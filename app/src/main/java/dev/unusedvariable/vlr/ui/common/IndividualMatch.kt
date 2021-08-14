@@ -35,14 +35,6 @@ import java.net.SocketTimeoutException
 
 @Composable
 fun SuccessScreen(data: List<MatchData>, upcomingMatches: Boolean, action: Action) {
-//    currentComposer.collectParameterInformation()
-//    currentComposer.compositionData.compositionGroups.forEach {
-//        it.data.forEach { e { "$it" } }
-//        e { "Key ${it.key}" }
-//        e { "node ${it.node}" }
-//        e { "info ${it.sourceInfo}" }
-//    }
-
     LazyColumn(modifier = Modifier
         .fillMaxSize()
         ) {
@@ -205,6 +197,7 @@ fun MatchUi(match: MatchData, upcomingMatch: Boolean = true, action: Action) {
                 color = VLRTheme.colors.onBackground.copy(0.6f),
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
