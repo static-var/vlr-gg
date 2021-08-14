@@ -135,7 +135,6 @@ class VlrRepository @Inject constructor(
             when (response) {
                 is StoreResponse.Loading -> emit(Waiting())
                 is StoreResponse.Data -> {
-                    e { "response ${response.value}" }
                     response.value.takeIf { it.isNotEmpty() }?.let {
                         emit(Pass(response.value[0]))
                     }

@@ -186,13 +186,13 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
 
         val animateVisibility by animateFloatAsState(
             if (expandMapInfo) 0f else 0.3f, animationSpec = spring(
-                dampingRatio = Spring.DampingRatioHighBouncy,
+                dampingRatio = Spring.DampingRatioLowBouncy,
                 stiffness = Spring.StiffnessLow
             )
         )
         val animateSize by animateDpAsState(
             if (expandMapInfo) 120.dp else 220.dp, animationSpec = spring(
-                dampingRatio = Spring.DampingRatioHighBouncy,
+                dampingRatio = Spring.DampingRatioLowBouncy,
                 stiffness = Spring.StiffnessLow
             )
         )
@@ -537,19 +537,26 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                                                         }
 
                                                         items(agents) { agent ->
+                                                            val agentPainter = rememberImagePainter(
+                                                                data = agent.agent,
+                                                                builder = {
+                                                                    crossfade(400)
+                                                                    size(90)
+                                                                }
+                                                            )
                                                             Row(
                                                                 modifier = Modifier.fillMaxWidth(),
                                                                 verticalAlignment = Alignment.CenterVertically,
                                                                 horizontalArrangement = Arrangement.SpaceEvenly
                                                             ) {
                                                                 Image(
-                                                                    painter = rememberImagePainter(
-                                                                        data = agent.agent
-                                                                    ),
-                                                                    contentDescription = "",
+                                                                    painter = agentPainter,
+                                                                    contentDescription = agent.agent.split(
+                                                                        "/"
+                                                                    ).last().split(".").first(),
                                                                     modifier = Modifier
                                                                         .padding(2.dp)
-                                                                        .fillMaxWidth(0.17f),
+                                                                        .fillMaxWidth(0.14f),
                                                                     contentScale = ContentScale.FillHeight,
                                                                     alignment = Alignment.Center
                                                                 )
@@ -557,7 +564,8 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                                                                     text = agent.name,
                                                                     modifier = Modifier
                                                                         .padding(2.dp)
-                                                                        .fillMaxWidth(0.20f)
+                                                                        .fillMaxWidth(0.20f),
+                                                                    maxLines = 1
                                                                 )
                                                                 Text(
                                                                     text = agent.combatStats.acs,

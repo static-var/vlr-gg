@@ -187,7 +187,6 @@ object VlrScraper {
                     }
                     mapData
                 }
-            e {"Original Parse $details"}
             details
         } catch (e: Exception) {
             e { "${e.printStackTrace()}" }

@@ -1,6 +1,6 @@
 package dev.unusedvariable.vlr.ui
 
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 
 private object Destinations {
     const val RESULTS = "results"
@@ -18,7 +18,7 @@ sealed class Destination(val route: String) {
     }
 }
 
-class Action(private val navController: NavController) {
+class Action(private val navController: NavHostController) {
     val pop: () -> Unit = {
         navController.popBackStack()
     }
