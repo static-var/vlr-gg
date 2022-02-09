@@ -1,8 +1,6 @@
 package dev.unusedvariable.vlr
 
 import android.os.Bundle
-import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
@@ -17,7 +15,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            VLRTheme {
+            VLRTheme() {
                 ProvideWindowInsets {
                     VLR()
                 }

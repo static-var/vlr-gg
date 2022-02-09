@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.github.ajalt.timberkt.e
 import com.google.accompanist.insets.statusBarsPadding
+import dev.unusedvariable.vlr.ui.COLOR_ALPHA
 import dev.unusedvariable.vlr.ui.VlrViewModel
 import dev.unusedvariable.vlr.ui.common.FailScreen
 import dev.unusedvariable.vlr.ui.common.LoadingScreen
@@ -34,7 +35,7 @@ fun ResultsScreen(viewModel: VlrViewModel) {
         Box(
             modifier = Modifier
                 .statusBarsPadding()
-                .background(color = VLRTheme.colors.background.copy(0.7f))
+                .background(color = VLRTheme.colorScheme.primary.copy(COLOR_ALPHA))
         )
         storeInfo.onPass {
             data?.let {

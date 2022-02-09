@@ -1,5 +1,7 @@
 package dev.unusedvariable.vlr.utils
 
+import androidx.compose.runtime.Composable
+
 sealed class Operation<T> {
     fun dataOrNull(): T? {
         return when (this) {
@@ -39,20 +41,22 @@ data class Fail<T>(val error: String = "", val exception: Exception = NullPointe
 
 data class Waiting<T>(val loading: Boolean = true) : Operation<T>()
 
-
-inline fun <T> Operation<T>.onPass(crossinline block: Pass<T>.() -> Unit): Operation<T> {
+@Composable
+inline fun <T> Operation<T>.onPass(crossinline block: @Composable Pass<T>.() -> Unit): Operation<T> {
     if (this is Pass)
         block(this)
     return this
 }
 
-inline fun <T> Operation<T>.onFail(crossinline block: Fail<T>.() -> Unit): Operation<T> {
+@Composable
+inline fun <T> Operation<T>.onFail(crossinline block: @Composable Fail<T>.() -> Unit): Operation<T> {
     if (this is Fail)
         block(this)
     return this
 }
 
-inline fun <T> Operation<T>.onWaiting(crossinline block: Waiting<T>.() -> Unit): Operation<T> {
+@Composable
+inline fun <T> Operation<T>.onWaiting(crossinline block: @Composable Waiting<T>.() -> Unit): Operation<T> {
     if (this is Waiting)
         block(this)
     return this

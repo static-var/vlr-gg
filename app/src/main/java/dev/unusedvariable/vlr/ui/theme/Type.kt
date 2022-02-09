@@ -1,12 +1,10 @@
 package dev.unusedvariable.vlr.ui.theme
 
-import androidx.compose.material.Typography
+import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.sp
 import dev.unusedvariable.vlr.R
 
@@ -23,53 +21,29 @@ val appFontFamily = FontFamily(
 )
 
 val Typography = Typography(
-    h4 = TextStyle(
+    titleLarge = TextStyle(
         fontFamily = appFontFamily,
         fontWeight = FontWeight.W600,
         fontSize = 30.sp,
     ),
-    h5 = TextStyle(
+    titleMedium = TextStyle(
         fontFamily = appFontFamily,
         fontWeight = FontWeight.W600,
         fontSize = 24.sp
     ),
-    h6 = TextStyle(
+    titleSmall = TextStyle(
         fontFamily = appFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 20.sp
     ),
-    subtitle1 = TextStyle(
+    displaySmall = TextStyle(
         fontFamily = appFontFamily,
         fontWeight = FontWeight.W600,
         fontSize = 16.sp
     ),
-    subtitle2 = TextStyle(
-        fontFamily = appFontFamily,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
-    ),
-    body1 = TextStyle(
+    bodyMedium = TextStyle(
         fontFamily = appFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp
     ),
-    body2 = TextStyle(
-        fontFamily = appFontFamily,
-        fontSize = 14.sp
-    ),
-    button = TextStyle(
-        fontFamily = appFontFamily,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
-    ),
-    caption = TextStyle(
-        fontFamily = appFontFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
-    ),
-    overline = TextStyle(
-        fontFamily = appFontFamily,
-        fontWeight = FontWeight.W500,
-        fontSize = 12.sp
-    )
 )

@@ -6,10 +6,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,13 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.github.ajalt.timberkt.e
 import dev.unusedvariable.vlr.data.NavState
 import dev.unusedvariable.vlr.data.model.CompletedMatch
 import dev.unusedvariable.vlr.data.model.MatchData
@@ -35,21 +33,30 @@ import java.net.SocketTimeoutException
 
 @Composable
 fun SuccessScreen(data: List<MatchData>, upcomingMatches: Boolean, action: Action) {
-    LazyColumn(modifier = Modifier
-        .fillMaxSize()
-        ) {
-
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         val map = data.groupBy { it.date }
         map.forEach { (date, matchData) ->
             stickyHeader {
-                Text(
-                    text = date,
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .background(color = VLRTheme.colors.background.copy(0.7f)),
-                    style = VLRTheme.typography.body1,
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .size(height = 32.dp, width = 0.dp)
+                        .background(VLRTheme.colorScheme.primaryContainer),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = date,
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp),
+                        style = VLRTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        color = VLRTheme.colorScheme.onPrimaryContainer
+                    )
+                }
             }
 
             items(matchData) { matchItem ->
@@ -69,7 +76,7 @@ fun LoadingScreen() {
         CircularProgressIndicator()
         Text(
             text = "Getting data...",
-            style = VLRTheme.typography.h4,
+            style = VLRTheme.typography.titleMedium,
             modifier = Modifier.padding(16.dp)
         )
     }
@@ -89,7 +96,7 @@ fun FailScreen(
     ) {
         Text(
             text = "Unable to parse webpage, try again!",
-            style = VLRTheme.typography.h4,
+            style = VLRTheme.typography.headlineMedium,
             modifier = Modifier.padding(16.dp),
             textAlign = TextAlign.Center
         )
@@ -128,18 +135,19 @@ fun MatchUi(match: MatchData, upcomingMatch: Boolean = true, action: Action) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 10.dp)
             .clickable {
                 if (match is UpcomingMatch)
                     action.match(match.upcomingId)
                 if (match is CompletedMatch)
                     action.match(match.completedId)
             },
-        shape = VLRTheme.shapes.large,
-        elevation = 12.dp,
+        shape = RoundedCornerShape(16.dp),
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
     ) {
-        Column(modifier = Modifier.padding(8.dp)) { // Main UI
-
+        Column(modifier = Modifier
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(8.dp)) { // Main UI
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
@@ -151,13 +159,13 @@ fun MatchUi(match: MatchData, upcomingMatch: Boolean = true, action: Action) {
                             .background(Color.Red)
                             .border(1.dp, Color.Red)
                             .padding(horizontal = 4.dp),
-                        style = VLRTheme.typography.body2,
+                        style = VLRTheme.typography.bodySmall,
                         color = Color.White
                     )
                 else {
                     Text(
                         text = if (upcomingMatch) "in ${match.eta}" else "was ${match.eta} ago",
-                        style = VLRTheme.typography.caption,
+                        style = VLRTheme.typography.bodySmall,
                     )
 
                 }
@@ -169,11 +177,11 @@ fun MatchUi(match: MatchData, upcomingMatch: Boolean = true, action: Action) {
             ) { // Team names
                 Text(
                     text = match.team1,
-                    style = VLRTheme.typography.h6,
+                    style = VLRTheme.typography.titleSmall,
                 )
                 Text(
                     text = match.team1Score,
-                    style = VLRTheme.typography.h6,
+                    style = VLRTheme.typography.titleSmall,
                 )
             }
 
@@ -183,18 +191,18 @@ fun MatchUi(match: MatchData, upcomingMatch: Boolean = true, action: Action) {
             ) { // Team names
                 Text(
                     text = match.team2,
-                    style = VLRTheme.typography.h6,
+                    style = VLRTheme.typography.titleSmall,
                 )
                 Text(
                     text = match.team2Score,
-                    style = VLRTheme.typography.h6,
+                    style = VLRTheme.typography.titleSmall,
                 )
             }
 
             Text(
                 text = match.gameExtraInfo,
-                style = VLRTheme.typography.caption,
-                color = VLRTheme.colors.onBackground.copy(0.6f),
+                style = VLRTheme.typography.bodySmall,
+                color = VLRTheme.colorScheme.onSecondaryContainer.copy(0.6f),
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth()

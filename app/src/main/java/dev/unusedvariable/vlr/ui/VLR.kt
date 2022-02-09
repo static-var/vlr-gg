@@ -2,22 +2,19 @@ package dev.unusedvariable.vlr.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
-import androidx.navigation.compose.navArgument
+import androidx.navigation.navArgument
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -30,6 +27,7 @@ import dev.unusedvariable.vlr.ui.schedule.SchedulePage
 import dev.unusedvariable.vlr.ui.theme.VLRTheme
 import dev.unusedvariable.vlr.utils.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VLR() {
     val navController = rememberAnimatedNavController()
@@ -39,18 +37,19 @@ fun VLR() {
     }
 
     val systemUiController = rememberSystemUiController()
-    systemUiController.setStatusBarColor(
-        color = Color.Transparent,
-        darkIcons = !isSystemInDarkTheme()
-    )
-    systemUiController.setNavigationBarColor(
-        color = if (isSystemInDarkTheme()) VLRTheme.colors.background else VLRTheme.colors.primary,
-        darkIcons = false
-    )
+    val primaryContainer = VLRTheme.colorScheme.primaryContainer
+    val background = VLRTheme.colorScheme.primary.copy(COLOR_ALPHA)
+
 
     viewModel.action = action
 
     val navState: NavState by viewModel.navState.collectAsState()
+
+    LaunchedEffect(key1 = navState) {
+        systemUiController.setSystemBarsColor(
+            color = if (navState == NavState.MATCH_DETAILS) background else primaryContainer,
+        )
+    }
 
     Scaffold(
         bottomBar = {
@@ -58,39 +57,39 @@ fun VLR() {
                 BottomNavigation(
                     modifier = Modifier
                         .navigationBarsPadding(true)
-                        .animateContentSize()
+                        .animateContentSize(),
+                    backgroundColor = VLRTheme.colorScheme.primaryContainer,
+                    contentColor = VLRTheme.colorScheme.onPrimaryContainer
                 ) {
                     BottomNavigationItem(
                         selected = navState == NavState.UPCOMING,
-                        icon = {},
-                        label = { Text(text = "Schedule", style = VLRTheme.typography.body1) },
+                        icon = { Text(text = "Schedule", style = VLRTheme.typography.bodyMedium) },
                         onClick = action.goUpcoming
                     )
                     BottomNavigationItem(
                         selected = navState == NavState.RESULTS,
-                        icon = {},
-                        label = { Text(text = "Results", style = VLRTheme.typography.body1) },
+                        icon = { Text(text = "Results", style = VLRTheme.typography.bodyMedium) },
                         onClick = action.goResults
                     )
                 }
             }
-        }
+        },
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())) {
+        Box(
+            modifier = Modifier
+                .padding(bottom = paddingValues.calculateBottomPadding())
+                .background(VLRTheme.colorScheme.primary.copy(COLOR_ALPHA)),
+        ) {
             AnimatedNavHost(
                 navController = navController,
                 startDestination = Destination.Schedule.route
             ) {
                 composable(
                     Destination.Schedule.route,
-                    enterTransition = { _, _ ->
-                        slideInFromLeft
-                    },
-                    popEnterTransition = { _, _ ->
-                        slideInFromBottom
-                    },
-                    exitTransition = { _, _ -> fadeOut },
-                    popExitTransition = { _, _ -> fadeOut },
+                    enterTransition = { slideInFromLeft },
+                    popEnterTransition = { slideInFromBottom },
+                    exitTransition = { fadeOut },
+                    popExitTransition = { fadeOut },
                 ) {
                     viewModel.setNavigation(NavState.UPCOMING)
                     SchedulePage(
@@ -99,14 +98,10 @@ fun VLR() {
                 }
                 composable(
                     Destination.Results.route,
-                    enterTransition = { _, _ ->
-                        slideInFromRight
-                    },
-                    popEnterTransition = { _, _ ->
-                        slideInFromBottom
-                    },
-                    exitTransition = { _, _ -> fadeOut },
-                    popExitTransition = { _, _ -> fadeOut },
+                    enterTransition = { slideInFromRight },
+                    popEnterTransition = { slideInFromBottom },
+                    exitTransition = { fadeOut },
+                    popExitTransition = { fadeOut },
                 ) {
                     viewModel.setNavigation(NavState.RESULTS)
                     ResultsScreen(viewModel = viewModel)
@@ -116,14 +111,10 @@ fun VLR() {
                     arguments = listOf(navArgument(Destination.Match.Args.ID) {
                         type = NavType.StringType
                     }),
-                    enterTransition = { _, _ ->
-                        slideInFromTop
-                    },
-                    popEnterTransition = { _, _ ->
-                        slideInFromTop
-                    },
-                    exitTransition = { _, _ -> fadeOut },
-                    popExitTransition = { _, _ -> fadeOut }
+                    enterTransition = { slideInFromTop },
+                    popEnterTransition = { slideInFromTop },
+                    exitTransition = { fadeOut },
+                    popExitTransition = { fadeOut }
                 ) {
                     viewModel.setNavigation(NavState.MATCH_DETAILS)
                     val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
@@ -133,3 +124,5 @@ fun VLR() {
         }
     }
 }
+
+const val COLOR_ALPHA = 0.2f

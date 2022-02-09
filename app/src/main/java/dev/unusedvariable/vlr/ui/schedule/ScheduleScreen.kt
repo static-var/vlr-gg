@@ -4,10 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.dropbox.android.external.store4.StoreRequest
-import com.dropbox.android.external.store4.StoreResponse
 import com.github.ajalt.timberkt.Timber.e
 import com.google.accompanist.insets.statusBarsPadding
 import dev.unusedvariable.vlr.ui.VlrViewModel
@@ -15,10 +16,10 @@ import dev.unusedvariable.vlr.ui.common.FailScreen
 import dev.unusedvariable.vlr.ui.common.LoadingScreen
 import dev.unusedvariable.vlr.ui.common.SuccessScreen
 import dev.unusedvariable.vlr.ui.theme.VLRTheme
-import dev.unusedvariable.vlr.utils.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlin.time.Duration
+import dev.unusedvariable.vlr.utils.Waiting
+import dev.unusedvariable.vlr.utils.onFail
+import dev.unusedvariable.vlr.utils.onPass
+import dev.unusedvariable.vlr.utils.onWaiting
 
 @Composable
 fun SchedulePage(viewModel: VlrViewModel) {
@@ -36,7 +37,7 @@ fun SchedulePage(viewModel: VlrViewModel) {
         Box(
             modifier = Modifier
                 .statusBarsPadding()
-                .background(color = VLRTheme.colors.background.copy(0.7f))
+                .background(color = VLRTheme.colorScheme.background.copy(0.7f))
         )
         storeInfo.onPass {
             data?.takeIf { it.isNotEmpty() }?.let {

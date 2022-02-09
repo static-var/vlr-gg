@@ -13,11 +13,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.material3.Button as M3Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +36,7 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
 import dev.unusedvariable.vlr.data.model.MatchDetails
+import dev.unusedvariable.vlr.ui.COLOR_ALPHA
 import dev.unusedvariable.vlr.ui.VlrViewModel
 import dev.unusedvariable.vlr.ui.common.FailScreen
 import dev.unusedvariable.vlr.ui.common.LoadingScreen
@@ -126,7 +132,7 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
         val infiniteRepeatable = rememberInfiniteTransition()
         val animatingCircleColor by infiniteRepeatable.animateColor(
             initialValue = Color.Red,
-            targetValue = VLRTheme.colors.background,
+            targetValue = VLRTheme.colorScheme.background,
             animationSpec = infiniteRepeatable(
                 animation = tween(1000, easing = LinearEasing),
                 repeatMode = RepeatMode.Reverse
@@ -167,7 +173,7 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                         text = matchDetails.date + " | " + matchDetails.time,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        style = VLRTheme.typography.body1
+                        style = VLRTheme.typography.bodyMedium
                     )
                     IconButton(onClick = refreshAction) {
                         Icon(Icons.Default.Refresh, contentDescription = "")
@@ -178,7 +184,7 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                 matchDetails.eta?.let { eta ->
                     Text(
                         text = eta, textAlign = TextAlign.Center, modifier = Modifier
-                            .fillMaxWidth(), style = VLRTheme.typography.body2
+                            .fillMaxWidth(), style = VLRTheme.typography.bodyMedium
                     )
                 }
             }
@@ -231,19 +237,19 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                 Text(
                     text = matchDetails.team1,
                     modifier = Modifier.width(LocalContext.current.resources.configuration.screenWidthDp.dp / 3),
-                    style = VLRTheme.typography.h5,
+                    style = VLRTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = matchDetails.scoreLine,
                     modifier = Modifier.width(LocalContext.current.resources.configuration.screenWidthDp.dp / 3),
-                    style = VLRTheme.typography.h5,
+                    style = VLRTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = matchDetails.team2,
                     modifier = Modifier.width(LocalContext.current.resources.configuration.screenWidthDp.dp / 3),
-                    style = VLRTheme.typography.h5,
+                    style = VLRTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
             }
@@ -261,7 +267,7 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth(),
-                        style = VLRTheme.typography.body2
+                        style = VLRTheme.typography.bodyMedium
                     )
                 }
 
@@ -273,7 +279,7 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 30.dp),
-                        style = VLRTheme.typography.body2
+                        style = VLRTheme.typography.bodyMedium
                     )
                 }
                 var expandCard by remember {
@@ -284,15 +290,17 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
                         .animateContentSize()
+                        .padding(16.dp)
                         .clickable { expandCard = expandCard.not() },
-                    shape = VLRTheme.shapes.large,
-                    elevation = 16.dp
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = 8.dp,
+                    contentColor = contentColorFor(backgroundColor = VLRTheme.colorScheme.onSurfaceVariant)
                 ) {
                     Column(
                         Modifier
                             .fillMaxWidth()
+                            .background(VLRTheme.colorScheme.surfaceVariant)
                     ) {
                         Row(
                             Modifier
@@ -305,7 +313,7 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                                 text = if (expandCard) "Show less" else "VODs and Streams",
                                 modifier = Modifier
                                     .padding(8.dp),
-                                style = VLRTheme.typography.body1
+                                style = VLRTheme.typography.bodyMedium
                             )
                             Icon(
                                 if (expandCard) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
@@ -319,9 +327,9 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                                     Text(
                                         text = "VODs",
                                         Modifier.padding(horizontal = 16.dp),
-                                        style = VLRTheme.typography.body2
+                                        style = VLRTheme.typography.bodySmall
                                     )
-                                    Button(
+                                    M3Button(
                                         onClick = {
                                             context.startActivity(
                                                 Intent(
@@ -343,11 +351,11 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                                             Modifier
                                                 .fillMaxWidth()
                                                 .padding(horizontal = 16.dp),
-                                            style = VLRTheme.typography.body2
+                                            style = VLRTheme.typography.bodySmall
                                         )
                                         LazyColumn(Modifier.fillMaxWidth()) {
                                             items(streams) { streamInfo ->
-                                                Button(
+                                                M3Button(
                                                     onClick = {
                                                         context.startActivity(
                                                             Intent(
@@ -376,20 +384,22 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
         Card(
             modifier = Modifier
                 .fillMaxWidth()
+                .animateContentSize()
                 .padding(16.dp)
-                .animateContentSize(),
-            shape = VLRTheme.shapes.large,
-            elevation = 16.dp
+                .clickable { expandMapInfo = expandMapInfo.not() },
+            shape = RoundedCornerShape(16.dp),
+            elevation = 8.dp,
+            contentColor = contentColorFor(backgroundColor = VLRTheme.colorScheme.onSurfaceVariant)
         ) {
             Column(
                 Modifier
                     .fillMaxWidth()
+                    .background(VLRTheme.colorScheme.surfaceVariant)
             ) {
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable { expandMapInfo = expandMapInfo.not() },
+                        .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -397,7 +407,7 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                         text = if (expandMapInfo) "Show less" else "Maps",
                         modifier = Modifier
                             .padding(8.dp),
-                        style = VLRTheme.typography.body1
+                        style = VLRTheme.typography.bodyMedium
                     )
                     Icon(
                         if (expandMapInfo) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
@@ -412,7 +422,13 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                     ) {
                         var tabPosition by remember { mutableStateOf(0) }
                         matchDetails.mapInfo?.takeIf { it.isNotEmpty() }?.let { maps ->
-                            TabRow(selectedTabIndex = tabPosition) {
+                            TabRow(
+                                selectedTabIndex = tabPosition,
+                                backgroundColor =
+                                    VLRTheme.colorScheme.primary.copy(
+                                        COLOR_ALPHA
+                                    ),
+                            ) {
                                 maps.forEachIndexed { index, pair ->
                                     Tab(
                                         selected = tabPosition == index,
@@ -528,8 +544,8 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                                                                 modifier = Modifier
                                                                     .fillMaxWidth()
                                                                     .background(
-                                                                        color = VLRTheme.colors.background.copy(
-                                                                            0.7f
+                                                                        color = VLRTheme.colorScheme.primary.copy(
+                                                                            COLOR_ALPHA
                                                                         )
                                                                     ),
                                                                 textAlign = TextAlign.Center
@@ -615,7 +631,7 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                                                     .fillMaxWidth()
                                                     .padding(32.dp),
                                                 textAlign = TextAlign.Center,
-                                                style = VLRTheme.typography.body1
+                                                style = VLRTheme.typography.bodyMedium
                                             )
                                         }
                                     }
