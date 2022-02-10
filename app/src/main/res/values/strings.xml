@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">VLR</string>
+    <string name="widget_description">VLR widget for live matches or upcoming matches</string>
 </resources>

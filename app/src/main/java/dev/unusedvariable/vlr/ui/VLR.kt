@@ -3,6 +3,7 @@ package dev.unusedvariable.vlr.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
@@ -26,6 +27,7 @@ import dev.unusedvariable.vlr.ui.results.ResultsScreen
 import dev.unusedvariable.vlr.ui.schedule.SchedulePage
 import dev.unusedvariable.vlr.ui.theme.VLRTheme
 import dev.unusedvariable.vlr.utils.*
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +40,8 @@ fun VLR() {
 
     val systemUiController = rememberSystemUiController()
     val primaryContainer = VLRTheme.colorScheme.primaryContainer
-    val background = VLRTheme.colorScheme.primary.copy(COLOR_ALPHA)
+    val background = VLRTheme.colorScheme.primaryContainer.copy(0.1f)
+    val isDark = isSystemInDarkTheme()
 
 
     viewModel.action = action
@@ -46,7 +49,11 @@ fun VLR() {
     val navState: NavState by viewModel.navState.collectAsState()
 
     LaunchedEffect(key1 = navState) {
-        systemUiController.setSystemBarsColor(
+        delay(500)
+        systemUiController.setStatusBarColor(
+            color = background,
+        )
+        systemUiController.setNavigationBarColor(
             color = if (navState == NavState.MATCH_DETAILS) background else primaryContainer,
         )
     }
@@ -78,7 +85,7 @@ fun VLR() {
         Box(
             modifier = Modifier
                 .padding(bottom = paddingValues.calculateBottomPadding())
-                .background(VLRTheme.colorScheme.primary.copy(COLOR_ALPHA)),
+                .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
         ) {
             AnimatedNavHost(
                 navController = navController,
@@ -125,4 +132,5 @@ fun VLR() {
     }
 }
 
-const val COLOR_ALPHA = 0.2f
+const val COLOR_ALPHA = 0.1f
+const val CARD_ALPHA = 0.3f

@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
-import androidx.compose.material3.Button as M3Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -36,12 +34,14 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
 import dev.unusedvariable.vlr.data.model.MatchDetails
+import dev.unusedvariable.vlr.ui.CARD_ALPHA
 import dev.unusedvariable.vlr.ui.COLOR_ALPHA
 import dev.unusedvariable.vlr.ui.VlrViewModel
 import dev.unusedvariable.vlr.ui.common.FailScreen
 import dev.unusedvariable.vlr.ui.common.LoadingScreen
 import dev.unusedvariable.vlr.ui.theme.VLRTheme
 import dev.unusedvariable.vlr.utils.*
+import androidx.compose.material3.Button as M3Button
 
 @Composable
 fun MatchDetails(viewModel: VlrViewModel, matchUrl: String) {
@@ -59,6 +59,7 @@ fun MatchDetails(viewModel: VlrViewModel, matchUrl: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA))
     ) {
         Spacer(modifier = Modifier.statusBarsPadding())
 
@@ -294,85 +295,79 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                         .padding(16.dp)
                         .clickable { expandCard = expandCard.not() },
                     shape = RoundedCornerShape(16.dp),
-                    elevation = 8.dp,
-                    contentColor = contentColorFor(backgroundColor = VLRTheme.colorScheme.onSurfaceVariant)
+                    contentColor = contentColorFor(backgroundColor = VLRTheme.colorScheme.primaryContainer),
+                    containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
                 ) {
-                    Column(
+                    Row(
                         Modifier
                             .fillMaxWidth()
-                            .background(VLRTheme.colorScheme.surfaceVariant)
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
+                        Text(
+                            text = if (expandCard) "Show less" else "VODs and Streams",
+                            modifier = Modifier
                                 .padding(8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = if (expandCard) "Show less" else "VODs and Streams",
-                                modifier = Modifier
-                                    .padding(8.dp),
-                                style = VLRTheme.typography.bodyMedium
-                            )
-                            Icon(
-                                if (expandCard) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                                contentDescription = ""
-                            )
-                        }
-                        AnimatedVisibility(visible = expandCard) {
-                            Column(modifier = Modifier.fillMaxWidth()) {
+                            style = VLRTheme.typography.bodyMedium
+                        )
+                        Icon(
+                            if (expandCard) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = ""
+                        )
+                    }
+                    AnimatedVisibility(visible = expandCard) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
 
-                                matchDetails.vod?.let { vodInfo ->
+                            matchDetails.vod?.let { vodInfo ->
+                                Text(
+                                    text = "VODs",
+                                    Modifier.padding(horizontal = 16.dp),
+                                    style = VLRTheme.typography.bodySmall
+                                )
+                                M3Button(
+                                    onClick = {
+                                        context.startActivity(
+                                            Intent(
+                                                Intent.ACTION_VIEW,
+                                                Uri.parse(vodInfo.second)
+                                            )
+                                        )
+                                    }, modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                ) {
+                                    Text(text = vodInfo.first)
+                                }
+                            }
+                            matchDetails.streams?.takeUnless { it.isNullOrEmpty() }
+                                ?.let { streams ->
                                     Text(
-                                        text = "VODs",
-                                        Modifier.padding(horizontal = 16.dp),
+                                        text = "Streams",
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp),
                                         style = VLRTheme.typography.bodySmall
                                     )
-                                    M3Button(
-                                        onClick = {
-                                            context.startActivity(
-                                                Intent(
-                                                    Intent.ACTION_VIEW,
-                                                    Uri.parse(vodInfo.second)
-                                                )
-                                            )
-                                        }, modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp)
-                                    ) {
-                                        Text(text = vodInfo.first)
-                                    }
-                                }
-                                matchDetails.streams?.takeUnless { it.isNullOrEmpty() }
-                                    ?.let { streams ->
-                                        Text(
-                                            text = "Streams",
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 16.dp),
-                                            style = VLRTheme.typography.bodySmall
-                                        )
-                                        LazyColumn(Modifier.fillMaxWidth()) {
-                                            items(streams) { streamInfo ->
-                                                M3Button(
-                                                    onClick = {
-                                                        context.startActivity(
-                                                            Intent(
-                                                                Intent.ACTION_VIEW,
-                                                                Uri.parse(streamInfo.second)
-                                                            )
+                                    LazyColumn(Modifier.fillMaxWidth()) {
+                                        items(streams) { streamInfo ->
+                                            M3Button(
+                                                onClick = {
+                                                    context.startActivity(
+                                                        Intent(
+                                                            Intent.ACTION_VIEW,
+                                                            Uri.parse(streamInfo.second)
                                                         )
-                                                    }, modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(16.dp)
-                                                ) {
-                                                    Text(text = streamInfo.first)
-                                                }
+                                                    )
+                                                }, modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(16.dp)
+                                            ) {
+                                                Text(text = streamInfo.first)
                                             }
                                         }
                                     }
-                            }
+                                }
                         }
                     }
                 }
@@ -388,262 +383,256 @@ fun MatchDetailsUi(matchDetails: MatchDetails, isLoading: Boolean, refreshAction
                 .padding(16.dp)
                 .clickable { expandMapInfo = expandMapInfo.not() },
             shape = RoundedCornerShape(16.dp),
-            elevation = 8.dp,
-            contentColor = contentColorFor(backgroundColor = VLRTheme.colorScheme.onSurfaceVariant)
+            contentColor = contentColorFor(backgroundColor = VLRTheme.colorScheme.primaryContainer),
+            containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
         ) {
-            Column(
+            Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(VLRTheme.colorScheme.surfaceVariant)
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
+                Text(
+                    text = if (expandMapInfo) "Show less" else "Maps",
+                    modifier = Modifier
+                        .padding(8.dp),
+                    style = VLRTheme.typography.bodyMedium
+                )
+                Icon(
+                    if (expandMapInfo) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = ""
+                )
+            }
+            AnimatedVisibility(visible = expandMapInfo) {
+                Column(
                     Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .animateContentSize()
                 ) {
-                    Text(
-                        text = if (expandMapInfo) "Show less" else "Maps",
-                        modifier = Modifier
-                            .padding(8.dp),
-                        style = VLRTheme.typography.bodyMedium
-                    )
-                    Icon(
-                        if (expandMapInfo) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = ""
-                    )
-                }
-                AnimatedVisibility(visible = expandMapInfo) {
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .animateContentSize()
-                    ) {
-                        var tabPosition by remember { mutableStateOf(0) }
-                        matchDetails.mapInfo?.takeIf { it.isNotEmpty() }?.let { maps ->
-                            TabRow(
-                                selectedTabIndex = tabPosition,
-                                backgroundColor =
-                                    VLRTheme.colorScheme.primary.copy(
-                                        COLOR_ALPHA
-                                    ),
-                            ) {
-                                maps.forEachIndexed { index, pair ->
-                                    Tab(
-                                        selected = tabPosition == index,
-                                        onClick = { tabPosition = index },
-                                    ) {
-                                        Text(
-                                            text = pair.first,
-                                            modifier = Modifier.padding(vertical = 8.dp)
-                                        )
-                                    }
+                    var tabPosition by remember { mutableStateOf(0) }
+                    matchDetails.mapInfo?.takeIf { it.isNotEmpty() }?.let { maps ->
+                        TabRow(
+                            selectedTabIndex = tabPosition,
+                            backgroundColor =
+                            VLRTheme.colorScheme.primary.copy(
+                                COLOR_ALPHA
+                            ),
+                        ) {
+                            maps.forEachIndexed { index, pair ->
+                                Tab(
+                                    selected = tabPosition == index,
+                                    onClick = { tabPosition = index },
+                                ) {
+                                    Text(
+                                        text = pair.first,
+                                        modifier = Modifier.padding(vertical = 8.dp)
+                                    )
                                 }
                             }
-                            matchDetails.mapData?.takeIf { tabPosition < it.size }?.get(tabPosition)
-                                ?.let { mapData ->
-                                    Column(Modifier.fillMaxWidth()) {
+                        }
+                        matchDetails.mapData?.takeIf { tabPosition < it.size }?.get(tabPosition)
+                            ?.let { mapData ->
+                                Column(Modifier.fillMaxWidth()) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
                                         Row(
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(16.dp),
+                                                .fillMaxWidth(0.5f)
+                                                .padding(end = 4.dp),
                                             horizontalArrangement = Arrangement.SpaceBetween,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
+                                            Text(text = mapData.team1)
+                                            Text(text = mapData.team1Score)
+                                        }
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth(1f)
+                                                .padding(start = 4.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(text = mapData.team2Score)
+                                            Text(
+                                                text = mapData.team2,
+                                                textAlign = TextAlign.End
+                                            )
+                                        }
+                                    }
+
+                                    if (mapData.isMapComplete) { // show stats
+                                        val allPlayers = mapData.team1Players?.plus(
+                                            mapData.team2Players ?: emptyList()
+                                        )
+                                        allPlayers?.takeIf { it.isNotEmpty() }?.let { players ->
+                                            val playerGroup = players.groupBy { it.org }
                                             Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth(0.5f)
-                                                    .padding(end = 4.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
+                                                modifier = Modifier.fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.SpaceEvenly
                                             ) {
-                                                Text(text = mapData.team1)
-                                                Text(text = mapData.team1Score)
-                                            }
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth(1f)
-                                                    .padding(start = 4.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Text(text = mapData.team2Score)
                                                 Text(
-                                                    text = mapData.team2,
-                                                    textAlign = TextAlign.End
+                                                    text = "Agent",
+                                                    modifier = Modifier
+                                                        .padding(2.dp)
+                                                        .fillMaxWidth(0.17f)
+                                                )
+                                                Text(
+                                                    text = "Name",
+                                                    modifier = Modifier
+                                                        .padding(2.dp)
+                                                        .fillMaxWidth(0.20f)
+                                                )
+                                                Text(
+                                                    text = "ACS",
+                                                    modifier = Modifier
+                                                        .padding(2.dp)
+                                                        .fillMaxWidth(0.17f)
+                                                )
+                                                Text(
+                                                    text = "K",
+                                                    modifier = Modifier
+                                                        .padding(2.dp)
+                                                        .fillMaxWidth(0.15f)
+                                                )
+                                                Text(
+                                                    text = "D",
+                                                    modifier = Modifier
+                                                        .padding(2.dp)
+                                                        .fillMaxWidth(0.18f)
+                                                )
+                                                Text(
+                                                    text = "A",
+                                                    modifier = Modifier
+                                                        .padding(2.dp)
+                                                        .fillMaxWidth(0.25f)
+                                                )
+                                                Text(
+                                                    text = "ADR",
+                                                    modifier = Modifier
+                                                        .padding(2.dp)
+                                                        .fillMaxWidth(0.50f)
+                                                )
+                                                Text(
+                                                    text = "HS%",
+                                                    modifier = Modifier
+                                                        .padding(2.dp)
+                                                        .fillMaxWidth()
                                                 )
                                             }
-                                        }
+                                            LazyColumn(Modifier.fillMaxWidth()) {
+                                                playerGroup.forEach { (org, agents) ->
+                                                    stickyHeader {
+                                                        Text(
+                                                            text = org,
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .background(
+                                                                    color = VLRTheme.colorScheme.primary.copy(
+                                                                        COLOR_ALPHA
+                                                                    )
+                                                                ),
+                                                            textAlign = TextAlign.Center
+                                                        )
+                                                    }
 
-                                        if (mapData.isMapComplete) { // show stats
-                                            val allPlayers = mapData.team1Players?.plus(
-                                                mapData.team2Players ?: emptyList()
-                                            )
-                                            allPlayers?.takeIf { it.isNotEmpty() }?.let { players ->
-                                                val playerGroup = players.groupBy { it.org }
-                                                Row(
-                                                    modifier = Modifier.fillMaxWidth(),
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                                ) {
-                                                    Text(
-                                                        text = "Agent",
-                                                        modifier = Modifier
-                                                            .padding(2.dp)
-                                                            .fillMaxWidth(0.17f)
-                                                    )
-                                                    Text(
-                                                        text = "Name",
-                                                        modifier = Modifier
-                                                            .padding(2.dp)
-                                                            .fillMaxWidth(0.20f)
-                                                    )
-                                                    Text(
-                                                        text = "ACS",
-                                                        modifier = Modifier
-                                                            .padding(2.dp)
-                                                            .fillMaxWidth(0.17f)
-                                                    )
-                                                    Text(
-                                                        text = "K",
-                                                        modifier = Modifier
-                                                            .padding(2.dp)
-                                                            .fillMaxWidth(0.15f)
-                                                    )
-                                                    Text(
-                                                        text = "D",
-                                                        modifier = Modifier
-                                                            .padding(2.dp)
-                                                            .fillMaxWidth(0.18f)
-                                                    )
-                                                    Text(
-                                                        text = "A",
-                                                        modifier = Modifier
-                                                            .padding(2.dp)
-                                                            .fillMaxWidth(0.25f)
-                                                    )
-                                                    Text(
-                                                        text = "ADR",
-                                                        modifier = Modifier
-                                                            .padding(2.dp)
-                                                            .fillMaxWidth(0.50f)
-                                                    )
-                                                    Text(
-                                                        text = "HS%",
-                                                        modifier = Modifier
-                                                            .padding(2.dp)
-                                                            .fillMaxWidth()
-                                                    )
-                                                }
-                                                LazyColumn(Modifier.fillMaxWidth()) {
-                                                    playerGroup.forEach { (org, agents) ->
-                                                        stickyHeader {
-                                                            Text(
-                                                                text = org,
-                                                                modifier = Modifier
-                                                                    .fillMaxWidth()
-                                                                    .background(
-                                                                        color = VLRTheme.colorScheme.primary.copy(
-                                                                            COLOR_ALPHA
-                                                                        )
-                                                                    ),
-                                                                textAlign = TextAlign.Center
-                                                            )
-                                                        }
-
-                                                        items(agents) { agent ->
-                                                            val agentPainter = rememberImagePainter(
-                                                                data = agent.agent,
-                                                                builder = {
-                                                                    crossfade(400)
-                                                                    size(90)
-                                                                }
-                                                            )
-                                                            Row(
-                                                                modifier = Modifier.fillMaxWidth(),
-                                                                verticalAlignment = Alignment.CenterVertically,
-                                                                horizontalArrangement = Arrangement.SpaceEvenly
-                                                            ) {
-                                                                Image(
-                                                                    painter = agentPainter,
-                                                                    contentDescription = agent.agent.split(
-                                                                        "/"
-                                                                    ).last().split(".").first(),
-                                                                    modifier = Modifier
-                                                                        .padding(2.dp)
-                                                                        .fillMaxWidth(0.14f),
-                                                                    contentScale = ContentScale.FillHeight,
-                                                                    alignment = Alignment.Center
-                                                                )
-                                                                Text(
-                                                                    text = agent.name,
-                                                                    modifier = Modifier
-                                                                        .padding(2.dp)
-                                                                        .fillMaxWidth(0.20f),
-                                                                    maxLines = 1
-                                                                )
-                                                                Text(
-                                                                    text = agent.combatStats.acs,
-                                                                    modifier = Modifier
-                                                                        .padding(2.dp)
-                                                                        .fillMaxWidth(0.17f)
-                                                                )
-                                                                Text(
-                                                                    text = agent.combatStats.kills,
-                                                                    modifier = Modifier
-                                                                        .padding(2.dp)
-                                                                        .fillMaxWidth(0.15f)
-                                                                )
-                                                                Text(
-                                                                    text = agent.combatStats.deaths,
-                                                                    modifier = Modifier
-                                                                        .padding(2.dp)
-                                                                        .fillMaxWidth(0.18f)
-                                                                )
-                                                                Text(
-                                                                    text = agent.combatStats.assists,
-                                                                    modifier = Modifier
-                                                                        .padding(2.dp)
-                                                                        .fillMaxWidth(0.25f)
-                                                                )
-                                                                Text(
-                                                                    text = agent.combatStats.adr,
-                                                                    modifier = Modifier
-                                                                        .padding(2.dp)
-                                                                        .fillMaxWidth(0.50f)
-                                                                )
-                                                                Text(
-                                                                    text = agent.combatStats.headShot,
-                                                                    modifier = Modifier
-                                                                        .padding(2.dp)
-                                                                        .fillMaxWidth()
-                                                                )
+                                                    items(agents) { agent ->
+                                                        val agentPainter = rememberImagePainter(
+                                                            data = agent.agent,
+                                                            builder = {
+                                                                crossfade(400)
+                                                                size(90)
                                                             }
+                                                        )
+                                                        Row(
+                                                            modifier = Modifier.fillMaxWidth(),
+                                                            verticalAlignment = Alignment.CenterVertically,
+                                                            horizontalArrangement = Arrangement.SpaceEvenly
+                                                        ) {
+                                                            Image(
+                                                                painter = agentPainter,
+                                                                contentDescription = agent.agent.split(
+                                                                    "/"
+                                                                ).last().split(".").first(),
+                                                                modifier = Modifier
+                                                                    .padding(2.dp)
+                                                                    .fillMaxWidth(0.14f),
+                                                                contentScale = ContentScale.FillHeight,
+                                                                alignment = Alignment.Center
+                                                            )
+                                                            Text(
+                                                                text = agent.name,
+                                                                modifier = Modifier
+                                                                    .padding(2.dp)
+                                                                    .fillMaxWidth(0.20f),
+                                                                maxLines = 1
+                                                            )
+                                                            Text(
+                                                                text = agent.combatStats.acs,
+                                                                modifier = Modifier
+                                                                    .padding(2.dp)
+                                                                    .fillMaxWidth(0.17f)
+                                                            )
+                                                            Text(
+                                                                text = agent.combatStats.kills,
+                                                                modifier = Modifier
+                                                                    .padding(2.dp)
+                                                                    .fillMaxWidth(0.15f)
+                                                            )
+                                                            Text(
+                                                                text = agent.combatStats.deaths,
+                                                                modifier = Modifier
+                                                                    .padding(2.dp)
+                                                                    .fillMaxWidth(0.18f)
+                                                            )
+                                                            Text(
+                                                                text = agent.combatStats.assists,
+                                                                modifier = Modifier
+                                                                    .padding(2.dp)
+                                                                    .fillMaxWidth(0.25f)
+                                                            )
+                                                            Text(
+                                                                text = agent.combatStats.adr,
+                                                                modifier = Modifier
+                                                                    .padding(2.dp)
+                                                                    .fillMaxWidth(0.50f)
+                                                            )
+                                                            Text(
+                                                                text = agent.combatStats.headShot,
+                                                                modifier = Modifier
+                                                                    .padding(2.dp)
+                                                                    .fillMaxWidth()
+                                                            )
                                                         }
                                                     }
                                                 }
                                             }
-                                        } else {
-                                            Text(
-                                                text = "Match is going on, wait to see the stats",
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(32.dp),
-                                                textAlign = TextAlign.Center,
-                                                style = VLRTheme.typography.bodyMedium
-                                            )
                                         }
+                                    } else {
+                                        Text(
+                                            text = "Match is going on, wait to see the stats",
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(32.dp),
+                                            textAlign = TextAlign.Center,
+                                            style = VLRTheme.typography.bodyMedium
+                                        )
                                     }
-                                } ?: Row(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(32.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(text = "No info about the match")
-                            }
+                                }
+                            } ?: Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "No info about the match")
                         }
                     }
                 }

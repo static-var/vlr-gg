@@ -1,7 +1,6 @@
 package dev.unusedvariable.vlr.data
 
 import com.dropbox.android.external.store4.*
-import com.github.ajalt.timberkt.e
 import dev.unusedvariable.vlr.data.dao.CompletedMatchDao
 import dev.unusedvariable.vlr.data.dao.MatchDetailsDao
 import dev.unusedvariable.vlr.data.dao.UpcomingMatchDao
@@ -10,7 +9,6 @@ import dev.unusedvariable.vlr.data.model.MatchDetails
 import dev.unusedvariable.vlr.data.model.UpcomingMatch
 import dev.unusedvariable.vlr.utils.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.net.SocketTimeoutException
@@ -150,4 +148,6 @@ class VlrRepository @Inject constructor(
             }
         }
     }.flowOn(Dispatchers.IO)
+
+    fun getFiveUpcomingMatches() = upcomingMatchDao.fiveUpcomingMatches()
 }

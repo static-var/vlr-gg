@@ -21,4 +21,7 @@ interface UpcomingMatchDao {
         deleteAll()
         insertAll(list)
     }
+
+    @Query("SELECT * from UpcomingMatch")
+    fun fiveUpcomingMatches(): List<UpcomingMatch>
 }

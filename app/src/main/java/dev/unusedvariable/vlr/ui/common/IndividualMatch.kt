@@ -7,11 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,6 +23,7 @@ import dev.unusedvariable.vlr.data.model.CompletedMatch
 import dev.unusedvariable.vlr.data.model.MatchData
 import dev.unusedvariable.vlr.data.model.UpcomingMatch
 import dev.unusedvariable.vlr.ui.Action
+import dev.unusedvariable.vlr.ui.CARD_ALPHA
 import dev.unusedvariable.vlr.ui.VlrViewModel
 import dev.unusedvariable.vlr.ui.theme.VLRTheme
 import java.net.SocketTimeoutException
@@ -43,8 +40,7 @@ fun SuccessScreen(data: List<MatchData>, upcomingMatches: Boolean, action: Actio
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .size(height = 32.dp, width = 0.dp)
-                        .background(VLRTheme.colorScheme.primaryContainer),
+                        .size(height = 32.dp, width = 0.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
@@ -54,7 +50,6 @@ fun SuccessScreen(data: List<MatchData>, upcomingMatches: Boolean, action: Actio
                             .padding(4.dp),
                         style = VLRTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
-                        color = VLRTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -143,11 +138,13 @@ fun MatchUi(match: MatchData, upcomingMatch: Boolean = true, action: Action) {
                     action.match(match.completedId)
             },
         shape = RoundedCornerShape(16.dp),
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
     ) {
-        Column(modifier = Modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(8.dp)) { // Main UI
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+        ) { // Main UI
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End

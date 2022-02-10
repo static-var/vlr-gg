@@ -37,7 +37,6 @@ fun SchedulePage(viewModel: VlrViewModel) {
         Box(
             modifier = Modifier
                 .statusBarsPadding()
-                .background(color = VLRTheme.colorScheme.background.copy(0.7f))
         )
         storeInfo.onPass {
             data?.takeIf { it.isNotEmpty() }?.let {
