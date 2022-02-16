@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:name=".VLRapp"
         android:theme="@style/Theme.VLR"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"

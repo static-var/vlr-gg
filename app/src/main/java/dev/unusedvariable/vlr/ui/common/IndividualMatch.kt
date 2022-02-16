@@ -98,7 +98,7 @@ fun FailScreen(
 
         val navState by remember {
             viewModel.navState
-        }.collectAsState()
+        }.collectAsState(NavState.NEWS)
 
         when (navState) {
             NavState.MATCH_DETAILS -> {
@@ -106,16 +106,7 @@ fun FailScreen(
             else -> {
                 if (e is SocketTimeoutException || showReload) {
                     Button(
-                        onClick = when (viewModel.navState.value) {
-                            NavState.UPCOMING -> {
-                                viewModel.clearCache()
-                                viewModel.action.goUpcoming
-                            }
-                            else -> {
-                                viewModel.clearCache()
-                                viewModel.action.goResults
-                            }
-                        }
+                        onClick = {}
                     ) {
                         Text(text = "Reload")
                     }

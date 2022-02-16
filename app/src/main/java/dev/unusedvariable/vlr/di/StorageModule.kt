@@ -9,12 +9,15 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.unusedvariable.vlr.data.VlrRepository
+import dev.unusedvariable.vlr.data.api.service.VlrService
 import dev.unusedvariable.vlr.data.dao.CompletedMatchDao
 import dev.unusedvariable.vlr.data.dao.MatchDetailsDao
 import dev.unusedvariable.vlr.data.dao.UpcomingMatchDao
+import dev.unusedvariable.vlr.data.dao.VlrDao
 import dev.unusedvariable.vlr.data.db.VlrDB
 import dev.unusedvariable.vlr.data.db.VlrTypeConverter
 import dev.unusedvariable.vlr.utils.Constants
+import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
 @Module
@@ -23,14 +26,14 @@ object StorageModule {
 
     @Provides
     @Singleton
-    fun typeConverter(moshi: Moshi) = VlrTypeConverter(moshi)
+    fun typeConverter(moshi: Moshi, json: Json) = VlrTypeConverter(moshi, json)
 
     @Provides
     @Singleton
     fun db(application: Application, converter: VlrTypeConverter) =
         Room.databaseBuilder(
             application, VlrDB::class.java, Constants.DB_NAME
-        ).addTypeConverter(converter).build()
+        ).fallbackToDestructiveMigration().addTypeConverter(converter).build()
 
     @Provides
     @Singleton
@@ -46,11 +49,17 @@ object StorageModule {
 
     @Provides
     @Singleton
+    fun getVlrDao(db: VlrDB) = db.getVlrDao()
+
+    @Provides
+    @Singleton
     fun getVlrRepository(
         upcomingMatchDao: UpcomingMatchDao,
         completedMatchDao: CompletedMatchDao,
-        matchDetailsDao: MatchDetailsDao
+        matchDetailsDao: MatchDetailsDao,
+        vlrService: VlrService,
+        vlrDao: VlrDao,
     ) = VlrRepository(
-        completedMatchDao, upcomingMatchDao, matchDetailsDao
+        completedMatchDao, upcomingMatchDao, matchDetailsDao, vlrService, vlrDao
     )
 }

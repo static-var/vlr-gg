@@ -1,5 +1,5 @@
 package dev.unusedvariable.vlr.data
 
 enum class NavState {
-    UPCOMING, RESULTS, MATCH_DETAILS
+    MATCH_DETAILS, NEWS, TOURNAMENT, TOURNAMENT_DETAILS, MATCH_OVERVIEW
 }

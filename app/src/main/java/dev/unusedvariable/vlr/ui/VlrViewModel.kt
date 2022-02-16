@@ -9,10 +9,8 @@ import dev.unusedvariable.vlr.data.dao.MatchDetailsDao
 import dev.unusedvariable.vlr.utils.Constants
 import dev.unusedvariable.vlr.utils.TimeElapsed
 import dev.unusedvariable.vlr.utils.Waiting
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,11 +18,11 @@ class VlrViewModel @Inject constructor(
     private val repository: VlrRepository
 ) : ViewModel() {
 
-    private var _navState: MutableStateFlow<NavState> = MutableStateFlow(NavState.UPCOMING)
+    private var _navState: MutableStateFlow<NavState> = MutableStateFlow(NavState.NEWS)
     val navState: StateFlow<NavState> = _navState
 
     fun setNavigation(state: NavState) {
-        _navState.value = state
+        _navState.tryEmit(state)
     }
 
     lateinit var action: Action
@@ -38,26 +36,20 @@ class VlrViewModel @Inject constructor(
     fun getMatchDetails(matchUrl: String) = repository.getMatchDetail(matchUrl)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
+    fun getTournaments() = repository.getTournaments()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
-//    fun matchDetails(url: String) = flow<Operation<MatchDetails>> {
-//        emit(Waiting())
-//        repository.matchDetails(url).stream(StoreRequest.cached("", true)).collect { response ->
-//            when (response) {
-//                is StoreResponse.Loading -> emit(Waiting())
-//                is StoreResponse.Data -> emit(Pass(response.value))
-//                is StoreResponse.Error.Exception,
-//                is StoreResponse.Error.Message -> emit(
-//                    Fail(
-//                        response.errorMessageOrNull() ?: "Unable to fetch data"
-//                    )
-//                )
-//            }
-//        }
-//    }
+    fun getAllMatches() = repository.getAllMatchesPreview()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+
+    fun getNews() = repository.getAllNews()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
     fun clearCache() {
         TimeElapsed.reset(Constants.KEY_UPCOMING)
         TimeElapsed.reset(Constants.KEY_COMPLETED)
+        TimeElapsed.reset(Constants.KEY_TOURNAMENT_ALL)
+        TimeElapsed.reset(Constants.KEY_NEWS)
     }
 
     private val _forceRefreshCounter = MutableStateFlow(0)
@@ -66,5 +58,7 @@ class VlrViewModel @Inject constructor(
     fun updateCounter() {
         _forceRefreshCounter.value++
     }
+
+
 
 }

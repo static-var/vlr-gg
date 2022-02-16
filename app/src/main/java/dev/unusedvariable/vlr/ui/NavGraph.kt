@@ -3,14 +3,16 @@ package dev.unusedvariable.vlr.ui
 import androidx.navigation.NavHostController
 
 private object Destinations {
-    const val RESULTS = "results"
-    const val SCHEDULE = "schedule"
+    const val MATCH_OVERVIEW = "schedule"
     const val MATCH = "match"
+    const val NEWS = "news"
+    const val EVENTS = "events"
 }
 
 sealed class Destination(val route: String) {
-    object Results : Destination(Destinations.RESULTS)
-    object Schedule : Destination(Destinations.SCHEDULE)
+    object MatchOverview : Destination(Destinations.MATCH_OVERVIEW)
+    object News : Destination(Destinations.NEWS)
+    object Events : Destination(Destinations.EVENTS)
     object Match : Destination("${Destinations.MATCH}/{${Args.ID}}") {
         object Args {
             const val ID = "id"
@@ -23,12 +25,16 @@ class Action(private val navController: NavHostController) {
         navController.popBackStack()
     }
 
-    val goUpcoming: () -> Unit = {
-        navController.navigate(Destinations.SCHEDULE)
+    val matchOverview: () -> Unit = {
+        navController.navigate(Destinations.MATCH_OVERVIEW)
     }
 
-    val goResults: () -> Unit = {
-        navController.navigate(Destinations.RESULTS)
+    val goNews: () -> Unit = {
+        navController.navigate(Destinations.NEWS)
+    }
+
+    val goEvents: () -> Unit = {
+        navController.navigate(Destinations.EVENTS)
     }
 
     val match: (String) -> Unit = { id ->
