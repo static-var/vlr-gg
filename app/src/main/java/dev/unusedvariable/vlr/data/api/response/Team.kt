@@ -19,7 +19,7 @@ data class Team constructor(
     @SerialName("name")
     val name: String = "", // Renegades
     @SerialName("score")
-    val score: String = "", // 10
+    val score: Int? = null, // 10
     @SerialName("winner")
     val winner: Boolean? = null, // true
 )

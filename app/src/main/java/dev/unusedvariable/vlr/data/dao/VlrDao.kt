@@ -17,7 +17,7 @@ interface VlrDao {
     suspend fun insertAllNews(news: List<NewsResponseItem>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAllTournamentInfo(tournaments: List<TournamentInfo.TournamentPreview>)
+    suspend fun insertAllTournamentInfo(tournaments: List<TournamentPreview>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTournamentDetails(match: TournamentDetails)
@@ -29,23 +29,11 @@ interface VlrDao {
     @Query("SELECT * from NewsResponseItem")
     fun getNews(): Flow<List<NewsResponseItem>>
 
-    @Query("SELECT * from MatchPreviewInfo where status not like 'Completed%'")
-    fun getUpcomingMatches(): Flow<List<MatchPreviewInfo>>
-
-    @Query("SELECT * from MatchPreviewInfo where status like 'Completed%'")
-    fun getCompletedMatches(): Flow<List<MatchPreviewInfo>>
-
     @Query("SELECT * from MatchPreviewInfo")
     fun getAllMatchesPreview(): Flow<List<MatchPreviewInfo>>
 
-    @Query("SELECT * from TournamentPreview where status not like 'completed%'")
-    fun getUpcomingTournament(): Flow<List<TournamentInfo.TournamentPreview>>
-
-    @Query("SELECT * from TournamentPreview where status like 'completed%'")
-    fun getCompletedTournament(): Flow<List<TournamentInfo.TournamentPreview>>
-
     @Query("SELECT * from TournamentPreview")
-    fun getTournaments(): Flow<List<TournamentInfo.TournamentPreview>>
+    fun getTournaments(): Flow<List<TournamentPreview>>
 
     @Query("SELECT * from MatchInfo where id = :id")
     fun getMatchById(id: String): Flow<MatchInfo>

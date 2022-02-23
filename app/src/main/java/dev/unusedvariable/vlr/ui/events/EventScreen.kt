@@ -1,11 +1,10 @@
 package dev.unusedvariable.vlr.ui.events
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.LocationOn
@@ -17,7 +16,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
-import dev.unusedvariable.vlr.data.api.response.TournamentInfo
+import dev.unusedvariable.vlr.data.api.response.TournamentPreview
+import dev.unusedvariable.vlr.ui.Action
 import dev.unusedvariable.vlr.ui.CARD_ALPHA
 import dev.unusedvariable.vlr.ui.VlrViewModel
 import dev.unusedvariable.vlr.ui.theme.VLRTheme
@@ -55,7 +55,7 @@ fun EventScreen(viewModel: VlrViewModel) {
 }
 
 @Composable
-fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentInfo.TournamentPreview>) {
+fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPreview>) {
     var tabPosition by remember(viewModel) { mutableStateOf(0) }
     val (ongoing, upcoming, completed) = list.groupBy { it.status.startsWith("ongoing", ignoreCase = true) }.let {
         Triple(
@@ -65,7 +65,7 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentInf
         )
     }
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = tabPosition, backgroundColor = VLRTheme.colorScheme.primaryContainer) {
+        TabRow(selectedTabIndex = tabPosition, containerColor = VLRTheme.colorScheme.primaryContainer) {
             Tab(selected = tabPosition == 0, onClick = { tabPosition = 0 }) {
                 Text(text = "Ongoing", modifier = Modifier.padding(16.dp))
             }
@@ -85,7 +85,7 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentInf
                 } else {
                     LazyColumn() {
                         items(ongoing) {
-                            TournamentPreview(tournamentPreview = it)
+                            TournamentPreview(tournamentPreview = it, viewModel.action)
                         }
                     }
                 }
@@ -98,7 +98,7 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentInf
                 } else {
                     LazyColumn() {
                         items(upcoming) {
-                            TournamentPreview(tournamentPreview = it)
+                            TournamentPreview(tournamentPreview = it, viewModel.action)
                         }
                     }
                 }
@@ -111,22 +111,22 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentInf
                 } else {
                     LazyColumn() {
                         items(completed) {
-                            TournamentPreview(tournamentPreview = it)
+                            TournamentPreview(tournamentPreview = it, viewModel.action)
                         }
                     }
                 }
             }
         }
     }
-
 }
 
 @Composable
-fun TournamentPreview(tournamentPreview: TournamentInfo.TournamentPreview) {
+fun TournamentPreview(tournamentPreview: TournamentPreview, action: Action) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .clickable { action.event(tournamentPreview.id) },
         shape = RoundedCornerShape(16.dp),
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)

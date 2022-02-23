@@ -4,12 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
-import androidx.compose.material3.Card
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,7 +63,7 @@ fun MatchOverviewContainer(viewModel: VlrViewModel, list: List<MatchPreviewInfo>
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = tabPosition, backgroundColor = VLRTheme.colorScheme.primaryContainer) {
+        TabRow(selectedTabIndex = tabPosition, containerColor = VLRTheme.colorScheme.primaryContainer) {
             Tab(selected = tabPosition == 0, onClick = { tabPosition = 0 }) {
                 Text(text = "Ongoing", modifier = Modifier.padding(16.dp))
             }
@@ -83,7 +78,7 @@ fun MatchOverviewContainer(viewModel: VlrViewModel, list: List<MatchPreviewInfo>
             0 -> {
                 if (ongoing.isEmpty()) {
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "No ongoing events")
+                    Text(text = "No ongoing matches")
                     Spacer(modifier = Modifier.weight(1f))
                 } else {
                     LazyColumn() {
@@ -97,7 +92,7 @@ fun MatchOverviewContainer(viewModel: VlrViewModel, list: List<MatchPreviewInfo>
             1 -> {
                 if (upcoming.isEmpty()) {
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "No ongoing events")
+                    Text(text = "No upcoming matches")
                     Spacer(modifier = Modifier.weight(1f))
                 } else {
                     LazyColumn() {
@@ -110,7 +105,7 @@ fun MatchOverviewContainer(viewModel: VlrViewModel, list: List<MatchPreviewInfo>
             else -> {
                 if (completed.isEmpty()) {
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "No ongoing events")
+                    Text(text = "No completed matches")
                     Spacer(modifier = Modifier.weight(1f))
                 } else {
                     LazyColumn() {
@@ -151,7 +146,7 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo) {
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = matchPreviewInfo.team1.score,
+                    text = matchPreviewInfo.team1.score?.toString() ?: "-",
                     style = VLRTheme.typography.titleSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -167,14 +162,14 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo) {
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = matchPreviewInfo.team2.score,
+                    text = matchPreviewInfo.team2.score?.toString() ?: "-",
                     style = VLRTheme.typography.titleSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
             Text(
-                text = matchPreviewInfo.event.name + " - " + matchPreviewInfo.event.stage,
+                text = matchPreviewInfo.event + " - " + matchPreviewInfo.series,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = VLRTheme.typography.labelSmall

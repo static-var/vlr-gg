@@ -7,15 +7,14 @@ object Constants {
 
     const val KEY_UPCOMING = "upcoming"
     const val KEY_COMPLETED = "completed"
-    private const val KEY_MATCH = "match"
+    private const val KEY_MATCH = "match_"
+    private const val KEY_TOURNAMENT = "tournament_"
 
     fun matchDetailKey(detail: String) = KEY_MATCH + detail
 
+    fun tournamentDetailKey(detail: String) = KEY_TOURNAMENT + detail
+
     const val KEY_NEWS = "news"
-    const val KEY_UPCOMING_MATCH = "upcoming_match"
-    const val KEY_COMPLETED_MATCH = "completed_match"
-    const val KEY_UPCOMING_TOURNAMENT = "upcoming_tournament"
-    const val KEY_COMPLETED_TOURNAMENT = "completed_tournament"
     const val KEY_TOURNAMENT_ALL = "tournament_all"
     const val KEY_MATCH_ALL = "match_all"
     const val KEY_MATCH_DETAILS = "match_details_"

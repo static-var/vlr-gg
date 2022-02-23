@@ -36,6 +36,12 @@ class VlrViewModel @Inject constructor(
     fun getMatchDetails(matchUrl: String) = repository.getMatchDetail(matchUrl)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
+    fun getMatchInfo(matchUrl: String) = repository.getMatchInfo(matchUrl)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+
+    fun getTournamentDetails(matchUrl: String) = repository.getTournamentInfo(matchUrl)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+
     fun getTournaments() = repository.getTournaments()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
@@ -48,6 +54,7 @@ class VlrViewModel @Inject constructor(
     fun clearCache() {
         TimeElapsed.reset(Constants.KEY_UPCOMING)
         TimeElapsed.reset(Constants.KEY_COMPLETED)
+        TimeElapsed.reset(Constants.KEY_TOURNAMENT_ALL)
         TimeElapsed.reset(Constants.KEY_TOURNAMENT_ALL)
         TimeElapsed.reset(Constants.KEY_NEWS)
     }

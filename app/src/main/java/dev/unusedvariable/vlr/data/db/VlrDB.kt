@@ -13,7 +13,7 @@ import dev.unusedvariable.vlr.data.model.MatchDetails
 import dev.unusedvariable.vlr.data.model.UpcomingMatch
 
 @Database(
-    entities = [UpcomingMatch::class, CompletedMatch::class, MatchDetails::class, NewsResponseItem::class, MatchPreviewInfo::class, MatchInfo::class, TournamentInfo.TournamentPreview::class, TournamentDetails::class],
+    entities = [UpcomingMatch::class, CompletedMatch::class, MatchDetails::class, NewsResponseItem::class, MatchPreviewInfo::class, MatchInfo::class, TournamentPreview::class, TournamentDetails::class],
     exportSchema = false,
     version = 2
 )

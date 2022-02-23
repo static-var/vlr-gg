@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -19,7 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -30,11 +28,11 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.unusedvariable.vlr.data.NavState
+import dev.unusedvariable.vlr.ui.events.EventDetails
 import dev.unusedvariable.vlr.ui.events.EventScreen
 import dev.unusedvariable.vlr.ui.match.MatchDetails
 import dev.unusedvariable.vlr.ui.match.MatchOverview
 import dev.unusedvariable.vlr.ui.news.NewsScreen
-import dev.unusedvariable.vlr.ui.results.ResultsScreen
 import dev.unusedvariable.vlr.ui.theme.VLRTheme
 import dev.unusedvariable.vlr.utils.*
 import kotlinx.coroutines.delay
@@ -135,7 +133,7 @@ fun VLR() {
                     MatchOverview(viewModel = viewModel)
                 }
                 composable(
-                    Destination.Events.route,
+                    Destination.EventOverview.route,
                     enterTransition = { slideInFromBottom },
                     popEnterTransition = { slideInFromBottom },
                     exitTransition = { fadeOut },
@@ -159,6 +157,20 @@ fun VLR() {
                     viewModel.setNavigation(NavState.MATCH_DETAILS)
                     val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
                     MatchDetails(viewModel = viewModel, matchUrl = id)
+                }
+                composable(
+                    Destination.Event.route,
+                    arguments = listOf(navArgument(Destination.Event.Args.ID) {
+                        type = NavType.StringType
+                    }),
+                    enterTransition = { slideInFromTop },
+                    popEnterTransition = { slideInFromTop },
+                    exitTransition = { fadeOut },
+                    popExitTransition = { fadeOut }
+                ) {
+                    viewModel.setNavigation(NavState.TOURNAMENT_DETAILS)
+                    val id = it.arguments?.getString(Destination.Event.Args.ID) ?: ""
+                    EventDetails(viewModel = viewModel, id = id)
                 }
             }
         }

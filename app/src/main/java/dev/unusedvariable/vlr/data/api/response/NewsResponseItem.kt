@@ -17,7 +17,7 @@ data class NewsResponseItem(
     val date: String = "", // January 29, 2022
     @SerialName("description")
     val description: String = "", // BDS are going international in 2022 after several months of unsuccessful results.
-    @SerialName("link")
+    @SerialName("url")
     @PrimaryKey
     val link: String = "", // /67532/report-bds-to-overhaul-roster
     @SerialName("title")

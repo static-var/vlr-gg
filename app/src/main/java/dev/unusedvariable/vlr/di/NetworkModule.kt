@@ -12,12 +12,16 @@ import dagger.hilt.components.SingletonComponent
 import dev.unusedvariable.vlr.BuildConfig
 import dev.unusedvariable.vlr.data.api.service.VlrService
 import kotlinx.serialization.json.Json
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
+import okio.*
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -54,7 +58,11 @@ object NetworkModule {
         }
 
         httpClientBuilder.addInterceptor { chain ->
-            chain.proceed(chain.request().newBuilder().header("accept", "application/json").build())
+            chain.proceed(chain.request()
+                .newBuilder()
+//                .header("accept-encoding", "gzip")
+                .build()
+            )
         }
 
         return httpClientBuilder
@@ -93,5 +101,5 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideBaseUrl() = "https://damp-snowflake-6873.fly.dev/"
+    fun provideBaseUrl() = "http://150.230.235.107:8000/api/v1/"
 }
