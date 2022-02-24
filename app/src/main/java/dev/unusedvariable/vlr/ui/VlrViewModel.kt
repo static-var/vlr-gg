@@ -5,12 +5,13 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.unusedvariable.vlr.data.NavState
 import dev.unusedvariable.vlr.data.VlrRepository
-import dev.unusedvariable.vlr.data.dao.MatchDetailsDao
 import dev.unusedvariable.vlr.utils.Constants
 import dev.unusedvariable.vlr.utils.TimeElapsed
 import dev.unusedvariable.vlr.utils.Waiting
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,15 +27,6 @@ class VlrViewModel @Inject constructor(
     }
 
     lateinit var action: Action
-
-    fun getUpcomingMatches() = repository.getUpcomingMatches()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
-
-    fun getPreviousMatches() = repository.getCompletedMatches()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
-
-    fun getMatchDetails(matchUrl: String) = repository.getMatchDetail(matchUrl)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
     fun getMatchInfo(matchUrl: String) = repository.getMatchInfo(matchUrl)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
@@ -65,7 +57,4 @@ class VlrViewModel @Inject constructor(
     fun updateCounter() {
         _forceRefreshCounter.value++
     }
-
-
-
 }

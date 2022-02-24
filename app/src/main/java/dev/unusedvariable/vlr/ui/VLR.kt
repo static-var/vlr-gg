@@ -30,11 +30,13 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.unusedvariable.vlr.data.NavState
 import dev.unusedvariable.vlr.ui.events.EventDetails
 import dev.unusedvariable.vlr.ui.events.EventScreen
-import dev.unusedvariable.vlr.ui.match.MatchDetails
 import dev.unusedvariable.vlr.ui.match.MatchOverview
+import dev.unusedvariable.vlr.ui.match.NewMatchDetails
 import dev.unusedvariable.vlr.ui.news.NewsScreen
 import dev.unusedvariable.vlr.ui.theme.VLRTheme
-import dev.unusedvariable.vlr.utils.*
+import dev.unusedvariable.vlr.utils.fadeOut
+import dev.unusedvariable.vlr.utils.slideInFromBottom
+import dev.unusedvariable.vlr.utils.slideInFromTop
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,7 +58,7 @@ fun VLR() {
 
     val navState: NavState by viewModel.navState.collectAsState()
 
-    e {"Nav State $navState"}
+    e { "Nav State $navState" }
 
     LaunchedEffect(key1 = navState) {
         delay(500)
@@ -70,7 +72,7 @@ fun VLR() {
 
     Scaffold(
         bottomBar = {
-            AnimatedVisibility(visible = navState != NavState.MATCH_DETAILS) {
+            AnimatedVisibility(visible = navState != NavState.MATCH_DETAILS && navState != NavState.TOURNAMENT_DETAILS) {
                 BottomNavigation(
                     modifier = Modifier
                         .navigationBarsPadding(true)
@@ -117,7 +119,7 @@ fun VLR() {
                     popExitTransition = { fadeOut },
                 ) {
                     viewModel.setNavigation(NavState.NEWS)
-                    NewsScreen (
+                    NewsScreen(
                         viewModel = viewModel
                     )
                 }
@@ -140,7 +142,7 @@ fun VLR() {
                     popExitTransition = { fadeOut },
                 ) {
                     viewModel.setNavigation(NavState.TOURNAMENT)
-                    EventScreen (
+                    EventScreen(
                         viewModel = viewModel
                     )
                 }
@@ -156,7 +158,7 @@ fun VLR() {
                 ) {
                     viewModel.setNavigation(NavState.MATCH_DETAILS)
                     val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
-                    MatchDetails(viewModel = viewModel, matchUrl = id)
+                    NewMatchDetails(viewModel = viewModel, id = id)
                 }
                 composable(
                     Destination.Event.route,

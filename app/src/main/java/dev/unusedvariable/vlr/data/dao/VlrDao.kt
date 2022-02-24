@@ -1,9 +1,6 @@
 package dev.unusedvariable.vlr.data.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import dev.unusedvariable.vlr.data.api.response.*
 import kotlinx.coroutines.flow.Flow
 
@@ -32,6 +29,9 @@ interface VlrDao {
     @Query("SELECT * from MatchPreviewInfo")
     fun getAllMatchesPreview(): Flow<List<MatchPreviewInfo>>
 
+    @Query("SELECT * from MatchPreviewInfo")
+    fun getAllMatchesPreviewNoFlow(): List<MatchPreviewInfo>
+
     @Query("SELECT * from TournamentPreview")
     fun getTournaments(): Flow<List<TournamentPreview>>
 
@@ -41,5 +41,11 @@ interface VlrDao {
     @Query("SELECT * from TournamentDetails where id = :id")
     fun getTournamentById(id: String): Flow<TournamentDetails>
 
+
+    @Query("DELETE from MatchPreviewInfo")
+    fun deleteAllMatchPreview()
+
+    @Query("DELETE from TournamentPreview")
+    fun deleteAllTournamentPreview()
 
 }

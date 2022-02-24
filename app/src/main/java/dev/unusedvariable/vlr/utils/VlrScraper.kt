@@ -1,5 +1,5 @@
 package dev.unusedvariable.vlr.utils
-
+/**
 import com.github.ajalt.timberkt.e
 import dev.unusedvariable.vlr.data.model.*
 import org.jsoup.Jsoup
@@ -388,3 +388,4 @@ object VlrScraper {
         )
     }
 }
+ **/

@@ -2,15 +2,12 @@ package dev.unusedvariable.vlr.data.db
 
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
-import dev.unusedvariable.vlr.data.Status
 import dev.unusedvariable.vlr.data.api.response.Event
+import dev.unusedvariable.vlr.data.api.response.MatchInfo
 import dev.unusedvariable.vlr.data.api.response.MatchInfo.Head2head
 import dev.unusedvariable.vlr.data.api.response.MatchInfo.MatchDetailData
 import dev.unusedvariable.vlr.data.api.response.Team
 import dev.unusedvariable.vlr.data.api.response.TournamentDetails
-import dev.unusedvariable.vlr.data.model.MapData
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -19,16 +16,7 @@ import javax.inject.Singleton
 
 @ProvidedTypeConverter
 @Singleton
-class VlrTypeConverter @Inject constructor(private val moshi: Moshi, private val json: Json) {
-
-    private val statusAdapter by lazy { moshi.adapter(Status::class.java) }
-    private val mapDataAdapter by lazy {
-        moshi.adapter<List<MapData>>(
-            Types.newParameterizedType(
-                List::class.java, MapData::class.java
-            )
-        )
-    }
+class VlrTypeConverter @Inject constructor(private val json: Json) {
 
     @TypeConverter
     fun pairStringToString(pairs: List<Pair<String, String>>?): String? {
@@ -53,26 +41,6 @@ class VlrTypeConverter @Inject constructor(private val moshi: Moshi, private val
     @TypeConverter
     fun stringToPair(data: String?): Pair<String, String>? {
         return data?.let { Pair(it.split("---")[0], it.split("---")[1]) }
-    }
-
-    @TypeConverter
-    fun statusToString(status: Status): String {
-        return statusAdapter.toJson(status)
-    }
-
-    @TypeConverter
-    fun stringToStatus(status: String): Status? {
-        return statusAdapter.fromJson(status)
-    }
-
-    @TypeConverter
-    fun mapDataListToString(mapData: List<MapData>?): String? {
-        return mapDataAdapter.toJson(mapData)
-    }
-
-    @TypeConverter
-    fun stringToMapDataList(data: String?): List<MapData>? {
-        return data?.let { mapDataAdapter.fromJson(it) }
     }
 
     @TypeConverter
@@ -162,6 +130,26 @@ class VlrTypeConverter @Inject constructor(private val moshi: Moshi, private val
 
     @TypeConverter
     fun stringToListOfPrize(data: String): List<TournamentDetails.Prize> {
+        return json.decodeFromString(data)
+    }
+
+    @TypeConverter
+    fun listOfStringToString(data: List<String>): String {
+        return json.encodeToString(data)
+    }
+
+    @TypeConverter
+    fun stringToListOfString(data: String): List<String> {
+        return json.decodeFromString(data)
+    }
+
+    @TypeConverter
+    fun videosToString(data: MatchInfo.Videos): String {
+        return json.encodeToString(data)
+    }
+
+    @TypeConverter
+    fun stringToVideos(data: String): MatchInfo.Videos {
         return json.decodeFromString(data)
     }
 }

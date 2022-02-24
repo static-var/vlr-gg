@@ -17,6 +17,4 @@ object Constants {
     const val KEY_NEWS = "news"
     const val KEY_TOURNAMENT_ALL = "tournament_all"
     const val KEY_MATCH_ALL = "match_all"
-    const val KEY_MATCH_DETAILS = "match_details_"
-    const val KEY_TOURNAMENT_DETAILS = "tournament_details_"
 }

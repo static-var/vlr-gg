@@ -1,5 +1,6 @@
 package dev.unusedvariable.vlr.ui.match
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,15 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.github.ajalt.timberkt.e
 import com.google.accompanist.insets.statusBarsPadding
 import dev.unusedvariable.vlr.data.api.response.MatchPreviewInfo
 import dev.unusedvariable.vlr.ui.CARD_ALPHA
 import dev.unusedvariable.vlr.ui.VlrViewModel
 import dev.unusedvariable.vlr.ui.theme.VLRTheme
-import dev.unusedvariable.vlr.utils.Waiting
-import dev.unusedvariable.vlr.utils.onFail
-import dev.unusedvariable.vlr.utils.onPass
-import dev.unusedvariable.vlr.utils.onWaiting
+import dev.unusedvariable.vlr.utils.*
 
 @Composable
 fun MatchOverview(viewModel: VlrViewModel) {
@@ -41,7 +40,10 @@ fun MatchOverview(viewModel: VlrViewModel) {
 
         allMatches.onPass {
             data?.let { list ->
-                MatchOverviewContainer(viewModel = viewModel, list = list)
+                MatchOverviewContainer(
+                    viewModel = viewModel,
+                    list = list,
+                    onClick = { id -> viewModel.action.match(id) })
             }
         }.onWaiting {
             LinearProgressIndicator()
@@ -52,12 +54,12 @@ fun MatchOverview(viewModel: VlrViewModel) {
 }
 
 @Composable
-fun MatchOverviewContainer(viewModel: VlrViewModel, list: List<MatchPreviewInfo>) {
+fun MatchOverviewContainer(viewModel: VlrViewModel, list: List<MatchPreviewInfo>, onClick: (String) -> Unit) {
     var tabPosition by remember(viewModel) { mutableStateOf(0) }
     val (ongoing, upcoming, completed) = list.groupBy { it.status.startsWith("LIVE", ignoreCase = true) }.let {
         Triple(
             it[true].orEmpty(),
-            it[false]?.groupBy { it.status.startsWith("Upcoming", ignoreCase = true) }?.get(true).orEmpty(),
+            it[false]?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }?.get(true).orEmpty(),
             it[false]?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }?.get(false).orEmpty()
         )
     }
@@ -83,7 +85,7 @@ fun MatchOverviewContainer(viewModel: VlrViewModel, list: List<MatchPreviewInfo>
                 } else {
                     LazyColumn() {
                         items(ongoing) {
-                            MatchOverviewPreview(matchPreviewInfo = it)
+                            MatchOverviewPreview(matchPreviewInfo = it, onClick)
                         }
                     }
                 }
@@ -97,7 +99,7 @@ fun MatchOverviewContainer(viewModel: VlrViewModel, list: List<MatchPreviewInfo>
                 } else {
                     LazyColumn() {
                         items(upcoming) {
-                            MatchOverviewPreview(matchPreviewInfo = it)
+                            MatchOverviewPreview(matchPreviewInfo = it, onClick)
                         }
                     }
                 }
@@ -110,7 +112,7 @@ fun MatchOverviewContainer(viewModel: VlrViewModel, list: List<MatchPreviewInfo>
                 } else {
                     LazyColumn() {
                         items(completed) {
-                            MatchOverviewPreview(matchPreviewInfo = it)
+                            MatchOverviewPreview(matchPreviewInfo = it, onClick)
                         }
                     }
                 }
@@ -120,11 +122,12 @@ fun MatchOverviewContainer(viewModel: VlrViewModel, list: List<MatchPreviewInfo>
 }
 
 @Composable
-fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo) {
+fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .clickable { onClick(matchPreviewInfo.id) },
         shape = RoundedCornerShape(16.dp),
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
@@ -133,8 +136,9 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo) {
             Text(
                 text = when (matchPreviewInfo.status) {
                     "LIVE" -> "LIVE"
-                    "upcoming" -> matchPreviewInfo.time?.prependIndent("in ") ?: matchPreviewInfo.status
-                    else -> matchPreviewInfo.time?.plus(" ago") ?: matchPreviewInfo.status
+                    "Upcoming" -> matchPreviewInfo.time?.timeDiff?.prependIndent("in ")
+                        ?: ""
+                    else -> matchPreviewInfo.time?.timeDiff ?: ""
                 },
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,

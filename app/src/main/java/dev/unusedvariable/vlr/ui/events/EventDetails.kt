@@ -10,10 +10,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.DateRange
-import androidx.compose.material.icons.outlined.EmojiEmotions
-import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -85,9 +82,11 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                         )
                     }
                     items(group[group.keys.toList()[tabSelection]] ?: group[group.keys.toList()[0]] ?: listOf()) {
-                        TournamentMatchOverview(game = it)
+                        TournamentMatchOverview(game = it, onClick = {viewModel.action.match(it)})
                     }
-
+                    item {
+                        Spacer(modifier = Modifier.navigationBarsPadding())
+                    }
                 }
             }
         }.onWaiting {
@@ -154,7 +153,7 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
                         .fillMaxWidth()
                         .padding(horizontal = 4.dp)
                 ) {
-                    Icon(Icons.Outlined.EmojiEmotions, contentDescription = "Prize")
+                    Icon(Icons.Outlined.Paid, contentDescription = "Prize")
                     Text(text = tournamentDetails.prize)
                 }
                 Row(
@@ -300,22 +299,33 @@ fun EventMatchGroups(
 }
 
 @Composable
-fun TournamentMatchOverview(game: TournamentDetails.Games) {
+fun TournamentMatchOverview(game: TournamentDetails.Games, onClick:(String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp).clickable { onClick(game.id) },
         shape = RoundedCornerShape(16.dp),
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(
-                text = game.status.replaceFirstChar { it.uppercase() },
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                style = VLRTheme.typography.displaySmall
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = game.status.replaceFirstChar { it.uppercase() },
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center,
+                    style = VLRTheme.typography.displaySmall
+                )
+                Icon(Icons.Outlined.OpenInNew, contentDescription = "Open match", modifier = Modifier
+                    .size(24.dp)
+                    .padding(2.dp))
+            }
+
             Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = game.teams[0].name,

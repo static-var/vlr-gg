@@ -49,7 +49,7 @@ class ScoreWidget(private val repository: VlrRepository) : GlanceAppWidget() {
                                 modifier = GlanceModifier.padding(4.dp).fillMaxWidth()
                             ) {
                                 Text(
-                                    text = if (it.isLive) "LIVE" else it.date,
+                                    text = if (it.status == "LIVE") "LIVE" else it.time ?: "",
                                     modifier = GlanceModifier.fillMaxWidth(),
                                     style = TextStyle(
                                         textAlign = TextAlign.End,
@@ -64,7 +64,7 @@ class ScoreWidget(private val repository: VlrRepository) : GlanceAppWidget() {
                                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                             ) {
                                 Text(
-                                    text = it.team1,
+                                    text = it.team1.name,
                                     style = TextStyle(
                                         ColorProvider(MaterialTheme.colorScheme.onPrimary),
                                         textAlign = TextAlign.Start,
@@ -74,7 +74,7 @@ class ScoreWidget(private val repository: VlrRepository) : GlanceAppWidget() {
                                     maxLines = 1
                                 )
                                 Text(
-                                    text = it.team1Score,
+                                    text = it.team1.score?.toString() ?: "",
                                     style = TextStyle(
                                         ColorProvider(MaterialTheme.colorScheme.onPrimary),
                                         textAlign = TextAlign.End
@@ -82,7 +82,7 @@ class ScoreWidget(private val repository: VlrRepository) : GlanceAppWidget() {
                                     modifier = GlanceModifier.padding(2.dp)
                                 )
                                 Text(
-                                    text = it.team2Score,
+                                    text = it.team2.name,
                                     style = TextStyle(
                                         ColorProvider(MaterialTheme.colorScheme.onPrimary),
                                         textAlign = TextAlign.Start
@@ -90,7 +90,7 @@ class ScoreWidget(private val repository: VlrRepository) : GlanceAppWidget() {
                                     modifier = GlanceModifier.padding(2.dp)
                                 )
                                 Text(
-                                    text = it.team2,
+                                    text = it.team2.score?.toString() ?: "",
                                     style = TextStyle(
                                         ColorProvider(MaterialTheme.colorScheme.onPrimary),
                                         textAlign = TextAlign.End,
