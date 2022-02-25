@@ -16,48 +16,37 @@ import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
-
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    @Provides
-    @Singleton
-    fun provideJsonParser(): Json {
-        return Json {
-            ignoreUnknownKeys = true
-            isLenient = true
-            prettyPrint = true
-        }
+  @Provides
+  @Singleton
+  fun provideJsonParser(): Json {
+    return Json {
+      ignoreUnknownKeys = true
+      isLenient = true
+      prettyPrint = true
     }
+  }
 
-
-    @Provides
-    @Singleton
-    fun provideKtorHttpClient(json: Json) = HttpClient(Android) {
+  @Provides
+  @Singleton
+  fun provideKtorHttpClient(json: Json) =
+      HttpClient(Android) {
         defaultRequest {
-            host = "vlr-scraper.akhilnarang.dev/api/v1"
-            url {
-                protocol = URLProtocol.HTTPS
-            }
+          host = "vlr-scraper.akhilnarang.dev/api/v1"
+          url { protocol = URLProtocol.HTTPS }
         }
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(json)
-        }
+        install(JsonFeature) { serializer = KotlinxSerializer(json) }
 
         install(Logging) {
-            level = LogLevel.ALL
-            logger = Logger.SIMPLE
+          level = LogLevel.ALL
+          logger = Logger.SIMPLE
         }
 
-        install(DefaultRequest) {
-            headers {
-                append(HttpHeaders.AcceptEncoding, "gzip")
-            }
-        }
+        install(DefaultRequest) { headers { append(HttpHeaders.AcceptEncoding, "gzip") } }
 
-        install(ContentEncoding) {
-            gzip()
-        }
-    }
+        install(ContentEncoding) { gzip() }
+      }
 }

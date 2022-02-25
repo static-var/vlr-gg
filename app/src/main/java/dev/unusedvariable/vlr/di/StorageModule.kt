@@ -19,25 +19,20 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object StorageModule {
 
-    @Provides
-    @Singleton
-    fun typeConverter(json: Json) = VlrTypeConverter(json)
+  @Provides @Singleton fun typeConverter(json: Json) = VlrTypeConverter(json)
 
-    @Provides
-    @Singleton
-    fun db(application: Application, converter: VlrTypeConverter) =
-        Room.databaseBuilder(
-            application, VlrDB::class.java, Constants.DB_NAME
-        ).fallbackToDestructiveMigration().addTypeConverter(converter).build()
+  @Provides
+  @Singleton
+  fun db(application: Application, converter: VlrTypeConverter) =
+      Room.databaseBuilder(application, VlrDB::class.java, Constants.DB_NAME)
+          .fallbackToDestructiveMigration()
+          .addTypeConverter(converter)
+          .build()
 
-    @Provides
-    @Singleton
-    fun getVlrDao(db: VlrDB) = db.getVlrDao()
+  @Provides @Singleton fun getVlrDao(db: VlrDB) = db.getVlrDao()
 
-    @Provides
-    @Singleton
-    fun getVlrRepository(
-        vlrDao: VlrDao,
-        ktorHttpClient: HttpClient
-    ) = VlrRepository(vlrDao, ktorHttpClient)
+  @Provides
+  @Singleton
+  fun getVlrRepository(vlrDao: VlrDao, ktorHttpClient: HttpClient) =
+      VlrRepository(vlrDao, ktorHttpClient)
 }

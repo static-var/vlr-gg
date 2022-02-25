@@ -42,141 +42,128 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VLR() {
-    val navController = rememberAnimatedNavController()
-    val viewModel: VlrViewModel = hiltViewModel()
-    val action = remember(navController) {
-        Action(navController)
-    }
+  val navController = rememberAnimatedNavController()
+  val viewModel: VlrViewModel = hiltViewModel()
+  val action = remember(navController) { Action(navController) }
 
-    val systemUiController = rememberSystemUiController()
-    val primaryContainer = VLRTheme.colorScheme.primaryContainer
-    val background = VLRTheme.colorScheme.primaryContainer.copy(0.1f)
-    val isDark = isSystemInDarkTheme()
+  val systemUiController = rememberSystemUiController()
+  val primaryContainer = VLRTheme.colorScheme.primaryContainer
+  val background = VLRTheme.colorScheme.primaryContainer.copy(0.1f)
+  val isDark = isSystemInDarkTheme()
 
+  viewModel.action = action
 
-    viewModel.action = action
+  val navState: NavState by viewModel.navState.collectAsState()
 
-    val navState: NavState by viewModel.navState.collectAsState()
+  e { "Nav State $navState" }
 
-    e { "Nav State $navState" }
+  LaunchedEffect(key1 = navState) {
+    delay(500)
+    systemUiController.setStatusBarColor(
+        color =
+            if (navState == NavState.TOURNAMENT || navState == NavState.MATCH_OVERVIEW)
+                primaryContainer
+            else background,
+    )
+    systemUiController.setNavigationBarColor(
+        color = if (navState == NavState.MATCH_DETAILS) background else primaryContainer,
+    )
+  }
 
-    LaunchedEffect(key1 = navState) {
-        delay(500)
-        systemUiController.setStatusBarColor(
-            color = if (navState == NavState.TOURNAMENT || navState == NavState.MATCH_OVERVIEW) primaryContainer else background,
-        )
-        systemUiController.setNavigationBarColor(
-            color = if (navState == NavState.MATCH_DETAILS) background else primaryContainer,
-        )
-    }
-
-    Scaffold(
-        bottomBar = {
-            AnimatedVisibility(visible = navState != NavState.MATCH_DETAILS && navState != NavState.TOURNAMENT_DETAILS) {
-                BottomNavigation(
-                    modifier = Modifier
-                        .navigationBarsPadding(true)
-                        .animateContentSize(),
-                    backgroundColor = VLRTheme.colorScheme.primaryContainer,
-                    contentColor = VLRTheme.colorScheme.onPrimaryContainer
-                ) {
-                    BottomNavigationItem(
-                        selected = navState == NavState.NEWS,
-                        icon = { Icon(imageVector = Icons.Outlined.Feed, contentDescription = "News") },
-                        label = { Text(text = "News") },
-                        onClick = action.goNews
-                    )
-                    BottomNavigationItem(
-                        selected = navState == NavState.MATCH_OVERVIEW,
-                        icon = { Icon(imageVector = Icons.Outlined.Games, contentDescription = "Games") },
-                        label = { Text(text = "Matches") },
-                        onClick = action.matchOverview
-                    )
-                    BottomNavigationItem(
-                        selected = navState == NavState.TOURNAMENT,
-                        icon = { Icon(imageVector = Icons.Outlined.EmojiEvents, contentDescription = "Tournament") },
-                        label = { Text(text = "Events") },
-                        onClick = action.goEvents
-                    )
-                }
-            }
-        },
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .padding(bottom = paddingValues.calculateBottomPadding())
-                .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
-        ) {
-            AnimatedNavHost(
-                navController = navController,
-                startDestination = Destination.News.route
-            ) {
-                composable(
-                    Destination.News.route,
-                    enterTransition = { slideInFromBottom },
-                    popEnterTransition = { slideInFromBottom },
-                    exitTransition = { fadeOut },
-                    popExitTransition = { fadeOut },
-                ) {
-                    viewModel.setNavigation(NavState.NEWS)
-                    NewsScreen(
-                        viewModel = viewModel
-                    )
-                }
-                composable(
-                    Destination.MatchOverview.route,
-                    enterTransition = { slideInFromBottom },
-                    popEnterTransition = { slideInFromBottom },
-                    exitTransition = { fadeOut },
-                    popExitTransition = { fadeOut },
-                ) {
-                    viewModel.setNavigation(NavState.MATCH_OVERVIEW)
-//                    ResultsScreen(viewModel = viewModel)
-                    MatchOverview(viewModel = viewModel)
-                }
-                composable(
-                    Destination.EventOverview.route,
-                    enterTransition = { slideInFromBottom },
-                    popEnterTransition = { slideInFromBottom },
-                    exitTransition = { fadeOut },
-                    popExitTransition = { fadeOut },
-                ) {
-                    viewModel.setNavigation(NavState.TOURNAMENT)
-                    EventScreen(
-                        viewModel = viewModel
-                    )
-                }
-                composable(
-                    Destination.Match.route,
-                    arguments = listOf(navArgument(Destination.Match.Args.ID) {
-                        type = NavType.StringType
-                    }),
-                    enterTransition = { slideInFromTop },
-                    popEnterTransition = { slideInFromTop },
-                    exitTransition = { fadeOut },
-                    popExitTransition = { fadeOut }
-                ) {
-                    viewModel.setNavigation(NavState.MATCH_DETAILS)
-                    val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
-                    NewMatchDetails(viewModel = viewModel, id = id)
-                }
-                composable(
-                    Destination.Event.route,
-                    arguments = listOf(navArgument(Destination.Event.Args.ID) {
-                        type = NavType.StringType
-                    }),
-                    enterTransition = { slideInFromTop },
-                    popEnterTransition = { slideInFromTop },
-                    exitTransition = { fadeOut },
-                    popExitTransition = { fadeOut }
-                ) {
-                    viewModel.setNavigation(NavState.TOURNAMENT_DETAILS)
-                    val id = it.arguments?.getString(Destination.Event.Args.ID) ?: ""
-                    EventDetails(viewModel = viewModel, id = id)
-                }
-            }
+  Scaffold(
+      bottomBar = {
+        AnimatedVisibility(
+            visible =
+                navState != NavState.MATCH_DETAILS && navState != NavState.TOURNAMENT_DETAILS) {
+          BottomNavigation(
+              modifier = Modifier.navigationBarsPadding(true).animateContentSize(),
+              backgroundColor = VLRTheme.colorScheme.primaryContainer,
+              contentColor = VLRTheme.colorScheme.onPrimaryContainer) {
+            BottomNavigationItem(
+                selected = navState == NavState.NEWS,
+                icon = { Icon(imageVector = Icons.Outlined.Feed, contentDescription = "News") },
+                label = { Text(text = "News") },
+                onClick = action.goNews)
+            BottomNavigationItem(
+                selected = navState == NavState.MATCH_OVERVIEW,
+                icon = { Icon(imageVector = Icons.Outlined.Games, contentDescription = "Games") },
+                label = { Text(text = "Matches") },
+                onClick = action.matchOverview)
+            BottomNavigationItem(
+                selected = navState == NavState.TOURNAMENT,
+                icon = {
+                  Icon(imageVector = Icons.Outlined.EmojiEvents, contentDescription = "Tournament")
+                },
+                label = { Text(text = "Events") },
+                onClick = action.goEvents)
+          }
         }
+      },
+  ) { paddingValues ->
+    Box(
+        modifier =
+            Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+                .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
+    ) {
+      AnimatedNavHost(navController = navController, startDestination = Destination.News.route) {
+        composable(
+            Destination.News.route,
+            enterTransition = { slideInFromBottom },
+            popEnterTransition = { slideInFromBottom },
+            exitTransition = { fadeOut },
+            popExitTransition = { fadeOut },
+        ) {
+          viewModel.setNavigation(NavState.NEWS)
+          NewsScreen(viewModel = viewModel)
+        }
+        composable(
+            Destination.MatchOverview.route,
+            enterTransition = { slideInFromBottom },
+            popEnterTransition = { slideInFromBottom },
+            exitTransition = { fadeOut },
+            popExitTransition = { fadeOut },
+        ) {
+          viewModel.setNavigation(NavState.MATCH_OVERVIEW)
+          //                    ResultsScreen(viewModel = viewModel)
+          MatchOverview(viewModel = viewModel)
+        }
+        composable(
+            Destination.EventOverview.route,
+            enterTransition = { slideInFromBottom },
+            popEnterTransition = { slideInFromBottom },
+            exitTransition = { fadeOut },
+            popExitTransition = { fadeOut },
+        ) {
+          viewModel.setNavigation(NavState.TOURNAMENT)
+          EventScreen(viewModel = viewModel)
+        }
+        composable(
+            Destination.Match.route,
+            arguments =
+                listOf(navArgument(Destination.Match.Args.ID) { type = NavType.StringType }),
+            enterTransition = { slideInFromTop },
+            popEnterTransition = { slideInFromTop },
+            exitTransition = { fadeOut },
+            popExitTransition = { fadeOut }) {
+          viewModel.setNavigation(NavState.MATCH_DETAILS)
+          val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
+          NewMatchDetails(viewModel = viewModel, id = id)
+        }
+        composable(
+            Destination.Event.route,
+            arguments =
+                listOf(navArgument(Destination.Event.Args.ID) { type = NavType.StringType }),
+            enterTransition = { slideInFromTop },
+            popEnterTransition = { slideInFromTop },
+            exitTransition = { fadeOut },
+            popExitTransition = { fadeOut }) {
+          viewModel.setNavigation(NavState.TOURNAMENT_DETAILS)
+          val id = it.arguments?.getString(Destination.Event.Args.ID) ?: ""
+          EventDetails(viewModel = viewModel, id = id)
+        }
+      }
     }
+  }
 }
 
 const val COLOR_ALPHA = 0.1f

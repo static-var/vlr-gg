@@ -7,12 +7,16 @@ import dev.unusedvariable.vlr.data.api.response.*
 import dev.unusedvariable.vlr.data.dao.VlrDao
 
 @Database(
-    entities = [NewsResponseItem::class, MatchPreviewInfo::class, MatchInfo::class, TournamentPreview::class, TournamentDetails::class],
+    entities =
+        [
+            NewsResponseItem::class,
+            MatchPreviewInfo::class,
+            MatchInfo::class,
+            TournamentPreview::class,
+            TournamentDetails::class],
     exportSchema = false,
-    version = 3
-)
+    version = 3)
 @TypeConverters(VlrTypeConverter::class)
 abstract class VlrDB : RoomDatabase() {
-    abstract fun getVlrDao(): VlrDao
-
+  abstract fun getVlrDao(): VlrDao
 }

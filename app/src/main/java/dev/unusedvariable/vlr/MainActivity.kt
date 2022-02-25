@@ -11,15 +11,9 @@ import dev.unusedvariable.vlr.ui.theme.VLRTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        setContent {
-            VLRTheme() {
-                ProvideWindowInsets {
-                    VLR()
-                }
-            }
-        }
-    }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    WindowCompat.setDecorFitsSystemWindows(window, false)
+    setContent { VLRTheme() { ProvideWindowInsets { VLR() } } }
+  }
 }
