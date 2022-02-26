@@ -15,7 +15,7 @@ android {
         minSdk 23
         targetSdk 31
         versionCode 4
-        versionName "0.4"
+        versionName "v0.0.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -26,9 +26,11 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
+            archivesBaseName = "$defaultConfig.applicationId-$defaultConfig.versionCode($defaultConfig.versionName)"
         }
         release {
-            minifyEnabled false
+            minifyEnabled true
+            archivesBaseName = "$defaultConfig.applicationId-$defaultConfig.versionCode($defaultConfig.versionName)"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
