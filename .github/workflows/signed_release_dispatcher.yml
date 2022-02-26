@@ -1,0 +1,36 @@
+name: Build Release Apk
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app APK
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "31.0.0"
+
+      - name: Get Apk Info
+        id: apk_info
+        uses: JantHsueh/get-apk-version-action@master
+        with:
+          apkPath: ${{ steps.sign_app.outputs.signedReleaseFile }}
+
+      - uses: actions/checkout@v2
+      - uses: rickstaa/action-create-tag@v1
+        with:
+          tag: ${{ steps.apk_info.outputs.versionNum }}
+          message: ${{ steps.apk_info.outputs.versionNum }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.sign_app.outputs.signedReleaseFile }}
