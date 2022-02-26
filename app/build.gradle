@@ -14,8 +14,8 @@ android {
         applicationId "dev.unusedvariable.vlr"
         minSdk 23
         targetSdk 31
-        versionCode 3
-        versionName "0.3"
+        versionCode 4
+        versionName "0.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -46,6 +46,7 @@ android {
                              "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
                              "-Xuse-experimental=androidx.compose.foundation.ExperimentalFoundationApi",
                              "-Xuse-experimental=androidx.compose.material3.ExperimentalMaterial3Api",
+                             "-Xuse-experimental=com.google.accompanist.pager.ExperimentalPagerApi",
                              "-Xuse-experimental=androidx.compose.runtime.InternalComposeApi"]
     }
     buildFeatures {
@@ -80,12 +81,14 @@ dependencies {
     implementation "androidx.glance:glance-appwidget:1.0.0-alpha03"
 
 
-    def accompanist = "0.24.2-alpha"
+    def accompanist = "0.24.3-alpha"
     implementation "com.google.accompanist:accompanist-insets:$accompanist"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist"
     implementation "com.google.accompanist:accompanist-placeholder-material:$accompanist"
     implementation "com.google.accompanist:accompanist-swiperefresh:$accompanist"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist"
+    implementation "com.google.accompanist:accompanist-pager:$accompanist"
+    implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist"
 
     implementation "androidx.browser:browser:1.4.0"
 

@@ -16,6 +16,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import dev.unusedvariable.vlr.data.api.response.TournamentPreview
 import dev.unusedvariable.vlr.ui.Action
 import dev.unusedvariable.vlr.ui.CARD_ALPHA
@@ -25,6 +27,7 @@ import dev.unusedvariable.vlr.utils.Waiting
 import dev.unusedvariable.vlr.utils.onFail
 import dev.unusedvariable.vlr.utils.onPass
 import dev.unusedvariable.vlr.utils.onWaiting
+import kotlinx.coroutines.launch
 
 @Composable
 fun EventScreen(viewModel: VlrViewModel) {
@@ -49,7 +52,9 @@ fun EventScreen(viewModel: VlrViewModel) {
 
 @Composable
 fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPreview>) {
-  var tabPosition by remember(viewModel) { mutableStateOf(0) }
+  val pagerState = rememberPagerState()
+  val scope = rememberCoroutineScope()
+
   val (ongoing, upcoming, completed) =
       list.groupBy { it.status.startsWith("ongoing", ignoreCase = true) }.let {
         Triple(
@@ -64,48 +69,58 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
                 .orEmpty())
       }
   Column(modifier = Modifier.fillMaxSize()) {
-    TabRow(selectedTabIndex = tabPosition, containerColor = VLRTheme.colorScheme.primaryContainer) {
-      Tab(selected = tabPosition == 0, onClick = { tabPosition = 0 }) {
+    TabRow(
+        selectedTabIndex = pagerState.currentPage,
+        containerColor = VLRTheme.colorScheme.primaryContainer) {
+      Tab(
+          selected = pagerState.currentPage == 0,
+          onClick = { scope.launch { pagerState.scrollToPage(0) } }) {
         Text(text = "Ongoing", modifier = Modifier.padding(16.dp))
       }
-      Tab(selected = tabPosition == 1, onClick = { tabPosition = 1 }) {
+      Tab(
+          selected = pagerState.currentPage == 1,
+          onClick = { scope.launch { pagerState.scrollToPage(1) } }) {
         Text(text = "Upcoming", modifier = Modifier.padding(16.dp))
       }
-      Tab(selected = tabPosition == 2, onClick = { tabPosition = 2 }) {
+      Tab(
+          selected = pagerState.currentPage == 2,
+          onClick = { scope.launch { pagerState.scrollToPage(2) } }) {
         Text(text = "Completed", modifier = Modifier.padding(16.dp))
       }
     }
-    when (tabPosition) {
-      0 -> {
-        if (ongoing.isEmpty()) {
-          Spacer(modifier = Modifier.weight(1f))
-          Text(text = "No ongoing events")
-          Spacer(modifier = Modifier.weight(1f))
-        } else {
-          LazyColumn() {
-            items(ongoing) { TournamentPreview(tournamentPreview = it, viewModel.action) }
+    HorizontalPager(count = 3, state = pagerState) { tabPosition ->
+      when (tabPosition) {
+        0 -> {
+          if (ongoing.isEmpty()) {
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = "No ongoing events")
+            Spacer(modifier = Modifier.weight(1f))
+          } else {
+            LazyColumn() {
+              items(ongoing) { TournamentPreview(tournamentPreview = it, viewModel.action) }
+            }
           }
         }
-      }
-      1 -> {
-        if (upcoming.isEmpty()) {
-          Spacer(modifier = Modifier.weight(1f))
-          Text(text = "No ongoing events")
-          Spacer(modifier = Modifier.weight(1f))
-        } else {
-          LazyColumn() {
-            items(upcoming) { TournamentPreview(tournamentPreview = it, viewModel.action) }
+        1 -> {
+          if (upcoming.isEmpty()) {
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = "No ongoing events")
+            Spacer(modifier = Modifier.weight(1f))
+          } else {
+            LazyColumn() {
+              items(upcoming) { TournamentPreview(tournamentPreview = it, viewModel.action) }
+            }
           }
         }
-      }
-      else -> {
-        if (completed.isEmpty()) {
-          Spacer(modifier = Modifier.weight(1f))
-          Text(text = "No ongoing events")
-          Spacer(modifier = Modifier.weight(1f))
-        } else {
-          LazyColumn() {
-            items(completed) { TournamentPreview(tournamentPreview = it, viewModel.action) }
+        else -> {
+          if (completed.isEmpty()) {
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = "No ongoing events")
+            Spacer(modifier = Modifier.weight(1f))
+          } else {
+            LazyColumn() {
+              items(completed) { TournamentPreview(tournamentPreview = it, viewModel.action) }
+            }
           }
         }
       }

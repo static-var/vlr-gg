@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.PointerEventType.Companion.Scroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -217,14 +218,11 @@ fun EventMatchGroups(
           })
     }
 
-    ScrollableTabRow(
-        selectedTabIndex = tabSelection,
-        containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
-        modifier =
-            Modifier.fillMaxWidth()
-                .padding(8.dp)
-                .border(1.dp, VLRTheme.colorScheme.primaryContainer),
-    ) {
+      ScrollableTabRow(
+          selectedTabIndex = tabSelection,
+          containerColor = VLRTheme.colorScheme.primaryContainer,
+          modifier =
+          Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp))) {
       group.keys.forEachIndexed { index, s ->
         Tab(
             selected = tabSelection == index,

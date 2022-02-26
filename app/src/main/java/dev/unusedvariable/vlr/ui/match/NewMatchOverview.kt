@@ -12,12 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import dev.unusedvariable.vlr.data.api.response.MatchPreviewInfo
 import dev.unusedvariable.vlr.ui.CARD_ALPHA
 import dev.unusedvariable.vlr.ui.VlrViewModel
 import dev.unusedvariable.vlr.ui.theme.VLRTheme
 import dev.unusedvariable.vlr.utils.*
+import kotlinx.coroutines.launch
 
 @Composable
 fun MatchOverview(viewModel: VlrViewModel) {
@@ -29,17 +31,19 @@ fun MatchOverview(viewModel: VlrViewModel) {
       modifier = Modifier.fillMaxSize(),
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally) {
-    Box(modifier = Modifier.statusBarsPadding())
-
-    allMatches
-        .onPass {
-          data?.let { list ->
-            MatchOverviewContainer(
-                viewModel = viewModel, list = list, onClick = { id -> viewModel.action.match(id) })
+    Box(modifier = Modifier.statusBarsPadding()) {
+      allMatches
+          .onPass {
+            data?.let { list ->
+              MatchOverviewContainer(
+                  viewModel = viewModel,
+                  list = list,
+                  onClick = { id -> viewModel.action.match(id) })
+            }
           }
-        }
-        .onWaiting { LinearProgressIndicator() }
-        .onFail { Text(text = message()) }
+          .onWaiting { LinearProgressIndicator() }
+          .onFail { Text(text = message()) }
+    }
   }
 }
 
@@ -49,7 +53,9 @@ fun MatchOverviewContainer(
     list: List<MatchPreviewInfo>,
     onClick: (String) -> Unit
 ) {
-  var tabPosition by remember(viewModel) { mutableStateOf(0) }
+  val pagerState = rememberPagerState()
+  val scope = rememberCoroutineScope()
+
   val (ongoing, upcoming, completed) =
       list.groupBy { it.status.startsWith("LIVE", ignoreCase = true) }.let {
         Triple(
@@ -65,43 +71,58 @@ fun MatchOverviewContainer(
       }
 
   Column(modifier = Modifier.fillMaxSize()) {
-    TabRow(selectedTabIndex = tabPosition, containerColor = VLRTheme.colorScheme.primaryContainer) {
-      Tab(selected = tabPosition == 0, onClick = { tabPosition = 0 }) {
+    TabRow(
+        selectedTabIndex = pagerState.currentPage,
+        containerColor = VLRTheme.colorScheme.primaryContainer) {
+      Tab(
+          selected = pagerState.currentPage == 0,
+          onClick = { scope.launch { pagerState.scrollToPage(0) } }) {
         Text(text = "Ongoing", modifier = Modifier.padding(16.dp))
       }
-      Tab(selected = tabPosition == 1, onClick = { tabPosition = 1 }) {
+      Tab(
+          selected = pagerState.currentPage == 1,
+          onClick = { scope.launch { pagerState.scrollToPage(1) } }) {
         Text(text = "Upcoming", modifier = Modifier.padding(16.dp))
       }
-      Tab(selected = tabPosition == 2, onClick = { tabPosition = 2 }) {
+      Tab(
+          selected = pagerState.currentPage == 2,
+          onClick = { scope.launch { pagerState.scrollToPage(2) } }) {
         Text(text = "Completed", modifier = Modifier.padding(16.dp))
       }
     }
-    when (tabPosition) {
-      0 -> {
-        if (ongoing.isEmpty()) {
-          Spacer(modifier = Modifier.weight(1f))
-          Text(text = "No ongoing matches")
-          Spacer(modifier = Modifier.weight(1f))
-        } else {
-          LazyColumn() { items(ongoing) { MatchOverviewPreview(matchPreviewInfo = it, onClick) } }
+
+    HorizontalPager(count = 3, state = pagerState) { tabPosition ->
+      when (tabPosition) {
+        0 -> {
+          if (ongoing.isEmpty()) {
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = "No ongoing matches")
+            Spacer(modifier = Modifier.weight(1f))
+          } else {
+            LazyColumn() { items(ongoing) { MatchOverviewPreview(matchPreviewInfo = it, onClick) } }
+          }
         }
-      }
-      1 -> {
-        if (upcoming.isEmpty()) {
-          Spacer(modifier = Modifier.weight(1f))
-          Text(text = "No upcoming matches")
-          Spacer(modifier = Modifier.weight(1f))
-        } else {
-          LazyColumn() { items(upcoming) { MatchOverviewPreview(matchPreviewInfo = it, onClick) } }
+        1 -> {
+          if (upcoming.isEmpty()) {
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = "No upcoming matches")
+            Spacer(modifier = Modifier.weight(1f))
+          } else {
+            LazyColumn() {
+              items(upcoming) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
+            }
+          }
         }
-      }
-      else -> {
-        if (completed.isEmpty()) {
-          Spacer(modifier = Modifier.weight(1f))
-          Text(text = "No completed matches")
-          Spacer(modifier = Modifier.weight(1f))
-        } else {
-          LazyColumn() { items(completed) { MatchOverviewPreview(matchPreviewInfo = it, onClick) } }
+        else -> {
+          if (completed.isEmpty()) {
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = "No completed matches")
+            Spacer(modifier = Modifier.weight(1f))
+          } else {
+            LazyColumn() {
+              items(completed) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
+            }
+          }
         }
       }
     }

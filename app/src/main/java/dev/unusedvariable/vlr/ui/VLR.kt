@@ -1,28 +1,18 @@
 package dev.unusedvariable.vlr.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.EmojiEvents
-import androidx.compose.material.icons.outlined.Feed
-import androidx.compose.material.icons.outlined.Games
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.github.ajalt.timberkt.e
-import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -49,13 +39,10 @@ fun VLR() {
   val systemUiController = rememberSystemUiController()
   val primaryContainer = VLRTheme.colorScheme.primaryContainer
   val background = VLRTheme.colorScheme.primaryContainer.copy(0.1f)
-  val isDark = isSystemInDarkTheme()
 
   viewModel.action = action
 
   val navState: NavState by viewModel.navState.collectAsState()
-
-  e { "Nav State $navState" }
 
   LaunchedEffect(key1 = navState) {
     delay(500)
@@ -66,7 +53,7 @@ fun VLR() {
             else background,
     )
     systemUiController.setNavigationBarColor(
-        color = if (navState == NavState.MATCH_DETAILS) background else primaryContainer,
+        color = background,
     )
   }
 
@@ -75,21 +62,18 @@ fun VLR() {
         AnimatedVisibility(
             visible =
                 navState != NavState.MATCH_DETAILS && navState != NavState.TOURNAMENT_DETAILS) {
-          BottomNavigation(
-              modifier = Modifier.navigationBarsPadding(true).animateContentSize(),
-              backgroundColor = VLRTheme.colorScheme.primaryContainer,
-              contentColor = VLRTheme.colorScheme.onPrimaryContainer) {
-            BottomNavigationItem(
+          NavigationBar() {
+            NavigationBarItem(
                 selected = navState == NavState.NEWS,
                 icon = { Icon(imageVector = Icons.Outlined.Feed, contentDescription = "News") },
                 label = { Text(text = "News") },
                 onClick = action.goNews)
-            BottomNavigationItem(
+            NavigationBarItem(
                 selected = navState == NavState.MATCH_OVERVIEW,
-                icon = { Icon(imageVector = Icons.Outlined.Games, contentDescription = "Games") },
+                icon = { Icon(imageVector = Icons.Outlined.SportsEsports, contentDescription = "Games") },
                 label = { Text(text = "Matches") },
                 onClick = action.matchOverview)
-            BottomNavigationItem(
+            NavigationBarItem(
                 selected = navState == NavState.TOURNAMENT,
                 icon = {
                   Icon(imageVector = Icons.Outlined.EmojiEvents, contentDescription = "Tournament")
@@ -124,7 +108,6 @@ fun VLR() {
             popExitTransition = { fadeOut },
         ) {
           viewModel.setNavigation(NavState.MATCH_OVERVIEW)
-          //                    ResultsScreen(viewModel = viewModel)
           MatchOverview(viewModel = viewModel)
         }
         composable(

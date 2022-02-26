@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -88,11 +89,10 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 
                 if (matchInfo.head2head.isNotEmpty()) {
                   item {
-                    OutlinedCard(
+                    Card(
                         Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 8.dp),
                         contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-                        containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
-                        border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)) {
+                        containerColor = VLRTheme.colorScheme.primaryContainer) {
                       Text(
                           text = "Previous Encounters",
                           modifier = Modifier.fillMaxWidth().padding(4.dp),
@@ -191,10 +191,11 @@ fun ShowMatchStatsTab(
     tabIndex: Int,
     onTabChange: (Int) -> Unit
 ) {
-  TabRow(
+  ScrollableTabRow(
       selectedTabIndex = tabIndex,
       containerColor = VLRTheme.colorScheme.primaryContainer,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+      modifier =
+          Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp))) {
     mapData.forEachIndexed { index, matchDetailData ->
       Tab(selected = index == tabIndex, onClick = { onTabChange(index) }) {
         Text(text = matchDetailData.map, modifier = Modifier.padding(16.dp))
@@ -208,7 +209,7 @@ fun ScoreBox(mapData: MatchInfo.MatchDetailData) {
   Column(
       modifier =
           Modifier.fillMaxWidth()
-              .padding(horizontal = 4.dp)
+              .padding(horizontal = 8.dp, vertical = 4.dp)
               .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
   ) {
     Row(
@@ -295,7 +296,7 @@ fun StatsRow(member: MatchInfo.MatchDetailData.Member) {
   Row(
       modifier =
           Modifier.fillMaxWidth()
-              .padding(horizontal = 8.dp)
+              .padding(horizontal = 8.dp, vertical = 2.dp)
               .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
       verticalAlignment = Alignment.CenterVertically) {
     GlideImage(
@@ -363,26 +364,28 @@ fun VideoReferenceUi(videos: MatchInfo.Videos) {
       border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)) {
     if (videos.streams.isNotEmpty()) {
       Text(text = "Stream", modifier = Modifier.fillMaxWidth().padding(8.dp))
-      LazyRow(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+      LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
         items(videos.streams) { stream ->
           FilledTonalButton(
               onClick = {
                 intent.data = Uri.parse(stream.url)
                 context.startActivity(intent)
-              }) { Text(text = stream.name) }
+              },
+              modifier = Modifier.padding(horizontal = 4.dp)) { Text(text = stream.name) }
         }
       }
     }
 
     if (videos.vods.isNotEmpty()) {
       Text(text = "Vods", modifier = Modifier.fillMaxWidth().padding(8.dp))
-      LazyRow(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+      LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
         items(videos.vods) { stream ->
           FilledTonalButton(
               onClick = {
                 intent.data = Uri.parse(stream.url)
                 context.startActivity(intent)
-              }) { Text(text = stream.name) }
+              },
+              modifier = Modifier.padding(horizontal = 4.dp)) { Text(text = stream.name) }
         }
       }
     }
