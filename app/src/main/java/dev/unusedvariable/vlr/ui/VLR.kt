@@ -3,16 +3,23 @@ package dev.unusedvariable.vlr.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.EmojiEvents
+import androidx.compose.material.icons.outlined.Feed
+import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -27,7 +34,6 @@ import dev.unusedvariable.vlr.ui.theme.VLRTheme
 import dev.unusedvariable.vlr.utils.fadeOut
 import dev.unusedvariable.vlr.utils.slideInFromBottom
 import dev.unusedvariable.vlr.utils.slideInFromTop
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,14 +44,13 @@ fun VLR() {
 
   val systemUiController = rememberSystemUiController()
   val primaryContainer = VLRTheme.colorScheme.primaryContainer
-  val background = VLRTheme.colorScheme.primaryContainer.copy(0.1f)
+  val background = VLRTheme.colorScheme.primaryContainer.copy(0.2f)
 
   viewModel.action = action
 
   val navState: NavState by viewModel.navState.collectAsState()
 
   LaunchedEffect(key1 = navState) {
-    delay(500)
     systemUiController.setStatusBarColor(
         color =
             if (navState == NavState.TOURNAMENT || navState == NavState.MATCH_OVERVIEW)
@@ -62,28 +67,45 @@ fun VLR() {
         AnimatedVisibility(
             visible =
                 navState != NavState.MATCH_DETAILS && navState != NavState.TOURNAMENT_DETAILS) {
-          NavigationBar() {
+          NavigationBar(
+              containerColor = VLRTheme.colorScheme.primaryContainer.copy(0.2f),
+              contentColor = contentColorFor(VLRTheme.colorScheme.primaryContainer.copy(0.2f)),
+              tonalElevation = 0.dp,
+              modifier = Modifier.navigationBarsPadding()) {
             NavigationBarItem(
                 selected = navState == NavState.NEWS,
-                icon = { Icon(imageVector = Icons.Outlined.Feed, contentDescription = "News") },
+                icon = {
+                  Icon(
+                      imageVector = Icons.Outlined.Feed,
+                      contentDescription = "News",
+                      tint = VLRTheme.colorScheme.onPrimaryContainer)
+                },
                 label = { Text(text = "News") },
-                onClick = action.goNews)
+                onClick = action.goNews,
+            )
             NavigationBarItem(
                 selected = navState == NavState.MATCH_OVERVIEW,
-                icon = { Icon(imageVector = Icons.Outlined.SportsEsports, contentDescription = "Games") },
+                icon = {
+                  Icon(
+                      imageVector = Icons.Outlined.SportsEsports,
+                      contentDescription = "Games",
+                      tint = VLRTheme.colorScheme.onPrimaryContainer)
+                },
                 label = { Text(text = "Matches") },
                 onClick = action.matchOverview)
             NavigationBarItem(
                 selected = navState == NavState.TOURNAMENT,
                 icon = {
-                  Icon(imageVector = Icons.Outlined.EmojiEvents, contentDescription = "Tournament")
+                  Icon(
+                      imageVector = Icons.Outlined.EmojiEvents,
+                      contentDescription = "Tournament",
+                      tint = VLRTheme.colorScheme.onPrimaryContainer)
                 },
                 label = { Text(text = "Events") },
                 onClick = action.goEvents)
           }
         }
-      },
-  ) { paddingValues ->
+      }) { paddingValues ->
     Box(
         modifier =
             Modifier.padding(bottom = paddingValues.calculateBottomPadding())
