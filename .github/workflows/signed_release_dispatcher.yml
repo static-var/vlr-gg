@@ -12,14 +12,14 @@ jobs:
         with:
           java-version: '11'
 
-  - name: Decode Keystore
-      env:
-        ENCODED_STRING: ${{ secrets.SIGNING_KEY }}
-      run: |
-        TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}"/app/keystore
-        mkdir "${TMP_KEYSTORE_FILE_PATH}"
-        echo $RUNNER_TEMP
-        echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/vlr-gg.jks
+      - name: Decode Keystore
+        env:
+          ENCODED_STRING: ${{ secrets.SIGNING_KEY }}
+        run: |
+          TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}"/app/keystore
+          mkdir "${TMP_KEYSTORE_FILE_PATH}"
+          echo $RUNNER_TEMP
+          echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/vlr-gg.jks
 
 
       - name: Make gradlew executable
@@ -28,27 +28,15 @@ jobs:
       - name: build prod
         run: ./gradlew app:assembleRelease
         env:
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+            SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+            SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+            SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
           name: Build Artifacts
           path: app/build/outputs/
-
-#      - uses: r0adkll/sign-android-release@v1
-#        name: Sign app APK
-#        id: sign_app
-#        with:
-#          releaseDirectory: app/build/outputs/apk/release
-#          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-#          alias: ${{ secrets.SIGNING_KEY_ALIAS }}
-#          keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
-#          keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
-#        env:
-#          BUILD_TOOLS_VERSION: "30.0.0"
 
       - name: Get Apk Info
         id: apk_info
