@@ -68,7 +68,7 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
                 ?.get(false)
                 .orEmpty())
       }
-  Column(modifier = Modifier.fillMaxSize()) {
+  Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
         selectedTabIndex = pagerState.currentPage,
         containerColor = VLRTheme.colorScheme.primaryContainer) {
@@ -88,7 +88,8 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
         Text(text = "Completed", modifier = Modifier.padding(16.dp))
       }
     }
-    HorizontalPager(count = 3, state = pagerState) { tabPosition ->
+    HorizontalPager(count = 3, state = pagerState, modifier = Modifier.fillMaxSize()) { tabPosition
+      ->
       when (tabPosition) {
         0 -> {
           if (ongoing.isEmpty()) {
@@ -96,7 +97,7 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
             Text(text = "No ongoing events")
             Spacer(modifier = Modifier.weight(1f))
           } else {
-            LazyColumn() {
+            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
               items(ongoing) { TournamentPreview(tournamentPreview = it, viewModel.action) }
             }
           }
@@ -107,7 +108,7 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
             Text(text = "No ongoing events")
             Spacer(modifier = Modifier.weight(1f))
           } else {
-            LazyColumn() {
+            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
               items(upcoming) { TournamentPreview(tournamentPreview = it, viewModel.action) }
             }
           }
@@ -118,7 +119,7 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
             Text(text = "No ongoing events")
             Spacer(modifier = Modifier.weight(1f))
           } else {
-            LazyColumn() {
+            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
               items(completed) { TournamentPreview(tournamentPreview = it, viewModel.action) }
             }
           }

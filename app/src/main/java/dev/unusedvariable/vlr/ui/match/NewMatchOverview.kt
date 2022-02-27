@@ -36,7 +36,6 @@ fun MatchOverview(viewModel: VlrViewModel) {
           .onPass {
             data?.let { list ->
               MatchOverviewContainer(
-                  viewModel = viewModel,
                   list = list,
                   onClick = { id -> viewModel.action.match(id) })
             }
@@ -49,7 +48,6 @@ fun MatchOverview(viewModel: VlrViewModel) {
 
 @Composable
 fun MatchOverviewContainer(
-    viewModel: VlrViewModel,
     list: List<MatchPreviewInfo>,
     onClick: (String) -> Unit
 ) {
@@ -70,7 +68,7 @@ fun MatchOverviewContainer(
                 .orEmpty())
       }
 
-  Column(modifier = Modifier.fillMaxSize()) {
+  Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
         selectedTabIndex = pagerState.currentPage,
         containerColor = VLRTheme.colorScheme.primaryContainer) {
@@ -91,7 +89,7 @@ fun MatchOverviewContainer(
       }
     }
 
-    HorizontalPager(count = 3, state = pagerState) { tabPosition ->
+    HorizontalPager(count = 3, state = pagerState, modifier = Modifier.fillMaxSize()) { tabPosition ->
       when (tabPosition) {
         0 -> {
           if (ongoing.isEmpty()) {
@@ -99,7 +97,7 @@ fun MatchOverviewContainer(
             Text(text = "No ongoing matches")
             Spacer(modifier = Modifier.weight(1f))
           } else {
-            LazyColumn() { items(ongoing) { MatchOverviewPreview(matchPreviewInfo = it, onClick) } }
+            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) { items(ongoing) { MatchOverviewPreview(matchPreviewInfo = it, onClick) } }
           }
         }
         1 -> {
@@ -108,7 +106,7 @@ fun MatchOverviewContainer(
             Text(text = "No upcoming matches")
             Spacer(modifier = Modifier.weight(1f))
           } else {
-            LazyColumn() {
+            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
               items(upcoming) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
             }
           }
@@ -119,7 +117,7 @@ fun MatchOverviewContainer(
             Text(text = "No completed matches")
             Spacer(modifier = Modifier.weight(1f))
           } else {
-            LazyColumn() {
+            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
               items(completed) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
             }
           }
