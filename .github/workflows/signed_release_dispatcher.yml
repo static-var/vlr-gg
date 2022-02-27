@@ -16,9 +16,8 @@ jobs:
         env:
           ENCODED_STRING: ${{ secrets.SIGNING_KEY }}
         run: |
-          TMP_KEYSTORE_FILE_PATH="${RUNNER_TEMP}"/app/keystore
+          TMP_KEYSTORE_FILE_PATH="${GITHUB_WORKSPACE}"/app/keystore
           mkdir "${TMP_KEYSTORE_FILE_PATH}"
-          echo $RUNNER_TEMP
           echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/vlr-gg.jks
 
 
@@ -26,11 +25,11 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: build prod
-        run: ./gradlew app:assembleRelease
         env:
-            SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-            SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-            SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+        run: ./gradlew app:assembleRelease
 
       - name: Upload
         uses: actions/upload-artifact@v2
@@ -38,19 +37,29 @@ jobs:
           name: Build Artifacts
           path: app/build/outputs/
 
-      - name: Get Apk Info
-        id: apk_info
-        uses: JantHsueh/get-apk-info-action@master
-        with:
-          apkPath: app/build/outputs/apk/release/*.apk
+      - name: APK name and path
+        id: apk_details
+        run: |
+          echo "VERSION_NAME=$(echo $(find app/build/outputs/apk/release/  "*.apk" -type f -size +1M -print -quit | head -n1) | awk -F\( '{print $NF}' | awk -F\) '{print $1}')" >> $GITHUB_ENV
+          echo "APK=$(find app/build/outputs/apk/release/  "*.apk" -type f -size +1M -print -quit | head -n1)" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v2
-      - uses: rickstaa/action-create-tag@v1
-        with:
-          tag: ${{ steps.apk_info.outputs.versionNum }}
-          message: ${{ steps.apk_info.outputs.versionNum }}
+      - name: Print Build details
+        run: |
+          echo "${{ env.APK }}"
+          echo "${{ env.VERSION }}"
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      - name: Push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
         with:
-          files: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: "${{ env.VERSION_NAME }}"
+          tag_prefix: ""
+          default_prerelease_bump: false
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          artifacts: ${{ env.APK }}
