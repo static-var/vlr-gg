@@ -176,7 +176,7 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -
       }
       Text(
           text = matchPreviewInfo.event + " - " + matchPreviewInfo.series,
-          modifier = Modifier.fillMaxWidth(),
+          modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
           textAlign = TextAlign.Center,
           style = VLRTheme.typography.labelSmall)
     }
