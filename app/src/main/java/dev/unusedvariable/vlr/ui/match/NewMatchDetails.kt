@@ -95,7 +95,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                         containerColor = VLRTheme.colorScheme.primaryContainer) {
                       Text(
                           text = "Previous Encounters",
-                          modifier = Modifier.fillMaxWidth().padding(4.dp),
+                          modifier = Modifier.fillMaxWidth().padding(12.dp),
                           textAlign = TextAlign.Center,
                           style = VLRTheme.typography.titleSmall)
                     }
@@ -118,7 +118,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 @Composable
 fun MatchOverallAndEventOverview(detailData: MatchInfo) {
   OutlinedCard(
-      Modifier.fillMaxWidth().padding(8.dp),
+      Modifier.fillMaxWidth().padding(8.dp).aspectRatio(1.6f),
       contentColor = VLRTheme.colorScheme.onPrimaryContainer,
       containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
       border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)) {
@@ -127,23 +127,22 @@ fun MatchOverallAndEventOverview(detailData: MatchInfo) {
           modifier = Modifier.size(width = maxWidth, height = maxHeight),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.Center) {
-        Box(modifier = Modifier.weight(0.8f).alpha(0.2f).padding(16.dp)) {
+        Box(modifier = Modifier.weight(0.6f).alpha(0.2f).padding(16.dp)) {
           GlideImage(
               imageModel = detailData.teams[0].img,
-              contentScale = ContentScale.Crop,
+              contentScale = ContentScale.Fit,
               alignment = Alignment.CenterStart)
         }
-        Box(modifier = Modifier.weight(0.8f).alpha(0.2f).padding(16.dp)) {
+        Box(modifier = Modifier.weight(0.6f).alpha(0.2f).padding(16.dp)) {
           GlideImage(
               imageModel = detailData.teams[1].img,
-              contentScale = ContentScale.Crop,
+              contentScale = ContentScale.Fit,
               alignment = Alignment.CenterEnd)
         }
       }
       Column(
-          modifier = Modifier.fillMaxSize(),
-          horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.SpaceAround) {
+          modifier = Modifier.size(width = maxWidth, height = maxHeight).padding(8.dp),
+          horizontalAlignment = Alignment.CenterHorizontally) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           Text(
               text = detailData.teams[0].name,
@@ -156,7 +155,7 @@ fun MatchOverallAndEventOverview(detailData: MatchInfo) {
               textAlign = TextAlign.Center,
               modifier = Modifier.padding(12.dp).weight(1f))
         }
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().weight(1f), verticalAlignment = Alignment.CenterVertically) {
           Text(
               text = detailData.teams[0].score?.toString() ?: "-",
               style = VLRTheme.typography.titleSmall,
@@ -170,12 +169,11 @@ fun MatchOverallAndEventOverview(detailData: MatchInfo) {
         }
         Text(
             text = detailData.bans.joinToString { it },
-            style = VLRTheme.typography.labelSmall,
-            modifier = Modifier.padding(4.dp),
+            style = VLRTheme.typography.labelMedium,
+            modifier = Modifier.padding(8.dp),
             textAlign = TextAlign.Center)
         var dialogOpen by remember { mutableStateOf(false) }
-        FilledTonalButton(
-            onClick = { dialogOpen = true }, modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+        FilledTonalButton(onClick = { dialogOpen = true }, modifier = Modifier.fillMaxWidth()) {
           Text(text = "More info")
         }
         MatchMoreDetailsDialog(
