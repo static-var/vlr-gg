@@ -3,7 +3,6 @@ package dev.unusedvariable.vlr.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
@@ -14,12 +13,10 @@ import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -34,6 +31,7 @@ import dev.unusedvariable.vlr.ui.theme.VLRTheme
 import dev.unusedvariable.vlr.utils.fadeOut
 import dev.unusedvariable.vlr.utils.slideInFromBottom
 import dev.unusedvariable.vlr.utils.slideInFromTop
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +49,7 @@ fun VLR() {
   val navState: NavState by viewModel.navState.collectAsState()
 
   LaunchedEffect(key1 = navState) {
+    delay(500)
     systemUiController.setStatusBarColor(
         color =
             if (navState == NavState.TOURNAMENT || navState == NavState.MATCH_OVERVIEW)
