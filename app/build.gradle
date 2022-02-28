@@ -38,11 +38,18 @@ android {
     }
 
     buildTypes {
+        def localProperties = new Properties()
+        def localPropertiesFile = rootProject.file('local.properties')
+        if (localPropertiesFile.exists()) {
+            localProperties.load(new FileInputStream(localPropertiesFile))
+        }
         debug {
             minifyEnabled false
             archivesBaseName = "$defaultConfig.applicationId-$defaultConfig.versionCode($defaultConfig.versionName)"
+            buildConfigField "String", "TOKEN", localProperties['token']
         }
         release {
+            buildConfigField "String", "TOKEN", System.getenv("TOKEN") ?: localProperties['token']
             minifyEnabled true
             archivesBaseName = "$defaultConfig.applicationId-$defaultConfig.versionCode($defaultConfig.versionName)"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

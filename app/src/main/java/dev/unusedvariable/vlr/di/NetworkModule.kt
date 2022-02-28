@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dev.unusedvariable.vlr.BuildConfig
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.features.*
@@ -13,8 +14,8 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.serialization.json.Json
 import javax.inject.Singleton
+import kotlinx.serialization.json.Json
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -45,7 +46,12 @@ object NetworkModule {
           logger = Logger.SIMPLE
         }
 
-        install(DefaultRequest) { headers { append(HttpHeaders.AcceptEncoding, "gzip") } }
+        install(DefaultRequest) {
+          headers {
+            append(HttpHeaders.AcceptEncoding, "gzip")
+            append(HttpHeaders.Authorization, BuildConfig.TOKEN)
+          }
+        }
 
         install(ContentEncoding) { gzip() }
       }
