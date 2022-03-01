@@ -14,8 +14,8 @@ android {
         applicationId "dev.unusedvariable.vlr"
         minSdk 23
         targetSdk 31
-        versionCode 5
-        versionName "v0.0.5"
+        versionCode 6
+        versionName "v0.0.5-hotfix"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
