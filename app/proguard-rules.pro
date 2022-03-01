@@ -25,3 +25,5 @@
 -keep public enum dev.unusedvariable.vlr.data.**{
     *;
 }
+
+-dontwarn org.slf4j.impl.StaticLoggerBinder
