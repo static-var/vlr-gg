@@ -1,7 +1,6 @@
 package dev.unusedvariable.vlr.data
 
 import com.dropbox.android.external.store4.*
-import com.github.ajalt.timberkt.e
 import dev.unusedvariable.vlr.data.api.response.*
 import dev.unusedvariable.vlr.data.dao.VlrDao
 import dev.unusedvariable.vlr.utils.*
@@ -29,7 +28,7 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
                   SourceOfTruth.Companion.of(
                       reader = { vlrDao.getNews() },
                       writer = { key, b ->
-                        vlrDao.insertAllNews(b).also { TimeElapsed.start(key, 90.seconds) }
+                        vlrDao.insertAllNews(b).also { TimeElapsed.start(key, 180.seconds) }
                       },
                       deleteAll = {},
                       delete = { key -> TimeElapsed.reset(key) }))
@@ -66,7 +65,7 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
                       reader = { vlrDao.getAllMatchesPreview() },
                       writer = { key, b ->
                         vlrDao.deleteAllMatchPreview()
-                        vlrDao.insertAllMatches(b).also { TimeElapsed.start(key, 30.seconds) }
+                        vlrDao.insertAllMatches(b).also { TimeElapsed.start(key, 45.seconds) }
                       },
                       deleteAll = {},
                       delete = { key -> TimeElapsed.reset(key) }))
@@ -105,7 +104,7 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
                       writer = { key, b ->
                         vlrDao.deleteAllTournamentPreview()
                         vlrDao.insertAllTournamentInfo(b).also {
-                          TimeElapsed.start(key, 90.seconds)
+                          TimeElapsed.start(key, 120.seconds)
                         }
                       },
                       deleteAll = {},
