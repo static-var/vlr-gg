@@ -22,14 +22,21 @@ jobs:
 
 
       - name: Make gradlew executable
-        run: chmod +x ./gradlew
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+        run: |
+          touch local.properties
+          echo "API_KEY=${{ env.API_TOKEN }}" > local.properties
+          chmod +x ./gradlew
 
       - name: build prod
         env:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-        run: ./gradlew app:assembleRelease
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+        run: |
+          ./gradlew app:assembleRelease --stacktrace
 
       - name: Upload
         uses: actions/upload-artifact@v2
@@ -63,3 +70,13 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           artifacts: ${{ env.APK }}
+
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.CHAT_ID }}
+          token: ${{ secrets.BOT_TOKEN }}
+          message: |
+            Published ${{ env.VERSION_NAME }}
+            Release available at https://github.com/${{ github.repository }}/releases/tag/${{steps.tag_version.outputs.new_tag}}
+          document: ${{ env.APK }}
