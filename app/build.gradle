@@ -46,7 +46,7 @@ android {
         debug {
             minifyEnabled false
             archivesBaseName = "$defaultConfig.applicationId-$defaultConfig.versionCode($defaultConfig.versionName)"
-            buildConfigField "String", "TOKEN", localProperties['token']
+            buildConfigField "String", "TOKEN", System.getenv("TOKEN") ?: localProperties['token']
         }
         release {
             buildConfigField "String", "TOKEN", System.getenv("TOKEN") ?: localProperties['token']
