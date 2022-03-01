@@ -2,7 +2,6 @@ package dev.unusedvariable.vlr.ui.events
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,22 +16,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.PointerEventType.Companion.Scroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.github.ajalt.timberkt.e
 import com.google.accompanist.insets.statusBarsPadding
 import dev.unusedvariable.vlr.data.api.response.TournamentDetails
 import dev.unusedvariable.vlr.ui.CARD_ALPHA
 import dev.unusedvariable.vlr.ui.COLOR_ALPHA
 import dev.unusedvariable.vlr.ui.VlrViewModel
 import dev.unusedvariable.vlr.ui.theme.VLRTheme
-import dev.unusedvariable.vlr.utils.Waiting
-import dev.unusedvariable.vlr.utils.onFail
-import dev.unusedvariable.vlr.utils.onPass
-import dev.unusedvariable.vlr.utils.onWaiting
+import dev.unusedvariable.vlr.utils.*
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
@@ -218,11 +212,11 @@ fun EventMatchGroups(
           })
     }
 
-      ScrollableTabRow(
-          selectedTabIndex = tabSelection,
-          containerColor = VLRTheme.colorScheme.primaryContainer,
-          modifier =
-          Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp))) {
+    ScrollableTabRow(
+        selectedTabIndex = tabSelection,
+        containerColor = VLRTheme.colorScheme.primaryContainer,
+        modifier =
+            Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp))) {
       group.keys.forEachIndexed { index, s ->
         Tab(
             selected = tabSelection == index,

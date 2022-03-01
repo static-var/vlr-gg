@@ -6,9 +6,9 @@ import android.content.Intent
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.updateAll
-import com.github.ajalt.timberkt.e
 import dagger.hilt.android.AndroidEntryPoint
 import dev.unusedvariable.vlr.data.VlrRepository
+import dev.unusedvariable.vlr.utils.e
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
