@@ -2,19 +2,12 @@ package dev.unusedvariable.vlr
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
+import dev.unusedvariable.vlr.utils.Logger
 
 @HiltAndroidApp
 class VLRapp() : Application() {
   override fun onCreate() {
     super.onCreate()
-    Timber.plant(
-        object : Timber.DebugTree() {
-          override fun createStackElementTag(element: StackTraceElement): String? {
-            with(element) {
-              return "($fileName:$lineNumber)$methodName()"
-            }
-          }
-        })
+    Logger.init(true)
   }
 }

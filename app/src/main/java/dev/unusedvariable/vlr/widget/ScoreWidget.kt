@@ -16,8 +16,8 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import com.github.ajalt.timberkt.e
 import dev.unusedvariable.vlr.data.VlrRepository
+import dev.unusedvariable.vlr.utils.e
 
 class ScoreWidget(private val repository: VlrRepository) : GlanceAppWidget() {
 

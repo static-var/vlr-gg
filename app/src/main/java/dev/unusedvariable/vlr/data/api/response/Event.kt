@@ -7,7 +7,7 @@ import kotlinx.serialization.json.JsonNames
 
 @Keep
 @Serializable
-data class Event(
+data class Event constructor(
     @SerialName("date") val date: String = "", // 2021/04/25
     @SerialName("img")
     @JsonNames("icon")

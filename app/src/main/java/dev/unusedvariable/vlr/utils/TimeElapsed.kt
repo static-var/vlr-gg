@@ -1,6 +1,5 @@
 package dev.unusedvariable.vlr.utils
 
-import com.github.ajalt.timberkt.i
 import kotlin.time.Duration
 
 object TimeElapsed {

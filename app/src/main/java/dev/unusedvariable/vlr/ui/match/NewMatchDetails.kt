@@ -22,7 +22,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.github.ajalt.timberkt.e
 import com.google.accompanist.insets.statusBarsPadding
 import com.skydoves.landscapist.glide.GlideImage
 import dev.unusedvariable.vlr.data.api.response.MatchInfo
