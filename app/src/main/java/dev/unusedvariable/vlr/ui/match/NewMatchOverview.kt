@@ -35,9 +35,7 @@ fun MatchOverview(viewModel: VlrViewModel) {
       allMatches
           .onPass {
             data?.let { list ->
-              MatchOverviewContainer(
-                  list = list,
-                  onClick = { id -> viewModel.action.match(id) })
+              MatchOverviewContainer(list = list, onClick = { id -> viewModel.action.match(id) })
             }
           }
           .onWaiting { LinearProgressIndicator() }
@@ -47,10 +45,7 @@ fun MatchOverview(viewModel: VlrViewModel) {
 }
 
 @Composable
-fun MatchOverviewContainer(
-    list: List<MatchPreviewInfo>,
-    onClick: (String) -> Unit
-) {
+fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Unit) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
 
@@ -89,7 +84,8 @@ fun MatchOverviewContainer(
       }
     }
 
-    HorizontalPager(count = 3, state = pagerState, modifier = Modifier.fillMaxSize()) { tabPosition ->
+    HorizontalPager(count = 3, state = pagerState, modifier = Modifier.fillMaxSize()) { tabPosition
+      ->
       when (tabPosition) {
         0 -> {
           if (ongoing.isEmpty()) {
@@ -97,7 +93,9 @@ fun MatchOverviewContainer(
             Text(text = "No ongoing matches")
             Spacer(modifier = Modifier.weight(1f))
           } else {
-            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) { items(ongoing) { MatchOverviewPreview(matchPreviewInfo = it, onClick) } }
+            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+              items(ongoing) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
+            }
           }
         }
         1 -> {
