@@ -2,51 +2,46 @@ package dev.unusedvariable.vlr.utils
 
 import android.util.Log
 
-/**
- * Logger
- * Logger class to log information with a hyperlink to source in logcat
- *
- */
+/** Logger Logger class to log information with a hyperlink to source in logcat */
 object Logger {
 
-    var LOGGING_ENABLED = false
-    private val ignoreTags = listOf(this::class.java.name)
+  var LOGGING_ENABLED = false
+  private val ignoreTags = listOf(this::class.java.name)
 
-    private val tag: String
-        get() = Throwable().stackTrace.first { it.className !in ignoreTags }
-            .let { stackTraceElement ->
-                "(${stackTraceElement.fileName}:${stackTraceElement.lineNumber})${stackTraceElement.methodName}()"
-            }
+  private val tag: String
+    get() =
+        Throwable().stackTrace.first { it.className !in ignoreTags }.let { stackTraceElement ->
+          "(${stackTraceElement.fileName}:${stackTraceElement.lineNumber})${stackTraceElement.methodName}()"
+        }
 
-    fun init(logging: Boolean) {
-        LOGGING_ENABLED = logging
-        verbose(message = "Logger Initialized")
-    }
+  fun init(logging: Boolean) {
+    LOGGING_ENABLED = logging
+    verbose(message = "Logger Initialized")
+  }
 
-    fun verbose(message: String) {
-        if (LOGGING_ENABLED) Log.v(tag, message)
-    }
+  fun verbose(message: String) {
+    if (LOGGING_ENABLED) Log.v(tag, message)
+  }
 
-    fun info(message: String) {
-        if (LOGGING_ENABLED) Log.i(tag, message)
-    }
+  fun info(message: String) {
+    if (LOGGING_ENABLED) Log.i(tag, message)
+  }
 
-    fun log(message: String) {
-        if (LOGGING_ENABLED) Log.d(tag, message)
-    }
+  fun log(message: String) {
+    if (LOGGING_ENABLED) Log.d(tag, message)
+  }
 
-    fun warn(message: String) {
-        if (LOGGING_ENABLED) Log.w(tag, message)
-    }
+  fun warn(message: String) {
+    if (LOGGING_ENABLED) Log.w(tag, message)
+  }
 
-    fun error(message: String, throwable: Throwable?) {
-        if (LOGGING_ENABLED) Log.e(tag, message, throwable)
-    }
+  fun error(message: String, throwable: Throwable?) {
+    if (LOGGING_ENABLED) Log.e(tag, message, throwable)
+  }
 }
 
 /**
- * i
- * inline method to lazily evaluate log message at call site and print a info message
+ * i inline method to lazily evaluate log message at call site and print a info message
  *
  * usage: i {"message"}
  *
@@ -54,12 +49,11 @@ object Logger {
  * @receiver
  */
 inline fun i(message: () -> String) {
-    Logger.info(message())
+  Logger.info(message())
 }
 
 /**
- * v
- * inline method to lazily evaluate log message at call site and print a verbose message
+ * v inline method to lazily evaluate log message at call site and print a verbose message
  *
  * usage: v {"message"}
  *
@@ -67,12 +61,11 @@ inline fun i(message: () -> String) {
  * @receiver
  */
 inline fun v(message: () -> String) {
-    Logger.verbose(message())
+  Logger.verbose(message())
 }
 
 /**
- * log
- * inline method to lazily evaluate log message at call site and print a verbose message
+ * log inline method to lazily evaluate log message at call site and print a verbose message
  *
  * usage: log {"message"}
  *
@@ -80,12 +73,11 @@ inline fun v(message: () -> String) {
  * @receiver
  */
 inline fun log(message: () -> String) {
-    Logger.log(message())
+  Logger.log(message())
 }
 
 /**
- * w
- * inline method to lazily evaluate log message at call site and print a warning message
+ * w inline method to lazily evaluate log message at call site and print a warning message
  *
  * usage: w {"message"}
  *
@@ -93,12 +85,12 @@ inline fun log(message: () -> String) {
  * @receiver
  */
 inline fun w(message: () -> String) {
-    Logger.warn(message())
+  Logger.warn(message())
 }
 
 /**
- * e
- * inline method to lazily evaluate log message at call site and print a error message with exception
+ * e inline method to lazily evaluate log message at call site and print a error message with
+ * exception
  *
  * usage: e {"message"}
  *
@@ -107,12 +99,12 @@ inline fun w(message: () -> String) {
  * @receiver
  */
 inline fun e(message: () -> String, throwable: Throwable? = null) {
-    Logger.error(message(), throwable)
+  Logger.error(message(), throwable)
 }
 
 /**
- * e
- * inline method to lazily evaluate log message at call site and print a error message with exception
+ * e inline method to lazily evaluate log message at call site and print a error message with
+ * exception
  *
  * usage: e {"message"}
  *
@@ -120,5 +112,5 @@ inline fun e(message: () -> String, throwable: Throwable? = null) {
  * @receiver
  */
 inline fun e(message: () -> String) {
-    Logger.error(message(), null)
+  Logger.error(message(), null)
 }
