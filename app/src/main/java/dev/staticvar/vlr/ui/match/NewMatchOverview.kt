@@ -58,8 +58,8 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
                 ?.get(true)
                 .orEmpty(),
             it[false]
-                ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
-                ?.get(false)
+                ?.groupBy { it.status.startsWith("completed", ignoreCase = true) }
+                ?.get(true)
                 .orEmpty())
       }
 
