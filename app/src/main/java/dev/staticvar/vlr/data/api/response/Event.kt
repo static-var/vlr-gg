@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonNames
 @Keep
 @Serializable
 data class Event(
-    @SerialName("date") val date: String = "", // 2021/04/25
+    @SerialName("date") val date: String? = "", // 2021/04/25
     @SerialName("img")
     @JsonNames("icon")
     val img: String = "", // https://owcdn.net/img/6009f963577f4.png

@@ -3,16 +3,18 @@ package dev.staticvar.vlr.data
 import com.dropbox.android.external.store4.*
 import dev.staticvar.vlr.data.api.response.*
 import dev.staticvar.vlr.data.dao.VlrDao
+import dev.staticvar.vlr.data.model.TopicTracker
 import dev.staticvar.vlr.utils.*
 import io.ktor.client.*
 import io.ktor.client.request.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import java.net.SocketTimeoutException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 @Singleton
 class VlrRepository
@@ -210,4 +212,11 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
                 }
           }
           .flowOn(Dispatchers.IO)
+
+  fun trackTopic(topic: String) = vlrDao.insertTopicTracker(TopicTracker(topic))
+
+  fun isTopicTracked(topic: String) =
+      flow { emitAll(vlrDao.isTopicSubscribed(topic)) }.flowOn(Dispatchers.IO)
+
+  fun removeTopic(topic: String) = vlrDao.deleteTopic(topic)
 }

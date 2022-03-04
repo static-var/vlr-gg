@@ -8,11 +8,13 @@ import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.TimeElapsed
 import dev.staticvar.vlr.utils.Waiting
+import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class VlrViewModel @Inject constructor(private val repository: VlrRepository) : ViewModel() {
@@ -48,6 +50,14 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
 
   fun getNews() =
       repository.getAllNews().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+
+  fun trackTopic(topic: String) =
+      viewModelScope.launch(Dispatchers.IO) { repository.trackTopic(topic) }
+
+  fun isTopicTracked(topic: String) = repository.isTopicTracked(topic)
+
+  fun removeTopic(topic: String) =
+      viewModelScope.launch(Dispatchers.IO) { repository.removeTopic(topic) }
 
   fun clearCache() {
     TimeElapsed.reset(Constants.KEY_UPCOMING)
