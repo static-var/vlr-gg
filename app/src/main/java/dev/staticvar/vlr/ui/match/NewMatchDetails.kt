@@ -2,6 +2,7 @@ package dev.staticvar.vlr.ui.match
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +24,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.ui.CARD_ALPHA
@@ -34,6 +37,10 @@ import dev.staticvar.vlr.utils.*
 @Composable
 fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val details by remember(viewModel) { viewModel.getMatchInfo(id) }.collectAsState(Waiting())
+  val trackerString = id.toMatchTopic()
+  val isTracked by remember { viewModel.isTopicTracked(trackerString) }.collectAsState(null)
+
+  val context = LocalContext.current
 
   Column(
       modifier = Modifier.fillMaxSize(),
@@ -43,12 +50,46 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 
     details
         .onPass {
-          e { data.prettyPrint() }
+          e { data.toString() }
           data?.let { matchInfo ->
             var position by remember { mutableStateOf(0) }
 
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-              item { MatchOverallAndEventOverview(detailData = matchInfo) }
+              item {
+                MatchOverallAndEventOverview(
+                    detailData = matchInfo, isTracked = isTracked ?: false) {
+                  e { "Clicked $isTracked | $trackerString" }
+                  if (isTracked == true) {
+                    Firebase.messaging.unsubscribeFromTopic(trackerString).addOnCompleteListener {
+                        task ->
+                      if (task.isSuccessful) {
+                        viewModel.removeTopic(trackerString)
+                        Toast.makeText(
+                                context,
+                                "You have unsubscribed from this match",
+                                Toast.LENGTH_SHORT)
+                            .show()
+                      } else {
+                        e { "Unable to subscribe" }
+                      }
+                    }
+                  } else if (isTracked == false) {
+                    Firebase.messaging.subscribeToTopic(trackerString).addOnCompleteListener { task
+                      ->
+                      if (task.isSuccessful) {
+                        viewModel.trackTopic(trackerString)
+                        Toast.makeText(
+                                context,
+                                "You will be notified when the match starts",
+                                Toast.LENGTH_SHORT)
+                            .show()
+                      } else {
+                        e { "Unable to subscribe" }
+                      }
+                    }
+                  }
+                }
+              }
               item { VideoReferenceUi(videos = matchInfo.videos) }
               if (matchInfo.matchData.isNotEmpty()) {
                 val maps = matchInfo.matchData.filter { it.map != "All Maps" }
@@ -115,7 +156,11 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 }
 
 @Composable
-fun MatchOverallAndEventOverview(detailData: MatchInfo) {
+fun MatchOverallAndEventOverview(
+    detailData: MatchInfo,
+    isTracked: Boolean,
+    onSubButton: () -> Unit
+) {
   OutlinedCard(
       Modifier.fillMaxWidth().padding(8.dp).aspectRatio(1.6f),
       contentColor = VLRTheme.colorScheme.onPrimaryContainer,
@@ -172,9 +217,21 @@ fun MatchOverallAndEventOverview(detailData: MatchInfo) {
             modifier = Modifier.padding(8.dp),
             textAlign = TextAlign.Center)
         var dialogOpen by remember { mutableStateOf(false) }
-        FilledTonalButton(onClick = { dialogOpen = true }, modifier = Modifier.fillMaxWidth()) {
-          Text(text = "More info")
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+          FilledTonalButton(onClick = { dialogOpen = true }, modifier = Modifier.weight(1f)) {
+            Text(text = "More info")
+          }
+          detailData.event.date?.let {
+            if (!it.hasElapsed)
+                FilledTonalButton(onClick = onSubButton, modifier = Modifier.weight(1f)) {
+                  if (isTracked) Text(text = "Unsubscribe") else Text(text = "Get Notified")
+                }
+          }
         }
+
         MatchMoreDetailsDialog(
             detailData = detailData, open = dialogOpen, onDismiss = { dialogOpen = it })
       }
@@ -409,7 +466,7 @@ fun MatchMoreDetailsDialog(detailData: MatchInfo, open: Boolean, onDismiss: (Boo
                     textAlign = TextAlign.Center)
               }
               Text(
-                  text = detailData.event.date,
+                  text = detailData.event.date ?: "",
                   modifier = Modifier.padding(8.dp).fillMaxWidth(),
                   textAlign = TextAlign.Center)
               Text(
@@ -469,3 +526,5 @@ fun PreviousEncounter(previousEncounter: MatchInfo.Head2head, onClick: (String) 
     }
   }
 }
+
+fun String.toMatchTopic() = "match-$this"

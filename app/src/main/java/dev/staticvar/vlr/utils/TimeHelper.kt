@@ -24,3 +24,9 @@ val String.timeDiff: String
       if (diff.isNegative) append(" ago")
     }
   }
+
+val String.hasElapsed: Boolean
+  get() {
+    val givenTime = LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
+    return givenTime.isBefore(LocalDateTime.now())
+  }
