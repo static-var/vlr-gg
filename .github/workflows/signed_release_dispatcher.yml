@@ -41,7 +41,7 @@ jobs:
           ./gradlew app:assembleRelease --stacktrace
 
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Build Artifacts
           path: app/build/outputs/
