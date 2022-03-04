@@ -35,7 +35,9 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           API_TOKEN: ${{ secrets.API_TOKEN }}
+          FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG }}
         run: |
+          echo ${{ env.FIREBASE_CONFIG_DEV }} > app/google-services.json
           ./gradlew app:assembleRelease --stacktrace
 
       - name: Upload
