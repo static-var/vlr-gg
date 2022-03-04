@@ -19,10 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep public class dev.unusedvariable.vlr.data.** {
+-keep public class dev.staticvar.vlr.data.** {
     public protected private *;
 }
--keep public enum dev.unusedvariable.vlr.data.**{
+-keep public enum dev.staticvar.vlr.data.**{
     *;
 }
 
