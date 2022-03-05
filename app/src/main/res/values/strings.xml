@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">VLR</string>
     <string name="widget_description">VLR widget for live matches or upcoming matches</string>
+    <string name="notification_channel_id">Match Channel</string>
+    <string name="notification_channel_title">Subscribed matches</string>
 </resources>

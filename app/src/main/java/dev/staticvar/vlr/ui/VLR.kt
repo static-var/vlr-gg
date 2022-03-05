@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -28,6 +29,7 @@ import dev.staticvar.vlr.ui.match.MatchOverview
 import dev.staticvar.vlr.ui.match.NewMatchDetails
 import dev.staticvar.vlr.ui.news.NewsScreen
 import dev.staticvar.vlr.ui.theme.VLRTheme
+import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.fadeOut
 import dev.staticvar.vlr.utils.slideInFromBottom
 import dev.staticvar.vlr.utils.slideInFromTop
@@ -148,7 +150,8 @@ fun VLR() {
             enterTransition = { slideInFromTop },
             popEnterTransition = { slideInFromTop },
             exitTransition = { fadeOut },
-            popExitTransition = { fadeOut }) {
+            popExitTransition = { fadeOut },
+        deepLinks = listOf(navDeepLink { uriPattern = "${Constants.DEEP_LINK_BASEURL}${Destination.Match.Args.ID}={${Destination.Match.Args.ID}}" })) {
           viewModel.setNavigation(NavState.MATCH_DETAILS)
           val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
           NewMatchDetails(viewModel = viewModel, id = id)
