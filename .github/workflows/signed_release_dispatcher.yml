@@ -73,6 +73,15 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           artifacts: ${{ env.APK }}
 
+      - uses: actions/checkout@v3
+      - run: |
+          ${{ env.VERSION }} >> version
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Update version"
+          git push
+
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
         with:
