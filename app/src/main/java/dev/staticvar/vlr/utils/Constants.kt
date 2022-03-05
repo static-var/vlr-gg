@@ -17,4 +17,6 @@ object Constants {
   const val KEY_NEWS = "news"
   const val KEY_TOURNAMENT_ALL = "tournament_all"
   const val KEY_MATCH_ALL = "match_all"
+
+  const val DEEP_LINK_BASEURL="https://vlr-internal.gg/"
 }
