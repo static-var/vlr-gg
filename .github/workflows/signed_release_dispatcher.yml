@@ -39,7 +39,7 @@ jobs:
           FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG }}
         run: |
           touch app/google-services.json
-          echo ${{ env.FIREBASE_CONFIG_DEV }} >> app/google-services.json
+          echo $FIREBASE_CONFIG_DEV >> app/google-services.json
           ./gradlew app:assembleRelease --stacktrace
 
       - name: Upload
@@ -77,7 +77,7 @@ jobs:
 
       - uses: actions/checkout@v3
       - run: |
-          ${{ env.VERSION }} >> version
+          echo $VERSION >> version
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
