@@ -6,15 +6,20 @@ import dev.staticvar.vlr.data.dao.VlrDao
 import dev.staticvar.vlr.data.model.TopicTracker
 import dev.staticvar.vlr.utils.*
 import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.android.*
 import io.ktor.client.request.*
-import java.net.SocketTimeoutException
-import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.time.Duration.Companion.seconds
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import java.net.SocketTimeoutException
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 class VlrRepository
@@ -219,4 +224,46 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
       flow { emitAll(vlrDao.isTopicSubscribed(topic)) }.flowOn(Dispatchers.IO)
 
   fun removeTopic(topic: String) = vlrDao.deleteTopic(topic)
+
+  fun getLatestAppVersion() = flow {
+    emit(
+        HttpClient(Android)
+            .request<HttpStatement>(
+                "https://raw.githubusercontent.com/static-var/vlr-gg/trunk/version")
+            .execute()
+            .readText())
+  }
+
+  fun getApkUrl() =
+      flow<String?> {
+        emit(
+            HttpClient(Android)
+                .request<HttpStatement>("https://github.com/static-var/vlr-gg/releases/latest")
+                .execute()
+                .readText()
+                .lines()
+                .find { it.contains(".apk") }
+                ?.substringAfter("\"")
+                ?.substringBefore("\"")
+                ?.prependIndent("https://github.com"))
+      }
+
+  fun downloadApkWithProgress(url: String) =
+      flow<Pair<Int, ByteArray>> {
+        HttpClient(Android).request<HttpStatement>(url).execute {
+          var offset = 0
+          val byteBufferSize = 1024 * 100
+          val channel = it.receive<ByteReadChannel>()
+          val contentLen = it.contentLength()?.toInt() ?: 0
+          val data = ByteArray(contentLen)
+          do {
+            val currentRead = channel.readAvailable(data, offset, byteBufferSize)
+            val progress =
+                if (contentLen == 0) 0 else ((offset / contentLen.toDouble()) * 100).toInt()
+            offset += currentRead
+            emit(Pair(progress, ByteArray(0)))
+          } while (currentRead >= 0)
+          emit(Pair(100, data))
+        }
+      }
 }

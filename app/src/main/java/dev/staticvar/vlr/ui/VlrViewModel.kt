@@ -8,13 +8,13 @@ import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.TimeElapsed
 import dev.staticvar.vlr.utils.Waiting
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class VlrViewModel @Inject constructor(private val repository: VlrRepository) : ViewModel() {
@@ -67,10 +67,7 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
     TimeElapsed.reset(Constants.KEY_NEWS)
   }
 
-  private val _forceRefreshCounter = MutableStateFlow(0)
-  val forceRefreshCounter: StateFlow<Int> = _forceRefreshCounter
-
-  fun updateCounter() {
-    _forceRefreshCounter.value++
-  }
+    fun getLatestAppVersion() = repository.getLatestAppVersion()
+    fun getApkUrl() = repository.getApkUrl()
+    fun downloadApkWithProgress(url: String) = repository.downloadApkWithProgress(url)
 }
