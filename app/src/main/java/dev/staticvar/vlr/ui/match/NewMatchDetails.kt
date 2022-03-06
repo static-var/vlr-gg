@@ -2,7 +2,6 @@ package dev.staticvar.vlr.ui.match
 
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,14 +32,15 @@ import dev.staticvar.vlr.ui.COLOR_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val details by remember(viewModel) { viewModel.getMatchInfo(id) }.collectAsState(Waiting())
   val trackerString = id.toMatchTopic()
   val isTracked by remember { viewModel.isTopicTracked(trackerString) }.collectAsState(null)
-
-  val context = LocalContext.current
 
   Column(
       modifier = Modifier.fillMaxSize(),
@@ -59,34 +59,18 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                 MatchOverallAndEventOverview(
                     detailData = matchInfo, isTracked = isTracked ?: false) {
                   e { "Clicked $isTracked | $trackerString" }
-                  if (isTracked == true) {
-                    Firebase.messaging.unsubscribeFromTopic(trackerString).addOnCompleteListener {
-                        task ->
-                      if (task.isSuccessful) {
-                        viewModel.removeTopic(trackerString)
-                        Toast.makeText(
-                                context,
-                                "You have unsubscribed from this match",
-                                Toast.LENGTH_SHORT)
-                            .show()
-                      } else {
-                        e { "Unable to subscribe" }
-                      }
+                  when (isTracked) {
+                    true -> {
+                      Firebase.messaging.unsubscribeFromTopic(trackerString).await()
+                      viewModel.removeTopic(trackerString)
+                      e { "You have unsubscribed from this match" }
                     }
-                  } else if (isTracked == false) {
-                    Firebase.messaging.subscribeToTopic(trackerString).addOnCompleteListener { task
-                      ->
-                      if (task.isSuccessful) {
-                        viewModel.trackTopic(trackerString)
-                        Toast.makeText(
-                                context,
-                                "You will be notified when the match starts",
-                                Toast.LENGTH_SHORT)
-                            .show()
-                      } else {
-                        e { "Unable to subscribe" }
-                      }
+                    false -> {
+                      Firebase.messaging.subscribeToTopic(trackerString).await()
+                      viewModel.trackTopic(trackerString)
+                      e { "You will be notified when the match starts" }
                     }
+                    else -> {}
                   }
                 }
               }
@@ -159,8 +143,9 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 fun MatchOverallAndEventOverview(
     detailData: MatchInfo,
     isTracked: Boolean,
-    onSubButton: () -> Unit
+    onSubButton: suspend () -> Unit
 ) {
+  val scope = rememberCoroutineScope()
   OutlinedCard(
       Modifier.fillMaxWidth().padding(8.dp).aspectRatio(1.6f),
       contentColor = VLRTheme.colorScheme.onPrimaryContainer,
@@ -221,14 +206,32 @@ fun MatchOverallAndEventOverview(
             Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-          FilledTonalButton(onClick = { dialogOpen = true }, modifier = Modifier.weight(1f)) {
+          OutlinedButton(
+              onClick = { dialogOpen = true },
+              modifier = Modifier.weight(1f),
+              border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)) {
             Text(text = "More info")
           }
           detailData.event.date?.let {
-            if (!it.hasElapsed)
-                FilledTonalButton(onClick = onSubButton, modifier = Modifier.weight(1f)) {
-                  if (isTracked) Text(text = "Unsubscribe") else Text(text = "Get Notified")
-                }
+            if (!it.hasElapsed) {
+              var processingTopicSubscription by remember { mutableStateOf(false) }
+              OutlinedButton(
+                  onClick = {
+                    if (!processingTopicSubscription) {
+                      processingTopicSubscription = true
+                      scope.launch(Dispatchers.IO) {
+                        onSubButton()
+                        processingTopicSubscription = false
+                      }
+                    }
+                  },
+                  modifier = Modifier.weight(1f),
+                  border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)) {
+                if (processingTopicSubscription) {
+                  LinearProgressIndicator()
+                } else if (isTracked) Text(text = "Unsubscribe") else Text(text = "Get Notified")
+              }
+            }
           }
         }
 
