@@ -11,7 +11,6 @@ import kotlinx.serialization.Serializable
 @Entity
 data class MatchInfo(
     @PrimaryKey var id: String = "",
-    @SerialName("data") val matchData: List<MatchDetailData> = listOf(),
     @SerialName("event") val event: Event = Event(),
     @SerialName("previous_encounters") val head2head: List<Head2head> = listOf(),
     @SerialName("note")
@@ -21,7 +20,8 @@ data class MatchInfo(
     @SerialName("score") val score: String = "", // 2:1
     @SerialName("teams") val teams: List<Team> = listOf(),
     @SerialName("bans") val bans: List<String> = listOf(),
-    @SerialName("videos") val videos: Videos = Videos()
+    @SerialName("videos") val videos: Videos = Videos(),
+    @SerialName("data") val matchData: List<MatchDetailData> = listOf(),
 ) {
   @Keep
   @Serializable
