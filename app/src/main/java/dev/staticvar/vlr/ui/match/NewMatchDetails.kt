@@ -156,17 +156,35 @@ fun MatchOverallAndEventOverview(
           modifier = Modifier.size(width = maxWidth, height = maxHeight),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.Center) {
-        Box(modifier = Modifier.weight(0.6f).alpha(0.2f).padding(16.dp)) {
+        Box(modifier = Modifier.weight(0.6f).padding(8.dp).clickable { e { "Clicked T1" } }) {
+          detailData.teams[0].id?.let {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.Top) {
+              Icon(
+                  Icons.Outlined.OpenInNew,
+                  contentDescription = "Open match",
+                  modifier = Modifier.size(24.dp).padding(2.dp))
+            }
+          }
           GlideImage(
               imageModel = detailData.teams[0].img,
               contentScale = ContentScale.Fit,
-              alignment = Alignment.CenterStart)
+              alignment = Alignment.CenterStart,
+              modifier = Modifier.alpha(0.2f))
         }
-        Box(modifier = Modifier.weight(0.6f).alpha(0.2f).padding(16.dp)) {
+        Box(modifier = Modifier.weight(0.6f).padding(8.dp).clickable { e { "Clicked T2" } }) {
+          detailData.teams[1].id?.let {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.Top) {
+              Icon(
+                  Icons.Outlined.OpenInNew,
+                  contentDescription = "Open match",
+                  modifier = Modifier.size(24.dp).padding(2.dp))
+            }
+          }
           GlideImage(
               imageModel = detailData.teams[1].img,
               contentScale = ContentScale.Fit,
-              alignment = Alignment.CenterEnd)
+              alignment = Alignment.CenterEnd,
+              modifier = Modifier.alpha(0.2f))
         }
       }
       Column(
