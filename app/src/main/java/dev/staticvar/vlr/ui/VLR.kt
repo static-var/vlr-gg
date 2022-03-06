@@ -28,6 +28,7 @@ import dev.staticvar.vlr.ui.events.EventScreen
 import dev.staticvar.vlr.ui.match.MatchOverview
 import dev.staticvar.vlr.ui.match.NewMatchDetails
 import dev.staticvar.vlr.ui.news.NewsScreen
+import dev.staticvar.vlr.ui.team.TeamScreen
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
 import kotlinx.coroutines.delay
@@ -87,7 +88,9 @@ fun VLR() {
       bottomBar = {
         AnimatedVisibility(
             visible =
-                navState != NavState.MATCH_DETAILS && navState != NavState.TOURNAMENT_DETAILS) {
+                navState != NavState.MATCH_DETAILS &&
+                    navState != NavState.TOURNAMENT_DETAILS &&
+                    navState != NavState.TEAM_DETAILS) {
           NavigationBar(
               containerColor = VLRTheme.colorScheme.primaryContainer.copy(0.2f),
               contentColor = contentColorFor(VLRTheme.colorScheme.primaryContainer.copy(0.2f)),
@@ -192,6 +195,17 @@ fun VLR() {
           viewModel.setNavigation(NavState.TOURNAMENT_DETAILS)
           val id = it.arguments?.getString(Destination.Event.Args.ID) ?: ""
           EventDetails(viewModel = viewModel, id = id)
+        }
+        composable(
+            Destination.Team.route,
+            arguments = listOf(navArgument(Destination.Team.Args.ID) { type = NavType.StringType }),
+            enterTransition = { slideInFromTop },
+            popEnterTransition = { slideInFromTop },
+            exitTransition = { fadeOut },
+            popExitTransition = { fadeOut }) {
+          viewModel.setNavigation(NavState.TEAM_DETAILS)
+          val id = it.arguments?.getString(Destination.Team.Args.ID) ?: ""
+          TeamScreen(viewModel = viewModel, id = id)
         }
       }
     }

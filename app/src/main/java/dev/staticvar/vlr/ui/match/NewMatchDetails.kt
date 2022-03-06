@@ -57,18 +57,17 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
               item {
                 MatchOverallAndEventOverview(
-                    detailData = matchInfo, isTracked = isTracked ?: false) {
-                  e { "Clicked $isTracked | $trackerString" }
+                    detailData = matchInfo, isTracked = isTracked ?: false, viewModel.action.team) {
                   when (isTracked) {
                     true -> {
                       Firebase.messaging.unsubscribeFromTopic(trackerString).await()
                       viewModel.removeTopic(trackerString)
-                      e { "You have unsubscribed from this match" }
+                      i { "You have unsubscribed from $trackerString" }
                     }
                     false -> {
                       Firebase.messaging.subscribeToTopic(trackerString).await()
                       viewModel.trackTopic(trackerString)
-                      e { "You will be notified when the match starts" }
+                      i { "You will be notified when the match starts $trackerString" }
                     }
                     else -> {}
                   }
@@ -143,6 +142,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 fun MatchOverallAndEventOverview(
     detailData: MatchInfo,
     isTracked: Boolean,
+    onClick: (String) -> Unit,
     onSubButton: suspend () -> Unit
 ) {
   val scope = rememberCoroutineScope()
@@ -156,9 +156,16 @@ fun MatchOverallAndEventOverview(
           modifier = Modifier.size(width = maxWidth, height = maxHeight),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.Center) {
-        Box(modifier = Modifier.weight(0.6f).padding(8.dp).clickable { e { "Clicked T1" } }) {
+        Box(
+            modifier =
+                Modifier.weight(0.6f).padding(8.dp).clickable {
+                  detailData.teams[0].id?.let(onClick)
+                }) {
           detailData.teams[0].id?.let {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.Top) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.Top) {
               Icon(
                   Icons.Outlined.OpenInNew,
                   contentDescription = "Open match",
@@ -171,9 +178,16 @@ fun MatchOverallAndEventOverview(
               alignment = Alignment.CenterStart,
               modifier = Modifier.alpha(0.2f))
         }
-        Box(modifier = Modifier.weight(0.6f).padding(8.dp).clickable { e { "Clicked T2" } }) {
+        Box(
+            modifier =
+                Modifier.weight(0.6f).padding(8.dp).clickable {
+                  detailData.teams[1].id?.let(onClick)
+                }) {
           detailData.teams[1].id?.let {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.Top) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.Top) {
               Icon(
                   Icons.Outlined.OpenInNew,
                   contentDescription = "Open match",
