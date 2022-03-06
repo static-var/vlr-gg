@@ -20,6 +20,7 @@ class AppInstallerService : Service() {
         try {
           startActivity(confirmationIntent)
         } catch (e: Exception) {
+          e.printStackTrace()
           e { "Unable to start installation" }
         }
       }
