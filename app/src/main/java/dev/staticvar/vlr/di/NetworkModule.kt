@@ -54,5 +54,11 @@ object NetworkModule {
         }
 
         install(ContentEncoding) { gzip() }
+
+        install(HttpTimeout) {
+          requestTimeoutMillis = 15000L
+          connectTimeoutMillis = 15000L
+          socketTimeoutMillis = 15000L
+        }
       }
 }

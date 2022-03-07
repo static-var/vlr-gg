@@ -51,6 +51,9 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   fun getNews() =
       repository.getAllNews().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
+  fun getTeamDetails(id: String) =
+      repository.getTeamDetails(id).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+
   fun trackTopic(topic: String) =
       viewModelScope.launch(Dispatchers.IO) { repository.trackTopic(topic) }
 
