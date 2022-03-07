@@ -8,16 +8,17 @@ import dev.staticvar.vlr.data.dao.VlrDao
 import dev.staticvar.vlr.data.model.TopicTracker
 
 @Database(
-    entities =
-        [
-            NewsResponseItem::class,
-            MatchPreviewInfo::class,
-            MatchInfo::class,
-            TournamentPreview::class,
-            TournamentDetails::class,
-            TopicTracker::class],
-    exportSchema = false,
-    version = 4)
+  entities =
+    [
+      NewsResponseItem::class,
+      MatchPreviewInfo::class,
+      MatchInfo::class,
+      TournamentPreview::class,
+      TournamentDetails::class,
+      TopicTracker::class],
+  exportSchema = false,
+  version = 4
+)
 @TypeConverters(VlrTypeConverter::class)
 abstract class VlrDB : RoomDatabase() {
   abstract fun getVlrDao(): VlrDao

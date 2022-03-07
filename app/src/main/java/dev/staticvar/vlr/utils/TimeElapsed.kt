@@ -19,9 +19,9 @@ object TimeElapsed {
       }
       expireDuration < System.currentTimeMillis()
     }
-        ?: true.also { // Key doesn't exist, return true
-          i { "$key not in records" }
-        }
+      ?: true.also { // Key doesn't exist, return true
+        i { "$key not in records" }
+      }
   }
 
   fun reset(key: String) {

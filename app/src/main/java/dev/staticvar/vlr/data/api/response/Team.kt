@@ -9,12 +9,12 @@ import kotlinx.serialization.json.JsonNames
 @Serializable
 data class Team
 constructor(
-    @SerialName("country") @JsonNames("region") val region: String = "", // Canada
-    @SerialName("id") val id: String? = "", // 468
-    @SerialName("img")
-    @JsonNames("team")
-    val img: String = "", // https://owcdn.net/img/5f0f5c0ea3426.png
-    @SerialName("name") val name: String = "", // Renegades
-    @SerialName("score") val score: Int? = null, // 10
-    @SerialName("winner") val winner: Boolean? = null, // true
+  @SerialName("country") @JsonNames("region") val region: String = "", // Canada
+  @SerialName("id") val id: String? = "", // 468
+  @SerialName("img")
+  @JsonNames("team")
+  val img: String = "", // https://owcdn.net/img/5f0f5c0ea3426.png
+  @SerialName("name") val name: String = "", // Renegades
+  @SerialName("score") val score: Int? = null, // 10
+  @SerialName("winner") val winner: Boolean? = null, // true
 )

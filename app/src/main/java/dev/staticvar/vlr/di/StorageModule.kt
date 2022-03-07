@@ -24,15 +24,15 @@ object StorageModule {
   @Provides
   @Singleton
   fun db(application: Application, converter: VlrTypeConverter) =
-      Room.databaseBuilder(application, VlrDB::class.java, Constants.DB_NAME)
-          .fallbackToDestructiveMigration()
-          .addTypeConverter(converter)
-          .build()
+    Room.databaseBuilder(application, VlrDB::class.java, Constants.DB_NAME)
+      .fallbackToDestructiveMigration()
+      .addTypeConverter(converter)
+      .build()
 
   @Provides @Singleton fun getVlrDao(db: VlrDB) = db.getVlrDao()
 
   @Provides
   @Singleton
   fun getVlrRepository(vlrDao: VlrDao, ktorHttpClient: HttpClient) =
-      VlrRepository(vlrDao, ktorHttpClient)
+    VlrRepository(vlrDao, ktorHttpClient)
 }

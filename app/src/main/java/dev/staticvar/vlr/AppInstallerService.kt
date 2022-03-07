@@ -8,7 +8,6 @@ import android.widget.Toast
 import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.i
 
-
 class AppInstallerService : Service() {
 
   override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -27,22 +26,23 @@ class AppInstallerService : Service() {
       PackageInstaller.STATUS_SUCCESS -> {
         i { "Installation succeed" }
         filesDir
-            .listFiles()
-            ?.filter { it.name.startsWith("update") && it.name.endsWith(".apk") }
-            ?.forEach { it.delete() }
+          .listFiles()
+          ?.filter { it.name.startsWith("update") && it.name.endsWith(".apk") }
+          ?.forEach { it.delete() }
         i { "Delete APK(s)" }
       }
       else -> {
         filesDir
-            .listFiles()
-            ?.filter { it.name.startsWith("update") && it.name.endsWith(".apk") }
-            ?.forEach { it.delete() }
+          .listFiles()
+          ?.filter { it.name.startsWith("update") && it.name.endsWith(".apk") }
+          ?.forEach { it.delete() }
         i { "Delete APK(s)" }
         intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)?.let {
           e { it }
           Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
           startActivity(
-              Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+          )
         }
       }
     }

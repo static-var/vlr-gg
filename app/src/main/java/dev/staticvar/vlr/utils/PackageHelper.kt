@@ -14,7 +14,7 @@ object PackageHelper {
 
   private fun install(path: String, context: Context) {
     val intentFlags =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
     val callbackIntent = Intent(context, AppInstallerService::class.java)
     val pendingIntent = PendingIntent.getService(context, 0, callbackIntent, intentFlags)
     val packageInstaller = context.packageManager.packageInstaller

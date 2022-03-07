@@ -28,28 +28,29 @@ class VlrFirebaseNotificationService() : FirebaseMessagingService() {
     val matchId = remoteMessage.data["match_id"]?.toInt() ?: 0
 
     val taskDetailIntent =
-        Intent(
-            Intent.ACTION_VIEW,
-            "${Constants.DEEP_LINK_BASEURL}${Destination.Match.Args.ID}=${matchId}".toUri(),
-            this,
-            MainActivity::class.java)
+      Intent(
+        Intent.ACTION_VIEW,
+        "${Constants.DEEP_LINK_BASEURL}${Destination.Match.Args.ID}=${matchId}".toUri(),
+        this,
+        MainActivity::class.java
+      )
 
     val pending: PendingIntent =
-        TaskStackBuilder.create(this).run {
-          addNextIntentWithParentStack(taskDetailIntent)
-          getPendingIntent(matchId, PendingIntent.FLAG_IMMUTABLE)
-        }
+      TaskStackBuilder.create(this).run {
+        addNextIntentWithParentStack(taskDetailIntent)
+        getPendingIntent(matchId, PendingIntent.FLAG_IMMUTABLE)
+      }
 
     val channelId = getString(R.string.notification_channel_id)
     val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
     val notificationBuilder =
-        NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher_foreground)
-            .setContentTitle(title)
-            .setContentText(body)
-            .setAutoCancel(true)
-            .setSound(defaultSoundUri)
-            .setContentIntent(pending)
+      NotificationCompat.Builder(this, channelId)
+        .setSmallIcon(R.mipmap.ic_launcher_foreground)
+        .setContentTitle(title)
+        .setContentText(body)
+        .setAutoCancel(true)
+        .setSound(defaultSoundUri)
+        .setContentIntent(pending)
 
     getSystemService<NotificationManager>()?.notify(matchId, notificationBuilder.build())
   }

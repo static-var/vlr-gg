@@ -31,7 +31,7 @@ data class Pass<T>(val data: T?) : Operation<T>() {
 }
 
 data class Fail<T>(val error: String = "", val exception: Exception = NullPointerException()) :
-    Operation<T>() {
+  Operation<T>() {
 
   fun message(): String {
     return error.plus(exception)
@@ -42,7 +42,7 @@ data class Waiting<T>(val loading: Boolean = true) : Operation<T>()
 
 @Composable
 inline fun <T> Operation<T>.onPass(
-    crossinline block: @Composable Pass<T>.() -> Unit
+  crossinline block: @Composable Pass<T>.() -> Unit
 ): Operation<T> {
   if (this is Pass) block(this)
   return this
@@ -50,7 +50,7 @@ inline fun <T> Operation<T>.onPass(
 
 @Composable
 inline fun <T> Operation<T>.onFail(
-    crossinline block: @Composable Fail<T>.() -> Unit
+  crossinline block: @Composable Fail<T>.() -> Unit
 ): Operation<T> {
   if (this is Fail) block(this)
   return this
@@ -58,7 +58,7 @@ inline fun <T> Operation<T>.onFail(
 
 @Composable
 inline fun <T> Operation<T>.onWaiting(
-    crossinline block: @Composable Waiting<T>.() -> Unit
+  crossinline block: @Composable Waiting<T>.() -> Unit
 ): Operation<T> {
   if (this is Waiting) block(this)
   return this

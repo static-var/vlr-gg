@@ -29,38 +29,38 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   lateinit var action: Action
 
   fun getMatchInfo(matchUrl: String) =
-      repository
-          .getMatchInfo(matchUrl)
-          .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+    repository
+      .getMatchInfo(matchUrl)
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
   fun getTournamentDetails(matchUrl: String) =
-      repository
-          .getTournamentInfo(matchUrl)
-          .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+    repository
+      .getTournamentInfo(matchUrl)
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
   fun getTournaments() =
-      repository
-          .getTournaments()
-          .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+    repository.getTournaments().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
   fun getAllMatches() =
-      repository
-          .getAllMatchesPreview()
-          .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+    repository
+      .getAllMatchesPreview()
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
   fun getNews() =
-      repository.getAllNews().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+    repository.getAllNews().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
   fun getTeamDetails(id: String) =
-      repository.getTeamDetails(id).stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+    repository
+      .getTeamDetails(id)
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
 
   fun trackTopic(topic: String) =
-      viewModelScope.launch(Dispatchers.IO) { repository.trackTopic(topic) }
+    viewModelScope.launch(Dispatchers.IO) { repository.trackTopic(topic) }
 
   fun isTopicTracked(topic: String) = repository.isTopicTracked(topic)
 
   fun removeTopic(topic: String) =
-      viewModelScope.launch(Dispatchers.IO) { repository.removeTopic(topic) }
+    viewModelScope.launch(Dispatchers.IO) { repository.removeTopic(topic) }
 
   fun clearCache() {
     TimeElapsed.reset(Constants.KEY_UPCOMING)
@@ -70,7 +70,7 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
     TimeElapsed.reset(Constants.KEY_NEWS)
   }
 
-    fun getLatestAppVersion() = repository.getLatestAppVersion()
-    fun getApkUrl() = repository.getApkUrl()
-    fun downloadApkWithProgress(url: String) = repository.downloadApkWithProgress(url)
+  fun getLatestAppVersion() = repository.getLatestAppVersion()
+  fun getApkUrl() = repository.getApkUrl()
+  fun downloadApkWithProgress(url: String) = repository.downloadApkWithProgress(url)
 }

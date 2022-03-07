@@ -33,20 +33,21 @@ import kotlinx.coroutines.launch
 fun EventScreen(viewModel: VlrViewModel) {
 
   val allTournaments by
-      remember(viewModel) { viewModel.getTournaments() }.collectAsState(initial = Waiting())
+    remember(viewModel) { viewModel.getTournaments() }.collectAsState(initial = Waiting())
 
   Column(
-      modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally) {
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally
+  ) {
     Box(modifier = Modifier.statusBarsPadding())
 
     allTournaments
-        .onPass {
-          data?.let { list -> TournamentPreviewContainer(viewModel = viewModel, list = list) }
-        }
-        .onWaiting { LinearProgressIndicator() }
-        .onFail { Text(text = message()) }
+      .onPass {
+        data?.let { list -> TournamentPreviewContainer(viewModel = viewModel, list = list) }
+      }
+      .onWaiting { LinearProgressIndicator() }
+      .onFail { Text(text = message()) }
   }
 }
 
@@ -56,37 +57,36 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
   val scope = rememberCoroutineScope()
 
   val (ongoing, upcoming, completed) =
-      list.groupBy { it.status.startsWith("ongoing", ignoreCase = true) }.let {
-        Triple(
-            it[true].orEmpty(),
-            it[false]
-                ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
-                ?.get(true)
-                .orEmpty(),
-            it[false]
-                ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
-                ?.get(false)
-                .orEmpty())
-      }
+    list.groupBy { it.status.startsWith("ongoing", ignoreCase = true) }.let {
+      Triple(
+        it[true].orEmpty(),
+        it[false]
+          ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
+          ?.get(true)
+          .orEmpty(),
+        it[false]
+          ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
+          ?.get(false)
+          .orEmpty()
+      )
+    }
   Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
-        selectedTabIndex = pagerState.currentPage,
-        containerColor = VLRTheme.colorScheme.primaryContainer) {
+      selectedTabIndex = pagerState.currentPage,
+      containerColor = VLRTheme.colorScheme.primaryContainer
+    ) {
       Tab(
-          selected = pagerState.currentPage == 0,
-          onClick = { scope.launch { pagerState.scrollToPage(0) } }) {
-        Text(text = "Ongoing", modifier = Modifier.padding(16.dp))
-      }
+        selected = pagerState.currentPage == 0,
+        onClick = { scope.launch { pagerState.scrollToPage(0) } }
+      ) { Text(text = "Ongoing", modifier = Modifier.padding(16.dp)) }
       Tab(
-          selected = pagerState.currentPage == 1,
-          onClick = { scope.launch { pagerState.scrollToPage(1) } }) {
-        Text(text = "Upcoming", modifier = Modifier.padding(16.dp))
-      }
+        selected = pagerState.currentPage == 1,
+        onClick = { scope.launch { pagerState.scrollToPage(1) } }
+      ) { Text(text = "Upcoming", modifier = Modifier.padding(16.dp)) }
       Tab(
-          selected = pagerState.currentPage == 2,
-          onClick = { scope.launch { pagerState.scrollToPage(2) } }) {
-        Text(text = "Completed", modifier = Modifier.padding(16.dp))
-      }
+        selected = pagerState.currentPage == 2,
+        onClick = { scope.launch { pagerState.scrollToPage(2) } }
+      ) { Text(text = "Completed", modifier = Modifier.padding(16.dp)) }
     }
     HorizontalPager(count = 3, state = pagerState, modifier = Modifier.fillMaxSize()) { tabPosition
       ->
@@ -132,32 +132,36 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
 @Composable
 fun TournamentPreview(tournamentPreview: TournamentPreview, action: Action) {
   Card(
-      modifier =
-          Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp).clickable {
-            action.event(tournamentPreview.id)
-          },
-      shape = RoundedCornerShape(16.dp),
-      contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-      containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)) {
+    modifier =
+      Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp).clickable {
+        action.event(tournamentPreview.id)
+      },
+    shape = RoundedCornerShape(16.dp),
+    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
+  ) {
     Column(modifier = Modifier.padding(8.dp)) {
       Text(
-          text = tournamentPreview.title,
-          style = VLRTheme.typography.titleSmall,
-          modifier = Modifier.padding(4.dp),
-          maxLines = 2,
-          overflow = TextOverflow.Ellipsis)
+        text = tournamentPreview.title,
+        style = VLRTheme.typography.titleSmall,
+        modifier = Modifier.padding(4.dp),
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis
+      )
 
       Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            Icons.Outlined.LocationOn,
-            contentDescription = "Location",
-            modifier = Modifier.size(16.dp))
+          Icons.Outlined.LocationOn,
+          contentDescription = "Location",
+          modifier = Modifier.size(16.dp)
+        )
         Text(text = tournamentPreview.location.uppercase(), style = VLRTheme.typography.labelMedium)
         Text(
-            text = tournamentPreview.prize,
-            modifier = Modifier.padding(4.dp).weight(1f),
-            textAlign = TextAlign.Center,
-            style = VLRTheme.typography.labelMedium)
+          text = tournamentPreview.prize,
+          modifier = Modifier.padding(4.dp).weight(1f),
+          textAlign = TextAlign.Center,
+          style = VLRTheme.typography.labelMedium
+        )
         Icon(Icons.Outlined.DateRange, contentDescription = "Date", modifier = Modifier.size(16.dp))
         Text(text = tournamentPreview.dates, style = VLRTheme.typography.labelMedium)
       }

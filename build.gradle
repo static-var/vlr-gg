@@ -21,6 +21,25 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.diffplug.spotless" version "6.3.0"
+}
+
+spotless {
+    kotlin {
+        ktfmt().googleStyle()
+        target("**/*.kt")
+        targetExclude("**/build/")
+    }
+    format("xml") {
+        target("**/*.xml")
+        targetExclude("**/build/", ".idea/")
+        trimTrailingWhitespace()
+        indentWithSpaces()
+        endWithNewline()
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
