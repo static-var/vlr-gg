@@ -25,21 +25,22 @@ import kotlinx.coroutines.launch
 fun MatchOverview(viewModel: VlrViewModel) {
 
   val allMatches by
-      remember(viewModel) { viewModel.getAllMatches() }.collectAsState(initial = Waiting())
+    remember(viewModel) { viewModel.getAllMatches() }.collectAsState(initial = Waiting())
 
   Column(
-      modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally) {
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally
+  ) {
     Box(modifier = Modifier.statusBarsPadding()) {
       allMatches
-          .onPass {
-            data?.let { list ->
-              MatchOverviewContainer(list = list, onClick = { id -> viewModel.action.match(id) })
-            }
+        .onPass {
+          data?.let { list ->
+            MatchOverviewContainer(list = list, onClick = { id -> viewModel.action.match(id) })
           }
-          .onWaiting { LinearProgressIndicator() }
-          .onFail { Text(text = message()) }
+        }
+        .onWaiting { LinearProgressIndicator() }
+        .onFail { Text(text = message()) }
     }
   }
 }
@@ -50,38 +51,37 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
   val scope = rememberCoroutineScope()
 
   val (ongoing, upcoming, completed) =
-      list.groupBy { it.status.startsWith("LIVE", ignoreCase = true) }.let {
-        Triple(
-            it[true].orEmpty(),
-            it[false]
-                ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
-                ?.get(true)
-                .orEmpty(),
-            it[false]
-                ?.groupBy { it.status.startsWith("completed", ignoreCase = true) }
-                ?.get(true)
-                .orEmpty())
-      }
+    list.groupBy { it.status.startsWith("LIVE", ignoreCase = true) }.let {
+      Triple(
+        it[true].orEmpty(),
+        it[false]
+          ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
+          ?.get(true)
+          .orEmpty(),
+        it[false]
+          ?.groupBy { it.status.startsWith("completed", ignoreCase = true) }
+          ?.get(true)
+          .orEmpty()
+      )
+    }
 
   Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
-        selectedTabIndex = pagerState.currentPage,
-        containerColor = VLRTheme.colorScheme.primaryContainer) {
+      selectedTabIndex = pagerState.currentPage,
+      containerColor = VLRTheme.colorScheme.primaryContainer
+    ) {
       Tab(
-          selected = pagerState.currentPage == 0,
-          onClick = { scope.launch { pagerState.scrollToPage(0) } }) {
-        Text(text = "Ongoing", modifier = Modifier.padding(16.dp))
-      }
+        selected = pagerState.currentPage == 0,
+        onClick = { scope.launch { pagerState.scrollToPage(0) } }
+      ) { Text(text = "Ongoing", modifier = Modifier.padding(16.dp)) }
       Tab(
-          selected = pagerState.currentPage == 1,
-          onClick = { scope.launch { pagerState.scrollToPage(1) } }) {
-        Text(text = "Upcoming", modifier = Modifier.padding(16.dp))
-      }
+        selected = pagerState.currentPage == 1,
+        onClick = { scope.launch { pagerState.scrollToPage(1) } }
+      ) { Text(text = "Upcoming", modifier = Modifier.padding(16.dp)) }
       Tab(
-          selected = pagerState.currentPage == 2,
-          onClick = { scope.launch { pagerState.scrollToPage(2) } }) {
-        Text(text = "Completed", modifier = Modifier.padding(16.dp))
-      }
+        selected = pagerState.currentPage == 2,
+        onClick = { scope.launch { pagerState.scrollToPage(2) } }
+      ) { Text(text = "Completed", modifier = Modifier.padding(16.dp)) }
     }
 
     HorizontalPager(count = 3, state = pagerState, modifier = Modifier.fillMaxSize()) { tabPosition
@@ -128,55 +128,62 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
 @Composable
 fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -> Unit) {
   Card(
-      modifier =
-          Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp).clickable {
-            onClick(matchPreviewInfo.id)
-          },
-      shape = RoundedCornerShape(16.dp),
-      contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-      containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)) {
+    modifier =
+      Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp).clickable {
+        onClick(matchPreviewInfo.id)
+      },
+    shape = RoundedCornerShape(16.dp),
+    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
+  ) {
     Column(modifier = Modifier.padding(8.dp)) {
       Text(
-          text =
-              when (matchPreviewInfo.status) {
-                "LIVE" -> "LIVE"
-                "Upcoming" -> matchPreviewInfo.time?.timeDiff?.prependIndent("in ") ?: ""
-                else -> matchPreviewInfo.time?.timeDiff ?: ""
-              },
-          modifier = Modifier.fillMaxWidth(),
-          textAlign = TextAlign.Center,
-          style = VLRTheme.typography.displaySmall)
+        text =
+          when (matchPreviewInfo.status) {
+            "LIVE" -> "LIVE"
+            "Upcoming" -> matchPreviewInfo.time?.timeDiff?.prependIndent("in ") ?: ""
+            else -> matchPreviewInfo.time?.timeDiff ?: ""
+          },
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+        style = VLRTheme.typography.displaySmall
+      )
       Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = matchPreviewInfo.team1.name,
-            style = VLRTheme.typography.titleSmall,
-            modifier = Modifier.weight(1f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis)
+          text = matchPreviewInfo.team1.name,
+          style = VLRTheme.typography.titleSmall,
+          modifier = Modifier.weight(1f),
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis
+        )
         Text(
-            text = matchPreviewInfo.team1.score?.toString() ?: "-",
-            style = VLRTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis)
+          text = matchPreviewInfo.team1.score?.toString() ?: "-",
+          style = VLRTheme.typography.titleSmall,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis
+        )
       }
       Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = matchPreviewInfo.team2.name,
-            style = VLRTheme.typography.titleSmall,
-            modifier = Modifier.weight(1f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis)
+          text = matchPreviewInfo.team2.name,
+          style = VLRTheme.typography.titleSmall,
+          modifier = Modifier.weight(1f),
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis
+        )
         Text(
-            text = matchPreviewInfo.team2.score?.toString() ?: "-",
-            style = VLRTheme.typography.titleSmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis)
+          text = matchPreviewInfo.team2.score?.toString() ?: "-",
+          style = VLRTheme.typography.titleSmall,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis
+        )
       }
       Text(
-          text = matchPreviewInfo.event + " - " + matchPreviewInfo.series,
-          modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-          textAlign = TextAlign.Center,
-          style = VLRTheme.typography.labelSmall)
+        text = matchPreviewInfo.event + " - " + matchPreviewInfo.series,
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        textAlign = TextAlign.Center,
+        style = VLRTheme.typography.labelSmall
+      )
     }
   }
 }

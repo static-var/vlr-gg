@@ -27,9 +27,9 @@ class ScoreWidgetReceiver : GlanceAppWidgetReceiver() {
     get() = ScoreWidget(repository)
 
   override fun onUpdate(
-      context: Context,
-      appWidgetManager: AppWidgetManager,
-      appWidgetIds: IntArray
+    context: Context,
+    appWidgetManager: AppWidgetManager,
+    appWidgetIds: IntArray
   ) {
     super.onUpdate(context, appWidgetManager, appWidgetIds)
     e { "onUpdate" }

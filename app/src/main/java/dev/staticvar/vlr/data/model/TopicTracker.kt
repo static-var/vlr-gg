@@ -4,9 +4,4 @@ import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Keep
-@Entity
-data class TopicTracker(
-    @PrimaryKey
-    val topic: String = ""
-)
+@Keep @Entity data class TopicTracker(@PrimaryKey val topic: String = "")

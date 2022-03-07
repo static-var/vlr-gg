@@ -10,9 +10,9 @@ object Logger {
 
   private val tag: String
     get() =
-        Throwable().stackTrace.first { it.className !in ignoreTags }.let { stackTraceElement ->
-          "(${stackTraceElement.fileName}:${stackTraceElement.lineNumber})${stackTraceElement.methodName}()"
-        }
+      Throwable().stackTrace.first { it.className !in ignoreTags }.let { stackTraceElement ->
+        "(${stackTraceElement.fileName}:${stackTraceElement.lineNumber})${stackTraceElement.methodName}()"
+      }
 
   fun init(logging: Boolean) {
     LOGGING_ENABLED = logging

@@ -28,75 +28,85 @@ class ScoreWidget(private val repository: VlrRepository) : GlanceAppWidget() {
     var list by remember { mutableStateOf(repository.getFiveUpcomingMatches()) }
 
     if (list.isEmpty())
-        Column(
-            modifier =
-                GlanceModifier.fillMaxSize()
-                    .background(MaterialTheme.colorScheme.primary.copy(0.2f))
-                    .cornerRadius(16.dp)) {
-          Text(text = "Unable to find matches, open the app to fetch data.")
-        }
+      Column(
+        modifier =
+          GlanceModifier.fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary.copy(0.2f))
+            .cornerRadius(16.dp)
+      ) { Text(text = "Unable to find matches, open the app to fetch data.") }
     else {
       Column(
-          modifier =
-              GlanceModifier.padding(8.dp)
-                  .fillMaxSize()
-                  .background(MaterialTheme.colorScheme.primary)
-                  .cornerRadius(16.dp)) {
+        modifier =
+          GlanceModifier.padding(8.dp)
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary)
+            .cornerRadius(16.dp)
+      ) {
         LazyColumn(GlanceModifier.fillMaxWidth()) {
           items(list) {
             Column(
-                modifier =
-                    GlanceModifier.fillMaxWidth()
-                        .absolutePadding(top = 8.dp, bottom = 4.dp)
-                        .cornerRadius(16.dp),
+              modifier =
+                GlanceModifier.fillMaxWidth()
+                  .absolutePadding(top = 8.dp, bottom = 4.dp)
+                  .cornerRadius(16.dp),
             ) {
               Row(modifier = GlanceModifier.padding(4.dp).fillMaxWidth()) {
                 Text(
-                    text = if (it.status == "LIVE") "LIVE" else it.time ?: "",
-                    modifier = GlanceModifier.fillMaxWidth(),
-                    style =
-                        TextStyle(
-                            textAlign = TextAlign.End,
-                            color = ColorProvider(MaterialTheme.colorScheme.onPrimary),
-                            fontSize = 12.sp))
+                  text = if (it.status == "LIVE") "LIVE" else it.time ?: "",
+                  modifier = GlanceModifier.fillMaxWidth(),
+                  style =
+                    TextStyle(
+                      textAlign = TextAlign.End,
+                      color = ColorProvider(MaterialTheme.colorScheme.onPrimary),
+                      fontSize = 12.sp
+                    )
+                )
               }
               Row(
-                  GlanceModifier.fillMaxWidth(),
-                  verticalAlignment = Alignment.Vertical.CenterVertically,
-                  horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
+                GlanceModifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Vertical.CenterVertically,
+                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
               ) {
                 Text(
-                    text = it.team1.name,
-                    style =
-                        TextStyle(
-                            ColorProvider(MaterialTheme.colorScheme.onPrimary),
-                            textAlign = TextAlign.Start,
-                            fontWeight = FontWeight.Bold),
-                    modifier = GlanceModifier.defaultWeight().padding(2.dp),
-                    maxLines = 1)
+                  text = it.team1.name,
+                  style =
+                    TextStyle(
+                      ColorProvider(MaterialTheme.colorScheme.onPrimary),
+                      textAlign = TextAlign.Start,
+                      fontWeight = FontWeight.Bold
+                    ),
+                  modifier = GlanceModifier.defaultWeight().padding(2.dp),
+                  maxLines = 1
+                )
                 Text(
-                    text = it.team1.score?.toString() ?: "",
-                    style =
-                        TextStyle(
-                            ColorProvider(MaterialTheme.colorScheme.onPrimary),
-                            textAlign = TextAlign.End),
-                    modifier = GlanceModifier.padding(2.dp))
+                  text = it.team1.score?.toString() ?: "",
+                  style =
+                    TextStyle(
+                      ColorProvider(MaterialTheme.colorScheme.onPrimary),
+                      textAlign = TextAlign.End
+                    ),
+                  modifier = GlanceModifier.padding(2.dp)
+                )
                 Text(
-                    text = it.team2.name,
-                    style =
-                        TextStyle(
-                            ColorProvider(MaterialTheme.colorScheme.onPrimary),
-                            textAlign = TextAlign.Start),
-                    modifier = GlanceModifier.padding(2.dp))
+                  text = it.team2.name,
+                  style =
+                    TextStyle(
+                      ColorProvider(MaterialTheme.colorScheme.onPrimary),
+                      textAlign = TextAlign.Start
+                    ),
+                  modifier = GlanceModifier.padding(2.dp)
+                )
                 Text(
-                    text = it.team2.score?.toString() ?: "",
-                    style =
-                        TextStyle(
-                            ColorProvider(MaterialTheme.colorScheme.onPrimary),
-                            textAlign = TextAlign.End,
-                            fontWeight = FontWeight.Bold),
-                    modifier = GlanceModifier.defaultWeight().padding(2.dp),
-                    maxLines = 1)
+                  text = it.team2.score?.toString() ?: "",
+                  style =
+                    TextStyle(
+                      ColorProvider(MaterialTheme.colorScheme.onPrimary),
+                      textAlign = TextAlign.End,
+                      fontWeight = FontWeight.Bold
+                    ),
+                  modifier = GlanceModifier.defaultWeight().padding(2.dp),
+                  maxLines = 1
+                )
               }
             }
           }

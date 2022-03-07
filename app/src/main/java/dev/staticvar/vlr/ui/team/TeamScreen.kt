@@ -22,12 +22,13 @@ import dev.staticvar.vlr.utils.onWaiting
 @Composable
 fun TeamScreen(viewModel: VlrViewModel, id: String) {
   val teamDetails by
-      remember(viewModel) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
+    remember(viewModel) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
 
   Column(
-      modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally) {
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally
+  ) {
     Box(modifier = Modifier.statusBarsPadding())
 
     teamDetails.onPass {}.onWaiting { LinearProgressIndicator() }.onFail { Text(text = message()) }

@@ -43,222 +43,244 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val isTracked by remember { viewModel.isTopicTracked(trackerString) }.collectAsState(null)
 
   Column(
-      modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally) {
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.CenterHorizontally
+  ) {
     Box(modifier = Modifier.statusBarsPadding())
 
     details
-        .onPass {
-          e { data.toString() }
-          data?.let { matchInfo ->
-            var position by remember { mutableStateOf(0) }
+      .onPass {
+        e { data.toString() }
+        data?.let { matchInfo ->
+          var position by remember { mutableStateOf(0) }
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-              item {
-                MatchOverallAndEventOverview(
-                    detailData = matchInfo, isTracked = isTracked ?: false, viewModel.action.team) {
-                  when (isTracked) {
-                    true -> {
-                      Firebase.messaging.unsubscribeFromTopic(trackerString).await()
-                      viewModel.removeTopic(trackerString)
-                      i { "You have unsubscribed from $trackerString" }
-                    }
-                    false -> {
-                      Firebase.messaging.subscribeToTopic(trackerString).await()
-                      viewModel.trackTopic(trackerString)
-                      i { "You will be notified when the match starts $trackerString" }
-                    }
-                    else -> {}
+          LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item {
+              MatchOverallAndEventOverview(
+                detailData = matchInfo,
+                isTracked = isTracked ?: false,
+                viewModel.action.team
+              ) {
+                when (isTracked) {
+                  true -> {
+                    Firebase.messaging.unsubscribeFromTopic(trackerString).await()
+                    viewModel.removeTopic(trackerString)
+                    i { "You have unsubscribed from $trackerString" }
                   }
+                  false -> {
+                    Firebase.messaging.subscribeToTopic(trackerString).await()
+                    viewModel.trackTopic(trackerString)
+                    i { "You will be notified when the match starts $trackerString" }
+                  }
+                  else -> {}
                 }
               }
-              item { VideoReferenceUi(videos = matchInfo.videos) }
-              if (matchInfo.matchData.isNotEmpty()) {
-                val maps = matchInfo.matchData.filter { it.map != "All Maps" }
-                item { ShowMatchStatsTab(mapData = maps, position) { position = it } }
-                if (maps[position].map != "TBD") {
-                  item { ScoreBox(mapData = maps[position]) }
-                  item { StatsHeaderBox() }
-                  val teamGroupedPlayers = maps[position].members.groupBy { it.team }
-                  teamGroupedPlayers.keys.forEach {
-                    item {
-                      Text(
-                          text = it,
-                          modifier =
-                              Modifier.fillMaxWidth()
-                                  .padding(horizontal = 8.dp)
-                                  .background(
-                                      VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
-                          textAlign = TextAlign.Center)
-                    }
-                    teamGroupedPlayers[it]?.let { list ->
-                      items(list) { member -> StatsRow(member = member) }
-                    }
-                  }
-                } else {
+            }
+            item { VideoReferenceUi(videos = matchInfo.videos) }
+            if (matchInfo.matchData.isNotEmpty()) {
+              val maps = matchInfo.matchData.filter { it.map != "All Maps" }
+              item { ShowMatchStatsTab(mapData = maps, position) { position = it } }
+              if (maps[position].map != "TBD") {
+                item { ScoreBox(mapData = maps[position]) }
+                item { StatsHeaderBox() }
+                val teamGroupedPlayers = maps[position].members.groupBy { it.team }
+                teamGroupedPlayers.keys.forEach {
                   item {
                     Text(
-                        text = "Map is yet to be played or is under progress.",
-                        modifier =
-                            Modifier.fillMaxWidth()
-                                .padding(horizontal = 8.dp)
-                                .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA))
-                                .padding(32.dp),
-                        textAlign = TextAlign.Center,
-                        style = VLRTheme.typography.bodyLarge)
+                      text = it,
+                      modifier =
+                        Modifier.fillMaxWidth()
+                          .padding(horizontal = 8.dp)
+                          .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
+                      textAlign = TextAlign.Center
+                    )
+                  }
+                  teamGroupedPlayers[it]?.let { list ->
+                    items(list) { member -> StatsRow(member = member) }
                   }
                 }
-
-                if (matchInfo.head2head.isNotEmpty()) {
-                  item {
-                    Card(
-                        Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 8.dp),
-                        contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-                        containerColor = VLRTheme.colorScheme.primaryContainer) {
-                      Text(
-                          text = "Previous Encounters",
-                          modifier = Modifier.fillMaxWidth().padding(12.dp),
-                          textAlign = TextAlign.Center,
-                          style = VLRTheme.typography.titleSmall)
-                    }
-                  }
-                  items(matchInfo.head2head) {
-                    PreviousEncounter(
-                        previousEncounter = it, onClick = { viewModel.action.match(it) })
-                  }
+              } else {
+                item {
+                  Text(
+                    text = "Map is yet to be played or is under progress.",
+                    modifier =
+                      Modifier.fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                        .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA))
+                        .padding(32.dp),
+                    textAlign = TextAlign.Center,
+                    style = VLRTheme.typography.bodyLarge
+                  )
                 }
               }
-              item { Spacer(modifier = Modifier.navigationBarsPadding()) }
+
+              if (matchInfo.head2head.isNotEmpty()) {
+                item {
+                  Card(
+                    Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 8.dp),
+                    contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+                    containerColor = VLRTheme.colorScheme.primaryContainer
+                  ) {
+                    Text(
+                      text = "Previous Encounters",
+                      modifier = Modifier.fillMaxWidth().padding(12.dp),
+                      textAlign = TextAlign.Center,
+                      style = VLRTheme.typography.titleSmall
+                    )
+                  }
+                }
+                items(matchInfo.head2head) {
+                  PreviousEncounter(
+                    previousEncounter = it,
+                    onClick = { viewModel.action.match(it) }
+                  )
+                }
+              }
             }
+            item { Spacer(modifier = Modifier.navigationBarsPadding()) }
           }
         }
-        .onWaiting { LinearProgressIndicator() }
-        .onFail { Text(text = message()) }
+      }
+      .onWaiting { LinearProgressIndicator() }
+      .onFail { Text(text = message()) }
   }
 }
 
 @Composable
 fun MatchOverallAndEventOverview(
-    detailData: MatchInfo,
-    isTracked: Boolean,
-    onClick: (String) -> Unit,
-    onSubButton: suspend () -> Unit
+  detailData: MatchInfo,
+  isTracked: Boolean,
+  onClick: (String) -> Unit,
+  onSubButton: suspend () -> Unit
 ) {
   val scope = rememberCoroutineScope()
   OutlinedCard(
-      Modifier.fillMaxWidth().padding(8.dp).aspectRatio(1.6f),
-      contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-      containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
-      border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)) {
+    Modifier.fillMaxWidth().padding(8.dp).aspectRatio(1.6f),
+    contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+    containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
+    border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
+  ) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
       Row(
-          modifier = Modifier.size(width = maxWidth, height = maxHeight),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.Center) {
+        modifier = Modifier.size(width = maxWidth, height = maxHeight),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+      ) {
         Box(
-            modifier =
-                Modifier.weight(0.6f).padding(8.dp).clickable {
-                  detailData.teams[0].id?.let(onClick)
-                }) {
+          modifier =
+            Modifier.weight(0.6f).padding(8.dp).clickable { detailData.teams[0].id?.let(onClick) }
+        ) {
           detailData.teams[0].id?.let {
             Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.Top) {
+              Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.End,
+              verticalAlignment = Alignment.Top
+            ) {
               Icon(
-                  Icons.Outlined.OpenInNew,
-                  contentDescription = "Open match",
-                  modifier = Modifier.size(24.dp).padding(2.dp))
+                Icons.Outlined.OpenInNew,
+                contentDescription = "Open match",
+                modifier = Modifier.size(24.dp).padding(2.dp)
+              )
             }
           }
           GlideImage(
-              imageModel = detailData.teams[0].img,
-              contentScale = ContentScale.Fit,
-              alignment = Alignment.CenterStart,
-              modifier = Modifier.alpha(0.2f))
+            imageModel = detailData.teams[0].img,
+            contentScale = ContentScale.Fit,
+            alignment = Alignment.CenterStart,
+            modifier = Modifier.alpha(0.2f)
+          )
         }
         Box(
-            modifier =
-                Modifier.weight(0.6f).padding(8.dp).clickable {
-                  detailData.teams[1].id?.let(onClick)
-                }) {
+          modifier =
+            Modifier.weight(0.6f).padding(8.dp).clickable { detailData.teams[1].id?.let(onClick) }
+        ) {
           detailData.teams[1].id?.let {
             Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.Top) {
+              Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.End,
+              verticalAlignment = Alignment.Top
+            ) {
               Icon(
-                  Icons.Outlined.OpenInNew,
-                  contentDescription = "Open match",
-                  modifier = Modifier.size(24.dp).padding(2.dp))
+                Icons.Outlined.OpenInNew,
+                contentDescription = "Open match",
+                modifier = Modifier.size(24.dp).padding(2.dp)
+              )
             }
           }
           GlideImage(
-              imageModel = detailData.teams[1].img,
-              contentScale = ContentScale.Fit,
-              alignment = Alignment.CenterEnd,
-              modifier = Modifier.alpha(0.2f))
+            imageModel = detailData.teams[1].img,
+            contentScale = ContentScale.Fit,
+            alignment = Alignment.CenterEnd,
+            modifier = Modifier.alpha(0.2f)
+          )
         }
       }
       Column(
-          modifier = Modifier.size(width = maxWidth, height = maxHeight).padding(8.dp),
-          horizontalAlignment = Alignment.CenterHorizontally) {
+        modifier = Modifier.size(width = maxWidth, height = maxHeight).padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           Text(
-              text = detailData.teams[0].name,
-              style = VLRTheme.typography.titleSmall,
-              textAlign = TextAlign.Center,
-              modifier = Modifier.padding(12.dp).weight(1f))
+            text = detailData.teams[0].name,
+            style = VLRTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(12.dp).weight(1f)
+          )
           Text(
-              text = detailData.teams[1].name,
-              style = VLRTheme.typography.titleSmall,
-              textAlign = TextAlign.Center,
-              modifier = Modifier.padding(12.dp).weight(1f))
+            text = detailData.teams[1].name,
+            style = VLRTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(12.dp).weight(1f)
+          )
         }
         Row(Modifier.fillMaxWidth().weight(1f), verticalAlignment = Alignment.CenterVertically) {
           Text(
-              text = detailData.teams[0].score?.toString() ?: "-",
-              style = VLRTheme.typography.titleSmall,
-              textAlign = TextAlign.Center,
-              modifier = Modifier.padding(12.dp).weight(1f))
+            text = detailData.teams[0].score?.toString() ?: "-",
+            style = VLRTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(12.dp).weight(1f)
+          )
           Text(
-              text = detailData.teams[1].score?.toString() ?: "-",
-              style = VLRTheme.typography.titleSmall,
-              textAlign = TextAlign.Center,
-              modifier = Modifier.padding(12.dp).weight(1f))
+            text = detailData.teams[1].score?.toString() ?: "-",
+            style = VLRTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(12.dp).weight(1f)
+          )
         }
         Text(
-            text = detailData.bans.joinToString { it },
-            style = VLRTheme.typography.labelMedium,
-            modifier = Modifier.padding(8.dp),
-            textAlign = TextAlign.Center)
+          text = detailData.bans.joinToString { it },
+          style = VLRTheme.typography.labelMedium,
+          modifier = Modifier.padding(8.dp),
+          textAlign = TextAlign.Center
+        )
         var dialogOpen by remember { mutableStateOf(false) }
         Row(
-            Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+          Modifier.fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
           OutlinedButton(
-              onClick = { dialogOpen = true },
-              modifier = Modifier.weight(1f),
-              border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)) {
-            Text(text = "More info")
-          }
+            onClick = { dialogOpen = true },
+            modifier = Modifier.weight(1f),
+            border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
+          ) { Text(text = "More info") }
           detailData.event.date?.let {
             if (!it.hasElapsed) {
               var processingTopicSubscription by remember { mutableStateOf(false) }
               OutlinedButton(
-                  onClick = {
-                    if (!processingTopicSubscription) {
-                      processingTopicSubscription = true
-                      scope.launch(Dispatchers.IO) {
-                        onSubButton()
-                        processingTopicSubscription = false
-                      }
+                onClick = {
+                  if (!processingTopicSubscription) {
+                    processingTopicSubscription = true
+                    scope.launch(Dispatchers.IO) {
+                      onSubButton()
+                      processingTopicSubscription = false
                     }
-                  },
-                  modifier = Modifier.weight(1f),
-                  border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)) {
+                  }
+                },
+                modifier = Modifier.weight(1f),
+                border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
+              ) {
                 if (processingTopicSubscription) {
                   LinearProgressIndicator()
                 } else if (isTracked) Text(text = "Unsubscribe") else Text(text = "Get Notified")
@@ -268,7 +290,10 @@ fun MatchOverallAndEventOverview(
         }
 
         MatchMoreDetailsDialog(
-            detailData = detailData, open = dialogOpen, onDismiss = { dialogOpen = it })
+          detailData = detailData,
+          open = dialogOpen,
+          onDismiss = { dialogOpen = it }
+        )
       }
     }
   }
@@ -276,15 +301,15 @@ fun MatchOverallAndEventOverview(
 
 @Composable
 fun ShowMatchStatsTab(
-    mapData: List<MatchInfo.MatchDetailData>,
-    tabIndex: Int,
-    onTabChange: (Int) -> Unit
+  mapData: List<MatchInfo.MatchDetailData>,
+  tabIndex: Int,
+  onTabChange: (Int) -> Unit
 ) {
   ScrollableTabRow(
-      selectedTabIndex = tabIndex,
-      containerColor = VLRTheme.colorScheme.primaryContainer,
-      modifier =
-          Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp))) {
+    selectedTabIndex = tabIndex,
+    containerColor = VLRTheme.colorScheme.primaryContainer,
+    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp))
+  ) {
     mapData.forEachIndexed { index, matchDetailData ->
       Tab(selected = index == tabIndex, onClick = { onTabChange(index) }) {
         Text(text = matchDetailData.map, modifier = Modifier.padding(16.dp))
@@ -296,36 +321,42 @@ fun ShowMatchStatsTab(
 @Composable
 fun ScoreBox(mapData: MatchInfo.MatchDetailData) {
   Column(
-      modifier =
-          Modifier.fillMaxWidth()
-              .padding(horizontal = 8.dp, vertical = 4.dp)
-              .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
+    modifier =
+      Modifier.fillMaxWidth()
+        .padding(horizontal = 8.dp, vertical = 4.dp)
+        .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
   ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(2.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically) {
+      modifier = Modifier.fillMaxWidth().padding(2.dp),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
       Text(
-          text = mapData.teams[0].name,
-          modifier = Modifier.weight(1f),
-          textAlign = TextAlign.Center)
+        text = mapData.teams[0].name,
+        modifier = Modifier.weight(1f),
+        textAlign = TextAlign.Center
+      )
       Text(
-          text = mapData.teams[1].name,
-          modifier = Modifier.weight(1f),
-          textAlign = TextAlign.Center)
+        text = mapData.teams[1].name,
+        modifier = Modifier.weight(1f),
+        textAlign = TextAlign.Center
+      )
     }
     Row(
-        modifier = Modifier.fillMaxWidth().padding(2.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically) {
+      modifier = Modifier.fillMaxWidth().padding(2.dp),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
       Text(
-          text = mapData.teams[0].score.toString(),
-          modifier = Modifier.weight(1f),
-          textAlign = TextAlign.Center)
+        text = mapData.teams[0].score.toString(),
+        modifier = Modifier.weight(1f),
+        textAlign = TextAlign.Center
+      )
       Text(
-          text = mapData.teams[1].score.toString(),
-          modifier = Modifier.weight(1f),
-          textAlign = TextAlign.Center)
+        text = mapData.teams[1].score.toString(),
+        modifier = Modifier.weight(1f),
+        textAlign = TextAlign.Center
+      )
     }
   }
 }
@@ -333,101 +364,119 @@ fun ScoreBox(mapData: MatchInfo.MatchDetailData) {
 @Composable
 fun StatsHeaderBox() {
   Row(
-      modifier =
-          Modifier.fillMaxWidth()
-              .padding(horizontal = 8.dp)
-              .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA))) {
+    modifier =
+      Modifier.fillMaxWidth()
+        .padding(horizontal = 8.dp)
+        .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA))
+  ) {
     Text(
-        text = "Agent",
-        modifier = Modifier.weight(AGENT_IMG).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = "Agent",
+      modifier = Modifier.weight(AGENT_IMG).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = "Player",
-        modifier = Modifier.weight(NAME).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = "Player",
+      modifier = Modifier.weight(NAME).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = "ACS",
-        modifier = Modifier.weight(ACS).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = "ACS",
+      modifier = Modifier.weight(ACS).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = "ADR",
-        modifier = Modifier.weight(ADR).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = "ADR",
+      modifier = Modifier.weight(ADR).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = "K",
-        modifier = Modifier.weight(KILLS).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = "K",
+      modifier = Modifier.weight(KILLS).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = "D",
-        modifier = Modifier.weight(DEATHS).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = "D",
+      modifier = Modifier.weight(DEATHS).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = "A",
-        modifier = Modifier.weight(ASSISTS).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = "A",
+      modifier = Modifier.weight(ASSISTS).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = "HS%",
-        modifier = Modifier.weight(HSP).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = "HS%",
+      modifier = Modifier.weight(HSP).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
   }
 }
 
 @Composable
 fun StatsRow(member: MatchInfo.MatchDetailData.Member) {
   Row(
-      modifier =
-          Modifier.fillMaxWidth()
-              .padding(horizontal = 8.dp, vertical = 2.dp)
-              .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
-      verticalAlignment = Alignment.CenterVertically) {
+    modifier =
+      Modifier.fillMaxWidth()
+        .padding(horizontal = 8.dp, vertical = 2.dp)
+        .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
     GlideImage(
-        imageModel = member.agents.getOrNull(0)?.img,
-        modifier = Modifier.weight(AGENT_IMG).padding(horizontal = 1.dp),
-        alignment = Alignment.Center,
-        contentScale = ContentScale.Fit)
+      imageModel = member.agents.getOrNull(0)?.img,
+      modifier = Modifier.weight(AGENT_IMG).padding(horizontal = 1.dp),
+      alignment = Alignment.Center,
+      contentScale = ContentScale.Fit
+    )
     Text(
-        text = member.name,
-        modifier = Modifier.weight(NAME).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Start)
+      text = member.name,
+      modifier = Modifier.weight(NAME).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Start
+    )
     Text(
-        text = member.acs.toString(),
-        modifier = Modifier.weight(ACS).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = member.acs.toString(),
+      modifier = Modifier.weight(ACS).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = member.adr.toString(),
-        modifier = Modifier.weight(ADR).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = member.adr.toString(),
+      modifier = Modifier.weight(ADR).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = member.kills.toString(),
-        modifier = Modifier.weight(KILLS).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = member.kills.toString(),
+      modifier = Modifier.weight(KILLS).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = member.deaths.toString(),
-        modifier = Modifier.weight(DEATHS).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = member.deaths.toString(),
+      modifier = Modifier.weight(DEATHS).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = member.assists.toString(),
-        modifier = Modifier.weight(ASSISTS).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = member.assists.toString(),
+      modifier = Modifier.weight(ASSISTS).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
     Text(
-        text = member.hsPercent.toString(),
-        modifier = Modifier.weight(HSP).padding(horizontal = 1.dp),
-        style = VLRTheme.typography.bodySmall,
-        textAlign = TextAlign.Center)
+      text = member.hsPercent.toString(),
+      modifier = Modifier.weight(HSP).padding(horizontal = 1.dp),
+      style = VLRTheme.typography.bodySmall,
+      textAlign = TextAlign.Center
+    )
   }
 }
 
@@ -447,20 +496,22 @@ fun VideoReferenceUi(videos: MatchInfo.Videos) {
   if (videos.streams.isEmpty() && videos.vods.isEmpty()) return
 
   OutlinedCard(
-      Modifier.fillMaxWidth().padding(8.dp),
-      contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-      containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
-      border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)) {
+    Modifier.fillMaxWidth().padding(8.dp),
+    contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+    containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
+    border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
+  ) {
     if (videos.streams.isNotEmpty()) {
       Text(text = "Stream", modifier = Modifier.fillMaxWidth().padding(8.dp))
       LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
         items(videos.streams) { stream ->
           FilledTonalButton(
-              onClick = {
-                intent.data = Uri.parse(stream.url)
-                context.startActivity(intent)
-              },
-              modifier = Modifier.padding(horizontal = 4.dp)) { Text(text = stream.name) }
+            onClick = {
+              intent.data = Uri.parse(stream.url)
+              context.startActivity(intent)
+            },
+            modifier = Modifier.padding(horizontal = 4.dp)
+          ) { Text(text = stream.name) }
         }
       }
     }
@@ -470,11 +521,12 @@ fun VideoReferenceUi(videos: MatchInfo.Videos) {
       LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
         items(videos.vods) { stream ->
           FilledTonalButton(
-              onClick = {
-                intent.data = Uri.parse(stream.url)
-                context.startActivity(intent)
-              },
-              modifier = Modifier.padding(horizontal = 4.dp)) { Text(text = stream.name) }
+            onClick = {
+              intent.data = Uri.parse(stream.url)
+              context.startActivity(intent)
+            },
+            modifier = Modifier.padding(horizontal = 4.dp)
+          ) { Text(text = stream.name) }
         }
       }
     }
@@ -484,80 +536,91 @@ fun VideoReferenceUi(videos: MatchInfo.Videos) {
 @Composable
 fun MatchMoreDetailsDialog(detailData: MatchInfo, open: Boolean, onDismiss: (Boolean) -> Unit) {
   if (open)
-      AlertDialog(
-          onDismissRequest = { onDismiss(false) },
-          title = {
+    AlertDialog(
+      onDismissRequest = { onDismiss(false) },
+      title = {
+        Text(text = "Event Info", modifier = Modifier.padding(8.dp), textAlign = TextAlign.Center)
+      },
+      text = {
+        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
+          detailData.event.patch?.let {
             Text(
-                text = "Event Info",
-                modifier = Modifier.padding(8.dp),
-                textAlign = TextAlign.Center)
-          },
-          text = {
-            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
-              detailData.event.patch?.let {
-                Text(
-                    text = it,
-                    modifier = Modifier.padding(4.dp).fillMaxWidth(),
-                    textAlign = TextAlign.Center)
-              }
-              Text(
-                  text = detailData.event.date ?: "",
-                  modifier = Modifier.padding(8.dp).fillMaxWidth(),
-                  textAlign = TextAlign.Center)
-              Text(
-                  text = detailData.event.stage,
-                  modifier = Modifier.padding(4.dp).fillMaxWidth(),
-                  textAlign = TextAlign.Center)
-              Text(
-                  text = detailData.event.series,
-                  modifier = Modifier.padding(4.dp).fillMaxWidth(),
-                  textAlign = TextAlign.Center)
-            }
-          },
-          confirmButton = {})
+              text = it,
+              modifier = Modifier.padding(4.dp).fillMaxWidth(),
+              textAlign = TextAlign.Center
+            )
+          }
+          Text(
+            text = detailData.event.date ?: "",
+            modifier = Modifier.padding(8.dp).fillMaxWidth(),
+            textAlign = TextAlign.Center
+          )
+          Text(
+            text = detailData.event.stage,
+            modifier = Modifier.padding(4.dp).fillMaxWidth(),
+            textAlign = TextAlign.Center
+          )
+          Text(
+            text = detailData.event.series,
+            modifier = Modifier.padding(4.dp).fillMaxWidth(),
+            textAlign = TextAlign.Center
+          )
+        }
+      },
+      confirmButton = {}
+    )
 }
 
 @Composable
 fun PreviousEncounter(previousEncounter: MatchInfo.Head2head, onClick: (String) -> Unit) {
   Card(
-      modifier = Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(previousEncounter.id) },
-      shape = RoundedCornerShape(16.dp),
-      contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-      containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)) {
+    modifier = Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(previousEncounter.id) },
+    shape = RoundedCornerShape(16.dp),
+    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
+  ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End) {
+      modifier = Modifier.fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.End
+    ) {
       Icon(
-          Icons.Outlined.OpenInNew,
-          contentDescription = "Open match",
-          modifier = Modifier.size(24.dp).padding(2.dp))
+        Icons.Outlined.OpenInNew,
+        contentDescription = "Open match",
+        modifier = Modifier.size(24.dp).padding(2.dp)
+      )
     }
     Row(
-        modifier = Modifier.fillMaxWidth().padding(2.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center) {
+      modifier = Modifier.fillMaxWidth().padding(2.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.Center
+    ) {
       Text(
-          text = previousEncounter.teams[0].name,
-          modifier = Modifier.weight(1f).padding(2.dp),
-          textAlign = TextAlign.Center)
+        text = previousEncounter.teams[0].name,
+        modifier = Modifier.weight(1f).padding(2.dp),
+        textAlign = TextAlign.Center
+      )
       Text(
-          text = previousEncounter.teams[1].name,
-          modifier = Modifier.weight(1f).padding(2.dp),
-          textAlign = TextAlign.Center)
+        text = previousEncounter.teams[1].name,
+        modifier = Modifier.weight(1f).padding(2.dp),
+        textAlign = TextAlign.Center
+      )
     }
     Row(
-        modifier = Modifier.fillMaxWidth().padding(2.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center) {
+      modifier = Modifier.fillMaxWidth().padding(2.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.Center
+    ) {
       Text(
-          text = previousEncounter.teams[0].score?.toString() ?: "",
-          modifier = Modifier.weight(1f).padding(2.dp),
-          textAlign = TextAlign.Center)
+        text = previousEncounter.teams[0].score?.toString() ?: "",
+        modifier = Modifier.weight(1f).padding(2.dp),
+        textAlign = TextAlign.Center
+      )
       Text(
-          text = previousEncounter.teams[1].score?.toString() ?: "",
-          modifier = Modifier.weight(1f).padding(2.dp),
-          textAlign = TextAlign.Center)
+        text = previousEncounter.teams[1].score?.toString() ?: "",
+        modifier = Modifier.weight(1f).padding(2.dp),
+        textAlign = TextAlign.Center
+      )
     }
   }
 }

@@ -20,11 +20,13 @@ sealed class Destination(val route: String) {
       const val ID = "id"
     }
   }
+
   object Event : Destination("${Destinations.EVENT}/{${Args.ID}}") {
     object Args {
       const val ID = "id"
     }
   }
+
   object Team : Destination("${Destinations.TEAM}/{${Args.ID}}") {
     object Args {
       const val ID = "id"

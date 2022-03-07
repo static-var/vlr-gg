@@ -34,31 +34,31 @@ object NetworkModule {
   @Provides
   @Singleton
   fun provideKtorHttpClient(json: Json) =
-      HttpClient(Android) {
-        defaultRequest {
-          host = "vlr-scraper.akhilnarang.dev/api/v1"
-          url { protocol = URLProtocol.HTTPS }
-        }
-        install(JsonFeature) { serializer = KotlinxSerializer(json) }
+    HttpClient(Android) {
+      defaultRequest {
+        host = "vlr-scraper.akhilnarang.dev/api/v1"
+        url { protocol = URLProtocol.HTTPS }
+      }
+      install(JsonFeature) { serializer = KotlinxSerializer(json) }
 
-        install(Logging) {
-          level = LogLevel.ALL
-          logger = Logger.SIMPLE
-        }
+      install(Logging) {
+        level = LogLevel.ALL
+        logger = Logger.SIMPLE
+      }
 
-        install(DefaultRequest) {
-          headers {
-            append(HttpHeaders.AcceptEncoding, "gzip")
-            append(HttpHeaders.Authorization, BuildConfig.TOKEN)
-          }
-        }
-
-        install(ContentEncoding) { gzip() }
-
-        install(HttpTimeout) {
-          requestTimeoutMillis = 15000L
-          connectTimeoutMillis = 15000L
-          socketTimeoutMillis = 15000L
+      install(DefaultRequest) {
+        headers {
+          append(HttpHeaders.AcceptEncoding, "gzip")
+          append(HttpHeaders.Authorization, BuildConfig.TOKEN)
         }
       }
+
+      install(ContentEncoding) { gzip() }
+
+      install(HttpTimeout) {
+        requestTimeoutMillis = 15000L
+        connectTimeoutMillis = 15000L
+        socketTimeoutMillis = 15000L
+      }
+    }
 }
