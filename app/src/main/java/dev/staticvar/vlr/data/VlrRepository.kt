@@ -266,4 +266,14 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
           emit(Pair(100, data))
         }
       }
+
+  fun getTeamDetails(id: String) =
+      flow<Operation<TeamDetails>> {
+        emit(Waiting())
+        try {
+          ktorHttpClient.get<TeamDetails>("team/$id").also { emit(Pass(it)) }
+        } catch (e: Exception) {
+          emit(Fail("Error", e))
+        }
+      }
 }
