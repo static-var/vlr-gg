@@ -156,7 +156,7 @@ fun MatchOverallAndEventOverview(
 ) {
   val scope = rememberCoroutineScope()
   OutlinedCard(
-    Modifier.fillMaxWidth().padding(8.dp).aspectRatio(1.6f),
+    Modifier.fillMaxWidth().padding(8.dp).aspectRatio(1.8f),
     contentColor = VLRTheme.colorScheme.onPrimaryContainer,
     containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
     border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
@@ -225,13 +225,15 @@ fun MatchOverallAndEventOverview(
             text = detailData.teams[0].name,
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(12.dp).weight(1f)
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp).weight(1f),
+            maxLines = 2
           )
           Text(
             text = detailData.teams[1].name,
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(12.dp).weight(1f)
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp).weight(1f),
+            maxLines = 2
           )
         }
         Row(Modifier.fillMaxWidth().weight(1f), verticalAlignment = Alignment.CenterVertically) {
@@ -239,36 +241,29 @@ fun MatchOverallAndEventOverview(
             text = detailData.teams[0].score?.toString() ?: "-",
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(12.dp).weight(1f)
+            modifier = Modifier.weight(1f)
           )
           Text(
             text = detailData.teams[1].score?.toString() ?: "-",
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(12.dp).weight(1f)
+            modifier = Modifier.weight(1f)
           )
         }
-        Text(
-          text = detailData.bans.joinToString { it },
-          style = VLRTheme.typography.labelMedium,
-          modifier = Modifier.padding(8.dp),
-          textAlign = TextAlign.Center
-        )
         var dialogOpen by remember { mutableStateOf(false) }
         Row(
           Modifier.fillMaxWidth(),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-          OutlinedButton(
+          Button(
             onClick = { dialogOpen = true },
             modifier = Modifier.weight(1f),
-            border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
           ) { Text(text = "More info") }
           detailData.event.date?.let {
             if (!it.hasElapsed) {
               var processingTopicSubscription by remember { mutableStateOf(false) }
-              OutlinedButton(
+              Button(
                 onClick = {
                   if (!processingTopicSubscription) {
                     processingTopicSubscription = true
@@ -278,8 +273,7 @@ fun MatchOverallAndEventOverview(
                     }
                   }
                 },
-                modifier = Modifier.weight(1f),
-                border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
+                modifier = Modifier.weight(1f)
               ) {
                 if (processingTopicSubscription) {
                   LinearProgressIndicator()
@@ -539,10 +533,17 @@ fun MatchMoreDetailsDialog(detailData: MatchInfo, open: Boolean, onDismiss: (Boo
     AlertDialog(
       onDismissRequest = { onDismiss(false) },
       title = {
-        Text(text = "Event Info", modifier = Modifier.padding(8.dp), textAlign = TextAlign.Center)
+        Text(text = "Event Info", modifier = Modifier.padding(8.dp), textAlign = TextAlign.Center, style = VLRTheme.typography.titleMedium)
       },
       text = {
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
+          detailData.bans.takeIf { it.isNotEmpty() }?.let {
+            Text(
+              text = detailData.bans.joinToString { it },
+              modifier = Modifier.padding(8.dp),
+              textAlign = TextAlign.Center
+            )
+          }
           detailData.event.patch?.let {
             Text(
               text = it,
@@ -551,7 +552,7 @@ fun MatchMoreDetailsDialog(detailData: MatchInfo, open: Boolean, onDismiss: (Boo
             )
           }
           Text(
-            text = detailData.event.date ?: "",
+            text = detailData.event.date?.readableTime ?: "",
             modifier = Modifier.padding(8.dp).fillMaxWidth(),
             textAlign = TextAlign.Center
           )

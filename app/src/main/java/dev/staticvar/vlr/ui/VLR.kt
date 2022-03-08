@@ -250,7 +250,7 @@ fun AppUpdateDownloadPopup(viewModel: VlrViewModel) {
   if (show && url != null)
     AlertDialog(
       onDismissRequest = { if (!downloadClicked) show = false },
-      title = { Text(text = "Update available") },
+      title = { Text(text = "Update available", style = VLRTheme.typography.titleMedium) },
       text = {
         AnimatedVisibility(visible = show) {
           Column(
