@@ -122,7 +122,7 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
           Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(true) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
-          Text(text = "Roster")
+          Text(text = "Roster", style = VLRTheme.typography.titleSmall)
           Icon(Icons.Outlined.ArrowDownward, contentDescription = "Expand")
         }
       } else {
@@ -130,7 +130,7 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
           Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(false) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
-          Text(text = "Roster")
+          Text(text = "Roster", style = VLRTheme.typography.titleSmall)
           Icon(Icons.Outlined.ArrowUpward, contentDescription = "Collapse")
         }
         data.forEach { player ->

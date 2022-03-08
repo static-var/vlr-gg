@@ -2,6 +2,8 @@ package dev.staticvar.vlr.ui.match
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,6 +13,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,6 +45,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val details by remember(viewModel) { viewModel.getMatchInfo(id) }.collectAsState(Waiting())
   val trackerString = id.toMatchTopic()
   val isTracked by remember { viewModel.isTopicTracked(trackerString) }.collectAsState(null)
+  var streamAndVodsCard by remember { mutableStateOf(false) }
 
   Column(
     modifier = Modifier.fillMaxSize(),
@@ -77,7 +82,13 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                 }
               }
             }
-            item { VideoReferenceUi(videos = matchInfo.videos) }
+            item {
+              VideoReferenceUi(
+                videos = matchInfo.videos,
+                expand = streamAndVodsCard,
+                onClick = { streamAndVodsCard = it }
+              )
+            }
             if (matchInfo.matchData.isNotEmpty()) {
               val maps = matchInfo.matchData.filter { it.map != "All Maps" }
               item { ShowMatchStatsTab(mapData = maps, position) { position = it } }
@@ -484,44 +495,61 @@ const val ASSISTS = 0.12f
 const val HSP = 0.15f
 
 @Composable
-fun VideoReferenceUi(videos: MatchInfo.Videos) {
+fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolean) -> Unit) {
   val intent by remember { mutableStateOf(Intent(Intent.ACTION_VIEW)) }
   val context = LocalContext.current
   if (videos.streams.isEmpty() && videos.vods.isEmpty()) return
 
   OutlinedCard(
-    Modifier.fillMaxWidth().padding(8.dp),
+    Modifier.fillMaxWidth().padding(8.dp).animateContentSize(tween(500)),
     contentColor = VLRTheme.colorScheme.onPrimaryContainer,
     containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
     border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
   ) {
-    if (videos.streams.isNotEmpty()) {
-      Text(text = "Stream", modifier = Modifier.fillMaxWidth().padding(8.dp))
-      LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
-        items(videos.streams) { stream ->
-          FilledTonalButton(
-            onClick = {
-              intent.data = Uri.parse(stream.url)
-              context.startActivity(intent)
-            },
-            modifier = Modifier.padding(horizontal = 4.dp)
-          ) { Text(text = stream.name) }
+    if (expand) {
+      Row(
+        Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(false) },
+        horizontalArrangement = Arrangement.SpaceBetween
+      ) {
+        Text(text = "Streams & VoDs", style = VLRTheme.typography.titleSmall)
+        Icon(Icons.Outlined.ArrowUpward, contentDescription = "Expand")
+      }
+      if (videos.streams.isNotEmpty()) {
+        Text(text = "Stream", modifier = Modifier.fillMaxWidth().padding(8.dp))
+        LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
+          items(videos.streams) { stream ->
+            FilledTonalButton(
+              onClick = {
+                intent.data = Uri.parse(stream.url)
+                context.startActivity(intent)
+              },
+              modifier = Modifier.padding(horizontal = 4.dp)
+            ) { Text(text = stream.name) }
+          }
         }
       }
-    }
 
-    if (videos.vods.isNotEmpty()) {
-      Text(text = "Vods", modifier = Modifier.fillMaxWidth().padding(8.dp))
-      LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
-        items(videos.vods) { stream ->
-          FilledTonalButton(
-            onClick = {
-              intent.data = Uri.parse(stream.url)
-              context.startActivity(intent)
-            },
-            modifier = Modifier.padding(horizontal = 4.dp)
-          ) { Text(text = stream.name) }
+      if (videos.vods.isNotEmpty()) {
+        Text(text = "Vods", modifier = Modifier.fillMaxWidth().padding(8.dp))
+        LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
+          items(videos.vods) { stream ->
+            FilledTonalButton(
+              onClick = {
+                intent.data = Uri.parse(stream.url)
+                context.startActivity(intent)
+              },
+              modifier = Modifier.padding(horizontal = 4.dp)
+            ) { Text(text = stream.name) }
+          }
         }
+      }
+    } else {
+      Row(
+        Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(true) },
+        horizontalArrangement = Arrangement.SpaceBetween
+      ) {
+        Text(text = "Streams & VoDs", style = VLRTheme.typography.titleSmall)
+        Icon(Icons.Outlined.ArrowDownward, contentDescription = "Expand")
       }
     }
   }
@@ -533,7 +561,12 @@ fun MatchMoreDetailsDialog(detailData: MatchInfo, open: Boolean, onDismiss: (Boo
     AlertDialog(
       onDismissRequest = { onDismiss(false) },
       title = {
-        Text(text = "Event Info", modifier = Modifier.padding(8.dp), textAlign = TextAlign.Center, style = VLRTheme.typography.titleMedium)
+        Text(
+          text = "Event Info",
+          modifier = Modifier.padding(8.dp),
+          textAlign = TextAlign.Center,
+          style = VLRTheme.typography.titleMedium
+        )
       },
       text = {
         Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
