@@ -60,7 +60,7 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
                 upcoming = teamDetail.upcoming,
                 completed = teamDetail.completed,
                 teamName = teamDetail.name,
-                onClick = {}
+                onClick = { viewModel.action.match(it) }
               )
             }
           }
@@ -144,7 +144,10 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
               horizontalArrangement = Arrangement.SpaceBetween
             ) {
               Text(text = player.alias, style = VLRTheme.typography.titleSmall)
-              Text(text = player.role?.replaceFirstChar { it.uppercase() } ?: "", style = VLRTheme.typography.labelMedium)
+              Text(
+                text = player.role?.replaceFirstChar { it.uppercase() } ?: "",
+                style = VLRTheme.typography.labelMedium
+              )
             }
             Text(
               text = player.name ?: "",
