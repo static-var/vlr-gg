@@ -217,7 +217,6 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
             when (response) {
               is StoreResponse.Loading -> emit(Waiting())
               is StoreResponse.Data -> {
-                e { response.value.toString() }
                 if (response.value.id.isEmpty()) {
                   emit(Fail("unable to get data", SocketTimeoutException())).also {
                     TimeElapsed.reset(Constants.tournamentDetailKey(url))
