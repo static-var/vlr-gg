@@ -139,11 +139,8 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -
     Column(modifier = Modifier.padding(8.dp)) {
       Text(
         text =
-          when (matchPreviewInfo.status) {
-            "LIVE" -> "LIVE"
-            "Upcoming" -> matchPreviewInfo.time?.timeDiff?.prependIndent("in ") ?: ""
-            else -> matchPreviewInfo.time?.timeDiff ?: ""
-          },
+          if (matchPreviewInfo.status.equals("LIVE", true)) "LIVE"
+          else matchPreviewInfo.time?.timeDiff ?: "",
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.displaySmall
