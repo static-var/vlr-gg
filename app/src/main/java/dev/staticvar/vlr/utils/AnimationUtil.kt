@@ -9,7 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.ui.unit.IntOffset
 
 private val tween: FiniteAnimationSpec<IntOffset> = tween(800)
-private val tweenF: FiniteAnimationSpec<Float> = tween(400)
+private val tweenF: FiniteAnimationSpec<Float> = tween(800)
 
 val slideInFromLeft = slideInHorizontally(animationSpec = tween, initialOffsetX = { -it })
 

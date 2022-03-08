@@ -26,7 +26,10 @@ import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.COLOR_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.*
+import dev.staticvar.vlr.utils.Waiting
+import dev.staticvar.vlr.utils.onFail
+import dev.staticvar.vlr.utils.onPass
+import dev.staticvar.vlr.utils.onWaiting
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
@@ -47,7 +50,6 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
 
           var tabSelection by
             remember(selectedIndex) {
-              e { "Tab selection reset $selectedIndex" }
               mutableStateOf(0)
             }
 
@@ -62,7 +64,12 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
 
           LazyColumn(modifier = Modifier.fillMaxSize()) {
             item { TournamentDetailsHeader(tournamentDetails = tournamentDetails) }
-            item { EventDetailsTeamSlider(list = tournamentDetails.participants) }
+            item {
+              EventDetailsTeamSlider(
+                list = tournamentDetails.participants,
+                onClick = { viewModel.action.team(it) }
+              )
+            }
             item {
               EventMatchGroups(
                 selectedIndex,
@@ -129,12 +136,12 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
 }
 
 @Composable
-fun EventDetailsTeamSlider(list: List<TournamentDetails.Participant>) {
+fun EventDetailsTeamSlider(list: List<TournamentDetails.Participant>, onClick: (String) -> Unit) {
   Text(text = "Teams", modifier = Modifier.padding(8.dp), style = VLRTheme.typography.titleSmall)
   LazyRow(modifier = Modifier.fillMaxWidth()) {
     items(list) {
       OutlinedCard(
-        Modifier.padding(8.dp).width(width = 150.dp).aspectRatio(1.1f),
+        Modifier.padding(8.dp).width(width = 150.dp).aspectRatio(1.1f).clickable { onClick(it.id) },
         contentColor = VLRTheme.colorScheme.onPrimaryContainer,
         containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
         border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
