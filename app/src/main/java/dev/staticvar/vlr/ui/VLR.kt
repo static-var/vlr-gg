@@ -176,8 +176,8 @@ fun VLR() {
         composable(
           Destination.Match.route,
           arguments = listOf(navArgument(Destination.Match.Args.ID) { type = NavType.StringType }),
-          enterTransition = { slideInFromTop },
-          popEnterTransition = { slideInFromTop },
+          enterTransition = { fadeIn },
+          popEnterTransition = { fadeIn },
           exitTransition = { fadeOut },
           popExitTransition = { fadeOut },
           deepLinks =
@@ -195,8 +195,8 @@ fun VLR() {
         composable(
           Destination.Event.route,
           arguments = listOf(navArgument(Destination.Event.Args.ID) { type = NavType.StringType }),
-          enterTransition = { slideInFromTop },
-          popEnterTransition = { slideInFromTop },
+          enterTransition = { fadeIn },
+          popEnterTransition = { fadeIn },
           exitTransition = { fadeOut },
           popExitTransition = { fadeOut }
         ) {
@@ -207,8 +207,8 @@ fun VLR() {
         composable(
           Destination.Team.route,
           arguments = listOf(navArgument(Destination.Team.Args.ID) { type = NavType.StringType }),
-          enterTransition = { slideInFromTop },
-          popEnterTransition = { slideInFromTop },
+          enterTransition = { fadeIn },
+          popEnterTransition = { fadeIn },
           exitTransition = { fadeOut },
           popExitTransition = { fadeOut }
         ) {
