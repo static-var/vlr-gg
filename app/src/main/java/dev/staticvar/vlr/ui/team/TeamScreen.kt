@@ -1,6 +1,7 @@
 package dev.staticvar.vlr.ui.team
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -115,43 +116,41 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
     containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
     border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer),
   ) {
-    AnimatedContent(expanded) {
-      Column(modifier = Modifier.fillMaxWidth()) {
-        if (!expanded) {
-          Row(
-            Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(true) },
-            horizontalArrangement = Arrangement.SpaceBetween
+    Column(modifier = Modifier.fillMaxWidth().animateContentSize(tween(500))) {
+      if (!expanded) {
+        Row(
+          Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(true) },
+          horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+          Text(text = "Roster")
+          Icon(Icons.Outlined.ArrowDownward, contentDescription = "Expand")
+        }
+      } else {
+        Row(
+          Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(false) },
+          horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+          Text(text = "Roster")
+          Icon(Icons.Outlined.ArrowUpward, contentDescription = "Collapse")
+        }
+        data.forEach { player ->
+          Card(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+            contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+            containerColor = VLRTheme.colorScheme.primaryContainer
           ) {
-            Text(text = "Roster")
-            Icon(Icons.Outlined.ArrowDownward, contentDescription = "Expand")
-          }
-        } else {
-          Row(
-            Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(false) },
-            horizontalArrangement = Arrangement.SpaceBetween
-          ) {
-            Text(text = "Roster")
-            Icon(Icons.Outlined.ArrowUpward, contentDescription = "Collapse")
-          }
-          data.forEach { player ->
-            Card(
-              modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
-              contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-              containerColor = VLRTheme.colorScheme.primaryContainer
+            Row(
+              modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+              horizontalArrangement = Arrangement.SpaceBetween
             ) {
-              Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-              ) {
-                Text(text = player.alias, style = VLRTheme.typography.titleSmall)
-                Text(text = player.role ?: "", style = VLRTheme.typography.labelMedium)
-              }
-              Text(
-                text = player.name ?: "",
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-                style = VLRTheme.typography.labelMedium
-              )
+              Text(text = player.alias, style = VLRTheme.typography.titleSmall)
+              Text(text = player.role?.replaceFirstChar { it.uppercase() } ?: "", style = VLRTheme.typography.labelMedium)
             }
+            Text(
+              text = player.name ?: "",
+              modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, bottom = 4.dp),
+              style = VLRTheme.typography.labelMedium
+            )
           }
         }
       }
@@ -257,14 +256,12 @@ fun GameOverviewPreview(
           textAlign = TextAlign.Center
         )
       }
-      if (matchPreviewInfo.score.isNotBlank()) {
-        Text(
-          text = matchPreviewInfo.score,
-          style = VLRTheme.typography.titleSmall,
-          modifier = Modifier.fillMaxWidth().padding(2.dp),
-          textAlign = TextAlign.Center
-        )
-      }
+      Text(
+        text = matchPreviewInfo.score,
+        style = VLRTheme.typography.titleSmall,
+        modifier = Modifier.fillMaxWidth().padding(2.dp),
+        textAlign = TextAlign.Center
+      )
       Text(
         text = matchPreviewInfo.event + " - " + matchPreviewInfo.stage,
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
