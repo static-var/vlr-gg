@@ -24,12 +24,14 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.skydoves.landscapist.glide.GlideImage
+import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.COLOR_ALPHA
@@ -114,7 +116,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
               } else {
                 item {
                   Text(
-                    text = "Map is yet to be played or is under progress.",
+                    text = stringResource(R.string.map_tbp),
                     modifier =
                       Modifier.fillMaxWidth()
                         .padding(horizontal = 8.dp)
@@ -134,7 +136,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                     containerColor = VLRTheme.colorScheme.primaryContainer
                   ) {
                     Text(
-                      text = "Previous Encounters",
+                      text = stringResource(R.string.previous_encounter),
                       modifier = Modifier.fillMaxWidth().padding(12.dp),
                       textAlign = TextAlign.Center,
                       style = VLRTheme.typography.titleSmall
@@ -190,7 +192,7 @@ fun MatchOverallAndEventOverview(
             ) {
               Icon(
                 Icons.Outlined.OpenInNew,
-                contentDescription = "Open match",
+                contentDescription = stringResource(R.string.open_match_content_description),
                 modifier = Modifier.size(24.dp).padding(2.dp)
               )
             }
@@ -214,7 +216,7 @@ fun MatchOverallAndEventOverview(
             ) {
               Icon(
                 Icons.Outlined.OpenInNew,
-                contentDescription = "Open match",
+                contentDescription = stringResource(R.string.open_match_content_description),
                 modifier = Modifier.size(24.dp).padding(2.dp)
               )
             }
@@ -270,7 +272,7 @@ fun MatchOverallAndEventOverview(
           Button(
             onClick = { dialogOpen = true },
             modifier = Modifier.weight(1f),
-          ) { Text(text = "More info") }
+          ) { Text(text = stringResource(R.string.more_info)) }
           detailData.event.date?.let {
             if (!it.hasElapsed) {
               var processingTopicSubscription by remember { mutableStateOf(false) }
@@ -288,7 +290,8 @@ fun MatchOverallAndEventOverview(
               ) {
                 if (processingTopicSubscription) {
                   LinearProgressIndicator()
-                } else if (isTracked) Text(text = "Unsubscribe") else Text(text = "Get Notified")
+                } else if (isTracked) Text(text = stringResource(R.string.unsubscribe))
+                else Text(text = stringResource(R.string.get_notified))
               }
             }
           }
@@ -375,49 +378,49 @@ fun StatsHeaderBox() {
         .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA))
   ) {
     Text(
-      text = "Agent",
+      text = stringResource(R.string.agent),
       modifier = Modifier.weight(AGENT_IMG).padding(horizontal = 1.dp),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
-      text = "Player",
+      text = stringResource(R.string.player),
       modifier = Modifier.weight(NAME).padding(horizontal = 1.dp),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
-      text = "ACS",
+      text = stringResource(R.string.acs),
       modifier = Modifier.weight(ACS).padding(horizontal = 1.dp),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
-      text = "ADR",
+      text = stringResource(R.string.adr),
       modifier = Modifier.weight(ADR).padding(horizontal = 1.dp),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
-      text = "K",
+      text = stringResource(R.string.kill),
       modifier = Modifier.weight(KILLS).padding(horizontal = 1.dp),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
-      text = "D",
+      text = stringResource(R.string.death),
       modifier = Modifier.weight(DEATHS).padding(horizontal = 1.dp),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
-      text = "A",
+      text = stringResource(R.string.assist),
       modifier = Modifier.weight(ASSISTS).padding(horizontal = 1.dp),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
-      text = "HS%",
+      text = stringResource(R.string.headshot_percentage),
       modifier = Modifier.weight(HSP).padding(horizontal = 1.dp),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
@@ -511,8 +514,8 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
         Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(false) },
         horizontalArrangement = Arrangement.SpaceBetween
       ) {
-        Text(text = "Streams & VoDs", style = VLRTheme.typography.titleSmall)
-        Icon(Icons.Outlined.ArrowUpward, contentDescription = "Expand")
+        Text(text = stringResource(R.string.streams_and_vods), style = VLRTheme.typography.titleSmall)
+        Icon(Icons.Outlined.ArrowUpward, contentDescription = stringResource(R.string.expand))
       }
       if (videos.streams.isNotEmpty()) {
         Text(text = "Stream", modifier = Modifier.fillMaxWidth().padding(8.dp))
@@ -530,7 +533,7 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
       }
 
       if (videos.vods.isNotEmpty()) {
-        Text(text = "Vods", modifier = Modifier.fillMaxWidth().padding(8.dp))
+        Text(text = stringResource(R.string.vods), modifier = Modifier.fillMaxWidth().padding(8.dp))
         LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
           items(videos.vods) { stream ->
             FilledTonalButton(
@@ -548,8 +551,8 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
         Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(true) },
         horizontalArrangement = Arrangement.SpaceBetween
       ) {
-        Text(text = "Streams & VoDs", style = VLRTheme.typography.titleSmall)
-        Icon(Icons.Outlined.ArrowDownward, contentDescription = "Expand")
+        Text(text = stringResource(R.string.streams_and_vods), style = VLRTheme.typography.titleSmall)
+        Icon(Icons.Outlined.ArrowDownward, contentDescription = stringResource(R.string.expand))
       }
     }
   }
@@ -562,7 +565,7 @@ fun MatchMoreDetailsDialog(detailData: MatchInfo, open: Boolean, onDismiss: (Boo
       onDismissRequest = { onDismiss(false) },
       title = {
         Text(
-          text = "Event Info",
+          text = stringResource(R.string.event_info),
           modifier = Modifier.padding(8.dp),
           textAlign = TextAlign.Center,
           style = VLRTheme.typography.titleMedium
@@ -620,7 +623,7 @@ fun PreviousEncounter(previousEncounter: MatchInfo.Head2head, onClick: (String) 
     ) {
       Icon(
         Icons.Outlined.OpenInNew,
-        contentDescription = "Open match",
+        contentDescription = stringResource(R.string.open_match_content_description),
         modifier = Modifier.size(24.dp).padding(2.dp)
       )
     }

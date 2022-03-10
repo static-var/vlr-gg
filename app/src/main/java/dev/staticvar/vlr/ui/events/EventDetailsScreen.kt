@@ -16,11 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.statusBarsPadding
+import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.COLOR_ALPHA
@@ -105,7 +107,7 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
         Image(
           painter =
             rememberImagePainter(data = tournamentDetails.img, builder = { crossfade(true) }),
-          contentDescription = "Tournament Logo",
+          contentDescription = stringResource(R.string.tournament_logo_content_desciption),
           modifier = Modifier.alpha(0.3f)
         )
       }
@@ -119,15 +121,15 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
         )
         Text(text = tournamentDetails.subtitle, modifier = Modifier.padding(4.dp))
         Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
-          Icon(Icons.Outlined.DateRange, contentDescription = "Date")
+          Icon(Icons.Outlined.DateRange, contentDescription = stringResource(R.string.date))
           Text(text = tournamentDetails.dates)
         }
         Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
-          Icon(Icons.Outlined.Paid, contentDescription = "Prize")
+          Icon(Icons.Outlined.Paid, contentDescription = stringResource(R.string.prize))
           Text(text = tournamentDetails.prize)
         }
         Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
-          Icon(Icons.Outlined.LocationOn, contentDescription = "Location")
+          Icon(Icons.Outlined.LocationOn, contentDescription = stringResource(R.string.location))
           Text(text = tournamentDetails.location.uppercase())
         }
       }
@@ -161,12 +163,12 @@ fun EventDetailsTeamSlider(list: List<TournamentDetails.Participant>, onClick: (
           )
           Image(
             painter = rememberImagePainter(data = it.img, builder = { crossfade(true) }),
-            contentDescription = "Team Logo",
+            contentDescription = stringResource(R.string.team_logo_content_description),
             alignment = Alignment.Center,
             modifier = Modifier.size(80.dp).aspectRatio(1f)
           )
           Text(
-            text = it.seed,
+            text = it.seed ?: "",
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             maxLines = 1,
@@ -189,7 +191,7 @@ fun EventMatchGroups(
 ) {
   var expanded by remember { mutableStateOf(false) }
 
-  val filterOptions = listOf("Status", "Rounds", "Stage")
+  val filterOptions = listOf(stringResource(R.string.status), stringResource(R.string.rounds), stringResource(R.string.stage))
 
   Column(Modifier.fillMaxWidth().padding(8.dp)) {
     Text(text = "Games", modifier = Modifier.padding(8.dp), style = VLRTheme.typography.titleSmall)
@@ -200,9 +202,9 @@ fun EventMatchGroups(
         },
       verticalAlignment = Alignment.CenterVertically
     ) {
-      Text(text = "Filter by")
+      Text(text = stringResource(R.string.filter_by))
       Text(text = filterOptions[selectedIndex], Modifier.weight(1f), textAlign = TextAlign.End)
-      Icon(Icons.Outlined.ArrowDropDown, contentDescription = "Dropdown")
+      Icon(Icons.Outlined.ArrowDropDown, contentDescription = stringResource(R.string.dropdown_content_description))
     }
     DropdownMenu(
       expanded = expanded,
@@ -273,7 +275,7 @@ fun TournamentMatchOverview(game: TournamentDetails.Games, onClick: (String) -> 
         )
         Icon(
           Icons.Outlined.OpenInNew,
-          contentDescription = "Open match",
+          contentDescription = stringResource(R.string.open_match_content_description),
           modifier = Modifier.size(24.dp).padding(2.dp)
         )
       }
@@ -309,7 +311,7 @@ fun TournamentMatchOverview(game: TournamentDetails.Games, onClick: (String) -> 
         )
       }
       Text(
-        text = game.time + " - " + game.date,
+        text = "${game.time} - ${game.date}",
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.labelSmall

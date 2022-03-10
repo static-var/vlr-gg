@@ -47,7 +47,7 @@ data class TournamentDetails(
   data class Participant(
     @SerialName("id") val id: String = "", // 468
     @SerialName("img") val img: String = "", // https://owcdn.net/img/5f0f5c0ea3426.png
-    @SerialName("seed") val seed: String = "",
+    @SerialName("seed") val seed: String? = "",
     @SerialName("name") val team: String = "" // Renegades
   )
 
