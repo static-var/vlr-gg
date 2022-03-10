@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -22,6 +23,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.NavState
 import dev.staticvar.vlr.ui.events.EventDetails
 import dev.staticvar.vlr.ui.events.EventScreen
@@ -102,11 +104,11 @@ fun VLR() {
             icon = {
               Icon(
                 imageVector = Icons.Outlined.Feed,
-                contentDescription = "News",
+                contentDescription = stringResource(R.string.news),
                 tint = VLRTheme.colorScheme.onPrimaryContainer
               )
             },
-            label = { Text(text = "News") },
+            label = { Text(text = stringResource(R.string.news)) },
             onClick = action.goNews,
           )
           NavigationBarItem(
@@ -114,11 +116,11 @@ fun VLR() {
             icon = {
               Icon(
                 imageVector = Icons.Outlined.SportsEsports,
-                contentDescription = "Games",
+                contentDescription = stringResource(R.string.games),
                 tint = VLRTheme.colorScheme.onPrimaryContainer
               )
             },
-            label = { Text(text = "Matches") },
+            label = { Text(text = stringResource(R.string.matches)) },
             onClick = action.matchOverview
           )
           NavigationBarItem(
@@ -126,11 +128,11 @@ fun VLR() {
             icon = {
               Icon(
                 imageVector = Icons.Outlined.EmojiEvents,
-                contentDescription = "Tournament",
+                contentDescription = stringResource(R.string.tournament),
                 tint = VLRTheme.colorScheme.onPrimaryContainer
               )
             },
-            label = { Text(text = "Events") },
+            label = { Text(text = stringResource(R.string.events)) },
             onClick = action.goEvents
           )
         }
@@ -261,14 +263,14 @@ fun AppUpdateDownloadPopup(viewModel: VlrViewModel) {
             if (downloadClicked) {
               Text(
                 text =
-                  if (downloadProgress.first == 100) "Download complete!"
-                  else "Downloading... ${downloadProgress.first}%"
+                  if (downloadProgress.first == 100) stringResource(R.string.download_complete)
+                  else stringResource(R.string.downloading_percent, downloadProgress.first)
               )
               LinearProgressIndicator(
                 progress = downloadProgress.first.div(100f),
               )
             } else {
-              Text(text = "Click download to download the update")
+              Text(text = stringResource(R.string.begin_download))
             }
           }
         }
@@ -276,11 +278,11 @@ fun AppUpdateDownloadPopup(viewModel: VlrViewModel) {
       confirmButton = {
         AnimatedVisibility(visible = show) {
           if (!downloadClicked)
-            Button(onClick = { downloadClicked = true }) { Text(text = "Download") }
+            Button(onClick = { downloadClicked = true }) { Text(text = stringResource(R.string.download)) }
         }
       },
       dismissButton = {
-        if (!downloadClicked) Button(onClick = { show = false }) { Text(text = "Cancel") }
+        if (!downloadClicked) Button(onClick = { show = false }) { Text(text = stringResource(R.string.cancel)) }
       }
     )
 }

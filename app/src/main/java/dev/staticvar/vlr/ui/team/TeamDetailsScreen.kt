@@ -15,12 +15,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.COLOR_ALPHA
@@ -45,7 +47,6 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
     teamDetails
       .onPass {
         data?.let { teamDetail ->
-          e { "$teamDetail" }
           LazyColumn(modifier = Modifier.fillMaxSize()) {
             item { TeamBanner(teamDetails = teamDetail) }
             item {
@@ -122,16 +123,16 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
           Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(true) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
-          Text(text = "Roster", style = VLRTheme.typography.titleSmall)
-          Icon(Icons.Outlined.ArrowDownward, contentDescription = "Expand")
+          Text(text = stringResource(R.string.roster), style = VLRTheme.typography.titleSmall)
+          Icon(Icons.Outlined.ArrowDownward, contentDescription = stringResource(R.string.expand))
         }
       } else {
         Row(
           Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(false) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
-          Text(text = "Roster", style = VLRTheme.typography.titleSmall)
-          Icon(Icons.Outlined.ArrowUpward, contentDescription = "Collapse")
+          Text(text = stringResource(R.string.roster), style = VLRTheme.typography.titleSmall)
+          Icon(Icons.Outlined.ArrowUpward, contentDescription = stringResource(R.string.collapse))
         }
         data.forEach { player ->
           Card(
@@ -180,11 +181,11 @@ fun TeamMatchData(
       Tab(
         selected = pagerState.currentPage == 0,
         onClick = { scope.launch { pagerState.scrollToPage(0) } }
-      ) { Text(text = "Upcoming", modifier = Modifier.padding(16.dp)) }
+      ) { Text(text = stringResource(R.string.upcoming), modifier = Modifier.padding(16.dp)) }
       Tab(
         selected = pagerState.currentPage == 1,
         onClick = { scope.launch { pagerState.scrollToPage(1) } }
-      ) { Text(text = "Completed", modifier = Modifier.padding(16.dp)) }
+      ) { Text(text = stringResource(R.string.completed), modifier = Modifier.padding(16.dp)) }
     }
     HorizontalPager(count = 2, state = pagerState, modifier = Modifier.fillMaxSize()) {
       when (pagerState.currentPage) {
@@ -266,7 +267,7 @@ fun GameOverviewPreview(
         textAlign = TextAlign.Center
       )
       Text(
-        text = matchPreviewInfo.event + " - " + matchPreviewInfo.stage,
+        text = "${matchPreviewInfo.event} - ${matchPreviewInfo.stage}",
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.labelSmall
