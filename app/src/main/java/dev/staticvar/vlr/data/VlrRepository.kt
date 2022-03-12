@@ -4,6 +4,7 @@ import com.dropbox.android.external.store4.*
 import dev.staticvar.vlr.data.api.response.*
 import dev.staticvar.vlr.data.dao.VlrDao
 import dev.staticvar.vlr.data.model.TopicTracker
+import dev.staticvar.vlr.di.IoDispatcher
 import dev.staticvar.vlr.utils.*
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -12,7 +13,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -24,7 +25,11 @@ import kotlin.time.Duration.Companion.seconds
 @Singleton
 class VlrRepository
 @Inject
-constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) {
+constructor(
+  private val vlrDao: VlrDao,
+  private val ktorHttpClient: HttpClient,
+  @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) {
   fun getFiveUpcomingMatches() = vlrDao.getAllMatchesPreviewNoFlow()
 
   private val news =
@@ -64,7 +69,7 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
             }
           }
       }
-      .flowOn(Dispatchers.IO)
+      .flowOn(ioDispatcher)
 
   private val allMatches =
     StoreBuilder.from(
@@ -105,7 +110,7 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
             }
           }
       }
-      .flowOn(Dispatchers.IO)
+      .flowOn(ioDispatcher)
 
   private val tournamentInfo: Store<String, List<TournamentPreview>> =
     StoreBuilder.from(
@@ -146,7 +151,7 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
             }
           }
       }
-      .flowOn(Dispatchers.IO)
+      .flowOn(ioDispatcher)
 
   private fun newMatchDetails(url: String) =
     StoreBuilder.from(
@@ -187,7 +192,7 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
             }
           }
       }
-      .flowOn(Dispatchers.IO)
+      .flowOn(ioDispatcher)
 
   private fun tournamentInfo(url: String) =
     StoreBuilder.from(
@@ -228,12 +233,12 @@ constructor(private val vlrDao: VlrDao, private val ktorHttpClient: HttpClient) 
             }
           }
       }
-      .flowOn(Dispatchers.IO)
+      .flowOn(ioDispatcher)
 
   fun trackTopic(topic: String) = vlrDao.insertTopicTracker(TopicTracker(topic))
 
   fun isTopicTracked(topic: String) =
-    flow { emitAll(vlrDao.isTopicSubscribed(topic)) }.flowOn(Dispatchers.IO)
+    flow { emitAll(vlrDao.isTopicSubscribed(topic)) }.flowOn(ioDispatcher)
 
   fun removeTopic(topic: String) = vlrDao.deleteTopic(topic)
 
