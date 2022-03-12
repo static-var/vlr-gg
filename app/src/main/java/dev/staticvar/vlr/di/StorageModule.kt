@@ -12,6 +12,7 @@ import dev.staticvar.vlr.data.db.VlrDB
 import dev.staticvar.vlr.data.db.VlrTypeConverter
 import dev.staticvar.vlr.utils.Constants
 import io.ktor.client.*
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
@@ -33,6 +34,9 @@ object StorageModule {
 
   @Provides
   @Singleton
-  fun getVlrRepository(vlrDao: VlrDao, ktorHttpClient: HttpClient) =
-    VlrRepository(vlrDao, ktorHttpClient)
+  fun getVlrRepository(
+    vlrDao: VlrDao,
+    ktorHttpClient: HttpClient,
+    @IoDispatcher ioDispatcher: CoroutineDispatcher
+  ) = VlrRepository(vlrDao, ktorHttpClient, ioDispatcher)
 }
