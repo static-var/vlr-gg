@@ -84,6 +84,7 @@ android {
     }
     packagingOptions {
         excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        excludes += 'META-INF/DEPENDENCIES'
     }
 }
 
@@ -154,6 +155,7 @@ dependencies {
     implementation "io.ktor:ktor-client-serialization:$ktor_version"
     implementation "io.ktor:ktor-client-logging-jvm:$ktor_version"
     implementation "io.ktor:ktor-client-encoding-jvm:$ktor_version"
+    implementation "ch.qos.logback:logback-classic:1.2.11"
 
     implementation "com.github.skydoves:landscapist-glide:1.5.0"
 
