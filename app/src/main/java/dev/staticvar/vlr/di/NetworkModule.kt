@@ -43,7 +43,7 @@ object NetworkModule {
 
       install(Logging) {
         level = LogLevel.ALL
-        logger = Logger.SIMPLE
+        logger = Logger.ANDROID
       }
 
       install(DefaultRequest) {
