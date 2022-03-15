@@ -155,7 +155,7 @@ dependencies {
     implementation "io.ktor:ktor-client-logging-jvm:$ktor_version"
     implementation "io.ktor:ktor-client-encoding-jvm:$ktor_version"
 
-    implementation "com.github.skydoves:landscapist-glide:1.4.9"
+    implementation "com.github.skydoves:landscapist-glide:1.5.0"
 
     implementation "com.dropbox.mobile.store:store4:4.0.4-KT15"
 
