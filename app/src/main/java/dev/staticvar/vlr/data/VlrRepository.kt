@@ -1,6 +1,5 @@
 package dev.staticvar.vlr.data
 
-import com.dropbox.android.external.store4.*
 import dev.staticvar.vlr.data.api.response.*
 import dev.staticvar.vlr.data.dao.VlrDao
 import dev.staticvar.vlr.data.model.TopicTracker
@@ -14,10 +13,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import java.net.SocketTimeoutException
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
@@ -32,208 +28,110 @@ constructor(
 ) {
   fun getFiveUpcomingMatches() = vlrDao.getAllMatchesPreviewNoFlow()
 
-  private val news =
-    StoreBuilder.from(
-        fetcher = Fetcher.of<String, List<NewsResponseItem>> { ktorHttpClient.get(path = "news/") },
-        sourceOfTruth =
-          SourceOfTruth.Companion.of(
-            reader = { vlrDao.getNews() },
-            writer = { key, b ->
-              vlrDao.insertAllNews(b).also { TimeElapsed.start(key, 180.seconds) }
-            },
-            deleteAll = {},
-            delete = { key -> TimeElapsed.reset(key) }
-          )
-      )
-      .build()
-
-  fun getAllNews() =
+  private fun getNews() =
     flow<Operation<List<NewsResponseItem>>> {
-        news.stream(
-            StoreRequest.cached(
-              Constants.KEY_NEWS,
-              refresh = TimeElapsed.hasElapsed(Constants.KEY_NEWS)
-            )
-          )
-          .collect { response ->
-            when (response) {
-              is StoreResponse.Loading -> emit(Waiting())
-              is StoreResponse.Data -> {
-                response.value.takeIf { it.isNotEmpty() }?.let { emit(Pass(it)) }
-                  ?: emit(Fail("Unable to Parse", exception = SocketTimeoutException())).also {
-                    TimeElapsed.reset(Constants.KEY_NEWS)
-                  }
-              }
-              is StoreResponse.Error.Exception, is StoreResponse.Error.Message ->
-                emit(Fail(response.errorMessageOrNull() ?: ""))
+      if (TimeElapsed.hasElapsed(Constants.KEY_NEWS)) {
+        val response =
+          kotlin.runCatching {
+            ktorHttpClient.get<List<NewsResponseItem>>(path = "news/").also {
+              vlrDao.insertAllNews(it)
+              TimeElapsed.start(Constants.KEY_NEWS, 180.seconds)
             }
           }
+        if (response.isFailure) emit(Fail(response.exceptionOrNull().toString()))
       }
-      .flowOn(ioDispatcher)
+    }
 
-  private val allMatches =
-    StoreBuilder.from(
-        fetcher =
-          Fetcher.of<String, List<MatchPreviewInfo>> { ktorHttpClient.get(path = "matches/") },
-        sourceOfTruth =
-          SourceOfTruth.Companion.of(
-            reader = { vlrDao.getAllMatchesPreview() },
-            writer = { key, b ->
-              vlrDao.deleteAllMatchPreview()
-              vlrDao.insertAllMatches(b).also { TimeElapsed.start(key, 45.seconds) }
-            },
-            deleteAll = {},
-            delete = { key -> TimeElapsed.reset(key) }
-          )
-      )
-      .build()
+  private fun getNewsFromDb() =
+    flow { emitAll(vlrDao.getNews().map { if (it.isEmpty()) Waiting() else Pass(it) }) }
+      .distinctUntilChanged()
 
-  fun getAllMatchesPreview() =
+  fun mergeNews() = merge(getNewsFromDb(), getNews()).flowOn(ioDispatcher)
+
+  private fun getMatchesFromServer() =
     flow<Operation<List<MatchPreviewInfo>>> {
-        allMatches.stream(
-            StoreRequest.cached(
-              Constants.KEY_MATCH_ALL,
-              refresh = TimeElapsed.hasElapsed(Constants.KEY_MATCH_ALL)
-            )
-          )
-          .collect { response ->
-            when (response) {
-              is StoreResponse.Loading -> emit(Waiting())
-              is StoreResponse.Data -> {
-                response.value.takeIf { it.isNotEmpty() }?.let { emit(Pass(it)) }
-                  ?: emit(Fail("Unable to Parse", exception = SocketTimeoutException())).also {
-                    TimeElapsed.reset(Constants.KEY_MATCH_ALL)
-                  }
-              }
-              is StoreResponse.Error.Exception, is StoreResponse.Error.Message ->
-                emit(Fail(response.errorMessageOrNull() ?: ""))
+      if (TimeElapsed.hasElapsed(Constants.KEY_MATCH_ALL)) {
+        val response =
+          kotlin.runCatching {
+            ktorHttpClient.get<List<MatchPreviewInfo>>(path = "matches/").also {
+              vlrDao.insertAllMatches(it)
+              TimeElapsed.start(Constants.KEY_MATCH_ALL, 30.seconds)
             }
           }
+        if (response.isFailure) emit(Fail(response.exceptionOrNull().toString()))
       }
-      .flowOn(ioDispatcher)
+    }
 
-  private val tournamentInfo: Store<String, List<TournamentPreview>> =
-    StoreBuilder.from(
-        fetcher =
-          Fetcher.of<String, List<TournamentPreview>> { ktorHttpClient.get(path = "events/") },
-        sourceOfTruth =
-          SourceOfTruth.Companion.of(
-            reader = { vlrDao.getTournaments() },
-            writer = { key, b ->
-              vlrDao.deleteAllTournamentPreview()
-              vlrDao.insertAllTournamentInfo(b).also { TimeElapsed.start(key, 120.seconds) }
-            },
-            deleteAll = {},
-            delete = { key -> TimeElapsed.reset(key) }
-          )
-      )
-      .build()
+  private fun getMatchesFromDb() =
+    flow {
+        emitAll(vlrDao.getAllMatchesPreview().map { if (it.isEmpty()) Waiting() else Pass(it) })
+      }
+      .distinctUntilChanged()
 
-  fun getTournaments() =
+  fun mergeMatches() = merge(getMatchesFromDb(), getMatchesFromServer()).flowOn(ioDispatcher)
+
+  private fun getEventsFromServer() =
     flow<Operation<List<TournamentPreview>>> {
-        tournamentInfo.stream(
-            StoreRequest.cached(
-              Constants.KEY_TOURNAMENT_ALL,
-              refresh = TimeElapsed.hasElapsed(Constants.KEY_TOURNAMENT_ALL)
-            )
-          )
-          .collect { response ->
-            when (response) {
-              is StoreResponse.Loading -> emit(Waiting())
-              is StoreResponse.Data -> {
-                response.value.takeIf { it.isNotEmpty() }?.let { emit(Pass(it)) }
-                  ?: emit(Fail("Unable to Parse", exception = SocketTimeoutException())).also {
-                    TimeElapsed.reset(Constants.KEY_TOURNAMENT_ALL)
-                  }
-              }
-              is StoreResponse.Error.Exception, is StoreResponse.Error.Message ->
-                emit(Fail(response.errorMessageOrNull() ?: ""))
+      if (TimeElapsed.hasElapsed(Constants.KEY_TOURNAMENT_ALL)) {
+        val response =
+          kotlin.runCatching {
+            ktorHttpClient.get<List<TournamentPreview>>(path = "events/").also {
+              vlrDao.insertAllTournamentInfo(it)
+              TimeElapsed.start(Constants.KEY_TOURNAMENT_ALL, 60.seconds)
             }
           }
+        if (response.isFailure) emit(Fail(response.exceptionOrNull().toString()))
       }
-      .flowOn(ioDispatcher)
+    }
 
-  private fun newMatchDetails(url: String) =
-    StoreBuilder.from(
-        fetcher = Fetcher.of<String, MatchInfo> { ktorHttpClient.get(path = "matches/$url") },
-        sourceOfTruth =
-          SourceOfTruth.Companion.of(
-            reader = { vlrDao.getMatchById(url) },
-            writer = { key, b ->
-              b.id = url
-              vlrDao.insertMatchInfo(b)
-              TimeElapsed.start(key, 30.seconds)
-            },
-          )
-      )
-      .build()
+  private fun getEventsFromDb() =
+    flow { emitAll(vlrDao.getTournaments().map { if (it.isEmpty()) Waiting() else Pass(it) }) }
+      .distinctUntilChanged()
 
-  fun getMatchInfo(url: String) =
+  fun mergeEvents() = merge(getEventsFromDb(), getEventsFromServer()).flowOn(ioDispatcher)
+
+  private fun getMatchDetailsFromServer(url: String) =
     flow<Operation<MatchInfo>> {
-        newMatchDetails(url)
-          .stream(
-            StoreRequest.cached(
-              Constants.matchDetailKey(url),
-              refresh = TimeElapsed.hasElapsed(Constants.matchDetailKey(url))
-            )
-          )
-          .collect { response ->
-            when (response) {
-              is StoreResponse.Loading -> emit(Waiting())
-              is StoreResponse.Data -> {
-                if (response.value.id == "") {
-                  emit(Fail("unable to get data", SocketTimeoutException())).also {
-                    TimeElapsed.reset(Constants.matchDetailKey(url))
-                  }
-                } else emit(Pass(response.value))
-              }
-              is StoreResponse.Error.Exception, is StoreResponse.Error.Message ->
-                emit(Fail(response.errorMessageOrNull() ?: ""))
+      if (TimeElapsed.hasElapsed(url)) {
+        val response =
+          kotlin.runCatching {
+            ktorHttpClient.get<MatchInfo>(path = "matches/$url").also {
+              it.id = url
+              vlrDao.insertMatchInfo(it)
+              TimeElapsed.start(url, 30.seconds)
             }
           }
+        if (response.isFailure) emit(Fail(response.exceptionOrNull().toString()))
       }
-      .flowOn(ioDispatcher)
+    }
 
-  private fun tournamentInfo(url: String) =
-    StoreBuilder.from(
-        fetcher =
-          Fetcher.of<String, TournamentDetails> { ktorHttpClient.get(path = "events/$url") },
-        sourceOfTruth =
-          SourceOfTruth.Companion.of(
-            reader = { vlrDao.getTournamentById(url) },
-            writer = { key, b ->
-              vlrDao.insertTournamentDetails(b)
-              TimeElapsed.start(key, 120.seconds)
-            },
-          )
-      )
-      .build()
+  private fun getMatchDetailsFromDb(url: String) = flow {
+    emitAll(vlrDao.getMatchById(url).map { if (it == null) Waiting() else Pass(it) })
+  }
 
-  fun getTournamentInfo(url: String) =
+  fun mergeMatchDetails(url: String) =
+    merge(getMatchDetailsFromDb(url), getMatchDetailsFromServer(url)).flowOn(ioDispatcher)
+
+  private fun getEventDetailsFromServer(url: String) =
     flow<Operation<TournamentDetails>> {
-        tournamentInfo(url)
-          .stream(
-            StoreRequest.cached(
-              Constants.tournamentDetailKey(url),
-              refresh = TimeElapsed.hasElapsed(Constants.tournamentDetailKey(url))
-            )
-          )
-          .collect { response ->
-            when (response) {
-              is StoreResponse.Loading -> emit(Waiting())
-              is StoreResponse.Data -> {
-                if (response.value.id.isEmpty()) {
-                  emit(Fail("unable to get data", SocketTimeoutException())).also {
-                    TimeElapsed.reset(Constants.tournamentDetailKey(url))
-                  }
-                } else emit(Pass(response.value))
-              }
-              is StoreResponse.Error.Exception, is StoreResponse.Error.Message ->
-                emit(Fail(response.errorMessageOrNull() ?: ""))
+      if (TimeElapsed.hasElapsed(url)) {
+        val response =
+          kotlin.runCatching {
+            ktorHttpClient.get<TournamentDetails>(path = "events/$url").also {
+              vlrDao.insertTournamentDetails(it)
+              TimeElapsed.start(url, 30.seconds)
             }
           }
+        if (response.isFailure) emit(Fail(response.exceptionOrNull().toString()))
       }
-      .flowOn(ioDispatcher)
+    }
+
+  private fun getEventDetailsFromDb(url: String) = flow {
+    emitAll(vlrDao.getTournamentById(url).map { if (it == null) Waiting() else Pass(it) })
+  }
+
+  fun mergeEventDetails(url: String) =
+    merge(getEventDetailsFromDb(url), getEventDetailsFromServer(url)).flowOn(ioDispatcher)
 
   fun trackTopic(topic: String) = vlrDao.insertTopicTracker(TopicTracker(topic))
 
