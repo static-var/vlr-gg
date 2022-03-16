@@ -14,7 +14,7 @@ interface VlrDao {
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertAllMatches(matches: List<MatchPreviewInfo>)
 
-  @Insert(onConflict = OnConflictStrategy.IGNORE)
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertAllNews(news: List<NewsResponseItem>)
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -36,10 +36,10 @@ interface VlrDao {
 
   @Query("SELECT * from TournamentPreview") fun getTournaments(): Flow<List<TournamentPreview>>
 
-  @Query("SELECT * from MatchInfo where id = :id") fun getMatchById(id: String): Flow<MatchInfo>
+  @Query("SELECT * from MatchInfo where id = :id") fun getMatchById(id: String): Flow<MatchInfo?>
 
   @Query("SELECT * from TournamentDetails where id = :id")
-  fun getTournamentById(id: String): Flow<TournamentDetails>
+  fun getTournamentById(id: String): Flow<TournamentDetails?>
 
   @Query("SELECT EXISTS(SELECT * from TopicTracker where topic = :topic)")
   fun isTopicSubscribed(topic: String): Flow<Boolean>
@@ -49,4 +49,8 @@ interface VlrDao {
   @Query("DELETE from TournamentPreview") fun deleteAllTournamentPreview()
 
   @Query("DELETE from TopicTracker where topic = :topic") fun deleteTopic(topic: String)
+
+  @Query("DELETE from MatchInfo where id = :topic") fun deleteMatchInfoById(topic: String)
+
+  @Query("DELETE from TournamentDetails where id = :topic") fun deleteTournamentInfoById(topic: String)
 }

@@ -29,30 +29,21 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   lateinit var action: Action
 
   fun getMatchInfo(matchUrl: String) =
-    repository
-      .getMatchInfo(matchUrl)
-      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+    repository.mergeMatchDetails(matchUrl).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
   fun getTournamentDetails(matchUrl: String) =
-    repository
-      .getTournamentInfo(matchUrl)
-      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+    repository.mergeEventDetails(matchUrl).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
   fun getTournaments() =
-    repository.getTournaments().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+    repository.mergeEvents().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
   fun getAllMatches() =
-    repository
-      .getAllMatchesPreview()
-      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+    repository.mergeMatches().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
-  fun getNews() =
-    repository.getAllNews().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+  fun getNews() = repository.mergeNews().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
   fun getTeamDetails(id: String) =
-    repository
-      .getTeamDetails(id)
-      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), Waiting())
+    repository.getTeamDetails(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
   fun trackTopic(topic: String) =
     viewModelScope.launch(Dispatchers.IO) { repository.trackTopic(topic) }
