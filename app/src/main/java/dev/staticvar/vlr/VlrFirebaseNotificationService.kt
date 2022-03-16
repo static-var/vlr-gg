@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
@@ -45,6 +46,7 @@ class VlrFirebaseNotificationService() : FirebaseMessagingService() {
     val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
     val notificationBuilder =
       NotificationCompat.Builder(this, channelId)
+        .setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_foreground))
         .setSmallIcon(R.mipmap.ic_launcher_foreground)
         .setContentTitle(title)
         .setContentText(body)
