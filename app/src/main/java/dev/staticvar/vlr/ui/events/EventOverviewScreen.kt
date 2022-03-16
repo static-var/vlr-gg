@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import dev.staticvar.vlr.R
@@ -38,11 +37,11 @@ fun EventScreen(viewModel: VlrViewModel) {
     remember(viewModel) { viewModel.getTournaments() }.collectAsState(initial = Waiting())
 
   Column(
-    modifier = Modifier.fillMaxSize(),
+    modifier = Modifier.fillMaxSize().statusBarsPadding(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    Box(modifier = Modifier.statusBarsPadding())
+//    Box(modifier = Modifier.statusBarsPadding())
 
     allTournaments
       .onPass {

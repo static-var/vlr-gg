@@ -21,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.google.accompanist.insets.statusBarsPadding
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.ui.CARD_ALPHA
@@ -43,17 +42,12 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    Box(modifier = Modifier.statusBarsPadding())
-
     details
       .onPass {
         data?.let { tournamentDetails ->
           var selectedIndex by remember { mutableStateOf(0) }
 
-          var tabSelection by
-            remember(selectedIndex) {
-              mutableStateOf(0)
-            }
+          var tabSelection by remember(selectedIndex) { mutableStateOf(0) }
 
           val group =
             tournamentDetails.matches.groupBy {
@@ -65,6 +59,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
             }
 
           LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item { Spacer(modifier = Modifier.statusBarsPadding()) }
             item { TournamentDetailsHeader(tournamentDetails = tournamentDetails) }
             item {
               EventDetailsTeamSlider(
@@ -191,7 +186,12 @@ fun EventMatchGroups(
 ) {
   var expanded by remember { mutableStateOf(false) }
 
-  val filterOptions = listOf(stringResource(R.string.status), stringResource(R.string.rounds), stringResource(R.string.stage))
+  val filterOptions =
+    listOf(
+      stringResource(R.string.status),
+      stringResource(R.string.rounds),
+      stringResource(R.string.stage)
+    )
 
   Column(Modifier.fillMaxWidth().padding(8.dp)) {
     Text(text = "Games", modifier = Modifier.padding(8.dp), style = VLRTheme.typography.titleSmall)
@@ -204,7 +204,10 @@ fun EventMatchGroups(
     ) {
       Text(text = stringResource(R.string.filter_by))
       Text(text = filterOptions[selectedIndex], Modifier.weight(1f), textAlign = TextAlign.End)
-      Icon(Icons.Outlined.ArrowDropDown, contentDescription = stringResource(R.string.dropdown_content_description))
+      Icon(
+        Icons.Outlined.ArrowDropDown,
+        contentDescription = stringResource(R.string.dropdown_content_description)
+      )
     }
     DropdownMenu(
       expanded = expanded,

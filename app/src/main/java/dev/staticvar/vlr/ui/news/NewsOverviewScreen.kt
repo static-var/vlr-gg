@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.statusBarsPadding
 import dev.staticvar.vlr.data.api.response.NewsResponseItem
 import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
@@ -39,11 +38,14 @@ fun NewsScreen(viewModel: VlrViewModel) {
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    Box(modifier = Modifier.statusBarsPadding())
-
     newsInfo
       .onPass {
-        data?.let { list -> LazyColumn() { items(list) { NewsItem(newsResponseItem = it) } } }
+        data?.let { list ->
+          LazyColumn() {
+            item { Spacer(modifier = Modifier.statusBarsPadding()) }
+            items(list) { NewsItem(newsResponseItem = it) }
+          }
+        }
       }
       .onWaiting { LinearProgressIndicator() }
       .onFail { Text(text = message()) }

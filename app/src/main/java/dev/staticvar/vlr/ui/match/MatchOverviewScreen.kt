@@ -30,11 +30,11 @@ fun MatchOverview(viewModel: VlrViewModel) {
     remember(viewModel) { viewModel.getAllMatches() }.collectAsState(initial = Waiting())
 
   Column(
-    modifier = Modifier.fillMaxSize(),
+    modifier = Modifier.fillMaxSize().statusBarsPadding(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    Box(modifier = Modifier.statusBarsPadding()) {
+    Box() {
       allMatches
         .onPass {
           data?.let { list ->
