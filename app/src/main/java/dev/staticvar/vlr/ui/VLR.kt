@@ -149,7 +149,7 @@ fun VLR() {
         composable(
           Destination.News.route,
           enterTransition = { slideInFromBottom },
-          popEnterTransition = { fadeIn },
+          popEnterTransition = { slideInFromBottom },
           exitTransition = { fadeOut },
           popExitTransition = { fadeOut },
         ) {
@@ -159,7 +159,7 @@ fun VLR() {
         composable(
           Destination.MatchOverview.route,
           enterTransition = { slideInFromBottom },
-          popEnterTransition = { fadeIn },
+          popEnterTransition = { slideInFromBottom },
           exitTransition = { fadeOut },
           popExitTransition = { fadeOut },
         ) {
@@ -169,7 +169,7 @@ fun VLR() {
         composable(
           Destination.EventOverview.route,
           enterTransition = { slideInFromBottom },
-          popEnterTransition = { fadeIn },
+          popEnterTransition = { slideInFromBottom },
           exitTransition = { fadeOut },
           popExitTransition = { fadeOut },
         ) {
