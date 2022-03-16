@@ -111,8 +111,7 @@ dependencies {
     implementation 'androidx.core:core-splashscreen:1.0.0-beta01'
 
 
-    def accompanist = "0.24.3-alpha"
-    implementation "com.google.accompanist:accompanist-insets:$accompanist"
+    def accompanist = "0.24.4-alpha"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist"
     implementation "com.google.accompanist:accompanist-placeholder-material:$accompanist"
     implementation "com.google.accompanist:accompanist-swiperefresh:$accompanist"
@@ -158,8 +157,6 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:1.2.11"
 
     implementation "com.github.skydoves:landscapist-glide:1.5.0"
-
-    implementation "com.dropbox.mobile.store:store4:4.0.4-KT15"
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
