@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.skydoves.landscapist.glide.GlideImage
@@ -54,8 +53,6 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    Box(modifier = Modifier.statusBarsPadding())
-
     details
       .onPass {
         e { data.toString() }
@@ -63,6 +60,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
           var position by remember { mutableStateOf(0) }
 
           LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item { Spacer(modifier = Modifier.statusBarsPadding()) }
             item {
               MatchOverallAndEventOverview(
                 detailData = matchInfo,
@@ -514,7 +512,10 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
         Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(false) },
         horizontalArrangement = Arrangement.SpaceBetween
       ) {
-        Text(text = stringResource(R.string.streams_and_vods), style = VLRTheme.typography.titleSmall)
+        Text(
+          text = stringResource(R.string.streams_and_vods),
+          style = VLRTheme.typography.titleSmall
+        )
         Icon(Icons.Outlined.ArrowUpward, contentDescription = stringResource(R.string.expand))
       }
       if (videos.streams.isNotEmpty()) {
@@ -551,7 +552,10 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
         Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(true) },
         horizontalArrangement = Arrangement.SpaceBetween
       ) {
-        Text(text = stringResource(R.string.streams_and_vods), style = VLRTheme.typography.titleSmall)
+        Text(
+          text = stringResource(R.string.streams_and_vods),
+          style = VLRTheme.typography.titleSmall
+        )
         Icon(Icons.Outlined.ArrowDownward, contentDescription = stringResource(R.string.expand))
       }
     }

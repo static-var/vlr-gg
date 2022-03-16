@@ -48,6 +48,7 @@ fun VLR() {
   val background = VLRTheme.colorScheme.primaryContainer.copy(0.2f)
 
   viewModel.action = action
+  systemUiController.isNavigationBarContrastEnforced = true
 
   val navState: NavState by viewModel.navState.collectAsState()
 
@@ -148,7 +149,7 @@ fun VLR() {
         composable(
           Destination.News.route,
           enterTransition = { slideInFromBottom },
-          popEnterTransition = { slideInFromBottom },
+          popEnterTransition = { fadeIn },
           exitTransition = { fadeOut },
           popExitTransition = { fadeOut },
         ) {
@@ -158,7 +159,7 @@ fun VLR() {
         composable(
           Destination.MatchOverview.route,
           enterTransition = { slideInFromBottom },
-          popEnterTransition = { slideInFromBottom },
+          popEnterTransition = { fadeIn },
           exitTransition = { fadeOut },
           popExitTransition = { fadeOut },
         ) {
@@ -168,7 +169,7 @@ fun VLR() {
         composable(
           Destination.EventOverview.route,
           enterTransition = { slideInFromBottom },
-          popEnterTransition = { slideInFromBottom },
+          popEnterTransition = { fadeIn },
           exitTransition = { fadeOut },
           popExitTransition = { fadeOut },
         ) {
@@ -278,11 +279,14 @@ fun AppUpdateDownloadPopup(viewModel: VlrViewModel) {
       confirmButton = {
         AnimatedVisibility(visible = show) {
           if (!downloadClicked)
-            Button(onClick = { downloadClicked = true }) { Text(text = stringResource(R.string.download)) }
+            Button(onClick = { downloadClicked = true }) {
+              Text(text = stringResource(R.string.download))
+            }
         }
       },
       dismissButton = {
-        if (!downloadClicked) Button(onClick = { show = false }) { Text(text = stringResource(R.string.cancel)) }
+        if (!downloadClicked)
+          Button(onClick = { show = false }) { Text(text = stringResource(R.string.cancel)) }
       }
     )
 }

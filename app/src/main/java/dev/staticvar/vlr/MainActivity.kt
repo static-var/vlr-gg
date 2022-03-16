@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import com.google.accompanist.insets.ProvideWindowInsets
 import dagger.hilt.android.AndroidEntryPoint
 import dev.staticvar.vlr.ui.VLR
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -16,6 +15,6 @@ class MainActivity : ComponentActivity() {
     installSplashScreen()
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
-    setContent { VLRTheme() { ProvideWindowInsets { VLR() } } }
+    setContent { VLRTheme() { VLR() } }
   }
 }

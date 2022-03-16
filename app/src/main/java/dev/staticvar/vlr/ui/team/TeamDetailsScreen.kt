@@ -19,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import dev.staticvar.vlr.R
@@ -42,12 +41,11 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    Box(modifier = Modifier.statusBarsPadding())
-
     teamDetails
       .onPass {
         data?.let { teamDetail ->
           LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item { Spacer(modifier = Modifier.statusBarsPadding()) }
             item { TeamBanner(teamDetails = teamDetail) }
             item {
               RosterCard(
