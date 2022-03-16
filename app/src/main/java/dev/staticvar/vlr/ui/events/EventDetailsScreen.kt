@@ -115,15 +115,24 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
           overflow = TextOverflow.Ellipsis
         )
         Text(text = tournamentDetails.subtitle, modifier = Modifier.padding(4.dp))
-        Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
+        Row(
+          Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
           Icon(Icons.Outlined.DateRange, contentDescription = stringResource(R.string.date))
           Text(text = tournamentDetails.dates)
         }
-        Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
+        Row(
+          Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
           Icon(Icons.Outlined.Paid, contentDescription = stringResource(R.string.prize))
           Text(text = tournamentDetails.prize)
         }
-        Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
+        Row(
+          Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
           Icon(Icons.Outlined.LocationOn, contentDescription = stringResource(R.string.location))
           Text(text = tournamentDetails.location.uppercase())
         }
@@ -138,23 +147,23 @@ fun EventDetailsTeamSlider(list: List<TournamentDetails.Participant>, onClick: (
   LazyRow(modifier = Modifier.fillMaxWidth()) {
     items(list) {
       OutlinedCard(
-        Modifier.padding(8.dp).width(width = 150.dp).aspectRatio(1.1f).clickable { onClick(it.id) },
+        Modifier.padding(8.dp).width(width = 150.dp).aspectRatio(1f).clickable { onClick(it.id) },
         contentColor = VLRTheme.colorScheme.onPrimaryContainer,
         containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
         border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
       ) {
         Column(
-          Modifier.padding(8.dp),
+          Modifier.fillMaxSize().padding(8.dp),
           verticalArrangement = Arrangement.Center,
           horizontalAlignment = Alignment.CenterHorizontally
         ) {
           Text(
             text = it.team,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = VLRTheme.typography.labelLarge,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
           )
           Image(
             painter = rememberImagePainter(data = it.img, builder = { crossfade(true) }),
@@ -246,8 +255,7 @@ fun EventMatchGroups(
         Tab(
           selected = tabSelection == index,
           onClick = { onTabChange(index) },
-          modifier = Modifier.padding(16.dp)
-        ) { Text(text = s.replaceFirstChar { it.uppercase() }) }
+        ) { Text(text = s.replaceFirstChar { it.uppercase() }, modifier = Modifier.padding(16.dp)) }
       }
     }
   }
