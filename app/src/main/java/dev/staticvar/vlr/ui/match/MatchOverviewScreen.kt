@@ -1,5 +1,7 @@
 package dev.staticvar.vlr.ui.match
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +21,7 @@ import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
 import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
 import kotlinx.coroutines.launch
@@ -72,7 +75,8 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
   Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
       selectedTabIndex = pagerState.currentPage,
-      containerColor = VLRTheme.colorScheme.primaryContainer
+      containerColor = VLRTheme.colorScheme.primaryContainer,
+      indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
     ) {
       Tab(
         selected = pagerState.currentPage == 0,
@@ -109,7 +113,26 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
             Spacer(modifier = Modifier.weight(1f))
           } else {
             LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-              items(upcoming) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
+              val groupedUpcomingMatches = upcoming.groupBy { it.time?.readableDate }
+              groupedUpcomingMatches.forEach { (date, match) ->
+                stickyHeader {
+                  date?.let {
+                    Column(
+                      Modifier.fillMaxWidth()
+                        .background(VLRTheme.colorScheme.primaryContainer)
+                        .border(1.dp, VLRTheme.colorScheme.primaryContainer),
+                    ) {
+                      Text(
+                        it,
+                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        textAlign = TextAlign.Center,
+                        color = VLRTheme.colorScheme.primary
+                      )
+                    }
+                  }
+                }
+                items(match) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
+              }
             }
           }
         }
@@ -120,7 +143,24 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
             Spacer(modifier = Modifier.weight(1f))
           } else {
             LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-              items(completed) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
+              val groupedCompletedMatches = completed.groupBy { it.time?.readableDate }
+              groupedCompletedMatches.forEach { (date, match) ->
+                stickyHeader {
+                  date?.let {
+                    Column(
+                      Modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer),
+                    ) {
+                      Text(
+                        it,
+                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        textAlign = TextAlign.Center,
+                        color = VLRTheme.colorScheme.primary
+                      )
+                    }
+                  }
+                }
+                items(match) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
+              }
             }
           }
         }
@@ -144,7 +184,8 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -
       Text(
         text =
           if (matchPreviewInfo.status.equals("LIVE", true)) "LIVE"
-          else matchPreviewInfo.time?.timeDiff ?: "",
+          else
+            matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})") ?: "",
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.displaySmall

@@ -1,9 +1,6 @@
 package dev.staticvar.vlr.data.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import dev.staticvar.vlr.data.api.response.*
 import dev.staticvar.vlr.data.model.TopicTracker
 import kotlinx.coroutines.flow.Flow
@@ -56,4 +53,10 @@ interface VlrDao {
 
   @Query("DELETE from TournamentDetails where id = :topic")
   fun deleteTournamentInfoById(topic: String)
+
+  @Transaction
+  suspend fun insertMatchPreviewInfo(items: List<MatchPreviewInfo>) {
+    deleteAllMatchPreview()
+    insertAllMatches(items)
+  }
 }

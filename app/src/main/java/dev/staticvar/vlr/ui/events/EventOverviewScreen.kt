@@ -23,6 +23,7 @@ import dev.staticvar.vlr.data.api.response.TournamentPreview
 import dev.staticvar.vlr.ui.Action
 import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.Waiting
 import dev.staticvar.vlr.utils.onFail
@@ -74,7 +75,8 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
   Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
       selectedTabIndex = pagerState.currentPage,
-      containerColor = VLRTheme.colorScheme.primaryContainer
+      containerColor = VLRTheme.colorScheme.primaryContainer,
+      indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
     ) {
       Tab(
         selected = pagerState.currentPage == 0,

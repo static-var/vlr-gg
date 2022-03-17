@@ -26,6 +26,7 @@ import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.COLOR_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.Waiting
 import dev.staticvar.vlr.utils.onFail
@@ -114,7 +115,8 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
           maxLines = 2,
           overflow = TextOverflow.Ellipsis
         )
-        Text(text = tournamentDetails.subtitle, modifier = Modifier.padding(4.dp))
+        if (tournamentDetails.subtitle.isNotBlank())
+          Text(text = tournamentDetails.subtitle, modifier = Modifier.padding(4.dp))
         Row(
           Modifier.fillMaxWidth().padding(horizontal = 4.dp),
           verticalAlignment = Alignment.CenterVertically
@@ -249,7 +251,8 @@ fun EventMatchGroups(
     ScrollableTabRow(
       selectedTabIndex = tabSelection,
       containerColor = VLRTheme.colorScheme.primaryContainer,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp))
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp)),
+      indicator = { indicators -> VLRTabIndicator(indicators, tabSelection) }
     ) {
       group.keys.forEachIndexed { index, s ->
         Tab(

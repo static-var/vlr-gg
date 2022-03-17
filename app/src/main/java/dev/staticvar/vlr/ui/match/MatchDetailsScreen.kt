@@ -35,6 +35,7 @@ import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.COLOR_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -55,7 +56,6 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   ) {
     details
       .onPass {
-        e { data.toString() }
         data?.let { matchInfo ->
           var position by remember { mutableStateOf(0) }
 
@@ -314,7 +314,8 @@ fun ShowMatchStatsTab(
   ScrollableTabRow(
     selectedTabIndex = tabIndex,
     containerColor = VLRTheme.colorScheme.primaryContainer,
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp))
+    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp)),
+    indicator = { indicators -> VLRTabIndicator(indicators, tabIndex) }
   ) {
     mapData.forEachIndexed { index, matchDetailData ->
       Tab(selected = index == tabIndex, onClick = { onTabChange(index) }) {
@@ -510,13 +511,18 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
     if (expand) {
       Row(
         Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(false) },
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
       ) {
         Text(
           text = stringResource(R.string.streams_and_vods),
           style = VLRTheme.typography.titleSmall
         )
-        Icon(Icons.Outlined.ArrowUpward, contentDescription = stringResource(R.string.expand))
+        Icon(
+          Icons.Outlined.ArrowUpward,
+          contentDescription = stringResource(R.string.expand),
+          modifier = Modifier.size(16.dp)
+        )
       }
       if (videos.streams.isNotEmpty()) {
         Text(text = "Stream", modifier = Modifier.fillMaxWidth().padding(8.dp))
@@ -550,13 +556,18 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
     } else {
       Row(
         Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(true) },
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
       ) {
         Text(
           text = stringResource(R.string.streams_and_vods),
           style = VLRTheme.typography.titleSmall
         )
-        Icon(Icons.Outlined.ArrowDownward, contentDescription = stringResource(R.string.expand))
+        Icon(
+          Icons.Outlined.ArrowDownward,
+          contentDescription = stringResource(R.string.expand),
+          modifier = Modifier.size(16.dp)
+        )
       }
     }
   }
@@ -592,7 +603,7 @@ fun MatchMoreDetailsDialog(detailData: MatchInfo, open: Boolean, onDismiss: (Boo
             )
           }
           Text(
-            text = detailData.event.date?.readableTime ?: "",
+            text = detailData.event.date?.readableDateAndTime ?: "",
             modifier = Modifier.padding(8.dp).fillMaxWidth(),
             textAlign = TextAlign.Center
           )
