@@ -231,7 +231,7 @@ fun GameOverviewPreview(
   ) {
     Column(modifier = Modifier.padding(8.dp)) {
       Text(
-        text = matchPreviewInfo.eta ?: matchPreviewInfo.date.readableTime,
+        text = matchPreviewInfo.eta ?: matchPreviewInfo.date.readableDateAndTime,
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.displaySmall

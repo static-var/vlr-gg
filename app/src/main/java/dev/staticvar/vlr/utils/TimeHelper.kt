@@ -34,7 +34,7 @@ val String.hasElapsed: Boolean
       .atZoneSameInstant(deviceZoneId)
       .isBefore(ZonedDateTime.now())
 
-val String.readableTime: String
+val String.readableDateAndTime: String
   get() =
     LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
       .atOffset(ZoneOffset.UTC)
@@ -44,8 +44,17 @@ val String.readableTime: String
 
 val String.readableDate: String
   get() =
-    LocalDate.parse(this, DateTimeFormatter.ISO_DATE_TIME)
+    LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
+      .atOffset(ZoneOffset.UTC)
+      .atZoneSameInstant(deviceZoneId)
       .format(DateTimeFormatter.ofPattern("E, dd MMM yyyy"))
+
+val String.readableTime: String
+  get() =
+    LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
+      .atOffset(ZoneOffset.UTC)
+      .atZoneSameInstant(deviceZoneId)
+      .format(DateTimeFormatter.ofPattern("HH:mm a"))
 
 val String.timeToEpoch: Long
   get() =

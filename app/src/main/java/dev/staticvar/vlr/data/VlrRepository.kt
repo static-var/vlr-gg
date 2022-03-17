@@ -54,7 +54,7 @@ constructor(
         val response =
           kotlin.runCatching {
             ktorHttpClient.get<List<MatchPreviewInfo>>(path = "matches/").also {
-              vlrDao.insertAllMatches(it)
+              vlrDao.insertMatchPreviewInfo(it)
               TimeElapsed.start(Constants.KEY_MATCH_ALL, 30.seconds)
             }
           }
@@ -62,11 +62,9 @@ constructor(
       }
     }
 
-  private fun getMatchesFromDb() =
-    flow {
-        emitAll(vlrDao.getAllMatchesPreview().map { if (it.isEmpty()) Waiting() else Pass(it) })
-      }
-      .distinctUntilChanged()
+  private fun getMatchesFromDb() = vlrDao.getAllMatchesPreview().map {
+    e {"DB size ${it.size}"}
+    if (it.isEmpty()) Waiting() else Pass(it) }.distinctUntilChanged()
 
   fun mergeMatches() = merge(getMatchesFromDb(), getMatchesFromServer()).flowOn(ioDispatcher)
 
@@ -97,7 +95,6 @@ constructor(
           kotlin.runCatching {
             ktorHttpClient.get<MatchInfo>(path = "matches/$url").also {
               it.id = url
-              vlrDao.deleteAllMatchPreview()
               vlrDao.insertMatchInfo(it)
               TimeElapsed.start(url, 30.seconds)
             }
@@ -119,7 +116,6 @@ constructor(
         val response =
           kotlin.runCatching {
             ktorHttpClient.get<TournamentDetails>(path = "events/$url").also {
-              vlrDao.deleteAllTournamentPreview()
               vlrDao.insertTournamentDetails(it)
               TimeElapsed.start(url, 30.seconds)
             }
