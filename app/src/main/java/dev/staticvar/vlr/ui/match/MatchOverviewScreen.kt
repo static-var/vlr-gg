@@ -59,11 +59,13 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
         it[false]
           ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
           ?.get(true)
-          .orEmpty(),
+          .orEmpty()
+          .sortedBy { it.time?.timeToEpoch },
         it[false]
           ?.groupBy { it.status.startsWith("completed", ignoreCase = true) }
           ?.get(true)
           .orEmpty()
+          .sortedByDescending { it.time?.timeToEpoch }
       )
     }
 

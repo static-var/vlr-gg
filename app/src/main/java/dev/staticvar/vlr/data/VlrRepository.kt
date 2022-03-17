@@ -97,6 +97,7 @@ constructor(
           kotlin.runCatching {
             ktorHttpClient.get<MatchInfo>(path = "matches/$url").also {
               it.id = url
+              vlrDao.deleteAllMatchPreview()
               vlrDao.insertMatchInfo(it)
               TimeElapsed.start(url, 30.seconds)
             }
@@ -118,6 +119,7 @@ constructor(
         val response =
           kotlin.runCatching {
             ktorHttpClient.get<TournamentDetails>(path = "events/$url").also {
+              vlrDao.deleteAllTournamentPreview()
               vlrDao.insertTournamentDetails(it)
               TimeElapsed.start(url, 30.seconds)
             }
