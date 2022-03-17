@@ -24,10 +24,7 @@ import dev.staticvar.vlr.data.api.response.NewsResponseItem
 import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.Waiting
-import dev.staticvar.vlr.utils.onFail
-import dev.staticvar.vlr.utils.onPass
-import dev.staticvar.vlr.utils.onWaiting
+import dev.staticvar.vlr.utils.*
 
 @Composable
 fun NewsScreen(viewModel: VlrViewModel) {
@@ -41,9 +38,14 @@ fun NewsScreen(viewModel: VlrViewModel) {
     newsInfo
       .onPass {
         data?.let { list ->
+          val safeConvertedList =
+            kotlin.runCatching { list.sortedByDescending { it.date.timeToEpoch } }
+
           LazyColumn() {
             item { Spacer(modifier = Modifier.statusBarsPadding()) }
-            items(list) { NewsItem(newsResponseItem = it) }
+            items(
+              if (safeConvertedList.isFailure) list else safeConvertedList.getOrElse { listOf() }
+            ) { NewsItem(newsResponseItem = it) }
           }
         }
       }
@@ -91,8 +93,11 @@ fun NewsItem(newsResponseItem: NewsResponseItem) {
           contentDescription = "",
           modifier = Modifier.size(16.dp)
         )
+        val convertedDate = kotlin.runCatching { newsResponseItem.date.readableDate }
         Text(
-          text = newsResponseItem.date,
+          text =
+            if (convertedDate.isSuccess) convertedDate.getOrDefault(newsResponseItem.date)
+            else newsResponseItem.date,
           style = VLRTheme.typography.bodySmall,
           modifier = Modifier.padding(4.dp)
         )

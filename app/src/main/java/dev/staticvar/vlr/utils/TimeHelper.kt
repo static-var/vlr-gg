@@ -28,21 +28,30 @@ val String.timeDiff: String
   }
 
 val String.hasElapsed: Boolean
-  get() {
-    val givenTime =
-      LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
-        .atOffset(ZoneOffset.UTC)
-        .atZoneSameInstant(deviceZoneId)
-    return givenTime.isBefore(ZonedDateTime.now())
-  }
+  get() =
+    LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
+      .atOffset(ZoneOffset.UTC)
+      .atZoneSameInstant(deviceZoneId)
+      .isBefore(ZonedDateTime.now())
 
 val String.readableTime: String
-  get() {
-    return LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
+  get() =
+    LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
       .atOffset(ZoneOffset.UTC)
       .atZoneSameInstant(deviceZoneId)
       .format(DateTimeFormatter.RFC_1123_DATE_TIME)
       .substringBefore("+")
-  }
+
+val String.readableDate: String
+  get() =
+    LocalDate.parse(this, DateTimeFormatter.ISO_DATE_TIME)
+      .format(DateTimeFormatter.ofPattern("E, dd MMM yyyy"))
+
+val String.timeToEpoch: Long
+  get() =
+    LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
+      .atOffset(ZoneOffset.UTC)
+      .atZoneSameInstant(deviceZoneId)
+      .toEpochSecond()
 
 private val deviceZoneId = ZoneId.systemDefault()

@@ -48,9 +48,12 @@ interface VlrDao {
 
   @Query("DELETE from TournamentPreview") fun deleteAllTournamentPreview()
 
+  @Query("DELETE from NewsResponseItem") fun deleteAllNews()
+
   @Query("DELETE from TopicTracker where topic = :topic") fun deleteTopic(topic: String)
 
   @Query("DELETE from MatchInfo where id = :topic") fun deleteMatchInfoById(topic: String)
 
-  @Query("DELETE from TournamentDetails where id = :topic") fun deleteTournamentInfoById(topic: String)
+  @Query("DELETE from TournamentDetails where id = :topic")
+  fun deleteTournamentInfoById(topic: String)
 }
