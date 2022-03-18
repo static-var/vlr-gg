@@ -269,6 +269,7 @@ fun AppUpdateDownloadPopup(viewModel: VlrViewModel) {
               )
               LinearProgressIndicator(
                 progress = downloadProgress.first.div(100f),
+                modifier = Modifier.padding(4.dp)
               )
             } else {
               Text(text = stringResource(R.string.begin_download))

@@ -10,7 +10,7 @@
     <string name="events">Events</string>
     <string name="download_complete">Download complete!</string>
     <string name="begin_download">Click download to download the update</string>
-    <string name="downloading_percent">Downloading… %d %</string>
+    <string name="downloading_percent">Downloading… %1$d</string>
     <string name="download">Download</string>
     <string name="cancel">Cancel</string>
     <string name="team_logo_content_description">Team Logo</string>
