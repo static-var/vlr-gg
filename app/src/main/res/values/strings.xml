@@ -7,6 +7,7 @@
     <string name="games">Games</string>
     <string name="matches">Matches</string>
     <string name="tournament">Tournament</string>
+    <string name="about">About</string>
     <string name="events">Events</string>
     <string name="download_complete">Download complete!</string>
     <string name="begin_download">Click download to download the update</string>
@@ -47,4 +48,11 @@
     <string name="more_info">More info</string>
     <string name="roster">Roster</string>
     <string name="collapse">Collapse</string>
+    <string name="app_description">Unofficial app for VLR (vlr.gg)</string>
+    <string name="app_version">Current App version</string>
+    <string name="latest_app_version">Latest app version available</string>
+    <string name="developer">Developer</string>
+    <string name="website">Website</string>
+    <string name="source_code">Source Code</string>
+    <string name="release">Release</string>
 </resources>

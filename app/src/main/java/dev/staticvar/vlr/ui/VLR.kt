@@ -3,10 +3,14 @@ package dev.staticvar.vlr.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Feed
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Feed
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,6 +29,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.NavState
+import dev.staticvar.vlr.ui.about.AboutScreen
 import dev.staticvar.vlr.ui.events.EventDetails
 import dev.staticvar.vlr.ui.events.EventScreen
 import dev.staticvar.vlr.ui.match.MatchOverview
@@ -65,7 +70,7 @@ fun VLR() {
   }
 
   val context = LocalContext.current
-  val currentAppVersion = context.packageManager.getPackageInfo(context.packageName, 0).versionName
+  val currentAppVersion = context.currentAppVersion
   val remoteAppVersion by
     remember(viewModel) { viewModel.getLatestAppVersion() }.collectAsState(initial = null)
 
@@ -73,10 +78,12 @@ fun VLR() {
     produceState<Boolean>(initialValue = false, remoteAppVersion, currentAppVersion) {
       remoteAppVersion?.let { remoteVersion ->
         if (remoteVersion.trim().equals(currentAppVersion, ignoreCase = true)) {
-          e { "No new version available" }
+          i { "No new version available" }
           value = false
         } else {
-          e { "New version available | $remoteVersion | $currentAppVersion" }
+          i {
+            "New version available | Remove Version $remoteVersion | Local Version $currentAppVersion"
+          }
           value = true
         }
       }
@@ -104,7 +111,8 @@ fun VLR() {
             selected = navState == NavState.NEWS,
             icon = {
               Icon(
-                imageVector = Icons.Outlined.Feed,
+                imageVector =
+                  if (navState == NavState.NEWS) Icons.Filled.Feed else Icons.Outlined.Feed,
                 contentDescription = stringResource(R.string.news),
                 tint = VLRTheme.colorScheme.onPrimaryContainer
               )
@@ -116,7 +124,9 @@ fun VLR() {
             selected = navState == NavState.MATCH_OVERVIEW,
             icon = {
               Icon(
-                imageVector = Icons.Outlined.SportsEsports,
+                imageVector =
+                  if (navState == NavState.MATCH_OVERVIEW) Icons.Filled.SportsEsports
+                  else Icons.Outlined.SportsEsports,
                 contentDescription = stringResource(R.string.games),
                 tint = VLRTheme.colorScheme.onPrimaryContainer
               )
@@ -128,13 +138,28 @@ fun VLR() {
             selected = navState == NavState.TOURNAMENT,
             icon = {
               Icon(
-                imageVector = Icons.Outlined.EmojiEvents,
+                imageVector =
+                  if (navState == NavState.TOURNAMENT) Icons.Filled.EmojiEvents
+                  else Icons.Outlined.EmojiEvents,
                 contentDescription = stringResource(R.string.tournament),
                 tint = VLRTheme.colorScheme.onPrimaryContainer
               )
             },
             label = { Text(text = stringResource(R.string.events)) },
             onClick = action.goEvents
+          )
+          NavigationBarItem(
+            selected = navState == NavState.ABOUT,
+            icon = {
+              Icon(
+                imageVector =
+                  if (navState == NavState.ABOUT) Icons.Filled.Info else Icons.Outlined.Info,
+                contentDescription = stringResource(R.string.about),
+                tint = VLRTheme.colorScheme.onPrimaryContainer
+              )
+            },
+            label = { Text(text = stringResource(R.string.about)) },
+            onClick = action.goAbout
           )
         }
       }
@@ -165,6 +190,16 @@ fun VLR() {
         ) {
           viewModel.setNavigation(NavState.MATCH_OVERVIEW)
           MatchOverview(viewModel = viewModel)
+        }
+        composable(
+          Destination.About.route,
+          enterTransition = { slideInFromBottom },
+          popEnterTransition = { slideInFromBottom },
+          exitTransition = { fadeOut },
+          popExitTransition = { fadeOut },
+        ) {
+          viewModel.setNavigation(NavState.ABOUT)
+          AboutScreen(viewModel = viewModel)
         }
         composable(
           Destination.EventOverview.route,

@@ -9,12 +9,14 @@ private object Destinations {
   const val NEWS = "news"
   const val TEAM = "team"
   const val EVENTS_OVERVIEW = "event_overview"
+  const val ABOUT = "about"
 }
 
 sealed class Destination(val route: String) {
   object MatchOverview : Destination(Destinations.MATCH_OVERVIEW)
   object News : Destination(Destinations.NEWS)
   object EventOverview : Destination(Destinations.EVENTS_OVERVIEW)
+  object About : Destination(Destinations.ABOUT)
   object Match : Destination("${Destinations.MATCH}/{${Args.ID}}") {
     object Args {
       const val ID = "id"
@@ -42,6 +44,8 @@ class Action(private val navController: NavHostController) {
   val goNews: () -> Unit = { navController.navigate(Destinations.NEWS) }
 
   val goEvents: () -> Unit = { navController.navigate(Destinations.EVENTS_OVERVIEW) }
+
+  val goAbout: () -> Unit = { navController.navigate(Destinations.ABOUT) }
 
   val match: (String) -> Unit = { id -> navController.navigate("${Destinations.MATCH}/$id") }
 
