@@ -34,7 +34,7 @@ constructor(
         val response =
           kotlin.runCatching {
             ktorHttpClient.get<List<NewsResponseItem>>(path = "news/").also {
-              vlrDao.insertAllNews(it)
+              vlrDao.deleteAndInsertNews(it)
               TimeElapsed.start(Constants.KEY_NEWS, 180.seconds)
             }
           }
@@ -43,8 +43,7 @@ constructor(
     }
 
   private fun getNewsFromDb() =
-    flow { emitAll(vlrDao.getNews().map { if (it.isEmpty()) Waiting() else Pass(it) }) }
-      .distinctUntilChanged()
+    vlrDao.getNews().map { if (it.isEmpty()) Waiting() else Pass(it) }.distinctUntilChanged()
 
   fun mergeNews() = merge(getNewsFromDb(), getNews()).flowOn(ioDispatcher)
 
@@ -54,7 +53,7 @@ constructor(
         val response =
           kotlin.runCatching {
             ktorHttpClient.get<List<MatchPreviewInfo>>(path = "matches/").also {
-              vlrDao.insertMatchPreviewInfo(it)
+              vlrDao.deleteAndInsertMatchPreviewInfo(it)
               TimeElapsed.start(Constants.KEY_MATCH_ALL, 30.seconds)
             }
           }
@@ -62,9 +61,11 @@ constructor(
       }
     }
 
-  private fun getMatchesFromDb() = vlrDao.getAllMatchesPreview().map {
-    e {"DB size ${it.size}"}
-    if (it.isEmpty()) Waiting() else Pass(it) }.distinctUntilChanged()
+  private fun getMatchesFromDb() =
+    vlrDao
+      .getAllMatchesPreview()
+      .map { if (it.isEmpty()) Waiting() else Pass(it) }
+      .distinctUntilChanged()
 
   fun mergeMatches() = merge(getMatchesFromDb(), getMatchesFromServer()).flowOn(ioDispatcher)
 
@@ -74,7 +75,7 @@ constructor(
         val response =
           kotlin.runCatching {
             ktorHttpClient.get<List<TournamentPreview>>(path = "events/").also {
-              vlrDao.insertAllTournamentInfo(it)
+              vlrDao.deleteAndInsertTournamentPreview(it)
               TimeElapsed.start(Constants.KEY_TOURNAMENT_ALL, 60.seconds)
             }
           }
@@ -83,8 +84,7 @@ constructor(
     }
 
   private fun getEventsFromDb() =
-    flow { emitAll(vlrDao.getTournaments().map { if (it.isEmpty()) Waiting() else Pass(it) }) }
-      .distinctUntilChanged()
+    vlrDao.getTournaments().map { if (it.isEmpty()) Waiting() else Pass(it) }.distinctUntilChanged()
 
   fun mergeEvents() = merge(getEventsFromDb(), getEventsFromServer()).flowOn(ioDispatcher)
 
@@ -103,9 +103,8 @@ constructor(
       }
     }
 
-  private fun getMatchDetailsFromDb(url: String) = flow {
-    emitAll(vlrDao.getMatchById(url).map { if (it == null) Waiting() else Pass(it) })
-  }
+  private fun getMatchDetailsFromDb(url: String) =
+    vlrDao.getMatchById(url).map { if (it == null) Waiting() else Pass(it) }
 
   fun mergeMatchDetails(url: String) =
     merge(getMatchDetailsFromDb(url), getMatchDetailsFromServer(url)).flowOn(ioDispatcher)
@@ -124,17 +123,15 @@ constructor(
       }
     }
 
-  private fun getEventDetailsFromDb(url: String) = flow {
-    emitAll(vlrDao.getTournamentById(url).map { if (it == null) Waiting() else Pass(it) })
-  }
+  private fun getEventDetailsFromDb(url: String) =
+    vlrDao.getTournamentById(url).map { if (it == null) Waiting() else Pass(it) }
 
   fun mergeEventDetails(url: String) =
     merge(getEventDetailsFromDb(url), getEventDetailsFromServer(url)).flowOn(ioDispatcher)
 
   fun trackTopic(topic: String) = vlrDao.insertTopicTracker(TopicTracker(topic))
 
-  fun isTopicTracked(topic: String) =
-    flow { emitAll(vlrDao.isTopicSubscribed(topic)) }.flowOn(ioDispatcher)
+  fun isTopicTracked(topic: String) = vlrDao.isTopicSubscribed(topic).flowOn(ioDispatcher)
 
   fun removeTopic(topic: String) = vlrDao.deleteTopic(topic)
 

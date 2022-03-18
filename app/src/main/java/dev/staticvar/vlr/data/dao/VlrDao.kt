@@ -55,8 +55,20 @@ interface VlrDao {
   fun deleteTournamentInfoById(topic: String)
 
   @Transaction
-  suspend fun insertMatchPreviewInfo(items: List<MatchPreviewInfo>) {
+  suspend fun deleteAndInsertMatchPreviewInfo(items: List<MatchPreviewInfo>) {
     deleteAllMatchPreview()
     insertAllMatches(items)
+  }
+
+  @Transaction
+  suspend fun deleteAndInsertTournamentPreview(items: List<TournamentPreview>) {
+    deleteAllTournamentPreview()
+    insertAllTournamentInfo(items)
+  }
+
+  @Transaction
+  suspend fun deleteAndInsertNews(items: List<NewsResponseItem>) {
+    deleteAllNews()
+    insertAllNews(items)
   }
 }
