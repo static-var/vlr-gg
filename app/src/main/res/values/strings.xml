@@ -48,9 +48,10 @@
     <string name="more_info">More info</string>
     <string name="roster">Roster</string>
     <string name="collapse">Collapse</string>
-    <string name="app_description">Unofficial app for VLR (vlr.gg)</string>
-    <string name="app_version">Current App version</string>
-    <string name="latest_app_version">Latest app version available</string>
+    <string name="app_description">VLR (Unofficial app for vlr.gg)</string>
+    <string name="app_version">Current version</string>
+    <string name="latest_app_version">Latest available version</string>
+    <string name="package_name">Package name</string>
     <string name="developer">Developer</string>
     <string name="website">Website</string>
     <string name="source_code">Source Code</string>
