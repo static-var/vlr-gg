@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.helper.currentAppVersion
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.currentAppVersion
 
 @Composable
 fun AboutScreen(viewModel: VlrViewModel) {
@@ -204,7 +204,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
 
     Spacer(modifier = Modifier.weight(1f))
     Text(
-      text = context.packageName,
+      text = "${stringResource(id = R.string.package_name)} - ${context.packageName}",
       modifier = Modifier.fillMaxWidth(),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
@@ -216,7 +216,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
       textAlign = TextAlign.Center
     )
     Text(
-      text = "${stringResource(id = R.string.latest_app_version)} - $remoteAppVersion",
+      text = "${stringResource(id = R.string.latest_app_version)} - ${remoteAppVersion ?: "finding..."}",
       modifier = Modifier.fillMaxWidth(),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
