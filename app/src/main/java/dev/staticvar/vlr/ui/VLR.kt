@@ -1,8 +1,12 @@
 package dev.staticvar.vlr.ui
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Feed
@@ -14,10 +18,10 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -32,6 +36,8 @@ import dev.staticvar.vlr.data.NavState
 import dev.staticvar.vlr.ui.about.AboutScreen
 import dev.staticvar.vlr.ui.events.EventDetails
 import dev.staticvar.vlr.ui.events.EventScreen
+import dev.staticvar.vlr.ui.helper.AppUpdateDownloadPopup
+import dev.staticvar.vlr.ui.helper.currentAppVersion
 import dev.staticvar.vlr.ui.match.MatchOverview
 import dev.staticvar.vlr.ui.match.NewMatchDetails
 import dev.staticvar.vlr.ui.news.NewsScreen
@@ -39,7 +45,6 @@ import dev.staticvar.vlr.ui.team.TeamScreen
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flowOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,15 +82,14 @@ fun VLR() {
   val needAppUpdate by
     produceState<Boolean>(initialValue = false, remoteAppVersion, currentAppVersion) {
       remoteAppVersion?.let { remoteVersion ->
-        if (remoteVersion.trim().equals(currentAppVersion, ignoreCase = true)) {
-          i { "No new version available" }
-          value = false
-        } else {
-          i {
-            "New version available | Remove Version $remoteVersion | Local Version $currentAppVersion"
+        value =
+          if (remoteVersion.trim().equals(currentAppVersion, ignoreCase = true)) {
+            i { "No new version available" }
+            false
+          } else {
+            i { "New version | Remote Version $remoteVersion | Local Version $currentAppVersion" }
+            true
           }
-          value = true
-        }
       }
     }
 
@@ -95,72 +99,96 @@ fun VLR() {
 
   Scaffold(
     bottomBar = {
-      AnimatedVisibility(
-        visible =
-          navState != NavState.MATCH_DETAILS &&
-            navState != NavState.TOURNAMENT_DETAILS &&
-            navState != NavState.TEAM_DETAILS
-      ) {
-        NavigationBar(
-          containerColor = VLRTheme.colorScheme.primaryContainer.copy(0.2f),
-          contentColor = contentColorFor(VLRTheme.colorScheme.primaryContainer.copy(0.2f)),
-          tonalElevation = 0.dp,
-          modifier = Modifier.navigationBarsPadding()
+      AnimatedContent(
+        navState,
+        transitionSpec = {
+          fadeIn(animationSpec = tween(200, 200)) with
+            fadeOut(animationSpec = tween(150)) using
+            SizeTransform { initialSize, targetSize ->
+              if (navState != NavState.MATCH_DETAILS &&
+                  navState != NavState.TOURNAMENT_DETAILS &&
+                  navState != NavState.TEAM_DETAILS
+              ) {
+                keyframes {
+                  // Expand horizontally first.
+                  IntSize(targetSize.width, initialSize.height) at 150
+                  durationMillis = 300
+                }
+              } else {
+                keyframes {
+                  // Shrink vertically first.
+                  IntSize(initialSize.width, targetSize.height) at 150
+                  durationMillis = 300
+                }
+              }
+            }
+        }
+      ) { targetState ->
+        if (targetState != NavState.MATCH_DETAILS &&
+            targetState != NavState.TOURNAMENT_DETAILS &&
+            targetState != NavState.TEAM_DETAILS
         ) {
-          NavigationBarItem(
-            selected = navState == NavState.NEWS,
-            icon = {
-              Icon(
-                imageVector =
-                  if (navState == NavState.NEWS) Icons.Filled.Feed else Icons.Outlined.Feed,
-                contentDescription = stringResource(R.string.news),
-                tint = VLRTheme.colorScheme.onPrimaryContainer
-              )
-            },
-            label = { Text(text = stringResource(R.string.news)) },
-            onClick = action.goNews,
-          )
-          NavigationBarItem(
-            selected = navState == NavState.MATCH_OVERVIEW,
-            icon = {
-              Icon(
-                imageVector =
-                  if (navState == NavState.MATCH_OVERVIEW) Icons.Filled.SportsEsports
-                  else Icons.Outlined.SportsEsports,
-                contentDescription = stringResource(R.string.games),
-                tint = VLRTheme.colorScheme.onPrimaryContainer
-              )
-            },
-            label = { Text(text = stringResource(R.string.matches)) },
-            onClick = action.matchOverview
-          )
-          NavigationBarItem(
-            selected = navState == NavState.TOURNAMENT,
-            icon = {
-              Icon(
-                imageVector =
-                  if (navState == NavState.TOURNAMENT) Icons.Filled.EmojiEvents
-                  else Icons.Outlined.EmojiEvents,
-                contentDescription = stringResource(R.string.tournament),
-                tint = VLRTheme.colorScheme.onPrimaryContainer
-              )
-            },
-            label = { Text(text = stringResource(R.string.events)) },
-            onClick = action.goEvents
-          )
-          NavigationBarItem(
-            selected = navState == NavState.ABOUT,
-            icon = {
-              Icon(
-                imageVector =
-                  if (navState == NavState.ABOUT) Icons.Filled.Info else Icons.Outlined.Info,
-                contentDescription = stringResource(R.string.about),
-                tint = VLRTheme.colorScheme.onPrimaryContainer
-              )
-            },
-            label = { Text(text = stringResource(R.string.about)) },
-            onClick = action.goAbout
-          )
+          NavigationBar(
+            containerColor = VLRTheme.colorScheme.primaryContainer.copy(0.2f),
+            contentColor = contentColorFor(VLRTheme.colorScheme.primaryContainer.copy(0.2f)),
+            tonalElevation = 0.dp,
+            modifier = Modifier.navigationBarsPadding()
+          ) {
+            NavigationBarItem(
+              selected = navState == NavState.NEWS,
+              icon = {
+                Icon(
+                  imageVector =
+                    if (navState == NavState.NEWS) Icons.Filled.Feed else Icons.Outlined.Feed,
+                  contentDescription = stringResource(R.string.news),
+                  tint = VLRTheme.colorScheme.onPrimaryContainer
+                )
+              },
+              label = { Text(text = stringResource(R.string.news)) },
+              onClick = action.goNews,
+            )
+            NavigationBarItem(
+              selected = navState == NavState.MATCH_OVERVIEW,
+              icon = {
+                Icon(
+                  imageVector =
+                    if (navState == NavState.MATCH_OVERVIEW) Icons.Filled.SportsEsports
+                    else Icons.Outlined.SportsEsports,
+                  contentDescription = stringResource(R.string.games),
+                  tint = VLRTheme.colorScheme.onPrimaryContainer
+                )
+              },
+              label = { Text(text = stringResource(R.string.matches)) },
+              onClick = action.matchOverview
+            )
+            NavigationBarItem(
+              selected = navState == NavState.TOURNAMENT,
+              icon = {
+                Icon(
+                  imageVector =
+                    if (navState == NavState.TOURNAMENT) Icons.Filled.EmojiEvents
+                    else Icons.Outlined.EmojiEvents,
+                  contentDescription = stringResource(R.string.tournament),
+                  tint = VLRTheme.colorScheme.onPrimaryContainer
+                )
+              },
+              label = { Text(text = stringResource(R.string.events)) },
+              onClick = action.goEvents
+            )
+            NavigationBarItem(
+              selected = navState == NavState.ABOUT,
+              icon = {
+                Icon(
+                  imageVector =
+                    if (navState == NavState.ABOUT) Icons.Filled.Info else Icons.Outlined.Info,
+                  contentDescription = stringResource(R.string.about),
+                  tint = VLRTheme.colorScheme.onPrimaryContainer
+                )
+              },
+              label = { Text(text = stringResource(R.string.about)) },
+              onClick = action.goAbout
+            )
+          }
         }
       }
     }
@@ -261,68 +289,3 @@ fun VLR() {
 
 const val COLOR_ALPHA = 0.1f
 const val CARD_ALPHA = 0.3f
-
-@Composable
-fun AppUpdateDownloadPopup(viewModel: VlrViewModel) {
-  val url by remember { viewModel.getApkUrl() }.collectAsState(initial = null)
-  var show by remember { mutableStateOf(true) }
-  var downloadClicked by remember { mutableStateOf(false) }
-
-  // initiate download process if dialog is still being shown and URL is not null
-  val downloadProgress by
-    produceState(initialValue = flowOf(Pair(0, ByteArray(0))), downloadClicked, url) {
-        if (url != null && downloadClicked) {
-          value = viewModel.downloadApkWithProgress(url!!)
-        }
-      }
-      .value
-      .collectAsState(initial = Pair(0, ByteArray(0)))
-
-  // Once download is complete, initiate Installation process
-  if (downloadProgress.first == 100 && downloadProgress.second.isNotEmpty()) {
-    PackageHelper.convertByteToFileAndInstall(LocalContext.current, downloadProgress.second)
-  }
-
-  // Show dialog only when URL is available and make dialog dismissible only till download has not
-  // begun
-  if (show && url != null)
-    AlertDialog(
-      onDismissRequest = { if (!downloadClicked) show = false },
-      title = { Text(text = "Update available", style = VLRTheme.typography.titleMedium) },
-      text = {
-        AnimatedVisibility(visible = show) {
-          Column(
-            Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-          ) {
-            if (downloadClicked) {
-              Text(
-                text =
-                  if (downloadProgress.first == 100) stringResource(R.string.download_complete)
-                  else stringResource(R.string.downloading_percent, downloadProgress.first)
-              )
-              LinearProgressIndicator(
-                progress = downloadProgress.first.div(100f),
-                modifier = Modifier.padding(4.dp)
-              )
-            } else {
-              Text(text = stringResource(R.string.begin_download))
-            }
-          }
-        }
-      },
-      confirmButton = {
-        AnimatedVisibility(visible = show) {
-          if (!downloadClicked)
-            Button(onClick = { downloadClicked = true }) {
-              Text(text = stringResource(R.string.download))
-            }
-        }
-      },
-      dismissButton = {
-        if (!downloadClicked)
-          Button(onClick = { show = false }) { Text(text = stringResource(R.string.cancel)) }
-      }
-    )
-}
