@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,7 +31,6 @@ import com.google.firebase.messaging.ktx.messaging
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
-import dev.staticvar.vlr.ui.COLOR_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
@@ -53,9 +51,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 
   val primaryContainer = VLRTheme.colorScheme.tintedBackground
   val systemUiController = rememberSystemUiController()
-  SideEffect {
-    systemUiController.setStatusBarColor(primaryContainer)
-  }
+  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
   Column(
     modifier = Modifier.fillMaxSize(),
@@ -108,10 +104,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                   item {
                     Text(
                       text = it,
-                      modifier =
-                        Modifier.fillMaxWidth()
-                          .padding(horizontal = 8.dp)
-                          .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
+                      modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                       textAlign = TextAlign.Center
                     )
                   }
@@ -123,11 +116,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                 item {
                   Text(
                     text = stringResource(R.string.map_tbp),
-                    modifier =
-                      Modifier.fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA))
-                        .padding(32.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).padding(32.dp),
                     textAlign = TextAlign.Center,
                     style = VLRTheme.typography.bodyLarge
                   )
@@ -333,12 +322,7 @@ fun ShowMatchStatsTab(
 
 @Composable
 fun ScoreBox(mapData: MatchInfo.MatchDetailData) {
-  Column(
-    modifier =
-      Modifier.fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 4.dp)
-        .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
-  ) {
+  Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)) {
     Row(
       modifier = Modifier.fillMaxWidth().padding(2.dp),
       horizontalArrangement = Arrangement.Center,
