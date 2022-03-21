@@ -6,8 +6,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,10 +19,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
-import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
@@ -31,6 +34,12 @@ fun MatchOverview(viewModel: VlrViewModel) {
 
   val allMatches by
     remember(viewModel) { viewModel.getAllMatches() }.collectAsState(initial = Waiting())
+
+  val primaryContainer = VLRTheme.colorScheme.primaryContainer
+  val systemUiController = rememberSystemUiController()
+  SideEffect {
+    systemUiController.setStatusBarColor(primaryContainer)
+  }
 
   Column(
     modifier = Modifier.fillMaxSize().statusBarsPadding(),
@@ -171,15 +180,7 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
 
 @Composable
 fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -> Unit) {
-  Card(
-    modifier =
-      Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp).clickable {
-        onClick(matchPreviewInfo.id)
-      },
-    shape = RoundedCornerShape(16.dp),
-    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
-  ) {
+  CardView(modifier = Modifier.clickable { onClick(matchPreviewInfo.id) }) {
     Column(modifier = Modifier.padding(8.dp)) {
       Text(
         text =
@@ -196,13 +197,15 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -
           style = VLRTheme.typography.titleSmall,
           modifier = Modifier.weight(1f),
           maxLines = 1,
-          overflow = TextOverflow.Ellipsis
+          overflow = TextOverflow.Ellipsis,
+          color = VLRTheme.colorScheme.primary,
         )
         Text(
           text = matchPreviewInfo.team1.score?.toString() ?: "-",
           style = VLRTheme.typography.titleSmall,
           maxLines = 1,
-          overflow = TextOverflow.Ellipsis
+          overflow = TextOverflow.Ellipsis,
+          color = VLRTheme.colorScheme.primary,
         )
       }
       Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -211,13 +214,15 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -
           style = VLRTheme.typography.titleSmall,
           modifier = Modifier.weight(1f),
           maxLines = 1,
-          overflow = TextOverflow.Ellipsis
+          overflow = TextOverflow.Ellipsis,
+          color = VLRTheme.colorScheme.primary,
         )
         Text(
           text = matchPreviewInfo.team2.score?.toString() ?: "-",
           style = VLRTheme.typography.titleSmall,
           maxLines = 1,
-          overflow = TextOverflow.Ellipsis
+          overflow = TextOverflow.Ellipsis,
+          color = VLRTheme.colorScheme.primary,
         )
       }
       Text(

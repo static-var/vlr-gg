@@ -43,8 +43,8 @@ import dev.staticvar.vlr.ui.match.NewMatchDetails
 import dev.staticvar.vlr.ui.news.NewsScreen
 import dev.staticvar.vlr.ui.team.TeamScreen
 import dev.staticvar.vlr.ui.theme.VLRTheme
+import dev.staticvar.vlr.ui.theme.tintedBackground
 import dev.staticvar.vlr.utils.*
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,21 +54,14 @@ fun VLR() {
   val action = remember(navController) { Action(navController) }
 
   val systemUiController = rememberSystemUiController()
-  val primaryContainer = VLRTheme.colorScheme.primaryContainer
-  val background = VLRTheme.colorScheme.primaryContainer.copy(0.2f)
+  val background = VLRTheme.colorScheme.tintedBackground
 
   viewModel.action = action
   systemUiController.isNavigationBarContrastEnforced = true
 
-  val navState: NavState by viewModel.navState.collectAsState()
+  val navState: NavState by viewModel.navState.collectAsState(NavState.NEWS)
 
-  LaunchedEffect(key1 = navState) {
-    delay(500)
-    systemUiController.setStatusBarColor(
-      color =
-        if (navState == NavState.TOURNAMENT || navState == NavState.MATCH_OVERVIEW) primaryContainer
-        else background,
-    )
+  SideEffect() {
     systemUiController.setNavigationBarColor(
       color = background,
     )
@@ -129,8 +122,8 @@ fun VLR() {
             targetState != NavState.TEAM_DETAILS
         ) {
           NavigationBar(
-            containerColor = VLRTheme.colorScheme.primaryContainer.copy(0.2f),
-            contentColor = contentColorFor(VLRTheme.colorScheme.primaryContainer.copy(0.2f)),
+            containerColor = VLRTheme.colorScheme.tintedBackground,
+            contentColor = contentColorFor(VLRTheme.colorScheme.tintedBackground),
             tonalElevation = 0.dp,
             modifier = Modifier.navigationBarsPadding()
           ) {
@@ -195,8 +188,11 @@ fun VLR() {
   ) { paddingValues ->
     Box(
       modifier =
-        Modifier.padding(bottom = paddingValues.calculateBottomPadding())
-          .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
+        Modifier.padding(
+            bottom = paddingValues.calculateBottomPadding(),
+            top = paddingValues.calculateTopPadding()
+          )
+          .background(VLRTheme.colorScheme.tintedBackground),
     ) {
       AnimatedNavHost(navController = navController, startDestination = Destination.News.route) {
         composable(
@@ -287,5 +283,5 @@ fun VLR() {
   }
 }
 
-const val COLOR_ALPHA = 0.1f
+const val COLOR_ALPHA = 0.05f
 const val CARD_ALPHA = 0.3f

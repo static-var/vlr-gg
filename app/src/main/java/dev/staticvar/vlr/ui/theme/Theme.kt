@@ -5,10 +5,10 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
-import dev.staticvar.vlr.ui.COLOR_ALPHA
 
 private val DarkColorScheme =
   darkColorScheme(primary = Purple200, secondary = Purple500, tertiary = Teal200)
@@ -17,23 +17,12 @@ private val LightColorScheme =
   lightColorScheme(
     primary = Purple700,
     secondary = Purple500,
-    tertiary = Teal200
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
-    )
+    tertiary = Teal200,
+  )
 
 @Composable
 fun VLRTheme(
   darkTheme: Boolean = isSystemInDarkTheme(),
-  // Dynamic color is available on Android 12+
   dynamicColor: Boolean = true,
   content: @Composable () -> Unit
 ) {
@@ -56,11 +45,15 @@ fun VLRTheme(
   MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
 }
 
+const val LIGHT_THEME_ALPHA = 0.2f
+const val DARK_THEME_ALPHA = 0.05f
+
 val VLRTheme
   @Composable get() = MaterialTheme
 
-val MaterialTheme.primaryBackground
-  @Composable get() = VLRTheme.colorScheme.primary.copy(COLOR_ALPHA)
-
-val MaterialTheme.secondaryBackground
-  @Composable get() = VLRTheme.colorScheme.secondary.copy(COLOR_ALPHA)
+val ColorScheme.tintedBackground: Color
+  @Composable
+  get() =
+    primaryContainer.copy(
+      if (isSystemInDarkTheme()) DARK_THEME_ALPHA else LIGHT_THEME_ALPHA
+    )
