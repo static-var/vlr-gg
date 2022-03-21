@@ -2,7 +2,6 @@ package dev.staticvar.vlr.ui.team
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,11 +20,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
-import dev.staticvar.vlr.ui.CARD_ALPHA
-import dev.staticvar.vlr.ui.COLOR_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
 import kotlinx.coroutines.launch
@@ -72,12 +71,7 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
 
 @Composable
 fun TeamBanner(teamDetails: TeamDetails) {
-  OutlinedCard(
-    Modifier.fillMaxWidth().padding(8.dp),
-    contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-    containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
-    border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
-  ) {
+  CardView() {
     Row(
       modifier =
         Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 4.dp, start = 8.dp, end = 8.dp),
@@ -86,7 +80,8 @@ fun TeamBanner(teamDetails: TeamDetails) {
       Text(
         text = teamDetails.name,
         modifier = Modifier.padding(horizontal = 2.dp),
-        style = VLRTheme.typography.titleMedium
+        style = VLRTheme.typography.titleMedium,
+        color = VLRTheme.colorScheme.primary,
       )
       Text(
         text = teamDetails.tag,
@@ -109,28 +104,39 @@ fun TeamBanner(teamDetails: TeamDetails) {
 
 @Composable
 fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDetails.Roster>) {
-  OutlinedCard(
-    Modifier.fillMaxWidth().padding(8.dp),
-    contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-    containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
-    border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer),
-  ) {
+  CardView() {
     Column(modifier = Modifier.fillMaxWidth().animateContentSize(tween(500))) {
       if (!expanded) {
         Row(
           Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(true) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
-          Text(text = stringResource(R.string.roster), style = VLRTheme.typography.titleSmall)
-          Icon(Icons.Outlined.ArrowDownward, contentDescription = stringResource(R.string.expand))
+          Text(
+            text = stringResource(R.string.roster),
+            style = VLRTheme.typography.titleSmall,
+            color = VLRTheme.colorScheme.primary,
+          )
+          Icon(
+            Icons.Outlined.ArrowDownward,
+            contentDescription = stringResource(R.string.expand),
+            tint = VLRTheme.colorScheme.primary,
+          )
         }
       } else {
         Row(
           Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(false) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
-          Text(text = stringResource(R.string.roster), style = VLRTheme.typography.titleSmall)
-          Icon(Icons.Outlined.ArrowUpward, contentDescription = stringResource(R.string.collapse))
+          Text(
+            text = stringResource(R.string.roster),
+            style = VLRTheme.typography.titleSmall,
+            color = VLRTheme.colorScheme.primary,
+          )
+          Icon(
+            Icons.Outlined.ArrowUpward,
+            contentDescription = stringResource(R.string.collapse),
+            tint = VLRTheme.colorScheme.primary,
+          )
         }
         data.forEach { player ->
           Card(
@@ -174,7 +180,7 @@ fun TeamMatchData(
     TabRow(
       selectedTabIndex = pagerState.currentPage,
       containerColor = VLRTheme.colorScheme.primaryContainer,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp))
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(16.dp))
     ) {
       Tab(
         selected = pagerState.currentPage == 0,
@@ -220,14 +226,8 @@ fun GameOverviewPreview(
   team: String,
   onClick: (String) -> Unit,
 ) {
-  Card(
-    modifier =
-      Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp).clickable {
-        onClick(matchPreviewInfo.id)
-      },
-    shape = RoundedCornerShape(16.dp),
-    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
+  CardView(
+    modifier = Modifier.clickable { onClick(matchPreviewInfo.id) },
   ) {
     Column(modifier = Modifier.padding(8.dp)) {
       Text(
@@ -247,7 +247,8 @@ fun GameOverviewPreview(
           modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
+          color = VLRTheme.colorScheme.primary,
         )
         Text(
           text = matchPreviewInfo.opponent,
@@ -255,14 +256,16 @@ fun GameOverviewPreview(
           modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
+          color = VLRTheme.colorScheme.primary,
         )
       }
       Text(
         text = matchPreviewInfo.score,
         style = VLRTheme.typography.titleSmall,
         modifier = Modifier.fillMaxWidth().padding(2.dp),
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
+        color = VLRTheme.colorScheme.primary,
       )
       Text(
         text = "${matchPreviewInfo.event} - ${matchPreviewInfo.stage}",

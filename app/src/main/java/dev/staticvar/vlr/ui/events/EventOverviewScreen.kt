@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.LocationOn
@@ -18,11 +17,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentPreview
 import dev.staticvar.vlr.ui.Action
-import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.Waiting
@@ -37,12 +37,18 @@ fun EventScreen(viewModel: VlrViewModel) {
   val allTournaments by
     remember(viewModel) { viewModel.getTournaments() }.collectAsState(initial = Waiting())
 
+  val primaryContainer = VLRTheme.colorScheme.primaryContainer
+  val systemUiController = rememberSystemUiController()
+  SideEffect {
+    systemUiController.setStatusBarColor(primaryContainer)
+  }
+
   Column(
     modifier = Modifier.fillMaxSize().statusBarsPadding(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-//    Box(modifier = Modifier.statusBarsPadding())
+    //    Box(modifier = Modifier.statusBarsPadding())
 
     allTournaments
       .onPass {
@@ -134,29 +140,22 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
 
 @Composable
 fun TournamentPreview(tournamentPreview: TournamentPreview, action: Action) {
-  Card(
-    modifier =
-      Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp).clickable {
-        action.event(tournamentPreview.id)
-      },
-    shape = RoundedCornerShape(16.dp),
-    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
-  ) {
+  CardView(modifier = Modifier.clickable { action.event(tournamentPreview.id) }) {
     Column(modifier = Modifier.padding(8.dp)) {
       Text(
         text = tournamentPreview.title,
         style = VLRTheme.typography.titleSmall,
         modifier = Modifier.padding(4.dp),
         maxLines = 2,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
+        color = VLRTheme.colorScheme.primary,
       )
 
       Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(
           Icons.Outlined.LocationOn,
           contentDescription = stringResource(R.string.location),
-          modifier = Modifier.size(16.dp)
+          modifier = Modifier.size(16.dp),
         )
         Text(text = tournamentPreview.location.uppercase(), style = VLRTheme.typography.labelMedium)
         Text(
@@ -165,7 +164,11 @@ fun TournamentPreview(tournamentPreview: TournamentPreview, action: Action) {
           textAlign = TextAlign.Center,
           style = VLRTheme.typography.labelMedium
         )
-        Icon(Icons.Outlined.DateRange, contentDescription = "Date", modifier = Modifier.size(16.dp))
+        Icon(
+          Icons.Outlined.DateRange,
+          contentDescription = "Date",
+          modifier = Modifier.size(16.dp),
+         )
         Text(text = tournamentPreview.dates, style = VLRTheme.typography.labelMedium)
       }
     }
