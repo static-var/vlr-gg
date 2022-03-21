@@ -283,5 +283,4 @@ fun VLR() {
   }
 }
 
-const val COLOR_ALPHA = 0.05f
 const val CARD_ALPHA = 0.3f
