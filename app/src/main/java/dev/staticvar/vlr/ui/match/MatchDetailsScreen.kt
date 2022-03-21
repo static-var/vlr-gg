@@ -4,8 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,16 +25,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
-import dev.staticvar.vlr.ui.CARD_ALPHA
-import dev.staticvar.vlr.ui.COLOR_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.helper.CardView
+import dev.staticvar.vlr.ui.helper.EmphasisCardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
+import dev.staticvar.vlr.ui.theme.tintedBackground
 import dev.staticvar.vlr.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,10 +49,14 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val isTracked by remember { viewModel.isTopicTracked(trackerString) }.collectAsState(null)
   var streamAndVodsCard by remember { mutableStateOf(false) }
 
+  val primaryContainer = VLRTheme.colorScheme.tintedBackground
+  val systemUiController = rememberSystemUiController()
+  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
+
   Column(
     modifier = Modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     details
       .onPass {
@@ -100,10 +104,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                   item {
                     Text(
                       text = it,
-                      modifier =
-                        Modifier.fillMaxWidth()
-                          .padding(horizontal = 8.dp)
-                          .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
+                      modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                       textAlign = TextAlign.Center
                     )
                   }
@@ -115,11 +116,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                 item {
                   Text(
                     text = stringResource(R.string.map_tbp),
-                    modifier =
-                      Modifier.fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA))
-                        .padding(32.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).padding(32.dp),
                     textAlign = TextAlign.Center,
                     style = VLRTheme.typography.bodyLarge
                   )
@@ -128,16 +125,13 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 
               if (matchInfo.head2head.isNotEmpty()) {
                 item {
-                  Card(
-                    Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 8.dp),
-                    contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-                    containerColor = VLRTheme.colorScheme.primaryContainer
-                  ) {
+                  EmphasisCardView() {
                     Text(
                       text = stringResource(R.string.previous_encounter),
                       modifier = Modifier.fillMaxWidth().padding(12.dp),
                       textAlign = TextAlign.Center,
-                      style = VLRTheme.typography.titleSmall
+                      style = VLRTheme.typography.titleSmall,
+                      color = VLRTheme.colorScheme.primary,
                     )
                   }
                 }
@@ -166,11 +160,8 @@ fun MatchOverallAndEventOverview(
   onSubButton: suspend () -> Unit
 ) {
   val scope = rememberCoroutineScope()
-  OutlinedCard(
-    Modifier.fillMaxWidth().padding(8.dp).aspectRatio(1.8f),
-    contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-    containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
-    border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
+  CardView(
+    Modifier.fillMaxWidth().aspectRatio(1.8f),
   ) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
       Row(
@@ -237,14 +228,16 @@ fun MatchOverallAndEventOverview(
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp).weight(1f),
-            maxLines = 2
+            maxLines = 2,
+            color = VLRTheme.colorScheme.primary,
           )
           Text(
             text = detailData.teams[1].name,
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp).weight(1f),
-            maxLines = 2
+            maxLines = 2,
+            color = VLRTheme.colorScheme.primary,
           )
         }
         Row(Modifier.fillMaxWidth().weight(1f), verticalAlignment = Alignment.CenterVertically) {
@@ -252,13 +245,15 @@ fun MatchOverallAndEventOverview(
             text = detailData.teams[0].score?.toString() ?: "-",
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            color = VLRTheme.colorScheme.primary,
           )
           Text(
             text = detailData.teams[1].score?.toString() ?: "-",
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            color = VLRTheme.colorScheme.primary,
           )
         }
         var dialogOpen by remember { mutableStateOf(false) }
@@ -314,7 +309,7 @@ fun ShowMatchStatsTab(
   ScrollableTabRow(
     selectedTabIndex = tabIndex,
     containerColor = VLRTheme.colorScheme.primaryContainer,
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).clip(RoundedCornerShape(16.dp)),
+    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(16.dp)),
     indicator = { indicators -> VLRTabIndicator(indicators, tabIndex) }
   ) {
     mapData.forEachIndexed { index, matchDetailData ->
@@ -327,12 +322,7 @@ fun ShowMatchStatsTab(
 
 @Composable
 fun ScoreBox(mapData: MatchInfo.MatchDetailData) {
-  Column(
-    modifier =
-      Modifier.fillMaxWidth()
-        .padding(horizontal = 8.dp, vertical = 4.dp)
-        .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
-  ) {
+  Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)) {
     Row(
       modifier = Modifier.fillMaxWidth().padding(2.dp),
       horizontalArrangement = Arrangement.Center,
@@ -370,12 +360,7 @@ fun ScoreBox(mapData: MatchInfo.MatchDetailData) {
 
 @Composable
 fun StatsHeaderBox() {
-  Row(
-    modifier =
-      Modifier.fillMaxWidth()
-        .padding(horizontal = 8.dp)
-        .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA))
-  ) {
+  Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
     Text(
       text = stringResource(R.string.agent),
       modifier = Modifier.weight(AGENT_IMG).padding(horizontal = 1.dp),
@@ -430,11 +415,8 @@ fun StatsHeaderBox() {
 @Composable
 fun StatsRow(member: MatchInfo.MatchDetailData.Member) {
   Row(
-    modifier =
-      Modifier.fillMaxWidth()
-        .padding(horizontal = 8.dp, vertical = 2.dp)
-        .background(VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA)),
-    verticalAlignment = Alignment.CenterVertically
+    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp),
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     GlideImage(
       imageModel = member.agents.getOrNull(0)?.img,
@@ -502,11 +484,8 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
   val context = LocalContext.current
   if (videos.streams.isEmpty() && videos.vods.isEmpty()) return
 
-  OutlinedCard(
-    Modifier.fillMaxWidth().padding(8.dp).animateContentSize(tween(500)),
-    contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-    containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
-    border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
+  EmphasisCardView(
+    Modifier.animateContentSize(tween(500)),
   ) {
     if (expand) {
       Row(
@@ -516,19 +495,21 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
       ) {
         Text(
           text = stringResource(R.string.streams_and_vods),
-          style = VLRTheme.typography.titleSmall
+          style = VLRTheme.typography.titleSmall,
+          color = VLRTheme.colorScheme.primary,
         )
         Icon(
           Icons.Outlined.ArrowUpward,
           contentDescription = stringResource(R.string.expand),
-          modifier = Modifier.size(16.dp)
+          modifier = Modifier.size(16.dp),
+          tint = VLRTheme.colorScheme.primary,
         )
       }
       if (videos.streams.isNotEmpty()) {
         Text(text = "Stream", modifier = Modifier.fillMaxWidth().padding(8.dp))
         LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
           items(videos.streams) { stream ->
-            FilledTonalButton(
+            Button(
               onClick = {
                 intent.data = Uri.parse(stream.url)
                 context.startActivity(intent)
@@ -543,7 +524,7 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
         Text(text = stringResource(R.string.vods), modifier = Modifier.fillMaxWidth().padding(8.dp))
         LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
           items(videos.vods) { stream ->
-            FilledTonalButton(
+            Button(
               onClick = {
                 intent.data = Uri.parse(stream.url)
                 context.startActivity(intent)
@@ -561,12 +542,14 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
       ) {
         Text(
           text = stringResource(R.string.streams_and_vods),
-          style = VLRTheme.typography.titleSmall
+          style = VLRTheme.typography.titleSmall,
+          color = VLRTheme.colorScheme.primary,
         )
         Icon(
           Icons.Outlined.ArrowDownward,
           contentDescription = stringResource(R.string.expand),
-          modifier = Modifier.size(16.dp)
+          modifier = Modifier.size(16.dp),
+          tint = VLRTheme.colorScheme.primary,
         )
       }
     }
@@ -625,12 +608,7 @@ fun MatchMoreDetailsDialog(detailData: MatchInfo, open: Boolean, onDismiss: (Boo
 
 @Composable
 fun PreviousEncounter(previousEncounter: MatchInfo.Head2head, onClick: (String) -> Unit) {
-  Card(
-    modifier = Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(previousEncounter.id) },
-    shape = RoundedCornerShape(16.dp),
-    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
-  ) {
+  CardView(modifier = Modifier.clickable { onClick(previousEncounter.id) }) {
     Row(
       modifier = Modifier.fillMaxWidth(),
       verticalAlignment = Alignment.CenterVertically,

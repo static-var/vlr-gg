@@ -1,6 +1,5 @@
 package dev.staticvar.vlr.ui.events
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,13 +20,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
-import dev.staticvar.vlr.ui.CARD_ALPHA
-import dev.staticvar.vlr.ui.COLOR_ALPHA
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
+import dev.staticvar.vlr.ui.theme.tintedBackground
 import dev.staticvar.vlr.utils.Waiting
 import dev.staticvar.vlr.utils.onFail
 import dev.staticvar.vlr.utils.onPass
@@ -37,6 +37,12 @@ import dev.staticvar.vlr.utils.onWaiting
 fun EventDetails(viewModel: VlrViewModel, id: String) {
   val details by
     remember(viewModel) { viewModel.getTournamentDetails(id) }.collectAsState(Waiting())
+
+  val primaryContainer = VLRTheme.colorScheme.tintedBackground
+  val systemUiController = rememberSystemUiController()
+  SideEffect {
+    systemUiController.setStatusBarColor(primaryContainer)
+  }
 
   Column(
     modifier = Modifier.fillMaxSize(),
@@ -91,12 +97,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
 
 @Composable
 fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
-  OutlinedCard(
-    Modifier.fillMaxWidth().padding(8.dp),
-    contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-    containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
-    border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
-  ) {
+  CardView() {
     Box(modifier = Modifier.fillMaxWidth()) {
       Row(Modifier.fillMaxWidth().padding(16.dp)) {
         Spacer(modifier = Modifier.weight(1f))
@@ -104,7 +105,7 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
           painter =
             rememberImagePainter(data = tournamentDetails.img, builder = { crossfade(true) }),
           contentDescription = stringResource(R.string.tournament_logo_content_desciption),
-          modifier = Modifier.alpha(0.3f)
+          modifier = Modifier.alpha(0.3f),
         )
       }
       Column(Modifier.fillMaxWidth().padding(8.dp)) {
@@ -113,7 +114,8 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
           style = VLRTheme.typography.titleSmall,
           modifier = Modifier.padding(4.dp),
           maxLines = 2,
-          overflow = TextOverflow.Ellipsis
+          overflow = TextOverflow.Ellipsis,
+          color = VLRTheme.colorScheme.primary
         )
         if (tournamentDetails.subtitle.isNotBlank())
           Text(text = tournamentDetails.subtitle, modifier = Modifier.padding(4.dp))
@@ -121,21 +123,21 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
           Modifier.fillMaxWidth().padding(horizontal = 4.dp),
           verticalAlignment = Alignment.CenterVertically
         ) {
-          Icon(Icons.Outlined.DateRange, contentDescription = stringResource(R.string.date))
+          Icon(Icons.Outlined.DateRange, contentDescription = stringResource(R.string.date), tint = VLRTheme.colorScheme.primary,)
           Text(text = tournamentDetails.dates)
         }
         Row(
           Modifier.fillMaxWidth().padding(horizontal = 4.dp),
           verticalAlignment = Alignment.CenterVertically
         ) {
-          Icon(Icons.Outlined.Paid, contentDescription = stringResource(R.string.prize))
+          Icon(Icons.Outlined.Paid, contentDescription = stringResource(R.string.prize), tint = VLRTheme.colorScheme.primary,)
           Text(text = tournamentDetails.prize)
         }
         Row(
           Modifier.fillMaxWidth().padding(horizontal = 4.dp),
           verticalAlignment = Alignment.CenterVertically
         ) {
-          Icon(Icons.Outlined.LocationOn, contentDescription = stringResource(R.string.location))
+          Icon(Icons.Outlined.LocationOn, contentDescription = stringResource(R.string.location), tint = VLRTheme.colorScheme.primary,)
           Text(text = tournamentDetails.location.uppercase())
         }
       }
@@ -145,14 +147,16 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
 
 @Composable
 fun EventDetailsTeamSlider(list: List<TournamentDetails.Participant>, onClick: (String) -> Unit) {
-  Text(text = "Teams", modifier = Modifier.padding(8.dp), style = VLRTheme.typography.titleSmall)
+  Text(
+    text = "Teams",
+    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+    style = VLRTheme.typography.titleSmall,
+    color = VLRTheme.colorScheme.primary
+  )
   LazyRow(modifier = Modifier.fillMaxWidth()) {
     items(list) {
-      OutlinedCard(
-        Modifier.padding(8.dp).width(width = 150.dp).aspectRatio(1f).clickable { onClick(it.id) },
-        contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-        containerColor = VLRTheme.colorScheme.primaryContainer.copy(COLOR_ALPHA),
-        border = BorderStroke(1.dp, VLRTheme.colorScheme.primaryContainer)
+      CardView(
+        Modifier.width(width = 150.dp).aspectRatio(1f).clickable { onClick(it.id) },
       ) {
         Column(
           Modifier.fillMaxSize().padding(8.dp),
@@ -161,11 +165,11 @@ fun EventDetailsTeamSlider(list: List<TournamentDetails.Participant>, onClick: (
         ) {
           Text(
             text = it.team,
-            modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = VLRTheme.typography.labelLarge,
+            color = VLRTheme.colorScheme.primary,
           )
           Image(
             painter = rememberImagePainter(data = it.img, builder = { crossfade(true) }),
@@ -175,7 +179,6 @@ fun EventDetailsTeamSlider(list: List<TournamentDetails.Participant>, onClick: (
           )
           Text(
             text = it.seed ?: "",
-            modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -205,7 +208,12 @@ fun EventMatchGroups(
     )
 
   Column(Modifier.fillMaxWidth().padding(8.dp)) {
-    Text(text = "Games", modifier = Modifier.padding(8.dp), style = VLRTheme.typography.titleSmall)
+    Text(
+      text = "Games",
+      modifier = Modifier.padding(8.dp),
+      style = VLRTheme.typography.titleSmall,
+      color = VLRTheme.colorScheme.primary
+    )
     Row(
       modifier =
         Modifier.fillMaxWidth().padding(8.dp).clip(RoundedCornerShape(16.dp)).clickable {
@@ -266,14 +274,8 @@ fun EventMatchGroups(
 
 @Composable
 fun TournamentMatchOverview(game: TournamentDetails.Games, onClick: (String) -> Unit) {
-  Card(
-    modifier =
-      Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp).clickable {
-        onClick(game.id)
-      },
-    shape = RoundedCornerShape(16.dp),
-    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
+  CardView(
+    modifier = Modifier.clickable { onClick(game.id) },
   ) {
     Column(modifier = Modifier.padding(8.dp)) {
       Row(
