@@ -95,8 +95,8 @@ fun VLR() {
       AnimatedContent(
         navState,
         transitionSpec = {
-          fadeIn(animationSpec = tween(200, 200)) with
-            fadeOut(animationSpec = tween(150)) using
+          fadeIn(animationSpec = tween(400, 200)) with
+            fadeOut(animationSpec = tween(200)) using
             SizeTransform { initialSize, targetSize ->
               if (navState != NavState.MATCH_DETAILS &&
                   navState != NavState.TOURNAMENT_DETAILS &&
@@ -197,43 +197,83 @@ fun VLR() {
       AnimatedNavHost(navController = navController, startDestination = Destination.News.route) {
         composable(
           Destination.News.route,
-          enterTransition = { slideInFromBottom },
-          popEnterTransition = { slideInFromBottom },
-          exitTransition = { fadeOut },
-          popExitTransition = { fadeOut },
+          enterTransition = {
+            if (targetState.destination.route == initialState.destination.route) null
+            else slideInFromBottom
+          },
+          popEnterTransition = {
+            if (targetState.destination.route == initialState.destination.route) null
+            else slideInFromBottom
+          },
+          exitTransition = {
+            if (targetState.destination.route == initialState.destination.route) null else fadeOut
+          },
+          popExitTransition = {
+            if (targetState.destination.route == initialState.destination.route) null else fadeOut
+          },
         ) {
           viewModel.setNavigation(NavState.NEWS)
           NewsScreen(viewModel = viewModel)
         }
         composable(
           Destination.MatchOverview.route,
-          enterTransition = { slideInFromBottom },
-          popEnterTransition = { slideInFromBottom },
-          exitTransition = { fadeOut },
-          popExitTransition = { fadeOut },
+          enterTransition = {
+            if (targetState.destination.route == initialState.destination.route) null
+            else slideInFromBottom
+          },
+          popEnterTransition = {
+            if (targetState.destination.route == initialState.destination.route) null
+            else slideInFromBottom
+          },
+          exitTransition = {
+            if (targetState.destination.route == initialState.destination.route) null else fadeOut
+          },
+          popExitTransition = {
+            if (targetState.destination.route == initialState.destination.route) null else fadeOut
+          },
         ) {
           viewModel.setNavigation(NavState.MATCH_OVERVIEW)
           MatchOverview(viewModel = viewModel)
         }
         composable(
-          Destination.About.route,
-          enterTransition = { slideInFromBottom },
-          popEnterTransition = { slideInFromBottom },
-          exitTransition = { fadeOut },
-          popExitTransition = { fadeOut },
-        ) {
-          viewModel.setNavigation(NavState.ABOUT)
-          AboutScreen(viewModel = viewModel)
-        }
-        composable(
           Destination.EventOverview.route,
-          enterTransition = { slideInFromBottom },
-          popEnterTransition = { slideInFromBottom },
-          exitTransition = { fadeOut },
-          popExitTransition = { fadeOut },
+          enterTransition = {
+            if (targetState.destination.route == initialState.destination.route) null
+            else slideInFromBottom
+          },
+          popEnterTransition = {
+            if (targetState.destination.route == initialState.destination.route) null
+            else slideInFromBottom
+          },
+          exitTransition = {
+            if (targetState.destination.route == initialState.destination.route) null else fadeOut
+          },
+          popExitTransition = {
+            if (targetState.destination.route == initialState.destination.route) null else fadeOut
+          },
         ) {
           viewModel.setNavigation(NavState.TOURNAMENT)
           EventScreen(viewModel = viewModel)
+        }
+        composable(
+          Destination.About.route,
+          enterTransition = {
+            if (targetState.destination.route == initialState.destination.route) null
+            else slideInFromBottom
+          },
+          popEnterTransition = {
+            if (targetState.destination.route == initialState.destination.route) null
+            else slideInFromBottom
+          },
+          exitTransition = {
+            if (targetState.destination.route == initialState.destination.route) null else fadeOut
+          },
+          popExitTransition = {
+            if (targetState.destination.route == initialState.destination.route) null else fadeOut
+          },
+        ) {
+          viewModel.setNavigation(NavState.ABOUT)
+          AboutScreen(viewModel = viewModel)
         }
         composable(
           Destination.Match.route,
@@ -282,5 +322,3 @@ fun VLR() {
     }
   }
 }
-
-const val CARD_ALPHA = 0.3f
