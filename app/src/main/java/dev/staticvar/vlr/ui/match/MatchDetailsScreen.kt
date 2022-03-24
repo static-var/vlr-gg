@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
+import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
@@ -96,7 +97,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
             if (matchInfo.matchData.isNotEmpty()) {
               val maps = matchInfo.matchData.filter { it.map != "All Maps" }
               item { ShowMatchStatsTab(mapData = maps, position) { position = it } }
-              if (maps[position].map != "TBD") {
+              if (!maps[position].map.equals("TBD", false)) {
                 item { ScoreBox(mapData = maps[position]) }
                 item { StatsHeaderBox() }
                 val teamGroupedPlayers = maps[position].members.groupBy { it.team }
@@ -190,7 +191,8 @@ fun MatchOverallAndEventOverview(
             imageModel = detailData.teams[0].img,
             contentScale = ContentScale.Fit,
             alignment = Alignment.CenterStart,
-            modifier = Modifier.alpha(0.2f)
+            modifier = Modifier.alpha(0.2f),
+            circularReveal = CircularReveal(1000),
           )
         }
         Box(
@@ -214,7 +216,8 @@ fun MatchOverallAndEventOverview(
             imageModel = detailData.teams[1].img,
             contentScale = ContentScale.Fit,
             alignment = Alignment.CenterEnd,
-            modifier = Modifier.alpha(0.2f)
+            modifier = Modifier.alpha(0.2f),
+            circularReveal = CircularReveal(1000)
           )
         }
       }
@@ -415,14 +418,15 @@ fun StatsHeaderBox() {
 @Composable
 fun StatsRow(member: MatchInfo.MatchDetailData.Member) {
   Row(
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp),
+    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp).animateContentSize(tween(400)),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     GlideImage(
       imageModel = member.agents.getOrNull(0)?.img,
       modifier = Modifier.weight(AGENT_IMG).padding(horizontal = 1.dp),
       alignment = Alignment.Center,
-      contentScale = ContentScale.Fit
+      contentScale = ContentScale.Fit,
+      circularReveal = CircularReveal(1000)
     )
     Text(
       text = member.name,

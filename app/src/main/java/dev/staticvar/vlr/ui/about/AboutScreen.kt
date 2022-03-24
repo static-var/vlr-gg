@@ -58,7 +58,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
         style = VLRTheme.typography.titleSmall,
         color = VLRTheme.colorScheme.primary,
       )
-      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+      Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
         Button(
           onClick = {
             val builder = CustomTabsIntent.Builder()
@@ -90,7 +90,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
           Text(text = "static-var")
         }
       }
-      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+      Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
         Button(
           onClick = {
             val builder = CustomTabsIntent.Builder()
@@ -138,7 +138,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
         style = VLRTheme.typography.titleSmall,
         color = VLRTheme.colorScheme.primary,
       )
-      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+      Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
         Button(
           onClick = {
             val builder = CustomTabsIntent.Builder()
@@ -179,7 +179,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
             Uri.parse("https://github.com/akhilnarang/vlrgg-scraper")
           )
         },
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp)
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp)
       ) {
         Icon(
           imageVector = Icons.Outlined.Code,
@@ -195,20 +195,23 @@ fun AboutScreen(viewModel: VlrViewModel) {
       text = "${stringResource(id = R.string.package_name)} - ${context.packageName}",
       modifier = Modifier.fillMaxWidth(),
       style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
+      textAlign = TextAlign.Center,
+      color = VLRTheme.colorScheme.primary
     )
     Text(
       text = "${stringResource(id = R.string.app_version)} - $currentAppVersion",
       modifier = Modifier.fillMaxWidth(),
       style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
+      textAlign = TextAlign.Center,
+      color = VLRTheme.colorScheme.primary
     )
     Text(
       text =
         "${stringResource(id = R.string.latest_app_version)} - ${remoteAppVersion ?: "finding..."}",
       modifier = Modifier.fillMaxWidth(),
       style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
+      textAlign = TextAlign.Center,
+      color = VLRTheme.colorScheme.primary
     )
   }
 }

@@ -8,8 +8,9 @@ import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.staticvar.vlr.ui.CARD_ALPHA
 import dev.staticvar.vlr.ui.theme.VLRTheme
+
+const val CARD_ALPHA = 0.4f
 
 @Composable
 fun CardView(
