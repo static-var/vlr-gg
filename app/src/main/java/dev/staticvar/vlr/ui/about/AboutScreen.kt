@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
-import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.currentAppVersion
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -36,16 +36,13 @@ fun AboutScreen(viewModel: VlrViewModel) {
 
   val primaryContainer = VLRTheme.colorScheme.tintedBackground
   val systemUiController = rememberSystemUiController()
-  SideEffect {
-    systemUiController.setStatusBarColor(primaryContainer)
-  }
-
+  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
   Column(modifier = Modifier.fillMaxSize()) {
     Spacer(modifier = Modifier.statusBarsPadding())
     Text(
       text = stringResource(id = R.string.app_description),
-      modifier = Modifier.fillMaxWidth().padding(24.dp),
+      modifier = Modifier.fillMaxWidth().padding(Local16DPPadding.current),
       textAlign = TextAlign.Center,
       style = VLRTheme.typography.titleSmall,
       color = VLRTheme.colorScheme.primary,
@@ -54,22 +51,25 @@ fun AboutScreen(viewModel: VlrViewModel) {
     CardView() {
       Text(
         text = "Android",
-        modifier = Modifier.padding(8.dp),
+        modifier = Modifier.padding(Local8DPPadding.current),
         style = VLRTheme.typography.titleSmall,
         color = VLRTheme.colorScheme.primary,
       )
-      Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+      Row(
+        modifier = Modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+        horizontalArrangement = Arrangement.SpaceBetween
+      ) {
         Button(
           onClick = {
             val builder = CustomTabsIntent.Builder()
             val customTabsIntent = builder.build()
             customTabsIntent.launchUrl(context, Uri.parse("https://staticvar.dev"))
           },
-          modifier = Modifier.weight(1f).padding(horizontal = 2.dp, vertical = 2.dp)
+          modifier = Modifier.weight(1f).padding(Local2DPPadding.current)
         ) {
           Icon(
             imageVector = Icons.Outlined.Language,
-            modifier = Modifier.padding(horizontal = 2.dp),
+            modifier = Modifier.padding(Local2DPPadding.current),
             contentDescription = stringResource(id = R.string.website),
           )
           Text(text = "staticvar.dev", overflow = TextOverflow.Ellipsis, maxLines = 1)
@@ -80,28 +80,31 @@ fun AboutScreen(viewModel: VlrViewModel) {
             val customTabsIntent = builder.build()
             customTabsIntent.launchUrl(context, Uri.parse("https://github.com/static-var"))
           },
-          modifier = Modifier.weight(1f).padding(horizontal = 2.dp, vertical = 2.dp)
+          modifier = Modifier.weight(1f).padding(Local2DPPadding.current)
         ) {
           Icon(
             painterResource(id = R.drawable.github_logo),
-            modifier = Modifier.padding(horizontal = 2.dp),
+            modifier = Modifier.padding(Local2DPPadding.current),
             contentDescription = stringResource(id = R.string.developer)
           )
           Text(text = "static-var")
         }
       }
-      Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+      Row(
+        modifier = Modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+        horizontalArrangement = Arrangement.SpaceBetween
+      ) {
         Button(
           onClick = {
             val builder = CustomTabsIntent.Builder()
             val customTabsIntent = builder.build()
             customTabsIntent.launchUrl(context, Uri.parse("https://github.com/static-var/vlr-gg"))
           },
-          modifier = Modifier.weight(1f).padding(horizontal = 2.dp, vertical = 2.dp)
+          modifier = Modifier.weight(1f).padding(Local2DPPadding.current)
         ) {
           Icon(
             imageVector = Icons.Outlined.Code,
-            modifier = Modifier.padding(horizontal = 2.dp),
+            modifier = Modifier.padding(Local2DPPadding.current),
             contentDescription = stringResource(id = R.string.website),
           )
           Text(
@@ -119,11 +122,11 @@ fun AboutScreen(viewModel: VlrViewModel) {
               Uri.parse("https://github.com/static-var/vlr-gg/releases")
             )
           },
-          modifier = Modifier.weight(1f).padding(horizontal = 2.dp, vertical = 2.dp)
+          modifier = Modifier.weight(1f).padding(Local2DPPadding.current)
         ) {
           Icon(
             imageVector = Icons.Outlined.DownloadForOffline,
-            modifier = Modifier.padding(horizontal = 2.dp),
+            modifier = Modifier.padding(Local2DPPadding.current),
             contentDescription = stringResource(id = R.string.website),
           )
           Text(text = stringResource(id = R.string.release))
@@ -134,22 +137,25 @@ fun AboutScreen(viewModel: VlrViewModel) {
     CardView() {
       Text(
         text = "Backend",
-        modifier = Modifier.padding(8.dp),
+        modifier = Modifier.padding(Local8DPPadding.current),
         style = VLRTheme.typography.titleSmall,
         color = VLRTheme.colorScheme.primary,
       )
-      Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+      Row(
+        modifier = Modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+        horizontalArrangement = Arrangement.SpaceBetween
+      ) {
         Button(
           onClick = {
             val builder = CustomTabsIntent.Builder()
             val customTabsIntent = builder.build()
             customTabsIntent.launchUrl(context, Uri.parse("https://akhilnarang.dev"))
           },
-          modifier = Modifier.weight(1f).padding(horizontal = 2.dp, vertical = 2.dp)
+          modifier = Modifier.weight(1f).padding(Local2DPPadding.current)
         ) {
           Icon(
             imageVector = Icons.Outlined.Language,
-            modifier = Modifier.padding(horizontal = 2.dp),
+            modifier = Modifier.padding(Local2DPPadding.current),
             contentDescription = stringResource(id = R.string.website),
           )
           Text(text = "akhilnarang.dev", overflow = TextOverflow.Ellipsis, maxLines = 1)
@@ -160,11 +166,11 @@ fun AboutScreen(viewModel: VlrViewModel) {
             val customTabsIntent = builder.build()
             customTabsIntent.launchUrl(context, Uri.parse("https://github.com/akhilnarang"))
           },
-          modifier = Modifier.weight(1f).padding(horizontal = 2.dp, vertical = 2.dp)
+          modifier = Modifier.weight(1f).padding(Local2DPPadding.current)
         ) {
           Icon(
             painterResource(id = R.drawable.github_logo),
-            modifier = Modifier.padding(horizontal = 2.dp),
+            modifier = Modifier.padding(Local2DPPadding.current),
             contentDescription = stringResource(id = R.string.developer)
           )
           Text(text = "akhilnarang")
@@ -183,7 +189,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
       ) {
         Icon(
           imageVector = Icons.Outlined.Code,
-          modifier = Modifier.padding(horizontal = 2.dp),
+          modifier = Modifier.padding(Local2DPPadding.current),
           contentDescription = stringResource(id = R.string.website),
         )
         Text(text = stringResource(id = R.string.source_code))

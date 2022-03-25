@@ -20,8 +20,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentPreview
-import dev.staticvar.vlr.ui.Action
-import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -39,17 +38,13 @@ fun EventScreen(viewModel: VlrViewModel) {
 
   val primaryContainer = VLRTheme.colorScheme.primaryContainer
   val systemUiController = rememberSystemUiController()
-  SideEffect {
-    systemUiController.setStatusBarColor(primaryContainer)
-  }
+  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
   Column(
     modifier = Modifier.fillMaxSize().statusBarsPadding(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    //    Box(modifier = Modifier.statusBarsPadding())
-
     allTournaments
       .onPass {
         data?.let { list -> TournamentPreviewContainer(viewModel = viewModel, list = list) }
@@ -87,15 +82,30 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
       Tab(
         selected = pagerState.currentPage == 0,
         onClick = { scope.launch { pagerState.scrollToPage(0) } }
-      ) { Text(text = stringResource(R.string.ongoing), modifier = Modifier.padding(16.dp)) }
+      ) {
+        Text(
+          text = stringResource(R.string.ongoing),
+          modifier = Modifier.padding(Local16DPPadding.current)
+        )
+      }
       Tab(
         selected = pagerState.currentPage == 1,
         onClick = { scope.launch { pagerState.scrollToPage(1) } }
-      ) { Text(text = stringResource(R.string.upcoming), modifier = Modifier.padding(16.dp)) }
+      ) {
+        Text(
+          text = stringResource(R.string.upcoming),
+          modifier = Modifier.padding(Local16DPPadding.current)
+        )
+      }
       Tab(
         selected = pagerState.currentPage == 2,
         onClick = { scope.launch { pagerState.scrollToPage(2) } }
-      ) { Text(text = stringResource(R.string.completed), modifier = Modifier.padding(16.dp)) }
+      ) {
+        Text(
+          text = stringResource(R.string.completed),
+          modifier = Modifier.padding(Local16DPPadding.current)
+        )
+      }
     }
     HorizontalPager(count = 3, state = pagerState, modifier = Modifier.fillMaxSize()) { tabPosition
       ->
@@ -141,17 +151,20 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
 @Composable
 fun TournamentPreview(tournamentPreview: TournamentPreview, action: Action) {
   CardView(modifier = Modifier.clickable { action.event(tournamentPreview.id) }) {
-    Column(modifier = Modifier.padding(8.dp)) {
+    Column(modifier = Modifier.padding(Local8DPPadding.current)) {
       Text(
         text = tournamentPreview.title,
         style = VLRTheme.typography.titleSmall,
-        modifier = Modifier.padding(4.dp),
+        modifier = Modifier.padding(Local4DPPadding.current),
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
         color = VLRTheme.colorScheme.primary,
       )
 
-      Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
+      Row(
+        modifier = Modifier.padding(Local4DPPadding.current),
+        verticalAlignment = Alignment.CenterVertically
+      ) {
         Icon(
           Icons.Outlined.LocationOn,
           contentDescription = stringResource(R.string.location),
@@ -160,7 +173,7 @@ fun TournamentPreview(tournamentPreview: TournamentPreview, action: Action) {
         Text(text = tournamentPreview.location.uppercase(), style = VLRTheme.typography.labelMedium)
         Text(
           text = tournamentPreview.prize,
-          modifier = Modifier.padding(4.dp).weight(1f),
+          modifier = Modifier.padding(Local4DPPadding.current).weight(1f),
           textAlign = TextAlign.Center,
           style = VLRTheme.typography.labelMedium
         )
@@ -168,7 +181,7 @@ fun TournamentPreview(tournamentPreview: TournamentPreview, action: Action) {
           Icons.Outlined.DateRange,
           contentDescription = "Date",
           modifier = Modifier.size(16.dp),
-         )
+        )
         Text(text = tournamentPreview.dates, style = VLRTheme.typography.labelMedium)
       }
     }

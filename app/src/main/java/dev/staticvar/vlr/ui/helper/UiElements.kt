@@ -8,6 +8,7 @@ import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.staticvar.vlr.ui.Local16DP_8DPPadding
 import dev.staticvar.vlr.ui.theme.VLRTheme
 
 const val CARD_ALPHA = 0.4f
@@ -18,7 +19,7 @@ fun CardView(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Card(
-    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).then(modifier),
+    modifier = Modifier.padding(Local16DP_8DPPadding.current).then(modifier),
     shape = RoundedCornerShape(16.dp),
     contentColor = VLRTheme.colorScheme.onPrimaryContainer,
     containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
@@ -31,7 +32,7 @@ fun EmphasisCardView(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Card(
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).then(modifier),
+    modifier = Modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).then(modifier),
     shape = RoundedCornerShape(16.dp),
     contentColor = VLRTheme.colorScheme.onPrimaryContainer,
     containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA + CARD_ALPHA)

@@ -95,7 +95,7 @@ fun VLR() {
       AnimatedContent(
         navState,
         transitionSpec = {
-          fadeIn(animationSpec = tween(400, 200)) with
+          fadeIn(animationSpec = tween(200, 200)) with
             fadeOut(animationSpec = tween(200)) using
             SizeTransform { initialSize, targetSize ->
               if (navState != NavState.MATCH_DETAILS &&
