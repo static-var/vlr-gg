@@ -32,7 +32,7 @@ import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
-import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
@@ -105,7 +105,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                   item {
                     Text(
                       text = it,
-                      modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                      modifier = Modifier.fillMaxWidth().padding(Local8DPPadding.current),
                       textAlign = TextAlign.Center
                     )
                   }
@@ -117,7 +117,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                 item {
                   Text(
                     text = stringResource(R.string.map_tbp),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp).padding(32.dp),
+                    modifier = Modifier.fillMaxWidth().padding(Local16DPPadding.current),
                     textAlign = TextAlign.Center,
                     style = VLRTheme.typography.bodyLarge
                   )
@@ -129,7 +129,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                   EmphasisCardView() {
                     Text(
                       text = stringResource(R.string.previous_encounter),
-                      modifier = Modifier.fillMaxWidth().padding(12.dp),
+                      modifier = Modifier.fillMaxWidth().padding(Local16DPPadding.current),
                       textAlign = TextAlign.Center,
                       style = VLRTheme.typography.titleSmall,
                       color = VLRTheme.colorScheme.primary,
@@ -172,7 +172,9 @@ fun MatchOverallAndEventOverview(
       ) {
         Box(
           modifier =
-            Modifier.weight(0.6f).padding(8.dp).clickable { detailData.teams[0].id?.let(onClick) }
+            Modifier.weight(0.6f).padding(Local8DPPadding.current).clickable {
+              detailData.teams[0].id?.let(onClick)
+            }
         ) {
           detailData.teams[0].id?.let {
             Row(
@@ -183,7 +185,7 @@ fun MatchOverallAndEventOverview(
               Icon(
                 Icons.Outlined.OpenInNew,
                 contentDescription = stringResource(R.string.open_match_content_description),
-                modifier = Modifier.size(24.dp).padding(2.dp)
+                modifier = Modifier.size(24.dp).padding(Local2DPPadding.current)
               )
             }
           }
@@ -197,7 +199,9 @@ fun MatchOverallAndEventOverview(
         }
         Box(
           modifier =
-            Modifier.weight(0.6f).padding(8.dp).clickable { detailData.teams[1].id?.let(onClick) }
+            Modifier.weight(0.6f).padding(Local8DPPadding.current).clickable {
+              detailData.teams[1].id?.let(onClick)
+            }
         ) {
           detailData.teams[1].id?.let {
             Row(
@@ -208,7 +212,7 @@ fun MatchOverallAndEventOverview(
               Icon(
                 Icons.Outlined.OpenInNew,
                 contentDescription = stringResource(R.string.open_match_content_description),
-                modifier = Modifier.size(24.dp).padding(2.dp)
+                modifier = Modifier.size(24.dp).padding(Local2DPPadding.current)
               )
             }
           }
@@ -222,7 +226,8 @@ fun MatchOverallAndEventOverview(
         }
       }
       Column(
-        modifier = Modifier.size(width = maxWidth, height = maxHeight).padding(8.dp),
+        modifier =
+          Modifier.size(width = maxWidth, height = maxHeight).padding(Local8DPPadding.current),
         horizontalAlignment = Alignment.CenterHorizontally
       ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -230,7 +235,7 @@ fun MatchOverallAndEventOverview(
             text = detailData.teams[0].name,
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp).weight(1f),
+            modifier = Modifier.padding(Local16DPPadding.current).weight(1f),
             maxLines = 2,
             color = VLRTheme.colorScheme.primary,
           )
@@ -238,7 +243,7 @@ fun MatchOverallAndEventOverview(
             text = detailData.teams[1].name,
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp).weight(1f),
+            modifier = Modifier.padding(Local16DPPadding.current).weight(1f),
             maxLines = 2,
             color = VLRTheme.colorScheme.primary,
           )
@@ -312,12 +317,13 @@ fun ShowMatchStatsTab(
   ScrollableTabRow(
     selectedTabIndex = tabIndex,
     containerColor = VLRTheme.colorScheme.primaryContainer,
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(16.dp)),
+    modifier =
+      Modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).clip(RoundedCornerShape(16.dp)),
     indicator = { indicators -> VLRTabIndicator(indicators, tabIndex) }
   ) {
     mapData.forEachIndexed { index, matchDetailData ->
       Tab(selected = index == tabIndex, onClick = { onTabChange(index) }) {
-        Text(text = matchDetailData.map, modifier = Modifier.padding(16.dp))
+        Text(text = matchDetailData.map, modifier = Modifier.padding(Local16DPPadding.current))
       }
     }
   }
@@ -325,9 +331,9 @@ fun ShowMatchStatsTab(
 
 @Composable
 fun ScoreBox(mapData: MatchInfo.MatchDetailData) {
-  Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)) {
+  Column(modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current)) {
     Row(
-      modifier = Modifier.fillMaxWidth().padding(2.dp),
+      modifier = Modifier.fillMaxWidth().padding(Local2DPPadding.current),
       horizontalArrangement = Arrangement.Center,
       verticalAlignment = Alignment.CenterVertically
     ) {
@@ -343,7 +349,7 @@ fun ScoreBox(mapData: MatchInfo.MatchDetailData) {
       )
     }
     Row(
-      modifier = Modifier.fillMaxWidth().padding(2.dp),
+      modifier = Modifier.fillMaxWidth().padding(Local2DPPadding.current),
       horizontalArrangement = Arrangement.Center,
       verticalAlignment = Alignment.CenterVertically
     ) {
@@ -363,52 +369,52 @@ fun ScoreBox(mapData: MatchInfo.MatchDetailData) {
 
 @Composable
 fun StatsHeaderBox() {
-  Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+  Row(modifier = Modifier.fillMaxWidth().padding(Local16DPPadding.current)) {
     Text(
       text = stringResource(R.string.agent),
-      modifier = Modifier.weight(AGENT_IMG).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(AGENT_IMG).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = stringResource(R.string.player),
-      modifier = Modifier.weight(NAME).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(NAME).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = stringResource(R.string.acs),
-      modifier = Modifier.weight(ACS).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(ACS).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = stringResource(R.string.adr),
-      modifier = Modifier.weight(ADR).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(ADR).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = stringResource(R.string.kill),
-      modifier = Modifier.weight(KILLS).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(KILLS).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = stringResource(R.string.death),
-      modifier = Modifier.weight(DEATHS).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(DEATHS).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = stringResource(R.string.assist),
-      modifier = Modifier.weight(ASSISTS).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(ASSISTS).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = stringResource(R.string.headshot_percentage),
-      modifier = Modifier.weight(HSP).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(HSP).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
@@ -418,55 +424,58 @@ fun StatsHeaderBox() {
 @Composable
 fun StatsRow(member: MatchInfo.MatchDetailData.Member) {
   Row(
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp).animateContentSize(tween(400)),
+    modifier =
+      Modifier.fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 2.dp)
+        .animateContentSize(tween(400)),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     GlideImage(
       imageModel = member.agents.getOrNull(0)?.img,
-      modifier = Modifier.weight(AGENT_IMG).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(AGENT_IMG).padding(Local2DPPadding.current),
       alignment = Alignment.Center,
       contentScale = ContentScale.Fit,
       circularReveal = CircularReveal(1000)
     )
     Text(
       text = member.name,
-      modifier = Modifier.weight(NAME).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(NAME).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Start
     )
     Text(
       text = member.acs.toString(),
-      modifier = Modifier.weight(ACS).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(ACS).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = member.adr.toString(),
-      modifier = Modifier.weight(ADR).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(ADR).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = member.kills.toString(),
-      modifier = Modifier.weight(KILLS).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(KILLS).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = member.deaths.toString(),
-      modifier = Modifier.weight(DEATHS).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(DEATHS).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = member.assists.toString(),
-      modifier = Modifier.weight(ASSISTS).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(ASSISTS).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
     Text(
       text = member.hsPercent.toString(),
-      modifier = Modifier.weight(HSP).padding(horizontal = 1.dp),
+      modifier = Modifier.weight(HSP).padding(Local2DPPadding.current),
       style = VLRTheme.typography.bodySmall,
       textAlign = TextAlign.Center
     )
@@ -493,7 +502,7 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
   ) {
     if (expand) {
       Row(
-        Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(false) },
+        Modifier.fillMaxWidth().padding(Local16DPPadding.current).clickable { onClick(false) },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
       ) {
@@ -501,6 +510,8 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
           text = stringResource(R.string.streams_and_vods),
           style = VLRTheme.typography.titleSmall,
           color = VLRTheme.colorScheme.primary,
+          textAlign = TextAlign.Center,
+          modifier = Modifier.weight(1f)
         )
         Icon(
           Icons.Outlined.ArrowUpward,
@@ -510,37 +521,40 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
         )
       }
       if (videos.streams.isNotEmpty()) {
-        Text(text = "Stream", modifier = Modifier.fillMaxWidth().padding(8.dp))
-        LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
+        Text(text = "Stream", modifier = Modifier.fillMaxWidth().padding(Local8DPPadding.current))
+        LazyRow(modifier = Modifier.fillMaxWidth().padding(Local4DPPadding.current)) {
           items(videos.streams) { stream ->
             Button(
               onClick = {
                 intent.data = Uri.parse(stream.url)
                 context.startActivity(intent)
               },
-              modifier = Modifier.padding(horizontal = 4.dp)
+              modifier = Modifier.padding(Local4DPPadding.current)
             ) { Text(text = stream.name) }
           }
         }
       }
 
       if (videos.vods.isNotEmpty()) {
-        Text(text = stringResource(R.string.vods), modifier = Modifier.fillMaxWidth().padding(8.dp))
-        LazyRow(modifier = Modifier.fillMaxWidth().padding(4.dp)) {
+        Text(
+          text = stringResource(R.string.vods),
+          modifier = Modifier.fillMaxWidth().padding(Local8DPPadding.current)
+        )
+        LazyRow(modifier = Modifier.fillMaxWidth().padding(Local4DPPadding.current)) {
           items(videos.vods) { stream ->
             Button(
               onClick = {
                 intent.data = Uri.parse(stream.url)
                 context.startActivity(intent)
               },
-              modifier = Modifier.padding(horizontal = 4.dp)
+              modifier = Modifier.padding(Local4DPPadding.current)
             ) { Text(text = stream.name) }
           }
         }
       }
     } else {
       Row(
-        Modifier.fillMaxWidth().padding(8.dp).clickable { onClick(true) },
+        Modifier.fillMaxWidth().padding(Local16DPPadding.current).clickable { onClick(true) },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
       ) {
@@ -548,6 +562,8 @@ fun VideoReferenceUi(videos: MatchInfo.Videos, expand: Boolean, onClick: (Boolea
           text = stringResource(R.string.streams_and_vods),
           style = VLRTheme.typography.titleSmall,
           color = VLRTheme.colorScheme.primary,
+          textAlign = TextAlign.Center,
+          modifier = Modifier.weight(1f)
         )
         Icon(
           Icons.Outlined.ArrowDownward,
@@ -568,7 +584,7 @@ fun MatchMoreDetailsDialog(detailData: MatchInfo, open: Boolean, onDismiss: (Boo
       title = {
         Text(
           text = stringResource(R.string.event_info),
-          modifier = Modifier.padding(8.dp),
+          modifier = Modifier.padding(Local8DPPadding.current),
           textAlign = TextAlign.Center,
           style = VLRTheme.typography.titleMedium
         )
@@ -578,30 +594,30 @@ fun MatchMoreDetailsDialog(detailData: MatchInfo, open: Boolean, onDismiss: (Boo
           detailData.bans.takeIf { it.isNotEmpty() }?.let {
             Text(
               text = detailData.bans.joinToString { it },
-              modifier = Modifier.padding(8.dp),
+              modifier = Modifier.padding(Local8DPPadding.current),
               textAlign = TextAlign.Center
             )
           }
           detailData.event.patch?.let {
             Text(
               text = it,
-              modifier = Modifier.padding(4.dp).fillMaxWidth(),
+              modifier = Modifier.padding(Local4DPPadding.current).fillMaxWidth(),
               textAlign = TextAlign.Center
             )
           }
           Text(
             text = detailData.event.date?.readableDateAndTime ?: "",
-            modifier = Modifier.padding(8.dp).fillMaxWidth(),
+            modifier = Modifier.padding(Local4DPPadding.current).fillMaxWidth(),
             textAlign = TextAlign.Center
           )
           Text(
             text = detailData.event.stage,
-            modifier = Modifier.padding(4.dp).fillMaxWidth(),
+            modifier = Modifier.padding(Local4DPPadding.current).fillMaxWidth(),
             textAlign = TextAlign.Center
           )
           Text(
             text = detailData.event.series,
-            modifier = Modifier.padding(4.dp).fillMaxWidth(),
+            modifier = Modifier.padding(Local4DPPadding.current).fillMaxWidth(),
             textAlign = TextAlign.Center
           )
         }
@@ -621,38 +637,38 @@ fun PreviousEncounter(previousEncounter: MatchInfo.Head2head, onClick: (String) 
       Icon(
         Icons.Outlined.OpenInNew,
         contentDescription = stringResource(R.string.open_match_content_description),
-        modifier = Modifier.size(24.dp).padding(2.dp)
+        modifier = Modifier.size(24.dp).padding(Local2DPPadding.current)
       )
     }
     Row(
-      modifier = Modifier.fillMaxWidth().padding(2.dp),
+      modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.Center
     ) {
       Text(
         text = previousEncounter.teams[0].name,
-        modifier = Modifier.weight(1f).padding(2.dp),
+        modifier = Modifier.weight(1f).padding(Local2DPPadding.current),
         textAlign = TextAlign.Center
       )
       Text(
         text = previousEncounter.teams[1].name,
-        modifier = Modifier.weight(1f).padding(2.dp),
+        modifier = Modifier.weight(1f).padding(Local2DPPadding.current),
         textAlign = TextAlign.Center
       )
     }
     Row(
-      modifier = Modifier.fillMaxWidth().padding(2.dp),
+      modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.Center
     ) {
       Text(
         text = previousEncounter.teams[0].score?.toString() ?: "",
-        modifier = Modifier.weight(1f).padding(2.dp),
+        modifier = Modifier.weight(1f).padding(Local2DPPadding.current),
         textAlign = TextAlign.Center
       )
       Text(
         text = previousEncounter.teams[1].score?.toString() ?: "",
-        modifier = Modifier.weight(1f).padding(2.dp),
+        modifier = Modifier.weight(1f).padding(Local2DPPadding.current),
         textAlign = TextAlign.Center
       )
     }

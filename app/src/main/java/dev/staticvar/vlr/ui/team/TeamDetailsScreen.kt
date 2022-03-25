@@ -20,10 +20,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
-import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
@@ -74,25 +73,25 @@ fun TeamBanner(teamDetails: TeamDetails) {
   CardView() {
     Row(
       modifier =
-        Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 4.dp, start = 8.dp, end = 8.dp),
+        Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
       verticalAlignment = Alignment.CenterVertically
     ) {
       Text(
         text = teamDetails.name,
-        modifier = Modifier.padding(horizontal = 2.dp),
+        modifier = Modifier.padding(Local2DPPadding.current),
         style = VLRTheme.typography.titleMedium,
         color = VLRTheme.colorScheme.primary,
       )
       Text(
         text = teamDetails.tag,
-        modifier = Modifier.padding(horizontal = 2.dp),
+        modifier = Modifier.padding(Local2DPPadding.current),
         style = VLRTheme.typography.labelMedium
       )
     }
 
     Row(
       modifier =
-        Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 8.dp, start = 8.dp, end = 8.dp),
+        Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
       verticalAlignment = Alignment.CenterVertically
     ) {
       Text(text = "#${teamDetails.rank} in ", style = VLRTheme.typography.labelMedium)
@@ -108,7 +107,7 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
     Column(modifier = Modifier.fillMaxWidth().animateContentSize(tween(500))) {
       if (!expanded) {
         Row(
-          Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(true) },
+          Modifier.fillMaxWidth().padding(Local8DPPadding.current).clickable { onExpand(true) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
           Text(
@@ -124,7 +123,7 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
         }
       } else {
         Row(
-          Modifier.fillMaxWidth().padding(8.dp).clickable { onExpand(false) },
+          Modifier.fillMaxWidth().padding(Local8DPPadding.current).clickable { onExpand(false) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
           Text(
@@ -140,12 +139,12 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
         }
         data.forEach { player ->
           Card(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
             contentColor = VLRTheme.colorScheme.onPrimaryContainer,
             containerColor = VLRTheme.colorScheme.primaryContainer
           ) {
             Row(
-              modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+              modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
               horizontalArrangement = Arrangement.SpaceBetween
             ) {
               Text(text = player.alias, style = VLRTheme.typography.titleSmall)
@@ -156,7 +155,7 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
             }
             Text(
               text = player.name ?: "",
-              modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, bottom = 4.dp),
+              modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
               style = VLRTheme.typography.labelMedium
             )
           }
@@ -180,16 +179,16 @@ fun TeamMatchData(
     TabRow(
       selectedTabIndex = pagerState.currentPage,
       containerColor = VLRTheme.colorScheme.primaryContainer,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(16.dp))
+      modifier = Modifier.fillMaxWidth().padding(Local16DPPadding.current).clip(RoundedCornerShape(16.dp))
     ) {
       Tab(
         selected = pagerState.currentPage == 0,
         onClick = { scope.launch { pagerState.scrollToPage(0) } }
-      ) { Text(text = stringResource(R.string.upcoming), modifier = Modifier.padding(16.dp)) }
+      ) { Text(text = stringResource(R.string.upcoming), modifier = Modifier.padding(Local16DPPadding.current)) }
       Tab(
         selected = pagerState.currentPage == 1,
         onClick = { scope.launch { pagerState.scrollToPage(1) } }
-      ) { Text(text = stringResource(R.string.completed), modifier = Modifier.padding(16.dp)) }
+      ) { Text(text = stringResource(R.string.completed), modifier = Modifier.padding(Local16DPPadding.current)) }
     }
     HorizontalPager(count = 2, state = pagerState, modifier = Modifier.fillMaxSize()) {
       when (pagerState.currentPage) {
@@ -229,7 +228,7 @@ fun GameOverviewPreview(
   CardView(
     modifier = Modifier.clickable { onClick(matchPreviewInfo.id) },
   ) {
-    Column(modifier = Modifier.padding(8.dp)) {
+    Column(modifier = Modifier.padding(Local8DPPadding.current)) {
       Text(
         text = matchPreviewInfo.eta ?: matchPreviewInfo.date.readableDateAndTime,
         modifier = Modifier.fillMaxWidth(),
@@ -237,14 +236,14 @@ fun GameOverviewPreview(
         style = VLRTheme.typography.displaySmall
       )
       Row(
-        modifier = Modifier.fillMaxWidth().padding(4.dp),
+        modifier = Modifier.fillMaxWidth().padding(Local4DPPadding.current),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
       ) {
         Text(
           text = team,
           style = VLRTheme.typography.displaySmall,
-          modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
+          modifier = Modifier.weight(1f).padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
           textAlign = TextAlign.Center,
@@ -253,7 +252,7 @@ fun GameOverviewPreview(
         Text(
           text = matchPreviewInfo.opponent,
           style = VLRTheme.typography.displaySmall,
-          modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
+          modifier = Modifier.weight(1f).padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
           textAlign = TextAlign.Center,
@@ -261,15 +260,15 @@ fun GameOverviewPreview(
         )
       }
       Text(
-        text = matchPreviewInfo.score,
+        text = matchPreviewInfo.score.ifBlank { "TBP" },
         style = VLRTheme.typography.titleSmall,
-        modifier = Modifier.fillMaxWidth().padding(2.dp),
+        modifier = Modifier.fillMaxWidth().padding(Local2DPPadding.current),
         textAlign = TextAlign.Center,
         color = VLRTheme.colorScheme.primary,
       )
       Text(
         text = "${matchPreviewInfo.event} - ${matchPreviewInfo.stage}",
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(Local8DPPadding.current),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.labelSmall
       )

@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
+import dev.staticvar.vlr.ui.PaddingLocalCompositions
 import dev.staticvar.vlr.ui.VLR
 import dev.staticvar.vlr.ui.theme.VLRTheme
 
@@ -15,6 +16,6 @@ class MainActivity : ComponentActivity() {
     installSplashScreen()
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
-    setContent { VLRTheme() { VLR() } }
+    setContent { VLRTheme() { PaddingLocalCompositions { VLR() } } }
   }
 }

@@ -22,7 +22,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
-import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -37,9 +37,7 @@ fun MatchOverview(viewModel: VlrViewModel) {
 
   val primaryContainer = VLRTheme.colorScheme.primaryContainer
   val systemUiController = rememberSystemUiController()
-  SideEffect {
-    systemUiController.setStatusBarColor(primaryContainer)
-  }
+  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
   Column(
     modifier = Modifier.fillMaxSize().statusBarsPadding(),
@@ -90,15 +88,30 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
       Tab(
         selected = pagerState.currentPage == 0,
         onClick = { scope.launch { pagerState.scrollToPage(0) } }
-      ) { Text(text = stringResource(R.string.ongoing), modifier = Modifier.padding(16.dp)) }
+      ) {
+        Text(
+          text = stringResource(R.string.ongoing),
+          modifier = Modifier.padding(Local16DPPadding.current)
+        )
+      }
       Tab(
         selected = pagerState.currentPage == 1,
         onClick = { scope.launch { pagerState.scrollToPage(1) } }
-      ) { Text(text = stringResource(R.string.upcoming), modifier = Modifier.padding(16.dp)) }
+      ) {
+        Text(
+          text = stringResource(R.string.upcoming),
+          modifier = Modifier.padding(Local16DPPadding.current)
+        )
+      }
       Tab(
         selected = pagerState.currentPage == 2,
         onClick = { scope.launch { pagerState.scrollToPage(2) } }
-      ) { Text(text = stringResource(R.string.completed), modifier = Modifier.padding(16.dp)) }
+      ) {
+        Text(
+          text = stringResource(R.string.completed),
+          modifier = Modifier.padding(Local16DPPadding.current)
+        )
+      }
     }
 
     HorizontalPager(count = 3, state = pagerState, modifier = Modifier.fillMaxSize()) { tabPosition
@@ -133,7 +146,7 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
                     ) {
                       Text(
                         it,
-                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(Local8DPPadding.current),
                         textAlign = TextAlign.Center,
                         color = VLRTheme.colorScheme.primary
                       )
@@ -161,7 +174,7 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
                     ) {
                       Text(
                         it,
-                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(Local8DPPadding.current),
                         textAlign = TextAlign.Center,
                         color = VLRTheme.colorScheme.primary
                       )
@@ -181,17 +194,20 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
 @Composable
 fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -> Unit) {
   CardView(modifier = Modifier.clickable { onClick(matchPreviewInfo.id) }) {
-    Column(modifier = Modifier.padding(8.dp)) {
+    Column(modifier = Modifier.padding(Local4DPPadding.current)) {
       Text(
         text =
           if (matchPreviewInfo.status.equals("LIVE", true)) "LIVE"
           else
             matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})") ?: "",
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.displaySmall
       )
-      Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
+      Row(
+        modifier = Modifier.padding(Local8DP_4DPPadding.current),
+        verticalAlignment = Alignment.CenterVertically
+      ) {
         Text(
           text = matchPreviewInfo.team1.name,
           style = VLRTheme.typography.titleSmall,
@@ -208,7 +224,10 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -
           color = VLRTheme.colorScheme.primary,
         )
       }
-      Row(modifier = Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
+      Row(
+        modifier = Modifier.padding(Local8DP_4DPPadding.current),
+        verticalAlignment = Alignment.CenterVertically
+      ) {
         Text(
           text = matchPreviewInfo.team2.name,
           style = VLRTheme.typography.titleSmall,
@@ -227,7 +246,7 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -
       }
       Text(
         text = "${matchPreviewInfo.event} - ${matchPreviewInfo.series}",
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.labelSmall
       )

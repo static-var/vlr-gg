@@ -20,6 +20,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.data.api.response.NewsResponseItem
+import dev.staticvar.vlr.ui.Local4DPPadding
+import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -32,9 +34,7 @@ fun NewsScreen(viewModel: VlrViewModel) {
 
   val primaryContainer = VLRTheme.colorScheme.tintedBackground
   val systemUiController = rememberSystemUiController()
-  SideEffect {
-    systemUiController.setStatusBarColor(primaryContainer)
-  }
+  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
   Column(
     modifier = Modifier.fillMaxSize(),
@@ -71,11 +71,11 @@ fun NewsItem(newsResponseItem: NewsResponseItem) {
         customTabsIntent.launchUrl(context, Uri.parse(newsResponseItem.link))
       },
   ) {
-    Column(modifier = Modifier.padding(8.dp)) {
+    Column(modifier = Modifier.padding(Local8DPPadding.current)) {
       Text(
         text = newsResponseItem.title,
         style = VLRTheme.typography.titleSmall,
-        modifier = Modifier.padding(4.dp),
+        modifier = Modifier.padding(Local4DPPadding.current),
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
         color = VLRTheme.colorScheme.primary,
@@ -90,7 +90,7 @@ fun NewsItem(newsResponseItem: NewsResponseItem) {
         Text(
           text = newsResponseItem.author,
           style = VLRTheme.typography.bodySmall,
-          modifier = Modifier.padding(4.dp).weight(1f)
+          modifier = Modifier.padding(Local4DPPadding.current).weight(1f)
         )
         Icon(
           imageVector = Icons.Outlined.DateRange,
@@ -103,14 +103,14 @@ fun NewsItem(newsResponseItem: NewsResponseItem) {
             if (convertedDate.isSuccess) convertedDate.getOrDefault(newsResponseItem.date)
             else newsResponseItem.date,
           style = VLRTheme.typography.bodySmall,
-          modifier = Modifier.padding(4.dp)
+          modifier = Modifier.padding(Local4DPPadding.current)
         )
       }
 
       Text(
         text = newsResponseItem.description,
         style = VLRTheme.typography.bodySmall,
-        modifier = Modifier.padding(4.dp),
+        modifier = Modifier.padding(Local4DPPadding.current),
         maxLines = 2,
         overflow = TextOverflow.Ellipsis
       )
