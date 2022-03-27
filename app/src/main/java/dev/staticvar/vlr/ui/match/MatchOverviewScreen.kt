@@ -1,7 +1,6 @@
 package dev.staticvar.vlr.ui.match
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -39,26 +37,35 @@ fun MatchOverview(viewModel: VlrViewModel) {
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
+  val modifier: Modifier = Modifier
   Column(
-    modifier = Modifier.fillMaxSize().statusBarsPadding(),
+    modifier = modifier.fillMaxSize().statusBarsPadding(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    Box() {
+    Box(modifier) {
       allMatches
         .onPass {
           data?.let { list ->
-            MatchOverviewContainer(list = list, onClick = { id -> viewModel.action.match(id) })
+            MatchOverviewContainer(
+              modifier,
+              list = list,
+              onClick = { id -> viewModel.action.match(id) }
+            )
           }
         }
-        .onWaiting { LinearProgressIndicator() }
+        .onWaiting { LinearProgressIndicator(modifier) }
         .onFail { Text(text = message()) }
     }
   }
 }
 
 @Composable
-fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Unit) {
+fun MatchOverviewContainer(
+  modifier: Modifier = Modifier,
+  list: List<MatchPreviewInfo>,
+  onClick: (String) -> Unit
+) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
 
@@ -79,7 +86,7 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
       )
     }
 
-  Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+  Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
       selectedTabIndex = pagerState.currentPage,
       containerColor = VLRTheme.colorScheme.primaryContainer,
@@ -91,7 +98,7 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
       ) {
         Text(
           text = stringResource(R.string.ongoing),
-          modifier = Modifier.padding(Local16DPPadding.current)
+          modifier = modifier.padding(Local16DPPadding.current)
         )
       }
       Tab(
@@ -100,7 +107,7 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
       ) {
         Text(
           text = stringResource(R.string.upcoming),
-          modifier = Modifier.padding(Local16DPPadding.current)
+          modifier = modifier.padding(Local16DPPadding.current)
         )
       }
       Tab(
@@ -109,79 +116,71 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
       ) {
         Text(
           text = stringResource(R.string.completed),
-          modifier = Modifier.padding(Local16DPPadding.current)
+          modifier = modifier.padding(Local16DPPadding.current)
         )
       }
     }
 
-    HorizontalPager(count = 3, state = pagerState, modifier = Modifier.fillMaxSize()) { tabPosition
+    HorizontalPager(count = 3, state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition
       ->
       when (tabPosition) {
         0 -> {
           if (ongoing.isEmpty()) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(text = stringResource(R.string.no_ongoing_event))
-            Spacer(modifier = Modifier.weight(1f))
+            NoMatchUI()
           } else {
-            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-              items(ongoing) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
+            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+              items(ongoing) { MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick) }
             }
           }
         }
         1 -> {
           if (upcoming.isEmpty()) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(text = stringResource(R.string.no_ongoing_event))
-            Spacer(modifier = Modifier.weight(1f))
+            NoMatchUI()
           } else {
-            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
               val groupedUpcomingMatches = upcoming.groupBy { it.time?.readableDate }
               groupedUpcomingMatches.forEach { (date, match) ->
                 stickyHeader {
                   date?.let {
                     Column(
-                      Modifier.fillMaxWidth()
-                        .background(VLRTheme.colorScheme.primaryContainer)
-                        .border(1.dp, VLRTheme.colorScheme.primaryContainer),
+                      modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer)
                     ) {
                       Text(
                         it,
-                        modifier = Modifier.fillMaxWidth().padding(Local8DPPadding.current),
+                        modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
                         textAlign = TextAlign.Center,
                         color = VLRTheme.colorScheme.primary
                       )
                     }
                   }
                 }
-                items(match) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
+                items(match) { MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick) }
               }
             }
           }
         }
         else -> {
           if (completed.isEmpty()) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(text = stringResource(R.string.no_ongoing_event))
-            Spacer(modifier = Modifier.weight(1f))
+            NoMatchUI(modifier = modifier)
           } else {
-            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
               val groupedCompletedMatches = completed.groupBy { it.time?.readableDate }
               groupedCompletedMatches.forEach { (date, match) ->
                 stickyHeader {
                   date?.let {
                     Column(
-                      Modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer),
+                      modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer),
                     ) {
                       Text(
                         it,
-                        modifier = Modifier.fillMaxWidth().padding(Local8DPPadding.current),
+                        modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
                         textAlign = TextAlign.Center,
                         color = VLRTheme.colorScheme.primary
                       )
                     }
                   }
                 }
-                items(match) { MatchOverviewPreview(matchPreviewInfo = it, onClick) }
+                items(match) { MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick) }
               }
             }
           }
@@ -192,26 +191,39 @@ fun MatchOverviewContainer(list: List<MatchPreviewInfo>, onClick: (String) -> Un
 }
 
 @Composable
-fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -> Unit) {
-  CardView(modifier = Modifier.clickable { onClick(matchPreviewInfo.id) }) {
-    Column(modifier = Modifier.padding(Local4DPPadding.current)) {
+fun NoMatchUI(modifier: Modifier = Modifier) {
+  Column(modifier = modifier.fillMaxSize()) {
+    Spacer(modifier = modifier.weight(1f))
+    Text(text = stringResource(R.string.no_match))
+    Spacer(modifier = modifier.weight(1f))
+  }
+}
+
+@Composable
+fun MatchOverviewPreview(
+  modifier: Modifier = Modifier,
+  matchPreviewInfo: MatchPreviewInfo,
+  onClick: (String) -> Unit
+) {
+  CardView(modifier = modifier.clickable { onClick(matchPreviewInfo.id) }) {
+    Column(modifier = modifier.padding(Local4DPPadding.current)) {
       Text(
         text =
           if (matchPreviewInfo.status.equals("LIVE", true)) "LIVE"
           else
             matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})") ?: "",
-        modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+        modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.displaySmall
       )
       Row(
-        modifier = Modifier.padding(Local8DP_4DPPadding.current),
+        modifier = modifier.padding(Local8DP_4DPPadding.current),
         verticalAlignment = Alignment.CenterVertically
       ) {
         Text(
           text = matchPreviewInfo.team1.name,
           style = VLRTheme.typography.titleSmall,
-          modifier = Modifier.weight(1f),
+          modifier = modifier.weight(1f),
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
           color = VLRTheme.colorScheme.primary,
@@ -225,13 +237,13 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -
         )
       }
       Row(
-        modifier = Modifier.padding(Local8DP_4DPPadding.current),
+        modifier = modifier.padding(Local8DP_4DPPadding.current),
         verticalAlignment = Alignment.CenterVertically
       ) {
         Text(
           text = matchPreviewInfo.team2.name,
           style = VLRTheme.typography.titleSmall,
-          modifier = Modifier.weight(1f),
+          modifier = modifier.weight(1f),
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
           color = VLRTheme.colorScheme.primary,
@@ -246,7 +258,7 @@ fun MatchOverviewPreview(matchPreviewInfo: MatchPreviewInfo, onClick: (String) -
       }
       Text(
         text = "${matchPreviewInfo.event} - ${matchPreviewInfo.series}",
-        modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+        modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.labelSmall
       )

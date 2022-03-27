@@ -1,6 +1,5 @@
 package dev.staticvar.vlr.ui.events
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,8 +18,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.skydoves.landscapist.CircularReveal
+import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.ui.*
@@ -42,8 +42,9 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
+  val modifier = Modifier
   Column(
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
@@ -63,8 +64,8 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
               }
             }
 
-          LazyColumn(modifier = Modifier.fillMaxSize()) {
-            item { Spacer(modifier = Modifier.statusBarsPadding()) }
+          LazyColumn(modifier = modifier.fillMaxSize()) {
+            item { Spacer(modifier = modifier.statusBarsPadding()) }
             item { TournamentDetailsHeader(tournamentDetails = tournamentDetails) }
             item {
               EventDetailsTeamSlider(
@@ -72,45 +73,52 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 onClick = { viewModel.action.team(it) }
               )
             }
-            item {
-              EventMatchGroups(
-                selectedIndex,
-                group,
-                tabSelection,
-                onFilterChange = { selectedIndex = it },
-                onTabChange = { tabSelection = it }
-              )
+
+            kotlin.runCatching {
+              group[group.keys.toList()[tabSelection]]
+                ?: group[group.keys.toList()[0]]?.let {
+                  item {
+                    EventMatchGroups(
+                      modifier,
+                      selectedIndex,
+                      group,
+                      tabSelection,
+                      onFilterChange = { selectedIndex = it },
+                      onTabChange = { tabSelection = it }
+                    )
+                  }
+                  items(it) {
+                    TournamentMatchOverview(game = it, onClick = { viewModel.action.match(it) })
+                  }
+                }
             }
-            items(
-              group[group.keys.toList()[tabSelection]] ?: group[group.keys.toList()[0]] ?: listOf()
-            ) { TournamentMatchOverview(game = it, onClick = { viewModel.action.match(it) }) }
-            item { Spacer(modifier = Modifier.navigationBarsPadding()) }
+            item { Spacer(modifier = modifier.navigationBarsPadding()) }
           }
         }
       }
-      .onWaiting { LinearProgressIndicator() }
+      .onWaiting { LinearProgressIndicator(modifier) }
       .onFail { Text(text = message()) }
   }
 }
 
 @Composable
-fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
-  CardView() {
-    Box(modifier = Modifier.fillMaxWidth()) {
-      Row(Modifier.fillMaxWidth().padding(Local16DPPadding.current)) {
-        Spacer(modifier = Modifier.weight(1f))
-        Image(
-          painter =
-            rememberImagePainter(data = tournamentDetails.img, builder = { crossfade(true) }),
+fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: TournamentDetails) {
+  CardView(modifier) {
+    Box(modifier = modifier.fillMaxWidth()) {
+      Row(modifier.fillMaxWidth().padding(Local16DPPadding.current)) {
+        Spacer(modifier = modifier.weight(1f))
+        GlideImage(
+          tournamentDetails.img,
           contentDescription = stringResource(R.string.tournament_logo_content_desciption),
           modifier = Modifier.alpha(0.3f),
+          circularReveal = CircularReveal(1000)
         )
       }
-      Column(Modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
+      Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
         Text(
           text = tournamentDetails.title,
           style = VLRTheme.typography.titleSmall,
-          modifier = Modifier.padding(Local4DPPadding.current),
+          modifier = modifier.padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
           color = VLRTheme.colorScheme.primary
@@ -118,10 +126,10 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
         if (tournamentDetails.subtitle.isNotBlank())
           Text(
             text = tournamentDetails.subtitle,
-            modifier = Modifier.padding(Local4DPPadding.current)
+            modifier = modifier.padding(Local4DPPadding.current)
           )
         Row(
-          Modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
           verticalAlignment = Alignment.CenterVertically
         ) {
           Icon(
@@ -132,7 +140,7 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
           Text(text = tournamentDetails.dates)
         }
         Row(
-          Modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
           verticalAlignment = Alignment.CenterVertically
         ) {
           Icon(
@@ -143,7 +151,7 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
           Text(text = tournamentDetails.prize)
         }
         Row(
-          Modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
           verticalAlignment = Alignment.CenterVertically
         ) {
           Icon(
@@ -159,20 +167,24 @@ fun TournamentDetailsHeader(tournamentDetails: TournamentDetails) {
 }
 
 @Composable
-fun EventDetailsTeamSlider(list: List<TournamentDetails.Participant>, onClick: (String) -> Unit) {
+fun EventDetailsTeamSlider(
+  modifier: Modifier = Modifier,
+  list: List<TournamentDetails.Participant>,
+  onClick: (String) -> Unit
+) {
   Text(
     text = "Teams",
-    modifier = Modifier.padding(Local16DPPadding.current),
+    modifier = modifier.padding(Local16DPPadding.current),
     style = VLRTheme.typography.titleSmall,
     color = VLRTheme.colorScheme.primary
   )
-  LazyRow(modifier = Modifier.fillMaxWidth()) {
+  LazyRow(modifier = modifier.fillMaxWidth()) {
     items(list) {
       CardView(
-        Modifier.width(width = 150.dp).aspectRatio(1f).clickable { onClick(it.id) },
+        modifier.width(width = 150.dp).aspectRatio(1f).clickable { onClick(it.id) },
       ) {
         Column(
-          Modifier.fillMaxSize().padding(Local8DPPadding.current),
+          modifier.fillMaxSize().padding(Local8DPPadding.current),
           verticalArrangement = Arrangement.Center,
           horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -184,11 +196,12 @@ fun EventDetailsTeamSlider(list: List<TournamentDetails.Participant>, onClick: (
             style = VLRTheme.typography.labelLarge,
             color = VLRTheme.colorScheme.primary,
           )
-          Image(
-            painter = rememberImagePainter(data = it.img, builder = { crossfade(true) }),
+          GlideImage(
+            imageModel = it.img,
             contentDescription = stringResource(R.string.team_logo_content_description),
             alignment = Alignment.Center,
-            modifier = Modifier.size(80.dp).aspectRatio(1f)
+            modifier = modifier.size(80.dp).aspectRatio(1f),
+            circularReveal = CircularReveal(1000)
           )
           Text(
             text = it.seed ?: "",
@@ -205,6 +218,7 @@ fun EventDetailsTeamSlider(list: List<TournamentDetails.Participant>, onClick: (
 
 @Composable
 fun EventMatchGroups(
+  modifier: Modifier = Modifier,
   selectedIndex: Int,
   group: Map<String, List<TournamentDetails.Games>>,
   tabSelection: Int,
@@ -220,34 +234,34 @@ fun EventMatchGroups(
       stringResource(R.string.stage)
     )
 
-  Column(Modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
+  Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
     Text(
       text = "Games",
-      modifier = Modifier.padding(Local8DPPadding.current),
+      modifier = modifier.padding(Local8DPPadding.current),
       style = VLRTheme.typography.titleSmall,
       color = VLRTheme.colorScheme.primary
     )
     Row(
       modifier =
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable { expanded = true },
+        modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable { expanded = true },
       verticalAlignment = Alignment.CenterVertically
     ) {
-      Text(text = stringResource(R.string.filter_by), Modifier.padding(Local8DPPadding.current))
+      Text(text = stringResource(R.string.filter_by), modifier.padding(Local8DPPadding.current))
       Text(
         text = filterOptions[selectedIndex],
-        Modifier.weight(1f).padding(Local8DPPadding.current),
+        modifier.weight(1f).padding(Local8DPPadding.current),
         textAlign = TextAlign.End
       )
       Icon(
         Icons.Outlined.ArrowDropDown,
         contentDescription = stringResource(R.string.dropdown_content_description),
-        modifier = Modifier.padding(Local8DPPadding.current)
+        modifier = modifier.padding(Local8DPPadding.current)
       )
     }
     DropdownMenu(
       expanded = expanded,
       onDismissRequest = { expanded = false },
-      modifier = Modifier.fillMaxWidth().padding(Local8DPPadding.current)
+      modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current)
     ) {
       DropdownMenuItem(
         text = { Text(text = filterOptions[0]) },
@@ -276,8 +290,10 @@ fun EventMatchGroups(
       selectedTabIndex = tabSelection,
       containerColor = VLRTheme.colorScheme.primaryContainer,
       modifier =
-        Modifier.fillMaxWidth().padding(Local8DPPadding.current).clip(RoundedCornerShape(16.dp)),
-      indicator = { indicators -> VLRTabIndicator(indicators, tabSelection) }
+        modifier.fillMaxWidth().padding(Local8DPPadding.current).clip(RoundedCornerShape(16.dp)),
+      indicator = { indicators ->
+        if (indicators.isNotEmpty()) VLRTabIndicator(indicators, tabSelection)
+      }
     ) {
       group.keys.forEachIndexed { index, s ->
         Tab(
@@ -286,7 +302,7 @@ fun EventMatchGroups(
         ) {
           Text(
             text = s.replaceFirstChar { it.uppercase() },
-            modifier = Modifier.padding(Local16DPPadding.current)
+            modifier = modifier.padding(Local16DPPadding.current)
           )
         }
       }
@@ -295,37 +311,41 @@ fun EventMatchGroups(
 }
 
 @Composable
-fun TournamentMatchOverview(game: TournamentDetails.Games, onClick: (String) -> Unit) {
+fun TournamentMatchOverview(
+  modifier: Modifier = Modifier,
+  game: TournamentDetails.Games,
+  onClick: (String) -> Unit
+) {
   CardView(
-    modifier = Modifier.clickable { onClick(game.id) },
+    modifier = modifier.clickable { onClick(game.id) },
   ) {
-    Column(modifier = Modifier.padding(Local8DPPadding.current)) {
+    Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
       ) {
         Text(
           text = game.status.replaceFirstChar { it.uppercase() },
-          modifier = Modifier.weight(1f),
+          modifier = modifier.weight(1f),
           textAlign = TextAlign.Center,
           style = VLRTheme.typography.displaySmall
         )
         Icon(
           Icons.Outlined.OpenInNew,
           contentDescription = stringResource(R.string.open_match_content_description),
-          modifier = Modifier.size(24.dp).padding(Local2DPPadding.current)
+          modifier = modifier.size(24.dp).padding(Local2DPPadding.current)
         )
       }
 
       Row(
-        modifier = Modifier.padding(Local4DPPadding.current),
+        modifier = modifier.padding(Local4DPPadding.current),
         verticalAlignment = Alignment.CenterVertically
       ) {
         Text(
           text = game.teams[0].name,
           style = VLRTheme.typography.titleSmall,
-          modifier = Modifier.weight(1f),
+          modifier = modifier.weight(1f),
           maxLines = 1,
           overflow = TextOverflow.Ellipsis
         )
@@ -337,13 +357,13 @@ fun TournamentMatchOverview(game: TournamentDetails.Games, onClick: (String) -> 
         )
       }
       Row(
-        modifier = Modifier.padding(Local4DPPadding.current),
+        modifier = modifier.padding(Local4DPPadding.current),
         verticalAlignment = Alignment.CenterVertically
       ) {
         Text(
           text = game.teams[1].name,
           style = VLRTheme.typography.titleSmall,
-          modifier = Modifier.weight(1f),
+          modifier = modifier.weight(1f),
           maxLines = 1,
           overflow = TextOverflow.Ellipsis
         )
@@ -356,7 +376,7 @@ fun TournamentMatchOverview(game: TournamentDetails.Games, onClick: (String) -> 
       }
       Text(
         text = "${game.time} - ${game.date}",
-        modifier = Modifier.fillMaxWidth().padding(Local8DPPadding.current),
+        modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.labelSmall
       )
