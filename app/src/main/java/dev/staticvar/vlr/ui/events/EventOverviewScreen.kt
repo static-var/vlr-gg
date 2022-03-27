@@ -40,22 +40,30 @@ fun EventScreen(viewModel: VlrViewModel) {
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
+  val modifier: Modifier = Modifier
+
   Column(
-    modifier = Modifier.fillMaxSize().statusBarsPadding(),
+    modifier = modifier.fillMaxSize().statusBarsPadding(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
     allTournaments
       .onPass {
-        data?.let { list -> TournamentPreviewContainer(viewModel = viewModel, list = list) }
+        data?.let { list ->
+          TournamentPreviewContainer(modifier = Modifier, viewModel = viewModel, list = list)
+        }
       }
-      .onWaiting { LinearProgressIndicator() }
+      .onWaiting { LinearProgressIndicator(modifier) }
       .onFail { Text(text = message()) }
   }
 }
 
 @Composable
-fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPreview>) {
+fun TournamentPreviewContainer(
+  modifier: Modifier = Modifier,
+  viewModel: VlrViewModel,
+  list: List<TournamentPreview>
+) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
 
@@ -73,7 +81,7 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
           .orEmpty()
       )
     }
-  Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+  Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
       selectedTabIndex = pagerState.currentPage,
       containerColor = VLRTheme.colorScheme.primaryContainer,
@@ -85,7 +93,7 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
       ) {
         Text(
           text = stringResource(R.string.ongoing),
-          modifier = Modifier.padding(Local16DPPadding.current)
+          modifier = modifier.padding(Local16DPPadding.current)
         )
       }
       Tab(
@@ -94,7 +102,7 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
       ) {
         Text(
           text = stringResource(R.string.upcoming),
-          modifier = Modifier.padding(Local16DPPadding.current)
+          modifier = modifier.padding(Local16DPPadding.current)
         )
       }
       Tab(
@@ -103,43 +111,43 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
       ) {
         Text(
           text = stringResource(R.string.completed),
-          modifier = Modifier.padding(Local16DPPadding.current)
+          modifier = modifier.padding(Local16DPPadding.current)
         )
       }
     }
-    HorizontalPager(count = 3, state = pagerState, modifier = Modifier.fillMaxSize()) { tabPosition
+    HorizontalPager(count = 3, state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition
       ->
       when (tabPosition) {
         0 -> {
           if (ongoing.isEmpty()) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(text = stringResource(R.string.no_ongoing_event))
-            Spacer(modifier = Modifier.weight(1f))
+            NoEventUI(modifier = modifier)
           } else {
-            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-              items(ongoing) { TournamentPreview(tournamentPreview = it, viewModel.action) }
+            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+              items(ongoing) {
+                TournamentPreview(modifier = modifier, tournamentPreview = it, viewModel.action)
+              }
             }
           }
         }
         1 -> {
           if (upcoming.isEmpty()) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(text = stringResource(R.string.no_ongoing_event))
-            Spacer(modifier = Modifier.weight(1f))
+            NoEventUI(modifier = modifier)
           } else {
-            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-              items(upcoming) { TournamentPreview(tournamentPreview = it, viewModel.action) }
+            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+              items(upcoming) {
+                TournamentPreview(modifier = modifier, tournamentPreview = it, viewModel.action)
+              }
             }
           }
         }
         else -> {
           if (completed.isEmpty()) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(text = stringResource(R.string.no_ongoing_event))
-            Spacer(modifier = Modifier.weight(1f))
+            NoEventUI(modifier = modifier)
           } else {
-            LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-              items(completed) { TournamentPreview(tournamentPreview = it, viewModel.action) }
+            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+              items(completed) {
+                TournamentPreview(modifier = modifier, tournamentPreview = it, viewModel.action)
+              }
             }
           }
         }
@@ -149,38 +157,51 @@ fun TournamentPreviewContainer(viewModel: VlrViewModel, list: List<TournamentPre
 }
 
 @Composable
-fun TournamentPreview(tournamentPreview: TournamentPreview, action: Action) {
-  CardView(modifier = Modifier.clickable { action.event(tournamentPreview.id) }) {
-    Column(modifier = Modifier.padding(Local8DPPadding.current)) {
+fun NoEventUI(modifier: Modifier = Modifier) {
+  Column(modifier = modifier.fillMaxSize()) {
+    Spacer(modifier = modifier.weight(1f))
+    Text(text = stringResource(R.string.no_ongoing_event))
+    Spacer(modifier = modifier.weight(1f))
+  }
+}
+
+@Composable
+fun TournamentPreview(
+  modifier: Modifier = Modifier,
+  tournamentPreview: TournamentPreview,
+  action: Action
+) {
+  CardView(modifier = modifier.clickable { action.event(tournamentPreview.id) }) {
+    Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(
         text = tournamentPreview.title,
         style = VLRTheme.typography.titleSmall,
-        modifier = Modifier.padding(Local4DPPadding.current),
+        modifier = modifier.padding(Local4DPPadding.current),
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
         color = VLRTheme.colorScheme.primary,
       )
 
       Row(
-        modifier = Modifier.padding(Local4DPPadding.current),
+        modifier = modifier.padding(Local4DPPadding.current),
         verticalAlignment = Alignment.CenterVertically
       ) {
         Icon(
           Icons.Outlined.LocationOn,
           contentDescription = stringResource(R.string.location),
-          modifier = Modifier.size(16.dp),
+          modifier = modifier.size(16.dp),
         )
         Text(text = tournamentPreview.location.uppercase(), style = VLRTheme.typography.labelMedium)
         Text(
           text = tournamentPreview.prize,
-          modifier = Modifier.padding(Local4DPPadding.current).weight(1f),
+          modifier = modifier.padding(Local4DPPadding.current).weight(1f),
           textAlign = TextAlign.Center,
           style = VLRTheme.typography.labelMedium
         )
         Icon(
           Icons.Outlined.DateRange,
           contentDescription = "Date",
-          modifier = Modifier.size(16.dp),
+          modifier = modifier.size(16.dp),
         )
         Text(text = tournamentPreview.dates, style = VLRTheme.typography.labelMedium)
       }

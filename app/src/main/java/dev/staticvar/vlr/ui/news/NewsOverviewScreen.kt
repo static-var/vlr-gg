@@ -36,8 +36,10 @@ fun NewsScreen(viewModel: VlrViewModel) {
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
+  val modifier: Modifier = Modifier
+
   Column(
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
@@ -48,34 +50,34 @@ fun NewsScreen(viewModel: VlrViewModel) {
             kotlin.runCatching { list.sortedByDescending { it.date.timeToEpoch } }
 
           LazyColumn() {
-            item { Spacer(modifier = Modifier.statusBarsPadding()) }
+            item { Spacer(modifier = modifier.statusBarsPadding()) }
             items(
               if (safeConvertedList.isFailure) list else safeConvertedList.getOrElse { listOf() }
             ) { NewsItem(newsResponseItem = it) }
           }
         }
       }
-      .onWaiting { LinearProgressIndicator() }
+      .onWaiting { LinearProgressIndicator(modifier) }
       .onFail { Text(text = message()) }
   }
 }
 
 @Composable
-fun NewsItem(newsResponseItem: NewsResponseItem) {
+fun NewsItem(modifier: Modifier = Modifier, newsResponseItem: NewsResponseItem) {
   val context = LocalContext.current
   CardView(
     modifier =
-      Modifier.clickable {
+      modifier.clickable {
         val builder = CustomTabsIntent.Builder()
         val customTabsIntent = builder.build()
         customTabsIntent.launchUrl(context, Uri.parse(newsResponseItem.link))
       },
   ) {
-    Column(modifier = Modifier.padding(Local8DPPadding.current)) {
+    Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(
         text = newsResponseItem.title,
         style = VLRTheme.typography.titleSmall,
-        modifier = Modifier.padding(Local4DPPadding.current),
+        modifier = modifier.padding(Local4DPPadding.current),
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
         color = VLRTheme.colorScheme.primary,
@@ -85,17 +87,17 @@ fun NewsItem(newsResponseItem: NewsResponseItem) {
         Icon(
           imageVector = Icons.Outlined.Person,
           contentDescription = "",
-          modifier = Modifier.size(16.dp),
+          modifier = modifier.size(16.dp),
         )
         Text(
           text = newsResponseItem.author,
           style = VLRTheme.typography.bodySmall,
-          modifier = Modifier.padding(Local4DPPadding.current).weight(1f)
+          modifier = modifier.padding(Local4DPPadding.current).weight(1f)
         )
         Icon(
           imageVector = Icons.Outlined.DateRange,
           contentDescription = "",
-          modifier = Modifier.size(16.dp),
+          modifier = modifier.size(16.dp),
         )
         val convertedDate = kotlin.runCatching { newsResponseItem.date.readableDate }
         Text(
@@ -103,14 +105,14 @@ fun NewsItem(newsResponseItem: NewsResponseItem) {
             if (convertedDate.isSuccess) convertedDate.getOrDefault(newsResponseItem.date)
             else newsResponseItem.date,
           style = VLRTheme.typography.bodySmall,
-          modifier = Modifier.padding(Local4DPPadding.current)
+          modifier = modifier.padding(Local4DPPadding.current)
         )
       }
 
       Text(
         text = newsResponseItem.description,
         style = VLRTheme.typography.bodySmall,
-        modifier = Modifier.padding(Local4DPPadding.current),
+        modifier = modifier.padding(Local4DPPadding.current),
         maxLines = 2,
         overflow = TextOverflow.Ellipsis
       )

@@ -1,39 +1,11 @@
 package dev.staticvar.vlr.utils
 
-fun Any?.prettyPrint(): String {
+import android.content.Context
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 
-  var indentLevel = 0
-  val indentWidth = 4
-
-  fun padding() = "".padStart(indentLevel * indentWidth)
-
-  val toString = toString()
-
-  val stringBuilder = StringBuilder(toString.length)
-
-  var i = 0
-  while (i < toString.length) {
-    when (val char = toString[i]) {
-      '(', '[', '{' -> {
-        indentLevel++
-        stringBuilder.appendLine(char).append(padding())
-      }
-      ')', ']', '}' -> {
-        indentLevel--
-        stringBuilder.appendLine().append(padding()).append(char)
-      }
-      ',' -> {
-        stringBuilder.appendLine(char).append(padding())
-        // ignore space after comma as we have added a newline
-        val nextChar = toString.getOrElse(i + 1) { char }
-        if (nextChar == ' ') i++
-      }
-      else -> {
-        stringBuilder.append(char)
-      }
-    }
-    i++
-  }
-
-  return stringBuilder.toString().replace("=", " = ")
+fun String.openAsCustomTab(context: Context) {
+  val builder = CustomTabsIntent.Builder()
+  val customTabsIntent = builder.build()
+  customTabsIntent.launchUrl(context, Uri.parse(this))
 }

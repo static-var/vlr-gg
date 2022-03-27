@@ -34,19 +34,22 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
     remember(viewModel) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
   var rosterCard by remember { mutableStateOf(false) }
 
+  val modifier: Modifier = Modifier
+
   Column(
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
     teamDetails
       .onPass {
         data?.let { teamDetail ->
-          LazyColumn(modifier = Modifier.fillMaxSize()) {
-            item { Spacer(modifier = Modifier.statusBarsPadding()) }
-            item { TeamBanner(teamDetails = teamDetail) }
+          LazyColumn(modifier = modifier.fillMaxSize()) {
+            item { Spacer(modifier = modifier.statusBarsPadding()) }
+            item { TeamBanner(modifier = modifier, teamDetails = teamDetail) }
             item {
               RosterCard(
+                modifier = modifier,
                 expanded = rosterCard,
                 onExpand = { rosterCard = it },
                 data = teamDetail.roster
@@ -54,6 +57,7 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
             }
             item {
               TeamMatchData(
+                modifier = modifier,
                 upcoming = teamDetail.upcoming,
                 completed = teamDetail.completed,
                 teamName = teamDetail.name,
@@ -63,35 +67,33 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
           }
         }
       }
-      .onWaiting { LinearProgressIndicator() }
+      .onWaiting { LinearProgressIndicator(modifier) }
       .onFail { Text(text = message()) }
   }
 }
 
 @Composable
-fun TeamBanner(teamDetails: TeamDetails) {
-  CardView() {
+fun TeamBanner(modifier: Modifier = Modifier, teamDetails: TeamDetails) {
+  CardView(modifier) {
     Row(
-      modifier =
-        Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+      modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
       verticalAlignment = Alignment.CenterVertically
     ) {
       Text(
         text = teamDetails.name,
-        modifier = Modifier.padding(Local2DPPadding.current),
+        modifier = modifier.padding(Local2DPPadding.current),
         style = VLRTheme.typography.titleMedium,
         color = VLRTheme.colorScheme.primary,
       )
       Text(
         text = teamDetails.tag,
-        modifier = Modifier.padding(Local2DPPadding.current),
+        modifier = modifier.padding(Local2DPPadding.current),
         style = VLRTheme.typography.labelMedium
       )
     }
 
     Row(
-      modifier =
-        Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+      modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
       verticalAlignment = Alignment.CenterVertically
     ) {
       Text(text = "#${teamDetails.rank} in ", style = VLRTheme.typography.labelMedium)
@@ -102,12 +104,17 @@ fun TeamBanner(teamDetails: TeamDetails) {
 }
 
 @Composable
-fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDetails.Roster>) {
+fun RosterCard(
+  modifier: Modifier = Modifier,
+  expanded: Boolean,
+  onExpand: (Boolean) -> Unit,
+  data: List<TeamDetails.Roster>
+) {
   CardView() {
-    Column(modifier = Modifier.fillMaxWidth().animateContentSize(tween(500))) {
+    Column(modifier = modifier.fillMaxWidth().animateContentSize(tween(500))) {
       if (!expanded) {
         Row(
-          Modifier.fillMaxWidth().padding(Local8DPPadding.current).clickable { onExpand(true) },
+          modifier.fillMaxWidth().padding(Local8DPPadding.current).clickable { onExpand(true) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
           Text(
@@ -123,7 +130,7 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
         }
       } else {
         Row(
-          Modifier.fillMaxWidth().padding(Local8DPPadding.current).clickable { onExpand(false) },
+          modifier.fillMaxWidth().padding(Local8DPPadding.current).clickable { onExpand(false) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
           Text(
@@ -139,12 +146,12 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
         }
         data.forEach { player ->
           Card(
-            modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+            modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
             contentColor = VLRTheme.colorScheme.onPrimaryContainer,
             containerColor = VLRTheme.colorScheme.primaryContainer
           ) {
             Row(
-              modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+              modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
               horizontalArrangement = Arrangement.SpaceBetween
             ) {
               Text(text = player.alias, style = VLRTheme.typography.titleSmall)
@@ -155,7 +162,7 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
             }
             Text(
               text = player.name ?: "",
-              modifier = Modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+              modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
               style = VLRTheme.typography.labelMedium
             )
           }
@@ -167,6 +174,7 @@ fun RosterCard(expanded: Boolean, onExpand: (Boolean) -> Unit, data: List<TeamDe
 
 @Composable
 fun TeamMatchData(
+  modifier: Modifier = Modifier,
   upcoming: List<TeamDetails.Games>,
   completed: List<TeamDetails.Games>,
   teamName: String,
@@ -175,27 +183,39 @@ fun TeamMatchData(
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
 
-  Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+  Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
       selectedTabIndex = pagerState.currentPage,
       containerColor = VLRTheme.colorScheme.primaryContainer,
-      modifier = Modifier.fillMaxWidth().padding(Local16DPPadding.current).clip(RoundedCornerShape(16.dp))
+      modifier =
+        modifier.fillMaxWidth().padding(Local16DPPadding.current).clip(RoundedCornerShape(16.dp))
     ) {
       Tab(
         selected = pagerState.currentPage == 0,
         onClick = { scope.launch { pagerState.scrollToPage(0) } }
-      ) { Text(text = stringResource(R.string.upcoming), modifier = Modifier.padding(Local16DPPadding.current)) }
+      ) {
+        Text(
+          text = stringResource(R.string.upcoming),
+          modifier = modifier.padding(Local16DPPadding.current)
+        )
+      }
       Tab(
         selected = pagerState.currentPage == 1,
         onClick = { scope.launch { pagerState.scrollToPage(1) } }
-      ) { Text(text = stringResource(R.string.completed), modifier = Modifier.padding(Local16DPPadding.current)) }
+      ) {
+        Text(
+          text = stringResource(R.string.completed),
+          modifier = Modifier.padding(Local16DPPadding.current)
+        )
+      }
     }
     HorizontalPager(count = 2, state = pagerState, modifier = Modifier.fillMaxSize()) {
       when (pagerState.currentPage) {
         0 -> {
-          Column(modifier = Modifier.fillMaxSize()) {
+          Column(modifier = modifier.fillMaxSize()) {
             upcoming.forEach { games ->
               GameOverviewPreview(
+                modifier = modifier,
                 matchPreviewInfo = games,
                 team = teamName,
                 onClick = onClick,
@@ -204,9 +224,10 @@ fun TeamMatchData(
           }
         }
         1 -> {
-          Column(modifier = Modifier.fillMaxSize()) {
+          Column(modifier = modifier.fillMaxSize()) {
             completed.forEach { games ->
               GameOverviewPreview(
+                modifier = modifier,
                 matchPreviewInfo = games,
                 team = teamName,
                 onClick = onClick,
@@ -221,29 +242,30 @@ fun TeamMatchData(
 
 @Composable
 fun GameOverviewPreview(
+  modifier: Modifier = Modifier,
   matchPreviewInfo: TeamDetails.Games,
   team: String,
   onClick: (String) -> Unit,
 ) {
   CardView(
-    modifier = Modifier.clickable { onClick(matchPreviewInfo.id) },
+    modifier = modifier.clickable { onClick(matchPreviewInfo.id) },
   ) {
-    Column(modifier = Modifier.padding(Local8DPPadding.current)) {
+    Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(
         text = matchPreviewInfo.eta ?: matchPreviewInfo.date.readableDateAndTime,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.displaySmall
       )
       Row(
-        modifier = Modifier.fillMaxWidth().padding(Local4DPPadding.current),
+        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
       ) {
         Text(
           text = team,
           style = VLRTheme.typography.displaySmall,
-          modifier = Modifier.weight(1f).padding(Local4DPPadding.current),
+          modifier = modifier.weight(1f).padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
           textAlign = TextAlign.Center,
@@ -252,7 +274,7 @@ fun GameOverviewPreview(
         Text(
           text = matchPreviewInfo.opponent,
           style = VLRTheme.typography.displaySmall,
-          modifier = Modifier.weight(1f).padding(Local4DPPadding.current),
+          modifier = modifier.weight(1f).padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
           textAlign = TextAlign.Center,
@@ -262,13 +284,13 @@ fun GameOverviewPreview(
       Text(
         text = matchPreviewInfo.score.ifBlank { "TBP" },
         style = VLRTheme.typography.titleSmall,
-        modifier = Modifier.fillMaxWidth().padding(Local2DPPadding.current),
+        modifier = modifier.fillMaxWidth().padding(Local2DPPadding.current),
         textAlign = TextAlign.Center,
         color = VLRTheme.colorScheme.primary,
       )
       Text(
         text = "${matchPreviewInfo.event} - ${matchPreviewInfo.stage}",
-        modifier = Modifier.fillMaxWidth().padding(Local8DPPadding.current),
+        modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.labelSmall
       )
