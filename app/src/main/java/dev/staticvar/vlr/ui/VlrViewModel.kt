@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VlrViewModel @Inject constructor(private val repository: VlrRepository) : ViewModel() {
 
-  private var _navState: MutableStateFlow<NavState> = MutableStateFlow(NavState.NEWS)
+  private var _navState: MutableStateFlow<NavState> = MutableStateFlow(NavState.NEWS_OVERVIEW)
   val navState: StateFlow<NavState> = _navState
 
   fun setNavigation(state: NavState) {
@@ -52,6 +52,8 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
 
   fun removeTopic(topic: String) =
     viewModelScope.launch(Dispatchers.IO) { repository.removeTopic(topic) }
+
+  fun parseNews(id: String) = repository.parseNews(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
   fun clearCache() {
     TimeElapsed.reset(Constants.KEY_UPCOMING)
