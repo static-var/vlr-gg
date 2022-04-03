@@ -50,12 +50,7 @@ fun NewsScreen(viewModel: VlrViewModel) {
             item { Spacer(modifier = modifier.statusBarsPadding()) }
             items(
               if (safeConvertedList.isFailure) list else safeConvertedList.getOrElse { listOf() }
-            ) {
-              NewsItem(
-                modifier.clickable { viewModel.action.news(it.link.split("/")[3]) },
-                newsResponseItem = it
-              )
-            }
+            ) { NewsItem(modifier, newsResponseItem = it, viewModel) }
           }
         }
       }
@@ -65,9 +60,13 @@ fun NewsScreen(viewModel: VlrViewModel) {
 }
 
 @Composable
-fun NewsItem(modifier: Modifier = Modifier, newsResponseItem: NewsResponseItem) {
+fun NewsItem(
+  modifier: Modifier = Modifier,
+  newsResponseItem: NewsResponseItem,
+  viewModel: VlrViewModel
+) {
   CardView(
-    modifier = modifier,
+    modifier = modifier.clickable { viewModel.action.news(newsResponseItem.link.split("/")[3]) },
   ) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(
