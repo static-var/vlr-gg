@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,10 +29,7 @@ import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.ui.theme.tintedBackground
-import dev.staticvar.vlr.utils.Waiting
-import dev.staticvar.vlr.utils.onFail
-import dev.staticvar.vlr.utils.onPass
-import dev.staticvar.vlr.utils.onWaiting
+import dev.staticvar.vlr.utils.*
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
@@ -69,14 +67,15 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
             item { TournamentDetailsHeader(tournamentDetails = tournamentDetails) }
             item {
               EventDetailsTeamSlider(
+                modifier = modifier,
                 list = tournamentDetails.participants,
                 onClick = { viewModel.action.team(it) }
               )
             }
 
-            kotlin.runCatching {
-              group[group.keys.toList()[tabSelection]]
-                ?: group[group.keys.toList()[0]]?.let {
+            kotlin
+              .runCatching {
+                group[group.keys.elementAt(tabSelection)]?.let { games ->
                   item {
                     EventMatchGroups(
                       modifier,
@@ -87,11 +86,21 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                       onTabChange = { tabSelection = it }
                     )
                   }
-                  items(it) {
-                    TournamentMatchOverview(game = it, onClick = { viewModel.action.match(it) })
+                  items(games) { item ->
+                    TournamentMatchOverview(
+                      modifier = modifier,
+                      game = item,
+                      onClick = { viewModel.action.match(it) }
+                    )
                   }
                 }
-            }
+                  ?: e { "No matches in list" }
+              }
+              .onFailure {
+                it.printStackTrace()
+                e { "error $it" }
+              }
+              .onSuccess { e { "Success" } }
             item { Spacer(modifier = modifier.navigationBarsPadding()) }
           }
         }
@@ -110,8 +119,10 @@ fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: To
         GlideImage(
           tournamentDetails.img,
           contentDescription = stringResource(R.string.tournament_logo_content_desciption),
-          modifier = Modifier.alpha(0.3f),
-          circularReveal = CircularReveal(1000)
+          modifier = modifier.alpha(0.3f),
+          circularReveal = CircularReveal(1000),
+          contentScale = ContentScale.Inside,
+          alignment = Alignment.CenterEnd
         )
       }
       Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
