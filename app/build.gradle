@@ -15,8 +15,8 @@ android {
         applicationId "dev.staticvar.vlr"
         minSdk 23
         targetSdk 31
-        versionCode 15
-        versionName "v0.0.14"
+        versionCode 16
+        versionName "v0.0.15"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -118,6 +118,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist"
     implementation "com.google.accompanist:accompanist-pager:$accompanist"
     implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist"
+    implementation "com.google.accompanist:accompanist-webview:$accompanist"
 
     implementation "androidx.browser:browser:1.4.0"
 

@@ -14,6 +14,7 @@ import io.ktor.http.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
@@ -24,7 +25,8 @@ class VlrRepository
 constructor(
   private val vlrDao: VlrDao,
   private val ktorHttpClient: HttpClient,
-  @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+  @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+  private val json: Json
 ) {
   fun getFiveUpcomingMatches() = vlrDao.getAllMatchesPreviewNoFlow()
 
@@ -187,4 +189,6 @@ constructor(
         emit(Fail("Error", e))
       }
     }
+
+  fun parseNews(id: String) = NewsParser.parser(id, json).flowOn(ioDispatcher)
 }

@@ -40,6 +40,7 @@ import dev.staticvar.vlr.ui.helper.AppUpdateDownloadPopup
 import dev.staticvar.vlr.ui.helper.currentAppVersion
 import dev.staticvar.vlr.ui.match.MatchOverview
 import dev.staticvar.vlr.ui.match.NewMatchDetails
+import dev.staticvar.vlr.ui.news.NewsDetailsScreen
 import dev.staticvar.vlr.ui.news.NewsScreen
 import dev.staticvar.vlr.ui.team.TeamScreen
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -59,7 +60,7 @@ fun VLR() {
   viewModel.action = action
   systemUiController.isNavigationBarContrastEnforced = true
 
-  val navState: NavState by viewModel.navState.collectAsState(NavState.NEWS)
+  val navState: NavState by viewModel.navState.collectAsState(NavState.NEWS_OVERVIEW)
 
   SideEffect() {
     systemUiController.setNavigationBarColor(
@@ -100,7 +101,8 @@ fun VLR() {
             SizeTransform { initialSize, targetSize ->
               if (navState != NavState.MATCH_DETAILS &&
                   navState != NavState.TOURNAMENT_DETAILS &&
-                  navState != NavState.TEAM_DETAILS
+                  navState != NavState.TEAM_DETAILS &&
+                  navState != NavState.NEWS
               ) {
                 keyframes {
                   // Expand horizontally first.
@@ -119,7 +121,8 @@ fun VLR() {
       ) { targetState ->
         if (targetState != NavState.MATCH_DETAILS &&
             targetState != NavState.TOURNAMENT_DETAILS &&
-            targetState != NavState.TEAM_DETAILS
+            targetState != NavState.TEAM_DETAILS &&
+            targetState != NavState.NEWS
         ) {
           NavigationBar(
             containerColor = VLRTheme.colorScheme.tintedBackground,
@@ -128,11 +131,12 @@ fun VLR() {
             modifier = Modifier.navigationBarsPadding()
           ) {
             NavigationBarItem(
-              selected = navState == NavState.NEWS,
+              selected = navState == NavState.NEWS_OVERVIEW,
               icon = {
                 Icon(
                   imageVector =
-                    if (navState == NavState.NEWS) Icons.Filled.Feed else Icons.Outlined.Feed,
+                    if (navState == NavState.NEWS_OVERVIEW) Icons.Filled.Feed
+                    else Icons.Outlined.Feed,
                   contentDescription = stringResource(R.string.news),
                   tint = VLRTheme.colorScheme.onPrimaryContainer
                 )
@@ -194,9 +198,12 @@ fun VLR() {
           )
           .background(VLRTheme.colorScheme.tintedBackground),
     ) {
-      AnimatedNavHost(navController = navController, startDestination = Destination.News.route) {
+      AnimatedNavHost(
+        navController = navController,
+        startDestination = Destination.NewsOverview.route
+      ) {
         composable(
-          Destination.News.route,
+          Destination.NewsOverview.route,
           enterTransition = {
             if (targetState.destination.route == initialState.destination.route) null
             else slideInFromBottom
@@ -212,7 +219,7 @@ fun VLR() {
             if (targetState.destination.route == initialState.destination.route) null else fadeOut
           },
         ) {
-          viewModel.setNavigation(NavState.NEWS)
+          viewModel.setNavigation(NavState.NEWS_OVERVIEW)
           NewsScreen(viewModel = viewModel)
         }
         composable(
@@ -317,6 +324,18 @@ fun VLR() {
           viewModel.setNavigation(NavState.TEAM_DETAILS)
           val id = it.arguments?.getString(Destination.Team.Args.ID) ?: ""
           TeamScreen(viewModel = viewModel, id = id)
+        }
+        composable(
+          Destination.News.route,
+          arguments = listOf(navArgument(Destination.News.Args.ID) { type = NavType.StringType }),
+          enterTransition = { fadeIn },
+          popEnterTransition = { fadeIn },
+          exitTransition = { fadeOut },
+          popExitTransition = { fadeOut }
+        ) {
+          viewModel.setNavigation(NavState.NEWS)
+          val id = it.arguments?.getString(Destination.News.Args.ID) ?: ""
+          NewsDetailsScreen(viewModel = viewModel, id = id)
         }
       }
     }

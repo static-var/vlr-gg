@@ -3,7 +3,7 @@ buildscript {
     ext {
         compose_version = '1.2.0-alpha06'
         hilt_version = '2.41'
-        kotlin_version = '1.6.20'
+        kotlin_version = '1.6.10'
     }
     repositories {
         google()
@@ -11,7 +11,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.1.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.20"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath 'com.google.gms:google-services:4.3.10'
