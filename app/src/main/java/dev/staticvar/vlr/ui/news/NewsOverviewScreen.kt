@@ -1,7 +1,5 @@
 package dev.staticvar.vlr.ui.news
 
-import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -53,7 +50,12 @@ fun NewsScreen(viewModel: VlrViewModel) {
             item { Spacer(modifier = modifier.statusBarsPadding()) }
             items(
               if (safeConvertedList.isFailure) list else safeConvertedList.getOrElse { listOf() }
-            ) { NewsItem(newsResponseItem = it) }
+            ) {
+              NewsItem(
+                modifier.clickable { viewModel.action.news(it.link.split("/")[3]) },
+                newsResponseItem = it
+              )
+            }
           }
         }
       }
@@ -64,14 +66,8 @@ fun NewsScreen(viewModel: VlrViewModel) {
 
 @Composable
 fun NewsItem(modifier: Modifier = Modifier, newsResponseItem: NewsResponseItem) {
-  val context = LocalContext.current
   CardView(
-    modifier =
-      modifier.clickable {
-        val builder = CustomTabsIntent.Builder()
-        val customTabsIntent = builder.build()
-        customTabsIntent.launchUrl(context, Uri.parse(newsResponseItem.link))
-      },
+    modifier = modifier,
   ) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(

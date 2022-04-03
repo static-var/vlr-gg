@@ -37,6 +37,7 @@ object StorageModule {
   fun getVlrRepository(
     vlrDao: VlrDao,
     ktorHttpClient: HttpClient,
-    @IoDispatcher ioDispatcher: CoroutineDispatcher
-  ) = VlrRepository(vlrDao, ktorHttpClient, ioDispatcher)
+    @IoDispatcher ioDispatcher: CoroutineDispatcher,
+    json: Json
+  ) = VlrRepository(vlrDao, ktorHttpClient, ioDispatcher, json)
 }
