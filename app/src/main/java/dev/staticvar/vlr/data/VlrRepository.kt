@@ -11,7 +11,6 @@ import io.ktor.client.engine.android.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.utils.io.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
@@ -35,7 +34,7 @@ constructor(
       if (TimeElapsed.hasElapsed(Constants.KEY_NEWS)) {
         val response =
           kotlin.runCatching {
-            ktorHttpClient.get<List<NewsResponseItem>>(path = "news/").also {
+            ktorHttpClient.get("api/v1/news/").body<List<NewsResponseItem>>().also {
               vlrDao.deleteAndInsertNews(it)
               TimeElapsed.start(Constants.KEY_NEWS, 180.seconds)
             }
@@ -54,7 +53,7 @@ constructor(
       if (TimeElapsed.hasElapsed(Constants.KEY_MATCH_ALL)) {
         val response =
           kotlin.runCatching {
-            ktorHttpClient.get<List<MatchPreviewInfo>>(path = "matches/").also {
+            ktorHttpClient.get("api/v1/matches/").body<List<MatchPreviewInfo>>().also {
               vlrDao.deleteAndInsertMatchPreviewInfo(it)
               TimeElapsed.start(Constants.KEY_MATCH_ALL, 30.seconds)
             }
@@ -76,7 +75,7 @@ constructor(
       if (TimeElapsed.hasElapsed(Constants.KEY_TOURNAMENT_ALL)) {
         val response =
           kotlin.runCatching {
-            ktorHttpClient.get<List<TournamentPreview>>(path = "events/").also {
+            ktorHttpClient.get("api/v1/events/").body<List<TournamentPreview>>().also {
               vlrDao.deleteAndInsertTournamentPreview(it)
               TimeElapsed.start(Constants.KEY_TOURNAMENT_ALL, 60.seconds)
             }
@@ -95,7 +94,7 @@ constructor(
       if (TimeElapsed.hasElapsed(url)) {
         val response =
           kotlin.runCatching {
-            ktorHttpClient.get<MatchInfo>(path = "matches/$url").also {
+            ktorHttpClient.get("api/v1/matches/$url").body<MatchInfo>().also {
               it.id = url
               vlrDao.insertMatchInfo(it)
               TimeElapsed.start(url, 30.seconds)
@@ -116,7 +115,7 @@ constructor(
       if (TimeElapsed.hasElapsed(url)) {
         val response =
           kotlin.runCatching {
-            ktorHttpClient.get<TournamentDetails>(path = "events/$url").also {
+            ktorHttpClient.get("api/v1/events/$url").body<TournamentDetails>().also {
               vlrDao.insertTournamentDetails(it)
               TimeElapsed.start(url, 30.seconds)
             }
@@ -140,9 +139,8 @@ constructor(
   fun getLatestAppVersion() = flow {
     emit(
       HttpClient(Android)
-        .request<HttpStatement>("https://raw.githubusercontent.com/static-var/vlr-gg/trunk/version")
-        .execute()
-        .readText()
+        .request("https://raw.githubusercontent.com/static-var/vlr-gg/trunk/version")
+        .bodyAsText()
     )
   }
 
@@ -150,9 +148,8 @@ constructor(
     flow<String?> {
       emit(
         HttpClient(Android)
-          .request<HttpStatement>("https://github.com/static-var/vlr-gg/releases/latest")
-          .execute()
-          .readText()
+          .request("https://github.com/static-var/vlr-gg/releases/latest")
+          .bodyAsText()
           .lines()
           .find { it.contains(".apk") }
           ?.substringAfter("\"")
@@ -163,10 +160,10 @@ constructor(
 
   fun downloadApkWithProgress(url: String) =
     flow<Pair<Int, ByteArray>> {
-      HttpClient(Android).request<HttpStatement>(url).execute {
+      HttpClient(Android).prepareRequest(url).execute {
         var offset = 0
         val byteBufferSize = 1024 * 100
-        val channel = it.receive<ByteReadChannel>()
+        val channel = it.bodyAsChannel()
         val contentLen = it.contentLength()?.toInt() ?: 0
         val data = ByteArray(contentLen)
         do {
@@ -184,7 +181,7 @@ constructor(
     flow<Operation<TeamDetails>> {
       emit(Waiting())
       try {
-        ktorHttpClient.get<TeamDetails>("team/$id").also { emit(Pass(it)) }
+        ktorHttpClient.get("api/v1/team/$id").body<TeamDetails>().also { emit(Pass(it)) }
       } catch (e: Exception) {
         emit(Fail("Error", e))
       }

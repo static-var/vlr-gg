@@ -5,15 +5,16 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.staticvar.vlr.BuildConfig
+import dev.staticvar.vlr.utils.Constants
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
-import io.ktor.client.features.*
-import io.ktor.client.features.compression.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.logging.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.compression.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import javax.inject.Singleton
 import kotlinx.serialization.json.Json
 
@@ -36,10 +37,10 @@ object NetworkModule {
   fun provideKtorHttpClient(json: Json) =
     HttpClient(Android) {
       defaultRequest {
-        host = "vlr-scraper.akhilnarang.dev/api/v1"
+        host = Constants.BASE_URL
         url { protocol = URLProtocol.HTTPS }
       }
-      install(JsonFeature) { serializer = KotlinxSerializer(json) }
+      install(ContentNegotiation) { json(json) }
 
       install(Logging) {
         level = LogLevel.ALL
@@ -50,6 +51,9 @@ object NetworkModule {
         headers {
           append(HttpHeaders.AcceptEncoding, "gzip")
           append(HttpHeaders.Authorization, BuildConfig.TOKEN)
+          append(Constants.APPLICATION_HEADER, BuildConfig.APPLICATION_ID)
+          append(Constants.BUILD_TYPE_HEADER, BuildConfig.BUILD_TYPE)
+          append(Constants.VERSION_HEADER, BuildConfig.VERSION_NAME)
         }
       }
 
