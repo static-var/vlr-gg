@@ -96,11 +96,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 }
                   ?: e { "No matches in list" }
               }
-              .onFailure {
-                it.printStackTrace()
-                e { "error $it" }
-              }
-              .onSuccess { e { "Success" } }
+              .onFailure { it.printStackTrace() }
             item { Spacer(modifier = modifier.navigationBarsPadding()) }
           }
         }
@@ -275,21 +271,42 @@ fun EventMatchGroups(
       modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current)
     ) {
       DropdownMenuItem(
-        text = { Text(text = filterOptions[0]) },
+        text = {
+          Text(
+            text = filterOptions[0],
+            color =
+              if (selectedIndex == 0) VLRTheme.colorScheme.primary
+              else VLRTheme.colorScheme.onBackground
+          )
+        },
         onClick = {
           onFilterChange(0)
           expanded = false
         }
       )
       DropdownMenuItem(
-        text = { Text(text = filterOptions[1]) },
+        text = {
+          Text(
+            text = filterOptions[1],
+            color =
+              if (selectedIndex == 1) VLRTheme.colorScheme.primary
+              else VLRTheme.colorScheme.onBackground
+          )
+        },
         onClick = {
           onFilterChange(1)
           expanded = false
         }
       )
       DropdownMenuItem(
-        text = { Text(text = filterOptions[2]) },
+        text = {
+          Text(
+            text = filterOptions[2],
+            color =
+              if (selectedIndex == 2) VLRTheme.colorScheme.primary
+              else VLRTheme.colorScheme.onBackground
+          )
+        },
         onClick = {
           onFilterChange(2)
           expanded = false
