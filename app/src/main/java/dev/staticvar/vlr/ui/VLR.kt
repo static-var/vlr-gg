@@ -191,12 +191,7 @@ fun VLR() {
     }
   ) { paddingValues ->
     Box(
-      modifier =
-        Modifier.padding(
-            bottom = paddingValues.calculateBottomPadding(),
-            top = paddingValues.calculateTopPadding()
-          )
-          .background(VLRTheme.colorScheme.tintedBackground),
+      modifier = Modifier.padding(paddingValues).background(VLRTheme.colorScheme.tintedBackground),
     ) {
       AnimatedNavHost(
         navController = navController,
