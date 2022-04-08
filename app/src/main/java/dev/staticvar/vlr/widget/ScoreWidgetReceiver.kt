@@ -9,11 +9,11 @@ import androidx.glance.appwidget.updateAll
 import dagger.hilt.android.AndroidEntryPoint
 import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.e
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ScoreWidgetReceiver : GlanceAppWidgetReceiver() {

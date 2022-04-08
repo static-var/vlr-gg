@@ -160,7 +160,11 @@ fun TournamentPreviewContainer(
 fun NoEventUI(modifier: Modifier = Modifier) {
   Column(modifier = modifier.fillMaxSize()) {
     Spacer(modifier = modifier.weight(1f))
-    Text(text = stringResource(R.string.no_ongoing_event), modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+    Text(
+      text = stringResource(R.string.no_ongoing_event),
+      modifier = modifier.fillMaxWidth(),
+      textAlign = TextAlign.Center
+    )
     Spacer(modifier = modifier.weight(1f))
   }
 }

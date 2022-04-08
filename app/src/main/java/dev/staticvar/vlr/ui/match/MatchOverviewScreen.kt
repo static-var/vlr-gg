@@ -194,7 +194,11 @@ fun MatchOverviewContainer(
 fun NoMatchUI(modifier: Modifier = Modifier) {
   Column(modifier = modifier.fillMaxSize()) {
     Spacer(modifier = modifier.weight(1f))
-    Text(text = stringResource(R.string.no_match), modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+    Text(
+      text = stringResource(R.string.no_match),
+      modifier = modifier.fillMaxWidth(),
+      textAlign = TextAlign.Center
+    )
     Spacer(modifier = modifier.weight(1f))
   }
 }

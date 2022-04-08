@@ -33,7 +33,12 @@ fun VLRTheme(
       else -> LightColorScheme
     }
 
-  MaterialTheme(colorScheme = colorScheme, typography = Typography, shapes = Shapes,content = content)
+  MaterialTheme(
+    colorScheme = colorScheme,
+    typography = Typography,
+    shapes = Shapes,
+    content = content
+  )
 }
 
 const val LIGHT_THEME_ALPHA = 0.2f
@@ -44,7 +49,4 @@ val VLRTheme
 
 val ColorScheme.tintedBackground: Color
   @Composable
-  get() =
-    primaryContainer.copy(
-      if (isSystemInDarkTheme()) DARK_THEME_ALPHA else LIGHT_THEME_ALPHA
-    )
+  get() = primaryContainer.copy(if (isSystemInDarkTheme()) DARK_THEME_ALPHA else LIGHT_THEME_ALPHA)
