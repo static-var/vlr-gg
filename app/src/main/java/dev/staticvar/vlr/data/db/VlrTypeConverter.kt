@@ -6,11 +6,11 @@ import dev.staticvar.vlr.data.api.response.Event
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.data.api.response.Team
 import dev.staticvar.vlr.data.api.response.TournamentDetails
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @ProvidedTypeConverter
 @Singleton

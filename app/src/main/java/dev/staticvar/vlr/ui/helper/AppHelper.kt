@@ -33,13 +33,13 @@ fun AppUpdateDownloadPopup(viewModel: VlrViewModel) {
 
   // initiate download process if dialog is still being shown and URL is not null
   val downloadProgress by
-  produceState(initialValue = flowOf(Pair(0, ByteArray(0))), downloadClicked, url) {
-    if (url != null && downloadClicked) {
-      value = viewModel.downloadApkWithProgress(url!!)
-    }
-  }
-    .value
-    .collectAsState(initial = Pair(0, ByteArray(0)))
+    produceState(initialValue = flowOf(Pair(0, ByteArray(0))), downloadClicked, url) {
+        if (url != null && downloadClicked) {
+          value = viewModel.downloadApkWithProgress(url!!)
+        }
+      }
+      .value
+      .collectAsState(initial = Pair(0, ByteArray(0)))
 
   // Once download is complete, initiate Installation process
   if (downloadProgress.first == 100 && downloadProgress.second.isNotEmpty()) {
@@ -62,8 +62,8 @@ fun AppUpdateDownloadPopup(viewModel: VlrViewModel) {
             if (downloadClicked) {
               Text(
                 text =
-                if (downloadProgress.first == 100) stringResource(R.string.download_complete)
-                else stringResource(R.string.downloading_percent, downloadProgress.first)
+                  if (downloadProgress.first == 100) stringResource(R.string.download_complete)
+                  else stringResource(R.string.downloading_percent, downloadProgress.first)
               )
               LinearProgressIndicator(
                 progress = downloadProgress.first.div(100f),

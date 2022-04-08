@@ -44,8 +44,10 @@ object NewsParser {
     return if (element.tagName() == "iframe") listOf(Video(element.attr("src")))
     else if (element.tagName() == "em") listOf(Subtext(element.wholeText().trim()))
     else if (element.tagName() == "h1") listOf(Heading(element.wholeText().trim()))
-    else if (element.tagName() == "li") listOf<HtmlDataType>(ListItem(element.text().trim().replace("/", "")))
-    else if (element.tagName() == "blockquote") listOf<HtmlDataType>(Quote(element.wholeText().trim()))
+    else if (element.tagName() == "li")
+      listOf<HtmlDataType>(ListItem(element.text().trim().replace("/", "")))
+    else if (element.tagName() == "blockquote")
+      listOf<HtmlDataType>(Quote(element.wholeText().trim()))
     else if (element.tagName() == "p" && element.hasText() && element.wholeText().isNotBlank())
       listOf(Paragraph(element.wholeText().replace(Regex("\\s+"), " ").trim()))
     else if (element.tagName() == "div" && element.select(".tweet").isNotEmpty()) {
@@ -61,7 +63,8 @@ object NewsParser {
   }
 
   private fun getTweetEmbed(json: Json, url: String): TwitterOEmbed {
-    val content = Jsoup.connect("https://publish.twitter.com/oembed?url=$url").ignoreContentType(true).execute()
+    val content =
+      Jsoup.connect("https://publish.twitter.com/oembed?url=$url").ignoreContentType(true).execute()
     val data = content.body()
     return json.decodeFromString<TwitterOEmbed>(data)
   }
