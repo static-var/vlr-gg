@@ -30,6 +30,13 @@ class AppInstallerService : Service() {
           ?.filter { it.name.startsWith("update") && it.name.endsWith(".apk") }
           ?.forEach { it.delete() }
         i { "Delete APK(s)" }
+        intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)?.let {
+          e { it }
+          Toast.makeText(this, "App updated!", Toast.LENGTH_SHORT).show()
+          startActivity(
+            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+          )
+        }
       }
       else -> {
         filesDir
