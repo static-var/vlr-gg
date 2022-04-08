@@ -112,7 +112,7 @@ dependencies {
     implementation 'androidx.webkit:webkit:1.4.0'
 
 
-    def accompanist = "0.24.5-alpha"
+    def accompanist = "0.24.6-alpha"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist"
     implementation "com.google.accompanist:accompanist-placeholder-material:$accompanist"
     implementation "com.google.accompanist:accompanist-swiperefresh:$accompanist"
