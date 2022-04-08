@@ -151,7 +151,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-messaging-ktx'
 
-    def ktor_version = "1.6.8"
+    def ktor_version = "2.0.0"
     implementation "io.ktor:ktor-client-android:$ktor_version"
     implementation "io.ktor:ktor-client-serialization:$ktor_version"
     implementation "io.ktor:ktor-client-logging-jvm:$ktor_version"
