@@ -63,4 +63,4 @@ val String.timeToEpoch: Long
       .atZoneSameInstant(deviceZoneId)
       .toEpochSecond()
 
-private val deviceZoneId = ZoneId.systemDefault()
+val deviceZoneId = ZoneId.systemDefault()

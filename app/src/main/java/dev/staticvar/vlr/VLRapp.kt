@@ -5,19 +5,27 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import androidx.core.content.getSystemService
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.HiltAndroidApp
 import dev.staticvar.vlr.utils.Logger
 import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.i
+import dev.staticvar.vlr.utils.queueWorker
+import javax.inject.Inject
 
 @HiltAndroidApp
-class VLRapp() : Application() {
+class VLRapp() : Application(), Configuration.Provider {
+
+  @Inject lateinit var workerFactory: HiltWorkerFactory
+
   override fun onCreate() {
     super.onCreate()
     Logger.init(true)
     firebaseInit()
     createNotificationChannel()
+    queueWorker()
   }
 
   private fun firebaseInit() {
@@ -41,4 +49,7 @@ class VLRapp() : Application() {
       getSystemService<NotificationManager>()?.createNotificationChannel(channel)
     }
   }
+
+  override fun getWorkManagerConfiguration() =
+    Configuration.Builder().setWorkerFactory(workerFactory).build()
 }

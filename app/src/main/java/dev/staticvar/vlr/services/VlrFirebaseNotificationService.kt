@@ -1,4 +1,4 @@
-package dev.staticvar.vlr
+package dev.staticvar.vlr.services
 
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -11,6 +11,8 @@ import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import dev.staticvar.vlr.MainActivity
+import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.Destination
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.i
