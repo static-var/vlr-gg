@@ -45,7 +45,7 @@ object NewsParser {
     else if (element.tagName() == "em") listOf(Subtext(element.wholeText().trim()))
     else if (element.tagName() == "h1") listOf(Heading(element.wholeText().trim()))
     else if (element.tagName() == "li")
-      listOf<HtmlDataType>(ListItem(element.text().trim().replace("/", "")))
+      listOf<HtmlDataType>(ListItem(element.text().trim().trimStart('/')))
     else if (element.tagName() == "blockquote")
       listOf<HtmlDataType>(Quote(element.wholeText().trim()))
     else if (element.tagName() == "p" && element.hasText() && element.wholeText().isNotBlank())
