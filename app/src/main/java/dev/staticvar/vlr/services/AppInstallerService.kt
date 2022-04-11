@@ -1,10 +1,11 @@
-package dev.staticvar.vlr
+package dev.staticvar.vlr.services
 
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.os.IBinder
 import android.widget.Toast
+import dev.staticvar.vlr.MainActivity
 import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.i
 

@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.os.Build
-import dev.staticvar.vlr.AppInstallerService
+import dev.staticvar.vlr.services.AppInstallerService
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

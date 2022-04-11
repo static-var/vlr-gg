@@ -48,7 +48,7 @@ constructor(
 
   fun mergeNews() = merge(getNewsFromDb(), getNews()).flowOn(ioDispatcher)
 
-  private fun getMatchesFromServer() =
+  fun getMatchesFromServer() =
     flow<Operation<List<MatchPreviewInfo>>> {
       if (TimeElapsed.hasElapsed(Constants.KEY_MATCH_ALL)) {
         val response =

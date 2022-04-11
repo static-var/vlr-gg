@@ -42,7 +42,6 @@ fun VLRTheme(
   )
 }
 
-
 @Composable
 fun WidgetTheme(
   context: Context,
