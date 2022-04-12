@@ -19,3 +19,7 @@ fun Context.queueWorker() {
   WorkManager.getInstance(this)
     .enqueueUniquePeriodicWork("widget_update", ExistingPeriodicWorkPolicy.REPLACE, work)
 }
+
+fun Context.stopWorker() {
+  WorkManager.getInstance(this).cancelUniqueWork("widget_update")
+}

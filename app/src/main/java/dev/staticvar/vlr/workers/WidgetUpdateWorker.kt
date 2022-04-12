@@ -9,10 +9,11 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.areWidgetsEnabled
+import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.i
 import dev.staticvar.vlr.widget.ScoreWidget
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
 
 @HiltWorker
 class WidgetUpdateWorker
@@ -25,9 +26,9 @@ constructor(
   override suspend fun doWork(): Result {
     val widgetsEnabled = appContext.areWidgetsEnabled()
     if (widgetsEnabled) {
-      vlrRepository.mergeMatches().onEach { i { "Updating widget" } }.take(1)
+      vlrRepository.getMatchesFromServer().onEach { i { "Updating widget $it" } }.collect()
       ScoreWidget(vlrRepository).updateAll(appContext)
-    }
+    } else e { "No Widget to update" }
     return Result.success()
   }
 }
