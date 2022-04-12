@@ -1,6 +1,7 @@
 package dev.staticvar.vlr.widget
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.material3.MaterialTheme
@@ -10,9 +11,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.glance.GlanceModifier
 import androidx.glance.LocalContext
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
@@ -23,9 +27,12 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import dev.staticvar.vlr.MainActivity
 import dev.staticvar.vlr.data.VlrRepository
+import dev.staticvar.vlr.ui.Destination
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.ui.theme.WidgetTheme
+import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.readableDateAndTime
 import java.time.LocalTime
 import java.time.ZoneOffset
@@ -96,7 +103,20 @@ class ScoreWidget(private val repository: VlrRepository) : GlanceAppWidget() {
           }
           items(list) {
             Column(
-              modifier = GlanceModifier.fillMaxWidth().cornerRadius(16.dp).padding(8.dp),
+              modifier =
+                GlanceModifier.fillMaxWidth()
+                  .cornerRadius(16.dp)
+                  .padding(8.dp)
+                  .clickable(
+                    actionStartActivity(
+                      Intent(
+                        Intent.ACTION_VIEW,
+                        "${Constants.DEEP_LINK_BASEURL}${Destination.Match.Args.ID}=${it.id}".toUri(),
+                        context,
+                        MainActivity::class.java
+                      )
+                    )
+                  ),
             ) {
               Column(
                 modifier =
