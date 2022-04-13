@@ -1,5 +1,7 @@
 # vlr-gg
-Unofficial android app is written in Jetpack compose, which uses REST API that parses vlr.gg
+An unofficial android app for vlr.gg, written in Jetpack compose, which uses REST API that parses vlr.gg
+
+<img src="https://github.com/static-var/vlr-gg/blob/trunk/media/demo.gif" width="221" height="480" />
 
 ## App Overview
 
