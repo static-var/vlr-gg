@@ -1,7 +1,7 @@
 # vlr-gg
 Unofficial android app is written in Jetpack compose, which uses REST API that parses vlr.gg
 
-## App overview
+## App Overview
 
 The app currently shows the following information
 - News and news articles
