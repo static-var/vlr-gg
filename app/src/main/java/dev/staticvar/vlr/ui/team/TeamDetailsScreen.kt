@@ -52,14 +52,14 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
                 modifier = modifier,
                 expanded = rosterCard,
                 onExpand = { rosterCard = it },
-                data = teamDetail.roster
+                data = StableHolder(teamDetail.roster)
               )
             }
             item {
               TeamMatchData(
                 modifier = modifier,
-                upcoming = teamDetail.upcoming,
-                completed = teamDetail.completed,
+                upcoming = StableHolder(teamDetail.upcoming),
+                completed = StableHolder(teamDetail.completed),
                 teamName = teamDetail.name,
                 onClick = { viewModel.action.match(it) }
               )
@@ -85,11 +85,13 @@ fun TeamBanner(modifier: Modifier = Modifier, teamDetails: TeamDetails) {
         style = VLRTheme.typography.titleMedium,
         color = VLRTheme.colorScheme.primary,
       )
-      Text(
-        text = teamDetails.tag,
-        modifier = modifier.padding(Local2DPPadding.current),
-        style = VLRTheme.typography.labelMedium
-      )
+      teamDetails.tag?.let {
+        Text(
+          text = it,
+          modifier = modifier.padding(Local2DPPadding.current),
+          style = VLRTheme.typography.labelMedium
+        )
+      }
     }
 
     Row(
@@ -108,13 +110,15 @@ fun RosterCard(
   modifier: Modifier = Modifier,
   expanded: Boolean,
   onExpand: (Boolean) -> Unit,
-  data: List<TeamDetails.Roster>
+  data: StableHolder<List<TeamDetails.Roster>>
 ) {
   CardView() {
     Column(modifier = modifier.fillMaxWidth().animateContentSize(tween(500))) {
       if (!expanded) {
         Row(
-          modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).clickable { onExpand(true) },
+          modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).clickable {
+            onExpand(true)
+          },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
           Text(
@@ -144,7 +148,7 @@ fun RosterCard(
             tint = VLRTheme.colorScheme.primary,
           )
         }
-        data.forEach { player ->
+        data.item.forEach { player ->
           Card(
             modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
             contentColor = VLRTheme.colorScheme.onPrimaryContainer,
@@ -175,8 +179,8 @@ fun RosterCard(
 @Composable
 fun TeamMatchData(
   modifier: Modifier = Modifier,
-  upcoming: List<TeamDetails.Games>,
-  completed: List<TeamDetails.Games>,
+  upcoming: StableHolder<List<TeamDetails.Games>>,
+  completed: StableHolder<List<TeamDetails.Games>>,
   teamName: String,
   onClick: (String) -> Unit
 ) {
@@ -212,7 +216,7 @@ fun TeamMatchData(
       when (pagerState.currentPage) {
         0 -> {
           Column(modifier = modifier.fillMaxSize()) {
-            upcoming.forEach { games ->
+            upcoming.item.forEach { games ->
               GameOverviewPreview(
                 modifier = modifier,
                 matchPreviewInfo = games,
@@ -224,7 +228,7 @@ fun TeamMatchData(
         }
         1 -> {
           Column(modifier = modifier.fillMaxSize()) {
-            completed.forEach { games ->
+            completed.item.forEach { games ->
               GameOverviewPreview(
                 modifier = modifier,
                 matchPreviewInfo = games,

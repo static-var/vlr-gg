@@ -1,6 +1,7 @@
 package dev.staticvar.vlr.ui.news
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.data.api.response.NewsResponseItem
+import dev.staticvar.vlr.ui.Action
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
@@ -31,7 +33,9 @@ fun NewsScreen(viewModel: VlrViewModel) {
 
   val primaryContainer = Color.Transparent
   val systemUiController = rememberSystemUiController()
-  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
+  val isDarkMode = isSystemInDarkTheme()
+
+  SideEffect { systemUiController.setStatusBarColor(primaryContainer, darkIcons = !isDarkMode) }
 
   val modifier: Modifier = Modifier
 
@@ -50,7 +54,7 @@ fun NewsScreen(viewModel: VlrViewModel) {
             item { Spacer(modifier = modifier.statusBarsPadding()) }
             items(
               if (safeConvertedList.isFailure) list else safeConvertedList.getOrElse { listOf() }
-            ) { NewsItem(modifier, newsResponseItem = it, viewModel) }
+            ) { NewsItem(modifier, newsResponseItem = it, action = viewModel.action) }
           }
         }
       }
@@ -60,13 +64,9 @@ fun NewsScreen(viewModel: VlrViewModel) {
 }
 
 @Composable
-fun NewsItem(
-  modifier: Modifier = Modifier,
-  newsResponseItem: NewsResponseItem,
-  viewModel: VlrViewModel
-) {
+fun NewsItem(modifier: Modifier = Modifier, newsResponseItem: NewsResponseItem, action: Action) {
   CardView(
-    modifier = modifier.clickable { viewModel.action.news(newsResponseItem.link.split("/")[3]) },
+    modifier = modifier.clickable { action.news(newsResponseItem.link.split("/")[3]) },
   ) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(

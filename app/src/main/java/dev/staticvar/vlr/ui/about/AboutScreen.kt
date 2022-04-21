@@ -1,6 +1,6 @@
 package dev.staticvar.vlr.ui.about
 
-import android.content.Context
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Code
@@ -36,7 +36,9 @@ fun AboutScreen(viewModel: VlrViewModel) {
 
   val primaryContainer = Color.Transparent
   val systemUiController = rememberSystemUiController()
-  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
+  val isDarkMode = isSystemInDarkTheme()
+
+  SideEffect { systemUiController.setStatusBarColor(primaryContainer, darkIcons = !isDarkMode) }
 
   Column(modifier = Modifier.fillMaxSize()) {
     Spacer(modifier = Modifier.statusBarsPadding())
@@ -48,21 +50,18 @@ fun AboutScreen(viewModel: VlrViewModel) {
       color = VLRTheme.colorScheme.primary,
     )
 
-    AndroidCard(context = context)
-    BackendCard(context = context)
+    AndroidCard()
+    BackendCard()
 
     Spacer(modifier = Modifier.weight(1f))
 
-    VersionFooter(
-      context = context,
-      currentAppVersion = currentAppVersion,
-      remoteAppVersion = remoteAppVersion
-    )
+    VersionFooter(currentAppVersion = currentAppVersion, remoteAppVersion = remoteAppVersion)
   }
 }
 
 @Composable
-fun AndroidCard(modifier: Modifier = Modifier, context: Context) {
+fun AndroidCard(modifier: Modifier = Modifier) {
+  val context = LocalContext.current
   CardView(modifier = modifier) {
     Text(
       text = "Android",
@@ -132,7 +131,8 @@ fun AndroidCard(modifier: Modifier = Modifier, context: Context) {
 }
 
 @Composable
-fun ColumnScope.BackendCard(modifier: Modifier = Modifier, context: Context) {
+fun ColumnScope.BackendCard(modifier: Modifier = Modifier) {
+  val context = LocalContext.current
   CardView() {
     Text(
       text = "Backend",
@@ -182,11 +182,8 @@ fun ColumnScope.BackendCard(modifier: Modifier = Modifier, context: Context) {
 }
 
 @Composable
-fun ColumnScope.VersionFooter(
-  context: Context,
-  currentAppVersion: String,
-  remoteAppVersion: String?
-) {
+fun ColumnScope.VersionFooter(currentAppVersion: String, remoteAppVersion: String?) {
+  val context = LocalContext.current
   Text(
     text = "${stringResource(id = R.string.package_name)} - ${context.packageName}",
     modifier = Modifier.fillMaxWidth(),

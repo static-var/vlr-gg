@@ -15,7 +15,7 @@ data class TeamDetails(
   @SerialName("rank") val rank: Int = 0, // 8
   @SerialName("region") val region: String = "", // North America
   @SerialName("roster") val roster: List<Roster> = listOf(),
-  @SerialName("tag") val tag: String = "", // 100T
+  @SerialName("tag") val tag: String? = "", // 100T
   @SerialName("twitter") val twitter: String? = "", // @100Thieves
   @SerialName("upcoming") val upcoming: List<Games> = listOf(),
   @SerialName("completed") val completed: List<Games> = listOf(),
