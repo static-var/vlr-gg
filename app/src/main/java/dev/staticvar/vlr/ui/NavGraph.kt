@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.ui
 
+import androidx.compose.runtime.Stable
 import androidx.navigation.NavHostController
 
 private object Destinations {
@@ -43,6 +44,7 @@ sealed class Destination(val route: String) {
   }
 }
 
+@Stable
 class Action(private val navController: NavHostController) {
   val pop: () -> Unit = { navController.popBackStack() }
 

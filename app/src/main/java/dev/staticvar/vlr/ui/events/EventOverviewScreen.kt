@@ -1,6 +1,7 @@
 package dev.staticvar.vlr.ui.events
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,10 +25,7 @@ import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.Waiting
-import dev.staticvar.vlr.utils.onFail
-import dev.staticvar.vlr.utils.onPass
-import dev.staticvar.vlr.utils.onWaiting
+import dev.staticvar.vlr.utils.*
 import kotlinx.coroutines.launch
 
 @Composable
@@ -38,7 +36,8 @@ fun EventScreen(viewModel: VlrViewModel) {
 
   val primaryContainer = VLRTheme.colorScheme.surface
   val systemUiController = rememberSystemUiController()
-  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
+  val isDarkMode = isSystemInDarkTheme()
+  SideEffect { systemUiController.setStatusBarColor(primaryContainer, darkIcons = !isDarkMode) }
 
   val modifier: Modifier = Modifier
 
@@ -50,7 +49,11 @@ fun EventScreen(viewModel: VlrViewModel) {
     allTournaments
       .onPass {
         data?.let { list ->
-          TournamentPreviewContainer(modifier = Modifier, viewModel = viewModel, list = list)
+          TournamentPreviewContainer(
+            modifier = Modifier,
+            action = viewModel.action,
+            list = StableHolder(list)
+          )
         }
       }
       .onWaiting { LinearProgressIndicator(modifier) }
@@ -61,14 +64,14 @@ fun EventScreen(viewModel: VlrViewModel) {
 @Composable
 fun TournamentPreviewContainer(
   modifier: Modifier = Modifier,
-  viewModel: VlrViewModel,
-  list: List<TournamentPreview>
+  action: Action,
+  list: StableHolder<List<TournamentPreview>>
 ) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
 
   val (ongoing, upcoming, completed) =
-    list.groupBy { it.status.startsWith("ongoing", ignoreCase = true) }.let {
+    list.item.groupBy { it.status.startsWith("ongoing", ignoreCase = true) }.let {
       Triple(
         it[true].orEmpty(),
         it[false]
@@ -123,7 +126,7 @@ fun TournamentPreviewContainer(
           } else {
             LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
               items(ongoing) {
-                TournamentPreview(modifier = modifier, tournamentPreview = it, viewModel.action)
+                TournamentPreview(modifier = modifier, tournamentPreview = it, action)
               }
             }
           }
@@ -134,7 +137,7 @@ fun TournamentPreviewContainer(
           } else {
             LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
               items(upcoming) {
-                TournamentPreview(modifier = modifier, tournamentPreview = it, viewModel.action)
+                TournamentPreview(modifier = modifier, tournamentPreview = it, action)
               }
             }
           }
@@ -145,7 +148,7 @@ fun TournamentPreviewContainer(
           } else {
             LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
               items(completed) {
-                TournamentPreview(modifier = modifier, tournamentPreview = it, viewModel.action)
+                TournamentPreview(modifier = modifier, tournamentPreview = it, action)
               }
             }
           }

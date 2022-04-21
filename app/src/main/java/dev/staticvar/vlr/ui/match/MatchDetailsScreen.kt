@@ -99,7 +99,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
             if (matchInfo.matchData.isNotEmpty()) {
               val maps = matchInfo.matchData.filter { it.map != "All Maps" }
               item {
-                ShowMatchStatsTab(modifier = modifier, mapData = maps, position) { position = it }
+                ShowMatchStatsTab(modifier = modifier, mapData = StableHolder(maps), tabIndex = position) { position = it }
               }
               if (!maps[position].map.equals("TBD", false)) {
                 item { ScoreBox(modifier = modifier, mapData = maps[position]) }
@@ -320,7 +320,7 @@ fun MatchOverallAndEventOverview(
 @Composable
 fun ShowMatchStatsTab(
   modifier: Modifier = Modifier,
-  mapData: List<MatchInfo.MatchDetailData>,
+  mapData: StableHolder<List<MatchInfo.MatchDetailData>>,
   tabIndex: Int,
   onTabChange: (Int) -> Unit
 ) {
@@ -331,7 +331,7 @@ fun ShowMatchStatsTab(
       modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).clip(RoundedCornerShape(16.dp)),
     indicator = { indicators -> VLRTabIndicator(indicators, tabIndex) }
   ) {
-    mapData.forEachIndexed { index, matchDetailData ->
+    mapData.item.forEachIndexed { index, matchDetailData ->
       Tab(selected = index == tabIndex, onClick = { onTabChange(index) }) {
         Text(text = matchDetailData.map, modifier = modifier.padding(Local16DPPadding.current))
       }

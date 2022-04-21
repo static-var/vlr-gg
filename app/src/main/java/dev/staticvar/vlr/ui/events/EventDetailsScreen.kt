@@ -67,7 +67,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
             item {
               EventDetailsTeamSlider(
                 modifier = modifier,
-                list = tournamentDetails.participants,
+                list = StableHolder(tournamentDetails.participants),
                 onClick = { viewModel.action.team(it) }
               )
             }
@@ -79,7 +79,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                     EventMatchGroups(
                       modifier,
                       selectedIndex,
-                      group,
+                      StableHolder(group),
                       tabSelection,
                       onFilterChange = { selectedIndex = it },
                       onTabChange = { tabSelection = it }
@@ -175,7 +175,7 @@ fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: To
 @Composable
 fun EventDetailsTeamSlider(
   modifier: Modifier = Modifier,
-  list: List<TournamentDetails.Participant>,
+  list: StableHolder<List<TournamentDetails.Participant>>,
   onClick: (String) -> Unit
 ) {
   Text(
@@ -185,7 +185,7 @@ fun EventDetailsTeamSlider(
     color = VLRTheme.colorScheme.primary
   )
   LazyRow(modifier = modifier.fillMaxWidth()) {
-    items(list) {
+    items(list.item) {
       CardView(
         modifier.width(width = 150.dp).aspectRatio(1f).clickable { onClick(it.id) },
       ) {
@@ -226,7 +226,7 @@ fun EventDetailsTeamSlider(
 fun EventMatchGroups(
   modifier: Modifier = Modifier,
   selectedIndex: Int,
-  group: Map<String, List<TournamentDetails.Games>>,
+  group: StableHolder<Map<String, List<TournamentDetails.Games>>>,
   tabSelection: Int,
   onFilterChange: (Int) -> Unit,
   onTabChange: (Int) -> Unit
@@ -322,7 +322,7 @@ fun EventMatchGroups(
         if (indicators.isNotEmpty()) VLRTabIndicator(indicators, tabSelection)
       }
     ) {
-      group.keys.forEachIndexed { index, s ->
+      group.item.keys.forEachIndexed { index, s ->
         Tab(
           selected = tabSelection == index,
           onClick = { onTabChange(index) },

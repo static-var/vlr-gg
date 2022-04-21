@@ -49,7 +49,7 @@ fun MatchOverview(viewModel: VlrViewModel) {
           data?.let { list ->
             MatchOverviewContainer(
               modifier,
-              list = list,
+              list = StableHolder(list),
               onClick = { id -> viewModel.action.match(id) }
             )
           }
@@ -63,14 +63,14 @@ fun MatchOverview(viewModel: VlrViewModel) {
 @Composable
 fun MatchOverviewContainer(
   modifier: Modifier = Modifier,
-  list: List<MatchPreviewInfo>,
+  list: StableHolder<List<MatchPreviewInfo>>,
   onClick: (String) -> Unit
 ) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
 
   val (ongoing, upcoming, completed) =
-    list.groupBy { it.status.startsWith("LIVE", ignoreCase = true) }.let {
+    list.item.groupBy { it.status.startsWith("LIVE", ignoreCase = true) }.let {
       Triple(
         it[true].orEmpty(),
         it[false]
