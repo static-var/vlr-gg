@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,7 +24,6 @@ import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.currentAppVersion
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.ui.theme.tintedBackground
 import dev.staticvar.vlr.utils.openAsCustomTab
 
 @Composable
@@ -34,7 +34,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
   val remoteAppVersion by
     remember(viewModel) { viewModel.getLatestAppVersion() }.collectAsState(initial = null)
 
-  val primaryContainer = VLRTheme.colorScheme.tintedBackground
+  val primaryContainer = Color.Transparent
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 

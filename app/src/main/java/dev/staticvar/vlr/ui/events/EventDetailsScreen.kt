@@ -28,7 +28,6 @@ import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.ui.theme.tintedBackground
 import dev.staticvar.vlr.utils.*
 
 @Composable
@@ -36,7 +35,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
   val details by
     remember(viewModel) { viewModel.getTournamentDetails(id) }.collectAsState(Waiting())
 
-  val primaryContainer = VLRTheme.colorScheme.tintedBackground
+  val primaryContainer = VLRTheme.colorScheme.surface.copy(0.2f)
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
@@ -144,7 +143,7 @@ fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: To
             contentDescription = stringResource(R.string.date),
             tint = VLRTheme.colorScheme.primary,
           )
-          Text(text = tournamentDetails.dates)
+          Text(text = tournamentDetails.dates, modifier = Modifier.padding(horizontal = 4.dp))
         }
         Row(
           modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
@@ -155,7 +154,7 @@ fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: To
             contentDescription = stringResource(R.string.prize),
             tint = VLRTheme.colorScheme.primary,
           )
-          Text(text = tournamentDetails.prize)
+          Text(text = tournamentDetails.prize, modifier = Modifier.padding(horizontal = 4.dp))
         }
         Row(
           modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
@@ -166,7 +165,7 @@ fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: To
             contentDescription = stringResource(R.string.location),
             tint = VLRTheme.colorScheme.primary,
           )
-          Text(text = tournamentDetails.location.uppercase())
+          Text(text = tournamentDetails.location.uppercase(), modifier = Modifier.padding(horizontal = 4.dp))
         }
       }
     }

@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -22,14 +23,13 @@ import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.ui.theme.tintedBackground
 import dev.staticvar.vlr.utils.*
 
 @Composable
 fun NewsScreen(viewModel: VlrViewModel) {
   val newsInfo by remember(viewModel) { viewModel.getNews() }.collectAsState(initial = Waiting())
 
-  val primaryContainer = VLRTheme.colorScheme.tintedBackground
+  val primaryContainer = Color.Transparent
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
