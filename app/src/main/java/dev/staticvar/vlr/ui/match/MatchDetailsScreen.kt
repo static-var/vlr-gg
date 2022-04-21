@@ -37,7 +37,6 @@ import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.ui.theme.tintedBackground
 import dev.staticvar.vlr.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,7 +49,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val isTracked by remember { viewModel.isTopicTracked(trackerString) }.collectAsState(null)
   var streamAndVodsCard by remember { mutableStateOf(false) }
 
-  val primaryContainer = VLRTheme.colorScheme.tintedBackground
+  val primaryContainer = VLRTheme.colorScheme.surface.copy(0.2f)
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
@@ -177,9 +176,10 @@ fun MatchOverallAndEventOverview(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
       ) {
+        Spacer(modifier = Modifier.weight(0.1f))
         Box(
           modifier =
-            modifier.weight(0.6f).padding(Local8DPPadding.current).clickable {
+            modifier.weight(0.3f).padding(Local8DPPadding.current).clickable {
               detailData.teams[0].id?.let(onClick)
             }
         ) {
@@ -204,9 +204,10 @@ fun MatchOverallAndEventOverview(
             circularReveal = CircularReveal(1000),
           )
         }
+        Spacer(modifier = Modifier.weight(0.2f))
         Box(
           modifier =
-            modifier.weight(0.6f).padding(Local8DPPadding.current).clickable {
+            modifier.weight(0.3f).padding(Local8DPPadding.current).clickable {
               detailData.teams[1].id?.let(onClick)
             }
         ) {
@@ -231,6 +232,7 @@ fun MatchOverallAndEventOverview(
             circularReveal = CircularReveal(1000)
           )
         }
+        Spacer(modifier = Modifier.weight(0.1f))
       }
       Column(
         modifier =
@@ -258,14 +260,14 @@ fun MatchOverallAndEventOverview(
         Row(modifier.fillMaxWidth().weight(1f), verticalAlignment = Alignment.CenterVertically) {
           Text(
             text = detailData.teams[0].score?.toString() ?: "-",
-            style = VLRTheme.typography.titleSmall,
+            style = VLRTheme.typography.displayMedium,
             textAlign = TextAlign.Center,
             modifier = modifier.weight(1f),
             color = VLRTheme.colorScheme.primary,
           )
           Text(
             text = detailData.teams[1].score?.toString() ?: "-",
-            style = VLRTheme.typography.titleSmall,
+            style = VLRTheme.typography.displayMedium,
             textAlign = TextAlign.Center,
             modifier = modifier.weight(1f),
             color = VLRTheme.colorScheme.primary,

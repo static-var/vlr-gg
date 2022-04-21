@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
@@ -55,16 +56,24 @@ fun VLR() {
   val action = remember(navController) { Action(navController) }
 
   val systemUiController = rememberSystemUiController()
-  val background = VLRTheme.colorScheme.tintedBackground
+  val background = VLRTheme.colorScheme.surface
+  val transparent = Color.Transparent
 
   viewModel.action = action
-  systemUiController.isNavigationBarContrastEnforced = true
 
   val navState: NavState by viewModel.navState.collectAsState(NavState.NEWS_OVERVIEW)
 
-  SideEffect() {
+  LaunchedEffect(navState) {
     systemUiController.setNavigationBarColor(
-      color = background,
+      color =
+        when (navState) {
+          NavState.MATCH_DETAILS,
+          NavState.TOURNAMENT_DETAILS,
+          NavState.TEAM_DETAILS,
+          NavState.NEWS -> transparent
+          NavState.NEWS_OVERVIEW, NavState.TOURNAMENT, NavState.MATCH_OVERVIEW, NavState.ABOUT ->
+            background
+        },
     )
   }
 
@@ -125,8 +134,8 @@ fun VLR() {
             targetState != NavState.NEWS
         ) {
           NavigationBar(
-            containerColor = VLRTheme.colorScheme.tintedBackground,
-            contentColor = contentColorFor(VLRTheme.colorScheme.tintedBackground),
+            containerColor = VLRTheme.colorScheme.surface,
+            contentColor = contentColorFor(VLRTheme.colorScheme.onSurface),
             tonalElevation = 0.dp,
             modifier = Modifier.navigationBarsPadding()
           ) {

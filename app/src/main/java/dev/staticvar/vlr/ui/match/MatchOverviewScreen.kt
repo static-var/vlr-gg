@@ -33,7 +33,7 @@ fun MatchOverview(viewModel: VlrViewModel) {
   val allMatches by
     remember(viewModel) { viewModel.getAllMatches() }.collectAsState(initial = Waiting())
 
-  val primaryContainer = VLRTheme.colorScheme.primaryContainer
+  val primaryContainer = VLRTheme.colorScheme.surface
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
@@ -89,7 +89,6 @@ fun MatchOverviewContainer(
   Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
       selectedTabIndex = pagerState.currentPage,
-      containerColor = VLRTheme.colorScheme.primaryContainer,
       indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
     ) {
       Tab(

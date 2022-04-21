@@ -76,7 +76,7 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
 fun TeamBanner(modifier: Modifier = Modifier, teamDetails: TeamDetails) {
   CardView(modifier) {
     Row(
-      modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+      modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
       verticalAlignment = Alignment.CenterVertically
     ) {
       Text(
@@ -93,7 +93,7 @@ fun TeamBanner(modifier: Modifier = Modifier, teamDetails: TeamDetails) {
     }
 
     Row(
-      modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+      modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
       verticalAlignment = Alignment.CenterVertically
     ) {
       Text(text = "#${teamDetails.rank} in ", style = VLRTheme.typography.labelMedium)
@@ -114,7 +114,7 @@ fun RosterCard(
     Column(modifier = modifier.fillMaxWidth().animateContentSize(tween(500))) {
       if (!expanded) {
         Row(
-          modifier.fillMaxWidth().padding(Local8DPPadding.current).clickable { onExpand(true) },
+          modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).clickable { onExpand(true) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
           Text(
@@ -186,7 +186,6 @@ fun TeamMatchData(
   Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
       selectedTabIndex = pagerState.currentPage,
-      containerColor = VLRTheme.colorScheme.primaryContainer,
       modifier =
         modifier.fillMaxWidth().padding(Local16DPPadding.current).clip(RoundedCornerShape(16.dp))
     ) {
