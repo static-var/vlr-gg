@@ -1,11 +1,13 @@
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Keep
 @Serializable
+@Immutable
 data class TwitterOEmbed(
   @SerialName("author_name") val authorName: String = "", // Gen.G Esports
   @SerialName("author_url") val authorUrl: String = "", // https://twitter.com/GenG

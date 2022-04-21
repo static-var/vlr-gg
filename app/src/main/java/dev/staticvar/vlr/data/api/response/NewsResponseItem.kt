@@ -1,6 +1,7 @@
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
@@ -9,6 +10,7 @@ import kotlinx.serialization.Serializable
 @Keep
 @Serializable
 @Entity
+@Immutable
 data class NewsResponseItem(
   @SerialName("author") val author: String = "", // Eutalyx
   @SerialName("date") val date: String = "", // January 29, 2022

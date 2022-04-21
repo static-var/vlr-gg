@@ -1,12 +1,14 @@
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
 
 @Keep
 @Serializable
+@Immutable
 data class Team
 constructor(
   @SerialName("country") @JsonNames("region") val region: String = "", // Canada

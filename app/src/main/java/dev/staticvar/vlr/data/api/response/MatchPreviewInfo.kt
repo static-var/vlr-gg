@@ -1,6 +1,7 @@
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
@@ -9,6 +10,7 @@ import kotlinx.serialization.Serializable
 @Keep
 @Serializable
 @Entity
+@Immutable
 data class MatchPreviewInfo(
   @PrimaryKey @SerialName("id") val id: String = "", // 71754
   @SerialName("event") val event: String = "", // Champions Tour Japan Stage 1: Challengers Week 1
