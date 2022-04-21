@@ -1,6 +1,8 @@
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
@@ -9,6 +11,7 @@ import kotlinx.serialization.Serializable
 @Keep
 @Serializable
 @Entity
+@Stable
 data class MatchInfo(
   @PrimaryKey var id: String = "",
   @SerialName("event") val event: Event = Event(),
@@ -25,6 +28,7 @@ data class MatchInfo(
 ) {
   @Keep
   @Serializable
+  @Immutable
   data class MatchDetailData(
     @SerialName("map") val map: String = "", // Fracture
     @SerialName("members") val members: List<Member> = listOf(),
@@ -32,6 +36,7 @@ data class MatchInfo(
   ) {
     @Keep
     @Serializable
+    @Immutable
     data class Member(
       @SerialName("acs") val acs: Int = 0, // 226
       @SerialName("adr") val adr: Int = 0, // 226
@@ -45,6 +50,7 @@ data class MatchInfo(
     ) {
       @Keep
       @Serializable
+      @Immutable
       data class Agent(
         @SerialName("img") val img: String = "", // https://vlr.gg/img/vlr/game/agents/chamber.png
         @SerialName("name") val name: String = "" // chamber
@@ -54,6 +60,7 @@ data class MatchInfo(
 
   @Keep
   @Serializable
+  @Immutable
   data class Head2head(
     @SerialName("match_id") val id: String = "", // 16996
     @SerialName("teams") val teams: List<Team> = listOf()
@@ -61,6 +68,7 @@ data class MatchInfo(
 
   @Keep
   @Serializable
+  @Immutable
   data class Videos(
     @SerialName("streams") val streams: List<ReferenceVideo> = listOf(),
     @SerialName("vods") val vods: List<ReferenceVideo> = listOf(),
@@ -68,6 +76,7 @@ data class MatchInfo(
 
     @Keep
     @Serializable
+    @Immutable
     data class ReferenceVideo(
       @SerialName("name") val name: String = "",
       @SerialName("url") val url: String = "",

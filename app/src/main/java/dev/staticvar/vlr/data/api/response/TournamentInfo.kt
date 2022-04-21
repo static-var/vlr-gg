@@ -1,6 +1,7 @@
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
@@ -9,6 +10,7 @@ import kotlinx.serialization.Serializable
 @Keep
 @Serializable
 @Entity
+@Immutable
 data class TournamentPreview(
   @SerialName("dates") val dates: String = "", // Feb 13—14
   @SerialName("id") @PrimaryKey val id: String = "", // 890

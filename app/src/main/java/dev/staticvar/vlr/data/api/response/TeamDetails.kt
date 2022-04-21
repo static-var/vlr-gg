@@ -1,11 +1,13 @@
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Keep
 @Serializable
+@Immutable
 data class TeamDetails(
   @SerialName("country") val country: String = "", // United States
   @SerialName("img") val img: String = "", // https://owcdn.net/img/603c00d5c5a08.png
@@ -21,6 +23,7 @@ data class TeamDetails(
 ) {
   @Keep
   @Serializable
+  @Immutable
   data class Games(
     @SerialName("date") val date: String = "", // 2022-03-07T02:30:00
     @SerialName("event") val event: String = "", // VCT NA S1: Challengers
@@ -33,6 +36,7 @@ data class TeamDetails(
 
   @Keep
   @Serializable
+  @Immutable
   data class Roster(
     @SerialName("alias") val alias: String = "", // Ethan
     @SerialName("id") val id: String = "", // 11225
