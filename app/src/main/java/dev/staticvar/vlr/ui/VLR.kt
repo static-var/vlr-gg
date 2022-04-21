@@ -151,7 +151,7 @@ fun VLR() {
                 )
               },
               label = { Text(text = stringResource(R.string.news)) },
-              onClick = action.goNews,
+              onClick = if (navState == NavState.NEWS_OVERVIEW) EMPTY else action.goNews,
             )
             NavigationBarItem(
               selected = navState == NavState.MATCH_OVERVIEW,
@@ -165,7 +165,7 @@ fun VLR() {
                 )
               },
               label = { Text(text = stringResource(R.string.matches)) },
-              onClick = action.matchOverview
+              onClick = if (navState == NavState.MATCH_OVERVIEW) EMPTY else action.matchOverview
             )
             NavigationBarItem(
               selected = navState == NavState.TOURNAMENT,
@@ -179,7 +179,7 @@ fun VLR() {
                 )
               },
               label = { Text(text = stringResource(R.string.events)) },
-              onClick = action.goEvents
+              onClick = if (navState == NavState.TOURNAMENT) EMPTY else action.goEvents
             )
             NavigationBarItem(
               selected = navState == NavState.ABOUT,
@@ -192,7 +192,7 @@ fun VLR() {
                 )
               },
               label = { Text(text = stringResource(R.string.about)) },
-              onClick = action.goAbout
+              onClick = if (navState == NavState.ABOUT) EMPTY else action.goAbout
             )
           }
         }
@@ -345,3 +345,5 @@ fun VLR() {
     }
   }
 }
+
+val EMPTY = {}
