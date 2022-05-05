@@ -21,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -62,6 +63,11 @@ fun VLR() {
   viewModel.action = action
 
   val navState: NavState by viewModel.navState.collectAsState(NavState.NEWS_OVERVIEW)
+
+  val fontFamilyResolver = LocalFontFamilyResolver.current
+  LaunchedEffect(Unit) {
+//    fontFamilyResolver.preload(appFontFamily) Crashes on 1.2.0-alpha07
+  }
 
   LaunchedEffect(navState) {
     systemUiController.setNavigationBarColor(

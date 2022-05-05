@@ -70,6 +70,7 @@ android {
                              "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                              "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi",
                              "-Xopt-in=kotlin.time.ExperimentalTime",
+                             "-Xopt-in=androidx.compose.ui.text.ExperimentalTextApi",
                              "-Xopt-in=androidx.compose.animation.ExperimentalAnimationApi",
                              "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi",
                              "-Xopt-in=androidx.compose.material3.ExperimentalMaterial3Api",
@@ -94,6 +95,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.compose.material3:material3:1.0.0-alpha09'
     implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.ui:ui-text-google-fonts:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
     implementation "androidx.compose.ui:ui-tooling:$compose_version"

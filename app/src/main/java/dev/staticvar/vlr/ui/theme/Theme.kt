@@ -5,8 +5,10 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFontFamilyResolver
 
 private val DarkColorScheme =
   darkColorScheme(primary = Purple200, secondary = Purple500, tertiary = Teal200)
@@ -33,6 +35,11 @@ fun VLRTheme(
       darkTheme -> DarkColorScheme
       else -> LightColorScheme
     }
+
+  val fontFamilyResolver = LocalFontFamilyResolver.current
+  LaunchedEffect(Unit) {
+    fontFamilyResolver.resolve(appFontFamily)
+  }
 
   MaterialTheme(
     colorScheme = colorScheme,
