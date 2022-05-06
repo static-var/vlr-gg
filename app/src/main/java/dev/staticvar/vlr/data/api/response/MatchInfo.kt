@@ -43,6 +43,10 @@ data class MatchInfo(
       @SerialName("agents") val agents: List<Agent> = listOf(),
       @SerialName("assists") val assists: Int = 0, // 1
       @SerialName("deaths") val deaths: Int = 0, // 18
+      @SerialName("kast") val kast: Int = 0, // 18
+      @SerialName("first_kills") val firstKills: Int = 0, // 18
+      @SerialName("first_deaths") val firstDeaths: Int = 0, // 18
+      @SerialName("first_kills_diff") val firstKillsDiff: Int = 0, // 18
       @SerialName("headshot_percent") val hsPercent: Int = 0, // 127
       @SerialName("kills") val kills: Int = 0, // 20
       @SerialName("name") val name: String = "", // dapr
