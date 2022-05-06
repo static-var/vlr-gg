@@ -7,16 +7,16 @@ import dev.staticvar.vlr.di.IoDispatcher
 import dev.staticvar.vlr.utils.*
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.android.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 class VlrRepository
@@ -138,7 +138,7 @@ constructor(
 
   fun getLatestAppVersion() = flow {
     emit(
-      HttpClient(Android)
+      HttpClient(OkHttp)
         .request("https://raw.githubusercontent.com/static-var/vlr-gg/trunk/version")
         .bodyAsText()
     )
@@ -147,7 +147,7 @@ constructor(
   fun getApkUrl() =
     flow<String?> {
       emit(
-        HttpClient(Android)
+        HttpClient(OkHttp)
           .request("https://github.com/static-var/vlr-gg/releases/latest")
           .bodyAsText()
           .lines()
@@ -160,7 +160,7 @@ constructor(
 
   fun downloadApkWithProgress(url: String) =
     flow<Pair<Int, ByteArray>> {
-      HttpClient(Android).prepareRequest(url).execute {
+      HttpClient(OkHttp).prepareRequest(url).execute {
         var offset = 0
         val byteBufferSize = 1024 * 100
         val channel = it.bodyAsChannel()
