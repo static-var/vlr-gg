@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
@@ -25,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
@@ -63,9 +65,16 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
     details
       .onPass {
         data?.let { matchInfo ->
-          var position by remember { mutableStateOf(0) }
+          val maps by remember {
+            mutableStateOf(matchInfo.matchData.filter { it.map != "All Maps" })
+          }
+          var toggleStateMap by remember {
+            mutableStateOf(maps.associate { it.map to false }.toMap())
+          }
 
-          LazyColumn(modifier = modifier.fillMaxSize()) {
+          val rememberListState = rememberLazyListState()
+
+          LazyColumn(modifier = modifier.fillMaxSize(), state = rememberListState) {
             item { Spacer(modifier = modifier.statusBarsPadding()) }
             item {
               MatchOverallAndEventOverview(
@@ -97,37 +106,19 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
               )
             }
             if (matchInfo.matchData.isNotEmpty()) {
-              val maps = matchInfo.matchData.filter { it.map != "All Maps" }
-              item {
-                ShowMatchStatsTab(modifier = modifier, mapData = StableHolder(maps), tabIndex = position) { position = it }
-              }
-              if (!maps[position].map.equals("TBD", false)) {
-                item { ScoreBox(modifier = modifier, mapData = maps[position]) }
-                item { StatsHeaderBox(modifier = modifier) }
-                val teamGroupedPlayers = maps[position].members.groupBy { it.team }
-                teamGroupedPlayers.keys.forEach {
-                  item {
-                    Text(
-                      text = it,
-                      modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
-                      textAlign = TextAlign.Center
-                    )
-                  }
-                  teamGroupedPlayers[it]?.let { list ->
-                    items(list) { member -> StatsRow(modifier = modifier, member = member) }
-                  }
-                }
-              } else {
+              // Remove all maps from list
+              maps.forEach { match ->
                 item {
-                  Text(
-                    text = stringResource(R.string.map_tbp),
-                    modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
-                    textAlign = TextAlign.Center,
-                    style = VLRTheme.typography.bodyLarge
+                  MapStatsCard(
+                    mapData = match,
+                    toggleState = toggleStateMap[match.map] ?: false,
+                    onClick = {
+                      toggleStateMap =
+                        toggleStateMap.toMutableMap().apply { set(match.map, it) }.toMap()
+                    }
                   )
                 }
               }
-
               if (matchInfo.head2head.isNotEmpty()) {
                 item {
                   EmphasisCardView(modifier = modifier) {
@@ -612,13 +603,15 @@ fun MatchMoreDetailsDialog(
       },
       text = {
         Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
-          detailData.bans.takeIf { it.isNotEmpty() }?.let {
-            Text(
-              text = detailData.bans.joinToString { it },
-              modifier = modifier.padding(Local8DPPadding.current),
-              textAlign = TextAlign.Center
-            )
-          }
+          detailData.bans
+            .takeIf { it.isNotEmpty() }
+            ?.let {
+              Text(
+                text = detailData.bans.joinToString { it },
+                modifier = modifier.padding(Local8DPPadding.current),
+                textAlign = TextAlign.Center
+              )
+            }
           detailData.event.patch?.let {
             Text(
               text = it,
@@ -697,6 +690,215 @@ fun PreviousEncounter(
         textAlign = TextAlign.Center
       )
     }
+  }
+}
+
+@Composable
+fun MapStatsCard(
+  modifier: Modifier = Modifier,
+  mapData: MatchInfo.MatchDetailData,
+  toggleState: Boolean,
+  onClick: (Boolean) -> Unit
+) {
+  CardView(modifier.fillMaxWidth().animateContentSize().clickable { onClick(!toggleState) }) {
+    Row(
+      modifier.fillMaxWidth().padding(Local16DPPadding.current),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      Text(
+        text = mapData.map,
+        style = VLRTheme.typography.titleSmall,
+        color = VLRTheme.colorScheme.primary,
+        textAlign = TextAlign.Center,
+        modifier = modifier.weight(1f)
+      )
+      Icon(
+        if (toggleState) Icons.Outlined.ArrowUpward else Icons.Outlined.ArrowDownward,
+        contentDescription = stringResource(R.string.expand),
+        modifier = modifier.size(16.dp),
+        tint = VLRTheme.colorScheme.primary,
+      )
+    }
+
+    if (toggleState) {
+      ScoreBox(mapData = mapData)
+      StatViewPager(modifier, members = StableHolder(mapData.members))
+    }
+  }
+}
+
+@Composable
+fun StatViewPager(
+  modifier: Modifier = Modifier,
+  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>
+) {
+  ProvideTextStyle(value = VLRTheme.typography.labelMedium) {
+    HorizontalPager(count = 3, modifier = modifier) { page ->
+      when (page) {
+        0 -> StatKDA(members = members, modifier = modifier)
+        1 -> StatCombat(members = members, modifier = modifier)
+        2 -> StatFirstBlood(members = members, modifier = modifier)
+      }
+    }
+  }
+}
+
+@Composable
+fun StatKDA(
+  modifier: Modifier = Modifier,
+  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>
+) {
+  val teamAndMember = remember(members) { members.item.groupBy { it.team } }
+
+  Column(modifier = modifier.fillMaxWidth()) {
+    Row(modifier = modifier.fillMaxWidth()) {
+      Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
+      Text(text = "Kills", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "Deaths", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "Assists", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "+/-", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+    }
+    teamAndMember.forEach { (team, member) ->
+      Text(text = team, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+      member.forEach { player ->
+        Row(modifier = modifier.fillMaxWidth()) {
+          PlayerNameAndAgentDetail(
+            modifier = modifier,
+            name = player.name,
+            img = player.agents.getOrNull(0)?.img
+          )
+          Text(
+            text = player.kills.toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
+          )
+          Text(
+            text = player.deaths.toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
+          )
+          Text(
+            text = player.assists.toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
+          )
+          Text(
+            text = (player.kills - player.deaths).toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+fun StatCombat(
+  modifier: Modifier = Modifier,
+  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>
+) {
+  val teamAndMember = remember(members) { members.item.groupBy { it.team } }
+  Column(modifier = modifier.fillMaxWidth()) {
+    Row(modifier = modifier.fillMaxWidth()) {
+      Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
+      Text(text = "ACS", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "Deaths", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "KAST", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "HS%", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+    }
+    teamAndMember.forEach { (team, member) ->
+      Text(text = team, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+      member.forEach { player ->
+        Row(modifier = modifier.fillMaxWidth()) {
+          PlayerNameAndAgentDetail(
+            modifier = modifier,
+            name = player.name,
+            img = player.agents.getOrNull(0)?.img
+          )
+          Text(
+            text = player.acs.toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
+          )
+          Text(
+            text = player.adr.toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
+          )
+          Text(
+            text = player.kast.toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
+          )
+          Text(
+            text = player.hsPercent.toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+fun StatFirstBlood(
+  modifier: Modifier = Modifier,
+  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>
+) {
+  val teamAndMember = remember(members) { members.item.groupBy { it.team } }
+  Column(modifier = modifier.fillMaxWidth()) {
+    Row(modifier = modifier.fillMaxWidth()) {
+      Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
+      Text(text = "FK", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "FK", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "+/-", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+    }
+    teamAndMember.forEach { (team, member) ->
+      Text(text = team, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+      member.forEach { player ->
+        Row(modifier = modifier.fillMaxWidth()) {
+          PlayerNameAndAgentDetail(
+            modifier = modifier,
+            name = player.name,
+            img = player.agents.getOrNull(0)?.img
+          )
+          Text(
+            text = player.firstKills.toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
+          )
+          Text(
+            text = player.firstDeaths.toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
+          )
+          Text(
+            text = player.firstKillsDiff.toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+fun RowScope.PlayerNameAndAgentDetail(modifier: Modifier = Modifier, name: String, img: String?) {
+  Row(modifier.weight(1.5f)) {
+    GlideImage(
+      imageModel = img,
+      modifier = modifier.padding(Local4DP_2DPPadding.current).size(20.dp),
+      contentScale = ContentScale.Fit,
+    )
+    Text(
+      text = name,
+      modifier = modifier.padding(Local2DPPadding.current),
+      textAlign = TextAlign.Start
+    )
   }
 }
 
