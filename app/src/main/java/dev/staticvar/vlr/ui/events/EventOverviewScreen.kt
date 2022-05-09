@@ -5,6 +5,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.LocationOn
@@ -71,18 +72,22 @@ fun TournamentPreviewContainer(
   val scope = rememberCoroutineScope()
 
   val (ongoing, upcoming, completed) =
-    list.item.groupBy { it.status.startsWith("ongoing", ignoreCase = true) }.let {
-      Triple(
-        it[true].orEmpty(),
-        it[false]
-          ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
-          ?.get(true)
-          .orEmpty(),
-        it[false]
-          ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
-          ?.get(false)
-          .orEmpty()
-      )
+    remember(list) {
+      list.item
+        .groupBy { it.status.startsWith("ongoing", ignoreCase = true) }
+        .let {
+          Triple(
+            it[true].orEmpty(),
+            it[false]
+              ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
+              ?.get(true)
+              .orEmpty(),
+            it[false]
+              ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
+              ?.get(false)
+              .orEmpty()
+          )
+        }
     }
   Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
@@ -124,7 +129,8 @@ fun TournamentPreviewContainer(
           if (ongoing.isEmpty()) {
             NoEventUI(modifier = modifier)
           } else {
-            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+            val lazyListState = rememberLazyListState()
+            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top, state = lazyListState) {
               items(ongoing) {
                 TournamentPreview(modifier = modifier, tournamentPreview = it, action)
               }
@@ -135,7 +141,8 @@ fun TournamentPreviewContainer(
           if (upcoming.isEmpty()) {
             NoEventUI(modifier = modifier)
           } else {
-            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+            val lazyListState = rememberLazyListState()
+            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top, state = lazyListState) {
               items(upcoming) {
                 TournamentPreview(modifier = modifier, tournamentPreview = it, action)
               }
@@ -146,7 +153,8 @@ fun TournamentPreviewContainer(
           if (completed.isEmpty()) {
             NoEventUI(modifier = modifier)
           } else {
-            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+            val lazyListState = rememberLazyListState()
+            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top, state = lazyListState) {
               items(completed) {
                 TournamentPreview(modifier = modifier, tournamentPreview = it, action)
               }
