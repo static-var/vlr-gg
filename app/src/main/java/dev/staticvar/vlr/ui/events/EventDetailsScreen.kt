@@ -54,7 +54,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
           var tabSelection by remember(selectedIndex) { mutableStateOf(0) }
 
           val group =
-            remember(tournamentDetails) {
+            remember(tabSelection, selectedIndex, tournamentDetails) {
               tournamentDetails.matches.groupBy {
                 when (selectedIndex) {
                   0 -> it.status

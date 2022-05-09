@@ -72,7 +72,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
               mutableStateOf(matchInfo.matchData.filter { it.map != "All Maps" })
             }
           var toggleStateMap by
-            remember(maps) { mutableStateOf(maps.associate { it.map to false }.toMap()) }
+            remember(maps, matchInfo) { mutableStateOf(maps.associate { it.map to false }.toMap()) }
 
           val rememberListState = rememberLazyListState()
 
@@ -152,7 +152,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                 )
               }
             }
-          item { Spacer(modifier = modifier.navigationBarsPadding()) }
+            item { Spacer(modifier = modifier.navigationBarsPadding()) }
           }
         }
       }
@@ -773,11 +773,9 @@ fun StatKDA(
   val teamAndMember = remember(members) { members.item.groupBy { it.team } }
 
   Column(modifier = modifier.fillMaxWidth()) {
-    Text(
+    StatTitle(
       text = "KDA statistics",
-      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
-      textAlign = TextAlign.Center,
-      style = VLRTheme.typography.bodyMedium
+      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current)
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -787,12 +785,7 @@ fun StatKDA(
       Text(text = "+/-", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
     }
     teamAndMember.forEach { (team, member) ->
-      Text(
-        text = team,
-        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
-        textAlign = TextAlign.Center,
-        style = VLRTheme.typography.bodySmall
-      )
+      TeamName(team = team)
       member.forEach { player ->
         Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           PlayerNameAndAgentDetail(
@@ -833,11 +826,9 @@ fun StatCombat(
 ) {
   val teamAndMember = remember(members) { members.item.groupBy { it.team } }
   Column(modifier = modifier.fillMaxWidth()) {
-    Text(
+    StatTitle(
       text = "Combat statistics",
-      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
-      textAlign = TextAlign.Center,
-      style = VLRTheme.typography.bodyMedium
+      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current)
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -847,12 +838,7 @@ fun StatCombat(
       Text(text = "HS%", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
     }
     teamAndMember.forEach { (team, member) ->
-      Text(
-        text = team,
-        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
-        textAlign = TextAlign.Center,
-        style = VLRTheme.typography.bodySmall
-      )
+      TeamName(team = team)
       member.forEach { player ->
         Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           PlayerNameAndAgentDetail(
@@ -893,11 +879,9 @@ fun StatFirstBlood(
 ) {
   val teamAndMember = remember(members) { members.item.groupBy { it.team } }
   Column(modifier = modifier.fillMaxWidth()) {
-    Text(
+    StatTitle(
       text = "First Kill/Death statistics",
-      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
-      textAlign = TextAlign.Center,
-      style = VLRTheme.typography.bodyMedium
+      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current)
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -906,12 +890,7 @@ fun StatFirstBlood(
       Text(text = "+/-", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
     }
     teamAndMember.forEach { (team, member) ->
-      Text(
-        text = team,
-        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
-        textAlign = TextAlign.Center,
-        style = VLRTheme.typography.bodySmall
-      )
+      TeamName(team = team)
       member.forEach { player ->
         Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           PlayerNameAndAgentDetail(
@@ -945,7 +924,7 @@ fun RowScope.PlayerNameAndAgentDetail(modifier: Modifier = Modifier, name: Strin
   Row(modifier.weight(1.5f), verticalAlignment = Alignment.CenterVertically) {
     GlideImage(
       imageModel = img,
-      modifier = modifier.padding(Local4DP_2DPPadding.current).size(20.dp),
+      modifier = modifier.padding(Local4DP_2DPPadding.current).size(24.dp),
       contentScale = ContentScale.Fit,
     )
     Text(
@@ -954,6 +933,28 @@ fun RowScope.PlayerNameAndAgentDetail(modifier: Modifier = Modifier, name: Strin
       textAlign = TextAlign.Start
     )
   }
+}
+
+@Composable
+fun TeamName(team: String, modifier: Modifier = Modifier) {
+  Text(
+    text = team,
+    modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+    textAlign = TextAlign.Center,
+    style = VLRTheme.typography.bodySmall,
+    color = VLRTheme.colorScheme.primary,
+  )
+}
+
+@Composable
+fun StatTitle(text: String, modifier: Modifier = Modifier) {
+  Text(
+    text = text,
+    modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+    textAlign = TextAlign.Center,
+    style = VLRTheme.typography.bodyMedium,
+    color = VLRTheme.colorScheme.primary,
+  )
 }
 
 fun String.toMatchTopic() = "match-$this"
