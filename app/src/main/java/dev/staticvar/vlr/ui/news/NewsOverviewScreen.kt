@@ -53,7 +53,8 @@ fun NewsScreen(viewModel: VlrViewModel) {
           LazyColumn() {
             item { Spacer(modifier = modifier.statusBarsPadding()) }
             items(
-              if (safeConvertedList.isFailure) list else safeConvertedList.getOrElse { listOf() }
+              if (safeConvertedList.isFailure) list else safeConvertedList.getOrElse { listOf() },
+              key = { item -> item.link }
             ) { NewsItem(modifier, newsResponseItem = it, action = viewModel.action) }
           }
         }

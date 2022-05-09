@@ -137,7 +137,11 @@ fun MatchOverviewContainer(
               modifier.fillMaxSize(),
               verticalArrangement = Arrangement.Top,
               state = lazyListState
-            ) { items(ongoing) { MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick) } }
+            ) {
+              items(ongoing, key = { item -> item.id }) {
+                MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick)
+              }
+            }
           }
         }
         1 -> {
@@ -145,12 +149,13 @@ fun MatchOverviewContainer(
             NoMatchUI()
           } else {
             val lazyListState = rememberLazyListState()
+            val groupedUpcomingMatches =
+              remember(upcoming) { upcoming.groupBy { it.time?.readableDate } }
             LazyColumn(
               modifier.fillMaxSize(),
               verticalArrangement = Arrangement.Top,
               state = lazyListState
             ) {
-              val groupedUpcomingMatches = upcoming.groupBy { it.time?.readableDate }
               groupedUpcomingMatches.forEach { (date, match) ->
                 stickyHeader {
                   date?.let {
@@ -166,7 +171,9 @@ fun MatchOverviewContainer(
                     }
                   }
                 }
-                items(match) { MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick) }
+                items(match, key = { item -> item.id }) {
+                  MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick)
+                }
               }
             }
           }
@@ -176,12 +183,13 @@ fun MatchOverviewContainer(
             NoMatchUI(modifier = modifier)
           } else {
             val lazyListState = rememberLazyListState()
+            val groupedCompletedMatches =
+              remember(completed) { completed.groupBy { it.time?.readableDate } }
             LazyColumn(
               modifier.fillMaxSize(),
               verticalArrangement = Arrangement.Top,
               state = lazyListState
             ) {
-              val groupedCompletedMatches = completed.groupBy { it.time?.readableDate }
               groupedCompletedMatches.forEach { (date, match) ->
                 stickyHeader {
                   date?.let {
@@ -197,7 +205,9 @@ fun MatchOverviewContainer(
                     }
                   }
                 }
-                items(match) { MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick) }
+                items(match, key = { item -> item.id }) {
+                  MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick)
+                }
               }
             }
           }

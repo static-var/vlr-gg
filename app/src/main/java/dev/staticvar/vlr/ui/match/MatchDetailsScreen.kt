@@ -27,6 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
@@ -65,12 +67,12 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
     details
       .onPass {
         data?.let { matchInfo ->
-          val maps by remember {
-            mutableStateOf(matchInfo.matchData.filter { it.map != "All Maps" })
-          }
-          var toggleStateMap by remember {
-            mutableStateOf(maps.associate { it.map to false }.toMap())
-          }
+          val maps by
+            remember(matchInfo) {
+              mutableStateOf(matchInfo.matchData.filter { it.map != "All Maps" })
+            }
+          var toggleStateMap by
+            remember(maps) { mutableStateOf(maps.associate { it.map to false }.toMap()) }
 
           val rememberListState = rememberLazyListState()
 
@@ -119,28 +121,38 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                   )
                 }
               }
-              if (matchInfo.head2head.isNotEmpty()) {
-                item {
-                  EmphasisCardView(modifier = modifier) {
-                    Text(
-                      text = stringResource(R.string.previous_encounter),
-                      modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
-                      textAlign = TextAlign.Center,
-                      style = VLRTheme.typography.titleSmall,
-                      color = VLRTheme.colorScheme.primary,
-                    )
-                  }
-                }
-                items(matchInfo.head2head) {
-                  PreviousEncounter(
-                    modifier = modifier,
-                    previousEncounter = it,
-                    onClick = { viewModel.action.match(it) }
+            } else {
+              item {
+                Text(
+                  text = stringResource(R.string.matches_tbp),
+                  modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
+                  textAlign = TextAlign.Center,
+                  style = VLRTheme.typography.titleSmall,
+                  color = VLRTheme.colorScheme.primary,
+                )
+              }
+            }
+            if (matchInfo.head2head.isNotEmpty()) {
+              item {
+                EmphasisCardView(modifier = modifier) {
+                  Text(
+                    text = stringResource(R.string.previous_encounter),
+                    modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
+                    textAlign = TextAlign.Center,
+                    style = VLRTheme.typography.titleSmall,
+                    color = VLRTheme.colorScheme.primary,
                   )
                 }
               }
+              items(matchInfo.head2head, key = { item -> item.id }) {
+                PreviousEncounter(
+                  modifier = modifier,
+                  previousEncounter = it,
+                  onClick = { viewModel.action.match(it) }
+                )
+              }
             }
-            item { Spacer(modifier = modifier.navigationBarsPadding()) }
+          item { Spacer(modifier = modifier.navigationBarsPadding()) }
           }
         }
       }
@@ -733,14 +745,23 @@ fun StatViewPager(
   modifier: Modifier = Modifier,
   members: StableHolder<List<MatchInfo.MatchDetailData.Member>>
 ) {
-  ProvideTextStyle(value = VLRTheme.typography.labelMedium) {
-    HorizontalPager(count = 3, modifier = modifier) { page ->
-      when (page) {
-        0 -> StatKDA(members = members, modifier = modifier)
-        1 -> StatCombat(members = members, modifier = modifier)
-        2 -> StatFirstBlood(members = members, modifier = modifier)
+  val pagerState = rememberPagerState()
+  Column(modifier.fillMaxWidth()) {
+    ProvideTextStyle(value = VLRTheme.typography.labelMedium) {
+      HorizontalPager(count = 3, modifier = modifier, state = pagerState) { page ->
+        when (page) {
+          0 -> StatKDA(members = members, modifier = modifier)
+          1 -> StatCombat(members = members, modifier = modifier)
+          2 -> StatFirstBlood(members = members, modifier = modifier)
+        }
       }
     }
+    HorizontalPagerIndicator(
+      pagerState = pagerState,
+      modifier = modifier.padding(Local4DPPadding.current).align(Alignment.CenterHorizontally),
+      activeColor = VLRTheme.colorScheme.onPrimaryContainer,
+      inactiveColor = VLRTheme.colorScheme.primary,
+    )
   }
 }
 
@@ -752,6 +773,12 @@ fun StatKDA(
   val teamAndMember = remember(members) { members.item.groupBy { it.team } }
 
   Column(modifier = modifier.fillMaxWidth()) {
+    Text(
+      text = "KDA statistics",
+      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+      textAlign = TextAlign.Center,
+      style = VLRTheme.typography.bodyMedium
+    )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
       Text(text = "Kills", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
@@ -760,9 +787,14 @@ fun StatKDA(
       Text(text = "+/-", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
     }
     teamAndMember.forEach { (team, member) ->
-      Text(text = team, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+      Text(
+        text = team,
+        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+        textAlign = TextAlign.Center,
+        style = VLRTheme.typography.bodySmall
+      )
       member.forEach { player ->
-        Row(modifier = modifier.fillMaxWidth()) {
+        Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           PlayerNameAndAgentDetail(
             modifier = modifier,
             name = player.name,
@@ -801,17 +833,28 @@ fun StatCombat(
 ) {
   val teamAndMember = remember(members) { members.item.groupBy { it.team } }
   Column(modifier = modifier.fillMaxWidth()) {
+    Text(
+      text = "Combat statistics",
+      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+      textAlign = TextAlign.Center,
+      style = VLRTheme.typography.bodyMedium
+    )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
       Text(text = "ACS", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
-      Text(text = "Deaths", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "ADR", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
       Text(text = "KAST", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
       Text(text = "HS%", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
     }
     teamAndMember.forEach { (team, member) ->
-      Text(text = team, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+      Text(
+        text = team,
+        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+        textAlign = TextAlign.Center,
+        style = VLRTheme.typography.bodySmall
+      )
       member.forEach { player ->
-        Row(modifier = modifier.fillMaxWidth()) {
+        Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           PlayerNameAndAgentDetail(
             modifier = modifier,
             name = player.name,
@@ -850,6 +893,12 @@ fun StatFirstBlood(
 ) {
   val teamAndMember = remember(members) { members.item.groupBy { it.team } }
   Column(modifier = modifier.fillMaxWidth()) {
+    Text(
+      text = "First Kill/Death statistics",
+      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+      textAlign = TextAlign.Center,
+      style = VLRTheme.typography.bodyMedium
+    )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
       Text(text = "FK", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
@@ -857,9 +906,14 @@ fun StatFirstBlood(
       Text(text = "+/-", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
     }
     teamAndMember.forEach { (team, member) ->
-      Text(text = team, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+      Text(
+        text = team,
+        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+        textAlign = TextAlign.Center,
+        style = VLRTheme.typography.bodySmall
+      )
       member.forEach { player ->
-        Row(modifier = modifier.fillMaxWidth()) {
+        Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           PlayerNameAndAgentDetail(
             modifier = modifier,
             name = player.name,
@@ -888,7 +942,7 @@ fun StatFirstBlood(
 
 @Composable
 fun RowScope.PlayerNameAndAgentDetail(modifier: Modifier = Modifier, name: String, img: String?) {
-  Row(modifier.weight(1.5f)) {
+  Row(modifier.weight(1.5f), verticalAlignment = Alignment.CenterVertically) {
     GlideImage(
       imageModel = img,
       modifier = modifier.padding(Local4DP_2DPPadding.current).size(20.dp),

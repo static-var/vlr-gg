@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
@@ -53,15 +54,19 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
           var tabSelection by remember(selectedIndex) { mutableStateOf(0) }
 
           val group =
-            tournamentDetails.matches.groupBy {
-              when (selectedIndex) {
-                0 -> it.status
-                1 -> it.round
-                else -> it.stage
+            remember(tournamentDetails) {
+              tournamentDetails.matches.groupBy {
+                when (selectedIndex) {
+                  0 -> it.status
+                  1 -> it.round
+                  else -> it.stage
+                }
               }
             }
 
-          LazyColumn(modifier = modifier.fillMaxSize()) {
+          val lazyListState = rememberLazyListState()
+
+          LazyColumn(modifier = modifier.fillMaxSize(), state = lazyListState) {
             item { Spacer(modifier = modifier.statusBarsPadding()) }
             item { TournamentDetailsHeader(tournamentDetails = tournamentDetails) }
             item {
@@ -85,7 +90,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                       onTabChange = { tabSelection = it }
                     )
                   }
-                  items(games) { item ->
+                  items(games, key = { game -> game.id }) { item ->
                     TournamentMatchOverview(
                       modifier = modifier,
                       game = item,
@@ -165,7 +170,10 @@ fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: To
             contentDescription = stringResource(R.string.location),
             tint = VLRTheme.colorScheme.primary,
           )
-          Text(text = tournamentDetails.location.uppercase(), modifier = Modifier.padding(horizontal = 4.dp))
+          Text(
+            text = tournamentDetails.location.uppercase(),
+            modifier = Modifier.padding(horizontal = 4.dp)
+          )
         }
       }
     }
@@ -178,14 +186,15 @@ fun EventDetailsTeamSlider(
   list: StableHolder<List<TournamentDetails.Participant>>,
   onClick: (String) -> Unit
 ) {
+  val lazyListState = rememberLazyListState()
   Text(
     text = "Teams",
     modifier = modifier.padding(Local16DPPadding.current),
     style = VLRTheme.typography.titleSmall,
     color = VLRTheme.colorScheme.primary
   )
-  LazyRow(modifier = modifier.fillMaxWidth()) {
-    items(list.item) {
+  LazyRow(modifier = modifier.fillMaxWidth(), state = lazyListState) {
+    items(list.item, key = { list -> list.id }) {
       CardView(
         modifier.width(width = 150.dp).aspectRatio(1f).clickable { onClick(it.id) },
       ) {
