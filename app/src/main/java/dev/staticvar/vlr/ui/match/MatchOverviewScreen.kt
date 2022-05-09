@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -70,20 +71,24 @@ fun MatchOverviewContainer(
   val scope = rememberCoroutineScope()
 
   val (ongoing, upcoming, completed) =
-    list.item.groupBy { it.status.startsWith("LIVE", ignoreCase = true) }.let {
-      Triple(
-        it[true].orEmpty(),
-        it[false]
-          ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
-          ?.get(true)
-          .orEmpty()
-          .sortedBy { it.time?.timeToEpoch },
-        it[false]
-          ?.groupBy { it.status.startsWith("completed", ignoreCase = true) }
-          ?.get(true)
-          .orEmpty()
-          .sortedByDescending { it.time?.timeToEpoch }
-      )
+    remember(list) {
+      list.item
+        .groupBy { it.status.startsWith("LIVE", ignoreCase = true) }
+        .let {
+          Triple(
+            it[true].orEmpty(),
+            it[false]
+              ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
+              ?.get(true)
+              .orEmpty()
+              .sortedBy { it.time?.timeToEpoch },
+            it[false]
+              ?.groupBy { it.status.startsWith("completed", ignoreCase = true) }
+              ?.get(true)
+              .orEmpty()
+              .sortedByDescending { it.time?.timeToEpoch }
+          )
+        }
     }
 
   Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
@@ -127,16 +132,24 @@ fun MatchOverviewContainer(
           if (ongoing.isEmpty()) {
             NoMatchUI()
           } else {
-            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-              items(ongoing) { MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick) }
-            }
+            val lazyListState = rememberLazyListState()
+            LazyColumn(
+              modifier.fillMaxSize(),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState
+            ) { items(ongoing) { MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick) } }
           }
         }
         1 -> {
           if (upcoming.isEmpty()) {
             NoMatchUI()
           } else {
-            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+            val lazyListState = rememberLazyListState()
+            LazyColumn(
+              modifier.fillMaxSize(),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState
+            ) {
               val groupedUpcomingMatches = upcoming.groupBy { it.time?.readableDate }
               groupedUpcomingMatches.forEach { (date, match) ->
                 stickyHeader {
@@ -162,7 +175,12 @@ fun MatchOverviewContainer(
           if (completed.isEmpty()) {
             NoMatchUI(modifier = modifier)
           } else {
-            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+            val lazyListState = rememberLazyListState()
+            LazyColumn(
+              modifier.fillMaxSize(),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState
+            ) {
               val groupedCompletedMatches = completed.groupBy { it.time?.readableDate }
               groupedCompletedMatches.forEach { (date, match) ->
                 stickyHeader {
