@@ -173,7 +173,9 @@ fun NoEventUI(modifier: Modifier = Modifier) {
     Text(
       text = stringResource(R.string.no_ongoing_event),
       modifier = modifier.fillMaxWidth(),
-      textAlign = TextAlign.Center
+      textAlign = TextAlign.Center,
+      style = VLRTheme.typography.bodyLarge,
+      color = VLRTheme.colorScheme.primary
     )
     Spacer(modifier = modifier.weight(1f))
   }
