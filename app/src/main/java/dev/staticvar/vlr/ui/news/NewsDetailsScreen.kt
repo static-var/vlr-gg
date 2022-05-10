@@ -1,5 +1,7 @@
 package dev.staticvar.vlr.ui.news
 
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -13,10 +15,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebSettingsCompat.FORCE_DARK_ON
+import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewFeature
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
@@ -27,12 +31,14 @@ import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.onFail
 import dev.staticvar.vlr.utils.onPass
 import dev.staticvar.vlr.utils.onWaiting
+import dev.staticvar.vlr.utils.openAsCustomTab
 
 @Composable
 fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
   val parsedNews by remember { viewModel.parseNews(id) }.collectAsState()
   val modifier = Modifier
   val isDarkMode = isSystemInDarkTheme()
+  val context = LocalContext.current
 
   Column(
     modifier = modifier.fillMaxSize(),
@@ -109,6 +115,15 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                           "UTF-8",
                           null
                         )
+                        webView.settings.setSupportMultipleWindows(true)
+                        webView.settings.javaScriptCanOpenWindowsAutomatically = true
+                        webView.webViewClient = object : WebViewClientCompat() {
+                          override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                            println(request.url)
+                            request.url?.toString()?.openAsCustomTab(context)
+                            return true
+                          }
+                        }
                       }
                     )
                   is Unknown ->
