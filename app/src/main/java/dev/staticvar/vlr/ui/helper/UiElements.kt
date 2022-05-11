@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,8 +22,11 @@ fun CardView(
   Card(
     modifier = Modifier.padding(Local16DP_8DPPadding.current).then(modifier),
     shape = RoundedCornerShape(16.dp),
-    contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-    containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
+    colors =
+      CardDefaults.cardColors(
+        contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+        containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
+      )
   ) { content(this) }
 }
 
@@ -34,7 +38,10 @@ fun EmphasisCardView(
   Card(
     modifier = Modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).then(modifier),
     shape = RoundedCornerShape(16.dp),
-    contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-    containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA + CARD_ALPHA)
+    colors =
+      CardDefaults.cardColors(
+        contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+        containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA + CARD_ALPHA)
+      )
   ) { content(this) }
 }
