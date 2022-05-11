@@ -151,8 +151,11 @@ fun RosterCard(
         data.item.forEach { player ->
           Card(
             modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
-            contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-            containerColor = VLRTheme.colorScheme.primaryContainer
+            colors =
+            CardDefaults.cardColors(
+              contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+              containerColor = VLRTheme.colorScheme.primaryContainer
+            )
           ) {
             Row(
               modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
