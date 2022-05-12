@@ -121,7 +121,8 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                   )
                 }
               }
-            } else {
+            }
+            if (matchInfo.mapCount > matchInfo.matchData.size) {
               item {
                 Text(
                   text = stringResource(R.string.matches_tbp),
