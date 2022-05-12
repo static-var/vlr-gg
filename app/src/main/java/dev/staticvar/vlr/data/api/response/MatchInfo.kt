@@ -25,6 +25,7 @@ data class MatchInfo(
   @SerialName("bans") val bans: List<String> = listOf(),
   @SerialName("videos") val videos: Videos = Videos(),
   @SerialName("data") val matchData: List<MatchDetailData> = listOf(),
+  @SerialName("map_count") val mapCount: Int = 0,
 ) {
   @Keep
   @Serializable
