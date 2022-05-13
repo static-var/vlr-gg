@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
@@ -20,7 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -39,7 +37,6 @@ import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
-import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -322,28 +319,6 @@ fun MatchOverallAndEventOverview(
 }
 
 @Composable
-fun ShowMatchStatsTab(
-  modifier: Modifier = Modifier,
-  mapData: StableHolder<List<MatchInfo.MatchDetailData>>,
-  tabIndex: Int,
-  onTabChange: (Int) -> Unit
-) {
-  ScrollableTabRow(
-    selectedTabIndex = tabIndex,
-    containerColor = VLRTheme.colorScheme.primaryContainer,
-    modifier =
-      modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).clip(RoundedCornerShape(16.dp)),
-    indicator = { indicators -> VLRTabIndicator(indicators, tabIndex) }
-  ) {
-    mapData.item.forEachIndexed { index, matchDetailData ->
-      Tab(selected = index == tabIndex, onClick = { onTabChange(index) }) {
-        Text(text = matchDetailData.map, modifier = modifier.padding(Local16DPPadding.current))
-      }
-    }
-  }
-}
-
-@Composable
 fun ScoreBox(modifier: Modifier = Modifier, mapData: MatchInfo.MatchDetailData) {
   Column(modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current)) {
     Row(
@@ -380,131 +355,6 @@ fun ScoreBox(modifier: Modifier = Modifier, mapData: MatchInfo.MatchDetailData) 
     }
   }
 }
-
-@Composable
-fun StatsHeaderBox(modifier: Modifier = Modifier) {
-  Row(modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current)) {
-    Text(
-      text = stringResource(R.string.agent),
-      modifier = modifier.weight(AGENT_IMG).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = stringResource(R.string.player),
-      modifier = modifier.weight(NAME).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = stringResource(R.string.acs),
-      modifier = modifier.weight(ACS).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = stringResource(R.string.adr),
-      modifier = modifier.weight(ADR).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = stringResource(R.string.kill),
-      modifier = modifier.weight(KILLS).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = stringResource(R.string.death),
-      modifier = modifier.weight(DEATHS).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = stringResource(R.string.assist),
-      modifier = modifier.weight(ASSISTS).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = stringResource(R.string.headshot_percentage),
-      modifier = modifier.weight(HSP).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-  }
-}
-
-@Composable
-fun StatsRow(modifier: Modifier = Modifier, member: MatchInfo.MatchDetailData.Member) {
-  Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 2.dp)
-        .animateContentSize(tween(400)),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    GlideImage(
-      imageModel = member.agents.getOrNull(0)?.img,
-      modifier = modifier.weight(AGENT_IMG).padding(Local2DPPadding.current),
-      alignment = Alignment.Center,
-      contentScale = ContentScale.Fit,
-      circularReveal = CircularReveal(1000)
-    )
-    Text(
-      text = member.name,
-      modifier = modifier.weight(NAME).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Start
-    )
-    Text(
-      text = member.acs.toString(),
-      modifier = modifier.weight(ACS).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = member.adr.toString(),
-      modifier = modifier.weight(ADR).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = member.kills.toString(),
-      modifier = modifier.weight(KILLS).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = member.deaths.toString(),
-      modifier = modifier.weight(DEATHS).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = member.assists.toString(),
-      modifier = modifier.weight(ASSISTS).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-    Text(
-      text = member.hsPercent.toString(),
-      modifier = modifier.weight(HSP).padding(Local2DPPadding.current),
-      style = VLRTheme.typography.bodySmall,
-      textAlign = TextAlign.Center
-    )
-  }
-}
-
-const val AGENT_IMG = 0.15f
-const val NAME = 0.44f
-const val ACS = 0.15f
-const val ADR = 0.15f
-const val KILLS = 0.12f
-const val DEATHS = 0.12f
-const val ASSISTS = 0.12f
-const val HSP = 0.15f
 
 @Composable
 fun VideoReferenceUi(
@@ -887,7 +737,7 @@ fun StatFirstBlood(
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
       Text(text = "FK", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
-      Text(text = "FK", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "FD", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
       Text(text = "+/-", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
     }
     teamAndMember.forEach { (team, member) ->
