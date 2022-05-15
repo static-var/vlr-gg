@@ -159,7 +159,7 @@ dependencies {
 
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
-    implementation 'org.jsoup:jsoup:1.14.3'
+    implementation 'org.jsoup:jsoup:1.15.1'
     implementation "com.github.skydoves:landscapist-glide:1.5.2"
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
