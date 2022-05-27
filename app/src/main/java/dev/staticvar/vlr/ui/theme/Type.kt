@@ -20,7 +20,7 @@ val fontProvider by lazy {
 val appFontFamily =
   FontFamily(
     listOf(
-      Font(GoogleFont("IBM Plex Sans"), fontProvider = fontProvider),
+      Font(GoogleFont("Inter"), fontProvider = fontProvider),
     )
   )
 
