@@ -123,7 +123,7 @@ dependencies {
     implementation "androidx.browser:browser:1.4.0"
 
     // Coroutines
-    def coroutines_version = "1.6.1"
+    def coroutines_version = "1.6.2"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutines_version"
