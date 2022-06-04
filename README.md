@@ -4,10 +4,15 @@ An unofficial android app for vlr.gg, written in Jetpack compose, which uses RES
 |Light|Dark|
 |-----|----|
 |![](https://github.com/static-var/vlr-gg/blob/trunk/art/NEWS_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/NEWS_DARK_VLR.jpg)|
+|![](https://github.com/static-var/vlr-gg/blob/trunk/art/BLOG_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/BLOG_DARK_VLR.jpg)|
 |![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_OVERVIEW_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_OVERVIEW_DARK_VLR.jpg)|
-|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_DARK_VLR.jpg)|
 |![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_DETAILS_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_DETAILS_DARK_VLR.jpg)|
+|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_DARK_VLR.jpg)|
 |![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_DARK_VLR.jpg)|
+|![](https://github.com/static-var/vlr-gg/blob/trunk/art/SQUAD_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/SQUAD_DARK_VLR.jpg)|
+|![](https://github.com/static-var/vlr-gg/blob/trunk/art/ABOUT_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/ABOUT_DARK_VLR.jpg)|
+
+
 
 ## App Overview
 
@@ -18,7 +23,7 @@ The app currently shows the following information
 - Team details
 
 #### Additional features
-- Users can sign up to get notified for their choice of matches a few minutes before it starts.
+- Users can opt in to get notified for their choice of matches a few minutes before it starts.
 - Widget to see scores and updates on your home screen.
 - App uses Material 3 theming.
 
