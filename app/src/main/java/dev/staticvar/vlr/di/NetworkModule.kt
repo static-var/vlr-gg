@@ -14,9 +14,9 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import javax.inject.Singleton
 import kotlinx.serialization.json.Json
 import okhttp3.logging.HttpLoggingInterceptor
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -61,9 +61,7 @@ object NetworkModule {
       }
 
       engine {
-        val logger = HttpLoggingInterceptor().apply {
-          level = HttpLoggingInterceptor.Level.BODY
-        }
+        val logger = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         addInterceptor(logger)
       }
     }

@@ -38,8 +38,7 @@ fun AppUpdateDownloadPopup(viewModel: VlrViewModel) {
           value = viewModel.downloadApkWithProgress(url!!)
         }
       }
-      .value
-      .collectAsState(initial = Pair(0, ByteArray(0)))
+      .value.collectAsState(initial = Pair(0, ByteArray(0)))
 
   // Once download is complete, initiate Installation process
   if (downloadProgress.first == 100 && downloadProgress.second.isNotEmpty()) {

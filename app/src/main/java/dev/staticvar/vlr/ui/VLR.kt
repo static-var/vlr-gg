@@ -66,7 +66,7 @@ fun VLR() {
 
   val fontFamilyResolver = LocalFontFamilyResolver.current
   LaunchedEffect(Unit) {
-//    fontFamilyResolver.preload(appFontFamily) Crashes on 1.2.0-alpha07
+    //    fontFamilyResolver.preload(appFontFamily) Crashes on 1.2.0-alpha07
   }
 
   LaunchedEffect(navState) {
@@ -77,8 +77,10 @@ fun VLR() {
           NavState.TOURNAMENT_DETAILS,
           NavState.TEAM_DETAILS,
           NavState.NEWS -> transparent
-          NavState.NEWS_OVERVIEW, NavState.TOURNAMENT, NavState.MATCH_OVERVIEW, NavState.ABOUT ->
-            background
+          NavState.NEWS_OVERVIEW,
+          NavState.TOURNAMENT,
+          NavState.MATCH_OVERVIEW,
+          NavState.ABOUT -> background
         },
     )
   }

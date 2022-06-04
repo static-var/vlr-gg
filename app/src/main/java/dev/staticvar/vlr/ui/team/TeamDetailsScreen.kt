@@ -152,10 +152,10 @@ fun RosterCard(
           Card(
             modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
             colors =
-            CardDefaults.cardColors(
-              contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-              containerColor = VLRTheme.colorScheme.primaryContainer
-            )
+              CardDefaults.cardColors(
+                contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+                containerColor = VLRTheme.colorScheme.primaryContainer
+              )
           ) {
             Row(
               modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),

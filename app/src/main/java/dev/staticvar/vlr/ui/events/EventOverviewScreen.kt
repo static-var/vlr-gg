@@ -130,7 +130,11 @@ fun TournamentPreviewContainer(
             NoEventUI(modifier = modifier)
           } else {
             val lazyListState = rememberLazyListState()
-            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top, state = lazyListState) {
+            LazyColumn(
+              modifier.fillMaxSize(),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState
+            ) {
               items(ongoing, key = { item -> item.id }) {
                 TournamentPreview(modifier = modifier, tournamentPreview = it, action)
               }
@@ -142,7 +146,11 @@ fun TournamentPreviewContainer(
             NoEventUI(modifier = modifier)
           } else {
             val lazyListState = rememberLazyListState()
-            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top, state = lazyListState) {
+            LazyColumn(
+              modifier.fillMaxSize(),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState
+            ) {
               items(upcoming, key = { item -> item.id }) {
                 TournamentPreview(modifier = modifier, tournamentPreview = it, action)
               }
@@ -154,7 +162,11 @@ fun TournamentPreviewContainer(
             NoEventUI(modifier = modifier)
           } else {
             val lazyListState = rememberLazyListState()
-            LazyColumn(modifier.fillMaxSize(), verticalArrangement = Arrangement.Top, state = lazyListState) {
+            LazyColumn(
+              modifier.fillMaxSize(),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState
+            ) {
               items(completed, key = { item -> item.id }) {
                 TournamentPreview(modifier = modifier, tournamentPreview = it, action)
               }
