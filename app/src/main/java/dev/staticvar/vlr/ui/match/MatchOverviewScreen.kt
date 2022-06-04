@@ -42,11 +42,11 @@ import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
+import kotlinx.coroutines.launch
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
-import kotlinx.coroutines.launch
 
 @Composable
 fun MatchOverview(viewModel: VlrViewModel) {
@@ -95,7 +95,7 @@ fun MatchOverviewContainer(
   val haptic = LocalHapticFeedback.current
 
   if (shareDialog) {
-    ShareDialog(matches = shareMatchList) { shareDialog = false }
+    ShareDialog(matches = StableHolder(shareMatchList)) { shareDialog = false }
   }
 
   val (ongoing, upcoming, completed) =
@@ -455,7 +455,7 @@ fun SharingAppBar(
 }
 
 @Composable
-fun ShareDialog(matches: List<MatchPreviewInfo>, onDismiss: () -> Unit) {
+fun ShareDialog(matches: StableHolder<List<MatchPreviewInfo>>, onDismiss: () -> Unit) {
   var shareToggle by remember { mutableStateOf(false) }
   val context = LocalContext.current
   AlertDialog(
@@ -480,7 +480,7 @@ fun ShareDialog(matches: List<MatchPreviewInfo>, onDismiss: () -> Unit) {
             )
           val os: OutputStream = BufferedOutputStream(FileOutputStream(file))
           os.use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, os) }
-          fireIntent(context = context, file = imageUri, matches = matches)
+          fireIntent(context = context, file = imageUri, matches = matches.item)
         }
       )
     },
@@ -513,7 +513,7 @@ fun CaptureBitmap(
 }
 
 @Composable
-fun SharableListUi(modifier: Modifier = Modifier, matches: List<MatchPreviewInfo>) {
+fun SharableListUi(modifier: Modifier = Modifier, matches: StableHolder<List<MatchPreviewInfo>>) {
   CardView(
     modifier.fillMaxWidth().padding(16.dp),
     colors =
@@ -522,9 +522,9 @@ fun SharableListUi(modifier: Modifier = Modifier, matches: List<MatchPreviewInfo
         containerColor = VLRTheme.colorScheme.primaryContainer
       )
   ) {
-    matches.forEachIndexed { index, matchPreviewInfo ->
+    matches.item.forEachIndexed { index, matchPreviewInfo ->
       SharableMatchUi(match = matchPreviewInfo)
-      if (index != matches.size - 1)
+      if (index != matches.item.size - 1)
         Divider(modifier = Modifier.fillMaxWidth().padding(2.dp).height(0.5.dp))
     }
   }
