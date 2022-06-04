@@ -1,7 +1,13 @@
 # vlr-gg
 An unofficial android app for vlr.gg, written in Jetpack compose, which uses REST API that parses vlr.gg
 
-<img src="https://github.com/static-var/vlr-gg/blob/trunk/media/demo.gif" width="221" height="480" />
+|Light|Dark|
+|-----|----|
+|![](https://github.com/static-var/vlr-gg/blob/trunk/art/NEWS_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/NEWS_DARK_VLR.jpg)|
+|![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_OVERVIEW_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_OVERVIEW_DARK_VLR.jpg)|
+|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_DARK_VLR.jpg)|
+|![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_DETAILS_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_DETAILS_DARK_VLR.jpg)|
+|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_DARK_VLR.jpg)|
 
 ## App Overview
 
