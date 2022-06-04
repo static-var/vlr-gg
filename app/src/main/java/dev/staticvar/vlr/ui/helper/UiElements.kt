@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,16 +18,17 @@ const val CARD_ALPHA = 0.4f
 @Composable
 fun CardView(
   modifier: Modifier = Modifier,
+  colors: CardColors =
+    CardDefaults.cardColors(
+      contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+      containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
+    ),
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Card(
     modifier = Modifier.padding(Local16DP_8DPPadding.current).then(modifier),
     shape = RoundedCornerShape(16.dp),
-    colors =
-      CardDefaults.cardColors(
-        contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-        containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
-      )
+    colors = colors
   ) { content(this) }
 }
 
