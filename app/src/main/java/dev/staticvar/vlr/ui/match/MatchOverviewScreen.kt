@@ -1,21 +1,37 @@
 package dev.staticvar.vlr.ui.match
 
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Send
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.FileProvider
+import androidx.core.view.drawToBitmap
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -26,6 +42,10 @@ import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,6 +89,14 @@ fun MatchOverviewContainer(
 ) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
+  var shareMatchList by remember { mutableStateOf(listOf<MatchPreviewInfo>()) }
+  var shareState by remember { mutableStateOf(false) }
+  var shareDialog by remember { mutableStateOf(false) }
+  val haptic = LocalHapticFeedback.current
+
+  if (shareDialog) {
+    ShareDialog(matches = shareMatchList) { shareDialog = false }
+  }
 
   val (ongoing, upcoming, completed) =
     remember(list) {
@@ -92,6 +120,18 @@ fun MatchOverviewContainer(
     }
 
   Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+    AnimatedVisibility(visible = shareState) {
+      SharingAppBar(
+        modifier = modifier,
+        items = shareMatchList,
+        shareMode = {
+          shareState = it
+          shareMatchList = listOf()
+        },
+        shareConfirm = { shareDialog = true }
+      )
+    }
+
     TabRow(
       selectedTabIndex = pagerState.currentPage,
       indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
@@ -139,7 +179,25 @@ fun MatchOverviewContainer(
               state = lazyListState
             ) {
               items(ongoing, key = { item -> item.id }) {
-                MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick)
+                MatchOverviewPreview(
+                  matchPreviewInfo = it,
+                  shareMode = shareState,
+                  isSelected = it in shareMatchList,
+                  onAction = { longPress, match ->
+                    if (longPress) shareState = true
+                    when {
+                      shareState && shareMatchList.contains(match) -> {
+                        shareMatchList = shareMatchList - match
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                      }
+                      shareState && !shareMatchList.contains(match) && shareMatchList.size < 6 -> {
+                        shareMatchList = shareMatchList + match
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                      }
+                      !shareState -> onClick(match.id)
+                    }
+                  }
+                )
               }
             }
           }
@@ -172,7 +230,27 @@ fun MatchOverviewContainer(
                   }
                 }
                 items(match, key = { item -> item.id }) {
-                  MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick)
+                  MatchOverviewPreview(
+                    matchPreviewInfo = it,
+                    shareMode = shareState,
+                    isSelected = it in shareMatchList,
+                    onAction = { longPress, match ->
+                      if (longPress) shareState = true
+                      when {
+                        shareState && shareMatchList.contains(match) -> {
+                          shareMatchList = shareMatchList - match
+                          haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        }
+                        shareState &&
+                          !shareMatchList.contains(match) &&
+                          shareMatchList.size < 6 -> {
+                          shareMatchList = shareMatchList + match
+                          haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        }
+                        !shareState -> onClick(match.id)
+                      }
+                    }
+                  )
                 }
               }
             }
@@ -206,7 +284,27 @@ fun MatchOverviewContainer(
                   }
                 }
                 items(match, key = { item -> item.id }) {
-                  MatchOverviewPreview(matchPreviewInfo = it, onClick = onClick)
+                  MatchOverviewPreview(
+                    matchPreviewInfo = it,
+                    shareMode = shareState,
+                    isSelected = it in shareMatchList,
+                    onAction = { longPress, match ->
+                      if (longPress) shareState = true
+                      when {
+                        shareState && shareMatchList.contains(match) -> {
+                          shareMatchList = shareMatchList - match
+                          haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        }
+                        shareState &&
+                          !shareMatchList.contains(match) &&
+                          shareMatchList.size < 6 -> {
+                          shareMatchList = shareMatchList + match
+                          haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        }
+                        !shareState -> onClick(match.id)
+                      }
+                    }
+                  )
                 }
               }
             }
@@ -236,19 +334,42 @@ fun NoMatchUI(modifier: Modifier = Modifier) {
 fun MatchOverviewPreview(
   modifier: Modifier = Modifier,
   matchPreviewInfo: MatchPreviewInfo,
-  onClick: (String) -> Unit
+  shareMode: Boolean,
+  isSelected: Boolean,
+  onAction: (Boolean, MatchPreviewInfo) -> Unit,
 ) {
-  CardView(modifier = modifier.clickable { onClick(matchPreviewInfo.id) }) {
-    Column(modifier = modifier.padding(Local4DPPadding.current)) {
-      Text(
-        text =
-          if (matchPreviewInfo.status.equals("LIVE", true)) "LIVE"
-          else
-            matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})") ?: "",
-        modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
-        textAlign = TextAlign.Center,
-        style = VLRTheme.typography.displaySmall
-      )
+  CardView(
+    modifier =
+      modifier
+        .pointerInput(Unit) {
+          detectTapGestures(
+            onPress = {},
+            onDoubleTap = {},
+            onLongPress = { onAction(true, matchPreviewInfo) },
+            onTap = {
+              onAction(false, matchPreviewInfo)
+              e { "onTap - shareMode $shareMode" }
+            }
+          )
+        }
+        .apply { if (isSelected) background(VLRTheme.colorScheme.secondaryContainer) }
+  ) {
+    Column(modifier = modifier.padding(Local4DPPadding.current).animateContentSize()) {
+      Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+        Text(
+          text =
+            if (matchPreviewInfo.status.equals("LIVE", true)) "LIVE"
+            else
+              matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})")
+                ?: "",
+          modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+          textAlign = TextAlign.Center,
+          style = VLRTheme.typography.displaySmall
+        )
+
+        if (shareMode)
+          Checkbox(checked = isSelected, onCheckedChange = { onAction(false, matchPreviewInfo) })
+      }
       Row(
         modifier = modifier.padding(Local8DP_4DPPadding.current),
         verticalAlignment = Alignment.CenterVertically
@@ -297,4 +418,181 @@ fun MatchOverviewPreview(
       )
     }
   }
+}
+
+@Composable
+fun SharingAppBar(
+  modifier: Modifier,
+  items: List<MatchPreviewInfo>,
+  shareMode: (Boolean) -> Unit,
+  shareConfirm: (Boolean) -> Unit
+) {
+  Row(
+    modifier.fillMaxWidth().height(40.dp).background(VLRTheme.colorScheme.background),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    Icon(
+      imageVector = Icons.Outlined.Close,
+      contentDescription = "Cancel",
+      modifier =
+        modifier.padding(Local8DP_4DPPadding.current).clickable { shareMode(false) }.size(32.dp),
+      tint = VLRTheme.colorScheme.primary,
+    )
+    Spacer(modifier = modifier.weight(1f))
+    Text(
+      text = "${items.size}/6",
+      modifier = modifier.padding(Local8DP_4DPPadding.current),
+      color = VLRTheme.colorScheme.primary
+    )
+    Icon(
+      imageVector = Icons.Outlined.Send,
+      contentDescription = "Share",
+      modifier =
+        modifier.padding(Local8DP_4DPPadding.current).clickable { shareConfirm(true) }.size(32.dp),
+      tint = VLRTheme.colorScheme.primary
+    )
+  }
+}
+
+@Composable
+fun ShareDialog(matches: List<MatchPreviewInfo>, onDismiss: () -> Unit) {
+  var shareToggle by remember { mutableStateOf(false) }
+  val context = LocalContext.current
+  AlertDialog(
+    onDismissRequest = onDismiss,
+    text = {
+      CaptureBitmap(
+        captureRequestKey = shareToggle,
+        content = { SharableListUi(matches = matches) },
+        onBitmapCaptured = { bitmap ->
+          val imagePath = File(context.externalCacheDir, "my_images")
+          if (!imagePath.exists()) imagePath.mkdirs()
+          val file = File(imagePath, System.currentTimeMillis().toString() + ".png")
+
+          val imageUri =
+            FileProvider.getUriForFile(
+              context,
+              context.packageName +
+                ".fileprovider".also {
+                  e { "authority $it" }
+                }, // (use your app signature + ".provider" )
+              file
+            )
+          val os: OutputStream = BufferedOutputStream(FileOutputStream(file))
+          os.use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, os) }
+          fireIntent(context = context, file = imageUri, matches = matches)
+        }
+      )
+    },
+    confirmButton = {
+      Button(onClick = { shareToggle = shareToggle.not() }) { Text(text = "Share") }
+    }
+  )
+}
+
+@Composable
+fun CaptureBitmap(
+  captureRequestKey: Boolean,
+  content: @Composable () -> Unit,
+  onBitmapCaptured: (Bitmap) -> Unit
+) {
+
+  val context = LocalContext.current
+
+  /**
+   * ComposeView that would take composable as its content Kept in remember so recomposition doesn't
+   * re-initialize it
+   */
+  val composeView = remember { ComposeView(context) }
+
+  // If key is changed it means it's requested to capture a Bitmap
+  if (captureRequestKey) composeView.post { onBitmapCaptured.invoke(composeView.drawToBitmap()) }
+
+  /** Use Native View inside Composable */
+  AndroidView(factory = { composeView.apply { setContent { content.invoke() } } })
+}
+
+@Composable
+fun SharableListUi(modifier: Modifier = Modifier, matches: List<MatchPreviewInfo>) {
+  CardView(
+    modifier.fillMaxWidth().padding(16.dp),
+    colors =
+      CardDefaults.cardColors(
+        contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+        containerColor = VLRTheme.colorScheme.primaryContainer
+      )
+  ) {
+    matches.forEachIndexed { index, matchPreviewInfo ->
+      SharableMatchUi(match = matchPreviewInfo)
+      if (index != matches.size - 1)
+        Divider(modifier = Modifier.fillMaxWidth().padding(2.dp).height(0.5.dp))
+    }
+  }
+}
+
+@Composable
+fun SharableMatchUi(modifier: Modifier = Modifier, match: MatchPreviewInfo) {
+  Text(
+    text = if (match.status.equals("LIVE", true)) "LIVE" else match.time?.readableDateAndTime ?: "",
+    modifier = modifier.fillMaxWidth().padding(Local2DPPadding.current),
+    textAlign = TextAlign.Center,
+    style = VLRTheme.typography.labelSmall
+  )
+  Row(modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current)) {
+    Text(
+      text = match.team1.name,
+      overflow = TextOverflow.Ellipsis,
+      maxLines = 1,
+      modifier = modifier.weight(3f),
+      textAlign = TextAlign.Start,
+      style = VLRTheme.typography.bodySmall
+    )
+    Text(
+      text = match.team1.score?.toString() ?: "-",
+      overflow = TextOverflow.Ellipsis,
+      maxLines = 1,
+      modifier = modifier.weight(1f),
+      textAlign = TextAlign.End,
+      style = VLRTheme.typography.bodySmall
+    )
+  }
+  Row(modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current)) {
+    Text(
+      text = match.team2.name,
+      overflow = TextOverflow.Ellipsis,
+      maxLines = 1,
+      modifier = modifier.weight(3f),
+      textAlign = TextAlign.Start,
+      style = VLRTheme.typography.bodySmall
+    )
+    Text(
+      text = match.team2.score?.toString() ?: "-",
+      overflow = TextOverflow.Ellipsis,
+      maxLines = 1,
+      modifier = modifier.weight(1f),
+      textAlign = TextAlign.End,
+      style = VLRTheme.typography.bodySmall
+    )
+  }
+}
+
+fun fireIntent(context: Context, file: Uri, matches: List<MatchPreviewInfo>) {
+  val string = buildString {
+    matches.forEach {
+      appendLine(
+        "${it.team1.name} vs ${it.team2.name} | ${it.time?.readableDateAndTime} | https://vlr.gg/${it.id}"
+      )
+      appendLine()
+    }
+    appendLine(context.resources.getString(R.string.shared_via))
+  }
+
+  val shareIntent =
+    Intent(Intent.ACTION_SEND).apply {
+      flags = Intent.FLAG_GRANT_READ_URI_PERMISSION + Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+      putExtra(Intent.EXTRA_STREAM, file)
+      putExtra(Intent.EXTRA_TEXT, string)
+      type = "image/png"
+    }
+  context.startActivity(Intent.createChooser(shareIntent, "Share with"))
 }

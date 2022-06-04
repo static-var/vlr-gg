@@ -58,4 +58,5 @@
     <string name="website">Website</string>
     <string name="source_code">Source Code</string>
     <string name="release">Release</string>
+    <string name="shared_via">Shared via VLR app : https://github.com/static-var/vlr-gg/releases</string>
 </resources>
