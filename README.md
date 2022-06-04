@@ -1,5 +1,5 @@
 # vlr-gg
-An unofficial android app for vlr.gg, written in Jetpack compose, which uses REST API that parses vlr.gg
+An unofficial android app for vlr.gg, written in Jetpack compose, which uses REST API that parses vlr.gg (Code for the scrapper can be found here https://github.com/akhilnarang/vlrgg-scraper, thanks to @akhilnarang for hosting and maintaining the scrapping code.)
 
 |Light|Dark|
 |-----|----|
