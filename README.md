@@ -1,5 +1,10 @@
-# vlr-gg
+# 🚧 vlr-gg (Unofficial application) 🚧
 An unofficial android app for vlr.gg, written in Jetpack compose, which uses REST API that parses vlr.gg (Code for the scrapper can be found [here](https://github.com/akhilnarang/vlrgg-scraper), thanks to [@akhilnarang](https://github.com/akhilnarang) for hosting and maintaining the scrapping code.)
+
+The application is not listed on Play Store, but you will receive in app updates for every release (you can choose to install the update or ignore it)
+
+## 📸 Preview 📸
+There were no designs / mock ups during the development of this app, this was developed as a side project / hobby.
 
 |Light|Dark|
 |-----|----|
@@ -14,7 +19,7 @@ An unofficial android app for vlr.gg, written in Jetpack compose, which uses RES
 
 
 
-## App Overview
+## ✨ App Overview ✨
 
 The app currently shows the following information
 - News and news articles
@@ -26,8 +31,9 @@ The app currently shows the following information
 - Users can opt in to get notified for their choice of matches a few minutes before it starts.
 - Widget to see scores and updates on your home screen.
 - App uses Material 3 theming.
+- Receive in app updates (doesn't rely on Play Store)
 
-## Dev Overview
+## 🧑‍💻 Dev Overview 🧑‍💻
 
 The application has been written completely in [Kotlin](https://kotlinlang.org/) and [Jetpack Compose](https://developer.android.com/jetpack/compose)
 
