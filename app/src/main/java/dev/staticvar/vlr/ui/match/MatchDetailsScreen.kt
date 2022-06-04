@@ -72,6 +72,8 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
             remember(maps, matchInfo) { mutableStateOf(maps.associate { it.map to false }.toMap()) }
 
           val rememberListState = rememberLazyListState()
+          var upcomingMatchToggle by remember { mutableStateOf(false) }
+          var overAllMapToggle by remember { mutableStateOf(false) }
 
           LazyColumn(modifier = modifier.fillMaxSize(), state = rememberListState) {
             item { Spacer(modifier = modifier.statusBarsPadding()) }
@@ -105,19 +107,44 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
               )
             }
             if (matchInfo.matchData.isNotEmpty()) {
-              // Remove all maps from list
-              maps.forEach { match ->
-                item {
-                  MapStatsCard(
-                    mapData = match,
-                    toggleState = toggleStateMap[match.map] ?: false,
-                    onClick = {
-                      toggleStateMap =
-                        toggleStateMap.toMutableMap().apply { set(match.map, it) }.toMap()
-                    }
-                  )
+              item {
+                EmphasisCardView(
+                  modifier = modifier.clickable { overAllMapToggle = overAllMapToggle.not() }
+                ) {
+                  Box(
+                    modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
+                    contentAlignment = Alignment.CenterEnd
+                  ) {
+                    Text(
+                      text = stringResource(R.string.maps),
+                      modifier = modifier.fillMaxWidth(),
+                      textAlign = TextAlign.Center,
+                      style = VLRTheme.typography.titleSmall,
+                      color = VLRTheme.colorScheme.primary,
+                    )
+                    Icon(
+                      if (overAllMapToggle) Icons.Outlined.ArrowUpward
+                      else Icons.Outlined.ArrowDownward,
+                      contentDescription = stringResource(R.string.expand),
+                      modifier = modifier.size(16.dp),
+                      tint = VLRTheme.colorScheme.primary,
+                    )
+                  }
                 }
               }
+              if (overAllMapToggle)
+                maps.forEach { match ->
+                  item {
+                    MapStatsCard(
+                      mapData = match,
+                      toggleState = toggleStateMap[match.map] ?: false,
+                      onClick = {
+                        toggleStateMap =
+                          toggleStateMap.toMutableMap().apply { set(match.map, it) }.toMap()
+                      }
+                    )
+                  }
+                }
             }
             if (matchInfo.mapCount > matchInfo.matchData.size) {
               item {
@@ -132,23 +159,38 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
             }
             if (matchInfo.head2head.isNotEmpty()) {
               item {
-                EmphasisCardView(modifier = modifier) {
-                  Text(
-                    text = stringResource(R.string.previous_encounter),
+                EmphasisCardView(
+                  modifier = modifier.clickable { upcomingMatchToggle = upcomingMatchToggle.not() }
+                ) {
+                  Box(
                     modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
-                    textAlign = TextAlign.Center,
-                    style = VLRTheme.typography.titleSmall,
-                    color = VLRTheme.colorScheme.primary,
-                  )
+                    contentAlignment = Alignment.CenterEnd
+                  ) {
+                    Text(
+                      text = stringResource(R.string.previous_encounter),
+                      modifier = modifier.fillMaxWidth(),
+                      textAlign = TextAlign.Center,
+                      style = VLRTheme.typography.titleSmall,
+                      color = VLRTheme.colorScheme.primary,
+                    )
+                    Icon(
+                      if (upcomingMatchToggle) Icons.Outlined.ArrowUpward
+                      else Icons.Outlined.ArrowDownward,
+                      contentDescription = stringResource(R.string.expand),
+                      modifier = modifier.size(16.dp),
+                      tint = VLRTheme.colorScheme.primary,
+                    )
+                  }
                 }
               }
-              items(matchInfo.head2head, key = { item -> item.id }) {
-                PreviousEncounter(
-                  modifier = modifier,
-                  previousEncounter = it,
-                  onClick = { viewModel.action.match(it) }
-                )
-              }
+              if (upcomingMatchToggle)
+                items(matchInfo.head2head, key = { item -> item.id }) {
+                  PreviousEncounter(
+                    modifier = modifier,
+                    previousEncounter = it,
+                    onClick = { viewModel.action.match(it) }
+                  )
+                }
             }
             item { Spacer(modifier = modifier.navigationBarsPadding()) }
           }
@@ -180,22 +222,17 @@ fun MatchOverallAndEventOverview(
         Spacer(modifier = Modifier.weight(0.1f))
         Box(
           modifier =
-            modifier.weight(0.3f).padding(Local8DPPadding.current).clickable {
+            modifier.weight(1f).padding(Local8DPPadding.current).clickable {
               detailData.teams[0].id?.let(onClick)
-            }
+            },
+          contentAlignment = Alignment.TopEnd
         ) {
           detailData.teams[0].id?.let {
-            Row(
-              modifier.fillMaxWidth(),
-              horizontalArrangement = Arrangement.End,
-              verticalAlignment = Alignment.Top
-            ) {
-              Icon(
-                Icons.Outlined.OpenInNew,
-                contentDescription = stringResource(R.string.open_match_content_description),
-                modifier = modifier.size(24.dp).padding(Local2DPPadding.current)
-              )
-            }
+            Icon(
+              Icons.Outlined.OpenInNew,
+              contentDescription = stringResource(R.string.open_match_content_description),
+              modifier = modifier.size(24.dp).padding(Local2DPPadding.current)
+            )
           }
           GlideImage(
             imageModel = detailData.teams[0].img,
@@ -208,22 +245,17 @@ fun MatchOverallAndEventOverview(
         Spacer(modifier = Modifier.weight(0.2f))
         Box(
           modifier =
-            modifier.weight(0.3f).padding(Local8DPPadding.current).clickable {
+            modifier.weight(1f).padding(Local8DPPadding.current).clickable {
               detailData.teams[1].id?.let(onClick)
-            }
+            },
+          contentAlignment = Alignment.TopEnd
         ) {
           detailData.teams[1].id?.let {
-            Row(
-              modifier.fillMaxWidth(),
-              horizontalArrangement = Arrangement.End,
-              verticalAlignment = Alignment.Top
-            ) {
-              Icon(
-                Icons.Outlined.OpenInNew,
-                contentDescription = stringResource(R.string.open_match_content_description),
-                modifier = modifier.size(24.dp).padding(Local2DPPadding.current)
-              )
-            }
+            Icon(
+              Icons.Outlined.OpenInNew,
+              contentDescription = stringResource(R.string.open_match_content_description),
+              modifier = modifier.size(24.dp).padding(Local2DPPadding.current)
+            )
           }
           GlideImage(
             imageModel = detailData.teams[1].img,
