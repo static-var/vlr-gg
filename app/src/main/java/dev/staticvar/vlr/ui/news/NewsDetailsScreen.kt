@@ -117,13 +117,17 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                         )
                         webView.settings.setSupportMultipleWindows(true)
                         webView.settings.javaScriptCanOpenWindowsAutomatically = true
-                        webView.webViewClient = object : WebViewClientCompat() {
-                          override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                            println(request.url)
-                            request.url?.toString()?.openAsCustomTab(context)
-                            return true
+                        webView.webViewClient =
+                          object : WebViewClientCompat() {
+                            override fun shouldOverrideUrlLoading(
+                              view: WebView,
+                              request: WebResourceRequest
+                            ): Boolean {
+                              println(request.url)
+                              request.url?.toString()?.openAsCustomTab(context)
+                              return true
+                            }
                           }
-                        }
                       }
                     )
                   is Unknown ->

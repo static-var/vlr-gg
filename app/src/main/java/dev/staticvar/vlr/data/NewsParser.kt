@@ -21,7 +21,8 @@ object NewsParser {
           }
             ?: "",
           headerHtml.first()?.let {
-            it.select(".article-meta-author")
+            it
+              .select(".article-meta-author")
               .first()
               ?.wholeText()
               ?.replace(Regex("\\s+"), " ")
