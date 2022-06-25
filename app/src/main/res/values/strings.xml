@@ -60,4 +60,8 @@
     <string name="source_code">Source Code</string>
     <string name="release">Release</string>
     <string name="shared_via">Shared via VLR app : https://github.com/static-var/vlr-gg/releases</string>
+    <string name="share">Share</string>
+    <string name="live">LIVE</string>
+    <string name="preview">Preview</string>
+    <string name="share_with">Share with</string>
 </resources>
