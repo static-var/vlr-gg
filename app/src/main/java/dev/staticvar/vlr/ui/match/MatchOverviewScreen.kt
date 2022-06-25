@@ -81,6 +81,8 @@ fun MatchOverview(viewModel: VlrViewModel) {
   }
 }
 
+const val MAX_SHARABLE_ITEMS = 6
+
 @Composable
 fun MatchOverviewContainer(
   modifier: Modifier = Modifier,
@@ -89,34 +91,32 @@ fun MatchOverviewContainer(
 ) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
-  var shareMatchList by remember { mutableStateOf(listOf<MatchPreviewInfo>()) }
+  val shareMatchList = remember { mutableStateListOf<MatchPreviewInfo>() }
   var shareState by remember { mutableStateOf(false) }
   var shareDialog by remember { mutableStateOf(false) }
   val haptic = LocalHapticFeedback.current
 
+  val tabs =
+    listOf(
+      stringResource(id = R.string.live),
+      stringResource(id = R.string.upcoming),
+      stringResource(id = R.string.completed)
+    )
+
   if (shareDialog) {
     ShareDialog(matches = StableHolder(shareMatchList)) { shareDialog = false }
   }
+  val mapByStatus by remember(list) { mutableStateOf(list.item.groupBy { it.status }) }
 
   val (ongoing, upcoming, completed) =
     remember(list) {
-      list.item
-        .groupBy { it.status.startsWith("LIVE", ignoreCase = true) }
-        .let {
-          Triple(
-            it[true].orEmpty(),
-            it[false]
-              ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
-              ?.get(true)
-              .orEmpty()
-              .sortedBy { it.time?.timeToEpoch },
-            it[false]
-              ?.groupBy { it.status.startsWith("completed", ignoreCase = true) }
-              ?.get(true)
-              .orEmpty()
-              .sortedByDescending { it.time?.timeToEpoch }
-          )
-        }
+      mapByStatus.let {
+        Triple(
+          it[tabs[0].lowercase()].orEmpty(),
+          it[tabs[1].lowercase()].orEmpty().sortedBy { match -> match.time?.timeToEpoch },
+          it[tabs[2].lowercase()].orEmpty().sortedByDescending { match -> match.time?.timeToEpoch }
+        )
+      }
     }
 
   Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
@@ -126,7 +126,7 @@ fun MatchOverviewContainer(
         items = shareMatchList,
         shareMode = {
           shareState = it
-          shareMatchList = listOf()
+          shareMatchList.clear()
         },
         shareConfirm = { shareDialog = true }
       )
@@ -136,37 +136,16 @@ fun MatchOverviewContainer(
       selectedTabIndex = pagerState.currentPage,
       indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
     ) {
-      Tab(
-        selected = pagerState.currentPage == 0,
-        onClick = { scope.launch { pagerState.scrollToPage(0) } }
-      ) {
-        Text(
-          text = stringResource(R.string.ongoing),
-          modifier = modifier.padding(Local16DPPadding.current)
-        )
-      }
-      Tab(
-        selected = pagerState.currentPage == 1,
-        onClick = { scope.launch { pagerState.scrollToPage(1) } }
-      ) {
-        Text(
-          text = stringResource(R.string.upcoming),
-          modifier = modifier.padding(Local16DPPadding.current)
-        )
-      }
-      Tab(
-        selected = pagerState.currentPage == 2,
-        onClick = { scope.launch { pagerState.scrollToPage(2) } }
-      ) {
-        Text(
-          text = stringResource(R.string.completed),
-          modifier = modifier.padding(Local16DPPadding.current)
-        )
+      tabs.forEachIndexed { index, title ->
+        Tab(
+          selected = pagerState.currentPage == index,
+          onClick = { scope.launch { pagerState.scrollToPage(index) } }
+        ) { Text(text = title, modifier = modifier.padding(Local16DPPadding.current)) }
       }
     }
 
-    HorizontalPager(count = 3, state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition
-      ->
+    HorizontalPager(count = tabs.size, state = pagerState, modifier = modifier.fillMaxSize()) {
+      tabPosition ->
       when (tabPosition) {
         0 -> {
           if (ongoing.isEmpty()) {
@@ -184,17 +163,25 @@ fun MatchOverviewContainer(
                   shareMode = shareState,
                   isSelected = it in shareMatchList,
                   onAction = { longPress, match ->
-                    if (longPress) shareState = true
+                    if (longPress) shareState = true // If long press enable share bar
                     when {
                       shareState && shareMatchList.contains(match) -> {
-                        shareMatchList = shareMatchList - match
+                        // If in share mode &
+                        // If match is already in the list and is being clicked again, remove the
+                        // item
+                        shareMatchList.remove(match)
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                       }
-                      shareState && !shareMatchList.contains(match) && shareMatchList.size < 6 -> {
-                        shareMatchList = shareMatchList + match
+                      shareState &&
+                        !shareMatchList.contains(match) &&
+                        shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                        // If in share mode &
+                        // If list does not have 6 items and if the clicked icon is not already in
+                        // the list
+                        shareMatchList.add(match)
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                       }
-                      !shareState -> onClick(match.id)
+                      !shareState -> onClick(match.id) // Its a normal click, navigate to the action
                     }
                   }
                 )
@@ -214,7 +201,8 @@ fun MatchOverviewContainer(
               verticalArrangement = Arrangement.Top,
               state = lazyListState
             ) {
-              groupedUpcomingMatches.forEach { (date, match) ->
+              groupedUpcomingMatches.forEach { (date, match)
+                -> // Group heading based on date for sticky header
                 stickyHeader {
                   date?.let {
                     Column(
@@ -235,19 +223,26 @@ fun MatchOverviewContainer(
                     shareMode = shareState,
                     isSelected = it in shareMatchList,
                     onAction = { longPress, match ->
-                      if (longPress) shareState = true
+                      if (longPress) shareState = true // If long press enable share bar
                       when {
                         shareState && shareMatchList.contains(match) -> {
-                          shareMatchList = shareMatchList - match
+                          // If in share mode &
+                          // If match is already in the list and is being clicked again, remove the
+                          // item
+                          shareMatchList.remove(match)
                           haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         }
                         shareState &&
                           !shareMatchList.contains(match) &&
-                          shareMatchList.size < 6 -> {
-                          shareMatchList = shareMatchList + match
+                          shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                          // If in share mode &
+                          // If list does not have 6 items and if the clicked icon is not already in
+                          // the list
+                          shareMatchList.add(match)
                           haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         }
-                        !shareState -> onClick(match.id)
+                        !shareState ->
+                          onClick(match.id) // Its a normal click, navigate to the action
                       }
                     }
                   )
@@ -268,7 +263,8 @@ fun MatchOverviewContainer(
               verticalArrangement = Arrangement.Top,
               state = lazyListState
             ) {
-              groupedCompletedMatches.forEach { (date, match) ->
+              groupedCompletedMatches.forEach { (date, match)
+                -> // Group heading based on date for sticky header
                 stickyHeader {
                   date?.let {
                     Column(
@@ -289,19 +285,26 @@ fun MatchOverviewContainer(
                     shareMode = shareState,
                     isSelected = it in shareMatchList,
                     onAction = { longPress, match ->
-                      if (longPress) shareState = true
+                      if (longPress) shareState = true // If long press enable share bar
                       when {
                         shareState && shareMatchList.contains(match) -> {
-                          shareMatchList = shareMatchList - match
+                          // If in share mode &
+                          // If match is already in the list and is being clicked again, remove the
+                          // item
+                          shareMatchList.remove(match)
                           haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         }
                         shareState &&
                           !shareMatchList.contains(match) &&
-                          shareMatchList.size < 6 -> {
-                          shareMatchList = shareMatchList + match
+                          shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                          // If in share mode &
+                          // If list does not have 6 items and if the clicked icon is not already in
+                          // the list
+                          shareMatchList.add(match)
                           haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         }
-                        !shareState -> onClick(match.id)
+                        !shareState ->
+                          onClick(match.id) // Its a normal click, navigate to the action
                       }
                     }
                   )
@@ -346,10 +349,7 @@ fun MatchOverviewPreview(
             onPress = {},
             onDoubleTap = {},
             onLongPress = { onAction(true, matchPreviewInfo) },
-            onTap = {
-              onAction(false, matchPreviewInfo)
-              e { "onTap - shareMode $shareMode" }
-            }
+            onTap = { onAction(false, matchPreviewInfo) }
           )
         }
         .apply { if (isSelected) background(VLRTheme.colorScheme.secondaryContainer) }
@@ -358,7 +358,8 @@ fun MatchOverviewPreview(
       Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
         Text(
           text =
-            if (matchPreviewInfo.status.equals("LIVE", true)) "LIVE"
+            if (matchPreviewInfo.status.equals(stringResource(id = R.string.live), true))
+              stringResource(id = R.string.live)
             else
               matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})")
                 ?: "",
@@ -433,20 +434,20 @@ fun SharingAppBar(
   ) {
     Icon(
       imageVector = Icons.Outlined.Close,
-      contentDescription = "Cancel",
+      contentDescription = stringResource(id = R.string.cancel),
       modifier =
         modifier.padding(Local8DP_4DPPadding.current).clickable { shareMode(false) }.size(32.dp),
       tint = VLRTheme.colorScheme.primary,
     )
     Spacer(modifier = modifier.weight(1f))
     Text(
-      text = "${items.size}/6",
+      text = "${items.size}/$MAX_SHARABLE_ITEMS",
       modifier = modifier.padding(Local8DP_4DPPadding.current),
       color = VLRTheme.colorScheme.primary
     )
     Icon(
       imageVector = Icons.Outlined.Send,
-      contentDescription = "Share",
+      contentDescription = stringResource(R.string.share),
       modifier =
         modifier.padding(Local8DP_4DPPadding.current).clickable { shareConfirm(true) }.size(32.dp),
       tint = VLRTheme.colorScheme.primary
@@ -460,6 +461,7 @@ fun ShareDialog(matches: StableHolder<List<MatchPreviewInfo>>, onDismiss: () -> 
   val context = LocalContext.current
   AlertDialog(
     onDismissRequest = onDismiss,
+    title = { Text(stringResource(R.string.preview), color = VLRTheme.colorScheme.primary) },
     text = {
       CaptureBitmap(
         captureRequestKey = shareToggle,
@@ -470,14 +472,7 @@ fun ShareDialog(matches: StableHolder<List<MatchPreviewInfo>>, onDismiss: () -> 
           val file = File(imagePath, System.currentTimeMillis().toString() + ".png")
 
           val imageUri =
-            FileProvider.getUriForFile(
-              context,
-              context.packageName +
-                ".fileprovider".also {
-                  e { "authority $it" }
-                }, // (use your app signature + ".provider" )
-              file
-            )
+            FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
           val os: OutputStream = BufferedOutputStream(FileOutputStream(file))
           os.use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, os) }
           fireIntent(context = context, file = imageUri, matches = matches.item)
@@ -485,7 +480,9 @@ fun ShareDialog(matches: StableHolder<List<MatchPreviewInfo>>, onDismiss: () -> 
       )
     },
     confirmButton = {
-      Button(onClick = { shareToggle = shareToggle.not() }) { Text(text = "Share") }
+      Button(onClick = { shareToggle = shareToggle.not() }) {
+        Text(text = stringResource(R.string.share))
+      }
     }
   )
 }
@@ -514,18 +511,19 @@ fun CaptureBitmap(
 
 @Composable
 fun SharableListUi(modifier: Modifier = Modifier, matches: StableHolder<List<MatchPreviewInfo>>) {
-  CardView(
-    modifier.fillMaxWidth().padding(16.dp),
-    colors =
-      CardDefaults.cardColors(
-        contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-        containerColor = VLRTheme.colorScheme.primaryContainer
-      )
-  ) {
-    matches.item.forEachIndexed { index, matchPreviewInfo ->
-      SharableMatchUi(match = matchPreviewInfo)
-      if (index != matches.item.size - 1)
-        Divider(modifier = Modifier.fillMaxWidth().padding(2.dp).height(0.5.dp))
+  Column(modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer)) {
+    CardView(
+      colors =
+        CardDefaults.cardColors(
+          contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+          containerColor = VLRTheme.colorScheme.primaryContainer
+        )
+    ) {
+      matches.item.forEachIndexed { index, matchPreviewInfo ->
+        SharableMatchUi(match = matchPreviewInfo)
+        if (index != matches.item.size - 1)
+          Divider(modifier = Modifier.fillMaxWidth().padding(2.dp).height(0.5.dp))
+      }
     }
   }
 }
@@ -533,7 +531,9 @@ fun SharableListUi(modifier: Modifier = Modifier, matches: StableHolder<List<Mat
 @Composable
 fun SharableMatchUi(modifier: Modifier = Modifier, match: MatchPreviewInfo) {
   Text(
-    text = if (match.status.equals("LIVE", true)) "LIVE" else match.time?.readableDateAndTime ?: "",
+    text =
+      if (match.status.equals(stringResource(R.string.live), true)) stringResource(R.string.live)
+      else match.time?.readableDateAndTime ?: "",
     modifier = modifier.fillMaxWidth().padding(Local2DPPadding.current),
     textAlign = TextAlign.Center,
     style = VLRTheme.typography.labelSmall
@@ -580,7 +580,7 @@ fun fireIntent(context: Context, file: Uri, matches: List<MatchPreviewInfo>) {
   val string = buildString {
     matches.forEach {
       appendLine(
-        "${it.team1.name} vs ${it.team2.name} | ${it.time?.readableDateAndTime} | https://vlr.gg/${it.id}"
+        "${it.team1.name} vs ${it.team2.name} | ${it.time?.readableDateAndTime} | ${it.id.urlFromId()}"
       )
       appendLine()
     }
@@ -594,5 +594,7 @@ fun fireIntent(context: Context, file: Uri, matches: List<MatchPreviewInfo>) {
       putExtra(Intent.EXTRA_TEXT, string)
       type = "image/png"
     }
-  context.startActivity(Intent.createChooser(shareIntent, "Share with"))
+  context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_with)))
 }
+
+private fun String.urlFromId() = "https://vlr.gg/$this"

@@ -68,60 +68,42 @@ fun TournamentPreviewContainer(
   action: Action,
   list: StableHolder<List<TournamentPreview>>
 ) {
+
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
 
+  val tabs =
+    listOf(
+      stringResource(id = R.string.ongoing),
+      stringResource(id = R.string.upcoming),
+      stringResource(id = R.string.completed)
+    )
+  val mapByStatus by remember(list) { mutableStateOf(list.item.groupBy { it.status }) }
+
+  list.item.forEach { println(it.status) }
   val (ongoing, upcoming, completed) =
     remember(list) {
-      list.item
-        .groupBy { it.status.startsWith("ongoing", ignoreCase = true) }
-        .let {
-          Triple(
-            it[true].orEmpty(),
-            it[false]
-              ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
-              ?.get(true)
-              .orEmpty(),
-            it[false]
-              ?.groupBy { it.status.startsWith("upcoming", ignoreCase = true) }
-              ?.get(false)
-              .orEmpty()
-          )
-        }
+      mapByStatus.let {
+        Triple(
+          it[tabs[0].lowercase()].orEmpty(),
+          it[tabs[1].lowercase()].orEmpty(),
+          it[tabs[2].lowercase()].orEmpty()
+        )
+      }
     }
   Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     TabRow(
       selectedTabIndex = pagerState.currentPage,
       indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
     ) {
-      Tab(
-        selected = pagerState.currentPage == 0,
-        onClick = { scope.launch { pagerState.scrollToPage(0) } }
-      ) {
-        Text(
-          text = stringResource(R.string.ongoing),
-          modifier = modifier.padding(Local16DPPadding.current)
-        )
-      }
-      Tab(
-        selected = pagerState.currentPage == 1,
-        onClick = { scope.launch { pagerState.scrollToPage(1) } }
-      ) {
-        Text(
-          text = stringResource(R.string.upcoming),
-          modifier = modifier.padding(Local16DPPadding.current)
-        )
-      }
-      Tab(
-        selected = pagerState.currentPage == 2,
-        onClick = { scope.launch { pagerState.scrollToPage(2) } }
-      ) {
-        Text(
-          text = stringResource(R.string.completed),
-          modifier = modifier.padding(Local16DPPadding.current)
-        )
+      tabs.forEachIndexed { index, title ->
+        Tab(
+          selected = pagerState.currentPage == index,
+          onClick = { scope.launch { pagerState.scrollToPage(index) } }
+        ) { Text(text = title, modifier = modifier.padding(Local16DPPadding.current)) }
       }
     }
+
     HorizontalPager(count = 3, state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition
       ->
       when (tabPosition) {

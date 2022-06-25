@@ -6,16 +6,16 @@ The application is not listed on Play Store, but you will receive in app updates
 ## 📸 Preview 📸
 There were no designs / mock ups during the development of this app, this was developed as a side project / hobby.
 
-|Light|Dark|
-|-----|----|
-|![](https://github.com/static-var/vlr-gg/blob/trunk/art/NEWS_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/NEWS_DARK_VLR.jpg)|
-|![](https://github.com/static-var/vlr-gg/blob/trunk/art/BLOG_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/BLOG_DARK_VLR.jpg)|
-|![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_OVERVIEW_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_OVERVIEW_DARK_VLR.jpg)|
-|![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_DETAILS_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_DETAILS_DARK_VLR.jpg)|
-|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_DARK_VLR.jpg)|
-|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_DARK_VLR.jpg)|
-|![](https://github.com/static-var/vlr-gg/blob/trunk/art/SQUAD_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/SQUAD_DARK_VLR.jpg)|
-|![](https://github.com/static-var/vlr-gg/blob/trunk/art/ABOUT_LIGHT_VLR.jpg)|![](https://github.com/static-var/vlr-gg/blob/trunk/art/ABOUT_DARK_VLR.jpg)|
+| Light                                                                                 | Dark                                                                                 |
+|---------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/NEWS_LIGHT_VLR.jpg)           | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/NEWS_DARK_VLR.jpg)           |
+| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/BLOG_LIGHT_VLR.jpg)           | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/BLOG_DARK_VLR.jpg)           |
+| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_OVERVIEW_LIGHT_VLR.jpg) | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_OVERVIEW_DARK_VLR.jpg) |
+| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_DETAILS_LIGHT_VLR.jpg)  | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_DETAILS_DARK_VLR.jpg)  |
+| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_LIGHT_VLR.jpg) | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_DARK_VLR.jpg) |
+| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_LIGHT_VLR.jpg)          | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_DARK_VLR.jpg)          |
+| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/SQUAD_LIGHT_VLR.jpg)          | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/SQUAD_DARK_VLR.jpg)          |
+| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/ABOUT_LIGHT_VLR.jpg)          | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/ABOUT_DARK_VLR.jpg)          |
 
 
 
@@ -43,7 +43,7 @@ The application has been written completely in [Kotlin](https://kotlinlang.org/)
 - [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) - Hilt is a dependency injection library for Android that reduces the boilerplate of doing manual dependency injection in your project.
 - [Room](https://developer.android.com/jetpack/androidx/releases/room) - The Room persistence library provides an abstraction layer over SQLite to allow for more robust database access while harnessing the full power of SQLite.
 - [Firebase Analytics](https://firebase.google.com/docs/analytics) - Analytics is an app measurement solution, available at no charge, that provides insight on app usage and user engagement.
-- [Firebase Messagign](https://firebase.google.com/docs/cloud-messaging) - Firebase Cloud Messaging (FCM) is a cross-platform messaging solution that lets you reliably send messages at no cost.
+- [Firebase Messaging](https://firebase.google.com/docs/cloud-messaging) - Firebase Cloud Messaging (FCM) is a cross-platform messaging solution that lets you reliably send messages at no cost.
 - [Ktor-client](https://ktor.io/docs/create-client.html) - Ktor is a framework to easily build connected applications
 - [Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization) - Kotlin serialization consists of a compiler plugin, that generates visitor code for serializable classes, runtime library with core serialization API and support libraries with various serialization formats.
 - [Navigation Compose](https://developer.android.com/jetpack/compose/navigation) - Navigation Compose enables you to navigate between composables while taking advantage of the Navigation component’s infrastructure and features.

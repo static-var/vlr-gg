@@ -3,6 +3,11 @@ package dev.staticvar.vlr.utils
 import java.time.*
 import java.time.format.DateTimeFormatter
 
+private const val FULL_DATE_TIME_PATTERN = "E, dd MMM yyyy HH:mm z"
+private const val FULL_DATE_PATTERN = "E, dd MMM yyyy"
+private const val FULL_TIME_PATTERN = "HH:mm a"
+private val deviceZoneId = ZoneId.systemDefault()
+
 val String.timeDiff: String
   get() {
     val givenTime =
@@ -39,22 +44,21 @@ val String.readableDateAndTime: String
     LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
       .atOffset(ZoneOffset.UTC)
       .atZoneSameInstant(deviceZoneId)
-      .format(DateTimeFormatter.RFC_1123_DATE_TIME)
-      .substringBefore("+")
+      .format(DateTimeFormatter.ofPattern(FULL_DATE_TIME_PATTERN))
 
 val String.readableDate: String
   get() =
     LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
       .atOffset(ZoneOffset.UTC)
       .atZoneSameInstant(deviceZoneId)
-      .format(DateTimeFormatter.ofPattern("E, dd MMM yyyy"))
+      .format(DateTimeFormatter.ofPattern(FULL_DATE_PATTERN))
 
 val String.readableTime: String
   get() =
     LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
       .atOffset(ZoneOffset.UTC)
       .atZoneSameInstant(deviceZoneId)
-      .format(DateTimeFormatter.ofPattern("HH:mm a"))
+      .format(DateTimeFormatter.ofPattern(FULL_TIME_PATTERN))
 
 val String.timeToEpoch: Long
   get() =
@@ -62,5 +66,3 @@ val String.timeToEpoch: Long
       .atOffset(ZoneOffset.UTC)
       .atZoneSameInstant(deviceZoneId)
       .toEpochSecond()
-
-val deviceZoneId = ZoneId.systemDefault()
