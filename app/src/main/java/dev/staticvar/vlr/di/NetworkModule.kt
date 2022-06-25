@@ -14,9 +14,10 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import javax.inject.Singleton
 import kotlinx.serialization.json.Json
 import okhttp3.logging.HttpLoggingInterceptor
+import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -34,6 +35,7 @@ object NetworkModule {
 
   @Provides
   @Singleton
+  @Named("vlrClient")
   fun provideKtorHttpClient(json: Json) =
     HttpClient(OkHttp) {
       defaultRequest {
@@ -53,6 +55,28 @@ object NetworkModule {
       }
 
       install(ContentEncoding) { gzip() }
+
+      install(HttpTimeout) {
+        requestTimeoutMillis = 15000L
+        connectTimeoutMillis = 15000L
+        socketTimeoutMillis = 15000L
+      }
+
+      engine {
+        val logger = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+        addInterceptor(logger)
+      }
+    }
+
+  @Provides
+  @Singleton
+  @Named("simpleClient")
+  fun provideSimpleKtorHttpClient(json: Json) =
+    HttpClient(OkHttp) {
+      defaultRequest {
+        url { protocol = URLProtocol.HTTPS }
+      }
+      install(ContentNegotiation) { json(json) }
 
       install(HttpTimeout) {
         requestTimeoutMillis = 15000L

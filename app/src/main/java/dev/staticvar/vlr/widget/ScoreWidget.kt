@@ -42,7 +42,7 @@ class ScoreWidget(private val repository: VlrRepository) : GlanceAppWidget() {
 
   @Composable
   override fun Content() {
-    val list by remember { mutableStateOf(repository.getFiveUpcomingMatches().subList(0, 10)) }
+    val list by remember { mutableStateOf(repository.upcomingMatches().subList(0, 10)) }
     val context = LocalContext.current
 
     WidgetTheme(context = context, darkTheme = context.isDarkThemeOn()) {

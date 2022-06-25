@@ -2,6 +2,12 @@ package dev.staticvar.vlr.utils
 
 import kotlin.time.Duration
 
+/**
+ * Time elapsed A simple in-memory time system to prevent a key from being accessed before its
+ * allocated elapsed time.
+ *
+ * @constructor Create empty Time elapsed
+ */
 object TimeElapsed {
   private var timeMap: MutableMap<String, Long> = mutableMapOf()
 
