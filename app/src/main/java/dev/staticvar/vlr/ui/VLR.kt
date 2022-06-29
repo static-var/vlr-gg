@@ -21,7 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -57,17 +56,12 @@ fun VLR() {
   val action = remember(navController) { Action(navController) }
 
   val systemUiController = rememberSystemUiController()
-  val background = VLRTheme.colorScheme.surface
+  val background = VLRTheme.colorScheme.surfaceColorAtElevation(8.dp)
   val transparent = Color.Transparent
 
   viewModel.action = action
 
   val navState: NavState by viewModel.navState.collectAsState(NavState.NEWS_OVERVIEW)
-
-  val fontFamilyResolver = LocalFontFamilyResolver.current
-  LaunchedEffect(Unit) {
-    //    fontFamilyResolver.preload(appFontFamily) Crashes on 1.2.0-alpha07
-  }
 
   LaunchedEffect(navState) {
     systemUiController.setNavigationBarColor(
@@ -141,10 +135,11 @@ fun VLR() {
             targetState != NavState.TEAM_DETAILS &&
             targetState != NavState.NEWS
         ) {
+          VLRTheme.colorScheme.surface
           NavigationBar(
-            containerColor = VLRTheme.colorScheme.surface,
+            containerColor = VLRTheme.colorScheme.surfaceColorAtElevation(8.dp),
             contentColor = contentColorFor(VLRTheme.colorScheme.onSurface),
-            tonalElevation = 0.dp,
+            tonalElevation = 8.dp,
             modifier = Modifier.navigationBarsPadding()
           ) {
             NavigationBarItem(

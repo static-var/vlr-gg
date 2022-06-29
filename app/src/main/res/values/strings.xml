@@ -64,4 +64,8 @@
     <string name="live">LIVE</string>
     <string name="preview">Preview</string>
     <string name="share_with">Share with</string>
+    <string name="error_occurred">Error occurred while getting latest data, try again!</string>
+    <string name="click_here">Click here for more info</string>
+    <string name="error_log">Error Log</string>
+    <string name="dismiss">Dismiss</string>
 </resources>

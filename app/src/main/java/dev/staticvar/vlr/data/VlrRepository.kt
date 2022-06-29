@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.data
 
+import com.github.michaelbull.result.*
 import dev.staticvar.vlr.data.api.response.*
 import dev.staticvar.vlr.data.dao.VlrDao
 import dev.staticvar.vlr.data.model.TopicTracker
@@ -12,7 +13,9 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,79 +38,70 @@ constructor(
    * Get news Method which calls API and requests for latest news article info This method won't
    * make the call again till 180 seconds
    */
-  private fun getNews() =
-    flow<Operation<List<NewsResponseItem>>> {
+  fun updateLatestNews() =
+    flow<Result<Boolean, Throwable?>> {
       if (TimeElapsed.hasElapsed(Constants.KEY_NEWS)) {
-        val response =
-          kotlin.runCatching {
-            ktorHttpClient.get(Endpoints.NEWS).body<List<NewsResponseItem>>().also {
-              vlrDao.deleteAndInsertNews(it)
-              TimeElapsed.start(Constants.KEY_NEWS, 180.seconds)
-            }
-          }
-        if (response.isFailure) emit(Fail(response.exceptionOrNull().toString()))
+        emit(Ok(true))
+        val result = runSuspendCatching {
+          ktorHttpClient.get(Endpoints.NEWS).body<List<NewsResponseItem>>()
+        }
+        result.get()?.let {
+          vlrDao.deleteAndInsertNews(it)
+          TimeElapsed.start(Constants.KEY_NEWS, 180.seconds)
+          emit(Ok(false))
+        }
+          ?: emit(Err(result.getError()))
       }
     }
 
   /** Get news from db */
-  private fun getNewsFromDb() =
-    vlrDao.getNews().map { if (it.isEmpty()) Waiting() else Pass(it) }.distinctUntilChanged()
-
-  /** Merge news Merges data from both the flows [getNews] & [getNewsFromDb] */
-  fun mergeNews() = merge(getNewsFromDb(), getNews()).flowOn(ioDispatcher)
+  fun getNewsFromDb() = vlrDao.getNews().map { Pass(it) }
 
   /**
    * Get matches from server This method will request server to return the latest matches This call
    * is made once every 30 seconds
    */
-  fun getMatchesFromServer() =
-    flow<Operation<List<MatchPreviewInfo>>> {
+  fun updateLatestMatches() =
+    flow<Result<Boolean, Throwable?>> {
       if (TimeElapsed.hasElapsed(Constants.KEY_MATCH_ALL)) {
-        val response =
-          kotlin.runCatching {
-            ktorHttpClient.get(Endpoints.MATCHES_OVERVIEW).body<List<MatchPreviewInfo>>().also {
-              vlrDao.deleteAndInsertMatchPreviewInfo(it)
-              TimeElapsed.start(Constants.KEY_MATCH_ALL, 30.seconds)
-            }
-          }
-        if (response.isFailure) emit(Fail(response.exceptionOrNull().toString()))
+        emit(Ok(true))
+        val result = runSuspendCatching {
+          ktorHttpClient.get(Endpoints.MATCHES_OVERVIEW).body<List<MatchPreviewInfo>>()
+        }
+        result.get()?.let {
+          vlrDao.deleteAndInsertMatchPreviewInfo(it)
+          TimeElapsed.start(Constants.KEY_MATCH_ALL, 30.seconds)
+          emit(Ok(false))
+        }
+          ?: emit(Err(result.getError()))
       }
     }
 
   /** Get matches from db */
-  private fun getMatchesFromDb() =
-    vlrDao
-      .getAllMatchesPreview()
-      .map { if (it.isEmpty()) Waiting() else Pass(it) }
-      .distinctUntilChanged()
-
-  /** Merge matches Merges data from both the flows [getMatchesFromServer] & [getMatchesFromDb] */
-  fun mergeMatches() = merge(getMatchesFromDb(), getMatchesFromServer()).flowOn(ioDispatcher)
+  fun getMatchesFromDb() = vlrDao.getAllMatchesPreview().map { Pass(it) }
 
   /**
    * Get events from server This method will request server to return the latest events / tournament
    * related data This call is made once every 30 seconds
    */
-  private fun getEventsFromServer() =
-    flow<Operation<List<TournamentPreview>>> {
+  fun updateLatestEvents() =
+    flow<Result<Boolean, Throwable?>> {
       if (TimeElapsed.hasElapsed(Constants.KEY_TOURNAMENT_ALL)) {
-        val response =
-          kotlin.runCatching {
-            ktorHttpClient.get(Endpoints.EVENTS_OVERVIEW).body<List<TournamentPreview>>().also {
-              vlrDao.deleteAndInsertTournamentPreview(it)
-              TimeElapsed.start(Constants.KEY_TOURNAMENT_ALL, 60.seconds)
-            }
-          }
-        if (response.isFailure) emit(Fail(response.exceptionOrNull().toString()))
+        emit(Ok(true))
+        val result = runSuspendCatching {
+          ktorHttpClient.get(Endpoints.EVENTS_OVERVIEW).body<List<TournamentPreview>>()
+        }
+        result.get()?.let {
+          vlrDao.deleteAndInsertTournamentPreview(it)
+          TimeElapsed.start(Constants.KEY_TOURNAMENT_ALL, 60.seconds)
+          emit(Ok(false))
+        }
+          ?: emit(Err(result.getError()))
       }
     }
 
   /** Get events from db */
-  private fun getEventsFromDb() =
-    vlrDao.getTournaments().map { if (it.isEmpty()) Waiting() else Pass(it) }.distinctUntilChanged()
-
-  /** Merge events Merges data from both the flows [getEventsFromServer] & [getEventsFromDb] */
-  fun mergeEvents() = merge(getEventsFromDb(), getEventsFromServer()).flowOn(ioDispatcher)
+  fun getEventsFromDb() = vlrDao.getTournaments().map { Pass(it) }
 
   /**
    * Get match details from server This will request server to return match data of a given match ID
@@ -115,18 +109,19 @@ constructor(
    *
    * @param id
    */
-  private fun getMatchDetailsFromServer(id: String) =
-    flow<Operation<MatchInfo>> {
+  fun updateLatestMatchDetails(id: String) =
+    flow<Result<Boolean, Throwable?>> {
       if (TimeElapsed.hasElapsed(id)) {
-        val response =
-          kotlin.runCatching {
-            ktorHttpClient.get("api/v1/matches/$id").body<MatchInfo>().also {
-              it.id = id
-              vlrDao.insertMatchInfo(it)
-              TimeElapsed.start(id, 30.seconds)
-            }
-          }
-        if (response.isFailure) emit(Fail(response.exceptionOrNull().toString()))
+        val result = runSuspendCatching {
+          ktorHttpClient.get(Endpoints.matchDetails(id)).body<MatchInfo>()
+        }
+        result.get()?.let {
+          it.id = id
+          vlrDao.insertMatchInfo(it)
+          TimeElapsed.start(id, 30.seconds)
+          emit(Ok(false))
+        }
+          ?: emit(Err(result.getError()))
       }
     }
 
@@ -135,16 +130,7 @@ constructor(
    *
    * @param id
    */
-  private fun getMatchDetailsFromDb(id: String) =
-    vlrDao.getMatchById(id).map { if (it == null) Waiting() else Pass(it) }
-
-  /**
-   * Merge match details Merges data from both the flows [getMatchDetailsFromServer] &
-   * [getMatchDetailsFromDb]
-   * @param id
-   */
-  fun mergeMatchDetails(id: String) =
-    merge(getMatchDetailsFromDb(id), getMatchDetailsFromServer(id)).flowOn(ioDispatcher)
+  fun getMatchDetailsFromDb(id: String) = vlrDao.getMatchById(id).map { Pass(it) }
 
   /**
    * Get event details from server Request for latest Event / Tournament details of a given event
@@ -152,17 +138,18 @@ constructor(
    *
    * @param id
    */
-  private fun getEventDetailsFromServer(id: String) =
-    flow<Operation<TournamentDetails>> {
+  fun updateLatestEventDetails(id: String) =
+    flow<Result<Boolean, Throwable?>> {
       if (TimeElapsed.hasElapsed(id)) {
-        val response =
-          kotlin.runCatching {
-            ktorHttpClient.get(Endpoints.eventDetails(id)).body<TournamentDetails>().also {
-              vlrDao.insertTournamentDetails(it)
-              TimeElapsed.start(id, 30.seconds)
-            }
-          }
-        if (response.isFailure) emit(Fail(response.exceptionOrNull().toString()))
+        val result = runSuspendCatching {
+          ktorHttpClient.get(Endpoints.eventDetails(id)).body<TournamentDetails>()
+        }
+        result.get()?.let {
+          vlrDao.insertTournamentDetails(it)
+          TimeElapsed.start(id, 30.seconds)
+          emit(Ok(false))
+        }
+          ?: emit(Err(result.getError()))
       }
     }
 
@@ -171,17 +158,7 @@ constructor(
    *
    * @param id
    */
-  private fun getEventDetailsFromDb(id: String) =
-    vlrDao.getTournamentById(id).map { if (it == null) Waiting() else Pass(it) }
-
-  /**
-   * Merge event details Merges data from both the flows [getEventDetailsFromServer] &
-   * [getEventDetailsFromDb]
-   *
-   * @param id
-   */
-  fun mergeEventDetails(id: String) =
-    merge(getEventDetailsFromDb(id), getEventDetailsFromServer(id)).flowOn(ioDispatcher)
+  fun getEventDetailsFromDb(id: String) = vlrDao.getTournamentById(id).map { Pass(it) }
 
   /**
    * Add a match to be tracked in DB
@@ -206,11 +183,7 @@ constructor(
 
   /** Get latest app version from github version file */
   fun getLatestAppVersion() = flow {
-    emit(
-      simpleKtorHttpClient
-        .request(Endpoints.APK_VERSION_PAGE_LINK)
-        .bodyAsText()
-    )
+    emit(simpleKtorHttpClient.request(Endpoints.APK_VERSION_PAGE_LINK).bodyAsText())
   }
 
   /** Get url to the latest apk from github from the latest release page */

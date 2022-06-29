@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.ui.events
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,12 +21,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.get
+import com.github.michaelbull.result.getError
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -33,8 +40,13 @@ import dev.staticvar.vlr.utils.*
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
-  val details by
-    remember(viewModel) { viewModel.getTournamentDetails(id) }.collectAsState(Waiting())
+  val details by remember(viewModel) { viewModel.getEventDetails(id) }.collectAsState(Waiting())
+  var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
+  val updateState by
+    remember(triggerRefresh) { viewModel.refreshEventDetails(id) }
+      .collectAsState(initial = Ok(false))
+
+  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
   val primaryContainer = VLRTheme.colorScheme.surface.copy(0.2f)
   val systemUiController = rememberSystemUiController()
@@ -66,46 +78,62 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
 
           val lazyListState = rememberLazyListState()
 
-          LazyColumn(modifier = modifier.fillMaxSize(), state = lazyListState) {
-            item { Spacer(modifier = modifier.statusBarsPadding()) }
-            item { TournamentDetailsHeader(tournamentDetails = tournamentDetails) }
-            item {
-              EventDetailsTeamSlider(
-                modifier = modifier,
-                list = StableHolder(tournamentDetails.participants),
-                onClick = { viewModel.action.team(it) }
-              )
-            }
-
-            kotlin
-              .runCatching {
-                group[group.keys.elementAt(tabSelection)]?.let { games ->
-                  item {
-                    EventMatchGroups(
-                      modifier,
-                      selectedIndex,
-                      StableHolder(group),
-                      tabSelection,
-                      onFilterChange = { selectedIndex = it },
-                      onTabChange = { tabSelection = it }
-                    )
-                  }
-                  items(games, key = { game -> game.id }) { item ->
-                    TournamentMatchOverview(
-                      modifier = modifier,
-                      game = item,
-                      onClick = { viewModel.action.match(it) }
-                    )
-                  }
+          SwipeRefresh(
+            state = swipeRefresh,
+            onRefresh = { triggerRefresh = triggerRefresh.not() },
+            indicator = { _, _ -> }
+          ) {
+            LazyColumn(modifier = modifier.fillMaxSize(), state = lazyListState) {
+              item { Spacer(modifier = modifier.statusBarsPadding()) }
+              if (updateState.get() == true || swipeRefresh.isSwipeInProgress)
+                item {
+                  LinearProgressIndicator(
+                    modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
+                  )
                 }
-                  ?: e { "No matches in list" }
+              updateState.getError()?.let {
+                item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
-              .onFailure { it.printStackTrace() }
-            item { Spacer(modifier = modifier.navigationBarsPadding()) }
+
+              item { TournamentDetailsHeader(tournamentDetails = tournamentDetails) }
+              item {
+                EventDetailsTeamSlider(
+                  modifier = modifier,
+                  list = StableHolder(tournamentDetails.participants),
+                  onClick = { viewModel.action.team(it) }
+                )
+              }
+
+              kotlin
+                .runCatching {
+                  group[group.keys.elementAt(tabSelection)]?.let { games ->
+                    item {
+                      EventMatchGroups(
+                        modifier,
+                        selectedIndex,
+                        StableHolder(group),
+                        tabSelection,
+                        onFilterChange = { selectedIndex = it },
+                        onTabChange = { tabSelection = it }
+                      )
+                    }
+                    items(games, key = { game -> game.id }) { item ->
+                      TournamentMatchOverview(
+                        modifier = modifier,
+                        game = item,
+                        onClick = { viewModel.action.match(it) }
+                      )
+                    }
+                  }
+                    ?: e { "No matches in list" }
+                }
+                .onFailure { it.printStackTrace() }
+              item { Spacer(modifier = modifier.navigationBarsPadding()) }
+            }
           }
         }
       }
-      .onWaiting { LinearProgressIndicator(modifier) }
+      .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
       .onFail { Text(text = message()) }
   }
 }

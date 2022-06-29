@@ -26,7 +26,7 @@ constructor(
   override suspend fun doWork(): Result {
     val widgetsEnabled = appContext.areWidgetsEnabled()
     if (widgetsEnabled) {
-      vlrRepository.getMatchesFromServer().onEach { i { "Updating widget $it" } }.collect()
+      vlrRepository.updateLatestMatches().onEach { i { "Updating widget $it" } }.collect()
       ScoreWidget(vlrRepository).updateAll(appContext)
     } else e { "No Widget to update" }
     return Result.success()
