@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.ui.news
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -17,12 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.get
+import com.github.michaelbull.result.getError
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.data.api.response.NewsResponseItem
-import dev.staticvar.vlr.ui.Action
-import dev.staticvar.vlr.ui.Local4DPPadding
-import dev.staticvar.vlr.ui.Local8DPPadding
-import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
@@ -30,6 +34,11 @@ import dev.staticvar.vlr.utils.*
 @Composable
 fun NewsScreen(viewModel: VlrViewModel) {
   val newsInfo by remember(viewModel) { viewModel.getNews() }.collectAsState(initial = Waiting())
+  var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
+  val updateState by
+    remember(triggerRefresh) { viewModel.refreshNews() }.collectAsState(initial = Ok(false))
+
+  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
   val primaryContainer = Color.Transparent
   val systemUiController = rememberSystemUiController()
@@ -50,16 +59,32 @@ fun NewsScreen(viewModel: VlrViewModel) {
           val safeConvertedList =
             kotlin.runCatching { list.sortedByDescending { it.date.timeToEpoch } }
 
-          LazyColumn() {
-            item { Spacer(modifier = modifier.statusBarsPadding()) }
-            items(
-              if (safeConvertedList.isFailure) list else safeConvertedList.getOrElse { listOf() },
-              key = { item -> item.link }
-            ) { NewsItem(modifier, newsResponseItem = it, action = viewModel.action) }
+          SwipeRefresh(
+            state = swipeRefresh,
+            onRefresh = { triggerRefresh = triggerRefresh.not() },
+            indicator = { _, _ -> }
+          ) {
+            LazyColumn() {
+              item { Spacer(modifier = modifier.statusBarsPadding()) }
+              if (updateState.get() == true || swipeRefresh.isSwipeInProgress)
+                item {
+                  LinearProgressIndicator(
+                    modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
+                  )
+                }
+              updateState.getError()?.let {
+                item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
+              }
+
+              items(
+                if (safeConvertedList.isFailure) list else safeConvertedList.getOrElse { listOf() },
+                key = { item -> item.link }
+              ) { NewsItem(modifier, newsResponseItem = it, action = viewModel.action) }
+            }
           }
         }
       }
-      .onWaiting { LinearProgressIndicator(modifier) }
+      .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
       .onFail { Text(text = message()) }
   }
 }

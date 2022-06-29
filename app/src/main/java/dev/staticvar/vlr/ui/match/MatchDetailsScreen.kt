@@ -24,9 +24,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.get
+import com.github.michaelbull.result.getError
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
@@ -35,6 +40,7 @@ import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -45,7 +51,7 @@ import kotlinx.coroutines.tasks.await
 
 @Composable
 fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
-  val details by remember(viewModel) { viewModel.getMatchInfo(id) }.collectAsState(Waiting())
+  val details by remember(viewModel) { viewModel.getMatchDetails(id) }.collectAsState(Waiting())
   val trackerString = id.toMatchTopic()
   val isTracked by remember { viewModel.isTopicTracked(trackerString) }.collectAsState(null)
   var streamAndVodsCard by remember { mutableStateOf(false) }
@@ -55,6 +61,12 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
   val modifier: Modifier = Modifier
+
+  var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
+  val updateState by
+    remember(triggerRefresh) { viewModel.refreshMatchInfo(id) }.collectAsState(initial = Ok(false))
+
+  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
   Column(
     modifier = modifier.fillMaxSize(),
@@ -75,128 +87,142 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
           var upcomingMatchToggle by remember { mutableStateOf(false) }
           var overAllMapToggle by remember { mutableStateOf(false) }
 
-          LazyColumn(modifier = modifier.fillMaxSize(), state = rememberListState) {
-            item { Spacer(modifier = modifier.statusBarsPadding()) }
-            item {
-              MatchOverallAndEventOverview(
-                modifier = modifier,
-                detailData = matchInfo,
-                isTracked = isTracked ?: false,
-                viewModel.action.team
-              ) {
-                when (isTracked) {
-                  true -> {
-                    Firebase.messaging.unsubscribeFromTopic(trackerString).await()
-                    viewModel.removeTopic(trackerString)
-                    i { "You have unsubscribed from $trackerString" }
-                  }
-                  false -> {
-                    Firebase.messaging.subscribeToTopic(trackerString).await()
-                    viewModel.trackTopic(trackerString)
-                    i { "You will be notified when the match starts $trackerString" }
-                  }
-                  else -> {}
-                }
-              }
-            }
-            item {
-              VideoReferenceUi(
-                videos = matchInfo.videos,
-                expand = streamAndVodsCard,
-                onClick = { streamAndVodsCard = it }
-              )
-            }
-            if (matchInfo.matchData.isNotEmpty()) {
-              item {
-                EmphasisCardView(
-                  modifier = modifier.clickable { overAllMapToggle = overAllMapToggle.not() }
-                ) {
-                  Box(
-                    modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
-                    contentAlignment = Alignment.CenterEnd
-                  ) {
-                    Text(
-                      text = stringResource(R.string.maps),
-                      modifier = modifier.fillMaxWidth(),
-                      textAlign = TextAlign.Center,
-                      style = VLRTheme.typography.titleSmall,
-                      color = VLRTheme.colorScheme.primary,
-                    )
-                    Icon(
-                      if (overAllMapToggle) Icons.Outlined.ArrowUpward
-                      else Icons.Outlined.ArrowDownward,
-                      contentDescription = stringResource(R.string.expand),
-                      modifier = modifier.size(16.dp),
-                      tint = VLRTheme.colorScheme.primary,
-                    )
-                  }
-                }
-              }
-              if (overAllMapToggle)
-                maps.forEach { match ->
-                  item {
-                    MapStatsCard(
-                      mapData = match,
-                      toggleState = toggleStateMap[match.map] ?: false,
-                      onClick = {
-                        toggleStateMap =
-                          toggleStateMap.toMutableMap().apply { set(match.map, it) }.toMap()
-                      }
-                    )
-                  }
-                }
-            }
-            if (matchInfo.mapCount > matchInfo.matchData.size) {
-              item {
-                Text(
-                  text = stringResource(R.string.matches_tbp),
-                  modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
-                  textAlign = TextAlign.Center,
-                  style = VLRTheme.typography.titleSmall,
-                  color = VLRTheme.colorScheme.primary,
-                )
-              }
-            }
-            if (matchInfo.head2head.isNotEmpty()) {
-              item {
-                EmphasisCardView(
-                  modifier = modifier.clickable { upcomingMatchToggle = upcomingMatchToggle.not() }
-                ) {
-                  Box(
-                    modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
-                    contentAlignment = Alignment.CenterEnd
-                  ) {
-                    Text(
-                      text = stringResource(R.string.previous_encounter),
-                      modifier = modifier.fillMaxWidth(),
-                      textAlign = TextAlign.Center,
-                      style = VLRTheme.typography.titleSmall,
-                      color = VLRTheme.colorScheme.primary,
-                    )
-                    Icon(
-                      if (upcomingMatchToggle) Icons.Outlined.ArrowUpward
-                      else Icons.Outlined.ArrowDownward,
-                      contentDescription = stringResource(R.string.expand),
-                      modifier = modifier.size(16.dp),
-                      tint = VLRTheme.colorScheme.primary,
-                    )
-                  }
-                }
-              }
-              if (upcomingMatchToggle)
-                items(matchInfo.head2head, key = { item -> item.id }) {
-                  PreviousEncounter(
-                    modifier = modifier,
-                    previousEncounter = it,
-                    onClick = { viewModel.action.match(it) }
+          SwipeRefresh(
+            state = swipeRefresh,
+            onRefresh = { triggerRefresh = triggerRefresh.not() },
+            indicator = { _, _ -> }
+          ) {
+            LazyColumn(modifier = modifier.fillMaxSize(), state = rememberListState) {
+              item { Spacer(modifier = modifier.statusBarsPadding()) }
+              if (updateState.get() == true || swipeRefresh.isSwipeInProgress)
+                item {
+                  LinearProgressIndicator(
+                    modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
                   )
                 }
+              updateState.getError()?.let {
+                item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
+              }
+              item {
+                MatchOverallAndEventOverview(
+                  modifier = modifier,
+                  detailData = matchInfo,
+                  isTracked = isTracked ?: false,
+                  viewModel.action.team
+                ) {
+                  when (isTracked) {
+                    true -> {
+                      Firebase.messaging.unsubscribeFromTopic(trackerString).await()
+                      viewModel.removeTopic(trackerString)
+                    }
+                    false -> {
+                      Firebase.messaging.subscribeToTopic(trackerString).await()
+                      viewModel.trackTopic(trackerString)
+                    }
+                    else -> {}
+                  }
+                }
+              }
+              item {
+                VideoReferenceUi(
+                  videos = matchInfo.videos,
+                  expand = streamAndVodsCard,
+                  onClick = { streamAndVodsCard = it }
+                )
+              }
+              if (matchInfo.matchData.isNotEmpty()) {
+                item {
+                  EmphasisCardView(
+                    modifier = modifier.clickable { overAllMapToggle = overAllMapToggle.not() }
+                  ) {
+                    Box(
+                      modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
+                      contentAlignment = Alignment.CenterEnd
+                    ) {
+                      Text(
+                        text = stringResource(R.string.maps),
+                        modifier = modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        style = VLRTheme.typography.titleSmall,
+                        color = VLRTheme.colorScheme.primary,
+                      )
+                      Icon(
+                        if (overAllMapToggle) Icons.Outlined.ArrowUpward
+                        else Icons.Outlined.ArrowDownward,
+                        contentDescription = stringResource(R.string.expand),
+                        modifier = modifier.size(16.dp),
+                        tint = VLRTheme.colorScheme.primary,
+                      )
+                    }
+                  }
+                }
+                if (overAllMapToggle)
+                  maps.forEach { match ->
+                    item {
+                      MapStatsCard(
+                        mapData = match,
+                        toggleState = toggleStateMap[match.map] ?: false,
+                        onClick = {
+                          toggleStateMap =
+                            toggleStateMap.toMutableMap().apply { set(match.map, it) }.toMap()
+                        }
+                      )
+                    }
+                  }
+              }
+              if (matchInfo.mapCount > matchInfo.matchData.size) {
+                item {
+                  Text(
+                    text = stringResource(R.string.matches_tbp),
+                    modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
+                    textAlign = TextAlign.Center,
+                    style = VLRTheme.typography.titleSmall,
+                    color = VLRTheme.colorScheme.primary,
+                  )
+                }
+              }
+              if (matchInfo.head2head.isNotEmpty()) {
+                item {
+                  EmphasisCardView(
+                    modifier =
+                      modifier.clickable { upcomingMatchToggle = upcomingMatchToggle.not() }
+                  ) {
+                    Box(
+                      modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
+                      contentAlignment = Alignment.CenterEnd
+                    ) {
+                      Text(
+                        text = stringResource(R.string.previous_encounter),
+                        modifier = modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        style = VLRTheme.typography.titleSmall,
+                        color = VLRTheme.colorScheme.primary,
+                      )
+                      Icon(
+                        if (upcomingMatchToggle) Icons.Outlined.ArrowUpward
+                        else Icons.Outlined.ArrowDownward,
+                        contentDescription = stringResource(R.string.expand),
+                        modifier = modifier.size(16.dp),
+                        tint = VLRTheme.colorScheme.primary,
+                      )
+                    }
+                  }
+                }
+                if (upcomingMatchToggle)
+                  items(matchInfo.head2head, key = { item -> item.id }) {
+                    PreviousEncounter(
+                      modifier = modifier,
+                      previousEncounter = it,
+                      onClick = { viewModel.action.match(it) }
+                    )
+                  }
+              }
+              item { Spacer(modifier = modifier.navigationBarsPadding()) }
             }
-            item { Spacer(modifier = modifier.navigationBarsPadding()) }
           }
         }
       }
-      .onWaiting { LinearProgressIndicator(modifier) }
+      .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
       .onFail { Text(text = message()) }
   }
 }
@@ -239,7 +265,7 @@ fun MatchOverallAndEventOverview(
             contentScale = ContentScale.Fit,
             alignment = Alignment.CenterStart,
             modifier = modifier.alpha(0.2f),
-            circularReveal = CircularReveal(1000),
+            circularReveal = CircularReveal(400),
           )
         }
         Spacer(modifier = Modifier.weight(0.2f))
@@ -262,7 +288,7 @@ fun MatchOverallAndEventOverview(
             contentScale = ContentScale.Fit,
             alignment = Alignment.CenterEnd,
             modifier = modifier.alpha(0.2f),
-            circularReveal = CircularReveal(1000)
+            circularReveal = CircularReveal(400)
           )
         }
         Spacer(modifier = Modifier.weight(0.1f))
@@ -315,7 +341,9 @@ fun MatchOverallAndEventOverview(
           Button(
             onClick = { dialogOpen = true },
             modifier = modifier.weight(1f),
-          ) { Text(text = stringResource(R.string.more_info)) }
+          ) {
+            Text(text = stringResource(R.string.more_info))
+          }
           detailData.event.date?.let {
             if (!it.hasElapsed) {
               var processingTopicSubscription by remember { mutableStateOf(false) }

@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.ui.events
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -17,12 +18,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.get
+import com.github.michaelbull.result.getError
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshState
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentPreview
 import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -33,7 +42,12 @@ import kotlinx.coroutines.launch
 fun EventScreen(viewModel: VlrViewModel) {
 
   val allTournaments by
-    remember(viewModel) { viewModel.getTournaments() }.collectAsState(initial = Waiting())
+    remember(viewModel) { viewModel.getEvents() }.collectAsState(initial = Waiting())
+  var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
+  val updateState by
+    remember(triggerRefresh) { viewModel.refreshEvents() }.collectAsState(initial = Ok(false))
+
+  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
   val primaryContainer = VLRTheme.colorScheme.surface
   val systemUiController = rememberSystemUiController()
@@ -53,11 +67,14 @@ fun EventScreen(viewModel: VlrViewModel) {
           TournamentPreviewContainer(
             modifier = Modifier,
             action = viewModel.action,
-            list = StableHolder(list)
+            list = StableHolder(list),
+            swipeRefresh,
+            updateState,
+            triggerRefresh = { triggerRefresh = triggerRefresh.not() }
           )
         }
       }
-      .onWaiting { LinearProgressIndicator(modifier) }
+      .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
       .onFail { Text(text = message()) }
   }
 }
@@ -66,7 +83,10 @@ fun EventScreen(viewModel: VlrViewModel) {
 fun TournamentPreviewContainer(
   modifier: Modifier = Modifier,
   action: Action,
-  list: StableHolder<List<TournamentPreview>>
+  list: StableHolder<List<TournamentPreview>>,
+  swipeRefresh: SwipeRefreshState,
+  updateState: Result<Boolean, Throwable?>,
+  triggerRefresh: () -> Unit
 ) {
 
   val pagerState = rememberPagerState()
@@ -80,7 +100,6 @@ fun TournamentPreviewContainer(
     )
   val mapByStatus by remember(list) { mutableStateOf(list.item.groupBy { it.status }) }
 
-  list.item.forEach { println(it.status) }
   val (ongoing, upcoming, completed) =
     remember(list) {
       mapByStatus.let {
@@ -91,66 +110,79 @@ fun TournamentPreviewContainer(
         )
       }
     }
-  Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-    TabRow(
-      selectedTabIndex = pagerState.currentPage,
-      indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
-    ) {
-      tabs.forEachIndexed { index, title ->
-        Tab(
-          selected = pagerState.currentPage == index,
-          onClick = { scope.launch { pagerState.scrollToPage(index) } }
-        ) { Text(text = title, modifier = modifier.padding(Local16DPPadding.current)) }
-      }
-    }
 
-    HorizontalPager(count = 3, state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition
-      ->
-      when (tabPosition) {
-        0 -> {
-          if (ongoing.isEmpty()) {
-            NoEventUI(modifier = modifier)
-          } else {
-            val lazyListState = rememberLazyListState()
-            LazyColumn(
-              modifier.fillMaxSize(),
-              verticalArrangement = Arrangement.Top,
-              state = lazyListState
-            ) {
-              items(ongoing, key = { item -> item.id }) {
-                TournamentPreview(modifier = modifier, tournamentPreview = it, action)
+  SwipeRefresh(state = swipeRefresh, onRefresh = triggerRefresh, indicator = { _, _ -> }) {
+    Column(
+      modifier = modifier.fillMaxSize().animateContentSize(),
+      verticalArrangement = Arrangement.Top
+    ) {
+      if (updateState.get() == true || swipeRefresh.isSwipeInProgress)
+        LinearProgressIndicator(
+          modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
+        )
+      updateState.getError()?.let {
+        ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
+      }
+      TabRow(
+        selectedTabIndex = pagerState.currentPage,
+        indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
+      ) {
+        tabs.forEachIndexed { index, title ->
+          Tab(
+            selected = pagerState.currentPage == index,
+            onClick = { scope.launch { pagerState.scrollToPage(index) } }
+          ) { Text(text = title, modifier = modifier.padding(Local16DPPadding.current)) }
+        }
+      }
+
+      HorizontalPager(count = 3, state = pagerState, modifier = modifier.fillMaxSize()) {
+        tabPosition ->
+        when (tabPosition) {
+          0 -> {
+            if (ongoing.isEmpty()) {
+              NoEventUI(modifier = modifier)
+            } else {
+              val lazyListState = rememberLazyListState()
+              LazyColumn(
+                modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                state = lazyListState
+              ) {
+                items(ongoing, key = { item -> item.id }) {
+                  TournamentPreview(modifier = modifier, tournamentPreview = it, action)
+                }
               }
             }
           }
-        }
-        1 -> {
-          if (upcoming.isEmpty()) {
-            NoEventUI(modifier = modifier)
-          } else {
-            val lazyListState = rememberLazyListState()
-            LazyColumn(
-              modifier.fillMaxSize(),
-              verticalArrangement = Arrangement.Top,
-              state = lazyListState
-            ) {
-              items(upcoming, key = { item -> item.id }) {
-                TournamentPreview(modifier = modifier, tournamentPreview = it, action)
+          1 -> {
+            if (upcoming.isEmpty()) {
+              NoEventUI(modifier = modifier)
+            } else {
+              val lazyListState = rememberLazyListState()
+              LazyColumn(
+                modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                state = lazyListState
+              ) {
+                items(upcoming, key = { item -> item.id }) {
+                  TournamentPreview(modifier = modifier, tournamentPreview = it, action)
+                }
               }
             }
           }
-        }
-        else -> {
-          if (completed.isEmpty()) {
-            NoEventUI(modifier = modifier)
-          } else {
-            val lazyListState = rememberLazyListState()
-            LazyColumn(
-              modifier.fillMaxSize(),
-              verticalArrangement = Arrangement.Top,
-              state = lazyListState
-            ) {
-              items(completed, key = { item -> item.id }) {
-                TournamentPreview(modifier = modifier, tournamentPreview = it, action)
+          else -> {
+            if (completed.isEmpty()) {
+              NoEventUI(modifier = modifier)
+            } else {
+              val lazyListState = rememberLazyListState()
+              LazyColumn(
+                modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                state = lazyListState
+              ) {
+                items(completed, key = { item -> item.id }) {
+                  TournamentPreview(modifier = modifier, tournamentPreview = it, action)
+                }
               }
             }
           }

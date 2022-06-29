@@ -63,3 +63,24 @@ inline fun <T> Operation<T>.onWaiting(
   if (this is Waiting) block(this)
   return this
 }
+
+suspend inline fun <T> Operation<T>.onPassSuspended(
+  crossinline block: suspend Pass<T>.() -> Unit
+): Operation<T> {
+  if (this is Pass) block(this)
+  return this
+}
+
+suspend inline fun <T> Operation<T>.onFailSuspended(
+  crossinline block: suspend Fail<T>.() -> Unit
+): Operation<T> {
+  if (this is Fail) block(this)
+  return this
+}
+
+suspend inline fun <T> Operation<T>.onWaitingSuspended(
+  crossinline block: suspend Waiting<T>.() -> Unit
+): Operation<T> {
+  if (this is Waiting) block(this)
+  return this
+}

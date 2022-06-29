@@ -32,12 +32,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
 import androidx.core.view.drawToBitmap
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.get
+import com.github.michaelbull.result.getError
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshState
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
 import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -52,7 +60,12 @@ import java.io.OutputStream
 fun MatchOverview(viewModel: VlrViewModel) {
 
   val allMatches by
-    remember(viewModel) { viewModel.getAllMatches() }.collectAsState(initial = Waiting())
+    remember(viewModel) { viewModel.getMatches() }.collectAsState(initial = Waiting())
+  var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
+  val updateState by
+    remember(triggerRefresh) { viewModel.refreshMatches() }.collectAsState(initial = Ok(false))
+
+  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
   val primaryContainer = VLRTheme.colorScheme.surface
   val systemUiController = rememberSystemUiController()
@@ -71,11 +84,14 @@ fun MatchOverview(viewModel: VlrViewModel) {
             MatchOverviewContainer(
               modifier,
               list = StableHolder(list),
-              onClick = { id -> viewModel.action.match(id) }
+              swipeRefresh,
+              updateState,
+              onClick = { id -> viewModel.action.match(id) },
+              triggerRefresh = { triggerRefresh = triggerRefresh.not() }
             )
           }
         }
-        .onWaiting { LinearProgressIndicator(modifier) }
+        .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
         .onFail { Text(text = message()) }
     }
   }
@@ -87,7 +103,10 @@ const val MAX_SHARABLE_ITEMS = 6
 fun MatchOverviewContainer(
   modifier: Modifier = Modifier,
   list: StableHolder<List<MatchPreviewInfo>>,
-  onClick: (String) -> Unit
+  swipeRefresh: SwipeRefreshState,
+  updateState: Result<Boolean, Throwable?>,
+  onClick: (String) -> Unit,
+  triggerRefresh: () -> Unit
 ) {
   val pagerState = rememberPagerState()
   val scope = rememberCoroutineScope()
@@ -119,105 +138,56 @@ fun MatchOverviewContainer(
       }
     }
 
-  Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-    AnimatedVisibility(visible = shareState) {
-      SharingAppBar(
-        modifier = modifier,
-        items = shareMatchList,
-        shareMode = {
-          shareState = it
-          shareMatchList.clear()
-        },
-        shareConfirm = { shareDialog = true }
-      )
-    }
-
-    TabRow(
-      selectedTabIndex = pagerState.currentPage,
-      indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
+  SwipeRefresh(state = swipeRefresh, onRefresh = triggerRefresh, indicator = { _, _ -> }) {
+    Column(
+      modifier = modifier.fillMaxSize().animateContentSize(),
+      verticalArrangement = Arrangement.Top
     ) {
-      tabs.forEachIndexed { index, title ->
-        Tab(
-          selected = pagerState.currentPage == index,
-          onClick = { scope.launch { pagerState.scrollToPage(index) } }
-        ) { Text(text = title, modifier = modifier.padding(Local16DPPadding.current)) }
+      if (updateState.get() == true || swipeRefresh.isSwipeInProgress)
+        LinearProgressIndicator(
+          modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
+        )
+      updateState.getError()?.let {
+        ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
       }
-    }
+      AnimatedVisibility(visible = shareState) {
+        SharingAppBar(
+          modifier = modifier,
+          items = shareMatchList,
+          shareMode = {
+            shareState = it
+            shareMatchList.clear()
+          },
+          shareConfirm = { shareDialog = true }
+        )
+      }
 
-    HorizontalPager(count = tabs.size, state = pagerState, modifier = modifier.fillMaxSize()) {
-      tabPosition ->
-      when (tabPosition) {
-        0 -> {
-          if (ongoing.isEmpty()) {
-            NoMatchUI()
-          } else {
-            val lazyListState = rememberLazyListState()
-            LazyColumn(
-              modifier.fillMaxSize(),
-              verticalArrangement = Arrangement.Top,
-              state = lazyListState
-            ) {
-              items(ongoing, key = { item -> item.id }) {
-                MatchOverviewPreview(
-                  matchPreviewInfo = it,
-                  shareMode = shareState,
-                  isSelected = it in shareMatchList,
-                  onAction = { longPress, match ->
-                    if (longPress) shareState = true // If long press enable share bar
-                    when {
-                      shareState && shareMatchList.contains(match) -> {
-                        // If in share mode &
-                        // If match is already in the list and is being clicked again, remove the
-                        // item
-                        shareMatchList.remove(match)
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                      }
-                      shareState &&
-                        !shareMatchList.contains(match) &&
-                        shareMatchList.size < MAX_SHARABLE_ITEMS -> {
-                        // If in share mode &
-                        // If list does not have 6 items and if the clicked icon is not already in
-                        // the list
-                        shareMatchList.add(match)
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                      }
-                      !shareState -> onClick(match.id) // Its a normal click, navigate to the action
-                    }
-                  }
-                )
-              }
-            }
-          }
+      TabRow(
+        selectedTabIndex = pagerState.currentPage,
+        indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
+      ) {
+        tabs.forEachIndexed { index, title ->
+          Tab(
+            selected = pagerState.currentPage == index,
+            onClick = { scope.launch { pagerState.scrollToPage(index) } }
+          ) { Text(text = title, modifier = modifier.padding(Local16DPPadding.current)) }
         }
-        1 -> {
-          if (upcoming.isEmpty()) {
-            NoMatchUI()
-          } else {
-            val lazyListState = rememberLazyListState()
-            val groupedUpcomingMatches =
-              remember(upcoming) { upcoming.groupBy { it.time?.readableDate } }
-            LazyColumn(
-              modifier.fillMaxSize(),
-              verticalArrangement = Arrangement.Top,
-              state = lazyListState
-            ) {
-              groupedUpcomingMatches.forEach { (date, match)
-                -> // Group heading based on date for sticky header
-                stickyHeader {
-                  date?.let {
-                    Column(
-                      modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer)
-                    ) {
-                      Text(
-                        it,
-                        modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
-                        textAlign = TextAlign.Center,
-                        color = VLRTheme.colorScheme.primary
-                      )
-                    }
-                  }
-                }
-                items(match, key = { item -> item.id }) {
+      }
+
+      HorizontalPager(count = tabs.size, state = pagerState, modifier = modifier.fillMaxSize()) {
+        tabPosition ->
+        when (tabPosition) {
+          0 -> {
+            if (ongoing.isEmpty()) {
+              NoMatchUI()
+            } else {
+              val lazyListState = rememberLazyListState()
+              LazyColumn(
+                modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                state = lazyListState
+              ) {
+                items(ongoing, key = { item -> item.id }) {
                   MatchOverviewPreview(
                     matchPreviewInfo = it,
                     shareMode = shareState,
@@ -250,64 +220,130 @@ fun MatchOverviewContainer(
               }
             }
           }
-        }
-        else -> {
-          if (completed.isEmpty()) {
-            NoMatchUI(modifier = modifier)
-          } else {
-            val lazyListState = rememberLazyListState()
-            val groupedCompletedMatches =
-              remember(completed) { completed.groupBy { it.time?.readableDate } }
-            LazyColumn(
-              modifier.fillMaxSize(),
-              verticalArrangement = Arrangement.Top,
-              state = lazyListState
-            ) {
-              groupedCompletedMatches.forEach { (date, match)
-                -> // Group heading based on date for sticky header
-                stickyHeader {
-                  date?.let {
-                    Column(
-                      modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer),
-                    ) {
-                      Text(
-                        it,
-                        modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
-                        textAlign = TextAlign.Center,
-                        color = VLRTheme.colorScheme.primary
-                      )
-                    }
-                  }
-                }
-                items(match, key = { item -> item.id }) {
-                  MatchOverviewPreview(
-                    matchPreviewInfo = it,
-                    shareMode = shareState,
-                    isSelected = it in shareMatchList,
-                    onAction = { longPress, match ->
-                      if (longPress) shareState = true // If long press enable share bar
-                      when {
-                        shareState && shareMatchList.contains(match) -> {
-                          // If in share mode &
-                          // If match is already in the list and is being clicked again, remove the
-                          // item
-                          shareMatchList.remove(match)
-                          haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        }
-                        shareState &&
-                          !shareMatchList.contains(match) &&
-                          shareMatchList.size < MAX_SHARABLE_ITEMS -> {
-                          // If in share mode &
-                          // If list does not have 6 items and if the clicked icon is not already in
-                          // the list
-                          shareMatchList.add(match)
-                          haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        }
-                        !shareState ->
-                          onClick(match.id) // Its a normal click, navigate to the action
+          1 -> {
+            if (upcoming.isEmpty()) {
+              NoMatchUI()
+            } else {
+              val lazyListState = rememberLazyListState()
+              val groupedUpcomingMatches =
+                remember(upcoming) { upcoming.groupBy { it.time?.readableDate } }
+              LazyColumn(
+                modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                state = lazyListState
+              ) {
+                groupedUpcomingMatches.forEach { (date, match)
+                  -> // Group heading based on date for sticky header
+                  stickyHeader {
+                    date?.let {
+                      Column(
+                        modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer)
+                      ) {
+                        Text(
+                          it,
+                          modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
+                          textAlign = TextAlign.Center,
+                          color = VLRTheme.colorScheme.primary
+                        )
                       }
                     }
-                  )
+                  }
+                  items(match, key = { item -> item.id }) {
+                    MatchOverviewPreview(
+                      matchPreviewInfo = it,
+                      shareMode = shareState,
+                      isSelected = it in shareMatchList,
+                      onAction = { longPress, match ->
+                        if (longPress) shareState = true // If long press enable share bar
+                        when {
+                          shareState && shareMatchList.contains(match) -> {
+                            // If in share mode &
+                            // If match is already in the list and is being clicked again, remove
+                            // the
+                            // item
+                            shareMatchList.remove(match)
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                          }
+                          shareState &&
+                            !shareMatchList.contains(match) &&
+                            shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                            // If in share mode &
+                            // If list does not have 6 items and if the clicked icon is not already
+                            // in
+                            // the list
+                            shareMatchList.add(match)
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                          }
+                          !shareState ->
+                            onClick(match.id) // Its a normal click, navigate to the action
+                        }
+                      }
+                    )
+                  }
+                }
+              }
+            }
+          }
+          else -> {
+            if (completed.isEmpty()) {
+              NoMatchUI(modifier = modifier)
+            } else {
+              val lazyListState = rememberLazyListState()
+              val groupedCompletedMatches =
+                remember(completed) { completed.groupBy { it.time?.readableDate } }
+              LazyColumn(
+                modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                state = lazyListState
+              ) {
+                groupedCompletedMatches.forEach { (date, match)
+                  -> // Group heading based on date for sticky header
+                  stickyHeader {
+                    date?.let {
+                      Column(
+                        modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer),
+                      ) {
+                        Text(
+                          it,
+                          modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
+                          textAlign = TextAlign.Center,
+                          color = VLRTheme.colorScheme.primary
+                        )
+                      }
+                    }
+                  }
+                  items(match, key = { item -> item.id }) {
+                    MatchOverviewPreview(
+                      matchPreviewInfo = it,
+                      shareMode = shareState,
+                      isSelected = it in shareMatchList,
+                      onAction = { longPress, match ->
+                        if (longPress) shareState = true // If long press enable share bar
+                        when {
+                          shareState && shareMatchList.contains(match) -> {
+                            // If in share mode &
+                            // If match is already in the list and is being clicked again, remove
+                            // the
+                            // item
+                            shareMatchList.remove(match)
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                          }
+                          shareState &&
+                            !shareMatchList.contains(match) &&
+                            shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                            // If in share mode &
+                            // If list does not have 6 items and if the clicked icon is not already
+                            // in
+                            // the list
+                            shareMatchList.add(match)
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                          }
+                          !shareState ->
+                            onClick(match.id) // Its a normal click, navigate to the action
+                        }
+                      }
+                    )
+                  }
                 }
               }
             }
