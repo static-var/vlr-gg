@@ -1,0 +1,1802 @@
+[
+    {
+        "id": 800,
+        "title": "Champions Tour North America Stage 2: Challengers",
+        "status": "ongoing",
+        "prize": "${'$'}200,000",
+        "dates": "Apr 28—Jun 27",
+        "location": "us",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 984,
+        "title": "Champions Tour EMEA Stage 2: Challengers",
+        "status": "ongoing",
+        "prize": "${'$'}216,946",
+        "dates": "May 13—Jun 27",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 911,
+        "title": "Champions Tour Brazil Stage 2: Challengers",
+        "status": "ongoing",
+        "prize": "${'$'}79,222",
+        "dates": "Mar 8—Jun 27",
+        "location": "br",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 1013,
+        "title": "Champions Tour Japan Stage 2: Challengers Playoffs",
+        "status": "ongoing",
+        "prize": "${'$'}15,465",
+        "dates": "Jun 10—26",
+        "location": "jp",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 998,
+        "title": "Champions Tour Korea Stage 2: Challengers",
+        "status": "ongoing",
+        "prize": "${'$'}82,940",
+        "dates": "May 6—Jun 26",
+        "location": "kr",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 1086,
+        "title": "Champions Tour Latin America Stage 2: Playoffs",
+        "status": "ongoing",
+        "prize": "${'$'}50,000",
+        "dates": "Jun 23—27",
+        "location": "ar",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 1063,
+        "title": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "status": "ongoing",
+        "prize": "${'$'}150,000",
+        "dates": "Jun 9—26",
+        "location": "un",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 981,
+        "title": "Valorant Regional League Turkey: Birlik - Stage 2",
+        "status": "ongoing",
+        "prize": "${'$'}17,436",
+        "dates": "Apr 25—Jun 2",
+        "location": "tr",
+        "img": "https://owcdn.net/img/61efdb5c9d837.png"
+    },
+    {
+        "id": 985,
+        "title": "Valorant Regional League Northern Europe: Polaris - Stage 2",
+        "status": "ongoing",
+        "prize": "${'$'}21,694",
+        "dates": "Apr 27—Jul 3",
+        "location": "eu",
+        "img": "https://owcdn.net/img/61dc2b3c4b2e9.png"
+    },
+    {
+        "id": 1002,
+        "title": "Valorant Regional League East: Surge - Stage 2",
+        "status": "ongoing",
+        "prize": "${'$'}21,242",
+        "dates": "May 12—Jul 4",
+        "location": "eu",
+        "img": "https://owcdn.net/img/61efdb2450b31.png"
+    },
+    {
+        "id": 993,
+        "title": "Valorant Regional League Spain: Rising - Stage 2",
+        "status": "ongoing",
+        "prize": "TBD",
+        "dates": "May 11—Jul 4",
+        "location": "es",
+        "img": "https://owcdn.net/img/61efdbf019340.png"
+    },
+    {
+        "id": 987,
+        "title": "Valorant Regional League DACH: Evolution - Stage 2",
+        "status": "ongoing",
+        "prize": "${'$'}26,378",
+        "dates": "May 9—Jul 3",
+        "location": "eu",
+        "img": "https://owcdn.net/img/61efdb456ffec.png"
+    },
+    {
+        "id": 986,
+        "title": "Valorant Regional League France: Revolution - Stage 2",
+        "status": "ongoing",
+        "prize": "TBD",
+        "dates": "May 9—TBD",
+        "location": "fr",
+        "img": "https://owcdn.net/img/61efdbfeb2344.png"
+    },
+    {
+        "id": 1072,
+        "title": "Valorant East: United - Stage 2 - Monthly Cup #2",
+        "status": "ongoing",
+        "prize": "${'$'}1,000",
+        "dates": "Jun 25—27",
+        "location": "eu",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 1107,
+        "title": "NorQuest Esports Series Grand Finale",
+        "status": "ongoing",
+        "prize": "${'$'}3,103",
+        "dates": "Jun 26",
+        "location": "ca",
+        "img": "https://owcdn.net/img/62b79ce59d3cb.png"
+    },
+    {
+        "id": 1095,
+        "title": "LEAGUES.GG - BEACON Split 1",
+        "status": "ongoing",
+        "prize": "${'$'}1,566",
+        "dates": "Jun 25—27",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62ad034975701.png"
+    },
+    {
+        "id": 866,
+        "title": "Champions Tour Game Changers Asia Pacific: Open Overtime",
+        "status": "ongoing",
+        "prize": "${'$'}0",
+        "dates": "Jun 25—Jul 3",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 1102,
+        "title": "Game Changers Academy 2022 - June",
+        "status": "ongoing",
+        "prize": "${'$'}1,500",
+        "dates": "Jun 25—27",
+        "location": "us",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 1103,
+        "title": "Intel Arabian Cup Playground 2022",
+        "status": "ongoing",
+        "prize": "${'$'}15,000",
+        "dates": "Jun 24—Jul 8",
+        "location": "un",
+        "img": "https://owcdn.net/img/62b554d65b9d5.png"
+    },
+    {
+        "id": 1106,
+        "title": "Ultimasters AOC #3",
+        "status": "ongoing",
+        "prize": "${'$'}3,814",
+        "dates": "Jun 23—Jul 2",
+        "location": "br",
+        "img": "https://owcdn.net/img/5ff642cc02121.png"
+    },
+    {
+        "id": 982,
+        "title": "Campeonato de Elite - Stage 1",
+        "status": "ongoing",
+        "prize": "${'$'}10,500",
+        "dates": "Apr 16—Jul 11",
+        "location": "pt",
+        "img": "https://owcdn.net/img/6282b8b2b7292.png"
+    },
+    {
+        "id": 1100,
+        "title": "Project Queens",
+        "status": "ongoing",
+        "prize": "${'$'}1,566",
+        "dates": "Jun 19—Jul 2",
+        "location": "de",
+        "img": "https://owcdn.net/img/62b54ad1b9adf.png"
+    },
+    {
+        "id": 1096,
+        "title": "Astral Clash 2022",
+        "status": "ongoing",
+        "prize": "${'$'}11,900",
+        "dates": "Jun 17—Aug 7",
+        "location": "us",
+        "img": "https://owcdn.net/img/62aeb83f9e194.png"
+    },
+    {
+        "id": 1094,
+        "title": "The Esports Club Community Cup",
+        "status": "ongoing",
+        "prize": "${'$'}1,923",
+        "dates": "Jun 17—25",
+        "location": "in",
+        "img": "https://owcdn.net/img/62aaa1861b409.png"
+    },
+    {
+        "id": 995,
+        "title": "Valorant Regional League MENA: Resilience - Stage 2",
+        "status": "ongoing",
+        "prize": "${'$'}30,000",
+        "dates": "Apr 29—Jul 3",
+        "location": "un",
+        "img": "https://owcdn.net/img/61efdc1e26119.png"
+    },
+    {
+        "id": 927,
+        "title": "Game Changers LATAM: Open 3",
+        "status": "ongoing",
+        "prize": "${'$'}4,000",
+        "dates": "Jun 14—19",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 1064,
+        "title": "MEL Premiership S3",
+        "status": "ongoing",
+        "prize": "${'$'}10,000",
+        "dates": "Jun 9—Aug 7",
+        "location": "us",
+        "img": "https://owcdn.net/img/6297ddcb5ad8f.png"
+    },
+    {
+        "id": 943,
+        "title": "Knights Circuit Championship",
+        "status": "upcoming",
+        "prize": "${'$'}15,000",
+        "dates": "Jun 28—30",
+        "location": "us",
+        "img": "https://owcdn.net/img/62b1d9a02cb48.png"
+    },
+    {
+        "id": 1105,
+        "title": "FGC VALORANT Invitational 2022: Act 3",
+        "status": "upcoming",
+        "prize": "${'$'}0",
+        "dates": "Jun 28—Jul 9",
+        "location": "cn",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+        "id": 1104,
+        "title": "Valorant Balkan League - Season 1",
+        "status": "upcoming",
+        "prize": "${'$'}2,000",
+        "dates": "Jun 30—Jul 10",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62b556f9b13ad.png"
+    },
+    {
+        "id": 1085,
+        "title": "Champions Tour LATAM/BR Stage 2: Last Chance Qualifier",
+        "status": "upcoming",
+        "prize": "TBD",
+        "dates": "Jun 30",
+        "location": "ar",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 802,
+        "title": "Champions Tour Game Changers Series II: North America",
+        "status": "upcoming",
+        "prize": "TBD",
+        "dates": "Jun 30—Jul 11",
+        "location": "us",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 1081,
+        "title": "Project V: Split 2 Finals",
+        "status": "upcoming",
+        "prize": "${'$'}10,714",
+        "dates": "Jul 1—3",
+        "location": "de",
+        "img": "https://owcdn.net/img/62a168e571a1b.png"
+    },
+    {
+        "id": 1082,
+        "title": "Agents Series 2022 - Split 2",
+        "status": "upcoming",
+        "prize": "TBD",
+        "dates": "Jul 2",
+        "location": "it",
+        "img": "https://owcdn.net/img/6170371ea5153.png"
+    },
+    {
+        "id": 1074,
+        "title": "Valorant East: United - Stage 2 - Last Chance Qualifier",
+        "status": "upcoming",
+        "prize": "${'$'}0",
+        "dates": "Jul 2—4",
+        "location": "eu",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 1089,
+        "title": "Valorant Open Tour France 2022: Stage 5",
+        "status": "upcoming",
+        "prize": "${'$'}1,607",
+        "dates": "Jul 3—4",
+        "location": "fr",
+        "img": "https://owcdn.net/img/60918cde5ed00.png"
+    },
+    {
+        "id": 1041,
+        "title": "Nerd Street Summer Championship 2022 - Online Qualifier",
+        "status": "upcoming",
+        "prize": "${'$'}5,000",
+        "dates": "Jul 6—8",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1087,
+        "title": "MEDUSA Series",
+        "status": "upcoming",
+        "prize": "${'$'}2,100",
+        "dates": "Jul 6—9",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62a4ec942d1f7.png"
+    },
+    {
+        "id": 1069,
+        "title": "Valorant Regional League DACH: Relegation - Stage 2",
+        "status": "upcoming",
+        "prize": "${'$'}0",
+        "dates": "Jul 7—TBD",
+        "location": "eu",
+        "img": "https://owcdn.net/img/61efdb456ffec.png"
+    },
+    {
+        "id": 1098,
+        "title": "EPIC.LAN #36 - BEACON Split #1",
+        "status": "upcoming",
+        "prize": "${'$'}1,519",
+        "dates": "Jul 8—11",
+        "location": "gb",
+        "img": "https://owcdn.net/img/5f736e0e08c1d.png"
+    },
+    {
+        "id": 1073,
+        "title": "Valorant East: United - Stage 2 - Season Finals",
+        "status": "upcoming",
+        "prize": "${'$'}7,500",
+        "dates": "Jul 8—10",
+        "location": "pl",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 1043,
+        "title": "Nerd Street Summer Championship 2022 - Fullerton LAN #2",
+        "status": "upcoming",
+        "prize": "${'$'}3,500",
+        "dates": "Jul 9—11",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1014,
+        "title": "Valorant Champions Tour Stage 2: Masters Copenhagen",
+        "status": "upcoming",
+        "prize": "TBD",
+        "dates": "Jul 10—24",
+        "location": "dk",
+        "img": "https://owcdn.net/img/603bfd7bf3f54.png"
+    },
+    {
+        "id": 1099,
+        "title": "Guild Academy - BEACON Split 1",
+        "status": "upcoming",
+        "prize": "${'$'}1,566",
+        "dates": "Jul 11—18",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62affd8b7138c.png"
+    },
+    {
+        "id": 1044,
+        "title": "Nerd Street Summer Championship 2022 - Open 12",
+        "status": "upcoming",
+        "prize": "${'$'}3,500",
+        "dates": "Jul 12—14",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1045,
+        "title": "Nerd Street Summer Championship 2022 - Open 13",
+        "status": "upcoming",
+        "prize": "${'$'}3,500",
+        "dates": "Jul 19—21",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1046,
+        "title": "Nerd Street Summer Championship 2022 - Brentwood LAN #2",
+        "status": "upcoming",
+        "prize": "${'$'}3,500",
+        "dates": "Jul 23—25",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1101,
+        "title": "Valorant Regional Leagues 2022: Finals",
+        "status": "upcoming",
+        "prize": "${'$'}156,667",
+        "dates": "Jul 25—Aug 8",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62b2a4d05ebb1.png"
+    },
+    {
+        "id": 1047,
+        "title": "Nerd Street Summer Championship 2022 - Open 14",
+        "status": "upcoming",
+        "prize": "${'$'}3,500",
+        "dates": "Jul 26—28",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1084,
+        "title": "Champions Tour Asia-Pacific: Last Chance Qualifier",
+        "status": "upcoming",
+        "prize": "TBD",
+        "dates": "Aug 1—7",
+        "location": "un",
+        "img": "https://owcdn.net/img/5f8e73ec18ba4.png"
+    },
+    {
+        "id": 1083,
+        "title": "Champions Tour East Asia: Last Chance Qualifier",
+        "status": "upcoming",
+        "prize": "${'$'}0",
+        "dates": "Aug 8—14",
+        "location": "un",
+        "img": "https://owcdn.net/img/5f8e73ec18ba4.png"
+    },
+    {
+        "id": 867,
+        "title": "Champions Tour Game Changers Asia Pacific: Last Chance",
+        "status": "upcoming",
+        "prize": "${'$'}5,000",
+        "dates": "Aug 16—20",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 1048,
+        "title": "Nerd Street Summer Championship 2022 - Last Chance Qualifier",
+        "status": "upcoming",
+        "prize": "${'$'}0",
+        "dates": "Aug 18—19",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 969,
+        "title": "Nerd Street Summer Championship 2022 - Finals",
+        "status": "upcoming",
+        "prize": "${'$'}50,000",
+        "dates": "Aug 20—22",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1015,
+        "title": "Valorant Champions 2022",
+        "status": "upcoming",
+        "prize": "TBD",
+        "dates": "Sep 2—19",
+        "location": "tr",
+        "img": "https://owcdn.net/img/60865adcb127b.png"
+    },
+    {
+        "id": 868,
+        "title": "Champions Tour Game Changers Asia Pacific: Elite",
+        "status": "upcoming",
+        "prize": "${'$'}35,000",
+        "dates": "Oct 1—9",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 803,
+        "title": "Champions Tour Game Changers Series III: North America",
+        "status": "upcoming",
+        "prize": "TBD",
+        "dates": "Oct 6—17",
+        "location": "us",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 1092,
+        "title": "Champions Tour Game Changers Championship: Berlin",
+        "status": "upcoming",
+        "prize": "${'$'}0",
+        "dates": "Nov 15—21",
+        "location": "de",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 1075,
+        "title": "Liga Gamers Club - Série A: Junho",
+        "status": "completed",
+        "prize": "${'$'}3,545",
+        "dates": "Jun 7—Jul 2",
+        "location": "br",
+        "img": "https://owcdn.net/img/6254aed213373.png"
+    },
+    {
+        "id": 1040,
+        "title": "Nerd Street Summer Championship 2022 - Bakersfield LAN",
+        "status": "completed",
+        "prize": "${'$'}1,500",
+        "dates": "Jun 25—27",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1093,
+        "title": "Rebels #3",
+        "status": "completed",
+        "prize": "${'$'}2,328",
+        "dates": "Jun 15—24",
+        "location": "tr",
+        "img": "https://owcdn.net/img/625dd9d0a5826.png"
+    },
+    {
+        "id": 1062,
+        "title": "Pizza Hut Champions Cup",
+        "status": "completed",
+        "prize": "${'$'}15,000",
+        "dates": "Jun 15—24",
+        "location": "un",
+        "img": "https://owcdn.net/img/629592d3318bb.png"
+    },
+    {
+        "id": 1039,
+        "title": "Nerd Street Summer Championship 2022 - Open 11",
+        "status": "completed",
+        "prize": "${'$'}2,500",
+        "dates": "Jun 21—22",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1000,
+        "title": "Circuito Tormenta: Liga Radiante 2022 S2",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "May 9—Jun 22",
+        "location": "es",
+        "img": "https://owcdn.net/img/62220ea912e96.png"
+    },
+    {
+        "id": 1071,
+        "title": "Valorant East: United - Stage 2 - Weekly Cup #6",
+        "status": "completed",
+        "prize": "${'$'}780",
+        "dates": "Jun 18—20",
+        "location": "eu",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 1078,
+        "title": "Esportsmaker Spike Ladies #3",
+        "status": "completed",
+        "prize": "${'$'}3,113",
+        "dates": "Jun 17—20",
+        "location": "br",
+        "img": "https://owcdn.net/img/62abe9d66a358.png"
+    },
+    {
+        "id": 1097,
+        "title": "DreamHack Summer 2022 - BEACON Split 1",
+        "status": "completed",
+        "prize": "${'$'}1,966",
+        "dates": "Jun 19",
+        "location": "se",
+        "img": "https://owcdn.net/img/62afbfc7baf18.png"
+    },
+    {
+        "id": 1007,
+        "title": "Project V: A1 eSports VALORANT Cup",
+        "status": "completed",
+        "prize": "${'$'}5,310",
+        "dates": "May 10—Jun 19",
+        "location": "eu",
+        "img": "https://owcdn.net/img/627972c55c3fc.png"
+    },
+    {
+        "id": 1077,
+        "title": "Project V: Weekly Tournament 6",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "Jun 16—17",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62930d7549b15.png"
+    },
+    {
+        "id": 1038,
+        "title": "Nerd Street Summer Championship 2022 - Open 10",
+        "status": "completed",
+        "prize": "${'$'}3,500",
+        "dates": "Jun 14—16",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1080,
+        "title": "Sakura Cup #7",
+        "status": "completed",
+        "prize": "${'$'}2,000",
+        "dates": "Jun 14",
+        "location": "us",
+        "img": "https://owcdn.net/img/609ebe183836b.png"
+    },
+    {
+        "id": 1037,
+        "title": "Nerd Street Summer Championship 2022 - Georgetown LAN",
+        "status": "completed",
+        "prize": "${'$'}3,500",
+        "dates": "Jun 11—13",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1079,
+        "title": "The Goose House - BEACON Split 1",
+        "status": "completed",
+        "prize": "${'$'}1,597",
+        "dates": "Jun 11—13",
+        "location": "eu",
+        "img": "https://owcdn.net/img/629ed5355b083.png"
+    },
+    {
+        "id": 1090,
+        "title": "Jack Link's Wild Side Rumble",
+        "status": "completed",
+        "prize": "${'$'}3,907",
+        "dates": "Jun 12—13",
+        "location": "us",
+        "img": "https://owcdn.net/img/62a6650cd358e.png"
+    },
+    {
+        "id": 1070,
+        "title": "Valorant East: United - Stage 2 - Weekly Cup #5",
+        "status": "completed",
+        "prize": "${'$'}780",
+        "dates": "Jun 11—13",
+        "location": "eu",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 1061,
+        "title": "Project V: Clutch Kings #2",
+        "status": "completed",
+        "prize": "${'$'}5,345",
+        "dates": "Jun 5—13",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6295834068038.png"
+    },
+    {
+        "id": 988,
+        "title": "Champions Tour Latin America South Stage 2: Challengers",
+        "status": "completed",
+        "prize": "${'$'}15,000",
+        "dates": "Apr 29—Jun 11",
+        "location": "un",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 983,
+        "title": "Champions Tour Latin America North Stage 2: Challengers",
+        "status": "completed",
+        "prize": "${'$'}15,000",
+        "dates": "Apr 26—Jun 11",
+        "location": "un",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 999,
+        "title": "Agents Series 2022 - Split 1",
+        "status": "completed",
+        "prize": "${'$'}5,265",
+        "dates": "Apr 20—Jun 10",
+        "location": "it",
+        "img": "https://owcdn.net/img/6170371ea5153.png"
+    },
+    {
+        "id": 1025,
+        "title": "FGC VALORANT Invitational 2022: Act 2",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "May 21—Jun 10",
+        "location": "cn",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+        "id": 940,
+        "title": "Knights Circuit Weekly #5",
+        "status": "completed",
+        "prize": "${'$'}2,000",
+        "dates": "Jun 9—10",
+        "location": "us",
+        "img": "https://owcdn.net/img/623ec9cde7772.png"
+    },
+    {
+        "id": 1076,
+        "title": "Project V: Weekly Tournament 5",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "Jun 9—10",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62930d7549b15.png"
+    },
+    {
+        "id": 1036,
+        "title": "Nerd Street Summer Championship 2022 - Open 9",
+        "status": "completed",
+        "prize": "${'$'}2,500",
+        "dates": "Jun 7—8",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1068,
+        "title": "Project V: BLINDED RUMATHRAS Valorant TOURNEY",
+        "status": "completed",
+        "prize": "${'$'}1,065",
+        "dates": "Jun 4—7",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62930d7549b15.png"
+    },
+    {
+        "id": 1035,
+        "title": "Nerd Street Summer Championship 2022 - Chicago Scrims LAN",
+        "status": "completed",
+        "prize": "${'$'}10,000",
+        "dates": "Jun 4—6",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1066,
+        "title": "Valorant East: United - Stage 2 - Weekly Cup #4",
+        "status": "completed",
+        "prize": "${'$'}780",
+        "dates": "Jun 4—6",
+        "location": "eu",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 865,
+        "title": "Champions Tour Game Changers Asia Pacific: Open 4",
+        "status": "completed",
+        "prize": "${'$'}5,000",
+        "dates": "May 28—Jun 5",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 996,
+        "title": "Skyesports Champions Series",
+        "status": "completed",
+        "prize": "${'$'}28,500",
+        "dates": "May 9—Jun 5",
+        "location": "in",
+        "img": "https://owcdn.net/img/6278abe935719.png"
+    },
+    {
+        "id": 1012,
+        "title": "Champions Tour Japan Stage 2: Challengers Week 2",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "May 25—Jun 5",
+        "location": "jp",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 1067,
+        "title": "Fragleague Cup #7 - Nordic",
+        "status": "completed",
+        "prize": "${'$'}2,679",
+        "dates": "Jun 4—5",
+        "location": "eu",
+        "img": "https://owcdn.net/img/60d2def036f6a.png"
+    },
+    {
+        "id": 1051,
+        "title": "Project V: SEL Ignition Cup",
+        "status": "completed",
+        "prize": "${'$'}3,207",
+        "dates": "May 28—Jun 5",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62906cdde3943.png"
+    },
+    {
+        "id": 1058,
+        "title": "Gamdias OneTap 3",
+        "status": "completed",
+        "prize": "${'$'}575",
+        "dates": "Jun 4",
+        "location": "ph",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+        "id": 939,
+        "title": "Knights Circuit Weekly #4",
+        "status": "completed",
+        "prize": "${'$'}2,000",
+        "dates": "Jun 2—3",
+        "location": "us",
+        "img": "https://owcdn.net/img/62350c2c00222.png"
+    },
+    {
+        "id": 1065,
+        "title": "Project V: Weekly Tournament 4",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "Jun 2—3",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62930d7549b15.png"
+    },
+    {
+        "id": 1009,
+        "title": "Liga Gamers Club - Série A: Maio",
+        "status": "completed",
+        "prize": "${'$'}3,319",
+        "dates": "May 9—Jun 2",
+        "location": "br",
+        "img": "https://owcdn.net/img/6254aed213373.png"
+    },
+    {
+        "id": 1034,
+        "title": "Nerd Street Summer Championship 2022 - Open 8",
+        "status": "completed",
+        "prize": "${'$'}2,500",
+        "dates": "May 31—Jun 1",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1052,
+        "title": "Game Changers Academy 2022 - May",
+        "status": "completed",
+        "prize": "${'$'}1,500",
+        "dates": "May 28—30",
+        "location": "us",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 1057,
+        "title": "Kotex Torneo Femenino",
+        "status": "completed",
+        "prize": "${'$'}840",
+        "dates": "May 23—30",
+        "location": "un",
+        "img": "https://owcdn.net/img/629307526919f.png"
+    },
+    {
+        "id": 1031,
+        "title": "Valorant East: United - Stage 2 - Monthly Cup #1",
+        "status": "completed",
+        "prize": "${'$'}1,000",
+        "dates": "May 28—30",
+        "location": "eu",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 1056,
+        "title": "Valorant Open Tour France 2022: Stage 4",
+        "status": "completed",
+        "prize": "${'$'}1,569",
+        "dates": "May 29—30",
+        "location": "fr",
+        "img": "https://owcdn.net/img/60918cde5ed00.png"
+    },
+    {
+        "id": 882,
+        "title": "Champions Tour Philippines Stage 2: Challengers",
+        "status": "completed",
+        "prize": "${'$'}30,000",
+        "dates": "Apr 30—May 29",
+        "location": "ph",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 991,
+        "title": "Champions Tour Vietnam Stage 2: Challengers",
+        "status": "completed",
+        "prize": "${'$'}40,760",
+        "dates": "Apr 29—May 29",
+        "location": "vn",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 965,
+        "title": "Champions Tour Indonesia Stage 2: Challengers",
+        "status": "completed",
+        "prize": "${'$'}25,000",
+        "dates": "Apr 27—May 29",
+        "location": "id",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 977,
+        "title": "Champions Tour Hong Kong & Taiwan Stage 2: Challengers",
+        "status": "completed",
+        "prize": "${'$'}25,000",
+        "dates": "Apr 30—May 29",
+        "location": "tw",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 972,
+        "title": "Champions Tour Thailand Stage 2: Challengers",
+        "status": "completed",
+        "prize": "${'$'}24,774",
+        "dates": "Apr 29—May 29",
+        "location": "th",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 1029,
+        "title": "Valorant Balkan League #4",
+        "status": "completed",
+        "prize": "${'$'}1,000",
+        "dates": "May 22—29",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6289bd51b5c91.png"
+    },
+    {
+        "id": 963,
+        "title": "Champions Tour Malaysia & Singapore Stage 2: Challengers",
+        "status": "completed",
+        "prize": "${'$'}23,823",
+        "dates": "Apr 30—May 29",
+        "location": "my",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 1032,
+        "title": "ROG RUSH Invitational",
+        "status": "completed",
+        "prize": "${'$'}2,000",
+        "dates": "May 22—29",
+        "location": "kh",
+        "img": "https://owcdn.net/img/628b0de94cace.png"
+    },
+    {
+        "id": 1050,
+        "title": "Project V: RUSH.GG - HOT VALORANT Future Cup #3",
+        "status": "completed",
+        "prize": "${'$'}526",
+        "dates": "May 27—28",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6277410177db2.png"
+    },
+    {
+        "id": 942,
+        "title": "Knights Circuit Monthly #2",
+        "status": "completed",
+        "prize": "${'$'}5,000",
+        "dates": "May 26—27",
+        "location": "us",
+        "img": "https://owcdn.net/img/6215ce3984a17.png"
+    },
+    {
+        "id": 1005,
+        "title": "Rebels #2",
+        "status": "completed",
+        "prize": "${'$'}1,696",
+        "dates": "May 18—27",
+        "location": "tr",
+        "img": "https://owcdn.net/img/625dd9d0a5826.png"
+    },
+    {
+        "id": 1049,
+        "title": "Project V: Weekly Tournament 3",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "May 26—27",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62930d7549b15.png"
+    },
+    {
+        "id": 1026,
+        "title": "XP Valorant Open Series",
+        "status": "completed",
+        "prize": "${'$'}1,407",
+        "dates": "May 18—25",
+        "location": "au",
+        "img": "https://owcdn.net/img/62872cc7bf33f.png"
+    },
+    {
+        "id": 1033,
+        "title": "Nerd Street Summer Championship 2022 - Open 7",
+        "status": "completed",
+        "prize": "${'$'}2,500",
+        "dates": "May 24—25",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1010,
+        "title": "FEL Valorant Cup #4",
+        "status": "completed",
+        "prize": "${'$'}2,105",
+        "dates": "May 12—25",
+        "location": "fi",
+        "img": "https://owcdn.net/img/60218d1699e4f.png"
+    },
+    {
+        "id": 1028,
+        "title": "Nerd Street Summer Championship 2022 - North Brunswick LAN",
+        "status": "completed",
+        "prize": "${'$'}3,500",
+        "dates": "May 21—23",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1006,
+        "title": "Campeonato de Elite Cup - Stage 1",
+        "status": "completed",
+        "prize": "${'$'}2,627",
+        "dates": "May 14—23",
+        "location": "pt",
+        "img": "https://owcdn.net/img/6269d00b47f88.png"
+    },
+    {
+        "id": 1024,
+        "title": "Valorant East: United - Stage 2 - Weekly Cup #3",
+        "status": "completed",
+        "prize": "${'$'}780",
+        "dates": "May 20—23",
+        "location": "eu",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 1027,
+        "title": "Metafy Masters",
+        "status": "completed",
+        "prize": "${'$'}1,056",
+        "dates": "May 20—23",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62884787f41f2.png"
+    },
+    {
+        "id": 960,
+        "title": "Oceania Tour: Stage 2",
+        "status": "completed",
+        "prize": "${'$'}18,574",
+        "dates": "Apr 13—May 22",
+        "location": "au",
+        "img": "https://owcdn.net/img/61dd0b7c24e22.png"
+    },
+    {
+        "id": 1030,
+        "title": "Project V: RCADIA United - Spring 2022",
+        "status": "completed",
+        "prize": "${'$'}3,767",
+        "dates": "May 21—22",
+        "location": "de",
+        "img": "https://owcdn.net/img/6289c24553d38.png"
+    },
+    {
+        "id": 997,
+        "title": "Champions Tour Japan Stage 2: Challengers Week 1",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "May 11—22",
+        "location": "jp",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 938,
+        "title": "Knights Circuit Weekly #3",
+        "status": "completed",
+        "prize": "${'$'}2,000",
+        "dates": "May 19—20",
+        "location": "us",
+        "img": "https://owcdn.net/img/622be76a22688.png"
+    },
+    {
+        "id": 1023,
+        "title": "Project V: Weekly Tournament 2",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "May 19—20",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62930d7549b15.png"
+    },
+    {
+        "id": 1022,
+        "title": "Nerd Street Summer Championship 2022 - Open 6",
+        "status": "completed",
+        "prize": "${'$'}2,500",
+        "dates": "May 17—18",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 1020,
+        "title": "Nerd Street Summer Championship 2022 - Fullerton LAN #1",
+        "status": "completed",
+        "prize": "${'$'}10,000",
+        "dates": "May 14—16",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 973,
+        "title": "BoomTV Proving Grounds ${'$'}10k - April Anarchy",
+        "status": "completed",
+        "prize": "${'$'}10,500",
+        "dates": "Apr 23—May 16",
+        "location": "us",
+        "img": "https://owcdn.net/img/61378ef4a2159.png"
+    },
+    {
+        "id": 1019,
+        "title": "${'$'}2000 NYXL x BrookLAN - May Local",
+        "status": "completed",
+        "prize": "${'$'}2,000",
+        "dates": "May 14—16",
+        "location": "us",
+        "img": "https://owcdn.net/img/628022f70a1e3.png"
+    },
+    {
+        "id": 1018,
+        "title": "Valorant East: United - Stage 2 - Weekly Cup #2",
+        "status": "completed",
+        "prize": "${'$'}780",
+        "dates": "May 14—16",
+        "location": "eu",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 1021,
+        "title": "VALORANT @ LAN ETS 2022",
+        "status": "completed",
+        "prize": "${'$'}4,258",
+        "dates": "May 15",
+        "location": "ca",
+        "img": "https://owcdn.net/img/6281747ec2f04.png"
+    },
+    {
+        "id": 1011,
+        "title": "PLAYER1 SERIES: Hera #3",
+        "status": "completed",
+        "prize": "${'$'}1,946",
+        "dates": "May 11—15",
+        "location": "br",
+        "img": "https://owcdn.net/img/61d4db166aa6e.png"
+    },
+    {
+        "id": 1016,
+        "title": "Project V: RUSH.GG - HOT VALORANT Future Cup #2",
+        "status": "completed",
+        "prize": "${'$'}526",
+        "dates": "May 13—14",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6277410177db2.png"
+    },
+    {
+        "id": 937,
+        "title": "Knights Circuit Weekly #2",
+        "status": "completed",
+        "prize": "${'$'}2,000",
+        "dates": "May 12—13",
+        "location": "us",
+        "img": "https://owcdn.net/img/622303c534891.png"
+    },
+    {
+        "id": 1017,
+        "title": "Project V: Weekly Tournament 1",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "May 12—13",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62930d7549b15.png"
+    },
+    {
+        "id": 1004,
+        "title": "Nerd Street Summer Championship 2022 - Open 5",
+        "status": "completed",
+        "prize": "${'$'}2,500",
+        "dates": "May 10—11",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 966,
+        "title": "LPL Summer Cup Legends 2022",
+        "status": "completed",
+        "prize": "${'$'}1,294",
+        "dates": "Apr 18—May 9",
+        "location": "au",
+        "img": "https://owcdn.net/img/5f471342b2dff.png"
+    },
+    {
+        "id": 980,
+        "title": "Game Changers EMEA: Series II",
+        "status": "completed",
+        "prize": "${'$'}32,139",
+        "dates": "Apr 25—May 9",
+        "location": "eu",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 1001,
+        "title": "Valorant East: United - Stage 2 - Weekly Cup #1",
+        "status": "completed",
+        "prize": "${'$'}780",
+        "dates": "May 5—9",
+        "location": "eu",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 1008,
+        "title": "Safe Mode Season 4",
+        "status": "completed",
+        "prize": "${'$'}6,765",
+        "dates": "May 5—9",
+        "location": "eg",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+        "id": 864,
+        "title": "Champions Tour Game Changers Asia Pacific: Open 3",
+        "status": "completed",
+        "prize": "${'$'}5,000",
+        "dates": "Apr 30—May 8",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 1003,
+        "title": "Project V: RUSH.GG - HOT VALORANT Future Cup #1",
+        "status": "completed",
+        "prize": "${'$'}531",
+        "dates": "May 6",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6277410177db2.png"
+    },
+    {
+        "id": 992,
+        "title": "Nerd Street Summer Championship 2022 - Open 4",
+        "status": "completed",
+        "prize": "${'$'}3,500",
+        "dates": "May 3—5",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 957,
+        "title": "Liga Gamers Club - Série A: Abril",
+        "status": "completed",
+        "prize": "${'$'}3,620",
+        "dates": "Apr 12—May 5",
+        "location": "br",
+        "img": "https://owcdn.net/img/6254aed213373.png"
+    },
+    {
+        "id": 971,
+        "title": "Gaming Culture - Girl Power #4",
+        "status": "completed",
+        "prize": "${'$'}4,264",
+        "dates": "Apr 28—May 2",
+        "location": "br",
+        "img": "https://owcdn.net/img/626041d11f148.png"
+    },
+    {
+        "id": 1055,
+        "title": "Valorant Open Tour France 2022: Stage 3",
+        "status": "completed",
+        "prize": "${'$'}1,593",
+        "dates": "May 1—2",
+        "location": "fr",
+        "img": "https://owcdn.net/img/60918cde5ed00.png"
+    },
+    {
+        "id": 956,
+        "title": "The Esports Club - Challenger Series",
+        "status": "completed",
+        "prize": "${'$'}9,900",
+        "dates": "Apr 5—May 1",
+        "location": "in",
+        "img": "https://owcdn.net/img/61b930626ebac.png"
+    },
+    {
+        "id": 990,
+        "title": "A1 Adria League - Season 9",
+        "status": "completed",
+        "prize": "${'$'}1,055",
+        "dates": "Apr 30—May 1",
+        "location": "eu",
+        "img": "https://owcdn.net/img/626d29386f85f.png"
+    },
+    {
+        "id": 962,
+        "title": "CriticalX Valorant Milestone",
+        "status": "completed",
+        "prize": "${'$'}1,971",
+        "dates": "Apr 25—30",
+        "location": "in",
+        "img": "https://owcdn.net/img/62668681dc7d4.png"
+    },
+    {
+        "id": 989,
+        "title": "Odyssey Warpros Volume 7",
+        "status": "completed",
+        "prize": "${'$'}4,325",
+        "dates": "Apr 22—28",
+        "location": "eg",
+        "img": "https://owcdn.net/img/626c2613451b6.png"
+    },
+    {
+        "id": 978,
+        "title": "Nerd Street Summer Championship 2022 - Open 3",
+        "status": "completed",
+        "prize": "${'$'}3,500",
+        "dates": "Apr 26—28",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 950,
+        "title": "Valorant Regional League DACH: Relegation",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "Apr 26—28",
+        "location": "eu",
+        "img": "https://owcdn.net/img/61efdb456ffec.png"
+    },
+    {
+        "id": 979,
+        "title": "Valorant Regional League Spain: Promotion",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "Apr 25—26",
+        "location": "es",
+        "img": "https://owcdn.net/img/61efdbf019340.png"
+    },
+    {
+        "id": 975,
+        "title": "Game Changers Academy 2022 - April",
+        "status": "completed",
+        "prize": "${'$'}1,500",
+        "dates": "Apr 23—25",
+        "location": "us",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 926,
+        "title": "Valorant Champions Tour Stage 1: Masters Reykjavík",
+        "status": "completed",
+        "prize": "${'$'}650,000",
+        "dates": "Apr 10—24",
+        "location": "is",
+        "img": "https://owcdn.net/img/603bfd7bf3f54.png"
+    },
+    {
+        "id": 976,
+        "title": "Nerd Street Summer Championship 2022 - Brentwood LAN #1",
+        "status": "completed",
+        "prize": "${'$'}1,500",
+        "dates": "Apr 24",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 964,
+        "title": "WD Black Cup: Season 3",
+        "status": "completed",
+        "prize": "${'$'}10,000",
+        "dates": "Apr 15—22",
+        "location": "in",
+        "img": "https://owcdn.net/img/619b487358c12.png"
+    },
+    {
+        "id": 941,
+        "title": "Knights Circuit Monthly #1",
+        "status": "completed",
+        "prize": "${'$'}5,000",
+        "dates": "Apr 21—22",
+        "location": "us",
+        "img": "https://owcdn.net/img/6215ce3984a17.png"
+    },
+    {
+        "id": 968,
+        "title": "Rebels #1",
+        "status": "completed",
+        "prize": "${'$'}1,713",
+        "dates": "Apr 19—22",
+        "location": "tr",
+        "img": "https://owcdn.net/img/625dd9d0a5826.png"
+    },
+    {
+        "id": 970,
+        "title": "NOM Overwolf Juniors: 2022",
+        "status": "completed",
+        "prize": "${'$'}2,008",
+        "dates": "Apr 19—21",
+        "location": "il",
+        "img": "https://owcdn.net/img/625e50d99cb81.png"
+    },
+    {
+        "id": 967,
+        "title": "Nerd Street Summer Championship 2022 - Open 2",
+        "status": "completed",
+        "prize": "${'$'}2,500",
+        "dates": "Apr 19—20",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 955,
+        "title": "Road to VCT 2022: Stage 2",
+        "status": "completed",
+        "prize": "${'$'}437",
+        "dates": "Apr 7—19",
+        "location": "vn",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+        "id": 904,
+        "title": "Toronto VALORANT: Viper’s Pit ${'$'}10K",
+        "status": "completed",
+        "prize": "${'$'}12,720",
+        "dates": "Apr 16—18",
+        "location": "ca",
+        "img": "https://owcdn.net/img/62099d2b41b45.png"
+    },
+    {
+        "id": 953,
+        "title": "Nerd Street Summer Championship 2022 - Philadelphia LAN",
+        "status": "completed",
+        "prize": "${'$'}10,000",
+        "dates": "Apr 16—18",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 974,
+        "title": "Insomnia 68",
+        "status": "completed",
+        "prize": "${'$'}3,923",
+        "dates": "Apr 15—17",
+        "location": "en",
+        "img": "https://owcdn.net/img/626421c72515d.png"
+    },
+    {
+        "id": 920,
+        "title": "Nerd Street Summer Championship 2022 - Open 1",
+        "status": "completed",
+        "prize": "${'$'}3,500",
+        "dates": "Apr 12—14",
+        "location": "us",
+        "img": "https://owcdn.net/img/6233a90560f34.png"
+    },
+    {
+        "id": 958,
+        "title": "Sakura Cup #6",
+        "status": "completed",
+        "prize": "${'$'}2,000",
+        "dates": "Apr 12—13",
+        "location": "us",
+        "img": "https://owcdn.net/img/62551e7be8b61.png"
+    },
+    {
+        "id": 954,
+        "title": "Trinity Trials - Spring Trial",
+        "status": "completed",
+        "prize": "${'$'}2,213",
+        "dates": "Apr 9—11",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62516c6819dd2.png"
+    },
+    {
+        "id": 863,
+        "title": "Champions Tour Game Changers Asia Pacific: Open 2",
+        "status": "completed",
+        "prize": "${'$'}5,000",
+        "dates": "Apr 2—10",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 952,
+        "title": "CEL Valorant Invitation 2022",
+        "status": "completed",
+        "prize": "${'$'}1,500",
+        "dates": "Apr 1—10",
+        "location": "kh",
+        "img": "https://owcdn.net/img/62484b68a7c3c.png"
+    },
+    {
+        "id": 945,
+        "title": "Predator Kings of PH 2022",
+        "status": "completed",
+        "prize": "${'$'}2,300",
+        "dates": "Apr 2—10",
+        "location": "ph",
+        "img": "https://owcdn.net/img/623d8ca906c1b.png"
+    },
+    {
+        "id": 801,
+        "title": "Champions Tour Game Changers Series I: North America",
+        "status": "completed",
+        "prize": "${'$'}50,000",
+        "dates": "Mar 31—Apr 10",
+        "location": "us",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 885,
+        "title": "Champions Tour Stage 1: EMEA Promotion",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Apr 1—9",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 944,
+        "title": "Spring Gauntlet Invitational",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Mar 25—Apr 9",
+        "location": "cn",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+    },
+    {
+        "id": 931,
+        "title": "Girls On Fire #2",
+        "status": "completed",
+        "prize": "${'$'}3,185",
+        "dates": "Mar 19—Apr 7",
+        "location": "br",
+        "img": "https://owcdn.net/img/6236498aaa41f.png"
+    },
+    {
+        "id": 936,
+        "title": "Knights Circuit Weekly #1",
+        "status": "completed",
+        "prize": "${'$'}2,000",
+        "dates": "Apr 5—6",
+        "location": "us",
+        "img": "https://owcdn.net/img/624b33c2bf64d.png"
+    },
+    {
+        "id": 919,
+        "title": "Project V: Split 1 Finals",
+        "status": "completed",
+        "prize": "${'$'}10,991",
+        "dates": "Mar 26—Apr 4",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62930d7549b15.png"
+    },
+    {
+        "id": 948,
+        "title": "Champions Tour LATAM/BR Stage 1: Last Chance Qualifier",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Apr 2",
+        "location": "mx",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 959,
+        "title": "Gençlik Kupası",
+        "status": "completed",
+        "prize": "${'$'}2,381",
+        "dates": "Mar 29—Apr 1",
+        "location": "tr",
+        "img": "https://owcdn.net/img/6254fc9e65d02.png"
+    },
+    {
+        "id": 951,
+        "title": "Valorant Regional League East: Relegation",
+        "status": "completed",
+        "prize": "${'$'}0",
+        "dates": "Mar 30—Apr 1",
+        "location": "eu",
+        "img": "https://owcdn.net/img/61efdb2450b31.png"
+    },
+    {
+        "id": 923,
+        "title": "Predator Shot 2022",
+        "status": "completed",
+        "prize": "${'$'}4,370",
+        "dates": "Mar 22—31",
+        "location": "vn",
+        "img": "https://owcdn.net/img/6232da0b40f57.png"
+    },
+    {
+        "id": 933,
+        "title": "Average Jonas Nordic Nations Cup",
+        "status": "completed",
+        "prize": "${'$'}5,000",
+        "dates": "Mar 29—31",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6237ff0f0eb52.png"
+    },
+    {
+        "id": 935,
+        "title": "Valorant East: United - Season Final",
+        "status": "completed",
+        "prize": "${'$'}7,500",
+        "dates": "Mar 26—28",
+        "location": "eu",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 925,
+        "title": "Champions Tour Latin America Stage 1: Playoffs",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Mar 25—28",
+        "location": "mx",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 947,
+        "title": "Game Changers Academy 2022 - March",
+        "status": "completed",
+        "prize": "${'$'}1,500",
+        "dates": "Mar 26—28",
+        "location": "us",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 853,
+        "title": "Champions Tour Japan Stage 1: Challengers Playoffs",
+        "status": "completed",
+        "prize": "${'$'}17,575",
+        "dates": "Mar 24—27",
+        "location": "jp",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 884,
+        "title": "Champions Tour Asia-Pacific Stage 1: Challengers Playoffs",
+        "status": "completed",
+        "prize": "${'$'}150,000",
+        "dates": "Mar 10—27",
+        "location": "un",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+    },
+    {
+        "id": 946,
+        "title": "Knights Weekly #5",
+        "status": "completed",
+        "prize": "${'$'}1,000",
+        "dates": "Mar 26",
+        "location": "us",
+        "img": "https://owcdn.net/img/623ec9cde7772.png"
+    },
+    {
+        "id": 934,
+        "title": "Valorant East: United - Monthly Cup #2",
+        "status": "completed",
+        "prize": "${'$'}1,000",
+        "dates": "Mar 21—24",
+        "location": "eu",
+        "img": "https://owcdn.net/img/623c03abe705a.png"
+    },
+    {
+        "id": 922,
+        "title": "Knights Monthly Gauntlet 2022: March",
+        "status": "completed",
+        "prize": "${'$'}5,000",
+        "dates": "Mar 22—23",
+        "location": "us",
+        "img": "https://owcdn.net/img/6215ce3984a17.png"
+    },
+    {
+        "id": 929,
+        "title": "Chroma Cup #13",
+        "status": "completed",
+        "prize": "${'$'}1,996",
+        "dates": "Mar 19—22",
+        "location": "br",
+        "img": "https://owcdn.net/img/60060fde49688.png"
+    },
+    {
+        "id": 1054,
+        "title": "Valorant Open Tour France 2022: Stage 2",
+        "status": "completed",
+        "prize": "${'$'}1,651",
+        "dates": "Mar 20—21",
+        "location": "fr",
+        "img": "https://owcdn.net/img/60918cde5ed00.png"
+    },
+    {
+        "id": 930,
+        "title": "SMU X QOR Cup",
+        "status": "completed",
+        "prize": "${'$'}2,500",
+        "dates": "Mar 20",
+        "location": "us",
+        "img": "https://owcdn.net/img/6236427e1364d.png"
+    },
+    {
+        "id": 857,
+        "title": "Game Changers LATAM: Open 2",
+        "status": "completed",
+        "prize": "${'$'}4,000",
+        "dates": "Mar 8—20",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+    },
+    {
+        "id": 928,
+        "title": "Knights Weekly #4",
+        "status": "completed",
+        "prize": "${'$'}1,000",
+        "dates": "Mar 19",
+        "location": "us",
+        "img": "https://owcdn.net/img/62350c2c00222.png"
+    },
+    {
+        "id": 913,
+        "title": "BoomTV Proving Grounds ${'$'}20k - Spring 2022",
+        "status": "completed",
+        "prize": "${'$'}20,000",
+        "dates": "Mar 8—17",
+        "location": "us",
+        "img": "https://owcdn.net/img/61378ef4a2159.png"
+    },
+    {
+        "id": 921,
+        "title": "TGH x Birds of Prey: Episode 3",
+        "status": "completed",
+        "prize": "${'$'}2,608",
+        "dates": "Mar 15—17",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6101758639aff.png"
+    },
+    {
+        "id": 915,
+        "title": "KaBuM! Challenge",
+        "status": "completed",
+        "prize": "${'$'}937",
+        "dates": "Mar 13—14",
+        "location": "br",
+        "img": "https://owcdn.net/img/622bfd619ea91.png"
+    },
+    {
+        "id": 916,
+        "title": "VCS VALORANT ${'$'}5,000 LAN",
+        "status": "completed",
+        "prize": "${'$'}5,000",
+        "dates": "Mar 11—14",
+        "location": "us",
+        "img": "https://owcdn.net/img/5fe98081f34ec.png"
+    },
+    {
+        "id": 918,
+        "title": "Project V: Crown The Champs",
+        "status": "completed",
+        "prize": "${'$'}5,495",
+        "dates": "Mar 13—14",
+        "location": "eu",
+        "img": "https://owcdn.net/img/62930d7549b15.png"
+    },
+    {
+        "id": 917,
+        "title": "Knights Weekly #3",
+        "status": "completed",
+        "prize": "${'$'}1,000",
+        "dates": "Mar 12",
+        "location": "us",
+        "img": "https://owcdn.net/img/622be76a22688.png"
+    }
+]

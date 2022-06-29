@@ -1,0 +1,933 @@
+{
+    "teams": [
+        {
+            "name": "XSET",
+            "score": 3,
+            "img": "https://owcdn.net/img/62874ec8a2b0c.png",
+            "id": "533"
+        },
+        {
+            "name": "FaZe Clan",
+            "score": 1,
+            "img": "https://owcdn.net/img/61f6178e64260.png",
+            "id": "337"
+        }
+    ],
+    "bans": [
+        "XSET ban Fracture",
+        "FaZe ban Bind",
+        "XSET pick Split",
+        "FaZe pick Breeze",
+        "XSET pick Icebox",
+        "FaZe pick Ascent",
+        "Haven remains"
+    ],
+    "event": {
+        "id": "800",
+        "img": "https://owcdn.net/img/6009f963577f4.png",
+        "series": "Champions Tour North America Stage 2: Challengers",
+        "stage": "Playoffs: Lower Bracket Finals",
+        "date": "2022-06-24T20:00:00+00:00",
+        "patch": null
+    },
+    "videos": {
+        "streams": [
+            {
+                "name": "Valorant",
+                "url": "https://www.twitch.tv/valorant"
+            }
+        ],
+        "vods": []
+    },
+    "map_count": 4,
+    "data": [
+        {
+            "map": "Split",
+            "teams": [
+                {
+                    "name": "XSET",
+                    "score": 11
+                },
+                {
+                    "name": "FaZe Clan",
+                    "score": 13
+                }
+            ],
+            "members": [
+                {
+                    "name": "Cryocells",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Chamber",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+                        }
+                    ],
+                    "acs": 241,
+                    "kills": 21,
+                    "deaths": 17,
+                    "assists": 3,
+                    "kast": 71,
+                    "adr": 139,
+                    "headshot_percent": 23,
+                    "first_kills": 3,
+                    "first_deaths": 2,
+                    "first_kills_diff": 1
+                },
+                {
+                    "name": "AYRIN",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Viper",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/viper.png"
+                        }
+                    ],
+                    "acs": 197,
+                    "kills": 14,
+                    "deaths": 18,
+                    "assists": 5,
+                    "kast": 67,
+                    "adr": 133,
+                    "headshot_percent": 31,
+                    "first_kills": 2,
+                    "first_deaths": 1,
+                    "first_kills_diff": 1
+                },
+                {
+                    "name": "BcJ",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Skye",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/skye.png"
+                        }
+                    ],
+                    "acs": 188,
+                    "kills": 14,
+                    "deaths": 16,
+                    "assists": 4,
+                    "kast": 63,
+                    "adr": 123,
+                    "headshot_percent": 26,
+                    "first_kills": 3,
+                    "first_deaths": 3,
+                    "first_kills_diff": 0
+                },
+                {
+                    "name": "zekken",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Raze",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/raze.png"
+                        }
+                    ],
+                    "acs": 133,
+                    "kills": 12,
+                    "deaths": 20,
+                    "assists": 3,
+                    "kast": 50,
+                    "adr": 87,
+                    "headshot_percent": 24,
+                    "first_kills": 2,
+                    "first_deaths": 5,
+                    "first_kills_diff": -3
+                },
+                {
+                    "name": "dephh",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Astra",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/astra.png"
+                        }
+                    ],
+                    "acs": 119,
+                    "kills": 10,
+                    "deaths": 17,
+                    "assists": 4,
+                    "kast": 46,
+                    "adr": 93,
+                    "headshot_percent": 42,
+                    "first_kills": 1,
+                    "first_deaths": 2,
+                    "first_kills_diff": -1
+                },
+                {
+                    "name": "dicey",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Chamber",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+                        }
+                    ],
+                    "acs": 284,
+                    "kills": 25,
+                    "deaths": 14,
+                    "assists": 3,
+                    "kast": 67,
+                    "adr": 180,
+                    "headshot_percent": 28,
+                    "first_kills": 5,
+                    "first_deaths": 0,
+                    "first_kills_diff": 5
+                },
+                {
+                    "name": "POISED",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Kayo",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/kayo.png"
+                        }
+                    ],
+                    "acs": 238,
+                    "kills": 19,
+                    "deaths": 14,
+                    "assists": 7,
+                    "kast": 75,
+                    "adr": 146,
+                    "headshot_percent": 22,
+                    "first_kills": 1,
+                    "first_deaths": 2,
+                    "first_kills_diff": -1
+                },
+                {
+                    "name": "supamen",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Astra",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/astra.png"
+                        }
+                    ],
+                    "acs": 225,
+                    "kills": 21,
+                    "deaths": 14,
+                    "assists": 2,
+                    "kast": 75,
+                    "adr": 149,
+                    "headshot_percent": 32,
+                    "first_kills": 1,
+                    "first_deaths": 1,
+                    "first_kills_diff": 0
+                },
+                {
+                    "name": "BABYBAY",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Neon",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/neon.png"
+                        }
+                    ],
+                    "acs": 148,
+                    "kills": 11,
+                    "deaths": 17,
+                    "assists": 7,
+                    "kast": 63,
+                    "adr": 101,
+                    "headshot_percent": 10,
+                    "first_kills": 3,
+                    "first_deaths": 8,
+                    "first_kills_diff": -5
+                },
+                {
+                    "name": "flyuh",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Breach",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/breach.png"
+                        }
+                    ],
+                    "acs": 146,
+                    "kills": 12,
+                    "deaths": 12,
+                    "assists": 5,
+                    "kast": 75,
+                    "adr": 103,
+                    "headshot_percent": 22,
+                    "first_kills": 3,
+                    "first_deaths": 0,
+                    "first_kills_diff": 3
+                }
+            ]
+        },
+        {
+            "map": "Breeze",
+            "teams": [
+                {
+                    "name": "XSET",
+                    "score": 13
+                },
+                {
+                    "name": "FaZe Clan",
+                    "score": 10
+                }
+            ],
+            "members": [
+                {
+                    "name": "Cryocells",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Jett",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/jett.png"
+                        }
+                    ],
+                    "acs": 314,
+                    "kills": 27,
+                    "deaths": 14,
+                    "assists": 2,
+                    "kast": 78,
+                    "adr": 172,
+                    "headshot_percent": 28,
+                    "first_kills": 3,
+                    "first_deaths": 2,
+                    "first_kills_diff": 1
+                },
+                {
+                    "name": "BcJ",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Sova",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/sova.png"
+                        }
+                    ],
+                    "acs": 218,
+                    "kills": 16,
+                    "deaths": 18,
+                    "assists": 7,
+                    "kast": 70,
+                    "adr": 142,
+                    "headshot_percent": 23,
+                    "first_kills": 3,
+                    "first_deaths": 2,
+                    "first_kills_diff": 1
+                },
+                {
+                    "name": "zekken",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Kayo",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/kayo.png"
+                        }
+                    ],
+                    "acs": 208,
+                    "kills": 16,
+                    "deaths": 17,
+                    "assists": 9,
+                    "kast": 74,
+                    "adr": 128,
+                    "headshot_percent": 20,
+                    "first_kills": 3,
+                    "first_deaths": 2,
+                    "first_kills_diff": 1
+                },
+                {
+                    "name": "dephh",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Cypher",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/cypher.png"
+                        }
+                    ],
+                    "acs": 163,
+                    "kills": 13,
+                    "deaths": 16,
+                    "assists": 5,
+                    "kast": 74,
+                    "adr": 115,
+                    "headshot_percent": 23,
+                    "first_kills": 2,
+                    "first_deaths": 4,
+                    "first_kills_diff": -2
+                },
+                {
+                    "name": "AYRIN",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Viper",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/viper.png"
+                        }
+                    ],
+                    "acs": 154,
+                    "kills": 14,
+                    "deaths": 10,
+                    "assists": 7,
+                    "kast": 78,
+                    "adr": 107,
+                    "headshot_percent": 28,
+                    "first_kills": 1,
+                    "first_deaths": 1,
+                    "first_kills_diff": 0
+                },
+                {
+                    "name": "flyuh",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Sova",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/sova.png"
+                        }
+                    ],
+                    "acs": 243,
+                    "kills": 19,
+                    "deaths": 17,
+                    "assists": 4,
+                    "kast": 70,
+                    "adr": 148,
+                    "headshot_percent": 45,
+                    "first_kills": 2,
+                    "first_deaths": 1,
+                    "first_kills_diff": 1
+                },
+                {
+                    "name": "BABYBAY",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Neon",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/neon.png"
+                        }
+                    ],
+                    "acs": 233,
+                    "kills": 19,
+                    "deaths": 19,
+                    "assists": 5,
+                    "kast": 74,
+                    "adr": 140,
+                    "headshot_percent": 24,
+                    "first_kills": 4,
+                    "first_deaths": 3,
+                    "first_kills_diff": 1
+                },
+                {
+                    "name": "supamen",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Viper",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/viper.png"
+                        }
+                    ],
+                    "acs": 173,
+                    "kills": 13,
+                    "deaths": 17,
+                    "assists": 6,
+                    "kast": 65,
+                    "adr": 112,
+                    "headshot_percent": 45,
+                    "first_kills": 0,
+                    "first_deaths": 2,
+                    "first_kills_diff": -2
+                },
+                {
+                    "name": "dicey",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Chamber",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+                        }
+                    ],
+                    "acs": 159,
+                    "kills": 13,
+                    "deaths": 15,
+                    "assists": 2,
+                    "kast": 61,
+                    "adr": 125,
+                    "headshot_percent": 40,
+                    "first_kills": 3,
+                    "first_deaths": 5,
+                    "first_kills_diff": -2
+                },
+                {
+                    "name": "POISED",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Kayo",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/kayo.png"
+                        }
+                    ],
+                    "acs": 145,
+                    "kills": 11,
+                    "deaths": 18,
+                    "assists": 8,
+                    "kast": 65,
+                    "adr": 92,
+                    "headshot_percent": 11,
+                    "first_kills": 2,
+                    "first_deaths": 1,
+                    "first_kills_diff": 1
+                }
+            ]
+        },
+        {
+            "map": "Icebox",
+            "teams": [
+                {
+                    "name": "XSET",
+                    "score": 16
+                },
+                {
+                    "name": "FaZe Clan",
+                    "score": 14
+                }
+            ],
+            "members": [
+                {
+                    "name": "Cryocells",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Chamber",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+                        }
+                    ],
+                    "acs": 314,
+                    "kills": 35,
+                    "deaths": 22,
+                    "assists": 3,
+                    "kast": 77,
+                    "adr": 198,
+                    "headshot_percent": 22,
+                    "first_kills": 6,
+                    "first_deaths": 2,
+                    "first_kills_diff": 4
+                },
+                {
+                    "name": "BcJ",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Sova",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/sova.png"
+                        }
+                    ],
+                    "acs": 258,
+                    "kills": 24,
+                    "deaths": 19,
+                    "assists": 10,
+                    "kast": 77,
+                    "adr": 183,
+                    "headshot_percent": 20,
+                    "first_kills": 1,
+                    "first_deaths": 1,
+                    "first_kills_diff": 0
+                },
+                {
+                    "name": "AYRIN",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Viper",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/viper.png"
+                        }
+                    ],
+                    "acs": 164,
+                    "kills": 16,
+                    "deaths": 19,
+                    "assists": 8,
+                    "kast": 77,
+                    "adr": 101,
+                    "headshot_percent": 18,
+                    "first_kills": 2,
+                    "first_deaths": 4,
+                    "first_kills_diff": -2
+                },
+                {
+                    "name": "zekken",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Sage",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/sage.png"
+                        }
+                    ],
+                    "acs": 163,
+                    "kills": 17,
+                    "deaths": 23,
+                    "assists": 16,
+                    "kast": 77,
+                    "adr": 110,
+                    "headshot_percent": 30,
+                    "first_kills": 4,
+                    "first_deaths": 3,
+                    "first_kills_diff": 1
+                },
+                {
+                    "name": "dephh",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Kayo",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/kayo.png"
+                        }
+                    ],
+                    "acs": 156,
+                    "kills": 16,
+                    "deaths": 23,
+                    "assists": 14,
+                    "kast": 70,
+                    "adr": 105,
+                    "headshot_percent": 19,
+                    "first_kills": 2,
+                    "first_deaths": 5,
+                    "first_kills_diff": -3
+                },
+                {
+                    "name": "dicey",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Sage",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/sage.png"
+                        }
+                    ],
+                    "acs": 263,
+                    "kills": 30,
+                    "deaths": 19,
+                    "assists": 7,
+                    "kast": 80,
+                    "adr": 160,
+                    "headshot_percent": 41,
+                    "first_kills": 5,
+                    "first_deaths": 1,
+                    "first_kills_diff": 4
+                },
+                {
+                    "name": "supamen",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Viper",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/viper.png"
+                        }
+                    ],
+                    "acs": 255,
+                    "kills": 27,
+                    "deaths": 24,
+                    "assists": 4,
+                    "kast": 77,
+                    "adr": 174,
+                    "headshot_percent": 24,
+                    "first_kills": 4,
+                    "first_deaths": 2,
+                    "first_kills_diff": 2
+                },
+                {
+                    "name": "flyuh",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Sova",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/sova.png"
+                        }
+                    ],
+                    "acs": 166,
+                    "kills": 16,
+                    "deaths": 23,
+                    "assists": 10,
+                    "kast": 70,
+                    "adr": 121,
+                    "headshot_percent": 26,
+                    "first_kills": 0,
+                    "first_deaths": 3,
+                    "first_kills_diff": -3
+                },
+                {
+                    "name": "BABYBAY",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Chamber",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+                        }
+                    ],
+                    "acs": 161,
+                    "kills": 16,
+                    "deaths": 19,
+                    "assists": 4,
+                    "kast": 63,
+                    "adr": 111,
+                    "headshot_percent": 20,
+                    "first_kills": 4,
+                    "first_deaths": 3,
+                    "first_kills_diff": 1
+                },
+                {
+                    "name": "POISED",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Kayo",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/kayo.png"
+                        }
+                    ],
+                    "acs": 149,
+                    "kills": 17,
+                    "deaths": 23,
+                    "assists": 7,
+                    "kast": 67,
+                    "adr": 95,
+                    "headshot_percent": 15,
+                    "first_kills": 2,
+                    "first_deaths": 6,
+                    "first_kills_diff": -4
+                }
+            ]
+        },
+        {
+            "map": "Ascent",
+            "teams": [
+                {
+                    "name": "XSET",
+                    "score": 13
+                },
+                {
+                    "name": "FaZe Clan",
+                    "score": 4
+                }
+            ],
+            "members": [
+                {
+                    "name": "BcJ",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Omen",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/omen.png"
+                        }
+                    ],
+                    "acs": 260,
+                    "kills": 18,
+                    "deaths": 8,
+                    "assists": 3,
+                    "kast": 82,
+                    "adr": 170,
+                    "headshot_percent": 20,
+                    "first_kills": 3,
+                    "first_deaths": 1,
+                    "first_kills_diff": 2
+                },
+                {
+                    "name": "Cryocells",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Jett",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/jett.png"
+                        }
+                    ],
+                    "acs": 241,
+                    "kills": 20,
+                    "deaths": 7,
+                    "assists": 1,
+                    "kast": 94,
+                    "adr": 140,
+                    "headshot_percent": 22,
+                    "first_kills": 3,
+                    "first_deaths": 1,
+                    "first_kills_diff": 2
+                },
+                {
+                    "name": "zekken",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Sova",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/sova.png"
+                        }
+                    ],
+                    "acs": 169,
+                    "kills": 11,
+                    "deaths": 12,
+                    "assists": 8,
+                    "kast": 88,
+                    "adr": 113,
+                    "headshot_percent": 18,
+                    "first_kills": 0,
+                    "first_deaths": 3,
+                    "first_kills_diff": -3
+                },
+                {
+                    "name": "AYRIN",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Killjoy",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/killjoy.png"
+                        }
+                    ],
+                    "acs": 158,
+                    "kills": 10,
+                    "deaths": 7,
+                    "assists": 4,
+                    "kast": 82,
+                    "adr": 109,
+                    "headshot_percent": 18,
+                    "first_kills": 0,
+                    "first_deaths": 2,
+                    "first_kills_diff": -2
+                },
+                {
+                    "name": "dephh",
+                    "team": "XSET",
+                    "agents": [
+                        {
+                            "title": "Kayo",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/kayo.png"
+                        }
+                    ],
+                    "acs": 149,
+                    "kills": 10,
+                    "deaths": 8,
+                    "assists": 6,
+                    "kast": 88,
+                    "adr": 98,
+                    "headshot_percent": 20,
+                    "first_kills": 1,
+                    "first_deaths": 1,
+                    "first_kills_diff": 0
+                },
+                {
+                    "name": "BABYBAY",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Kayo",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/kayo.png"
+                        }
+                    ],
+                    "acs": 235,
+                    "kills": 13,
+                    "deaths": 13,
+                    "assists": 9,
+                    "kast": 94,
+                    "adr": 148,
+                    "headshot_percent": 30,
+                    "first_kills": 3,
+                    "first_deaths": 0,
+                    "first_kills_diff": 3
+                },
+                {
+                    "name": "dicey",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Chamber",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+                        }
+                    ],
+                    "acs": 166,
+                    "kills": 11,
+                    "deaths": 14,
+                    "assists": 0,
+                    "kast": 59,
+                    "adr": 99,
+                    "headshot_percent": 16,
+                    "first_kills": 4,
+                    "first_deaths": 1,
+                    "first_kills_diff": 3
+                },
+                {
+                    "name": "supamen",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Astra",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/astra.png"
+                        }
+                    ],
+                    "acs": 160,
+                    "kills": 11,
+                    "deaths": 12,
+                    "assists": 4,
+                    "kast": 76,
+                    "adr": 116,
+                    "headshot_percent": 28,
+                    "first_kills": 0,
+                    "first_deaths": 2,
+                    "first_kills_diff": -2
+                },
+                {
+                    "name": "flyuh",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Sova",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/sova.png"
+                        }
+                    ],
+                    "acs": 96,
+                    "kills": 4,
+                    "deaths": 15,
+                    "assists": 4,
+                    "kast": 59,
+                    "adr": 66,
+                    "headshot_percent": 18,
+                    "first_kills": 1,
+                    "first_deaths": 3,
+                    "first_kills_diff": -2
+                },
+                {
+                    "name": "POISED",
+                    "team": "FaZe",
+                    "agents": [
+                        {
+                            "title": "Fade",
+                            "img": "https://www.vlr.gg/img/vlr/game/agents/fade.png"
+                        }
+                    ],
+                    "acs": 57,
+                    "kills": 3,
+                    "deaths": 15,
+                    "assists": 5,
+                    "kast": 65,
+                    "adr": 45,
+                    "headshot_percent": 20,
+                    "first_kills": 0,
+                    "first_deaths": 1,
+                    "first_kills_diff": -1
+                }
+            ]
+        }
+    ],
+    "previous_encounters": [
+        {
+            "teams": [
+                {
+                    "name": "XSET",
+                    "score": 0
+                },
+                {
+                    "name": "FaZe Clan",
+                    "score": 2
+                }
+            ],
+            "match_id": "12551"
+        },
+        {
+            "teams": [
+                {
+                    "name": "XSET",
+                    "score": 2
+                },
+                {
+                    "name": "FaZe Clan",
+                    "score": 0
+                }
+            ],
+            "match_id": "10249"
+        }
+    ]
+}
