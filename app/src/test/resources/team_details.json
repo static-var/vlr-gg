@@ -1,0 +1,464 @@
+{
+    "name": "Ghost Gaming",
+    "tag": "GHST",
+    "img": "https://owcdn.net/img/62a407a8ec084.png",
+    "website": "https://ghostgaming.org/",
+    "twitter": "https://twitter.com/GhostGaming",
+    "country": "United States",
+    "rank": 10,
+    "region": "North America",
+    "roster": [
+        {
+            "id": "1265",
+            "name": "Mohamed Amine Ouarid",
+            "alias": "johnqt",
+            "role": "Team Captain",
+            "img": "https://owcdn.net/img/6278bd6e3dafe.png"
+        },
+        {
+            "id": "3722",
+            "name": "Gianfranco Potestio",
+            "alias": "koalanoob",
+            "role": null,
+            "img": "https://owcdn.net/img/6278bd32573d4.png"
+        },
+        {
+            "id": "4828",
+            "name": "Marc-Andre Tayar",
+            "alias": "NiSMO",
+            "role": null,
+            "img": "https://owcdn.net/img/6278bd40801eb.png"
+        },
+        {
+            "id": "740",
+            "name": "Alex Protopapas",
+            "alias": "aproto",
+            "role": null,
+            "img": "https://owcdn.net/img/6278bd4d347ef.png"
+        },
+        {
+            "id": "2172",
+            "name": "Brock Somerhalder",
+            "alias": "brawk",
+            "role": null,
+            "img": "https://owcdn.net/img/6278bd62b7113.png"
+        },
+        {
+            "id": "757",
+            "name": "Adam Kaplan",
+            "alias": "kaplan",
+            "role": "coach",
+            "img": "https://owcdn.net/img/627b460a3b85d.png"
+        },
+        {
+            "id": "28113",
+            "name": null,
+            "alias": "GUNTER",
+            "role": "analyst",
+            "img": "https://www.vlr.gg/img/base/ph/sil.png"
+        }
+    ],
+    "upcoming": [],
+    "completed": [
+        {
+            "id": "107142",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Playoffs ⋅LBR1",
+            "opponent": "NRG Esports",
+            "date": "2022-06-18T01:50:00",
+            "score": "0:2"
+        },
+        {
+            "id": "107144",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Playoffs ⋅UBR1",
+            "opponent": "Evil Geniuses",
+            "date": "2022-06-17T05:25:00",
+            "score": "0:2"
+        },
+        {
+            "id": "99719",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Group Stage ⋅W5",
+            "opponent": "100 Thieves",
+            "date": "2022-06-12T05:20:00",
+            "score": "2:0"
+        },
+        {
+            "id": "99713",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Group Stage ⋅W4",
+            "opponent": "TSM",
+            "date": "2022-06-05T04:15:00",
+            "score": "2:0"
+        },
+        {
+            "id": "99709",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Group Stage ⋅W3",
+            "opponent": "NRG Esports",
+            "date": "2022-05-30T03:45:00",
+            "score": "2:0"
+        },
+        {
+            "id": "99693",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Group Stage ⋅W2",
+            "opponent": "The Guard",
+            "date": "2022-05-21T04:30:00",
+            "score": "2:1"
+        },
+        {
+            "id": "99689",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Group Stage ⋅W1",
+            "opponent": "XSET",
+            "date": "2022-05-15T04:00:00",
+            "score": "0:2"
+        },
+        {
+            "id": "97232",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #2 ⋅LR6",
+            "opponent": "Knights",
+            "date": "2022-05-09T03:00:00",
+            "score": "2:0"
+        },
+        {
+            "id": "97230",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #2 ⋅LR5",
+            "opponent": "Built By Gamers Academy",
+            "date": "2022-05-09T00:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "97227",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #2 ⋅LR4",
+            "opponent": "NYFU",
+            "date": "2022-05-08T05:50:00",
+            "score": "2:1"
+        },
+        {
+            "id": "97223",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #2 ⋅LR3",
+            "opponent": "Complexity",
+            "date": "2022-05-08T03:45:00",
+            "score": "2:0"
+        },
+        {
+            "id": "97216",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #2 ⋅LR2",
+            "opponent": "Team Basilisk",
+            "date": "2022-05-08T00:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "97197",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #2 ⋅URo16",
+            "opponent": "Evil Geniuses",
+            "date": "2022-05-07T05:40:00",
+            "score": "1:2"
+        },
+        {
+            "id": "97187",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #2 ⋅URo32",
+            "opponent": "Zero MarksMen Black",
+            "date": "2022-05-07T03:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "97068",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #2 ⋅Ro64",
+            "opponent": "IlluZion",
+            "date": "2022-05-06T05:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "97027",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #2 ⋅Ro128",
+            "opponent": "Area of Effect",
+            "date": "2022-05-06T03:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "94330",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #1 ⋅LR1",
+            "opponent": "DarkZero Esports",
+            "date": "2022-04-30T06:05:00",
+            "score": "1:2"
+        },
+        {
+            "id": "94302",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #1 ⋅URo32",
+            "opponent": "Team Basilisk",
+            "date": "2022-04-30T03:30:00",
+            "score": "0:2"
+        },
+        {
+            "id": "94267",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #1 ⋅Ro64",
+            "opponent": "Nation Gaming",
+            "date": "2022-04-29T05:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "94209",
+            "event": "VCT NA S2: Challengers ",
+            "stage": "Open Qualifier #1 ⋅Ro128",
+            "opponent": "Team Opulence Black",
+            "date": "2022-04-29T03:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "91591",
+            "event": "Knights Monthly #1",
+            "stage": "Playoffs ⋅GF",
+            "opponent": "TSM",
+            "date": "2022-04-22T07:00:00",
+            "score": "2:0"
+        },
+        {
+            "id": "91590",
+            "event": "Knights Monthly #1",
+            "stage": "Playoffs ⋅SF",
+            "opponent": "Knights",
+            "date": "2022-04-22T04:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "91587",
+            "event": "Knights Monthly #1",
+            "stage": "Playoffs ⋅QF",
+            "opponent": "Clanless",
+            "date": "2022-04-22T01:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "91582",
+            "event": "Knights Monthly #1",
+            "stage": "Playoffs ⋅Ro16",
+            "opponent": "Built By Gamers Academy",
+            "date": "2022-04-21T05:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "91764",
+            "event": "Knights Monthly #1",
+            "stage": "Group Stage ⋅R3",
+            "opponent": "Toms Kittens",
+            "date": "2022-04-21T03:30:00",
+            "score": "1:0"
+        },
+        {
+            "id": "91732",
+            "event": "Knights Monthly #1",
+            "stage": "Group Stage ⋅R2",
+            "opponent": "ONi",
+            "date": "2022-04-21T02:30:00",
+            "score": "1:0"
+        },
+        {
+            "id": "91698",
+            "event": "Knights Monthly #1",
+            "stage": "Group Stage ⋅R1",
+            "opponent": "Team Reckaroo",
+            "date": "2022-04-21T01:30:00",
+            "score": "1:0"
+        },
+        {
+            "id": "78504",
+            "event": "Knights Monthly 2022: March",
+            "stage": "Playoffs ⋅GF",
+            "opponent": "Complexity",
+            "date": "2022-03-24T05:00:00",
+            "score": "2:0"
+        },
+        {
+            "id": "78503",
+            "event": "Knights Monthly 2022: March",
+            "stage": "Playoffs ⋅SF",
+            "opponent": "T1",
+            "date": "2022-03-24T02:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "78501",
+            "event": "Knights Monthly 2022: March",
+            "stage": "Playoffs ⋅QF",
+            "opponent": "Lenny Time",
+            "date": "2022-03-23T06:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "78496",
+            "event": "Knights Monthly 2022: March",
+            "stage": "Playoffs ⋅Ro16",
+            "opponent": "Zero MarksMen Black",
+            "date": "2022-03-23T04:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "78486",
+            "event": "Knights Monthly 2022: March",
+            "stage": "Playoffs ⋅Ro32",
+            "opponent": "Gen.G",
+            "date": "2022-03-23T01:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "78525",
+            "event": "Knights Monthly 2022: March",
+            "stage": "Group Stage ⋅Decider (D)",
+            "opponent": "Glueface",
+            "date": "2022-03-22T05:00:00",
+            "score": "2:0"
+        },
+        {
+            "id": "78523",
+            "event": "Knights Monthly 2022: March",
+            "stage": "Group Stage ⋅Winner's (D)",
+            "opponent": "Moon Raccoons",
+            "date": "2022-03-22T02:30:00",
+            "score": "0:1"
+        },
+        {
+            "id": "78521",
+            "event": "Knights Monthly 2022: March",
+            "stage": "Group Stage ⋅Opening (D)",
+            "opponent": "Valkyrie",
+            "date": "2022-03-22T01:30:00",
+            "score": "1:0"
+        },
+        {
+            "id": "68724",
+            "event": "VCT NA S1: Challengers ",
+            "stage": "Open Qualifier #2 ⋅LR4",
+            "opponent": "Pioneers",
+            "date": "2022-02-06T07:50:00",
+            "score": "1:2"
+        },
+        {
+            "id": "68699",
+            "event": "VCT NA S1: Challengers ",
+            "stage": "Open Qualifier #2 ⋅UBQF",
+            "opponent": "Evil Geniuses",
+            "date": "2022-02-06T01:30:00",
+            "score": "1:2"
+        },
+        {
+            "id": "68692",
+            "event": "VCT NA S1: Challengers ",
+            "stage": "Open Qualifier #2 ⋅URo16",
+            "opponent": "TSM",
+            "date": "2022-02-05T08:10:00",
+            "score": "2:1"
+        },
+        {
+            "id": "68679",
+            "event": "VCT NA S1: Challengers ",
+            "stage": "Open Qualifier #2 ⋅URo32",
+            "opponent": "FaZe Clan",
+            "date": "2022-02-05T04:30:00",
+            "score": "2:1"
+        },
+        {
+            "id": "68653",
+            "event": "VCT NA S1: Challengers ",
+            "stage": "Open Qualifier #2 ⋅Ro64",
+            "opponent": "CLG Red",
+            "date": "2022-02-04T07:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "68600",
+            "event": "VCT NA S1: Challengers ",
+            "stage": "Open Qualifier #2 ⋅Ro128",
+            "opponent": "5 of a Kind",
+            "date": "2022-02-04T04:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "68332",
+            "event": "NSG Winter Championship - LCQ",
+            "stage": "Playoffs ⋅Ro16",
+            "opponent": "Moon Raccoons",
+            "date": "2022-02-02T05:30:00",
+            "score": "1:2"
+        },
+        {
+            "id": "68319",
+            "event": "NSG Winter Championship - LCQ",
+            "stage": "Playoffs ⋅Ro32",
+            "opponent": "Shopify Rebellion",
+            "date": "2022-02-02T03:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "68177",
+            "event": "NSG Winter Championship - LCQ",
+            "stage": "Group Stage ⋅Winner's (N)",
+            "opponent": "Teal Seam",
+            "date": "2022-02-01T06:00:00",
+            "score": "2:0"
+        },
+        {
+            "id": "68175",
+            "event": "NSG Winter Championship - LCQ",
+            "stage": "Group Stage ⋅Opening (N)",
+            "opponent": "Akave Esports",
+            "date": "2022-02-01T03:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "67373",
+            "event": "VCT NA S1: Challengers ",
+            "stage": "Open Qualifier #1 ⋅LR1",
+            "opponent": "Cosmic Divide",
+            "date": "2022-01-29T06:45:00",
+            "score": "1:2"
+        },
+        {
+            "id": "67318",
+            "event": "VCT NA S1: Challengers ",
+            "stage": "Open Qualifier #1 ⋅URo32",
+            "opponent": "Andbox",
+            "date": "2022-01-29T04:30:00",
+            "score":"0:2"
+        },
+        {
+            "id": "67062",
+            "event": "VCT NA S1: Challengers ",
+            "stage": "Open Qualifier #1 ⋅Ro64",
+            "opponent": "Green Beans",
+            "date": "2022-01-28T05:40:00",
+            "score": "2:0"
+        },
+        {
+            "id": "67019",
+            "event": "VCT NA S1: Challengers ",
+            "stage": "Open Qualifier #1 ⋅Ro128",
+            "opponent": "Divided Sons",
+            "date": "2022-01-28T04:30:00",
+            "score": "2:0"
+        },
+        {
+            "id": "63777",
+            "event": "Knights VALORAMPAGE",
+            "stage": "Playoffs ⋅SF",
+            "opponent": "Cloud9",
+            "date": "2022-01-23T03:30:00",
+            "score": "0:2"
+        }
+    ]
+}

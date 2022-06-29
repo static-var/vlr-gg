@@ -1,0 +1,1502 @@
+[
+    {
+        "id": "106922",
+        "team1": {
+            "name": "Team Secret",
+            "score": 1
+        },
+        "team2": {
+            "name": "XERXIA Esports",
+            "score": 1
+        },
+        "status": "live",
+        "time": "2022-06-26T03:00:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Lower Final"
+    },
+    {
+        "id": "106173",
+        "team1": {
+            "name": "ZETA DIVISION",
+            "score": 1
+        },
+        "team2": {
+            "name": "NORTHEPTION",
+            "score": 1
+        },
+        "status": "live",
+        "time": "2022-06-26T03:15:00+00:00",
+        "event": "Champions Tour Japan Stage 2: Challengers Playoffs",
+        "series": "Main Event–Grand Final"
+    },
+    {
+        "id": "106923",
+        "team1": {
+            "name": "Paper Rex",
+            "score": null
+        },
+        "team2": {
+            "name": "TBD",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-26T06:00:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Grand Final"
+    },
+    {
+        "id": "108015",
+        "team1": {
+            "name": "DRX",
+            "score": null
+        },
+        "team2": {
+            "name": "Maru Gaming",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-26T07:00:00+00:00",
+        "event": "Champions Tour Korea Stage 2: Challengers",
+        "series": "Playoffs–Grand Final"
+    },
+    {
+        "id": "108330",
+        "team1": {
+            "name": "Lethal Esports",
+            "score": null
+        },
+        "team2": {
+            "name": "Revenant Esports",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-26T11:30:00+00:00",
+        "event": "The Esports Club Community Cup",
+        "series": "Main Event–Grand Final"
+    },
+    {
+        "id": "107525",
+        "team1": {
+            "name": "FNATIC",
+            "score": null
+        },
+        "team2": {
+            "name": "FunPlus Phoenix",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-26T14:00:00+00:00",
+        "event": "Champions Tour EMEA Stage 2: Challengers",
+        "series": "Playoffs–Grand Final"
+    },
+    {
+        "id": "108239",
+        "team1": {
+            "name": "LOUD",
+            "score": null
+        },
+        "team2": {
+            "name": "Ninjas In Pyjamas",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-26T16:00:00+00:00",
+        "event": "Champions Tour Brazil Stage 2: Challengers",
+        "series": "Playoffs–Grand Final"
+    },
+    {
+        "id": "108005",
+        "team1": {
+            "name": "KRÜ Esports",
+            "score": null
+        },
+        "team2": {
+            "name": "Leviatán",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-26T19:00:00+00:00",
+        "event": "Champions Tour Latin America Stage 2: Playoffs",
+        "series": "Playoffs–Grand Final"
+    },
+    {
+        "id": "107743",
+        "team1": {
+            "name": "OpTic Gaming",
+            "score": null
+        },
+        "team2": {
+            "name": "XSET",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-26T20:00:00+00:00",
+        "event": "Champions Tour North America Stage 2: Challengers",
+        "series": "Playoffs–Grand Finals"
+    },
+    {
+        "id": "78825",
+        "team1": {
+            "name": "Akave Girls",
+            "score": null
+        },
+        "team2": {
+            "name": "Deportivo Cali Esports",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Game Changers LATAM: Open 3",
+        "series": "Latin America: North–Lower Round 3"
+    },
+    {
+        "id": "109799",
+        "team1": {
+            "name": "Cloud9",
+            "score": null
+        },
+        "team2": {
+            "name": "Levitate",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (A)"
+    },
+    {
+        "id": "109800",
+        "team1": {
+            "name": "DNADIFF",
+            "score": null
+        },
+        "team2": {
+            "name": "VIRTUOSO",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (A)"
+    },
+    {
+        "id": "109804",
+        "team1": {
+            "name": "SoaR",
+            "score": null
+        },
+        "team2": {
+            "name": "PUGSTARS",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (B)"
+    },
+    {
+        "id": "109805",
+        "team1": {
+            "name": "Soniqs",
+            "score": null
+        },
+        "team2": {
+            "name": "Elysium",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (B)"
+    },
+    {
+        "id": "109809",
+        "team1": {
+            "name": "Version1",
+            "score": null
+        },
+        "team2": {
+            "name": "Windmill Isle",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (C)"
+    },
+    {
+        "id": "109810",
+        "team1": {
+            "name": "TSM Academy",
+            "score": null
+        },
+        "team2": {
+            "name": "Native Gaming Black",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (C)"
+    },
+    {
+        "id": "109814",
+        "team1": {
+            "name": "Gen.G",
+            "score": null
+        },
+        "team2": {
+            "name": "The Ganaccis",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (D)"
+    },
+    {
+        "id": "109815",
+        "team1": {
+            "name": "DarkZero Esports",
+            "score": null
+        },
+        "team2": {
+            "name": "Maidenless",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (D)"
+    },
+    {
+        "id": "109819",
+        "team1": {
+            "name": "Knights",
+            "score": null
+        },
+        "team2": {
+            "name": "Stasis",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (E)"
+    },
+    {
+        "id": "109820",
+        "team1": {
+            "name": "Teal Seam",
+            "score": null
+        },
+        "team2": {
+            "name": "Zero MarksMen Black",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (E)"
+    },
+    {
+        "id": "109824",
+        "team1": {
+            "name": "Built By Gamers Academy",
+            "score": null
+        },
+        "team2": {
+            "name": "Knights Academy",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (F)"
+    },
+    {
+        "id": "109825",
+        "team1": {
+            "name": "NYFU",
+            "score": null
+        },
+        "team2": {
+            "name": "Indecisive",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (F)"
+    },
+    {
+        "id": "109829",
+        "team1": {
+            "name": "Lenny Time",
+            "score": null
+        },
+        "team2": {
+            "name": "TradeLikePros",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (G)"
+    },
+    {
+        "id": "109830",
+        "team1": {
+            "name": "Complexity",
+            "score": null
+        },
+        "team2": {
+            "name": "Team Basilisk",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (G)"
+    },
+    {
+        "id": "109834",
+        "team1": {
+            "name": "Oxygen Academy",
+            "score": null
+        },
+        "team2": {
+            "name": "Roy's Kitten Shelter",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (H)"
+    },
+    {
+        "id": "109835",
+        "team1": {
+            "name": "Cosmic Divide",
+            "score": null
+        },
+        "team2": {
+            "name": "together we are terrific",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-27T22:00:00+00:00",
+        "event": "Knights Circuit Championship",
+        "series": "Group Stage–Opening (H)"
+    },
+    {
+        "id": "78819",
+        "team1": {
+            "name": "FiRePOWER",
+            "score": null
+        },
+        "team2": {
+            "name": "Skull Cracker Fem",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-28T01:00:00+00:00",
+        "event": "Game Changers LATAM: Open 3",
+        "series": "Latin America: North–Upper Final"
+    },
+    {
+        "id": "78826",
+        "team1": {
+            "name": "TBD",
+            "score": null
+        },
+        "team2": {
+            "name": "TBD",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-28T22:00:00+00:00",
+        "event": "Game Changers LATAM: Open 3",
+        "series": "Latin America: North–Lower Final"
+    },
+    {
+        "id": "105015",
+        "team1": {
+            "name": "Version1",
+            "score": null
+        },
+        "team2": {
+            "name": "Knights Academy",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-29T20:00:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 4"
+    },
+    {
+        "id": "78820",
+        "team1": {
+            "name": "TBD",
+            "score": null
+        },
+        "team2": {
+            "name": "TBD",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-29T22:00:00+00:00",
+        "event": "Game Changers LATAM: Open 3",
+        "series": "Latin America: North–Grand Final"
+    },
+    {
+        "id": "105016",
+        "team1": {
+            "name": "Complexity",
+            "score": null
+        },
+        "team2": {
+            "name": "Zer0 Latency",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-29T22:30:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 4"
+    },
+    {
+        "id": "105874",
+        "team1": {
+            "name": "X10 Sapphire",
+            "score": null
+        },
+        "team2": {
+            "name": "Orangutan Female",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-30T11:00:00+00:00",
+        "event": "Champions Tour Game Changers Asia Pacific: Open Overtime",
+        "series": "Playoffs–Upper Semifinals"
+    },
+    {
+        "id": "105876",
+        "team1": {
+            "name": "TBD",
+            "score": null
+        },
+        "team2": {
+            "name": "TBD",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-30T11:00:00+00:00",
+        "event": "Champions Tour Game Changers Asia Pacific: Open Overtime",
+        "series": "Playoffs–Lower Round 3"
+    },
+    {
+        "id": "107065",
+        "team1": {
+            "name": "TBD",
+            "score": null
+        },
+        "team2": {
+            "name": "TBD",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-30T16:00:00+00:00",
+        "event": "Champions Tour LATAM/BR Stage 2: Last Chance Qualifier",
+        "series": "Decider–Decider"
+    },
+    {
+        "id": "109906",
+        "team1": {
+            "name": "Karmine Corp",
+            "score": null
+        },
+        "team2": {
+            "name": "beGenius",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-30T16:00:00+00:00",
+        "event": "Valorant Regional League France: Revolution - Stage 2",
+        "series": "Playoffs–Quarterfinals"
+    },
+    {
+        "id": "109907",
+        "team1": {
+            "name": "Mandatory",
+            "score": null
+        },
+        "team2": {
+            "name": "Team BDS",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-30T19:00:00+00:00",
+        "event": "Valorant Regional League France: Revolution - Stage 2",
+        "series": "Playoffs–Quarterfinals"
+    },
+    {
+        "id": "105017",
+        "team1": {
+            "name": "Cloud9 Academy",
+            "score": null
+        },
+        "team2": {
+            "name": "Zero MarksMen Black",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-30T20:00:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 4"
+    },
+    {
+        "id": "105014",
+        "team1": {
+            "name": "NYFU",
+            "score": null
+        },
+        "team2": {
+            "name": "Cloud9",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-30T21:00:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 3"
+    },
+    {
+        "id": "105018",
+        "team1": {
+            "name": "TSM Academy",
+            "score": null
+        },
+        "team2": {
+            "name": "Gen.G",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-06-30T22:30:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 4"
+    },
+    {
+        "id": "105875",
+        "team1": {
+            "name": "L Streak Female",
+            "score": null
+        },
+        "team2": {
+            "name": "ZOL Meraki",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-07-01T11:00:00+00:00",
+        "event": "Champions Tour Game Changers Asia Pacific: Open Overtime",
+        "series": "Playoffs–Upper Semifinals"
+    },
+    {
+        "id": "105877",
+        "team1": {
+            "name": "TBD",
+            "score": null
+        },
+        "team2": {
+            "name": "TBD",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-07-01T11:00:00+00:00",
+        "event": "Champions Tour Game Changers Asia Pacific: Open Overtime",
+        "series": "Playoffs–Lower Round 3"
+    },
+    {
+        "id": "108471",
+        "team1": {
+            "name": "Case Esports",
+            "score": null
+        },
+        "team2": {
+            "name": "Rebels Gaming",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-07-01T15:00:00+00:00",
+        "event": "Valorant Regional League Spain: Rising - Stage 2",
+        "series": "Playoffs–Semifinals"
+    },
+    {
+        "id": "109908",
+        "team1": {
+            "name": "MAD Lions",
+            "score": null
+        },
+        "team2": {
+            "name": "TBD",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-07-01T16:00:00+00:00",
+        "event": "Valorant Regional League France: Revolution - Stage 2",
+        "series": "Playoffs–Semifinals"
+    },
+    {
+        "id": "78833",
+        "team1": {
+            "name": "KRÜ Fem",
+            "score": null
+        },
+        "team2": {
+            "name": "Undead Gaming Fem",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-07-01T20:00:00+00:00",
+        "event": "Game Changers LATAM: Open 3",
+        "series": "Latin America: South–Upper Final"
+    },
+    {
+        "id": "105020",
+        "team1": {
+            "name": "Built By Gamers Academy",
+            "score": null
+        },
+        "team2": {
+            "name": "NYFU",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-07-01T20:00:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 4"
+    },
+    {
+        "id": "78839",
+        "team1": {
+            "name": "Movistar Optix Fem",
+            "score": null
+        },
+        "team2": {
+            "name": "9z Team Fem",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-07-01T23:00:00+00:00",
+        "event": "Game Changers LATAM: Open 3",
+        "series": "Latin America: South–Lower Round 3"
+    },
+    {
+        "id": "105023",
+        "team1": {
+            "name": "SoaR",
+            "score": null
+        },
+        "team2": {
+            "name": "Cloud9",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-07-01T23:00:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 4"
+    },
+    {
+        "id": "105878",
+        "team1": {
+            "name": "TBD",
+            "score": null
+        },
+        "team2": {
+            "name": "TBD",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-07-02T06:00:00+00:00",
+        "event": "Champions Tour Game Changers Asia Pacific: Open Overtime",
+        "series": "Playoffs–Lower Round 4"
+    },
+    {
+        "id": "105879",
+        "team1": {
+            "name": "TBD",
+            "score": null
+        },
+        "team2": {
+            "name": "TBD",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-07-02T09:00:00+00:00",
+        "event": "Champions Tour Game Changers Asia Pacific: Open Overtime",
+        "series": "Playoffs–Lower Round 4"
+    },
+    {
+        "id": "108472",
+        "team1": {
+            "name": "Giants Gaming",
+            "score": null
+        },
+        "team2": {
+            "name": "UCAM Tokiers",
+            "score": null
+        },
+        "status": "upcoming",
+        "time": "2022-07-02T09:00:00+00:00",
+        "event": "Valorant Regional League Spain: Rising - Stage 2",
+        "series": "Playoffs–Semifinals"
+    },
+    {
+        "id": "107742",
+        "team1": {
+            "name": "XSET",
+            "score": 3
+        },
+        "team2": {
+            "name": "FaZe Clan",
+            "score": 1
+        },
+        "status": "completed",
+        "time": "2022-06-25T20:00:00+00:00",
+        "event": "Champions Tour North America Stage 2: Challengers",
+        "series": "Playoffs–Lower Bracket Finals"
+    },
+    {
+        "id": "108007",
+        "team1": {
+            "name": "FUSION",
+            "score": 2
+        },
+        "team2": {
+            "name": "Leviatán",
+            "score": 3
+        },
+        "status": "completed",
+        "time": "2022-06-25T19:30:00+00:00",
+        "event": "Champions Tour Latin America Stage 2: Playoffs",
+        "series": "Playoffs–Lower Final"
+    },
+    {
+        "id": "108243",
+        "team1": {
+            "name": "Ninjas In Pyjamas",
+            "score": 3
+        },
+        "team2": {
+            "name": "Keyd Stars",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-25T16:00:00+00:00",
+        "event": "Champions Tour Brazil Stage 2: Challengers",
+        "series": "Playoffs–Lower Final"
+    },
+    {
+        "id": "107526",
+        "team1": {
+            "name": "Guild Esports",
+            "score": 0
+        },
+        "team2": {
+            "name": "FunPlus Phoenix",
+            "score": 3
+        },
+        "status": "completed",
+        "time": "2022-06-25T14:00:00+00:00",
+        "event": "Champions Tour EMEA Stage 2: Challengers",
+        "series": "Playoffs–Lower Final"
+    },
+    {
+        "id": "106921",
+        "team1": {
+            "name": "ONIC G",
+            "score": 0
+        },
+        "team2": {
+            "name": "XERXIA Esports",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-25T12:00:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Lower Round 3"
+    },
+    {
+        "id": "106920",
+        "team1": {
+            "name": "Paper Rex",
+            "score": 2
+        },
+        "team2": {
+            "name": "Team Secret",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-25T09:30:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Upper Final"
+    },
+    {
+        "id": "108019",
+        "team1": {
+            "name": "DAMWON Gaming",
+            "score": 1
+        },
+        "team2": {
+            "name": "Maru Gaming",
+            "score": 3
+        },
+        "status": "completed",
+        "time": "2022-06-25T07:00:00+00:00",
+        "event": "Champions Tour Korea Stage 2: Challengers",
+        "series": "Playoffs–Lower Final"
+    },
+    {
+        "id": "106919",
+        "team1": {
+            "name": "BLEED",
+            "score": 1
+        },
+        "team2": {
+            "name": "XERXIA Esports",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-25T06:00:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Lower Round 2"
+    },
+    {
+        "id": "106172",
+        "team1": {
+            "name": "NORTHEPTION",
+            "score": 2
+        },
+        "team2": {
+            "name": "Crazy Raccoon",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-25T05:50:00+00:00",
+        "event": "Champions Tour Japan Stage 2: Challengers Playoffs",
+        "series": "Main Event–Lower Bracket Final"
+    },
+    {
+        "id": "106918",
+        "team1": {
+            "name": "ONIC G",
+            "score": 2
+        },
+        "team2": {
+            "name": "Alter Ego",
+            "score": 1
+        },
+        "status": "completed",
+        "time": "2022-06-25T03:00:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Lower Round 2"
+    },
+    {
+        "id": "106171",
+        "team1": {
+            "name": "NORTHEPTION",
+            "score": 0
+        },
+        "team2": {
+            "name": "ZETA DIVISION",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-25T02:40:00+00:00",
+        "event": "Champions Tour Japan Stage 2: Challengers Playoffs",
+        "series": "Main Event–Upper Bracket Final"
+    },
+    {
+        "id": "107741",
+        "team1": {
+            "name": "NRG Esports",
+            "score": 1
+        },
+        "team2": {
+            "name": "FaZe Clan",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-25T00:45:00+00:00",
+        "event": "Champions Tour North America Stage 2: Challengers",
+        "series": "Playoffs–Lower Bracket Round 3"
+    },
+    {
+        "id": "105006",
+        "team1": {
+            "name": "Version1",
+            "score": 2
+        },
+        "team2": {
+            "name": "Built By Gamers Academy",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-24T22:30:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 2"
+    },
+    {
+        "id": "105009",
+        "team1": {
+            "name": "Cosmic Divide",
+            "score": 1
+        },
+        "team2": {
+            "name": "Oxygen Academy",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-24T22:30:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 3"
+    },
+    {
+        "id": "108004",
+        "team1": {
+            "name": "FUSION",
+            "score": 0
+        },
+        "team2": {
+            "name": "KRÜ Esports",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-24T21:45:00+00:00",
+        "event": "Champions Tour Latin America Stage 2: Playoffs",
+        "series": "Playoffs–Upper Final"
+    },
+    {
+        "id": "105011",
+        "team1": {
+            "name": "SoaR",
+            "score": 2
+        },
+        "team2": {
+            "name": "Gen.G",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-24T20:00:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 3"
+    },
+    {
+        "id": "107737",
+        "team1": {
+            "name": "XSET",
+            "score": 1
+        },
+        "team2": {
+            "name": "OpTic Gaming",
+            "score": 3
+        },
+        "status": "completed",
+        "time": "2022-06-24T20:00:00+00:00",
+        "event": "Champions Tour North America Stage 2: Challengers",
+        "series": "Playoffs–Upper Bracket Finals"
+    },
+    {
+        "id": "108006",
+        "team1": {
+            "name": "Leviatán",
+            "score": 2
+        },
+        "team2": {
+            "name": "E-Xolos LAZER",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-24T19:00:00+00:00",
+        "event": "Champions Tour Latin America Stage 2: Playoffs",
+        "series": "Playoffs–Lower Round 1"
+    },
+    {
+        "id": "107530",
+        "team1": {
+            "name": "FunPlus Phoenix",
+            "score": 2
+        },
+        "team2": {
+            "name": "M3 Champions",
+            "score": 1
+        },
+        "status": "completed",
+        "time": "2022-06-24T16:30:00+00:00",
+        "event": "Champions Tour EMEA Stage 2: Challengers",
+        "series": "Playoffs–Lower Round 2"
+    },
+    {
+        "id": "108238",
+        "team1": {
+            "name": "LOUD",
+            "score": 3
+        },
+        "team2": {
+            "name": "Ninjas In Pyjamas",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-24T16:00:00+00:00",
+        "event": "Champions Tour Brazil Stage 2: Challengers",
+        "series": "Playoffs–Upper Final"
+    },
+    {
+        "id": "107529",
+        "team1": {
+            "name": "Guild Esports",
+            "score": 0
+        },
+        "team2": {
+            "name": "FNATIC",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-24T14:05:00+00:00",
+        "event": "Champions Tour EMEA Stage 2: Challengers",
+        "series": "Playoffs–Upper Final"
+    },
+    {
+        "id": "108336",
+        "team1": {
+            "name": "Revenant Esports",
+            "score": 2
+        },
+        "team2": {
+            "name": "prime 5",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-24T11:30:00+00:00",
+        "event": "The Esports Club Community Cup",
+        "series": "Main Event–Lower Final"
+    },
+    {
+        "id": "106917",
+        "team1": {
+            "name": "BOOM Esports",
+            "score": 1
+        },
+        "team2": {
+            "name": "XERXIA Esports",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-24T10:30:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Lower Round 1"
+    },
+    {
+        "id": "106916",
+        "team1": {
+            "name": "Alter Ego",
+            "score": 2
+        },
+        "team2": {
+            "name": "Griffin E-Sports",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-24T08:00:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Lower Round 1"
+    },
+    {
+        "id": "106915",
+        "team1": {
+            "name": "ONIC G",
+            "score": 0
+        },
+        "team2": {
+            "name": "Team Secret",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-24T05:40:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Upper Semifinals"
+    },
+    {
+        "id": "106914",
+        "team1": {
+            "name": "Paper Rex",
+            "score": 2
+        },
+        "team2": {
+            "name": "BLEED",
+            "score": 1
+        },
+        "status": "completed",
+        "time": "2022-06-24T03:00:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Upper Semifinals"
+    },
+    {
+        "id": "108242",
+        "team1": {
+            "name": "Keyd Stars",
+            "score": 2
+        },
+        "team2": {
+            "name": "Los Grandes",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-23T22:50:00+00:00",
+        "event": "Champions Tour Brazil Stage 2: Challengers",
+        "series": "Playoffs–Lower Round 2"
+    },
+    {
+        "id": "108003",
+        "team1": {
+            "name": "KRÜ Esports",
+            "score": 2
+        },
+        "team2": {
+            "name": "E-Xolos LAZER",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-23T22:15:00+00:00",
+        "event": "Champions Tour Latin America Stage 2: Playoffs",
+        "series": "Playoffs–Upper Semifinals"
+    },
+    {
+        "id": "105003",
+        "team1": {
+            "name": "Knights Academy",
+            "score": 1
+        },
+        "team2": {
+            "name": "Cloud9",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-23T21:00:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 3"
+    },
+    {
+        "id": "98946",
+        "team1": {
+            "name": "Zero Tenacity",
+            "score": 6
+        },
+        "team2": {
+            "name": "NOM Esports",
+            "score": 13
+        },
+        "status": "completed",
+        "time": "2022-06-23T19:00:00+00:00",
+        "event": "Valorant Regional League East: Surge - Stage 2",
+        "series": "Regular Season–Week 7"
+    },
+    {
+        "id": "108002",
+        "team1": {
+            "name": "FUSION",
+            "score": 2
+        },
+        "team2": {
+            "name": "Leviatán",
+            "score": 1
+        },
+        "status": "completed",
+        "time": "2022-06-23T19:00:00+00:00",
+        "event": "Champions Tour Latin America Stage 2: Playoffs",
+        "series": "Playoffs–Upper Semifinals"
+    },
+    {
+        "id": "108241",
+        "team1": {
+            "name": "Los Grandes",
+            "score": 2
+        },
+        "team2": {
+            "name": "FURIA",
+            "score": 1
+        },
+        "status": "completed",
+        "time": "2022-06-23T19:00:00+00:00",
+        "event": "Champions Tour Brazil Stage 2: Challengers",
+        "series": "Playoffs–Lower Round 1"
+    },
+    {
+        "id": "98945",
+        "team1": {
+            "name": "Entropiq",
+            "score": 9
+        },
+        "team2": {
+            "name": "Anorthosis Famagusta Esports",
+            "score": 13
+        },
+        "status": "completed",
+        "time": "2022-06-23T17:15:00+00:00",
+        "event": "Valorant Regional League East: Surge - Stage 2",
+        "series": "Regular Season–Week 7"
+    },
+    {
+        "id": "98944",
+        "team1": {
+            "name": "Anonymo Mentos",
+            "score": 13
+        },
+        "team2": {
+            "name": "Enterprise Esports",
+            "score": 10
+        },
+        "status": "completed",
+        "time": "2022-06-23T16:00:00+00:00",
+        "event": "Valorant Regional League East: Surge - Stage 2",
+        "series": "Regular Season–Week 7"
+    },
+    {
+        "id": "108240",
+        "team1": {
+            "name": "Keyd Stars",
+            "score": 2
+        },
+        "team2": {
+            "name": "MIBR",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-23T16:00:00+00:00",
+        "event": "Champions Tour Brazil Stage 2: Challengers",
+        "series": "Playoffs–Lower Round 1"
+    },
+    {
+        "id": "98943",
+        "team1": {
+            "name": "Diamant Esports",
+            "score": 11
+        },
+        "team2": {
+            "name": "TENSTAR",
+            "score": 13
+        },
+        "status": "completed",
+        "time": "2022-06-23T15:00:00+00:00",
+        "event": "Valorant Regional League East: Surge - Stage 2",
+        "series": "Regular Season–Week 7"
+    },
+    {
+        "id": "106913",
+        "team1": {
+            "name": "XERXIA Esports",
+            "score": 1
+        },
+        "team2": {
+            "name": "Team Secret",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-23T11:30:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Upper Quarterfinals"
+    },
+    {
+        "id": "108329",
+        "team1": {
+            "name": "Lethal Esports",
+            "score": 2
+        },
+        "team2": {
+            "name": "Revenant Esports",
+            "score": 1
+        },
+        "status": "completed",
+        "time": "2022-06-23T11:00:00+00:00",
+        "event": "The Esports Club Community Cup",
+        "series": "Main Event–Upper Final"
+    },
+    {
+        "id": "106912",
+        "team1": {
+            "name": "ONIC G",
+            "score": 2
+        },
+        "team2": {
+            "name": "BOOM Esports",
+            "score": 1
+        },
+        "status": "completed",
+        "time": "2022-06-23T08:30:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Upper Quarterfinals"
+    },
+    {
+        "id": "106911",
+        "team1": {
+            "name": "BLEED",
+            "score": 2
+        },
+        "team2": {
+            "name": "Griffin E-Sports",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-23T06:00:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Upper Quarterfinals"
+    },
+    {
+        "id": "106910",
+        "team1": {
+            "name": "Paper Rex",
+            "score": 2
+        },
+        "team2": {
+            "name": "Alter Ego",
+            "score": 1
+        },
+        "status": "completed",
+        "time": "2022-06-23T03:00:00+00:00",
+        "event": "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
+        "series": "Playoffs–Upper Quarterfinals"
+    },
+    {
+        "id": "105012",
+        "team1": {
+            "name": "Complexity",
+            "score": 1
+        },
+        "team2": {
+            "name": "Akrew",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-22T23:00:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 3"
+    },
+    {
+        "id": "105007",
+        "team1": {
+            "name": "Built By Gamers Academy",
+            "score": 1
+        },
+        "team2": {
+            "name": "Knights Academy",
+            "score": 2
+        },
+        "status": "completed",
+        "time": "2022-06-22T20:00:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 3"
+    },
+    {
+        "id": "105008",
+        "team1": {
+            "name": "Cloud9 Academy",
+            "score": 2
+        },
+        "team2": {
+            "name": "Soniqs",
+            "score": 1
+        },
+        "status": "completed",
+        "time": "2022-06-22T20:00:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 3"
+    },
+    {
+        "id": "105010",
+        "team1": {
+            "name": "Version1",
+            "score": 2
+        },
+        "team2": {
+            "name": "TSM Academy",
+            "score": 1
+        },
+        "status": "completed",
+        "time": "2022-06-22T20:00:00+00:00",
+        "event": "MEL Premiership S3",
+        "series": "Group Stage: Stage 1–Week 3"
+    },
+    {
+        "id": "108237",
+        "team1": {
+            "name": "Ninjas In Pyjamas",
+            "score": 2
+        },
+        "team2": {
+            "name": "Keyd Stars",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-22T18:15:00+00:00",
+        "event": "Champions Tour Brazil Stage 2: Challengers",
+        "series": "Playoffs–Upper Semifinals"
+    },
+    {
+        "id": "98942",
+        "team1": {
+            "name": "NOM Esports",
+            "score": 13
+        },
+        "team2": {
+            "name": "Entropiq",
+            "score": 11
+        },
+        "status": "completed",
+        "time": "2022-06-22T18:00:00+00:00",
+        "event": "Valorant Regional League East: Surge - Stage 2",
+        "series": "Regular Season–Week 7"
+    },
+    {
+        "id": "98941",
+        "team1": {
+            "name": "Zero Tenacity",
+            "score": 11
+        },
+        "team2": {
+            "name": "Diamant Esports",
+            "score": 13
+        },
+        "status": "completed",
+        "time": "2022-06-22T17:00:00+00:00",
+        "event": "Valorant Regional League East: Surge - Stage 2",
+        "series": "Regular Season–Week 7"
+    },
+    {
+        "id": "98940",
+        "team1": {
+            "name": "TENSTAR",
+            "score": 13
+        },
+        "team2": {
+            "name": "Enterprise Esports",
+            "score": 4
+        },
+        "status": "completed",
+        "time": "2022-06-22T16:00:00+00:00",
+        "event": "Valorant Regional League East: Surge - Stage 2",
+        "series": "Regular Season–Week 7"
+    },
+    {
+        "id": "108236",
+        "team1": {
+            "name": "LOUD",
+            "score": 2
+        },
+        "team2": {
+            "name": "Los Grandes",
+            "score": 0
+        },
+        "status": "completed",
+        "time": "2022-06-22T16:00:00+00:00",
+        "event": "Champions Tour Brazil Stage 2: Challengers",
+        "series": "Playoffs–Upper Semifinals"
+    }
+]

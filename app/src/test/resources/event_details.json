@@ -1,0 +1,6665 @@
+{
+    "id": "800",
+    "title": "Champions Tour North America Stage 2: Challengers",
+    "subtitle": "Part of the Valorant Champions Tour, Riot's official 2022 tournament circuit",
+    "dates": "Apr 28, 2022 - Jun 26, 2022",
+    "prize": "${'$'}200,000 USD",
+    "location": "us",
+    "img": "https://owcdn.net/img/6009f963577f4.png",
+    "prizes": [
+        {
+            "position": "1st",
+            "prize": "${'$'}50,000USD",
+            "team": null
+        },
+        {
+            "position": "2nd",
+            "prize": "${'$'}32,000USD",
+            "team": null
+        },
+        {
+            "position": "3rd",
+            "prize": "${'$'}26,000USD",
+            "team": {
+                "id": "337",
+                "name": "FaZe Clan",
+                "img": "https://owcdn.net/img/61f6178e64260.png",
+                "country": "United States"
+            }
+        }
+    ],
+    "brackets": [
+        {
+            "upper": [
+                {
+                    "title": "",
+                    "matches": [
+                        {
+                            "id": "107143",
+                            "time": "1:50 am IST, Jun 17",
+                            "teams": [
+                                {
+                                    "name": "FaZe Clan",
+                                    "score": "1",
+                                    "img": "https://owcdn.net/img/61f6178e64260.png"
+                                },
+                                {
+                                    "name": "100 Thieves",
+                                    "score": "2",
+                                    "img": "https://owcdn.net/img/603c00d5c5a08.png"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "107144",
+                            "time": "5:25 am IST, Jun 17",
+                            "teams": [
+                                {
+                                    "name": "Ghost Gaming",
+                                    "score": "0",
+                                    "img": "https://owcdn.net/img/62a407a8ec084.png"
+                                },
+                                {
+                                    "name": "Evil Geniuses",
+                                    "score": "2",
+                                    "img": "https://owcdn.net/img/62a409ad29351.png"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Upper Semifinals",
+                    "matches": [
+                        {
+                            "id": "107435",
+                            "time": "1:30 am IST, Jun 19",
+                            "teams": [
+                                {
+                                    "name": "XSET",
+                                    "score": "2",
+                                    "img": "https://owcdn.net/img/62874ec8a2b0c.png"
+                                },
+                                {
+                                    "name": "100 Thieves",
+                                    "score": "0",
+                                    "img": "https://owcdn.net/img/603c00d5c5a08.png"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "107436",
+                            "time": "4:05 am IST, Jun 19",
+                            "teams": [
+                                {
+                                    "name": "OpTic Gaming",
+                                    "score": "2",
+                                    "img": "https://owcdn.net/img/62058299eef09.png"
+                                },
+                                {
+                                    "name": "Evil Geniuses",
+                                    "score": "0",
+                                    "img": "https://owcdn.net/img/62a409ad29351.png"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Upper Final",
+                    "matches": [
+                        {
+                            "id": "107737",
+                            "time": "1:30 am IST, Jun 25",
+                            "teams": [
+                                {
+                                    "name": "XSET",
+                                    "score": "1",
+                                    "img": "https://owcdn.net/img/62874ec8a2b0c.png"
+                                },
+                                {
+                                    "name": "OpTic Gaming",
+                                    "score": "3",
+                                    "img": "https://owcdn.net/img/62058299eef09.png"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Grand Final",
+                    "matches": [
+                        {
+                            "id": "107743",
+                            "time": "1:30 am IST, Jun 27",
+                            "teams": [
+                                {
+                                    "name": "OpTic Gaming",
+                                    "score": "-",
+                                    "img": "https://owcdn.net/img/62058299eef09.png"
+                                },
+                                {
+                                    "name": "XSET",
+                                    "score": "-",
+                                    "img": "https://owcdn.net/img/62874ec8a2b0c.png"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "lower": [
+                {
+                    "title": "Lower Round 1",
+                    "matches": [
+                        {
+                            "id": "107142",
+                            "time": "1:50 am IST, Jun 18",
+                            "teams": [
+                                {
+                                    "name": "Ghost Gaming",
+                                    "score": "0",
+                                    "img": "https://owcdn.net/img/62a407a8ec084.png"
+                                },
+                                {
+                                    "name": "NRG Esports",
+                                    "score": "2",
+                                    "img": "https://owcdn.net/img/62874d7ac0534.png"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "107141",
+                            "time": "4:25 am IST, Jun 18",
+                            "teams": [
+                                {
+                                    "name": "FaZe Clan",
+                                    "score": "2",
+                                    "img": "https://owcdn.net/img/61f6178e64260.png"
+                                },
+                                {
+                                    "name": "Luminosity",
+                                    "score": "1",
+                                    "img": "https://owcdn.net/img/5f36ec1f4ab21.png"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Lower Round 2",
+                    "matches": [
+                        {
+                            "id": "107739",
+                            "time": "1:30 am IST, Jun 20",
+                            "teams": [
+                                {
+                                    "name": "Evil Geniuses",
+                                    "score": "1",
+                                    "img": "https://owcdn.net/img/62a409ad29351.png"
+                                },
+                                {
+                                    "name": "NRG Esports",
+                                    "score": "2",
+                                    "img": "https://owcdn.net/img/62874d7ac0534.png"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "107740",
+                            "time": "5:00 am IST, Jun 20",
+                            "teams": [
+                                {
+                                    "name": "100 Thieves",
+                                    "score": "1",
+                                    "img": "https://owcdn.net/img/603c00d5c5a08.png"
+                                },
+                                {
+                                    "name": "FaZe Clan",
+                                    "score": "2",
+                                    "img": "https://owcdn.net/img/61f6178e64260.png"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Lower Round 3",
+                    "matches": [
+                        {
+                            "id": "107741",
+                            "time": "6:15 am IST, Jun 25",
+                            "teams": [
+                                {
+                                    "name": "NRG Esports",
+                                    "score": "1",
+                                    "img": "https://owcdn.net/img/62874d7ac0534.png"
+                                },
+                                {
+                                    "name": "FaZe Clan",
+                                    "score": "2",
+                                    "img": "https://owcdn.net/img/61f6178e64260.png"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Lower Final",
+                    "matches": [
+                        {
+                            "id": "107742",
+                            "time": "1:30 am IST, Jun 26",
+                            "teams": [
+                                {
+                                    "name": "XSET",
+                                    "score": "3",
+                                    "img": "https://owcdn.net/img/62874ec8a2b0c.png"
+                                },
+                                {
+                                    "name": "FaZe Clan",
+                                    "score": "1",
+                                    "img": "https://owcdn.net/img/61f6178e64260.png"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "teams": [
+        {
+            "name": "Ghost Gaming",
+            "id": "2291",
+            "img": "https://owcdn.net/img/62a407a8ec084.png",
+            "seed": "Group Stage"
+        },
+        {
+            "name": "XSET",
+            "id": "533",
+            "img": "https://owcdn.net/img/62874ec8a2b0c.png",
+            "seed": "Group Stage"
+        },
+        {
+            "name": "100 Thieves",
+            "id": "120",
+            "img": "https://owcdn.net/img/603c00d5c5a08.png",
+            "seed": "Group Stage"
+        },
+        {
+            "name": "OpTic Gaming",
+            "id": "8127",
+            "img": "https://owcdn.net/img/62058299eef09.png",
+            "seed": "Group Stage"
+        },
+        {
+            "name": "Evil Geniuses",
+            "id": "5248",
+            "img": "https://owcdn.net/img/62a409ad29351.png",
+            "seed": "Group Stage"
+        },
+        {
+            "name": "Luminosity",
+            "id": "642",
+            "img": "https://owcdn.net/img/5f36ec1f4ab21.png",
+            "seed": "Group Stage"
+        },
+        {
+            "name": "FaZe Clan",
+            "id": "337",
+            "img": "https://owcdn.net/img/61f6178e64260.png",
+            "seed": "Group Stage"
+        },
+        {
+            "name": "NRG Esports",
+            "id": "1034",
+            "img": "https://owcdn.net/img/62874d7ac0534.png",
+            "seed": "Group Stage"
+        }
+    ],
+    "matches": [
+        {
+            "id": "94199",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zer0 Latency",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "TEN-5",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94200",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "YFP Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "MEW2",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94201",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Tokyo Revengers",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94202",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Aspyre",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "RILLAS",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94203",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Mizzou Esports",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94204",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Exotic",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Free Fall",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94207",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "DarkZero Esports",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Ego peekers",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94208",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Able Esports",
+                    "region": "ca",
+                    "score": 0
+                },
+                {
+                    "name": "DawN",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94209",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team Opulence Black",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94210",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "5 of a Kind",
+                    "region": "ca",
+                    "score": 0
+                },
+                {
+                    "name": "Nation Gaming",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94211",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Basilisk",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Lycus Empire",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94212",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Thanos Mug Academy",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "SWARM esports",
+                    "region": "un",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94215",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "AstraSect",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team Opulence Gold",
+                    "region": "un",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94216",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Nights Academy",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "FaRt Clan",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94217",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "T1",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "Ugly Hamsters",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94218",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Flux",
+                    "region": "ca",
+                    "score": 0
+                },
+                {
+                    "name": "afterMath Esports",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94219",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Moon Raccoons",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Nana's Biscuits",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94220",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "New Moon",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "select few",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94223",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Lenny Time",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Go 4 Broke",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94224",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Unknown",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Eros",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94225",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Soniqs",
+                    "region": "au",
+                    "score": 2
+                },
+                {
+                    "name": "SSA",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94226",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Moonrise",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Crownless",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94227",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zero MarksMen Black",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "SLODI REPUS",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94228",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "BASED",
+                    "region": "un",
+                    "score": 2
+                },
+                {
+                    "name": "Panda Party",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94231",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "TradeLikePros",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "goth boy clique",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94232",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Girl Kissers",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Phoenix2",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94233",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Face Off",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94234",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team MystiC",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Dallas Vendetta",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94235",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Clanless",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "SYR",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94236",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cloud9 White",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "EDO TENSEI",
+                    "region": "ca",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94239",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "NYFU",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Pasquallys Pizza Posse",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94240",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gorilla Gang",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Nocturnals",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94241",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Discord Kitties uwu",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94242",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "IlluZion",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Eclectiq",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94243",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cosmic Divide",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Desire Rising",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94244",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Resonate",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "StarBound",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94247",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Reckaroo",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Moonrise Black",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94248",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "PUGSTARS",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "GONJO",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94249",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team Blank",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94250",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Mach5",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Omnipotent Gaming",
+                    "region": "un",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94251",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Northern Forces",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94252",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Solstice Esports",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "Zenigma Alpha",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94255",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Skwirel Warriers",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "StayHydrated",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94256",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Run it Down",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Conquest Esports",
+                    "region": "un",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94257",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Nearest Airport",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "GodSpeed",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94258",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Shopify Rebellion",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Tempest Gaming",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94259",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "dart monkeys",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94260",
+            "time": "3:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gifted",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Immortals",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94262",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zer0 Latency",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "YFP Gaming",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94264",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Free Fall",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94266",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "DarkZero Esports",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "DawN",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94267",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Nation Gaming",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94271",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "T1",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "afterMath Esports",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94272",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Moon Raccoons",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "New Moon",
+                    "region": "ca",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94274",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Lenny Time",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Unknown",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94276",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zero MarksMen Black",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "BASED",
+                    "region": "un",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94278",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "TradeLikePros",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Girl Kissers",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94279",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team MystiC",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94280",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Clanless",
+                    "region": "ca",
+                    "score": 0
+                },
+                {
+                    "name": "Cloud9 White",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94282",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "NYFU",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Gorilla Gang",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94288",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Solstice Esports",
+                    "region": "ca",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94291",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Nearest Airport",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Shopify Rebellion",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94292",
+            "time": "5:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Gifted",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94263",
+            "time": "6:00 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Aspyre",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94275",
+            "time": "6:00 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Soniqs",
+                    "region": "au",
+                    "score": 2
+                },
+                {
+                    "name": "Moonrise",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94270",
+            "time": "6:15 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "AstraSect",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "Nights Academy",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94287",
+            "time": "6:15 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Mach5",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94290",
+            "time": "6:15 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Skwirel Warriers",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Run it Down",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94283",
+            "time": "6:20 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "IlluZion",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94268",
+            "time": "6:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Basilisk",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "SWARM esports",
+                    "region": "un",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94284",
+            "time": "6:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cosmic Divide",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Resonate",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94286",
+            "time": "6:30 AM",
+            "date": "Fri, April 29, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Reckaroo",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "PUGSTARS",
+                    "region": "ca",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94299",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Version1",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "Zer0 Latency",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94300",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94301",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "DarkZero Esports",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94302",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Team Basilisk",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94303",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Knights",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Nights Academy",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94304",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "T1",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "Moon Raccoons",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94305",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Lenny Time",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94306",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Soniqs",
+                    "region": "au",
+                    "score": 1
+                },
+                {
+                    "name": "Zero MarksMen Black",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94307",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Girl Kissers",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94308",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Cloud9 White",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94309",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "NYFU",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94310",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Cosmic Divide",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94311",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "PUGSTARS",
+                    "region": "ca",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94312",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94313",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Run it Down",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94314",
+            "time": "3:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Nearest Airport",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94335",
+            "time": "5:45 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "PUGSTARS",
+                    "region": "ca",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94321",
+            "time": "5:50 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94316",
+            "time": "6:05 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team Basilisk",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94330",
+            "time": "6:05 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "DarkZero Esports",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94318",
+            "time": "6:15 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Zero MarksMen Black",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94332",
+            "time": "6:15 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Soniqs",
+                    "region": "au",
+                    "score": 2
+                },
+                {
+                    "name": "Lenny Time",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94315",
+            "time": "6:20 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Version1",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94322",
+            "time": "6:25 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94329",
+            "time": "6:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Zer0 Latency",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94334",
+            "time": "6:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cosmic Divide",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "NYFU",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94336",
+            "time": "6:30 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Nearest Airport",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Run it Down",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94319",
+            "time": "6:45 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94333",
+            "time": "6:45 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cloud9 White",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Girl Kissers",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94320",
+            "time": "6:50 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94317",
+            "time": "7:35 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Knights",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "T1",
+                    "region": "ca",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94331",
+            "time": "7:35 AM",
+            "date": "Sat, April 30, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Moon Raccoons",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Nights Academy",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94323",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Version1",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Quarterfinals",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94324",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Knights",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Quarterfinals",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94325",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Quarterfinals",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94326",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Quarterfinals",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94337",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Zer0 Latency",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94338",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "DarkZero Esports",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94339",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Moon Raccoons",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94340",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Soniqs",
+                    "region": "au",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94341",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zero MarksMen Black",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Girl Kissers",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94342",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "T1",
+                    "region": "ca",
+                    "score": 1
+                },
+                {
+                    "name": "NYFU",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94343",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Basilisk",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94344",
+            "time": "1:30 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Nearest Airport",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94327",
+            "time": "4:20 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Version1",
+                    "region": "ca",
+                    "score": 0
+                },
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Semifinals",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94348",
+            "time": "4:40 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 3",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94345",
+            "time": "5:00 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "DarkZero Esports",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 3",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94346",
+            "time": "5:00 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 3",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94347",
+            "time": "5:05 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zero MarksMen Black",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "NYFU",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 3",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94328",
+            "time": "7:00 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Semifinals",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94349",
+            "time": "7:00 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Knights",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "DarkZero Esports",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 4",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94352",
+            "time": "7:00 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 4",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94350",
+            "time": "7:40 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 4",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94351",
+            "time": "7:50 AM",
+            "date": "Sun, May 1, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "NYFU",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 4",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94353",
+            "time": "1:30 AM",
+            "date": "Mon, May 2, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Knights",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 5",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94354",
+            "time": "1:30 AM",
+            "date": "Mon, May 2, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 5",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94355",
+            "time": "5:00 AM",
+            "date": "Mon, May 2, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 6",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "94356",
+            "time": "8:25 AM",
+            "date": "Mon, May 2, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Version1",
+                    "region": "ca",
+                    "score": 1
+                },
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 6",
+            "stage": "Open Qualifier #1"
+        },
+        {
+            "id": "96983",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gorilla Gang",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Phoenix2",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96984",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Reckaroo",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Gen.G Black",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96985",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "T1",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "Misfits Black",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96986",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "afterMath Esports",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team Opulence Gold",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96987",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Soniqs",
+                    "region": "au",
+                    "score": 2
+                },
+                {
+                    "name": "1Rule",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96988",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Vexo Esports",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "select few",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96991",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Lenny Time",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Eros",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96992",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Able Esports",
+                    "region": "ca",
+                    "score": 1
+                },
+                {
+                    "name": "StarBound",
+                    "region": "un",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96993",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Panda Party",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96994",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Spectral Esports",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Big Baller Brand",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96995",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Pasquallys Pizza Posse",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96996",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "TradeLikePros",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Pulsar Red",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "96999",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Clanless",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "SLODI REPUS",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97000",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Resonate",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "GONJO",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97001",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Ugly Hamsters",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97002",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Nation Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "BaddiesOnVal",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97003",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Basilisk",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "5 of a Kind",
+                    "region": "ca",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97004",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "HypeHorizen",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Zenigma Alpha",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97007",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Nights Academy",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "MEW2",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97008",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Unknown",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "BASED",
+                    "region": "un",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97009",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Nana's Biscuits",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97010",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Free Fall",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Omnipotent Gaming",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97011",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cosmic Divide",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Chapter 4",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97012",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Lycus Empire",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Conquest Esports",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97015",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Skwirel Warriers",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Shift Walkers",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97016",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Mach5",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "RILLAS",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97017",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Girl Kissers",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Moonrise Black",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97018",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Moonrise",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Tempest Gaming",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97019",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Nearest Airport",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "CG",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97020",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "New Moon",
+                    "region": "ca",
+                    "score": 1
+                },
+                {
+                    "name": "Rated Gaming",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97023",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "PUGSTARS",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "SYR",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97024",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Solstice Esports",
+                    "region": "ca",
+                    "score": 1
+                },
+                {
+                    "name": "AVESTA",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97025",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zero MarksMen Black",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Mizzou Esports",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97026",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Eclectiq",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Tokyo Revengers",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97027",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Area of Effect",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97028",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "IlluZion",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "TBD",
+                    "region": "un",
+                    "score": null
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97031",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "YFP Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "dart monkeys",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97032",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "SWARM esports",
+                    "region": "un",
+                    "score": 1
+                },
+                {
+                    "name": "Desire Rising",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97033",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Moon Raccoons",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "GodSpeed",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97034",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "ADHD",
+                    "region": "un",
+                    "score": 2
+                },
+                {
+                    "name": "Team Flux",
+                    "region": "ca",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97035",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zer0 Latency",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Face Off",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97036",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Aspyre",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Dallas Vendetta",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97039",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cloud9 White",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "TEN-5",
+                    "region": "un",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97040",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "ONi",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "FaRt Clan",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97041",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Nocturnals",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97042",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team MystiC",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Exotic",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97043",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Run it Down",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team Opulence Black",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97044",
+            "time": "3:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Mystic",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team Blank",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 128",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97046",
+            "time": "5:15 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gorilla Gang",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Team Reckaroo",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97048",
+            "time": "5:15 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Soniqs",
+                    "region": "au",
+                    "score": 2
+                },
+                {
+                    "name": "Vexo Esports",
+                    "region": "ca",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97050",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Lenny Time",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "StarBound",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97051",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Big Baller Brand",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97052",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "TradeLikePros",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97055",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Nation Gaming",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97058",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Nights Academy",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "BASED",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97059",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Free Fall",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97060",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cosmic Divide",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Lycus Empire",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97063",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Girl Kissers",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Moonrise",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97067",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zero MarksMen Black",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Eclectiq",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97068",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "IlluZion",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97072",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zer0 Latency",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Aspyre",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97076",
+            "time": "5:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Run it Down",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Team Mystic",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97047",
+            "time": "5:45 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "T1",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "afterMath Esports",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97075",
+            "time": "5:45 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Exotic",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97056",
+            "time": "6:00 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Basilisk",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "HypeHorizen",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97066",
+            "time": "6:00 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "PUGSTARS",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "AVESTA",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97071",
+            "time": "6:00 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Moon Raccoons",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "ADHD",
+                    "region": "un",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97074",
+            "time": "6:15 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cloud9 White",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "ONi",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97054",
+            "time": "6:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Clanless",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "Resonate",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97062",
+            "time": "6:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Skwirel Warriers",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "RILLAS",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97064",
+            "time": "6:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Nearest Airport",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "Rated Gaming",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97070",
+            "time": "6:30 AM",
+            "date": "Fri, May 6, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "YFP Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Desire Rising",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Round of 64",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97176",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team Reckaroo",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97177",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "T1",
+                    "region": "ca",
+                    "score": 0
+                },
+                {
+                    "name": "Soniqs",
+                    "region": "au",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97178",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "NYFU",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Lenny Time",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97179",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97180",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Clanless",
+                    "region": "ca",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97181",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team Basilisk",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97182",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Nights Academy",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97183",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Cosmic Divide",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97184",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Version1",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "Skwirel Warriers",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97185",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Girl Kissers",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Rated Gaming",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97186",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "PUGSTARS",
+                    "region": "ca",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97187",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zero MarksMen Black",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97188",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Knights",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "YFP Gaming",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97189",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Moon Raccoons",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Aspyre",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97190",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "DarkZero Esports",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Cloud9 White",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97191",
+            "time": "3:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team Mystic",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 32",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97192",
+            "time": "5:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Soniqs",
+                    "region": "au",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97196",
+            "time": "5:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Version1",
+                    "region": "ca",
+                    "score": 1
+                },
+                {
+                    "name": "Girl Kissers",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97206",
+            "time": "5:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "T1",
+                    "region": "ca",
+                    "score": 2
+                },
+                {
+                    "name": "Team Reckaroo",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97194",
+            "time": "5:35 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97208",
+            "time": "5:35 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Basilisk",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Clanless",
+                    "region": "ca",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97197",
+            "time": "5:40 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97211",
+            "time": "5:40 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Zero MarksMen Black",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "PUGSTARS",
+                    "region": "ca",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97195",
+            "time": "5:45 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Cosmic Divide",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97209",
+            "time": "5:45 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Nights Academy",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97198",
+            "time": "5:50 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Knights",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Moon Raccoons",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97212",
+            "time": "5:50 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Aspyre",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "YFP Gaming",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97199",
+            "time": "6:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "DarkZero Esports",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97210",
+            "time": "6:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Skwirel Warriers",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Rated Gaming",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97213",
+            "time": "6:30 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Team Mystic",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Cloud9 White",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97193",
+            "time": "6:45 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "NYFU",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Round of 16",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97207",
+            "time": "6:45 AM",
+            "date": "Sat, May 7, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Lenny Time",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 1",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97200",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "NYFU",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Upper Quarterfinals",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97201",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Quarterfinals",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97202",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Girl Kissers",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Quarterfinals",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97203",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Knights",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "DarkZero Esports",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Quarterfinals",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97214",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "T1",
+                    "region": "ca",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97215",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Moon Raccoons",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97216",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Team Basilisk",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97217",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Version1",
+                    "region": "ca",
+                    "score": 1
+                },
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97218",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cosmic Divide",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Skwirel Warriers",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97219",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "PUGSTARS",
+                    "region": "ca",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97220",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "YFP Gaming",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97221",
+            "time": "12:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Soniqs",
+                    "region": "au",
+                    "score": 2
+                },
+                {
+                    "name": "Team Mystic",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 2",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97225",
+            "time": "2:25 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Soniqs",
+                    "region": "au",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Round 3",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97222",
+            "time": "2:55 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "VIRTUOSO",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 3",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97204",
+            "time": "3:15 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Semifinals",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97224",
+            "time": "3:30 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cosmic Divide",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 3",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97223",
+            "time": "3:45 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Complexity",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 3",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97226",
+            "time": "4:40 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Gen.G",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 4",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97205",
+            "time": "5:05 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Knights",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Semifinals",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97229",
+            "time": "5:15 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Girl Kissers",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 4",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97228",
+            "time": "5:35 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "DarkZero Esports",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 4",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97227",
+            "time": "5:50 AM",
+            "date": "Sun, May 8, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "NYFU",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 4",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97230",
+            "time": "12:30 AM",
+            "date": "Mon, May 9, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Built By Gamers Academy",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 5",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97231",
+            "time": "12:30 AM",
+            "date": "Mon, May 9, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "SoaR",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Lower Round 5",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97232",
+            "time": "3:00 AM",
+            "date": "Mon, May 9, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Knights",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 6",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "97233",
+            "time": "5:25 AM",
+            "date": "Mon, May 9, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Akrew",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Round 6",
+            "stage": "Open Qualifier #2"
+        },
+        {
+            "id": "99686",
+            "time": "1:30 AM",
+            "date": "Sat, May 14, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "The Guard",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Week 1",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99687",
+            "time": "3:55 AM",
+            "date": "Sat, May 14, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Week 1",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99688",
+            "time": "1:30 AM",
+            "date": "Sun, May 15, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "OpTic Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 1",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99689",
+            "time": "4:00 AM",
+            "date": "Sun, May 15, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "XSET",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 1",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99690",
+            "time": "1:30 AM",
+            "date": "Mon, May 16, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 1",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99691",
+            "time": "4:20 AM",
+            "date": "Mon, May 16, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cloud9",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 1",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99692",
+            "time": "1:30 AM",
+            "date": "Sat, May 21, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Week 2",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99693",
+            "time": "4:30 AM",
+            "date": "Sat, May 21, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "The Guard",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Week 2",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99694",
+            "time": "1:30 AM",
+            "date": "Sun, May 22, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 2",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99695",
+            "time": "4:10 AM",
+            "date": "Sun, May 22, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 2",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99696",
+            "time": "1:30 AM",
+            "date": "Mon, May 23, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "OpTic Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Cloud9",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Week 2",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99697",
+            "time": "4:50 AM",
+            "date": "Mon, May 23, 2022",
+            "eta": "1mo",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "XSET",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 2",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99704",
+            "time": "1:30 AM",
+            "date": "Sat, May 28, 2022",
+            "eta": "4w 1d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "The Guard",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 3",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99705",
+            "time": "4:00 AM",
+            "date": "Sat, May 28, 2022",
+            "eta": "4w 1d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Week 3",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99706",
+            "time": "1:30 AM",
+            "date": "Sun, May 29, 2022",
+            "eta": "4w 0d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "OpTic Gaming",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Week 3",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99707",
+            "time": "3:45 AM",
+            "date": "Sun, May 29, 2022",
+            "eta": "4w 0d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "XSET",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 3",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99708",
+            "time": "1:30 AM",
+            "date": "Mon, May 30, 2022",
+            "eta": "3w 6d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Cloud9",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 3",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99709",
+            "time": "3:45 AM",
+            "date": "Mon, May 30, 2022",
+            "eta": "3w 6d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 3",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99710",
+            "time": "1:30 AM",
+            "date": "Sat, June 4, 2022",
+            "eta": "3w 1d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "The Guard",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "XSET",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Week 4",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99711",
+            "time": "5:25 AM",
+            "date": "Sat, June 4, 2022",
+            "eta": "3w 1d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "OpTic Gaming",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Week 4",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99712",
+            "time": "1:30 AM",
+            "date": "Sun, June 5, 2022",
+            "eta": "3w 0d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Week 4",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99713",
+            "time": "4:15 AM",
+            "date": "Sun, June 5, 2022",
+            "eta": "3w 0d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Week 4",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99714",
+            "time": "1:30 AM",
+            "date": "Mon, June 6, 2022",
+            "eta": "2w 6d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Week 4",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99715",
+            "time": "3:45 AM",
+            "date": "Mon, June 6, 2022",
+            "eta": "2w 6d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cloud9",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Week 4",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99716",
+            "time": "1:45 AM",
+            "date": "Sat, June 11, 2022",
+            "eta": "2w 1d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "XSET",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "TSM",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 5",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99717",
+            "time": "3:55 AM",
+            "date": "Sat, June 11, 2022",
+            "eta": "2w 1d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 5",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99718",
+            "time": "1:30 AM",
+            "date": "Sun, June 12, 2022",
+            "eta": "2w 0d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "The Guard",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Week 5",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99719",
+            "time": "5:20 AM",
+            "date": "Sun, June 12, 2022",
+            "eta": "2w 0d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Week 5",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99720",
+            "time": "1:30 AM",
+            "date": "Mon, June 13, 2022",
+            "eta": "1w 6d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Cloud9",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Sentinels",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 5",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "99721",
+            "time": "3:30 AM",
+            "date": "Mon, June 13, 2022",
+            "eta": "1w 6d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "OpTic Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Week 5",
+            "stage": "Group Stage"
+        },
+        {
+            "id": "107143",
+            "time": "1:50 AM",
+            "date": "Fri, June 17, 2022",
+            "eta": "1w 2d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Bracket Round 1",
+            "stage": "Playoffs"
+        },
+        {
+            "id": "107144",
+            "time": "5:25 AM",
+            "date": "Fri, June 17, 2022",
+            "eta": "1w 2d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Upper Bracket Round 1",
+            "stage": "Playoffs"
+        },
+        {
+            "id": "107142",
+            "time": "1:50 AM",
+            "date": "Sat, June 18, 2022",
+            "eta": "1w 1d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Ghost Gaming",
+                    "region": "us",
+                    "score": 0
+                },
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Bracket Round 1",
+            "stage": "Playoffs"
+        },
+        {
+            "id": "107141",
+            "time": "4:25 AM",
+            "date": "Sat, June 18, 2022",
+            "eta": "1w 1d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Luminosity",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Bracket Round 1",
+            "stage": "Playoffs"
+        },
+        {
+            "id": "107435",
+            "time": "1:30 AM",
+            "date": "Sun, June 19, 2022",
+            "eta": "1w 0d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "XSET",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Bracket Semifinals",
+            "stage": "Playoffs"
+        },
+        {
+            "id": "107436",
+            "time": "4:05 AM",
+            "date": "Sun, June 19, 2022",
+            "eta": "1w 0d",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "OpTic Gaming",
+                    "region": "us",
+                    "score": 2
+                },
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 0
+                }
+            ],
+            "round": "Upper Bracket Semifinals",
+            "stage": "Playoffs"
+        },
+        {
+            "id": "107739",
+            "time": "1:30 AM",
+            "date": "Mon, June 20, 2022",
+            "eta": "6d 9h",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "Evil Geniuses",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Bracket Round 2",
+            "stage": "Playoffs"
+        },
+        {
+            "id": "107740",
+            "time": "5:00 AM",
+            "date": "Mon, June 20, 2022",
+            "eta": "6d 5h",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "100 Thieves",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Bracket Round 2",
+            "stage": "Playoffs"
+        },
+        {
+            "id": "107737",
+            "time": "1:30 AM",
+            "date": "Sat, June 25, 2022 Yesterday",
+            "eta": "1d 9h",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "XSET",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "OpTic Gaming",
+                    "region": "us",
+                    "score": 3
+                }
+            ],
+            "round": "Upper Bracket Finals",
+            "stage": "Playoffs"
+        },
+        {
+            "id": "107741",
+            "time": "6:15 AM",
+            "date": "Sat, June 25, 2022 Yesterday",
+            "eta": "1d 4h",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "NRG Esports",
+                    "region": "us",
+                    "score": 1
+                },
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 2
+                }
+            ],
+            "round": "Lower Bracket Round 3",
+            "stage": "Playoffs"
+        },
+        {
+            "id": "107742",
+            "time": "1:30 AM",
+            "date": "Sun, June 26, 2022 Today",
+            "eta": "9h 27m",
+            "status": "completed",
+            "teams": [
+                {
+                    "name": "XSET",
+                    "region": "us",
+                    "score": 3
+                },
+                {
+                    "name": "FaZe Clan",
+                    "region": "us",
+                    "score": 1
+                }
+            ],
+            "round": "Lower Bracket Finals",
+            "stage": "Playoffs"
+        },
+        {
+            "id": "107743",
+            "time": "1:30 AM",
+            "date": "Mon, June 27, 2022",
+            "eta": "14h 33m",
+            "status": "upcoming",
+            "teams": [
+                {
+                    "name": "OpTic Gaming",
+                    "region": "us",
+                    "score": null
+                },
+                {
+                    "name": "XSET",
+                    "region": "us",
+                    "score": null
+                }
+            ],
+            "round": "Grand Finals",
+            "stage": "Playoffs"
+        }
+    ]
+}
