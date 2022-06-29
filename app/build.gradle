@@ -67,6 +67,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
         freeCompilerArgs += ["-opt-in=kotlin.RequiresOptIn",
+                             "-opt-in=kotlin.contracts.ExperimentalContracts",
                              "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                              "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
                              "-opt-in=kotlin.time.ExperimentalTime",
@@ -81,11 +82,14 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion compose_version
+        kotlinCompilerExtensionVersion compose_compiler
     }
     packagingOptions {
         excludes += '/META-INF/{AL2.0,LGPL2.1}'
         excludes += 'META-INF/DEPENDENCIES'
+    }
+    sourceSets {
+        test.resources.srcDirs += 'src/test/resources'
     }
 }
 
@@ -93,7 +97,7 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'androidx.compose.material3:material3:1.0.0-alpha13'
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha14'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-text-google-fonts:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
@@ -113,12 +117,15 @@ dependencies {
 
     implementation "androidx.work:work-runtime-ktx:2.7.1"
 
-    def accompanist = "0.24.10-beta"
+    implementation "com.michael-bull.kotlin-result:kotlin-result:1.1.16"
+
+    def accompanist = "0.24.12-rc"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist"
     implementation "com.google.accompanist:accompanist-pager:$accompanist"
     implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist"
     implementation "com.google.accompanist:accompanist-webview:$accompanist"
+    implementation "com.google.accompanist:accompanist-swiperefresh:$accompanist"
 
     implementation "androidx.browser:browser:1.4.0"
 
@@ -166,11 +173,13 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "com.google.truth:truth:1.1.3"
+    testImplementation "com.google.truth.extensions:truth-java8-extension:1.1.3"
 
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
     testImplementation 'app.cash.turbine:turbine:0.8.0'
 
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+    testImplementation "io.ktor:ktor-client-mock:$ktor_version"
 
     testImplementation "org.robolectric:robolectric:4.8.1"
     testImplementation "androidx.arch.core:core-testing:2.1.0"
