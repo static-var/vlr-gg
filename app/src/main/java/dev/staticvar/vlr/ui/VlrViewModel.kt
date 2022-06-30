@@ -9,7 +9,6 @@ import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.TimeElapsed
 import dev.staticvar.vlr.utils.Waiting
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -71,12 +70,12 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
     repository.getTeamDetails(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
   fun trackTopic(topic: String) =
-    viewModelScope.launch(Dispatchers.IO) { repository.trackTopic(topic) }
+    viewModelScope.launch { repository.trackTopic(topic) }
 
   fun isTopicTracked(topic: String) = repository.isTopicTracked(topic)
 
   fun removeTopic(topic: String) =
-    viewModelScope.launch(Dispatchers.IO) { repository.removeTopic(topic) }
+    viewModelScope.launch { repository.removeTopic(topic) }
 
   fun parseNews(id: String) =
     repository.parseNews(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())

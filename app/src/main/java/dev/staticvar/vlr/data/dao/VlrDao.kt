@@ -23,7 +23,7 @@ interface VlrDao {
   @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertMatchInfo(match: MatchInfo)
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  fun insertTopicTracker(topicTracker: TopicTracker)
+  suspend fun insertTopicTracker(topicTracker: TopicTracker)
 
   @Query("SELECT * from NewsResponseItem") fun getNews(): Flow<List<NewsResponseItem>>
 
@@ -47,7 +47,7 @@ interface VlrDao {
 
   @Query("DELETE from NewsResponseItem") fun deleteAllNews()
 
-  @Query("DELETE from TopicTracker where topic = :topic") fun deleteTopic(topic: String)
+  @Query("DELETE from TopicTracker where topic = :topic") suspend fun deleteTopic(topic: String)
 
   @Query("DELETE from MatchInfo where id = :topic") fun deleteMatchInfoById(topic: String)
 
