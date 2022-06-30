@@ -44,18 +44,17 @@ class VlrMockEngine(private var sendISR: Boolean = false) {
             )
           println(request.url.encodedPath.removePrefix("/"))
           when (request.url.encodedPath.removePrefix("/")) {
-            Endpoints.NEWS ->
-              respond(readJson("news.json"), HttpStatusCode.OK, responseHeaders).also {
-                println(it)
-              }
-            Endpoints.MATCHES_OVERVIEW -> respond(readJson("matches.json"), HttpStatusCode.OK)
-            Endpoints.EVENTS_OVERVIEW -> respond(readJson("events.json"), HttpStatusCode.OK)
+            Endpoints.NEWS -> respond(readJson("news.json"), HttpStatusCode.OK, responseHeaders)
+            Endpoints.MATCHES_OVERVIEW ->
+              respond(readJson("matches.json"), HttpStatusCode.OK, responseHeaders)
+            Endpoints.EVENTS_OVERVIEW ->
+              respond(readJson("events.json"), HttpStatusCode.OK, responseHeaders)
             Endpoints.matchDetails("107742") ->
-              respond(readJson("match_details.json"), HttpStatusCode.OK)
+              respond(readJson("match_details.json"), HttpStatusCode.OK, responseHeaders)
             Endpoints.eventDetails("800") ->
-              respond(readJson("event_details.json"), HttpStatusCode.OK)
+              respond(readJson("event_details.json"), HttpStatusCode.OK, responseHeaders)
             Endpoints.teamDetails("2291") ->
-              respond(readJson("team_details.json"), HttpStatusCode.OK)
+              respond(readJson("team_details.json"), HttpStatusCode.OK, responseHeaders)
             else -> respond("Unknown request ${request.url.encodedPath}", HttpStatusCode.BadGateway)
           }
         }

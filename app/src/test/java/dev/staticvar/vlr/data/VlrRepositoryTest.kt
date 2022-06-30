@@ -4,23 +4,22 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import app.cash.turbine.testIn
+import app.cash.turbine.test
+import com.github.michaelbull.result.get
+import com.github.michaelbull.result.getError
 import com.google.common.truth.Truth.assertThat
 import dev.staticvar.vlr.BuildConfig
-import dev.staticvar.vlr.data.api.response.NewsResponseItem
 import dev.staticvar.vlr.data.dao.VlrDao
 import dev.staticvar.vlr.data.db.VlrDB
 import dev.staticvar.vlr.data.db.VlrTypeConverter
-import dev.staticvar.vlr.utils.Constants
-import dev.staticvar.vlr.utils.Waiting
+import dev.staticvar.vlr.utils.*
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
-import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
@@ -47,10 +46,10 @@ class VlrRepositoryTest {
     prettyPrint = true
   }
 
-  private val apiEngine = VlrMockEngine()
+  private val vlrMockEngine = VlrMockEngine()
 
   private var vlrHttpClient =
-    HttpClient(apiEngine.get()) {
+    HttpClient(vlrMockEngine.get()) {
       defaultRequest {
         host = Constants.BASE_URL
         url { protocol = URLProtocol.HTTPS }
@@ -69,14 +68,12 @@ class VlrRepositoryTest {
       }
     }
 
-  private var httpClient =
-    HttpClient(apiEngine.get()) {
-      defaultRequest {
-        host = Constants.BASE_URL
-        url { protocol = URLProtocol.HTTPS }
-      }
+  private val githubMockEngine = GithubMockEngine()
 
-      install(ContentNegotiation) { json(json = json) }
+  private var httpClient =
+    HttpClient(githubMockEngine.get()) {
+      defaultRequest { url { protocol = URLProtocol.HTTPS } }
+      expectSuccess = true
     }
 
   @Before
@@ -88,7 +85,6 @@ class VlrRepositoryTest {
         .allowMainThreadQueries()
         .build()
     vlrDao = db.getVlrDao()
-    repository = VlrRepository(vlrDao, vlrHttpClient, httpClient, testDispatcher, json)
   }
 
   @After
@@ -96,54 +92,385 @@ class VlrRepositoryTest {
     db.close()
   }
 
-  private lateinit var repository: VlrRepository
+  private val repository: VlrRepository by lazy {
+    VlrRepository(vlrDao, vlrHttpClient, httpClient, testDispatcher, json)
+  }
 
   @Test
-  fun `test if mergeNews returns correct data when api responds with error and db has no data`() =
+  fun `test if Ok(false) is returned when updateLatestNews api call is successful`() =
     runTest(testDispatcher) {
-      apiEngine.nextResponseWithServerError()
-      val flow = repository.mergeNews().testIn(this)
-      assertThat(flow.awaitItem()).isInstanceOf(Waiting::class.java)
-
-//      val failedResponse = flow.awaitItem()
-//      assertThat(failedResponse).isInstanceOf(Fail::class.java)
-//      assertThat(failedResponse.dataOrNull()).isNull()
-      flow.cancelAndIgnoreRemainingEvents()
+      TimeElapsed.reset(Endpoints.NEWS) // Reset cache key for api calls
+      repository.updateLatestNews().test {
+        assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
+        assertThat(awaitItem().get()).isFalse() // Api call complete, should return [Ok(false)]
+        awaitComplete()
+      }
     }
 
   @Test
-  fun `test if mergeNews returns correct data when api responds with error and db has data`() =
+  fun `test if Err(exception) is returned when updateLatestNews api responds with error`() =
     runTest(testDispatcher) {
-      launch { vlrDao.insertAllNews(listOf(NewsResponseItem())) }
-      apiEngine.nextResponseWithServerError()
-      val flow = repository.mergeNews().testIn(this)
-      val fail = flow.awaitItem()
-      assertThat(fail).isInstanceOf(Waiting::class.java)
-      println(fail)
+      TimeElapsed.reset(Endpoints.NEWS) // Reset cache key for api calls
+      vlrMockEngine.nextResponseWithServerError() // Ensure the api call fails
 
-      val emptyData = flow.awaitItem()
-      assertThat(emptyData.dataOrNull()).isNotNull()
-      assertThat(emptyData.dataOrNull()?.size).isEqualTo(1)
-
-      println(flow.awaitItem())
-//
-//      val failedResponse = flow.awaitItem()
-//      assertThat(failedResponse).isInstanceOf(Fail::class.java)
-//      assertThat(failedResponse.dataOrNull()).isNull()
-
-      flow.cancelAndIgnoreRemainingEvents()
+      repository.updateLatestNews().test {
+        assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
+        assertThat(awaitItem().getError())
+          .isNotNull() // Api call complete, should error [Err(ServerResponseException)]
+        awaitComplete()
+      }
     }
 
   @Test
-  fun `test if mergeNews returns correct data when api responds correctly and db has no data`() =
+  fun `test if getNewsFromDb gets data when api call is successful`() =
     runTest(testDispatcher) {
-      val flow = repository.mergeNews().testIn(this)
-      val waiting = flow.awaitItem()
-      assertThat(waiting).isInstanceOf(Waiting::class.java)
+      TimeElapsed.reset(Endpoints.NEWS) // Reset cache key for api calls
 
-//      val passData = flow.awaitItem()
-//      assertThat(passData).isInstanceOf(Pass::class.java)
-//      assertThat(passData.dataOrNull()).isNotEmpty()
-      flow.cancelAndIgnoreRemainingEvents()
+      repository.updateLatestNews().collect()
+
+      repository.getNewsFromDb().test {
+        val data = awaitItem()
+        assertThat(data)
+          .isInstanceOf(Pass::class.java) // Pass is a wrapper class around the actual data
+        assertThat(data.data).isNotNull()
+        assertThat(data.data?.size).isAtLeast(1) // Check if DAO data has at least 1 item
+      }
+    }
+
+  @Test
+  fun `test if getNewsFromDb has same data as before when api call fails`() =
+    runTest(testDispatcher) {
+      TimeElapsed.reset(Endpoints.NEWS) // Reset cache key for api calls
+
+      repository.getNewsFromDb().test {
+        assertThat(awaitItem().data).isEmpty() // Check if DAO returns has 0 data
+
+        vlrMockEngine.nextResponseWithServerError()
+        repository.updateLatestNews().collect()
+
+        expectNoEvents() // This will assert that flow does not emit anything after API call fails
+      }
+    }
+
+  @Test
+  fun `test if Ok(false) is returned when updateLatestMatches api call is successful`() =
+    runTest(testDispatcher) {
+      TimeElapsed.reset(Endpoints.MATCHES_OVERVIEW) // Reset cache key for api calls
+      repository.updateLatestMatches().test {
+        assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
+        assertThat(awaitItem().get()).isFalse() // Api call complete, should return [Ok(false)]
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `test if Err(exception) is returned when updateLatestMatches api responds with error`() =
+    runTest(testDispatcher) {
+      TimeElapsed.reset(Endpoints.MATCHES_OVERVIEW) // Reset cache key for api calls
+      vlrMockEngine.nextResponseWithServerError() // Ensure the api call fails
+
+      repository.updateLatestMatches().test {
+        assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
+        assertThat(awaitItem().getError())
+          .isNotNull() // Api call complete, should error [Err(ServerResponseException)]
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `test if getMatchesFromDb gets data when api call is successful`() =
+    runTest(testDispatcher) {
+      TimeElapsed.reset(Endpoints.MATCHES_OVERVIEW) // Reset cache key for api calls
+
+      repository.updateLatestMatches().collect()
+
+      repository.getMatchesFromDb().test {
+        val data = awaitItem()
+        assertThat(data)
+          .isInstanceOf(Pass::class.java) // Pass is a wrapper class around the actual data
+        assertThat(data.data).isNotNull()
+        assertThat(data.data?.size).isAtLeast(1) // Check if DAO data has at least 1 item
+      }
+    }
+
+  @Test
+  fun `test if getMatchesFromDb has same data as before when api call fails`() =
+    runTest(testDispatcher) {
+      TimeElapsed.reset(Endpoints.MATCHES_OVERVIEW) // Reset cache key for api calls
+
+      repository.getMatchesFromDb().test {
+        assertThat(awaitItem().data).isEmpty() // Check if DAO returns has 0 data
+
+        vlrMockEngine.nextResponseWithServerError()
+        repository.updateLatestMatches().collect()
+
+        expectNoEvents() // This will assert that flow does not emit anything after API call fails
+      }
+    }
+
+  @Test
+  fun `test if Ok(false) is returned when updateLatestEvents api call is successful`() =
+    runTest(testDispatcher) {
+      TimeElapsed.reset(Endpoints.EVENTS_OVERVIEW) // Reset cache key for api calls
+      repository.updateLatestEvents().test {
+        assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
+        assertThat(awaitItem().get()).isFalse() // Api call complete, should return [Ok(false)]
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `test if Err(exception) is returned when updateLatestEvents api responds with error`() =
+    runTest(testDispatcher) {
+      TimeElapsed.reset(Endpoints.EVENTS_OVERVIEW) // Reset cache key for api calls
+      vlrMockEngine.nextResponseWithServerError() // Ensure the api call fails
+
+      repository.updateLatestEvents().test {
+        assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
+        assertThat(awaitItem().getError())
+          .isNotNull() // Api call complete, should error [Err(ServerResponseException)]
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `test if getEventsFromDb gets data when api call is successful`() =
+    runTest(testDispatcher) {
+      TimeElapsed.reset(Endpoints.EVENTS_OVERVIEW) // Reset cache key for api calls
+
+      repository.updateLatestEvents().collect()
+
+      repository.getEventsFromDb().test {
+        val data = awaitItem()
+        assertThat(data)
+          .isInstanceOf(Pass::class.java) // Pass is a wrapper class around the actual data
+        assertThat(data.data).isNotNull()
+        assertThat(data.data?.size).isAtLeast(1) // Check if DAO data has at least 1 item
+      }
+    }
+
+  @Test
+  fun `test if getEventsFromDb has same data as before when api call fails`() =
+    runTest(testDispatcher) {
+      TimeElapsed.reset(Endpoints.EVENTS_OVERVIEW) // Reset cache key for api calls
+
+      repository.getEventsFromDb().test {
+        assertThat(awaitItem().data).isEmpty() // Check if DAO returns has 0 data
+
+        vlrMockEngine.nextResponseWithServerError()
+        repository.updateLatestEvents().collect()
+
+        expectNoEvents() // This will assert that flow does not emit anything after API call fails
+      }
+    }
+
+  @Test
+  fun `test if Ok(false) is returned when updateLatestMatchDetails api call is successful`() =
+    runTest(testDispatcher) {
+      val matchId = "107742"
+      TimeElapsed.reset(Endpoints.matchDetails(matchId)) // Reset cache key for api calls
+      repository.updateLatestMatchDetails(matchId).test {
+        assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
+        assertThat(awaitItem().get()).isFalse() // Api call complete, should return [Ok(false)]
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `test if Err(exception) is returned when updateLatestMatchDetails api responds with error`() =
+    runTest(testDispatcher) {
+      val matchId = "107742"
+      TimeElapsed.reset(Endpoints.matchDetails(matchId)) // Reset cache key for api calls
+      vlrMockEngine.nextResponseWithServerError() // Ensure the api call fails
+
+      repository.updateLatestMatchDetails(matchId).test {
+        assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
+        assertThat(awaitItem().getError())
+          .isNotNull() // Api call complete, should error [Err(ServerResponseException)]
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `test if getMatchDetailsFromDb gets data when api call is successful`() =
+    runTest(testDispatcher) {
+      val matchId = "107742"
+      TimeElapsed.reset(Endpoints.matchDetails(matchId)) // Reset cache key for api calls
+
+      repository.updateLatestMatchDetails(matchId).collect()
+
+      repository.getMatchDetailsFromDb(matchId).test {
+        val data = awaitItem()
+        assertThat(data)
+          .isInstanceOf(Pass::class.java) // Pass is a wrapper class around the actual data
+        assertThat(data.data).isNotNull() // Check if DAO data has returned !null data
+      }
+    }
+
+  @Test
+  fun `test if getMatchDetailsFromDb has same data as before when api call fails`() =
+    runTest(testDispatcher) {
+      val matchId = "107742"
+      TimeElapsed.reset(Endpoints.matchDetails(matchId)) // Reset cache key for api calls
+
+      repository.getMatchDetailsFromDb(matchId).test {
+        assertThat(awaitItem().data).isNull() // Confirm if DAO has no record of it before
+
+        vlrMockEngine.nextResponseWithServerError()
+        repository.updateLatestMatchDetails(matchId).collect()
+
+        expectNoEvents() // This will assert that flow does not emit anything after API call fails
+      }
+    }
+
+  @Test
+  fun `test if Ok(false) is returned when updateLatestEventDetails api call is successful`() =
+    runTest(testDispatcher) {
+      val eventId = "800"
+      TimeElapsed.reset(Endpoints.eventDetails(eventId)) // Reset cache key for api calls
+      repository.updateLatestEventDetails(eventId).test {
+        assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
+        assertThat(awaitItem().get()).isFalse() // Api call complete, should return [Ok(false)]
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `test if Err(exception) is returned when updateLatestEventDetails api responds with error`() =
+    runTest(testDispatcher) {
+      val eventId = "800"
+      TimeElapsed.reset(Endpoints.eventDetails(eventId)) // Reset cache key for api calls
+      vlrMockEngine.nextResponseWithServerError() // Ensure the api call fails
+
+      repository.updateLatestEventDetails(eventId).test {
+        assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
+        assertThat(awaitItem().getError())
+          .isNotNull() // Api call complete, should error [Err(ServerResponseException)]
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `test if getEventDetailsFromDb gets data when api call is successful`() =
+    runTest(testDispatcher) {
+      val eventId = "800"
+      TimeElapsed.reset(Endpoints.eventDetails(eventId)) // Reset cache key for api calls
+
+      repository.updateLatestEventDetails(eventId).collect()
+
+      repository.getEventDetailsFromDb(eventId).test {
+        val data = awaitItem()
+        assertThat(data)
+          .isInstanceOf(Pass::class.java) // Pass is a wrapper class around the actual data
+        assertThat(data.data).isNotNull() // Check if DAO data has returned !null data
+      }
+    }
+
+  @Test
+  fun `test if getEventDetailsFromDb has same data as before when api call fails`() =
+    runTest(testDispatcher) {
+      val eventId = "800"
+      TimeElapsed.reset(Endpoints.eventDetails(eventId)) // Reset cache key for api calls
+
+      repository.getEventDetailsFromDb(eventId).test {
+        assertThat(awaitItem().data).isNull() // Confirm if DAO has no record of it before
+
+        vlrMockEngine.nextResponseWithServerError()
+        repository.updateLatestEventDetails(eventId).collect()
+
+        expectNoEvents() // This will assert that flow does not emit anything after API call fails
+      }
+    }
+
+  @Test
+  fun `test if trackTopic inserts the data in db`() =
+    runTest(testDispatcher) {
+      val topic = "match/1100"
+      repository.trackTopic(topic)
+      repository.isTopicTracked(topic).test {
+        assertThat(awaitItem()).isTrue()
+        expectNoEvents()
+      }
+    }
+
+  @Test
+  fun `test if removeTopic removes the data from db`() =
+    runTest(testDispatcher) {
+      val topic = "match/1100"
+      repository.trackTopic(topic)
+      repository.isTopicTracked(topic).test {
+        assertThat(awaitItem()).isTrue()
+        expectNoEvents()
+      }
+      repository.removeTopic(topic)
+      repository.isTopicTracked(topic).test {
+        assertThat(awaitItem()).isFalse()
+        expectNoEvents()
+      }
+    }
+
+  @Test
+  fun `test if getTeamDetails gets data when api call is successful`() =
+    runTest(testDispatcher) {
+      val teamId = "2291"
+
+      repository.getTeamDetails(teamId).test {
+        skipItems(1) // Waiting state emits first so skip that
+        val data = awaitItem()
+        assertThat(data)
+          .isInstanceOf(Pass::class.java) // Pass is a wrapper class around the actual data
+        assertThat(data.dataOrNull()).isNotNull() // Check if data is not empty
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `test if getTeamDetails fails gracefully`() =
+    runTest(testDispatcher) {
+      val teamId = "2291"
+      vlrMockEngine.nextResponseWithServerError()
+      repository.getTeamDetails(teamId).test {
+        skipItems(1) // Waiting state emits first so skip that
+        assertThat(awaitItem()).isInstanceOf(Fail::class.java)
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `check getLatestAppVersion returns version when api call is successful`() =
+    runTest(testDispatcher) {
+      repository.getLatestAppVersion().test {
+        assertThat(awaitItem()).isEqualTo("0.2.0")
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `check getLatestAppVersion returns null when api call is unsuccessful`() =
+    runTest(testDispatcher) {
+      githubMockEngine.nextResponseWithServerError()
+      repository.getLatestAppVersion().test {
+        assertThat(awaitItem()).isNull()
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `check getApkUrl returns url when api call is successful`() =
+    runTest(testDispatcher) {
+      repository.getApkUrl().test {
+        assertThat(awaitItem()).isNotEmpty()
+        awaitComplete()
+      }
+    }
+
+  @Test
+  fun `check getApkUrl returns null when api call is unsuccessful`() =
+    runTest(testDispatcher) {
+      githubMockEngine.nextResponseWithServerError()
+      repository.getApkUrl().test {
+        assertThat(awaitItem()).isNull()
+        awaitComplete()
+      }
     }
 }

@@ -8,7 +8,6 @@ import dev.staticvar.vlr.di.IoDispatcher
 import dev.staticvar.vlr.utils.*
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -16,6 +15,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -40,14 +40,14 @@ constructor(
    */
   fun updateLatestNews() =
     flow<Result<Boolean, Throwable?>> {
-      if (TimeElapsed.hasElapsed(Constants.KEY_NEWS)) {
+      if (TimeElapsed.hasElapsed(Endpoints.NEWS)) {
         emit(Ok(true))
         val result = runSuspendCatching {
           ktorHttpClient.get(Endpoints.NEWS).body<List<NewsResponseItem>>()
         }
         result.get()?.let {
           vlrDao.deleteAndInsertNews(it)
-          TimeElapsed.start(Constants.KEY_NEWS, 180.seconds)
+          TimeElapsed.start(Endpoints.NEWS, 180.seconds)
           emit(Ok(false))
         }
           ?: emit(Err(result.getError()))
@@ -63,14 +63,14 @@ constructor(
    */
   fun updateLatestMatches() =
     flow<Result<Boolean, Throwable?>> {
-      if (TimeElapsed.hasElapsed(Constants.KEY_MATCH_ALL)) {
+      if (TimeElapsed.hasElapsed(Endpoints.MATCHES_OVERVIEW)) {
         emit(Ok(true))
         val result = runSuspendCatching {
           ktorHttpClient.get(Endpoints.MATCHES_OVERVIEW).body<List<MatchPreviewInfo>>()
         }
         result.get()?.let {
           vlrDao.deleteAndInsertMatchPreviewInfo(it)
-          TimeElapsed.start(Constants.KEY_MATCH_ALL, 30.seconds)
+          TimeElapsed.start(Endpoints.MATCHES_OVERVIEW, 30.seconds)
           emit(Ok(false))
         }
           ?: emit(Err(result.getError()))
@@ -86,14 +86,14 @@ constructor(
    */
   fun updateLatestEvents() =
     flow<Result<Boolean, Throwable?>> {
-      if (TimeElapsed.hasElapsed(Constants.KEY_TOURNAMENT_ALL)) {
+      if (TimeElapsed.hasElapsed(Endpoints.EVENTS_OVERVIEW)) {
         emit(Ok(true))
         val result = runSuspendCatching {
           ktorHttpClient.get(Endpoints.EVENTS_OVERVIEW).body<List<TournamentPreview>>()
         }
         result.get()?.let {
           vlrDao.deleteAndInsertTournamentPreview(it)
-          TimeElapsed.start(Constants.KEY_TOURNAMENT_ALL, 60.seconds)
+          TimeElapsed.start(Endpoints.EVENTS_OVERVIEW, 60.seconds)
           emit(Ok(false))
         }
           ?: emit(Err(result.getError()))
@@ -111,14 +111,14 @@ constructor(
    */
   fun updateLatestMatchDetails(id: String) =
     flow<Result<Boolean, Throwable?>> {
-      if (TimeElapsed.hasElapsed(id)) {
-        val result = runSuspendCatching {
-          ktorHttpClient.get(Endpoints.matchDetails(id)).body<MatchInfo>()
-        }
+      emit(Ok(true))
+      val key = Endpoints.matchDetails(id)
+      if (TimeElapsed.hasElapsed(key)) {
+        val result = runSuspendCatching { ktorHttpClient.get(key).body<MatchInfo>() }
         result.get()?.let {
           it.id = id
           vlrDao.insertMatchInfo(it)
-          TimeElapsed.start(id, 30.seconds)
+          TimeElapsed.start(key, 30.seconds)
           emit(Ok(false))
         }
           ?: emit(Err(result.getError()))
@@ -140,13 +140,13 @@ constructor(
    */
   fun updateLatestEventDetails(id: String) =
     flow<Result<Boolean, Throwable?>> {
-      if (TimeElapsed.hasElapsed(id)) {
-        val result = runSuspendCatching {
-          ktorHttpClient.get(Endpoints.eventDetails(id)).body<TournamentDetails>()
-        }
+      emit(Ok(true))
+      val key = Endpoints.eventDetails(id)
+      if (TimeElapsed.hasElapsed(key)) {
+        val result = runSuspendCatching { ktorHttpClient.get(key).body<TournamentDetails>() }
         result.get()?.let {
           vlrDao.insertTournamentDetails(it)
-          TimeElapsed.start(id, 30.seconds)
+          TimeElapsed.start(key, 30.seconds)
           emit(Ok(false))
         }
           ?: emit(Err(result.getError()))
@@ -165,7 +165,8 @@ constructor(
    *
    * @param topic
    */
-  fun trackTopic(topic: String) = vlrDao.insertTopicTracker(TopicTracker(topic))
+  suspend fun trackTopic(topic: String) =
+    withContext(ioDispatcher) { vlrDao.insertTopicTracker(TopicTracker(topic)) }
 
   /**
    * Is match tracked
@@ -179,26 +180,30 @@ constructor(
    *
    * @param topic
    */
-  fun removeTopic(topic: String) = vlrDao.deleteTopic(topic)
+  suspend fun removeTopic(topic: String) = withContext(ioDispatcher) { vlrDao.deleteTopic(topic) }
 
   /** Get latest app version from github version file */
   fun getLatestAppVersion() = flow {
-    emit(simpleKtorHttpClient.request(Endpoints.APK_VERSION_PAGE_LINK).bodyAsText())
+    runSuspendCatching {
+        simpleKtorHttpClient.request(Endpoints.APK_VERSION_PAGE_LINK).bodyAsText()
+      }
+      .also { emit(it.get()) }
   }
 
   /** Get url to the latest apk from github from the latest release page */
   fun getApkUrl() =
     flow<String?> {
-      emit(
-        HttpClient(OkHttp)
-          .request(Endpoints.APK_DOWNLOAD_PAGE_LINK)
-          .bodyAsText()
-          .lines()
-          .find { it.contains(".apk") }
-          ?.substringAfter("\"")
-          ?.substringBefore("\"")
-          ?.prependIndent("https://github.com")
-      )
+      runSuspendCatching {
+          simpleKtorHttpClient
+            .request(Endpoints.APK_DOWNLOAD_PAGE_LINK)
+            .bodyAsText()
+            .lines()
+            .find { it.contains(".apk") }
+            ?.substringAfter("\"")
+            ?.substringBefore("\"")
+            ?.prependIndent("https://github.com")
+        }
+        .also { emit(it.get()) }
     }
 
   /**

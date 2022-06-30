@@ -76,7 +76,6 @@ object NetworkModule {
       defaultRequest {
         url { protocol = URLProtocol.HTTPS }
       }
-      install(ContentNegotiation) { json(json) }
 
       install(HttpTimeout) {
         requestTimeoutMillis = 15000L
