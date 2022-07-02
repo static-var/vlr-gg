@@ -1,5 +1,7 @@
 package dev.staticvar.vlr.utils
 
+import androidx.annotation.VisibleForTesting
+import java.util.*
 import kotlin.time.Duration
 
 /**
@@ -13,26 +15,31 @@ object TimeElapsed {
 
   fun start(key: String, expireIn: Duration) {
     // Create a new entry in map or override existing with expiration time
-    timeMap[key] = (System.currentTimeMillis() + expireIn.inWholeMilliseconds)
-    i { "$key started at ${System.currentTimeMillis()} will expire in ${expireIn.absoluteValue}" }
+    timeMap[key] = (Calendar.getInstance().timeInMillis + expireIn.inWholeMilliseconds)
+    println(
+      "$key started at ${Calendar.getInstance().timeInMillis} will expire in ${expireIn.absoluteValue}"
+    )
   }
 
   fun hasElapsed(key: String): Boolean {
     return timeMap[key]?.let { expireDuration ->
       // If key exists then perform check
-      i {
-        "Elapsed check for $key, current time ${System.currentTimeMillis()}, set to expire at $expireDuration"
-      }
-      expireDuration < System.currentTimeMillis()
+      println(
+        "Elapsed check for $key, current time ${Calendar.getInstance().timeInMillis}, set to expire at $expireDuration"
+      )
+      expireDuration < Calendar.getInstance().timeInMillis
     }
       ?: true.also { // Key doesn't exist, return true
-        i { "$key not in records" }
+        println("$key not in records")
       }
   }
 
   fun reset(key: String) {
     // Set expired time
     i { "Resetting $key" }
-    timeMap[key] = System.currentTimeMillis() - 1
+    timeMap[key] = Calendar.getInstance().timeInMillis - 1
   }
+
+  @VisibleForTesting internal fun timeForKey(key: String) = timeMap[key]
+  @VisibleForTesting internal fun resetCache() = timeMap.clear()
 }
