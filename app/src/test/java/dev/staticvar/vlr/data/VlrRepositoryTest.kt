@@ -33,7 +33,7 @@ import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
 @Config(manifest = Config.NONE)
-class VlrRepositoryTest {
+internal class VlrRepositoryTest {
 
   private lateinit var vlrDao: VlrDao
   private lateinit var db: VlrDB
