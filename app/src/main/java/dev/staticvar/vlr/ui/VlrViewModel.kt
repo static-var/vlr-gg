@@ -80,14 +80,6 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   fun parseNews(id: String) =
     repository.parseNews(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
-  fun clearCache() {
-    TimeElapsed.reset(Constants.KEY_UPCOMING)
-    TimeElapsed.reset(Constants.KEY_COMPLETED)
-    TimeElapsed.reset(Constants.KEY_TOURNAMENT_ALL)
-    TimeElapsed.reset(Constants.KEY_TOURNAMENT_ALL)
-    TimeElapsed.reset(Constants.KEY_NEWS)
-  }
-
   fun getLatestAppVersion() = repository.getLatestAppVersion()
   fun getApkUrl() = repository.getApkUrl()
   fun downloadApkWithProgress(url: String) = repository.downloadApkWithProgress(url)

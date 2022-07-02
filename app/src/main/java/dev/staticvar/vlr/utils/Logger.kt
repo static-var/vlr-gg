@@ -5,7 +5,7 @@ import android.util.Log
 /** Logger Logger class to log information with a hyperlink to source in logcat */
 object Logger {
 
-  var LOGGING_ENABLED = false
+  private var LOGGING_ENABLED = false
   private val ignoreTags = listOf(this::class.java.name)
 
   private val tag: String
