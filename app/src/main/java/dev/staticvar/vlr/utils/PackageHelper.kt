@@ -10,8 +10,17 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
+/** Package helper This helper class is responsible for installing the apk */
 object PackageHelper {
 
+  /**
+   * Install
+   * This method will read the file from a given path, initiate [PackageInstaller] Session and
+   * queue installation process
+   *
+   * @param path
+   * @param context
+   */
   private fun install(path: String, context: Context) {
     val intentFlags =
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
@@ -45,6 +54,12 @@ object PackageHelper {
     }
   }
 
+  /**
+   * Convert byte to file to .apk and queue install
+   *
+   * @param context
+   * @param byteArray
+   */
   fun convertByteToFileAndInstall(context: Context, byteArray: ByteArray) {
     val path = context.filesDir
     val tempFile = File.createTempFile("update", ".apk", path)
