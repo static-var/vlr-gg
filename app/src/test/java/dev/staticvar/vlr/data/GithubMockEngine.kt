@@ -6,7 +6,7 @@ import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import java.io.File
 
-class GithubMockEngine(private var sendISR: Boolean = false) {
+internal class GithubMockEngine(private var sendISR: Boolean = false) {
   fun get() = client.engine
 
   fun nextResponseWithServerError() {
