@@ -69,4 +69,5 @@
     <string name="error_log">Error Log</string>
     <string name="dismiss">Dismiss</string>
     <string name="app_updated">App updated!</string>
+    <string name="teams">Teams</string>
 </resources>

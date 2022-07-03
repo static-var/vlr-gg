@@ -101,7 +101,7 @@ fun NewsItem(modifier: Modifier = Modifier, newsResponseItem: NewsResponseItem, 
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(
         text = newsResponseItem.title,
-        style = VLRTheme.typography.titleSmall,
+        style = VLRTheme.typography.titleLarge,
         modifier = modifier.padding(Local4DPPadding.current),
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
@@ -116,7 +116,7 @@ fun NewsItem(modifier: Modifier = Modifier, newsResponseItem: NewsResponseItem, 
         )
         Text(
           text = newsResponseItem.author,
-          style = VLRTheme.typography.bodySmall,
+          style = VLRTheme.typography.labelSmall,
           modifier = modifier.padding(Local4DPPadding.current).weight(1f)
         )
         Icon(
@@ -129,14 +129,14 @@ fun NewsItem(modifier: Modifier = Modifier, newsResponseItem: NewsResponseItem, 
           text =
             if (convertedDate.isSuccess) convertedDate.getOrDefault(newsResponseItem.date)
             else newsResponseItem.date,
-          style = VLRTheme.typography.bodySmall,
+          style = VLRTheme.typography.labelSmall,
           modifier = modifier.padding(Local4DPPadding.current)
         )
       }
 
       Text(
         text = newsResponseItem.description,
-        style = VLRTheme.typography.bodySmall,
+        style = VLRTheme.typography.bodyMedium,
         modifier = modifier.padding(Local4DPPadding.current),
         maxLines = 2,
         overflow = TextOverflow.Ellipsis

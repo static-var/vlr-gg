@@ -46,7 +46,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
       text = stringResource(id = R.string.app_description),
       modifier = Modifier.fillMaxWidth().padding(Local16DPPadding.current),
       textAlign = TextAlign.Center,
-      style = VLRTheme.typography.titleSmall,
+      style = VLRTheme.typography.headlineSmall,
       color = VLRTheme.colorScheme.primary,
     )
 
@@ -66,7 +66,7 @@ fun AndroidCard(modifier: Modifier = Modifier) {
     Text(
       text = "Android",
       modifier = Modifier.padding(Local8DPPadding.current),
-      style = VLRTheme.typography.titleSmall,
+      style = VLRTheme.typography.titleMedium,
       color = VLRTheme.colorScheme.primary,
     )
     Row(
@@ -137,7 +137,7 @@ fun ColumnScope.BackendCard(modifier: Modifier = Modifier) {
     Text(
       text = "Backend",
       modifier = modifier.padding(Local8DPPadding.current),
-      style = VLRTheme.typography.titleSmall,
+      style = VLRTheme.typography.titleMedium,
       color = VLRTheme.colorScheme.primary,
     )
     Row(

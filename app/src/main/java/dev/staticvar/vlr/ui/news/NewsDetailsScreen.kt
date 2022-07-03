@@ -53,21 +53,21 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
             item {
               Text(
                 text = news.title,
-                style = VLRTheme.typography.titleMedium,
+                style = VLRTheme.typography.headlineMedium,
                 color = VLRTheme.colorScheme.primary
               )
             }
             item {
               Text(
                 text = news.authorName,
-                style = VLRTheme.typography.labelMedium,
+                style = VLRTheme.typography.labelLarge,
                 color = VLRTheme.colorScheme.primary
               )
             }
             item {
               Text(
                 text = news.time,
-                style = VLRTheme.typography.labelMedium,
+                style = VLRTheme.typography.labelLarge,
                 color = VLRTheme.colorScheme.primary
               )
             }
@@ -154,7 +154,7 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                       )
                       Text(
                         text = parsedData.text,
-                        style = VLRTheme.typography.labelMedium,
+                        style = VLRTheme.typography.bodyMedium,
                         modifier = modifier.padding(horizontal = 4.dp, vertical = 2.dp),
                       )
                     }
