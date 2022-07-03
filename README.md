@@ -1,4 +1,7 @@
-# 🚧 vlr-gg (Unofficial application) 🚧
+# 🚧 VLR-GG (Unofficial application) 🚧
+
+<img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/static-var/vlr-gg?style=for-the-badge"> <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/static-var/vlr-gg/Build%20Signed%20APK%20and%20create%20a%20release?style=for-the-badge"> <a href="https://github.com/static-var/vlr-gg/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/static-var/vlr-gg?style=for-the-badge"></a> <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/static-var/vlr-gg/total?style=for-the-badge">
+
 An unofficial android app for vlr.gg, written in Jetpack compose, which uses REST API that parses vlr.gg (Code for the scrapper can be found [here](https://github.com/akhilnarang/vlrgg-scraper), thanks to [@akhilnarang](https://github.com/akhilnarang) for hosting and maintaining the scrapping code.)
 
 The application is not listed on Play Store, but you will receive in app updates for every release (you can choose to install the update or ignore it)
