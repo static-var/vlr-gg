@@ -1,3 +1,5 @@
+import kotlinx.kover.api.KoverTaskExtension
+
 plugins {
     id 'com.android.application'
     id 'dagger.hilt.android.plugin'
