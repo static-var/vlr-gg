@@ -2,6 +2,7 @@ package dev.staticvar.vlr.ui.match
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -94,12 +95,15 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
           ) {
             LazyColumn(modifier = modifier.fillMaxSize(), state = rememberListState) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
-              if (updateState.get() == true || swipeRefresh.isSwipeInProgress)
-                item {
+              item {
+                AnimatedVisibility(
+                  visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
+                ) {
                   LinearProgressIndicator(
                     modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
                   )
                 }
+              }
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
@@ -221,8 +225,13 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
             }
           }
         }
+          ?: kotlin.run {
+            updateState.getError()?.let {
+              ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
+            }
+              ?: LinearProgressIndicator(modifier.animateContentSize())
+          }
       }
-      .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
       .onFail { Text(text = message()) }
   }
 }

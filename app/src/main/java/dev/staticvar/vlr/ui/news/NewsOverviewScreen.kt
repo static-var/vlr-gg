@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.ui.news
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -66,12 +67,15 @@ fun NewsScreen(viewModel: VlrViewModel) {
           ) {
             LazyColumn() {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
-              if (updateState.get() == true || swipeRefresh.isSwipeInProgress)
-                item {
+              item {
+                AnimatedVisibility(
+                  visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
+                ) {
                   LinearProgressIndicator(
                     modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
                   )
                 }
+              }
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }

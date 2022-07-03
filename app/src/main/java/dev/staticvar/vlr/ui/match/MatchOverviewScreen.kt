@@ -127,10 +127,11 @@ fun MatchOverviewContainer(
       modifier = modifier.fillMaxSize().animateContentSize(),
       verticalArrangement = Arrangement.Top
     ) {
-      if (updateState.get() == true || swipeRefresh.isSwipeInProgress)
+      AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.isSwipeInProgress) {
         LinearProgressIndicator(
           modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
         )
+      }
       updateState.getError()?.let {
         ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
       }
