@@ -17,27 +17,49 @@ val fontProvider by lazy {
   )
 }
 
-val appFontFamily =
+val bigFontFamily =
   FontFamily(
     listOf(
       Font(GoogleFont("Inter"), fontProvider = fontProvider),
     )
   )
+val smallFontFamily =
+  FontFamily(
+    listOf(
+      Font(GoogleFont("Sora"), fontProvider = fontProvider),
+    )
+  )
 
 val Typography =
   Typography(
-    titleLarge =
-      TextStyle(
-        fontFamily = appFontFamily,
-        fontWeight = FontWeight.W600,
-        fontSize = 30.sp,
-      ),
-    titleMedium =
-      TextStyle(fontFamily = appFontFamily, fontWeight = FontWeight.W600, fontSize = 24.sp),
-    titleSmall =
-      TextStyle(fontFamily = appFontFamily, fontWeight = FontWeight.Normal, fontSize = 20.sp),
+    displayLarge =
+      TextStyle(fontFamily = bigFontFamily, fontWeight = FontWeight.W600, fontSize = 57.sp),
+    displayMedium =
+      TextStyle(fontFamily = bigFontFamily, fontWeight = FontWeight.W600, fontSize = 45.sp),
     displaySmall =
-      TextStyle(fontFamily = appFontFamily, fontWeight = FontWeight.W600, fontSize = 16.sp),
+      TextStyle(fontFamily = bigFontFamily, fontWeight = FontWeight.W600, fontSize = 36.sp),
+    headlineLarge =
+      TextStyle(fontFamily = bigFontFamily, fontWeight = FontWeight.W600, fontSize = 32.sp),
+    headlineMedium =
+      TextStyle(fontFamily = bigFontFamily, fontWeight = FontWeight.W600, fontSize = 28.sp),
+    headlineSmall =
+      TextStyle(fontFamily = bigFontFamily, fontWeight = FontWeight.W600, fontSize = 24.sp),
+    titleLarge =
+      TextStyle(fontFamily = bigFontFamily, fontWeight = FontWeight.W600, fontSize = 22.sp),
+    titleMedium =
+      TextStyle(fontFamily = bigFontFamily, fontWeight = FontWeight.W600, fontSize = 16.sp),
+    titleSmall =
+      TextStyle(fontFamily = bigFontFamily, fontWeight = FontWeight.Normal, fontSize = 14.sp),
+    bodyLarge =
+      TextStyle(fontFamily = smallFontFamily, fontWeight = FontWeight.Normal, fontSize = 16.sp),
     bodyMedium =
-      TextStyle(fontFamily = appFontFamily, fontWeight = FontWeight.Normal, fontSize = 16.sp),
+      TextStyle(fontFamily = smallFontFamily, fontWeight = FontWeight.Normal, fontSize = 14.sp),
+    bodySmall =
+      TextStyle(fontFamily = smallFontFamily, fontWeight = FontWeight.Normal, fontSize = 12.sp),
+    labelLarge =
+      TextStyle(fontFamily = smallFontFamily, fontWeight = FontWeight.Normal, fontSize = 14.sp),
+    labelMedium =
+      TextStyle(fontFamily = smallFontFamily, fontWeight = FontWeight.Normal, fontSize = 12.sp),
+    labelSmall =
+      TextStyle(fontFamily = smallFontFamily, fontWeight = FontWeight.Normal, fontSize = 11.sp),
   )
