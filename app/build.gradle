@@ -170,7 +170,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.1'
     implementation "com.github.skydoves:landscapist-glide:1.5.2"
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.6")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.0")
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "com.google.truth:truth:1.1.3"
