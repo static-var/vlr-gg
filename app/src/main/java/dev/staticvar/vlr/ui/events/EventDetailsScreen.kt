@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.ui.events
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -36,7 +37,10 @@ import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.*
+import dev.staticvar.vlr.utils.StableHolder
+import dev.staticvar.vlr.utils.Waiting
+import dev.staticvar.vlr.utils.onFail
+import dev.staticvar.vlr.utils.onPass
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
@@ -85,12 +89,15 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
           ) {
             LazyColumn(modifier = modifier.fillMaxSize(), state = lazyListState) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
-              if (updateState.get() == true || swipeRefresh.isSwipeInProgress)
-                item {
+              item {
+                AnimatedVisibility(
+                  visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
+                ) {
                   LinearProgressIndicator(
                     modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
                   )
                 }
+              }
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
@@ -104,36 +111,36 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 )
               }
 
-              kotlin
-                .runCatching {
-                  group[group.keys.elementAt(tabSelection)]?.let { games ->
-                    item {
-                      EventMatchGroups(
-                        modifier,
-                        selectedIndex,
-                        StableHolder(group),
-                        tabSelection,
-                        onFilterChange = { selectedIndex = it },
-                        onTabChange = { tabSelection = it }
-                      )
-                    }
-                    items(games, key = { game -> game.id }) { item ->
-                      TournamentMatchOverview(
-                        modifier = modifier,
-                        game = item,
-                        onClick = { viewModel.action.match(it) }
-                      )
-                    }
-                  }
-                    ?: e { "No matches in list" }
+              group[group.keys.elementAt(tabSelection)]?.let { games ->
+                item {
+                  EventMatchGroups(
+                    modifier,
+                    selectedIndex,
+                    StableHolder(group),
+                    tabSelection,
+                    onFilterChange = { selectedIndex = it },
+                    onTabChange = { tabSelection = it }
+                  )
                 }
-                .onFailure { it.printStackTrace() }
+                items(games, key = { game -> game.id }) { item ->
+                  TournamentMatchOverview(
+                    modifier = modifier,
+                    game = item,
+                    onClick = { viewModel.action.match(it) }
+                  )
+                }
+              }
               item { Spacer(modifier = modifier.navigationBarsPadding()) }
             }
           }
         }
+          ?: kotlin.run {
+            updateState.getError()?.let {
+              ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
+            }
+              ?: LinearProgressIndicator(modifier.animateContentSize())
+          }
       }
-      .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
       .onFail { Text(text = message()) }
   }
 }
@@ -301,54 +308,14 @@ fun EventMatchGroups(
         modifier = modifier.padding(Local8DPPadding.current)
       )
     }
-    DropdownMenu(
-      expanded = expanded,
-      onDismissRequest = { expanded = false },
-      modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current)
-    ) {
-      DropdownMenuItem(
-        text = {
-          Text(
-            text = filterOptions[0],
-            color =
-              if (selectedIndex == 0) VLRTheme.colorScheme.primary
-              else VLRTheme.colorScheme.onBackground
-          )
-        },
-        onClick = {
-          onFilterChange(0)
-          expanded = false
-        }
-      )
-      DropdownMenuItem(
-        text = {
-          Text(
-            text = filterOptions[1],
-            color =
-              if (selectedIndex == 1) VLRTheme.colorScheme.primary
-              else VLRTheme.colorScheme.onBackground
-          )
-        },
-        onClick = {
-          onFilterChange(1)
-          expanded = false
-        }
-      )
-      DropdownMenuItem(
-        text = {
-          Text(
-            text = filterOptions[2],
-            color =
-              if (selectedIndex == 2) VLRTheme.colorScheme.primary
-              else VLRTheme.colorScheme.onBackground
-          )
-        },
-        onClick = {
-          onFilterChange(2)
-          expanded = false
-        }
-      )
-    }
+
+    FilterSelectionDropDown(
+      modifier,
+      filterOptions,
+      selectedIndex,
+      expanded,
+      { expanded = false }
+    ) { onFilterChange(it) }
 
     ScrollableTabRow(
       selectedTabIndex = tabSelection,
@@ -371,6 +338,65 @@ fun EventMatchGroups(
         }
       }
     }
+  }
+}
+
+@Composable
+fun FilterSelectionDropDown(
+  modifier: Modifier,
+  filterOptions: List<String>,
+  selectedIndex: Int,
+  expanded: Boolean,
+  onExpandChange: () -> Unit,
+  onFilterChange: (Int) -> Unit
+) {
+  DropdownMenu(
+    expanded = expanded,
+    onDismissRequest = onExpandChange,
+    modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current)
+  ) {
+    DropdownMenuItem(
+      text = {
+        Text(
+          text = filterOptions[0],
+          color =
+            if (selectedIndex == 0) VLRTheme.colorScheme.primary
+            else VLRTheme.colorScheme.onBackground
+        )
+      },
+      onClick = {
+        onFilterChange(0)
+        onExpandChange()
+      }
+    )
+    DropdownMenuItem(
+      text = {
+        Text(
+          text = filterOptions[1],
+          color =
+            if (selectedIndex == 1) VLRTheme.colorScheme.primary
+            else VLRTheme.colorScheme.onBackground
+        )
+      },
+      onClick = {
+        onFilterChange(1)
+        onExpandChange()
+      }
+    )
+    DropdownMenuItem(
+      text = {
+        Text(
+          text = filterOptions[2],
+          color =
+            if (selectedIndex == 2) VLRTheme.colorScheme.primary
+            else VLRTheme.colorScheme.onBackground
+        )
+      },
+      onClick = {
+        onFilterChange(2)
+        onExpandChange()
+      }
+    )
   }
 }
 

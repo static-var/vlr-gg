@@ -111,9 +111,9 @@ constructor(
    */
   fun updateLatestMatchDetails(id: String) =
     flow<Result<Boolean, Throwable?>> {
-      emit(Ok(true))
       val key = Endpoints.matchDetails(id)
       if (TimeElapsed.hasElapsed(key)) {
+        emit(Ok(true))
         val result = runSuspendCatching { ktorHttpClient.get(key).body<MatchInfo>() }
         result.get()?.let {
           it.id = id
@@ -140,9 +140,9 @@ constructor(
    */
   fun updateLatestEventDetails(id: String) =
     flow<Result<Boolean, Throwable?>> {
-      emit(Ok(true))
       val key = Endpoints.eventDetails(id)
       if (TimeElapsed.hasElapsed(key)) {
+        emit(Ok(true))
         val result = runSuspendCatching { ktorHttpClient.get(key).body<TournamentDetails>() }
         result.get()?.let {
           vlrDao.insertTournamentDetails(it)
