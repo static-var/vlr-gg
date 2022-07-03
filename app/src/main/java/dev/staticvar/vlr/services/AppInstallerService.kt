@@ -67,4 +67,4 @@ class AppInstallerService : Service() {
 
 const val DEFAULT_VALUE = -999
 const val FILE_SUFFIX = ".apk"
-const val APK_NAME = ".update"
+const val APK_NAME = "update"

@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.os.Build
+import dev.staticvar.vlr.services.APK_NAME
 import dev.staticvar.vlr.services.AppInstallerService
+import dev.staticvar.vlr.services.FILE_SUFFIX
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -14,9 +16,8 @@ import java.io.FileOutputStream
 object PackageHelper {
 
   /**
-   * Install
-   * This method will read the file from a given path, initiate [PackageInstaller] Session and
-   * queue installation process
+   * Install This method will read the file from a given path, initiate [PackageInstaller] Session
+   * and queue installation process
    *
    * @param path
    * @param context
@@ -62,7 +63,7 @@ object PackageHelper {
    */
   fun convertByteToFileAndInstall(context: Context, byteArray: ByteArray) {
     val path = context.filesDir
-    val tempFile = File.createTempFile("update", ".apk", path)
+    val tempFile = File.createTempFile(APK_NAME, FILE_SUFFIX, path)
     FileOutputStream(tempFile).use { it.write(byteArray) }
     install(tempFile.absolutePath, context)
   }
