@@ -6,8 +6,6 @@ import com.github.michaelbull.result.Ok
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.staticvar.vlr.data.NavState
 import dev.staticvar.vlr.data.VlrRepository
-import dev.staticvar.vlr.utils.Constants
-import dev.staticvar.vlr.utils.TimeElapsed
 import dev.staticvar.vlr.utils.Waiting
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -69,13 +67,11 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   fun getTeamDetails(id: String) =
     repository.getTeamDetails(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
-  fun trackTopic(topic: String) =
-    viewModelScope.launch { repository.trackTopic(topic) }
+  fun trackTopic(topic: String) = viewModelScope.launch { repository.trackTopic(topic) }
 
   fun isTopicTracked(topic: String) = repository.isTopicTracked(topic)
 
-  fun removeTopic(topic: String) =
-    viewModelScope.launch { repository.removeTopic(topic) }
+  fun removeTopic(topic: String) = viewModelScope.launch { repository.removeTopic(topic) }
 
   fun parseNews(id: String) =
     repository.parseNews(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
