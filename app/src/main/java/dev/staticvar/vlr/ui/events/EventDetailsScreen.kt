@@ -163,7 +163,7 @@ fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: To
       Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
         Text(
           text = tournamentDetails.title,
-          style = VLRTheme.typography.titleSmall,
+          style = VLRTheme.typography.headlineSmall,
           modifier = modifier.padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
@@ -223,9 +223,9 @@ fun EventDetailsTeamSlider(
 ) {
   val lazyListState = rememberLazyListState()
   Text(
-    text = "Teams",
+    text = stringResource(R.string.teams),
     modifier = modifier.padding(Local16DPPadding.current),
-    style = VLRTheme.typography.titleSmall,
+    style = VLRTheme.typography.titleMedium,
     color = VLRTheme.colorScheme.primary
   )
   LazyRow(modifier = modifier.fillMaxWidth(), state = lazyListState) {
@@ -243,14 +243,14 @@ fun EventDetailsTeamSlider(
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = VLRTheme.typography.labelLarge,
+            style = VLRTheme.typography.titleSmall,
             color = VLRTheme.colorScheme.primary,
           )
           GlideImage(
             imageModel = it.img,
             contentDescription = stringResource(R.string.team_logo_content_description),
             alignment = Alignment.Center,
-            modifier = modifier.size(80.dp).aspectRatio(1f),
+            modifier = modifier.size(80.dp).aspectRatio(1f).padding(Local4DPPadding.current),
             circularReveal = CircularReveal(1000)
           )
           Text(
@@ -286,9 +286,9 @@ fun EventMatchGroups(
 
   Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
     Text(
-      text = "Games",
+      text = stringResource(id = R.string.games),
       modifier = modifier.padding(Local8DPPadding.current),
-      style = VLRTheme.typography.titleSmall,
+      style = VLRTheme.typography.titleMedium,
       color = VLRTheme.colorScheme.primary
     )
     Row(
@@ -419,7 +419,7 @@ fun TournamentMatchOverview(
           text = game.status.replaceFirstChar { it.uppercase() },
           modifier = modifier.weight(1f),
           textAlign = TextAlign.Center,
-          style = VLRTheme.typography.displaySmall
+          style = VLRTheme.typography.bodyMedium
         )
         Icon(
           Icons.Outlined.OpenInNew,
@@ -434,14 +434,14 @@ fun TournamentMatchOverview(
       ) {
         Text(
           text = game.teams[0].name,
-          style = VLRTheme.typography.titleSmall,
+          style = VLRTheme.typography.titleMedium,
           modifier = modifier.weight(1f),
           maxLines = 1,
           overflow = TextOverflow.Ellipsis
         )
         Text(
           text = game.teams[0].score?.toString() ?: "-",
-          style = VLRTheme.typography.titleSmall,
+          style = VLRTheme.typography.titleMedium,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis
         )
@@ -452,14 +452,14 @@ fun TournamentMatchOverview(
       ) {
         Text(
           text = game.teams[1].name,
-          style = VLRTheme.typography.titleSmall,
+          style = VLRTheme.typography.titleMedium,
           modifier = modifier.weight(1f),
           maxLines = 1,
           overflow = TextOverflow.Ellipsis
         )
         Text(
           text = game.teams[1].score?.toString() ?: "-",
-          style = VLRTheme.typography.titleSmall,
+          style = VLRTheme.typography.titleMedium,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis
         )
@@ -468,7 +468,7 @@ fun TournamentMatchOverview(
         text = "${game.time} - ${game.date}",
         modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
         textAlign = TextAlign.Center,
-        style = VLRTheme.typography.labelSmall
+        style = VLRTheme.typography.labelMedium
       )
     }
   }

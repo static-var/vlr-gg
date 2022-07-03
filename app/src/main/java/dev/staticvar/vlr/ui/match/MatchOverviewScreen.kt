@@ -374,7 +374,7 @@ fun MatchOverviewPreview(
                 ?: "",
           modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
           textAlign = TextAlign.Center,
-          style = VLRTheme.typography.displaySmall
+          style = VLRTheme.typography.bodyMedium
         )
 
         if (shareMode)
@@ -386,7 +386,7 @@ fun MatchOverviewPreview(
       ) {
         Text(
           text = matchPreviewInfo.team1.name,
-          style = VLRTheme.typography.titleSmall,
+          style = VLRTheme.typography.titleMedium,
           modifier = modifier.weight(1f),
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
@@ -394,7 +394,7 @@ fun MatchOverviewPreview(
         )
         Text(
           text = matchPreviewInfo.team1.score?.toString() ?: "-",
-          style = VLRTheme.typography.titleSmall,
+          style = VLRTheme.typography.titleMedium,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
           color = VLRTheme.colorScheme.primary,
@@ -406,7 +406,7 @@ fun MatchOverviewPreview(
       ) {
         Text(
           text = matchPreviewInfo.team2.name,
-          style = VLRTheme.typography.titleSmall,
+          style = VLRTheme.typography.titleMedium,
           modifier = modifier.weight(1f),
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
@@ -414,7 +414,7 @@ fun MatchOverviewPreview(
         )
         Text(
           text = matchPreviewInfo.team2.score?.toString() ?: "-",
-          style = VLRTheme.typography.titleSmall,
+          style = VLRTheme.typography.titleMedium,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
           color = VLRTheme.colorScheme.primary,
@@ -424,7 +424,7 @@ fun MatchOverviewPreview(
         text = "${matchPreviewInfo.event} - ${matchPreviewInfo.series}",
         modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
         textAlign = TextAlign.Center,
-        style = VLRTheme.typography.labelSmall
+        style = VLRTheme.typography.labelMedium
       )
     }
   }

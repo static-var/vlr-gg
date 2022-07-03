@@ -208,7 +208,7 @@ fun TournamentPreview(
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(
         text = tournamentPreview.title,
-        style = VLRTheme.typography.titleSmall,
+        style = VLRTheme.typography.titleMedium,
         modifier = modifier.padding(Local4DPPadding.current),
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
@@ -224,19 +224,19 @@ fun TournamentPreview(
           contentDescription = stringResource(R.string.location),
           modifier = modifier.size(16.dp),
         )
-        Text(text = tournamentPreview.location.uppercase(), style = VLRTheme.typography.labelMedium)
+        Text(text = tournamentPreview.location.uppercase(), style = VLRTheme.typography.bodyMedium)
         Text(
           text = tournamentPreview.prize,
           modifier = modifier.padding(Local4DPPadding.current).weight(1f),
           textAlign = TextAlign.Center,
-          style = VLRTheme.typography.labelMedium
+          style = VLRTheme.typography.bodyMedium
         )
         Icon(
           Icons.Outlined.DateRange,
           contentDescription = "Date",
           modifier = modifier.size(16.dp),
         )
-        Text(text = tournamentPreview.dates, style = VLRTheme.typography.labelMedium)
+        Text(text = tournamentPreview.dates, style = VLRTheme.typography.bodyMedium)
       }
     }
   }
