@@ -552,7 +552,7 @@ fun MatchMoreDetailsDialog(
             )
           }
           Text(
-            text = detailData.event.date?.readableDateAndTime ?: "",
+            text = detailData.event.date?.readableDateAndTimeWithZone ?: "",
             modifier = modifier.padding(Local4DPPadding.current).fillMaxWidth(),
             textAlign = TextAlign.Center
           )

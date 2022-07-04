@@ -3,7 +3,8 @@ package dev.staticvar.vlr.utils
 import java.time.*
 import java.time.format.DateTimeFormatter
 
-private const val FULL_DATE_TIME_PATTERN = "E, dd MMM yyyy HH:mm z"
+private const val FULL_DATE_TIME_PATTERN_WITH_ZONE = "E, dd MMM yyyy HH:mm z"
+private const val FULL_DATE_TIME_PATTERN = "E, dd MMM yyyy HH:mm"
 private const val FULL_DATE_PATTERN = "E, dd MMM yyyy"
 private const val FULL_TIME_PATTERN = "HH:mm a"
 private val deviceZoneId = ZoneId.systemDefault()
@@ -39,11 +40,20 @@ val String.hasElapsed: Boolean
       .atZoneSameInstant(deviceZoneId)
       .isBefore(ZonedDateTime.now())
 
+val String.readableDateAndTimeWithZone: String
+  get() =
+    LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
+      .atOffset(ZoneOffset.UTC)
+      .atZoneSameInstant(deviceZoneId)
+      .format(DateTimeFormatter.RFC_1123_DATE_TIME)
+      .substringBefore("+")
+
 val String.readableDateAndTime: String
   get() =
     LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
       .atOffset(ZoneOffset.UTC)
       .atZoneSameInstant(deviceZoneId)
+      .withZoneSameInstant(deviceZoneId)
       .format(DateTimeFormatter.ofPattern(FULL_DATE_TIME_PATTERN))
 
 val String.readableDate: String

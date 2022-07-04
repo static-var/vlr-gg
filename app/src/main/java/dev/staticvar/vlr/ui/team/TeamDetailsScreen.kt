@@ -5,7 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
@@ -13,20 +13,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
+import dev.staticvar.vlr.ui.match.NoMatchUI
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
-import kotlinx.coroutines.launch
 
 @Composable
 fun TeamScreen(viewModel: VlrViewModel, id: String) {
@@ -85,15 +84,13 @@ fun TeamBanner(modifier: Modifier = Modifier, teamDetails: TeamDetails) {
         style = VLRTheme.typography.titleMedium,
         color = VLRTheme.colorScheme.primary,
       )
-      teamDetails.tag?.let {
+      if (teamDetails.tag?.isNotBlank() == true)
         Text(
-          text = it,
+          text = "[${teamDetails.tag}]",
           modifier = modifier.padding(Local2DPPadding.current),
           style = VLRTheme.typography.labelMedium
         )
-      }
     }
-
     Row(
       modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
       verticalAlignment = Alignment.CenterVertically
@@ -180,7 +177,7 @@ fun RosterCard(
 }
 
 @Composable
-fun TeamMatchData(
+fun LazyItemScope.TeamMatchData(
   modifier: Modifier = Modifier,
   upcoming: StableHolder<List<TeamDetails.Games>>,
   completed: StableHolder<List<TeamDetails.Games>>,
@@ -188,57 +185,47 @@ fun TeamMatchData(
   onClick: (String) -> Unit
 ) {
   val pagerState = rememberPagerState()
-  val scope = rememberCoroutineScope()
+
+  val tabs =
+    listOf(
+      stringResource(R.string.upcoming),
+      stringResource(R.string.completed),
+    )
 
   Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-    TabRow(
-      selectedTabIndex = pagerState.currentPage,
-      modifier =
-        modifier.fillMaxWidth().padding(Local16DPPadding.current).clip(RoundedCornerShape(16.dp))
+    VlrTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
+    HorizontalPager(
+      count = tabs.size,
+      state = pagerState,
+      modifier = Modifier.fillMaxSize()
     ) {
-      Tab(
-        selected = pagerState.currentPage == 0,
-        onClick = { scope.launch { pagerState.scrollToPage(0) } }
-      ) {
-        Text(
-          text = stringResource(R.string.upcoming),
-          modifier = modifier.padding(Local16DPPadding.current)
-        )
-      }
-      Tab(
-        selected = pagerState.currentPage == 1,
-        onClick = { scope.launch { pagerState.scrollToPage(1) } }
-      ) {
-        Text(
-          text = stringResource(R.string.completed),
-          modifier = Modifier.padding(Local16DPPadding.current)
-        )
-      }
-    }
-    HorizontalPager(count = 2, state = pagerState, modifier = Modifier.fillMaxSize()) {
       when (pagerState.currentPage) {
         0 -> {
-          Column(modifier = modifier.fillMaxSize()) {
-            upcoming.item.forEach { games ->
-              GameOverviewPreview(
-                modifier = modifier,
-                matchPreviewInfo = games,
-                team = teamName,
-                onClick = onClick,
-              )
-            }
+          Column(modifier = modifier.fillParentMaxSize()) {
+            if (upcoming.item.isNotEmpty())
+              upcoming.item.forEach { games ->
+                GameOverviewPreview(
+                  modifier = modifier,
+                  matchPreviewInfo = games,
+                  team = teamName,
+                  onClick = onClick,
+                )
+              }
+            else NoMatchUI(modifier)
           }
         }
         1 -> {
           Column(modifier = modifier.fillMaxSize()) {
-            completed.item.forEach { games ->
-              GameOverviewPreview(
-                modifier = modifier,
-                matchPreviewInfo = games,
-                team = teamName,
-                onClick = onClick,
-              )
-            }
+            if (completed.item.isNotEmpty())
+              completed.item.forEach { games ->
+                GameOverviewPreview(
+                  modifier = modifier,
+                  matchPreviewInfo = games,
+                  team = teamName,
+                  onClick = onClick,
+                )
+              }
+            else NoMatchUI(modifier)
           }
         }
       }
@@ -257,11 +244,12 @@ fun GameOverviewPreview(
     modifier = modifier.clickable { onClick(matchPreviewInfo.id) },
   ) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
+      println(matchPreviewInfo.date)
       Text(
         text = matchPreviewInfo.eta ?: matchPreviewInfo.date.readableDateAndTime,
         modifier = modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
-        style = VLRTheme.typography.displaySmall
+        style = VLRTheme.typography.bodyMedium
       )
       Row(
         modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
@@ -270,7 +258,6 @@ fun GameOverviewPreview(
       ) {
         Text(
           text = team,
-          style = VLRTheme.typography.displaySmall,
           modifier = modifier.weight(1f).padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
@@ -279,7 +266,6 @@ fun GameOverviewPreview(
         )
         Text(
           text = matchPreviewInfo.opponent,
-          style = VLRTheme.typography.displaySmall,
           modifier = modifier.weight(1f).padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
