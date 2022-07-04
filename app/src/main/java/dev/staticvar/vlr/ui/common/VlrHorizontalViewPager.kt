@@ -8,12 +8,12 @@ import com.google.accompanist.pager.PagerState
 
 @Composable
 fun VlrHorizontalViewPager(
-    modifier: Modifier,
-    pagerState: PagerState,
-    vararg contents: @Composable () -> Unit
+  modifier: Modifier,
+  pagerState: PagerState,
+  vararg contents: @Composable () -> Unit
 ) {
-    HorizontalPager(count = contents.size, state = pagerState, modifier = modifier.fillMaxSize()) {
-            tabPosition ->
-        contents[tabPosition]()
-    }
+  HorizontalPager(count = contents.size, state = pagerState, modifier = modifier.fillMaxSize()) {
+    tabPosition ->
+    contents[tabPosition]()
+  }
 }

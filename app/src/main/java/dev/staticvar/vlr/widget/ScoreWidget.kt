@@ -33,7 +33,7 @@ import dev.staticvar.vlr.ui.Destination
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.ui.theme.WidgetTheme
 import dev.staticvar.vlr.utils.Constants
-import dev.staticvar.vlr.utils.readableDateAndTime
+import dev.staticvar.vlr.utils.readableDateAndTimeWithZone
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -129,7 +129,7 @@ class ScoreWidget(private val repository: VlrRepository) : GlanceAppWidget() {
                   Text(
                     text =
                       if (it.status.equals("LIVE", true)) "LIVE"
-                      else it.time?.readableDateAndTime ?: "",
+                      else it.time?.readableDateAndTimeWithZone ?: "",
                     modifier = GlanceModifier.fillMaxWidth(),
                     style =
                       TextStyle(

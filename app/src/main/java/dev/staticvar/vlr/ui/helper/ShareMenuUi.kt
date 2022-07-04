@@ -28,7 +28,7 @@ import dev.staticvar.vlr.ui.Local8DP_4DPPadding
 import dev.staticvar.vlr.ui.match.MAX_SHARABLE_ITEMS
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.StableHolder
-import dev.staticvar.vlr.utils.readableDateAndTime
+import dev.staticvar.vlr.utils.readableDateAndTimeWithZone
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -124,7 +124,7 @@ fun SharableMatchUi(modifier: Modifier = Modifier, match: MatchPreviewInfo) {
   Text(
     text =
       if (match.status.equals(stringResource(R.string.live), true)) stringResource(R.string.live)
-      else match.time?.readableDateAndTime ?: "",
+      else match.time?.readableDateAndTimeWithZone ?: "",
     modifier = modifier.fillMaxWidth().padding(Local2DPPadding.current),
     textAlign = TextAlign.Center,
     style = VLRTheme.typography.labelSmall
@@ -171,7 +171,7 @@ fun fireIntent(context: Context, file: Uri, matches: List<MatchPreviewInfo>) {
   val string = buildString {
     matches.forEach {
       appendLine(
-        "${it.team1.name} vs ${it.team2.name} | ${it.time?.readableDateAndTime} | ${it.id.urlFromId()}"
+        "${it.team1.name} vs ${it.team2.name} | ${it.time?.readableDateAndTimeWithZone} | ${it.id.urlFromId()}"
       )
       appendLine()
     }
