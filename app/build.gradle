@@ -169,6 +169,7 @@ dependencies {
     implementation "io.ktor:ktor-client-content-negotiation:$ktor_version"
     implementation "io.ktor:ktor-serialization-kotlinx-json:$ktor_version"
 
+    implementation("com.squareup.okhttp3:okhttp-brotli:4.10.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 
     implementation 'org.jsoup:jsoup:1.15.2'
