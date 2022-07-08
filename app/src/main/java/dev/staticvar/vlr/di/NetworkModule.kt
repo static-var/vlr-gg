@@ -15,6 +15,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import okhttp3.ConnectionPool
 import okhttp3.logging.HttpLoggingInterceptor
 import javax.inject.Named
 import javax.inject.Singleton
@@ -34,9 +35,24 @@ object NetworkModule {
   }
 
   @Provides
+  fun provideHttpConnectionPool(): ConnectionPool {
+    return ConnectionPool()
+  }
+
+  @Provides
+  @Singleton
+  fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
+    return HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+  }
+
+  @Provides
   @Singleton
   @Named("vlrClient")
-  fun provideKtorHttpClient(json: Json) =
+  fun provideKtorHttpClient(
+    json: Json,
+    connectionPool: ConnectionPool,
+    httpLoggingInterceptor: HttpLoggingInterceptor
+  ) =
     HttpClient(OkHttp) {
       defaultRequest {
         host = Constants.BASE_URL
@@ -63,29 +79,24 @@ object NetworkModule {
       }
 
       engine {
-        val logger = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-        addInterceptor(logger)
+        addInterceptor(httpLoggingInterceptor)
+        config { connectionPool(connectionPool) }
       }
     }
 
   @Provides
   @Singleton
   @Named("simpleClient")
-  fun provideSimpleKtorHttpClient(json: Json) =
+  fun provideSimpleKtorHttpClient(
+    connectionPool: ConnectionPool,
+    httpLoggingInterceptor: HttpLoggingInterceptor
+  ) =
     HttpClient(OkHttp) {
-      defaultRequest {
-        url { protocol = URLProtocol.HTTPS }
-      }
-
-      install(HttpTimeout) {
-        requestTimeoutMillis = 15000L
-        connectTimeoutMillis = 15000L
-        socketTimeoutMillis = 15000L
-      }
+      defaultRequest { url { protocol = URLProtocol.HTTPS } }
 
       engine {
-        val logger = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-        addInterceptor(logger)
+        addInterceptor(httpLoggingInterceptor)
+        config { connectionPool(connectionPool) }
       }
     }
 }
