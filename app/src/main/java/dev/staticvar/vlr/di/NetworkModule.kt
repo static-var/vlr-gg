@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.staticvar.vlr.BuildConfig
+import dev.staticvar.vlr.utils.BrotliEncoder
 import dev.staticvar.vlr.utils.Constants
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
@@ -62,7 +63,7 @@ object NetworkModule {
 
       install(DefaultRequest) {
         headers {
-          append(HttpHeaders.AcceptEncoding, "gzip")
+          append(HttpHeaders.AcceptEncoding, "br")
           append(HttpHeaders.Authorization, BuildConfig.TOKEN)
           append(Constants.APPLICATION_HEADER, BuildConfig.APPLICATION_ID)
           append(Constants.BUILD_TYPE_HEADER, BuildConfig.BUILD_TYPE)
@@ -70,12 +71,9 @@ object NetworkModule {
         }
       }
 
-      install(ContentEncoding) { gzip() }
-
-      install(HttpTimeout) {
-        requestTimeoutMillis = 15000L
-        connectTimeoutMillis = 15000L
-        socketTimeoutMillis = 15000L
+      install(ContentEncoding) {
+        customEncoder(BrotliEncoder)
+        gzip()
       }
 
       engine {
