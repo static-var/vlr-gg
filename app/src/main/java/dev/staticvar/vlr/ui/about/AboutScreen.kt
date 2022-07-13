@@ -9,7 +9,10 @@ import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -18,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.*
@@ -32,7 +36,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
   val currentAppVersion = context.currentAppVersion
 
   val remoteAppVersion by
-    remember(viewModel) { viewModel.getLatestAppVersion() }.collectAsState(initial = null)
+    remember(viewModel) { viewModel.getLatestAppVersion() }.collectAsStateWithLifecycle(initialValue = null)
 
   val primaryContainer = Color.Transparent
   val systemUiController = rememberSystemUiController()

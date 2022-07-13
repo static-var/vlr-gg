@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
@@ -44,11 +45,11 @@ import dev.staticvar.vlr.utils.onPass
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
-  val details by remember(viewModel) { viewModel.getEventDetails(id) }.collectAsState(Waiting())
+  val details by remember(viewModel) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
     remember(triggerRefresh) { viewModel.refreshEventDetails(id) }
-      .collectAsState(initial = Ok(false))
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 

@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -18,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebSettingsCompat.FORCE_DARK_ON
 import androidx.webkit.WebViewClientCompat
@@ -35,7 +35,7 @@ import dev.staticvar.vlr.utils.openAsCustomTab
 
 @Composable
 fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
-  val parsedNews by remember { viewModel.parseNews(id) }.collectAsState()
+  val parsedNews by remember { viewModel.parseNews(id) }.collectAsStateWithLifecycle()
   val modifier = Modifier
   val isDarkMode = isSystemInDarkTheme()
   val context = LocalContext.current

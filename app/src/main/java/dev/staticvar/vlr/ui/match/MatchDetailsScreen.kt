@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
@@ -54,7 +55,7 @@ import kotlinx.coroutines.tasks.await
 fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val details by remember(viewModel) { viewModel.getMatchDetails(id) }.collectAsState(Waiting())
   val trackerString = id.toMatchTopic()
-  val isTracked by remember { viewModel.isTopicTracked(trackerString) }.collectAsState(null)
+  val isTracked by remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
   var streamAndVodsCard by remember { mutableStateOf(false) }
 
   val primaryContainer = VLRTheme.colorScheme.surface.copy(0.2f)
@@ -65,7 +66,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshMatchInfo(id) }.collectAsState(initial = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshMatchInfo(id) }.collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
