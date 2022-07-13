@@ -7,10 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.staticvar.vlr.data.NavState
 import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.Waiting
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +22,17 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   }
 
   lateinit var action: Action
+
+  private var _resetScroll: MutableSharedFlow<Boolean> = MutableSharedFlow(0)
+  val resetScroll: SharedFlow<Boolean> = _resetScroll
+
+  fun resetScroll() {
+    viewModelScope.launch { _resetScroll.emit(true) }
+  }
+
+  fun postResetScroll() {
+    viewModelScope.launch { _resetScroll.emit(false) }
+  }
 
   fun refreshNews() =
     repository.updateLatestNews().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))

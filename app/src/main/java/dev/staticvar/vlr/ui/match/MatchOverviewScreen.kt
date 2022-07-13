@@ -33,6 +33,7 @@ import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
 import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
 import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
@@ -56,6 +57,8 @@ fun MatchOverview(viewModel: VlrViewModel) {
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
+  val resetScroll by remember { viewModel.resetScroll }.collectAsState(initial = false)
+
   val modifier: Modifier = Modifier
   Column(
     modifier = modifier.fillMaxSize().statusBarsPadding(),
@@ -71,8 +74,10 @@ fun MatchOverview(viewModel: VlrViewModel) {
               list = StableHolder(list),
               swipeRefresh,
               updateState,
+              resetScroll,
               onClick = { id -> viewModel.action.match(id) },
-              triggerRefresh = { triggerRefresh = triggerRefresh.not() }
+              triggerRefresh = { triggerRefresh = triggerRefresh.not() },
+              postResetScroll = { viewModel.postResetScroll() }
             )
           }
         }
@@ -90,8 +95,10 @@ fun MatchOverviewContainer(
   list: StableHolder<List<MatchPreviewInfo>>,
   swipeRefresh: SwipeRefreshState,
   updateState: Result<Boolean, Throwable?>,
+  resetScroll: Boolean,
   onClick: (String) -> Unit,
-  triggerRefresh: () -> Unit
+  triggerRefresh: () -> Unit,
+  postResetScroll: () -> Unit,
 ) {
   val pagerState = rememberPagerState()
   val shareMatchList = remember { mutableStateListOf<MatchPreviewInfo>() }
@@ -157,6 +164,8 @@ fun MatchOverviewContainer(
             NoMatchUI()
           } else {
             val lazyListState = rememberLazyListState()
+            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+
             LazyColumn(
               modifier.fillMaxSize(),
               verticalArrangement = Arrangement.Top,
@@ -199,6 +208,8 @@ fun MatchOverviewContainer(
             NoMatchUI()
           } else {
             val lazyListState = rememberLazyListState()
+            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+
             val groupedUpcomingMatches =
               remember(upcoming) { upcoming.groupBy { it.time?.readableDate } }
             LazyColumn(
@@ -263,6 +274,8 @@ fun MatchOverviewContainer(
             NoMatchUI(modifier = modifier)
           } else {
             val lazyListState = rememberLazyListState()
+            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+
             val groupedCompletedMatches =
               remember(completed) { completed.groupBy { it.time?.readableDate } }
             LazyColumn(
