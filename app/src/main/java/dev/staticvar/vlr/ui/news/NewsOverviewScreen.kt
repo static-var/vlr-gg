@@ -7,6 +7,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Person
@@ -28,6 +29,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.data.api.response.NewsResponseItem
 import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
@@ -49,6 +51,10 @@ fun NewsScreen(viewModel: VlrViewModel) {
 
   val modifier: Modifier = Modifier
 
+  val resetScroll by remember { viewModel.resetScroll }.collectAsState(initial = false)
+  val scrollState = rememberLazyListState()
+  scrollState.ScrollHelper(resetScroll = resetScroll) { viewModel.postResetScroll() }
+
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
@@ -65,7 +71,7 @@ fun NewsScreen(viewModel: VlrViewModel) {
             onRefresh = { triggerRefresh = triggerRefresh.not() },
             indicator = { _, _ -> }
           ) {
-            LazyColumn() {
+            LazyColumn(state = scrollState) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
               item {
                 AnimatedVisibility(

@@ -1,8 +1,6 @@
 package dev.staticvar.vlr.ui.helper
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
@@ -17,42 +15,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.NavState
 import dev.staticvar.vlr.ui.Action
+import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.theme.VLRTheme
+import dev.staticvar.vlr.utils.navAnimation
 
 @Composable
-fun VlrBottomNavbar(navState: NavState, action: Action) {
-  AnimatedContent(
-    navState,
-    transitionSpec = {
-      fadeIn(animationSpec = tween(200, 200)) with
-        fadeOut(animationSpec = tween(200)) using
-        SizeTransform { initialSize, targetSize ->
-          if (
-            navState != NavState.MATCH_DETAILS &&
-              navState != NavState.TOURNAMENT_DETAILS &&
-              navState != NavState.TEAM_DETAILS &&
-              navState != NavState.NEWS
-          ) {
-            keyframes {
-              // Expand horizontally first.
-              IntSize(targetSize.width, initialSize.height) at 150
-              durationMillis = 300
-            }
-          } else {
-            keyframes {
-              // Shrink vertically first.
-              IntSize(initialSize.width, targetSize.height) at 150
-              durationMillis = 300
-            }
-          }
-        }
-    }
-  ) { targetState ->
+fun VlrBottomNavbar(navState: NavState, action: Action, viewModel: VlrViewModel) {
+  val resetScroll = { viewModel.resetScroll() }
+  AnimatedContent(navState, transitionSpec = { navAnimation(navState) }) { targetState ->
     if (
       targetState != NavState.MATCH_DETAILS &&
         targetState != NavState.TOURNAMENT_DETAILS &&
@@ -77,7 +51,7 @@ fun VlrBottomNavbar(navState: NavState, action: Action) {
             )
           },
           label = { Text(text = stringResource(R.string.news)) },
-          onClick = if (navState == NavState.NEWS_OVERVIEW) EMPTY else action.goNews,
+          onClick = if (navState == NavState.NEWS_OVERVIEW) resetScroll else action.goNews,
         )
         NavigationBarItem(
           selected = navState == NavState.MATCH_OVERVIEW,
@@ -91,7 +65,7 @@ fun VlrBottomNavbar(navState: NavState, action: Action) {
             )
           },
           label = { Text(text = stringResource(R.string.matches)) },
-          onClick = if (navState == NavState.MATCH_OVERVIEW) EMPTY else action.matchOverview
+          onClick = if (navState == NavState.MATCH_OVERVIEW) resetScroll else action.matchOverview
         )
         NavigationBarItem(
           selected = navState == NavState.TOURNAMENT,
@@ -105,7 +79,7 @@ fun VlrBottomNavbar(navState: NavState, action: Action) {
             )
           },
           label = { Text(text = stringResource(R.string.events)) },
-          onClick = if (navState == NavState.TOURNAMENT) EMPTY else action.goEvents
+          onClick = if (navState == NavState.TOURNAMENT) resetScroll else action.goEvents
         )
         NavigationBarItem(
           selected = navState == NavState.ABOUT,
