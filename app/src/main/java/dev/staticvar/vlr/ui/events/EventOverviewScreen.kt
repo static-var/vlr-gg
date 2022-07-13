@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.get
@@ -45,10 +46,10 @@ import dev.staticvar.vlr.utils.*
 fun EventScreen(viewModel: VlrViewModel) {
 
   val allTournaments by
-    remember(viewModel) { viewModel.getEvents() }.collectAsState(initial = Waiting())
+    remember(viewModel) { viewModel.getEvents() }.collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshEvents() }.collectAsState(initial = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshEvents() }.collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
@@ -57,7 +58,7 @@ fun EventScreen(viewModel: VlrViewModel) {
   val isDarkMode = isSystemInDarkTheme()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer, darkIcons = !isDarkMode) }
 
-  val resetScroll by remember { viewModel.resetScroll }.collectAsState(initial = false)
+  val resetScroll by remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val modifier: Modifier = Modifier
 
