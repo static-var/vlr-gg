@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
@@ -36,10 +37,10 @@ import dev.staticvar.vlr.utils.*
 
 @Composable
 fun NewsScreen(viewModel: VlrViewModel) {
-  val newsInfo by remember(viewModel) { viewModel.getNews() }.collectAsState(initial = Waiting())
+  val newsInfo by remember(viewModel) { viewModel.getNews() }.collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshNews() }.collectAsState(initial = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshNews() }.collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
@@ -51,7 +52,7 @@ fun NewsScreen(viewModel: VlrViewModel) {
 
   val modifier: Modifier = Modifier
 
-  val resetScroll by remember { viewModel.resetScroll }.collectAsState(initial = false)
+  val resetScroll by remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
   val scrollState = rememberLazyListState()
   scrollState.ScrollHelper(resetScroll = resetScroll) { viewModel.postResetScroll() }
 

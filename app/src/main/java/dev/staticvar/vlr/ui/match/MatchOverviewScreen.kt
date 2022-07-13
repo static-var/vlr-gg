@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.get
@@ -46,10 +47,10 @@ import dev.staticvar.vlr.utils.*
 fun MatchOverview(viewModel: VlrViewModel) {
 
   val allMatches by
-    remember(viewModel) { viewModel.getMatches() }.collectAsState(initial = Waiting())
+    remember(viewModel) { viewModel.getMatches() }.collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshMatches() }.collectAsState(initial = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshMatches() }.collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
@@ -57,7 +58,7 @@ fun MatchOverview(viewModel: VlrViewModel) {
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
-  val resetScroll by remember { viewModel.resetScroll }.collectAsState(initial = false)
+  val resetScroll by remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val modifier: Modifier = Modifier
   Column(
