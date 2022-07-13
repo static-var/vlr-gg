@@ -34,6 +34,7 @@ import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentPreview
 import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
 import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
@@ -56,6 +57,8 @@ fun EventScreen(viewModel: VlrViewModel) {
   val isDarkMode = isSystemInDarkTheme()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer, darkIcons = !isDarkMode) }
 
+  val resetScroll by remember { viewModel.resetScroll }.collectAsState(initial = false)
+
   val modifier: Modifier = Modifier
 
   Column(
@@ -72,7 +75,9 @@ fun EventScreen(viewModel: VlrViewModel) {
             list = StableHolder(list),
             swipeRefresh,
             updateState,
-            triggerRefresh = { triggerRefresh = triggerRefresh.not() }
+            resetScroll,
+            triggerRefresh = { triggerRefresh = triggerRefresh.not() },
+            postResetScroll = { viewModel.postResetScroll() }
           )
         }
       }
@@ -88,7 +93,9 @@ fun TournamentPreviewContainer(
   list: StableHolder<List<TournamentPreview>>,
   swipeRefresh: SwipeRefreshState,
   updateState: Result<Boolean, Throwable?>,
-  triggerRefresh: () -> Unit
+  resetScroll: Boolean,
+  triggerRefresh: () -> Unit,
+  postResetScroll: () -> Unit,
 ) {
 
   val pagerState = rememberPagerState()
@@ -135,6 +142,7 @@ fun TournamentPreviewContainer(
             NoEventUI(modifier = modifier)
           } else {
             val lazyListState = rememberLazyListState()
+            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
             LazyColumn(
               modifier.fillMaxSize(),
               verticalArrangement = Arrangement.Top,
@@ -151,6 +159,7 @@ fun TournamentPreviewContainer(
             NoEventUI(modifier = modifier)
           } else {
             val lazyListState = rememberLazyListState()
+            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
             LazyColumn(
               modifier.fillMaxSize(),
               verticalArrangement = Arrangement.Top,
@@ -167,6 +176,7 @@ fun TournamentPreviewContainer(
             NoEventUI(modifier = modifier)
           } else {
             val lazyListState = rememberLazyListState()
+            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
             LazyColumn(
               modifier.fillMaxSize(),
               verticalArrangement = Arrangement.Top,

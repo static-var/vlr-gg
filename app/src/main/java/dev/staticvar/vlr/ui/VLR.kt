@@ -77,7 +77,9 @@ fun VLR() {
     AppUpdateDownloadPopup(viewModel)
   }
 
-  Scaffold(bottomBar = { VlrBottomNavbar(navState = navState, action = action) }) { paddingValues ->
+  Scaffold(
+    bottomBar = { VlrBottomNavbar(navState = navState, action = action, viewModel = viewModel) }
+  ) { paddingValues ->
     Box(
       modifier = Modifier.padding(paddingValues).background(VLRTheme.colorScheme.tintedBackground),
     ) {
