@@ -1,7 +1,10 @@
 package dev.staticvar.vlr.ui
 
 import androidx.compose.runtime.Stable
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptionsBuilder
 
 private object Destinations {
   const val MATCH_OVERVIEW = "match_overview"
@@ -48,13 +51,21 @@ sealed class Destination(val route: String) {
 class Action(private val navController: NavHostController) {
   val pop: () -> Unit = { navController.popBackStack() }
 
-  val matchOverview: () -> Unit = { navController.navigate(Destinations.MATCH_OVERVIEW) }
+  val matchOverview: () -> Unit = {
+    navController.navigate(Destinations.MATCH_OVERVIEW, builder = { navConfig(navController) })
+  }
 
-  val goNews: () -> Unit = { navController.navigate(Destinations.NEWS_OVERVIEW) }
+  val goNews: () -> Unit = {
+    navController.navigate(Destinations.NEWS_OVERVIEW, builder = { navConfig(navController) })
+  }
 
-  val goEvents: () -> Unit = { navController.navigate(Destinations.EVENTS_OVERVIEW) }
+  val goEvents: () -> Unit = {
+    navController.navigate(Destinations.EVENTS_OVERVIEW, builder = { navConfig(navController) })
+  }
 
-  val goAbout: () -> Unit = { navController.navigate(Destinations.ABOUT) }
+  val goAbout: () -> Unit = {
+    navController.navigate(Destinations.ABOUT, builder = { navConfig(navController) })
+  }
 
   val match: (String) -> Unit = { id -> navController.navigate("${Destinations.MATCH}/$id") }
 
@@ -63,4 +74,16 @@ class Action(private val navController: NavHostController) {
   val team: (String) -> Unit = { id -> navController.navigate("${Destinations.TEAM}/$id") }
 
   val news: (String) -> Unit = { id -> navController.navigate("${Destinations.NEWS}/$id") }
+}
+
+private fun NavOptionsBuilder.navConfig(navController: NavController) {
+  // Pop up to the start destination of the graph to
+  // avoid building up a large stack of destinations
+  // on the back stack as users select items
+  popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+  // Avoid multiple copies of the same destination when
+  // re-selecting the same item
+  launchSingleTop = true
+  // Restore state when re-selecting a previously selected item
+  restoreState = true
 }
