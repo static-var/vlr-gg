@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -95,7 +96,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                   visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
                 ) {
                   LinearProgressIndicator(
-                    modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
+                    modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize().testTag("common:loader")
                   )
                 }
               }
@@ -225,7 +226,7 @@ fun EventDetailsTeamSlider(
   val lazyListState = rememberLazyListState()
   Text(
     text = stringResource(R.string.teams),
-    modifier = modifier.padding(Local16DPPadding.current),
+    modifier = modifier.padding(Local16DPPadding.current).testTag("eventDetails:teams"),
     style = VLRTheme.typography.titleMedium,
     color = VLRTheme.colorScheme.primary
   )
