@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -72,14 +73,14 @@ fun NewsScreen(viewModel: VlrViewModel) {
             onRefresh = { triggerRefresh = triggerRefresh.not() },
             indicator = { _, _ -> }
           ) {
-            LazyColumn(state = scrollState) {
+            LazyColumn(state = scrollState, modifier = modifier.testTag("newsOverview:root")) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
               item {
                 AnimatedVisibility(
                   visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
                 ) {
                   LinearProgressIndicator(
-                    modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
+                    modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize().testTag("common:loader")
                   )
                 }
               }
