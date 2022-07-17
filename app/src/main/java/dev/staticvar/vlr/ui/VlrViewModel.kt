@@ -4,23 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.Ok
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.staticvar.vlr.data.NavState
 import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.Waiting
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class VlrViewModel @Inject constructor(private val repository: VlrRepository) : ViewModel() {
-
-  private var _navState: MutableStateFlow<NavState> = MutableStateFlow(NavState.NEWS_OVERVIEW)
-  val navState: StateFlow<NavState> = _navState
-
-  fun setNavigation(state: NavState) {
-    _navState.tryEmit(state)
-  }
-
   lateinit var action: Action
 
   private var _resetScroll: MutableSharedFlow<Boolean> = MutableSharedFlow(0)
