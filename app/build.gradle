@@ -18,8 +18,8 @@ android {
         applicationId "dev.staticvar.vlr"
         minSdk 23
         targetSdk 32
-        versionCode 28
-        versionName "v0.2.3"
+        versionCode 29
+        versionName "v0.2.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
