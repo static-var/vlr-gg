@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -101,7 +102,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                   visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
                 ) {
                   LinearProgressIndicator(
-                    modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
+                    modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize().testTag("common:loader")
                   )
                 }
               }
@@ -350,7 +351,7 @@ fun MatchOverallAndEventOverview(
         ) {
           Button(
             onClick = { dialogOpen = true },
-            modifier = modifier.weight(1f),
+            modifier = modifier.weight(1f).testTag("details:more_info"),
           ) {
             Text(text = stringResource(R.string.more_info))
           }

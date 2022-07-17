@@ -17,6 +17,10 @@
         android:theme="@style/Theme.App.Starting"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <profileable
+            android:shell="true"
+            tools:targetApi="29" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -40,10 +44,10 @@
             android:name=".widget.ScoreWidgetReceiver"
             android:enabled="true"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info_provider" />
@@ -53,6 +57,7 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
+
                 <data android:scheme="package" />
             </intent-filter>
             <intent-filter>
@@ -73,7 +78,6 @@
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove" />
-
         <provider
             android:name=".VlrFileProvider"
             android:authorities="${applicationId}.fileprovider"

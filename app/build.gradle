@@ -47,6 +47,15 @@ android {
         if (localPropertiesFile.exists()) {
             localProperties.load(new FileInputStream(localPropertiesFile))
         }
+        benchmark {
+            buildConfigField "String", "TOKEN", System.getenv("API_TOKEN") ?: localProperties['token']
+            shrinkResources true
+            minifyEnabled true
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['release']
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
         debug {
             minifyEnabled false
             archivesBaseName = "$defaultConfig.applicationId-$defaultConfig.versionCode($defaultConfig.versionName)"
@@ -75,6 +84,7 @@ android {
                              "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
                              "-opt-in=kotlin.time.ExperimentalTime",
                              "-opt-in=androidx.compose.ui.text.ExperimentalTextApi",
+                             "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
                              "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
                              "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
                              "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
@@ -91,9 +101,6 @@ android {
     packagingOptions {
         excludes += '/META-INF/{AL2.0,LGPL2.1}'
         excludes += 'META-INF/DEPENDENCIES'
-    }
-    sourceSets {
-        test.resources.srcDirs += 'src/test/resources'
     }
 }
 
@@ -123,10 +130,11 @@ dependencies {
     implementation 'androidx.webkit:webkit:1.4.0'
 
     implementation "androidx.work:work-runtime-ktx:2.7.1"
+    implementation "androidx.profileinstaller:profileinstaller:1.2.0-rc01"
 
     implementation "com.michael-bull.kotlin-result:kotlin-result:1.1.16"
 
-    def accompanist = "0.24.12-rc"
+    def accompanist = '0.24.13-rc'
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist"
     implementation "com.google.accompanist:accompanist-pager:$accompanist"
