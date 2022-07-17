@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -47,10 +48,12 @@ import dev.staticvar.vlr.utils.*
 fun MatchOverview(viewModel: VlrViewModel) {
 
   val allMatches by
-    remember(viewModel) { viewModel.getMatches() }.collectAsStateWithLifecycle(initialValue = Waiting())
+    remember(viewModel) { viewModel.getMatches() }
+      .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshMatches() }.collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshMatches() }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
@@ -58,7 +61,8 @@ fun MatchOverview(viewModel: VlrViewModel) {
   val systemUiController = rememberSystemUiController()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
-  val resetScroll by remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+  val resetScroll by
+    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val modifier: Modifier = Modifier
   Column(
@@ -137,7 +141,7 @@ fun MatchOverviewContainer(
     ) {
       AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.isSwipeInProgress) {
         LinearProgressIndicator(
-          modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
+          modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize().testTag("common:loader")
         )
       }
       updateState.getError()?.let {
@@ -168,7 +172,7 @@ fun MatchOverviewContainer(
             lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
 
             LazyColumn(
-              modifier.fillMaxSize(),
+              modifier.fillMaxSize().testTag("matchOverview:live"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState
             ) {
@@ -214,7 +218,7 @@ fun MatchOverviewContainer(
             val groupedUpcomingMatches =
               remember(upcoming) { upcoming.groupBy { it.time?.readableDate } }
             LazyColumn(
-              modifier.fillMaxSize(),
+              modifier.fillMaxSize().testTag("matchOverview:upcoming"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState
             ) {
@@ -280,7 +284,7 @@ fun MatchOverviewContainer(
             val groupedCompletedMatches =
               remember(completed) { completed.groupBy { it.time?.readableDate } }
             LazyColumn(
-              modifier.fillMaxSize(),
+              modifier.fillMaxSize().testTag("matchOverview:result"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState
             ) {

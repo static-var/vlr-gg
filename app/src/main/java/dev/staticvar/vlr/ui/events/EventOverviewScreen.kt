@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -127,7 +128,7 @@ fun TournamentPreviewContainer(
     ) {
       AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.isSwipeInProgress) {
         LinearProgressIndicator(
-          modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize()
+          modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize().testTag("common:loader")
         )
       }
       updateState.getError()?.let {
@@ -145,7 +146,7 @@ fun TournamentPreviewContainer(
             val lazyListState = rememberLazyListState()
             lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
             LazyColumn(
-              modifier.fillMaxSize(),
+              modifier.fillMaxSize().testTag("eventOverview:live"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState
             ) {
@@ -162,7 +163,7 @@ fun TournamentPreviewContainer(
             val lazyListState = rememberLazyListState()
             lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
             LazyColumn(
-              modifier.fillMaxSize(),
+              modifier.fillMaxSize().testTag("eventOverview:upcoming"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState
             ) {
@@ -179,7 +180,7 @@ fun TournamentPreviewContainer(
             val lazyListState = rememberLazyListState()
             lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
             LazyColumn(
-              modifier.fillMaxSize(),
+              modifier.fillMaxSize().testTag("eventOverview:result"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState
             ) {

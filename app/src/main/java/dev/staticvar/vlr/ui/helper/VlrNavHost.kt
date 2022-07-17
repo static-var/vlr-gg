@@ -8,7 +8,6 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import dev.staticvar.vlr.data.NavState
 import dev.staticvar.vlr.ui.Destination
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.about.AboutScreen
@@ -25,7 +24,7 @@ import dev.staticvar.vlr.utils.fadeOut
 import dev.staticvar.vlr.utils.slideInFromBottom
 
 @Composable
-fun VlrNavHost(navController: NavHostController) {
+fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit) {
   val viewModel: VlrViewModel = hiltViewModel()
   AnimatedNavHost(
     navController = navController,
@@ -48,7 +47,7 @@ fun VlrNavHost(navController: NavHostController) {
         if (targetState.destination.route == initialState.destination.route) null else fadeOut
       },
     ) {
-      viewModel.setNavigation(NavState.NEWS_OVERVIEW)
+      onNavigation(Destination.NewsOverview.route)
       NewsScreen(viewModel = viewModel)
     }
     composable(
@@ -68,7 +67,7 @@ fun VlrNavHost(navController: NavHostController) {
         if (targetState.destination.route == initialState.destination.route) null else fadeOut
       },
     ) {
-      viewModel.setNavigation(NavState.MATCH_OVERVIEW)
+      onNavigation(Destination.MatchOverview.route)
       MatchOverview(viewModel = viewModel)
     }
     composable(
@@ -88,7 +87,7 @@ fun VlrNavHost(navController: NavHostController) {
         if (targetState.destination.route == initialState.destination.route) null else fadeOut
       },
     ) {
-      viewModel.setNavigation(NavState.TOURNAMENT)
+      onNavigation(Destination.EventOverview.route)
       EventScreen(viewModel = viewModel)
     }
     composable(
@@ -108,7 +107,7 @@ fun VlrNavHost(navController: NavHostController) {
         if (targetState.destination.route == initialState.destination.route) null else fadeOut
       },
     ) {
-      viewModel.setNavigation(NavState.ABOUT)
+      onNavigation(Destination.About.route)
       AboutScreen(viewModel = viewModel)
     }
     composable(
@@ -126,7 +125,7 @@ fun VlrNavHost(navController: NavHostController) {
           }
         )
     ) {
-      viewModel.setNavigation(NavState.MATCH_DETAILS)
+      onNavigation(Destination.Match.route)
       val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
       NewMatchDetails(viewModel = viewModel, id = id)
     }
@@ -138,7 +137,7 @@ fun VlrNavHost(navController: NavHostController) {
       exitTransition = { fadeOut },
       popExitTransition = { fadeOut }
     ) {
-      viewModel.setNavigation(NavState.TOURNAMENT_DETAILS)
+      onNavigation(Destination.Event.route)
       val id = it.arguments?.getString(Destination.Event.Args.ID) ?: ""
       EventDetails(viewModel = viewModel, id = id)
     }
@@ -150,7 +149,7 @@ fun VlrNavHost(navController: NavHostController) {
       exitTransition = { fadeOut },
       popExitTransition = { fadeOut }
     ) {
-      viewModel.setNavigation(NavState.TEAM_DETAILS)
+      onNavigation(Destination.Event.route)
       val id = it.arguments?.getString(Destination.Team.Args.ID) ?: ""
       TeamScreen(viewModel = viewModel, id = id)
     }
@@ -162,7 +161,7 @@ fun VlrNavHost(navController: NavHostController) {
       exitTransition = { fadeOut },
       popExitTransition = { fadeOut }
     ) {
-      viewModel.setNavigation(NavState.NEWS)
+      onNavigation(Destination.News.route)
       val id = it.arguments?.getString(Destination.News.Args.ID) ?: ""
       NewsDetailsScreen(viewModel = viewModel, id = id)
     }

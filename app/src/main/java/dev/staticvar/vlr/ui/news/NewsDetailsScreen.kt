@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,7 +49,7 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
     parsedNews
       .onPass {
         data?.let { news ->
-          LazyColumn(modifier = modifier.fillMaxSize().padding(Local8DPPadding.current)) {
+          LazyColumn(modifier = modifier.fillMaxSize().padding(Local8DPPadding.current).testTag("news:root")) {
             item { Spacer(modifier = modifier.statusBarsPadding()) }
             item {
               Text(
@@ -166,7 +167,7 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
           }
         }
       }
-      .onWaiting { LinearProgressIndicator(modifier) }
+      .onWaiting { LinearProgressIndicator(modifier.testTag("common:loader")) }
       .onFail { Text(text = message()) }
   }
 }
