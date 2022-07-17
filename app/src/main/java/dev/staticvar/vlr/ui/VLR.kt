@@ -3,6 +3,15 @@ package dev.staticvar.vlr.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Feed
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.SportsEsports
+import androidx.compose.material.icons.outlined.EmojiEvents
+import androidx.compose.material.icons.outlined.Feed
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.surfaceColorAtElevation
@@ -14,11 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import dev.staticvar.vlr.data.NavState
-import dev.staticvar.vlr.ui.helper.AppUpdateDownloadPopup
-import dev.staticvar.vlr.ui.helper.VlrBottomNavbar
-import dev.staticvar.vlr.ui.helper.VlrNavHost
-import dev.staticvar.vlr.ui.helper.currentAppVersion
+import dev.staticvar.vlr.R
+import dev.staticvar.vlr.ui.helper.*
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.ui.theme.tintedBackground
 import dev.staticvar.vlr.utils.i
@@ -36,20 +42,55 @@ fun VLR() {
 
   viewModel.action = action
 
-  val navState: NavState by viewModel.navState.collectAsState(NavState.NEWS_OVERVIEW)
+  val resetScroll = { viewModel.resetScroll() }
 
-  LaunchedEffect(navState) {
+  var currentNav by remember { mutableStateOf(Destination.NewsOverview.route) }
+  val navItems =
+    listOf<NavItem>(
+      NavItem(
+        title = stringResource(id = R.string.news),
+        Destination.NewsOverview.route,
+        Icons.Filled.Feed,
+        Icons.Outlined.Feed,
+        onClick = { if (currentNav == Destination.News.route) resetScroll() else action.goNews() }
+      ),
+      NavItem(
+        title = stringResource(id = R.string.matches),
+        Destination.MatchOverview.route,
+        Icons.Filled.SportsEsports,
+        Icons.Outlined.SportsEsports,
+        onClick = {
+          if (currentNav == Destination.MatchOverview.route) resetScroll()
+          else action.matchOverview()
+        }
+      ),
+      NavItem(
+        title = stringResource(id = R.string.events),
+        Destination.EventOverview.route,
+        Icons.Filled.EmojiEvents,
+        Icons.Outlined.EmojiEvents,
+        onClick = {
+          if (currentNav == Destination.EventOverview.route) resetScroll() else action.goEvents()
+        }
+      ),
+      NavItem(
+        title = stringResource(id = R.string.about),
+        Destination.About.route,
+        Icons.Filled.Info,
+        Icons.Outlined.Info,
+        onClick = { if (currentNav != Destination.About.route) action.goAbout() }
+      ),
+    )
+
+  LaunchedEffect(currentNav) {
     systemUiController.setNavigationBarColor(
       color =
-        when (navState) {
-          NavState.MATCH_DETAILS,
-          NavState.TOURNAMENT_DETAILS,
-          NavState.TEAM_DETAILS,
-          NavState.NEWS -> transparent
-          NavState.NEWS_OVERVIEW,
-          NavState.TOURNAMENT,
-          NavState.MATCH_OVERVIEW,
-          NavState.ABOUT -> background
+        when (currentNav) {
+          Destination.NewsOverview.route,
+          Destination.MatchOverview.route,
+          Destination.EventOverview.route,
+          Destination.About.route -> background
+          else -> transparent
         },
     )
   }
@@ -78,12 +119,12 @@ fun VLR() {
   }
 
   Scaffold(
-    bottomBar = { VlrBottomNavbar(navState = navState, action = action, viewModel = viewModel) }
+    bottomBar = { NewNavBar(navController = navController, items = navItems, currentNav) }
   ) { paddingValues ->
     Box(
       modifier = Modifier.padding(paddingValues).background(VLRTheme.colorScheme.tintedBackground),
     ) {
-      VlrNavHost(navController = navController)
+      VlrNavHost(navController = navController) { currentNav = it }
     }
   }
 }
