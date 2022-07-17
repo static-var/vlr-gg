@@ -19,6 +19,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -122,7 +125,10 @@ fun VLR() {
     bottomBar = { NewNavBar(navController = navController, items = navItems, currentNav) }
   ) { paddingValues ->
     Box(
-      modifier = Modifier.padding(paddingValues).background(VLRTheme.colorScheme.tintedBackground),
+      modifier =
+        Modifier.padding(paddingValues)
+          .background(VLRTheme.colorScheme.tintedBackground)
+          .semantics { testTagsAsResourceId = true },
     ) {
       VlrNavHost(navController = navController) { currentNav = it }
     }
