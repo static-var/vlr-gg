@@ -10,6 +10,8 @@ object Endpoints {
 
   const val APK_VERSION_PAGE_LINK =
     "https://raw.githubusercontent.com/static-var/vlr-gg/trunk/version"
+  const val CHANGFELOG_PAGE_LINK =
+    "https://raw.githubusercontent.com/static-var/vlr-gg/trunk/CHANGELOG.md"
   const val APK_DOWNLOAD_PAGE_LINK = "https://github.com/static-var/vlr-gg/releases/latest"
 
   fun teamDetails(id: String) = TEAM_DETAILS + id
