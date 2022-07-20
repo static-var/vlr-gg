@@ -70,4 +70,5 @@
     <string name="dismiss">Dismiss</string>
     <string name="app_updated">App updated!</string>
     <string name="teams">Teams</string>
+    <string name="changelog">Change Log</string>
 </resources>
