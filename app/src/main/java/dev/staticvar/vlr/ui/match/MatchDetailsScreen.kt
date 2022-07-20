@@ -95,7 +95,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
             onRefresh = { triggerRefresh = triggerRefresh.not() },
             indicator = { _, _ -> }
           ) {
-            LazyColumn(modifier = modifier.fillMaxSize(), state = rememberListState) {
+            LazyColumn(modifier = modifier.fillMaxSize().testTag("matchDetails:root"), state = rememberListState) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
               item {
                 AnimatedVisibility(
@@ -139,7 +139,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
               if (matchInfo.matchData.isNotEmpty()) {
                 item {
                   EmphasisCardView(
-                    modifier = modifier.clickable { overAllMapToggle = overAllMapToggle.not() }
+                    modifier = modifier.clickable { overAllMapToggle = overAllMapToggle.not() }.testTag("matchDetails:mapHeader")
                   ) {
                     Box(
                       modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
@@ -634,7 +634,7 @@ fun MapStatsCard(
   toggleState: Boolean,
   onClick: (Boolean) -> Unit
 ) {
-  CardView(modifier.fillMaxWidth().animateContentSize().clickable { onClick(!toggleState) }) {
+  CardView(modifier.fillMaxWidth().animateContentSize().clickable { onClick(!toggleState) }.testTag("matchDetails:map")) {
     Row(
       modifier.fillMaxWidth().padding(Local16DPPadding.current),
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -657,7 +657,7 @@ fun MapStatsCard(
 
     if (toggleState) {
       ScoreBox(mapData = mapData)
-      StatViewPager(modifier, members = StableHolder(mapData.members))
+      StatViewPager(modifier.testTag("matchDetails:mapStats"), members = StableHolder(mapData.members))
     }
   }
 }
