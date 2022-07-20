@@ -1,18 +1,17 @@
 package dev.staticvar.vlr.ui.about
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.TextSnippet
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.DownloadForOffline
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.common.ChangeLogDialog
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.currentAppVersion
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -36,7 +36,12 @@ fun AboutScreen(viewModel: VlrViewModel) {
   val currentAppVersion = context.currentAppVersion
 
   val remoteAppVersion by
-    remember(viewModel) { viewModel.getLatestAppVersion() }.collectAsStateWithLifecycle(initialValue = null)
+    remember(viewModel) { viewModel.getLatestAppVersion() }
+      .collectAsStateWithLifecycle(initialValue = null)
+
+  val changelogText by
+    remember(viewModel) { viewModel.getLatestChangelog() }
+      .collectAsStateWithLifecycle(initialValue = null)
 
   val primaryContainer = Color.Transparent
   val systemUiController = rememberSystemUiController()
@@ -54,7 +59,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
       color = VLRTheme.colorScheme.primary,
     )
 
-    AndroidCard()
+    AndroidCard(changelog = changelogText)
     BackendCard()
 
     Spacer(modifier = Modifier.weight(1f))
@@ -64,7 +69,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
 }
 
 @Composable
-fun AndroidCard(modifier: Modifier = Modifier) {
+fun AndroidCard(modifier: Modifier = Modifier, changelog: String? = null) {
   val context = LocalContext.current
   CardView(modifier = modifier) {
     Text(
@@ -131,6 +136,8 @@ fun AndroidCard(modifier: Modifier = Modifier) {
         Text(text = stringResource(id = R.string.release))
       }
     }
+
+    ChangelogPreview(modifier.padding(Local2DPPadding.current), changelog)
   }
 }
 
@@ -210,4 +217,26 @@ fun ColumnScope.VersionFooter(currentAppVersion: String, remoteAppVersion: Strin
     textAlign = TextAlign.Center,
     color = VLRTheme.colorScheme.primary
   )
+}
+
+@Composable
+fun ChangelogPreview(modifier: Modifier = Modifier, text: String? = null) {
+  AnimatedVisibility(visible = text != null) {
+    var launchDialog by remember(text) { mutableStateOf(false) }
+
+    Button(
+      onClick = { launchDialog = true },
+      modifier = modifier.fillMaxWidth().padding(Local2DPPadding.current)
+    ) {
+      Icon(
+        imageVector = Icons.Filled.TextSnippet,
+        modifier = modifier.padding(Local2DPPadding.current),
+        contentDescription = stringResource(id = R.string.developer)
+      )
+      Text(text = stringResource(id = R.string.changelog))
+    }
+    if (launchDialog && text != null) {
+      ChangeLogDialog(text = text, onDismiss = { launchDialog = it })
+    }
+  }
 }
