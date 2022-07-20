@@ -89,7 +89,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
             onRefresh = { triggerRefresh = triggerRefresh.not() },
             indicator = { _, _ -> }
           ) {
-            LazyColumn(modifier = modifier.fillMaxSize(), state = lazyListState) {
+            LazyColumn(modifier = modifier.fillMaxSize().testTag("eventDetails:root"), state = lazyListState) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
               item {
                 AnimatedVisibility(
@@ -230,7 +230,7 @@ fun EventDetailsTeamSlider(
     style = VLRTheme.typography.titleMedium,
     color = VLRTheme.colorScheme.primary
   )
-  LazyRow(modifier = modifier.fillMaxWidth(), state = lazyListState) {
+  LazyRow(modifier = modifier.fillMaxWidth().testTag("eventDetails:teamList"), state = lazyListState) {
     items(list.item, key = { list -> list.id }) {
       CardView(
         modifier.width(width = 150.dp).aspectRatio(1f).clickable { onClick(it.id) },
