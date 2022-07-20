@@ -6,12 +6,12 @@ import com.github.michaelbull.result.Ok
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.Waiting
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class VlrViewModel @Inject constructor(private val repository: VlrRepository) : ViewModel() {
@@ -81,4 +81,5 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   fun getLatestAppVersion() = repository.getLatestAppVersion()
   fun getApkUrl() = repository.getApkUrl()
   fun downloadApkWithProgress(url: String) = repository.downloadApkWithProgress(url)
+  fun getLatestChangelog() = repository.getLatestChangelog()
 }
