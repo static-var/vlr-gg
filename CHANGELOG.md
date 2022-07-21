@@ -1,3 +1,15 @@
+# Release v0.2.5
+## What's Changed
+* `Changelog`: Add change log preview option in app by @static-var in https://github.com/static-var/vlr-gg/pull/127
+* Added new baseline profile
+
+## Dependency Updates
+* Update compose compiler to 1.3.0-beta01
+* Update Kotlin to 1.7.10
+
+**Full Changelog**: https://github.com/static-var/vlr-gg/compare/v0.2.4...v0.2.5
+
+
 # Release v0.2.4
 ## What's Changed
 * Add baseline profiles by @static-var in https://github.com/static-var/vlr-gg/pull/121
