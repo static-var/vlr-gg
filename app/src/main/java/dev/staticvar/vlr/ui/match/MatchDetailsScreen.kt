@@ -56,7 +56,8 @@ import kotlinx.coroutines.tasks.await
 fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val details by remember(viewModel) { viewModel.getMatchDetails(id) }.collectAsState(Waiting())
   val trackerString = id.toMatchTopic()
-  val isTracked by remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
+  val isTracked by
+    remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
   var streamAndVodsCard by remember { mutableStateOf(false) }
 
   val primaryContainer = VLRTheme.colorScheme.surface.copy(0.2f)
@@ -67,7 +68,8 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshMatchInfo(id) }.collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshMatchInfo(id) }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
@@ -95,14 +97,21 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
             onRefresh = { triggerRefresh = triggerRefresh.not() },
             indicator = { _, _ -> }
           ) {
-            LazyColumn(modifier = modifier.fillMaxSize().testTag("matchDetails:root"), state = rememberListState) {
+            LazyColumn(
+              modifier = modifier.fillMaxSize().testTag("matchDetails:root"),
+              state = rememberListState
+            ) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
               item {
                 AnimatedVisibility(
                   visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
                 ) {
                   LinearProgressIndicator(
-                    modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize().testTag("common:loader")
+                    modifier
+                      .fillMaxWidth()
+                      .padding(Local16DPPadding.current)
+                      .animateContentSize()
+                      .testTag("common:loader")
                   )
                 }
               }
@@ -139,7 +148,10 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
               if (matchInfo.matchData.isNotEmpty()) {
                 item {
                   EmphasisCardView(
-                    modifier = modifier.clickable { overAllMapToggle = overAllMapToggle.not() }.testTag("matchDetails:mapHeader")
+                    modifier =
+                      modifier
+                        .clickable { overAllMapToggle = overAllMapToggle.not() }
+                        .testTag("matchDetails:mapHeader")
                   ) {
                     Box(
                       modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
@@ -434,6 +446,7 @@ fun VideoReferenceUi(
   expand: Boolean,
   onClick: (Boolean) -> Unit
 ) {
+  var streamAndVodsCard by remember { mutableStateOf(false) }
   val intent by remember { mutableStateOf(Intent(Intent.ACTION_VIEW)) }
   val context = LocalContext.current
   if (videos.streams.isEmpty() && videos.vods.isEmpty()) return
@@ -634,7 +647,13 @@ fun MapStatsCard(
   toggleState: Boolean,
   onClick: (Boolean) -> Unit
 ) {
-  CardView(modifier.fillMaxWidth().animateContentSize().clickable { onClick(!toggleState) }.testTag("matchDetails:map")) {
+  CardView(
+    modifier
+      .fillMaxWidth()
+      .animateContentSize()
+      .clickable { onClick(!toggleState) }
+      .testTag("matchDetails:map")
+  ) {
     Row(
       modifier.fillMaxWidth().padding(Local16DPPadding.current),
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -657,7 +676,10 @@ fun MapStatsCard(
 
     if (toggleState) {
       ScoreBox(mapData = mapData)
-      StatViewPager(modifier.testTag("matchDetails:mapStats"), members = StableHolder(mapData.members))
+      StatViewPager(
+        modifier.testTag("matchDetails:mapStats"),
+        members = StableHolder(mapData.members)
+      )
     }
   }
 }

@@ -256,9 +256,7 @@ constructor(
 
   /** Get latest app version from github version file */
   fun getLatestChangelog() = flow {
-    runSuspendCatching {
-      simpleKtorHttpClient.request(Endpoints.CHANGFELOG_PAGE_LINK).bodyAsText()
-    }
+    runSuspendCatching { simpleKtorHttpClient.request(Endpoints.CHANGFELOG_PAGE_LINK).bodyAsText() }
       .also { emit(it.get()) }
   }
 }

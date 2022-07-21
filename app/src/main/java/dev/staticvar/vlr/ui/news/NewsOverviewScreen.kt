@@ -38,10 +38,13 @@ import dev.staticvar.vlr.utils.*
 
 @Composable
 fun NewsScreen(viewModel: VlrViewModel) {
-  val newsInfo by remember(viewModel) { viewModel.getNews() }.collectAsStateWithLifecycle(initialValue = Waiting())
+  val newsInfo by
+    remember(viewModel) { viewModel.getNews() }
+      .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshNews() }.collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshNews() }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
@@ -53,7 +56,8 @@ fun NewsScreen(viewModel: VlrViewModel) {
 
   val modifier: Modifier = Modifier
 
-  val resetScroll by remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+  val resetScroll by
+    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
   val scrollState = rememberLazyListState()
   scrollState.ScrollHelper(resetScroll = resetScroll) { viewModel.postResetScroll() }
 
@@ -80,7 +84,11 @@ fun NewsScreen(viewModel: VlrViewModel) {
                   visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
                 ) {
                   LinearProgressIndicator(
-                    modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize().testTag("common:loader")
+                    modifier
+                      .fillMaxWidth()
+                      .padding(Local16DPPadding.current)
+                      .animateContentSize()
+                      .testTag("common:loader")
                   )
                 }
               }

@@ -141,7 +141,11 @@ fun MatchOverviewContainer(
     ) {
       AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.isSwipeInProgress) {
         LinearProgressIndicator(
-          modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize().testTag("common:loader")
+          modifier
+            .fillMaxWidth()
+            .padding(Local16DPPadding.current)
+            .animateContentSize()
+            .testTag("common:loader")
         )
       }
       updateState.getError()?.let {

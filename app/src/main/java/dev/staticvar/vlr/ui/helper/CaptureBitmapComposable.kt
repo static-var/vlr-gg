@@ -10,22 +10,22 @@ import androidx.core.view.drawToBitmap
 
 @Composable
 fun CaptureBitmap(
-    captureRequestKey: Boolean,
-    content: @Composable () -> Unit,
-    onBitmapCaptured: (Bitmap) -> Unit
+  captureRequestKey: Boolean,
+  content: @Composable () -> Unit,
+  onBitmapCaptured: (Bitmap) -> Unit
 ) {
 
-    val context = LocalContext.current
+  val context = LocalContext.current
 
-    /**
-     * ComposeView that would take composable as its content Kept in remember so recomposition doesn't
-     * re-initialize it
-     */
-    val composeView = remember { ComposeView(context) }
+  /**
+   * ComposeView that would take composable as its content Kept in remember so recomposition doesn't
+   * re-initialize it
+   */
+  val composeView = remember { ComposeView(context) }
 
-    // If key is changed it means it's requested to capture a Bitmap
-    if (captureRequestKey) composeView.post { onBitmapCaptured.invoke(composeView.drawToBitmap()) }
+  // If key is changed it means it's requested to capture a Bitmap
+  if (captureRequestKey) composeView.post { onBitmapCaptured.invoke(composeView.drawToBitmap()) }
 
-    /** Use Native View inside Composable */
-    AndroidView(factory = { composeView.apply { setContent { content.invoke() } } })
+  /** Use Native View inside Composable */
+  AndroidView(factory = { composeView.apply { setContent { content.invoke() } } })
 }
