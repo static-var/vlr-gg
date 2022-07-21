@@ -16,11 +16,7 @@ import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.theme.VLRTheme
 
 @Composable
-fun ChangeLogDialog(
-  modifier: Modifier = Modifier,
-  text: String,
-  onDismiss: (Boolean) -> Unit
-) {
+fun ChangeLogDialog(modifier: Modifier = Modifier, text: String, onDismiss: (Boolean) -> Unit) {
   AlertDialog(
     onDismissRequest = { onDismiss.invoke(false) },
     title = { Text(text = stringResource(id = R.string.changelog)) },

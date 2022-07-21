@@ -49,7 +49,9 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
     parsedNews
       .onPass {
         data?.let { news ->
-          LazyColumn(modifier = modifier.fillMaxSize().padding(Local8DPPadding.current).testTag("news:root")) {
+          LazyColumn(
+            modifier = modifier.fillMaxSize().padding(Local8DPPadding.current).testTag("news:root")
+          ) {
             item { Spacer(modifier = modifier.statusBarsPadding()) }
             item {
               Text(

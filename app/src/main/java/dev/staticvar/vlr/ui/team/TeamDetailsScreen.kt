@@ -46,7 +46,9 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
         data?.let { teamDetail ->
           LazyColumn(modifier = modifier.fillMaxSize()) {
             item { Spacer(modifier = modifier.statusBarsPadding()) }
-            item { TeamBanner(modifier = modifier.testTag("team:banner"), teamDetails = teamDetail) }
+            item {
+              TeamBanner(modifier = modifier.testTag("team:banner"), teamDetails = teamDetail)
+            }
             item {
               RosterCard(
                 modifier = modifier,
@@ -195,11 +197,7 @@ fun LazyItemScope.TeamMatchData(
 
   Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     VlrTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
-    HorizontalPager(
-      count = tabs.size,
-      state = pagerState,
-      modifier = Modifier.fillMaxSize()
-    ) {
+    HorizontalPager(count = tabs.size, state = pagerState, modifier = Modifier.fillMaxSize()) {
       when (pagerState.currentPage) {
         0 -> {
           Column(modifier = modifier.fillParentMaxSize()) {

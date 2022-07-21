@@ -22,7 +22,8 @@ class ScoreWidgetReceiver : GlanceAppWidgetReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
     super.onReceive(context, intent)
     e { "onReceive ${intent.action} | ${intent.data}" }
-    if (intent.data.toString() != "android.appwidget.action.APPWIDGET_DISABLED" ||
+    if (
+      intent.data.toString() != "android.appwidget.action.APPWIDGET_DISABLED" ||
         intent.data.toString() != "android.appwidget.action.APPWIDGET_DELETED"
     )
       context.queueWorker()

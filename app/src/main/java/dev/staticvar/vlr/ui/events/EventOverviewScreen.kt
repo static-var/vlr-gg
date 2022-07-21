@@ -47,10 +47,12 @@ import dev.staticvar.vlr.utils.*
 fun EventScreen(viewModel: VlrViewModel) {
 
   val allTournaments by
-    remember(viewModel) { viewModel.getEvents() }.collectAsStateWithLifecycle(initialValue = Waiting())
+    remember(viewModel) { viewModel.getEvents() }
+      .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshEvents() }.collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshEvents() }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
@@ -59,7 +61,8 @@ fun EventScreen(viewModel: VlrViewModel) {
   val isDarkMode = isSystemInDarkTheme()
   SideEffect { systemUiController.setStatusBarColor(primaryContainer, darkIcons = !isDarkMode) }
 
-  val resetScroll by remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+  val resetScroll by
+    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val modifier: Modifier = Modifier
 
@@ -128,7 +131,11 @@ fun TournamentPreviewContainer(
     ) {
       AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.isSwipeInProgress) {
         LinearProgressIndicator(
-          modifier.fillMaxWidth().padding(Local16DPPadding.current).animateContentSize().testTag("common:loader")
+          modifier
+            .fillMaxWidth()
+            .padding(Local16DPPadding.current)
+            .animateContentSize()
+            .testTag("common:loader")
         )
       }
       updateState.getError()?.let {
