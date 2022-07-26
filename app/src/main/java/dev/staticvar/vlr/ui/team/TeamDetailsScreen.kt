@@ -98,7 +98,9 @@ fun TeamBanner(modifier: Modifier = Modifier, teamDetails: TeamDetails) {
       modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
       verticalAlignment = Alignment.CenterVertically
     ) {
-      Text(text = "#${teamDetails.rank} in ", style = VLRTheme.typography.labelMedium)
+      // Server might send rank 0 when ranks are not found over the website.
+      if (teamDetails.rank != 0)
+        Text(text = "#${teamDetails.rank} in ", style = VLRTheme.typography.labelMedium)
       Text(text = teamDetails.region, style = VLRTheme.typography.labelMedium)
       Text(text = ", from " + teamDetails.country, style = VLRTheme.typography.labelMedium)
     }

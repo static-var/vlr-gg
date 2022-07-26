@@ -71,4 +71,6 @@
     <string name="app_updated">App updated!</string>
     <string name="teams">Teams</string>
     <string name="changelog">Change Log</string>
+    <string name="no_match_info_found">No match information found</string>
+    <string name="no_team_info_found">No team information found</string>
 </resources>
