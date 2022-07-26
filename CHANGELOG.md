@@ -1,3 +1,17 @@
+# Release v0.2.6
+## What's Changed
+* Enable Crashlytics
+* Update app theme for devices running Android 11 and below
+* Update fonts
+* Fix a few crash and show appropriate message when data is unavailable.
+
+## Dependency Updates
+* chore(deps): update dependency com.google.firebase:firebase-bom to v30.3.1 by @renovate in https://github.com/static-var/vlr-gg/pull/129
+* chore(deps): update hilt_version to v2.43 by @renovate in https://github.com/static-var/vlr-gg/pull/128
+
+**Full Changelog**: https://github.com/static-var/vlr-gg/compare/v0.2.5...v0.2.6
+
+
 # Release v0.2.5
 ## What's Changed
 * `Changelog`: Add change log preview option in app by @static-var in https://github.com/static-var/vlr-gg/pull/127
