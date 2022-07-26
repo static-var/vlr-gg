@@ -113,33 +113,54 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
               }
 
               item { TournamentDetailsHeader(tournamentDetails = tournamentDetails) }
-              item {
-                EventDetailsTeamSlider(
-                  modifier = modifier,
-                  list = StableHolder(tournamentDetails.participants),
-                  onClick = { viewModel.action.team(it) }
-                )
-              }
-
-              group[group.keys.elementAt(tabSelection)]?.let { games ->
+              if (tournamentDetails.participants.isNotEmpty())
                 item {
-                  EventMatchGroups(
-                    modifier,
-                    selectedIndex,
-                    StableHolder(group),
-                    tabSelection,
-                    onFilterChange = { selectedIndex = it },
-                    onTabChange = { tabSelection = it }
-                  )
-                }
-                items(games, key = { game -> game.id }) { item ->
-                  TournamentMatchOverview(
+                  EventDetailsTeamSlider(
                     modifier = modifier,
-                    game = item,
-                    onClick = { viewModel.action.match(it) }
+                    list = StableHolder(tournamentDetails.participants),
+                    onClick = { viewModel.action.team(it) }
                   )
                 }
-              }
+              else
+                item {
+                  Text(
+                    text = stringResource(id = R.string.no_team_info_found),
+                    modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
+                    textAlign = TextAlign.Center,
+                    style = VLRTheme.typography.titleMedium,
+                    color = VLRTheme.colorScheme.primary
+                  )
+                }
+              if (group.isNotEmpty())
+                group[group.keys.elementAt(tabSelection)]?.let { games ->
+                  item {
+                    EventMatchGroups(
+                      modifier,
+                      selectedIndex,
+                      StableHolder(group),
+                      tabSelection,
+                      onFilterChange = { selectedIndex = it },
+                      onTabChange = { tabSelection = it }
+                    )
+                  }
+                  items(games, key = { game -> game.id }) { item ->
+                    TournamentMatchOverview(
+                      modifier = modifier,
+                      game = item,
+                      onClick = { viewModel.action.match(it) }
+                    )
+                  }
+                }
+              else
+                item {
+                  Text(
+                    text = stringResource(id = R.string.no_match_info_found),
+                    modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
+                    textAlign = TextAlign.Center,
+                    style = VLRTheme.typography.titleMedium,
+                    color = VLRTheme.colorScheme.primary
+                  )
+                }
               item { Spacer(modifier = modifier.navigationBarsPadding()) }
             }
           }
