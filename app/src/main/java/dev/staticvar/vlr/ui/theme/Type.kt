@@ -17,16 +17,29 @@ val fontProvider by lazy {
   )
 }
 
+private val bigFont = GoogleFont("Montserrat")
+private val smallFont = GoogleFont("Inter")
 val bigFontFamily =
   FontFamily(
     listOf(
-      Font(GoogleFont("Inter"), fontProvider = fontProvider),
+      Font(bigFont, fontProvider = fontProvider, weight = FontWeight.Bold),
+      Font(bigFont, fontProvider = fontProvider, weight = FontWeight.SemiBold),
+      Font(bigFont, fontProvider = fontProvider, weight = FontWeight.W600),
+      Font(bigFont, fontProvider = fontProvider, weight = FontWeight.Normal),
+      Font(bigFont, fontProvider = fontProvider, weight = FontWeight.Light),
     )
   )
+
 val smallFontFamily =
   FontFamily(
     listOf(
-      Font(GoogleFont("Sora"), fontProvider = fontProvider),
+      Font(smallFont, fontProvider = fontProvider, weight = FontWeight.Bold),
+      Font(smallFont, fontProvider = fontProvider, weight = FontWeight.SemiBold),
+      Font(smallFont, fontProvider = fontProvider, weight = FontWeight.W600),
+      Font(smallFont, fontProvider = fontProvider, weight = FontWeight.W500),
+      Font(smallFont, fontProvider = fontProvider, weight = FontWeight.Normal),
+      Font(smallFont, fontProvider = fontProvider, weight = FontWeight.Light),
+      Font(smallFont, fontProvider = fontProvider, weight = FontWeight.ExtraLight),
     )
   )
 
