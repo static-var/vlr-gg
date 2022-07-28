@@ -133,7 +133,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version"
 
-    implementation 'androidx.activity:activity-compose:1.5.0'
+    implementation 'androidx.activity:activity-compose:1.5.1'
     implementation "androidx.glance:glance-appwidget:1.0.0-alpha03"
 
     implementation 'androidx.core:core-splashscreen:1.0.0'
