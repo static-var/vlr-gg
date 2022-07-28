@@ -119,7 +119,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.compose.material3:material3:1.0.0-alpha15'
 
-    def compose_version = '1.3.0-alpha01'
+    def compose_version = '1.3.0-alpha02'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-text-google-fonts:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
