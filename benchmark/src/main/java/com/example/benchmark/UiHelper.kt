@@ -72,6 +72,7 @@ fun UiDevice.visitEventDetailsAndBack() {
   val liveEvent = wait(Until.hasObject(By.res("eventOverview:live")), 30_000)
   if (liveEvent) {
     // Visit match details screen 2 times
+    findObject(By.res("eventOverview:live"))?.fling(Direction.DOWN)
     repeat(2) {
       findObject(By.res("eventOverview:live"))?.children?.get(it)?.click()
       wait(
