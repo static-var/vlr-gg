@@ -17,8 +17,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.ui.*
@@ -27,12 +30,19 @@ import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.match.NoMatchUI
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun TeamScreen(viewModel: VlrViewModel, id: String) {
   val teamDetails by
     remember(viewModel) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
   var rosterCard by remember { mutableStateOf(false) }
+
+  val trackerString = id.toTeamTopic()
+  val isTracked by
+    remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
 
   val modifier: Modifier = Modifier
 
@@ -47,7 +57,23 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
           LazyColumn(modifier = modifier.fillMaxSize()) {
             item { Spacer(modifier = modifier.statusBarsPadding()) }
             item {
-              TeamBanner(modifier = modifier.testTag("team:banner"), teamDetails = teamDetail)
+              TeamBanner(
+                modifier = modifier.testTag("team:banner"),
+                teamDetails = teamDetail,
+                isTracked = isTracked ?: false
+              ) {
+                when (isTracked) {
+                  true -> {
+                    Firebase.messaging.unsubscribeFromTopic(trackerString).await()
+                    viewModel.removeTopic(trackerString)
+                  }
+                  false -> {
+                    Firebase.messaging.subscribeToTopic(trackerString).await()
+                    viewModel.trackTopic(trackerString)
+                  }
+                  else -> {}
+                }
+              }
             }
             item {
               RosterCard(
@@ -75,7 +101,15 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
 }
 
 @Composable
-fun TeamBanner(modifier: Modifier = Modifier, teamDetails: TeamDetails) {
+fun TeamBanner(
+  modifier: Modifier = Modifier,
+  teamDetails: TeamDetails,
+  isTracked: Boolean,
+  onSubButton: suspend () -> Unit
+) {
+
+  val scope = rememberCoroutineScope()
+
   CardView(modifier) {
     Row(
       modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
@@ -103,6 +137,26 @@ fun TeamBanner(modifier: Modifier = Modifier, teamDetails: TeamDetails) {
         Text(text = "#${teamDetails.rank} in ", style = VLRTheme.typography.labelMedium)
       Text(text = teamDetails.region, style = VLRTheme.typography.labelMedium)
       Text(text = ", from " + teamDetails.country, style = VLRTheme.typography.labelMedium)
+    }
+
+    var processingTopicSubscription by remember { mutableStateOf(false) }
+
+    Button(
+      onClick = {
+        if (!processingTopicSubscription) {
+          processingTopicSubscription = true
+          scope.launch(Dispatchers.IO) {
+            onSubButton()
+            processingTopicSubscription = false
+          }
+        }
+      },
+      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+    ) {
+      if (processingTopicSubscription) {
+        LinearProgressIndicator()
+      } else if (isTracked) Text(text = stringResource(R.string.unsubscribe))
+      else Text(text = stringResource(R.string.get_notified))
     }
   }
 }
@@ -245,7 +299,6 @@ fun GameOverviewPreview(
     modifier = modifier.clickable { onClick(matchPreviewInfo.id) },
   ) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
-      println(matchPreviewInfo.date)
       Text(
         text = matchPreviewInfo.eta ?: matchPreviewInfo.date.readableDateAndTime,
         modifier = modifier.fillMaxWidth(),
@@ -290,3 +343,5 @@ fun GameOverviewPreview(
     }
   }
 }
+
+private fun String.toTeamTopic() = "team-$this"

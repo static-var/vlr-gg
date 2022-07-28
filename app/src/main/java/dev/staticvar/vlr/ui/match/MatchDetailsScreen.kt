@@ -901,4 +901,4 @@ fun StatTitle(text: String, modifier: Modifier = Modifier) {
   )
 }
 
-fun String.toMatchTopic() = "match-$this"
+private fun String.toMatchTopic() = "match-$this"
