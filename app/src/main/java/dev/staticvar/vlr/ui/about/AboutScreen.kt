@@ -1,8 +1,10 @@
 package dev.staticvar.vlr.ui.about
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.TextSnippet
 import androidx.compose.material.icons.outlined.Code
@@ -22,12 +24,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.firebase.messaging.FirebaseMessaging
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.common.ChangeLogDialog
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.currentAppVersion
 import dev.staticvar.vlr.ui.theme.VLRTheme
+import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.openAsCustomTab
 
 @Composable
@@ -46,6 +50,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
   val primaryContainer = Color.Transparent
   val systemUiController = rememberSystemUiController()
   val isDarkMode = isSystemInDarkTheme()
+  var simpleEasterEgg by remember { mutableStateOf(false) }
 
   SideEffect { systemUiController.setStatusBarColor(primaryContainer, darkIcons = !isDarkMode) }
 
@@ -53,7 +58,10 @@ fun AboutScreen(viewModel: VlrViewModel) {
     Spacer(modifier = Modifier.statusBarsPadding())
     Text(
       text = stringResource(id = R.string.app_description),
-      modifier = Modifier.fillMaxWidth().padding(Local16DPPadding.current),
+      modifier =
+        Modifier.fillMaxWidth()
+          .padding(Local16DPPadding.current)
+          .combinedClickable(onLongClick = { simpleEasterEgg = true }, onClick = {}),
       textAlign = TextAlign.Center,
       style = VLRTheme.typography.headlineSmall,
       color = VLRTheme.colorScheme.primary,
@@ -64,7 +72,11 @@ fun AboutScreen(viewModel: VlrViewModel) {
 
     Spacer(modifier = Modifier.weight(1f))
 
-    VersionFooter(currentAppVersion = currentAppVersion, remoteAppVersion = remoteAppVersion)
+    VersionFooter(
+      currentAppVersion = currentAppVersion,
+      remoteAppVersion = remoteAppVersion,
+      simpleEasterEgg
+    )
   }
 }
 
@@ -193,7 +205,11 @@ fun ColumnScope.BackendCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ColumnScope.VersionFooter(currentAppVersion: String, remoteAppVersion: String?) {
+fun ColumnScope.VersionFooter(
+  currentAppVersion: String,
+  remoteAppVersion: String?,
+  simpleEasterEgg: Boolean
+) {
   val context = LocalContext.current
   Text(
     text = "${stringResource(id = R.string.package_name)} - ${context.packageName}",
@@ -217,6 +233,30 @@ fun ColumnScope.VersionFooter(currentAppVersion: String, remoteAppVersion: Strin
     textAlign = TextAlign.Center,
     color = VLRTheme.colorScheme.primary
   )
+  if (simpleEasterEgg) {
+    var token by remember(simpleEasterEgg) {
+      mutableStateOf("processing")
+    }
+
+    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+      if (task.isSuccessful) {
+        token = task.result
+        println("Token $token")
+      } else {
+        e { "FCM Token error" }
+      }
+    }
+
+    SelectionContainer() {
+      Text(
+        text = token,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+        style = VLRTheme.typography.bodySmall,
+        textAlign = TextAlign.Center,
+        color = VLRTheme.colorScheme.primary
+      )
+    }
+  }
 }
 
 @Composable
