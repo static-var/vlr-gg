@@ -1,3 +1,24 @@
+# Release v0.2.7
+## What's Changed
+* Add option to get notified before match of your favorite team (Navigate to roster / team screen and click "Get notified")
+* Updated a lot of dependencies.
+
+## Dependency Updates
+* chore(deps): update plugin com.diffplug.spotless to v6.9.0 by @renovate in https://github.com/static-var/vlr-gg/pull/140
+* fix(deps): update room_version to v2.4.3 by @renovate in https://github.com/static-var/vlr-gg/pull/138
+* fix(deps): update dependency androidx.profileinstaller:profileinstaller to v1.2.0 by @renovate in https://github.com/static-var/vlr-gg/pull/137
+* fix(deps): update dependency androidx.navigation:navigation-compose to v2.5.1 by @renovate in https://github.com/static-var/vlr-gg/pull/136
+* fix(deps): update dependency androidx.core:core-splashscreen to v1.0.0 by @renovate in https://github.com/static-var/vlr-gg/pull/135
+* fix(deps): update dependency androidx.compose.material3:material3 to v1.0.0-alpha15 by @renovate in https://github.com/static-var/vlr-gg/pull/134
+* fix(deps): update dependency io.mockk:mockk to v1.12.5 by @renovate in https://github.com/static-var/vlr-gg/pull/131
+* fix(deps): update dependency androidx.activity:activity-compose to v1.5.1 by @renovate in https://github.com/static-var/vlr-gg/pull/133
+* fix(deps): update compose_version to v1.3.0-alpha02 by @renovate in https://github.com/static-var/vlr-gg/pull/132
+* fix(deps): update dependency com.github.skydoves:landscapist-glide to v1.6.0 by @renovate in https://github.com/static-var/vlr-gg/pull/141
+* fix(deps): update accompanist to v0.25.0 by @renovate in https://github.com/static-var/vlr-gg/pull/139
+
+**Full Changelog**: https://github.com/static-var/vlr-gg/compare/v0.2.6...v0.2.7
+
+
 # Release v0.2.6
 ## What's Changed
 * Enable Crashlytics
@@ -67,26 +88,3 @@
 * chore(deps): update dependency gradle to v7.5-rc-3 by @renovate in https://github.com/static-var/vlr-gg/pull/103
 
 **Full Changelog**: https://github.com/static-var/vlr-gg/compare/v0.2.2...v0.2.2-hotfix
-
-
-# Release v0.2.2
-## What's Changed
-* Fix a crash caused if there's no internet on home screen
-* Add a Progress Indicator in case data is being fetched from API on Event Details and Match Details screen
-* Add two downloadable fonts (Inter, Sora)
-* Add details to typography definition
-* Animate visibility of Progress Indicators through out the app
-
-## Dev Notes
-* Make code more readable
-* Document more code
-* Added more tests
-* Add Kover to generate code coverage report
-* Remove unused methods, variables and cleanup code
-
-## Dependency Updates
-* chore(deps): update plugin com.diffplug.spotless to v6.8.0 by @renovate in https://github.com/static-var/vlr-gg/pull/102
-* chore(deps): update dependency com.android.tools:desugar_jdk_libs to v1.2.0 by @renovate in https://github.com/static-var/vlr-gg/pull/101
-* chore(deps): update dependency org.jetbrains.kotlinx:kover to v0.5.1 by @renovate in https://github.com/static-var/vlr-gg/pull/104
-
-**Full Changelog**: https://github.com/static-var/vlr-gg/compare/v0.2.0...v0.2.2
