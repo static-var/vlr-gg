@@ -169,7 +169,7 @@ dependencies {
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
     // Room
-    def room_version = "2.4.2"
+    def room_version = "2.4.3"
     implementation "androidx.room:room-runtime:$room_version"
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:$room_version"
