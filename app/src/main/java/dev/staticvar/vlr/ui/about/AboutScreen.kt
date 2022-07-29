@@ -63,6 +63,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
 
     AndroidCard(changelog = changelogText)
     BackendCard()
+    SourceCard()
 
     Spacer(modifier = Modifier.weight(1f))
 
@@ -194,6 +195,30 @@ fun ColumnScope.BackendCard(modifier: Modifier = Modifier) {
         contentDescription = stringResource(id = R.string.website),
       )
       Text(text = stringResource(id = R.string.source_code))
+    }
+  }
+}
+
+@Composable
+fun ColumnScope.SourceCard(modifier: Modifier = Modifier) {
+  val context = LocalContext.current
+  CardView() {
+    Text(
+      text = "Data source",
+      modifier = modifier.padding(Local8DPPadding.current),
+      style = VLRTheme.typography.titleMedium,
+      color = VLRTheme.colorScheme.primary,
+    )
+    Button(
+      onClick = { "https://vlr.gg".openAsCustomTab(context) },
+      modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp)
+    ) {
+      Icon(
+        imageVector = Icons.Outlined.Language,
+        modifier = modifier.padding(Local2DPPadding.current),
+        contentDescription = "vlr.gg",
+      )
+      Text(text = "vlr.gg")
     }
   }
 }
