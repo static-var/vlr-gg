@@ -2,7 +2,6 @@ package dev.staticvar.vlr.ui.about
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
@@ -15,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,11 +21,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.messaging.FirebaseMessaging
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.common.ChangeLogDialog
+import dev.staticvar.vlr.ui.common.StatusBarColorForHome
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.currentAppVersion
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -36,6 +34,8 @@ import dev.staticvar.vlr.utils.openAsCustomTab
 
 @Composable
 fun AboutScreen(viewModel: VlrViewModel) {
+  StatusBarColorForHome()
+
   val context = LocalContext.current
   val currentAppVersion = context.currentAppVersion
 
@@ -47,13 +47,7 @@ fun AboutScreen(viewModel: VlrViewModel) {
     remember(viewModel) { viewModel.getLatestChangelog() }
       .collectAsStateWithLifecycle(initialValue = null)
 
-  val primaryContainer = Color.Transparent
-  val systemUiController = rememberSystemUiController()
-  val isDarkMode = isSystemInDarkTheme()
   var simpleEasterEgg by remember { mutableStateOf(false) }
-
-  SideEffect { systemUiController.setStatusBarColor(primaryContainer, darkIcons = !isDarkMode) }
-
   Column(modifier = Modifier.fillMaxSize()) {
     Spacer(modifier = Modifier.statusBarsPadding())
     Text(
@@ -234,9 +228,7 @@ fun ColumnScope.VersionFooter(
     color = VLRTheme.colorScheme.primary
   )
   if (simpleEasterEgg) {
-    var token by remember(simpleEasterEgg) {
-      mutableStateOf("processing")
-    }
+    var token by remember(simpleEasterEgg) { mutableStateOf("processing") }
 
     FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
       if (task.isSuccessful) {

@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -35,7 +36,6 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.skydoves.landscapist.CircularReveal
@@ -44,6 +44,7 @@ import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -54,17 +55,14 @@ import kotlinx.coroutines.tasks.await
 
 @Composable
 fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
+
+  SetStatusBarColor()
+  val modifier: Modifier = Modifier
+
   val details by remember(viewModel) { viewModel.getMatchDetails(id) }.collectAsState(Waiting())
   val trackerString = id.toMatchTopic()
   val isTracked by
     remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
-  var streamAndVodsCard by remember { mutableStateOf(false) }
-
-  val primaryContainer = VLRTheme.colorScheme.surface.copy(0.2f)
-  val systemUiController = rememberSystemUiController()
-  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
-
-  val modifier: Modifier = Modifier
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
@@ -72,6 +70,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
       .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
+  val rememberListState = rememberLazyListState()
 
   Column(
     modifier = modifier.fillMaxSize(),
@@ -81,17 +80,6 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
     details
       .onPass {
         data?.let { matchInfo ->
-          val maps by
-            remember(matchInfo) {
-              mutableStateOf(matchInfo.matchData.filter { it.map != "All Maps" })
-            }
-          var toggleStateMap by
-            remember(maps, matchInfo) { mutableStateOf(maps.associate { it.map to false }.toMap()) }
-
-          val rememberListState = rememberLazyListState()
-          var upcomingMatchToggle by remember { mutableStateOf(false) }
-          var overAllMapToggle by remember { mutableStateOf(false) }
-
           SwipeRefresh(
             state = swipeRefresh,
             onRefresh = { triggerRefresh = triggerRefresh.not() },
@@ -138,55 +126,9 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                   }
                 }
               }
-              item {
-                VideoReferenceUi(
-                  videos = matchInfo.videos,
-                  expand = streamAndVodsCard,
-                  onClick = { streamAndVodsCard = it }
-                )
-              }
+              item { VideoReferenceUi(videos = matchInfo.videos) }
               if (matchInfo.matchData.isNotEmpty()) {
-                item {
-                  EmphasisCardView(
-                    modifier =
-                      modifier
-                        .clickable { overAllMapToggle = overAllMapToggle.not() }
-                        .testTag("matchDetails:mapHeader")
-                  ) {
-                    Box(
-                      modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
-                      contentAlignment = Alignment.CenterEnd
-                    ) {
-                      Text(
-                        text = stringResource(R.string.maps),
-                        modifier = modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = VLRTheme.typography.titleSmall,
-                        color = VLRTheme.colorScheme.primary,
-                      )
-                      Icon(
-                        if (overAllMapToggle) Icons.Outlined.ArrowUpward
-                        else Icons.Outlined.ArrowDownward,
-                        contentDescription = stringResource(R.string.expand),
-                        modifier = modifier.size(16.dp),
-                        tint = VLRTheme.colorScheme.primary,
-                      )
-                    }
-                  }
-                }
-                if (overAllMapToggle)
-                  maps.forEach { match ->
-                    item {
-                      MapStatsCard(
-                        mapData = match,
-                        toggleState = toggleStateMap[match.map] ?: false,
-                        onClick = {
-                          toggleStateMap =
-                            toggleStateMap.toMutableMap().apply { set(match.map, it) }.toMap()
-                        }
-                      )
-                    }
-                  }
+                item { MapBox(modifier, matchInfo) }
               }
               if (matchInfo.mapCount > matchInfo.matchData.size) {
                 item {
@@ -201,39 +143,8 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
               }
               if (matchInfo.head2head.isNotEmpty()) {
                 item {
-                  EmphasisCardView(
-                    modifier =
-                      modifier.clickable { upcomingMatchToggle = upcomingMatchToggle.not() }
-                  ) {
-                    Box(
-                      modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
-                      contentAlignment = Alignment.CenterEnd
-                    ) {
-                      Text(
-                        text = stringResource(R.string.previous_encounter),
-                        modifier = modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = VLRTheme.typography.titleSmall,
-                        color = VLRTheme.colorScheme.primary,
-                      )
-                      Icon(
-                        if (upcomingMatchToggle) Icons.Outlined.ArrowUpward
-                        else Icons.Outlined.ArrowDownward,
-                        contentDescription = stringResource(R.string.expand),
-                        modifier = modifier.size(16.dp),
-                        tint = VLRTheme.colorScheme.primary,
-                      )
-                    }
-                  }
+                  PreviousMatches(modifier, matchInfo.head2head) { viewModel.action.match(it) }
                 }
-                if (upcomingMatchToggle)
-                  items(matchInfo.head2head, key = { item -> item.id }) {
-                    PreviousEncounter(
-                      modifier = modifier,
-                      previousEncounter = it,
-                      onClick = { viewModel.action.match(it) }
-                    )
-                  }
               }
               item { Spacer(modifier = modifier.navigationBarsPadding()) }
             }
@@ -443,10 +354,8 @@ fun ScoreBox(modifier: Modifier = Modifier, mapData: MatchInfo.MatchDetailData) 
 fun VideoReferenceUi(
   modifier: Modifier = Modifier,
   videos: MatchInfo.Videos,
-  expand: Boolean,
-  onClick: (Boolean) -> Unit
 ) {
-  var streamAndVodsCard by remember { mutableStateOf(false) }
+  var streamAndVodsCard by rememberSaveable { mutableStateOf(false) }
   val intent by remember { mutableStateOf(Intent(Intent.ACTION_VIEW)) }
   val context = LocalContext.current
   if (videos.streams.isEmpty() && videos.vods.isEmpty()) return
@@ -454,9 +363,11 @@ fun VideoReferenceUi(
   EmphasisCardView(
     modifier.animateContentSize(tween(500)),
   ) {
-    if (expand) {
+    if (streamAndVodsCard) {
       Row(
-        modifier.fillMaxWidth().padding(Local16DPPadding.current).clickable { onClick(false) },
+        modifier.fillMaxWidth().padding(Local16DPPadding.current).clickable {
+          streamAndVodsCard = streamAndVodsCard.not()
+        },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
       ) {
@@ -508,7 +419,9 @@ fun VideoReferenceUi(
       }
     } else {
       Row(
-        modifier.fillMaxWidth().padding(Local16DPPadding.current).clickable { onClick(true) },
+        modifier.fillMaxWidth().padding(Local16DPPadding.current).clickable {
+          streamAndVodsCard = streamAndVodsCard.not()
+        },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
       ) {
@@ -902,3 +815,89 @@ fun StatTitle(text: String, modifier: Modifier = Modifier) {
 }
 
 private fun String.toMatchTopic() = "match-$this"
+
+@Composable
+fun MapBox(modifier: Modifier = Modifier, matchInfo: MatchInfo) {
+  var overAllMapToggle by rememberSaveable { mutableStateOf(false) }
+  var toggleStateMap by
+    rememberSaveable(matchInfo, overAllMapToggle) {
+      mutableStateOf(matchInfo.matchData.associate { it.map to false }.toMap())
+    }
+  EmphasisCardView(
+    modifier =
+      modifier
+        .clickable { overAllMapToggle = overAllMapToggle.not() }
+        .testTag("matchDetails:mapHeader")
+  ) {
+    Box(
+      modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
+      contentAlignment = Alignment.CenterEnd
+    ) {
+      Text(
+        text = stringResource(R.string.maps),
+        modifier = modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+        style = VLRTheme.typography.titleSmall,
+        color = VLRTheme.colorScheme.primary,
+      )
+      Icon(
+        if (overAllMapToggle) Icons.Outlined.ArrowUpward else Icons.Outlined.ArrowDownward,
+        contentDescription = stringResource(R.string.expand),
+        modifier = modifier.size(16.dp),
+        tint = VLRTheme.colorScheme.primary,
+      )
+    }
+  }
+  if (overAllMapToggle) {
+    matchInfo.matchData.forEach { match ->
+      MapStatsCard(
+        modifier = modifier.animateContentSize(),
+        mapData = match,
+        toggleState = toggleStateMap[match.map] ?: false,
+        onClick = {
+          toggleStateMap = toggleStateMap.toMutableMap().apply { set(match.map, it) }.toMap()
+        }
+      )
+    }
+  }
+}
+
+@Composable
+fun PreviousMatches(
+  modifier: Modifier = Modifier,
+  head2head: List<MatchInfo.Head2head>,
+  onClick: (String) -> Unit
+) {
+  var upcomingMatchToggle by rememberSaveable { mutableStateOf(false) }
+  EmphasisCardView(
+    modifier = modifier.clickable { upcomingMatchToggle = upcomingMatchToggle.not() }
+  ) {
+    Box(
+      modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
+      contentAlignment = Alignment.CenterEnd
+    ) {
+      Text(
+        text = stringResource(R.string.previous_encounter),
+        modifier = modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+        style = VLRTheme.typography.titleSmall,
+        color = VLRTheme.colorScheme.primary,
+      )
+      Icon(
+        if (upcomingMatchToggle) Icons.Outlined.ArrowUpward else Icons.Outlined.ArrowDownward,
+        contentDescription = stringResource(R.string.expand),
+        modifier = modifier.size(16.dp),
+        tint = VLRTheme.colorScheme.primary,
+      )
+    }
+  }
+  if (upcomingMatchToggle) {
+    head2head.forEach {
+      PreviousEncounter(
+        modifier = modifier.animateContentSize(),
+        previousEncounter = it,
+        onClick = onClick
+      )
+    }
+  }
+}
