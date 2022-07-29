@@ -7,7 +7,10 @@ import android.os.Build
 import androidx.core.content.getSystemService
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.perf.ktx.performance
 import dagger.hilt.android.HiltAndroidApp
 import dev.staticvar.vlr.utils.Logger
 import dev.staticvar.vlr.utils.e
@@ -29,6 +32,8 @@ class VLRapp() : Application(), Configuration.Provider {
   }
 
   private fun firebaseInit() {
+    Firebase.performance.isPerformanceCollectionEnabled = !BuildConfig.DEBUG
+    Firebase.crashlytics.setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
     FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
       if (task.isSuccessful) {
         i { "FCM Token ${task.result}" }
