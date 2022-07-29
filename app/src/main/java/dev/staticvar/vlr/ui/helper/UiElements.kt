@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.ui.helper
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,7 +27,7 @@ fun CardView(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Card(
-    modifier = Modifier.padding(Local16DP_8DPPadding.current).then(modifier),
+    modifier = Modifier.padding(Local16DP_8DPPadding.current).animateContentSize().then(modifier),
     shape = RoundedCornerShape(16.dp),
     colors = colors
   ) { content(this) }
@@ -38,7 +39,7 @@ fun EmphasisCardView(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Card(
-    modifier = Modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).then(modifier),
+    modifier = Modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).animateContentSize().then(modifier),
     shape = RoundedCornerShape(16.dp),
     colors =
       CardDefaults.cardColors(

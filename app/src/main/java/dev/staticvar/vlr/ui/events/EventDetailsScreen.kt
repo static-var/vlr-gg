@@ -29,13 +29,13 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -46,20 +46,21 @@ import dev.staticvar.vlr.utils.onPass
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
+
+  SetStatusBarColor()
+  val modifier = Modifier
+
   val details by
     remember(viewModel) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
+
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
     remember(triggerRefresh) { viewModel.refreshEventDetails(id) }
       .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
+  val lazyListState = rememberLazyListState()
 
-  val primaryContainer = VLRTheme.colorScheme.surface.copy(0.2f)
-  val systemUiController = rememberSystemUiController()
-  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
-
-  val modifier = Modifier
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
@@ -82,8 +83,6 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 }
               }
             }
-
-          val lazyListState = rememberLazyListState()
 
           SwipeRefresh(
             state = swipeRefresh,

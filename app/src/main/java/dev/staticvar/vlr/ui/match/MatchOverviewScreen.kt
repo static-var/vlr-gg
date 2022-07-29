@@ -30,14 +30,10 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
 import dev.staticvar.vlr.ui.*
-import dev.staticvar.vlr.ui.common.ErrorUi
-import dev.staticvar.vlr.ui.common.ScrollHelper
-import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
-import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
+import dev.staticvar.vlr.ui.common.*
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.ShareDialog
 import dev.staticvar.vlr.ui.helper.SharingAppBar
@@ -46,6 +42,7 @@ import dev.staticvar.vlr.utils.*
 
 @Composable
 fun MatchOverview(viewModel: VlrViewModel) {
+  StatusBarColorForHomeWithTabs()
 
   val allMatches by
     remember(viewModel) { viewModel.getMatches() }
@@ -56,10 +53,6 @@ fun MatchOverview(viewModel: VlrViewModel) {
       .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
-
-  val primaryContainer = VLRTheme.colorScheme.surface
-  val systemUiController = rememberSystemUiController()
-  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 
   val resetScroll by
     remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)

@@ -3,7 +3,6 @@ package dev.staticvar.vlr.ui.events
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,20 +30,17 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentPreview
 import dev.staticvar.vlr.ui.*
-import dev.staticvar.vlr.ui.common.ErrorUi
-import dev.staticvar.vlr.ui.common.ScrollHelper
-import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
-import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
+import dev.staticvar.vlr.ui.common.*
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
 
 @Composable
 fun EventScreen(viewModel: VlrViewModel) {
+  StatusBarColorForHomeWithTabs()
 
   val allTournaments by
     remember(viewModel) { viewModel.getEvents() }
@@ -55,11 +51,6 @@ fun EventScreen(viewModel: VlrViewModel) {
       .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
-
-  val primaryContainer = VLRTheme.colorScheme.surface
-  val systemUiController = rememberSystemUiController()
-  val isDarkMode = isSystemInDarkTheme()
-  SideEffect { systemUiController.setStatusBarColor(primaryContainer, darkIcons = !isDarkMode) }
 
   val resetScroll by
     remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
