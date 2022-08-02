@@ -77,9 +77,4 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
 
   fun parseNews(id: String) =
     repository.parseNews(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
-
-  fun getLatestAppVersion() = repository.getLatestAppVersion()
-  fun getApkUrl() = repository.getApkUrl()
-  fun downloadApkWithProgress(url: String) = repository.downloadApkWithProgress(url)
-  fun getLatestChangelog() = repository.getLatestChangelog()
 }

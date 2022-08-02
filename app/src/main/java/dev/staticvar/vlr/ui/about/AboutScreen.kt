@@ -1,11 +1,10 @@
 package dev.staticvar.vlr.ui.about
 
-import androidx.compose.animation.AnimatedVisibility
+import android.content.Context
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.TextSnippet
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.DownloadForOffline
 import androidx.compose.material.icons.outlined.Language
@@ -20,32 +19,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.messaging.FirebaseMessaging
 import dev.staticvar.vlr.R
-import dev.staticvar.vlr.ui.*
-import dev.staticvar.vlr.ui.common.ChangeLogDialog
+import dev.staticvar.vlr.ui.Local16DPPadding
+import dev.staticvar.vlr.ui.Local2DPPadding
+import dev.staticvar.vlr.ui.Local4DP_2DPPadding
+import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.common.StatusBarColorForHome
 import dev.staticvar.vlr.ui.helper.CardView
-import dev.staticvar.vlr.ui.helper.currentAppVersion
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.openAsCustomTab
 
 @Composable
-fun AboutScreen(viewModel: VlrViewModel) {
+fun AboutScreen() {
   StatusBarColorForHome()
 
   val context = LocalContext.current
   val currentAppVersion = context.currentAppVersion
-
-  val remoteAppVersion by
-    remember(viewModel) { viewModel.getLatestAppVersion() }
-      .collectAsStateWithLifecycle(initialValue = null)
-
-  val changelogText by
-    remember(viewModel) { viewModel.getLatestChangelog() }
-      .collectAsStateWithLifecycle(initialValue = null)
 
   var simpleEasterEgg by remember { mutableStateOf(false) }
   Column(modifier = Modifier.fillMaxSize()) {
@@ -61,22 +52,18 @@ fun AboutScreen(viewModel: VlrViewModel) {
       color = VLRTheme.colorScheme.primary,
     )
 
-    AndroidCard(changelog = changelogText)
+    AndroidCard()
     BackendCard()
     SourceCard()
 
     Spacer(modifier = Modifier.weight(1f))
 
-    VersionFooter(
-      currentAppVersion = currentAppVersion,
-      remoteAppVersion = remoteAppVersion,
-      simpleEasterEgg
-    )
+    VersionFooter(currentAppVersion = currentAppVersion, simpleEasterEgg)
   }
 }
 
 @Composable
-fun AndroidCard(modifier: Modifier = Modifier, changelog: String? = null) {
+fun AndroidCard(modifier: Modifier = Modifier) {
   val context = LocalContext.current
   CardView(modifier = modifier) {
     Text(
@@ -143,8 +130,6 @@ fun AndroidCard(modifier: Modifier = Modifier, changelog: String? = null) {
         Text(text = stringResource(id = R.string.release))
       }
     }
-
-    ChangelogPreview(modifier.padding(Local2DPPadding.current), changelog)
   }
 }
 
@@ -224,11 +209,7 @@ fun ColumnScope.SourceCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ColumnScope.VersionFooter(
-  currentAppVersion: String,
-  remoteAppVersion: String?,
-  simpleEasterEgg: Boolean
-) {
+fun ColumnScope.VersionFooter(currentAppVersion: String, simpleEasterEgg: Boolean) {
   val context = LocalContext.current
   Text(
     text = "${stringResource(id = R.string.package_name)} - ${context.packageName}",
@@ -239,14 +220,6 @@ fun ColumnScope.VersionFooter(
   )
   Text(
     text = "${stringResource(id = R.string.app_version)} - $currentAppVersion",
-    modifier = Modifier.fillMaxWidth(),
-    style = VLRTheme.typography.bodySmall,
-    textAlign = TextAlign.Center,
-    color = VLRTheme.colorScheme.primary
-  )
-  Text(
-    text =
-      "${stringResource(id = R.string.latest_app_version)} - ${remoteAppVersion ?: "finding..."}",
     modifier = Modifier.fillMaxWidth(),
     style = VLRTheme.typography.bodySmall,
     textAlign = TextAlign.Center,
@@ -276,24 +249,5 @@ fun ColumnScope.VersionFooter(
   }
 }
 
-@Composable
-fun ChangelogPreview(modifier: Modifier = Modifier, text: String? = null) {
-  AnimatedVisibility(visible = text != null) {
-    var launchDialog by remember(text) { mutableStateOf(false) }
-
-    Button(
-      onClick = { launchDialog = true },
-      modifier = modifier.fillMaxWidth().padding(Local2DPPadding.current)
-    ) {
-      Icon(
-        imageVector = Icons.Filled.TextSnippet,
-        modifier = modifier.padding(Local2DPPadding.current),
-        contentDescription = stringResource(id = R.string.developer)
-      )
-      Text(text = stringResource(id = R.string.changelog))
-    }
-    if (launchDialog && text != null) {
-      ChangeLogDialog(text = text, onDismiss = { launchDialog = it })
-    }
-  }
-}
+private val Context.currentAppVersion: String
+  get() = packageManager.getPackageInfo(packageName, 0).versionName ?: ""

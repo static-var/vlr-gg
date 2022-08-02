@@ -9,8 +9,6 @@ import dev.staticvar.vlr.utils.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -27,7 +25,6 @@ class VlrRepository
 constructor(
   private val vlrDao: VlrDao,
   private val ktorHttpClient: HttpClient,
-  private val simpleKtorHttpClient: HttpClient,
   @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
   private val json: Json
 ) {
@@ -182,56 +179,6 @@ constructor(
    */
   suspend fun removeTopic(topic: String) = withContext(ioDispatcher) { vlrDao.deleteTopic(topic) }
 
-  /** Get latest app version from github version file */
-  fun getLatestAppVersion() = flow {
-    runSuspendCatching {
-        simpleKtorHttpClient.request(Endpoints.APK_VERSION_PAGE_LINK).bodyAsText()
-      }
-      .also { emit(it.get()) }
-  }
-
-  /** Get url to the latest apk from github from the latest release page */
-  fun getApkUrl() =
-    flow<String?> {
-      runSuspendCatching {
-          simpleKtorHttpClient
-            .request(Endpoints.APK_DOWNLOAD_PAGE_LINK)
-            .bodyAsText()
-            .lines()
-            .find { it.contains(".apk") }
-            ?.substringAfter("\"")
-            ?.substringBefore("\"")
-            ?.prependIndent("https://github.com")
-        }
-        .also { emit(it.get()) }
-    }
-
-  /**
-   * Download apk with progress This method will give % based update of download while downloading
-   * the file Returns data in pair format where first parameter is the download progress and the
-   * second param is the byte array
-   *
-   * @param url
-   */
-  fun downloadApkWithProgress(url: String) =
-    flow<Pair<Int, ByteArray>> {
-      simpleKtorHttpClient.prepareRequest(url).execute {
-        var offset = 0
-        val byteBufferSize = 1024 * 100
-        val channel = it.bodyAsChannel()
-        val contentLen = it.contentLength()?.toInt() ?: 0
-        val data = ByteArray(contentLen)
-        do {
-          val currentRead = channel.readAvailable(data, offset, byteBufferSize)
-          val progress =
-            if (contentLen == 0) 0 else ((offset / contentLen.toDouble()) * 100).toInt()
-          offset += currentRead
-          emit(Pair(progress, ByteArray(0)))
-        } while (currentRead >= 0)
-        emit(Pair(100, data))
-      }
-    }
-
   /**
    * Get team details
    *
@@ -253,10 +200,4 @@ constructor(
    * @param id
    */
   fun parseNews(id: String) = NewsParser.parser(id, json).flowOn(ioDispatcher)
-
-  /** Get latest app version from github version file */
-  fun getLatestChangelog() = flow {
-    runSuspendCatching { simpleKtorHttpClient.request(Endpoints.CHANGFELOG_PAGE_LINK).bodyAsText() }
-      .also { emit(it.get()) }
-  }
 }

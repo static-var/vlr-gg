@@ -68,14 +68,6 @@ internal class VlrRepositoryTest {
       }
     }
 
-  private val githubMockEngine = GithubMockEngine()
-
-  private var httpClient =
-    HttpClient(githubMockEngine.get()) {
-      defaultRequest { url { protocol = URLProtocol.HTTPS } }
-      expectSuccess = true
-    }
-
   @Before
   fun setUp() {
     val context = ApplicationProvider.getApplicationContext<Context>()
@@ -93,7 +85,7 @@ internal class VlrRepositoryTest {
   }
 
   private val repository: VlrRepository by lazy {
-    VlrRepository(vlrDao, vlrHttpClient, httpClient, testDispatcher, json)
+    VlrRepository(vlrDao, vlrHttpClient, testDispatcher, json)
   }
 
   @Test
@@ -432,44 +424,6 @@ internal class VlrRepositoryTest {
       repository.getTeamDetails(teamId).test {
         skipItems(1) // Waiting state emits first so skip that
         assertThat(awaitItem()).isInstanceOf(Fail::class.java)
-        awaitComplete()
-      }
-    }
-
-  @Test
-  fun `check getLatestAppVersion returns version when api call is successful`() =
-    runTest(testDispatcher) {
-      repository.getLatestAppVersion().test {
-        assertThat(awaitItem()).isEqualTo("0.2.0")
-        awaitComplete()
-      }
-    }
-
-  @Test
-  fun `check getLatestAppVersion returns null when api call is unsuccessful`() =
-    runTest(testDispatcher) {
-      githubMockEngine.nextResponseWithServerError()
-      repository.getLatestAppVersion().test {
-        assertThat(awaitItem()).isNull()
-        awaitComplete()
-      }
-    }
-
-  @Test
-  fun `check getApkUrl returns url when api call is successful`() =
-    runTest(testDispatcher) {
-      repository.getApkUrl().test {
-        assertThat(awaitItem()).isNotEmpty()
-        awaitComplete()
-      }
-    }
-
-  @Test
-  fun `check getApkUrl returns null when api call is unsuccessful`() =
-    runTest(testDispatcher) {
-      githubMockEngine.nextResponseWithServerError()
-      repository.getApkUrl().test {
-        assertThat(awaitItem()).isNull()
         awaitComplete()
       }
     }

@@ -108,7 +108,7 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       },
     ) {
       onNavigation(Destination.About.route)
-      AboutScreen(viewModel = viewModel)
+      AboutScreen()
     }
     composable(
       Destination.Match.route,
