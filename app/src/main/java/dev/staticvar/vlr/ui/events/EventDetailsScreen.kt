@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -39,10 +40,7 @@ import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.StableHolder
-import dev.staticvar.vlr.utils.Waiting
-import dev.staticvar.vlr.utils.onFail
-import dev.staticvar.vlr.utils.onPass
+import dev.staticvar.vlr.utils.*
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
@@ -60,6 +58,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
   val lazyListState = rememberLazyListState()
+  val context = LocalContext.current
 
   Column(
     modifier = modifier.fillMaxSize(),
@@ -177,6 +176,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
 
 @Composable
 fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: TournamentDetails) {
+  val context = LocalContext.current
   CardView(modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
       Row(modifier.fillMaxWidth().padding(Local16DPPadding.current)) {
@@ -240,6 +240,10 @@ fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: To
             modifier = Modifier.padding(horizontal = 4.dp)
           )
         }
+        Button(
+          onClick = { (Constants.VLR_BASE +"event/"+ tournamentDetails.id).openAsCustomTab(context) },
+          modifier = modifier.fillMaxWidth(),
+        ) { Text(text = stringResource(id = R.string.view_at_vlr)) }
       }
     }
   }
