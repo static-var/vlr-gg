@@ -45,8 +45,7 @@ val String.readableDateAndTimeWithZone: String
     LocalDateTime.parse(this, DateTimeFormatter.ISO_DATE_TIME)
       .atOffset(ZoneOffset.UTC)
       .atZoneSameInstant(deviceZoneId)
-      .format(DateTimeFormatter.RFC_1123_DATE_TIME)
-      .substringBefore("+")
+      .format(DateTimeFormatter.ofPattern(ABBREVIATED_DATE_TIME_WITH_ZONE))
 
 val String.readableDateAndTime: String
   get() =
@@ -76,3 +75,5 @@ val String.timeToEpoch: Long
       .atOffset(ZoneOffset.UTC)
       .atZoneSameInstant(deviceZoneId)
       .toEpochSecond()
+
+const val ABBREVIATED_DATE_TIME_WITH_ZONE = "EEE, dd MMM hh:mm a z"
