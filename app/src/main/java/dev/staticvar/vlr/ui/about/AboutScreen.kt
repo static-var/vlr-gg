@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Code
-import androidx.compose.material.icons.outlined.DownloadForOffline
 import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.Paid
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -42,7 +42,7 @@ fun AboutScreen() {
   Column(modifier = Modifier.fillMaxSize()) {
     Spacer(modifier = Modifier.statusBarsPadding())
     Text(
-      text = stringResource(id = R.string.app_description),
+      text = stringResource(id = R.string.app_name),
       modifier =
         Modifier.fillMaxWidth()
           .padding(Local16DPPadding.current)
@@ -110,7 +110,7 @@ fun AndroidCard(modifier: Modifier = Modifier) {
         Icon(
           imageVector = Icons.Outlined.Code,
           modifier = modifier.padding(Local2DPPadding.current),
-          contentDescription = stringResource(id = R.string.website),
+          contentDescription = stringResource(id = R.string.source_code),
         )
         Text(
           text = stringResource(id = R.string.source_code),
@@ -119,15 +119,15 @@ fun AndroidCard(modifier: Modifier = Modifier) {
         )
       }
       Button(
-        onClick = { "https://github.com/static-var/vlr-gg/releases".openAsCustomTab(context) },
+        onClick = { "https://github.com/sponsors/static-var".openAsCustomTab(context) },
         modifier = modifier.weight(1f).padding(Local2DPPadding.current)
       ) {
         Icon(
-          imageVector = Icons.Outlined.DownloadForOffline,
+          imageVector = Icons.Outlined.Paid,
           modifier = modifier.padding(Local2DPPadding.current),
-          contentDescription = stringResource(id = R.string.website),
+          contentDescription = stringResource(id = R.string.sponsor),
         )
-        Text(text = stringResource(id = R.string.release))
+        Text(text = stringResource(id = R.string.sponsor))
       }
     }
   }
