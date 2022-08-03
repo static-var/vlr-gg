@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.LocationOn
@@ -18,9 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
@@ -229,24 +235,56 @@ fun TournamentPreview(
         modifier = modifier.padding(Local4DPPadding.current),
         verticalAlignment = Alignment.CenterVertically
       ) {
-        Icon(
-          Icons.Outlined.LocationOn,
-          contentDescription = stringResource(R.string.location),
-          modifier = modifier.size(16.dp),
+        val annotatedLocationString = buildAnnotatedString {
+          appendInlineContent(id = "location")
+          append(tournamentPreview.location.uppercase())
+        }
+        val inlineLocationContentMap =
+          mapOf(
+            "location" to
+              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                Icon(
+                  imageVector = Icons.Outlined.LocationOn,
+                  modifier = modifier.size(16.dp),
+                  contentDescription = ""
+                )
+              }
+          )
+        val annotatedDateString = buildAnnotatedString {
+          appendInlineContent(id = "date")
+          append(tournamentPreview.dates)
+        }
+        val inlineDateContentMap =
+          mapOf(
+            "date" to
+              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                Icon(
+                  imageVector = Icons.Outlined.DateRange,
+                  modifier = modifier.size(16.dp),
+                  contentDescription = ""
+                )
+              }
+          )
+        Text(
+          annotatedLocationString,
+          style = VLRTheme.typography.bodyMedium,
+          inlineContent = inlineLocationContentMap,
+          modifier = modifier.padding(Local4DPPadding.current).weight(1f),
+          textAlign = TextAlign.Start,
         )
-        Text(text = tournamentPreview.location.uppercase(), style = VLRTheme.typography.bodyMedium)
         Text(
           text = tournamentPreview.prize,
-          modifier = modifier.padding(Local4DPPadding.current).weight(1f),
-          textAlign = TextAlign.Center,
+          modifier = modifier.padding(Local4DPPadding.current),
+          textAlign = TextAlign.Start,
           style = VLRTheme.typography.bodyMedium
         )
-        Icon(
-          Icons.Outlined.DateRange,
-          contentDescription = "Date",
-          modifier = modifier.size(16.dp),
+        Text(
+          annotatedDateString,
+          style = VLRTheme.typography.bodyMedium,
+          inlineContent = inlineDateContentMap,
+          modifier = modifier.padding(Local4DPPadding.current).weight(1f),
+          textAlign = TextAlign.End,
         )
-        Text(text = tournamentPreview.dates, style = VLRTheme.typography.bodyMedium)
       }
     }
   }
