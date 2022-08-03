@@ -71,6 +71,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
   val rememberListState = rememberLazyListState()
+  val context = LocalContext.current
 
   Column(
     modifier = modifier.fillMaxSize(),
@@ -171,7 +172,7 @@ fun MatchOverallAndEventOverview(
 ) {
   val scope = rememberCoroutineScope()
   CardView(
-    modifier.fillMaxWidth().aspectRatio(1.8f),
+    modifier.fillMaxWidth().aspectRatio(1.3f),
   ) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Row(
@@ -301,6 +302,11 @@ fun MatchOverallAndEventOverview(
             }
           }
         }
+        val context = LocalContext.current
+        Button(
+          onClick = { (Constants.VLR_BASE + detailData.id).openAsCustomTab(context) },
+          modifier = modifier.fillMaxWidth(),
+        ) { Text(text = stringResource(id = R.string.view_at_vlr)) }
 
         MatchMoreDetailsDialog(
           detailData = detailData,
