@@ -81,20 +81,4 @@ object NetworkModule {
         config { connectionPool(connectionPool) }
       }
     }
-
-  @Provides
-  @Singleton
-  @Named("simpleClient")
-  fun provideSimpleKtorHttpClient(
-    connectionPool: ConnectionPool,
-    httpLoggingInterceptor: HttpLoggingInterceptor
-  ) =
-    HttpClient(OkHttp) {
-      defaultRequest { url { protocol = URLProtocol.HTTPS } }
-
-      engine {
-        addInterceptor(httpLoggingInterceptor)
-        config { connectionPool(connectionPool) }
-      }
-    }
 }

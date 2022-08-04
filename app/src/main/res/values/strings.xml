@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VLR</string>
+    <string name="app_name">VLR.gg (Unofficial)</string>
     <string name="widget_description">VLR widget for live matches or upcoming matches</string>
     <string name="notification_channel_id">Match Channel</string>
     <string name="notification_channel_title">Subscribed matches</string>
@@ -51,14 +51,13 @@
     <string name="more_info">More info</string>
     <string name="roster">Roster</string>
     <string name="collapse">Collapse</string>
-    <string name="app_description">VLR (Unofficial app for vlr.gg)</string>
     <string name="app_version">Current version</string>
     <string name="latest_app_version">Latest available version</string>
     <string name="package_name">Package name</string>
     <string name="developer">Developer</string>
     <string name="website">Website</string>
     <string name="source_code">Source Code</string>
-    <string name="release">Release</string>
+    <string name="sponsor">Sponsor</string>
     <string name="shared_via">Shared via VLR app : https://github.com/static-var/vlr-gg/releases</string>
     <string name="share">Share</string>
     <string name="live">LIVE</string>
@@ -70,7 +69,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="app_updated">App updated!</string>
     <string name="teams">Teams</string>
-    <string name="changelog">Change Log</string>
     <string name="no_match_info_found">No match information found</string>
     <string name="no_team_info_found">No team information found</string>
+    <string name="view_at_vlr">Open in VLR.gg website</string>>
 </resources>

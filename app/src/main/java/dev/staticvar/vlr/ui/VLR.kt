@@ -18,7 +18,6 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
@@ -27,10 +26,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
-import dev.staticvar.vlr.ui.helper.*
+import dev.staticvar.vlr.ui.helper.NavItem
+import dev.staticvar.vlr.ui.helper.NewNavBar
+import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.ui.theme.tintedBackground
-import dev.staticvar.vlr.utils.i
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,29 +96,6 @@ fun VLR() {
           else -> transparent
         },
     )
-  }
-
-  val context = LocalContext.current
-  val currentAppVersion = context.currentAppVersion
-  val remoteAppVersion by
-    remember(viewModel) { viewModel.getLatestAppVersion() }.collectAsState(initial = null)
-
-  val needAppUpdate by
-    produceState<Boolean>(initialValue = false, remoteAppVersion, currentAppVersion) {
-      remoteAppVersion?.let { remoteVersion ->
-        value =
-          if (remoteVersion.trim().equals(currentAppVersion, ignoreCase = true)) {
-            i { "No new version available" }
-            false
-          } else {
-            i { "New version | Remote Version $remoteVersion | Local Version $currentAppVersion" }
-            true
-          }
-      }
-    }
-
-  if (needAppUpdate) {
-    AppUpdateDownloadPopup(viewModel)
   }
 
   Scaffold(

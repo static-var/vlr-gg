@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -60,6 +61,7 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
               TeamBanner(
                 modifier = modifier.testTag("team:banner"),
                 teamDetails = teamDetail,
+                id = id,
                 isTracked = isTracked ?: false
               ) {
                 when (isTracked) {
@@ -104,11 +106,13 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
 fun TeamBanner(
   modifier: Modifier = Modifier,
   teamDetails: TeamDetails,
+  id: String,
   isTracked: Boolean,
   onSubButton: suspend () -> Unit
 ) {
 
   val scope = rememberCoroutineScope()
+  val context = LocalContext.current
 
   CardView(modifier) {
     Row(
@@ -151,12 +155,18 @@ fun TeamBanner(
           }
         }
       },
-      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
     ) {
       if (processingTopicSubscription) {
         LinearProgressIndicator()
       } else if (isTracked) Text(text = stringResource(R.string.unsubscribe))
       else Text(text = stringResource(R.string.get_notified))
+    }
+    Button(
+      onClick = { (Constants.VLR_BASE + "team/" + id).openAsCustomTab(context) },
+      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+    ) {
+      Text(text = stringResource(id = R.string.view_at_vlr), maxLines = 1)
     }
   }
 }
