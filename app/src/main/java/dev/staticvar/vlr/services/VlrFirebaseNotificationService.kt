@@ -48,8 +48,8 @@ class VlrFirebaseNotificationService() : FirebaseMessagingService() {
     val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
     val notificationBuilder =
       NotificationCompat.Builder(this, channelId)
-        .setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher_foreground))
-        .setSmallIcon(R.mipmap.ic_launcher_foreground)
+        .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_launcher_foreground))
+        .setSmallIcon(R.drawable.ic_launcher_foreground)
         .setContentTitle(title)
         .setContentText(body)
         .setAutoCancel(true)
