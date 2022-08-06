@@ -19,4 +19,5 @@ data class Event(
   @SerialName("id") val id: String = "", // 799
   @SerialName("name") val name: String = "", // 799
   @SerialName("patch") val patch: String? = "", // "Patch 4.02"
+  @SerialName("status") val status: String? = "", // "Patch 4.02"
 )

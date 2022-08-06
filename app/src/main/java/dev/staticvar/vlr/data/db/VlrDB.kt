@@ -18,7 +18,7 @@ import dev.staticvar.vlr.data.model.TopicTracker
       TopicTracker::class
     ],
   exportSchema = false,
-  version = 5
+  version = 6
 )
 @TypeConverters(VlrTypeConverter::class)
 abstract class VlrDB : RoomDatabase() {
@@ -29,4 +29,5 @@ abstract class VlrDB : RoomDatabase() {
  * Version change log 3 -> Remove old tables and create new for accommodating API calls
  *
  * 4 -> Add FCM tracker table 5 -> Add more stats to players in match
+ * 6 -> Add status in events for MatchDetailsScreen
  */
