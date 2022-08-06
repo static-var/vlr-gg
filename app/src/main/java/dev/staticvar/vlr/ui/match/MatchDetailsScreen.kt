@@ -3,8 +3,10 @@ package dev.staticvar.vlr.ui.match
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -174,10 +177,13 @@ fun MatchOverallAndEventOverview(
   CardView(
     modifier.fillMaxWidth().aspectRatio(1.3f),
   ) {
+    detailData.event.status?.let {
+      MatchStatusUi(modifier = modifier, state = it, date = detailData.event.date)
+    }
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Row(
         modifier = modifier.size(width = maxWidth, height = maxHeight),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.Center
       ) {
         Spacer(modifier = Modifier.weight(0.1f))
@@ -199,7 +205,7 @@ fun MatchOverallAndEventOverview(
             imageModel = detailData.teams[0].img,
             contentScale = ContentScale.Fit,
             alignment = Alignment.CenterStart,
-            modifier = modifier.alpha(0.2f),
+            modifier = modifier.alpha(0.2f).aspectRatio(1f, true).align(Alignment.TopCenter),
             circularReveal = CircularReveal(400),
           )
         }
@@ -222,7 +228,7 @@ fun MatchOverallAndEventOverview(
             imageModel = detailData.teams[1].img,
             contentScale = ContentScale.Fit,
             alignment = Alignment.CenterEnd,
-            modifier = modifier.alpha(0.2f),
+            modifier = modifier.alpha(0.2f).aspectRatio(1f, true).align(Alignment.TopCenter),
             circularReveal = CircularReveal(400)
           )
         }
@@ -306,7 +312,9 @@ fun MatchOverallAndEventOverview(
         Button(
           onClick = { (Constants.VLR_BASE + detailData.id).openAsCustomTab(context) },
           modifier = modifier.fillMaxWidth(),
-        ) { Text(text = stringResource(id = R.string.view_at_vlr)) }
+        ) {
+          Text(text = stringResource(id = R.string.view_at_vlr))
+        }
 
         MatchMoreDetailsDialog(
           detailData = detailData,
@@ -903,6 +911,52 @@ fun PreviousMatches(
         modifier = modifier.animateContentSize(),
         previousEncounter = it,
         onClick = onClick
+      )
+    }
+  }
+}
+
+@Composable
+fun MatchLiveUi(modifier: Modifier = Modifier) {
+  val infiniteTransition = rememberInfiniteTransition()
+  val color by
+    infiniteTransition.animateColor(
+      initialValue = VLRTheme.colorScheme.primary,
+      targetValue = Color.Transparent,
+      animationSpec =
+        infiniteRepeatable(
+          animation = tween(1000, easing = Ease),
+          repeatMode = RepeatMode.Reverse
+        )
+    )
+
+  Row(
+    modifier = modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.Center,
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    Canvas(
+      modifier = modifier.size(18.dp).padding(Local2DPPadding.current),
+      onDraw = { drawCircle(color = color) }
+    )
+    Text(
+      text = stringResource(id = R.string.live),
+      color = color,
+      modifier = modifier.padding(Local4DPPadding.current)
+    )
+  }
+}
+
+@Composable
+fun MatchStatusUi(modifier: Modifier, state: String, date: String?) {
+  ProvideTextStyle(value = VLRTheme.typography.labelLarge) {
+    if (state.equals(stringResource(id = R.string.live), ignoreCase = true)) MatchLiveUi(modifier)
+    else {
+      Text(
+        text = state.uppercase() + " " + date?.timeDiff,
+        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+        textAlign = TextAlign.Center,
+        color = VLRTheme.colorScheme.primary
       )
     }
   }

@@ -1,6 +1,7 @@
 package dev.staticvar.vlr.ui.helper
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,7 +15,17 @@ import androidx.compose.ui.unit.dp
 import dev.staticvar.vlr.ui.Local16DP_8DPPadding
 import dev.staticvar.vlr.ui.theme.VLRTheme
 
-const val CARD_ALPHA = 0.4f
+val cardAlpha: Float
+  @Composable
+  get() {
+    return if (isSystemInDarkTheme()) 0.3f else 0.6f
+  }
+
+val emphasisCardAlpha: Float
+  @Composable
+  get() {
+    return if (isSystemInDarkTheme()) 0.6f else 0.6f
+  }
 
 @Composable
 fun CardView(
@@ -22,7 +33,7 @@ fun CardView(
   colors: CardColors =
     CardDefaults.cardColors(
       contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-      containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA)
+      containerColor = VLRTheme.colorScheme.primaryContainer.copy(cardAlpha)
     ),
   content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -39,12 +50,16 @@ fun EmphasisCardView(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Card(
-    modifier = Modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).animateContentSize().then(modifier),
+    modifier =
+      Modifier.fillMaxWidth()
+        .padding(Local16DP_8DPPadding.current)
+        .animateContentSize()
+        .then(modifier),
     shape = RoundedCornerShape(16.dp),
     colors =
       CardDefaults.cardColors(
         contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-        containerColor = VLRTheme.colorScheme.primaryContainer.copy(CARD_ALPHA + CARD_ALPHA)
+        containerColor = VLRTheme.colorScheme.primaryContainer.copy(emphasisCardAlpha)
       )
   ) { content(this) }
 }
