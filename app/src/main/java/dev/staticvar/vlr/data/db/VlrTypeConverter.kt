@@ -146,4 +146,14 @@ class VlrTypeConverter @Inject constructor(private val json: Json) {
   fun stringToVideos(data: String): MatchInfo.Videos {
     return json.decodeFromString(data)
   }
+
+  @TypeConverter
+  fun roundsToString(data: MatchInfo.MatchDetailData.Rounds): String {
+    return json.encodeToString(data)
+  }
+
+  @TypeConverter
+  fun stringToRounds(data: String): MatchInfo.MatchDetailData.Rounds {
+    return json.decodeFromString(data)
+  }
 }
