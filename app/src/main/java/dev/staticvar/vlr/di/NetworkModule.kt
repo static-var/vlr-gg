@@ -63,7 +63,7 @@ object NetworkModule {
 
       install(DefaultRequest) {
         headers {
-          append(HttpHeaders.AcceptEncoding, "br")
+          append(HttpHeaders.AcceptEncoding, "gzip")
           append(HttpHeaders.Authorization, BuildConfig.TOKEN)
           append(Constants.APPLICATION_HEADER, BuildConfig.APPLICATION_ID)
           append(Constants.BUILD_TYPE_HEADER, BuildConfig.BUILD_TYPE)

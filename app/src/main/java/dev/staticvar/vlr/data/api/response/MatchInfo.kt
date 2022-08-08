@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.lang.reflect.Member
 
 @Keep
 @Serializable
@@ -33,7 +34,8 @@ data class MatchInfo(
   data class MatchDetailData(
     @SerialName("map") val map: String = "", // Fracture
     @SerialName("members") val members: List<Member> = listOf(),
-    @SerialName("teams") val teams: List<Team> = listOf()
+    @SerialName("teams") val teams: List<Team> = listOf(),
+    @SerialName("rounds") val rounds: List<Rounds> = listOf()
   ) {
     @Keep
     @Serializable
@@ -60,6 +62,44 @@ data class MatchInfo(
         @SerialName("img") val img: String = "", // https://vlr.gg/img/vlr/game/agents/chamber.png
         @SerialName("name") val name: String = "" // chamber
       )
+    }
+
+    @Keep
+    @Serializable
+    @Immutable
+    data class Rounds(
+      @SerialName("round_number") val roundNo: Int = 0, // 1
+      @SerialName("round_score") val score: String = "", // 1-0
+      @SerialName("winner") val winner: Winner = Winner.NOT_PLAYED, // team1
+      @SerialName("side") val side: Side = Side.NOT_PLAYED, // defense
+      @SerialName("win_type") val winType: WinType = WinType.NotPlayed // Elimination
+    ) {
+      @Keep
+      @Serializable
+      @Immutable
+      enum class Winner {
+        @SerialName("team1") TEAM1,
+        @SerialName("team2") TEAM2,
+        @SerialName("") NOT_PLAYED
+      }
+      @Keep
+      @Serializable
+      @Immutable
+      enum class Side {
+        @SerialName("attack") ATTACK,
+        @SerialName("defense") DEFENCE,
+        @SerialName("") NOT_PLAYED
+      }
+      @Keep
+      @Serializable
+      @Immutable
+      enum class WinType {
+        @SerialName("Elimination") Elimination,
+        @SerialName("Spike exploded") SpikeExploded,
+        @SerialName("Defused") Defused,
+        @SerialName("Time out") TimeOut,
+        @SerialName("Not Played") NotPlayed,
+      }
     }
   }
 
