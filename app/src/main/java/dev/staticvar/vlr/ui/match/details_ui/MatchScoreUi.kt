@@ -1,4 +1,4 @@
-package dev.staticvar.vlr.ui.match
+package dev.staticvar.vlr.ui.match.details_ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -51,7 +51,7 @@ fun ScoreBox(modifier: Modifier = Modifier, mapData: MatchInfo.MatchDetailData) 
       val annotatedTeam2String = buildAnnotatedString {
         appendInlineContent(id = "team2Color")
         withStyle(style = SpanStyle(VLRTheme.colorScheme.tertiary)) {
-          append(mapData.teams[0].name)
+          append(mapData.teams[1].name)
         }
       }
       val inlineTeam2ContentMap =

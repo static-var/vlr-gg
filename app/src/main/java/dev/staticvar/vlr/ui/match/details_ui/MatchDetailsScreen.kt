@@ -1,4 +1,4 @@
-package dev.staticvar.vlr.ui.match
+package dev.staticvar.vlr.ui.match.details_ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
@@ -43,10 +43,6 @@ import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
-import dev.staticvar.vlr.ui.match.details_ui.MatchMoreDetailsDialog
-import dev.staticvar.vlr.ui.match.details_ui.PreviousMatches
-import dev.staticvar.vlr.ui.match.details_ui.StatViewPager
-import dev.staticvar.vlr.ui.match.details_ui.VideoReferenceUi
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
 import kotlinx.coroutines.Dispatchers

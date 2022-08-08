@@ -14,7 +14,7 @@ import dev.staticvar.vlr.ui.about.AboutScreen
 import dev.staticvar.vlr.ui.events.EventDetails
 import dev.staticvar.vlr.ui.events.EventScreen
 import dev.staticvar.vlr.ui.match.MatchOverview
-import dev.staticvar.vlr.ui.match.NewMatchDetails
+import dev.staticvar.vlr.ui.match.details_ui.NewMatchDetails
 import dev.staticvar.vlr.ui.news.NewsDetailsScreen
 import dev.staticvar.vlr.ui.news.NewsScreen
 import dev.staticvar.vlr.ui.team.TeamScreen
