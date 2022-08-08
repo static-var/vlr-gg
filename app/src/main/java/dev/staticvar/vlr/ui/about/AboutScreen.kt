@@ -54,7 +54,7 @@ fun AboutScreen() {
 
     AndroidCard()
     BackendCard()
-    SourceCard()
+    FeedbackCard()
 
     Spacer(modifier = Modifier.weight(1f))
 
@@ -82,7 +82,7 @@ fun AndroidCard(modifier: Modifier = Modifier) {
       ) {
         Icon(
           imageVector = Icons.Outlined.Language,
-          modifier = modifier.padding(Local2DPPadding.current),
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
           contentDescription = stringResource(id = R.string.website),
         )
         Text(text = "staticvar.dev", overflow = TextOverflow.Ellipsis, maxLines = 1)
@@ -93,7 +93,7 @@ fun AndroidCard(modifier: Modifier = Modifier) {
       ) {
         Icon(
           painterResource(id = R.drawable.github_logo),
-          modifier = modifier.padding(Local2DPPadding.current),
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
           contentDescription = stringResource(id = R.string.developer)
         )
         Text(text = "static-var")
@@ -109,7 +109,7 @@ fun AndroidCard(modifier: Modifier = Modifier) {
       ) {
         Icon(
           imageVector = Icons.Outlined.Code,
-          modifier = modifier.padding(Local2DPPadding.current),
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
           contentDescription = stringResource(id = R.string.source_code),
         )
         Text(
@@ -124,7 +124,7 @@ fun AndroidCard(modifier: Modifier = Modifier) {
       ) {
         Icon(
           imageVector = Icons.Outlined.Paid,
-          modifier = modifier.padding(Local2DPPadding.current),
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
           contentDescription = stringResource(id = R.string.sponsor),
         )
         Text(text = stringResource(id = R.string.sponsor))
@@ -153,7 +153,7 @@ fun ColumnScope.BackendCard(modifier: Modifier = Modifier) {
       ) {
         Icon(
           imageVector = Icons.Outlined.Language,
-          modifier = modifier.padding(Local2DPPadding.current),
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
           contentDescription = stringResource(id = R.string.website),
         )
         Text(text = "akhilnarang.dev", overflow = TextOverflow.Ellipsis, maxLines = 1)
@@ -164,7 +164,7 @@ fun ColumnScope.BackendCard(modifier: Modifier = Modifier) {
       ) {
         Icon(
           painterResource(id = R.drawable.github_logo),
-          modifier = modifier.padding(Local2DPPadding.current),
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
           contentDescription = stringResource(id = R.string.developer)
         )
         Text(text = "akhilnarang")
@@ -176,7 +176,7 @@ fun ColumnScope.BackendCard(modifier: Modifier = Modifier) {
     ) {
       Icon(
         imageVector = Icons.Outlined.Code,
-        modifier = modifier.padding(Local2DPPadding.current),
+        modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
         contentDescription = stringResource(id = R.string.website),
       )
       Text(text = stringResource(id = R.string.source_code))
@@ -185,25 +185,25 @@ fun ColumnScope.BackendCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ColumnScope.SourceCard(modifier: Modifier = Modifier) {
+fun ColumnScope.FeedbackCard(modifier: Modifier = Modifier) {
   val context = LocalContext.current
   CardView() {
     Text(
-      text = "Data source",
+      text = stringResource(id = R.string.feedback),
       modifier = modifier.padding(Local8DPPadding.current),
       style = VLRTheme.typography.titleMedium,
       color = VLRTheme.colorScheme.primary,
     )
     Button(
-      onClick = { "https://vlr.gg".openAsCustomTab(context) },
+      onClick = { "https://t.me/vlr_gg_chat".openAsCustomTab(context) },
       modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp)
     ) {
       Icon(
         imageVector = Icons.Outlined.Language,
-        modifier = modifier.padding(Local2DPPadding.current),
-        contentDescription = "vlr.gg",
+        modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
+        contentDescription = "Telegram",
       )
-      Text(text = "vlr.gg")
+      Text(text = "Telegram")
     }
   }
 }
