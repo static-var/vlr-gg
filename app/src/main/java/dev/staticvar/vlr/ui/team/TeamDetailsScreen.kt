@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.ui.team
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -19,13 +20,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.get
+import com.github.michaelbull.result.getError
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.match.NoMatchUI
@@ -38,12 +45,19 @@ import kotlinx.coroutines.tasks.await
 @Composable
 fun TeamScreen(viewModel: VlrViewModel, id: String) {
   val teamDetails by
-    remember(viewModel) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
+    remember(viewModel) { viewModel.getTeamDetailsFromDb(id) }.collectAsState(initial = Waiting())
   var rosterCard by remember { mutableStateOf(false) }
 
   val trackerString = id.toTeamTopic()
   val isTracked by
     remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
+
+  var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
+  val updateState by
+    remember(triggerRefresh) { viewModel.refreshTeamDetails(id) }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
+
+  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
 
   val modifier: Modifier = Modifier
 
@@ -55,47 +69,75 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
     teamDetails
       .onPass {
         data?.let { teamDetail ->
-          LazyColumn(modifier = modifier.fillMaxSize()) {
-            item { Spacer(modifier = modifier.statusBarsPadding()) }
-            item {
-              TeamBanner(
-                modifier = modifier.testTag("team:banner"),
-                teamDetails = teamDetail,
-                id = id,
-                isTracked = isTracked ?: false
-              ) {
-                when (isTracked) {
-                  true -> {
-                    Firebase.messaging.unsubscribeFromTopic(trackerString).await()
-                    viewModel.removeTopic(trackerString)
-                  }
-                  false -> {
-                    Firebase.messaging.subscribeToTopic(trackerString).await()
-                    viewModel.trackTopic(trackerString)
-                  }
-                  else -> {}
+          SwipeRefresh(
+            state = swipeRefresh,
+            onRefresh = { triggerRefresh = triggerRefresh.not() },
+            indicator = { _, _ -> }
+          ) {
+            LazyColumn(modifier = modifier.fillMaxSize()) {
+              item { Spacer(modifier = modifier.statusBarsPadding()) }
+              item {
+                AnimatedVisibility(
+                  visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
+                ) {
+                  LinearProgressIndicator(
+                    modifier
+                      .fillMaxWidth()
+                      .padding(Local16DPPadding.current)
+                      .animateContentSize()
+                      .testTag("common:loader")
+                  )
                 }
               }
-            }
-            item {
-              RosterCard(
-                modifier = modifier,
-                expanded = rosterCard,
-                onExpand = { rosterCard = it },
-                data = StableHolder(teamDetail.roster)
-              )
-            }
-            item {
-              TeamMatchData(
-                modifier = modifier,
-                upcoming = StableHolder(teamDetail.upcoming),
-                completed = StableHolder(teamDetail.completed),
-                teamName = teamDetail.name,
-                onClick = { viewModel.action.match(it) }
-              )
+              updateState.getError()?.let {
+                item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
+              }
+              item {
+                TeamBanner(
+                  modifier = modifier.testTag("team:banner"),
+                  teamDetails = teamDetail,
+                  id = id,
+                  isTracked = isTracked ?: false
+                ) {
+                  when (isTracked) {
+                    true -> {
+                      Firebase.messaging.unsubscribeFromTopic(trackerString).await()
+                      viewModel.removeTopic(trackerString)
+                    }
+                    false -> {
+                      Firebase.messaging.subscribeToTopic(trackerString).await()
+                      viewModel.trackTopic(trackerString)
+                    }
+                    else -> {}
+                  }
+                }
+              }
+              item {
+                RosterCard(
+                  modifier = modifier,
+                  expanded = rosterCard,
+                  onExpand = { rosterCard = it },
+                  data = StableHolder(teamDetail.roster)
+                )
+              }
+              item {
+                TeamMatchData(
+                  modifier = modifier,
+                  upcoming = StableHolder(teamDetail.upcoming),
+                  completed = StableHolder(teamDetail.completed),
+                  teamName = teamDetail.name,
+                  onClick = { viewModel.action.match(it) }
+                )
+              }
             }
           }
         }
+          ?: kotlin.run {
+            updateState.getError()?.let {
+              ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
+            }
+              ?: LinearProgressIndicator(modifier.animateContentSize())
+          }
       }
       .onWaiting { LinearProgressIndicator(modifier) }
       .onFail { Text(text = message()) }

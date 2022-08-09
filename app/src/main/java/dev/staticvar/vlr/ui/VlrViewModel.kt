@@ -66,8 +66,11 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
       .getEventDetailsFromDb(matchUrl)
       .stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
+  fun refreshTeamDetails(id: String) =
+    repository.getTeamDetails(id).stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
+
   fun getTeamDetails(id: String) =
-    repository.getTeamDetails(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
+    repository.getTeamDetailsFromDb(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
   fun trackTopic(topic: String) = viewModelScope.launch { repository.trackTopic(topic) }
 

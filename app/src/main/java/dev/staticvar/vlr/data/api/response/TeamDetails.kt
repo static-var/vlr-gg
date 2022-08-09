@@ -2,13 +2,18 @@ package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Keep
 @Serializable
 @Immutable
+@Entity
 data class TeamDetails(
+  @PrimaryKey
+  @SerialName("id") var id: String = "", // United States
   @SerialName("country") val country: String = "", // United States
   @SerialName("img") val img: String = "", // https://owcdn.net/img/603c00d5c5a08.png
   @SerialName("name") val name: String = "", // 100 Thieves
@@ -19,7 +24,8 @@ data class TeamDetails(
   @SerialName("twitter") val twitter: String? = "", // @100Thieves
   @SerialName("upcoming") val upcoming: List<Games> = listOf(),
   @SerialName("completed") val completed: List<Games> = listOf(),
-  @SerialName("website") val website: String? = "" // https://www.100thieves.com/
+  @SerialName("website") val website: String? = "", // https://www.100thieves.com/
+  @SerialName("points") val points: Int? = null, // true
 ) {
   @Keep
   @Serializable

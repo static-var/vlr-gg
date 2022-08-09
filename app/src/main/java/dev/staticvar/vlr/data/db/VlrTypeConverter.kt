@@ -2,10 +2,7 @@ package dev.staticvar.vlr.data.db
 
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
-import dev.staticvar.vlr.data.api.response.Event
-import dev.staticvar.vlr.data.api.response.MatchInfo
-import dev.staticvar.vlr.data.api.response.Team
-import dev.staticvar.vlr.data.api.response.TournamentDetails
+import dev.staticvar.vlr.data.api.response.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -154,6 +151,26 @@ class VlrTypeConverter @Inject constructor(private val json: Json) {
 
   @TypeConverter
   fun stringToRounds(data: String): MatchInfo.MatchDetailData.Rounds {
+    return json.decodeFromString(data)
+  }
+
+  @TypeConverter
+  fun rosterToString(data: List<TeamDetails.Roster>): String {
+    return json.encodeToString(data)
+  }
+
+  @TypeConverter
+  fun stringToRoster(data: String): List<TeamDetails.Roster> {
+    return json.decodeFromString(data)
+  }
+
+  @TypeConverter
+  fun gamesToString(data: List<TeamDetails.Games>): String {
+    return json.encodeToString(data)
+  }
+
+  @TypeConverter
+  fun stringToGames(data: String): List<TeamDetails.Games> {
     return json.decodeFromString(data)
   }
 }
