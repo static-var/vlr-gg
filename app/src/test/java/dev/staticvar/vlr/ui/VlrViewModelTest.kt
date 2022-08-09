@@ -242,7 +242,7 @@ internal class VlrViewModelTest {
   @Test
   fun `test if getTeamDetails emits data from db`() = runTest {
     val data = TeamDetails()
-    every { vlrRepository.getTeamDetails("800") } returns flow { emit(Pass(data)) }
+    every { vlrRepository.getTeamDetailsFromDb("800") } returns flow { emit(Pass(data)) }
     viewModel.getTeamDetails("800").test {
       skipItems(1)
       val response = awaitItem()

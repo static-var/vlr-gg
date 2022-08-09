@@ -15,7 +15,8 @@ import dev.staticvar.vlr.data.model.TopicTracker
       MatchInfo::class,
       TournamentPreview::class,
       TournamentDetails::class,
-      TopicTracker::class
+      TopicTracker::class,
+      TeamDetails::class,
     ],
   exportSchema = false,
   version = 7

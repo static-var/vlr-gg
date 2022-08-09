@@ -5,7 +5,10 @@ import dev.staticvar.vlr.data.api.response.*
 import dev.staticvar.vlr.data.dao.VlrDao
 import dev.staticvar.vlr.data.model.TopicTracker
 import dev.staticvar.vlr.di.IoDispatcher
-import dev.staticvar.vlr.utils.*
+import dev.staticvar.vlr.utils.Endpoints
+import dev.staticvar.vlr.utils.Pass
+import dev.staticvar.vlr.utils.TimeElapsed
+import dev.staticvar.vlr.utils.runSuspendCatching
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -185,14 +188,27 @@ constructor(
    * @param id
    */
   fun getTeamDetails(id: String) =
-    flow<Operation<TeamDetails>> {
-      emit(Waiting())
-      try {
-        ktorHttpClient.get(Endpoints.teamDetails(id)).body<TeamDetails>().also { emit(Pass(it)) }
-      } catch (e: Exception) {
-        emit(Fail("Error", e))
-      }
+    flow<Result<Boolean, Throwable?>> {
+        val key = Endpoints.teamDetails(id)
+        if (TimeElapsed.hasElapsed(key)) {
+          emit(Ok(true))
+          val result = runSuspendCatching { ktorHttpClient.get(key).body<TeamDetails>() }
+          result.get()?.let {
+            it.id = id
+            vlrDao.insertTeamDetail(it)
+            TimeElapsed.start(key, 180.seconds)
+            emit(Ok(false))
+          }
+            ?: emit(Err(result.getError()))
+        }
     }
+
+  /**
+   * Get event details from db
+   *
+   * @param id
+   */
+  fun getTeamDetailsFromDb(id: String) = vlrDao.getTeamDetailById(id).map { Pass(it) }
 
   /**
    * Parse news

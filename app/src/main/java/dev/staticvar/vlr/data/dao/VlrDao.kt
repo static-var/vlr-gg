@@ -70,7 +70,7 @@ interface VlrDao {
   @Query("SELECT * from MatchInfo where id = :id") fun getMatchById(id: String): Flow<MatchInfo?>
   // -------------- DAO calls for [MatchInfo] ends here --------------//
 
-  // -------------- DAO calls for [TopicTracker] ends here --------------//
+  // -------------- DAO calls for [TopicTracker] starts here --------------//
   @Query("SELECT EXISTS(SELECT * from TopicTracker where topic = :topic)")
   fun isTopicSubscribed(topic: String): Flow<Boolean>
 
@@ -79,5 +79,19 @@ interface VlrDao {
 
   @Query("DELETE from TopicTracker where topic = :topic") suspend fun deleteTopic(topic: String)
   // -------------- DAO calls for [TopicTracker] ends here --------------//
+
+  // -------------- DAO calls for [Team] stars here --------------//
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  suspend fun insertTeamDetail(team: TeamDetails)
+
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  suspend fun insertTeamDetails(team: List<TeamDetails>)
+
+  @Query("SELECT * from TeamDetails where id = :id")
+  fun getTeamDetailById(id: String): Flow<TeamDetails?>
+
+  @Query("SELECT * from TeamDetails where region = :region")
+  fun getTeamDetailsByCountry(region: String): Flow<List<TeamDetails>?>
+  // -------------- DAO calls for [Team] ends here --------------//
 
 }
