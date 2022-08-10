@@ -6,12 +6,12 @@ import com.github.michaelbull.result.Ok
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.Waiting
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class VlrViewModel @Inject constructor(private val repository: VlrRepository) : ViewModel() {
@@ -45,6 +45,12 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
 
   fun getEvents() =
     repository.getEventsFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
+
+  fun refreshRanks() =
+    repository.updateLatestRanks().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
+
+  fun getRanks() =
+    repository.getRanksFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
   fun refreshMatchInfo(id: String) =
     repository

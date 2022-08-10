@@ -4,6 +4,7 @@ object Endpoints {
   const val NEWS = "api/v1/news/"
   const val MATCHES_OVERVIEW = "api/v1/matches/"
   const val EVENTS_OVERVIEW = "api/v1/events/"
+  const val RANK_OVERVIEW = "api/v1/rankings/"
   private const val TEAM_DETAILS = "api/v1/team/"
   private const val EVENT_DETAILS = "api/v1/events/"
   private const val MATCH_DETAILS = "api/v1/matches/"

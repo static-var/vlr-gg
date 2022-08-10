@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 
 @Keep
 @Serializable
@@ -15,10 +16,11 @@ data class TeamDetails(
   @PrimaryKey
   @SerialName("id") var id: String = "", // United States
   @SerialName("country") val country: String = "", // United States
+  @JsonNames("logo")
   @SerialName("img") val img: String = "", // https://owcdn.net/img/603c00d5c5a08.png
   @SerialName("name") val name: String = "", // 100 Thieves
   @SerialName("rank") val rank: Int = 0, // 8
-  @SerialName("region") val region: String = "", // North America
+  @SerialName("region") var region: String = "", // North America
   @SerialName("roster") val roster: List<Roster> = listOf(),
   @SerialName("tag") val tag: String? = "", // 100T
   @SerialName("twitter") val twitter: String? = "", // @100Thieves

@@ -7,6 +7,7 @@
     <string name="games">Games</string>
     <string name="matches">Matches</string>
     <string name="tournament">Tournament</string>
+    <string name="rank">Rankings</string>
     <string name="about">About</string>
     <string name="events">Events</string>
     <string name="download_complete">Download complete!</string>
@@ -29,6 +30,7 @@
     <string name="upcoming">Upcoming</string>
     <string name="completed">Completed</string>
     <string name="no_ongoing_event">No events</string>
+    <string name="no_teams">No teams</string>
     <string name="no_match">No matches</string>
     <string name="unsubscribe">Unsubscribe</string>
     <string name="get_notified">Get Notified</string>

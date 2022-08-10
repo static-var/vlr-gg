@@ -12,15 +12,15 @@ import dev.staticvar.vlr.utils.runSuspendCatching
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.time.Duration.Companion.seconds
 
 @Singleton
 class VlrRepository
@@ -102,6 +102,31 @@ constructor(
 
   /** Get events from db */
   fun getEventsFromDb() = vlrDao.getTournaments().map { Pass(it) }
+
+  /**
+   * Get events from server This method will request server to return the latest events / tournament
+   * related data This call is made once every 30 seconds
+   */
+  fun updateLatestRanks() =
+    flow<Result<Boolean, Throwable?>> {
+      if (TimeElapsed.hasElapsed(Endpoints.RANK_OVERVIEW)) {
+        emit(Ok(true))
+        val result = runSuspendCatching {
+          ktorHttpClient.get(Endpoints.RANK_OVERVIEW).body<List<RankPerRegion>>()
+        }
+        result.get()?.let { ranks ->
+          ranks.forEach { perRegion -> perRegion.teams.forEach { it.region = perRegion.region } }
+          val teams = ranks.flatMap { it.teams }
+          vlrDao.insertTeamDetails(teams)
+          TimeElapsed.start(Endpoints.RANK_OVERVIEW, 180.seconds)
+          emit(Ok(false))
+        }
+          ?: emit(Err(result.getError()))
+      }
+    }
+
+  /** Get events from db */
+  fun getRanksFromDb() = vlrDao.getTeamDetailsInFlow().map { Pass(it) }
 
   /**
    * Get match details from server This will request server to return match data of a given match ID
@@ -189,18 +214,18 @@ constructor(
    */
   fun getTeamDetails(id: String) =
     flow<Result<Boolean, Throwable?>> {
-        val key = Endpoints.teamDetails(id)
-        if (TimeElapsed.hasElapsed(key)) {
-          emit(Ok(true))
-          val result = runSuspendCatching { ktorHttpClient.get(key).body<TeamDetails>() }
-          result.get()?.let {
-            it.id = id
-            vlrDao.insertTeamDetail(it)
-            TimeElapsed.start(key, 180.seconds)
-            emit(Ok(false))
-          }
-            ?: emit(Err(result.getError()))
+      val key = Endpoints.teamDetails(id)
+      if (TimeElapsed.hasElapsed(key)) {
+        emit(Ok(true))
+        val result = runSuspendCatching { ktorHttpClient.get(key).body<TeamDetails>() }
+        result.get()?.let {
+          it.id = id
+          vlrDao.insertTeamDetail(it)
+          TimeElapsed.start(key, 180.seconds)
+          emit(Ok(false))
         }
+          ?: emit(Err(result.getError()))
+      }
     }
 
   /**
