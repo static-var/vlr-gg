@@ -17,7 +17,8 @@ import dev.staticvar.vlr.ui.match.MatchOverview
 import dev.staticvar.vlr.ui.match.details_ui.NewMatchDetails
 import dev.staticvar.vlr.ui.news.NewsDetailsScreen
 import dev.staticvar.vlr.ui.news.NewsScreen
-import dev.staticvar.vlr.ui.team.TeamScreen
+import dev.staticvar.vlr.ui.team_rank.RankScreen
+import dev.staticvar.vlr.ui.team_rank.TeamScreen
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.fadeIn
 import dev.staticvar.vlr.utils.fadeOut
@@ -109,6 +110,26 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
     ) {
       onNavigation(Destination.About.route)
       AboutScreen()
+    }
+    composable(
+      Destination.Rank.route,
+      enterTransition = {
+        if (targetState.destination.route == initialState.destination.route) null
+        else slideInFromBottom
+      },
+      popEnterTransition = {
+        if (targetState.destination.route == initialState.destination.route) null
+        else slideInFromBottom
+      },
+      exitTransition = {
+        if (targetState.destination.route == initialState.destination.route) null else fadeOut
+      },
+      popExitTransition = {
+        if (targetState.destination.route == initialState.destination.route) null else fadeOut
+      },
+    ) {
+      onNavigation(Destination.Rank.route)
+      RankScreen(viewModel = viewModel)
     }
     composable(
       Destination.Match.route,

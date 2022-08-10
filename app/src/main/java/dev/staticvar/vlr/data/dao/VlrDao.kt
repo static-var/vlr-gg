@@ -92,6 +92,21 @@ interface VlrDao {
 
   @Query("SELECT * from TeamDetails where region = :region")
   fun getTeamDetailsByCountry(region: String): Flow<List<TeamDetails>?>
+
+  @Query("SELECT * from TeamDetails")
+  suspend fun getTeamDetails(): List<TeamDetails>?
+
+  @Query("SELECT * from TeamDetails")
+  fun getTeamDetailsInFlow(): Flow<List<TeamDetails>?>
+
+  @Update
+  suspend fun updateTeamDetails(common: List<TeamDetails>)
+
+  @Transaction
+  suspend fun upsert(common: List<TeamDetails>, diff: List<TeamDetails>) {
+    updateTeamDetails(common)
+    insertTeamDetails(diff)
+  }
   // -------------- DAO calls for [Team] ends here --------------//
 
 }

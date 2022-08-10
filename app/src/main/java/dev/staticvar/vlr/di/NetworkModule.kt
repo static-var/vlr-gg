@@ -31,7 +31,6 @@ object NetworkModule {
     return Json {
       ignoreUnknownKeys = true
       isLenient = true
-      prettyPrint = true
     }
   }
 

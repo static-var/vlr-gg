@@ -4,14 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Feed
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.SportsEsports
-import androidx.compose.material.icons.outlined.EmojiEvents
-import androidx.compose.material.icons.outlined.Feed
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.SportsEsports
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.surfaceColorAtElevation
@@ -74,6 +68,15 @@ fun VLR() {
         Icons.Outlined.EmojiEvents,
         onClick = {
           if (currentNav == Destination.EventOverview.route) resetScroll() else action.goEvents()
+        }
+      ),
+      NavItem(
+        title = stringResource(id = R.string.rank),
+        Destination.Rank.route,
+        Icons.Filled.Leaderboard,
+        Icons.Outlined.Leaderboard,
+        onClick = {
+          if (currentNav == Destination.Rank.route) resetScroll() else action.goRanks()
         }
       ),
       NavItem(

@@ -22,6 +22,10 @@ fun MacrobenchmarkScope.userflow() {
   device.visitEventDetailsAndBack() // Visit event details page 2 times from Event screen
   device.waitForIdle()
 
+  device.findObject(By.text("Rankings"))?.click() // Navigate to Events screen
+  device.visitRanksAndBack() // Visit team details page 2 times from Event screen
+  device.waitForIdle()
+
   device.findObject(By.text("About"))?.click() // Navigate to About screen
   device.waitForIdle()
 
@@ -54,7 +58,6 @@ fun UiDevice.visitMatchDetailsAndBack() {
           wait(Until.hasObject(By.res("matchDetails:mapStats")), 30_000)
 
           findObject(By.res("matchDetails:mapStats")).fling(Direction.RIGHT)
-          findObject(By.res("matchDetails:mapStats")).fling(Direction.RIGHT)
           waitForIdle()
 
           findObject(By.res("matchDetails:root")).fling(Direction.DOWN)
@@ -69,6 +72,7 @@ fun UiDevice.visitMatchDetailsAndBack() {
 }
 
 fun UiDevice.visitEventDetailsAndBack() {
+  wait(Until.gone(By.res("common:loader")), 30_000)
   val liveEvent = wait(Until.hasObject(By.res("eventOverview:live")), 30_000)
   if (liveEvent) {
     // Visit match details screen 2 times
@@ -87,6 +91,23 @@ fun UiDevice.visitEventDetailsAndBack() {
       pressBack()
       findObject(By.res("eventDetails:root")).fling(Direction.DOWN)
       waitForIdle()
+      pressBack()
+    }
+  }
+}
+
+fun UiDevice.visitRanksAndBack() {
+  wait(Until.gone(By.res("common:loader")), 30_000)
+  val liveEvent = wait(Until.hasObject(By.res("rankOverview:live")), 30_000)
+  if (liveEvent) {
+    // Visit match details screen 2 times
+    findObject(By.res("rankOverview:live"))?.fling(Direction.DOWN)
+    repeat(2) {
+      findObject(By.res("rankOverview:live"))?.children?.get(it)?.click()
+      wait(Until.gone(By.res("common:loader")), 30_000) // Ensure loader is gone
+      wait(Until.hasObject(By.res("team:banner")), 30_0000)
+      waitForIdle()
+      findObject(By.res("team:roster"))?.click()
       pressBack()
     }
   }
