@@ -1,4 +1,4 @@
-name: Build Signed APK and create a release
+name: Internal Play store release
 
 on: workflow_dispatch
 
@@ -42,22 +42,25 @@ jobs:
           echo $FIREBASE_CONFIG_DEV >> app/google-services.json
           ./gradlew app:assembleRelease --stacktrace
 
-      - name: Upload
-        uses: actions/upload-artifact@v3
-        with:
-          name: Build Artifacts
-          path: app/build/outputs/
-
       - name: APK name and path
         id: apk_details
         run: |
-          echo "VERSION_NAME=$(echo $(find app/build/outputs/apk/release/  "*.apk" -type f -size +1M -print -quit | head -n1) | awk -F\( '{print $NF}' | awk -F\) '{print $1}')" >> $GITHUB_ENV
-          echo "APK=$(find app/build/outputs/apk/release/  "*.apk" -type f -size +1M -print -quit | head -n1)" >> $GITHUB_ENV
+          echo "VERSION_NAME=$(echo $(find app/release/  "*.aab" -type f -size +1M -print -quit | head -n1) | awk -F\( '{print $NF}' | awk -F\) '{print $1}')" >> $GITHUB_ENV
+          echo "APK=$(find app/build/outputs/apk/release/  "*.aab" -type f -size +1M -print -quit | head -n1)" >> $GITHUB_ENV
 
       - name: Print Build details
         run: |
           echo "${{ env.APK }}"
           echo "${{ env.VERSION_NAME }}"
+
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+        packageName: dev.staticvar.vlr
+        releaseFiles: ${{ env.APK }}
+        track: internal
+        inAppUpdatePriority: 5
+        whatsNewDirectory: distribution/release-notes
 
       - name: Push tag
         id: tag_version
@@ -75,15 +78,6 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           artifacts: ${{ env.APK }}
 
-      - uses: actions/checkout@v3
-      - run: |
-          echo ${{ env.VERSION_NAME }} > version
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git commit -m "Update version"
-          git push
-
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
         with:
@@ -92,4 +86,5 @@ jobs:
           document: ${{ env.APK }}
           message: |
             Published ${{ env.VERSION_NAME }}
-            Release available at https://github.com/${{ github.repository }}/releases/tag/${{steps.tag_version.outputs.new_tag}}
+            https://github.com/${{ github.repository }}/releases/tag/${{steps.tag_version.outputs.new_tag}}
+            Early access app update released, should reflect on play store soon.
