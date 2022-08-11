@@ -13,15 +13,15 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
     namespace 'dev.staticvar.vlr'
 
     defaultConfig {
         applicationId "dev.staticvar.vlr"
         minSdk 23
-        targetSdk 32
-        versionCode 34
-        versionName "v0.2.9"
+        targetSdk 33
+        versionCode 37
+        versionName "v0.2.11"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -126,10 +126,10 @@ android {
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'androidx.compose.material3:material3:1.0.0-alpha15'
+    implementation 'androidx.appcompat:appcompat:1.5.0'
+    implementation 'androidx.compose.material3:material3:1.0.0-alpha16'
 
-    def compose_version = '1.3.0-alpha02'
+    def compose_version = '1.3.0-alpha03'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-text-google-fonts:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
@@ -144,7 +144,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version"
 
     implementation 'androidx.activity:activity-compose:1.5.1'
-    implementation "androidx.glance:glance-appwidget:1.0.0-alpha03"
+    implementation "androidx.glance:glance-appwidget:1.0.0-alpha04"
 
     implementation 'androidx.core:core-splashscreen:1.0.0'
     implementation 'androidx.webkit:webkit:1.4.0'
@@ -154,7 +154,7 @@ dependencies {
 
     implementation "com.michael-bull.kotlin-result:kotlin-result:1.1.16"
 
-    def accompanist = '0.25.0'
+    def accompanist = '0.25.1'
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist"
     implementation "com.google.accompanist:accompanist-pager:$accompanist"
