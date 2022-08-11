@@ -21,7 +21,6 @@ jobs:
           mkdir "${TMP_KEYSTORE_FILE_PATH}"
           echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/vlr-gg.jks
 
-
       - name: Make gradlew executable
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
@@ -41,7 +40,6 @@ jobs:
           touch app/google-services.json
           echo $FIREBASE_CONFIG_DEV >> app/google-services.json
           ./gradlew app:assembleRelease --stacktrace
-
       - name: APK name and path
         id: apk_details
         run: |
@@ -53,14 +51,15 @@ jobs:
           echo "${{ env.APK }}"
           echo "${{ env.VERSION_NAME }}"
 
-      uses: r0adkll/upload-google-play@v1
-      with:
-        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-        packageName: dev.staticvar.vlr
-        releaseFiles: ${{ env.APK }}
-        track: internal
-        inAppUpdatePriority: 5
-        whatsNewDirectory: distribution/release-notes
+      - name: Print Build details
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          packageName: dev.staticvar.vlr
+          releaseFiles: ${{ env.APK }}
+          track: internal
+          inAppUpdatePriority: 5
+          whatsNewDirectory: distribution/release-notes
 
       - name: Push tag
         id: tag_version
