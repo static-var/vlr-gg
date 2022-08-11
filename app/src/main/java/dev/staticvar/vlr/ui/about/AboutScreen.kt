@@ -12,7 +12,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -212,33 +211,20 @@ fun ColumnScope.FeedbackCard(modifier: Modifier = Modifier) {
 @Composable
 fun ColumnScope.VersionFooter(currentAppVersion: String, simpleEasterEgg: Boolean) {
   val context = LocalContext.current
-  Button(
-    onClick = {
-      "https://play.google.com/store/apps/details?id=dev.staticvar.vlr".openAsCustomTab(context)
-    },
-    modifier = Modifier.padding(vertical = 2.dp).align(CenterHorizontally)
-  ) { Text(text = stringResource(R.string.play_store)) }
   Text(
-    text = stringResource(id = R.string.download_disable),
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+    text = "${stringResource(id = R.string.package_name)} - ${context.packageName}",
+    modifier = Modifier.fillMaxWidth(),
     style = VLRTheme.typography.bodySmall,
     textAlign = TextAlign.Center,
     color = VLRTheme.colorScheme.primary
   )
-//  Text(
-//    text = "${stringResource(id = R.string.package_name)} - ${context.packageName}",
-//    modifier = Modifier.fillMaxWidth(),
-//    style = VLRTheme.typography.bodySmall,
-//    textAlign = TextAlign.Center,
-//    color = VLRTheme.colorScheme.primary
-//  )
-//  Text(
-//    text = "${stringResource(id = R.string.app_version)} - $currentAppVersion",
-//    modifier = Modifier.fillMaxWidth(),
-//    style = VLRTheme.typography.bodySmall,
-//    textAlign = TextAlign.Center,
-//    color = VLRTheme.colorScheme.primary
-//  )
+  Text(
+    text = "${stringResource(id = R.string.app_version)} - $currentAppVersion",
+    modifier = Modifier.fillMaxWidth(),
+    style = VLRTheme.typography.bodySmall,
+    textAlign = TextAlign.Center,
+    color = VLRTheme.colorScheme.primary
+  )
   if (simpleEasterEgg) {
     var token by remember(simpleEasterEgg) { mutableStateOf("processing") }
 
