@@ -194,7 +194,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-perf-ktx'
 
-    def ktor_version = "2.0.3"
+    def ktor_version = "2.1.0"
     implementation("io.ktor:ktor-client-okhttp:$ktor_version")
     implementation "io.ktor:ktor-client-serialization:$ktor_version"
     implementation "io.ktor:ktor-client-encoding:$ktor_version"
