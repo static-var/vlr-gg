@@ -129,22 +129,23 @@ fun RanksPreviewContainer(
       updateState.getError()?.let {
         ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
       }
-
-      VlrScrollableTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
-      HorizontalPager(count = tabs.size, state = pagerState, modifier = modifier.fillMaxSize()) {
-        tabPosition ->
-        val lazyListState = rememberLazyListState()
-        lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
-        val topTeams = teamMap[tabs[tabPosition]]?.take(20) ?: listOf()
-        if (topTeams.isEmpty()) NoTeamsUI()
-        else {
-          LazyColumn(
-            modifier.fillMaxSize().testTag("rankOverview:live"),
-            verticalArrangement = Arrangement.Top,
-            state = lazyListState
-          ) {
-            items(topTeams, key = { item -> item.id }) {
-              TeamRankPreview(team = it, action = action)
+      if (tabs.isNotEmpty()) {
+        VlrScrollableTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
+        HorizontalPager(count = tabs.size, state = pagerState, modifier = modifier.fillMaxSize()) {
+          tabPosition ->
+          val lazyListState = rememberLazyListState()
+          lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+          val topTeams = teamMap[tabs[tabPosition]]?.take(20) ?: listOf()
+          if (topTeams.isEmpty()) NoTeamsUI()
+          else {
+            LazyColumn(
+              modifier.fillMaxSize().testTag("rankOverview:live"),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState
+            ) {
+              items(topTeams, key = { item -> item.id }) {
+                TeamRankPreview(team = it, action = action)
+              }
             }
           }
         }

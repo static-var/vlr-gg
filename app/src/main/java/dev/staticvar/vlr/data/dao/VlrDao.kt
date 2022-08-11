@@ -93,7 +93,7 @@ interface VlrDao {
   @Query("SELECT * from TeamDetails where region = :region")
   fun getTeamDetailsByCountry(region: String): Flow<List<TeamDetails>?>
 
-  @Query("SELECT * from TeamDetails")
+  @Query("SELECT * from TeamDetails where rank is not 0")
   suspend fun getTeamDetails(): List<TeamDetails>?
 
   @Query("SELECT * from TeamDetails")
