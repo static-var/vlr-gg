@@ -154,7 +154,7 @@ dependencies {
 
     implementation "com.michael-bull.kotlin-result:kotlin-result:1.1.16"
 
-    def accompanist = '0.25.0'
+    def accompanist = '0.25.1'
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist"
     implementation "com.google.accompanist:accompanist-pager:$accompanist"
