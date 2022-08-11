@@ -39,12 +39,12 @@ jobs:
         run: |
           touch app/google-services.json
           echo $FIREBASE_CONFIG_DEV >> app/google-services.json
-          ./gradlew app:assembleRelease --stacktrace
+          ./gradlew app:bundleRelease --stacktrace
       - name: APK name and path
         id: apk_details
         run: |
           echo "VERSION_NAME=$(echo $(find app/release/  "*.aab" -type f -size +1M -print -quit | head -n1) | awk -F\( '{print $NF}' | awk -F\) '{print $1}')" >> $GITHUB_ENV
-          echo "APK=$(find app/build/outputs/apk/release/  "*.aab" -type f -size +1M -print -quit | head -n1)" >> $GITHUB_ENV
+          echo "APK=$(find app/release/  "*.aab" -type f -size +1M -print -quit | head -n1)" >> $GITHUB_ENV
 
       - name: Print Build details
         run: |
