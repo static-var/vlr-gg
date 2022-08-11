@@ -75,4 +75,6 @@
     <string name="no_team_info_found">No team information found</string>
     <string name="view_at_vlr">Open in VLR.gg website</string>>
     <string name="feedback">Feedback &amp; Discussion</string>>
+    <string name="play_store">Play Store</string>>
+    <string name="download_disable">App has been released on play store. Please uninstall this app and install the app from above button to receive updates in future.</string>>
 </resources>
