@@ -248,7 +248,7 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
         imageModel = team.img,
         contentScale = ContentScale.Fit,
         alignment = Alignment.CenterEnd,
-        modifier = modifier.alpha(0.2f).align(Alignment.CenterEnd).padding(horizontal = 8.dp),
+        modifier = modifier.align(Alignment.CenterEnd).padding(horizontal = 8.dp),
         circularReveal = CircularReveal(400),
       )
     }
