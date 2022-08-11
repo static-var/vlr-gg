@@ -43,23 +43,25 @@ jobs:
       - name: APK name and path
         id: apk_details
         run: |
-          echo "VERSION_NAME=$(echo $(find app/release/  "*.aab" -type f -size +1M -print -quit | head -n1) | awk -F\( '{print $NF}' | awk -F\) '{print $1}')" >> $GITHUB_ENV
-          echo "APK=$(find app/release/  "*.aab" -type f -size +1M -print -quit | head -n1)" >> $GITHUB_ENV
+          echo "VERSION_NAME=$(echo $(find app/build/outputs/bundle/release/  "*.aab" -type f -size +1M -print -quit | head -n1) | awk -F\( '{print $NF}' | awk -F\) '{print $1}')" >> $GITHUB_ENV
+          echo "APK=$(find app/build/outputs/bundle/release/  "*.aab" -type f -size +1M -print -quit | head -n1)" >> $GITHUB_ENV
 
       - name: Print Build details
         run: |
           echo "${{ env.APK }}"
           echo "${{ env.VERSION_NAME }}"
+          echo "${{ github.workspace }}/${{ env.APK }}"
+          echo "${{ github.workspace }}/${{ env.APK }}"
 
-      - name: Print Build details
-        uses: r0adkll/upload-google-play@v1
+      - name: Publish to play store
+        uses: r0adkll/upload-google-play@v1.0.17
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: dev.staticvar.vlr
-          releaseFiles: ${{ env.APK }}
-          track: internal
-          inAppUpdatePriority: 5
-          whatsNewDirectory: distribution/release-notes
+          releaseFiles: app/build/outputs/bundle/release/*.aab
+          track: beta
+          inAppUpdatePriority: 3
+          whatsNewDirectory: distribution/whatsnew
 
       - name: Push tag
         id: tag_version
