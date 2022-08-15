@@ -28,7 +28,7 @@ data class TeamDetails(
   @SerialName("completed") val completed: List<Games> = listOf(),
   @SerialName("website") val website: String? = "", // https://www.100thieves.com/
   @SerialName("points") val points: Int? = null, // true
-  val createdAt: String = "${System.currentTimeMillis()}",
+  val createdAt: Long = System.currentTimeMillis(),
 ) {
   @Keep
   @Serializable
