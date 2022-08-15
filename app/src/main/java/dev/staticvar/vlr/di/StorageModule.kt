@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.data.dao.VlrDao
+import dev.staticvar.vlr.data.db.Migration_7_8
 import dev.staticvar.vlr.data.db.VlrDB
 import dev.staticvar.vlr.data.db.VlrTypeConverter
 import dev.staticvar.vlr.utils.Constants
@@ -29,6 +30,7 @@ object StorageModule {
     Room.databaseBuilder(application, VlrDB::class.java, Constants.DB_NAME)
       .fallbackToDestructiveMigration()
       .addTypeConverter(converter)
+      .addMigrations(Migration_7_8)
       .build()
 
   @Provides @Singleton fun getVlrDao(db: VlrDB) = db.getVlrDao()
