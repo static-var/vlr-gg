@@ -27,7 +27,7 @@ data class MatchInfo(
   @SerialName("videos") val videos: Videos = Videos(),
   @SerialName("data") val matchData: List<MatchDetailData> = listOf(),
   @SerialName("map_count") val mapCount: Int = 0,
-  val createdAt: String = "${System.currentTimeMillis()}",
+  val createdAt: Long = System.currentTimeMillis(),
 ) {
   @Keep
   @Serializable

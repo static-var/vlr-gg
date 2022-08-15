@@ -23,7 +23,7 @@ data class TournamentDetails(
   @SerialName("prizes") val prizes: List<Prize> = listOf(),
   @SerialName("subtitle") val subtitle: String = "",
   @SerialName("title") val title: String = "", // Toronto VALORANT: Viper's Pit $2K Online Qualifier
-  val createdAt: String = "${System.currentTimeMillis()}",
+  val createdAt: Long = System.currentTimeMillis(),
 ) {
   @Keep
   @Serializable
