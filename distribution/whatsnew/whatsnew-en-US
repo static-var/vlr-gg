@@ -1,5 +1,5 @@
 v0.2.12
- • ✨ Auto cleaning (Automatically cleanup the database of app for entries which are not in use anymore)
+ • ✨ Auto cleaning (Automatically cleanup the database of app for data which is not in use anymore)
  • ⚒️ Show top 25 teams from each region instead of 20
  • ⚒️ Ui fixes for Rank screen
  • ⚒️ Change Bottom Navigation bar color
