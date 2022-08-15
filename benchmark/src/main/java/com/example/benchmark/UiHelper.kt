@@ -103,7 +103,7 @@ fun UiDevice.visitRanksAndBack() {
     // Visit match details screen 2 times
     findObject(By.res("rankOverview:live"))?.fling(Direction.DOWN)
     repeat(2) {
-      findObject(By.res("rankOverview:live"))?.children?.get(it)?.click()
+      findObject(By.res("rankOverview:live"))?.children?.get(it+2)?.click()
       wait(Until.gone(By.res("common:loader")), 30_000) // Ensure loader is gone
       wait(Until.hasObject(By.res("team:banner")), 30_0000)
       waitForIdle()
