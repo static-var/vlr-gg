@@ -18,8 +18,6 @@ fun NewNavBar(navController: NavHostController, items: List<NavItem>, currentNav
     visible = items.any { it.route == (navController.currentDestination?.route ?: "") }
   ) {
     NavigationBar(
-      containerColor = VLRTheme.colorScheme.surfaceColorAtElevation(8.dp),
-      contentColor = contentColorFor(VLRTheme.colorScheme.onSurface),
       tonalElevation = 8.dp,
       modifier = Modifier.navigationBarsPadding()
     ) {
