@@ -16,6 +16,7 @@ import dev.staticvar.vlr.utils.Logger
 import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.i
 import dev.staticvar.vlr.utils.queueWorker
+import dev.staticvar.vlr.workers.queueObsoleteRecord
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -29,6 +30,7 @@ class VLRapp() : Application(), Configuration.Provider {
     firebaseInit()
     createNotificationChannel()
     queueWorker()
+    queueObsoleteRecord()
   }
 
   private fun firebaseInit() {
