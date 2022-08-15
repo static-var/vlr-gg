@@ -32,13 +32,13 @@ val Migration_7_8 =
   object : Migration(7, 8) {
     override fun migrate(database: SupportSQLiteDatabase) {
       val time = System.currentTimeMillis().toString()
-      database.execSQL("ALTER TABLE MatchInfo ADD COLUMN createdAt TEXT NOT NULL DEFAULT ''")
-      database.execSQL("ALTER TABLE TeamDetails ADD COLUMN createdAt TEXT NOT NULL DEFAULT ''")
-      database.execSQL("ALTER TABLE TournamentDetails ADD COLUMN createdAt TEXT NOT NULL DEFAULT ''")
+      database.execSQL("ALTER TABLE MatchInfo ADD COLUMN createdAt INTEGER NOT NULL DEFAULT 0")
+      database.execSQL("ALTER TABLE TeamDetails ADD COLUMN createdAt INTEGER NOT NULL DEFAULT 0")
+      database.execSQL("ALTER TABLE TournamentDetails ADD COLUMN createdAt INTEGER NOT NULL DEFAULT 0")
 
-      database.execSQL("UPDATE MatchInfo set createdAt = $time where createdAt = ''")
-      database.execSQL("UPDATE TeamDetails set createdAt = $time where createdAt = ''")
-      database.execSQL("UPDATE TournamentDetails set createdAt = $time where createdAt = ''")
+      database.execSQL("UPDATE MatchInfo set createdAt = $time where createdAt = 0")
+      database.execSQL("UPDATE TeamDetails set createdAt = $time where createdAt = 0")
+      database.execSQL("UPDATE TournamentDetails set createdAt = $time where createdAt = 0")
     }
   }
 
