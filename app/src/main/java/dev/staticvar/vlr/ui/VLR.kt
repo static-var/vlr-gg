@@ -95,6 +95,7 @@ fun VLR() {
           Destination.NewsOverview.route,
           Destination.MatchOverview.route,
           Destination.EventOverview.route,
+          Destination.Rank.route,
           Destination.About.route -> background
           else -> transparent
         },
