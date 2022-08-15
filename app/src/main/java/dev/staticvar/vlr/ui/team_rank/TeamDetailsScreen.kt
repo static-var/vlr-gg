@@ -33,6 +33,7 @@ import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.match.NoMatchUI
@@ -44,6 +45,8 @@ import kotlinx.coroutines.tasks.await
 
 @Composable
 fun TeamScreen(viewModel: VlrViewModel, id: String) {
+  SetStatusBarColor()
+
   val teamDetails by
     remember(viewModel) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
   var rosterCard by remember { mutableStateOf(false) }
