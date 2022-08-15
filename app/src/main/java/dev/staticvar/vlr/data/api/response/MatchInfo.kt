@@ -5,9 +5,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.lang.reflect.Member
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.lang.reflect.Member
 
 @Keep
 @Serializable
@@ -27,6 +27,7 @@ data class MatchInfo(
   @SerialName("videos") val videos: Videos = Videos(),
   @SerialName("data") val matchData: List<MatchDetailData> = listOf(),
   @SerialName("map_count") val mapCount: Int = 0,
+  val createdAt: String = "${System.currentTimeMillis()}",
 ) {
   @Keep
   @Serializable
