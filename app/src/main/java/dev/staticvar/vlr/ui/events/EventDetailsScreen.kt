@@ -58,7 +58,6 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
   val lazyListState = rememberLazyListState()
-  val context = LocalContext.current
 
   Column(
     modifier = modifier.fillMaxSize(),
