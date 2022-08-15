@@ -10,8 +10,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Scoreboard
+import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -117,25 +119,20 @@ fun RanksPreviewContainer(
       modifier = modifier.fillMaxSize().animateContentSize(),
       verticalArrangement = Arrangement.Top
     ) {
-      AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.isSwipeInProgress) {
-        LinearProgressIndicator(
-          modifier
-            .fillMaxWidth()
-            .padding(Local16DPPadding.current)
-            .animateContentSize()
-            .testTag("common:loader")
-        )
-      }
-      updateState.getError()?.let {
-        ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
-      }
       if (tabs.isNotEmpty()) {
+        AnimatedProgressBar(
+          modifier,
+          show = updateState.get() == true || swipeRefresh.isSwipeInProgress
+        )
+        updateState.getError()?.let {
+          ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
+        }
         VlrScrollableTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
         HorizontalPager(count = tabs.size, state = pagerState, modifier = modifier.fillMaxSize()) {
           tabPosition ->
           val lazyListState = rememberLazyListState()
           lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
-          val topTeams = teamMap[tabs[tabPosition]]?.take(20) ?: listOf()
+          val topTeams = teamMap[tabs[tabPosition]]?.take(25) ?: listOf()
           if (topTeams.isEmpty()) NoTeamsUI()
           else {
             LazyColumn(
@@ -149,8 +146,35 @@ fun RanksPreviewContainer(
             }
           }
         }
+      } else {
+        Column(
+          modifier = modifier.fillMaxSize(),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.Center
+        ) {
+          AnimatedProgressBar(
+            modifier,
+            show = updateState.get() == true || swipeRefresh.isSwipeInProgress
+          )
+          updateState.getError()?.let {
+            ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
+          }
+        }
       }
     }
+  }
+}
+
+@Composable
+fun AnimatedProgressBar(modifier: Modifier = Modifier, show: Boolean) {
+  AnimatedVisibility(show) {
+    LinearProgressIndicator(
+      modifier
+        .fillMaxWidth()
+        .padding(Local16DPPadding.current)
+        .animateContentSize()
+        .testTag("common:loader")
+    )
   }
 }
 
@@ -172,7 +196,7 @@ fun NoTeamsUI(modifier: Modifier = Modifier) {
 @Composable
 fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Action) {
 
-  CardView(modifier = modifier.clickable { action.team(team.id) }) {
+  CardView(modifier = modifier.clickable { action.team(team.id) }. height(120.dp)) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Column(modifier = modifier.padding(Local8DPPadding.current)) {
         val teamRankAnnotatedString = buildAnnotatedString {
@@ -194,8 +218,8 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
         Text(
           text = teamRankAnnotatedString,
           style = VLRTheme.typography.titleMedium,
-          modifier = modifier.padding(Local4DPPadding.current),
-          maxLines = 2,
+          modifier = modifier.padding(start = 4.dp, end = 120.dp),
+          maxLines = 1,
           overflow = TextOverflow.Ellipsis,
           color = VLRTheme.colorScheme.primary,
         )
@@ -215,15 +239,15 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
               }
           )
         val annotatedDateString = buildAnnotatedString {
-          appendInlineContent(id = "date")
+          appendInlineContent(id = "points")
           append((team.points ?: 0).toString())
         }
         val inlineDateContentMap =
           mapOf(
-            "date" to
+            "points" to
               InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
                 Icon(
-                  imageVector = Icons.Outlined.Scoreboard,
+                  imageVector = Icons.Outlined.Insights,
                   modifier = modifier.size(16.dp),
                   contentDescription = ""
                 )
@@ -248,7 +272,11 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
         imageModel = team.img,
         contentScale = ContentScale.Fit,
         alignment = Alignment.CenterEnd,
-        modifier = modifier.alpha(0.2f).align(Alignment.CenterEnd).padding(horizontal = 8.dp),
+        modifier =
+          modifier
+            .align(Alignment.CenterEnd)
+            .padding(24.dp)
+            .size(120.dp),
         circularReveal = CircularReveal(400),
       )
     }
