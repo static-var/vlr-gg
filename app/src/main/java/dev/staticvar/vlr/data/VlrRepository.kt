@@ -241,4 +241,24 @@ constructor(
    * @param id
    */
   fun parseNews(id: String) = NewsParser.parser(id, json).flowOn(ioDispatcher)
+
+  suspend fun deleteObsoleteRecords() {
+    val time = System.currentTimeMillis() - DAY_15
+    val matchInfoRecords =
+      vlrDao.getObsoleteRecordFromMatchInfo(time).map { it.id }
+    val teamDetailsRecords =
+      vlrDao.getObsoleteRecordFromTeamDetails(time).map { it.id }
+    val tournamentDetailsRecords =
+      vlrDao.getObsoleteRecordFromTournamentDetails(time).map { it.id }
+
+    println("Deleting ${matchInfoRecords.size} items from MatchInfo")
+    println("Deleting ${teamDetailsRecords.size} items from TeamDetails")
+    println("Deleting ${tournamentDetailsRecords.size} items from TournamentDetails")
+
+    vlrDao.deleteMatchInfo(matchInfoRecords)
+    vlrDao.deleteTeamDetails(teamDetailsRecords)
+    vlrDao.deleteTournamentDetails(tournamentDetailsRecords)
+  }
 }
+
+const val DAY_15: Long = 15*24*60*60*1000
