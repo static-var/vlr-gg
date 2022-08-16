@@ -1,6 +1,9 @@
+<img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/static-var/vlr-gg?style=for-the-badge"> <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/static-var/vlr-gg/Build%20Signed%20APK%20and%20create%20a%20release?style=for-the-badge"> <a href="https://github.com/static-var/vlr-gg/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/static-var/vlr-gg?style=for-the-badge"></a>
+
 # 🚧 VLR-GG (Unofficial application) 🚧
 
-<img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/static-var/vlr-gg?style=for-the-badge"> <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/static-var/vlr-gg/Build%20Signed%20APK%20and%20create%20a%20release?style=for-the-badge"> <a href="https://github.com/static-var/vlr-gg/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/static-var/vlr-gg?style=for-the-badge"></a> <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/static-var/vlr-gg/total?style=for-the-badge">
+<a href='https://play.google.com/store/apps/details?id=dev.staticvar.vlr&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
+
 
 An unofficial android app for vlr.gg, written in Jetpack compose, which uses REST API that parses vlr.gg (Code for the scrapper can be found [here](https://github.com/akhilnarang/vlrgg-scraper), thanks to [@akhilnarang](https://github.com/akhilnarang) for hosting and maintaining the scrapping code.)
 
@@ -21,7 +24,6 @@ There were no designs / mock ups during the development of this app, this was de
 | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/ABOUT_LIGHT_VLR.jpg)          | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/ABOUT_DARK_VLR.jpg)          |
 
 
-
 ## ✨ App Overview ✨
 
 The app currently shows the following information
@@ -29,12 +31,13 @@ The app currently shows the following information
 - (Ongoing, upcoming and completed) matches and matche details
 - (Ongoing, upcoming and completed) events and events details
 - Team details
+- Team ranks per region
 
 #### Additional features
 - Users can opt in to get notified for their choice of matches a few minutes before it starts.
+- Users can opt in to get notified for their favorite teams' match a few minutes before it starts.
 - Widget to see scores and updates on your home screen.
 - App uses Material 3 theming.
-- Receive in app updates (doesn't rely on Play Store)
 
 ## 🧑‍💻 Dev Overview 🧑‍💻
 
