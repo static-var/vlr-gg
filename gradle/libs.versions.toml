@@ -13,7 +13,7 @@ ktor = "2.0.3"
 [libraries]
 build-agp = { module = "com.android.tools.build:gradle", version.ref = "gradle"}
 build-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-build-kover = "org.jetbrains.kotlinx:kover:0.5.1"
+build-kover = "org.jetbrains.kotlinx:kover:0.6.0"
 build-spotless = "com.diffplug.spotless:spotless-plugin-gradle:6.10.0"
 
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
@@ -56,7 +56,7 @@ hilt-nav = { module = "androidx.hilt:hilt-navigation-compose", version = "1.0.0"
 hilt-work = { module = "androidx.hilt:hilt-work", version = "1.0.0" }
 hilt-android-compiler = { module = "androidx.hilt:hilt-compiler", version = "1.0.0" }
 
-kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.3.3" }
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.4.0" }
 
 ktor-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
