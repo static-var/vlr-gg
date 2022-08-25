@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -30,6 +31,8 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
@@ -41,6 +44,9 @@ import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
@@ -58,6 +64,10 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
 
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
   val lazyListState = rememberLazyListState()
+
+  val trackerString = id.toEventTopic()
+  val isTracked by
+    remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
 
   Column(
     modifier = modifier.fillMaxSize(),
@@ -109,7 +119,24 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
 
-              item { TournamentDetailsHeader(tournamentDetails = tournamentDetails) }
+              item {
+                TournamentDetailsHeader(
+                  tournamentDetails = tournamentDetails,
+                  isTracked = isTracked ?: false
+                ) {
+                  when (isTracked) {
+                    true -> {
+                      Firebase.messaging.unsubscribeFromTopic(trackerString).await()
+                      viewModel.removeTopic(trackerString)
+                    }
+                    false -> {
+                      Firebase.messaging.subscribeToTopic(trackerString).await()
+                      viewModel.trackTopic(trackerString)
+                    }
+                    else -> {}
+                  }
+                }
+              }
               if (tournamentDetails.participants.isNotEmpty())
                 item {
                   EventDetailsTeamSlider(
@@ -174,7 +201,13 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
 }
 
 @Composable
-fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: TournamentDetails) {
+fun TournamentDetailsHeader(
+  modifier: Modifier = Modifier,
+  tournamentDetails: TournamentDetails,
+  isTracked: Boolean,
+  onSubButton: suspend () -> Unit
+) {
+  val scope = rememberCoroutineScope()
   val context = LocalContext.current
   CardView(modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
@@ -240,9 +273,37 @@ fun TournamentDetailsHeader(modifier: Modifier = Modifier, tournamentDetails: To
           )
         }
         Button(
-          onClick = { (Constants.VLR_BASE +"event/"+ tournamentDetails.id).openAsCustomTab(context) },
+          onClick = {
+            (Constants.VLR_BASE + "event/" + tournamentDetails.id).openAsCustomTab(context)
+          },
           modifier = modifier.fillMaxWidth(),
-        ) { Text(text = stringResource(id = R.string.view_at_vlr)) }
+        ) {
+          Text(text = stringResource(id = R.string.view_at_vlr))
+        }
+
+        var processingTopicSubscription by remember { mutableStateOf(false) }
+
+        if (
+          tournamentDetails.status == TournamentDetails.Status.ONGOING ||
+            tournamentDetails.status == TournamentDetails.Status.UPCOMING
+        )
+          Button(
+            onClick = {
+              if (!processingTopicSubscription) {
+                processingTopicSubscription = true
+                scope.launch(Dispatchers.IO) {
+                  onSubButton()
+                  processingTopicSubscription = false
+                }
+              }
+            },
+            modifier = modifier.fillMaxWidth()
+          ) {
+            if (processingTopicSubscription) {
+              LinearProgressIndicator()
+            } else if (isTracked) Text(text = stringResource(R.string.unsubscribe))
+            else Text(text = stringResource(R.string.get_notified))
+          }
       }
     }
   }
@@ -391,48 +452,22 @@ fun FilterSelectionDropDown(
     onDismissRequest = onExpandChange,
     modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current)
   ) {
-    DropdownMenuItem(
-      text = {
-        Text(
-          text = filterOptions[0],
-          color =
-            if (selectedIndex == 0) VLRTheme.colorScheme.primary
+    filterOptions.forEachIndexed { index, filter ->
+      DropdownMenuItem(
+        text = {
+          Text(
+            text = filter,
+            color =
+            if (selectedIndex == index) VLRTheme.colorScheme.primary
             else VLRTheme.colorScheme.onBackground
-        )
-      },
-      onClick = {
-        onFilterChange(0)
-        onExpandChange()
-      }
-    )
-    DropdownMenuItem(
-      text = {
-        Text(
-          text = filterOptions[1],
-          color =
-            if (selectedIndex == 1) VLRTheme.colorScheme.primary
-            else VLRTheme.colorScheme.onBackground
-        )
-      },
-      onClick = {
-        onFilterChange(1)
-        onExpandChange()
-      }
-    )
-    DropdownMenuItem(
-      text = {
-        Text(
-          text = filterOptions[2],
-          color =
-            if (selectedIndex == 2) VLRTheme.colorScheme.primary
-            else VLRTheme.colorScheme.onBackground
-        )
-      },
-      onClick = {
-        onFilterChange(2)
-        onExpandChange()
-      }
-    )
+          )
+        },
+        onClick = {
+          onFilterChange(index)
+          onExpandChange()
+        }
+      )
+    }
   }
 }
 
@@ -509,3 +544,5 @@ fun TournamentMatchOverview(
     }
   }
 }
+
+private fun String.toEventTopic() = "event-$this"
