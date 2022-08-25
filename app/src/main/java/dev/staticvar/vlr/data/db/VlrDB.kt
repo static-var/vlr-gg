@@ -21,7 +21,7 @@ import dev.staticvar.vlr.data.model.TopicTracker
       TeamDetails::class,
     ],
   exportSchema = false,
-  version = 8
+  version = 9
 )
 @TypeConverters(VlrTypeConverter::class)
 abstract class VlrDB : RoomDatabase() {
@@ -45,4 +45,6 @@ val Migration_7_8 =
  * 5 -> Add more stats to players in match
  * 6 -> Add status in events for MatchDetailsScreen
  * 7 -> Add rounds information for every match
+ * 8 -> Add creating time of each record for MatchInfo, TeamDetails, TournamentDetails
+ * 9 -> Add event status field in TournamentDetails
  */

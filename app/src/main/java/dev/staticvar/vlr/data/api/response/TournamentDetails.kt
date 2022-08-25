@@ -23,6 +23,7 @@ data class TournamentDetails(
   @SerialName("prizes") val prizes: List<Prize> = listOf(),
   @SerialName("subtitle") val subtitle: String = "",
   @SerialName("title") val title: String = "", // Toronto VALORANT: Viper's Pit $2K Online Qualifier
+  @SerialName("status") val status: Status = Status.UNKNOWN,
   val createdAt: Long = System.currentTimeMillis(),
 ) {
   @Keep
@@ -65,4 +66,14 @@ data class TournamentDetails(
     @SerialName("prize") val prize: String = "", // $1,200CAD
     @SerialName("team") val team: Team? = null
   )
+
+  @Keep
+  @Serializable
+  @Immutable
+  enum class Status {
+    @SerialName("completed") COMPLETED,
+    @SerialName("ongoing") ONGOING,
+    @SerialName("upcoming") UPCOMING,
+    @SerialName("unknown") UNKNOWN
+  }
 }
