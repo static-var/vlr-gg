@@ -172,7 +172,7 @@ dependencies {
   implementation(libs.jsoup)
   implementation(libs.landscapist.glide)
 
-  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.0")
+  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
 
   testImplementation(libs.bundles.testing)
 }
