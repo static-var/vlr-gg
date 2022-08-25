@@ -14,7 +14,7 @@ ktor = "2.0.3"
 build-agp = { module = "com.android.tools.build:gradle", version.ref = "gradle"}
 build-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 build-kover = "org.jetbrains.kotlinx:kover:0.5.1"
-build-spotless = "com.diffplug.spotless:spotless-plugin-gradle:6.9.1"
+build-spotless = "com.diffplug.spotless:spotless-plugin-gradle:6.10.0"
 
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
