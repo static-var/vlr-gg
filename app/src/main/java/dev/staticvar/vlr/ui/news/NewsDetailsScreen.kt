@@ -20,18 +20,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.webkit.WebSettingsCompat
-import androidx.webkit.WebSettingsCompat.FORCE_DARK_ON
 import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewFeature
+import com.github.michaelbull.result.get
+import com.github.michaelbull.result.getError
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import dev.staticvar.vlr.data.*
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.onFail
-import dev.staticvar.vlr.utils.onPass
-import dev.staticvar.vlr.utils.onWaiting
 import dev.staticvar.vlr.utils.openAsCustomTab
 
 @Composable
@@ -46,130 +44,127 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    parsedNews
-      .onPass {
-        data?.let { news ->
-          LazyColumn(
-            modifier = modifier.fillMaxSize().padding(Local8DPPadding.current).testTag("news:root")
-          ) {
-            item { Spacer(modifier = modifier.statusBarsPadding()) }
-            item {
-              Text(
-                text = news.title,
-                style = VLRTheme.typography.headlineMedium,
-                color = VLRTheme.colorScheme.primary
-              )
-            }
-            item {
-              Text(
-                text = news.authorName,
-                style = VLRTheme.typography.labelLarge,
-                color = VLRTheme.colorScheme.primary
-              )
-            }
-            item {
-              Text(
-                text = news.time,
-                style = VLRTheme.typography.labelLarge,
-                color = VLRTheme.colorScheme.primary
-              )
-            }
-            item { Spacer(modifier = modifier.padding(Local8DPPadding.current)) }
+    parsedNews?.get()?.let { news ->
+      LazyColumn(
+        modifier = modifier.fillMaxSize().padding(Local8DPPadding.current).testTag("news:root")
+      ) {
+        item { Spacer(modifier = modifier.statusBarsPadding()) }
+        item {
+          Text(
+            text = news.title,
+            style = VLRTheme.typography.headlineMedium,
+            color = VLRTheme.colorScheme.primary
+          )
+        }
+        item {
+          Text(
+            text = news.authorName,
+            style = VLRTheme.typography.labelLarge,
+            color = VLRTheme.colorScheme.primary
+          )
+        }
+        item {
+          Text(
+            text = news.time,
+            style = VLRTheme.typography.labelLarge,
+            color = VLRTheme.colorScheme.primary
+          )
+        }
+        item { Spacer(modifier = modifier.padding(Local8DPPadding.current)) }
 
-            news.news?.let {
-              items(it) { parsedData ->
-                when (parsedData) {
-                  is Heading ->
-                    Text(
-                      text = parsedData.text,
-                      style = VLRTheme.typography.titleMedium,
-                      color = VLRTheme.colorScheme.primary,
-                      modifier = modifier.padding(vertical = 8.dp)
-                    )
-                  is ListItem ->
-                    Row(modifier = modifier.fillMaxWidth()) {
-                      Text(text = " - ", color = VLRTheme.colorScheme.primary)
-                      Text(text = parsedData.text, modifier = modifier.padding(vertical = 2.dp))
-                    }
-                  is Paragraph ->
-                    Text(text = parsedData.text, modifier = modifier.padding(vertical = 4.dp))
-                  is Subtext ->
-                    Text(
-                      text = parsedData.text,
-                      style = VLRTheme.typography.labelMedium,
-                      modifier = modifier.fillMaxSize().padding(vertical = 2.dp),
-                      textAlign = TextAlign.Center
-                    )
-                  is Tweet ->
-                    WebView(
-                      state = rememberWebViewState(""),
-                      modifier = modifier.fillMaxWidth().padding(vertical = 4.dp),
-                      onCreated = { webView ->
-                        webView.settings.javaScriptEnabled = true
-                        webView.settings.domStorageEnabled = true
-                        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-                          if (isDarkMode)
-                            WebSettingsCompat.setForceDark(webView.settings, FORCE_DARK_ON)
-                        }
-                        webView.loadDataWithBaseURL(
-                          null,
-                          parsedData.tweetUrl,
-                          "text/html",
-                          "UTF-8",
-                          null
-                        )
-                        webView.settings.setSupportMultipleWindows(true)
-                        webView.settings.javaScriptCanOpenWindowsAutomatically = true
-                        webView.webViewClient =
-                          object : WebViewClientCompat() {
-                            override fun shouldOverrideUrlLoading(
-                              view: WebView,
-                              request: WebResourceRequest
-                            ): Boolean {
-                              println(request.url)
-                              request.url?.toString()?.openAsCustomTab(context)
-                              return true
-                            }
-                          }
-                      }
-                    )
-                  is Unknown ->
-                    Text(
-                      text = parsedData.text,
-                      style = VLRTheme.typography.labelMedium,
-                      modifier = modifier.padding(vertical = 2.dp)
-                    )
-                  is Video ->
-                    WebView(
-                      state = rememberWebViewState(url = parsedData.link),
-                      modifier = modifier.fillMaxWidth().padding(vertical = 4.dp).aspectRatio(1.6f),
-                      onCreated = { webView -> webView.settings.javaScriptEnabled = true }
-                    )
-                  is Quote ->
-                    Row(modifier.fillMaxWidth().height(IntrinsicSize.Max)) {
-                      Spacer(
-                        modifier =
-                          modifier
-                            .width(12.dp)
-                            .padding(4.dp)
-                            .background(VLRTheme.colorScheme.primary)
-                            .fillMaxHeight()
-                      )
-                      Text(
-                        text = parsedData.text,
-                        style = VLRTheme.typography.bodyMedium,
-                        modifier = modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-                      )
-                    }
+        news.news?.let {
+          items(it) { parsedData ->
+            when (parsedData) {
+              is Heading ->
+                Text(
+                  text = parsedData.text,
+                  style = VLRTheme.typography.titleMedium,
+                  color = VLRTheme.colorScheme.primary,
+                  modifier = modifier.padding(vertical = 8.dp)
+                )
+              is ListItem ->
+                Row(modifier = modifier.fillMaxWidth()) {
+                  Text(text = " - ", color = VLRTheme.colorScheme.primary)
+                  Text(text = parsedData.text, modifier = modifier.padding(vertical = 2.dp))
                 }
-              }
+              is Paragraph ->
+                Text(text = parsedData.text, modifier = modifier.padding(vertical = 4.dp))
+              is Subtext ->
+                Text(
+                  text = parsedData.text,
+                  style = VLRTheme.typography.labelMedium,
+                  modifier = modifier.fillMaxSize().padding(vertical = 2.dp),
+                  textAlign = TextAlign.Center
+                )
+              is Tweet ->
+                WebView(
+                  state = rememberWebViewState(""),
+                  modifier = modifier.fillMaxWidth().padding(vertical = 4.dp),
+                  onCreated = { webView ->
+                    webView.settings.javaScriptEnabled = true
+                    webView.settings.domStorageEnabled = true
+                    if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+                      if (isDarkMode)
+                        WebSettingsCompat.setAlgorithmicDarkeningAllowed(webView.settings, true)
+                    }
+                    webView.loadDataWithBaseURL(
+                      null,
+                      parsedData.tweetUrl,
+                      "text/html",
+                      "UTF-8",
+                      null
+                    )
+                    webView.settings.setSupportMultipleWindows(true)
+                    webView.settings.javaScriptCanOpenWindowsAutomatically = true
+                    webView.webViewClient =
+                      object : WebViewClientCompat() {
+                        override fun shouldOverrideUrlLoading(
+                          view: WebView,
+                          request: WebResourceRequest
+                        ): Boolean {
+                          println(request.url)
+                          request.url?.toString()?.openAsCustomTab(context)
+                          return true
+                        }
+                      }
+                  }
+                )
+              is Unknown ->
+                Text(
+                  text = parsedData.text,
+                  style = VLRTheme.typography.labelMedium,
+                  modifier = modifier.padding(vertical = 2.dp)
+                )
+              is Video ->
+                WebView(
+                  state = rememberWebViewState(url = parsedData.link),
+                  modifier = modifier.fillMaxWidth().padding(vertical = 4.dp).aspectRatio(1.6f),
+                  onCreated = { webView -> webView.settings.javaScriptEnabled = true }
+                )
+              is Quote ->
+                Row(modifier.fillMaxWidth().height(IntrinsicSize.Max)) {
+                  Spacer(
+                    modifier =
+                      modifier
+                        .width(12.dp)
+                        .padding(4.dp)
+                        .background(VLRTheme.colorScheme.primary)
+                        .fillMaxHeight()
+                  )
+                  Text(
+                    text = parsedData.text,
+                    style = VLRTheme.typography.bodyMedium,
+                    modifier = modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                  )
+                }
             }
-
-            item { Spacer(modifier = modifier.navigationBarsPadding()) }
           }
         }
+
+        item { Spacer(modifier = modifier.navigationBarsPadding()) }
       }
-      .onWaiting { LinearProgressIndicator(modifier.testTag("common:loader")) }
-      .onFail { Text(text = message()) }
+    }
+      ?: parsedNews?.getError()?.let { Text(text = it.stackTraceToString()) }
+        ?: LinearProgressIndicator(modifier.testTag("common:loader"))
   }
 }
