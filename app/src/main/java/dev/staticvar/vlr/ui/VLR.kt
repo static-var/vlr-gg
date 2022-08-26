@@ -1,12 +1,10 @@
 package dev.staticvar.vlr.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.*
@@ -26,7 +24,6 @@ import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.ui.theme.tintedBackground
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VLR() {
   val navController = rememberAnimatedNavController()
@@ -75,9 +72,7 @@ fun VLR() {
         Destination.Rank.route,
         Icons.Filled.Leaderboard,
         Icons.Outlined.Leaderboard,
-        onClick = {
-          if (currentNav == Destination.Rank.route) resetScroll() else action.goRanks()
-        }
+        onClick = { if (currentNav == Destination.Rank.route) resetScroll() else action.goRanks() }
       ),
       NavItem(
         title = stringResource(id = R.string.about),

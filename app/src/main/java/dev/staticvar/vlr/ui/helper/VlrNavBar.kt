@@ -17,10 +17,7 @@ fun NewNavBar(navController: NavHostController, items: List<NavItem>, currentNav
   AnimatedVisibility(
     visible = items.any { it.route == (navController.currentDestination?.route ?: "") }
   ) {
-    NavigationBar(
-      tonalElevation = 8.dp,
-      modifier = Modifier.navigationBarsPadding()
-    ) {
+    NavigationBar(tonalElevation = 8.dp, modifier = Modifier.navigationBarsPadding()) {
       items.forEach { navItem ->
         NavigationBarItem(
           selected = navController.currentDestination?.route == navItem.route,

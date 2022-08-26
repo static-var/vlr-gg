@@ -44,20 +44,14 @@ fun SharingAppBar(
   shareConfirm: (Boolean) -> Unit
 ) {
   Row(
-    modifier
-      .fillMaxWidth()
-      .height(40.dp)
-      .background(VLRTheme.colorScheme.background),
+    modifier.fillMaxWidth().height(40.dp).background(VLRTheme.colorScheme.background),
     verticalAlignment = Alignment.CenterVertically
   ) {
     Icon(
       imageVector = Icons.Outlined.Close,
       contentDescription = stringResource(id = R.string.cancel),
       modifier =
-      modifier
-        .padding(Local8DP_4DPPadding.current)
-        .clickable { shareMode(false) }
-        .size(32.dp),
+        modifier.padding(Local8DP_4DPPadding.current).clickable { shareMode(false) }.size(32.dp),
       tint = VLRTheme.colorScheme.primary,
     )
     Spacer(modifier = modifier.weight(1f))
@@ -70,10 +64,7 @@ fun SharingAppBar(
       imageVector = Icons.Outlined.Send,
       contentDescription = stringResource(R.string.share),
       modifier =
-      modifier
-        .padding(Local8DP_4DPPadding.current)
-        .clickable { shareConfirm(true) }
-        .size(32.dp),
+        modifier.padding(Local8DP_4DPPadding.current).clickable { shareConfirm(true) }.size(32.dp),
       tint = VLRTheme.colorScheme.primary
     )
   }
@@ -113,10 +104,7 @@ fun ShareDialog(matches: StableHolder<List<MatchPreviewInfo>>, onDismiss: () -> 
 
 @Composable
 fun SharableListUi(modifier: Modifier = Modifier, matches: StableHolder<List<MatchPreviewInfo>>) {
-  Column(
-    modifier
-      .fillMaxWidth()
-      .background(VLRTheme.colorScheme.primaryContainer)) {
+  Column(modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer)) {
     CardView(
       colors =
         CardDefaults.cardColors(
@@ -127,10 +115,7 @@ fun SharableListUi(modifier: Modifier = Modifier, matches: StableHolder<List<Mat
       matches.item.forEachIndexed { index, matchPreviewInfo ->
         SharableMatchUi(match = matchPreviewInfo)
         if (index != matches.item.size - 1)
-          Divider(modifier = Modifier
-            .fillMaxWidth()
-            .padding(2.dp)
-            .height(0.5.dp))
+          Divider(modifier = Modifier.fillMaxWidth().padding(2.dp).height(0.5.dp))
       }
     }
   }
@@ -142,15 +127,11 @@ fun SharableMatchUi(modifier: Modifier = Modifier, match: MatchPreviewInfo) {
     text =
       if (match.status.equals(stringResource(R.string.live), true)) stringResource(R.string.live)
       else match.time?.readableDateAndTimeWithZone ?: "",
-    modifier = modifier
-      .fillMaxWidth()
-      .padding(Local2DPPadding.current),
+    modifier = modifier.fillMaxWidth().padding(Local2DPPadding.current),
     textAlign = TextAlign.Center,
     style = VLRTheme.typography.labelSmall
   )
-  Row(modifier = modifier
-    .fillMaxWidth()
-    .padding(Local4DP_2DPPadding.current)) {
+  Row(modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current)) {
     Text(
       text = match.team1.name,
       overflow = TextOverflow.Ellipsis,
@@ -168,9 +149,7 @@ fun SharableMatchUi(modifier: Modifier = Modifier, match: MatchPreviewInfo) {
       style = VLRTheme.typography.bodySmall
     )
   }
-  Row(modifier = modifier
-    .fillMaxWidth()
-    .padding(Local4DP_2DPPadding.current)) {
+  Row(modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current)) {
     Text(
       text = match.team2.name,
       overflow = TextOverflow.Ellipsis,
@@ -207,7 +186,11 @@ fun fireIntent(context: Context, file: Uri, matches: List<MatchPreviewInfo>) {
       putExtra(Intent.EXTRA_STREAM, file)
       putExtra(Intent.EXTRA_TEXT, string)
       type = "image/png"
-      clipData = ClipData(ClipDescription("Matches shared from VLR.app", arrayOf("image/png")), ClipData.Item(file))
+      clipData =
+        ClipData(
+          ClipDescription("Matches shared from VLR.app", arrayOf("image/png")),
+          ClipData.Item(file)
+        )
     }
   context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_with)))
 }

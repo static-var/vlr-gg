@@ -13,10 +13,10 @@ import dev.staticvar.vlr.data.db.VlrDB
 import dev.staticvar.vlr.data.db.VlrTypeConverter
 import dev.staticvar.vlr.utils.Constants
 import io.ktor.client.*
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.serialization.json.Json
 import javax.inject.Named
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.serialization.json.Json
 
 @Module
 @InstallIn(SingletonComponent::class)

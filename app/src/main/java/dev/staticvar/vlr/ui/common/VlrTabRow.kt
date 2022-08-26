@@ -38,9 +38,12 @@ fun VlrTabRowForViewPager(modifier: Modifier, pagerState: PagerState, tabs: List
   }
 }
 
-
 @Composable
-fun VlrScrollableTabRowForViewPager(modifier: Modifier, pagerState: PagerState, tabs: List<String>) {
+fun VlrScrollableTabRowForViewPager(
+  modifier: Modifier,
+  pagerState: PagerState,
+  tabs: List<String>
+) {
   val scope = rememberCoroutineScope()
   ScrollableTabRow(
     modifier = modifier.fillMaxWidth(),

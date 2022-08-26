@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -458,8 +457,8 @@ fun FilterSelectionDropDown(
           Text(
             text = filter,
             color =
-            if (selectedIndex == index) VLRTheme.colorScheme.primary
-            else VLRTheme.colorScheme.onBackground
+              if (selectedIndex == index) VLRTheme.colorScheme.primary
+              else VLRTheme.colorScheme.onBackground
           )
         },
         onClick = {

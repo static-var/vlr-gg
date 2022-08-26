@@ -1,11 +1,11 @@
 package dev.staticvar.vlr.utils
 
-import okhttp3.*
 import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.atomic.AtomicLong
+import okhttp3.*
 
 /**
  * PrintEvents is a singleton responsible for logging duration between each step of making a network

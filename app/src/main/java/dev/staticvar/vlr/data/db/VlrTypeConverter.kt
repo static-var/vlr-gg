@@ -3,11 +3,11 @@ package dev.staticvar.vlr.data.db
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import dev.staticvar.vlr.data.api.response.*
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @ProvidedTypeConverter
 @Singleton

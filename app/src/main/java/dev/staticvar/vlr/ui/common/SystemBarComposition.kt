@@ -16,17 +16,16 @@ fun SetStatusBarColor() {
 
 @Composable
 fun StatusBarColorForHome() {
-    val primaryContainer = Color.Transparent
-    val systemUiController = rememberSystemUiController()
-    val isDarkMode = isSystemInDarkTheme()
+  val primaryContainer = Color.Transparent
+  val systemUiController = rememberSystemUiController()
+  val isDarkMode = isSystemInDarkTheme()
 
-    SideEffect { systemUiController.setStatusBarColor(primaryContainer, darkIcons = !isDarkMode) }
+  SideEffect { systemUiController.setStatusBarColor(primaryContainer, darkIcons = !isDarkMode) }
 }
-
 
 @Composable
 fun StatusBarColorForHomeWithTabs() {
-    val primaryContainer = VLRTheme.colorScheme.surface
-    val systemUiController = rememberSystemUiController()
-    SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
+  val primaryContainer = VLRTheme.colorScheme.surface
+  val systemUiController = rememberSystemUiController()
+  SideEffect { systemUiController.setStatusBarColor(primaryContainer) }
 }

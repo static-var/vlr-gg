@@ -60,6 +60,4 @@ val md_theme_dark_onPrimary = Color(0xFF381E72)
 val md_theme_dark_primaryContainer = Color(0xFF4F378B)
 val md_theme_dark_primary = Color(0xFFD0BCFF)
 
-
 val seed = Color(0xFF6750A4)
-
