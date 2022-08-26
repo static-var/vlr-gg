@@ -10,8 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface VlrDao {
 
   // -------------- DAO calls for [NewsResponseItem] start here --------------//
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertAllNews(news: List<NewsResponseItem>)
+  @Upsert suspend fun insertAllNews(news: List<NewsResponseItem>)
 
   @Query("SELECT * from NewsResponseItem") fun getNews(): Flow<List<NewsResponseItem>>
 
@@ -25,8 +24,7 @@ interface VlrDao {
   // -------------- DAO calls for [NewsResponseItem] ends here --------------//
 
   // -------------- DAO calls for [MatchPreviewInfo] start here --------------//
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertAllMatches(matches: List<MatchPreviewInfo>)
+  @Upsert suspend fun insertAllMatches(matches: List<MatchPreviewInfo>)
 
   @Query("SELECT * from MatchPreviewInfo") fun getAllMatchesPreview(): Flow<List<MatchPreviewInfo>>
 
@@ -42,8 +40,7 @@ interface VlrDao {
   // -------------- DAO calls for [MatchPreviewInfo] ends here --------------//
 
   // -------------- DAO calls for [TournamentPreview] start here --------------//
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertAllTournamentInfo(tournaments: List<TournamentPreview>)
+  @Upsert suspend fun insertAllTournamentInfo(tournaments: List<TournamentPreview>)
 
   @Query("SELECT * from TournamentPreview") fun getTournaments(): Flow<List<TournamentPreview>>
 
@@ -57,8 +54,7 @@ interface VlrDao {
   // -------------- DAO calls for [TournamentPreview] ends here --------------//
 
   // -------------- DAO calls for [TournamentDetails] starts here --------------//
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertTournamentDetails(match: TournamentDetails)
+  @Upsert suspend fun insertTournamentDetails(match: TournamentDetails)
 
   @Query("SELECT * from TournamentDetails where id = :id")
   fun getTournamentById(id: String): Flow<TournamentDetails?>
@@ -68,7 +64,7 @@ interface VlrDao {
   // -------------- DAO calls for [TournamentDetails] ends here --------------//
 
   // -------------- DAO calls for [MatchInfo] starts here --------------//
-  @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertMatchInfo(match: MatchInfo)
+  @Upsert suspend fun insertMatchInfo(match: MatchInfo)
 
   @Query("SELECT * from MatchInfo where id = :id") fun getMatchById(id: String): Flow<MatchInfo?>
 
@@ -80,17 +76,15 @@ interface VlrDao {
   @Query("SELECT EXISTS(SELECT * from TopicTracker where topic = :topic)")
   fun isTopicSubscribed(topic: String): Flow<Boolean>
 
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertTopicTracker(topicTracker: TopicTracker)
+  @Upsert suspend fun insertTopicTracker(topicTracker: TopicTracker)
 
   @Query("DELETE from TopicTracker where topic = :topic") suspend fun deleteTopic(topic: String)
   // -------------- DAO calls for [TopicTracker] ends here --------------//
 
   // -------------- DAO calls for [Team] stars here --------------//
-  @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertTeamDetail(team: TeamDetails)
+  @Upsert suspend fun insertTeamDetail(team: TeamDetails)
 
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertTeamDetails(team: List<TeamDetails>)
+  @Upsert suspend fun insertTeamDetails(team: List<TeamDetails>)
 
   @Query("SELECT * from TeamDetails where id = :id")
   fun getTeamDetailById(id: String): Flow<TeamDetails?>
