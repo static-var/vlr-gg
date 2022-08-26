@@ -12,15 +12,12 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.Scoreboard
-import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -113,7 +110,7 @@ fun RanksPreviewContainer(
   val pagerState = rememberPagerState()
   val teamMap by
     remember(list) { mutableStateOf(list.item.sortedBy { it.rank }.groupBy { it.region }) }
-  val tabs = teamMap.keys.toList()
+  val tabs by remember { mutableStateOf(teamMap.keys.toList().sorted()) }
   SwipeRefresh(state = swipeRefresh, onRefresh = triggerRefresh, indicator = { _, _ -> }) {
     Column(
       modifier = modifier.fillMaxSize().animateContentSize(),
@@ -196,7 +193,7 @@ fun NoTeamsUI(modifier: Modifier = Modifier) {
 @Composable
 fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Action) {
 
-  CardView(modifier = modifier.clickable { action.team(team.id) }. height(120.dp)) {
+  CardView(modifier = modifier.clickable { action.team(team.id) }.height(120.dp)) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Column(modifier = modifier.padding(Local8DPPadding.current)) {
         val teamRankAnnotatedString = buildAnnotatedString {
@@ -272,11 +269,7 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
         imageModel = team.img,
         contentScale = ContentScale.Fit,
         alignment = Alignment.CenterEnd,
-        modifier =
-          modifier
-            .align(Alignment.CenterEnd)
-            .padding(24.dp)
-            .size(120.dp),
+        modifier = modifier.align(Alignment.CenterEnd).padding(24.dp).size(120.dp),
         circularReveal = CircularReveal(400),
       )
     }
