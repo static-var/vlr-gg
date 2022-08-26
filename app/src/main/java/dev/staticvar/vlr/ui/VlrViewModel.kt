@@ -85,5 +85,5 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   fun removeTopic(topic: String) = viewModelScope.launch { repository.removeTopic(topic) }
 
   fun parseNews(id: String) =
-    repository.parseNews(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
+    repository.parseNews(id).stateIn(viewModelScope, SharingStarted.Lazily, null)
 }

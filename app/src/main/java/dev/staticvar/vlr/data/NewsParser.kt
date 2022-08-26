@@ -3,11 +3,13 @@ package dev.staticvar.vlr.data
 import dev.staticvar.vlr.data.api.response.TwitterOEmbed
 import dev.staticvar.vlr.utils.Operation
 import dev.staticvar.vlr.utils.Pass
+import dev.staticvar.vlr.utils.runSuspendCatching
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+import com.github.michaelbull.result.Result
 
 object NewsParser {
 
@@ -19,15 +21,16 @@ object NewsParser {
    * @param json
    */
   fun parser(id: String, json: Json) =
-    flow<Operation<NewsArticle>> {
-      val webpage = Jsoup.connect("https://www.vlr.gg/$id").get() // Read webpage
-      val headerHtml =
-        webpage.select(
-          ".article-header"
-        ) // Separate the section with author and top level article info
-      val text = webpage.select(".article-body") // Separate body of the article
+    flow<Result<NewsArticle, Throwable>> {
+      runSuspendCatching {
+        val webpage = Jsoup.connect("https://www.vlr.gg/$id").get() // Read webpage
+        val headerHtml =
+          webpage.select(
+            ".article-header"
+          ) // Separate the section with author and top level article info
+        val text = webpage.select(".article-body") // Separate body of the article
 
-      NewsArticle(
+        NewsArticle(
           headerHtml.first()?.let {
             it
               .select(".wf-title")
@@ -45,7 +48,7 @@ object NewsParser {
               ?.replace(Regex("\\s+"), " ")
               ?.trim()
           } // Fetch author name
-           ?: "",
+            ?: "",
           headerHtml.first()?.let {
             it
               .select(".js-date-toggle")
@@ -60,7 +63,7 @@ object NewsParser {
             elements.children().map { recursiveTextFinder(it, json) }.flatten()
           }
         )
-        .also { emit(Pass(it)) }
+      }.also { emit(it) }
     }
 
   /**

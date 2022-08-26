@@ -2,10 +2,7 @@ package dev.staticvar.vlr.ui
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Ok
-import com.github.michaelbull.result.get
-import com.github.michaelbull.result.getError
+import com.github.michaelbull.result.*
 import com.google.common.truth.Truth.assertThat
 import dev.staticvar.vlr.data.NewsArticle
 import dev.staticvar.vlr.data.VlrRepository
@@ -265,10 +262,10 @@ internal class VlrViewModelTest {
     runTest() {
       val id = "800"
       val data = NewsArticle()
-      every { vlrRepository.parseNews(id) } returns flowOf(Pass(NewsArticle()))
+      every { vlrRepository.parseNews(id) } returns flowOf(Ok(NewsArticle()))
       viewModel.parseNews(id).test {
         skipItems(1)
-        assertThat(awaitItem().dataOrNull()).isEqualTo(data)
+        assertThat(awaitItem()?.getOr(NewsArticle())).isEqualTo(data)
       }
       verify { vlrRepository.parseNews(id) }
     }
