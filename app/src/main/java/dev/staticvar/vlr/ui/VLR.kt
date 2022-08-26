@@ -19,7 +19,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.helper.NavItem
-import dev.staticvar.vlr.ui.helper.NewNavBar
+import dev.staticvar.vlr.ui.helper.VlrNavBar
 import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.ui.theme.tintedBackground
@@ -98,7 +98,7 @@ fun VLR() {
   }
 
   Scaffold(
-    bottomBar = { NewNavBar(navController = navController, items = navItems, currentNav) }
+    bottomBar = { VlrNavBar(navController = navController, items = navItems, currentNav) }
   ) { paddingValues ->
     Box(
       modifier =
