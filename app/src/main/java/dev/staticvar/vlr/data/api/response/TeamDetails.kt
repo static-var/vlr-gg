@@ -13,11 +13,11 @@ import kotlinx.serialization.json.JsonNames
 @Immutable
 @Entity
 data class TeamDetails(
-  @PrimaryKey
-  @SerialName("id") var id: String = "", // United States
+  @PrimaryKey @SerialName("id") var id: String = "", // United States
   @SerialName("country") val country: String = "", // United States
   @JsonNames("logo")
-  @SerialName("img") val img: String = "", // https://owcdn.net/img/603c00d5c5a08.png
+  @SerialName("img")
+  val img: String = "", // https://owcdn.net/img/603c00d5c5a08.png
   @SerialName("name") val name: String = "", // 100 Thieves
   @SerialName("rank") val rank: Int = 0, // 8
   @SerialName("region") var region: String = "", // North America

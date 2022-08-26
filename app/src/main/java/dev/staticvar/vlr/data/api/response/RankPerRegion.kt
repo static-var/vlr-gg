@@ -9,6 +9,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Immutable
 data class RankPerRegion(
-    @SerialName("region") val region: String = "",
-    @SerialName("teams") val teams: List<TeamDetails> = listOf()
+  @SerialName("region") val region: String = "",
+  @SerialName("teams") val teams: List<TeamDetails> = listOf()
 )

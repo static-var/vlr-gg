@@ -33,18 +33,20 @@ val Migration_7_8 =
     override fun migrate(database: SupportSQLiteDatabase) {
       val time = System.currentTimeMillis().toString()
       database.execSQL("ALTER TABLE MatchInfo ADD COLUMN createdAt INTEGER NOT NULL DEFAULT $time")
-      database.execSQL("ALTER TABLE TeamDetails ADD COLUMN createdAt INTEGER NOT NULL DEFAULT $time")
-      database.execSQL("ALTER TABLE TournamentDetails ADD COLUMN createdAt INTEGER NOT NULL DEFAULT $time")
+      database.execSQL(
+        "ALTER TABLE TeamDetails ADD COLUMN createdAt INTEGER NOT NULL DEFAULT $time"
+      )
+      database.execSQL(
+        "ALTER TABLE TournamentDetails ADD COLUMN createdAt INTEGER NOT NULL DEFAULT $time"
+      )
     }
   }
 
 /**
  * Version change log 3 -> Remove old tables and create new for accommodating API calls
  *
- * 4 -> Add FCM tracker table
- * 5 -> Add more stats to players in match
- * 6 -> Add status in events for MatchDetailsScreen
- * 7 -> Add rounds information for every match
- * 8 -> Add creating time of each record for MatchInfo, TeamDetails, TournamentDetails
- * 9 -> Add event status field in TournamentDetails
+ * 4 -> Add FCM tracker table 5 -> Add more stats to players in match 6 -> Add status in events for
+ * MatchDetailsScreen 7 -> Add rounds information for every match 8 -> Add creating time of each
+ * record for MatchInfo, TeamDetails, TournamentDetails 9 -> Add event status field in
+ * TournamentDetails
  */

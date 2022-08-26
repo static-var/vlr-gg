@@ -5,13 +5,13 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkObject
+import java.util.*
+import kotlin.time.Duration.Companion.seconds
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
-import java.util.*
-import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
 @Config(manifest = Config.NONE)

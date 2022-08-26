@@ -410,7 +410,6 @@ fun MapBox(modifier: Modifier = Modifier, matchInfo: MatchInfo) {
   }
 }
 
-
 @Composable
 fun MatchLiveUi(modifier: Modifier = Modifier) {
   val infiniteTransition = rememberInfiniteTransition()
