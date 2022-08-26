@@ -1,5 +1,6 @@
-@file:Suppress("DSL_SCOPE_VIOLATION")
+@file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
 
+import com.android.build.api.dsl.ManagedVirtualDevice
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -31,6 +32,18 @@ android {
   targetProjectPath = ":app"
   // Enable the benchmark to run separately from the app process
   experimentalProperties["android.experimental.self-instrumenting"] = true
+
+  testOptions {
+    managedDevices {
+      devices {
+        create("pixel6Api30", ManagedVirtualDevice::class.java) {
+          device = "Pixel 6"
+          apiLevel = 30
+          systemImageSource = "aosp"
+        }
+      }
+    }
+  }
 
   buildTypes {
     val localProperties = Properties()
