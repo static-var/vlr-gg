@@ -1,9 +1,6 @@
 package com.example.benchmark
 
-import androidx.benchmark.macro.BaselineProfileMode
-import androidx.benchmark.macro.CompilationMode
-import androidx.benchmark.macro.StartupMode
-import androidx.benchmark.macro.StartupTimingMetric
+import androidx.benchmark.macro.*
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import org.junit.Rule
@@ -58,7 +55,7 @@ abstract class AbstractStartupBenchmark(private val startupMode: StartupMode) {
   private fun startup(compilationMode: CompilationMode) =
     benchmarkRule.measureRepeated(
       packageName = "dev.staticvar.vlr",
-      metrics = listOf(StartupTimingMetric()),
+      metrics = listOf(StartupTimingMetric(), FrameTimingMetric()),
       compilationMode = compilationMode,
       iterations = 5,
       startupMode = startupMode,
