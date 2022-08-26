@@ -1,12 +1,10 @@
+v0.2.13
+ • ⚒️ Switch to better encoding to reduce network call size
+ • ⚒️ Iron out some more bugs in Rank screen
+ • ⚒️ Handle corner case that would crash the app when reading a news article
+
 v0.2.12
  • ✨ Auto cleaning (Automatically cleanup the database of app for data which is not in use anymore)
  • ⚒️ Show top 25 teams from each region instead of 20
  • ⚒️ Ui fixes for Rank screen
  • ⚒️ Change Bottom Navigation bar color
- • ✨ App should feel faster overall now since we have made some major improvements to our backend logic
-
-
-v0.2.11
- • ✨ Ranks, check out the top teams in each region
- • ✨ Add Ui to see round by round information for each map
- • 👻 Boring bug fixes and improvements
