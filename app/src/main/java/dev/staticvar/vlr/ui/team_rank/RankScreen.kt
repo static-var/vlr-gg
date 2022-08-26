@@ -109,7 +109,7 @@ fun RanksPreviewContainer(
 ) {
   val pagerState = rememberPagerState()
   val teamMap by
-    remember(list) { mutableStateOf(list.item.sortedBy { it.rank }.groupBy { it.region }) }
+    remember(list) { mutableStateOf(list.item.sortedBy { it.rank }.filter { it.region.isNotEmpty() }.groupBy { it.region.trim() }) }
   val tabs by remember { mutableStateOf(teamMap.keys.toList().sorted()) }
   SwipeRefresh(state = swipeRefresh, onRefresh = triggerRefresh, indicator = { _, _ -> }) {
     Column(
