@@ -116,7 +116,9 @@ constructor(
         }
         result.get()?.let { ranks ->
           ranks.forEach { perRegion -> perRegion.teams.forEach { it.region = perRegion.region } }
-          val teams = ranks.flatMap { it.teams }
+          val limitedRanks =
+            ranks.map { RankPerRegion(it.region, it.teams.sortedBy { it.rank }.take(25)) }
+          val teams = limitedRanks.flatMap { it.teams }
           vlrDao.insertTeamDetails(teams)
           TimeElapsed.start(Endpoints.RANK_OVERVIEW, 180.seconds)
           emit(Ok(false))
@@ -244,12 +246,9 @@ constructor(
 
   suspend fun deleteObsoleteRecords() {
     val time = System.currentTimeMillis() - DAY_15
-    val matchInfoRecords =
-      vlrDao.getObsoleteRecordFromMatchInfo(time).map { it.id }
-    val teamDetailsRecords =
-      vlrDao.getObsoleteRecordFromTeamDetails(time).map { it.id }
-    val tournamentDetailsRecords =
-      vlrDao.getObsoleteRecordFromTournamentDetails(time).map { it.id }
+    val matchInfoRecords = vlrDao.getObsoleteRecordFromMatchInfo(time).map { it.id }
+    val teamDetailsRecords = vlrDao.getObsoleteRecordFromTeamDetails(time).map { it.id }
+    val tournamentDetailsRecords = vlrDao.getObsoleteRecordFromTournamentDetails(time).map { it.id }
 
     println("Deleting ${matchInfoRecords.size} items from MatchInfo")
     println("Deleting ${teamDetailsRecords.size} items from TeamDetails")
@@ -261,4 +260,4 @@ constructor(
   }
 }
 
-const val DAY_15: Long = 15*24*60*60*1000
+const val DAY_15: Long = 15 * 24 * 60 * 60 * 1000
