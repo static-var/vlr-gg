@@ -78,18 +78,19 @@ fun RankScreen(viewModel: VlrViewModel) {
   ) {
     allTeams
       .onPass {
-        data?.let { list ->
+        if (data == null || data.isEmpty())
+          LinearProgressIndicator(modifier.animateContentSize())
+        else
           RanksPreviewContainer(
             modifier = Modifier,
             action = viewModel.action,
-            list = StableHolder(list),
+            list = StableHolder(data),
             swipeRefresh,
             updateState,
             resetScroll,
             triggerRefresh = { triggerRefresh = triggerRefresh.not() },
             postResetScroll = { viewModel.postResetScroll() }
           )
-        }
       }
       .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
       .onFail { Text(text = message()) }
