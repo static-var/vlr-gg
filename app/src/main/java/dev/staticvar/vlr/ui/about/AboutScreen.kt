@@ -134,7 +134,7 @@ fun AndroidCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ColumnScope.BackendCard(modifier: Modifier = Modifier) {
+fun BackendCard(modifier: Modifier = Modifier) {
   val context = LocalContext.current
   CardView() {
     Text(
@@ -185,7 +185,7 @@ fun ColumnScope.BackendCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ColumnScope.FeedbackCard(modifier: Modifier = Modifier) {
+fun FeedbackCard(modifier: Modifier = Modifier) {
   val context = LocalContext.current
   CardView() {
     Text(
@@ -209,7 +209,7 @@ fun ColumnScope.FeedbackCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ColumnScope.VersionFooter(currentAppVersion: String, simpleEasterEgg: Boolean) {
+fun VersionFooter(currentAppVersion: String, simpleEasterEgg: Boolean) {
   val context = LocalContext.current
   Text(
     text = "${stringResource(id = R.string.package_name)} - ${context.packageName}",
