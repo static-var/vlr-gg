@@ -29,7 +29,7 @@ android {
     versionCode = 39
     versionName = "v0.2.13"
 
-    setProperty("archivesBaseName", "${applicationId}-${versionCode}.${versionName}.")
+    setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
   }
 
   signingConfigs {
