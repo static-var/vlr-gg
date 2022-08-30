@@ -107,7 +107,7 @@ fun ScoreBox(modifier: Modifier = Modifier, mapData: MatchInfo.MatchDetailData) 
 
 @Composable
 fun RoundByRoundRow(modifier: Modifier, rounds: List<MatchInfo.MatchDetailData.Rounds>) {
-  LazyRow(modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current)) {
+  LazyRow(modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
     items(rounds, key = { item -> item.roundNo }) { RoundBox(modifier = modifier, round = it) }
   }
 }
