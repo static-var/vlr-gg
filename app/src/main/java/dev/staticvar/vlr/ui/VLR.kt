@@ -102,7 +102,7 @@ fun VLR() {
   ) { paddingValues ->
     Box(
       modifier =
-        Modifier.padding(paddingValues)
+        Modifier.padding(bottom = paddingValues.calculateBottomPadding())
           .background(VLRTheme.colorScheme.tintedBackground)
           .semantics { testTagsAsResourceId = true },
     ) {
