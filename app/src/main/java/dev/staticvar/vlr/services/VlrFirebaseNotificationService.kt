@@ -6,6 +6,7 @@ import android.app.TaskStackBuilder
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.RingtoneManager
+import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
@@ -18,6 +19,7 @@ import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.i
 
 class VlrFirebaseNotificationService() : FirebaseMessagingService() {
+
   override fun onNewToken(p0: String) {
     super.onNewToken(p0)
   }
@@ -29,6 +31,7 @@ class VlrFirebaseNotificationService() : FirebaseMessagingService() {
     val title = remoteMessage.data["title"]
     val body = remoteMessage.data["body"]
     val matchId = remoteMessage.data["match_id"]?.toInt() ?: 0
+    val streamLink = remoteMessage.data["stream_url"]
 
     val taskDetailIntent =
       Intent(
@@ -55,6 +58,16 @@ class VlrFirebaseNotificationService() : FirebaseMessagingService() {
         .setAutoCancel(true)
         .setSound(defaultSoundUri)
         .setContentIntent(pending)
+
+    streamLink?.let { link ->
+      val weblinkIntent =
+        Intent(Intent.ACTION_VIEW, Uri.parse(link)).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
+      val pIntent = PendingIntent.getActivity(this, 0, weblinkIntent, PendingIntent.FLAG_IMMUTABLE)
+
+      val streamAction =
+        NotificationCompat.Action.Builder(0, getString(R.string.watch_stream), pIntent)
+      notificationBuilder.addAction(streamAction.build())
+    }
 
     getSystemService<NotificationManager>()?.notify(matchId, notificationBuilder.build())
   }
