@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -221,20 +219,7 @@ fun MatchOverviewContainer(
             ) {
               groupedUpcomingMatches.forEach { (date, match)
                 -> // Group heading based on date for sticky header
-                stickyHeader {
-                  date?.let {
-                    Column(
-                      modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer)
-                    ) {
-                      Text(
-                        it,
-                        modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
-                        textAlign = TextAlign.Center,
-                        color = VLRTheme.colorScheme.primary
-                      )
-                    }
-                  }
-                }
+                stickyHeader { date?.let { date -> DateChip(date = date) } }
                 items(match, key = { item -> item.id }) {
                   MatchOverviewPreview(
                     matchPreviewInfo = it,
@@ -287,20 +272,7 @@ fun MatchOverviewContainer(
             ) {
               groupedCompletedMatches.forEach { (date, match)
                 -> // Group heading based on date for sticky header
-                stickyHeader {
-                  date?.let {
-                    Column(
-                      modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer),
-                    ) {
-                      Text(
-                        it,
-                        modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
-                        textAlign = TextAlign.Center,
-                        color = VLRTheme.colorScheme.primary
-                      )
-                    }
-                  }
-                }
+                stickyHeader { date?.let { date -> DateChip(date = date) } }
                 items(match, key = { item -> item.id }) {
                   MatchOverviewPreview(
                     matchPreviewInfo = it,
