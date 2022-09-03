@@ -60,7 +60,7 @@ jobs:
           packageName: dev.staticvar.vlr
           releaseFiles: app/build/outputs/bundle/release/*.aab
           track: beta
-          inAppUpdatePriority: 3
+          inAppUpdatePriority: 5
           whatsNewDirectory: distribution/whatsnew
 
       - name: Push tag
