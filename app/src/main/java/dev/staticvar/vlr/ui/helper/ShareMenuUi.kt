@@ -29,6 +29,7 @@ import dev.staticvar.vlr.ui.Local4DP_2DPPadding
 import dev.staticvar.vlr.ui.Local8DP_4DPPadding
 import dev.staticvar.vlr.ui.match.MAX_SHARABLE_ITEMS
 import dev.staticvar.vlr.ui.theme.VLRTheme
+import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.readableDateAndTimeWithZone
 import java.io.BufferedOutputStream
@@ -195,4 +196,4 @@ fun fireIntent(context: Context, file: Uri, matches: List<MatchPreviewInfo>) {
   context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_with)))
 }
 
-private fun String.urlFromId() = "https://vlr.gg/$this"
+private fun String.urlFromId() = "${Constants.DEEP_LINK_2_BASEURL}id=$this"
