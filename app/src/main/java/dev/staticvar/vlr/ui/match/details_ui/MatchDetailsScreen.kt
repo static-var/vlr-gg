@@ -68,6 +68,8 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
   val rememberListState = rememberLazyListState()
 
+  val context = LocalContext.current
+
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
@@ -141,6 +143,9 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                 item {
                   PreviousMatches(modifier, matchInfo.head2head) { viewModel.action.match(it) }
                 }
+              }
+              if (domainVerificationStatus(context) == DomainVerificationStatus.NOT_VERIFIED) {
+                item { DomainVerificationUi(modifier) }
               }
               item { Spacer(modifier = modifier.navigationBarsPadding()) }
             }

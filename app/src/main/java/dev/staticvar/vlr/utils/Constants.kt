@@ -9,6 +9,7 @@ object Constants {
   const val DB_NAME = "vlr"
 
   const val DEEP_LINK_BASEURL = "https://vlr-internal.gg/"
+  const val DEEP_LINK_2_BASEURL = "https://vlr-app.gg/"
 
   const val VLR_BASE = "https://www.vlr.gg/"
 }

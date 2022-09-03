@@ -76,4 +76,7 @@
     <string name="view_at_vlr">Open in VLR.gg website</string>>
     <string name="feedback">Feedback &amp; Discussion</string>>
     <string name="watch_stream">Watch Stream</string>
+    <string name="domain_verification_desc">Enabling this would allow us to make your experience better by verifying deeplink for our internal URLs, click on Verify button and add all the available links. Enabling this won\'t affect your experience while you browse vlr.gg website.</string>
+    <string name="domain_verification">Enable domain verification</string>
+    <string name="verify">Verify</string>
 </resources>

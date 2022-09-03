@@ -97,8 +97,7 @@ android {
   }
   kotlinOptions {
     jvmTarget = JavaVersion.VERSION_11.toString()
-    freeCompilerArgs +=
-      listOf(
+    freeCompilerArgs = freeCompilerArgs + listOf(
         "-opt-in=kotlin.RequiresOptIn",
         "-opt-in=kotlin.contracts.ExperimentalContracts",
         "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
@@ -111,8 +110,9 @@ android {
         "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
         "-opt-in=androidx.lifecycle.compose.ExperimentalLifecycleComposeApi",
         "-opt-in=com.google.accompanist.pager.ExperimentalPagerApi",
-        "-opt-in=androidx.compose.runtime.InternalComposeApi"
-      )
+        "-opt-in=androidx.compose.runtime.InternalComposeApi",
+        "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+    )
   }
   buildFeatures { compose = true }
   composeOptions { kotlinCompilerExtensionVersion = "1.3.0" }
