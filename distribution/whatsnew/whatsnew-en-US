@@ -1,3 +1,7 @@
+v0.2.15
+ • ✨ Better support for deep links
+ • ✨ Slight Ui changes in match screens
+
 v0.2.14
  • ✨ Now you can get notified for all the matches of an event (look for "Subscribe" button in your favourite event / tournament)
  • ✨ Launch stream directly from the notification of your subscribed matches, events and teams
@@ -5,4 +9,4 @@ v0.2.14
 v0.2.13
  • ⚒️ Switch to better encoding to reduce network call size
  • ⚒️ Iron out some more bugs in Rank screen
- • ⚒️ Handle corner case that would crash the app when reading a news article
+ • ⚒️ Handle corner case while reading a news article
