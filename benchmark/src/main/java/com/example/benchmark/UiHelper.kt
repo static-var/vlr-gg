@@ -35,8 +35,8 @@ fun MacrobenchmarkScope.userflow() {
 }
 
 fun UiDevice.visitMatchDetailsAndBack() {
-  wait(Until.gone(By.res("common:loader")), 30_000)
-  val upcomingMatch = wait(Until.hasObject(By.res("matchOverview:result")), 30_000)
+  wait(Until.gone(By.res("common:loader")), 15_000)
+  val upcomingMatch = wait(Until.hasObject(By.res("matchOverview:result")), 15_000)
   if (upcomingMatch) {
     var visitedMatchDetails = 0
     var child = 0
@@ -46,16 +46,24 @@ fun UiDevice.visitMatchDetailsAndBack() {
         child < (findObject(By.res("matchOverview:result"))?.children?.size ?: 0)
     ) {
       findObject(By.res("matchOverview:result"))?.children?.let { children ->
-        if (children[child]?.text == null) { // isClickable didn't work
+        if (
+          children[child]?.text == null
+        ) { // isClickable didn't work
+
           children[child].click()
-          wait(
+          val data = wait(
             Until.hasObject(By.res("details:more_info")),
-            30_000
+            15_000
           ) // Ensure static Ui elements are loaded
-          wait(Until.gone(By.res("common:loader")), 30_000) // Ensure loader is gone
+          if (!data) {
+            child++
+            return@let
+          }
+
+          wait(Until.gone(By.res("common:loader")), 15_000) // Ensure loader is gone
           findObject(By.res("matchDetails:mapHeader")).click()
           findObject(By.res("matchDetails:map")).click()
-          wait(Until.hasObject(By.res("matchDetails:mapStats")), 30_000)
+          wait(Until.hasObject(By.res("matchDetails:mapStats")), 15_000)
 
           findObject(By.res("matchDetails:mapStats")).fling(Direction.RIGHT)
           waitForIdle()
@@ -72,8 +80,8 @@ fun UiDevice.visitMatchDetailsAndBack() {
 }
 
 fun UiDevice.visitEventDetailsAndBack() {
-  wait(Until.gone(By.res("common:loader")), 30_000)
-  val liveEvent = wait(Until.hasObject(By.res("eventOverview:live")), 30_000)
+  wait(Until.gone(By.res("common:loader")), 15_000)
+  val liveEvent = wait(Until.hasObject(By.res("eventOverview:live")), 15_000)
   if (liveEvent) {
     // Visit match details screen 2 times
     findObject(By.res("eventOverview:live"))?.fling(Direction.DOWN)
@@ -81,12 +89,12 @@ fun UiDevice.visitEventDetailsAndBack() {
       findObject(By.res("eventOverview:live"))?.children?.get(it)?.click()
       wait(
         Until.hasObject(By.res("eventDetails:teams")),
-        30_000
+        15_000
       ) // Ensure static Ui elements are loaded
-      wait(Until.hasObject(By.res("eventDetails:teams")), 30_000)
-      wait(Until.gone(By.res("common:loader")), 30_000) // Ensure loader is gone
+      wait(Until.hasObject(By.res("eventDetails:teams")), 15_000)
+      wait(Until.gone(By.res("common:loader")), 15_000) // Ensure loader is gone
       findObject(By.res("eventDetails:teamList"))?.children?.get(0)?.click()
-      wait(Until.hasObject(By.res("team:banner")), 30_0000)
+      wait(Until.hasObject(By.res("team:banner")), 15_0000)
       waitForIdle()
       pressBack()
       findObject(By.res("eventDetails:root")).fling(Direction.DOWN)
@@ -97,15 +105,15 @@ fun UiDevice.visitEventDetailsAndBack() {
 }
 
 fun UiDevice.visitRanksAndBack() {
-  wait(Until.gone(By.res("common:loader")), 30_000)
-  val liveEvent = wait(Until.hasObject(By.res("rankOverview:live")), 30_000)
+  wait(Until.gone(By.res("common:loader")), 15_000)
+  val liveEvent = wait(Until.hasObject(By.res("rankOverview:live")), 15_000)
   if (liveEvent) {
     // Visit match details screen 2 times
     findObject(By.res("rankOverview:live"))?.fling(Direction.DOWN)
     repeat(2) {
       findObject(By.res("rankOverview:live"))?.children?.get(it + 2)?.click()
-      wait(Until.gone(By.res("common:loader")), 30_000) // Ensure loader is gone
-      wait(Until.hasObject(By.res("team:banner")), 30_0000)
+      wait(Until.gone(By.res("common:loader")), 15_000) // Ensure loader is gone
+      wait(Until.hasObject(By.res("team:banner")), 15_0000)
       waitForIdle()
       findObject(By.res("team:roster"))?.click()
       pressBack()
@@ -114,13 +122,13 @@ fun UiDevice.visitRanksAndBack() {
 }
 
 fun UiDevice.readNewsAndBack() {
-  val newsOverview = wait(Until.gone(By.res("common:loader")), 30_000) // Ensure loader is gone
+  val newsOverview = wait(Until.gone(By.res("common:loader")), 15_000) // Ensure loader is gone
   val newsRoot =
-    wait(Until.hasObject(By.res("newsOverview:root")), 30_000) // Ensure news list is available
+    wait(Until.hasObject(By.res("newsOverview:root")), 15_000) // Ensure news list is available
   if (newsOverview && newsRoot) {
     findObject(By.res("newsOverview:root"))?.children?.get(0)?.click()
-    wait(Until.gone(By.res("common:loader")), 30_000) // Ensure loader is gone
-    wait(Until.hasObject(By.res("news:root")), 30_000) // Ensure news details are drawn
+    wait(Until.gone(By.res("common:loader")), 15_000) // Ensure loader is gone
+    wait(Until.hasObject(By.res("news:root")), 15_000) // Ensure news details are drawn
     findObject(By.res("news:root"))?.fling(Direction.DOWN)
     waitForIdle()
     pressBack()
