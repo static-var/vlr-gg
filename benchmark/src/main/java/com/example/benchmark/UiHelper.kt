@@ -68,7 +68,7 @@ fun UiDevice.visitMatchDetailsAndBack() {
           findObject(By.res("matchDetails:mapStats")).fling(Direction.RIGHT)
           waitForIdle()
 
-          findObject(By.res("matchDetails:root")).fling(Direction.DOWN)
+          findObject(By.res("matchDetails:root"))?.fling(Direction.DOWN)
           waitForIdle()
           pressBack()
           visitedMatchDetails++

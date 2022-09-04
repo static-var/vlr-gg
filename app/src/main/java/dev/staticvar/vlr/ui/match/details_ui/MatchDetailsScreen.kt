@@ -71,7 +71,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val context = LocalContext.current
 
   Column(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().testTag("matchDetails:root"),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
@@ -84,7 +84,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
             indicator = { _, _ -> }
           ) {
             LazyColumn(
-              modifier = modifier.fillMaxSize().testTag("matchDetails:root"),
+              modifier = modifier.fillMaxSize(),
               state = rememberListState
             ) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
