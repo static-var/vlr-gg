@@ -174,7 +174,7 @@ fun fireIntent(context: Context, file: Uri, matches: List<MatchPreviewInfo>) {
   val string = buildString {
     matches.forEach {
       appendLine(
-        "${it.team1.name} vs ${it.team2.name} | ${it.time?.readableDateAndTimeWithZone} | ${it.id.urlFromId()}"
+        "${it.team1.name} vs ${it.team2.name} | ${it.time?.readableDateAndTimeWithZone} | ${it.id.internalUrlFromId()} | ${it.id.websiteUrlFromId()}"
       )
       appendLine()
     }
@@ -196,4 +196,6 @@ fun fireIntent(context: Context, file: Uri, matches: List<MatchPreviewInfo>) {
   context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_with)))
 }
 
-private fun String.urlFromId() = "${Constants.DEEP_LINK_2_BASEURL}id=$this"
+private fun String.internalUrlFromId() = "${Constants.DEEP_LINK_2_BASEURL}id=$this"
+
+private fun String.websiteUrlFromId() = "${Constants.VLR_BASE}$this"

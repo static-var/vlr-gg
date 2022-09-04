@@ -21,21 +21,36 @@ import dev.staticvar.vlr.ui.theme.VLRTheme
 fun DomainVerificationUi(
   modifier: Modifier = Modifier,
 ) {
+
   val context = LocalContext.current
   val intent =
-    Intent(
-      Settings.ACTION_APP_OPEN_BY_DEFAULT_SETTINGS,
-      Uri.parse("package:${context.packageName}")
-    )
-  CardView(modifier = modifier.fillMaxWidth()) {
-    Column(modifier = modifier.padding(8.dp)) {
-      Text(
-        text = stringResource(id = R.string.domain_verification),
-        style = VLRTheme.typography.titleMedium,
+    if (android.os.Build.MANUFACTURER.equals("samsung", true)) {
+      Intent("android.settings.MANAGE_DOMAIN_URLS")
+    } else {
+      Intent(
+        Settings.ACTION_APP_OPEN_BY_DEFAULT_SETTINGS,
+        Uri.parse("package:${context.packageName}")
       )
-      Text(text = stringResource(id = R.string.domain_verification_desc), style = VLRTheme.typography.labelMedium)
-      Button(onClick = { context.startActivity(intent) }, modifier = modifier.fillMaxWidth()) {
-        Text(text = stringResource(id = R.string.verify))
+    }
+
+  if (intent.resolveActivity(context.packageManager) != null) {
+    CardView(modifier = modifier.fillMaxWidth()) {
+      Column(modifier = modifier.padding(8.dp)) {
+        Text(
+          text = stringResource(id = R.string.domain_verification),
+          style = VLRTheme.typography.titleMedium,
+        )
+        Text(
+          text = stringResource(id = R.string.domain_verification_desc),
+          style = VLRTheme.typography.labelMedium
+        )
+        Text(
+          text = if (android.os.Build.MANUFACTURER.equals("samsung", true)) stringResource(id = R.string.domain_verification_samsung_steps) else stringResource(id = R.string.domain_verification_steps),
+          style = VLRTheme.typography.labelMedium
+        )
+        Button(onClick = { context.startActivity(intent) }, modifier = modifier.fillMaxWidth()) {
+          Text(text = stringResource(id = R.string.verify))
+        }
       }
     }
   }
