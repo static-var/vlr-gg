@@ -173,4 +173,14 @@ class VlrTypeConverter @Inject constructor(private val json: Json) {
   fun stringToGames(data: String): List<TeamDetails.Games> {
     return json.decodeFromString(data)
   }
+
+  @TypeConverter
+  fun agentToString(data: List<PlayerData.Agent>): String {
+    return json.encodeToString(data)
+  }
+
+  @TypeConverter
+  fun stringToAgent(data: String): List<PlayerData.Agent> {
+    return json.decodeFromString(data)
+  }
 }

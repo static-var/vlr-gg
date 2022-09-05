@@ -30,6 +30,12 @@ android {
     versionName = "v0.2.16"
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
+
+    javaCompileOptions {
+      annotationProcessorOptions {
+        argument("room.schemaLocation", "$projectDir/schemas")
+      }
+    }
   }
 
   signingConfigs {

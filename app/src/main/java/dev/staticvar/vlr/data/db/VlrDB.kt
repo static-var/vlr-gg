@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.data.db
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -19,9 +20,10 @@ import dev.staticvar.vlr.data.model.TopicTracker
       TournamentDetails::class,
       TopicTracker::class,
       TeamDetails::class,
-    ],
-  exportSchema = false,
-  version = 9
+      PlayerData::class],
+  exportSchema = true,
+  version = 10,
+  autoMigrations = [AutoMigration(9, 10)]
 )
 @TypeConverters(VlrTypeConverter::class)
 abstract class VlrDB : RoomDatabase() {
@@ -43,10 +45,13 @@ val Migration_7_8 =
   }
 
 /**
- * Version change log 3 -> Remove old tables and create new for accommodating API calls
- *
- * 4 -> Add FCM tracker table 5 -> Add more stats to players in match 6 -> Add status in events for
- * MatchDetailsScreen 7 -> Add rounds information for every match 8 -> Add creating time of each
- * record for MatchInfo, TeamDetails, TournamentDetails 9 -> Add event status field in
- * TournamentDetails
+ * ************************************** Version change log ***************************************
+ * 3 -> Remove old tables and create new for accommodating API call ................................
+ * 4 -> Add FCM tracker table ......................................................................
+ * 5 -> Add more stats to players in match .........................................................
+ * 6 -> Add status in events for MatchDetailsScreen ................................................
+ * 7 -> Add rounds information for every match .....................................................
+ * 8 -> Add creating time of each record for MatchInfo, TeamDetails, TournamentDetails .............
+ * 9 -> Add event status field in TournamentDetails ................................................
+ * 10 -> Add PlayerData table to store player records ..............................................
  */
