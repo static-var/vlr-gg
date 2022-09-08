@@ -2,9 +2,11 @@ package dev.staticvar.vlr.ui.player
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
@@ -12,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,14 +29,10 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.data.api.response.PlayerData
-import dev.staticvar.vlr.ui.Local16DPPadding
-import dev.staticvar.vlr.ui.Local4DPPadding
-import dev.staticvar.vlr.ui.Local8DP_4DPPadding
-import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.helper.CardView
-import dev.staticvar.vlr.ui.match.details_ui.PlayerNameAndAgentDetail
 import dev.staticvar.vlr.ui.match.details_ui.StatTitle
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.*
@@ -113,6 +112,7 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
 
 @Composable
 fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
+  val shape = remember { RoundedCornerShape(50) }
   CardView(modifier = modifier.fillMaxWidth()) {
     Column(
       modifier.fillMaxWidth(),
@@ -121,7 +121,18 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
     ) {
       GlideImage(
         imageModel = playerData.img,
-        modifier.clip(RoundedCornerShape(40.dp)).size(80.dp).padding(Local8DP_4DPPadding.current)
+        modifier =
+          modifier
+            .size(160.dp)
+            .padding(Local8DPPadding.current)
+            .background(VLRTheme.colorScheme.primary, shape)
+            .clip(shape),
+        loading = {
+          CircularProgressIndicator(
+            modifier = Modifier.align(Alignment.Center),
+            color = VLRTheme.colorScheme.onPrimary
+          )
+        }
       )
       if (playerData.alias.isNotEmpty()) {
         Text(
@@ -192,7 +203,7 @@ fun AgentStatKDA(modifier: Modifier = Modifier, members: StableHolder<List<Playe
     }
     members.item.forEach { member ->
       Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        PlayerNameAndAgentDetail(modifier = modifier, name = member.name, img = member.img)
+        NameAndAgentDetail(modifier = modifier, name = member.name, img = member.img)
         Text(
           text = member.k.toString(),
           modifier = modifier.weight(1f),
@@ -233,7 +244,7 @@ fun AgentStatCombat(modifier: Modifier = Modifier, members: StableHolder<List<Pl
     }
     members.item.forEach { member ->
       Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        PlayerNameAndAgentDetail(modifier = modifier, name = member.name, img = member.img)
+        NameAndAgentDetail(modifier = modifier, name = member.name, img = member.img)
         Text(
           text = member.acs.toString(),
           modifier = modifier.weight(1f),
@@ -273,7 +284,7 @@ fun AgentStatFirstBlood(
     }
     members.item.forEach { member ->
       Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        PlayerNameAndAgentDetail(modifier = modifier, name = member.name, img = member.img)
+        NameAndAgentDetail(modifier = modifier, name = member.name, img = member.img)
         Text(
           text = member.fk.toString(),
           modifier = modifier.weight(1f),
@@ -309,16 +320,22 @@ fun AgentStatOverall(modifier: Modifier = Modifier, members: StableHolder<List<P
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Agent", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
-      Text(text = "Usage", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "Usage %", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
+      Text(text = "Matches", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
       Text(text = "Rounds", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
       Text(text = "KPR", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
       Text(text = "APR", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
     }
     members.item.forEach { member ->
       Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        PlayerNameAndAgentDetail(modifier = modifier, name = member.name, img = member.img)
+        NameAndAgentDetail(modifier = modifier, name = member.name, img = member.img)
         Text(
-          text = member.percent.toString(),
+          text = member.percent.toString() + " %",
+          modifier = modifier.weight(1f),
+          textAlign = TextAlign.Center
+        )
+        Text(
+          text = member.count.toString(),
           modifier = modifier.weight(1f),
           textAlign = TextAlign.Center
         )
@@ -339,5 +356,21 @@ fun AgentStatOverall(modifier: Modifier = Modifier, members: StableHolder<List<P
         )
       }
     }
+  }
+}
+
+@Composable
+fun RowScope.NameAndAgentDetail(modifier: Modifier = Modifier, name: String, img: String?) {
+  Row(modifier.weight(1.5f), verticalAlignment = Alignment.CenterVertically) {
+    GlideImage(
+      imageModel = img,
+      modifier = modifier.padding(Local4DP_2DPPadding.current).size(24.dp),
+      contentScale = ContentScale.Fit,
+    )
+    Text(
+      text = name.replaceFirstChar { it.uppercase() },
+      modifier = modifier.padding(Local2DPPadding.current),
+      textAlign = TextAlign.Start
+    )
   }
 }
