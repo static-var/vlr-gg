@@ -109,6 +109,16 @@ interface VlrDao {
   }
   // -------------- DAO calls for [Team] ends here --------------//
 
+  // -------------- DAO calls for [PlayerData] starts here --------------//
+
+  @Upsert
+  suspend fun upsertPlayer(playerData: PlayerData)
+
+  @Query("SELECT * from PlayerData where id = :id")
+  fun getPlayerById(id: String): Flow<PlayerData?>
+
+  // -------------- DAO calls for [PlayerData] ends here --------------//
+
   @Query("SELECT * from MatchInfo where createdAt < :expiredTime")
   suspend fun getObsoleteRecordFromMatchInfo(expiredTime: Long): List<MatchInfo>
 
