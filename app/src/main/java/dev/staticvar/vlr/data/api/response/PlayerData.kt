@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
 data class PlayerData(
   @PrimaryKey
   @SerialName("id")
-  val id: String = "",
+  var id: String = "",
   @SerialName("name")
   val name: String = "", // Tyson Ngo
   @SerialName("alias")
@@ -48,7 +48,7 @@ data class PlayerData(
     @SerialName("count")
     val count: Int = 0, // 197
     @SerialName("percent")
-    val percent: Int = 0, // 63
+    val percent: Double = 0.0, // 63
     @SerialName("rounds")
     val rounds: Int = 0, // 4090
     @SerialName("rating")
@@ -60,7 +60,7 @@ data class PlayerData(
     @SerialName("adr")
     val adr: Double = 0.0, // 159.2
     @SerialName("kast")
-    val kast: Int = 0, // 72
+    val kast: Double = 0.0, // 72
     @SerialName("kpr")
     val kpr: Double = 0.0, // 0.93
     @SerialName("apr")
