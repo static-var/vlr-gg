@@ -238,6 +238,34 @@ constructor(
   fun getTeamDetailsFromDb(id: String) = vlrDao.getTeamDetailById(id).map { Pass(it) }
 
   /**
+   * Get team details
+   *
+   * @param id
+   */
+  fun getPlayerDetails(id: String) =
+    flow<Result<Boolean, Throwable?>> {
+      val key = Endpoints.playerDetails(id)
+      if (TimeElapsed.hasElapsed(key)) {
+        emit(Ok(true))
+        val result = runSuspendCatching { ktorHttpClient.get(key).body<PlayerData>() }
+        result.get()?.let {
+          it.id = id
+          vlrDao.upsertPlayer(it)
+          TimeElapsed.start(key, 120.seconds)
+          emit(Ok(false))
+        }
+          ?: emit(Err(result.getError()))
+      }
+    }
+
+  /**
+   * Get event details from db
+   *
+   * @param id
+   */
+  fun getPlayerDetailsFromDb(id: String) = vlrDao.getPlayerById(id).map { Pass(it) }
+
+  /**
    * Parse news
    *
    * @param id
