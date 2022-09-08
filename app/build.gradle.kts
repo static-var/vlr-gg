@@ -123,6 +123,7 @@ android {
         "-opt-in=com.google.accompanist.pager.ExperimentalPagerApi",
         "-opt-in=androidx.compose.runtime.InternalComposeApi",
         "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+        "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
     )
   }
   buildFeatures { compose = true }

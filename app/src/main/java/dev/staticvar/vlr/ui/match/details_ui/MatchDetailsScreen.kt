@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.ui.match.details_ui
 
+import android.Manifest
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
@@ -30,6 +31,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.firebase.ktx.Firebase
@@ -83,10 +86,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
             onRefresh = { triggerRefresh = triggerRefresh.not() },
             indicator = { _, _ -> }
           ) {
-            LazyColumn(
-              modifier = modifier.fillMaxSize(),
-              state = rememberListState
-            ) {
+            LazyColumn(modifier = modifier.fillMaxSize(), state = rememberListState) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
               item {
                 AnimatedVisibility(
@@ -171,6 +171,9 @@ fun MatchOverallAndEventOverview(
   onSubButton: suspend () -> Unit
 ) {
   val scope = rememberCoroutineScope()
+  val notificationPermission =
+    rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
   CardView(
     modifier.fillMaxWidth().aspectRatio(1.3f),
   ) {
@@ -287,13 +290,15 @@ fun MatchOverallAndEventOverview(
               var processingTopicSubscription by remember { mutableStateOf(false) }
               Button(
                 onClick = {
-                  if (!processingTopicSubscription) {
-                    processingTopicSubscription = true
-                    scope.launch(Dispatchers.IO) {
-                      onSubButton()
-                      processingTopicSubscription = false
+                  if (notificationPermission.status.isGranted) {
+                    if (!processingTopicSubscription) {
+                      processingTopicSubscription = true
+                      scope.launch(Dispatchers.IO) {
+                        onSubButton()
+                        processingTopicSubscription = false
+                      }
                     }
-                  }
+                  } else notificationPermission.launchPermissionRequest()
                 },
                 modifier = Modifier.weight(1f)
               ) {

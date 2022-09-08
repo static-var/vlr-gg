@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.ui.events
 
+import android.Manifest
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -32,6 +33,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.firebase.ktx.Firebase
@@ -212,6 +215,9 @@ fun TournamentDetailsHeader(
 ) {
   val scope = rememberCoroutineScope()
   val context = LocalContext.current
+  val notificationPermission =
+    rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
   CardView(modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
       Row(modifier.fillMaxWidth().padding(Local16DPPadding.current)) {
@@ -292,13 +298,15 @@ fun TournamentDetailsHeader(
         )
           Button(
             onClick = {
-              if (!processingTopicSubscription) {
-                processingTopicSubscription = true
-                scope.launch(Dispatchers.IO) {
-                  onSubButton()
-                  processingTopicSubscription = false
+              if (notificationPermission.status.isGranted) {
+                if (!processingTopicSubscription) {
+                  processingTopicSubscription = true
+                  scope.launch(Dispatchers.IO) {
+                    onSubButton()
+                    processingTopicSubscription = false
+                  }
                 }
-              }
+              } else notificationPermission.launchPermissionRequest()
             },
             modifier = modifier.fillMaxWidth()
           ) {
