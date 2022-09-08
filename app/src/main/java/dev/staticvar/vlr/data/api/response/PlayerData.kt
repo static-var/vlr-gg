@@ -35,7 +35,8 @@ data class PlayerData(
   @SerialName("previous_team")
   val previousTeams: List<Team> = listOf(),
   @SerialName("earnings")
-  val earnings: Double? = null
+  val earnings: Double? = null,
+  val createdAt: Long = System.currentTimeMillis(),
 ) {
   @Keep
   @Serializable

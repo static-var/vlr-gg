@@ -117,6 +117,8 @@ interface VlrDao {
   @Query("SELECT * from PlayerData where id = :id")
   fun getPlayerById(id: String): Flow<PlayerData?>
 
+  @Query("DELETE from PlayerData where id in(:record)")
+  suspend fun deletePlayerData(record: List<String>)
   // -------------- DAO calls for [PlayerData] ends here --------------//
 
   @Query("SELECT * from MatchInfo where createdAt < :expiredTime")
@@ -127,4 +129,7 @@ interface VlrDao {
 
   @Query("SELECT * from TournamentDetails where createdAt < :expiredTime")
   suspend fun getObsoleteRecordFromTournamentDetails(expiredTime: Long): List<TournamentDetails>
+
+  @Query("SELECT * from PlayerData where createdAt < :expiredTime")
+  suspend fun getObsoleteRecordFromPlayerData(expiredTime: Long): List<PlayerData>
 }
