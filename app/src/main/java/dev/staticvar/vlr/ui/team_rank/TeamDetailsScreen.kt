@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.ui.team_rank
 
+import android.Manifest
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
@@ -25,6 +26,8 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.firebase.ktx.Firebase
@@ -160,6 +163,9 @@ fun TeamBanner(
   val scope = rememberCoroutineScope()
   val context = LocalContext.current
 
+  val notificationPermission =
+    rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
   CardView(modifier) {
     Row(
       modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
@@ -193,13 +199,15 @@ fun TeamBanner(
 
     Button(
       onClick = {
-        if (!processingTopicSubscription) {
-          processingTopicSubscription = true
-          scope.launch(Dispatchers.IO) {
-            onSubButton()
-            processingTopicSubscription = false
+        if (notificationPermission.status.isGranted) {
+          if (!processingTopicSubscription) {
+            processingTopicSubscription = true
+            scope.launch(Dispatchers.IO) {
+              onSubButton()
+              processingTopicSubscription = false
+            }
           }
-        }
+        } else notificationPermission.launchPermissionRequest()
       },
       modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
     ) {

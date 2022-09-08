@@ -44,6 +44,7 @@ accompanist-pager = { module = "com.google.accompanist:accompanist-pager", versi
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
 accompanist-swipe-refresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanist" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
@@ -105,7 +106,7 @@ benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", versio
 base = ["core", "app-compat", "activity-compose"]
 compose = ["compose-ui", "compose-text", "compose-material", "compose-ui-tooling", "compose-runtime", "m3"]
 lifecycle = ["lifecycle-runtime", "lifecycle-viewmodel"]
-accompanist = ["accompanist-sysui", "accompanist-nav-animation", "accompanist-pager", "accompanist-swipe-refresh", "accompanist-pager-indicators", "accompanist-webview"]
+accompanist = ["accompanist-sysui", "accompanist-nav-animation", "accompanist-pager", "accompanist-swipe-refresh", "accompanist-pager-indicators", "accompanist-webview", "accompanist-permissions"]
 coroutines = ["coroutines-core", "coroutines-android", "coroutines-play-services"]
 room = ["room-ktx", "room-runtime"]
 hilt = ["hilt-android", "hilt-common", "hilt-nav", "hilt-work"]
