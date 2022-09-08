@@ -209,7 +209,7 @@ fun RowScope.PlayerNameAndAgentDetail(modifier: Modifier = Modifier, name: Strin
       contentScale = ContentScale.Fit,
     )
     Text(
-      text = name,
+      text = name.replaceFirstChar { it.uppercase() },
       modifier = modifier.padding(Local2DPPadding.current),
       textAlign = TextAlign.Start
     )
