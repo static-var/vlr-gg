@@ -45,12 +45,12 @@ class VlrTypeConverter @Inject constructor(private val json: Json) {
   }
 
   @TypeConverter
-  fun teamToString(data: Team): String {
+  fun teamToString(data: Team?): String {
     return json.encodeToString(data)
   }
 
   @TypeConverter
-  fun stringToTeam(data: String): Team {
+  fun stringToTeam(data: String): Team? {
     return json.decodeFromString(data)
   }
 
