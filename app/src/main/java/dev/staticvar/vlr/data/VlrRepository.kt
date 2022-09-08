@@ -277,14 +277,17 @@ constructor(
     val matchInfoRecords = vlrDao.getObsoleteRecordFromMatchInfo(time).map { it.id }
     val teamDetailsRecords = vlrDao.getObsoleteRecordFromTeamDetails(time).map { it.id }
     val tournamentDetailsRecords = vlrDao.getObsoleteRecordFromTournamentDetails(time).map { it.id }
+    val playerDataRecords = vlrDao.getObsoleteRecordFromPlayerData(time).map { it.id }
 
     println("Deleting ${matchInfoRecords.size} items from MatchInfo")
     println("Deleting ${teamDetailsRecords.size} items from TeamDetails")
     println("Deleting ${tournamentDetailsRecords.size} items from TournamentDetails")
+    println("Deleting ${playerDataRecords.size} items from PlayerData")
 
     vlrDao.deleteMatchInfo(matchInfoRecords)
     vlrDao.deleteTeamDetails(teamDetailsRecords)
     vlrDao.deleteTournamentDetails(tournamentDetailsRecords)
+    vlrDao.deletePlayerData(playerDataRecords)
   }
 }
 
