@@ -81,4 +81,7 @@
     <string name="domain_verification_samsung_steps">Click on the "VLR.gg (Unofficial)" app from the list and enable all links in "Supported web addresses".</string>
     <string name="domain_verification">Enable domain verification</string>
     <string name="verify">Verify</string>
+    <string name="earnings">Total Earnings</string>
+    <string name="current_team">Current Team</string>
+    <string name="previous_team">Previous Teams</string>
 </resources>
