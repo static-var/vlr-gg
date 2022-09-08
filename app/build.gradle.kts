@@ -159,7 +159,7 @@ dependencies {
   implementation(libs.kotlinx.serialization)
 
   // Firebase
-  implementation(platform("com.google.firebase:firebase-bom:30.4.0"))
+  implementation(platform("com.google.firebase:firebase-bom:30.4.1"))
   implementation("com.google.firebase:firebase-analytics-ktx")
   implementation("com.google.firebase:firebase-messaging-ktx")
   implementation("com.google.firebase:firebase-crashlytics-ktx")
