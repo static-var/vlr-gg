@@ -94,6 +94,11 @@ android {
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
       configure<CrashlyticsExtension> { mappingFileUploadEnabled = true }
+      optimization {
+        keepRules {
+          ignoreExternalDependencies("androidx.glance:glance-appwidget")
+        }
+      }
     }
   }
   compileOptions {
