@@ -32,10 +32,10 @@ data class PlayerData(
   val agents: List<Agent> = listOf(),
   @SerialName("current_team")
   val currentTeam: Team? = null,
-  @SerialName("previous_team")
+  @SerialName("past_teams")
   val previousTeams: List<Team> = listOf(),
-  @SerialName("earnings")
-  val earnings: Double? = null,
+  @SerialName("total_winnings")
+  val earnings: Double = 0.0,
   val createdAt: Long = System.currentTimeMillis(),
 ) {
   @Keep

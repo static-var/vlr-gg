@@ -3,8 +3,10 @@ package dev.staticvar.vlr.ui.player
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
@@ -16,8 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
@@ -27,8 +35,11 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.skydoves.landscapist.CircularReveal
 import com.skydoves.landscapist.glide.GlideImage
+import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.PlayerData
+import dev.staticvar.vlr.data.api.response.Team
 import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.SetStatusBarColor
@@ -95,6 +106,20 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
                   members = StableHolder(data.agents)
                 )
               }
+
+              if (data.previousTeams.isNotEmpty()) {
+                item {
+                  Text(
+                    text = stringResource(R.string.previous_team),
+                    modifier =
+                      modifier.padding(Local16DPPadding.current).testTag("playerDetail:teams"),
+                    style = VLRTheme.typography.titleMedium,
+                    color = VLRTheme.colorScheme.primary
+                  )
+                }
+                items(data.previousTeams) { PreviousTeam(team = it, action = viewModel.action) }
+              }
+              item { Spacer(modifier = modifier.navigationBarsPadding()) }
             }
           }
         }
@@ -119,42 +144,105 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center
     ) {
-      GlideImage(
-        imageModel = playerData.img,
-        modifier =
-          modifier
-            .size(160.dp)
-            .padding(Local8DPPadding.current)
-            .background(VLRTheme.colorScheme.primary, shape)
-            .clip(shape),
-        loading = {
-          CircularProgressIndicator(
-            modifier = Modifier.align(Alignment.Center),
-            color = VLRTheme.colorScheme.onPrimary
+      Row(
+        modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        GlideImage(
+          imageModel = playerData.img,
+          modifier =
+            modifier
+              .size(120.dp)
+              .padding(Local8DPPadding.current)
+              .background(VLRTheme.colorScheme.primary, shape)
+              .clip(shape),
+          loading = {
+            CircularProgressIndicator(
+              modifier = Modifier.align(Alignment.Center),
+              color = VLRTheme.colorScheme.onPrimary
+            )
+          }
+        )
+        if (playerData.currentTeam?.img != null)
+          GlideImage(
+            imageModel = playerData.currentTeam.img,
+            modifier =
+              modifier
+                .size(120.dp)
+                .padding(Local8DPPadding.current)
+                .background(VLRTheme.colorScheme.primary, shape)
+                .padding(Local8DPPadding.current)
+                .clip(shape),
+            loading = {
+              CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = VLRTheme.colorScheme.onPrimary
+              )
+            }
+          )
+      }
+
+      Row(
+        modifier.fillMaxWidth(),
+      ) {
+        Column(
+          modifier.weight(1f),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.Center
+        ) {
+          if (playerData.alias.isNotEmpty()) {
+            Text(
+              text = playerData.alias,
+              modifier.padding(Local4DPPadding.current),
+              style = VLRTheme.typography.titleMedium,
+              maxLines = 1
+            )
+            Text(
+              text = playerData.name,
+              modifier.padding(Local4DPPadding.current),
+              style = VLRTheme.typography.labelLarge,
+              maxLines = 1
+            )
+          } else
+            Text(
+              text = playerData.name,
+              modifier.padding(Local4DPPadding.current),
+              style = VLRTheme.typography.titleMedium,
+              maxLines = 1
+            )
+        }
+
+        Column(
+          modifier.weight(1f),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.Center
+        ) {
+          Text(
+            text = playerData.currentTeam?.name ?: "-",
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            style = VLRTheme.typography.titleMedium,
+            modifier = modifier.padding(Local4DPPadding.current),
           )
         }
-      )
-      if (playerData.alias.isNotEmpty()) {
-        Text(
-          text = playerData.alias,
-          modifier.padding(Local4DPPadding.current),
-          style = VLRTheme.typography.titleMedium
-        )
-        Text(
-          text = playerData.name,
-          modifier.padding(Local4DPPadding.current),
-          style = VLRTheme.typography.labelLarge
-        )
-      } else
-        Text(
-          text = playerData.name,
-          modifier.padding(Local4DPPadding.current),
-          style = VLRTheme.typography.titleMedium
-        )
+      }
+
+      val playerSalaryString = buildAnnotatedString {
+        withStyle(style = SpanStyle(VLRTheme.colorScheme.primary)) {
+          append(stringResource(id = R.string.earnings))
+        }
+        withStyle(style = SpanStyle(fontSize = 20.sp)) { append(" $") }
+        withStyle(style = SpanStyle(VLRTheme.colorScheme.primary)) {
+          append(playerData.earnings.toString())
+        }
+      }
+
       Text(
-        text = playerData.country,
-        modifier.padding(Local4DPPadding.current),
-        style = VLRTheme.typography.labelLarge
+        text = playerSalaryString,
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+        modifier = modifier.padding(Local4DPPadding.current)
       )
     }
   }
@@ -370,7 +458,34 @@ fun RowScope.NameAndAgentDetail(modifier: Modifier = Modifier, name: String, img
     Text(
       text = name.replaceFirstChar { it.uppercase() },
       modifier = modifier.padding(Local2DPPadding.current),
-      textAlign = TextAlign.Start
+      textAlign = TextAlign.Start,
+      maxLines = 1
     )
+  }
+}
+
+@Composable
+fun PreviousTeam(modifier: Modifier = Modifier, team: Team, action: Action) {
+  CardView(
+    modifier =
+      modifier.clickable { if (team.id != null) action.team(team.id) }.height(120.dp)
+  ) {
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+      Text(
+        text = team.name,
+        style = VLRTheme.typography.titleMedium,
+        modifier = modifier.padding(start = 24.dp, end = 24.dp).align(Alignment.CenterStart),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        color = VLRTheme.colorScheme.primary,
+      )
+      GlideImage(
+        imageModel = team.img,
+        contentScale = ContentScale.Fit,
+        alignment = Alignment.CenterEnd,
+        modifier = modifier.align(Alignment.CenterEnd).padding(24.dp).size(120.dp),
+        circularReveal = CircularReveal(400),
+      )
+    }
   }
 }
