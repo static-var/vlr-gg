@@ -17,6 +17,7 @@ import dev.staticvar.vlr.ui.match.MatchOverview
 import dev.staticvar.vlr.ui.match.details_ui.NewMatchDetails
 import dev.staticvar.vlr.ui.news.NewsDetailsScreen
 import dev.staticvar.vlr.ui.news.NewsScreen
+import dev.staticvar.vlr.ui.player.PlayerDetailsScreen
 import dev.staticvar.vlr.ui.team_rank.RankScreen
 import dev.staticvar.vlr.ui.team_rank.TeamScreen
 import dev.staticvar.vlr.utils.Constants
@@ -198,6 +199,28 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       onNavigation(Destination.Event.route)
       val id = it.arguments?.getString(Destination.Team.Args.ID) ?: ""
       TeamScreen(viewModel = viewModel, id = id)
+    }
+    composable(
+      Destination.Player.route,
+      arguments = listOf(navArgument(Destination.Player.Args.ID) { type = NavType.StringType }),
+      enterTransition = { fadeIn },
+      popEnterTransition = { fadeIn },
+      exitTransition = { fadeOut },
+      popExitTransition = { fadeOut },
+      deepLinks = listOf(
+        navDeepLink {
+          uriPattern =
+            "${Constants.DEEP_LINK_BASEURL}${Destination.Player.route}={${Destination.Player.Args.ID}}"
+        },
+        navDeepLink {
+          uriPattern =
+            "${Constants.DEEP_LINK_2_BASEURL}${Destination.Player.route}={${Destination.Player.Args.ID}}"
+        },
+      )
+    ) {
+      onNavigation(Destination.Player.route)
+      val id = it.arguments?.getString(Destination.Player.Args.ID) ?: ""
+      PlayerDetailsScreen(viewModel = viewModel, id = id)
     }
     composable(
       Destination.News.route,

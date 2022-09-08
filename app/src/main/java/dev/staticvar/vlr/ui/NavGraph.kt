@@ -16,6 +16,7 @@ private object Destinations {
   const val TEAM = "team"
   const val ABOUT = "about"
   const val RANK = "rank"
+  const val PLAYER = "player"
 }
 
 sealed class Destination(val route: String) {
@@ -43,6 +44,12 @@ sealed class Destination(val route: String) {
   }
 
   object News : Destination("${Destinations.NEWS}/{${Args.ID}}") {
+    object Args {
+      const val ID = "id"
+    }
+  }
+
+  object Player : Destination("${Destinations.PLAYER}/{${Args.ID}}") {
     object Args {
       const val ID = "id"
     }
@@ -80,6 +87,8 @@ class Action(private val navController: NavHostController) {
   val team: (String) -> Unit = { id -> navController.navigate("${Destinations.TEAM}/$id") }
 
   val news: (String) -> Unit = { id -> navController.navigate("${Destinations.NEWS}/$id") }
+
+  val player: (String) -> Unit = { id -> navController.navigate("${Destinations.PLAYER}/$id") }
 }
 
 private fun NavOptionsBuilder.navConfig(navController: NavController) {
