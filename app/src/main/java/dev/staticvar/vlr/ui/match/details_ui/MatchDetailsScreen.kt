@@ -126,7 +126,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
               }
               item { VideoReferenceUi(videos = matchInfo.videos) }
               if (matchInfo.matchData.isNotEmpty()) {
-                item { MapBox(modifier, matchInfo) }
+                item { MapBox(modifier, matchInfo, onPlayerClick = {viewModel.action.player(it)}) }
               }
               if (matchInfo.mapCount > matchInfo.matchData.size) {
                 item {
@@ -333,7 +333,8 @@ fun MapStatsCard(
   modifier: Modifier = Modifier,
   mapData: MatchInfo.MatchDetailData,
   toggleState: Boolean,
-  onClick: (Boolean) -> Unit
+  onClick: (Boolean) -> Unit,
+  onPlayerClick: (String) -> Unit
 ) {
   CardView(
     modifier
@@ -366,7 +367,8 @@ fun MapStatsCard(
       ScoreBox(mapData = mapData)
       StatViewPager(
         modifier.testTag("matchDetails:mapStats"),
-        members = StableHolder(mapData.members)
+        members = StableHolder(mapData.members),
+        onPlayerClick
       )
     }
   }
@@ -375,7 +377,7 @@ fun MapStatsCard(
 private fun String.toMatchTopic() = "match-$this"
 
 @Composable
-fun MapBox(modifier: Modifier = Modifier, matchInfo: MatchInfo) {
+fun MapBox(modifier: Modifier = Modifier, matchInfo: MatchInfo, onPlayerClick: (String) -> Unit) {
   var overAllMapToggle by rememberSaveable { mutableStateOf(false) }
   var toggleStateMap by
     rememberSaveable(matchInfo, overAllMapToggle) {
@@ -414,7 +416,8 @@ fun MapBox(modifier: Modifier = Modifier, matchInfo: MatchInfo) {
         toggleState = toggleStateMap[match.map] ?: false,
         onClick = {
           toggleStateMap = toggleStateMap.toMutableMap().apply { set(match.map, it) }.toMap()
-        }
+        },
+        onPlayerClick
       )
     }
   }

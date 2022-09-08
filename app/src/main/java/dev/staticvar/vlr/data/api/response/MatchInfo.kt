@@ -42,6 +42,7 @@ data class MatchInfo(
     @Serializable
     @Immutable
     data class Member(
+      @SerialName("id") val playerId: String = "", // "9"
       @SerialName("acs") val acs: Int = 0, // 226
       @SerialName("adr") val adr: Int = 0, // 226
       @SerialName("agents") val agents: List<Agent> = listOf(),

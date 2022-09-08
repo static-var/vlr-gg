@@ -1,6 +1,8 @@
 package dev.staticvar.vlr.ui.match.details_ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -9,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
@@ -24,16 +27,17 @@ import dev.staticvar.vlr.utils.StableHolder
 @Composable
 fun StatViewPager(
   modifier: Modifier = Modifier,
-  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>
+  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>,
+  onClick: (String) -> Unit
 ) {
   val pagerState = rememberPagerState()
   Column(modifier.fillMaxWidth()) {
     ProvideTextStyle(value = VLRTheme.typography.labelMedium) {
       HorizontalPager(count = 3, modifier = modifier, state = pagerState) { page ->
         when (page) {
-          0 -> StatKDA(members = members, modifier = modifier)
-          1 -> StatCombat(members = members, modifier = modifier)
-          2 -> StatFirstBlood(members = members, modifier = modifier)
+          0 -> StatKDA(members = members, modifier = modifier, onClick = onClick)
+          1 -> StatCombat(members = members, modifier = modifier, onClick = onClick)
+          2 -> StatFirstBlood(members = members, modifier = modifier, onClick = onClick)
         }
       }
     }
@@ -49,7 +53,8 @@ fun StatViewPager(
 @Composable
 fun StatKDA(
   modifier: Modifier = Modifier,
-  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>
+  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>,
+  onClick: (String) -> Unit
 ) {
   val teamAndMember = remember(members) { members.item.groupBy { it.team } }
 
@@ -69,10 +74,12 @@ fun StatKDA(
       TeamName(team = team)
       member.forEach { player ->
         Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-          PlayerNameAndAgentDetail(
+          PlayerNameAndAgentDetailWithHyperlink(
             modifier = modifier,
             name = player.name,
-            img = player.agents.getOrNull(0)?.img
+            img = player.agents.getOrNull(0)?.img,
+            id = player.playerId,
+            onClick = onClick
           )
           Text(
             text = player.kills.toString(),
@@ -103,7 +110,8 @@ fun StatKDA(
 @Composable
 fun StatCombat(
   modifier: Modifier = Modifier,
-  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>
+  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>,
+  onClick: (String) -> Unit
 ) {
   val teamAndMember = remember(members) { members.item.groupBy { it.team } }
   Column(modifier = modifier.fillMaxWidth()) {
@@ -122,10 +130,12 @@ fun StatCombat(
       TeamName(team = team)
       member.forEach { player ->
         Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-          PlayerNameAndAgentDetail(
+          PlayerNameAndAgentDetailWithHyperlink(
             modifier = modifier,
             name = player.name,
-            img = player.agents.getOrNull(0)?.img
+            img = player.agents.getOrNull(0)?.img,
+            id = player.playerId,
+            onClick = onClick
           )
           Text(
             text = player.acs.toString(),
@@ -156,7 +166,8 @@ fun StatCombat(
 @Composable
 fun StatFirstBlood(
   modifier: Modifier = Modifier,
-  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>
+  members: StableHolder<List<MatchInfo.MatchDetailData.Member>>,
+  onClick: (String) -> Unit
 ) {
   val teamAndMember = remember(members) { members.item.groupBy { it.team } }
   Column(modifier = modifier.fillMaxWidth()) {
@@ -174,10 +185,12 @@ fun StatFirstBlood(
       TeamName(team = team)
       member.forEach { player ->
         Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-          PlayerNameAndAgentDetail(
+          PlayerNameAndAgentDetailWithHyperlink(
             modifier = modifier,
             name = player.name,
-            img = player.agents.getOrNull(0)?.img
+            img = player.agents.getOrNull(0)?.img,
+            id = player.playerId,
+            onClick = onClick
           )
           Text(
             text = player.firstKills.toString(),
@@ -201,17 +214,27 @@ fun StatFirstBlood(
 }
 
 @Composable
-fun RowScope.PlayerNameAndAgentDetail(modifier: Modifier = Modifier, name: String, img: String?) {
-  Row(modifier.weight(1.5f), verticalAlignment = Alignment.CenterVertically) {
+fun RowScope.PlayerNameAndAgentDetailWithHyperlink(
+  modifier: Modifier = Modifier,
+  name: String,
+  img: String?,
+  id: String,
+  onClick: (String) -> Unit
+) {
+  Row(
+    modifier.weight(1.5f).clickable { onClick(id) },
+    verticalAlignment = Alignment.CenterVertically
+  ) {
     GlideImage(
       imageModel = img,
       modifier = modifier.padding(Local4DP_2DPPadding.current).size(24.dp),
       contentScale = ContentScale.Fit,
     )
     Text(
-      text = name.replaceFirstChar { it.uppercase() },
+      text = name,
       modifier = modifier.padding(Local2DPPadding.current),
-      textAlign = TextAlign.Start
+      textAlign = TextAlign.Start,
+      textDecoration = TextDecoration.Underline
     )
   }
 }
