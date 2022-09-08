@@ -29,7 +29,7 @@ m3 = { module = "androidx.compose.material3:material3", version = "1.0.0-beta02"
 
 compose-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
 
-core = { module = "androidx.core:core-ktx", version = "1.8.0" }
+core = { module = "androidx.core:core-ktx", version = "1.9.0" }
 app-compat = { module = "androidx.appcompat:appcompat", version = "1.5.1" }
 activity-compose = { module = "androidx.activity:activity-compose", version = "1.5.1" }
 
