@@ -119,8 +119,9 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
                 RosterCard(
                   modifier = modifier,
                   expanded = rosterCard,
+                  data = StableHolder(teamDetail.roster),
                   onExpand = { rosterCard = it },
-                  data = StableHolder(teamDetail.roster)
+                  onClick = { viewModel.action.player(it) }
                 )
               }
               item {
@@ -220,8 +221,9 @@ fun TeamBanner(
 fun RosterCard(
   modifier: Modifier = Modifier,
   expanded: Boolean,
+  data: StableHolder<List<TeamDetails.Roster>>,
   onExpand: (Boolean) -> Unit,
-  data: StableHolder<List<TeamDetails.Roster>>
+  onClick: (String) -> Unit,
 ) {
   CardView(modifier = modifier.testTag("team:roster")) {
     Column(modifier = modifier.fillMaxWidth().animateContentSize(tween(500))) {
@@ -261,7 +263,10 @@ fun RosterCard(
         }
         data.item.forEach { player ->
           Card(
-            modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+            modifier =
+              modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current).clickable {
+                onClick(player.id)
+              },
             colors =
               CardDefaults.cardColors(
                 contentColor = VLRTheme.colorScheme.onPrimaryContainer,
