@@ -10,7 +10,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.Paid
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -371,8 +375,6 @@ fun EventMatchGroups(
   onFilterChange: (Int) -> Unit,
   onTabChange: (Int) -> Unit
 ) {
-  var expanded by remember { mutableStateOf(false) }
-
   val filterOptions =
     listOf(
       stringResource(R.string.status),
@@ -387,31 +389,14 @@ fun EventMatchGroups(
       style = VLRTheme.typography.titleMedium,
       color = VLRTheme.colorScheme.primary
     )
-    Row(
-      modifier =
-        modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable { expanded = true },
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-      Text(text = stringResource(R.string.filter_by), modifier.padding(Local8DPPadding.current))
-      Text(
-        text = filterOptions[selectedIndex],
-        modifier.weight(1f).padding(Local8DPPadding.current),
-        textAlign = TextAlign.End
-      )
-      Icon(
-        Icons.Outlined.ArrowDropDown,
-        contentDescription = stringResource(R.string.dropdown_content_description),
-        modifier = modifier.padding(Local8DPPadding.current)
-      )
-    }
 
-    FilterSelectionDropDown(
+    FilterChips(
       modifier,
       filterOptions,
       selectedIndex,
-      expanded,
-      { expanded = false }
-    ) { onFilterChange(it) }
+    ) {
+      onFilterChange(it)
+    }
 
     ScrollableTabRow(
       selectedTabIndex = tabSelection,
@@ -438,33 +423,35 @@ fun EventMatchGroups(
 }
 
 @Composable
-fun FilterSelectionDropDown(
+fun FilterChips(
   modifier: Modifier,
   filterOptions: List<String>,
   selectedIndex: Int,
-  expanded: Boolean,
-  onExpandChange: () -> Unit,
   onFilterChange: (Int) -> Unit
 ) {
-  DropdownMenu(
-    expanded = expanded,
-    onDismissRequest = onExpandChange,
-    modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current)
+  Row(
+    modifier.fillMaxSize().animateContentSize(),
+    horizontalArrangement = Arrangement.Center,
+    verticalAlignment = Alignment.CenterVertically
   ) {
     filterOptions.forEachIndexed { index, filter ->
-      DropdownMenuItem(
-        text = {
-          Text(
-            text = filter,
-            color =
-              if (selectedIndex == index) VLRTheme.colorScheme.primary
-              else VLRTheme.colorScheme.onBackground
-          )
-        },
-        onClick = {
-          onFilterChange(index)
-          onExpandChange()
-        }
+      FilterChip(
+        selected = selectedIndex == index,
+        onClick = { onFilterChange(index) },
+        label = { Text(filter) },
+        leadingIcon =
+          if (selectedIndex == index) {
+            {
+              Icon(
+                imageVector = Icons.Filled.Done,
+                contentDescription = "Localized Description",
+                modifier = Modifier.size(FilterChipDefaults.IconSize)
+              )
+            }
+          } else {
+            null
+          },
+        modifier = Modifier.padding(horizontal = 8.dp)
       )
     }
   }
