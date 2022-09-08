@@ -1,7 +1,9 @@
 package dev.staticvar.vlr.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -98,7 +100,8 @@ fun VLR() {
   }
 
   Scaffold(
-    bottomBar = { VlrNavBar(navController = navController, items = navItems, currentNav) }
+    bottomBar = { VlrNavBar(navController = navController, items = navItems, currentNav) },
+    contentWindowInsets = WindowInsets(left = 0.dp, top = 0.dp, right = 0.dp, bottom = 0.dp)
   ) { paddingValues ->
     Box(
       modifier =
