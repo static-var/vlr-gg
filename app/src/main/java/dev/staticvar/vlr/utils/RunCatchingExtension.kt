@@ -20,6 +20,7 @@ public suspend inline fun <V> runSuspendCatching(block: () -> V): Result<V, Thro
     Ok(block())
   } catch (e: Throwable) {
     if (e is CancellationException) throw e
+    println(e.printStackTrace())
     Err(e)
   }
 }
