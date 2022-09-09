@@ -21,11 +21,11 @@ data class PlayerData(
   @SerialName("alias")
   val alias: String = "", // TenZ
   @SerialName("twitch")
-  val twitch: String = "", // https://www.twitch.tv/tenz
+  val twitch: String? = "", // https://www.twitch.tv/tenz
   @SerialName("twitter")
-  val twitter: String = "", // @TenZOfficial
+  val twitter: String? = "", // @TenZOfficial
   @SerialName("country")
-  val country: String = "", // CANADA
+  val country: String? = "", // CANADA
   @SerialName("img")
   val img: String = "", // https://www.vlr.gg/img/base/ph/sil.png
   @SerialName("agents")
