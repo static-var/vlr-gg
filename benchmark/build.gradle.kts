@@ -60,10 +60,13 @@ android {
       )
       isDebuggable = true
       signingConfig = signingConfigs.getByName("debug")
-      // [START_EXCLUDE silent]
       // Selects release buildType if the benchmark buildType not available in other modules.
       matchingFallbacks += mutableListOf("release")
-      // [END_EXCLUDE]
+      optimization {
+        keepRules {
+          ignoreExternalDependencies("androidx.glance:glance-appwidget")
+        }
+      }
     }
   }
 }

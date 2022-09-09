@@ -53,7 +53,7 @@ fun UiDevice.visitMatchDetailsAndBack() {
           children[child].click()
           val data = wait(
             Until.hasObject(By.res("details:more_info")),
-            15_000
+            5_000
           ) // Ensure static Ui elements are loaded
           if (!data) {
             child++
@@ -116,6 +116,15 @@ fun UiDevice.visitRanksAndBack() {
       wait(Until.hasObject(By.res("team:banner")), 15_0000)
       waitForIdle()
       findObject(By.res("team:roster"))?.click()
+      waitForIdle()
+      wait(Until.hasObject(By.res("team:player")), 15_0000)
+      findObject(By.res("team:player"))?.click()
+      waitForIdle()
+      wait(Until.gone(By.res("common:loader")), 15_000) // Ensure loader is gone
+      wait(Until.gone(By.res("player:img")), 20_000) // Ensure loader is gone
+      waitForIdle()
+      pressBack()
+      waitForIdle()
       pressBack()
     }
   }
