@@ -159,7 +159,7 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
               .clip(shape),
           loading = {
             CircularProgressIndicator(
-              modifier = Modifier.align(Alignment.Center),
+              modifier = Modifier.align(Alignment.Center).testTag("player:img"),
               color = VLRTheme.colorScheme.onPrimary
             )
           }

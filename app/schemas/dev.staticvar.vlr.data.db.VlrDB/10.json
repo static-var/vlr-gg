@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 10,
-    "identityHash": "951fdb19c9742072cd67b6f45c627202",
+    "identityHash": "5c555f69bacde62bdac86299840f8ea2",
     "entities": [
       {
         "tableName": "NewsResponseItem",
@@ -452,7 +452,7 @@
       },
       {
         "tableName": "PlayerData",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `alias` TEXT NOT NULL, `twitch` TEXT NOT NULL, `twitter` TEXT NOT NULL, `country` TEXT NOT NULL, `img` TEXT NOT NULL, `agents` TEXT NOT NULL, `currentTeam` TEXT, `previousTeams` TEXT NOT NULL, `earnings` REAL NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `alias` TEXT NOT NULL, `twitch` TEXT, `twitter` TEXT, `country` TEXT, `img` TEXT NOT NULL, `agents` TEXT NOT NULL, `currentTeam` TEXT, `previousTeams` TEXT NOT NULL, `earnings` REAL NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -476,19 +476,19 @@
             "fieldPath": "twitch",
             "columnName": "twitch",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "twitter",
             "columnName": "twitter",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "country",
             "columnName": "country",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "img",
@@ -540,7 +540,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '951fdb19c9742072cd67b6f45c627202')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5c555f69bacde62bdac86299840f8ea2')"
     ]
   }
 }

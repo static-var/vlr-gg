@@ -274,7 +274,7 @@ fun RosterCard(
             modifier =
               modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current).clickable {
                 onClick(player.id)
-              },
+              }.testTag("team:player"),
             colors =
               CardDefaults.cardColors(
                 contentColor = VLRTheme.colorScheme.onPrimaryContainer,
