@@ -39,7 +39,9 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
-import com.skydoves.landscapist.CircularReveal
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
+import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
@@ -218,17 +220,23 @@ fun TournamentDetailsHeader(
   val notificationPermission =
     rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
+  val imageComponent = rememberImageComponent {
+    add(CircularRevealPlugin())
+  }
+
   CardView(modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
       Row(modifier.fillMaxWidth().padding(Local16DPPadding.current)) {
         Spacer(modifier = modifier.weight(1f))
         GlideImage(
           tournamentDetails.img,
-          contentDescription = stringResource(R.string.tournament_logo_content_desciption),
           modifier = modifier.alpha(0.3f),
-          circularReveal = CircularReveal(1000),
-          contentScale = ContentScale.Inside,
-          alignment = Alignment.CenterEnd
+          imageOptions =
+            ImageOptions(
+              contentScale = ContentScale.Inside,
+              alignment = Alignment.CenterEnd,
+            ),
+          component = imageComponent,
         )
       }
       Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
@@ -326,6 +334,9 @@ fun EventDetailsTeamSlider(
   list: StableHolder<List<TournamentDetails.Participant>>,
   onClick: (String) -> Unit
 ) {
+  val imageComponent = rememberImageComponent {
+    add(CircularRevealPlugin())
+  }
   val lazyListState = rememberLazyListState()
   Text(
     text = stringResource(R.string.teams),
@@ -356,10 +367,12 @@ fun EventDetailsTeamSlider(
           )
           GlideImage(
             imageModel = it.img,
-            contentDescription = stringResource(R.string.team_logo_content_description),
-            alignment = Alignment.Center,
+            imageOptions =
+              ImageOptions(
+                alignment = Alignment.Center,
+              ),
             modifier = modifier.size(80.dp).aspectRatio(1f).padding(Local4DPPadding.current),
-            circularReveal = CircularReveal(1000)
+            component = imageComponent
           )
           Text(
             text = it.seed ?: "",
