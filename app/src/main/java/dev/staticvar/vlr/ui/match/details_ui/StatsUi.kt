@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.ui.Local2DPPadding
@@ -228,7 +229,9 @@ fun RowScope.PlayerNameAndAgentDetailWithHyperlink(
     GlideImage(
       imageModel = img,
       modifier = modifier.padding(Local4DP_2DPPadding.current).size(24.dp),
-      contentScale = ContentScale.Fit,
+      imageOptions = ImageOptions(
+        contentScale = ContentScale.Fit,
+      )
     )
     Text(
       text = name,

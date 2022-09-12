@@ -35,7 +35,9 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.skydoves.landscapist.CircularReveal
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
+import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.PlayerData
@@ -453,7 +455,7 @@ fun RowScope.NameAndAgentDetail(modifier: Modifier = Modifier, name: String, img
     GlideImage(
       imageModel = img,
       modifier = modifier.padding(Local4DP_2DPPadding.current).size(24.dp),
-      contentScale = ContentScale.Fit,
+      imageOptions = ImageOptions(contentScale = ContentScale.Fit)
     )
     Text(
       text = name.replaceFirstChar { it.uppercase() },
@@ -466,9 +468,9 @@ fun RowScope.NameAndAgentDetail(modifier: Modifier = Modifier, name: String, img
 
 @Composable
 fun PreviousTeam(modifier: Modifier = Modifier, team: Team, action: Action) {
+  val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
   CardView(
-    modifier =
-      modifier.clickable { if (team.id != null) action.team(team.id) }.height(120.dp)
+    modifier = modifier.clickable { if (team.id != null) action.team(team.id) }.height(120.dp)
   ) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Text(
@@ -481,10 +483,10 @@ fun PreviousTeam(modifier: Modifier = Modifier, team: Team, action: Action) {
       )
       GlideImage(
         imageModel = team.img,
-        contentScale = ContentScale.Fit,
-        alignment = Alignment.CenterEnd,
+        imageOptions =
+          ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
         modifier = modifier.align(Alignment.CenterEnd).padding(24.dp).size(120.dp),
-        circularReveal = CircularReveal(400),
+        component = imageComponent
       )
     }
   }

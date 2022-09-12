@@ -37,7 +37,9 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
-import com.skydoves.landscapist.CircularReveal
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
+import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
@@ -126,7 +128,9 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
               }
               item { VideoReferenceUi(videos = matchInfo.videos) }
               if (matchInfo.matchData.isNotEmpty()) {
-                item { MapBox(modifier, matchInfo, onPlayerClick = {viewModel.action.player(it)}) }
+                item {
+                  MapBox(modifier, matchInfo, onPlayerClick = { viewModel.action.player(it) })
+                }
               }
               if (matchInfo.mapCount > matchInfo.matchData.size) {
                 item {
@@ -174,6 +178,8 @@ fun MatchOverallAndEventOverview(
   val notificationPermission =
     rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
+  val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
+
   CardView(
     modifier.fillMaxWidth().aspectRatio(1.3f),
   ) {
@@ -203,10 +209,10 @@ fun MatchOverallAndEventOverview(
           }
           GlideImage(
             imageModel = detailData.teams[0].img,
-            contentScale = ContentScale.Fit,
-            alignment = Alignment.CenterStart,
+            imageOptions =
+              ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterStart),
             modifier = modifier.alpha(0.2f).aspectRatio(1f, true).align(Alignment.TopCenter),
-            circularReveal = CircularReveal(400),
+            component = imageComponent
           )
         }
         Spacer(modifier = Modifier.weight(0.2f))
@@ -226,10 +232,10 @@ fun MatchOverallAndEventOverview(
           }
           GlideImage(
             imageModel = detailData.teams[1].img,
-            contentScale = ContentScale.Fit,
-            alignment = Alignment.CenterEnd,
+            imageOptions =
+              ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
             modifier = modifier.alpha(0.2f).aspectRatio(1f, true).align(Alignment.TopCenter),
-            circularReveal = CircularReveal(400)
+            component = imageComponent
           )
         }
         Spacer(modifier = Modifier.weight(0.1f))

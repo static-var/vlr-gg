@@ -39,7 +39,9 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.skydoves.landscapist.CircularReveal
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
+import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
@@ -78,8 +80,7 @@ fun RankScreen(viewModel: VlrViewModel) {
   ) {
     allTeams
       .onPass {
-        if (data == null || data.isEmpty())
-          LinearProgressIndicator(modifier.animateContentSize())
+        if (data == null || data.isEmpty()) LinearProgressIndicator(modifier.animateContentSize())
         else
           RanksPreviewContainer(
             modifier = Modifier,
@@ -110,7 +111,14 @@ fun RanksPreviewContainer(
 ) {
   val pagerState = rememberPagerState()
   val teamMap by
-    remember(list) { mutableStateOf(list.item.sortedBy { it.rank }.filter { it.region.isNotEmpty() }.groupBy { it.region.trim() }) }
+    remember(list) {
+      mutableStateOf(
+        list.item
+          .sortedBy { it.rank }
+          .filter { it.region.isNotEmpty() }
+          .groupBy { it.region.trim() }
+      )
+    }
   val tabs by remember { mutableStateOf(teamMap.keys.toList().sorted()) }
   SwipeRefresh(state = swipeRefresh, onRefresh = triggerRefresh, indicator = { _, _ -> }) {
     Column(
@@ -193,6 +201,9 @@ fun NoTeamsUI(modifier: Modifier = Modifier) {
 
 @Composable
 fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Action) {
+  val imageComponent = rememberImageComponent {
+    add(CircularRevealPlugin())
+  }
 
   CardView(modifier = modifier.clickable { action.team(team.id) }.height(120.dp)) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
@@ -268,10 +279,10 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
       }
       GlideImage(
         imageModel = team.img,
-        contentScale = ContentScale.Fit,
-        alignment = Alignment.CenterEnd,
         modifier = modifier.align(Alignment.CenterEnd).padding(24.dp).size(120.dp),
-        circularReveal = CircularReveal(400),
+        imageOptions =
+          ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
+        component = imageComponent
       )
     }
   }

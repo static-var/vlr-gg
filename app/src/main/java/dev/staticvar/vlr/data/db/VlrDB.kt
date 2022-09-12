@@ -21,7 +21,7 @@ import dev.staticvar.vlr.data.model.TopicTracker
       PlayerData::class],
   exportSchema = true,
   version = 11,
-  autoMigrations = [AutoMigration(9, 10), AutoMigration(10, 11, spec = DeleteBracketsFromTournamentDetails::class)]
+  autoMigrations = [AutoMigration(9, 10)]
 )
 @TypeConverters(VlrTypeConverter::class)
 abstract class VlrDB : RoomDatabase() {
@@ -41,9 +41,6 @@ val Migration_7_8 =
       )
     }
   }
-
-@DeleteColumn.Entries(DeleteColumn(tableName = "TournamentDetails", columnName = "bracket"))
-private class DeleteBracketsFromTournamentDetails() : AutoMigrationSpec
 
 /**
  * ************************************** Version change log ***************************************
