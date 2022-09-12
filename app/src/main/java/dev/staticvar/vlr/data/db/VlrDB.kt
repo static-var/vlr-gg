@@ -1,9 +1,7 @@
 package dev.staticvar.vlr.data.db
 
-import androidx.room.AutoMigration
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room.*
+import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import dev.staticvar.vlr.data.api.response.*
@@ -22,8 +20,8 @@ import dev.staticvar.vlr.data.model.TopicTracker
       TeamDetails::class,
       PlayerData::class],
   exportSchema = true,
-  version = 10,
-  autoMigrations = [AutoMigration(9, 10)]
+  version = 11,
+  autoMigrations = [AutoMigration(9, 10), AutoMigration(10, 11, spec = DeleteBracketsFromTournamentDetails::class)]
 )
 @TypeConverters(VlrTypeConverter::class)
 abstract class VlrDB : RoomDatabase() {
@@ -44,6 +42,9 @@ val Migration_7_8 =
     }
   }
 
+@DeleteColumn.Entries(DeleteColumn(tableName = "TournamentDetails", columnName = "bracket"))
+private class DeleteBracketsFromTournamentDetails() : AutoMigrationSpec
+
 /**
  * ************************************** Version change log ***************************************
  * 3 -> Remove old tables and create new for accommodating API call ................................
@@ -54,4 +55,5 @@ val Migration_7_8 =
  * 8 -> Add creating time of each record for MatchInfo, TeamDetails, TournamentDetails .............
  * 9 -> Add event status field in TournamentDetails ................................................
  * 10 -> Add PlayerData table to store player records ..............................................
+ * 11 -> Remove redundant brackets info from TournamentDetails .....................................
  */
