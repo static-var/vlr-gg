@@ -13,7 +13,6 @@ import kotlinx.serialization.Serializable
 @Immutable
 data class TournamentDetails(
   @PrimaryKey @SerialName("id") val id: String = "", // 890
-  @SerialName("bracket") val bracket: List<Bracket> = listOf(),
   @SerialName("dates") val dates: String = "", // Feb 13 - 14, 2022
   @SerialName("img") val img: String = "", // https://owcdn.net/img/62099d2b41b45.png
   @SerialName("location") val location: String = "", // ca
@@ -26,13 +25,6 @@ data class TournamentDetails(
   @SerialName("status") val status: Status = Status.UNKNOWN,
   val createdAt: Long = System.currentTimeMillis(),
 ) {
-  @Keep
-  @Serializable
-  @Immutable
-  data class Bracket(
-    @SerialName("lower") val lower: List<Games> = listOf(),
-    @SerialName("upper") val upper: List<Games> = listOf()
-  )
 
   @Keep
   @Serializable

@@ -14,27 +14,6 @@ import kotlinx.serialization.json.Json
 class VlrTypeConverter @Inject constructor(private val json: Json) {
 
   @TypeConverter
-  fun pairStringToString(pairs: List<Pair<String, String>>?): String? {
-    return pairs?.joinToString("|||") { "${it.first}---${it.second}" }
-  }
-
-  @TypeConverter
-  fun stringToPairString(data: String?): List<Pair<String, String>>? {
-    return if (data.isNullOrEmpty()) null
-    else data.split("|||").map { Pair(it.split("---")[0], it.split("---")[1]) }
-  }
-
-  @TypeConverter
-  fun pairToString(pair: Pair<String, String>?): String? {
-    return pair?.let { "${pair.first}---${pair.second}" }
-  }
-
-  @TypeConverter
-  fun stringToPair(data: String?): Pair<String, String>? {
-    return data?.let { Pair(it.split("---")[0], it.split("---")[1]) }
-  }
-
-  @TypeConverter
   fun eventToString(data: Event): String {
     return json.encodeToString(data)
   }
@@ -83,17 +62,7 @@ class VlrTypeConverter @Inject constructor(private val json: Json) {
   fun stringToListOfTeams(data: String): List<Team> {
     return json.decodeFromString(data)
   }
-
-  @TypeConverter
-  fun listOfBracketToString(data: List<TournamentDetails.Bracket>): String {
-    return json.encodeToString(data)
-  }
-
-  @TypeConverter
-  fun stringToListOfBracket(data: String): List<TournamentDetails.Bracket> {
-    return json.decodeFromString(data)
-  }
-
+  
   @TypeConverter
   fun listOfGamesToString(data: List<TournamentDetails.Games>): String {
     return json.encodeToString(data)
@@ -141,16 +110,6 @@ class VlrTypeConverter @Inject constructor(private val json: Json) {
 
   @TypeConverter
   fun stringToVideos(data: String): MatchInfo.Videos {
-    return json.decodeFromString(data)
-  }
-
-  @TypeConverter
-  fun roundsToString(data: MatchInfo.MatchDetailData.Rounds): String {
-    return json.encodeToString(data)
-  }
-
-  @TypeConverter
-  fun stringToRounds(data: String): MatchInfo.MatchDetailData.Rounds {
     return json.decodeFromString(data)
   }
 
