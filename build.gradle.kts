@@ -23,6 +23,6 @@ buildscript {
     classpath("com.google.dagger:hilt-android-gradle-plugin:$hilt_version")
     classpath("com.google.gms:google-services:4.3.13")
     classpath("com.google.firebase:perf-plugin:1.4.1")
-    classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.1")
+    classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.2")
   }
 }
