@@ -36,8 +36,8 @@ activity-compose = { module = "androidx.activity:activity-compose", version = "1
 
 navigation = { module = "androidx.navigation:navigation-compose", version = "2.5.2" }
 
-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.6.0-alpha02" }
-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.6.0-alpha02" }
+lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.6.0-alpha03" }
+lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.6.0-alpha03" }
 
 accompanist-sysui = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-nav-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanist" }
