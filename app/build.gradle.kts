@@ -191,7 +191,7 @@ dependencies {
   implementation(libs.landscapist.glide)
   implementation(libs.landscapist.animation)
 
-  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
 
   testImplementation(libs.bundles.testing)
 }
