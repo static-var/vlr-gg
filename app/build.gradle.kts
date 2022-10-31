@@ -5,7 +5,7 @@ import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.io.FileInputStream
 import java.util.Properties
 
-plugins {
+ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.kapt)
@@ -132,7 +132,7 @@ android {
     )
   }
   buildFeatures { compose = true }
-  composeOptions { kotlinCompilerExtensionVersion = "1.3.0" }
+  composeOptions { kotlinCompilerExtensionVersion = "1.3.2" }
   packagingOptions {
     jniLibs { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}") }
     resources { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/DEPENDENCIES") }
@@ -141,6 +141,7 @@ android {
 }
 
 dependencies {
+  implementation(platform(libs.compose.bom))
   implementation(libs.bundles.base)
   implementation(libs.bundles.compose)
   implementation(libs.compose.icons)
@@ -176,7 +177,7 @@ dependencies {
   implementation(libs.kotlinx.serialization)
 
   // Firebase
-  implementation(platform("com.google.firebase:firebase-bom:30.4.1"))
+  implementation(platform("com.google.firebase:firebase-bom:31.0.1"))
   implementation("com.google.firebase:firebase-analytics-ktx")
   implementation("com.google.firebase:firebase-messaging-ktx")
   implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -190,7 +191,7 @@ dependencies {
   implementation(libs.landscapist.glide)
   implementation(libs.landscapist.animation)
 
-  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
+  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
   testImplementation(libs.bundles.testing)
 }
