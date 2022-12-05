@@ -20,7 +20,7 @@ import dev.staticvar.vlr.data.model.TopicTracker
       TeamDetails::class,
       PlayerData::class],
   exportSchema = true,
-  version = 11,
+  version = 12,
   autoMigrations = [AutoMigration(9, 10)]
 )
 @TypeConverters(VlrTypeConverter::class)

@@ -79,6 +79,6 @@ data class PlayerData(
     @SerialName("fk")
     val fk: Int = 0, // 866
     @SerialName("fd")
-    val fd: Int = 0 // 469
+    val fd: Int = 0, // 469
   )
 }

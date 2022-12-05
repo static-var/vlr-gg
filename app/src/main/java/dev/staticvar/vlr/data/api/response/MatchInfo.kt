@@ -55,7 +55,8 @@ data class MatchInfo(
       @SerialName("headshot_percent") val hsPercent: Int = 0, // 127
       @SerialName("kills") val kills: Int = 0, // 20
       @SerialName("name") val name: String = "", // dapr
-      @SerialName("team") val team: String = "" // SEN
+      @SerialName("team") val team: String = "", // SEN
+      @SerialName("rating") val rating: Float = 0.0f, // SEN
     ) {
       @Keep
       @Serializable

@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 11,
-    "identityHash": "318fee5989610eb3481ba35a08a726b1",
+    "version": 12,
+    "identityHash": "d099ba01054ff49ffbe804c50f21a33c",
     "entities": [
       {
         "tableName": "NewsResponseItem",
@@ -446,7 +446,7 @@
       },
       {
         "tableName": "PlayerData",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `alias` TEXT NOT NULL, `twitch` TEXT, `twitter` TEXT, `country` TEXT, `img` TEXT NOT NULL, `agents` TEXT NOT NULL, `currentTeam` TEXT, `previousTeams` TEXT NOT NULL, `earnings` REAL NOT NULL, `rating` REAL NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `alias` TEXT NOT NULL, `twitch` TEXT, `twitter` TEXT, `country` TEXT, `img` TEXT NOT NULL, `agents` TEXT NOT NULL, `currentTeam` TEXT, `previousTeams` TEXT NOT NULL, `earnings` REAL NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -515,12 +515,6 @@
             "notNull": true
           },
           {
-            "fieldPath": "rating",
-            "columnName": "rating",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
             "fieldPath": "createdAt",
             "columnName": "createdAt",
             "affinity": "INTEGER",
@@ -540,7 +534,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '318fee5989610eb3481ba35a08a726b1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd099ba01054ff49ffbe804c50f21a33c')"
     ]
   }
 }

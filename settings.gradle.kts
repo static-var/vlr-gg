@@ -4,6 +4,7 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven { url = java.net.URI.create("https://dl.bintray.com/kotlin/kotlinx") }
     }
 }
 

@@ -65,7 +65,8 @@ fun StatKDA(
       modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current)
     )
     Row(modifier = modifier.fillMaxWidth()) {
-      Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
+      Text(text = "Players", modifier = modifier.weight(2f), textAlign = TextAlign.Center)
+      Text(text = "Rating", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
       Text(text = "Kills", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
       Text(text = "Deaths", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
       Text(text = "Assists", modifier = modifier.weight(1f), textAlign = TextAlign.Center)
@@ -76,11 +77,16 @@ fun StatKDA(
       member.forEach { player ->
         Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           PlayerNameAndAgentDetailWithHyperlink(
-            modifier = modifier,
+            modifier = modifier.weight(2f),
             name = player.name,
             img = player.agents.getOrNull(0)?.img,
             id = player.playerId,
             onClick = onClick
+          )
+          Text(
+            text = player.rating.toString(),
+            modifier = modifier.weight(1f),
+            textAlign = TextAlign.Center
           )
           Text(
             text = player.kills.toString(),
