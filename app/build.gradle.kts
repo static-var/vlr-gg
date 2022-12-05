@@ -202,5 +202,5 @@ dependencies {
   testImplementation(libs.bundles.testing)
 
   detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0-RC2")
-  detektPlugins("com.twitter.compose.rules:detekt:0.0.22")
+  detektPlugins("com.twitter.compose.rules:detekt:0.0.26")
 }
