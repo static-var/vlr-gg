@@ -16,6 +16,7 @@ import java.util.Properties
   id("com.google.firebase.firebase-perf")
   id("com.google.firebase.crashlytics")
   id("vlr.spotless")
+  id("io.gitlab.arturbosch.detekt")
 }
 
 android {
@@ -131,7 +132,9 @@ android {
         "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
     )
   }
-  buildFeatures { compose = true }
+  buildFeatures { compose = true
+    buildConfig = true
+  }
   composeOptions { kotlinCompilerExtensionVersion = "1.3.2" }
   packagingOptions {
     jniLibs { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}") }
@@ -162,6 +165,8 @@ dependencies {
   implementation(libs.browser)
   implementation(libs.webkit)
 
+  implementation(libs.immutable.collection)
+
   // Coroutines
   implementation(libs.bundles.coroutines)
 
@@ -175,9 +180,10 @@ dependencies {
   kapt(libs.room.compiler)
 
   implementation(libs.kotlinx.serialization)
+  implementation(libs.kotlinx.collections.immutable)
 
   // Firebase
-  implementation(platform("com.google.firebase:firebase-bom:31.0.1"))
+  implementation(platform("com.google.firebase:firebase-bom:31.1.0"))
   implementation("com.google.firebase:firebase-analytics-ktx")
   implementation("com.google.firebase:firebase-messaging-ktx")
   implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -191,7 +197,10 @@ dependencies {
   implementation(libs.landscapist.glide)
   implementation(libs.landscapist.animation)
 
-  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
 
   testImplementation(libs.bundles.testing)
+
+  detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0-RC2")
+  detektPlugins("com.twitter.compose.rules:detekt:0.0.22")
 }
