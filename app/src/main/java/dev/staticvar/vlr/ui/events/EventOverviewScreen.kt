@@ -3,7 +3,15 @@ package dev.staticvar.vlr.ui.events
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -12,10 +20,17 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -33,38 +48,50 @@ import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.google.accompanist.pager.rememberPagerState
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshState
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentPreview
-import dev.staticvar.vlr.ui.*
-import dev.staticvar.vlr.ui.common.*
+import dev.staticvar.vlr.ui.Action
+import dev.staticvar.vlr.ui.Local16DPPadding
+import dev.staticvar.vlr.ui.Local4DPPadding
+import dev.staticvar.vlr.ui.Local8DPPadding
+import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.ScrollHelper
+import dev.staticvar.vlr.ui.common.StatusBarColorForHomeWithTabs
+import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
+import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.*
+import dev.staticvar.vlr.utils.StableHolder
+import dev.staticvar.vlr.utils.Waiting
+import dev.staticvar.vlr.utils.onFail
+import dev.staticvar.vlr.utils.onPass
+import dev.staticvar.vlr.utils.onWaiting
 
 @Composable
 fun EventScreen(viewModel: VlrViewModel) {
   StatusBarColorForHomeWithTabs()
 
   val allTournaments by
-    remember(viewModel) { viewModel.getEvents() }
-      .collectAsStateWithLifecycle(initialValue = Waiting())
+  remember(viewModel) { viewModel.getEvents() }
+    .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshEvents() }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh) { viewModel.refreshEvents() }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
-  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
+  val swipeRefresh =
+    rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
 
   val resetScroll by
-    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val modifier: Modifier = Modifier
 
   Column(
-    modifier = modifier.fillMaxSize().statusBarsPadding(),
+    modifier = modifier
+      .fillMaxSize()
+      .statusBarsPadding(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
@@ -78,7 +105,6 @@ fun EventScreen(viewModel: VlrViewModel) {
             swipeRefresh,
             updateState,
             resetScroll,
-            triggerRefresh = { triggerRefresh = triggerRefresh.not() },
             postResetScroll = { viewModel.postResetScroll() }
           )
         }
@@ -93,10 +119,9 @@ fun TournamentPreviewContainer(
   modifier: Modifier = Modifier,
   action: Action,
   list: StableHolder<List<TournamentPreview>>,
-  swipeRefresh: SwipeRefreshState,
+  swipeRefresh: PullRefreshState,
   updateState: Result<Boolean, Throwable?>,
   resetScroll: Boolean,
-  triggerRefresh: () -> Unit,
   postResetScroll: () -> Unit,
 ) {
 
@@ -121,81 +146,90 @@ fun TournamentPreviewContainer(
       }
     }
 
-  SwipeRefresh(state = swipeRefresh, onRefresh = triggerRefresh, indicator = { _, _ -> }) {
-    Column(
-      modifier = modifier.fillMaxSize().animateContentSize(),
-      verticalArrangement = Arrangement.Top
+  Column(
+    modifier = modifier
+      .fillMaxSize()
+      .animateContentSize()
+      .pullRefresh(swipeRefresh),
+    verticalArrangement = Arrangement.Top
+  ) {
+    AnimatedVisibility(
+      visible = updateState.get() == true || swipeRefresh.progress != 0f,
     ) {
-      AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.isSwipeInProgress) {
-        LinearProgressIndicator(
-          modifier
-            .fillMaxWidth()
-            .padding(Local16DPPadding.current)
-            .animateContentSize()
-            .testTag("common:loader")
-        )
-      }
-      updateState.getError()?.let {
-        ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
-      }
-      VlrTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
+      LinearProgressIndicator(
+        modifier
+          .fillMaxWidth()
+          .padding(Local16DPPadding.current)
+          .animateContentSize()
+          .testTag("common:loader")
+      )
+    }
+    updateState.getError()?.let {
+      ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
+    }
+    VlrTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
 
-      VlrHorizontalViewPager(
-        modifier = modifier,
-        pagerState = pagerState,
-        {
-          if (ongoing.isEmpty()) {
-            NoEventUI(modifier = modifier)
-          } else {
-            val lazyListState = rememberLazyListState()
-            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
-            LazyColumn(
-              modifier.fillMaxSize().testTag("eventOverview:live"),
-              verticalArrangement = Arrangement.Top,
-              state = lazyListState
-            ) {
-              items(ongoing, key = { item -> item.id }) {
-                TournamentPreview(modifier = modifier, tournamentPreview = it, action)
-              }
-            }
-          }
-        },
-        {
-          if (upcoming.isEmpty()) {
-            NoEventUI(modifier = modifier)
-          } else {
-            val lazyListState = rememberLazyListState()
-            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
-            LazyColumn(
-              modifier.fillMaxSize().testTag("eventOverview:upcoming"),
-              verticalArrangement = Arrangement.Top,
-              state = lazyListState
-            ) {
-              items(upcoming, key = { item -> item.id }) {
-                TournamentPreview(modifier = modifier, tournamentPreview = it, action)
-              }
-            }
-          }
-        },
-        {
-          if (completed.isEmpty()) {
-            NoEventUI(modifier = modifier)
-          } else {
-            val lazyListState = rememberLazyListState()
-            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
-            LazyColumn(
-              modifier.fillMaxSize().testTag("eventOverview:result"),
-              verticalArrangement = Arrangement.Top,
-              state = lazyListState
-            ) {
-              items(completed, key = { item -> item.id }) {
-                TournamentPreview(modifier = modifier, tournamentPreview = it, action)
-              }
+    VlrHorizontalViewPager(
+      modifier = modifier,
+      pagerState = pagerState,
+      {
+        if (ongoing.isEmpty()) {
+          NoEventUI(modifier = modifier)
+        } else {
+          val lazyListState = rememberLazyListState()
+          lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+          LazyColumn(
+            modifier
+              .fillMaxSize()
+              .testTag("eventOverview:live"),
+            verticalArrangement = Arrangement.Top,
+            state = lazyListState
+          ) {
+            items(ongoing, key = { item -> item.id }) {
+              TournamentPreview(modifier = modifier, tournamentPreview = it, action)
             }
           }
         }
-      )
-    }
+      },
+      {
+        if (upcoming.isEmpty()) {
+          NoEventUI(modifier = modifier)
+        } else {
+          val lazyListState = rememberLazyListState()
+          lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+          LazyColumn(
+            modifier
+              .fillMaxSize()
+              .testTag("eventOverview:upcoming"),
+            verticalArrangement = Arrangement.Top,
+            state = lazyListState
+          ) {
+            items(upcoming, key = { item -> item.id }) {
+              TournamentPreview(modifier = modifier, tournamentPreview = it, action)
+            }
+          }
+        }
+      },
+      {
+        if (completed.isEmpty()) {
+          NoEventUI(modifier = modifier)
+        } else {
+          val lazyListState = rememberLazyListState()
+          lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+          LazyColumn(
+            modifier
+              .fillMaxSize()
+              .testTag("eventOverview:result"),
+            verticalArrangement = Arrangement.Top,
+            state = lazyListState
+          ) {
+            items(completed, key = { item -> item.id }) {
+              TournamentPreview(modifier = modifier, tournamentPreview = it, action)
+            }
+          }
+        }
+      }
+    )
   }
 }
 
@@ -242,13 +276,13 @@ fun TournamentPreview(
         val inlineLocationContentMap =
           mapOf(
             "location" to
-              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                Icon(
-                  imageVector = Icons.Outlined.LocationOn,
-                  modifier = modifier.size(16.dp),
-                  contentDescription = ""
-                )
-              }
+                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                  Icon(
+                    imageVector = Icons.Outlined.LocationOn,
+                    modifier = modifier.size(16.dp),
+                    contentDescription = ""
+                  )
+                }
           )
         val annotatedDateString = buildAnnotatedString {
           appendInlineContent(id = "date")
@@ -257,19 +291,21 @@ fun TournamentPreview(
         val inlineDateContentMap =
           mapOf(
             "date" to
-              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                Icon(
-                  imageVector = Icons.Outlined.DateRange,
-                  modifier = modifier.size(16.dp),
-                  contentDescription = ""
-                )
-              }
+                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                  Icon(
+                    imageVector = Icons.Outlined.DateRange,
+                    modifier = modifier.size(16.dp),
+                    contentDescription = ""
+                  )
+                }
           )
         Text(
           annotatedLocationString,
           style = VLRTheme.typography.bodyMedium,
           inlineContent = inlineLocationContentMap,
-          modifier = modifier.padding(Local4DPPadding.current).weight(1f),
+          modifier = modifier
+            .padding(Local4DPPadding.current)
+            .weight(1f),
           textAlign = TextAlign.Start,
         )
         Text(
@@ -282,7 +318,9 @@ fun TournamentPreview(
           annotatedDateString,
           style = VLRTheme.typography.bodyMedium,
           inlineContent = inlineDateContentMap,
-          modifier = modifier.padding(Local4DPPadding.current).weight(1f),
+          modifier = modifier
+            .padding(Local4DPPadding.current)
+            .weight(1f),
           textAlign = TextAlign.End,
         )
       }

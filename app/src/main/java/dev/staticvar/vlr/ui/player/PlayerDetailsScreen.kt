@@ -152,7 +152,7 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
         verticalAlignment = Alignment.CenterVertically
       ) {
         GlideImage(
-          imageModel = playerData.img,
+          imageModel = { playerData.img },
           modifier =
             modifier
               .size(120.dp)
@@ -168,7 +168,7 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
         )
         if (playerData.currentTeam?.img != null)
           GlideImage(
-            imageModel = playerData.currentTeam.img,
+            imageModel = { playerData.currentTeam.img },
             modifier =
               modifier
                 .size(120.dp)
@@ -453,7 +453,7 @@ fun AgentStatOverall(modifier: Modifier = Modifier, members: StableHolder<List<P
 fun RowScope.NameAndAgentDetail(modifier: Modifier = Modifier, name: String, img: String?) {
   Row(modifier.weight(1.5f), verticalAlignment = Alignment.CenterVertically) {
     GlideImage(
-      imageModel = img,
+      imageModel = { img },
       modifier = modifier.padding(Local4DP_2DPPadding.current).size(24.dp),
       imageOptions = ImageOptions(contentScale = ContentScale.Fit)
     )
@@ -482,7 +482,7 @@ fun PreviousTeam(modifier: Modifier = Modifier, team: Team, action: Action) {
         color = VLRTheme.colorScheme.primary,
       )
       GlideImage(
-        imageModel = team.img,
+        imageModel = { team.img },
         imageOptions =
           ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
         modifier = modifier.align(Alignment.CenterEnd).padding(24.dp).size(120.dp),

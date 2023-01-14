@@ -1,10 +1,24 @@
 package dev.staticvar.vlr.ui.news
 
+import android.os.Build
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LinearProgressIndicator
@@ -26,7 +40,14 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
-import dev.staticvar.vlr.data.*
+import dev.staticvar.vlr.data.Heading
+import dev.staticvar.vlr.data.ListItem
+import dev.staticvar.vlr.data.Paragraph
+import dev.staticvar.vlr.data.Quote
+import dev.staticvar.vlr.data.Subtext
+import dev.staticvar.vlr.data.Tweet
+import dev.staticvar.vlr.data.Unknown
+import dev.staticvar.vlr.data.Video
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -46,7 +67,10 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
   ) {
     parsedNews?.get()?.let { news ->
       LazyColumn(
-        modifier = modifier.fillMaxSize().padding(Local8DPPadding.current).testTag("news:root")
+        modifier = modifier
+          .fillMaxSize()
+          .padding(Local8DPPadding.current)
+          .testTag("news:root")
       ) {
         item { Spacer(modifier = modifier.statusBarsPadding()) }
         item {
@@ -82,30 +106,40 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                   color = VLRTheme.colorScheme.primary,
                   modifier = modifier.padding(vertical = 8.dp)
                 )
+
               is ListItem ->
                 Row(modifier = modifier.fillMaxWidth()) {
                   Text(text = " - ", color = VLRTheme.colorScheme.primary)
                   Text(text = parsedData.text, modifier = modifier.padding(vertical = 2.dp))
                 }
+
               is Paragraph ->
                 Text(text = parsedData.text, modifier = modifier.padding(vertical = 4.dp))
+
               is Subtext ->
                 Text(
                   text = parsedData.text,
                   style = VLRTheme.typography.labelMedium,
-                  modifier = modifier.fillMaxSize().padding(vertical = 2.dp),
+                  modifier = modifier
+                    .fillMaxSize()
+                    .padding(vertical = 2.dp),
                   textAlign = TextAlign.Center
                 )
+
               is Tweet ->
                 WebView(
                   state = rememberWebViewState(""),
-                  modifier = modifier.fillMaxWidth().padding(vertical = 4.dp),
+                  modifier = modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
                   onCreated = { webView ->
                     webView.settings.javaScriptEnabled = true
                     webView.settings.domStorageEnabled = true
-                    if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-                      if (isDarkMode)
-                        WebSettingsCompat.setAlgorithmicDarkeningAllowed(webView.settings, true)
+                    if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) && WebViewFeature.isFeatureSupported(
+                        WebViewFeature.ALGORITHMIC_DARKENING
+                      ) && isDarkMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                    ) {
+                      WebSettingsCompat.setAlgorithmicDarkeningAllowed(webView.settings, true)
                     }
                     webView.loadDataWithBaseURL(
                       null,
@@ -129,27 +163,36 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                       }
                   }
                 )
+
               is Unknown ->
                 Text(
                   text = parsedData.text,
                   style = VLRTheme.typography.labelMedium,
                   modifier = modifier.padding(vertical = 2.dp)
                 )
+
               is Video ->
                 WebView(
                   state = rememberWebViewState(url = parsedData.link),
-                  modifier = modifier.fillMaxWidth().padding(vertical = 4.dp).aspectRatio(1.6f),
+                  modifier = modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+                    .aspectRatio(1.6f),
                   onCreated = { webView -> webView.settings.javaScriptEnabled = true }
                 )
+
               is Quote ->
-                Row(modifier.fillMaxWidth().height(IntrinsicSize.Max)) {
+                Row(
+                  modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max)) {
                   Spacer(
                     modifier =
-                      modifier
-                        .width(12.dp)
-                        .padding(4.dp)
-                        .background(VLRTheme.colorScheme.primary)
-                        .fillMaxHeight()
+                    modifier
+                      .width(12.dp)
+                      .padding(4.dp)
+                      .background(VLRTheme.colorScheme.primary)
+                      .fillMaxHeight()
                   )
                   Text(
                     text = parsedData.text,
@@ -165,6 +208,6 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
       }
     }
       ?: parsedNews?.getError()?.let { Text(text = it.stackTraceToString()) }
-        ?: LinearProgressIndicator(modifier.testTag("common:loader"))
+      ?: LinearProgressIndicator(modifier.testTag("common:loader"))
   }
 }
