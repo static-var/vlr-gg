@@ -4,15 +4,35 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,8 +53,6 @@ import com.github.michaelbull.result.getError
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
 import com.skydoves.landscapist.components.rememberImageComponent
@@ -42,28 +60,41 @@ import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.PlayerData
 import dev.staticvar.vlr.data.api.response.Team
-import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.Action
+import dev.staticvar.vlr.ui.Local16DPPadding
+import dev.staticvar.vlr.ui.Local2DPPadding
+import dev.staticvar.vlr.ui.Local4DPPadding
+import dev.staticvar.vlr.ui.Local4DP_2DPPadding
+import dev.staticvar.vlr.ui.Local8DPPadding
+import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.match.details_ui.StatTitle
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.*
+import dev.staticvar.vlr.utils.StableHolder
+import dev.staticvar.vlr.utils.Waiting
+import dev.staticvar.vlr.utils.onFail
+import dev.staticvar.vlr.utils.onPass
+import dev.staticvar.vlr.utils.onWaiting
 
 @Composable
 fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
   SetStatusBarColor()
 
   val playerDetails by
-    remember(viewModel) { viewModel.getPlayerDetails(id) }.collectAsState(initial = Waiting())
+  remember(viewModel) { viewModel.getPlayerDetails(id) }.collectAsState(initial = Waiting())
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
 
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshPlayerDetails(id) }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh) { viewModel.refreshPlayerDetails(id) }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
-  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
+  val swipeRefresh =
+    rememberPullRefreshState(
+      refreshing = updateState.get() ?: false,
+      { triggerRefresh = triggerRefresh.not() })
 
   val modifier: Modifier = Modifier
 
@@ -75,26 +106,28 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
     playerDetails
       .onPass {
         data?.let {
-          SwipeRefresh(
-            state = swipeRefresh,
-            onRefresh = { triggerRefresh = triggerRefresh.not() },
-            indicator = { _, _ -> }
+
+          AnimatedVisibility(
+            visible = updateState.get() == true || swipeRefresh.progress != 0f,
+            modifier = Modifier
+              .statusBarsPadding(),
+          ) {
+            LinearProgressIndicator(
+              modifier
+                .fillMaxWidth()
+                .padding(Local16DPPadding.current)
+                .animateContentSize()
+                .testTag("common:loader")
+            )
+          }
+
+          Box(
+            modifier = Modifier
+              .pullRefresh(swipeRefresh)
+              .fillMaxSize(),
           ) {
             LazyColumn(modifier = modifier.fillMaxSize()) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
-              item {
-                AnimatedVisibility(
-                  visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
-                ) {
-                  LinearProgressIndicator(
-                    modifier
-                      .fillMaxWidth()
-                      .padding(Local16DPPadding.current)
-                      .animateContentSize()
-                      .testTag("common:loader")
-                  )
-                }
-              }
 
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
@@ -114,7 +147,9 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
                   Text(
                     text = stringResource(R.string.previous_team),
                     modifier =
-                      modifier.padding(Local16DPPadding.current).testTag("playerDetail:teams"),
+                    modifier
+                      .padding(Local16DPPadding.current)
+                      .testTag("playerDetail:teams"),
                     style = VLRTheme.typography.titleMedium,
                     color = VLRTheme.colorScheme.primary
                   )
@@ -154,14 +189,16 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
         GlideImage(
           imageModel = { playerData.img },
           modifier =
-            modifier
-              .size(120.dp)
-              .padding(Local8DPPadding.current)
-              .background(VLRTheme.colorScheme.primary, shape)
-              .clip(shape),
+          modifier
+            .size(120.dp)
+            .padding(Local8DPPadding.current)
+            .background(VLRTheme.colorScheme.primary, shape)
+            .clip(shape),
           loading = {
             CircularProgressIndicator(
-              modifier = Modifier.align(Alignment.Center).testTag("player:img"),
+              modifier = Modifier
+                .align(Alignment.Center)
+                .testTag("player:img"),
               color = VLRTheme.colorScheme.onPrimary
             )
           }
@@ -170,12 +207,12 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
           GlideImage(
             imageModel = { playerData.currentTeam.img },
             modifier =
-              modifier
-                .size(120.dp)
-                .padding(Local8DPPadding.current)
-                .background(VLRTheme.colorScheme.primary, shape)
-                .padding(Local8DPPadding.current)
-                .clip(shape),
+            modifier
+              .size(120.dp)
+              .padding(Local8DPPadding.current)
+              .background(VLRTheme.colorScheme.primary, shape)
+              .padding(Local8DPPadding.current)
+              .clip(shape),
             loading = {
               CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
@@ -269,7 +306,9 @@ fun AgentStatViewPager(
     }
     HorizontalPagerIndicator(
       pagerState = pagerState,
-      modifier = modifier.padding(Local4DPPadding.current).align(Alignment.CenterHorizontally),
+      modifier = modifier
+        .padding(Local4DPPadding.current)
+        .align(Alignment.CenterHorizontally),
       activeColor = VLRTheme.colorScheme.onPrimaryContainer,
       inactiveColor = VLRTheme.colorScheme.primary,
     )
@@ -282,7 +321,9 @@ fun AgentStatKDA(modifier: Modifier = Modifier, members: StableHolder<List<Playe
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "KDA statistics",
-      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current)
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DPPadding.current)
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Agent", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -324,7 +365,9 @@ fun AgentStatCombat(modifier: Modifier = Modifier, members: StableHolder<List<Pl
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "Combat statistics",
-      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current)
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DPPadding.current)
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Agent", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -363,7 +406,9 @@ fun AgentStatFirstBlood(
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "First Kill/Death statistics",
-      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current)
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DPPadding.current)
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Agent", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -406,7 +451,9 @@ fun AgentStatOverall(modifier: Modifier = Modifier, members: StableHolder<List<P
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "Overall statistics",
-      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current)
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DPPadding.current)
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Agent", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -454,7 +501,9 @@ fun RowScope.NameAndAgentDetail(modifier: Modifier = Modifier, name: String, img
   Row(modifier.weight(1.5f), verticalAlignment = Alignment.CenterVertically) {
     GlideImage(
       imageModel = { img },
-      modifier = modifier.padding(Local4DP_2DPPadding.current).size(24.dp),
+      modifier = modifier
+        .padding(Local4DP_2DPPadding.current)
+        .size(24.dp),
       imageOptions = ImageOptions(contentScale = ContentScale.Fit)
     )
     Text(
@@ -470,13 +519,17 @@ fun RowScope.NameAndAgentDetail(modifier: Modifier = Modifier, name: String, img
 fun PreviousTeam(modifier: Modifier = Modifier, team: Team, action: Action) {
   val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
   CardView(
-    modifier = modifier.clickable { if (team.id != null) action.team(team.id) }.height(120.dp)
+    modifier = modifier
+      .clickable { if (team.id != null) action.team(team.id) }
+      .height(120.dp)
   ) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Text(
         text = team.name,
         style = VLRTheme.typography.titleMedium,
-        modifier = modifier.padding(start = 24.dp, end = 24.dp).align(Alignment.CenterStart),
+        modifier = modifier
+          .padding(start = 24.dp, end = 24.dp)
+          .align(Alignment.CenterStart),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         color = VLRTheme.colorScheme.primary,
@@ -484,8 +537,11 @@ fun PreviousTeam(modifier: Modifier = Modifier, team: Team, action: Action) {
       GlideImage(
         imageModel = { team.img },
         imageOptions =
-          ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
-        modifier = modifier.align(Alignment.CenterEnd).padding(24.dp).size(120.dp),
+        ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
+        modifier = modifier
+          .align(Alignment.CenterEnd)
+          .padding(24.dp)
+          .size(120.dp),
         component = imageComponent
       )
     }
