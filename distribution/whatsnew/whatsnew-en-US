@@ -1,3 +1,6 @@
+v0.3.0
+ • ⚒️ Fix a crash in news screen for devices in dark mode and with older webview pack
+
 v0.2.17
  • ✨ You can now check out stats of your favourite player
  • ⚒️ Simplify Ui for Event Details
@@ -6,7 +9,3 @@ v0.2.17
 v0.2.15 & v0.2.16
  • ✨ Better support for deep links
  • ✨ Slight Ui changes in match screens
-
-v0.2.14
- • ✨ Now you can get notified for all the matches of an event (look for "Subscribe" button in your favourite event / tournament)
- • ✨ Launch stream directly from the notification of your subscribed matches, events and teams
