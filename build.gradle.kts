@@ -6,11 +6,11 @@ plugins {
   alias(libs.plugins.kotlin.kapt) apply false
   alias(libs.plugins.spotless) apply false
   alias(libs.plugins.hilt.plugin) apply false
-  id("io.gitlab.arturbosch.detekt").version("1.22.0-RC2")
+  id("io.gitlab.arturbosch.detekt").version("1.22.0")
 }
 
 buildscript {
-  val hilt_version = "2.44"
+  val hilt_version = "2.44.2"
   val kotlin_version = "1.7.20"
   repositories {
     google()
