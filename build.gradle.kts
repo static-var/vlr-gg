@@ -31,7 +31,7 @@ buildscript {
 detekt {
   // Version of Detekt that will be used. When unspecified the latest detekt
   // version found will be used. Override to stay on the same version.
-  toolVersion = "1.22.0-RC2"
+  toolVersion = "1.22.0"
 
   // The directories where detekt looks for source files.
   // Defaults to `files("src/main/java", "src/test/java", "src/main/kotlin", "src/test/kotlin")`.
