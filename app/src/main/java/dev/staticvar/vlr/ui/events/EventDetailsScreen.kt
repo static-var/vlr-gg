@@ -16,6 +16,9 @@ import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Paid
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -35,8 +38,6 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.skydoves.landscapist.ImageOptions
@@ -63,19 +64,20 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
   val modifier = Modifier
 
   val details by
-    remember(viewModel) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
+  remember(viewModel) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshEventDetails(id) }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh) { viewModel.refreshEventDetails(id) }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
-  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
+  val swipeRefresh =
+    rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
   val lazyListState = rememberLazyListState()
 
   val trackerString = id.toEventTopic()
   val isTracked by
-    remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
+  remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
 
   Column(
     modifier = modifier.fillMaxSize(),
@@ -99,30 +101,32 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 }
               }
             }
-
-          SwipeRefresh(
-            state = swipeRefresh,
-            onRefresh = { triggerRefresh = triggerRefresh.not() },
-            indicator = { _, _ -> }
+          AnimatedVisibility(
+            visible = updateState.get() == true || swipeRefresh.progress != 0f,
+            modifier = Modifier
+              .statusBarsPadding(),
+          ) {
+            LinearProgressIndicator(
+              modifier
+                .fillMaxWidth()
+                .padding(Local16DPPadding.current)
+                .animateContentSize()
+                .testTag("common:loader")
+            )
+          }
+          Box(
+            modifier = Modifier
+              .pullRefresh(swipeRefresh)
+              .fillMaxSize(),
           ) {
             LazyColumn(
-              modifier = modifier.fillMaxSize().testTag("eventDetails:root"),
+              modifier = modifier
+                .fillMaxSize()
+                .testTag("eventDetails:root"),
               state = lazyListState
             ) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
-              item {
-                AnimatedVisibility(
-                  visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
-                ) {
-                  LinearProgressIndicator(
-                    modifier
-                      .fillMaxWidth()
-                      .padding(Local16DPPadding.current)
-                      .animateContentSize()
-                      .testTag("common:loader")
-                  )
-                }
-              }
+
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
@@ -137,10 +141,12 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                       Firebase.messaging.unsubscribeFromTopic(trackerString).await()
                       viewModel.removeTopic(trackerString)
                     }
+
                     false -> {
                       Firebase.messaging.subscribeToTopic(trackerString).await()
                       viewModel.trackTopic(trackerString)
                     }
+
                     else -> {}
                   }
                 }
@@ -157,7 +163,9 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 item {
                   Text(
                     text = stringResource(id = R.string.no_team_info_found),
-                    modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
+                    modifier = modifier
+                      .fillMaxWidth()
+                      .padding(Local16DP_8DPPadding.current),
                     textAlign = TextAlign.Center,
                     style = VLRTheme.typography.titleMedium,
                     color = VLRTheme.colorScheme.primary
@@ -187,7 +195,9 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 item {
                   Text(
                     text = stringResource(id = R.string.no_match_info_found),
-                    modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
+                    modifier = modifier
+                      .fillMaxWidth()
+                      .padding(Local16DP_8DPPadding.current),
                     textAlign = TextAlign.Center,
                     style = VLRTheme.typography.titleMedium,
                     color = VLRTheme.colorScheme.primary
@@ -226,20 +236,26 @@ fun TournamentDetailsHeader(
 
   CardView(modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
-      Row(modifier.fillMaxWidth().padding(Local16DPPadding.current)) {
+      Row(
+        modifier
+          .fillMaxWidth()
+          .padding(Local16DPPadding.current)) {
         Spacer(modifier = modifier.weight(1f))
         GlideImage(
-          tournamentDetails.img,
+          imageModel = { tournamentDetails.img },
           modifier = modifier.alpha(0.3f),
           imageOptions =
-            ImageOptions(
-              contentScale = ContentScale.Inside,
-              alignment = Alignment.CenterEnd,
-            ),
+          ImageOptions(
+            contentScale = ContentScale.Inside,
+            alignment = Alignment.CenterEnd,
+          ),
           component = imageComponent,
         )
       }
-      Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
+      Column(
+        modifier
+          .fillMaxWidth()
+          .padding(Local8DPPadding.current)) {
         Text(
           text = tournamentDetails.title,
           style = VLRTheme.typography.headlineSmall,
@@ -254,7 +270,9 @@ fun TournamentDetailsHeader(
             modifier = modifier.padding(Local4DPPadding.current)
           )
         Row(
-          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          modifier
+            .fillMaxWidth()
+            .padding(Local4DP_2DPPadding.current),
           verticalAlignment = Alignment.CenterVertically
         ) {
           Icon(
@@ -265,7 +283,9 @@ fun TournamentDetailsHeader(
           Text(text = tournamentDetails.dates, modifier = Modifier.padding(horizontal = 4.dp))
         }
         Row(
-          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          modifier
+            .fillMaxWidth()
+            .padding(Local4DP_2DPPadding.current),
           verticalAlignment = Alignment.CenterVertically
         ) {
           Icon(
@@ -276,7 +296,9 @@ fun TournamentDetailsHeader(
           Text(text = tournamentDetails.prize, modifier = Modifier.padding(horizontal = 4.dp))
         }
         Row(
-          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          modifier
+            .fillMaxWidth()
+            .padding(Local4DP_2DPPadding.current),
           verticalAlignment = Alignment.CenterVertically
         ) {
           Icon(
@@ -302,7 +324,7 @@ fun TournamentDetailsHeader(
 
         if (
           tournamentDetails.status == TournamentDetails.Status.ONGOING ||
-            tournamentDetails.status == TournamentDetails.Status.UPCOMING
+          tournamentDetails.status == TournamentDetails.Status.UPCOMING
         )
           Button(
             onClick = {
@@ -340,20 +362,29 @@ fun EventDetailsTeamSlider(
   val lazyListState = rememberLazyListState()
   Text(
     text = stringResource(R.string.teams),
-    modifier = modifier.padding(Local16DPPadding.current).testTag("eventDetails:teams"),
+    modifier = modifier
+      .padding(Local16DPPadding.current)
+      .testTag("eventDetails:teams"),
     style = VLRTheme.typography.titleMedium,
     color = VLRTheme.colorScheme.primary
   )
   LazyRow(
-    modifier = modifier.fillMaxWidth().testTag("eventDetails:teamList"),
+    modifier = modifier
+      .fillMaxWidth()
+      .testTag("eventDetails:teamList"),
     state = lazyListState
   ) {
     items(list.item, key = { list -> list.id }) {
       CardView(
-        modifier.width(width = 150.dp).aspectRatio(1f).clickable { onClick(it.id) },
+        modifier
+          .width(width = 150.dp)
+          .aspectRatio(1f)
+          .clickable { onClick(it.id) },
       ) {
         Column(
-          modifier.fillMaxSize().padding(Local8DPPadding.current),
+          modifier
+            .fillMaxSize()
+            .padding(Local8DPPadding.current),
           verticalArrangement = Arrangement.Center,
           horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -366,12 +397,15 @@ fun EventDetailsTeamSlider(
             color = VLRTheme.colorScheme.primary,
           )
           GlideImage(
-            imageModel = it.img,
+            imageModel = { it.img },
             imageOptions =
-              ImageOptions(
-                alignment = Alignment.Center,
-              ),
-            modifier = modifier.size(80.dp).aspectRatio(1f).padding(Local4DPPadding.current),
+            ImageOptions(
+              alignment = Alignment.Center,
+            ),
+            modifier = modifier
+              .size(80.dp)
+              .aspectRatio(1f)
+              .padding(Local4DPPadding.current),
             component = imageComponent
           )
           Text(
@@ -403,7 +437,10 @@ fun EventMatchGroups(
       stringResource(R.string.stage)
     )
 
-  Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
+  Column(
+    modifier
+      .fillMaxWidth()
+      .padding(Local8DPPadding.current)) {
     Text(
       text = stringResource(id = R.string.games),
       modifier = modifier.padding(Local8DPPadding.current),
@@ -423,7 +460,10 @@ fun EventMatchGroups(
       selectedTabIndex = tabSelection,
       containerColor = VLRTheme.colorScheme.primaryContainer,
       modifier =
-        modifier.fillMaxWidth().padding(Local8DPPadding.current).clip(RoundedCornerShape(16.dp)),
+      modifier
+        .fillMaxWidth()
+        .padding(Local8DPPadding.current)
+        .clip(RoundedCornerShape(16.dp)),
       indicator = { indicators ->
         if (indicators.isNotEmpty()) VLRTabIndicator(indicators, tabSelection)
       }
@@ -451,7 +491,9 @@ fun FilterChips(
   onFilterChange: (Int) -> Unit
 ) {
   Row(
-    modifier.fillMaxSize().animateContentSize(),
+    modifier
+      .fillMaxSize()
+      .animateContentSize(),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically
   ) {
@@ -461,17 +503,17 @@ fun FilterChips(
         onClick = { onFilterChange(index) },
         label = { Text(filter) },
         leadingIcon =
-          if (selectedIndex == index) {
-            {
-              Icon(
-                imageVector = Icons.Filled.Done,
-                contentDescription = "Localized Description",
-                modifier = Modifier.size(FilterChipDefaults.IconSize)
-              )
-            }
-          } else {
-            null
-          },
+        if (selectedIndex == index) {
+          {
+            Icon(
+              imageVector = Icons.Filled.Done,
+              contentDescription = "Localized Description",
+              modifier = Modifier.size(FilterChipDefaults.IconSize)
+            )
+          }
+        } else {
+          null
+        },
         modifier = Modifier.padding(horizontal = 8.dp)
       )
     }
@@ -502,7 +544,9 @@ fun TournamentMatchOverview(
         Icon(
           Icons.Outlined.OpenInNew,
           contentDescription = stringResource(R.string.open_match_content_description),
-          modifier = modifier.size(24.dp).padding(Local2DPPadding.current)
+          modifier = modifier
+            .size(24.dp)
+            .padding(Local2DPPadding.current)
         )
       }
 
@@ -544,7 +588,9 @@ fun TournamentMatchOverview(
       }
       Text(
         text = "${game.time} - ${game.date}",
-        modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
+        modifier = modifier
+          .fillMaxWidth()
+          .padding(Local8DPPadding.current),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.labelMedium
       )

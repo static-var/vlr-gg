@@ -14,6 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.OpenInNew
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -70,7 +72,8 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
     remember(triggerRefresh) { viewModel.refreshMatchInfo(id) }
       .collectAsStateWithLifecycle(initialValue = Ok(false))
 
-  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
+  val swipeRefresh =
+    rememberPullRefreshState(refreshing = updateState.get() ?: false,  { triggerRefresh = triggerRefresh.not() })
   val rememberListState = rememberLazyListState()
 
   val context = LocalContext.current
@@ -83,26 +86,29 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
     details
       .onPass {
         data?.let { matchInfo ->
-          SwipeRefresh(
-            state = swipeRefresh,
-            onRefresh = { triggerRefresh = triggerRefresh.not() },
-            indicator = { _, _ -> }
+
+          AnimatedVisibility(
+            visible = updateState.get() == true || swipeRefresh.progress != 0f,
+            modifier = Modifier
+              .statusBarsPadding(),
+          ) {
+            LinearProgressIndicator(
+              modifier
+                .fillMaxWidth()
+                .padding(Local16DPPadding.current)
+                .animateContentSize()
+                .testTag("common:loader")
+            )
+          }
+
+          Box(
+            modifier = Modifier
+              .pullRefresh(swipeRefresh)
+              .fillMaxSize(),
           ) {
             LazyColumn(modifier = modifier.fillMaxSize(), state = rememberListState) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
-              item {
-                AnimatedVisibility(
-                  visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
-                ) {
-                  LinearProgressIndicator(
-                    modifier
-                      .fillMaxWidth()
-                      .padding(Local16DPPadding.current)
-                      .animateContentSize()
-                      .testTag("common:loader")
-                  )
-                }
-              }
+
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
@@ -208,7 +214,7 @@ fun MatchOverallAndEventOverview(
             )
           }
           GlideImage(
-            imageModel = detailData.teams[0].img,
+            imageModel = { detailData.teams[0].img },
             imageOptions =
               ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterStart),
             modifier = modifier.alpha(0.2f).aspectRatio(1f, true).align(Alignment.TopCenter),
@@ -231,7 +237,7 @@ fun MatchOverallAndEventOverview(
             )
           }
           GlideImage(
-            imageModel = detailData.teams[1].img,
+            imageModel = { detailData.teams[1].img },
             imageOptions =
               ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
             modifier = modifier.alpha(0.2f).aspectRatio(1f, true).align(Alignment.TopCenter),

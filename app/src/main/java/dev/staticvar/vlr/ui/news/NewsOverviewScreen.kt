@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -46,7 +48,8 @@ fun NewsScreen(viewModel: VlrViewModel) {
     remember(triggerRefresh) { viewModel.refreshNews() }
       .collectAsStateWithLifecycle(initialValue = Ok(false))
 
-  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
+  val swipeRefresh =
+    rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
 
   val modifier: Modifier = Modifier
 
@@ -66,26 +69,27 @@ fun NewsScreen(viewModel: VlrViewModel) {
           val safeConvertedList =
             kotlin.runCatching { list.sortedByDescending { it.date.timeToEpoch } }
 
-          SwipeRefresh(
-            state = swipeRefresh,
-            onRefresh = { triggerRefresh = triggerRefresh.not() },
-            indicator = { _, _ -> }
+          AnimatedVisibility(
+            visible = updateState.get() == true || swipeRefresh.progress != 0f,
+            modifier = Modifier
+              .statusBarsPadding(),
+          ) {
+            LinearProgressIndicator(
+              modifier
+                .fillMaxWidth()
+                .padding(Local16DPPadding.current)
+                .animateContentSize()
+                .testTag("common:loader")
+            )
+          }
+          Box(
+            modifier = Modifier
+              .pullRefresh(swipeRefresh)
+              .fillMaxSize(),
           ) {
             LazyColumn(state = scrollState, modifier = modifier.testTag("newsOverview:root")) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
-              item {
-                AnimatedVisibility(
-                  visible = updateState.get() == true || swipeRefresh.isSwipeInProgress
-                ) {
-                  LinearProgressIndicator(
-                    modifier
-                      .fillMaxWidth()
-                      .padding(Local16DPPadding.current)
-                      .animateContentSize()
-                      .testTag("common:loader")
-                  )
-                }
-              }
+
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }

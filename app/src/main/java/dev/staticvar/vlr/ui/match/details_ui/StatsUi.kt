@@ -233,7 +233,7 @@ fun RowScope.PlayerNameAndAgentDetailWithHyperlink(
     verticalAlignment = Alignment.CenterVertically
   ) {
     GlideImage(
-      imageModel = img,
+      imageModel = { img },
       modifier = modifier.padding(Local4DP_2DPPadding.current).size(24.dp),
       imageOptions = ImageOptions(
         contentScale = ContentScale.Fit,

@@ -12,6 +12,9 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -66,7 +69,8 @@ fun RankScreen(viewModel: VlrViewModel) {
     remember(triggerRefresh) { viewModel.refreshRanks() }
       .collectAsStateWithLifecycle(initialValue = Ok(false))
 
-  val swipeRefresh = rememberSwipeRefreshState(isRefreshing = updateState.get() ?: false)
+  val swipeRefresh =
+    rememberPullRefreshState(refreshing = updateState.get() ?: false,  { triggerRefresh = triggerRefresh.not() })
 
   val resetScroll by
     remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
@@ -89,7 +93,6 @@ fun RankScreen(viewModel: VlrViewModel) {
             swipeRefresh,
             updateState,
             resetScroll,
-            triggerRefresh = { triggerRefresh = triggerRefresh.not() },
             postResetScroll = { viewModel.postResetScroll() }
           )
       }
@@ -103,10 +106,9 @@ fun RanksPreviewContainer(
   modifier: Modifier = Modifier,
   action: Action,
   list: StableHolder<List<TeamDetails>>,
-  swipeRefresh: SwipeRefreshState,
+  swipeRefresh: PullRefreshState,
   updateState: Result<Boolean, Throwable?>,
   resetScroll: Boolean,
-  triggerRefresh: () -> Unit,
   postResetScroll: () -> Unit,
 ) {
   val pagerState = rememberPagerState()
@@ -120,16 +122,26 @@ fun RanksPreviewContainer(
       )
     }
   val tabs by remember { mutableStateOf(teamMap.keys.toList().sorted()) }
-  SwipeRefresh(state = swipeRefresh, onRefresh = triggerRefresh, indicator = { _, _ -> }) {
-    Column(
-      modifier = modifier.fillMaxSize().animateContentSize(),
-      verticalArrangement = Arrangement.Top
+
+  Column(
+    modifier = modifier
+      .fillMaxSize()
+      .animateContentSize()
+      .pullRefresh(swipeRefresh),
+    verticalArrangement = Arrangement.Top
     ) {
       if (tabs.isNotEmpty()) {
-        AnimatedProgressBar(
-          modifier,
-          show = updateState.get() == true || swipeRefresh.isSwipeInProgress
-        )
+        AnimatedVisibility(
+          visible = updateState.get() == true || swipeRefresh.progress != 0f,
+        ) {
+          LinearProgressIndicator(
+            modifier
+              .fillMaxWidth()
+              .padding(Local16DPPadding.current)
+              .animateContentSize()
+              .testTag("common:loader")
+          )
+        }
         updateState.getError()?.let {
           ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
         }
@@ -158,17 +170,23 @@ fun RanksPreviewContainer(
           horizontalAlignment = Alignment.CenterHorizontally,
           verticalArrangement = Arrangement.Center
         ) {
-          AnimatedProgressBar(
-            modifier,
-            show = updateState.get() == true || swipeRefresh.isSwipeInProgress
-          )
+          AnimatedVisibility(
+            visible = updateState.get() == true || swipeRefresh.progress != 0f,
+          ) {
+            LinearProgressIndicator(
+              modifier
+                .fillMaxWidth()
+                .padding(Local16DPPadding.current)
+                .animateContentSize()
+                .testTag("common:loader")
+            )
+          }
           updateState.getError()?.let {
             ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
           }
         }
       }
     }
-  }
 }
 
 @Composable
@@ -278,7 +296,7 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
         )
       }
       GlideImage(
-        imageModel = team.img,
+        imageModel = { team.img },
         modifier = modifier.align(Alignment.CenterEnd).padding(24.dp).size(120.dp),
         imageOptions =
           ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
