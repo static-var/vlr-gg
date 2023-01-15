@@ -73,11 +73,6 @@ android {
       isDebuggable = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
-      optimization {
-        keepRules {
-          ignoreExternalDependencies("androidx.glance:glance-appwidget")
-        }
-      }
     }
     getByName("debug") {
       isMinifyEnabled = false
@@ -100,11 +95,6 @@ android {
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
       configure<CrashlyticsExtension> { mappingFileUploadEnabled = true }
-      optimization {
-        keepRules {
-          ignoreExternalDependencies("androidx.glance:glance-appwidget")
-        }
-      }
     }
   }
   compileOptions {
