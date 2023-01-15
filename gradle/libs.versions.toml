@@ -101,7 +101,7 @@ test-core-ktx = { module = "androidx.test:core-ktx", version = "1.4.0" }
 junit-ktx = { module = "androidx.test.ext:junit-ktx", version = "1.1.5" }
 
 android-junit = { module = "androidx.test.ext:junit", version = "1.1.5" }
-espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.4.0" }
+espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }
 uiautomator = { module = "androidx.test.uiautomator:uiautomator", version = "2.2.0" }
 benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version = "1.2.0-alpha09" }
 
