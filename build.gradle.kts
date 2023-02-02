@@ -11,7 +11,7 @@ plugins {
 
 buildscript {
   val hilt_version = "2.44.2"
-  val kotlin_version = "1.7.20"
+  val kotlin_version = "1.8.10"
   repositories {
     google()
     mavenCentral()
