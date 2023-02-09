@@ -4,6 +4,7 @@ import java.time.*
 import java.time.format.DateTimeFormatter
 
 private const val FULL_DATE_TIME_PATTERN_WITH_ZONE = "E, dd MMM yyyy HH:mm z"
+private const val CUSTOM_DATE_TIME_PATTERN = "HH:mm:ss yyyy-MM-dd"
 private const val FULL_DATE_TIME_PATTERN = "E, dd MMM yyyy HH:mm"
 private const val FULL_DATE_PATTERN = "E, dd MMM yyyy"
 private const val FULL_TIME_PATTERN = "HH:mm a"
@@ -77,3 +78,10 @@ val String.timeToEpoch: Long
       .toEpochSecond()
 
 const val ABBREVIATED_DATE_TIME_WITH_ZONE = "EEE, dd MMM hh:mm a z"
+
+val String.patternDateTimeToReadable: String
+  get() = LocalDateTime.parse(this, DateTimeFormatter.ofPattern(CUSTOM_DATE_TIME_PATTERN))
+    .atOffset(ZoneOffset.UTC)
+    .atZoneSameInstant(deviceZoneId)
+    .withZoneSameInstant(deviceZoneId)
+    .format(DateTimeFormatter.ofPattern(FULL_DATE_TIME_PATTERN))

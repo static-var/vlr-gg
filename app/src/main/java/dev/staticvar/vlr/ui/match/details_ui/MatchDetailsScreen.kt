@@ -1,13 +1,28 @@
 package dev.staticvar.vlr.ui.match.details_ui
 
-import android.Manifest
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.Ease
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -16,9 +31,17 @@ import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -33,10 +56,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.skydoves.landscapist.ImageOptions
@@ -45,15 +64,23 @@ import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
-import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.Local16DPPadding
+import dev.staticvar.vlr.ui.Local2DPPadding
+import dev.staticvar.vlr.ui.Local4DPPadding
+import dev.staticvar.vlr.ui.Local8DPPadding
+import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import dev.staticvar.vlr.utils.DomainVerificationStatus
+import dev.staticvar.vlr.utils.StableHolder
+import dev.staticvar.vlr.utils.Waiting
+import dev.staticvar.vlr.utils.domainVerificationStatus
+import dev.staticvar.vlr.utils.onFail
+import dev.staticvar.vlr.utils.onPass
+import dev.staticvar.vlr.utils.timeDiff
 import kotlinx.coroutines.tasks.await
 
 @Composable
@@ -65,21 +92,25 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val details by remember(viewModel) { viewModel.getMatchDetails(id) }.collectAsState(Waiting())
   val trackerString = id.toMatchTopic()
   val isTracked by
-    remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
+  remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshMatchInfo(id) }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh) { viewModel.refreshMatchInfo(id) }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
-    rememberPullRefreshState(refreshing = updateState.get() ?: false,  { triggerRefresh = triggerRefresh.not() })
+    rememberPullRefreshState(
+      refreshing = updateState.get() ?: false,
+      { triggerRefresh = triggerRefresh.not() })
   val rememberListState = rememberLazyListState()
 
   val context = LocalContext.current
 
   Column(
-    modifier = modifier.fillMaxSize().testTag("matchDetails:root"),
+    modifier = modifier
+      .fillMaxSize()
+      .testTag("matchDetails:root"),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
@@ -116,21 +147,31 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                 MatchOverallAndEventOverview(
                   modifier = modifier,
                   detailData = matchInfo,
+                  onClick = viewModel.action.team,
+                )
+              }
+              item {
+                MatchInfoMoreOptions(
+                  detailData = matchInfo,
                   isTracked = isTracked ?: false,
-                  viewModel.action.team
-                ) {
-                  when (isTracked) {
-                    true -> {
-                      Firebase.messaging.unsubscribeFromTopic(trackerString).await()
-                      viewModel.removeTopic(trackerString)
+                  eventId = matchInfo.event.id,
+                  onEventClick = viewModel.action.event,
+                  onSubButton = {
+                    when (isTracked) {
+                      true -> {
+                        Firebase.messaging.unsubscribeFromTopic(trackerString).await()
+                        viewModel.removeTopic(trackerString)
+                      }
+
+                      false -> {
+                        Firebase.messaging.subscribeToTopic(trackerString).await()
+                        viewModel.trackTopic(trackerString)
+                      }
+
+                      else -> {}
                     }
-                    false -> {
-                      Firebase.messaging.subscribeToTopic(trackerString).await()
-                      viewModel.trackTopic(trackerString)
-                    }
-                    else -> {}
                   }
-                }
+                )
               }
               item { VideoReferenceUi(videos = matchInfo.videos) }
               if (matchInfo.matchData.isNotEmpty()) {
@@ -142,7 +183,9 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                 item {
                   Text(
                     text = stringResource(R.string.matches_tbp),
-                    modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
+                    modifier = modifier
+                      .fillMaxWidth()
+                      .padding(Local16DPPadding.current),
                     textAlign = TextAlign.Center,
                     style = VLRTheme.typography.titleSmall,
                     color = VLRTheme.colorScheme.primary,
@@ -176,18 +219,15 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 fun MatchOverallAndEventOverview(
   modifier: Modifier = Modifier,
   detailData: MatchInfo,
-  isTracked: Boolean,
   onClick: (String) -> Unit,
-  onSubButton: suspend () -> Unit
 ) {
-  val scope = rememberCoroutineScope()
-  val notificationPermission =
-    rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
   val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
 
   CardView(
-    modifier.fillMaxWidth().aspectRatio(1.3f),
+    modifier
+      .fillMaxWidth()
+      .aspectRatio(1.8f),
   ) {
     detailData.event.status?.let {
       MatchStatusUi(modifier = modifier, state = it, date = detailData.event.date)
@@ -201,7 +241,10 @@ fun MatchOverallAndEventOverview(
         Spacer(modifier = Modifier.weight(0.1f))
         Box(
           modifier =
-            modifier.weight(1f).padding(Local8DPPadding.current).clickable {
+          modifier
+            .weight(1f)
+            .padding(Local8DPPadding.current)
+            .clickable {
               detailData.teams[0].id?.let(onClick)
             },
           contentAlignment = Alignment.TopEnd
@@ -210,21 +253,29 @@ fun MatchOverallAndEventOverview(
             Icon(
               Icons.Outlined.OpenInNew,
               contentDescription = stringResource(R.string.open_match_content_description),
-              modifier = modifier.size(24.dp).padding(Local2DPPadding.current)
+              modifier = modifier
+                .size(24.dp)
+                .padding(Local2DPPadding.current)
             )
           }
           GlideImage(
             imageModel = { detailData.teams[0].img },
             imageOptions =
-              ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterStart),
-            modifier = modifier.alpha(0.2f).aspectRatio(1f, true).align(Alignment.TopCenter),
+            ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterStart),
+            modifier = modifier
+              .alpha(0.2f)
+              .aspectRatio(1f, true)
+              .align(Alignment.TopCenter),
             component = imageComponent
           )
         }
         Spacer(modifier = Modifier.weight(0.2f))
         Box(
           modifier =
-            modifier.weight(1f).padding(Local8DPPadding.current).clickable {
+          modifier
+            .weight(1f)
+            .padding(Local8DPPadding.current)
+            .clickable {
               detailData.teams[1].id?.let(onClick)
             },
           contentAlignment = Alignment.TopEnd
@@ -233,14 +284,19 @@ fun MatchOverallAndEventOverview(
             Icon(
               Icons.Outlined.OpenInNew,
               contentDescription = stringResource(R.string.open_match_content_description),
-              modifier = modifier.size(24.dp).padding(Local2DPPadding.current)
+              modifier = modifier
+                .size(24.dp)
+                .padding(Local2DPPadding.current)
             )
           }
           GlideImage(
             imageModel = { detailData.teams[1].img },
             imageOptions =
-              ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
-            modifier = modifier.alpha(0.2f).aspectRatio(1f, true).align(Alignment.TopCenter),
+            ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
+            modifier = modifier
+              .alpha(0.2f)
+              .aspectRatio(1f, true)
+              .align(Alignment.TopCenter),
             component = imageComponent
           )
         }
@@ -248,15 +304,20 @@ fun MatchOverallAndEventOverview(
       }
       Column(
         modifier =
-          modifier.size(width = maxWidth, height = maxHeight).padding(Local8DPPadding.current),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier
+          .size(width = maxWidth, height = maxHeight)
+          .padding(Local8DPPadding.current),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
       ) {
         Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           Text(
             text = detailData.teams[0].name,
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = modifier.padding(Local16DPPadding.current).weight(1f),
+            modifier = modifier
+              .padding(Local16DPPadding.current)
+              .weight(1f),
             maxLines = 2,
             color = VLRTheme.colorScheme.primary,
           )
@@ -264,12 +325,20 @@ fun MatchOverallAndEventOverview(
             text = detailData.teams[1].name,
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = modifier.padding(Local16DPPadding.current).weight(1f),
+            modifier = modifier
+              .padding(Local16DPPadding.current)
+              .weight(1f),
             maxLines = 2,
             color = VLRTheme.colorScheme.primary,
           )
         }
-        Row(modifier.fillMaxWidth().weight(1f), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+          modifier
+            .fillMaxWidth()
+            .weight(1f)
+            .animateContentSize(),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
           Text(
             text = detailData.teams[0].score?.toString() ?: "-",
             style = VLRTheme.typography.displayMedium,
@@ -285,56 +354,6 @@ fun MatchOverallAndEventOverview(
             color = VLRTheme.colorScheme.primary,
           )
         }
-        var dialogOpen by remember { mutableStateOf(false) }
-        Row(
-          modifier.fillMaxWidth(),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-          Button(
-            onClick = { dialogOpen = true },
-            modifier = modifier.weight(1f).testTag("details:more_info"),
-          ) {
-            Text(text = stringResource(R.string.more_info))
-          }
-          detailData.event.date?.let {
-            if (!it.hasElapsed) {
-              var processingTopicSubscription by remember { mutableStateOf(false) }
-              Button(
-                onClick = {
-                  if (notificationPermission.status.isGranted) {
-                    if (!processingTopicSubscription) {
-                      processingTopicSubscription = true
-                      scope.launch(Dispatchers.IO) {
-                        onSubButton()
-                        processingTopicSubscription = false
-                      }
-                    }
-                  } else notificationPermission.launchPermissionRequest()
-                },
-                modifier = Modifier.weight(1f)
-              ) {
-                if (processingTopicSubscription) {
-                  LinearProgressIndicator()
-                } else if (isTracked) Text(text = stringResource(R.string.unsubscribe))
-                else Text(text = stringResource(R.string.get_notified))
-              }
-            }
-          }
-        }
-        val context = LocalContext.current
-        Button(
-          onClick = { (Constants.VLR_BASE + detailData.id).openAsCustomTab(context) },
-          modifier = modifier.fillMaxWidth(),
-        ) {
-          Text(text = stringResource(id = R.string.view_at_vlr))
-        }
-
-        MatchMoreDetailsDialog(
-          detailData = detailData,
-          open = dialogOpen,
-          onDismiss = { dialogOpen = it }
-        )
       }
     }
   }
@@ -356,7 +375,9 @@ fun MapStatsCard(
       .testTag("matchDetails:map")
   ) {
     Row(
-      modifier.fillMaxWidth().padding(Local16DPPadding.current),
+      modifier
+        .fillMaxWidth()
+        .padding(Local16DPPadding.current),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
@@ -392,17 +413,19 @@ private fun String.toMatchTopic() = "match-$this"
 fun MapBox(modifier: Modifier = Modifier, matchInfo: MatchInfo, onPlayerClick: (String) -> Unit) {
   var overAllMapToggle by rememberSaveable { mutableStateOf(false) }
   var toggleStateMap by
-    rememberSaveable(matchInfo, overAllMapToggle) {
-      mutableStateOf(matchInfo.matchData.associate { it.map to false }.toMap())
-    }
+  rememberSaveable(matchInfo, overAllMapToggle) {
+    mutableStateOf(matchInfo.matchData.associate { it.map to false }.toMap())
+  }
   EmphasisCardView(
     modifier =
-      modifier
-        .clickable { overAllMapToggle = overAllMapToggle.not() }
-        .testTag("matchDetails:mapHeader")
+    modifier
+      .clickable { overAllMapToggle = overAllMapToggle.not() }
+      .testTag("matchDetails:mapHeader")
   ) {
     Box(
-      modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local16DPPadding.current),
       contentAlignment = Alignment.CenterEnd
     ) {
       Text(
@@ -439,12 +462,12 @@ fun MapBox(modifier: Modifier = Modifier, matchInfo: MatchInfo, onPlayerClick: (
 fun MatchLiveUi(modifier: Modifier = Modifier) {
   val infiniteTransition = rememberInfiniteTransition()
   val color by
-    infiniteTransition.animateColor(
-      initialValue = VLRTheme.colorScheme.primary,
-      targetValue = Color.Transparent,
-      animationSpec =
-        infiniteRepeatable(animation = tween(1000, easing = Ease), repeatMode = RepeatMode.Reverse)
-    )
+  infiniteTransition.animateColor(
+    initialValue = VLRTheme.colorScheme.primary,
+    targetValue = Color.Transparent,
+    animationSpec =
+    infiniteRepeatable(animation = tween(1000, easing = Ease), repeatMode = RepeatMode.Reverse)
+  )
 
   Row(
     modifier = modifier.fillMaxWidth(),
@@ -452,7 +475,9 @@ fun MatchLiveUi(modifier: Modifier = Modifier) {
     verticalAlignment = Alignment.CenterVertically
   ) {
     Canvas(
-      modifier = modifier.size(18.dp).padding(Local2DPPadding.current),
+      modifier = modifier
+        .size(18.dp)
+        .padding(Local2DPPadding.current),
       onDraw = { drawCircle(color = color) }
     )
     Text(
@@ -470,7 +495,9 @@ fun MatchStatusUi(modifier: Modifier, state: String, date: String?) {
     else {
       Text(
         text = state.uppercase() + " " + date?.timeDiff,
-        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+        modifier = modifier
+          .fillMaxWidth()
+          .padding(Local4DPPadding.current),
         textAlign = TextAlign.Center,
         color = VLRTheme.colorScheme.primary
       )
