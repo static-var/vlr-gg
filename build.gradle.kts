@@ -11,14 +11,14 @@ plugins {
 
 buildscript {
   val hilt_version = "2.44.2"
-  val kotlin_version = "1.7.20"
+  val kotlin_version = "1.8.10"
   repositories {
     google()
     mavenCentral()
   }
 
   dependencies {
-    classpath("com.android.tools.build:gradle:8.0.0-alpha11")
+    classpath("com.android.tools.build:gradle:8.1.0-alpha03")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
     classpath("org.jetbrains.kotlin:kotlin-serialization:$kotlin_version")
     classpath("com.google.dagger:hilt-android-gradle-plugin:$hilt_version")
