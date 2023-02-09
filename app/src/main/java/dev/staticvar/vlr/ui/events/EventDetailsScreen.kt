@@ -4,7 +4,19 @@ import android.Manifest
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -16,11 +28,22 @@ import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Paid
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -46,13 +69,25 @@ import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
-import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.Local16DPPadding
+import dev.staticvar.vlr.ui.Local16DP_8DPPadding
+import dev.staticvar.vlr.ui.Local2DPPadding
+import dev.staticvar.vlr.ui.Local4DPPadding
+import dev.staticvar.vlr.ui.Local4DP_2DPPadding
+import dev.staticvar.vlr.ui.Local8DPPadding
+import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.*
+import dev.staticvar.vlr.utils.Constants
+import dev.staticvar.vlr.utils.StableHolder
+import dev.staticvar.vlr.utils.Waiting
+import dev.staticvar.vlr.utils.onFail
+import dev.staticvar.vlr.utils.onPass
+import dev.staticvar.vlr.utils.openAsCustomTab
+import dev.staticvar.vlr.utils.patternDateTimeToReadable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -239,7 +274,8 @@ fun TournamentDetailsHeader(
       Row(
         modifier
           .fillMaxWidth()
-          .padding(Local16DPPadding.current)) {
+          .padding(Local16DPPadding.current)
+      ) {
         Spacer(modifier = modifier.weight(1f))
         GlideImage(
           imageModel = { tournamentDetails.img },
@@ -255,7 +291,8 @@ fun TournamentDetailsHeader(
       Column(
         modifier
           .fillMaxWidth()
-          .padding(Local8DPPadding.current)) {
+          .padding(Local8DPPadding.current)
+      ) {
         Text(
           text = tournamentDetails.title,
           style = VLRTheme.typography.headlineSmall,
@@ -440,7 +477,8 @@ fun EventMatchGroups(
   Column(
     modifier
       .fillMaxWidth()
-      .padding(Local8DPPadding.current)) {
+      .padding(Local8DPPadding.current)
+  ) {
     Text(
       text = stringResource(id = R.string.games),
       modifier = modifier.padding(Local8DPPadding.current),
@@ -586,14 +624,15 @@ fun TournamentMatchOverview(
           overflow = TextOverflow.Ellipsis
         )
       }
-      Text(
-        text = "${game.time} - ${game.date}",
-        modifier = modifier
-          .fillMaxWidth()
-          .padding(Local8DPPadding.current),
-        textAlign = TextAlign.Center,
-        style = VLRTheme.typography.labelMedium
-      )
+      if (!game.time.equals("TBD", ignoreCase = true))
+        Text(
+          text = "${game.time} ${game.date}".patternDateTimeToReadable,
+          modifier = modifier
+            .fillMaxWidth()
+            .padding(Local8DPPadding.current),
+          textAlign = TextAlign.Center,
+          style = VLRTheme.typography.labelMedium
+        )
     }
   }
 }

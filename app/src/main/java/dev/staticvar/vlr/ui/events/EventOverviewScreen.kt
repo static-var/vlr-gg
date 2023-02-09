@@ -286,6 +286,7 @@ fun TournamentPreview(
           )
         val annotatedDateString = buildAnnotatedString {
           appendInlineContent(id = "date")
+          append(" ")
           append(tournamentPreview.dates)
         }
         val inlineDateContentMap =
