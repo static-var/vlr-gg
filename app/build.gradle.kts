@@ -99,11 +99,11 @@ android {
   }
   compileOptions {
     isCoreLibraryDesugaringEnabled = true
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8.toString()
+    jvmTarget = JavaVersion.VERSION_17.toString()
     freeCompilerArgs = freeCompilerArgs + listOf(
         "-opt-in=kotlin.RequiresOptIn",
         "-opt-in=kotlin.contracts.ExperimentalContracts",
@@ -125,7 +125,7 @@ android {
   buildFeatures { compose = true
     buildConfig = true
   }
-  composeOptions { kotlinCompilerExtensionVersion = "1.3.2" }
+  composeOptions { kotlinCompilerExtensionVersion = "1.4.2" }
   packagingOptions {
     jniLibs { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}") }
     resources { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/DEPENDENCIES") }
@@ -173,7 +173,7 @@ dependencies {
   implementation(libs.kotlinx.collections.immutable)
 
   // Firebase
-  implementation(platform("com.google.firebase:firebase-bom:31.1.1"))
+  implementation(platform("com.google.firebase:firebase-bom:31.2.0"))
   implementation("com.google.firebase:firebase-analytics-ktx")
   implementation("com.google.firebase:firebase-messaging-ktx")
   implementation("com.google.firebase:firebase-crashlytics-ktx")
