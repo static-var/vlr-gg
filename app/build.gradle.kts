@@ -27,8 +27,8 @@ android {
     applicationId = "dev.staticvar.vlr"
     minSdk = 23
     targetSdk = 33
-    versionCode = 44
-    versionName = "v0.3.0"
+    versionCode = 45
+    versionName = "v0.3.1"
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
@@ -187,7 +187,7 @@ dependencies {
   implementation(libs.landscapist.glide)
   implementation(libs.landscapist.animation)
 
-  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
+  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.2")
 
   testImplementation(libs.bundles.testing)
 
