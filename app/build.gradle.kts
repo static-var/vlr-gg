@@ -27,8 +27,8 @@ android {
     applicationId = "dev.staticvar.vlr"
     minSdk = 23
     targetSdk = 33
-    versionCode = 45
-    versionName = "v0.3.1"
+    versionCode = 46
+    versionName = "v0.3.2"
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
