@@ -22,7 +22,13 @@
 -keep public class dev.staticvar.vlr.data.** {
     public protected private *;
 }
--keep public enum dev.staticvar.vlr.data.**{
+-keep public enum dev.staticvar.vlr.data.** {
+    *;
+}
+-keep public class java.util.** {
+    public protected private *;
+}
+-keep public enum java.util.** {
     *;
 }
 
