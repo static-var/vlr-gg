@@ -98,7 +98,6 @@ android {
     }
   }
   compileOptions {
-    isCoreLibraryDesugaringEnabled = true
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
@@ -187,7 +186,7 @@ dependencies {
   implementation(libs.landscapist.glide)
   implementation(libs.landscapist.animation)
 
-  coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.2")
+//  coreLibraryDesugaring(libs.desugar.jdk.libs)
 
   testImplementation(libs.bundles.testing)
 
