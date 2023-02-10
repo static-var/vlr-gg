@@ -1,5 +1,5 @@
 [versions]
-gradle = "8.1.0-alpha03"
+gradle = "8.1.0-alpha04"
 hilt = '2.44.2'
 kotlin = '1.8.10'
 room = "2.5.0"

@@ -18,7 +18,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("com.android.tools.build:gradle:8.1.0-alpha03")
+    classpath("com.android.tools.build:gradle:8.1.0-alpha04")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
     classpath("org.jetbrains.kotlin:kotlin-serialization:$kotlin_version")
     classpath("com.google.dagger:hilt-android-gradle-plugin:$hilt_version")
