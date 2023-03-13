@@ -124,7 +124,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "gradle" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
-spotless = { id = "com.diffplug.spotless", version = "6.11.0" }
+spotless = { id = "com.diffplug.spotless", version = "6.17.0" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 hilt-android-plugin = { id = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
 google-services = { id = "com.google.gms:google-services", version = "4.3.14" }
