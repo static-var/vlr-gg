@@ -17,6 +17,7 @@ import java.util.Properties
   id("com.google.firebase.crashlytics")
   id("vlr.spotless")
   id("io.gitlab.arturbosch.detekt")
+  alias(libs.plugins.ksp.plugin)
 }
 
 android {
@@ -32,10 +33,8 @@ android {
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
-    javaCompileOptions {
-      annotationProcessorOptions {
-        argument("room.schemaLocation", "$projectDir/schemas")
-      }
+    ksp {
+      arg("room.schemaLocation", "$projectDir/schemas")
     }
   }
 
@@ -114,8 +113,6 @@ android {
         "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
         "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
         "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-        "-opt-in=androidx.lifecycle.compose.ExperimentalLifecycleComposeApi",
-        "-opt-in=com.google.accompanist.pager.ExperimentalPagerApi",
         "-opt-in=androidx.compose.runtime.InternalComposeApi",
         "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
         "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
@@ -166,13 +163,13 @@ dependencies {
 
   // Room
   implementation(libs.bundles.room)
-  kapt(libs.room.compiler)
+  ksp(libs.room.compiler)
 
   implementation(libs.kotlinx.serialization)
   implementation(libs.kotlinx.collections.immutable)
 
   // Firebase
-  implementation(platform("com.google.firebase:firebase-bom:31.2.0"))
+  implementation(platform("com.google.firebase:firebase-bom:31.3.0"))
   implementation("com.google.firebase:firebase-analytics-ktx")
   implementation("com.google.firebase:firebase-messaging-ktx")
   implementation("com.google.firebase:firebase-crashlytics-ktx")
@@ -190,6 +187,6 @@ dependencies {
 
   testImplementation(libs.bundles.testing)
 
-  detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0")
-  detektPlugins("com.twitter.compose.rules:detekt:0.0.26")
+  detektPlugins(libs.detekt.formatting)
+  detektPlugins(libs.detekt)
 }
