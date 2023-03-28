@@ -121,7 +121,7 @@ android {
   buildFeatures { compose = true
     buildConfig = true
   }
-  composeOptions { kotlinCompilerExtensionVersion = "1.4.2" }
+  composeOptions { kotlinCompilerExtensionVersion = "1.4.4" }
   packagingOptions {
     jniLibs { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}") }
     resources { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/DEPENDENCIES") }
