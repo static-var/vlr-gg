@@ -1,10 +1,10 @@
 package dev.staticvar.vlr.ui.common
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
 
 @Composable
 fun VlrHorizontalViewPager(
@@ -12,7 +12,7 @@ fun VlrHorizontalViewPager(
   pagerState: PagerState,
   vararg contents: @Composable () -> Unit
 ) {
-  HorizontalPager(count = contents.size, state = pagerState, modifier = modifier.fillMaxSize()) {
+  HorizontalPager(pageCount = contents.size, state = pagerState, modifier = modifier.fillMaxSize()) {
     tabPosition ->
     contents[tabPosition]()
   }

@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
@@ -50,8 +52,6 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
 import com.skydoves.landscapist.components.rememberImageComponent
@@ -106,7 +106,7 @@ fun RankScreen(viewModel: VlrViewModel) {
   ) {
     allTeams
       .onPass {
-        if (data == null || data.isEmpty()) LinearProgressIndicator(modifier.animateContentSize())
+        if (data.isNullOrEmpty()) LinearProgressIndicator(modifier.animateContentSize())
         else
           RanksPreviewContainer(
             modifier = Modifier,
@@ -169,7 +169,7 @@ fun RanksPreviewContainer(
       }
       VlrScrollableTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
       HorizontalPager(
-        count = tabs.size,
+        pageCount = tabs.size,
         state = pagerState,
         modifier = modifier.fillMaxSize()
       ) { tabPosition ->
@@ -328,7 +328,7 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
         imageModel = { team.img },
         modifier = modifier
           .align(Alignment.CenterEnd)
-          .padding(24.dp)
+          .padding(horizontal = 24.dp, vertical = 8.dp)
           .size(120.dp),
         imageOptions =
         ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),

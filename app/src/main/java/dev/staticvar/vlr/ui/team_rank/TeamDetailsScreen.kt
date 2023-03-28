@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
@@ -26,12 +28,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import dev.staticvar.vlr.R
@@ -325,7 +323,7 @@ fun LazyItemScope.TeamMatchData(
 
   Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     VlrTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
-    HorizontalPager(count = tabs.size, state = pagerState, modifier = Modifier.fillMaxSize()) {
+    HorizontalPager(pageCount = tabs.size, state = pagerState, modifier = Modifier.fillMaxSize()) {
       when (pagerState.currentPage) {
         0 -> {
           Column(modifier = modifier.fillParentMaxSize()) {

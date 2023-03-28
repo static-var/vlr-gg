@@ -30,5 +30,5 @@ fun Context.queueObsoleteRecord() {
       .setConstraints(constraints)
       .build()
   WorkManager.getInstance(this)
-    .enqueueUniquePeriodicWork("obsolete_records_deleter", ExistingPeriodicWorkPolicy.REPLACE, work)
+    .enqueueUniquePeriodicWork("obsolete_records_deleter", ExistingPeriodicWorkPolicy.UPDATE, work)
 }
