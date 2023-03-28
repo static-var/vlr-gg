@@ -17,7 +17,7 @@ fun Context.queueWorker() {
       .setConstraints(constraints)
       .build()
   WorkManager.getInstance(this)
-    .enqueueUniquePeriodicWork("widget_update", ExistingPeriodicWorkPolicy.REPLACE, work)
+    .enqueueUniquePeriodicWork("widget_update", ExistingPeriodicWorkPolicy.UPDATE, work)
 }
 
 fun Context.stopWorker() {

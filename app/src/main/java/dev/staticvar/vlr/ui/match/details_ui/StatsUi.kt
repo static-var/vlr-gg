@@ -1,21 +1,29 @@
 package dev.staticvar.vlr.ui.match.details_ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.data.api.response.MatchInfo
@@ -32,9 +40,9 @@ fun StatViewPager(
   onClick: (String) -> Unit
 ) {
   val pagerState = rememberPagerState()
-  Column(modifier.fillMaxWidth()) {
+  Column(modifier.fillMaxWidth().padding(Local4DPPadding.current)) {
     ProvideTextStyle(value = VLRTheme.typography.labelMedium) {
-      HorizontalPager(count = 3, modifier = modifier, state = pagerState) { page ->
+      HorizontalPager(pageCount = 3, modifier = modifier, state = pagerState) { page ->
         when (page) {
           0 -> StatKDA(members = members, modifier = modifier, onClick = onClick)
           1 -> StatCombat(members = members, modifier = modifier, onClick = onClick)
@@ -42,12 +50,25 @@ fun StatViewPager(
         }
       }
     }
-    HorizontalPagerIndicator(
-      pagerState = pagerState,
-      modifier = modifier.padding(Local4DPPadding.current).align(Alignment.CenterHorizontally),
-      activeColor = VLRTheme.colorScheme.onPrimaryContainer,
-      inactiveColor = VLRTheme.colorScheme.primary,
-    )
+
+    Row(
+      Modifier
+        .fillMaxWidth()
+        .align(Alignment.CenterHorizontally),
+      horizontalArrangement = Arrangement.Center
+    ) {
+      repeat(3) { iteration ->
+        val color =
+          if (pagerState.currentPage == iteration) VLRTheme.colorScheme.onPrimaryContainer else VLRTheme.colorScheme.primary
+        Box(
+          modifier = Modifier
+            .size(20.dp)
+            .padding(4.dp)
+            .clip(CircleShape)
+            .background(color)
+        )
+      }
+    }
   }
 }
 
@@ -62,7 +83,9 @@ fun StatKDA(
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "KDA statistics",
-      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current)
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DPPadding.current)
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Players", modifier = modifier.weight(2f), textAlign = TextAlign.Center)
@@ -124,7 +147,9 @@ fun StatCombat(
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "Combat statistics",
-      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current)
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DPPadding.current)
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -180,7 +205,9 @@ fun StatFirstBlood(
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "First Kill/Death statistics",
-      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current)
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DPPadding.current)
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Players", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -229,12 +256,16 @@ fun RowScope.PlayerNameAndAgentDetailWithHyperlink(
   onClick: (String) -> Unit
 ) {
   Row(
-    modifier.weight(1.5f).clickable { onClick(id) },
+    modifier
+      .weight(1.5f)
+      .clickable { onClick(id) },
     verticalAlignment = Alignment.CenterVertically
   ) {
     GlideImage(
       imageModel = { img },
-      modifier = modifier.padding(Local4DP_2DPPadding.current).size(24.dp),
+      modifier = modifier
+        .padding(Local4DP_2DPPadding.current)
+        .size(24.dp),
       imageOptions = ImageOptions(
         contentScale = ContentScale.Fit,
       )
@@ -252,7 +283,9 @@ fun RowScope.PlayerNameAndAgentDetailWithHyperlink(
 fun TeamName(team: String, modifier: Modifier = Modifier) {
   Text(
     text = team,
-    modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(Local4DPPadding.current),
     textAlign = TextAlign.Center,
     style = VLRTheme.typography.bodySmall,
     color = VLRTheme.colorScheme.primary,
@@ -263,7 +296,9 @@ fun TeamName(team: String, modifier: Modifier = Modifier) {
 fun StatTitle(text: String, modifier: Modifier = Modifier) {
   Text(
     text = text,
-    modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(Local4DPPadding.current),
     textAlign = TextAlign.Center,
     style = VLRTheme.typography.bodyMedium,
     color = VLRTheme.colorScheme.primary,
