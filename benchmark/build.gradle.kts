@@ -7,7 +7,6 @@ import java.util.Properties
 plugins {
   id("com.android.test")
   id("org.jetbrains.kotlin.android")
-  id("vlr.spotless")
 }
 
 android {

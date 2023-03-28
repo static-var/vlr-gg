@@ -20,14 +20,13 @@ dependencies {
   compileOnly(libs.build.agp)
   compileOnly(libs.build.kover)
   compileOnly(libs.build.kotlin)
-  compileOnly(libs.build.spotless)
 }
 
 gradlePlugin {
   plugins {
-    register("spotless") {
-      id = "vlr.spotless"
-      implementationClass = "SpotlessConventionPlugin"
-    }
+//    register("spotless") {
+//      id = "vlr.spotless"
+//      implementationClass = "SpotlessConventionPlugin"
+//    }
   }
 }

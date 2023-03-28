@@ -19,8 +19,6 @@ ktor = "2.2.4"
 build-agp = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 build-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 build-kover = "org.jetbrains.kotlinx:kover:0.6.1"
-build-spotless = "com.diffplug.spotless:spotless-plugin-gradle:6.17.0"
-
 detekt = { module = "com.twitter.compose.rules:detekt", version.ref = "detekt" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektFormatting" }
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsGradle" }
@@ -53,9 +51,6 @@ lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose
 
 accompanist-sysui = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-nav-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanist" }
-accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
-accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
-accompanist-swipe-refresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
@@ -122,7 +117,7 @@ benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", versio
 base = ["core", "app-compat", "activity-compose"]
 compose = ["compose-ui", "compose-text", "compose-material", "compose-ui-tooling", "compose-runtime", "m3"]
 lifecycle = ["lifecycle-runtime", "lifecycle-viewmodel"]
-accompanist = ["accompanist-sysui", "accompanist-nav-animation", "accompanist-pager", "accompanist-swipe-refresh", "accompanist-pager-indicators", "accompanist-webview", "accompanist-permissions"]
+accompanist = ["accompanist-sysui", "accompanist-nav-animation", "accompanist-webview", "accompanist-permissions"]
 coroutines = ["coroutines-core", "coroutines-android", "coroutines-play-services"]
 room = ["room-ktx", "room-runtime"]
 hilt = ["hilt-android", "hilt-common", "hilt-nav", "hilt-work"]
@@ -136,7 +131,6 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "gradle" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
-spotless = { id = "com.diffplug.spotless", version = "6.11.0" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 hilt-android-plugin = { id = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
 google-services = { id = "com.google.gms:google-services", version = "4.3.14" }

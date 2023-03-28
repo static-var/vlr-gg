@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -50,9 +53,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
 import com.skydoves.landscapist.components.rememberImageComponent
@@ -295,7 +295,7 @@ fun AgentStatViewPager(
   val pagerState = rememberPagerState()
   CardView(modifier.fillMaxWidth()) {
     ProvideTextStyle(value = VLRTheme.typography.labelMedium) {
-      HorizontalPager(count = 4, modifier = modifier, state = pagerState) { page ->
+      HorizontalPager(pageCount = 4, modifier = modifier, state = pagerState) { page ->
         when (page) {
           0 -> AgentStatOverall(members = members, modifier = modifier)
           1 -> AgentStatKDA(members = members, modifier = modifier)
@@ -304,14 +304,24 @@ fun AgentStatViewPager(
         }
       }
     }
-    HorizontalPagerIndicator(
-      pagerState = pagerState,
-      modifier = modifier
-        .padding(Local4DPPadding.current)
+    Row(
+      Modifier
+        .fillMaxWidth()
         .align(Alignment.CenterHorizontally),
-      activeColor = VLRTheme.colorScheme.onPrimaryContainer,
-      inactiveColor = VLRTheme.colorScheme.primary,
-    )
+      horizontalArrangement = Arrangement.Center
+    ) {
+      repeat(3) { iteration ->
+        val color =
+          if (pagerState.currentPage == iteration) VLRTheme.colorScheme.onPrimaryContainer else VLRTheme.colorScheme.primary
+        Box(
+          modifier = Modifier
+            .size(20.dp)
+            .padding(4.dp)
+            .clip(CircleShape)
+            .background(color)
+        )
+      }
+    }
   }
 }
 
