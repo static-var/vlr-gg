@@ -6,25 +6,24 @@ plugins {
   alias(libs.plugins.kotlin.kapt) apply false
   alias(libs.plugins.spotless) apply false
   alias(libs.plugins.hilt.plugin) apply false
+  alias(libs.plugins.ksp.plugin) apply false
   id("io.gitlab.arturbosch.detekt").version("1.22.0")
 }
 
 buildscript {
-  val hilt_version = "2.44.2"
-  val kotlin_version = "1.8.10"
   repositories {
     google()
     mavenCentral()
   }
 
   dependencies {
-    classpath("com.android.tools.build:gradle:8.1.0-alpha04")
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-    classpath("org.jetbrains.kotlin:kotlin-serialization:$kotlin_version")
-    classpath("com.google.dagger:hilt-android-gradle-plugin:$hilt_version")
-    classpath("com.google.gms:google-services:4.3.15")
-    classpath("com.google.firebase:perf-plugin:1.4.2")
-    classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.2")
+    classpath(libs.build.agp)
+    classpath(libs.build.kotlin)
+    classpath(libs.kotlin.serialization)
+    classpath(libs.hilt.android.gradle.plugin)
+    classpath(libs.google.services)
+    classpath(libs.perf.plugin)
+    classpath(libs.firebase.crashlytics.gradle)
   }
 }
 
