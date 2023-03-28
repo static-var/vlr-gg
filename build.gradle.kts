@@ -4,10 +4,9 @@ plugins {
   alias(libs.plugins.android.library) apply false
   alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.kotlin.kapt) apply false
-  alias(libs.plugins.spotless) apply false
   alias(libs.plugins.hilt.plugin) apply false
   alias(libs.plugins.ksp.plugin) apply false
-  id("io.gitlab.arturbosch.detekt").version("1.22.0")
+  id("io.gitlab.arturbosch.detekt") version("1.22.0")
 }
 
 buildscript {
@@ -28,49 +27,26 @@ buildscript {
 }
 
 detekt {
-  // Version of Detekt that will be used. When unspecified the latest detekt
-  // version found will be used. Override to stay on the same version.
-  toolVersion = "1.22.0"
-
-  // The directories where detekt looks for source files.
-  // Defaults to `files("src/main/java", "src/test/java", "src/main/kotlin", "src/test/kotlin")`.
-  source = files("src/main/java", "src/main/kotlin")
-
-  // Builds the AST in parallel. Rules are always executed in parallel.
-  // Can lead to speedups in larger projects. `false` by default.
+  buildUponDefaultConfig = true // preconfigure defaults
+  allRules = false // activate all available (even unstable) rules.
+  autoCorrect = true
   parallel = true
+  config = files("config/detekt/detekt.yml")
+  baseline = file("config/detekt/detekt-baseline.xml")
+  autoCorrect = true
+}
 
-  // Define the detekt configuration(s) you want to use.
-  // Defaults to the default detekt configuration.
-  config = files("${projectDir.path}/config/detekt/detekt.yml")
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+  reports {
+    html.required.set(true) // observe findings in your browser with structure and code snippets
+    txt.required.set(true) // similar to the console output, contains issue signature to manually edit baseline files
+    md.required.set(true) // simple Markdown format
+  }
+}
 
-  // Applies the config files on top of detekt's default config file. `false` by default.
-  buildUponDefaultConfig = false
-
-  // Turns on all the rules. `false` by default.
-  allRules = false
-
-  // Disables all default detekt rulesets and will only run detekt with custom rules
-  // defined in plugins passed in with `detektPlugins` configuration. `false` by default.
-  disableDefaultRuleSets = false
-
-  // Adds debug output during task execution. `false` by default.
-  debug = false
-
-  // If set to `true` the build does not fail when the
-  // maxIssues count was reached. Defaults to `false`.
-  ignoreFailures = true
-
-  // Android: Don't create tasks for the specified build types (e.g. "release")
-  ignoredBuildTypes = listOf("release")
-
-  // Android: Don't create tasks for the specified build flavor (e.g. "production")
-  ignoredFlavors = listOf("production")
-
-  // Android: Don't create tasks for the specified build variants (e.g. "productionRelease")
-  ignoredVariants = listOf("productionRelease")
-
-  // Specify the base path for file paths in the formatted reports.
-  // If not set, all file paths reported will be absolute file path.
-  basePath = projectDir.path
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+  jvmTarget = "17"
+}
+tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
+  jvmTarget = "17"
 }

@@ -25,8 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import dev.staticvar.vlr.data.api.response.NewsResponseItem
 import dev.staticvar.vlr.ui.*
 import dev.staticvar.vlr.ui.common.ErrorUi

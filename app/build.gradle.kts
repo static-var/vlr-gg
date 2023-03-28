@@ -15,7 +15,6 @@ import java.util.Properties
   id("com.google.gms.google-services")
   id("com.google.firebase.firebase-perf")
   id("com.google.firebase.crashlytics")
-  id("vlr.spotless")
   id("io.gitlab.arturbosch.detekt")
   alias(libs.plugins.ksp.plugin)
 }
@@ -121,7 +120,7 @@ android {
   buildFeatures { compose = true
     buildConfig = true
   }
-  composeOptions { kotlinCompilerExtensionVersion = "1.4.2" }
+  composeOptions { kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get() }
   packagingOptions {
     jniLibs { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}") }
     resources { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/DEPENDENCIES") }
@@ -187,6 +186,6 @@ dependencies {
 
   testImplementation(libs.bundles.testing)
 
-  detektPlugins(libs.detekt.formatting)
   detektPlugins(libs.detekt)
+  detektPlugins(libs.detekt.formatting)
 }
