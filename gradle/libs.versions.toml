@@ -77,8 +77,8 @@ ktor-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", versio
 okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version = "4.10.0" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version = "4.10.0" }
 
-landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version = "2.1.0" }
-landscapist-animation = { module = "com.github.skydoves:landscapist-animation", version = "2.0.3" }
+landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version = "2.2.8" }
+landscapist-animation = { module = "com.github.skydoves:landscapist-animation", version = "2.2.8" }
 
 kotlin-monad = { module = "com.michael-bull.kotlin-result:kotlin-result", version = "1.1.16" }
 
