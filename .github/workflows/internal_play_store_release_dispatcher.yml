@@ -29,7 +29,7 @@ jobs:
           SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
         run: |
           touch local.properties
-          echo 'API_KEY="${{ env.API_TOKEN }}"' > local.properties
+          echo 'TOKEN="${{ env.API_TOKEN }}"' > local.properties
           echo 'APPLICATION_ID="dev.staticvar.vlr"' >> local.properties
           echo 'key.alias=${{ env.SIGNING_KEY_ALIAS }}' >> local.properties
           echo 'key.password=${{ env.SIGNING_KEY_PASSWORD }}' >> local.properties
