@@ -5,7 +5,15 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.pager.HorizontalPager
@@ -15,8 +23,19 @@ import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,14 +53,28 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
-import dev.staticvar.vlr.ui.*
+import dev.staticvar.vlr.ui.Local16DPPadding
+import dev.staticvar.vlr.ui.Local16DP_8DPPadding
+import dev.staticvar.vlr.ui.Local2DPPadding
+import dev.staticvar.vlr.ui.Local4DPPadding
+import dev.staticvar.vlr.ui.Local4DP_2DPPadding
+import dev.staticvar.vlr.ui.Local8DPPadding
+import dev.staticvar.vlr.ui.Local8DP_4DPPadding
+import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.match.NoMatchUI
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.*
+import dev.staticvar.vlr.utils.Constants
+import dev.staticvar.vlr.utils.StableHolder
+import dev.staticvar.vlr.utils.Waiting
+import dev.staticvar.vlr.utils.onFail
+import dev.staticvar.vlr.utils.onPass
+import dev.staticvar.vlr.utils.onWaiting
+import dev.staticvar.vlr.utils.openAsCustomTab
+import dev.staticvar.vlr.utils.readableDateAndTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -64,7 +97,10 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
       .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
-    rememberPullRefreshState(refreshing = updateState.get() ?: false,  { triggerRefresh = triggerRefresh.not() })
+    rememberPullRefreshState(
+      refreshing = updateState.get() ?: false,
+      { triggerRefresh = triggerRefresh.not() }
+    )
 
   val modifier: Modifier = Modifier
 
@@ -78,8 +114,7 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
         data?.let { teamDetail ->
           AnimatedVisibility(
             visible = updateState.get() == true || swipeRefresh.progress != 0f,
-            modifier = Modifier
-              .statusBarsPadding(),
+            modifier = Modifier.statusBarsPadding(),
           ) {
             LinearProgressIndicator(
               modifier
@@ -90,10 +125,8 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
             )
           }
           Box(
-            modifier = Modifier
-              .pullRefresh(swipeRefresh)
-              .fillMaxSize(),
-          ){
+            modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize(),
+          ) {
             LazyColumn(modifier = modifier.fillMaxSize()) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
 
@@ -274,9 +307,11 @@ fun RosterCard(
         data.item.forEach { player ->
           Card(
             modifier =
-              modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current).clickable {
-                onClick(player.id)
-              }.testTag("team:player"),
+              modifier
+                .fillMaxWidth()
+                .padding(Local8DP_4DPPadding.current)
+                .clickable { onClick(player.id) }
+                .testTag("team:player"),
             colors =
               CardDefaults.cardColors(
                 contentColor = VLRTheme.colorScheme.onPrimaryContainer,
@@ -313,7 +348,6 @@ fun LazyItemScope.TeamMatchData(
   teamName: String,
   onClick: (String) -> Unit
 ) {
-  val pagerState = rememberPagerState()
 
   val tabs =
     listOf(
@@ -321,9 +355,11 @@ fun LazyItemScope.TeamMatchData(
       stringResource(R.string.completed),
     )
 
+  val pagerState = rememberPagerState(pageCount = { tabs.size })
+
   Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
     VlrTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
-    HorizontalPager(pageCount = tabs.size, state = pagerState, modifier = Modifier.fillMaxSize()) {
+    HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) {
       when (pagerState.currentPage) {
         0 -> {
           Column(modifier = modifier.fillParentMaxSize()) {

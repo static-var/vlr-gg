@@ -292,10 +292,10 @@ fun AgentStatViewPager(
   modifier: Modifier = Modifier,
   members: StableHolder<List<PlayerData.Agent>>
 ) {
-  val pagerState = rememberPagerState()
+  val pagerState = rememberPagerState(pageCount = { 4 })
   CardView(modifier.fillMaxWidth()) {
     ProvideTextStyle(value = VLRTheme.typography.labelMedium) {
-      HorizontalPager(pageCount = 4, modifier = modifier, state = pagerState) { page ->
+      HorizontalPager(modifier = modifier, state = pagerState) { page ->
         when (page) {
           0 -> AgentStatOverall(members = members, modifier = modifier)
           1 -> AgentStatKDA(members = members, modifier = modifier)

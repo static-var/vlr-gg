@@ -39,10 +39,10 @@ fun StatViewPager(
   members: StableHolder<List<MatchInfo.MatchDetailData.Member>>,
   onClick: (String) -> Unit
 ) {
-  val pagerState = rememberPagerState()
+  val pagerState = rememberPagerState(pageCount = { 3 })
   Column(modifier.fillMaxWidth().padding(Local4DPPadding.current)) {
     ProvideTextStyle(value = VLRTheme.typography.labelMedium) {
-      HorizontalPager(pageCount = 3, modifier = modifier, state = pagerState) { page ->
+      HorizontalPager(modifier = modifier, state = pagerState) { page ->
         when (page) {
           0 -> StatKDA(members = members, modifier = modifier, onClick = onClick)
           1 -> StatCombat(members = members, modifier = modifier, onClick = onClick)

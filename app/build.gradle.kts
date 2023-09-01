@@ -5,7 +5,7 @@ import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.io.FileInputStream
 import java.util.Properties
 
- plugins {
+plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.kapt)
@@ -15,26 +15,25 @@ import java.util.Properties
   id("com.google.gms.google-services")
   id("com.google.firebase.firebase-perf")
   id("com.google.firebase.crashlytics")
-  id("io.gitlab.arturbosch.detekt")
+  alias(libs.plugins.detekt)
   alias(libs.plugins.ksp.plugin)
+  alias(libs.plugins.secrets.plugin)
 }
 
 android {
-  compileSdk = 33
+  compileSdk = 34
   namespace = "dev.staticvar.vlr"
 
   defaultConfig {
     applicationId = "dev.staticvar.vlr"
     minSdk = 23
-    targetSdk = 33
-    versionCode = 47
-    versionName = "v0.3.3"
+    targetSdk = 34
+    versionCode = 48
+    versionName = "v0.3.4"
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
-    ksp {
-      arg("room.schemaLocation", "$projectDir/schemas")
-    }
+    ksp { arg("room.schemaLocation", "$projectDir/schemas") }
   }
 
   signingConfigs {
@@ -59,11 +58,6 @@ android {
       localProperties.load(FileInputStream(localPropertiesFile))
     }
     create("benchmark") {
-      buildConfigField(
-        "String",
-        "TOKEN",
-        System.getenv("API_TOKEN") ?: localProperties["token"] as String
-      )
       isShrinkResources = true
       isMinifyEnabled = true
       signingConfig = signingConfigs.getByName("debug")
@@ -75,49 +69,44 @@ android {
     getByName("debug") {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      buildConfigField(
-        "String",
-        "TOKEN",
-        System.getenv("API_TOKEN") ?: localProperties["token"] as String
-      )
+
       configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
     }
     getByName("release") {
       isShrinkResources = true
       isMinifyEnabled = true
-      buildConfigField(
-        "String",
-        "TOKEN",
-        System.getenv("API_TOKEN") ?: localProperties["token"] as String
-      )
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
       configure<CrashlyticsExtension> { mappingFileUploadEnabled = true }
     }
   }
   compileOptions {
+    isCoreLibraryDesugaringEnabled = true
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
   kotlinOptions {
     jvmTarget = JavaVersion.VERSION_17.toString()
-    freeCompilerArgs = freeCompilerArgs + listOf(
-        "-opt-in=kotlin.RequiresOptIn",
-        "-opt-in=kotlin.contracts.ExperimentalContracts",
-        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-        "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
-        "-opt-in=kotlin.time.ExperimentalTime",
-        "-opt-in=androidx.compose.ui.text.ExperimentalTextApi",
-        "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
-        "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
-        "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-        "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-        "-opt-in=androidx.compose.runtime.InternalComposeApi",
-        "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
-        "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
-    )
+    freeCompilerArgs =
+      freeCompilerArgs +
+        listOf(
+          "-opt-in=kotlin.RequiresOptIn",
+          "-opt-in=kotlin.contracts.ExperimentalContracts",
+          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+          "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+          "-opt-in=kotlin.time.ExperimentalTime",
+          "-opt-in=androidx.compose.ui.text.ExperimentalTextApi",
+          "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
+          "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
+          "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+          "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+          "-opt-in=androidx.compose.runtime.InternalComposeApi",
+          "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+          "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
+        )
   }
-  buildFeatures { compose = true
+  buildFeatures {
+    compose = true
     buildConfig = true
   }
   composeOptions { kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get() }
@@ -157,8 +146,8 @@ dependencies {
 
   // Hilt
   implementation(libs.bundles.hilt)
-  kapt(libs.hilt.compiler)
-  kapt(libs.hilt.android.compiler)
+  ksp(libs.hilt.compiler)
+  ksp(libs.hilt.android.compiler)
 
   // Room
   implementation(libs.bundles.room)
@@ -182,7 +171,7 @@ dependencies {
   implementation(libs.landscapist.glide)
   implementation(libs.landscapist.animation)
 
-//  coreLibraryDesugaring(libs.desugar.jdk.libs)
+  coreLibraryDesugaring(libs.core.desugar)
 
   testImplementation(libs.bundles.testing)
 

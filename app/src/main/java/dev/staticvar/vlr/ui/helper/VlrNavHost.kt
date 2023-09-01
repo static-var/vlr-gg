@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
 import dev.staticvar.vlr.ui.Destination
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.about.AboutScreen
@@ -28,7 +28,8 @@ import dev.staticvar.vlr.utils.slideInFromBottom
 @Composable
 fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit) {
   val viewModel: VlrViewModel = hiltViewModel()
-  AnimatedNavHost(
+
+  NavHost(
     navController = navController,
     startDestination = Destination.NewsOverview.route
   ) {

@@ -125,8 +125,6 @@ fun TournamentPreviewContainer(
   postResetScroll: () -> Unit,
 ) {
 
-  val pagerState = rememberPagerState()
-
   val tabs =
     listOf(
       stringResource(id = R.string.ongoing),
@@ -134,6 +132,8 @@ fun TournamentPreviewContainer(
       stringResource(id = R.string.completed)
     )
   val mapByStatus by remember(list) { mutableStateOf(list.item.groupBy { it.status }) }
+
+  val pagerState = rememberPagerState(pageCount = { tabs.size })
 
   val (ongoing, upcoming, completed) =
     remember(list) {
