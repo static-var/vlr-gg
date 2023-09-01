@@ -1,6 +1,5 @@
 @file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
 
-import com.android.build.api.dsl.ManagedVirtualDevice
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -35,7 +34,7 @@ android {
   testOptions {
     managedDevices {
       devices {
-        create("pixel6Api30", ManagedVirtualDevice::class.java) {
+        create("pixel6Api30", com.android.build.api.dsl.ManagedVirtualDevice::class.java) {
           device = "Pixel 6"
           apiLevel = 30
           systemImageSource = "aosp"

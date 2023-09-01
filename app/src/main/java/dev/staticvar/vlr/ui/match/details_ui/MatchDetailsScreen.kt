@@ -92,36 +92,33 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
   val details by remember(viewModel) { viewModel.getMatchDetails(id) }.collectAsState(Waiting())
   val trackerString = id.toMatchTopic()
   val isTracked by
-  remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
+    remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh) { viewModel.refreshMatchInfo(id) }
-    .collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshMatchInfo(id) }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(
       refreshing = updateState.get() ?: false,
-      { triggerRefresh = triggerRefresh.not() })
+      { triggerRefresh = triggerRefresh.not() }
+    )
   val rememberListState = rememberLazyListState()
 
   val context = LocalContext.current
 
   Column(
-    modifier = modifier
-      .fillMaxSize()
-      .testTag("matchDetails:root"),
+    modifier = modifier.fillMaxSize().testTag("matchDetails:root"),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     details
       .onPass {
         data?.let { matchInfo ->
-
           AnimatedVisibility(
             visible = updateState.get() == true || swipeRefresh.progress != 0f,
-            modifier = Modifier
-              .statusBarsPadding(),
+            modifier = Modifier.statusBarsPadding(),
           ) {
             LinearProgressIndicator(
               modifier
@@ -133,9 +130,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
           }
 
           Box(
-            modifier = Modifier
-              .pullRefresh(swipeRefresh)
-              .fillMaxSize(),
+            modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize(),
           ) {
             LazyColumn(modifier = modifier.fillMaxSize(), state = rememberListState) {
               item { Spacer(modifier = modifier.statusBarsPadding()) }
@@ -162,12 +157,10 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                         Firebase.messaging.unsubscribeFromTopic(trackerString).await()
                         viewModel.removeTopic(trackerString)
                       }
-
                       false -> {
                         Firebase.messaging.subscribeToTopic(trackerString).await()
                         viewModel.trackTopic(trackerString)
                       }
-
                       else -> {}
                     }
                   }
@@ -183,9 +176,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
                 item {
                   Text(
                     text = stringResource(R.string.matches_tbp),
-                    modifier = modifier
-                      .fillMaxWidth()
-                      .padding(Local16DPPadding.current),
+                    modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
                     textAlign = TextAlign.Center,
                     style = VLRTheme.typography.titleSmall,
                     color = VLRTheme.colorScheme.primary,
@@ -225,9 +216,7 @@ fun MatchOverallAndEventOverview(
   val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
 
   CardView(
-    modifier
-      .fillMaxWidth()
-      .aspectRatio(1.8f),
+    modifier.fillMaxWidth().aspectRatio(1.8f),
   ) {
     detailData.event.status?.let {
       MatchStatusUi(modifier = modifier, state = it, date = detailData.event.date)
@@ -241,10 +230,7 @@ fun MatchOverallAndEventOverview(
         Spacer(modifier = Modifier.weight(0.1f))
         Box(
           modifier =
-          modifier
-            .weight(1f)
-            .padding(Local8DPPadding.current)
-            .clickable {
+            modifier.weight(1f).padding(Local8DPPadding.current).clickable {
               detailData.teams[0].id?.let(onClick)
             },
           contentAlignment = Alignment.TopEnd
@@ -253,29 +239,21 @@ fun MatchOverallAndEventOverview(
             Icon(
               Icons.Outlined.OpenInNew,
               contentDescription = stringResource(R.string.open_match_content_description),
-              modifier = modifier
-                .size(24.dp)
-                .padding(Local2DPPadding.current)
+              modifier = modifier.size(24.dp).padding(Local2DPPadding.current)
             )
           }
           GlideImage(
             imageModel = { detailData.teams[0].img },
             imageOptions =
-            ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterStart),
-            modifier = modifier
-              .alpha(0.2f)
-              .aspectRatio(1f, true)
-              .align(Alignment.TopCenter),
+              ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterStart),
+            modifier = modifier.alpha(0.2f).aspectRatio(1f, true).align(Alignment.TopCenter),
             component = imageComponent
           )
         }
         Spacer(modifier = Modifier.weight(0.2f))
         Box(
           modifier =
-          modifier
-            .weight(1f)
-            .padding(Local8DPPadding.current)
-            .clickable {
+            modifier.weight(1f).padding(Local8DPPadding.current).clickable {
               detailData.teams[1].id?.let(onClick)
             },
           contentAlignment = Alignment.TopEnd
@@ -284,19 +262,14 @@ fun MatchOverallAndEventOverview(
             Icon(
               Icons.Outlined.OpenInNew,
               contentDescription = stringResource(R.string.open_match_content_description),
-              modifier = modifier
-                .size(24.dp)
-                .padding(Local2DPPadding.current)
+              modifier = modifier.size(24.dp).padding(Local2DPPadding.current)
             )
           }
           GlideImage(
             imageModel = { detailData.teams[1].img },
             imageOptions =
-            ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
-            modifier = modifier
-              .alpha(0.2f)
-              .aspectRatio(1f, true)
-              .align(Alignment.TopCenter),
+              ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
+            modifier = modifier.alpha(0.2f).aspectRatio(1f, true).align(Alignment.TopCenter),
             component = imageComponent
           )
         }
@@ -304,9 +277,7 @@ fun MatchOverallAndEventOverview(
       }
       Column(
         modifier =
-        modifier
-          .size(width = maxWidth, height = maxHeight)
-          .padding(Local8DPPadding.current),
+          modifier.size(width = maxWidth, height = maxHeight).padding(Local8DPPadding.current),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
       ) {
@@ -315,9 +286,7 @@ fun MatchOverallAndEventOverview(
             text = detailData.teams[0].name,
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = modifier
-              .padding(Local16DPPadding.current)
-              .weight(1f),
+            modifier = modifier.padding(Local16DPPadding.current).weight(1f),
             maxLines = 2,
             color = VLRTheme.colorScheme.primary,
           )
@@ -325,18 +294,13 @@ fun MatchOverallAndEventOverview(
             text = detailData.teams[1].name,
             style = VLRTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = modifier
-              .padding(Local16DPPadding.current)
-              .weight(1f),
+            modifier = modifier.padding(Local16DPPadding.current).weight(1f),
             maxLines = 2,
             color = VLRTheme.colorScheme.primary,
           )
         }
         Row(
-          modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .animateContentSize(),
+          modifier.fillMaxWidth().weight(1f).animateContentSize(),
           verticalAlignment = Alignment.CenterVertically
         ) {
           Text(
@@ -375,9 +339,7 @@ fun MapStatsCard(
       .testTag("matchDetails:map")
   ) {
     Row(
-      modifier
-        .fillMaxWidth()
-        .padding(Local16DPPadding.current),
+      modifier.fillMaxWidth().padding(Local16DPPadding.current),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
@@ -413,19 +375,17 @@ private fun String.toMatchTopic() = "match-$this"
 fun MapBox(modifier: Modifier = Modifier, matchInfo: MatchInfo, onPlayerClick: (String) -> Unit) {
   var overAllMapToggle by rememberSaveable { mutableStateOf(false) }
   var toggleStateMap by
-  rememberSaveable(matchInfo, overAllMapToggle) {
-    mutableStateOf(matchInfo.matchData.associate { it.map to false }.toMap())
-  }
+    rememberSaveable(matchInfo, overAllMapToggle) {
+      mutableStateOf(matchInfo.matchData.associate { it.map to false }.toMap())
+    }
   EmphasisCardView(
     modifier =
-    modifier
-      .clickable { overAllMapToggle = overAllMapToggle.not() }
-      .testTag("matchDetails:mapHeader")
+      modifier
+        .clickable { overAllMapToggle = overAllMapToggle.not() }
+        .testTag("matchDetails:mapHeader")
   ) {
     Box(
-      modifier = modifier
-        .fillMaxWidth()
-        .padding(Local16DPPadding.current),
+      modifier = modifier.fillMaxWidth().padding(Local16DPPadding.current),
       contentAlignment = Alignment.CenterEnd
     ) {
       Text(
@@ -462,12 +422,12 @@ fun MapBox(modifier: Modifier = Modifier, matchInfo: MatchInfo, onPlayerClick: (
 fun MatchLiveUi(modifier: Modifier = Modifier) {
   val infiniteTransition = rememberInfiniteTransition()
   val color by
-  infiniteTransition.animateColor(
-    initialValue = VLRTheme.colorScheme.primary,
-    targetValue = Color.Transparent,
-    animationSpec =
-    infiniteRepeatable(animation = tween(1000, easing = Ease), repeatMode = RepeatMode.Reverse)
-  )
+    infiniteTransition.animateColor(
+      initialValue = VLRTheme.colorScheme.primary,
+      targetValue = Color.Transparent,
+      animationSpec =
+        infiniteRepeatable(animation = tween(1000, easing = Ease), repeatMode = RepeatMode.Reverse)
+    )
 
   Row(
     modifier = modifier.fillMaxWidth(),
@@ -475,9 +435,7 @@ fun MatchLiveUi(modifier: Modifier = Modifier) {
     verticalAlignment = Alignment.CenterVertically
   ) {
     Canvas(
-      modifier = modifier
-        .size(18.dp)
-        .padding(Local2DPPadding.current),
+      modifier = modifier.size(18.dp).padding(Local2DPPadding.current),
       onDraw = { drawCircle(color = color) }
     )
     Text(
@@ -495,9 +453,7 @@ fun MatchStatusUi(modifier: Modifier, state: String, date: String?) {
     else {
       Text(
         text = state.uppercase() + " " + date?.timeDiff,
-        modifier = modifier
-          .fillMaxWidth()
-          .padding(Local4DPPadding.current),
+        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
         textAlign = TextAlign.Center,
         color = VLRTheme.colorScheme.primary
       )
