@@ -6,7 +6,8 @@ plugins {
   alias(libs.plugins.kotlin.kapt) apply false
   alias(libs.plugins.hilt.plugin) apply false
   alias(libs.plugins.ksp.plugin) apply false
-  id("io.gitlab.arturbosch.detekt") version("1.22.0")
+  alias(libs.plugins.secrets.plugin) apply false
+  alias(libs.plugins.detekt)
 }
 
 buildscript {

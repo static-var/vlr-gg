@@ -24,17 +24,20 @@ jobs:
       - name: Make gradlew executable
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
         run: |
           touch local.properties
-          echo "API_KEY=${{ env.API_TOKEN }}" > local.properties
+          echo 'API_KEY="${{ env.API_TOKEN }}"' > local.properties
+          echo 'APPLICATION_ID="dev.staticvar.vlr"' >> local.properties
+          echo 'key.alias=${{ env.SIGNING_KEY_ALIAS }}' >> local.properties
+          echo 'key.password=${{ env.SIGNING_KEY_PASSWORD }}' >> local.properties
+          echo 'store.password=${{ env.SIGNING_STORE_PASSWORD }}' >> local.properties
           chmod +x ./gradlew
 
       - name: build prod
         env:
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          API_TOKEN: ${{ secrets.API_TOKEN }}
           FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG }}
         run: |
           touch app/google-services.json

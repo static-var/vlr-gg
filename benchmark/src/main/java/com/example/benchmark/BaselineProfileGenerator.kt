@@ -9,5 +9,5 @@ class BaselineProfileGenerator {
 
   @Test
   fun startup() =
-    baselineProfileRule.collectBaselineProfile(packageName = "dev.staticvar.vlr") { userflow() }
+    baselineProfileRule.collect(packageName = "dev.staticvar.vlr", maxIterations = 5) { userflow() }
 }

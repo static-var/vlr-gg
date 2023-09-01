@@ -80,27 +80,26 @@ fun RankScreen(viewModel: VlrViewModel) {
   StatusBarColorForHomeWithTabs()
 
   val allTeams by
-  remember(viewModel) { viewModel.getRanks() }
-    .collectAsStateWithLifecycle(initialValue = Waiting())
+    remember(viewModel) { viewModel.getRanks() }
+      .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh) { viewModel.refreshRanks() }
-    .collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshRanks() }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(
       refreshing = updateState.get() ?: false,
-      { triggerRefresh = triggerRefresh.not() })
+      { triggerRefresh = triggerRefresh.not() }
+    )
 
   val resetScroll by
-  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val modifier: Modifier = Modifier
 
   Column(
-    modifier = modifier
-      .fillMaxSize()
-      .statusBarsPadding(),
+    modifier = modifier.fillMaxSize().statusBarsPadding(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
@@ -133,23 +132,20 @@ fun RanksPreviewContainer(
   resetScroll: Boolean,
   postResetScroll: () -> Unit,
 ) {
-  val pagerState = rememberPagerState()
   val teamMap by
-  remember(list) {
-    mutableStateOf(
-      list.item
-        .sortedBy { it.rank }
-        .filter { it.region.isNotEmpty() }
-        .groupBy { it.region.trim() }
-    )
-  }
+    remember(list) {
+      mutableStateOf(
+        list.item
+          .sortedBy { it.rank }
+          .filter { it.region.isNotEmpty() }
+          .groupBy { it.region.trim() }
+      )
+    }
   val tabs by remember { mutableStateOf(teamMap.keys.toList().sorted()) }
+  val pagerState = rememberPagerState(pageCount = { tabs.size })
 
   Column(
-    modifier = modifier
-      .fillMaxSize()
-      .animateContentSize()
-      .pullRefresh(swipeRefresh),
+    modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh),
     verticalArrangement = Arrangement.Top
   ) {
     if (tabs.isNotEmpty()) {
@@ -169,7 +165,6 @@ fun RanksPreviewContainer(
       }
       VlrScrollableTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
       HorizontalPager(
-        pageCount = tabs.size,
         state = pagerState,
         modifier = modifier.fillMaxSize()
       ) { tabPosition ->
@@ -179,9 +174,7 @@ fun RanksPreviewContainer(
         if (topTeams.isEmpty()) NoTeamsUI()
         else {
           LazyColumn(
-            modifier
-              .fillMaxSize()
-              .testTag("rankOverview:live"),
+            modifier.fillMaxSize().testTag("rankOverview:live"),
             verticalArrangement = Arrangement.Top,
             state = lazyListState
           ) {
@@ -246,13 +239,9 @@ fun NoTeamsUI(modifier: Modifier = Modifier) {
 
 @Composable
 fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Action) {
-  val imageComponent = rememberImageComponent {
-    add(CircularRevealPlugin())
-  }
+  val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
 
-  CardView(modifier = modifier
-    .clickable { action.team(team.id) }
-    .height(120.dp)) {
+  CardView(modifier = modifier.clickable { action.team(team.id) }.height(120.dp)) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Column(modifier = modifier.padding(Local8DPPadding.current)) {
         val teamRankAnnotatedString = buildAnnotatedString {
@@ -286,13 +275,13 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
         val inlineLocationContentMap =
           mapOf(
             "location" to
-                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                  Icon(
-                    imageVector = Icons.Outlined.LocationOn,
-                    modifier = modifier.size(16.dp),
-                    contentDescription = ""
-                  )
-                }
+              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                Icon(
+                  imageVector = Icons.Outlined.LocationOn,
+                  modifier = modifier.size(16.dp),
+                  contentDescription = ""
+                )
+              }
           )
         val annotatedDateString = buildAnnotatedString {
           appendInlineContent(id = "points")
@@ -301,13 +290,13 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
         val inlineDateContentMap =
           mapOf(
             "points" to
-                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                  Icon(
-                    imageVector = Icons.Outlined.Insights,
-                    modifier = modifier.size(16.dp),
-                    contentDescription = ""
-                  )
-                }
+              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                Icon(
+                  imageVector = Icons.Outlined.Insights,
+                  modifier = modifier.size(16.dp),
+                  contentDescription = ""
+                )
+              }
           )
         Text(
           text = annotatedLocationString,
@@ -326,12 +315,13 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
       }
       GlideImage(
         imageModel = { team.img },
-        modifier = modifier
-          .align(Alignment.CenterEnd)
-          .padding(horizontal = 24.dp, vertical = 8.dp)
-          .size(120.dp),
+        modifier =
+          modifier
+            .align(Alignment.CenterEnd)
+            .padding(horizontal = 24.dp, vertical = 8.dp)
+            .size(120.dp),
         imageOptions =
-        ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
+          ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
         component = imageComponent
       )
     }

@@ -1,6 +1,5 @@
 @file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
 
-import com.android.build.api.dsl.ManagedVirtualDevice
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -11,11 +10,11 @@ plugins {
 
 android {
   namespace = "com.example.benchmark"
-  compileSdk = 33
+  compileSdk = 34
 
   defaultConfig {
     minSdk = 23 // Macrobenchmark doesn't work with SDK lower than 23
-    targetSdk = 33
+    targetSdk = 34
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
@@ -35,7 +34,7 @@ android {
   testOptions {
     managedDevices {
       devices {
-        create("pixel6Api30", ManagedVirtualDevice::class.java) {
+        create("pixel6Api30", com.android.build.api.dsl.ManagedVirtualDevice::class.java) {
           device = "Pixel 6"
           apiLevel = 30
           systemImageSource = "aosp"
@@ -52,11 +51,6 @@ android {
     }
     // declare a build type to match the target app's build type
     create("benchmark") {
-      buildConfigField(
-        "String",
-        "TOKEN",
-        System.getenv("API_TOKEN") ?: localProperties["token"] as String
-      )
       isDebuggable = true
       signingConfig = signingConfigs.getByName("debug")
       // Selects release buildType if the benchmark buildType not available in other modules.
