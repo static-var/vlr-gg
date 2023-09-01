@@ -1,7 +1,13 @@
 package com.example.benchmark
 
 import androidx.benchmark.macro.MacrobenchmarkScope
-import androidx.test.uiautomator.*
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject
+import androidx.test.uiautomator.UiObjectNotFoundException
+import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
 
 fun MacrobenchmarkScope.userflow() {
   pressHome()
@@ -62,6 +68,7 @@ fun UiDevice.visitMatchDetailsAndBack() {
 
           wait(Until.gone(By.res("common:loader")), 15_000) // Ensure loader is gone
           findObject(By.res("matchDetails:mapHeader")).click()
+          wait(Until.gone(By.res("matchDetails:map")), 15_000) // Ensure maps are visible
           findObject(By.res("matchDetails:map")).click()
           wait(Until.hasObject(By.res("matchDetails:mapStats")), 15_000)
 
@@ -97,6 +104,7 @@ fun UiDevice.visitEventDetailsAndBack() {
       wait(Until.hasObject(By.res("team:banner")), 15_0000)
       waitForIdle()
       pressBack()
+      wait(Until.hasObject(By.res("eventDetails:root")), 15_0000)
       findObject(By.res("eventDetails:root")).fling(Direction.DOWN)
       waitForIdle()
       pressBack()
