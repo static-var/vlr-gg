@@ -103,6 +103,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
+                  <entry key="Pixel_3a_API_33_x86_64" value="120" />
                   <entry key="Pixel_6_Pro_API_29" value="120" />
                   <entry key="Pixel_6_Pro_API_30" value="120" />
                   <entry key="Pixel_6_Pro_API_31_2" value="120" />
