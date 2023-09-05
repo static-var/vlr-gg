@@ -1,4 +1,4 @@
-<img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/static-var/vlr-gg?style=for-the-badge"> <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/static-var/vlr-gg/Build%20Signed%20APK%20and%20create%20a%20release?style=for-the-badge"> <a href="https://github.com/static-var/vlr-gg/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/static-var/vlr-gg?style=for-the-badge"></a>
+![GitHub Release](https://img.shields.io/github/v/release/static-var/vlr-gg) ![GitHub Repo stars](https://img.shields.io/github/stars/static-var/vlr-gg) [![Beta Play store release](https://github.com/static-var/vlr-gg/actions/workflows/internal_play_store_release_dispatcher.yml/badge.svg?branch=trunk)](https://github.com/static-var/vlr-gg/actions/workflows/internal_play_store_release_dispatcher.yml)
 
 # 🚧 VLR-GG (Unofficial application) 🚧
 
