@@ -147,7 +147,7 @@ android-library = { id = "com.android.library", version.ref = "gradle" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 hilt-android-plugin = { id = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
-google-services = { id = "com.google.gms:google-services", version = "4.3.15" }
+google-services = { id = "com.google.gms:google-services", version = "4.4.0" }
 perf-plugin = { id = "com.google.firebase:perf-plugin", version = "1.4.2" }
 crashlytics-plugin = { id = "com.google.firebase:firebase-crashlytics-gradle", version = "2.9.9" }
 ksp-plugin = { id = "com.google.devtools.ksp", version.ref = "ksp" }
