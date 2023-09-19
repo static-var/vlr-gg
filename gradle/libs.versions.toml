@@ -83,7 +83,7 @@ ktor-encoding = { module = "io.ktor:ktor-client-encoding", version.ref = "ktor" 
 ktor-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
-okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version = "4.10.0" }
+okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version = "4.11.0" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version = "4.10.0" }
 
 landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version = "2.2.8" }
