@@ -157,7 +157,7 @@ dependencies {
   implementation(libs.kotlinx.collections.immutable)
 
   // Firebase
-  implementation(platform("com.google.firebase:firebase-bom:31.3.0"))
+  implementation(platform("com.google.firebase:firebase-bom:31.5.0"))
   implementation("com.google.firebase:firebase-analytics-ktx")
   implementation("com.google.firebase:firebase-messaging-ktx")
   implementation("com.google.firebase:firebase-crashlytics-ktx")
