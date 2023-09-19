@@ -49,7 +49,7 @@ activity-compose = { module = "androidx.activity:activity-compose", version = "1
 
 navigation = { module = "androidx.navigation:navigation-compose", version = "2.7.1" }
 
-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.6.1" }
+lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.6.2" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.6.1" }
 
 accompanist-sysui = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
