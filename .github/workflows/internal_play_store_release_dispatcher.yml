@@ -68,7 +68,7 @@ jobs:
           echo "${{ github.workspace }}/${{ env.APK }}"
 
       - name: Publish to play store
-        uses: r0adkll/upload-google-play@v1.0.17
+        uses: r0adkll/upload-google-play@v1.1.2
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: dev.staticvar.vlr
