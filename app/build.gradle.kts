@@ -8,16 +8,15 @@ import java.util.Properties
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
-  alias(libs.plugins.kotlin.kapt)
+  alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.kotlin.parcelize)
   id("dagger.hilt.android.plugin")
-  id("kotlin-parcelize")
-  id("kotlinx-serialization")
   id("com.google.gms.google-services")
   id("com.google.firebase.firebase-perf")
   id("com.google.firebase.crashlytics")
-  alias(libs.plugins.detekt)
   alias(libs.plugins.ksp.plugin)
   alias(libs.plugins.secrets.plugin)
+  id("vlr.detekt")
 }
 
 android {
@@ -157,11 +156,8 @@ dependencies {
   implementation(libs.kotlinx.collections.immutable)
 
   // Firebase
-  implementation(platform("com.google.firebase:firebase-bom:31.3.0"))
-  implementation("com.google.firebase:firebase-analytics-ktx")
-  implementation("com.google.firebase:firebase-messaging-ktx")
-  implementation("com.google.firebase:firebase-crashlytics-ktx")
-  implementation("com.google.firebase:firebase-perf-ktx")
+  implementation(platform(libs.firebase.bom))
+  implementation(libs.bundles.firebase)
 
   implementation(libs.bundles.ktor)
   implementation(libs.okhttp.brotli)
@@ -174,7 +170,4 @@ dependencies {
   coreLibraryDesugaring(libs.core.desugar)
 
   testImplementation(libs.bundles.testing)
-
-  detektPlugins(libs.detekt)
-  detektPlugins(libs.detekt.formatting)
 }
