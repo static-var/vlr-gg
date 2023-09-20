@@ -112,7 +112,7 @@ turbine = { module = "app.cash.turbine:turbine", version = "0.13.0" }
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 ktor-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 
-robolectric = { module = "org.robolectric:robolectric", version = "4.9.2" }
+robolectric = { module = "org.robolectric:robolectric", version = "4.10.3" }
 arch-core-testing = { module = "androidx.arch.core:core-testing", version = "2.2.0" }
 test-core-ktx = { module = "androidx.test:core-ktx", version = "1.5.0" }
 junit-ktx = { module = "androidx.test.ext:junit-ktx", version = "1.1.5" }
