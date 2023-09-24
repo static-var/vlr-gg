@@ -13,8 +13,8 @@ import dev.staticvar.vlr.ui.theme.VLRTheme
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
-    enableEdgeToEdge()
     installSplashScreen()
+    enableEdgeToEdge()
     super.onCreate(savedInstanceState)
     setContent { VLRTheme() { PaddingLocalCompositions { VLR() } } }
   }
