@@ -122,7 +122,6 @@ dependencies {
   implementation(libs.bundles.compose)
   implementation(libs.compose.icons)
 
-  implementation(libs.navigation)
   implementation(libs.bundles.lifecycle)
 
   implementation(libs.glance.widget)
