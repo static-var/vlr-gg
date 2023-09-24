@@ -27,7 +27,7 @@ constructor(
     val widgetsEnabled = appContext.areWidgetsEnabled()
     if (widgetsEnabled) {
       vlrRepository.updateLatestMatches().onEach { i { "Updating widget $it" } }.collect()
-      ScoreWidget(vlrRepository).updateAll(appContext)
+      ScoreWidget().updateAll(appContext)
     } else e { "No Widget to update" }
     return Result.success()
   }
