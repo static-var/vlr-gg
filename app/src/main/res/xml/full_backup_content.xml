@@ -1,0 +1,5 @@
+<full-backup-content>
+    <include
+        domain="database"
+        path="databases" />
+</full-backup-content>
