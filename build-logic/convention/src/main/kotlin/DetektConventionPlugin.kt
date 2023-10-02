@@ -22,7 +22,7 @@ class DetektConventionPlugin : Plugin<Project> {
       extensions.getByType<DetektExtension>().apply {
         buildUponDefaultConfig = true // preconfigure defaults
         allRules = false // activate all available (even unstable) rules.
-        autoCorrect = true
+        autoCorrect = false
         parallel = true
         config = files("config/detekt/detekt.yml")
         baseline = file("config/detekt/detekt-baseline.xml")
