@@ -133,9 +133,9 @@ complexity:
     active: true
     functionThreshold: 7
     constructorThreshold: 7
+    ignoreDefaultParameters: false
     ignoreDataClasses: true
     ignoreAnnotatedParameter: []
-    ignoreDefaultParameters: true
   MethodOverloading:
     active: false
     threshold: 6
@@ -503,7 +503,7 @@ potential-bugs:
     active: true
 
 style:
-  active: true
+  active: false
   AlsoCouldBeApply:
     active: false
   BracesOnIfStatements:
@@ -616,7 +616,7 @@ style:
       - '1'
       - '2'
     ignoreHashCodeFunction: true
-    ignorePropertyDeclaration: true
+    ignorePropertyDeclaration: false
     ignoreLocalVariableDeclaration: false
     ignoreConstantDeclaration: true
     ignoreCompanionObjectPropertyDeclaration: true
@@ -739,7 +739,6 @@ style:
   UnusedPrivateMember:
     active: true
     allowedNames: ''
-    ignoreAnnotated: ['Preview']
   UnusedPrivateProperty:
     active: true
     allowedNames: '_|ignored|expected|serialVersionUID'
@@ -784,47 +783,35 @@ style:
     active: true
     excludeImports:
       - 'java.util.*'
+
 Compose:
   CompositionLocalAllowlist:
     active: true
-    # You can optionally define a list of CompositionLocals that are allowed here
-    # allowedCompositionLocals: LocalSomething,LocalSomethingElse
   ContentEmitterReturningValues:
     active: true
-    # You can optionally add your own composables here
-    # contentEmitters: MyComposable,MyOtherComposable
   DefaultsVisibility:
     active: true
   ModifierComposable:
     active: true
   ModifierMissing:
     active: true
-    # You can optionally control the visibility of which composables to check for here
-    # Possible values are: `only_public`, `public_and_internal` and `all` (default is `only_public`)
-    # checkModifiersForVisibility: only_public
   ModifierNaming:
     active: true
   ModifierNotUsedAtRoot:
     active: true
-    # You can optionally add your own composables here
-    # contentEmitters: MyComposable,MyOtherComposable
   ModifierReused:
     active: true
   ModifierWithoutDefault:
     active: true
   MultipleEmitters:
     active: true
-    # You can optionally add your own composables here
-    # contentEmitters: MyComposable,MyOtherComposable
   MutableParams:
     active: true
   ComposableNaming:
     active: true
-    # You can optionally disable the checks in this rule for regex matches against the composable name (e.g. molecule presenters)
-    # allowedComposableFunctionNames: .*Presenter,.*MoleculePresenter
   ComposableParamOrder:
     active: true
-  PreviewNaming:
+  PreviewAnnotationNaming:
     active: true
   PreviewPublic:
     active: true
@@ -834,9 +821,5 @@ Compose:
     active: true
   ViewModelForwarding:
     active: true
-      # You can optionally use this rule on things other than types ending in "ViewModel" or "Presenter" (which are the defaults). You can add your own via a regex here:
-    # allowedStateHolderNames: .*ViewModel,.*Presenter
   ViewModelInjection:
     active: true
-    # You can optionally add your own ViewModel factories here
-    # viewModelFactories: hiltViewModel,potatoViewModel
