@@ -19,6 +19,7 @@ dependencies {
   compileOnly(libs.build.kover)
   compileOnly(libs.build.kotlin)
   compileOnly(libs.detekt.gradle)
+  compileOnly(libs.spotless.gradle)
 }
 
 gradlePlugin {
@@ -26,6 +27,10 @@ gradlePlugin {
     register("detekt") {
       id = "vlr.detekt"
       implementationClass = "DetektConventionPlugin"
+    }
+    register("ktfmt") {
+      id = "vlr.ktfmt"
+      implementationClass = "KtfmtConventionPlugin"
     }
   }
 }
