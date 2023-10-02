@@ -17,6 +17,7 @@ plugins {
   alias(libs.plugins.ksp.plugin)
   alias(libs.plugins.secrets.plugin)
   id("vlr.detekt")
+  id("vlr.ktfmt")
 }
 
 android {
