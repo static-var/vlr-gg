@@ -70,7 +70,7 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 hilt-common = { module = "androidx.hilt:hilt-common", version = "1.0.0" }
 hilt-nav = { module = "androidx.hilt:hilt-navigation-compose", version = "1.0.0" }
 hilt-work = { module = "androidx.hilt:hilt-work", version = "1.0.0" }
-hilt-android-compiler = { module = "androidx.hilt:hilt-compiler", version = "1.1.0-alpha01" }
+hilt-android-compiler = { module = "androidx.hilt:hilt-compiler", version = "1.1.0-beta01" }
 
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.6.0" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.5" }
