@@ -24,9 +24,8 @@ class DetektConventionPlugin : Plugin<Project> {
         allRules = false // activate all available (even unstable) rules.
         autoCorrect = false
         parallel = true
-        config = files("config/detekt/detekt.yml")
+        config.setFrom("config/detekt/detekt.yml")
         baseline = file("config/detekt/detekt-baseline.xml")
-        autoCorrect = true
       }
 
       tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
