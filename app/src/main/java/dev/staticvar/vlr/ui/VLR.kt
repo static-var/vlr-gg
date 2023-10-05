@@ -39,7 +39,7 @@ import dev.staticvar.vlr.ui.helper.VlrNavBar
 import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.ui.theme.tintedBackground
-import dev.staticvar.vlr.utils.e
+import dev.staticvar.vlr.utils.FirebaseLogger
 
 @Composable
 fun VLR() {
@@ -48,6 +48,10 @@ fun VLR() {
 
   val viewModel: VlrViewModel = hiltViewModel()
   val action = remember(navController) { Action(navController) }
+
+  val crashlytics by remember {
+    mutableStateOf(FirebaseLogger)
+  }
 
   val systemUiController = rememberSystemUiController()
   val background = VLRTheme.colorScheme.surfaceColorAtElevation(8.dp)
@@ -68,8 +72,8 @@ fun VLR() {
         Icons.Filled.Feed,
         Icons.Outlined.Feed,
         onClick = {
-          e {"OnNews | ${currentNav} | ${currentNav == Destination.NewsOverview.route}"}
-          if (currentNav == Destination.NewsOverview.route) resetScroll() else action.goNews() }
+          if (currentNav == Destination.NewsOverview.route) resetScroll() else action.goNews()
+        }
       ),
       NavItem(
         title = stringResource(id = R.string.matches),
@@ -118,6 +122,7 @@ fun VLR() {
           else -> transparent
         },
     )
+    crashlytics.setDestinationKey(currentNav)
   }
 
   Scaffold(

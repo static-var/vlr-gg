@@ -152,8 +152,8 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
           }
         )
     ) {
-      onNavigation(Destination.Match.route)
       val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
+      onNavigation(Destination.Match.route.replace(Destination.Match.Args.ID, id))
       NewMatchDetails(viewModel = viewModel, id = id)
     }
     composable(
@@ -175,8 +175,8 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
         }
       )
     ) {
-      onNavigation(Destination.Event.route)
       val id = it.arguments?.getString(Destination.Event.Args.ID) ?: ""
+      onNavigation(Destination.Event.route.replace(Destination.Event.Args.ID, id))
       EventDetails(viewModel = viewModel, id = id)
     }
     composable(
@@ -197,8 +197,8 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
         },
       )
     ) {
-      onNavigation(Destination.Event.route)
       val id = it.arguments?.getString(Destination.Team.Args.ID) ?: ""
+      onNavigation(Destination.Event.route.replace(Destination.Team.Args.ID, id))
       TeamScreen(viewModel = viewModel, id = id)
     }
     composable(
@@ -219,8 +219,8 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
         },
       )
     ) {
-      onNavigation(Destination.Player.route)
       val id = it.arguments?.getString(Destination.Player.Args.ID) ?: ""
+      onNavigation(Destination.Player.route.replace(Destination.Player.Args.ID, id))
       PlayerDetailsScreen(viewModel = viewModel, id = id)
     }
     composable(
