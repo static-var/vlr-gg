@@ -134,6 +134,7 @@ output.json
 *.ipr
 *~
 *.swp
+/app/release/output-metadata.json
 
 # Keystore files
 *.jks

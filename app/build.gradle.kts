@@ -1,6 +1,5 @@
 @file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
 
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.io.FileInputStream
 import java.util.Properties
@@ -16,6 +15,7 @@ plugins {
   id("com.google.firebase.crashlytics")
   alias(libs.plugins.ksp.plugin)
   alias(libs.plugins.secrets.plugin)
+  alias(libs.plugins.baselineprofile)
   id("vlr.detekt")
   id("vlr.ktfmt")
 }
@@ -28,8 +28,8 @@ android {
     applicationId = "dev.staticvar.vlr"
     minSdk = 23
     targetSdk = 34
-    versionCode = 48
-    versionName = "v0.3.4"
+    versionCode = 49
+    versionName = "v0.3.5"
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
@@ -38,16 +38,19 @@ android {
 
   signingConfigs {
     create("release") {
+      val prop = Properties().apply {
+        load(FileInputStream(File(rootProject.rootDir, "local.properties")))
+      }
       storeFile = file("keystore/vlr-gg.jks")
       storePassword =
         System.getenv("SIGNING_STORE_PASSWORD")
-          ?: gradleLocalProperties(rootDir).getProperty("store.password") as String
+          ?: prop.getProperty("store.password") as String
       keyPassword =
         System.getenv("SIGNING_KEY_PASSWORD")
-          ?: gradleLocalProperties(rootDir).getProperty("key.password") as String
+          ?: prop.getProperty("key.password") as String
       keyAlias =
         System.getenv("SIGNING_KEY_ALIAS")
-          ?: gradleLocalProperties(rootDir).getProperty("key.alias") as String
+          ?: prop.getProperty("key.alias") as String
     }
   }
 
@@ -115,6 +118,13 @@ android {
     resources { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/DEPENDENCIES") }
   }
   bundle { storeArchive { enable = false } }
+  baselineProfile {
+    saveInSrc = true
+    mergeIntoMain = true
+    from(projects.baselineprofile.dependencyProject)
+  }
+  experimentalProperties["android.experimental.art-profile-r8-rewriting"] = true
+  experimentalProperties["android.experimental.r8.dex-startup-optimization"] = true
 }
 
 dependencies {
@@ -145,6 +155,7 @@ dependencies {
 
   // Hilt
   implementation(libs.bundles.hilt)
+  "baselineProfile"(project(":baselineprofile"))
   ksp(libs.hilt.compiler)
   ksp(libs.hilt.android.compiler)
 
