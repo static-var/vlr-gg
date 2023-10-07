@@ -6,6 +6,7 @@ import java.util.Properties
 plugins {
   id("com.android.test")
   id("org.jetbrains.kotlin.android")
+  alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -34,9 +35,9 @@ android {
   testOptions {
     managedDevices {
       devices {
-        create("pixel6Api30", com.android.build.api.dsl.ManagedVirtualDevice::class.java) {
+        create("pixel6Api33", com.android.build.api.dsl.ManagedVirtualDevice::class.java) {
           device = "Pixel 6"
-          apiLevel = 30
+          apiLevel = 33
           systemImageSource = "aosp"
         }
       }
@@ -60,5 +61,3 @@ android {
 }
 
 dependencies { implementation(libs.bundles.benchmark) }
-
-androidComponents { beforeVariants(selector().all()) { it.enable = it.buildType == "benchmark" } }

@@ -1,4 +1,4 @@
-package com.example.benchmark
+package dev.staticvar.baselineprofile
 
 import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.test.uiautomator.By

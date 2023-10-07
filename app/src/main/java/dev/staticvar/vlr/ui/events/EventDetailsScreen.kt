@@ -46,7 +46,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -54,6 +53,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
@@ -279,11 +279,12 @@ fun TournamentDetailsHeader(
         Spacer(modifier = modifier.weight(1f))
         GlideImage(
           imageModel = { tournamentDetails.img },
-          modifier = modifier.alpha(0.3f),
           imageOptions =
           ImageOptions(
-            contentScale = ContentScale.Inside,
+            contentScale = ContentScale.FillBounds,
             alignment = Alignment.CenterEnd,
+            alpha = 0.3f,
+            requestSize = IntSize(200, 200)
           ),
           component = imageComponent,
         )

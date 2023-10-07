@@ -9,10 +9,12 @@ plugins {
   alias(libs.plugins.secrets.plugin) apply false
   alias(libs.plugins.kotlin.serialization) apply false
   alias(libs.plugins.kotlin.parcelize) apply false
+  alias(libs.plugins.baselineprofile) apply false
   alias(libs.plugins.detekt)
   alias(libs.plugins.spotless.plugin)
   id("vlr.detekt")
   id("vlr.ktfmt")
+  alias(libs.plugins.androidTest) apply false
 }
 
 buildscript {

@@ -1,3 +1,4 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -20,5 +21,4 @@ dependencyResolutionManagement {
 rootProject.name = "VLR"
 include (":app")
 include (":benchmark")
-
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+include(":baselineprofile")
