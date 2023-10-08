@@ -8,7 +8,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -27,40 +27,42 @@ fun VlrNavBar(navController: NavController, items: List<NavItem>, isVisible: Boo
   AnimatedVisibility(
     visible = isVisible,
     enter =
-      slideInVertically(
-        // Enters by sliding up from offset 0 to fullHeight.
-        initialOffsetY = { fullHeight -> fullHeight },
-        animationSpec = tween(durationMillis = 400, easing = LinearOutSlowInEasing),
-      ),
+    slideInVertically(
+      // Enters by sliding up from offset 0 to fullHeight.
+      initialOffsetY = { fullHeight -> fullHeight },
+      animationSpec = tween(durationMillis = 400, easing = LinearOutSlowInEasing),
+    ),
     exit =
-      slideOutVertically(
-        // Exits by sliding up from offset 0 to -fullHeight.
-        targetOffsetY = { fullHeight -> fullHeight },
-        animationSpec = tween(durationMillis = 400, easing = FastOutLinearInEasing),
-      ),
+    slideOutVertically(
+      // Exits by sliding up from offset 0 to -fullHeight.
+      targetOffsetY = { fullHeight -> fullHeight },
+      animationSpec = tween(durationMillis = 400, easing = FastOutLinearInEasing),
+    ),
     modifier = Modifier,
     label = ""
   ) {
-    NavigationBar(
-      tonalElevation = 8.dp,
-      modifier = Modifier.navigationBarsPadding().animateContentSize()
-    ) {
-      items.forEach { navItem ->
-        val isCurrentDestination = navController.currentDestination?.route == navItem.route
-        NavigationBarItem(
-          selected = isCurrentDestination,
-          icon = {
-            Crossfade(isCurrentDestination) {
-              Icon(
-                imageVector = if (it) navItem.selectedIcon else navItem.unselectedIcon,
-                contentDescription = navItem.title,
-                tint = VLRTheme.colorScheme.onPrimaryContainer
-              )
-            }
-          },
-          label = { Text(text = navItem.title) },
-          onClick = navItem.onClick
-        )
+    Column(modifier = Modifier) {
+      NavigationBar(
+        tonalElevation = 8.dp,
+        modifier = Modifier.animateContentSize()
+      ) {
+        items.forEach { navItem ->
+          val isCurrentDestination = navController.currentDestination?.route == navItem.route
+          NavigationBarItem(
+            selected = isCurrentDestination,
+            icon = {
+              Crossfade(isCurrentDestination, label = "NavBarItemIcon") {
+                Icon(
+                  imageVector = if (it) navItem.selectedIcon else navItem.unselectedIcon,
+                  contentDescription = navItem.title,
+                  tint = VLRTheme.colorScheme.onPrimaryContainer
+                )
+              }
+            },
+            label = { Text(text = navItem.title) },
+            onClick = navItem.onClick
+          )
+        }
       }
     }
   }

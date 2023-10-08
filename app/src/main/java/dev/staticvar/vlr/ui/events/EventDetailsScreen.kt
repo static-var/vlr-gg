@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -77,9 +75,12 @@ import dev.staticvar.vlr.ui.Local4DP_2DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.ErrorUi
-import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
+import dev.staticvar.vlr.ui.scrim.NavigationBarSpacer
+import dev.staticvar.vlr.ui.scrim.NavigationBarType
+import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
+import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.StableHolder
@@ -95,7 +96,6 @@ import kotlinx.coroutines.tasks.await
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
 
-  SetStatusBarColor()
   val modifier = Modifier
 
   val details by
@@ -113,6 +113,12 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
   val trackerString = id.toEventTopic()
   val isTracked by
   remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
+
+  val progressBarVisibility by remember(updateState.get(), swipeRefresh.progress) {
+    mutableStateOf(
+      updateState.get() == true || swipeRefresh.progress != 0f
+    )
+  }
 
   Column(
     modifier = modifier.fillMaxSize(),
@@ -136,18 +142,18 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 }
               }
             }
-          AnimatedVisibility(
-            visible = updateState.get() == true || swipeRefresh.progress != 0f,
-            modifier = Modifier
-              .statusBarsPadding(),
-          ) {
-            LinearProgressIndicator(
-              modifier
-                .fillMaxWidth()
-                .padding(Local16DPPadding.current)
-                .animateContentSize()
-                .testTag("common:loader")
-            )
+          AnimatedVisibility(visible = progressBarVisibility) {
+              Column {
+                StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
+                LinearProgressIndicator(
+                  modifier
+                    .fillMaxWidth()
+                    .padding(Local16DPPadding.current)
+                    .animateContentSize()
+                    .testTag("common:loader")
+                    .align(Alignment.CenterHorizontally)
+                )
+              }
           }
           Box(
             modifier = Modifier
@@ -160,8 +166,9 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 .testTag("eventDetails:root"),
               state = lazyListState
             ) {
-              item { Spacer(modifier = modifier.statusBarsPadding()) }
-
+              item {
+                StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
+              }
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
@@ -238,7 +245,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                     color = VLRTheme.colorScheme.primary
                   )
                 }
-              item { Spacer(modifier = modifier.navigationBarsPadding()) }
+              item { NavigationBarSpacer(navigationBarType = NavigationBarType.TRANSPARENT) }
             }
           }
         }

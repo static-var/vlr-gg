@@ -16,7 +16,6 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Leaderboard
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,12 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.helper.NavItem
 import dev.staticvar.vlr.ui.helper.VlrNavBar
 import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.theme.VLRTheme
+import dev.staticvar.vlr.ui.theme.elevatedSurfaceColor
 import dev.staticvar.vlr.ui.theme.tintedBackground
 import dev.staticvar.vlr.utils.FirebaseLogger
 
@@ -53,8 +52,8 @@ fun VLR() {
     mutableStateOf(FirebaseLogger)
   }
 
-  val systemUiController = rememberSystemUiController()
-  val background = VLRTheme.colorScheme.surfaceColorAtElevation(8.dp)
+//  val systemUiController = rememberSystemUiController()
+  val background = VLRTheme.colorScheme.elevatedSurfaceColor
   val transparent = Color.Transparent
 
   viewModel.action = action
@@ -111,17 +110,6 @@ fun VLR() {
     )
 
   LaunchedEffect(currentNav) {
-    systemUiController.setNavigationBarColor(
-      color =
-        when (currentNav) {
-          Destination.NewsOverview.route,
-          Destination.MatchOverview.route,
-          Destination.EventOverview.route,
-          Destination.Rank.route,
-          Destination.About.route -> background
-          else -> transparent
-        },
-    )
     crashlytics.setDestinationKey(currentNav)
   }
 
@@ -137,9 +125,10 @@ fun VLR() {
   ) { paddingValues ->
     Box(
       modifier =
-        Modifier.padding(paddingValues)
-          .background(VLRTheme.colorScheme.tintedBackground)
-          .semantics { testTagsAsResourceId = true },
+      Modifier
+        .padding(paddingValues)
+        .background(VLRTheme.colorScheme.tintedBackground)
+        .semantics { testTagsAsResourceId = true }
     ) {
       VlrNavHost(navController = navController) { currentNav = it }
     }

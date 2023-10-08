@@ -3,10 +3,17 @@ package dev.staticvar.vlr.ui.theme
 import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 
 private val DarkColorScheme =
   darkColorScheme(
@@ -132,3 +139,11 @@ val VLRTheme
 val ColorScheme.tintedBackground: Color
   @Composable
   get() = primaryContainer.copy(if (isSystemInDarkTheme()) DARK_THEME_ALPHA else LIGHT_THEME_ALPHA)
+
+val ColorScheme.elevatedSurfaceColor: Color
+  @Composable
+  get() = VLRTheme.colorScheme.surfaceColorAtElevation(8.dp)
+
+val ColorScheme.transparent: Color
+  @Composable
+  get() = Color.Transparent
