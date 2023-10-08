@@ -1,3 +1,8 @@
+v0.3.5 & 0.3.6
+ • ⚒️ Removed some unusual UI elements
+ • ⚒️ Fixed some more crashes with Home screen Widget
+ • ⚒️ More under the hood improvements
+
 v0.3.4
  • ⚒️ Fixed some crashes with Home screen Widget
  • ⚒️ Maintenance update to iron out the bugs and crashes
@@ -11,8 +16,3 @@ v0.3.1 & 0.3.2
 
 v0.3.0
  • ⚒️ Fix a crash in news screen for devices in dark mode and with older webview pack
-
-v0.2.17
- • ✨ You can now check out stats of your favourite player
- • ⚒️ Simplify Ui for Event Details
- • ⚒️ Misc bug fixes and improvements
