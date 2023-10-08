@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -57,10 +56,11 @@ import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.ScrollHelper
-import dev.staticvar.vlr.ui.common.StatusBarColorForHomeWithTabs
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
 import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
+import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
+import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.Waiting
@@ -70,7 +70,6 @@ import dev.staticvar.vlr.utils.onWaiting
 
 @Composable
 fun EventScreen(viewModel: VlrViewModel) {
-  StatusBarColorForHomeWithTabs()
 
   val allTournaments by
   remember(viewModel) { viewModel.getEvents() }
@@ -90,11 +89,11 @@ fun EventScreen(viewModel: VlrViewModel) {
 
   Column(
     modifier = modifier
-      .fillMaxSize()
-      .statusBarsPadding(),
+      .fillMaxSize(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
+    StatusBarSpacer(statusBarType = StatusBarType.TABBED)
     allTournaments
       .onPass {
         data?.let { list ->

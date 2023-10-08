@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -52,12 +51,13 @@ import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.DateChip
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.ScrollHelper
-import dev.staticvar.vlr.ui.common.StatusBarColorForHomeWithTabs
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
 import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.ShareDialog
 import dev.staticvar.vlr.ui.helper.SharingAppBar
+import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
+import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.Waiting
@@ -71,7 +71,6 @@ import dev.staticvar.vlr.utils.timeToEpoch
 
 @Composable
 fun MatchOverview(viewModel: VlrViewModel) {
-  StatusBarColorForHomeWithTabs()
 
   val allMatches by
     remember(viewModel) { viewModel.getMatches() }
@@ -89,10 +88,11 @@ fun MatchOverview(viewModel: VlrViewModel) {
 
   val modifier: Modifier = Modifier
   Column(
-    modifier = modifier.fillMaxSize().statusBarsPadding(),
+    modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
+    StatusBarSpacer(statusBarType = StatusBarType.TABBED)
     Box(modifier) {
       allMatches
         .onPass {
@@ -168,7 +168,7 @@ fun MatchOverviewContainer(
           .padding(Local16DPPadding.current)
           .animateContentSize()
           .testTag("common:loader")
-      )
+        )
     }
     updateState.getError()?.let {
       ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())

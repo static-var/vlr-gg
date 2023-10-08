@@ -10,14 +10,11 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -68,9 +65,12 @@ import dev.staticvar.vlr.ui.Local4DP_2DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.ErrorUi
-import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.match.details_ui.StatTitle
+import dev.staticvar.vlr.ui.scrim.NavigationBarSpacer
+import dev.staticvar.vlr.ui.scrim.NavigationBarType
+import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
+import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.Waiting
@@ -80,7 +80,6 @@ import dev.staticvar.vlr.utils.onWaiting
 
 @Composable
 fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
-  SetStatusBarColor()
 
   val playerDetails by
   remember(viewModel) { viewModel.getPlayerDetails(id) }.collectAsState(initial = Waiting())
@@ -98,6 +97,12 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
 
   val modifier: Modifier = Modifier
 
+  val progressBarVisibility by remember(updateState.get(), swipeRefresh.progress) {
+    mutableStateOf(
+      updateState.get() == true || swipeRefresh.progress != 0f
+    )
+  }
+
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
@@ -106,19 +111,18 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
     playerDetails
       .onPass {
         data?.let {
-
-          AnimatedVisibility(
-            visible = updateState.get() == true || swipeRefresh.progress != 0f,
-            modifier = Modifier
-              .statusBarsPadding(),
-          ) {
-            LinearProgressIndicator(
-              modifier
-                .fillMaxWidth()
-                .padding(Local16DPPadding.current)
-                .animateContentSize()
-                .testTag("common:loader")
-            )
+          AnimatedVisibility(visible = progressBarVisibility) {
+            Column {
+              StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
+              LinearProgressIndicator(
+                modifier
+                  .fillMaxWidth()
+                  .padding(Local16DPPadding.current)
+                  .animateContentSize()
+                  .testTag("common:loader")
+                  .align(Alignment.CenterHorizontally)
+              )
+            }
           }
 
           Box(
@@ -127,7 +131,9 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
               .fillMaxSize(),
           ) {
             LazyColumn(modifier = modifier.fillMaxSize()) {
-              item { Spacer(modifier = modifier.statusBarsPadding()) }
+              item {
+                StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
+              }
 
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
@@ -156,7 +162,7 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
                 }
                 items(data.previousTeams) { PreviousTeam(team = it, action = viewModel.action) }
               }
-              item { Spacer(modifier = modifier.navigationBarsPadding()) }
+              item { NavigationBarSpacer(navigationBarType = NavigationBarType.TRANSPARENT) }
             }
           }
         }

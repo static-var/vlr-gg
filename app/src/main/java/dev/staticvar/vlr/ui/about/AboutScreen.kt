@@ -2,7 +2,14 @@ package dev.staticvar.vlr.ui.about
 
 import android.content.Context
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Code
@@ -11,7 +18,11 @@ import androidx.compose.material.icons.outlined.Paid
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -25,28 +36,30 @@ import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local2DPPadding
 import dev.staticvar.vlr.ui.Local4DP_2DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
-import dev.staticvar.vlr.ui.common.StatusBarColorForHome
 import dev.staticvar.vlr.ui.helper.CardView
+import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
+import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.openAsCustomTab
 
 @Composable
 fun AboutScreen() {
-  StatusBarColorForHome()
+
 
   val context = LocalContext.current
   val currentAppVersion = context.currentAppVersion
 
   var simpleEasterEgg by remember { mutableStateOf(false) }
   Column(modifier = Modifier.fillMaxSize()) {
-    Spacer(modifier = Modifier.statusBarsPadding())
+    StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
     Text(
       text = stringResource(id = R.string.app_name),
       modifier =
-        Modifier.fillMaxWidth()
-          .padding(Local16DPPadding.current)
-          .combinedClickable(onLongClick = { simpleEasterEgg = true }, onClick = {}),
+      Modifier
+        .fillMaxWidth()
+        .padding(Local16DPPadding.current)
+        .combinedClickable(onLongClick = { simpleEasterEgg = true }, onClick = {}),
       textAlign = TextAlign.Center,
       style = VLRTheme.typography.headlineSmall,
       color = VLRTheme.colorScheme.primary,
@@ -73,43 +86,59 @@ fun AndroidCard(modifier: Modifier = Modifier) {
       color = VLRTheme.colorScheme.primary,
     )
     Row(
-      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DP_2DPPadding.current),
       horizontalArrangement = Arrangement.SpaceBetween
     ) {
       Button(
         onClick = { "https://staticvar.dev".openAsCustomTab(context) },
-        modifier = modifier.weight(1f).padding(Local2DPPadding.current)
+        modifier = modifier
+          .weight(1f)
+          .padding(Local2DPPadding.current)
       ) {
         Icon(
           imageVector = Icons.Outlined.Language,
-          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
+          modifier = modifier
+            .padding(Local2DPPadding.current)
+            .size(18.dp),
           contentDescription = stringResource(id = R.string.website),
         )
         Text(text = "staticvar.dev", overflow = TextOverflow.Ellipsis, maxLines = 1)
       }
       Button(
         onClick = { "https://github.com/static-var".openAsCustomTab(context) },
-        modifier = modifier.weight(1f).padding(Local2DPPadding.current)
+        modifier = modifier
+          .weight(1f)
+          .padding(Local2DPPadding.current)
       ) {
         Icon(
           painterResource(id = R.drawable.github_logo),
-          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
+          modifier = modifier
+            .padding(Local2DPPadding.current)
+            .size(18.dp),
           contentDescription = stringResource(id = R.string.developer)
         )
         Text(text = "static-var")
       }
     }
     Row(
-      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DP_2DPPadding.current),
       horizontalArrangement = Arrangement.SpaceBetween
     ) {
       Button(
         onClick = { "https://github.com/static-var/vlr-gg".openAsCustomTab(context) },
-        modifier = modifier.weight(1f).padding(Local2DPPadding.current)
+        modifier = modifier
+          .weight(1f)
+          .padding(Local2DPPadding.current)
       ) {
         Icon(
           imageVector = Icons.Outlined.Code,
-          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
+          modifier = modifier
+            .padding(Local2DPPadding.current)
+            .size(18.dp),
           contentDescription = stringResource(id = R.string.source_code),
         )
         Text(
@@ -120,11 +149,15 @@ fun AndroidCard(modifier: Modifier = Modifier) {
       }
       Button(
         onClick = { "https://github.com/sponsors/static-var".openAsCustomTab(context) },
-        modifier = modifier.weight(1f).padding(Local2DPPadding.current)
+        modifier = modifier
+          .weight(1f)
+          .padding(Local2DPPadding.current)
       ) {
         Icon(
           imageVector = Icons.Outlined.Paid,
-          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
+          modifier = modifier
+            .padding(Local2DPPadding.current)
+            .size(18.dp),
           contentDescription = stringResource(id = R.string.sponsor),
         )
         Text(text = stringResource(id = R.string.sponsor))
@@ -144,27 +177,37 @@ fun BackendCard(modifier: Modifier = Modifier) {
       color = VLRTheme.colorScheme.primary,
     )
     Row(
-      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DP_2DPPadding.current),
       horizontalArrangement = Arrangement.SpaceBetween
     ) {
       Button(
         onClick = { "https://akhilnarang.dev".openAsCustomTab(context) },
-        modifier = modifier.weight(1f).padding(Local2DPPadding.current)
+        modifier = modifier
+          .weight(1f)
+          .padding(Local2DPPadding.current)
       ) {
         Icon(
           imageVector = Icons.Outlined.Language,
-          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
+          modifier = modifier
+            .padding(Local2DPPadding.current)
+            .size(18.dp),
           contentDescription = stringResource(id = R.string.website),
         )
         Text(text = "akhilnarang.dev", overflow = TextOverflow.Ellipsis, maxLines = 1)
       }
       Button(
         onClick = { "https://github.com/akhilnarang".openAsCustomTab(context) },
-        modifier = modifier.weight(1f).padding(Local2DPPadding.current)
+        modifier = modifier
+          .weight(1f)
+          .padding(Local2DPPadding.current)
       ) {
         Icon(
           painterResource(id = R.drawable.github_logo),
-          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
+          modifier = modifier
+            .padding(Local2DPPadding.current)
+            .size(18.dp),
           contentDescription = stringResource(id = R.string.developer)
         )
         Text(text = "akhilnarang")
@@ -172,11 +215,15 @@ fun BackendCard(modifier: Modifier = Modifier) {
     }
     Button(
       onClick = { "https://github.com/akhilnarang/vlrgg-scraper".openAsCustomTab(context) },
-      modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp)
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(horizontal = 8.dp, vertical = 2.dp)
     ) {
       Icon(
         imageVector = Icons.Outlined.Code,
-        modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
+        modifier = modifier
+          .padding(Local2DPPadding.current)
+          .size(18.dp),
         contentDescription = stringResource(id = R.string.website),
       )
       Text(text = stringResource(id = R.string.source_code))
@@ -196,11 +243,15 @@ fun FeedbackCard(modifier: Modifier = Modifier) {
     )
     Button(
       onClick = { "https://t.me/vlr_gg_chat".openAsCustomTab(context) },
-      modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp)
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(horizontal = 8.dp, vertical = 2.dp)
     ) {
       Icon(
         imageVector = Icons.Outlined.Language,
-        modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
+        modifier = modifier
+          .padding(Local2DPPadding.current)
+          .size(18.dp),
         contentDescription = "Telegram",
       )
       Text(text = "Telegram")
@@ -240,7 +291,9 @@ fun VersionFooter(currentAppVersion: String, simpleEasterEgg: Boolean) {
     SelectionContainer() {
       Text(
         text = token,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 8.dp),
         style = VLRTheme.typography.bodySmall,
         textAlign = TextAlign.Center,
         color = VLRTheme.colorScheme.primary

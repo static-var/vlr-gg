@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -65,9 +64,10 @@ import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.ScrollHelper
-import dev.staticvar.vlr.ui.common.StatusBarColorForHomeWithTabs
 import dev.staticvar.vlr.ui.common.VlrScrollableTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
+import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
+import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.Waiting
@@ -77,7 +77,6 @@ import dev.staticvar.vlr.utils.onWaiting
 
 @Composable
 fun RankScreen(viewModel: VlrViewModel) {
-  StatusBarColorForHomeWithTabs()
 
   val allTeams by
     remember(viewModel) { viewModel.getRanks() }
@@ -99,10 +98,11 @@ fun RankScreen(viewModel: VlrViewModel) {
   val modifier: Modifier = Modifier
 
   Column(
-    modifier = modifier.fillMaxSize().statusBarsPadding(),
+    modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
+    StatusBarSpacer(statusBarType = StatusBarType.TABBED)
     allTeams
       .onPass {
         if (data.isNullOrEmpty()) LinearProgressIndicator(modifier.animateContentSize())

@@ -15,9 +15,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -50,6 +48,10 @@ import dev.staticvar.vlr.data.Unknown
 import dev.staticvar.vlr.data.Video
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.scrim.NavigationBarSpacer
+import dev.staticvar.vlr.ui.scrim.NavigationBarType
+import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
+import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.openAsCustomTab
 
@@ -69,10 +71,10 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
       LazyColumn(
         modifier = modifier
           .fillMaxSize()
-          .padding(Local8DPPadding.current)
+          .padding(horizontal = 8.dp)
           .testTag("news:root")
       ) {
-        item { Spacer(modifier = modifier.statusBarsPadding()) }
+        item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }
         item {
           Text(
             text = news.title,
@@ -204,7 +206,7 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
           }
         }
 
-        item { Spacer(modifier = modifier.navigationBarsPadding()) }
+        item { NavigationBarSpacer(navigationBarType = NavigationBarType.TRANSPARENT) }
       }
     }
       ?: parsedNews?.getError()?.let { Text(text = it.stackTraceToString()) }

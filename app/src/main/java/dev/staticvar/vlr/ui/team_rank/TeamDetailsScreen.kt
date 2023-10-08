@@ -1,7 +1,7 @@
 package dev.staticvar.vlr.ui.team_rank
 
 import android.Manifest
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.pager.HorizontalPager
@@ -62,10 +60,13 @@ import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.Local8DP_4DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.ErrorUi
-import dev.staticvar.vlr.ui.common.SetStatusBarColor
 import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.match.NoMatchUI
+import dev.staticvar.vlr.ui.scrim.NavigationBarSpacer
+import dev.staticvar.vlr.ui.scrim.NavigationBarType
+import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
+import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.StableHolder
@@ -81,20 +82,19 @@ import kotlinx.coroutines.tasks.await
 
 @Composable
 fun TeamScreen(viewModel: VlrViewModel, id: String) {
-  SetStatusBarColor()
 
   val teamDetails by
-    remember(viewModel) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
+  remember(viewModel) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
   var rosterCard by remember { mutableStateOf(false) }
 
   val trackerString = id.toTeamTopic()
   val isTracked by
-    remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
+  remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshTeamDetails(id) }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh) { viewModel.refreshTeamDetails(id) }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(
@@ -104,6 +104,12 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
 
   val modifier: Modifier = Modifier
 
+  val progressBarVisibility by remember(updateState.get(), swipeRefresh.progress) {
+    mutableStateOf(
+      updateState.get() == true || swipeRefresh.progress != 0f
+    )
+  }
+
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
@@ -112,24 +118,29 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
     teamDetails
       .onPass {
         data?.let { teamDetail ->
-          AnimatedVisibility(
-            visible = updateState.get() == true || swipeRefresh.progress != 0f,
-            modifier = Modifier.statusBarsPadding(),
-          ) {
-            LinearProgressIndicator(
-              modifier
-                .fillMaxWidth()
-                .padding(Local16DPPadding.current)
-                .animateContentSize()
-                .testTag("common:loader")
-            )
+          AnimatedContent(targetState = progressBarVisibility, label = "progress") {
+            if (it)
+              Column {
+                StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
+                LinearProgressIndicator(
+                  modifier
+                    .fillMaxWidth()
+                    .padding(Local16DPPadding.current)
+                    .animateContentSize()
+                    .testTag("common:loader")
+                    .align(Alignment.CenterHorizontally)
+                )
+              }
           }
           Box(
-            modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize(),
+            modifier = Modifier
+              .pullRefresh(swipeRefresh)
+              .fillMaxSize(),
           ) {
             LazyColumn(modifier = modifier.fillMaxSize()) {
-              item { Spacer(modifier = modifier.statusBarsPadding()) }
-
+              item {
+                StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
+              }
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
@@ -145,10 +156,12 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
                       Firebase.messaging.unsubscribeFromTopic(trackerString).await()
                       viewModel.removeTopic(trackerString)
                     }
+
                     false -> {
                       Firebase.messaging.subscribeToTopic(trackerString).await()
                       viewModel.trackTopic(trackerString)
                     }
+
                     else -> {}
                   }
                 }
@@ -171,6 +184,7 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
                   onClick = { viewModel.action.match(it) }
                 )
               }
+              item { NavigationBarSpacer(navigationBarType = NavigationBarType.TRANSPARENT) }
             }
           }
         }
@@ -203,7 +217,9 @@ fun TeamBanner(
 
   CardView(modifier) {
     Row(
-      modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local16DP_8DPPadding.current),
       verticalAlignment = Alignment.CenterVertically
     ) {
       Text(
@@ -220,7 +236,9 @@ fun TeamBanner(
         )
     }
     Row(
-      modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local16DP_8DPPadding.current),
       verticalAlignment = Alignment.CenterVertically
     ) {
       // Server might send rank 0 when ranks are not found over the website.
@@ -244,7 +262,9 @@ fun TeamBanner(
           }
         } else notificationPermission.launchPermissionRequest()
       },
-      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DP_2DPPadding.current),
     ) {
       if (processingTopicSubscription) {
         LinearProgressIndicator()
@@ -253,7 +273,9 @@ fun TeamBanner(
     }
     Button(
       onClick = { (Constants.VLR_BASE + "team/" + id).openAsCustomTab(context) },
-      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local4DP_2DPPadding.current),
     ) {
       Text(text = stringResource(id = R.string.view_at_vlr), maxLines = 1)
     }
@@ -269,12 +291,19 @@ fun RosterCard(
   onClick: (String) -> Unit,
 ) {
   CardView(modifier = modifier.testTag("team:roster")) {
-    Column(modifier = modifier.fillMaxWidth().animateContentSize(tween(500))) {
+    Column(
+      modifier = modifier
+        .fillMaxWidth()
+        .animateContentSize(tween(500))
+    ) {
       if (!expanded) {
         Row(
-          modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).clickable {
-            onExpand(true)
-          },
+          modifier
+            .fillMaxWidth()
+            .padding(Local16DP_8DPPadding.current)
+            .clickable {
+              onExpand(true)
+            },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
           Text(
@@ -290,7 +319,10 @@ fun RosterCard(
         }
       } else {
         Row(
-          modifier.fillMaxWidth().padding(Local8DPPadding.current).clickable { onExpand(false) },
+          modifier
+            .fillMaxWidth()
+            .padding(Local8DPPadding.current)
+            .clickable { onExpand(false) },
           horizontalArrangement = Arrangement.SpaceBetween
         ) {
           Text(
@@ -307,19 +339,21 @@ fun RosterCard(
         data.item.forEach { player ->
           Card(
             modifier =
-              modifier
-                .fillMaxWidth()
-                .padding(Local8DP_4DPPadding.current)
-                .clickable { onClick(player.id) }
-                .testTag("team:player"),
+            modifier
+              .fillMaxWidth()
+              .padding(Local8DP_4DPPadding.current)
+              .clickable { onClick(player.id) }
+              .testTag("team:player"),
             colors =
-              CardDefaults.cardColors(
-                contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-                containerColor = VLRTheme.colorScheme.primaryContainer
-              )
+            CardDefaults.cardColors(
+              contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+              containerColor = VLRTheme.colorScheme.primaryContainer
+            )
           ) {
             Row(
-              modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+              modifier = modifier
+                .fillMaxWidth()
+                .padding(Local8DP_4DPPadding.current),
               horizontalArrangement = Arrangement.SpaceBetween
             ) {
               Text(text = player.alias, style = VLRTheme.typography.titleSmall)
@@ -330,7 +364,9 @@ fun RosterCard(
             }
             Text(
               text = player.name ?: "",
-              modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+              modifier = modifier
+                .fillMaxWidth()
+                .padding(Local8DP_4DPPadding.current),
               style = VLRTheme.typography.labelMedium
             )
           }
@@ -375,6 +411,7 @@ fun LazyItemScope.TeamMatchData(
             else NoMatchUI(modifier)
           }
         }
+
         1 -> {
           Column(modifier = modifier.fillMaxSize()) {
             if (completed.item.isNotEmpty())
@@ -412,13 +449,17 @@ fun GameOverviewPreview(
         style = VLRTheme.typography.bodyMedium
       )
       Row(
-        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+        modifier = modifier
+          .fillMaxWidth()
+          .padding(Local4DPPadding.current),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
       ) {
         Text(
           text = team,
-          modifier = modifier.weight(1f).padding(Local4DPPadding.current),
+          modifier = modifier
+            .weight(1f)
+            .padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
           textAlign = TextAlign.Center,
@@ -426,7 +467,9 @@ fun GameOverviewPreview(
         )
         Text(
           text = matchPreviewInfo.opponent,
-          modifier = modifier.weight(1f).padding(Local4DPPadding.current),
+          modifier = modifier
+            .weight(1f)
+            .padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
           textAlign = TextAlign.Center,
@@ -436,13 +479,17 @@ fun GameOverviewPreview(
       Text(
         text = matchPreviewInfo.score.ifBlank { "TBP" },
         style = VLRTheme.typography.titleSmall,
-        modifier = modifier.fillMaxWidth().padding(Local2DPPadding.current),
+        modifier = modifier
+          .fillMaxWidth()
+          .padding(Local2DPPadding.current),
         textAlign = TextAlign.Center,
         color = VLRTheme.colorScheme.primary,
       )
       Text(
         text = "${matchPreviewInfo.event} - ${matchPreviewInfo.stage}",
-        modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
+        modifier = modifier
+          .fillMaxWidth()
+          .padding(Local8DPPadding.current),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.labelSmall
       )
