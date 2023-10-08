@@ -59,7 +59,6 @@ activity-compose = { module = "androidx.activity:activity-compose", version = "1
 lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.6.2" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.6.2" }
 
-accompanist-sysui = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
@@ -130,7 +129,7 @@ spotless-gradle = { module = "com.diffplug.spotless:spotless-plugin-gradle", ver
 base = ["core", "app-compat", "activity-compose"]
 compose = ["compose-ui", "compose-text", "compose-material", "compose-ui-tooling", "compose-runtime", "m3", "compose-navigation"]
 lifecycle = ["lifecycle-runtime", "lifecycle-viewmodel"]
-accompanist = ["accompanist-sysui", "accompanist-webview", "accompanist-permissions"]
+accompanist = ["accompanist-webview", "accompanist-permissions"]
 coroutines = ["coroutines-core", "coroutines-android", "coroutines-play-services"]
 room = ["room-ktx", "room-runtime"]
 hilt = ["hilt-android", "hilt-common", "hilt-nav", "hilt-work"]
