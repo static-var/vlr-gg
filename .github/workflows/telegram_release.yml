@@ -1,4 +1,4 @@
-name: Internal Play store release
+name: Telegram Release
 
 on: workflow_dispatch
 
