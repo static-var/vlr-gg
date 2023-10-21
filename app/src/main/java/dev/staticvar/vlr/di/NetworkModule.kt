@@ -4,21 +4,26 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
 import dev.staticvar.vlr.BuildConfig
 import dev.staticvar.vlr.utils.BrotliEncoder
 import dev.staticvar.vlr.utils.Constants
-import io.ktor.client.*
-import io.ktor.client.engine.okhttp.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.compression.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.compression.ContentEncoding
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.URLProtocol
+import io.ktor.serialization.kotlinx.json.json
+import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import javax.inject.Named
 import javax.inject.Singleton
 import kotlinx.serialization.json.Json
 import okhttp3.ConnectionPool
+import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 
 @Module
@@ -41,8 +46,16 @@ object NetworkModule {
 
   @Provides
   @Singleton
-  fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
+  @IntoSet
+  fun provideHttpLoggingInterceptor(): Interceptor {
     return HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+  }
+
+  @Provides
+  @Singleton
+  @IntoSet
+  fun provideSentryInterceptor(): Interceptor {
+    return SentryOkHttpInterceptor()
   }
 
   @Provides
@@ -51,7 +64,7 @@ object NetworkModule {
   fun provideKtorHttpClient(
     json: Json,
     connectionPool: ConnectionPool,
-    httpLoggingInterceptor: HttpLoggingInterceptor
+    interceptors: Set<@JvmSuppressWildcards Interceptor>,
   ) =
     HttpClient(OkHttp) {
       defaultRequest {
@@ -76,7 +89,7 @@ object NetworkModule {
       }
 
       engine {
-        addInterceptor(httpLoggingInterceptor)
+        interceptors.forEach(::addInterceptor)
         config { connectionPool(connectionPool) }
       }
     }
