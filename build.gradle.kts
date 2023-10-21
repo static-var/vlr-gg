@@ -12,8 +12,10 @@ plugins {
   alias(libs.plugins.baselineprofile) apply false
   alias(libs.plugins.detekt)
   alias(libs.plugins.spotless.plugin)
+  alias(libs.plugins.sentry.plugin)
   id("vlr.detekt")
   id("vlr.ktfmt")
+  id("vlr.sentry") apply false
   alias(libs.plugins.androidTest) apply false
 }
 
