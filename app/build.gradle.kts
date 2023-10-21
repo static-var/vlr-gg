@@ -16,8 +16,11 @@ plugins {
   alias(libs.plugins.ksp.plugin)
   alias(libs.plugins.secrets.plugin)
   alias(libs.plugins.baselineprofile)
+  alias(libs.plugins.sentry.plugin)
+  alias(libs.plugins.room)
   id("vlr.detekt")
   id("vlr.ktfmt")
+  id("vlr.sentry")
 }
 
 android {
@@ -33,7 +36,9 @@ android {
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
-    ksp { arg("room.schemaLocation", "$projectDir/schemas") }
+    room {
+      schemaDirectory("$projectDir/schemas/")
+    }
   }
 
   signingConfigs {

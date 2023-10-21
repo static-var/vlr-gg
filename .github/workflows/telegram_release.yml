@@ -1,4 +1,4 @@
-name: Internal Play store release
+name: Telegram Release
 
 on: workflow_dispatch
 
@@ -61,44 +61,18 @@ jobs:
         run: |
           touch app/google-services.json
           echo $FIREBASE_CONFIG_DEV >> app/google-services.json
-          ./gradlew app:bundleRelease -PsentryUploadMappings --stacktrace
+          ./gradlew app:assembleRelease -PsentryUploadMappings --stacktrace
       - name: APK name and path
         id: apk_details
         run: |
-          echo "VERSION_NAME=$(echo $(find app/build/outputs/bundle/release/  "*.aab" -type f -size +1M -print -quit | head -n1) | awk -F\( '{print $NF}' | awk -F\) '{print $1}')" >> $GITHUB_ENV
-          echo "APK=$(find app/build/outputs/bundle/release/  "*.aab" -type f -size +1M -print -quit | head -n1)" >> $GITHUB_ENV
+          echo "VERSION_NAME=$(echo $(find app/build/outputs/apk/release/  "*.apk" -type f -size +1M -print -quit | head -n1) | awk -F\( '{print $NF}' | awk -F\) '{print $1}')" >> $GITHUB_ENV
+          echo "APK=$(find app/build/outputs/apk/release/  "*.apk" -type f -size +1M -print -quit | head -n1)" >> $GITHUB_ENV
 
       - name: Print Build details
         run: |
           echo "${{ env.APK }}"
           echo "${{ env.VERSION_NAME }}"
           echo "${{ github.workspace }}/${{ env.APK }}"
-
-      - name: Publish to play store
-        uses: r0adkll/upload-google-play@v1.0.17
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-          packageName: dev.staticvar.vlr
-          releaseFiles: app/build/outputs/bundle/release/*.aab
-          track: beta
-          inAppUpdatePriority: 5
-          whatsNewDirectory: distribution/whatsnew
-
-      - name: Push tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          custom_tag: "${{ env.VERSION_NAME }}"
-          tag_prefix: ""
-          default_prerelease_bump: false
-
-      - name: Create a GitHub release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
-          artifacts: ${{ env.APK }}
 
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
@@ -107,6 +81,4 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           document: ${{ env.APK }}
           message: |
-            Published ${{ env.VERSION_NAME }}
-            https://github.com/${{ github.repository }}/releases/tag/${{steps.tag_version.outputs.new_tag}}
-            Early access app update released, should reflect on play store soon.
+            This is a test build, please ignore or install at your own risk.
