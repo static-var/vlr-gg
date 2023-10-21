@@ -17,13 +17,11 @@ import androidx.compose.material.icons.outlined.Leaderboard
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
@@ -36,25 +34,16 @@ import dev.staticvar.vlr.ui.helper.NavItem
 import dev.staticvar.vlr.ui.helper.VlrNavBar
 import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.ui.theme.elevatedSurfaceColor
 import dev.staticvar.vlr.ui.theme.tintedBackground
-import dev.staticvar.vlr.utils.FirebaseLogger
+import io.sentry.compose.withSentryObservableEffect
 
 @Composable
 fun VLR() {
-  val navController = rememberNavController()
+  val navController = rememberNavController().withSentryObservableEffect()
   val backStackEntry by navController.currentBackStackEntryAsState()
 
   val viewModel: VlrViewModel = hiltViewModel()
   val action = remember(navController) { Action(navController) }
-
-  val crashlytics by remember {
-    mutableStateOf(FirebaseLogger)
-  }
-
-//  val systemUiController = rememberSystemUiController()
-  val background = VLRTheme.colorScheme.elevatedSurfaceColor
-  val transparent = Color.Transparent
 
   viewModel.action = action
 
@@ -108,10 +97,6 @@ fun VLR() {
         onClick = { if (currentNav != Destination.About.route) action.goAbout() }
       ),
     )
-
-  LaunchedEffect(currentNav) {
-    crashlytics.setDestinationKey(currentNav)
-  }
 
   Scaffold(
     bottomBar = {
