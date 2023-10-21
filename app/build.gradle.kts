@@ -1,6 +1,5 @@
 @file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
 
-import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -11,8 +10,6 @@ plugins {
   alias(libs.plugins.kotlin.parcelize)
   id("dagger.hilt.android.plugin")
   id("com.google.gms.google-services")
-  id("com.google.firebase.firebase-perf")
-  id("com.google.firebase.crashlytics")
   alias(libs.plugins.ksp.plugin)
   alias(libs.plugins.secrets.plugin)
   alias(libs.plugins.baselineprofile)
@@ -72,20 +69,16 @@ android {
       matchingFallbacks += mutableListOf("release")
       isDebuggable = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
     }
     getByName("debug") {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-
-      configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
     }
     getByName("release") {
       isShrinkResources = true
       isMinifyEnabled = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
-      configure<CrashlyticsExtension> { mappingFileUploadEnabled = true }
     }
   }
   compileOptions {
@@ -160,7 +153,6 @@ dependencies {
 
   // Hilt
   implementation(libs.bundles.hilt)
-  "baselineProfile"(project(":baselineprofile"))
   ksp(libs.hilt.compiler)
   ksp(libs.hilt.android.compiler)
 
@@ -176,7 +168,6 @@ dependencies {
   implementation(libs.bundles.firebase)
 
   implementation(libs.bundles.ktor)
-  implementation(libs.okhttp.brotli)
   implementation(libs.logging.interceptor)
 
   implementation(libs.jsoup)

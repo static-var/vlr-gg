@@ -6,7 +6,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import dev.staticvar.vlr.BuildConfig
-import dev.staticvar.vlr.utils.BrotliEncoder
 import dev.staticvar.vlr.utils.Constants
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -85,7 +84,6 @@ object NetworkModule {
 
       install(ContentEncoding) {
         gzip()
-        customEncoder(BrotliEncoder)
       }
 
       engine {
