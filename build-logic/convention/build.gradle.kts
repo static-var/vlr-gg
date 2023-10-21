@@ -20,6 +20,7 @@ dependencies {
   compileOnly(libs.build.kotlin)
   compileOnly(libs.detekt.gradle)
   compileOnly(libs.spotless.gradle)
+  compileOnly(libs.sentry.gradle)
 }
 
 gradlePlugin {
@@ -31,6 +32,10 @@ gradlePlugin {
     register("ktfmt") {
       id = "vlr.ktfmt"
       implementationClass = "KtfmtConventionPlugin"
+    }
+    register("sentry") {
+      id = "vlr.sentry"
+      implementationClass = "SentryConventionPlugin"
     }
   }
 }
