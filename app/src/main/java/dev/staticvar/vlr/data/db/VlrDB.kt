@@ -1,10 +1,18 @@
 package dev.staticvar.vlr.data.db
 
-import androidx.room.*
-import androidx.room.migration.AutoMigrationSpec
+import androidx.room.AutoMigration
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import dev.staticvar.vlr.data.api.response.*
+import dev.staticvar.vlr.data.api.response.MatchInfo
+import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
+import dev.staticvar.vlr.data.api.response.NewsResponseItem
+import dev.staticvar.vlr.data.api.response.PlayerData
+import dev.staticvar.vlr.data.api.response.TeamDetails
+import dev.staticvar.vlr.data.api.response.TournamentDetails
+import dev.staticvar.vlr.data.api.response.TournamentPreview
 import dev.staticvar.vlr.data.dao.VlrDao
 import dev.staticvar.vlr.data.model.TopicTracker
 
@@ -30,13 +38,13 @@ abstract class VlrDB : RoomDatabase() {
 
 val Migration_7_8 =
   object : Migration(7, 8) {
-    override fun migrate(database: SupportSQLiteDatabase) {
+    override fun migrate(db: SupportSQLiteDatabase) {
       val time = System.currentTimeMillis().toString()
-      database.execSQL("ALTER TABLE MatchInfo ADD COLUMN createdAt INTEGER NOT NULL DEFAULT $time")
-      database.execSQL(
+      db.execSQL("ALTER TABLE MatchInfo ADD COLUMN createdAt INTEGER NOT NULL DEFAULT $time")
+      db.execSQL(
         "ALTER TABLE TeamDetails ADD COLUMN createdAt INTEGER NOT NULL DEFAULT $time"
       )
-      database.execSQL(
+      db.execSQL(
         "ALTER TABLE TournamentDetails ADD COLUMN createdAt INTEGER NOT NULL DEFAULT $time"
       )
     }
