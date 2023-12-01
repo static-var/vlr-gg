@@ -10,6 +10,7 @@ plugins {
   alias(libs.plugins.kotlin.serialization) apply false
   alias(libs.plugins.kotlin.parcelize) apply false
   alias(libs.plugins.baselineprofile) apply false
+  alias(libs.plugins.gms.plugin) apply false
   alias(libs.plugins.detekt)
   alias(libs.plugins.spotless.plugin)
   alias(libs.plugins.sentry.plugin)

@@ -17,8 +17,8 @@ val fontProvider by lazy {
   )
 }
 
-private val bigFont = GoogleFont("Montserrat")
-private val smallFont = GoogleFont("Inter")
+private val bigFont = GoogleFont("Archivo")
+private val smallFont = GoogleFont("Metrophobic")
 val bigFontFamily =
   FontFamily(
     listOf(
