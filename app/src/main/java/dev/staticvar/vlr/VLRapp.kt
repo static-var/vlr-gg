@@ -3,10 +3,12 @@ package dev.staticvar.vlr
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import androidx.core.content.getSystemService
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.HiltAndroidApp
 import dev.staticvar.vlr.utils.Logger
@@ -54,6 +56,6 @@ class VLRapp() : Application(), Configuration.Provider {
     }
   }
 
-  override fun getWorkManagerConfiguration() =
-    Configuration.Builder().setWorkerFactory(workerFactory).build()
+  override val workManagerConfiguration: Configuration
+    get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
 }

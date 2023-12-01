@@ -7,7 +7,7 @@ pluginManagement {
         google()
         mavenCentral()
         maven { url = java.net.URI.create("https://dl.bintray.com/kotlin/kotlinx") }
-        maven { url = java.net.URI.create("https://androidx.dev/storage/compose-compiler/repository/") }
+        maven { url = java.net.URI.create("https://androidx.dev/storage/compose-compiler/repository") }
     }
 }
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

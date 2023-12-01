@@ -16,6 +16,7 @@ plugins {
   alias(libs.plugins.baselineprofile)
   alias(libs.plugins.sentry.plugin)
   alias(libs.plugins.room)
+  alias(libs.plugins.gms.plugin)
   id("vlr.detekt")
   id("vlr.ktfmt")
   id("vlr.sentry")
