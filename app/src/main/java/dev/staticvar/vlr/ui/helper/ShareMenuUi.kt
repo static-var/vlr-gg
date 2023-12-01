@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.*
@@ -62,7 +63,7 @@ fun SharingAppBar(
       color = VLRTheme.colorScheme.primary
     )
     Icon(
-      imageVector = Icons.Outlined.Send,
+      imageVector = Icons.AutoMirrored.Outlined.Send,
       contentDescription = stringResource(R.string.share),
       modifier =
         modifier.padding(Local8DP_4DPPadding.current).clickable { shareConfirm(true) }.size(32.dp),
@@ -116,7 +117,7 @@ fun SharableListUi(modifier: Modifier = Modifier, matches: StableHolder<List<Mat
       matches.item.forEachIndexed { index, matchPreviewInfo ->
         SharableMatchUi(match = matchPreviewInfo)
         if (index != matches.item.size - 1)
-          Divider(modifier = Modifier.fillMaxWidth().padding(2.dp).height(0.5.dp))
+          HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(2.dp).height(0.5.dp))
       }
     }
   }

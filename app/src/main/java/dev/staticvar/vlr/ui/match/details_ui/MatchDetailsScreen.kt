@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.OpenInNew
@@ -259,7 +260,7 @@ fun MatchOverallAndEventOverview(
         ) {
           detailData.teams[0].id?.let {
             Icon(
-              Icons.Outlined.OpenInNew,
+              Icons.AutoMirrored.Outlined.OpenInNew,
               contentDescription = stringResource(R.string.open_match_content_description),
               modifier = modifier
                 .size(24.dp)
@@ -290,7 +291,7 @@ fun MatchOverallAndEventOverview(
         ) {
           detailData.teams[1].id?.let {
             Icon(
-              Icons.Outlined.OpenInNew,
+              Icons.AutoMirrored.Outlined.OpenInNew,
               contentDescription = stringResource(R.string.open_match_content_description),
               modifier = modifier
                 .size(24.dp)
