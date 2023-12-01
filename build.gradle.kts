@@ -30,6 +30,5 @@ buildscript {
     classpath(libs.build.kotlin)
     classpath(libs.kotlin.serialization)
     classpath(libs.hilt.android.gradle.plugin)
-    classpath(libs.google.services)
   }
 }

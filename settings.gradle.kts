@@ -1,4 +1,5 @@
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+import java.net.URI
+
 pluginManagement {
     includeBuild("build-logic")
     repositories {
@@ -6,15 +7,16 @@ pluginManagement {
         google()
         mavenCentral()
         maven { url = java.net.URI.create("https://dl.bintray.com/kotlin/kotlinx") }
+        maven { url = java.net.URI.create("https://androidx.dev/storage/compose-compiler/repository/") }
     }
 }
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
-        jcenter() // Warning: this repository is going to shut down soon
         maven (url = "https://jitpack.io")
     }
 }
