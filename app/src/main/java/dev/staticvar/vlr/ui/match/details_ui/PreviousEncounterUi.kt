@@ -4,6 +4,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.OpenInNew
@@ -41,7 +42,7 @@ fun PreviousEncounter(
       horizontalArrangement = Arrangement.End
     ) {
       Icon(
-        Icons.Outlined.OpenInNew,
+        Icons.AutoMirrored.Outlined.OpenInNew,
         contentDescription = stringResource(R.string.open_match_content_description),
         modifier = modifier.size(24.dp).padding(Local2DPPadding.current)
       )

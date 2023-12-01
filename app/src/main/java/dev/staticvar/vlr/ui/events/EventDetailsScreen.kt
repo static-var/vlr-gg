@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.LocationOn
@@ -588,7 +589,7 @@ fun TournamentMatchOverview(
           style = VLRTheme.typography.bodyMedium
         )
         Icon(
-          Icons.Outlined.OpenInNew,
+          Icons.AutoMirrored.Outlined.OpenInNew,
           contentDescription = stringResource(R.string.open_match_content_description),
           modifier = modifier
             .size(24.dp)
