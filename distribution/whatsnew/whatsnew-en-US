@@ -1,3 +1,7 @@
+v0.3.7
+ • ✨ Update fonts for better readability
+ • ⚒️ Under the hood improvements
+
 v0.3.5 & 0.3.6
  • ⚒️ Removed some unusual UI elements
  • ⚒️ Fixed some more crashes with Home screen Widget
@@ -13,6 +17,3 @@ v0.3.3
 v0.3.1 & 0.3.2
  • ⚒️ Updates to match screen
  • ⚒️ Maintenance update
-
-v0.3.0
- • ⚒️ Fix a crash in news screen for devices in dark mode and with older webview pack
