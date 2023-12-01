@@ -2,7 +2,7 @@
 detektCompose = "0.3.0"
 detekt = "1.23.1"
 googleServices = "4.4.0"
-gradle = "8.3.0-alpha09"
+gradle = "8.3.0-alpha16"
 hilt = '2.48.1'
 hiltAndroidGradlePlugin = "2.48.1"
 kotlin = '1.9.10'
