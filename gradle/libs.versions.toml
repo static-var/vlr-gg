@@ -1,6 +1,6 @@
 [versions]
 detektCompose = "0.3.0"
-benchmark = "1.2.1"
+benchmark = "1.2.2"
 sentry = "3.14.0"
 sentry-sdk = "6.32.0"
 detekt = "1.23.4"
