@@ -1,5 +1,7 @@
 @file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
 
+
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -9,7 +11,6 @@ plugins {
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.kotlin.parcelize)
   id("dagger.hilt.android.plugin")
-  id("com.google.gms.google-services")
   alias(libs.plugins.ksp.plugin)
   alias(libs.plugins.secrets.plugin)
   alias(libs.plugins.baselineprofile)
@@ -127,10 +128,12 @@ android {
 }
 
 dependencies {
-  implementation(platform(libs.compose.bom))
+  api(platform(libs.compose.bom.alpha))
   implementation(libs.bundles.base)
   implementation(libs.bundles.compose)
   implementation(libs.compose.icons)
+
+  implementation(libs.firebase.messaging)
 
   implementation(libs.bundles.lifecycle)
 
@@ -163,10 +166,6 @@ dependencies {
 
   implementation(libs.kotlinx.serialization)
   implementation(libs.kotlinx.collections.immutable)
-
-  // Firebase
-  implementation(platform(libs.firebase.bom))
-  implementation(libs.bundles.firebase)
 
   implementation(libs.bundles.ktor)
   implementation(libs.logging.interceptor)
