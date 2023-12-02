@@ -170,6 +170,8 @@ dependencies {
 
   implementation(libs.bundles.ktor)
   implementation(libs.logging.interceptor)
+  implementation(platform(libs.sentry.bom))
+  implementation(libs.sentry.okhttp)
 
   implementation(libs.jsoup)
   implementation(libs.landscapist.glide)

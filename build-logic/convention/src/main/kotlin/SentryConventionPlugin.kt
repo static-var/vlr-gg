@@ -60,7 +60,6 @@ class SentryConventionPlugin : Plugin<Project> {
           forceInstrumentDependencies.set(false)
           features.set(EnumSet.allOf(InstrumentationFeature::class.java))
         }
-        experimentalGuardsquareSupport.set(false)
         autoInstallation {
           enabled.set(true)
           sentryVersion.set(libs.findVersion("sentry-sdk").get().requiredVersion)

@@ -18,6 +18,7 @@ plugins {
   id("vlr.ktfmt")
   id("vlr.sentry") apply false
   alias(libs.plugins.androidTest) apply false
+  alias(libs.plugins.jetbrainsKotlinJvm) apply false
 }
 
 buildscript {
