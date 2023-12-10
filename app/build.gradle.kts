@@ -107,6 +107,8 @@ android {
           "-opt-in=androidx.compose.runtime.InternalComposeApi",
           "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
           "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
+          "-P",
+          "plugin:androidx.compose.compiler.plugins.kotlin:experimentalStrongSkipping=true"
         )
   }
   buildFeatures {
