@@ -8,13 +8,29 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Send
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonSkippableComposable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,19 +57,25 @@ import java.io.OutputStream
 @Composable
 fun SharingAppBar(
   modifier: Modifier,
-  items: List<MatchPreviewInfo>,
+  items: SnapshotStateList<MatchPreviewInfo>,
   shareMode: (Boolean) -> Unit,
-  shareConfirm: (Boolean) -> Unit
+  shareConfirm: (Boolean) -> Unit,
 ) {
   Row(
-    modifier.fillMaxWidth().height(40.dp).background(VLRTheme.colorScheme.background),
+    modifier
+      .fillMaxWidth()
+      .height(40.dp)
+      .background(VLRTheme.colorScheme.background),
     verticalAlignment = Alignment.CenterVertically
   ) {
     Icon(
       imageVector = Icons.Outlined.Close,
       contentDescription = stringResource(id = R.string.cancel),
       modifier =
-        modifier.padding(Local8DP_4DPPadding.current).clickable { shareMode(false) }.size(32.dp),
+      modifier
+        .padding(Local8DP_4DPPadding.current)
+        .clickable { shareMode(false) }
+        .size(32.dp),
       tint = VLRTheme.colorScheme.primary,
     )
     Spacer(modifier = modifier.weight(1f))
@@ -66,7 +88,10 @@ fun SharingAppBar(
       imageVector = Icons.AutoMirrored.Outlined.Send,
       contentDescription = stringResource(R.string.share),
       modifier =
-        modifier.padding(Local8DP_4DPPadding.current).clickable { shareConfirm(true) }.size(32.dp),
+      modifier
+        .padding(Local8DP_4DPPadding.current)
+        .clickable { shareConfirm(true) }
+        .size(32.dp),
       tint = VLRTheme.colorScheme.primary
     )
   }
@@ -106,18 +131,24 @@ fun ShareDialog(matches: StableHolder<List<MatchPreviewInfo>>, onDismiss: () -> 
 
 @Composable
 fun SharableListUi(modifier: Modifier = Modifier, matches: StableHolder<List<MatchPreviewInfo>>) {
-  Column(modifier.fillMaxWidth().background(VLRTheme.colorScheme.primaryContainer)) {
+  Column(
+    modifier
+      .fillMaxWidth()
+      .background(VLRTheme.colorScheme.primaryContainer)) {
     CardView(
       colors =
-        CardDefaults.cardColors(
-          contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-          containerColor = VLRTheme.colorScheme.primaryContainer
-        )
+      CardDefaults.cardColors(
+        contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+        containerColor = VLRTheme.colorScheme.primaryContainer
+      )
     ) {
       matches.item.forEachIndexed { index, matchPreviewInfo ->
         SharableMatchUi(match = matchPreviewInfo)
         if (index != matches.item.size - 1)
-          HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(2.dp).height(0.5.dp))
+          HorizontalDivider(modifier = Modifier
+            .fillMaxWidth()
+            .padding(2.dp)
+            .height(0.5.dp))
       }
     }
   }
@@ -127,13 +158,17 @@ fun SharableListUi(modifier: Modifier = Modifier, matches: StableHolder<List<Mat
 fun SharableMatchUi(modifier: Modifier = Modifier, match: MatchPreviewInfo) {
   Text(
     text =
-      if (match.status.equals(stringResource(R.string.live), true)) stringResource(R.string.live)
-      else match.time?.readableDateAndTimeWithZone ?: "",
-    modifier = modifier.fillMaxWidth().padding(Local2DPPadding.current),
+    if (match.status.equals(stringResource(R.string.live), true)) stringResource(R.string.live)
+    else match.time?.readableDateAndTimeWithZone ?: "",
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(Local2DPPadding.current),
     textAlign = TextAlign.Center,
     style = VLRTheme.typography.labelSmall
   )
-  Row(modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current)) {
+  Row(modifier = modifier
+    .fillMaxWidth()
+    .padding(Local4DP_2DPPadding.current)) {
     Text(
       text = match.team1.name,
       overflow = TextOverflow.Ellipsis,
@@ -151,7 +186,9 @@ fun SharableMatchUi(modifier: Modifier = Modifier, match: MatchPreviewInfo) {
       style = VLRTheme.typography.bodySmall
     )
   }
-  Row(modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current)) {
+  Row(modifier = modifier
+    .fillMaxWidth()
+    .padding(Local4DP_2DPPadding.current)) {
     Text(
       text = match.team2.name,
       overflow = TextOverflow.Ellipsis,

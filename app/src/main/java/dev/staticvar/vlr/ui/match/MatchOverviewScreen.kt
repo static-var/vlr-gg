@@ -2,7 +2,6 @@ package dev.staticvar.vlr.ui.match
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +22,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -73,18 +73,18 @@ import dev.staticvar.vlr.utils.timeToEpoch
 fun MatchOverview(viewModel: VlrViewModel) {
 
   val allMatches by
-    remember(viewModel) { viewModel.getMatches() }
-      .collectAsStateWithLifecycle(initialValue = Waiting())
+  remember(viewModel) { viewModel.getMatches() }
+    .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshMatches() }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh) { viewModel.refreshMatches() }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
 
   val resetScroll by
-    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val modifier: Modifier = Modifier
   Column(
@@ -142,21 +142,35 @@ fun MatchOverviewContainer(
   if (shareDialog) {
     ShareDialog(matches = StableHolder(shareMatchList)) { shareDialog = false }
   }
-  val mapByStatus by remember(list) { mutableStateOf(list.item.groupBy { it.status }) }
 
-  val (ongoing, upcoming, completed) =
-    remember(list) {
-      mapByStatus.let {
-        Triple(
-          it[tabs[0].lowercase()].orEmpty(),
-          it[tabs[1].lowercase()].orEmpty().sortedBy { match -> match.time?.timeToEpoch },
-          it[tabs[2].lowercase()].orEmpty().sortedByDescending { match -> match.time?.timeToEpoch }
-        )
-      }
+  val mapByStatus by remember {
+    derivedStateOf {
+      list.item.groupBy { it.status }
     }
+  }
+
+  val ongoing by remember {
+    derivedStateOf { mapByStatus[tabs[0].lowercase()].orEmpty() }
+  }
+
+  val upcoming by remember {
+    derivedStateOf {
+      mapByStatus[tabs[1].lowercase()].orEmpty().sortedBy { match -> match.time?.timeToEpoch }
+    }
+  }
+
+  val completed by remember {
+    derivedStateOf {
+      mapByStatus[tabs[2].lowercase()].orEmpty()
+        .sortedByDescending { match -> match.time?.timeToEpoch }
+    }
+  }
 
   Column(
-    modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh),
+    modifier = modifier
+      .fillMaxSize()
+      .animateContentSize()
+      .pullRefresh(swipeRefresh),
     verticalArrangement = Arrangement.Top
   ) {
     AnimatedVisibility(
@@ -168,7 +182,7 @@ fun MatchOverviewContainer(
           .padding(Local16DPPadding.current)
           .animateContentSize()
           .testTag("common:loader")
-        )
+      )
     }
     updateState.getError()?.let {
       ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
@@ -198,7 +212,9 @@ fun MatchOverviewContainer(
           lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
 
           LazyColumn(
-            modifier.fillMaxSize().testTag("matchOverview:live"),
+            modifier
+              .fillMaxSize()
+              .testTag("matchOverview:live"),
             verticalArrangement = Arrangement.Top,
             state = lazyListState
           ) {
@@ -217,15 +233,17 @@ fun MatchOverviewContainer(
                       shareMatchList.remove(match)
                       haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     }
+
                     shareState &&
-                      !shareMatchList.contains(match) &&
-                      shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                        !shareMatchList.contains(match) &&
+                        shareMatchList.size < MAX_SHARABLE_ITEMS -> {
                       // If in share mode &
                       // If list does not have 6 items and if the clicked icon is not already in
                       // the list
                       shareMatchList.add(match)
                       haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     }
+
                     !shareState -> onClick(match.id) // Its a normal click, navigate to the action
                   }
                 }
@@ -244,11 +262,14 @@ fun MatchOverviewContainer(
           val groupedUpcomingMatches =
             remember(upcoming) { upcoming.groupBy { it.time?.readableDate } }
           LazyColumn(
-            modifier.fillMaxSize().testTag("matchOverview:upcoming"),
+            modifier
+              .fillMaxSize()
+              .testTag("matchOverview:upcoming"),
             verticalArrangement = Arrangement.Top,
             state = lazyListState
           ) {
-            groupedUpcomingMatches.forEach { (date, match)
+            groupedUpcomingMatches.forEach {
+                (date, match),
               -> // Group heading based on date for sticky header
               stickyHeader { date?.let { date -> DateChip(date = date) } }
               items(match, key = { item -> item.id }) {
@@ -267,9 +288,10 @@ fun MatchOverviewContainer(
                         shareMatchList.remove(match)
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                       }
+
                       shareState &&
-                        !shareMatchList.contains(match) &&
-                        shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                          !shareMatchList.contains(match) &&
+                          shareMatchList.size < MAX_SHARABLE_ITEMS -> {
                         // If in share mode &
                         // If list does not have 6 items and if the clicked icon is not already
                         // in
@@ -277,6 +299,7 @@ fun MatchOverviewContainer(
                         shareMatchList.add(match)
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                       }
+
                       !shareState -> onClick(match.id) // Its a normal click, navigate to the action
                     }
                   }
@@ -296,11 +319,14 @@ fun MatchOverviewContainer(
           val groupedCompletedMatches =
             remember(completed) { completed.groupBy { it.time?.readableDate } }
           LazyColumn(
-            modifier.fillMaxSize().testTag("matchOverview:result"),
+            modifier
+              .fillMaxSize()
+              .testTag("matchOverview:result"),
             verticalArrangement = Arrangement.Top,
             state = lazyListState
           ) {
-            groupedCompletedMatches.forEach { (date, match)
+            groupedCompletedMatches.forEach {
+                (date, match),
               -> // Group heading based on date for sticky header
               stickyHeader { date?.let { date -> DateChip(date = date) } }
               items(match, key = { item -> item.id }) {
@@ -319,9 +345,10 @@ fun MatchOverviewContainer(
                         shareMatchList.remove(match)
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                       }
+
                       shareState &&
-                        !shareMatchList.contains(match) &&
-                        shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                          !shareMatchList.contains(match) &&
+                          shareMatchList.size < MAX_SHARABLE_ITEMS -> {
                         // If in share mode &
                         // If list does not have 6 items and if the clicked icon is not already
                         // in
@@ -329,6 +356,7 @@ fun MatchOverviewContainer(
                         shareMatchList.add(match)
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                       }
+
                       !shareState -> onClick(match.id) // Its a normal click, navigate to the action
                     }
                   }
@@ -367,27 +395,32 @@ fun MatchOverviewPreview(
 ) {
   CardView(
     modifier =
-      modifier
-        .pointerInput(Unit) {
-          detectTapGestures(
-            onPress = {},
-            onDoubleTap = {},
-            onLongPress = { onAction(true, matchPreviewInfo) },
-            onTap = { onAction(false, matchPreviewInfo) }
-          )
-        }
-        .apply { if (isSelected) background(VLRTheme.colorScheme.secondaryContainer) }
+    modifier
+      .pointerInput(Unit) {
+        detectTapGestures(
+          onPress = {},
+          onDoubleTap = {},
+          onLongPress = { onAction(true, matchPreviewInfo) },
+          onTap = { onAction(false, matchPreviewInfo) }
+        )
+      }
   ) {
-    Column(modifier = modifier.padding(Local4DPPadding.current).animateContentSize()) {
+    Column(
+      modifier = modifier
+        .padding(Local4DPPadding.current)
+        .animateContentSize()
+    ) {
       Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
         Text(
           text =
-            if (matchPreviewInfo.status.equals(stringResource(id = R.string.live), true))
-              stringResource(id = R.string.live)
-            else
-              matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})")
-                ?: "",
-          modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+          if (matchPreviewInfo.status.equals(stringResource(id = R.string.live), true))
+            stringResource(id = R.string.live)
+          else
+            matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})")
+              ?: "",
+          modifier = modifier
+            .fillMaxWidth()
+            .padding(Local8DP_4DPPadding.current),
           textAlign = TextAlign.Center,
           style = VLRTheme.typography.bodyMedium
         )
@@ -437,7 +470,9 @@ fun MatchOverviewPreview(
       }
       Text(
         text = "${matchPreviewInfo.event} - ${matchPreviewInfo.series}",
-        modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+        modifier = modifier
+          .fillMaxWidth()
+          .padding(Local8DP_4DPPadding.current),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.labelMedium
       )
