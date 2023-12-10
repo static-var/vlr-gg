@@ -40,7 +40,11 @@ fun StatViewPager(
   onClick: (String) -> Unit
 ) {
   val pagerState = rememberPagerState(pageCount = { 3 })
-  Column(modifier.fillMaxWidth().padding(Local4DPPadding.current)) {
+  Column(
+    modifier
+      .fillMaxWidth()
+      .padding(Local4DPPadding.current)
+  ) {
     ProvideTextStyle(value = VLRTheme.typography.labelMedium) {
       HorizontalPager(modifier = modifier, state = pagerState) { page ->
         when (page) {
@@ -258,7 +262,9 @@ fun RowScope.PlayerNameAndAgentDetailWithHyperlink(
   Row(
     modifier
       .weight(1.5f)
-      .clickable { onClick(id) },
+      .clickable(id.isNotEmpty()) {
+        onClick(id)
+      },
     verticalAlignment = Alignment.CenterVertically
   ) {
     GlideImage(
@@ -274,7 +280,7 @@ fun RowScope.PlayerNameAndAgentDetailWithHyperlink(
       text = name,
       modifier = modifier.padding(Local2DPPadding.current),
       textAlign = TextAlign.Start,
-      textDecoration = TextDecoration.Underline
+      textDecoration = if (id.isNotEmpty()) TextDecoration.Underline else TextDecoration.None
     )
   }
 }
