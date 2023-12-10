@@ -75,7 +75,7 @@ ktor-serialization = { module = "io.ktor:ktor-client-serialization", version.ref
 ktor-encoding = { module = "io.ktor:ktor-client-encoding", version.ref = "ktor" }
 ktor-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-sandwich = { module = "com.github.skydoves:sandwich-ktor", version = "2.0.4" }
+ktor-sandwich = { module = "com.github.skydoves:sandwich-ktor", version = "2.0.5" }
 
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version = "4.12.0" }
 
