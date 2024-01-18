@@ -34,6 +34,10 @@
         <meta-data
             android:name="io.sentry.traces.user-interaction.enable"
             android:value="true" />
+        <meta-data
+            android:name="io.sentry.breadcrumbs.user-interaction"
+            android:value="true" />
+
         <!-- enable screenshot for crashes -->
         <meta-data
             android:name="io.sentry.attach-screenshot"
@@ -51,6 +55,11 @@
         <meta-data
             android:name="io.sentry.traces.profiling.sample-rate"
             android:value="1.0" />
+
+        <!-- enable sending header and cookies back to sentry -->
+        <meta-data
+            android:name="io.sentry.send-default-pii"
+            android:value="true" />
 
 
         <activity
