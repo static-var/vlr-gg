@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonSkippableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +57,7 @@ import dev.staticvar.vlr.utils.readableDate
 import dev.staticvar.vlr.utils.timeToEpoch
 
 @Composable
+@NonSkippableComposable
 fun NewsScreen(viewModel: VlrViewModel) {
 
   val newsInfo by

@@ -17,11 +17,11 @@ import io.ktor.client.request.headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
-import io.sentry.android.okhttp.SentryOkHttpInterceptor
+import io.sentry.okhttp.SentryOkHttpEventListener
+import io.sentry.okhttp.SentryOkHttpInterceptor
 import javax.inject.Named
 import javax.inject.Singleton
 import kotlinx.serialization.json.Json
-import okhttp3.ConnectionPool
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 
@@ -36,11 +36,6 @@ object NetworkModule {
       ignoreUnknownKeys = true
       isLenient = true
     }
-  }
-
-  @Provides
-  fun provideHttpConnectionPool(): ConnectionPool {
-    return ConnectionPool()
   }
 
   @Provides
@@ -62,7 +57,6 @@ object NetworkModule {
   @Named("vlrClient")
   fun provideKtorHttpClient(
     json: Json,
-    connectionPool: ConnectionPool,
     interceptors: Set<@JvmSuppressWildcards Interceptor>,
   ) =
     HttpClient(OkHttp) {
@@ -88,7 +82,9 @@ object NetworkModule {
 
       engine {
         interceptors.forEach(::addInterceptor)
-        config { connectionPool(connectionPool) }
+        config {
+          eventListener(SentryOkHttpEventListener())
+        }
       }
     }
 }
