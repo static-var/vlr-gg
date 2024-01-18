@@ -1,7 +1,6 @@
 @file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
 
 
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -30,8 +29,8 @@ android {
     applicationId = "dev.staticvar.vlr"
     minSdk = 23
     targetSdk = 34
-    versionCode = 52
-    versionName = "v0.3.8"
+    versionCode = 53
+    versionName = "v0.3.9"
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
