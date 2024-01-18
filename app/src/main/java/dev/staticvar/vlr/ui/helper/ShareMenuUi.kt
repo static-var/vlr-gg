@@ -25,7 +25,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.NonSkippableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +46,6 @@ import dev.staticvar.vlr.ui.Local8DP_4DPPadding
 import dev.staticvar.vlr.ui.match.MAX_SHARABLE_ITEMS
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.Constants
-import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.readableDateAndTimeWithZone
 import java.io.BufferedOutputStream
 import java.io.File
@@ -98,7 +96,7 @@ fun SharingAppBar(
 }
 
 @Composable
-fun ShareDialog(matches: StableHolder<List<MatchPreviewInfo>>, onDismiss: () -> Unit) {
+fun ShareDialog(matches: List<MatchPreviewInfo>, onDismiss: () -> Unit) {
   var shareToggle by remember { mutableStateOf(false) }
   val context = LocalContext.current
   AlertDialog(
@@ -117,7 +115,7 @@ fun ShareDialog(matches: StableHolder<List<MatchPreviewInfo>>, onDismiss: () -> 
             FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
           val os: OutputStream = BufferedOutputStream(FileOutputStream(file))
           os.use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, os) }
-          fireIntent(context = context, file = imageUri, matches = matches.item)
+          fireIntent(context = context, file = imageUri, matches = matches)
         }
       )
     },
@@ -130,7 +128,7 @@ fun ShareDialog(matches: StableHolder<List<MatchPreviewInfo>>, onDismiss: () -> 
 }
 
 @Composable
-fun SharableListUi(modifier: Modifier = Modifier, matches: StableHolder<List<MatchPreviewInfo>>) {
+fun SharableListUi(modifier: Modifier = Modifier, matches: List<MatchPreviewInfo>) {
   Column(
     modifier
       .fillMaxWidth()
@@ -142,9 +140,9 @@ fun SharableListUi(modifier: Modifier = Modifier, matches: StableHolder<List<Mat
         containerColor = VLRTheme.colorScheme.primaryContainer
       )
     ) {
-      matches.item.forEachIndexed { index, matchPreviewInfo ->
+      matches.forEachIndexed { index, matchPreviewInfo ->
         SharableMatchUi(match = matchPreviewInfo)
-        if (index != matches.item.size - 1)
+        if (index != matches.size - 1)
           HorizontalDivider(modifier = Modifier
             .fillMaxWidth()
             .padding(2.dp)

@@ -22,7 +22,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +58,6 @@ import dev.staticvar.vlr.ui.helper.SharingAppBar
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.Waiting
 import dev.staticvar.vlr.utils.onFail
 import dev.staticvar.vlr.utils.onPass
@@ -99,7 +97,7 @@ fun MatchOverview(viewModel: VlrViewModel) {
           data?.let { list ->
             MatchOverviewContainer(
               modifier,
-              list = StableHolder(list),
+              list = list,
               swipeRefresh,
               updateState,
               resetScroll,
@@ -119,7 +117,7 @@ const val MAX_SHARABLE_ITEMS = 6
 @Composable
 fun MatchOverviewContainer(
   modifier: Modifier = Modifier,
-  list: StableHolder<List<MatchPreviewInfo>>,
+  list: List<MatchPreviewInfo>,
   swipeRefresh: PullRefreshState,
   updateState: Result<Boolean, Throwable?>,
   resetScroll: Boolean,
@@ -140,31 +138,21 @@ fun MatchOverviewContainer(
   val pagerState = rememberPagerState(pageCount = { tabs.size })
 
   if (shareDialog) {
-    ShareDialog(matches = StableHolder(shareMatchList)) { shareDialog = false }
+    ShareDialog(matches = shareMatchList) { shareDialog = false }
   }
 
-  val mapByStatus by remember {
-    derivedStateOf {
-      list.item.groupBy { it.status }
+  val mapByStatus by remember(list) { mutableStateOf(list.groupBy { it.status }) }
+
+  val (ongoing, upcoming, completed) =
+    remember(list) {
+      mapByStatus.let {
+        Triple(
+          it[tabs[0].lowercase()].orEmpty(),
+          it[tabs[1].lowercase()].orEmpty().sortedBy { match -> match.time?.timeToEpoch },
+          it[tabs[2].lowercase()].orEmpty().sortedByDescending { match -> match.time?.timeToEpoch }
+        )
+      }
     }
-  }
-
-  val ongoing by remember {
-    derivedStateOf { mapByStatus[tabs[0].lowercase()].orEmpty() }
-  }
-
-  val upcoming by remember {
-    derivedStateOf {
-      mapByStatus[tabs[1].lowercase()].orEmpty().sortedBy { match -> match.time?.timeToEpoch }
-    }
-  }
-
-  val completed by remember {
-    derivedStateOf {
-      mapByStatus[tabs[2].lowercase()].orEmpty()
-        .sortedByDescending { match -> match.time?.timeToEpoch }
-    }
-  }
 
   Column(
     modifier = modifier
