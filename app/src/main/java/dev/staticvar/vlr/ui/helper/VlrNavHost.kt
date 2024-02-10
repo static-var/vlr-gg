@@ -141,16 +141,16 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       exitTransition = { fadeOut },
       popExitTransition = { fadeOut },
       deepLinks =
-        listOf(
-          navDeepLink {
-            uriPattern =
-              "${Constants.DEEP_LINK_BASEURL}${Destination.Match.Args.ID}={${Destination.Match.Args.ID}}"
-          },
-          navDeepLink {
-            uriPattern =
-              "${Constants.DEEP_LINK_2_BASEURL}${Destination.Match.Args.ID}={${Destination.Match.Args.ID}}"
-          }
-        )
+      listOf(
+        navDeepLink {
+          uriPattern =
+            "${Constants.DEEP_LINK_BASEURL}${Destination.Match.Args.ID}={${Destination.Match.Args.ID}}"
+        },
+        navDeepLink {
+          uriPattern =
+            "${Constants.DEEP_LINK_2_BASEURL}${Destination.Match.Args.ID}={${Destination.Match.Args.ID}}"
+        }
+      )
     ) {
       val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
       onNavigation(Destination.Match.route.replace(Destination.Match.Args.ID, id))
@@ -229,7 +229,18 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       enterTransition = { fadeIn },
       popEnterTransition = { fadeIn },
       exitTransition = { fadeOut },
-      popExitTransition = { fadeOut }
+      popExitTransition = { fadeOut },
+      deepLinks =
+      listOf(
+        navDeepLink {
+          uriPattern =
+            "${Constants.DEEP_LINK_BASEURL}news={${Destination.News.Args.ID}}"
+        },
+        navDeepLink {
+          uriPattern =
+            "${Constants.DEEP_LINK_2_BASEURL}news={${Destination.News.Args.ID}}"
+        }
+      )
     ) {
       onNavigation(Destination.News.route)
       val id = it.arguments?.getString(Destination.News.Args.ID) ?: ""
