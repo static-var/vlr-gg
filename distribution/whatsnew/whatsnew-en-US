@@ -1,3 +1,7 @@
+v0.4.0
+ • ✨ Added scroll to top button for news articles
+ • ✨ Add option to share news articles
+
 v0.3.7 ... v0.3.9
  • ✨ Update fonts for better readability
  • ⚒️ Header improvement for Home screen Widget
@@ -7,10 +11,3 @@ v0.3.5 & 0.3.6
  • ⚒️ Removed some unusual UI elements
  • ⚒️ Fixed some more crashes with Home screen Widget
  • ⚒️ More under the hood improvements
-
-v0.3.4
- • ⚒️ Fixed some crashes with Home screen Widget
- • ⚒️ Maintenance update to iron out the bugs and crashes
-
-v0.3.3
- • ⚒️ Maintenance update to iron out the bugs and crashes

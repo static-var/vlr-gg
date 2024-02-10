@@ -21,22 +21,22 @@ fun MacrobenchmarkScope.userflow() {
   device.waitForIdle()
 
   device.findObject(By.text("Completed"))?.click() // Select Upcoming tab from Match screen
-//  device.visitMatchDetailsAndBack() // Visit match details page 2 times from Upcoming tab
+  device.visitMatchDetailsAndBack() // Visit match details page 2 times from Upcoming tab
   device.waitForIdle()
 
   device.findObject(By.text("Events"))?.click() // Navigate to Events screen
-//  device.visitEventDetailsAndBack() // Visit event details page 2 times from Event screen
+  device.visitEventDetailsAndBack() // Visit event details page 2 times from Event screen
   device.waitForIdle()
 
   device.findObject(By.text("Rankings"))?.click() // Navigate to Events screen
-//  device.visitRanksAndBack() // Visit team details page 2 times from Event screen
+  device.visitRanksAndBack() // Visit team details page 2 times from Event screen
   device.waitForIdle()
 
   device.findObject(By.text("About"))?.click() // Navigate to About screen
   device.waitForIdle()
 
   device.findObject(By.text("News"))?.click() // Navigate to News screen
-//  device.readNewsAndBack()
+  device.readNewsAndBack()
   device.waitForIdle()
 }
 
