@@ -1,5 +1,5 @@
 [versions]
-detektCompose = "0.3.9"
+detektCompose = "0.3.11"
 benchmark = "1.2.3"
 sentry = "4.2.0"
 sentry-sdk = "7.2.0"
