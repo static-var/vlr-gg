@@ -1,5 +1,7 @@
 package dev.staticvar.vlr.ui.news
 
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -8,8 +10,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +31,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -63,6 +68,7 @@ import dev.staticvar.vlr.data.Subtext
 import dev.staticvar.vlr.data.Tweet
 import dev.staticvar.vlr.data.Unknown
 import dev.staticvar.vlr.data.Video
+import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.scrim.NavigationBarSpacer
@@ -70,6 +76,7 @@ import dev.staticvar.vlr.ui.scrim.NavigationBarType
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
+import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.openAsCustomTab
 import kotlinx.coroutines.launch
 
@@ -103,19 +110,35 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
             color = VLRTheme.colorScheme.primary
           )
         }
+
+        item { Spacer(modifier = modifier.padding(Local4DPPadding.current)) }
+
         item {
-          Text(
-            text = news.authorName,
-            style = VLRTheme.typography.labelLarge,
-            color = VLRTheme.colorScheme.primary
-          )
-        }
-        item {
-          Text(
-            text = news.time,
-            style = VLRTheme.typography.labelLarge,
-            color = VLRTheme.colorScheme.primary
-          )
+          Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = modifier.weight(1f), verticalArrangement = Arrangement.Center) {
+              Text(
+                text = news.authorName,
+                style = VLRTheme.typography.labelLarge,
+                color = VLRTheme.colorScheme.primary
+              )
+              Text(
+                text = news.time,
+                style = VLRTheme.typography.labelLarge,
+                color = VLRTheme.colorScheme.primary
+              )
+            }
+            Icon(
+              imageVector = Icons.Outlined.Share,
+              contentDescription = "Share",
+              modifier = modifier
+                .clip(shape = VLRTheme.shapes.medium)
+                .clickable {
+                  fireShareIntent(context, news.title, id)
+                },
+              tint = VLRTheme.colorScheme.primary
+            )
+          }
+
         }
         item { Spacer(modifier = modifier.padding(Local8DPPadding.current)) }
 
@@ -298,3 +321,27 @@ fun BoxScope.ScrollToTopButton(
   }
 
 }
+
+
+fun fireShareIntent(context: Context, title: String, id: String) {
+  val shareString = buildString {
+    appendLine(title)
+    appendLine(
+      "Check out the complete article here : ${internalDeepLinkForNews(id)} | ${
+        websiteUrlForNews(
+          id
+        )
+      }"
+    )
+  }
+  val intent = Intent(Intent.ACTION_SEND).apply {
+    putExtra(Intent.EXTRA_TEXT, shareString)
+    type = "text/plain"
+  }
+
+  val shareIntent = Intent.createChooser(intent, "Share Valorant News")
+  context.startActivity(shareIntent)
+}
+
+private fun internalDeepLinkForNews(id: String) = "${Constants.DEEP_LINK_BASEURL}news=$id"
+private fun websiteUrlForNews(id: String) = "${Constants.VLR_BASE}$id"
