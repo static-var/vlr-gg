@@ -177,6 +177,8 @@ dependencies {
   implementation(libs.jsoup)
   implementation(libs.landscapist.glide)
   implementation(libs.landscapist.animation)
+  implementation(libs.haze)
+  implementation(libs.haze.materials)
 
   coreLibraryDesugaring(libs.core.desugar)
 
