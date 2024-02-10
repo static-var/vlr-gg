@@ -3,10 +3,13 @@ package dev.staticvar.vlr.ui.news
 import android.os.Build
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,17 +18,27 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +51,10 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.staticvar.vlr.data.Heading
 import dev.staticvar.vlr.data.ListItem
 import dev.staticvar.vlr.data.Paragraph
@@ -54,6 +71,7 @@ import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.openAsCustomTab
+import kotlinx.coroutines.launch
 
 @Composable
 fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
@@ -61,11 +79,12 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
   val modifier = Modifier
   val isDarkMode = isSystemInDarkTheme()
   val context = LocalContext.current
+  val hazeState = remember { HazeState() }
+  val scrollState = rememberLazyListState()
 
-  Column(
+
+  Box(
     modifier = modifier.fillMaxSize(),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
   ) {
     parsedNews?.get()?.let { news ->
       LazyColumn(
@@ -73,6 +92,8 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
           .fillMaxSize()
           .padding(horizontal = 8.dp)
           .testTag("news:root")
+          .haze(hazeState),
+        state = scrollState
       ) {
         item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }
         item {
@@ -156,7 +177,7 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                       object : WebViewClientCompat() {
                         override fun shouldOverrideUrlLoading(
                           view: WebView,
-                          request: WebResourceRequest
+                          request: WebResourceRequest,
                         ): Boolean {
                           println(request.url)
                           request.url?.toString()?.openAsCustomTab(context)
@@ -187,7 +208,8 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                 Row(
                   modifier
                     .fillMaxWidth()
-                    .height(IntrinsicSize.Max)) {
+                    .height(IntrinsicSize.Max)
+                ) {
                   Spacer(
                     modifier =
                     modifier
@@ -208,8 +230,71 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
 
         item { NavigationBarSpacer(navigationBarType = NavigationBarType.TRANSPARENT) }
       }
+
+      ScrollToTopButton(scrollState = scrollState, hazeState = hazeState)
     }
-      ?: parsedNews?.getError()?.let { Text(text = it.stackTraceToString()) }
-      ?: LinearProgressIndicator(modifier.testTag("common:loader"))
+
+      ?: parsedNews?.getError()?.let {
+        Text(
+          text = it.stackTraceToString(),
+          modifier = Modifier.align(
+            Alignment.Center
+          )
+        )
+      }
+      ?: LinearProgressIndicator(
+        modifier
+          .testTag("common:loader")
+          .align(Alignment.Center)
+      )
   }
+}
+
+
+@Composable
+fun BoxScope.ScrollToTopButton(
+  modifier: Modifier = Modifier,
+  scrollState: LazyListState,
+  hazeState: HazeState,
+) {
+
+  val showScrollToTop by remember {
+    derivedStateOf { scrollState.firstVisibleItemIndex > 0 }
+  }
+
+  val coroutineScope = rememberCoroutineScope()
+  AnimatedVisibility(
+    visible = showScrollToTop,
+    modifier = modifier
+      .align(Alignment.BottomEnd)
+      .navigationBarsPadding()
+      .padding(16.dp)
+  ) {
+    Box(
+      modifier = Modifier
+        .background(Color.Transparent)
+        .hazeChild(
+          hazeState,
+          shape = VLRTheme.shapes.large,
+          style = HazeMaterials.ultraThin()
+        )
+        .clip(VLRTheme.shapes.large)
+        .border(1.dp, VLRTheme.colorScheme.primary, VLRTheme.shapes.large)
+        .clickable {
+          coroutineScope.launch {
+            scrollState.animateScrollToItem(0)
+          }
+        },
+    ) {
+      Icon(
+        imageVector = Icons.Outlined.KeyboardArrowUp,
+        contentDescription = "Scroll to Top",
+        modifier = Modifier
+          .background(Color.Transparent)
+          .padding(6.dp),
+        tint = VLRTheme.colorScheme.primary,
+      )
+    }
+  }
+
 }
