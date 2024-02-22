@@ -1,9 +1,9 @@
 [versions]
-detektCompose = "0.3.9"
+detektCompose = "0.3.11"
 benchmark = "1.2.3"
-sentry = "4.2.0"
-sentry-sdk = "7.2.0"
-detekt = "1.23.4"
+sentry = "4.3.0"
+sentry-sdk = "7.4.0"
+detekt = "1.23.5"
 gradle = "8.2.2"
 hilt = '2.50'
 hiltAndroidGradlePlugin = "2.50"
@@ -11,11 +11,11 @@ kotlin = '1.9.22'
 room = "2.6.1"
 composeCompiler = "1.5.8"
 accompanist = "0.33.2-alpha"
-coroutines = "1.7.3"
+coroutines = "1.8.0-RC2"
 ktor = "2.3.7"
 ksp = "1.9.22-1.0.17"
 spotless = "6.25.0"
-hiltCompiler = "1.2.0-rc01"
+hiltCompiler = "1.2.0"
 material = "1.11.0"
 jetbrainsKotlinJvm = "1.9.22"
 
@@ -31,7 +31,7 @@ room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
-compose-bom-alpha = "dev.chrisbanes.compose:compose-bom:2024.02.00-alpha01"
+compose-bom-alpha = "dev.chrisbanes.compose:compose-bom:2024.02.00-alpha02"
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-text = { module = "androidx.compose.ui:ui-text-google-fonts" }
 compose-material = { module = "androidx.compose.material:material" }
@@ -53,7 +53,6 @@ activity-compose = { module = "androidx.activity:activity-compose", version = "1
 lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.7.0" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.7.0" }
 
-accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -68,7 +67,7 @@ hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltCompiler" }
 hilt-android-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompiler" }
 
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.6.2" }
-kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.6" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.7" }
 
 ktor-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
@@ -79,8 +78,8 @@ ktor-sandwich = { module = "com.github.skydoves:sandwich-ktor", version = "2.0.5
 
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version = "4.12.0" }
 
-landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version = "2.3.0" }
-landscapist-animation = { module = "com.github.skydoves:landscapist-animation", version = "2.3.0" }
+landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version = "2.3.1" }
+landscapist-animation = { module = "com.github.skydoves:landscapist-animation", version = "2.3.1" }
 
 haze = { module = "dev.chrisbanes.haze:haze", version = "0.5.1" }
 haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "0.5.1" }
@@ -106,7 +105,7 @@ junit = { module = "junit:junit", version = "4.13.2" }
 truth = { module = "com.google.truth:truth", version = "1.1.5" }
 truth-java8 = { module = "com.google.truth.extensions:truth-java8-extension", version = "1.1.5" }
 
-mockk = { module = "io.mockk:mockk", version = "1.13.8" }
+mockk = { module = "io.mockk:mockk", version = "1.13.9" }
 turbine = { module = "app.cash.turbine:turbine", version = "1.0.0" }
 
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
@@ -133,7 +132,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 base = ["core", "app-compat", "activity-compose"]
 compose = ["compose-ui", "compose-text", "compose-material", "compose-ui-tooling", "compose-runtime", "m3", "compose-navigation"]
 lifecycle = ["lifecycle-runtime", "lifecycle-viewmodel"]
-accompanist = ["accompanist-webview", "accompanist-permissions"]
+accompanist = ["accompanist-permissions"]
 coroutines = ["coroutines-core", "coroutines-android", "coroutines-play-services"]
 room = ["room-ktx", "room-runtime"]
 hilt = ["hilt-android", "hilt-common", "hilt-nav", "hilt-work"]
