@@ -94,7 +94,7 @@ profileinstaller = { module = "androidx.profileinstaller:profileinstaller", vers
 
 work-manager = { module = "androidx.work:work-runtime", version = "2.9.0" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.17.2" }
-immutable-collection = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.6" }
+immutable-collection = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.7" }
 core-desugar = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.4" }
 
 sentry-bom = { module = "io.sentry:sentry-bom", version.ref = "sentry-sdk" }
