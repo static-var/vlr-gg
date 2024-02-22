@@ -2,9 +2,6 @@ package dev.staticvar.vlr.ui.news
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +28,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -49,13 +46,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.webkit.WebSettingsCompat
-import androidx.webkit.WebViewClientCompat
-import androidx.webkit.WebViewFeature
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
-import com.google.accompanist.web.WebView
-import com.google.accompanist.web.rememberWebViewState
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
@@ -65,7 +57,6 @@ import dev.staticvar.vlr.data.ListItem
 import dev.staticvar.vlr.data.Paragraph
 import dev.staticvar.vlr.data.Quote
 import dev.staticvar.vlr.data.Subtext
-import dev.staticvar.vlr.data.Tweet
 import dev.staticvar.vlr.data.Unknown
 import dev.staticvar.vlr.data.Video
 import dev.staticvar.vlr.ui.Local4DPPadding
@@ -172,44 +163,6 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                   textAlign = TextAlign.Center
                 )
 
-              is Tweet ->
-                WebView(
-                  state = rememberWebViewState(""),
-                  modifier = modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                  onCreated = { webView ->
-                    webView.settings.javaScriptEnabled = true
-                    webView.settings.domStorageEnabled = true
-                    if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) && WebViewFeature.isFeatureSupported(
-                        WebViewFeature.ALGORITHMIC_DARKENING
-                      ) && isDarkMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                    ) {
-                      WebSettingsCompat.setAlgorithmicDarkeningAllowed(webView.settings, true)
-                    }
-                    webView.loadDataWithBaseURL(
-                      null,
-                      parsedData.tweetUrl,
-                      "text/html",
-                      "UTF-8",
-                      null
-                    )
-                    webView.settings.setSupportMultipleWindows(true)
-                    webView.settings.javaScriptCanOpenWindowsAutomatically = true
-                    webView.webViewClient =
-                      object : WebViewClientCompat() {
-                        override fun shouldOverrideUrlLoading(
-                          view: WebView,
-                          request: WebResourceRequest,
-                        ): Boolean {
-                          println(request.url)
-                          request.url?.toString()?.openAsCustomTab(context)
-                          return true
-                        }
-                      }
-                  }
-                )
-
               is Unknown ->
                 Text(
                   text = parsedData.text,
@@ -218,14 +171,15 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                 )
 
               is Video ->
-                WebView(
-                  state = rememberWebViewState(url = parsedData.link),
+                FilledTonalButton(
+                  onClick = {
+                    parsedData.link.openAsCustomTab(context = context)
+                  },
                   modifier = modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-                    .aspectRatio(1.6f),
-                  onCreated = { webView -> webView.settings.javaScriptEnabled = true }
-                )
+                ) {
+                  Text(text = "Watch Video")
+                }
 
               is Quote ->
                 Row(
@@ -247,6 +201,8 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                     modifier = modifier.padding(horizontal = 4.dp, vertical = 2.dp),
                   )
                 }
+
+              else -> {}
             }
           }
         }
