@@ -61,7 +61,7 @@ jobs:
         run: |
           touch app/google-services.json
           echo $FIREBASE_CONFIG_DEV >> app/google-services.json
-          ./gradlew app:bundleRelease -PsentryUploadMappings --stacktrace
+          ./gradlew app:bundleRelease -Psentry --stacktrace
       - name: APK name and path
         id: apk_details
         run: |

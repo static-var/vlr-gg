@@ -29,9 +29,18 @@ class SentryConventionPlugin : Plugin<Project> {
       project.pluginManager.withPlugin("com.android.application") {
         project.extensions.configure<ApplicationAndroidComponentsExtension> {
           onVariants(selector().all()) { variant ->
+            val enableMappings =
+              project.providers.gradleProperty(SENTRY_UPLOAD_MAPPINGS_PROPERTY).isPresent
             val sentryDsn = localProperties.getProperty(SENTRY_DSN_PROPERTY) as String
             variant.manifestPlaceholders.put("sentryDsn", sentryDsn)
-            variant.manifestPlaceholders.put("enableSentry", "${variant.name == "release"}")
+            variant.manifestPlaceholders.put(
+              "sentryEnvironment",
+              when {
+                variant.name.contains("release") && enableMappings-> "production"
+                variant.name.contains("release") && !enableMappings-> "pre-release"
+                else -> "dev"
+              }
+            )
           }
         }
       }
@@ -39,24 +48,19 @@ class SentryConventionPlugin : Plugin<Project> {
       pluginManager.apply(libs.findPlugin("sentry-plugin").get().get().pluginId)
       project.plugins.apply(io.sentry.android.gradle.SentryPlugin::class)
       extensions.getByType<SentryPluginExtension>().apply {
-        val enableMappings =
-          project.providers.gradleProperty(SENTRY_UPLOAD_MAPPINGS_PROPERTY).isPresent
-        includeProguardMapping.set(enableMappings)
-        autoUploadProguardMapping.set(enableMappings)
-        if (enableMappings) {
-          authToken.set(
-            System.getenv(SENTRY_AUTH_TOKEN) ?: sentryProperties.getProperty("auth.token") as String
-          )
-        }
+        authToken.set(
+          System.getenv(SENTRY_AUTH_TOKEN) ?: sentryProperties.getProperty("auth.token") as String
+        )
         uploadNativeSymbols.set(false)
         autoUploadNativeSymbols.set(false)
         includeNativeSources.set(false)
         ignoredVariants.set(emptySet())
-        ignoredBuildTypes.set(setOf("benchmark", "debug"))
+        ignoredBuildTypes.set(setOf("benchmark"))
         ignoredFlavors.set(emptySet())
         tracingInstrumentation {
           enabled.set(true)
-          debug.set(false)
+          debug.set(true)
+          logcat.enabled.set(true)
           forceInstrumentDependencies.set(false)
           features.set(EnumSet.allOf(InstrumentationFeature::class.java))
         }
@@ -74,7 +78,7 @@ class SentryConventionPlugin : Plugin<Project> {
 
   private companion object {
     private const val SENTRY_DSN_PROPERTY = "SENTRY_DSN"
-    private const val SENTRY_UPLOAD_MAPPINGS_PROPERTY = "sentryUploadMappings"
+    private const val SENTRY_UPLOAD_MAPPINGS_PROPERTY = "sentry"
     private const val SENTRY_AUTH_TOKEN = "SENTRY_AUTH_TOKEN"
   }
 }

@@ -1,10 +1,10 @@
 [versions]
 detektCompose = "0.3.11"
 benchmark = "1.2.3"
-sentry = "4.3.0"
-sentry-sdk = "7.4.0"
+sentry = "4.3.1"
+sentry-sdk = "7.5.0"
 detekt = "1.23.5"
-gradle = "8.2.2"
+gradle = "8.3.0"
 hilt = '2.50'
 hiltAndroidGradlePlugin = "2.50"
 kotlin = '1.9.22'
@@ -98,6 +98,7 @@ immutable-collection = { module = "org.jetbrains.kotlinx:kotlinx-collections-imm
 core-desugar = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.4" }
 
 sentry-bom = { module = "io.sentry:sentry-bom", version.ref = "sentry-sdk" }
+sentry = { module = "io.sentry:sentry-android" }
 sentry-okhttp = { module = "io.sentry:sentry-android-okhttp", version.ref = "sentry-sdk" }
 
 
