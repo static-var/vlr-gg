@@ -84,14 +84,14 @@ import kotlinx.coroutines.tasks.await
 fun TeamScreen(viewModel: VlrViewModel, id: String) {
 
   val teamDetails by
-  remember(viewModel) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
+  remember(id) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
   var rosterCard by remember { mutableStateOf(false) }
 
   val trackerString = id.toTeamTopic()
   val isTracked by
   remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
 
-  var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
+  var triggerRefresh by remember(viewModel, id) { mutableStateOf(true) }
   val updateState by
   remember(triggerRefresh) { viewModel.refreshTeamDetails(id) }
     .collectAsStateWithLifecycle(initialValue = Ok(false))

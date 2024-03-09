@@ -12,13 +12,13 @@ import dev.staticvar.vlr.ui.Destination
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.about.AboutScreen
 import dev.staticvar.vlr.ui.events.EventDetails
-import dev.staticvar.vlr.ui.events.EventScreen
-import dev.staticvar.vlr.ui.match.MatchOverview
+import dev.staticvar.vlr.ui.events.EventOverviewAdaptive
+import dev.staticvar.vlr.ui.match.MatchOverviewAdaptive
 import dev.staticvar.vlr.ui.match.details_ui.NewMatchDetails
 import dev.staticvar.vlr.ui.news.NewsDetailsScreen
-import dev.staticvar.vlr.ui.news.NewsScreen
+import dev.staticvar.vlr.ui.news.NewsScreenAdaptive
 import dev.staticvar.vlr.ui.player.PlayerDetailsScreen
-import dev.staticvar.vlr.ui.team_rank.RankScreen
+import dev.staticvar.vlr.ui.team_rank.RankScreenAdaptive
 import dev.staticvar.vlr.ui.team_rank.TeamScreen
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.fadeIn
@@ -51,7 +51,7 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       },
     ) {
       onNavigation(Destination.NewsOverview.route)
-      NewsScreen(viewModel = viewModel)
+      NewsScreenAdaptive(viewModel = viewModel)
     }
     composable(
       Destination.MatchOverview.route,
@@ -71,7 +71,7 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       },
     ) {
       onNavigation(Destination.MatchOverview.route)
-      MatchOverview(viewModel = viewModel)
+      MatchOverviewAdaptive(viewModel = viewModel)
     }
     composable(
       Destination.EventOverview.route,
@@ -91,7 +91,7 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       },
     ) {
       onNavigation(Destination.EventOverview.route)
-      EventScreen(viewModel = viewModel)
+      EventOverviewAdaptive(viewModel = viewModel)
     }
     composable(
       Destination.About.route,
@@ -131,7 +131,7 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       },
     ) {
       onNavigation(Destination.Rank.route)
-      RankScreen(viewModel = viewModel)
+      RankScreenAdaptive(viewModel = viewModel)
     }
     composable(
       Destination.Match.route,

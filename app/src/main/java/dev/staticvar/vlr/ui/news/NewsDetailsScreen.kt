@@ -33,6 +33,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.NonSkippableComposable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -73,9 +75,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
-  val parsedNews by remember { viewModel.parseNews(id) }.collectAsStateWithLifecycle()
+  val parsedNews by remember(id) { viewModel.parseNews(id) }.collectAsStateWithLifecycle()
   val modifier = Modifier
-  val isDarkMode = isSystemInDarkTheme()
   val context = LocalContext.current
   val hazeState = remember { HazeState() }
   val scrollState = rememberLazyListState()

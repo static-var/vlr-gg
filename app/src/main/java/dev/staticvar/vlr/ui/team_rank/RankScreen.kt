@@ -1,12 +1,16 @@
 package dev.staticvar.vlr.ui.team_rank
 
+import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,14 +29,24 @@ import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.layout.AnimatedPane
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.material3.adaptive.layout.calculateStandardPaneScaffoldDirective
+import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonSkippableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +72,6 @@ import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
-import dev.staticvar.vlr.ui.Action
 import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
@@ -66,7 +79,10 @@ import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrScrollableTabRowForViewPager
+import dev.staticvar.vlr.ui.events.EventDetails
+import dev.staticvar.vlr.ui.events.EventScreen
 import dev.staticvar.vlr.ui.helper.CardView
+import dev.staticvar.vlr.ui.helper.cardAlpha
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -76,17 +92,63 @@ import dev.staticvar.vlr.utils.onFail
 import dev.staticvar.vlr.utils.onPass
 import dev.staticvar.vlr.utils.onWaiting
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+fun RankScreenAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel) {
+  var selectedItem: String? by rememberSaveable {
+    mutableStateOf(null)
+  }
+  val paneScaffoldDirective = calculateStandardPaneScaffoldDirective(currentWindowAdaptiveInfo())
+  val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
+    scaffoldDirective = PaneScaffoldDirective(
+      contentPadding = PaddingValues(0.dp),
+      maxHorizontalPartitions = paneScaffoldDirective.maxHorizontalPartitions,
+      horizontalPartitionSpacerSize = paneScaffoldDirective.horizontalPartitionSpacerSize,
+      maxVerticalPartitions = paneScaffoldDirective.maxVerticalPartitions,
+      verticalPartitionSpacerSize = paneScaffoldDirective.verticalPartitionSpacerSize,
+      excludedBounds = paneScaffoldDirective.excludedBounds
+    )
+  )
+
+  BackHandler(navigator.canNavigateBack()) {
+    selectedItem = null
+    navigator.navigateBack()
+  }
+
+  ListDetailPaneScaffold(
+    listPane = {
+      AnimatedPane(modifier = modifier) {
+        RankScreen(viewModel = viewModel, selectedItem = selectedItem ?: " ", action = {
+          selectedItem = it
+          navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
+        })
+      }
+    },
+    detailPane = {
+      selectedItem?.let {
+        AnimatedPane(modifier = modifier) {
+          TeamScreen(viewModel = viewModel, id = it)
+        }
+      }
+    },
+    windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
+    directive = navigator.scaffoldDirective,
+    value = navigator.scaffoldValue,
+    modifier = modifier
+  )
+}
+
 @Composable
 @NonSkippableComposable
-fun RankScreen(viewModel: VlrViewModel) {
+fun RankScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -> Unit) {
 
   val allTeams by
-    remember(viewModel) { viewModel.getRanks() }
-      .collectAsStateWithLifecycle(initialValue = Waiting())
+  remember(viewModel) { viewModel.getRanks() }
+    .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshRanks() }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh) { viewModel.refreshRanks() }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(
@@ -95,7 +157,7 @@ fun RankScreen(viewModel: VlrViewModel) {
     )
 
   val resetScroll by
-    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val modifier: Modifier = Modifier
 
@@ -111,11 +173,12 @@ fun RankScreen(viewModel: VlrViewModel) {
         else
           RanksPreviewContainer(
             modifier = Modifier,
-            action = viewModel.action,
             list = StableHolder(data),
             swipeRefresh,
             updateState,
             resetScroll,
+            selectedItem = selectedItem,
+            action = action,
             postResetScroll = { viewModel.postResetScroll() }
           )
       }
@@ -127,27 +190,31 @@ fun RankScreen(viewModel: VlrViewModel) {
 @Composable
 fun RanksPreviewContainer(
   modifier: Modifier = Modifier,
-  action: Action,
   list: StableHolder<List<TeamDetails>>,
   swipeRefresh: PullRefreshState,
   updateState: Result<Boolean, Throwable?>,
   resetScroll: Boolean,
+  selectedItem: String,
+  action: (String) -> Unit,
   postResetScroll: () -> Unit,
 ) {
   val teamMap by
-    remember(list) {
-      mutableStateOf(
-        list.item
-          .sortedBy { it.rank }
-          .filter { it.region.isNotEmpty() }
-          .groupBy { it.region.trim() }
-      )
-    }
+  remember(list) {
+    mutableStateOf(
+      list.item
+        .sortedBy { it.rank }
+        .filter { it.region.isNotEmpty() }
+        .groupBy { it.region.trim() }
+    )
+  }
   val tabs by remember { mutableStateOf(teamMap.keys.toList().sorted()) }
   val pagerState = rememberPagerState(pageCount = { tabs.size })
 
   Column(
-    modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh),
+    modifier = modifier
+      .fillMaxSize()
+      .animateContentSize()
+      .pullRefresh(swipeRefresh),
     verticalArrangement = Arrangement.Top
   ) {
     if (tabs.isNotEmpty()) {
@@ -176,12 +243,14 @@ fun RanksPreviewContainer(
         if (topTeams.isEmpty()) NoTeamsUI()
         else {
           LazyColumn(
-            modifier.fillMaxSize().testTag("rankOverview:live"),
+            modifier
+              .fillMaxSize()
+              .testTag("rankOverview:live"),
             verticalArrangement = Arrangement.Top,
             state = lazyListState
           ) {
             items(topTeams, key = { item -> item.id }) {
-              TeamRankPreview(team = it, action = action)
+              TeamRankPreview(team = it, selectedItem = selectedItem, action = action)
             }
           }
         }
@@ -239,11 +308,32 @@ fun NoTeamsUI(modifier: Modifier = Modifier) {
   }
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Action) {
+fun TeamRankPreview(
+  modifier: Modifier = Modifier,
+  team: TeamDetails,
+  selectedItem: String,
+  action: (String) -> Unit,
+) {
   val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
 
-  CardView(modifier = modifier.clickable { action.team(team.id) }.height(120.dp)) {
+  CardView(modifier = modifier
+    .clickable {
+      action(team.id)
+    }
+    .height(120.dp),
+    colors = if (selectedItem == team.id) {
+      CardDefaults.cardColors(
+        containerColor = VLRTheme.colorScheme.secondaryContainer.copy(cardAlpha),
+        contentColor = VLRTheme.colorScheme.onSecondaryContainer
+      )
+    } else {
+      CardDefaults.cardColors(
+        containerColor = VLRTheme.colorScheme.primaryContainer.copy(cardAlpha),
+        contentColor = VLRTheme.colorScheme.onPrimaryContainer
+      )
+    }) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Column(modifier = modifier.padding(Local8DPPadding.current)) {
         val teamRankAnnotatedString = buildAnnotatedString {
@@ -277,13 +367,13 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
         val inlineLocationContentMap =
           mapOf(
             "location" to
-              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                Icon(
-                  imageVector = Icons.Outlined.LocationOn,
-                  modifier = modifier.size(16.dp),
-                  contentDescription = ""
-                )
-              }
+                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                  Icon(
+                    imageVector = Icons.Outlined.LocationOn,
+                    modifier = modifier.size(16.dp),
+                    contentDescription = ""
+                  )
+                }
           )
         val annotatedDateString = buildAnnotatedString {
           appendInlineContent(id = "points")
@@ -292,13 +382,13 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
         val inlineDateContentMap =
           mapOf(
             "points" to
-              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                Icon(
-                  imageVector = Icons.Outlined.Insights,
-                  modifier = modifier.size(16.dp),
-                  contentDescription = ""
-                )
-              }
+                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                  Icon(
+                    imageVector = Icons.Outlined.Insights,
+                    modifier = modifier.size(16.dp),
+                    contentDescription = ""
+                  )
+                }
           )
         Text(
           text = annotatedLocationString,
@@ -318,12 +408,12 @@ fun TeamRankPreview(modifier: Modifier = Modifier, team: TeamDetails, action: Ac
       GlideImage(
         imageModel = { team.img },
         modifier =
-          modifier
-            .align(Alignment.CenterEnd)
-            .padding(horizontal = 24.dp, vertical = 8.dp)
-            .size(120.dp),
+        modifier
+          .align(Alignment.CenterEnd)
+          .padding(horizontal = 24.dp, vertical = 8.dp)
+          .size(120.dp),
         imageOptions =
-          ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
+        ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
         component = imageComponent
       )
     }
