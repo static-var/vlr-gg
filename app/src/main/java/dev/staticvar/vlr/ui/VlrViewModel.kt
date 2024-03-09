@@ -10,6 +10,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -17,8 +18,15 @@ import kotlinx.coroutines.launch
 class VlrViewModel @Inject constructor(private val repository: VlrRepository) : ViewModel() {
   lateinit var action: Action
 
+  private var _hideNavBar: MutableSharedFlow<Boolean> = MutableSharedFlow(0)
+  val hideNavBar: SharedFlow<Boolean> = _hideNavBar
+
   private var _resetScroll: MutableSharedFlow<Boolean> = MutableSharedFlow(0)
   val resetScroll: SharedFlow<Boolean> = _resetScroll
+
+  fun hideNavbar(hide: Boolean) {
+    viewModelScope.launch { _hideNavBar.emit(hide) }
+  }
 
   fun resetScroll() {
     viewModelScope.launch { _resetScroll.emit(true) }

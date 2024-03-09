@@ -100,11 +100,11 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
   val modifier = Modifier
 
   val details by
-  remember(viewModel) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
+  remember(id) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh) { viewModel.refreshEventDetails(id) }
+  remember(triggerRefresh, id) { viewModel.refreshEventDetails(id) }
     .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =

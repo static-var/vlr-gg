@@ -89,14 +89,14 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 
   val modifier: Modifier = Modifier
 
-  val details by remember(viewModel) { viewModel.getMatchDetails(id) }.collectAsState(Waiting())
+  val details by remember(id) { viewModel.getMatchDetails(id) }.collectAsState(Waiting())
   val trackerString = id.toMatchTopic()
   val isTracked by
-  remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
+  remember(id) { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
 
-  var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
+  var triggerRefresh by remember { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh) { viewModel.refreshMatchInfo(id) }
+  remember(triggerRefresh, id) { viewModel.refreshMatchInfo(id) }
     .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
