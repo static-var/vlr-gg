@@ -1,5 +1,7 @@
 package dev.staticvar.vlr.ui.helper
 
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -26,7 +28,11 @@ import dev.staticvar.vlr.utils.fadeOut
 import dev.staticvar.vlr.utils.slideInFromBottom
 
 @Composable
-fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit) {
+fun VlrNavHost(
+  navController: NavHostController,
+  paneState: (Boolean) -> Unit,
+  onNavigation: (String) -> Unit,
+) {
   val viewModel: VlrViewModel = hiltViewModel()
 
   NavHost(
@@ -51,7 +57,7 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       },
     ) {
       onNavigation(Destination.NewsOverview.route)
-      NewsScreenAdaptive(viewModel = viewModel)
+      NewsScreenAdaptive(viewModel = viewModel, hideNav = paneState)
     }
     composable(
       Destination.MatchOverview.route,
@@ -71,7 +77,7 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       },
     ) {
       onNavigation(Destination.MatchOverview.route)
-      MatchOverviewAdaptive(viewModel = viewModel)
+      MatchOverviewAdaptive(viewModel = viewModel, hideNav = paneState)
     }
     composable(
       Destination.EventOverview.route,
@@ -91,7 +97,7 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       },
     ) {
       onNavigation(Destination.EventOverview.route)
-      EventOverviewAdaptive(viewModel = viewModel)
+      EventOverviewAdaptive(viewModel = viewModel, hideNav = paneState)
     }
     composable(
       Destination.About.route,
@@ -131,7 +137,7 @@ fun VlrNavHost(navController: NavHostController, onNavigation: (String) -> Unit)
       },
     ) {
       onNavigation(Destination.Rank.route)
-      RankScreenAdaptive(viewModel = viewModel)
+      RankScreenAdaptive(viewModel = viewModel, hideNav = paneState)
     }
     composable(
       Destination.Match.route,

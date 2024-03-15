@@ -1,44 +1,51 @@
 package dev.staticvar.vlr.ui
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.automirrored.outlined.Feed
 import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Feed
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.outlined.EmojiEvents
-import androidx.compose.material.icons.outlined.Feed
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Leaderboard
 import androidx.compose.material.icons.outlined.SportsEsports
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.ExperimentalMaterial3AdaptiveNavigationSuiteApi
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.helper.NavItem
-import dev.staticvar.vlr.ui.helper.VlrNavBar
 import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.ui.theme.tintedBackground
 import io.sentry.compose.withSentryObservableEffect
 
+@OptIn(
+  ExperimentalMaterial3AdaptiveNavigationSuiteApi::class, ExperimentalMaterial3AdaptiveApi::class
+)
 @Composable
 fun VLR() {
   val navController = rememberNavController().withSentryObservableEffect()
@@ -72,7 +79,7 @@ fun VLR() {
         Icons.Outlined.SportsEsports,
         onClick = {
           if (currentNav == Destination.MatchOverview.route) resetScroll()
-          else action.matchOverview()
+          else action.matchOverview().also { println("Match overview navigation") }
         }
       ),
       NavItem(
@@ -100,24 +107,77 @@ fun VLR() {
       ),
     )
 
-  Scaffold(
-    bottomBar = {
-      VlrNavBar(
-        navController = navController,
-        items = navItems,
-        isVisible = navItems.any { it.route == currentDestination }
-      )
+  var hideNav by remember {
+    mutableStateOf(false)
+  }
+
+  val navSuiteType =
+    NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
+
+  var selectedItem by rememberSaveable { mutableIntStateOf(0) }
+  println("Current Destination $currentDestination currentNav $currentNav")
+
+  NavigationSuiteScaffold(
+    navigationSuiteItems = {
+      navItems.forEachIndexed { index, navItem ->
+        item(
+          selected = currentDestination == navItem.route,
+          icon = {
+            Crossfade(currentDestination == navItem.route, label = "NavBarItemIcon") {
+              Icon(
+                imageVector = if (it) navItem.selectedIcon else navItem.unselectedIcon,
+                contentDescription = navItem.title,
+                tint = VLRTheme.colorScheme.onPrimaryContainer
+              )
+            }
+          },
+          onClick = {
+            println("on click")
+            if (currentDestination != navItem.route)
+//              navItem.onClick()
+              navController.navigate(navItem.route)
+          },
+          label = { Text(text = navItem.title) }
+        )
+      }
+
     },
-    contentWindowInsets = WindowInsets(left = 0.dp, top = 0.dp, right = 0.dp, bottom = 0.dp)
-  ) { paddingValues ->
+    layoutType = if (!hideNav || navSuiteType != NavigationSuiteType.NavigationBar) navSuiteType else NavigationSuiteType.None
+  ) {
     Box(
       modifier =
       Modifier
-        .padding(paddingValues)
         .background(VLRTheme.colorScheme.tintedBackground)
         .semantics { testTagsAsResourceId = true }
     ) {
-      VlrNavHost(navController = navController) { currentNav = it }
+      VlrNavHost(
+        navController = navController,
+        paneState = { nav ->
+          println("VLR hideNav $nav")
+          hideNav = nav
+        }
+      ) { currentNav = it }
     }
   }
+
+  /*  Scaffold(
+      bottomBar = {
+        VlrNavBar(
+          navController = navController,
+          items = navItems,
+          isVisible = navItems.any { it.route == currentDestination }
+        )
+      },
+      contentWindowInsets = WindowInsets(left = 0.dp, top = 0.dp, right = 0.dp, bottom = 0.dp)
+    ) { paddingValues ->
+      Box(
+        modifier =
+        Modifier
+          .padding(paddingValues)
+          .background(VLRTheme.colorScheme.tintedBackground)
+          .semantics { testTagsAsResourceId = true }
+      ) {
+        VlrNavHost(navController = navController) { currentNav = it }
+      }
+    }*/
 }

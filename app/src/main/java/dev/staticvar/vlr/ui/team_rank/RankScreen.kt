@@ -39,9 +39,11 @@ import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.calculateStandardPaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.NonSkippableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -94,7 +96,7 @@ import dev.staticvar.vlr.utils.onWaiting
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun RankScreenAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel) {
+fun RankScreenAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel, hideNav: (Boolean) -> Unit) {
   var selectedItem: String? by rememberSaveable {
     mutableStateOf(null)
   }
@@ -109,6 +111,12 @@ fun RankScreenAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel) {
       excludedBounds = paneScaffoldDirective.excludedBounds
     )
   )
+
+  LaunchedEffect(navigator.currentDestination) {
+    if (navigator.currentDestination?.pane == ThreePaneScaffoldRole.Secondary) {
+      hideNav(false)
+    } else hideNav(true)
+  }
 
   BackHandler(navigator.canNavigateBack()) {
     selectedItem = null

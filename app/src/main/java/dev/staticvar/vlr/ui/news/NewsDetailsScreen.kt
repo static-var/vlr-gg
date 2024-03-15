@@ -31,6 +31,7 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
@@ -172,12 +173,13 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                 )
 
               is Video ->
-                FilledTonalButton(
+                OutlinedButton(
                   onClick = {
                     parsedData.link.openAsCustomTab(context = context)
                   },
                   modifier = modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                  shape = VLRTheme.shapes.small
                 ) {
                   Text(text = "Watch Video")
                 }

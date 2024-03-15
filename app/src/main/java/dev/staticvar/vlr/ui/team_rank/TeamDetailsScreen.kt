@@ -21,11 +21,11 @@ import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -206,7 +206,7 @@ fun TeamBanner(
   teamDetails: TeamDetails,
   id: String,
   isTracked: Boolean,
-  onSubButton: suspend () -> Unit
+  onSubButton: suspend () -> Unit,
 ) {
 
   val scope = rememberCoroutineScope()
@@ -250,7 +250,7 @@ fun TeamBanner(
 
     var processingTopicSubscription by remember { mutableStateOf(false) }
 
-    Button(
+    OutlinedButton(
       onClick = {
         if (notificationPermission.status.isGranted) {
           if (!processingTopicSubscription) {
@@ -265,17 +265,19 @@ fun TeamBanner(
       modifier = modifier
         .fillMaxWidth()
         .padding(Local4DP_2DPPadding.current),
+      shape = VLRTheme.shapes.small
     ) {
       if (processingTopicSubscription) {
         LinearProgressIndicator()
       } else if (isTracked) Text(text = stringResource(R.string.unsubscribe))
       else Text(text = stringResource(R.string.get_notified))
     }
-    Button(
+    OutlinedButton(
       onClick = { (Constants.VLR_BASE + "team/" + id).openAsCustomTab(context) },
       modifier = modifier
         .fillMaxWidth()
         .padding(Local4DP_2DPPadding.current),
+      shape = VLRTheme.shapes.small
     ) {
       Text(text = stringResource(id = R.string.view_at_vlr), maxLines = 1)
     }
@@ -382,7 +384,7 @@ fun LazyItemScope.TeamMatchData(
   upcoming: StableHolder<List<TeamDetails.Games>>,
   completed: StableHolder<List<TeamDetails.Games>>,
   teamName: String,
-  onClick: (String) -> Unit
+  onClick: (String) -> Unit,
 ) {
 
   val tabs =

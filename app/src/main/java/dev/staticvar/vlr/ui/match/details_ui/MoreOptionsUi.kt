@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,7 +28,6 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
-import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -61,7 +60,8 @@ fun MatchInfoMoreOptions(
       color = VLRTheme.colorScheme.primary,
       textAlign = TextAlign.Center,
       modifier = Modifier
-        .padding(Local8DPPadding.current).fillMaxWidth()
+        .padding(Local8DPPadding.current)
+        .fillMaxWidth()
     )
 
     var dialogOpen by remember { mutableStateOf(false) }
@@ -74,22 +74,23 @@ fun MatchInfoMoreOptions(
     Row(
       Modifier
         .fillMaxWidth()
-        .padding(vertical = 4.dp, horizontal = 8.dp),
+        .padding(horizontal = 8.dp),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-      Button(
+      OutlinedButton(
         onClick = { dialogOpen = true },
         modifier = Modifier
           .weight(1f)
           .testTag("details:more_info"),
+        shape = VLRTheme.shapes.small
       ) {
         Text(text = stringResource(R.string.details))
       }
       detailData.event.date?.let {
         if (!it.hasElapsed) {
           var processingTopicSubscription by remember { mutableStateOf(false) }
-          Button(
+          OutlinedButton(
             onClick = {
               if (notificationPermission.status.isGranted) {
                 if (!processingTopicSubscription) {
@@ -101,7 +102,8 @@ fun MatchInfoMoreOptions(
                 }
               } else notificationPermission.launchPermissionRequest()
             },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            shape = VLRTheme.shapes.small
           ) {
             if (processingTopicSubscription) {
               LinearProgressIndicator()
@@ -115,21 +117,23 @@ fun MatchInfoMoreOptions(
     Row(
       Modifier
         .fillMaxWidth()
-        .padding(vertical = 4.dp, horizontal = 8.dp),
+        .padding(horizontal = 8.dp),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
       val context = LocalContext.current
-      Button(
+      OutlinedButton(
         onClick = { (Constants.VLR_BASE + detailData.id).openAsCustomTab(context) },
         modifier = Modifier.weight(1f),
+        shape = VLRTheme.shapes.small
       ) {
         Text(text = stringResource(id = R.string.view_at_vlr), maxLines = 1)
       }
 
-      Button(
+      OutlinedButton(
         onClick = { onEventClick(eventId) },
         modifier = Modifier.weight(1f),
+        shape = VLRTheme.shapes.small
       ) {
         Text(text = stringResource(id = R.string.check_event))
       }

@@ -258,15 +258,6 @@ fun MatchOverallAndEventOverview(
             },
           contentAlignment = Alignment.TopEnd
         ) {
-          detailData.teams[0].id?.let {
-            Icon(
-              Icons.AutoMirrored.Outlined.OpenInNew,
-              contentDescription = stringResource(R.string.open_match_content_description),
-              modifier = modifier
-                .size(24.dp)
-                .padding(Local2DPPadding.current)
-            )
-          }
           GlideImage(
             imageModel = { detailData.teams[0].img },
             imageOptions =
@@ -289,15 +280,6 @@ fun MatchOverallAndEventOverview(
             },
           contentAlignment = Alignment.TopEnd
         ) {
-          detailData.teams[1].id?.let {
-            Icon(
-              Icons.AutoMirrored.Outlined.OpenInNew,
-              contentDescription = stringResource(R.string.open_match_content_description),
-              modifier = modifier
-                .size(24.dp)
-                .padding(Local2DPPadding.current)
-            )
-          }
           GlideImage(
             imageModel = { detailData.teams[1].img },
             imageOptions =
