@@ -6,7 +6,7 @@ import android.provider.Settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -45,10 +45,18 @@ fun DomainVerificationUi(
           style = VLRTheme.typography.labelMedium
         )
         Text(
-          text = if (android.os.Build.MANUFACTURER.equals("samsung", true)) stringResource(id = R.string.domain_verification_samsung_steps) else stringResource(id = R.string.domain_verification_steps),
+          text = if (android.os.Build.MANUFACTURER.equals(
+              "samsung",
+              true
+            )
+          ) stringResource(id = R.string.domain_verification_samsung_steps) else stringResource(id = R.string.domain_verification_steps),
           style = VLRTheme.typography.labelMedium
         )
-        Button(onClick = { context.startActivity(intent) }, modifier = modifier.fillMaxWidth()) {
+        OutlinedButton(
+          onClick = { context.startActivity(intent) },
+          modifier = modifier.fillMaxWidth(),
+          shape = VLRTheme.shapes.small
+        ) {
           Text(text = stringResource(id = R.string.verify))
         }
       }

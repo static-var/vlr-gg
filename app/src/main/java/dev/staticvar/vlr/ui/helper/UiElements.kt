@@ -30,10 +30,7 @@ val emphasisCardAlpha: Float
 fun CardView(
   modifier: Modifier = Modifier,
   colors: CardColors =
-    CardDefaults.cardColors(
-      contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-      containerColor = VLRTheme.colorScheme.primaryContainer.copy(cardAlpha)
-    ),
+    CardDefaults.cardColors(),
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Card(
@@ -59,10 +56,5 @@ fun EmphasisCardView(
       .animateContentSize()
       .then(modifier),
     shape = RoundedCornerShape(8.dp),
-    colors =
-    CardDefaults.cardColors(
-      contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-      containerColor = VLRTheme.colorScheme.primaryContainer.copy(emphasisCardAlpha)
-    )
   ) { content(this) }
 }

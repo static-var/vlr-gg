@@ -21,20 +21,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Paid
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.Button
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -70,7 +68,6 @@ import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local16DP_8DPPadding
-import dev.staticvar.vlr.ui.Local2DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local4DP_2DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
@@ -144,17 +141,17 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
               }
             }
           AnimatedVisibility(visible = progressBarVisibility) {
-              Column {
-                StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
-                LinearProgressIndicator(
-                  modifier
-                    .fillMaxWidth()
-                    .padding(Local16DPPadding.current)
-                    .animateContentSize()
-                    .testTag("common:loader")
-                    .align(Alignment.CenterHorizontally)
-                )
-              }
+            Column {
+              StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
+              LinearProgressIndicator(
+                modifier
+                  .fillMaxWidth()
+                  .padding(Local16DPPadding.current)
+                  .animateContentSize()
+                  .testTag("common:loader")
+                  .align(Alignment.CenterHorizontally)
+              )
+            }
           }
           Box(
             modifier = Modifier
@@ -266,7 +263,7 @@ fun TournamentDetailsHeader(
   modifier: Modifier = Modifier,
   tournamentDetails: TournamentDetails,
   isTracked: Boolean,
-  onSubButton: suspend () -> Unit
+  onSubButton: suspend () -> Unit,
 ) {
   val scope = rememberCoroutineScope()
   val context = LocalContext.current
@@ -357,11 +354,12 @@ fun TournamentDetailsHeader(
             modifier = Modifier.padding(horizontal = 4.dp)
           )
         }
-        Button(
+        OutlinedButton(
           onClick = {
             (Constants.VLR_BASE + "event/" + tournamentDetails.id).openAsCustomTab(context)
           },
           modifier = modifier.fillMaxWidth(),
+          shape = VLRTheme.shapes.small
         ) {
           Text(text = stringResource(id = R.string.view_at_vlr))
         }
@@ -372,7 +370,7 @@ fun TournamentDetailsHeader(
           tournamentDetails.status == TournamentDetails.Status.ONGOING ||
           tournamentDetails.status == TournamentDetails.Status.UPCOMING
         )
-          Button(
+          OutlinedButton(
             onClick = {
               if (notificationPermission.status.isGranted) {
                 if (!processingTopicSubscription) {
@@ -384,7 +382,8 @@ fun TournamentDetailsHeader(
                 }
               } else notificationPermission.launchPermissionRequest()
             },
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth(),
+            shape = VLRTheme.shapes.small
           ) {
             if (processingTopicSubscription) {
               LinearProgressIndicator()
@@ -400,7 +399,7 @@ fun TournamentDetailsHeader(
 fun EventDetailsTeamSlider(
   modifier: Modifier = Modifier,
   list: StableHolder<List<TournamentDetails.Participant>>,
-  onClick: (String) -> Unit
+  onClick: (String) -> Unit,
 ) {
   val imageComponent = rememberImageComponent {
     add(CircularRevealPlugin())
@@ -474,7 +473,7 @@ fun EventMatchGroups(
   group: StableHolder<Map<String, List<TournamentDetails.Games>>>,
   tabSelection: Int,
   onFilterChange: (Int) -> Unit,
-  onTabChange: (Int) -> Unit
+  onTabChange: (Int) -> Unit,
 ) {
   val filterOptions =
     listOf(
@@ -535,7 +534,7 @@ fun FilterChips(
   modifier: Modifier,
   filterOptions: List<String>,
   selectedIndex: Int,
-  onFilterChange: (Int) -> Unit
+  onFilterChange: (Int) -> Unit,
 ) {
   Row(
     modifier
@@ -544,25 +543,16 @@ fun FilterChips(
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically
   ) {
-    filterOptions.forEachIndexed { index, filter ->
-      FilterChip(
-        selected = selectedIndex == index,
-        onClick = { onFilterChange(index) },
-        label = { Text(filter) },
-        leadingIcon =
-        if (selectedIndex == index) {
-          {
-            Icon(
-              imageVector = Icons.Filled.Done,
-              contentDescription = "Localized Description",
-              modifier = Modifier.size(FilterChipDefaults.IconSize)
-            )
-          }
-        } else {
-          null
-        },
-        modifier = Modifier.padding(horizontal = 8.dp)
-      )
+    SingleChoiceSegmentedButtonRow {
+      filterOptions.forEachIndexed { index, filter ->
+        SegmentedButton(
+          shape = SegmentedButtonDefaults.itemShape(index = index, count = filterOptions.size),
+          onClick = { onFilterChange(index) },
+          selected = index == selectedIndex
+        ) {
+          Text(filter)
+        }
+      }
     }
   }
 }
@@ -571,31 +561,18 @@ fun FilterChips(
 fun TournamentMatchOverview(
   modifier: Modifier = Modifier,
   game: TournamentDetails.Games,
-  onClick: (String) -> Unit
+  onClick: (String) -> Unit,
 ) {
   CardView(
     modifier = modifier.clickable { onClick(game.id) },
   ) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
-      Row(
+      Text(
+        text = game.status.replaceFirstChar { it.uppercase() },
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-      ) {
-        Text(
-          text = game.status.replaceFirstChar { it.uppercase() },
-          modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center,
-          style = VLRTheme.typography.bodyMedium
-        )
-        Icon(
-          Icons.AutoMirrored.Outlined.OpenInNew,
-          contentDescription = stringResource(R.string.open_match_content_description),
-          modifier = modifier
-            .size(24.dp)
-            .padding(Local2DPPadding.current)
-        )
-      }
+        textAlign = TextAlign.Center,
+        style = VLRTheme.typography.bodyMedium
+      )
 
       Row(
         modifier = modifier.padding(Local4DPPadding.current),

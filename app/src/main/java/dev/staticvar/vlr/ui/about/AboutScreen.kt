@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Paid
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -91,11 +92,12 @@ fun AndroidCard(modifier: Modifier = Modifier) {
         .padding(Local4DP_2DPPadding.current),
       horizontalArrangement = Arrangement.SpaceBetween
     ) {
-      Button(
+      OutlinedButton(
         onClick = { "https://staticvar.dev".openAsCustomTab(context) },
         modifier = modifier
           .weight(1f)
-          .padding(Local2DPPadding.current)
+          .padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small
       ) {
         Icon(
           imageVector = Icons.Outlined.Language,
@@ -106,11 +108,12 @@ fun AndroidCard(modifier: Modifier = Modifier) {
         )
         Text(text = "staticvar.dev", overflow = TextOverflow.Ellipsis, maxLines = 1)
       }
-      Button(
+      OutlinedButton(
         onClick = { "https://github.com/static-var".openAsCustomTab(context) },
         modifier = modifier
           .weight(1f)
-          .padding(Local2DPPadding.current)
+          .padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small
       ) {
         Icon(
           painterResource(id = R.drawable.github_logo),
@@ -128,11 +131,12 @@ fun AndroidCard(modifier: Modifier = Modifier) {
         .padding(Local4DP_2DPPadding.current),
       horizontalArrangement = Arrangement.SpaceBetween
     ) {
-      Button(
+      OutlinedButton(
         onClick = { "https://github.com/static-var/vlr-gg".openAsCustomTab(context) },
         modifier = modifier
           .weight(1f)
-          .padding(Local2DPPadding.current)
+          .padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small
       ) {
         Icon(
           imageVector = Icons.Outlined.Code,
@@ -147,11 +151,12 @@ fun AndroidCard(modifier: Modifier = Modifier) {
           maxLines = 1
         )
       }
-      Button(
+      OutlinedButton(
         onClick = { "https://github.com/sponsors/static-var".openAsCustomTab(context) },
         modifier = modifier
           .weight(1f)
-          .padding(Local2DPPadding.current)
+          .padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small
       ) {
         Icon(
           imageVector = Icons.Outlined.Paid,
@@ -182,11 +187,12 @@ fun BackendCard(modifier: Modifier = Modifier) {
         .padding(Local4DP_2DPPadding.current),
       horizontalArrangement = Arrangement.SpaceBetween
     ) {
-      Button(
+      OutlinedButton(
         onClick = { "https://akhilnarang.dev".openAsCustomTab(context) },
         modifier = modifier
           .weight(1f)
-          .padding(Local2DPPadding.current)
+          .padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small
       ) {
         Icon(
           imageVector = Icons.Outlined.Language,
@@ -197,11 +203,12 @@ fun BackendCard(modifier: Modifier = Modifier) {
         )
         Text(text = "akhilnarang.dev", overflow = TextOverflow.Ellipsis, maxLines = 1)
       }
-      Button(
+      OutlinedButton(
         onClick = { "https://github.com/akhilnarang".openAsCustomTab(context) },
         modifier = modifier
           .weight(1f)
-          .padding(Local2DPPadding.current)
+          .padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small
       ) {
         Icon(
           painterResource(id = R.drawable.github_logo),
@@ -213,11 +220,12 @@ fun BackendCard(modifier: Modifier = Modifier) {
         Text(text = "akhilnarang")
       }
     }
-    Button(
+    OutlinedButton(
       onClick = { "https://github.com/akhilnarang/vlrgg-scraper".openAsCustomTab(context) },
       modifier = modifier
         .fillMaxWidth()
-        .padding(horizontal = 8.dp, vertical = 2.dp)
+        .padding(horizontal = 8.dp, vertical = 2.dp),
+      shape = VLRTheme.shapes.small
     ) {
       Icon(
         imageVector = Icons.Outlined.Code,
@@ -241,11 +249,12 @@ fun FeedbackCard(modifier: Modifier = Modifier) {
       style = VLRTheme.typography.titleMedium,
       color = VLRTheme.colorScheme.primary,
     )
-    Button(
+    OutlinedButton(
       onClick = { "https://t.me/vlr_gg_chat".openAsCustomTab(context) },
       modifier = modifier
         .fillMaxWidth()
-        .padding(horizontal = 8.dp, vertical = 2.dp)
+        .padding(horizontal = 8.dp, vertical = 2.dp),
+      shape = VLRTheme.shapes.small
     ) {
       Icon(
         imageVector = Icons.Outlined.Language,

@@ -5,16 +5,29 @@ import android.net.Uri
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedAssistChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,9 +55,12 @@ fun VideoReferenceUi(
   ) {
     if (streamAndVodsCard) {
       Row(
-        modifier.fillMaxWidth().padding(Local16DPPadding.current).clickable {
-          streamAndVodsCard = streamAndVodsCard.not()
-        },
+        modifier
+          .fillMaxWidth()
+          .padding(Local16DPPadding.current)
+          .clickable {
+            streamAndVodsCard = streamAndVodsCard.not()
+          },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
       ) {
@@ -63,23 +79,27 @@ fun VideoReferenceUi(
         )
       }
       if (videos.streams.isNotEmpty()) {
-        Text(text = "Stream", modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp))
-        LazyRow(modifier = modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
+        Text(
+          text = "Stream", modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+        )
+        LazyRow(
+          modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp)
+        ) {
           items(videos.streams) { stream ->
-            ElevatedAssistChip(
+            OutlinedButton(
               onClick = {
                 intent.data = Uri.parse(stream.url)
                 context.startActivity(intent)
               },
               modifier = modifier.padding(horizontal = 4.dp),
-              label = { Text(text = stream.name) },
-              colors =
-                AssistChipDefaults.assistChipColors(
-                  containerColor = VLRTheme.colorScheme.primary,
-                  labelColor = VLRTheme.colorScheme.onPrimary,
-                ),
-              shape = RoundedCornerShape(16.dp)
-            )
+              shape = VLRTheme.shapes.small
+            ) {
+              Text(text = stream.name)
+            }
           }
         }
       }
@@ -87,9 +107,15 @@ fun VideoReferenceUi(
       if (videos.vods.isNotEmpty()) {
         Text(
           text = stringResource(R.string.vods),
-          modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp)
+          modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
         )
-        LazyRow(modifier = modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
+        LazyRow(
+          modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp)
+        ) {
           items(videos.vods) { stream ->
             ElevatedAssistChip(
               onClick = {
@@ -99,10 +125,10 @@ fun VideoReferenceUi(
               modifier = modifier.padding(horizontal = 4.dp),
               label = { Text(text = stream.name) },
               colors =
-                AssistChipDefaults.assistChipColors(
-                  containerColor = VLRTheme.colorScheme.primary,
-                  labelColor = VLRTheme.colorScheme.onPrimary
-                ),
+              AssistChipDefaults.assistChipColors(
+                containerColor = VLRTheme.colorScheme.primary,
+                labelColor = VLRTheme.colorScheme.onPrimary
+              ),
               shape = RoundedCornerShape(16.dp)
             )
           }
@@ -110,9 +136,12 @@ fun VideoReferenceUi(
       }
     } else {
       Row(
-        modifier.fillMaxWidth().padding(Local16DPPadding.current).clickable {
-          streamAndVodsCard = streamAndVodsCard.not()
-        },
+        modifier
+          .fillMaxWidth()
+          .padding(Local16DPPadding.current)
+          .clickable {
+            streamAndVodsCard = streamAndVodsCard.not()
+          },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
       ) {
