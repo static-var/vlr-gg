@@ -1,4 +1,4 @@
-v0.4.2
+v0.5.0
  • ✨ Design improvements
  • ⚒️ Improved support for large form factor devices
 
@@ -9,8 +9,3 @@ v0.4.1
 v0.4.0
  • ✨ Added scroll to top button for news articles
  • ✨ Add option to share news articles
-
-v0.3.7 ... v0.3.9
- • ✨ Update fonts for better readability
- • ⚒️ Header improvement for Home screen Widget
- • ⚒️ Under the hood improvements
