@@ -114,12 +114,9 @@ fun VLR() {
   val navSuiteType =
     NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
 
-  var selectedItem by rememberSaveable { mutableIntStateOf(0) }
-  println("Current Destination $currentDestination currentNav $currentNav")
-
   NavigationSuiteScaffold(
     navigationSuiteItems = {
-      navItems.forEachIndexed { index, navItem ->
+      navItems.forEach { navItem ->
         item(
           selected = currentDestination == navItem.route,
           icon = {
@@ -132,10 +129,9 @@ fun VLR() {
             }
           },
           onClick = {
-            println("on click")
             if (currentDestination != navItem.route)
-//              navItem.onClick()
-              navController.navigate(navItem.route)
+              navItem.onClick()
+//              navController.navigate(navItem.route)
           },
           label = { Text(text = navItem.title) }
         )
@@ -153,31 +149,9 @@ fun VLR() {
       VlrNavHost(
         navController = navController,
         paneState = { nav ->
-          println("VLR hideNav $nav")
           hideNav = nav
         }
       ) { currentNav = it }
     }
   }
-
-  /*  Scaffold(
-      bottomBar = {
-        VlrNavBar(
-          navController = navController,
-          items = navItems,
-          isVisible = navItems.any { it.route == currentDestination }
-        )
-      },
-      contentWindowInsets = WindowInsets(left = 0.dp, top = 0.dp, right = 0.dp, bottom = 0.dp)
-    ) { paddingValues ->
-      Box(
-        modifier =
-        Modifier
-          .padding(paddingValues)
-          .background(VLRTheme.colorScheme.tintedBackground)
-          .semantics { testTagsAsResourceId = true }
-      ) {
-        VlrNavHost(navController = navController) { currentNav = it }
-      }
-    }*/
 }
