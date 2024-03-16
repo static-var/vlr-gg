@@ -90,7 +90,7 @@ landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version 
 landscapist-animation = { module = "com.github.skydoves:landscapist-animation", version = "2.3.1" }
 
 haze = { module = "dev.chrisbanes.haze:haze", version = "0.5.1" }
-haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "0.5.1" }
+haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "0.6.2" }
 
 kotlin-monad = { module = "com.michael-bull.kotlin-result:kotlin-result", version = "1.1.18" }
 
