@@ -7,10 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -40,7 +38,7 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldRole
-import androidx.compose.material3.adaptive.layout.calculateStandardPaneScaffoldDirective
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -77,7 +75,6 @@ import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
 import dev.staticvar.vlr.ui.common.VlrSegmentedButtons
-import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.cardAlpha
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
@@ -96,15 +93,15 @@ fun EventOverviewAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel
   var selectedItem: String? by rememberSaveable {
     mutableStateOf(null)
   }
-  val paneScaffoldDirective = calculateStandardPaneScaffoldDirective(currentWindowAdaptiveInfo())
+  val paneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
   val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
     scaffoldDirective = PaneScaffoldDirective(
-      contentPadding = PaddingValues(0.dp),
       maxHorizontalPartitions = paneScaffoldDirective.maxHorizontalPartitions,
       horizontalPartitionSpacerSize = paneScaffoldDirective.horizontalPartitionSpacerSize,
       maxVerticalPartitions = paneScaffoldDirective.maxVerticalPartitions,
       verticalPartitionSpacerSize = paneScaffoldDirective.verticalPartitionSpacerSize,
-      excludedBounds = paneScaffoldDirective.excludedBounds
+      excludedBounds = paneScaffoldDirective.excludedBounds,
+      defaultPanePreferredWidth = paneScaffoldDirective.defaultPanePreferredWidth
     )
   )
 
@@ -148,7 +145,6 @@ fun EventOverviewAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel
         }
       }
     },
-    windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
     directive = navigator.scaffoldDirective,
     value = navigator.scaffoldValue,
     modifier = modifier

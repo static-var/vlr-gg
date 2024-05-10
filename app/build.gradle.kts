@@ -168,7 +168,6 @@ dependencies {
   ksp(libs.room.compiler)
 
   implementation(libs.kotlinx.serialization)
-  implementation(libs.kotlinx.collections.immutable)
 
   implementation(libs.bundles.ktor)
   implementation(libs.logging.interceptor)
