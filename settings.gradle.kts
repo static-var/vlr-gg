@@ -1,5 +1,8 @@
 import java.net.URI
 
+include(":designsystem")
+
+
 pluginManagement {
     includeBuild("build-logic")
     repositories {
