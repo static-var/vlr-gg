@@ -1,5 +1,6 @@
 package dev.staticvar.designsystem.component.card
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -40,7 +41,12 @@ fun BreezeCardPreview(modifier: Modifier = Modifier) {
   val breezeCardViewState =
     BreezeCardViewState(content = { Text("Hello, BreezeCard!") }, style = Filled)
   BreezeTheme(dynamicColor = false) {
-    Column(verticalArrangement = Arrangement.spacedBy(BreezeTheme.dimens.large)) {
+    Column(
+      modifier = Modifier
+        .background(BreezeTheme.colorScheme.background)
+        .padding(BreezeTheme.dimens.medium),
+      verticalArrangement = Arrangement.spacedBy(BreezeTheme.dimens.large)
+    ) {
       BreezeCard(modifier = modifier, viewState = breezeCardViewState)
       BreezeCard(modifier = modifier, viewState = breezeCardViewState.copy(style = Elevated))
       BreezeCard(modifier = modifier, viewState = breezeCardViewState.copy(style = Outlined))
