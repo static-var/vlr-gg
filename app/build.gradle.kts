@@ -7,18 +7,18 @@ import java.util.Properties
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.compose.compiler)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.kotlin.parcelize)
   id("dagger.hilt.android.plugin")
   alias(libs.plugins.ksp.plugin)
   alias(libs.plugins.secrets.plugin)
   alias(libs.plugins.baselineprofile)
-  alias(libs.plugins.sentry.plugin)
+  alias(libs.plugins.firebase.perf)
   alias(libs.plugins.room)
   alias(libs.plugins.gms.plugin)
   id("vlr.detekt")
   id("vlr.ktfmt")
-  id("vlr.sentry")
 }
 
 android {
@@ -114,7 +114,11 @@ android {
     compose = true
     buildConfig = true
   }
-  composeOptions { kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get() }
+  composeCompiler {
+    enableStrongSkippingMode = true
+
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+  }
   packaging {
     jniLibs { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}") }
     resources { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/DEPENDENCIES") }
@@ -136,7 +140,10 @@ dependencies {
   implementation(libs.bundles.m3)
   implementation(libs.compose.icons)
 
+  implementation(platform(libs.firebase.bom))
+  implementation(libs.firebase.perf)
   implementation(libs.firebase.messaging)
+
 
   implementation(libs.bundles.lifecycle)
 
@@ -171,9 +178,6 @@ dependencies {
 
   implementation(libs.bundles.ktor)
   implementation(libs.logging.interceptor)
-  implementation(platform(libs.sentry.bom))
-  implementation(libs.sentry)
-  implementation(libs.sentry.okhttp)
 
   implementation(libs.jsoup)
   implementation(libs.landscapist.glide)

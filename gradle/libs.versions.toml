@@ -1,19 +1,19 @@
 [versions]
+kotlin = '2.0.0'
 detektCompose = "0.3.11"
 benchmark = "1.2.4"
 sentry = "4.6.0"
 sentry-sdk = "7.9.0"
 detekt = "1.23.5"
-gradle = "8.4.1"
+gradle = "8.5.0"
 hilt = '2.50'
 hiltAndroidGradlePlugin = "2.50"
-kotlin = '1.9.24'
 room = "2.6.1"
-composeCompiler = "1.5.14"
+firebase = "33.1.1"
 accompanist = "0.35.0-alpha"
 coroutines = "1.8.0"
 ktor = "2.3.7"
-ksp = "1.9.24-1.0.20"
+ksp = "2.0.0-1.0.21"
 spotless = "6.25.0"
 hiltCompiler = "1.2.0"
 jetbrainsKotlinJvm = "1.9.23"
@@ -41,12 +41,13 @@ compose-navigation = { module = "androidx.navigation:navigation-compose", versio
 compose-m3 = { module = "androidx.compose.material3:material3" }
 compose-m3-window = { module = "androidx.compose.material3:material3-window-size-class" }
 compose-m3-navigation = { module = "androidx.compose.material3:material3-adaptive-navigation-suite" }
-compose-m3-adaptive-android = { module = "androidx.compose.material3.adaptive:adaptive", version = "1.0.0-beta02" }
-compose-m3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version = "1.0.0-beta02" }
-compose-m3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version = "1.0.0-beta02" }
+compose-m3-adaptive-android = { module = "androidx.compose.material3.adaptive:adaptive", version = "1.0.0-beta03" }
+compose-m3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version = "1.0.0-beta03" }
+compose-m3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version = "1.0.0-beta03" }
 
-
-firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx", version = "24.0.0" }
+firebase-bom = {module = "com.google.firebase:firebase-bom", version.ref = "firebase"}
+firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
+firebase-perf = { module = "com.google.firebase:firebase-perf" }
 
 m3 = { module = "androidx.compose.material3:material3" }
 
@@ -56,8 +57,8 @@ core = { module = "androidx.core:core-ktx", version = "1.13.1" }
 app-compat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
 activity-compose = { module = "androidx.activity:activity-compose", version = "1.9.0" }
 
-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.8.1" }
-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.8.1" }
+lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.8.2" }
+lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.8.2" }
 
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
@@ -90,7 +91,7 @@ haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "0.7
 
 kotlin-monad = { module = "com.michael-bull.kotlin-result:kotlin-result", version = "1.1.18" }
 
-glance-widget = { module = "androidx.glance:glance-appwidget", version = "1.0.0" }
+glance-widget = { module = "androidx.glance:glance-appwidget", version = "1.1.0" }
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 webkit = { module = "androidx.webkit:webkit", version = "1.11.0" }
 browser = { module = "androidx.browser:browser", version = "1.8.0" }
@@ -151,6 +152,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "gradle" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 hilt-android-plugin = { id = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
@@ -162,5 +164,6 @@ baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 room = { id = "androidx.room", version.ref = "room" }
 androidTest = { id = "com.android.test", version.ref = "gradle" }
 sentry-plugin = { id = "io.sentry.android.gradle", version.ref = "sentry" }
+firebase-perf = {id = "com.google.firebase.firebase-perf", version = "1.4.2"}
 gms-plugin = { id = "com.google.gms.google-services", version = "4.4.2" }
 jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
