@@ -1,6 +1,7 @@
 plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.compose.compiler)
   id("vlr.detekt")
   id("vlr.ktfmt")
 }
@@ -30,7 +31,11 @@ android {
   buildFeatures {
     compose = true
   }
-  composeOptions { kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get() }
+  composeCompiler {
+    enableStrongSkippingMode = true
+
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+  }
 }
 
 dependencies {
