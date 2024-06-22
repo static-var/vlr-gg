@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -128,18 +129,20 @@ fun BreezeLabel(
 @Composable
 private fun BreezeTexts(modifier: Modifier = Modifier) {
 
-  BreezeTheme {
-    Column(
-      modifier = Modifier
-        .background(BreezeTheme.colorScheme.background)
-        .padding(BreezeTheme.dimens.medium),
-      verticalArrangement = Arrangement.spacedBy(BreezeTheme.dimens.large)
-    ) {
-      BreezeLargeText("Breeze Large")
-      BreezeTitleText("Breeze Title")
-      BreezeSubtitleText("Breeze Subtitle")
-      BreezeText("Breeze Default Text")
-      BreezeLabel("Breeze Label Text")
+  BreezeTheme() {
+    Surface {
+      Column(
+        modifier = Modifier
+          .background(BreezeTheme.colorScheme.background)
+          .padding(BreezeTheme.dimens.medium),
+        verticalArrangement = Arrangement.spacedBy(BreezeTheme.dimens.large)
+      ) {
+        BreezeLargeText("Breeze Large")
+        BreezeTitleText("Breeze Title")
+        BreezeSubtitleText("Breeze Subtitle")
+        BreezeText("Breeze Default Text")
+        BreezeLabel("Breeze Label Text")
+      }
     }
   }
 }

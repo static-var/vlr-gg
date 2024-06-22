@@ -21,47 +21,8 @@
             android:shell="true"
             tools:targetApi="29" />
 
-        <meta-data android:name="io.sentry.environment" android:value="${sentryEnvironment}" />
-
-        <!-- Required: set your sentry.io project identifier (DSN) -->
         <meta-data
-            android:name="io.sentry.dsn"
-            android:value="${sentryDsn}" />
-
-        <!-- enable automatic breadcrumbs for user interactions (clicks, swipes, scrolls) -->
-        <meta-data
-            android:name="io.sentry.traces.user-interaction.enable"
-            android:value="true" />
-        <meta-data
-            android:name="io.sentry.breadcrumbs.user-interaction"
-            android:value="true" />
-
-        <!-- enable screenshot for crashes -->
-        <meta-data
-            android:name="io.sentry.attach-screenshot"
-            android:value="true" />
-        <!-- enable view hierarchy for crashes -->
-        <meta-data
-            android:name="io.sentry.attach-view-hierarchy"
-            android:value="true" />
-
-        <!-- enable the performance API by setting a sample-rate, adjust in production env -->
-        <meta-data
-            android:name="io.sentry.traces.sample-rate"
-            android:value="1.0" />
-        <!-- enable profiling when starting transactions, adjust in production env -->
-        <meta-data
-            android:name="io.sentry.traces.profiling.sample-rate"
-            android:value="1.0" />
-
-        <!-- enable sending header and cookies back to sentry -->
-        <meta-data
-            android:name="io.sentry.send-default-pii"
-            android:value="true" />
-
-        <!-- enable app start profiling -->
-        <meta-data
-            android:name="io.sentry.traces.profiling.enable-app-start"
+            android:name="firebase_performance_logcat_enabled"
             android:value="true" />
 
 
