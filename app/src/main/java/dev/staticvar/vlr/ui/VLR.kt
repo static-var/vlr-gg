@@ -41,14 +41,13 @@ import dev.staticvar.vlr.ui.helper.NavItem
 import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.ui.theme.tintedBackground
-import io.sentry.compose.withSentryObservableEffect
 
 @OptIn(
   ExperimentalMaterial3AdaptiveNavigationSuiteApi::class, ExperimentalMaterial3AdaptiveApi::class
 )
 @Composable
 fun VLR() {
-  val navController = rememberNavController().withSentryObservableEffect()
+  val navController = rememberNavController()
   val backStackEntry by navController.currentBackStackEntryAsState()
 
   val viewModel: VlrViewModel = hiltViewModel()
