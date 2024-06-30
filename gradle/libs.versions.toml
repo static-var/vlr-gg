@@ -30,7 +30,7 @@ room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
-compose-bom-alpha = "dev.chrisbanes.compose:compose-bom:2024.05.00-alpha03"
+compose-bom-alpha = "dev.chrisbanes.compose:compose-bom:2024.06.00-alpha01"
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-text = { module = "androidx.compose.ui:ui-text-google-fonts" }
 compose-material = { module = "androidx.compose.material:material" }
@@ -41,9 +41,9 @@ compose-navigation = { module = "androidx.navigation:navigation-compose", versio
 compose-m3 = { module = "androidx.compose.material3:material3" }
 compose-m3-window = { module = "androidx.compose.material3:material3-window-size-class" }
 compose-m3-navigation = { module = "androidx.compose.material3:material3-adaptive-navigation-suite" }
-compose-m3-adaptive-android = { module = "androidx.compose.material3.adaptive:adaptive", version = "1.0.0-beta03" }
-compose-m3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version = "1.0.0-beta03" }
-compose-m3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version = "1.0.0-beta03" }
+compose-m3-adaptive-android = { module = "androidx.compose.material3.adaptive:adaptive", version = "1.0.0-beta04" }
+compose-m3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version = "1.0.0-beta04" }
+compose-m3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version = "1.0.0-beta04" }
 
 firebase-bom = {module = "com.google.firebase:firebase-bom", version.ref = "firebase"}
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
@@ -92,6 +92,7 @@ haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "0.7
 kotlin-monad = { module = "com.michael-bull.kotlin-result:kotlin-result", version = "1.1.18" }
 
 glance-widget = { module = "androidx.glance:glance-appwidget", version = "1.1.0" }
+glance-widget-m3 = { module = "androidx.glance:glance-material3", version = "1.1.0" }
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 webkit = { module = "androidx.webkit:webkit", version = "1.11.0" }
 browser = { module = "androidx.browser:browser", version = "1.8.0" }
@@ -119,11 +120,11 @@ ktor-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 
 robolectric = { module = "org.robolectric:robolectric", version = "4.10.3" }
 arch-core-testing = { module = "androidx.arch.core:core-testing", version = "2.2.0" }
-test-core-ktx = { module = "androidx.test:core-ktx", version = "1.5.0" }
-junit-ktx = { module = "androidx.test.ext:junit-ktx", version = "1.1.5" }
+test-core-ktx = { module = "androidx.test:core-ktx", version = "1.6.1" }
+junit-ktx = { module = "androidx.test.ext:junit-ktx", version = "1.2.1" }
 
-android-junit = { module = "androidx.test.ext:junit", version = "1.1.5" }
-espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }
+android-junit = { module = "androidx.test.ext:junit", version = "1.2.1" }
+espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.6.1" }
 uiautomator = { module = "androidx.test.uiautomator:uiautomator", version = "2.3.0" }
 
 benchmark-macro = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }

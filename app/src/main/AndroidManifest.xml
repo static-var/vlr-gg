@@ -25,7 +25,6 @@
             android:name="firebase_performance_logcat_enabled"
             android:value="true" />
 
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -106,5 +105,4 @@
                 android:resource="@xml/file_path" />
         </provider>
     </application>
-
 </manifest>

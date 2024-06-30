@@ -148,6 +148,7 @@ dependencies {
   implementation(libs.bundles.lifecycle)
 
   implementation(libs.glance.widget)
+  implementation(libs.glance.widget.m3)
   implementation(libs.splashscreen)
   implementation(libs.profileinstaller)
 
