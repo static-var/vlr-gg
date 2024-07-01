@@ -3,6 +3,7 @@ plugins {
   alias(libs.plugins.android.application) apply false
   alias(libs.plugins.android.library) apply false
   alias(libs.plugins.kotlin.android) apply false
+  alias(libs.plugins.compose.compiler) apply false
   alias(libs.plugins.kotlin.kapt) apply false
   alias(libs.plugins.hilt.plugin) apply false
   alias(libs.plugins.ksp.plugin) apply false
@@ -13,10 +14,9 @@ plugins {
   alias(libs.plugins.gms.plugin) apply false
   alias(libs.plugins.detekt)
   alias(libs.plugins.spotless.plugin)
-  alias(libs.plugins.sentry.plugin)
+  alias(libs.plugins.firebase.perf) apply false
   id("vlr.detekt")
   id("vlr.ktfmt")
-  id("vlr.sentry") apply false
   alias(libs.plugins.androidTest) apply false
   alias(libs.plugins.jetbrainsKotlinJvm) apply false
 }
@@ -32,24 +32,5 @@ buildscript {
     classpath(libs.build.kotlin)
     classpath(libs.kotlin.serialization)
     classpath(libs.hilt.android.gradle.plugin)
-  }
-}
-
-subprojects {
-  tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions {
-      if (project.findProperty("composeCompilerReports") == "true") {
-        freeCompilerArgs += listOf(
-          "-P",
-          "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${project.buildDir.absolutePath}/compose_compiler"
-        )
-      }
-      if (project.findProperty("composeCompilerMetrics") == "true") {
-        freeCompilerArgs += listOf(
-          "-P",
-          "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${project.buildDir.absolutePath}/compose_compiler"
-        )
-      }
-    }
   }
 }
