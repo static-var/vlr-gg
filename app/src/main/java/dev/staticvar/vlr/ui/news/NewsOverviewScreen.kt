@@ -60,7 +60,6 @@ import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.helper.CardView
-import dev.staticvar.vlr.ui.helper.cardAlpha
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -213,15 +212,12 @@ fun NewsItem(
         action(newsResponseItem.link.split("/")[3])
       },
     colors = if (newsResponseItem.link.contains(selectedItem)) {
-      CardDefaults.cardColors(
-        containerColor = VLRTheme.colorScheme.secondaryContainer.copy(cardAlpha),
+      CardDefaults.elevatedCardColors(
+        containerColor = VLRTheme.colorScheme.secondaryContainer,
         contentColor = VLRTheme.colorScheme.onSecondaryContainer
       )
     } else {
-      CardDefaults.cardColors(
-        containerColor = VLRTheme.colorScheme.primaryContainer.copy(cardAlpha),
-        contentColor = VLRTheme.colorScheme.onPrimaryContainer
-      )
+      CardDefaults.elevatedCardColors()
     }
   ) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {

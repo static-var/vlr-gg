@@ -76,7 +76,6 @@ import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
 import dev.staticvar.vlr.ui.common.VlrSegmentedButtons
 import dev.staticvar.vlr.ui.helper.CardView
-import dev.staticvar.vlr.ui.helper.cardAlpha
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -380,15 +379,12 @@ fun TournamentPreview(
   CardView(
     modifier = modifier.clickable { action(tournamentPreview.id) },
     colors = if (tournamentPreview.id == selectedItem) {
-      CardDefaults.cardColors(
-        containerColor = VLRTheme.colorScheme.secondaryContainer.copy(cardAlpha),
+      CardDefaults.elevatedCardColors(
+        containerColor = VLRTheme.colorScheme.secondaryContainer,
         contentColor = VLRTheme.colorScheme.onSecondaryContainer
       )
     } else {
-      CardDefaults.cardColors(
-        containerColor = VLRTheme.colorScheme.primaryContainer.copy(cardAlpha),
-        contentColor = VLRTheme.colorScheme.onPrimaryContainer
-      )
+      CardDefaults.elevatedCardColors()
     }
   ) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
