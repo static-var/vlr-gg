@@ -80,7 +80,6 @@ import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrScrollableTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
-import dev.staticvar.vlr.ui.helper.cardAlpha
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -327,15 +326,12 @@ fun TeamRankPreview(
     }
     .height(120.dp),
     colors = if (selectedItem == team.id) {
-      CardDefaults.cardColors(
-        containerColor = VLRTheme.colorScheme.secondaryContainer.copy(cardAlpha),
+      CardDefaults.elevatedCardColors(
+        containerColor = VLRTheme.colorScheme.secondaryContainer,
         contentColor = VLRTheme.colorScheme.onSecondaryContainer
       )
     } else {
-      CardDefaults.cardColors(
-        containerColor = VLRTheme.colorScheme.primaryContainer.copy(cardAlpha),
-        contentColor = VLRTheme.colorScheme.onPrimaryContainer
-      )
+      CardDefaults.elevatedCardColors()
     }) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Column(modifier = modifier.padding(Local8DPPadding.current)) {

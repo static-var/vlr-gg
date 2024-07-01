@@ -73,7 +73,6 @@ import dev.staticvar.vlr.ui.common.VlrSegmentedButtons
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.ShareDialog
 import dev.staticvar.vlr.ui.helper.SharingAppBar
-import dev.staticvar.vlr.ui.helper.cardAlpha
 import dev.staticvar.vlr.ui.match.details_ui.NewMatchDetails
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
@@ -506,15 +505,12 @@ fun MatchOverviewPreview(
         )
       },
     colors = if (matchPreviewInfo.id == selectedItem) {
-      CardDefaults.cardColors(
-        containerColor = VLRTheme.colorScheme.secondaryContainer.copy(cardAlpha),
+      CardDefaults.elevatedCardColors(
+        containerColor = VLRTheme.colorScheme.secondaryContainer,
         contentColor = VLRTheme.colorScheme.onSecondaryContainer
       )
     } else {
-      CardDefaults.cardColors(
-        containerColor = VLRTheme.colorScheme.primaryContainer.copy(cardAlpha),
-        contentColor = VLRTheme.colorScheme.onPrimaryContainer
-      )
+      CardDefaults.elevatedCardColors()
     }
   ) {
     Column(
