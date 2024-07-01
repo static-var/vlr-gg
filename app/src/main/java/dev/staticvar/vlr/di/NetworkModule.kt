@@ -17,8 +17,6 @@ import io.ktor.client.request.headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
-import io.sentry.okhttp.SentryOkHttpEventListener
-import io.sentry.okhttp.SentryOkHttpInterceptor
 import javax.inject.Named
 import javax.inject.Singleton
 import kotlinx.serialization.json.Json
@@ -43,13 +41,6 @@ object NetworkModule {
   @IntoSet
   fun provideHttpLoggingInterceptor(): Interceptor {
     return HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-  }
-
-  @Provides
-  @Singleton
-  @IntoSet
-  fun provideSentryInterceptor(): Interceptor {
-    return SentryOkHttpInterceptor()
   }
 
   @Provides
@@ -82,9 +73,6 @@ object NetworkModule {
 
       engine {
         interceptors.forEach(::addInterceptor)
-        config {
-          eventListener(SentryOkHttpEventListener())
-        }
       }
     }
 }

@@ -8,7 +8,7 @@ import org.gradle.kotlin.dsl.getByType
 class KtfmtConventionPlugin : Plugin<Project> {
 
   companion object {
-    private const val KTFMT_VERSION = "0.46"
+    private const val KTFMT_VERSION = "0.49"
   }
 
   override fun apply(project: Project) {

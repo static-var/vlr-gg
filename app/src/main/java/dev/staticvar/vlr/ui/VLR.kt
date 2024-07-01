@@ -1,7 +1,6 @@
 package dev.staticvar.vlr.ui
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Feed
@@ -24,10 +23,8 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -40,15 +37,13 @@ import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.helper.NavItem
 import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.theme.VLRTheme
-import dev.staticvar.vlr.ui.theme.tintedBackground
-import io.sentry.compose.withSentryObservableEffect
 
 @OptIn(
   ExperimentalMaterial3AdaptiveNavigationSuiteApi::class, ExperimentalMaterial3AdaptiveApi::class
 )
 @Composable
 fun VLR() {
-  val navController = rememberNavController().withSentryObservableEffect()
+  val navController = rememberNavController()
   val backStackEntry by navController.currentBackStackEntryAsState()
 
   val viewModel: VlrViewModel = hiltViewModel()
@@ -143,7 +138,6 @@ fun VLR() {
     Box(
       modifier =
       Modifier
-        .background(VLRTheme.colorScheme.tintedBackground)
         .semantics { testTagsAsResourceId = true }
     ) {
       VlrNavHost(
