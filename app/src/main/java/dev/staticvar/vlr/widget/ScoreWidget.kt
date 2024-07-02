@@ -74,7 +74,6 @@ class ScoreWidget : GlanceAppWidget() {
 
   @Composable
   fun Content(vlrRepository: VlrRepository) {
-    var list by remember { mutableStateOf(listOf<MatchPreviewInfo>()) }
     val coroutine = rememberCoroutineScope()
     val context = LocalContext.current
     val state by vlrRepository.updateLatestMatches().collectAsState(initial = Ok(false))
@@ -107,8 +106,12 @@ class ScoreWidget : GlanceAppWidget() {
           .onFail { WidgetUnableToUpdateUi() }
           .onWaiting { WaitingUi() }
           .onPass {
-            data?.let { MatchList(list = it, isUpdating = state.getOr(false)) }
-              ?: run { WidgetUnableToUpdateUi() }
+            data?.let {
+              val matchList = it.filterNot { matches ->
+                matches.status == "completed"
+              }
+              MatchList(list = matchList, isUpdating = state.getOr(false))
+            } ?: run { WidgetUnableToUpdateUi() }
           }
       }
     }
