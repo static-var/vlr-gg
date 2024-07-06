@@ -1,3 +1,8 @@
+v0.5.2
+ • ✨ Design improvements
+ • ✨ Improved widget
+ • ⚒️ Under the hood improvements
+
 v0.5.0
  • ✨ Design improvements
  • ⚒️ Improved support for large form factor devices
@@ -5,7 +10,3 @@ v0.5.0
 v0.4.1
  • ⚒️ Under the hood improvements
  • 🐞 Remove video previews for news articles
-
-v0.4.0
- • ✨ Added scroll to top button for news articles
- • ✨ Add option to share news articles
