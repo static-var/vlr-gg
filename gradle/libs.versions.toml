@@ -4,7 +4,7 @@ detektCompose = "0.3.11"
 benchmark = "1.2.4"
 sentry = "4.6.0"
 sentry-sdk = "7.9.0"
-detekt = "1.23.5"
+detekt = "1.23.6"
 gradle = "8.5.0"
 hilt = '2.50'
 hiltAndroidGradlePlugin = "2.50"
@@ -13,10 +13,9 @@ firebase = "33.1.1"
 accompanist = "0.35.0-alpha"
 coroutines = "1.8.1"
 ktor = "2.3.7"
-ksp = "2.0.0-1.0.21"
+ksp = "2.0.0-1.0.22"
 spotless = "6.25.0"
 hiltCompiler = "1.2.0"
-jetbrainsKotlinJvm = "1.9.23"
 
 
 [libraries]
@@ -45,9 +44,10 @@ compose-m3-adaptive-android = { module = "androidx.compose.material3.adaptive:ad
 compose-m3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version = "1.0.0-beta04" }
 compose-m3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version = "1.0.0-beta04" }
 
-firebase-bom = {module = "com.google.firebase:firebase-bom", version.ref = "firebase"}
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 firebase-perf = { module = "com.google.firebase:firebase-perf" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 
 m3 = { module = "androidx.compose.material3:material3" }
 
@@ -165,6 +165,6 @@ baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 room = { id = "androidx.room", version.ref = "room" }
 androidTest = { id = "com.android.test", version.ref = "gradle" }
 sentry-plugin = { id = "io.sentry.android.gradle", version.ref = "sentry" }
-firebase-perf = {id = "com.google.firebase.firebase-perf", version = "1.4.2"}
+firebase-perf = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.2" }
 gms-plugin = { id = "com.google.gms.google-services", version = "4.4.2" }
-jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
