@@ -15,6 +15,7 @@ plugins {
   alias(libs.plugins.secrets.plugin)
   alias(libs.plugins.baselineprofile)
   alias(libs.plugins.firebase.perf)
+  alias(libs.plugins.firebase.crashlytics)
   alias(libs.plugins.room)
   alias(libs.plugins.gms.plugin)
   id("vlr.detekt")
@@ -143,6 +144,7 @@ dependencies {
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.perf)
   implementation(libs.firebase.messaging)
+  implementation(libs.firebase.crashlytics)
 
 
   implementation(libs.bundles.lifecycle)
