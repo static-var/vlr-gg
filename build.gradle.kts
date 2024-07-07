@@ -18,7 +18,7 @@ plugins {
   id("vlr.detekt")
   id("vlr.ktfmt")
   alias(libs.plugins.androidTest) apply false
-  alias(libs.plugins.jetbrainsKotlinJvm) apply false
+  alias(libs.plugins.firebase.crashlytics) apply false
 }
 
 buildscript {
