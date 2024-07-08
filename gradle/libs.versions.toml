@@ -86,7 +86,7 @@ logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", ver
 landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version = "2.3.1" }
 landscapist-animation = { module = "com.github.skydoves:landscapist-animation", version = "2.3.1" }
 
-haze = { module = "dev.chrisbanes.haze:haze", version = "0.7.2" }
+haze = { module = "dev.chrisbanes.haze:haze", version = "0.7.3" }
 haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "0.7.2" }
 
 kotlin-monad = { module = "com.michael-bull.kotlin-result:kotlin-result", version = "1.1.18" }
