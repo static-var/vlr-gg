@@ -164,6 +164,7 @@ dependencies {
   implementation(libs.webkit)
 
   implementation(libs.immutable.collection)
+  implementation(libs.androidx.collection)
 
   // Coroutines
   implementation(libs.bundles.coroutines)
