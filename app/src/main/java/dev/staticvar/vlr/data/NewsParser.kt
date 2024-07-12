@@ -1,15 +1,17 @@
 package dev.staticvar.vlr.data
 
+import androidx.core.util.lruCache
 import com.github.michaelbull.result.Result
 import dev.staticvar.vlr.data.api.response.TwitterOEmbed
 import dev.staticvar.vlr.utils.runSuspendCatching
 import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 object NewsParser {
+
+  private val cache = lruCache<String, NewsArticle>(25)
 
   /**
    * Parser This method will receive the id of the webpage to be parsed and it will return a flow
@@ -21,6 +23,10 @@ object NewsParser {
   fun parser(id: String, json: Json) =
     flow<Result<NewsArticle, Throwable>> {
       runSuspendCatching {
+        val cached = cache[id]
+        if (cached != null) {
+          cached
+        } else {
           val webpage = Jsoup.connect("https://www.vlr.gg/$id").get() // Read webpage
           val headerHtml =
             webpage.select(
@@ -46,7 +52,7 @@ object NewsParser {
                 ?.replace(Regex("\\s+"), " ")
                 ?.trim()
             } // Fetch author name
-             ?: "",
+              ?: "",
             headerHtml.first()?.let {
               it
                 .select(".js-date-toggle")
@@ -62,9 +68,11 @@ object NewsParser {
                 .remove() // Remove hover card from HTML before parsing
               elements.children().map { recursiveTextFinder(it, json) }.flatten()
             }
-          )
+          ).also {
+            cache.put(id, it)
+          }
         }
-        .also { emit(it) }
+      }.also { emit(it) }
     }
 
   /**
@@ -91,7 +99,7 @@ object NewsParser {
     else if (
       element.tagName() == "p" && element.hasText() && element.wholeText().isNotBlank()
     ) // Identify paragraph text from the page
-     listOf(Paragraph(element.wholeText().replace(Regex("\\s+"), " ").trim()))
+      listOf(Paragraph(element.wholeText().replace(Regex("\\s+"), " ").trim()))
     else if (
       element.tagName() == "div" && element.select(".tweet").isNotEmpty()
     ) { // Identify tags which contain tweet
@@ -106,7 +114,7 @@ object NewsParser {
       if (
         element.tagName() == "p" && element.hasText() && element.wholeText().isNotBlank()
       ) // Identify paragraph text which were not identified before from the page
-       listOf(Paragraph(element.text().replace(Regex("\\s+"), " ").trim()))
+        listOf(Paragraph(element.text().replace(Regex("\\s+"), " ").trim()))
       else if (element.text().isBlank()) listOf() else listOf(Unknown(element.html()))
     }
   }
