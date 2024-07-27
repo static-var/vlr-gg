@@ -26,9 +26,9 @@ import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Paid
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -354,7 +354,7 @@ fun TournamentDetailsHeader(
             modifier = Modifier.padding(horizontal = 4.dp)
           )
         }
-        OutlinedButton(
+        Button(
           onClick = {
             (Constants.VLR_BASE + "event/" + tournamentDetails.id).openAsCustomTab(context)
           },
@@ -370,7 +370,7 @@ fun TournamentDetailsHeader(
           tournamentDetails.status == TournamentDetails.Status.ONGOING ||
           tournamentDetails.status == TournamentDetails.Status.UPCOMING
         )
-          OutlinedButton(
+          Button(
             onClick = {
               if (notificationPermission.status.isGranted) {
                 if (!processingTopicSubscription) {

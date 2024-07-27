@@ -43,6 +43,7 @@ fun CardView(
         .then(modifier),
     shape = RoundedCornerShape(8.dp),
     colors = colors,
+    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp, pressedElevation = 12.dp),
   ) {
     content(this)
   }
@@ -60,6 +61,7 @@ fun EmphasisCardView(modifier: Modifier = Modifier, content: @Composable ColumnS
         )
         .then(modifier),
     shape = RoundedCornerShape(8.dp),
+    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 12.dp, pressedElevation = 16.dp),
   ) {
     content(this)
   }

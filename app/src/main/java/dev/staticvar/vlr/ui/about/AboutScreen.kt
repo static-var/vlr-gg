@@ -17,7 +17,6 @@ import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Paid
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,7 +46,6 @@ import dev.staticvar.vlr.utils.openAsCustomTab
 @Composable
 fun AboutScreen() {
 
-
   val context = LocalContext.current
   val currentAppVersion = context.currentAppVersion
 
@@ -57,10 +55,9 @@ fun AboutScreen() {
     Text(
       text = stringResource(id = R.string.app_name),
       modifier =
-      Modifier
-        .fillMaxWidth()
-        .padding(Local16DPPadding.current)
-        .combinedClickable(onLongClick = { simpleEasterEgg = true }, onClick = {}),
+        Modifier.fillMaxWidth()
+          .padding(Local16DPPadding.current)
+          .combinedClickable(onLongClick = { simpleEasterEgg = true }, onClick = {}),
       textAlign = TextAlign.Center,
       style = VLRTheme.typography.headlineSmall,
       color = VLRTheme.colorScheme.primary,
@@ -87,82 +84,62 @@ fun AndroidCard(modifier: Modifier = Modifier) {
       color = VLRTheme.colorScheme.primary,
     )
     Row(
-      modifier = modifier
-        .fillMaxWidth()
-        .padding(Local4DP_2DPPadding.current),
-      horizontalArrangement = Arrangement.SpaceBetween
+      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+      horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-      OutlinedButton(
+      Button(
         onClick = { "https://staticvar.dev".openAsCustomTab(context) },
-        modifier = modifier
-          .weight(1f)
-          .padding(Local2DPPadding.current),
-        shape = VLRTheme.shapes.small
+        modifier = modifier.weight(1f).padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small,
       ) {
         Icon(
           imageVector = Icons.Outlined.Language,
-          modifier = modifier
-            .padding(Local2DPPadding.current)
-            .size(18.dp),
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
           contentDescription = stringResource(id = R.string.website),
         )
         Text(text = "staticvar.dev", overflow = TextOverflow.Ellipsis, maxLines = 1)
       }
-      OutlinedButton(
+      Button(
         onClick = { "https://github.com/static-var".openAsCustomTab(context) },
-        modifier = modifier
-          .weight(1f)
-          .padding(Local2DPPadding.current),
-        shape = VLRTheme.shapes.small
+        modifier = modifier.weight(1f).padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small,
       ) {
         Icon(
           painterResource(id = R.drawable.github_logo),
-          modifier = modifier
-            .padding(Local2DPPadding.current)
-            .size(18.dp),
-          contentDescription = stringResource(id = R.string.developer)
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
+          contentDescription = stringResource(id = R.string.developer),
         )
         Text(text = "static-var")
       }
     }
     Row(
-      modifier = modifier
-        .fillMaxWidth()
-        .padding(Local4DP_2DPPadding.current),
-      horizontalArrangement = Arrangement.SpaceBetween
+      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+      horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-      OutlinedButton(
+      Button(
         onClick = { "https://github.com/static-var/vlr-gg".openAsCustomTab(context) },
-        modifier = modifier
-          .weight(1f)
-          .padding(Local2DPPadding.current),
-        shape = VLRTheme.shapes.small
+        modifier = modifier.weight(1f).padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small,
       ) {
         Icon(
           imageVector = Icons.Outlined.Code,
-          modifier = modifier
-            .padding(Local2DPPadding.current)
-            .size(18.dp),
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
           contentDescription = stringResource(id = R.string.source_code),
         )
         Text(
           text = stringResource(id = R.string.source_code),
           overflow = TextOverflow.Ellipsis,
-          maxLines = 1
+          maxLines = 1,
         )
       }
-      OutlinedButton(
+      Button(
         onClick = { "https://github.com/sponsors/static-var".openAsCustomTab(context) },
-        modifier = modifier
-          .weight(1f)
-          .padding(Local2DPPadding.current),
-        shape = VLRTheme.shapes.small
+        modifier = modifier.weight(1f).padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small,
       ) {
         Icon(
           imageVector = Icons.Outlined.Paid,
-          modifier = modifier
-            .padding(Local2DPPadding.current)
-            .size(18.dp),
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
           contentDescription = stringResource(id = R.string.sponsor),
         )
         Text(text = stringResource(id = R.string.sponsor))
@@ -182,56 +159,42 @@ fun BackendCard(modifier: Modifier = Modifier) {
       color = VLRTheme.colorScheme.primary,
     )
     Row(
-      modifier = modifier
-        .fillMaxWidth()
-        .padding(Local4DP_2DPPadding.current),
-      horizontalArrangement = Arrangement.SpaceBetween
+      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+      horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-      OutlinedButton(
+      Button(
         onClick = { "https://akhilnarang.dev".openAsCustomTab(context) },
-        modifier = modifier
-          .weight(1f)
-          .padding(Local2DPPadding.current),
-        shape = VLRTheme.shapes.small
+        modifier = modifier.weight(1f).padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small,
       ) {
         Icon(
           imageVector = Icons.Outlined.Language,
-          modifier = modifier
-            .padding(Local2DPPadding.current)
-            .size(18.dp),
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
           contentDescription = stringResource(id = R.string.website),
         )
         Text(text = "akhilnarang.dev", overflow = TextOverflow.Ellipsis, maxLines = 1)
       }
-      OutlinedButton(
+      Button(
         onClick = { "https://github.com/akhilnarang".openAsCustomTab(context) },
-        modifier = modifier
-          .weight(1f)
-          .padding(Local2DPPadding.current),
-        shape = VLRTheme.shapes.small
+        modifier = modifier.weight(1f).padding(Local2DPPadding.current),
+        shape = VLRTheme.shapes.small,
       ) {
         Icon(
           painterResource(id = R.drawable.github_logo),
-          modifier = modifier
-            .padding(Local2DPPadding.current)
-            .size(18.dp),
-          contentDescription = stringResource(id = R.string.developer)
+          modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
+          contentDescription = stringResource(id = R.string.developer),
         )
         Text(text = "akhilnarang")
       }
     }
-    OutlinedButton(
+    Button(
       onClick = { "https://github.com/akhilnarang/vlrgg-scraper".openAsCustomTab(context) },
-      modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 8.dp, vertical = 2.dp),
-      shape = VLRTheme.shapes.small
+      modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp),
+      shape = VLRTheme.shapes.small,
     ) {
       Icon(
         imageVector = Icons.Outlined.Code,
-        modifier = modifier
-          .padding(Local2DPPadding.current)
-          .size(18.dp),
+        modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
         contentDescription = stringResource(id = R.string.website),
       )
       Text(text = stringResource(id = R.string.source_code))
@@ -249,18 +212,14 @@ fun FeedbackCard(modifier: Modifier = Modifier) {
       style = VLRTheme.typography.titleMedium,
       color = VLRTheme.colorScheme.primary,
     )
-    OutlinedButton(
+    Button(
       onClick = { "https://t.me/vlr_gg_chat".openAsCustomTab(context) },
-      modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 8.dp, vertical = 2.dp),
-      shape = VLRTheme.shapes.small
+      modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp),
+      shape = VLRTheme.shapes.small,
     ) {
       Icon(
         imageVector = Icons.Outlined.Language,
-        modifier = modifier
-          .padding(Local2DPPadding.current)
-          .size(18.dp),
+        modifier = modifier.padding(Local2DPPadding.current).size(18.dp),
         contentDescription = "Telegram",
       )
       Text(text = "Telegram")
@@ -276,14 +235,14 @@ fun VersionFooter(currentAppVersion: String, simpleEasterEgg: Boolean) {
     modifier = Modifier.fillMaxWidth(),
     style = VLRTheme.typography.bodySmall,
     textAlign = TextAlign.Center,
-    color = VLRTheme.colorScheme.primary
+    color = VLRTheme.colorScheme.primary,
   )
   Text(
     text = "${stringResource(id = R.string.app_version)} - $currentAppVersion",
     modifier = Modifier.fillMaxWidth(),
     style = VLRTheme.typography.bodySmall,
     textAlign = TextAlign.Center,
-    color = VLRTheme.colorScheme.primary
+    color = VLRTheme.colorScheme.primary,
   )
   if (simpleEasterEgg) {
     var token by remember(simpleEasterEgg) { mutableStateOf("processing") }
@@ -300,12 +259,10 @@ fun VersionFooter(currentAppVersion: String, simpleEasterEgg: Boolean) {
     SelectionContainer() {
       Text(
         text = token,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
         style = VLRTheme.typography.bodySmall,
         textAlign = TextAlign.Center,
-        color = VLRTheme.colorScheme.primary
+        color = VLRTheme.colorScheme.primary,
       )
     }
   }

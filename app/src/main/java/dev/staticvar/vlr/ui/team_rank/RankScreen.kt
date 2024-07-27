@@ -91,21 +91,25 @@ import dev.staticvar.vlr.utils.onWaiting
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun RankScreenAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel, hideNav: (Boolean) -> Unit) {
-  var selectedItem: String? by rememberSaveable {
-    mutableStateOf(null)
-  }
+fun RankScreenAdaptive(
+  modifier: Modifier = Modifier,
+  viewModel: VlrViewModel,
+  hideNav: (Boolean) -> Unit,
+) {
+  var selectedItem: String? by rememberSaveable { mutableStateOf(null) }
   val paneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
-  val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
-    scaffoldDirective = PaneScaffoldDirective(
-      maxHorizontalPartitions = paneScaffoldDirective.maxHorizontalPartitions,
-      horizontalPartitionSpacerSize = paneScaffoldDirective.horizontalPartitionSpacerSize,
-      maxVerticalPartitions = paneScaffoldDirective.maxVerticalPartitions,
-      verticalPartitionSpacerSize = paneScaffoldDirective.verticalPartitionSpacerSize,
-      excludedBounds = paneScaffoldDirective.excludedBounds,
-      defaultPanePreferredWidth = paneScaffoldDirective.defaultPanePreferredWidth,
+  val navigator =
+    rememberListDetailPaneScaffoldNavigator<Nothing>(
+      scaffoldDirective =
+        PaneScaffoldDirective(
+          maxHorizontalPartitions = paneScaffoldDirective.maxHorizontalPartitions,
+          horizontalPartitionSpacerSize = paneScaffoldDirective.horizontalPartitionSpacerSize,
+          maxVerticalPartitions = paneScaffoldDirective.maxVerticalPartitions,
+          verticalPartitionSpacerSize = paneScaffoldDirective.verticalPartitionSpacerSize,
+          excludedBounds = paneScaffoldDirective.excludedBounds,
+          defaultPanePreferredWidth = paneScaffoldDirective.defaultPanePreferredWidth,
+        )
     )
-  )
 
   LaunchedEffect(navigator.currentDestination) {
     if (navigator.currentDestination?.pane == ThreePaneScaffoldRole.Secondary) {
@@ -121,22 +125,24 @@ fun RankScreenAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel, h
   ListDetailPaneScaffold(
     listPane = {
       AnimatedPane(modifier = modifier) {
-        RankScreen(viewModel = viewModel, selectedItem = selectedItem ?: " ", action = {
-          selectedItem = it
-          navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
-        })
+        RankScreen(
+          viewModel = viewModel,
+          selectedItem = selectedItem ?: " ",
+          action = {
+            selectedItem = it
+            navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
+          },
+        )
       }
     },
     detailPane = {
       selectedItem?.let {
-        AnimatedPane(modifier = modifier) {
-          TeamScreen(viewModel = viewModel, id = it)
-        }
+        AnimatedPane(modifier = modifier) { TeamScreen(viewModel = viewModel, id = it) }
       }
     },
     directive = navigator.scaffoldDirective,
     value = navigator.scaffoldValue,
-    modifier = modifier
+    modifier = modifier,
   )
 }
 
@@ -145,28 +151,28 @@ fun RankScreenAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel, h
 fun RankScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -> Unit) {
 
   val allTeams by
-  remember(viewModel) { viewModel.getRanks() }
-    .collectAsStateWithLifecycle(initialValue = Waiting())
+    remember(viewModel) { viewModel.getRanks() }
+      .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh) { viewModel.refreshRanks() }
-    .collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshRanks() }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(
       refreshing = updateState.get() ?: false,
-      { triggerRefresh = triggerRefresh.not() }
+      { triggerRefresh = triggerRefresh.not() },
     )
 
   val resetScroll by
-  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val modifier: Modifier = Modifier
 
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     StatusBarSpacer(statusBarType = StatusBarType.TABBED)
     allTeams
@@ -181,7 +187,7 @@ fun RankScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -
             resetScroll,
             selectedItem = selectedItem,
             action = action,
-            postResetScroll = { viewModel.postResetScroll() }
+            postResetScroll = { viewModel.postResetScroll() },
           )
       }
       .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
@@ -201,28 +207,23 @@ fun RanksPreviewContainer(
   postResetScroll: () -> Unit,
 ) {
   val teamMap by
-  remember(list) {
-    mutableStateOf(
-      list.item
-        .sortedBy { it.rank }
-        .filter { it.region.isNotEmpty() }
-        .groupBy { it.region.trim() }
-    )
-  }
+    remember(list) {
+      mutableStateOf(
+        list.item
+          .sortedBy { it.rank }
+          .filter { it.region.isNotEmpty() }
+          .groupBy { it.region.trim() }
+      )
+    }
   val tabs by remember { mutableStateOf(teamMap.keys.toList().sorted()) }
   val pagerState = rememberPagerState(pageCount = { tabs.size })
 
   Column(
-    modifier = modifier
-      .fillMaxSize()
-      .animateContentSize()
-      .pullRefresh(swipeRefresh),
-    verticalArrangement = Arrangement.Top
+    modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh),
+    verticalArrangement = Arrangement.Top,
   ) {
     if (tabs.isNotEmpty()) {
-      AnimatedVisibility(
-        visible = updateState.get() == true || swipeRefresh.progress != 0f,
-      ) {
+      AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.progress != 0f) {
         LinearProgressIndicator(
           modifier
             .fillMaxWidth()
@@ -235,21 +236,17 @@ fun RanksPreviewContainer(
         ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
       }
       VlrScrollableTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
-      HorizontalPager(
-        state = pagerState,
-        modifier = modifier.fillMaxSize()
-      ) { tabPosition ->
+
+      HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition ->
         val lazyListState = rememberLazyListState()
         lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
         val topTeams = teamMap[tabs[tabPosition]]?.take(25) ?: listOf()
         if (topTeams.isEmpty()) NoTeamsUI()
         else {
           LazyColumn(
-            modifier
-              .fillMaxSize()
-              .testTag("rankOverview:live"),
+            modifier.fillMaxSize().testTag("rankOverview:live"),
             verticalArrangement = Arrangement.Top,
-            state = lazyListState
+            state = lazyListState,
           ) {
             items(topTeams, key = { item -> item.id }) {
               TeamRankPreview(team = it, selectedItem = selectedItem, action = action)
@@ -261,11 +258,9 @@ fun RanksPreviewContainer(
       Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
       ) {
-        AnimatedVisibility(
-          visible = updateState.get() == true || swipeRefresh.progress != 0f,
-        ) {
+        AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.progress != 0f) {
           LinearProgressIndicator(
             modifier
               .fillMaxWidth()
@@ -304,7 +299,7 @@ fun NoTeamsUI(modifier: Modifier = Modifier) {
       modifier = modifier.fillMaxWidth(),
       textAlign = TextAlign.Center,
       style = VLRTheme.typography.bodyLarge,
-      color = VLRTheme.colorScheme.primary
+      color = VLRTheme.colorScheme.primary,
     )
     Spacer(modifier = modifier.weight(1f))
   }
@@ -320,26 +315,25 @@ fun TeamRankPreview(
 ) {
   val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
 
-  CardView(modifier = modifier
-    .clickable {
-      action(team.id)
-    }
-    .height(120.dp),
-    colors = if (selectedItem == team.id) {
-      CardDefaults.elevatedCardColors(
-        containerColor = VLRTheme.colorScheme.secondaryContainer,
-        contentColor = VLRTheme.colorScheme.onSecondaryContainer
-      )
-    } else {
-      CardDefaults.elevatedCardColors()
-    }) {
+  CardView(
+    modifier = modifier.clickable { action(team.id) }.height(120.dp),
+    colors =
+      if (selectedItem == team.id) {
+        CardDefaults.elevatedCardColors(
+          containerColor = VLRTheme.colorScheme.secondaryContainer,
+          contentColor = VLRTheme.colorScheme.onSecondaryContainer,
+        )
+      } else {
+        CardDefaults.elevatedCardColors()
+      },
+  ) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Column(modifier = modifier.padding(Local8DPPadding.current)) {
         val teamRankAnnotatedString = buildAnnotatedString {
           pushStyle(
             SpanStyle(
               VLRTheme.colorScheme.onSurface,
-              fontSize = VLRTheme.typography.headlineMedium.fontSize
+              fontSize = VLRTheme.typography.headlineMedium.fontSize,
             )
           )
           append("#${team.rank} ")
@@ -366,13 +360,13 @@ fun TeamRankPreview(
         val inlineLocationContentMap =
           mapOf(
             "location" to
-                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                  Icon(
-                    imageVector = Icons.Outlined.LocationOn,
-                    modifier = modifier.size(16.dp),
-                    contentDescription = ""
-                  )
-                }
+              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                Icon(
+                  imageVector = Icons.Outlined.LocationOn,
+                  modifier = modifier.size(16.dp),
+                  contentDescription = "",
+                )
+              }
           )
         val annotatedDateString = buildAnnotatedString {
           appendInlineContent(id = "points")
@@ -381,13 +375,13 @@ fun TeamRankPreview(
         val inlineDateContentMap =
           mapOf(
             "points" to
-                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                  Icon(
-                    imageVector = Icons.Outlined.Insights,
-                    modifier = modifier.size(16.dp),
-                    contentDescription = ""
-                  )
-                }
+              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                Icon(
+                  imageVector = Icons.Outlined.Insights,
+                  modifier = modifier.size(16.dp),
+                  contentDescription = "",
+                )
+              }
           )
         Text(
           text = annotatedLocationString,
@@ -401,19 +395,19 @@ fun TeamRankPreview(
           inlineContent = inlineDateContentMap,
           modifier = modifier.padding(Local4DPPadding.current),
           textAlign = TextAlign.Start,
-          style = VLRTheme.typography.bodyMedium
+          style = VLRTheme.typography.bodyMedium,
         )
       }
       GlideImage(
         imageModel = { team.img },
         modifier =
-        modifier
-          .align(Alignment.CenterEnd)
-          .padding(horizontal = 24.dp, vertical = 8.dp)
-          .size(120.dp),
+          modifier
+            .align(Alignment.CenterEnd)
+            .padding(horizontal = 24.dp, vertical = 8.dp)
+            .size(120.dp),
         imageOptions =
-        ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
-        component = imageComponent
+          ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
+        component = imageComponent,
       )
     }
   }

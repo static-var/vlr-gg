@@ -6,7 +6,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -28,14 +27,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.NonSkippableComposable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -82,25 +78,19 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
   val hazeState = remember { HazeState() }
   val scrollState = rememberLazyListState()
 
-
-  Box(
-    modifier = modifier.fillMaxSize(),
-  ) {
+  Box(modifier = modifier.fillMaxSize()) {
     parsedNews?.get()?.let { news ->
       LazyColumn(
-        modifier = modifier
-          .fillMaxSize()
-          .padding(horizontal = 8.dp)
-          .testTag("news:root")
-          .haze(hazeState),
-        state = scrollState
+        modifier =
+          modifier.fillMaxSize().padding(horizontal = 8.dp).testTag("news:root").haze(hazeState),
+        state = scrollState,
       ) {
         item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }
         item {
           Text(
             text = news.title,
             style = VLRTheme.typography.headlineMedium,
-            color = VLRTheme.colorScheme.primary
+            color = VLRTheme.colorScheme.primary,
           )
         }
 
@@ -112,26 +102,24 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
               Text(
                 text = news.authorName,
                 style = VLRTheme.typography.labelLarge,
-                color = VLRTheme.colorScheme.primary
+                color = VLRTheme.colorScheme.primary,
               )
               Text(
                 text = news.time,
                 style = VLRTheme.typography.labelLarge,
-                color = VLRTheme.colorScheme.primary
+                color = VLRTheme.colorScheme.primary,
               )
             }
             Icon(
               imageVector = Icons.Outlined.Share,
               contentDescription = "Share",
-              modifier = modifier
-                .clip(shape = VLRTheme.shapes.medium)
-                .clickable {
+              modifier =
+                modifier.clip(shape = VLRTheme.shapes.medium).clickable {
                   fireShareIntent(context, news.title, id)
                 },
-              tint = VLRTheme.colorScheme.primary
+              tint = VLRTheme.colorScheme.primary,
             )
           }
-
         }
         item { Spacer(modifier = modifier.padding(Local8DPPadding.current)) }
 
@@ -143,7 +131,7 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                   text = parsedData.text,
                   style = VLRTheme.typography.titleMedium,
                   color = VLRTheme.colorScheme.primary,
-                  modifier = modifier.padding(vertical = 8.dp)
+                  modifier = modifier.padding(vertical = 8.dp),
                 )
 
               is ListItem ->
@@ -159,44 +147,35 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                 Text(
                   text = parsedData.text,
                   style = VLRTheme.typography.labelMedium,
-                  modifier = modifier
-                    .fillMaxSize()
-                    .padding(vertical = 2.dp),
-                  textAlign = TextAlign.Center
+                  modifier = modifier.fillMaxSize().padding(vertical = 2.dp),
+                  textAlign = TextAlign.Center,
                 )
 
               is Unknown ->
                 Text(
                   text = parsedData.text,
                   style = VLRTheme.typography.labelMedium,
-                  modifier = modifier.padding(vertical = 2.dp)
+                  modifier = modifier.padding(vertical = 2.dp),
                 )
 
               is Video ->
-                OutlinedButton(
-                  onClick = {
-                    parsedData.link.openAsCustomTab(context = context)
-                  },
-                  modifier = modifier
-                    .fillMaxWidth(),
-                  shape = VLRTheme.shapes.small
+                Button(
+                  onClick = { parsedData.link.openAsCustomTab(context = context) },
+                  modifier = modifier.fillMaxWidth(),
+                  shape = VLRTheme.shapes.small,
                 ) {
                   Text(text = "Watch Video")
                 }
 
               is Quote ->
-                Row(
-                  modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Max)
-                ) {
+                Row(modifier.fillMaxWidth().height(IntrinsicSize.Max)) {
                   Spacer(
                     modifier =
-                    modifier
-                      .width(12.dp)
-                      .padding(4.dp)
-                      .background(VLRTheme.colorScheme.primary)
-                      .fillMaxHeight()
+                      modifier
+                        .width(12.dp)
+                        .padding(4.dp)
+                        .background(VLRTheme.colorScheme.primary)
+                        .fillMaxHeight()
                   )
                   Text(
                     text = parsedData.text,
@@ -215,23 +194,12 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
 
       ScrollToTopButton(scrollState = scrollState, hazeState = hazeState)
     }
-
       ?: parsedNews?.getError()?.let {
-        Text(
-          text = it.stackTraceToString(),
-          modifier = Modifier.align(
-            Alignment.Center
-          )
-        )
+        Text(text = it.stackTraceToString(), modifier = Modifier.align(Alignment.Center))
       }
-      ?: LinearProgressIndicator(
-        modifier
-          .testTag("common:loader")
-          .align(Alignment.Center)
-      )
+      ?: LinearProgressIndicator(modifier.testTag("common:loader").align(Alignment.Center))
   }
 }
-
 
 @Composable
 fun BoxScope.ScrollToTopButton(
@@ -240,47 +208,30 @@ fun BoxScope.ScrollToTopButton(
   hazeState: HazeState,
 ) {
 
-  val showScrollToTop by remember {
-    derivedStateOf { scrollState.firstVisibleItemIndex > 0 }
-  }
+  val showScrollToTop by remember { derivedStateOf { scrollState.firstVisibleItemIndex > 0 } }
 
   val coroutineScope = rememberCoroutineScope()
   AnimatedVisibility(
     visible = showScrollToTop,
-    modifier = modifier
-      .align(Alignment.BottomEnd)
-      .navigationBarsPadding()
-      .padding(16.dp)
+    modifier = modifier.align(Alignment.BottomEnd).navigationBarsPadding().padding(16.dp),
   ) {
     Box(
-      modifier = Modifier
-        .background(Color.Transparent)
-        .hazeChild(
-          hazeState,
-          shape = VLRTheme.shapes.large,
-          style = HazeMaterials.ultraThin()
-        )
-        .clip(VLRTheme.shapes.large)
-        .border(1.dp, VLRTheme.colorScheme.primary, VLRTheme.shapes.large)
-        .clickable {
-          coroutineScope.launch {
-            scrollState.animateScrollToItem(0)
-          }
-        },
+      modifier =
+        Modifier.background(Color.Transparent)
+          .hazeChild(hazeState, shape = VLRTheme.shapes.large, style = HazeMaterials.ultraThin())
+          .clip(VLRTheme.shapes.large)
+          .border(1.dp, VLRTheme.colorScheme.primary, VLRTheme.shapes.large)
+          .clickable { coroutineScope.launch { scrollState.animateScrollToItem(0) } }
     ) {
       Icon(
         imageVector = Icons.Outlined.KeyboardArrowUp,
         contentDescription = "Scroll to Top",
-        modifier = Modifier
-          .background(Color.Transparent)
-          .padding(6.dp),
+        modifier = Modifier.background(Color.Transparent).padding(6.dp),
         tint = VLRTheme.colorScheme.primary,
       )
     }
   }
-
 }
-
 
 fun fireShareIntent(context: Context, title: String, id: String) {
   val shareString = buildString {
@@ -293,14 +244,16 @@ fun fireShareIntent(context: Context, title: String, id: String) {
       }"
     )
   }
-  val intent = Intent(Intent.ACTION_SEND).apply {
-    putExtra(Intent.EXTRA_TEXT, shareString)
-    type = "text/plain"
-  }
+  val intent =
+    Intent(Intent.ACTION_SEND).apply {
+      putExtra(Intent.EXTRA_TEXT, shareString)
+      type = "text/plain"
+    }
 
   val shareIntent = Intent.createChooser(intent, "Share Valorant News")
   context.startActivity(shareIntent)
 }
 
 private fun internalDeepLinkForNews(id: String) = "${Constants.DEEP_LINK_BASEURL}news=$id"
+
 private fun websiteUrlForNews(id: String) = "${Constants.VLR_BASE}$id"
