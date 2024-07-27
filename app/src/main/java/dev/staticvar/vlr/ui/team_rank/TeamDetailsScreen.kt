@@ -21,11 +21,11 @@ import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -250,7 +250,7 @@ fun TeamBanner(
 
     var processingTopicSubscription by remember { mutableStateOf(false) }
 
-    OutlinedButton(
+    Button(
       onClick = {
         if (notificationPermission.status.isGranted) {
           if (!processingTopicSubscription) {
@@ -272,7 +272,7 @@ fun TeamBanner(
       } else if (isTracked) Text(text = stringResource(R.string.unsubscribe))
       else Text(text = stringResource(R.string.get_notified))
     }
-    OutlinedButton(
+    Button(
       onClick = { (Constants.VLR_BASE + "team/" + id).openAsCustomTab(context) },
       modifier = modifier
         .fillMaxWidth()

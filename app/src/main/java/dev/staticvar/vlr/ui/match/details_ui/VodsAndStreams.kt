@@ -17,10 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -90,7 +89,7 @@ fun VideoReferenceUi(
             .padding(horizontal = 4.dp)
         ) {
           items(videos.streams) { stream ->
-            OutlinedButton(
+            Button(
               onClick = {
                 intent.data = Uri.parse(stream.url)
                 context.startActivity(intent)

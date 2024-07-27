@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -78,7 +78,7 @@ fun MatchInfoMoreOptions(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-      OutlinedButton(
+      Button(
         onClick = { dialogOpen = true },
         modifier = Modifier
           .weight(1f)
@@ -90,7 +90,7 @@ fun MatchInfoMoreOptions(
       detailData.event.date?.let {
         if (!it.hasElapsed) {
           var processingTopicSubscription by remember { mutableStateOf(false) }
-          OutlinedButton(
+          Button(
             onClick = {
               if (notificationPermission.status.isGranted) {
                 if (!processingTopicSubscription) {
@@ -122,7 +122,7 @@ fun MatchInfoMoreOptions(
       horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
       val context = LocalContext.current
-      OutlinedButton(
+      Button(
         onClick = { (Constants.VLR_BASE + detailData.id).openAsCustomTab(context) },
         modifier = Modifier.weight(1f),
         shape = VLRTheme.shapes.small
@@ -130,7 +130,7 @@ fun MatchInfoMoreOptions(
         Text(text = stringResource(id = R.string.view_at_vlr), maxLines = 1)
       }
 
-      OutlinedButton(
+      Button(
         onClick = { onEventClick(eventId) },
         modifier = Modifier.weight(1f),
         shape = VLRTheme.shapes.small
