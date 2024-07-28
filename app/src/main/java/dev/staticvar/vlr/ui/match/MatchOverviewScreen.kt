@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.PagerState
@@ -31,7 +32,6 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
-import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
@@ -44,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -89,21 +90,19 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun MatchOverviewAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel, hideNav: (Boolean) -> Unit) {
-  var selectedItem: String? by rememberSaveable {
-    mutableStateOf(null)
-  }
+fun MatchOverviewAdaptive(
+  modifier: Modifier = Modifier,
+  viewModel: VlrViewModel,
+  hideNav: (Boolean) -> Unit,
+) {
+  var selectedItem: String? by rememberSaveable { mutableStateOf(null) }
   val paneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
-  val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
-    scaffoldDirective = PaneScaffoldDirective(
-      maxHorizontalPartitions = paneScaffoldDirective.maxHorizontalPartitions,
-      horizontalPartitionSpacerSize = paneScaffoldDirective.horizontalPartitionSpacerSize,
-      maxVerticalPartitions = paneScaffoldDirective.maxVerticalPartitions,
-      verticalPartitionSpacerSize = paneScaffoldDirective.verticalPartitionSpacerSize,
-      excludedBounds = paneScaffoldDirective.excludedBounds,
-      defaultPanePreferredWidth = paneScaffoldDirective.defaultPanePreferredWidth,
-    )
-  )
+  val navigator = rememberListDetailPaneScaffoldNavigator(scaffoldDirective = paneScaffoldDirective)
+  val listOfLazyListState = remember { mutableStateListOf<LazyListState>() }
+
+  if (listOfLazyListState.isEmpty()) {
+    repeat(3) { listOfLazyListState.add(rememberLazyListState()) }
+  }
 
   LaunchedEffect(navigator.currentDestination) {
     if (navigator.currentDestination?.pane == ThreePaneScaffoldRole.Secondary) {
@@ -111,12 +110,11 @@ fun MatchOverviewAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel
     } else hideNav(true)
   }
 
-
   val tabs =
     listOf(
       stringResource(id = R.string.live),
       stringResource(id = R.string.upcoming),
-      stringResource(id = R.string.completed)
+      stringResource(id = R.string.completed),
     )
   val pagerState = rememberPagerState(pageCount = { tabs.size })
 
@@ -132,22 +130,22 @@ fun MatchOverviewAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel
           viewModel = viewModel,
           pagerState = pagerState,
           selectedItem = selectedItem ?: " ",
+          listOfLazyListState = listOfLazyListState,
           action = {
             selectedItem = it
             navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
-          })
+          },
+        )
       }
     },
     detailPane = {
       selectedItem?.let {
-        AnimatedPane(modifier = modifier) {
-          NewMatchDetails(viewModel = viewModel, id = it)
-        }
+        AnimatedPane(modifier = modifier) { NewMatchDetails(viewModel = viewModel, id = it) }
       }
     },
     directive = navigator.scaffoldDirective,
     value = navigator.scaffoldValue,
-    modifier = Modifier.statusBarsPadding().navigationBarsPadding()
+    modifier = Modifier.statusBarsPadding().navigationBarsPadding(),
   )
 }
 
@@ -156,28 +154,29 @@ fun MatchOverview(
   viewModel: VlrViewModel,
   pagerState: PagerState,
   selectedItem: String,
+  listOfLazyListState: SnapshotStateList<LazyListState>,
   action: (String) -> Unit,
 ) {
 
   val allMatches by
-  remember(viewModel) { viewModel.getMatches() }
-    .collectAsStateWithLifecycle(initialValue = Waiting())
+    remember(viewModel) { viewModel.getMatches() }
+      .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh) { viewModel.refreshMatches() }
-    .collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshMatches() }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
 
   val resetScroll by
-  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val modifier: Modifier = Modifier
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
     Box(modifier) {
@@ -189,11 +188,12 @@ fun MatchOverview(
               list = list,
               swipeRefresh = swipeRefresh,
               pagerState = pagerState,
+              listOfLazyListState = listOfLazyListState,
               updateState = updateState,
               resetScroll = resetScroll,
               selectedItem = selectedItem,
               onClick = action,
-              postResetScroll = { viewModel.postResetScroll() }
+              postResetScroll = { viewModel.postResetScroll() },
             )
           }
         }
@@ -211,6 +211,7 @@ fun MatchOverviewContainer(
   list: List<MatchPreviewInfo>,
   swipeRefresh: PullRefreshState,
   pagerState: PagerState,
+  listOfLazyListState: SnapshotStateList<LazyListState>,
   updateState: Result<Boolean, Throwable?>,
   resetScroll: Boolean,
   selectedItem: String,
@@ -226,7 +227,7 @@ fun MatchOverviewContainer(
     listOf(
       stringResource(id = R.string.live),
       stringResource(id = R.string.upcoming),
-      stringResource(id = R.string.completed)
+      stringResource(id = R.string.completed),
     )
 
   if (shareDialog) {
@@ -241,22 +242,17 @@ fun MatchOverviewContainer(
         Triple(
           it[tabs[0].lowercase()].orEmpty(),
           it[tabs[1].lowercase()].orEmpty().sortedBy { match -> match.time?.timeToEpoch },
-          it[tabs[2].lowercase()].orEmpty().sortedByDescending { match -> match.time?.timeToEpoch }
+          it[tabs[2].lowercase()].orEmpty().sortedByDescending { match -> match.time?.timeToEpoch },
         )
       }
     }
 
   Box {
     Column(
-      modifier = modifier
-        .fillMaxSize()
-        .animateContentSize()
-        .pullRefresh(swipeRefresh),
-      verticalArrangement = Arrangement.Top
+      modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh),
+      verticalArrangement = Arrangement.Top,
     ) {
-      AnimatedVisibility(
-        visible = updateState.get() == true || swipeRefresh.progress != 0f,
-      ) {
+      AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.progress != 0f) {
         LinearProgressIndicator(
           modifier
             .fillMaxWidth()
@@ -276,7 +272,7 @@ fun MatchOverviewContainer(
             shareState = it
             shareMatchList.clear()
           },
-          shareConfirm = { shareDialog = true }
+          shareConfirm = { shareDialog = true },
         )
       }
 
@@ -289,15 +285,13 @@ fun MatchOverviewContainer(
           if (ongoing.isEmpty()) {
             NoMatchUI()
           } else {
-            val lazyListState = rememberLazyListState()
+            val lazyListState = listOfLazyListState[0]
             lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
 
             LazyColumn(
-              modifier
-                .fillMaxSize()
-                .testTag("matchOverview:live"),
+              modifier.fillMaxSize().testTag("matchOverview:live"),
               verticalArrangement = Arrangement.Top,
-              state = lazyListState
+              state = lazyListState,
             ) {
               items(ongoing, key = { item -> item.id }) {
                 MatchOverviewPreview(
@@ -317,8 +311,8 @@ fun MatchOverviewContainer(
                       }
 
                       shareState &&
-                          !shareMatchList.contains(match) &&
-                          shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                        !shareMatchList.contains(match) &&
+                        shareMatchList.size < MAX_SHARABLE_ITEMS -> {
                         // If in share mode &
                         // If list does not have 6 items and if the clicked icon is not already in
                         // the list
@@ -328,7 +322,7 @@ fun MatchOverviewContainer(
 
                       !shareState -> onClick(match.id) // Its a normal click, navigate to the action
                     }
-                  }
+                  },
                 )
               }
             }
@@ -338,20 +332,17 @@ fun MatchOverviewContainer(
           if (upcoming.isEmpty()) {
             NoMatchUI()
           } else {
-            val lazyListState = rememberLazyListState()
+            val lazyListState = listOfLazyListState[1]
             lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
 
             val groupedUpcomingMatches =
               remember(upcoming) { upcoming.groupBy { it.time?.readableDate } }
             LazyColumn(
-              modifier
-                .fillMaxSize()
-                .testTag("matchOverview:upcoming"),
+              modifier.fillMaxSize().testTag("matchOverview:upcoming"),
               verticalArrangement = Arrangement.Top,
-              state = lazyListState
+              state = lazyListState,
             ) {
-              groupedUpcomingMatches.forEach {
-                  (date, match),
+              groupedUpcomingMatches.forEach { (date, match)
                 -> // Group heading based on date for sticky header
                 stickyHeader { date?.let { date -> DateChip(date = date) } }
                 items(match, key = { item -> item.id }) {
@@ -373,8 +364,8 @@ fun MatchOverviewContainer(
                         }
 
                         shareState &&
-                            !shareMatchList.contains(match) &&
-                            shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                          !shareMatchList.contains(match) &&
+                          shareMatchList.size < MAX_SHARABLE_ITEMS -> {
                           // If in share mode &
                           // If list does not have 6 items and if the clicked icon is not already
                           // in
@@ -383,9 +374,10 @@ fun MatchOverviewContainer(
                           haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         }
 
-                        !shareState -> onClick(match.id) // Its a normal click, navigate to the action
+                        !shareState ->
+                          onClick(match.id) // Its a normal click, navigate to the action
                       }
-                    }
+                    },
                   )
                 }
               }
@@ -396,20 +388,17 @@ fun MatchOverviewContainer(
           if (completed.isEmpty()) {
             NoMatchUI(modifier = modifier)
           } else {
-            val lazyListState = rememberLazyListState()
+            val lazyListState = listOfLazyListState[2]
             lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
 
             val groupedCompletedMatches =
               remember(completed) { completed.groupBy { it.time?.readableDate } }
             LazyColumn(
-              modifier
-                .fillMaxSize()
-                .testTag("matchOverview:result"),
+              modifier.fillMaxSize().testTag("matchOverview:result"),
               verticalArrangement = Arrangement.Top,
-              state = lazyListState
+              state = lazyListState,
             ) {
-              groupedCompletedMatches.forEach {
-                  (date, match),
+              groupedCompletedMatches.forEach { (date, match)
                 -> // Group heading based on date for sticky header
                 stickyHeader { date?.let { date -> DateChip(date = date) } }
                 items(match, key = { item -> item.id }) {
@@ -431,8 +420,8 @@ fun MatchOverviewContainer(
                         }
 
                         shareState &&
-                            !shareMatchList.contains(match) &&
-                            shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                          !shareMatchList.contains(match) &&
+                          shareMatchList.size < MAX_SHARABLE_ITEMS -> {
                           // If in share mode &
                           // If list does not have 6 items and if the clicked icon is not already
                           // in
@@ -441,30 +430,26 @@ fun MatchOverviewContainer(
                           haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         }
 
-                        !shareState -> onClick(match.id) // Its a normal click, navigate to the action
+                        !shareState ->
+                          onClick(match.id) // Its a normal click, navigate to the action
                       }
-                    }
+                    },
                   )
                 }
               }
             }
           }
-        }
+        },
       )
     }
 
     val scope = rememberCoroutineScope()
     VlrSegmentedButtons(
-      modifier = Modifier
-        .align(Alignment.BottomCenter)
-        .navigationBarsPadding()
-        .padding(8.dp),
+      modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(8.dp),
       highlighted = pagerState.currentPage,
       items = tabs,
     ) { _, index ->
-      scope.launch {
-        pagerState.animateScrollToPage(index)
-      }
+      scope.launch { pagerState.animateScrollToPage(index) }
     }
   }
 }
@@ -478,7 +463,7 @@ fun NoMatchUI(modifier: Modifier = Modifier) {
       modifier = modifier.fillMaxWidth(),
       textAlign = TextAlign.Center,
       style = VLRTheme.typography.bodyLarge,
-      color = VLRTheme.colorScheme.primary
+      color = VLRTheme.colorScheme.primary,
     )
     Spacer(modifier = modifier.weight(1f))
   }
@@ -495,42 +480,36 @@ fun MatchOverviewPreview(
 ) {
   CardView(
     modifier =
-    modifier
-      .pointerInput(Unit) {
+      modifier.pointerInput(Unit) {
         detectTapGestures(
           onPress = {},
           onDoubleTap = {},
           onLongPress = { onAction(true, matchPreviewInfo) },
-          onTap = { onAction(false, matchPreviewInfo) }
+          onTap = { onAction(false, matchPreviewInfo) },
         )
       },
-    colors = if (matchPreviewInfo.id == selectedItem) {
-      CardDefaults.elevatedCardColors(
-        containerColor = VLRTheme.colorScheme.secondaryContainer,
-        contentColor = VLRTheme.colorScheme.onSecondaryContainer
-      )
-    } else {
-      CardDefaults.elevatedCardColors()
-    }
+    colors =
+      if (matchPreviewInfo.id == selectedItem) {
+        CardDefaults.elevatedCardColors(
+          containerColor = VLRTheme.colorScheme.secondaryContainer,
+          contentColor = VLRTheme.colorScheme.onSecondaryContainer,
+        )
+      } else {
+        CardDefaults.elevatedCardColors()
+      },
   ) {
-    Column(
-      modifier = modifier
-        .padding(Local4DPPadding.current)
-        .animateContentSize()
-    ) {
+    Column(modifier = modifier.padding(Local4DPPadding.current).animateContentSize()) {
       Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
         Text(
           text =
-          if (matchPreviewInfo.status.equals(stringResource(id = R.string.live), true))
-            stringResource(id = R.string.live)
-          else
-            matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})")
-              ?: "",
-          modifier = modifier
-            .fillMaxWidth()
-            .padding(Local8DP_4DPPadding.current),
+            if (matchPreviewInfo.status.equals(stringResource(id = R.string.live), true))
+              stringResource(id = R.string.live)
+            else
+              matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})")
+                ?: "",
+          modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
           textAlign = TextAlign.Center,
-          style = VLRTheme.typography.bodyMedium
+          style = VLRTheme.typography.bodyMedium,
         )
 
         if (shareMode)
@@ -538,7 +517,7 @@ fun MatchOverviewPreview(
       }
       Row(
         modifier = modifier.padding(Local8DP_4DPPadding.current),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
           text = matchPreviewInfo.team1.name,
@@ -558,7 +537,7 @@ fun MatchOverviewPreview(
       }
       Row(
         modifier = modifier.padding(Local8DP_4DPPadding.current),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
           text = matchPreviewInfo.team2.name,
@@ -578,11 +557,9 @@ fun MatchOverviewPreview(
       }
       Text(
         text = "${matchPreviewInfo.event} - ${matchPreviewInfo.series}",
-        modifier = modifier
-          .fillMaxWidth()
-          .padding(Local8DP_4DPPadding.current),
+        modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
         textAlign = TextAlign.Center,
-        style = VLRTheme.typography.labelMedium
+        style = VLRTheme.typography.labelMedium,
       )
     }
   }
