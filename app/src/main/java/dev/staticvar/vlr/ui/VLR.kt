@@ -51,7 +51,10 @@ fun VLR() {
 
   viewModel.action = action
 
-  val resetScroll = { viewModel.resetScroll() }
+  val resetScroll = {
+    println("Resetting scroll")
+    viewModel.resetScroll()
+  }
 
   var currentNav by remember { mutableStateOf(Destination.NewsOverview.route) }
   val currentDestination = backStackEntry?.destination?.route
@@ -91,7 +94,14 @@ fun VLR() {
         Destination.Rank.route,
         Icons.Filled.Leaderboard,
         Icons.Outlined.Leaderboard,
-        onClick = { if (currentNav == Destination.Rank.route) resetScroll() else action.goRanks() }
+        onClick = {
+          // This causes crashes in certain scenarios.
+/*          if (currentNav == Destination.Rank.route)
+            resetScroll()
+          else */
+          if (currentNav != Destination.Rank.route)
+            action.goRanks()
+        }
       ),
       NavItem(
         title = stringResource(id = R.string.about),
@@ -124,9 +134,7 @@ fun VLR() {
             }
           },
           onClick = {
-            if (currentDestination != navItem.route)
               navItem.onClick()
-//              navController.navigate(navItem.route)
           },
           label = { Text(text = navItem.title) }
         )

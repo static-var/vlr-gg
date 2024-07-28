@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
@@ -36,7 +38,6 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
-import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
@@ -44,6 +45,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.NonSkippableComposable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -98,23 +101,22 @@ fun RankScreenAdaptive(
 ) {
   var selectedItem: String? by rememberSaveable { mutableStateOf(null) }
   val paneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
-  val navigator =
-    rememberListDetailPaneScaffoldNavigator<Nothing>(
-      scaffoldDirective =
-        PaneScaffoldDirective(
-          maxHorizontalPartitions = paneScaffoldDirective.maxHorizontalPartitions,
-          horizontalPartitionSpacerSize = paneScaffoldDirective.horizontalPartitionSpacerSize,
-          maxVerticalPartitions = paneScaffoldDirective.maxVerticalPartitions,
-          verticalPartitionSpacerSize = paneScaffoldDirective.verticalPartitionSpacerSize,
-          excludedBounds = paneScaffoldDirective.excludedBounds,
-          defaultPanePreferredWidth = paneScaffoldDirective.defaultPanePreferredWidth,
-        )
-    )
+  val navigator = rememberListDetailPaneScaffoldNavigator(scaffoldDirective = paneScaffoldDirective)
 
   LaunchedEffect(navigator.currentDestination) {
     if (navigator.currentDestination?.pane == ThreePaneScaffoldRole.Secondary) {
       hideNav(false)
     } else hideNav(true)
+  }
+
+  var pageSize by remember { mutableIntStateOf(0) }
+  val pagerState = rememberPagerState(pageCount = { pageSize })
+  val listOfLazyListState = remember { mutableStateListOf<LazyListState>() }
+
+  LaunchedEffect(pageSize) { listOfLazyListState.clear() }
+
+  if (listOfLazyListState.isEmpty()) {
+    repeat(pageSize) { listOfLazyListState.add(rememberLazyListState()) }
   }
 
   BackHandler(navigator.canNavigateBack()) {
@@ -132,6 +134,9 @@ fun RankScreenAdaptive(
             selectedItem = it
             navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
           },
+          pageSize = { pageSize = it },
+          pagerState = pagerState,
+          listOfLazyListState = listOfLazyListState,
         )
       }
     },
@@ -148,7 +153,14 @@ fun RankScreenAdaptive(
 
 @Composable
 @NonSkippableComposable
-fun RankScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -> Unit) {
+fun RankScreen(
+  viewModel: VlrViewModel,
+  selectedItem: String,
+  pagerState: PagerState,
+  listOfLazyListState: List<LazyListState>,
+  pageSize: (Int) -> Unit,
+  action: (String) -> Unit,
+) {
 
   val allTeams by
     remember(viewModel) { viewModel.getRanks() }
@@ -184,10 +196,13 @@ fun RankScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -
             list = StableHolder(data),
             swipeRefresh,
             updateState,
+            pagerState,
+            listOfLazyListState,
             resetScroll,
             selectedItem = selectedItem,
             action = action,
             postResetScroll = { viewModel.postResetScroll() },
+            pageSize = pageSize,
           )
       }
       .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
@@ -201,8 +216,11 @@ fun RanksPreviewContainer(
   list: StableHolder<List<TeamDetails>>,
   swipeRefresh: PullRefreshState,
   updateState: Result<Boolean, Throwable?>,
+  pagerState: PagerState,
+  listOfLazyListState: List<LazyListState>,
   resetScroll: Boolean,
   selectedItem: String,
+  pageSize: (Int) -> Unit,
   action: (String) -> Unit,
   postResetScroll: () -> Unit,
 ) {
@@ -216,7 +234,7 @@ fun RanksPreviewContainer(
       )
     }
   val tabs by remember { mutableStateOf(teamMap.keys.toList().sorted()) }
-  val pagerState = rememberPagerState(pageCount = { tabs.size })
+  LaunchedEffect(tabs.size) { pageSize(tabs.size) }
 
   Column(
     modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh),
@@ -238,7 +256,7 @@ fun RanksPreviewContainer(
       VlrScrollableTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
 
       HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition ->
-        val lazyListState = rememberLazyListState()
+        val lazyListState = listOfLazyListState[tabPosition]
         lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
         val topTeams = teamMap[tabs[tabPosition]]?.take(25) ?: listOf()
         if (topTeams.isEmpty()) NoTeamsUI()

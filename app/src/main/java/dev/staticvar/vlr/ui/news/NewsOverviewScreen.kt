@@ -31,7 +31,6 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
-import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
@@ -72,21 +71,14 @@ import dev.staticvar.vlr.utils.timeToEpoch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun NewsScreenAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel, hideNav: (Boolean) -> Unit) {
-  var selectedItem: String? by rememberSaveable {
-    mutableStateOf(null)
-  }
+fun NewsScreenAdaptive(
+  modifier: Modifier = Modifier,
+  viewModel: VlrViewModel,
+  hideNav: (Boolean) -> Unit,
+) {
+  var selectedItem: String? by rememberSaveable { mutableStateOf(null) }
   val paneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
-  val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
-    scaffoldDirective = PaneScaffoldDirective(
-      maxHorizontalPartitions = paneScaffoldDirective.maxHorizontalPartitions,
-      horizontalPartitionSpacerSize = paneScaffoldDirective.horizontalPartitionSpacerSize,
-      maxVerticalPartitions = paneScaffoldDirective.maxVerticalPartitions,
-      verticalPartitionSpacerSize = paneScaffoldDirective.verticalPartitionSpacerSize,
-      excludedBounds = paneScaffoldDirective.excludedBounds,
-      defaultPanePreferredWidth = paneScaffoldDirective.defaultPanePreferredWidth,
-    )
-  )
+  val navigator = rememberListDetailPaneScaffoldNavigator(scaffoldDirective = paneScaffoldDirective)
 
   LaunchedEffect(navigator.currentDestination) {
     if (navigator.currentDestination?.pane == ThreePaneScaffoldRole.Secondary) {
@@ -102,22 +94,24 @@ fun NewsScreenAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel, h
   ListDetailPaneScaffold(
     listPane = {
       AnimatedPane(modifier = modifier) {
-        NewsScreen(viewModel = viewModel, selectedItem = selectedItem ?: " ", action = {
-          selectedItem = it
-          navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
-        })
+        NewsScreen(
+          viewModel = viewModel,
+          selectedItem = selectedItem ?: " ",
+          action = {
+            selectedItem = it
+            navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
+          },
+        )
       }
     },
     detailPane = {
       selectedItem?.let {
-        AnimatedPane(modifier = modifier) {
-          NewsDetailsScreen(viewModel = viewModel, id = it)
-        }
+        AnimatedPane(modifier = modifier) { NewsDetailsScreen(viewModel = viewModel, id = it) }
       }
     },
     directive = navigator.scaffoldDirective,
     value = navigator.scaffoldValue,
-    modifier = modifier
+    modifier = modifier,
   )
 }
 
@@ -126,12 +120,12 @@ fun NewsScreenAdaptive(modifier: Modifier = Modifier, viewModel: VlrViewModel, h
 fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -> Unit) {
 
   val newsInfo by
-  remember(viewModel) { viewModel.getNews() }
-    .collectAsStateWithLifecycle(initialValue = Waiting())
+    remember(viewModel) { viewModel.getNews() }
+      .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh) { viewModel.refreshNews() }
-    .collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshNews() }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
@@ -139,15 +133,14 @@ fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -
   val modifier: Modifier = Modifier
 
   val resetScroll by
-  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
   val scrollState = rememberLazyListState()
   scrollState.ScrollHelper(resetScroll = resetScroll) { viewModel.postResetScroll() }
 
   Column(
-    modifier = modifier.fillMaxSize()
-      .navigationBarsPadding().statusBarsPadding(),
+    modifier = modifier.fillMaxSize().navigationBarsPadding().statusBarsPadding(),
     verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     newsInfo
       .onPass {
@@ -171,11 +164,7 @@ fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -
               )
             }
           }
-          Box(
-            modifier = Modifier
-              .pullRefresh(swipeRefresh)
-              .fillMaxSize(),
-          ) {
+          Box(modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize()) {
             LazyColumn(state = scrollState, modifier = modifier.testTag("newsOverview:root")) {
               item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }
               updateState.getError()?.let {
@@ -184,18 +173,21 @@ fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -
 
               items(
                 if (safeConvertedList.isFailure) list else safeConvertedList.getOrElse { listOf() },
-                key = { item -> item.link }
-              ) { NewsItem(modifier, newsResponseItem = it, selectedItem = selectedItem, action = action) }
+                key = { item -> item.link },
+              ) {
+                NewsItem(
+                  modifier,
+                  newsResponseItem = it,
+                  selectedItem = selectedItem,
+                  action = action,
+                )
+              }
             }
           }
         }
       }
-      .onWaiting {
-        LinearProgressIndicator(modifier.animateContentSize())
-      }
-      .onFail {
-        Text(text = message())
-      }
+      .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
+      .onFail { Text(text = message()) }
   }
 }
 
@@ -207,18 +199,16 @@ fun NewsItem(
   action: (String) -> Unit,
 ) {
   CardView(
-    modifier = modifier
-      .clickable {
-        action(newsResponseItem.link.split("/")[3])
+    modifier = modifier.clickable { action(newsResponseItem.link.split("/")[3]) },
+    colors =
+      if (newsResponseItem.link.contains(selectedItem)) {
+        CardDefaults.elevatedCardColors(
+          containerColor = VLRTheme.colorScheme.secondaryContainer,
+          contentColor = VLRTheme.colorScheme.onSecondaryContainer,
+        )
+      } else {
+        CardDefaults.elevatedCardColors()
       },
-    colors = if (newsResponseItem.link.contains(selectedItem)) {
-      CardDefaults.elevatedCardColors(
-        containerColor = VLRTheme.colorScheme.secondaryContainer,
-        contentColor = VLRTheme.colorScheme.onSecondaryContainer
-      )
-    } else {
-      CardDefaults.elevatedCardColors()
-    }
   ) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(
@@ -239,9 +229,7 @@ fun NewsItem(
         Text(
           text = newsResponseItem.author,
           style = VLRTheme.typography.labelSmall,
-          modifier = modifier
-            .padding(Local4DPPadding.current)
-            .weight(1f)
+          modifier = modifier.padding(Local4DPPadding.current).weight(1f),
         )
         Icon(
           imageVector = Icons.Outlined.DateRange,
@@ -251,10 +239,10 @@ fun NewsItem(
         val convertedDate = kotlin.runCatching { newsResponseItem.date.readableDate }
         Text(
           text =
-          if (convertedDate.isSuccess) convertedDate.getOrDefault(newsResponseItem.date)
-          else newsResponseItem.date,
+            if (convertedDate.isSuccess) convertedDate.getOrDefault(newsResponseItem.date)
+            else newsResponseItem.date,
           style = VLRTheme.typography.labelSmall,
-          modifier = modifier.padding(Local4DPPadding.current)
+          modifier = modifier.padding(Local4DPPadding.current),
         )
       }
 
@@ -263,7 +251,7 @@ fun NewsItem(
         style = VLRTheme.typography.bodyMedium,
         modifier = modifier.padding(Local4DPPadding.current),
         maxLines = 2,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
       )
     }
   }
