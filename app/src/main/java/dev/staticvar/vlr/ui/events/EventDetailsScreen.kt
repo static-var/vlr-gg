@@ -53,6 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
@@ -81,6 +82,7 @@ import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.Constants
+import dev.staticvar.vlr.utils.DynamicTheme
 import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.Waiting
 import dev.staticvar.vlr.utils.onFail
@@ -401,9 +403,7 @@ fun EventDetailsTeamSlider(
   list: StableHolder<List<TournamentDetails.Participant>>,
   onClick: (String) -> Unit,
 ) {
-  val imageComponent = rememberImageComponent {
-    add(CircularRevealPlugin())
-  }
+
   val lazyListState = rememberLazyListState()
   Text(
     text = stringResource(R.string.teams),
@@ -420,46 +420,47 @@ fun EventDetailsTeamSlider(
     state = lazyListState
   ) {
     items(list.item, key = { list -> list.id }) {
-      CardView(
-        modifier
-          .width(width = 150.dp)
-          .aspectRatio(1f)
-          .clickable { onClick(it.id) },
+      DynamicTheme(
+        model = it.img,
+        fallback = VLRTheme.colorScheme.primary,
       ) {
-        Column(
+        CardView(
           modifier
-            .fillMaxSize()
-            .padding(Local8DPPadding.current),
-          verticalArrangement = Arrangement.Center,
-          horizontalAlignment = Alignment.CenterHorizontally
+            .width(width = 150.dp)
+            .aspectRatio(1f)
+            .clickable { onClick(it.id) },
         ) {
-          Text(
-            text = it.team,
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = VLRTheme.typography.titleSmall,
-            color = VLRTheme.colorScheme.primary,
-          )
-          GlideImage(
-            imageModel = { it.img },
-            imageOptions =
-            ImageOptions(
-              alignment = Alignment.Center,
-            ),
-            modifier = modifier
-              .size(80.dp)
-              .aspectRatio(1f)
-              .padding(Local4DPPadding.current),
-            component = imageComponent
-          )
-          Text(
-            text = it.seed ?: "",
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = VLRTheme.typography.labelMedium
-          )
+          Column(
+            modifier
+              .fillMaxSize()
+              .padding(Local8DPPadding.current),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+          ) {
+            Text(
+              text = it.team,
+              textAlign = TextAlign.Center,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
+              style = VLRTheme.typography.titleSmall,
+              color = VLRTheme.colorScheme.primary,
+            )
+            AsyncImage(
+              model = it.img,
+              modifier = modifier
+                .size(80.dp)
+                .aspectRatio(1f)
+                .padding(Local4DPPadding.current),
+              contentDescription = it.team,
+            )
+            Text(
+              text = it.seed ?: "",
+              textAlign = TextAlign.Center,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
+              style = VLRTheme.typography.labelMedium
+            )
+          }
         }
       }
     }

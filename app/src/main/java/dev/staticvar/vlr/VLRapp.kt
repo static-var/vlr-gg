@@ -3,12 +3,14 @@ package dev.staticvar.vlr
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.os.Build
 import androidx.core.content.getSystemService
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.google.firebase.FirebaseApp
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.HiltAndroidApp
 import dev.staticvar.vlr.utils.Logger
@@ -18,12 +20,10 @@ import dev.staticvar.vlr.utils.queueWorker
 import dev.staticvar.vlr.workers.queueObsoleteRecord
 import javax.inject.Inject
 
-
 @HiltAndroidApp
-class VLRapp() : Application(), Configuration.Provider {
+class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
 
-  @Inject
-  lateinit var workerFactory: HiltWorkerFactory
+  @Inject lateinit var workerFactory: HiltWorkerFactory
 
   override fun onCreate() {
     super.onCreate()
@@ -50,7 +50,7 @@ class VLRapp() : Application(), Configuration.Provider {
         NotificationChannel(
           getString(R.string.notification_channel_id),
           getString(R.string.notification_channel_title),
-          NotificationManager.IMPORTANCE_HIGH
+          NotificationManager.IMPORTANCE_HIGH,
         )
       getSystemService<NotificationManager>()?.createNotificationChannel(channel)
     }
@@ -58,4 +58,17 @@ class VLRapp() : Application(), Configuration.Provider {
 
   override val workManagerConfiguration: Configuration
     get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
+
+  override fun newImageLoader(): ImageLoader {
+    return ImageLoader.Builder(this)
+      .crossfade(true)
+      .memoryCache { MemoryCache.Builder(this).maxSizePercent(0.25).build() }
+      .diskCache {
+        DiskCache.Builder()
+          .directory(this.cacheDir.resolve("image_cache"))
+          .maxSizePercent(0.02)
+          .build()
+      }
+      .build()
+  }
 }
