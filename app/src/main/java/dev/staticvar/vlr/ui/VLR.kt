@@ -15,9 +15,7 @@ import androidx.compose.material.icons.outlined.Leaderboard
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.adaptive.navigationsuite.ExperimentalMaterial3AdaptiveNavigationSuiteApi
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -38,9 +36,6 @@ import dev.staticvar.vlr.ui.helper.NavItem
 import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.theme.VLRTheme
 
-@OptIn(
-  ExperimentalMaterial3AdaptiveNavigationSuiteApi::class, ExperimentalMaterial3AdaptiveApi::class
-)
 @Composable
 fun VLR() {
   val navController = rememberNavController()
@@ -68,7 +63,7 @@ fun VLR() {
         Icons.AutoMirrored.Outlined.Feed,
         onClick = {
           if (currentNav == Destination.NewsOverview.route) resetScroll() else action.goNews()
-        }
+        },
       ),
       NavItem(
         title = stringResource(id = R.string.matches),
@@ -78,7 +73,7 @@ fun VLR() {
         onClick = {
           if (currentNav == Destination.MatchOverview.route) resetScroll()
           else action.matchOverview().also { println("Match overview navigation") }
-        }
+        },
       ),
       NavItem(
         title = stringResource(id = R.string.events),
@@ -87,7 +82,7 @@ fun VLR() {
         Icons.Outlined.EmojiEvents,
         onClick = {
           if (currentNav == Destination.EventOverview.route) resetScroll() else action.goEvents()
-        }
+        },
       ),
       NavItem(
         title = stringResource(id = R.string.rank),
@@ -96,25 +91,22 @@ fun VLR() {
         Icons.Outlined.Leaderboard,
         onClick = {
           // This causes crashes in certain scenarios.
-/*          if (currentNav == Destination.Rank.route)
+          /*          if (currentNav == Destination.Rank.route)
             resetScroll()
           else */
-          if (currentNav != Destination.Rank.route)
-            action.goRanks()
-        }
+          if (currentNav != Destination.Rank.route) action.goRanks()
+        },
       ),
       NavItem(
         title = stringResource(id = R.string.about),
         Destination.About.route,
         Icons.Filled.Info,
         Icons.Outlined.Info,
-        onClick = { if (currentNav != Destination.About.route) action.goAbout() }
+        onClick = { if (currentNav != Destination.About.route) action.goAbout() },
       ),
     )
 
-  var hideNav by remember {
-    mutableStateOf(false)
-  }
+  var hideNav by remember { mutableStateOf(false) }
 
   val navSuiteType =
     NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
@@ -129,31 +121,23 @@ fun VLR() {
               Icon(
                 imageVector = if (it) navItem.selectedIcon else navItem.unselectedIcon,
                 contentDescription = navItem.title,
-                tint = VLRTheme.colorScheme.onPrimaryContainer
+                tint = VLRTheme.colorScheme.onPrimaryContainer,
               )
             }
           },
-          onClick = {
-              navItem.onClick()
-          },
-          label = { Text(text = navItem.title) }
+          onClick = { navItem.onClick() },
+          label = { Text(text = navItem.title) },
         )
       }
-
     },
-    layoutType = if (!hideNav || navSuiteType != NavigationSuiteType.NavigationBar) navSuiteType else NavigationSuiteType.None
+    layoutType =
+      if (!hideNav || navSuiteType != NavigationSuiteType.NavigationBar) navSuiteType
+      else NavigationSuiteType.None,
   ) {
-    Box(
-      modifier =
-      Modifier
-        .semantics { testTagsAsResourceId = true }
-    ) {
-      VlrNavHost(
-        navController = navController,
-        paneState = { nav ->
-          hideNav = nav
-        }
-      ) { currentNav = it }
+    Box(modifier = Modifier.semantics { testTagsAsResourceId = true }) {
+      VlrNavHost(navController = navController, paneState = { nav -> hideNav = nav }) {
+        currentNav = it
+      }
     }
   }
 }
