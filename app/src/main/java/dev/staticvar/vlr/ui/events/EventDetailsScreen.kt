@@ -43,6 +43,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -50,7 +51,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -61,10 +61,6 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
-import com.skydoves.landscapist.ImageOptions
-import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
-import com.skydoves.landscapist.components.rememberImageComponent
-import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.ui.Local16DPPadding
@@ -99,12 +95,12 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
   val modifier = Modifier
 
   val details by
-  remember(id) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
+    remember(id) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh, id) { viewModel.refreshEventDetails(id) }
-    .collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh, id) { viewModel.refreshEventDetails(id) }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
@@ -112,18 +108,17 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
 
   val trackerString = id.toEventTopic()
   val isTracked by
-  remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
+    remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
 
-  val progressBarVisibility by remember(updateState.get(), swipeRefresh.progress) {
-    mutableStateOf(
-      updateState.get() == true || swipeRefresh.progress != 0f
-    )
-  }
+  val progressBarVisibility by
+    remember(updateState.get(), swipeRefresh.progress) {
+      mutableStateOf(updateState.get() == true || swipeRefresh.progress != 0f)
+    }
 
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     details
       .onPass {
@@ -155,20 +150,12 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
               )
             }
           }
-          Box(
-            modifier = Modifier
-              .pullRefresh(swipeRefresh)
-              .fillMaxSize(),
-          ) {
+          Box(modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize()) {
             LazyColumn(
-              modifier = modifier
-                .fillMaxSize()
-                .testTag("eventDetails:root"),
-              state = lazyListState
+              modifier = modifier.fillMaxSize().testTag("eventDetails:root"),
+              state = lazyListState,
             ) {
-              item {
-                StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
-              }
+              item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
@@ -176,7 +163,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
               item {
                 TournamentDetailsHeader(
                   tournamentDetails = tournamentDetails,
-                  isTracked = isTracked ?: false
+                  isTracked = isTracked ?: false,
                 ) {
                   when (isTracked) {
                     true -> {
@@ -198,19 +185,17 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                   EventDetailsTeamSlider(
                     modifier = modifier,
                     list = StableHolder(tournamentDetails.participants),
-                    onClick = { viewModel.action.team(it) }
+                    onClick = { viewModel.action.team(it) },
                   )
                 }
               else
                 item {
                   Text(
                     text = stringResource(id = R.string.no_team_info_found),
-                    modifier = modifier
-                      .fillMaxWidth()
-                      .padding(Local16DP_8DPPadding.current),
+                    modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
                     textAlign = TextAlign.Center,
                     style = VLRTheme.typography.titleMedium,
-                    color = VLRTheme.colorScheme.primary
+                    color = VLRTheme.colorScheme.primary,
                   )
                 }
               if (group.isNotEmpty())
@@ -222,14 +207,14 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                       StableHolder(group),
                       tabSelection,
                       onFilterChange = { selectedIndex = it },
-                      onTabChange = { tabSelection = it }
+                      onTabChange = { tabSelection = it },
                     )
                   }
                   items(games, key = { game -> game.id }) { item ->
                     TournamentMatchOverview(
                       modifier = modifier,
                       game = item,
-                      onClick = { viewModel.action.match(it) }
+                      onClick = { viewModel.action.match(it) },
                     )
                   }
                 }
@@ -237,12 +222,10 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 item {
                   Text(
                     text = stringResource(id = R.string.no_match_info_found),
-                    modifier = modifier
-                      .fillMaxWidth()
-                      .padding(Local16DP_8DPPadding.current),
+                    modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
                     textAlign = TextAlign.Center,
                     style = VLRTheme.typography.titleMedium,
-                    color = VLRTheme.colorScheme.primary
+                    color = VLRTheme.colorScheme.primary,
                   )
                 }
               item { NavigationBarSpacer(navigationBarType = NavigationBarType.TRANSPARENT) }
@@ -252,8 +235,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
           ?: kotlin.run {
             updateState.getError()?.let {
               ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
-            }
-              ?: LinearProgressIndicator(modifier.animateContentSize())
+            } ?: LinearProgressIndicator(modifier.animateContentSize())
           }
       }
       .onFail { Text(text = message()) }
@@ -272,53 +254,35 @@ fun TournamentDetailsHeader(
   val notificationPermission =
     rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
-  val imageComponent = rememberImageComponent {
-    add(CircularRevealPlugin())
-  }
-
   CardView(modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
-      Row(
-        modifier
-          .fillMaxWidth()
-          .padding(Local16DPPadding.current)
-      ) {
+      Row(modifier.fillMaxWidth().padding(Local16DPPadding.current)) {
         Spacer(modifier = modifier.weight(1f))
-        GlideImage(
-          imageModel = { tournamentDetails.img },
-          imageOptions =
-          ImageOptions(
-            contentScale = ContentScale.FillBounds,
-            alignment = Alignment.CenterEnd,
-            alpha = 0.3f,
-            requestSize = IntSize(200, 200)
-          ),
-          component = imageComponent,
+        AsyncImage(
+          model = tournamentDetails.img,
+          modifier = modifier.size(96.dp).aspectRatio(1f).alpha(0.4f),
+          contentDescription = tournamentDetails.title,
+          contentScale = ContentScale.FillBounds,
+          alignment = Alignment.CenterEnd,
         )
       }
-      Column(
-        modifier
-          .fillMaxWidth()
-          .padding(Local8DPPadding.current)
-      ) {
+      Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
         Text(
           text = tournamentDetails.title,
           style = VLRTheme.typography.headlineSmall,
           modifier = modifier.padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
-          color = VLRTheme.colorScheme.primary
+          color = VLRTheme.colorScheme.primary,
         )
         if (tournamentDetails.subtitle.isNotBlank())
           Text(
             text = tournamentDetails.subtitle,
-            modifier = modifier.padding(Local4DPPadding.current)
+            modifier = modifier.padding(Local4DPPadding.current),
           )
         Row(
-          modifier
-            .fillMaxWidth()
-            .padding(Local4DP_2DPPadding.current),
-          verticalAlignment = Alignment.CenterVertically
+          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          verticalAlignment = Alignment.CenterVertically,
         ) {
           Icon(
             Icons.Outlined.DateRange,
@@ -328,10 +292,8 @@ fun TournamentDetailsHeader(
           Text(text = tournamentDetails.dates, modifier = Modifier.padding(horizontal = 4.dp))
         }
         Row(
-          modifier
-            .fillMaxWidth()
-            .padding(Local4DP_2DPPadding.current),
-          verticalAlignment = Alignment.CenterVertically
+          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          verticalAlignment = Alignment.CenterVertically,
         ) {
           Icon(
             Icons.Outlined.Paid,
@@ -341,10 +303,8 @@ fun TournamentDetailsHeader(
           Text(text = tournamentDetails.prize, modifier = Modifier.padding(horizontal = 4.dp))
         }
         Row(
-          modifier
-            .fillMaxWidth()
-            .padding(Local4DP_2DPPadding.current),
-          verticalAlignment = Alignment.CenterVertically
+          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          verticalAlignment = Alignment.CenterVertically,
         ) {
           Icon(
             Icons.Outlined.LocationOn,
@@ -353,7 +313,7 @@ fun TournamentDetailsHeader(
           )
           Text(
             text = tournamentDetails.location.uppercase(),
-            modifier = Modifier.padding(horizontal = 4.dp)
+            modifier = Modifier.padding(horizontal = 4.dp),
           )
         }
         Button(
@@ -361,7 +321,7 @@ fun TournamentDetailsHeader(
             (Constants.VLR_BASE + "event/" + tournamentDetails.id).openAsCustomTab(context)
           },
           modifier = modifier.fillMaxWidth(),
-          shape = VLRTheme.shapes.small
+          shape = VLRTheme.shapes.small,
         ) {
           Text(text = stringResource(id = R.string.view_at_vlr))
         }
@@ -370,7 +330,7 @@ fun TournamentDetailsHeader(
 
         if (
           tournamentDetails.status == TournamentDetails.Status.ONGOING ||
-          tournamentDetails.status == TournamentDetails.Status.UPCOMING
+            tournamentDetails.status == TournamentDetails.Status.UPCOMING
         )
           Button(
             onClick = {
@@ -385,7 +345,7 @@ fun TournamentDetailsHeader(
               } else notificationPermission.launchPermissionRequest()
             },
             modifier = modifier.fillMaxWidth(),
-            shape = VLRTheme.shapes.small
+            shape = VLRTheme.shapes.small,
           ) {
             if (processingTopicSubscription) {
               LinearProgressIndicator()
@@ -395,6 +355,7 @@ fun TournamentDetailsHeader(
       }
     }
   }
+  //  }
 }
 
 @Composable
@@ -407,35 +368,21 @@ fun EventDetailsTeamSlider(
   val lazyListState = rememberLazyListState()
   Text(
     text = stringResource(R.string.teams),
-    modifier = modifier
-      .padding(Local16DPPadding.current)
-      .testTag("eventDetails:teams"),
+    modifier = modifier.padding(Local16DPPadding.current).testTag("eventDetails:teams"),
     style = VLRTheme.typography.titleMedium,
-    color = VLRTheme.colorScheme.primary
+    color = VLRTheme.colorScheme.primary,
   )
   LazyRow(
-    modifier = modifier
-      .fillMaxWidth()
-      .testTag("eventDetails:teamList"),
-    state = lazyListState
+    modifier = modifier.fillMaxWidth().testTag("eventDetails:teamList"),
+    state = lazyListState,
   ) {
     items(list.item, key = { list -> list.id }) {
-      DynamicTheme(
-        model = it.img,
-        fallback = VLRTheme.colorScheme.primary,
-      ) {
-        CardView(
-          modifier
-            .width(width = 150.dp)
-            .aspectRatio(1f)
-            .clickable { onClick(it.id) },
-        ) {
+      DynamicTheme(model = it.img, fallback = VLRTheme.colorScheme.primary) {
+        CardView(modifier.width(width = 150.dp).aspectRatio(1f).clickable { onClick(it.id) }) {
           Column(
-            modifier
-              .fillMaxSize()
-              .padding(Local8DPPadding.current),
+            modifier.fillMaxSize().padding(Local8DPPadding.current),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
           ) {
             Text(
               text = it.team,
@@ -447,10 +394,7 @@ fun EventDetailsTeamSlider(
             )
             AsyncImage(
               model = it.img,
-              modifier = modifier
-                .size(80.dp)
-                .aspectRatio(1f)
-                .padding(Local4DPPadding.current),
+              modifier = modifier.size(80.dp).aspectRatio(1f).padding(Local4DPPadding.current),
               contentDescription = it.team,
             )
             Text(
@@ -458,7 +402,7 @@ fun EventDetailsTeamSlider(
               textAlign = TextAlign.Center,
               maxLines = 1,
               overflow = TextOverflow.Ellipsis,
-              style = VLRTheme.typography.labelMedium
+              style = VLRTheme.typography.labelMedium,
             )
           }
         }
@@ -480,49 +424,33 @@ fun EventMatchGroups(
     listOf(
       stringResource(R.string.status),
       stringResource(R.string.rounds),
-      stringResource(R.string.stage)
+      stringResource(R.string.stage),
     )
 
-  Column(
-    modifier
-      .fillMaxWidth()
-      .padding(Local8DPPadding.current)
-  ) {
+  Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
     Text(
       text = stringResource(id = R.string.games),
       modifier = modifier.padding(Local8DPPadding.current),
       style = VLRTheme.typography.titleMedium,
-      color = VLRTheme.colorScheme.primary
+      color = VLRTheme.colorScheme.primary,
     )
 
-    FilterChips(
-      modifier,
-      filterOptions,
-      selectedIndex,
-    ) {
-      onFilterChange(it)
-    }
+    FilterChips(modifier, filterOptions, selectedIndex) { onFilterChange(it) }
 
     ScrollableTabRow(
       selectedTabIndex = tabSelection,
       containerColor = VLRTheme.colorScheme.primaryContainer,
       modifier =
-      modifier
-        .fillMaxWidth()
-        .padding(Local8DPPadding.current)
-        .clip(RoundedCornerShape(16.dp)),
+        modifier.fillMaxWidth().padding(Local8DPPadding.current).clip(RoundedCornerShape(16.dp)),
       indicator = { indicators ->
         if (indicators.isNotEmpty()) VLRTabIndicator(indicators, tabSelection)
-      }
+      },
     ) {
       group.item.keys.forEachIndexed { index, s ->
-        Tab(
-          selected = tabSelection == index,
-          onClick = { onTabChange(index) },
-        ) {
+        Tab(selected = tabSelection == index, onClick = { onTabChange(index) }) {
           Text(
             text = s.replaceFirstChar { it.uppercase() },
-            modifier = modifier.padding(Local16DPPadding.current)
+            modifier = modifier.padding(Local16DPPadding.current),
           )
         }
       }
@@ -538,18 +466,16 @@ fun FilterChips(
   onFilterChange: (Int) -> Unit,
 ) {
   Row(
-    modifier
-      .fillMaxSize()
-      .animateContentSize(),
+    modifier.fillMaxSize().animateContentSize(),
     horizontalArrangement = Arrangement.Center,
-    verticalAlignment = Alignment.CenterVertically
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     SingleChoiceSegmentedButtonRow {
       filterOptions.forEachIndexed { index, filter ->
         SegmentedButton(
           shape = SegmentedButtonDefaults.itemShape(index = index, count = filterOptions.size),
           onClick = { onFilterChange(index) },
-          selected = index == selectedIndex
+          selected = index == selectedIndex,
         ) {
           Text(filter)
         }
@@ -564,61 +490,57 @@ fun TournamentMatchOverview(
   game: TournamentDetails.Games,
   onClick: (String) -> Unit,
 ) {
-  CardView(
-    modifier = modifier.clickable { onClick(game.id) },
-  ) {
+  CardView(modifier = modifier.clickable { onClick(game.id) }) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(
         text = game.status.replaceFirstChar { it.uppercase() },
         modifier = modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
-        style = VLRTheme.typography.bodyMedium
+        style = VLRTheme.typography.bodyMedium,
       )
 
       Row(
         modifier = modifier.padding(Local4DPPadding.current),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
           text = game.teams[0].name,
           style = VLRTheme.typography.titleMedium,
           modifier = modifier.weight(1f),
           maxLines = 1,
-          overflow = TextOverflow.Ellipsis
+          overflow = TextOverflow.Ellipsis,
         )
         Text(
           text = game.teams[0].score?.toString() ?: "-",
           style = VLRTheme.typography.titleMedium,
           maxLines = 1,
-          overflow = TextOverflow.Ellipsis
+          overflow = TextOverflow.Ellipsis,
         )
       }
       Row(
         modifier = modifier.padding(Local4DPPadding.current),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
           text = game.teams[1].name,
           style = VLRTheme.typography.titleMedium,
           modifier = modifier.weight(1f),
           maxLines = 1,
-          overflow = TextOverflow.Ellipsis
+          overflow = TextOverflow.Ellipsis,
         )
         Text(
           text = game.teams[1].score?.toString() ?: "-",
           style = VLRTheme.typography.titleMedium,
           maxLines = 1,
-          overflow = TextOverflow.Ellipsis
+          overflow = TextOverflow.Ellipsis,
         )
       }
       if (!game.time.equals("TBD", ignoreCase = true))
         Text(
           text = "${game.time} ${game.date}".patternDateTimeToReadable,
-          modifier = modifier
-            .fillMaxWidth()
-            .padding(Local8DPPadding.current),
+          modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
           textAlign = TextAlign.Center,
-          style = VLRTheme.typography.labelMedium
+          style = VLRTheme.typography.labelMedium,
         )
     }
   }
