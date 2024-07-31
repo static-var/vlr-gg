@@ -6,14 +6,14 @@ sentry = "4.6.0"
 sentry-sdk = "7.9.0"
 detekt = "1.23.6"
 gradle = "8.5.1"
-hilt = '2.50'
-hiltAndroidGradlePlugin = "2.50"
+hilt = '2.51.1'
+hiltAndroidGradlePlugin = "2.51.1"
 room = "2.6.1"
 firebase = "33.1.2"
 accompanist = "0.35.0-alpha"
 coroutines = "1.8.1"
 ktor = "2.3.12"
-ksp = "2.0.0-1.0.23"
+ksp = "2.0.0-1.0.24"
 spotless = "6.25.0"
 hiltCompiler = "1.2.0"
 collections = "1.4.2"
@@ -118,7 +118,7 @@ truth = { module = "com.google.truth:truth", version = "1.1.5" }
 truth-java8 = { module = "com.google.truth.extensions:truth-java8-extension", version = "1.1.5" }
 
 mockk = { module = "io.mockk:mockk", version = "1.13.12" }
-turbine = { module = "app.cash.turbine:turbine", version = "1.0.0" }
+turbine = { module = "app.cash.turbine:turbine", version = "1.1.0" }
 
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 ktor-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
