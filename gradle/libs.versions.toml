@@ -32,6 +32,7 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 compose-bom-alpha = "dev.chrisbanes.compose:compose-bom:2024.07.00-alpha02"
 compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 compose-text = { module = "androidx.compose.ui:ui-text-google-fonts" }
 compose-material = { module = "androidx.compose.material:material" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
@@ -86,6 +87,7 @@ logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", ver
 
 landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version = "2.3.6" }
 landscapist-animation = { module = "com.github.skydoves:landscapist-animation", version = "2.3.6" }
+coil = { module = "io.coil-kt:coil-compose", version = "2.7.0" }
 
 haze = { module = "dev.chrisbanes.haze:haze", version = "0.7.3" }
 haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "0.7.3" }
@@ -104,6 +106,7 @@ jsoup = { module = "org.jsoup:jsoup", version = "1.17.2" }
 immutable-collection = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.7" }
 core-desugar = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.4" }
 androidx-collection = { module = "androidx.collection:collection", version.ref = "collections" }
+material-kolor = { module = "com.materialkolor:material-kolor", version = "1.7.0" }
 
 sentry-bom = { module = "io.sentry:sentry-bom", version.ref = "sentry-sdk" }
 sentry = { module = "io.sentry:sentry-android" }
@@ -138,7 +141,7 @@ sentry-gradle = { module = "io.sentry.android.gradle:io.sentry.android.gradle.gr
 
 [bundles]
 base = ["core", "app-compat", "activity-compose"]
-compose = ["compose-ui", "compose-text", "compose-material", "compose-ui-tooling", "compose-runtime", "m3", "compose-navigation"]
+compose = ["compose-ui", "compose-ui-graphics", "compose-text", "compose-material", "compose-ui-tooling", "compose-runtime", "m3", "compose-navigation"]
 lifecycle = ["lifecycle-runtime", "lifecycle-viewmodel"]
 accompanist = ["accompanist-permissions"]
 coroutines = ["coroutines-core", "coroutines-android", "coroutines-play-services"]

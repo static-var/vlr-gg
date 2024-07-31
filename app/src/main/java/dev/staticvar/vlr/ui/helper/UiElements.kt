@@ -3,7 +3,6 @@ package dev.staticvar.vlr.ui.helper
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,18 +13,6 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-
-val cardAlpha: Float
-  @Composable
-  get() {
-    return if (isSystemInDarkTheme()) 0.3f else 0.6f
-  }
-
-val emphasisCardAlpha: Float
-  @Composable
-  get() {
-    return if (isSystemInDarkTheme()) 0.6f else 0.6f
-  }
 
 @Composable
 fun CardView(
@@ -38,12 +25,13 @@ fun CardView(
       Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
         .animateContentSize(
           animationSpec =
-            spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)
+            spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMedium)
         )
         .then(modifier),
     shape = RoundedCornerShape(8.dp),
     colors = colors,
-    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp, pressedElevation = 12.dp),
+    elevation =
+      CardDefaults.elevatedCardElevation(defaultElevation = 8.dp, pressedElevation = 12.dp),
   ) {
     content(this)
   }
@@ -61,7 +49,8 @@ fun EmphasisCardView(modifier: Modifier = Modifier, content: @Composable ColumnS
         )
         .then(modifier),
     shape = RoundedCornerShape(8.dp),
-    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 12.dp, pressedElevation = 16.dp),
+    elevation =
+      CardDefaults.elevatedCardElevation(defaultElevation = 12.dp, pressedElevation = 16.dp),
   ) {
     content(this)
   }
