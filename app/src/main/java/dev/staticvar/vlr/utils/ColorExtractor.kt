@@ -2,9 +2,7 @@ package dev.staticvar.vlr.utils
 
 import android.content.Context
 import androidx.collection.lruCache
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -19,8 +17,9 @@ import coil.size.SizeResolver
 import com.materialkolor.DynamicMaterialTheme
 import com.materialkolor.PaletteStyle
 import com.materialkolor.ktx.harmonize
-import com.materialkolor.ktx.themeColors
+import com.materialkolor.ktx.themeColor
 import dev.staticvar.vlr.ui.LocalColorExtractor
+import dev.staticvar.vlr.ui.theme.VLRTheme
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -55,8 +54,8 @@ class ColorExtractor(private val context: Context) {
         context.imageLoader.enqueue(request)
       }
 
-    val suitableColors = bitmap.themeColors()
-    return suitableColors.first().harmonize(fallback).also { cache.put(model, it) }
+    val suitableColors = bitmap.themeColor(fallback)
+    return suitableColors.harmonize(fallback).also { cache.put(model, it) }
   }
 
   private companion object {
@@ -67,9 +66,9 @@ class ColorExtractor(private val context: Context) {
 @Composable
 fun DynamicTheme(
   model: String,
-  fallback: Color = MaterialTheme.colorScheme.primary,
+  fallback: Color = VLRTheme.colorScheme.primary,
   useDarkTheme: Boolean = isSystemInDarkTheme(),
-  style: PaletteStyle = PaletteStyle.TonalSpot,
+  style: PaletteStyle = PaletteStyle.Content,
   content: @Composable () -> Unit,
 ) {
   val colorExtractor = LocalColorExtractor.current
@@ -79,14 +78,26 @@ fun DynamicTheme(
       val result = cancellableRunCatching { colorExtractor.calculatePrimaryColor(model, fallback) }
       value = result.getOrNull()
     }
-
-  val animateColor by animateColorAsState(color ?: fallback)
-
   DynamicMaterialTheme(
-    seedColor = animateColor,
+    seedColor = color ?: fallback,
     useDarkTheme = useDarkTheme,
-    animate = false,
+    animate = true,
     style = style,
     content = content,
   )
+}
+
+@Composable
+fun rememberDynamicColor(
+  model: String,
+  fallback: Color = VLRTheme.colorScheme.primary,
+): Color {
+  val colorExtractor = LocalColorExtractor.current
+  val color by
+    produceState<Color?>(initialValue = fallback, model, colorExtractor) {
+      val result = cancellableRunCatching { colorExtractor.calculatePrimaryColor(model, fallback) }
+      value = result.getOrNull()
+    }
+
+  return color ?: fallback
 }
