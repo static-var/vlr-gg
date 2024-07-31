@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -65,14 +66,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
-import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
 import com.skydoves.landscapist.components.rememberImageComponent
-import com.skydoves.landscapist.glide.GlideImage
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.ui.Local16DPPadding
@@ -86,6 +86,7 @@ import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
+import dev.staticvar.vlr.utils.DynamicTheme
 import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.Waiting
 import dev.staticvar.vlr.utils.onFail
@@ -256,7 +257,7 @@ fun RanksPreviewContainer(
       VlrScrollableTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
 
       HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition ->
-        val lazyListState = listOfLazyListState[tabPosition]
+        val lazyListState = listOfLazyListState.getOrNull(tabPosition) ?: rememberLazyListState()
         lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
         val topTeams = teamMap[tabs[tabPosition]]?.take(25) ?: listOf()
         if (topTeams.isEmpty()) NoTeamsUI()
@@ -333,100 +334,106 @@ fun TeamRankPreview(
 ) {
   val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
 
-  CardView(
-    modifier = modifier.clickable { action(team.id) }.height(120.dp),
-    colors =
-      if (selectedItem == team.id) {
-        CardDefaults.elevatedCardColors(
-          containerColor = VLRTheme.colorScheme.secondaryContainer,
-          contentColor = VLRTheme.colorScheme.onSecondaryContainer,
-        )
-      } else {
-        CardDefaults.elevatedCardColors()
-      },
+  DynamicTheme(
+    model = team.img,
+    fallback = VLRTheme.colorScheme.primary,
+    useDarkTheme = isSystemInDarkTheme(),
   ) {
-    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-      Column(modifier = modifier.padding(Local8DPPadding.current)) {
-        val teamRankAnnotatedString = buildAnnotatedString {
-          pushStyle(
-            SpanStyle(
-              VLRTheme.colorScheme.onSurface,
-              fontSize = VLRTheme.typography.headlineMedium.fontSize,
+    CardView(
+      modifier = modifier.clickable { action(team.id) }.height(120.dp),
+      colors =
+        if (selectedItem == team.id) {
+          CardDefaults.elevatedCardColors(
+            containerColor = VLRTheme.colorScheme.secondaryContainer,
+            contentColor = VLRTheme.colorScheme.onSecondaryContainer,
+          )
+        } else {
+          CardDefaults.elevatedCardColors()
+        },
+    ) {
+      BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        Column(modifier = modifier.padding(Local8DPPadding.current)) {
+          val teamRankAnnotatedString = buildAnnotatedString {
+            pushStyle(
+              SpanStyle(
+                VLRTheme.colorScheme.onSurface,
+                fontSize = VLRTheme.typography.headlineMedium.fontSize,
+              )
             )
+            append("#${team.rank} ")
+            pop()
+            pushStyle(
+              SpanStyle(VLRTheme.colorScheme.primary, VLRTheme.typography.titleMedium.fontSize)
+            )
+            append(team.name)
+            pop()
+          }
+
+          Text(
+            text = teamRankAnnotatedString,
+            style = VLRTheme.typography.titleMedium,
+            modifier = modifier.padding(start = 4.dp, end = 120.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = VLRTheme.colorScheme.primary,
           )
-          append("#${team.rank} ")
-          pop()
-          pushStyle(
-            SpanStyle(VLRTheme.colorScheme.primary, VLRTheme.typography.titleMedium.fontSize)
+          val annotatedLocationString = buildAnnotatedString {
+            appendInlineContent(id = "location")
+            append(team.country.uppercase())
+          }
+          val inlineLocationContentMap =
+            mapOf(
+              "location" to
+                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                  Icon(
+                    imageVector = Icons.Outlined.LocationOn,
+                    modifier = modifier.size(16.dp),
+                    contentDescription = "",
+                  )
+                }
+            )
+          val annotatedDateString = buildAnnotatedString {
+            appendInlineContent(id = "points")
+            append((team.points ?: 0).toString())
+          }
+          val inlineDateContentMap =
+            mapOf(
+              "points" to
+                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                  Icon(
+                    imageVector = Icons.Outlined.Insights,
+                    modifier = modifier.size(16.dp),
+                    contentDescription = "",
+                  )
+                }
+            )
+          Text(
+            text = annotatedLocationString,
+            style = VLRTheme.typography.bodyMedium,
+            inlineContent = inlineLocationContentMap,
+            modifier = modifier.padding(Local4DPPadding.current),
+            textAlign = TextAlign.Start,
           )
-          append(team.name)
-          pop()
+          Text(
+            text = annotatedDateString,
+            inlineContent = inlineDateContentMap,
+            modifier = modifier.padding(Local4DPPadding.current),
+            textAlign = TextAlign.Start,
+            style = VLRTheme.typography.bodyMedium,
+          )
         }
 
-        Text(
-          text = teamRankAnnotatedString,
-          style = VLRTheme.typography.titleMedium,
-          modifier = modifier.padding(start = 4.dp, end = 120.dp),
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-          color = VLRTheme.colorScheme.primary,
-        )
-        val annotatedLocationString = buildAnnotatedString {
-          appendInlineContent(id = "location")
-          append(team.country.uppercase())
-        }
-        val inlineLocationContentMap =
-          mapOf(
-            "location" to
-              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                Icon(
-                  imageVector = Icons.Outlined.LocationOn,
-                  modifier = modifier.size(16.dp),
-                  contentDescription = "",
-                )
-              }
-          )
-        val annotatedDateString = buildAnnotatedString {
-          appendInlineContent(id = "points")
-          append((team.points ?: 0).toString())
-        }
-        val inlineDateContentMap =
-          mapOf(
-            "points" to
-              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                Icon(
-                  imageVector = Icons.Outlined.Insights,
-                  modifier = modifier.size(16.dp),
-                  contentDescription = "",
-                )
-              }
-          )
-        Text(
-          text = annotatedLocationString,
-          style = VLRTheme.typography.bodyMedium,
-          inlineContent = inlineLocationContentMap,
-          modifier = modifier.padding(Local4DPPadding.current),
-          textAlign = TextAlign.Start,
-        )
-        Text(
-          text = annotatedDateString,
-          inlineContent = inlineDateContentMap,
-          modifier = modifier.padding(Local4DPPadding.current),
-          textAlign = TextAlign.Start,
-          style = VLRTheme.typography.bodyMedium,
+        AsyncImage(
+          model = team.img,
+          contentDescription = "",
+          contentScale = ContentScale.Fit,
+          modifier =
+            modifier
+              .align(Alignment.CenterEnd)
+              .padding(horizontal = 24.dp, vertical = 8.dp)
+              .size(120.dp),
         )
       }
-      GlideImage(
-        imageModel = { team.img },
-        modifier =
-          modifier
-            .align(Alignment.CenterEnd)
-            .padding(horizontal = 24.dp, vertical = 8.dp)
-            .size(120.dp),
-        imageOptions =
-          ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
-        component = imageComponent,
-      )
     }
   }
 }

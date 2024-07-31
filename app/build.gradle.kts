@@ -166,6 +166,9 @@ dependencies {
   implementation(libs.immutable.collection)
   implementation(libs.androidx.collection)
 
+  implementation(libs.material.kolor)
+  implementation(libs.coil)
+
   // Coroutines
   implementation(libs.bundles.coroutines)
 
