@@ -235,7 +235,7 @@ fun MatchOverallAndEventOverview(
           Modifier.padding(start = 16.dp, top = 8.dp, bottom = 4.dp, end = 8.dp).weight(1f),
         id = detailData.teams[0].id ?: "",
         teamName = detailData.teams[0].name,
-        score = detailData.teams[0].score ?: 0,
+        score = detailData.teams[0].score?.toString() ?: "-",
         imageUrl = detailData.teams[0].img,
         onClick = onClick,
       )
@@ -244,7 +244,7 @@ fun MatchOverallAndEventOverview(
           Modifier.padding(start = 8.dp, top = 8.dp, bottom = 4.dp, end = 16.dp).weight(1f),
         id = detailData.teams[1].id ?: "",
         teamName = detailData.teams[1].name,
-        score = detailData.teams[1].score ?: 0,
+        score = detailData.teams[1].score?.toString() ?: "-",
         imageUrl = detailData.teams[1].img,
         onClick = onClick,
       )
@@ -398,7 +398,7 @@ fun HeroScoreBox(
   modifier: Modifier = Modifier,
   id: String,
   teamName: String,
-  score: Int,
+  score: String,
   imageUrl: String,
   onClick: (String) -> Unit = {},
 ) {
@@ -426,7 +426,7 @@ fun HeroScoreBox(
             modifier = Modifier.padding(Local8DPPadding.current),
           )
           Text(
-            text = score.toString(),
+            text = score,
             style = VLRTheme.typography.displayMedium,
             color = VLRTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
@@ -451,7 +451,7 @@ private fun HeroScoreBoxPreview() {
               Modifier.padding(start = 16.dp, top = 8.dp, bottom = 4.dp, end = 8.dp).weight(1f),
             id = "123",
             teamName = "Team 1",
-            score = 16,
+            score = "16",
             imageUrl = "https://static.hltv.org/images/team/logo/6665",
           )
           HeroScoreBox(
@@ -459,7 +459,7 @@ private fun HeroScoreBoxPreview() {
               Modifier.padding(start = 8.dp, top = 8.dp, bottom = 4.dp, end = 16.dp).weight(1f),
             id = "123",
             teamName = "Team 2",
-            score = 16,
+            score = "16",
             imageUrl = "https://static.hltv.org/images/team/logo/6665",
           )
         }
