@@ -1,6 +1,8 @@
 @file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
 
 
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+import com.google.firebase.perf.plugin.FirebasePerfPlugin
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -30,8 +32,8 @@ android {
     applicationId = "dev.staticvar.vlr"
     minSdk = 23
     targetSdk = 34
-    versionCode = 60
-    versionName = "v0.5.3"
+    versionCode = 61
+    versionName = "v0.5.4"
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
@@ -71,17 +73,20 @@ android {
       matchingFallbacks += mutableListOf("release")
       isDebuggable = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
     }
     getByName("debug") {
       isMinifyEnabled = false
       applicationIdSuffix = ".debug"
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
     }
     getByName("release") {
       isShrinkResources = true
       isMinifyEnabled = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
+      configure<CrashlyticsExtension> { mappingFileUploadEnabled = true }
     }
   }
   compileOptions {
@@ -107,8 +112,6 @@ android {
           "-opt-in=androidx.compose.runtime.InternalComposeApi",
           "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
           "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
-          "-P",
-          "plugin:androidx.compose.compiler.plugins.kotlin:experimentalStrongSkipping=true"
         )
   }
   buildFeatures {
