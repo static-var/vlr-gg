@@ -419,7 +419,6 @@ fun HeroScoreBox(
           Text(
             text = teamName,
             style = VLRTheme.typography.titleSmall,
-            color = VLRTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -428,7 +427,6 @@ fun HeroScoreBox(
           Text(
             text = score,
             style = VLRTheme.typography.displayMedium,
-            color = VLRTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(Local8DPPadding.current),
           )

@@ -11,7 +11,9 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.perf.ktx.performance
 import dagger.hilt.android.HiltAndroidApp
 import dev.staticvar.vlr.utils.Logger
 import dev.staticvar.vlr.utils.e
@@ -35,6 +37,7 @@ class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
   }
 
   private fun firebaseInit() {
+    Firebase.performance.isPerformanceCollectionEnabled = !BuildConfig.DEBUG
     FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
       if (task.isSuccessful) {
         i { "FCM Token ${task.result}" }

@@ -76,7 +76,7 @@ hilt-nav = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hi
 hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltCompiler" }
 hilt-android-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompiler" }
 
-kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.6.3" }
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.7.1" }
 
 ktor-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
