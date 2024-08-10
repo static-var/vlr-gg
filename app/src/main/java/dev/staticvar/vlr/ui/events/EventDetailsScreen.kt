@@ -69,6 +69,8 @@ import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local4DP_2DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
+import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
@@ -91,6 +93,8 @@ import kotlinx.coroutines.tasks.await
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
+
+  LogEvent(event = AnalyticsEvent.EVENT_DETAIL, extra = mapOf("event_id" to id))
 
   val modifier = Modifier
 

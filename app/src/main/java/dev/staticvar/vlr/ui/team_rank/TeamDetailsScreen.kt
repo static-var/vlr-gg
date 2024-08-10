@@ -59,6 +59,8 @@ import dev.staticvar.vlr.ui.Local4DP_2DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.Local8DP_4DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
+import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.VlrTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
@@ -82,6 +84,8 @@ import kotlinx.coroutines.tasks.await
 
 @Composable
 fun TeamScreen(viewModel: VlrViewModel, id: String) {
+
+   LogEvent(event = AnalyticsEvent.TEAM_OVERVIEW, extra = mapOf("team_id" to id))
 
   val teamDetails by
   remember(id) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())

@@ -79,6 +79,8 @@ import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
+import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrScrollableTabRowForViewPager
@@ -162,6 +164,8 @@ fun RankScreen(
   pageSize: (Int) -> Unit,
   action: (String) -> Unit,
 ) {
+
+  LogEvent(event = AnalyticsEvent.RANKING_OVERVIEW)
 
   val allTeams by
     remember(viewModel) { viewModel.getRanks() }

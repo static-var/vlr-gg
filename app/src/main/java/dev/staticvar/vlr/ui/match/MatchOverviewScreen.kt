@@ -66,6 +66,8 @@ import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DP_4DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
+import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.DateChip
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.ScrollHelper
@@ -157,6 +159,8 @@ fun MatchOverview(
   listOfLazyListState: SnapshotStateList<LazyListState>,
   action: (String) -> Unit,
 ) {
+
+  LogEvent(event = AnalyticsEvent.MATCH_OVERVIEW)
 
   val allMatches by
     remember(viewModel) { viewModel.getMatches() }

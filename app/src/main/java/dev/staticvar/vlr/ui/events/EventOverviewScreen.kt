@@ -73,6 +73,8 @@ import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
+import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
@@ -158,6 +160,8 @@ fun EventScreen(
   listOfLazyListState: SnapshotStateList<LazyListState>,
   action: (String) -> Unit,
 ) {
+
+  LogEvent(event = AnalyticsEvent.EVENT_OVERVIEW)
 
   val allTournaments by
     remember(viewModel) { viewModel.getEvents() }
