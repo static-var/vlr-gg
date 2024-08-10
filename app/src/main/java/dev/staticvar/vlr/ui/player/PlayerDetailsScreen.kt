@@ -64,6 +64,8 @@ import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local4DP_2DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
+import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.match.details_ui.StatTitle
@@ -80,6 +82,8 @@ import dev.staticvar.vlr.utils.onWaiting
 
 @Composable
 fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
+
+  LogEvent(event = AnalyticsEvent.PLAYER_OVERVIEW, extra = mapOf("player_id" to id))
 
   val playerDetails by
   remember(viewModel) { viewModel.getPlayerDetails(id) }.collectAsState(initial = Waiting())

@@ -2,7 +2,6 @@
 
 
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
-import com.google.firebase.perf.plugin.FirebasePerfPlugin
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -32,8 +31,8 @@ android {
     applicationId = "dev.staticvar.vlr"
     minSdk = 23
     targetSdk = 34
-    versionCode = 61
-    versionName = "v0.5.4"
+    versionCode = 62
+    versionName = "v0.5.5"
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
@@ -131,10 +130,10 @@ android {
   baselineProfile {
     saveInSrc = true
     mergeIntoMain = true
+    dexLayoutOptimization = true
     from(projects.baselineprofile.dependencyProject)
   }
   experimentalProperties["android.experimental.art-profile-r8-rewriting"] = true
-  experimentalProperties["android.experimental.r8.dex-startup-optimization"] = true
 }
 
 dependencies {
@@ -148,6 +147,7 @@ dependencies {
   implementation(libs.firebase.perf)
   implementation(libs.firebase.messaging)
   implementation(libs.firebase.crashlytics)
+  implementation(libs.firebase.analytics)
 
 
   implementation(libs.bundles.lifecycle)

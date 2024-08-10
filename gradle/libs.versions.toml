@@ -1,11 +1,12 @@
 [versions]
 kotlin = '2.0.0'
+compose = "2024.08.00-alpha01"
 detektCompose = "0.3.11"
 benchmark = "1.2.4"
 sentry = "4.6.0"
 sentry-sdk = "7.9.0"
 detekt = "1.23.6"
-gradle = "8.5.1"
+gradle = "8.5.2"
 hilt = '2.51.1'
 hiltAndroidGradlePlugin = "2.51.1"
 room = "2.6.1"
@@ -16,7 +17,7 @@ ktor = "2.3.12"
 ksp = "2.0.0-1.0.24"
 spotless = "6.25.0"
 hiltCompiler = "1.2.0"
-collections = "1.4.2"
+collections = "1.4.3"
 
 
 [libraries]
@@ -30,7 +31,7 @@ room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
-compose-bom-alpha = "dev.chrisbanes.compose:compose-bom:2024.07.00-alpha02"
+compose-bom-alpha = { module = "dev.chrisbanes.compose:compose-bom", version.ref = "compose" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 compose-text = { module = "androidx.compose.ui:ui-text-google-fonts" }

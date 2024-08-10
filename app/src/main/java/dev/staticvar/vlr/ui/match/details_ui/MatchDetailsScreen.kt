@@ -73,6 +73,8 @@ import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.LocalColorExtractor
 import dev.staticvar.vlr.ui.PaddingLocalCompositions
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
+import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
@@ -92,6 +94,8 @@ import kotlinx.coroutines.tasks.await
 
 @Composable
 fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
+
+  LogEvent(event = AnalyticsEvent.MATCH_DETAIL, extra = mapOf("match_id" to id))
 
   val modifier: Modifier = Modifier
 

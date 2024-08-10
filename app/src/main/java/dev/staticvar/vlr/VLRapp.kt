@@ -4,6 +4,9 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
+import android.os.StrictMode.VmPolicy
 import androidx.core.content.getSystemService
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
@@ -28,6 +31,7 @@ class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
   @Inject lateinit var workerFactory: HiltWorkerFactory
 
   override fun onCreate() {
+    if (BuildConfig.DEBUG) strictMode()
     super.onCreate()
     Logger.init(true)
     firebaseInit()
@@ -37,7 +41,7 @@ class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
   }
 
   private fun firebaseInit() {
-    Firebase.performance.isPerformanceCollectionEnabled = !BuildConfig.DEBUG
+    Firebase.performance.isPerformanceCollectionEnabled = true
     FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
       if (task.isSuccessful) {
         i { "FCM Token ${task.result}" }
@@ -45,6 +49,13 @@ class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
         e { "FCM Token error" }
       }
     }
+  }
+
+  private fun strictMode() {
+    StrictMode.setThreadPolicy(
+      ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build()
+    )
+    StrictMode.setVmPolicy(VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build())
   }
 
   private fun createNotificationChannel() {
