@@ -31,7 +31,7 @@ class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
   @Inject lateinit var workerFactory: HiltWorkerFactory
 
   override fun onCreate() {
-    if (BuildConfig.DEBUG) strictMode()
+//    if (BuildConfig.DEBUG) strictMode()
     super.onCreate()
     Logger.init(true)
     firebaseInit()

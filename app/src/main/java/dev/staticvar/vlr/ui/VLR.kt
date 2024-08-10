@@ -1,7 +1,8 @@
 package dev.staticvar.vlr.ui
 
-import androidx.compose.animation.Crossfade
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.automirrored.outlined.Feed
@@ -13,12 +14,9 @@ import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Leaderboard
 import androidx.compose.material.icons.outlined.SportsEsports
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,13 +29,17 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.helper.NavItem
+import dev.staticvar.vlr.ui.helper.VlrNavBar
 import dev.staticvar.vlr.ui.helper.VlrNavHost
-import dev.staticvar.vlr.ui.theme.VLRTheme
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun VLR() {
+  val hazeState = remember { HazeState() }
   val navController = rememberNavController()
   val backStackEntry by navController.currentBackStackEntryAsState()
 
@@ -111,30 +113,11 @@ fun VLR() {
   val navSuiteType =
     NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
 
-  NavigationSuiteScaffold(
-    navigationSuiteItems = {
-      navItems.forEach { navItem ->
-        item(
-          selected = currentDestination == navItem.route,
-          icon = {
-            Crossfade(currentDestination == navItem.route, label = "NavBarItemIcon") {
-              Icon(
-                imageVector = if (it) navItem.selectedIcon else navItem.unselectedIcon,
-                contentDescription = navItem.title,
-                tint = VLRTheme.colorScheme.onPrimaryContainer,
-              )
-            }
-          },
-          onClick = { navItem.onClick() },
-          label = { Text(text = navItem.title) },
-        )
-      }
-    },
-    layoutType =
-      if (!hideNav || navSuiteType != NavigationSuiteType.NavigationBar) navSuiteType
-      else NavigationSuiteType.None,
-  ) {
-    Box(modifier = Modifier.semantics { testTagsAsResourceId = true }) {
+  Scaffold(
+    modifier = Modifier,
+    bottomBar = { VlrNavBar(navController = navController, items = navItems, hazeState = hazeState, isVisible = !hideNav) }
+  ) { innerPadding ->
+    Box(modifier = Modifier.haze(hazeState).padding(innerPadding).semantics { testTagsAsResourceId = true }) {
       VlrNavHost(navController = navController, paneState = { nav -> hideNav = nav }) {
         currentNav = it
       }
