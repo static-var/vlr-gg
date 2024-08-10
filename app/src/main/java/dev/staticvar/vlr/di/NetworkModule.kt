@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.di
 
+import android.net.TrafficStats
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,11 +46,18 @@ object NetworkModule {
 
   @Provides
   @Singleton
+  @IntoSet
+  fun provideThreadTaggerInterceptor(): Interceptor {
+    return Interceptor { chain ->
+      TrafficStats.setThreadStatsTag(Thread.currentThread().id.toInt())
+      chain.proceed(chain.request())
+    }
+  }
+
+  @Provides
+  @Singleton
   @Named("vlrClient")
-  fun provideKtorHttpClient(
-    json: Json,
-    interceptors: Set<@JvmSuppressWildcards Interceptor>,
-  ) =
+  fun provideKtorHttpClient(json: Json, interceptors: Set<@JvmSuppressWildcards Interceptor>) =
     HttpClient(OkHttp) {
       defaultRequest {
         host = Constants.BASE_URL
@@ -67,12 +75,8 @@ object NetworkModule {
         }
       }
 
-      install(ContentEncoding) {
-        gzip()
-      }
+      install(ContentEncoding) { gzip() }
 
-      engine {
-        interceptors.forEach(::addInterceptor)
-      }
+      engine { interceptors.forEach(::addInterceptor) }
     }
 }
