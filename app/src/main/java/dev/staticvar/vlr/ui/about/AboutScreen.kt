@@ -36,6 +36,8 @@ import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local2DPPadding
 import dev.staticvar.vlr.ui.Local4DP_2DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
+import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
+import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
@@ -48,6 +50,8 @@ fun AboutScreen() {
 
   val context = LocalContext.current
   val currentAppVersion = context.currentAppVersion
+
+  LogEvent(event = AnalyticsEvent.ABOUT)
 
   var simpleEasterEgg by remember { mutableStateOf(false) }
   Column(modifier = Modifier.fillMaxSize()) {

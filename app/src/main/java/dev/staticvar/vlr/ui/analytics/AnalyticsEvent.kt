@@ -1,0 +1,14 @@
+package dev.staticvar.vlr.ui.analytics
+
+enum class AnalyticsEvent {
+  NEWS_OVERVIEW,
+  NEWS_DETAIL,
+  MATCH_OVERVIEW,
+  MATCH_DETAIL,
+  EVENT_OVERVIEW,
+  EVENT_DETAIL,
+  RANKING_OVERVIEW,
+  TEAM_OVERVIEW,
+  PLAYER_OVERVIEW,
+  ABOUT,
+}
