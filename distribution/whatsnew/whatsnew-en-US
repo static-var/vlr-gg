@@ -1,3 +1,7 @@
+v0.5.5
+ • ⚒️ Make application compatible with StrictMode
+ • ⚒️ Better logging to help diagnose crashes
+
 v0.5.4
  • ⚒️ Under the hood improvements
 
