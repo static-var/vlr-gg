@@ -61,6 +61,8 @@ import dev.staticvar.vlr.data.Video
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
+import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.scrim.NavigationBarSpacer
 import dev.staticvar.vlr.ui.scrim.NavigationBarType
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
@@ -77,6 +79,8 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
   val context = LocalContext.current
   val hazeState = remember { HazeState() }
   val scrollState = rememberLazyListState()
+
+  LogEvent(event = AnalyticsEvent.NEWS_DETAIL, extra = mapOf("news_id" to id))
 
   Box(modifier = modifier.fillMaxSize()) {
     parsedNews?.get()?.let { news ->

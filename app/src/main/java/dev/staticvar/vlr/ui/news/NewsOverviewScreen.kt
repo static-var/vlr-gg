@@ -56,6 +56,8 @@ import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
+import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
+import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.helper.CardView
@@ -118,6 +120,8 @@ fun NewsScreenAdaptive(
 @Composable
 @NonSkippableComposable
 fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -> Unit) {
+
+  LogEvent(event = AnalyticsEvent.NEWS_OVERVIEW)
 
   val newsInfo by
     remember(viewModel) { viewModel.getNews() }

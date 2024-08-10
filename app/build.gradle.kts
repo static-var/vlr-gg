@@ -2,7 +2,6 @@
 
 
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
-import com.google.firebase.perf.plugin.FirebasePerfPlugin
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -148,6 +147,7 @@ dependencies {
   implementation(libs.firebase.perf)
   implementation(libs.firebase.messaging)
   implementation(libs.firebase.crashlytics)
+  implementation(libs.firebase.analytics)
 
 
   implementation(libs.bundles.lifecycle)

@@ -37,7 +37,7 @@ class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
   }
 
   private fun firebaseInit() {
-    Firebase.performance.isPerformanceCollectionEnabled = !BuildConfig.DEBUG
+    Firebase.performance.isPerformanceCollectionEnabled = true
     FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
       if (task.isSuccessful) {
         i { "FCM Token ${task.result}" }
