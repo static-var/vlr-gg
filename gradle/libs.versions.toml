@@ -1,7 +1,7 @@
 [versions]
 kotlin = '2.0.0'
 compose = "2024.08.00-alpha01"
-detektCompose = "0.3.11"
+detektCompose = "0.4.10"
 benchmark = "1.2.4"
 sentry = "4.6.0"
 sentry-sdk = "7.9.0"
