@@ -2,7 +2,6 @@ package dev.staticvar.vlr.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.automirrored.outlined.Feed
@@ -27,14 +26,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.staticvar.vlr.R
-import dev.staticvar.vlr.ui.helper.NavItem
-import dev.staticvar.vlr.ui.helper.VlrNavBar
 import dev.staticvar.vlr.ui.helper.VlrNavHost
+import dev.staticvar.vlr.ui.navabar.NavItem
+import dev.staticvar.vlr.ui.navabar.TopSlot
+import dev.staticvar.vlr.ui.navabar.VlrNavBar
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -54,7 +55,9 @@ fun VLR() {
   }
 
   var currentNav by remember { mutableStateOf(Destination.NewsOverview.route) }
-  val currentDestination = backStackEntry?.destination?.route
+  backStackEntry?.destination?.route
+
+  val currentTopSlotItemPosition by viewModel.selectedTopSlotItemPosition.collectAsStateWithLifecycle()
 
   val navItems =
     listOf<NavItem>(
@@ -76,6 +79,7 @@ fun VLR() {
           if (currentNav == Destination.MatchOverview.route) resetScroll()
           else action.matchOverview().also { println("Match overview navigation") }
         },
+        topSlot = TopSlot.MATCH,
       ),
       NavItem(
         title = stringResource(id = R.string.events),
@@ -85,6 +89,7 @@ fun VLR() {
         onClick = {
           if (currentNav == Destination.EventOverview.route) resetScroll() else action.goEvents()
         },
+        topSlot = TopSlot.EVENT,
       ),
       NavItem(
         title = stringResource(id = R.string.rank),
@@ -115,10 +120,19 @@ fun VLR() {
 
   Scaffold(
     modifier = Modifier,
-    bottomBar = { VlrNavBar(navController = navController, items = navItems, hazeState = hazeState, isVisible = !hideNav) }
+    bottomBar = {
+      VlrNavBar(
+        navController = navController,
+        items = navItems,
+        hazeState = hazeState,
+        isVisible = !hideNav,
+        topSlotSelectedItem = currentTopSlotItemPosition,
+        topSlotAction = { viewModel.updateSelectedTopSlotItemPosition(it) },
+      )
+    },
   ) { innerPadding ->
-    Box(modifier = Modifier.haze(hazeState).padding(innerPadding).semantics { testTagsAsResourceId = true }) {
-      VlrNavHost(navController = navController, paneState = { nav -> hideNav = nav }) {
+    Box(modifier = Modifier.haze(hazeState).semantics { testTagsAsResourceId = true }) {
+      VlrNavHost(navController = navController, innerPadding = innerPadding, paneState = { nav -> hideNav = nav }) {
         currentNav = it
       }
     }

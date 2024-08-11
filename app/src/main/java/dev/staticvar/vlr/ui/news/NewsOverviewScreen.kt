@@ -7,13 +7,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -77,6 +76,7 @@ fun NewsScreenAdaptive(
   modifier: Modifier = Modifier,
   viewModel: VlrViewModel,
   hideNav: (Boolean) -> Unit,
+  innerPadding: PaddingValues,
 ) {
   var selectedItem: String? by rememberSaveable { mutableStateOf(null) }
   val paneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
@@ -99,6 +99,7 @@ fun NewsScreenAdaptive(
         NewsScreen(
           viewModel = viewModel,
           selectedItem = selectedItem ?: " ",
+          contentPadding = innerPadding,
           action = {
             selectedItem = it
             navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
@@ -119,7 +120,7 @@ fun NewsScreenAdaptive(
 
 @Composable
 @NonSkippableComposable
-fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -> Unit) {
+fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, contentPadding: PaddingValues, action: (String) -> Unit) {
 
   LogEvent(event = AnalyticsEvent.NEWS_OVERVIEW)
 
@@ -142,7 +143,7 @@ fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -
   scrollState.ScrollHelper(resetScroll = resetScroll) { viewModel.postResetScroll() }
 
   Column(
-    modifier = modifier.fillMaxSize().navigationBarsPadding().statusBarsPadding(),
+    modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
@@ -169,8 +170,11 @@ fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, action: (String) -
             }
           }
           Box(modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize()) {
-            LazyColumn(state = scrollState, modifier = modifier.testTag("newsOverview:root")) {
-              item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }
+            LazyColumn(
+              state = scrollState,
+              modifier = modifier.testTag("newsOverview:root"),
+              contentPadding = contentPadding,
+            ) {
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
