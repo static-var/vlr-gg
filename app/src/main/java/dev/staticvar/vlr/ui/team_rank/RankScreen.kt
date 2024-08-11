@@ -7,9 +7,13 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -55,6 +59,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
@@ -82,6 +87,7 @@ import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrScrollableTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
@@ -100,6 +106,7 @@ import dev.staticvar.vlr.utils.onWaiting
 fun RankScreenAdaptive(
   modifier: Modifier = Modifier,
   viewModel: VlrViewModel,
+  innerPadding: PaddingValues,
   hideNav: (Boolean) -> Unit,
 ) {
   var selectedItem: String? by rememberSaveable { mutableStateOf(null) }
@@ -127,19 +134,27 @@ fun RankScreenAdaptive(
     navigator.navigateBack()
   }
 
+  val layoutDirection = LocalLayoutDirection.current
   ListDetailPaneScaffold(
     listPane = {
       AnimatedPane(modifier = modifier) {
         RankScreen(
           viewModel = viewModel,
           selectedItem = selectedItem ?: " ",
+          pageSize = { pageSize = it },
+          pagerState = pagerState,
+          listOfLazyListState = listOfLazyListState,
+          contentPadding =
+            PaddingValues(
+              start = innerPadding.calculateStartPadding(layoutDirection),
+              end = innerPadding.calculateEndPadding(layoutDirection),
+              top = 0.dp,
+              bottom = innerPadding.calculateBottomPadding(),
+            ),
           action = {
             selectedItem = it
             navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
           },
-          pageSize = { pageSize = it },
-          pagerState = pagerState,
-          listOfLazyListState = listOfLazyListState,
         )
       }
     },
@@ -161,6 +176,7 @@ fun RankScreen(
   selectedItem: String,
   pagerState: PagerState,
   listOfLazyListState: List<LazyListState>,
+  contentPadding: PaddingValues,
   pageSize: (Int) -> Unit,
   action: (String) -> Unit,
 ) {
@@ -205,6 +221,7 @@ fun RankScreen(
             listOfLazyListState,
             resetScroll,
             selectedItem = selectedItem,
+            contentPadding = contentPadding,
             action = action,
             postResetScroll = { viewModel.postResetScroll() },
             pageSize = pageSize,
@@ -225,6 +242,7 @@ fun RanksPreviewContainer(
   listOfLazyListState: List<LazyListState>,
   resetScroll: Boolean,
   selectedItem: String,
+  contentPadding: PaddingValues,
   pageSize: (Int) -> Unit,
   action: (String) -> Unit,
   postResetScroll: () -> Unit,
@@ -246,33 +264,31 @@ fun RanksPreviewContainer(
     verticalArrangement = Arrangement.Top,
   ) {
     if (tabs.isNotEmpty()) {
-      AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.progress != 0f) {
-        LinearProgressIndicator(
-          modifier
-            .fillMaxWidth()
-            .padding(Local16DPPadding.current)
-            .animateContentSize()
-            .testTag("common:loader")
-        )
-      }
       updateState.getError()?.let {
         ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
       }
       VlrScrollableTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
 
-      HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition ->
-        val lazyListState = listOfLazyListState.getOrNull(tabPosition) ?: rememberLazyListState()
-        lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
-        val topTeams = teamMap[tabs[tabPosition]]?.take(25) ?: listOf()
-        if (topTeams.isEmpty()) NoTeamsUI()
-        else {
-          LazyColumn(
-            modifier.fillMaxSize().testTag("rankOverview:live"),
-            verticalArrangement = Arrangement.Top,
-            state = lazyListState,
-          ) {
-            items(topTeams, key = { item -> item.id }) {
-              TeamRankPreview(team = it, selectedItem = selectedItem, action = action)
+      Box(modifier = modifier.fillMaxSize()) {
+        PullToRefreshPill(
+          modifier = modifier.align(Alignment.TopCenter).padding(top = 16.dp),
+          show = updateState.get() == true || swipeRefresh.progress != 0f,
+        )
+        HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition ->
+          val lazyListState = listOfLazyListState.getOrNull(tabPosition) ?: rememberLazyListState()
+          lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+          val topTeams = teamMap[tabs[tabPosition]]?.take(25) ?: listOf()
+          if (topTeams.isEmpty()) NoTeamsUI()
+          else {
+            LazyColumn(
+              modifier.fillMaxSize().testTag("rankOverview:live"),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState,
+              contentPadding = contentPadding,
+            ) {
+              items(topTeams, key = { item -> item.id }) {
+                TeamRankPreview(team = it, selectedItem = selectedItem, action = action)
+              }
             }
           }
         }

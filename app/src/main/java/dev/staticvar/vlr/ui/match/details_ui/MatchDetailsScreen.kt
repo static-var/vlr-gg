@@ -1,6 +1,5 @@
 package dev.staticvar.vlr.ui.match.details_ui
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
@@ -17,14 +16,18 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -40,6 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,10 +80,10 @@ import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
-import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
-import dev.staticvar.vlr.ui.scrim.StatusBarType
+import dev.staticvar.vlr.ui.helper.plus
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.ColorExtractor
 import dev.staticvar.vlr.utils.DomainVerificationStatus
@@ -93,7 +97,7 @@ import dev.staticvar.vlr.utils.timeDiff
 import kotlinx.coroutines.tasks.await
 
 @Composable
-fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
+fun MatchDetails(viewModel: VlrViewModel, id: String, paddingValues: PaddingValues) {
 
   LogEvent(event = AnalyticsEvent.MATCH_DETAIL, extra = mapOf("match_id" to id))
 
@@ -120,7 +124,7 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
 
   val progressBarVisibility by
     remember(updateState.get(), swipeRefresh.progress) {
-      mutableStateOf(updateState.get() == true || swipeRefresh.progress != 0f)
+      derivedStateOf { updateState.get() == true || swipeRefresh.progress != 0f }
     }
 
   Column(
@@ -131,25 +135,19 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
     details
       .onPass {
         data?.let { matchInfo ->
-          AnimatedContent(targetState = progressBarVisibility, label = "progress") {
-            if (it)
-              Column {
-                StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
-                LinearProgressIndicator(
-                  modifier
-                    .fillMaxWidth()
-                    .padding(Local16DPPadding.current)
-                    .animateContentSize()
-                    .testTag("common:loader")
-                    .align(Alignment.CenterHorizontally)
-                )
-              }
-          }
-
           Box(modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize()) {
-            LazyColumn(modifier = modifier.fillMaxSize(), state = rememberListState) {
-              item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }
-
+            PullToRefreshPill(
+              modifier =
+                Modifier.align(Alignment.TopCenter).padding(top = 16.dp).statusBarsPadding(),
+              show = progressBarVisibility,
+            )
+            LazyColumn(
+              modifier = modifier.fillMaxSize(),
+              state = rememberListState,
+              contentPadding =
+                WindowInsets.statusBars.asPaddingValues() +
+                  WindowInsets.navigationBars.asPaddingValues(),
+            ) {
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
@@ -208,7 +206,6 @@ fun NewMatchDetails(viewModel: VlrViewModel, id: String) {
               if (domainVerificationStatus(context) == DomainVerificationStatus.NOT_VERIFIED) {
                 item { DomainVerificationUi(modifier) }
               }
-              item { Spacer(modifier = modifier.navigationBarsPadding()) }
             }
           }
         }

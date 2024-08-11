@@ -1,12 +1,12 @@
 package dev.staticvar.vlr.ui.events
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -69,19 +70,18 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentPreview
-import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
 import dev.staticvar.vlr.ui.common.VlrSegmentedButtons
 import dev.staticvar.vlr.ui.helper.CardView
-import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
-import dev.staticvar.vlr.ui.scrim.StatusBarType
+import dev.staticvar.vlr.ui.helper.ShowIfLargeFormFactorDevice
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.Waiting
@@ -95,6 +95,7 @@ import kotlinx.coroutines.launch
 fun EventOverviewAdaptive(
   modifier: Modifier = Modifier,
   viewModel: VlrViewModel,
+  innerPadding: PaddingValues,
   hideNav: (Boolean) -> Unit,
 ) {
   var selectedItem: String? by rememberSaveable { mutableStateOf(null) }
@@ -131,6 +132,7 @@ fun EventOverviewAdaptive(
         EventScreen(
           viewModel = viewModel,
           pagerState = pagerState,
+          contentPadding = innerPadding,
           listOfLazyListState = listOfLazyListState,
           selectedItem = selectedItem ?: " ",
           action = {
@@ -156,6 +158,7 @@ fun EventOverviewAdaptive(
 fun EventScreen(
   viewModel: VlrViewModel,
   pagerState: PagerState,
+  contentPadding: PaddingValues,
   selectedItem: String,
   listOfLazyListState: SnapshotStateList<LazyListState>,
   action: (String) -> Unit,
@@ -177,6 +180,14 @@ fun EventScreen(
   val resetScroll by
     remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
+  val selectedTopItemSlot by viewModel.selectedTopSlotItemPosition.collectAsStateWithLifecycle()
+
+  LaunchedEffect(pagerState.currentPage) {
+    viewModel.updateSelectedTopSlotItemPosition(pagerState.currentPage)
+  }
+
+  LaunchedEffect(selectedTopItemSlot) { pagerState.animateScrollToPage(selectedTopItemSlot) }
+
   val modifier: Modifier = Modifier
 
   Column(
@@ -184,7 +195,6 @@ fun EventScreen(
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
     allTournaments
       .onPass {
         data?.let { list ->
@@ -192,6 +202,7 @@ fun EventScreen(
             modifier = Modifier,
             list = StableHolder(list),
             pagerState = pagerState,
+            contentPadding = contentPadding,
             listOfLazyListState = listOfLazyListState,
             swipeRefresh = swipeRefresh,
             updateState = updateState,
@@ -217,6 +228,7 @@ fun TournamentPreviewContainer(
   updateState: Result<Boolean, Throwable?>,
   resetScroll: Boolean,
   selectedItem: String,
+  contentPadding: PaddingValues,
   action: (String) -> Unit,
   postResetScroll: () -> Unit,
 ) {
@@ -240,20 +252,12 @@ fun TournamentPreviewContainer(
       }
     }
 
-  Box {
-    Column(
-      modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh),
-      verticalArrangement = Arrangement.Top,
-    ) {
-      AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.progress != 0f) {
-        LinearProgressIndicator(
-          modifier
-            .fillMaxWidth()
-            .padding(Local16DPPadding.current)
-            .animateContentSize()
-            .testTag("common:loader")
-        )
-      }
+  Box(modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh)) {
+    PullToRefreshPill(
+      modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 16.dp),
+      show = updateState.get() == true || swipeRefresh.progress != 0f,
+    )
+    Column(verticalArrangement = Arrangement.Top) {
       updateState.getError()?.let {
         ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
       }
@@ -272,6 +276,7 @@ fun TournamentPreviewContainer(
               modifier.fillMaxSize().testTag("eventOverview:live"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState,
+              contentPadding = contentPadding,
             ) {
               items(ongoing, key = { item -> item.id }) {
                 TournamentPreview(
@@ -294,6 +299,7 @@ fun TournamentPreviewContainer(
               modifier.fillMaxSize().testTag("eventOverview:upcoming"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState,
+              contentPadding = contentPadding,
             ) {
               items(upcoming, key = { item -> item.id }) {
                 TournamentPreview(
@@ -316,6 +322,7 @@ fun TournamentPreviewContainer(
               modifier.fillMaxSize().testTag("eventOverview:result"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState,
+              contentPadding = contentPadding,
             ) {
               items(completed, key = { item -> item.id }) {
                 TournamentPreview(
@@ -330,14 +337,16 @@ fun TournamentPreviewContainer(
         },
       )
     }
-
-    val scope = rememberCoroutineScope()
-    VlrSegmentedButtons(
-      modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(8.dp),
-      highlighted = pagerState.currentPage,
-      items = tabs,
-    ) { _, index ->
-      scope.launch { pagerState.animateScrollToPage(index) }
+    ShowIfLargeFormFactorDevice {
+      val scope = rememberCoroutineScope()
+      VlrSegmentedButtons(
+        modifier =
+          Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp).navigationBarsPadding(),
+        highlighted = pagerState.currentPage,
+        items = tabs,
+      ) { _, index ->
+        scope.launch { pagerState.animateScrollToPage(index) }
+      }
     }
   }
 }

@@ -1,6 +1,5 @@
 package dev.staticvar.vlr.ui.player
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,11 +9,15 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -68,11 +71,8 @@ import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.helper.CardView
+import dev.staticvar.vlr.ui.helper.plus
 import dev.staticvar.vlr.ui.match.details_ui.StatTitle
-import dev.staticvar.vlr.ui.scrim.NavigationBarSpacer
-import dev.staticvar.vlr.ui.scrim.NavigationBarType
-import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
-import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.Waiting
@@ -86,59 +86,42 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
   LogEvent(event = AnalyticsEvent.PLAYER_OVERVIEW, extra = mapOf("player_id" to id))
 
   val playerDetails by
-  remember(viewModel) { viewModel.getPlayerDetails(id) }.collectAsState(initial = Waiting())
+    remember(viewModel) { viewModel.getPlayerDetails(id) }.collectAsState(initial = Waiting())
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
 
   val updateState by
-  remember(triggerRefresh) { viewModel.refreshPlayerDetails(id) }
-    .collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshPlayerDetails(id) }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(
       refreshing = updateState.get() ?: false,
-      { triggerRefresh = triggerRefresh.not() })
+      { triggerRefresh = triggerRefresh.not() },
+    )
 
   val modifier: Modifier = Modifier
 
-  val progressBarVisibility by remember(updateState.get(), swipeRefresh.progress) {
-    mutableStateOf(
-      updateState.get() == true || swipeRefresh.progress != 0f
-    )
-  }
+  val progressBarVisibility by
+    remember(updateState.get(), swipeRefresh.progress) {
+      mutableStateOf(updateState.get() == true || swipeRefresh.progress != 0f)
+    }
 
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     playerDetails
       .onPass {
         data?.let {
-          AnimatedVisibility(visible = progressBarVisibility) {
-            Column {
-              StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
-              LinearProgressIndicator(
-                modifier
-                  .fillMaxWidth()
-                  .padding(Local16DPPadding.current)
-                  .animateContentSize()
-                  .testTag("common:loader")
-                  .align(Alignment.CenterHorizontally)
-              )
-            }
-          }
-
-          Box(
-            modifier = Modifier
-              .pullRefresh(swipeRefresh)
-              .fillMaxSize(),
-          ) {
-            LazyColumn(modifier = modifier.fillMaxSize()) {
-              item {
-                StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
-              }
-
+          Box(modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize()) {
+            LazyColumn(
+              modifier = modifier.fillMaxSize(),
+              contentPadding =
+                WindowInsets.statusBars.asPaddingValues() +
+                  WindowInsets.navigationBars.asPaddingValues(),
+            ) {
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
@@ -148,7 +131,7 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
               item {
                 AgentStatViewPager(
                   modifier.testTag("matchDetails:mapStats"),
-                  members = StableHolder(data.agents)
+                  members = StableHolder(data.agents),
                 )
               }
 
@@ -157,24 +140,20 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
                   Text(
                     text = stringResource(R.string.previous_team),
                     modifier =
-                    modifier
-                      .padding(Local16DPPadding.current)
-                      .testTag("playerDetail:teams"),
+                      modifier.padding(Local16DPPadding.current).testTag("playerDetail:teams"),
                     style = VLRTheme.typography.titleMedium,
-                    color = VLRTheme.colorScheme.primary
+                    color = VLRTheme.colorScheme.primary,
                   )
                 }
                 items(data.previousTeams) { PreviousTeam(team = it, action = viewModel.action) }
               }
-              item { NavigationBarSpacer(navigationBarType = NavigationBarType.TRANSPARENT) }
             }
           }
         }
           ?: kotlin.run {
             updateState.getError()?.let {
               ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
-            }
-              ?: LinearProgressIndicator(modifier.animateContentSize())
+            } ?: LinearProgressIndicator(modifier.animateContentSize())
           }
       }
       .onWaiting { LinearProgressIndicator(modifier) }
@@ -189,83 +168,79 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
     Column(
       modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center
+      verticalArrangement = Arrangement.Center,
     ) {
       Row(
         modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
       ) {
         GlideImage(
           imageModel = { playerData.img },
           modifier =
-          modifier
-            .size(120.dp)
-            .padding(Local8DPPadding.current)
-            .background(VLRTheme.colorScheme.primary, shape)
-            .clip(shape),
+            modifier
+              .size(120.dp)
+              .padding(Local8DPPadding.current)
+              .background(VLRTheme.colorScheme.primary, shape)
+              .clip(shape),
           loading = {
             CircularProgressIndicator(
-              modifier = Modifier
-                .align(Alignment.Center)
-                .testTag("player:img"),
-              color = VLRTheme.colorScheme.onPrimary
+              modifier = Modifier.align(Alignment.Center).testTag("player:img"),
+              color = VLRTheme.colorScheme.onPrimary,
             )
-          }
+          },
         )
         if (playerData.currentTeam?.img != null)
           GlideImage(
             imageModel = { playerData.currentTeam.img },
             modifier =
-            modifier
-              .size(120.dp)
-              .padding(Local8DPPadding.current)
-              .background(VLRTheme.colorScheme.primary, shape)
-              .padding(Local8DPPadding.current)
-              .clip(shape),
+              modifier
+                .size(120.dp)
+                .padding(Local8DPPadding.current)
+                .background(VLRTheme.colorScheme.primary, shape)
+                .padding(Local8DPPadding.current)
+                .clip(shape),
             loading = {
               CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
-                color = VLRTheme.colorScheme.onPrimary
+                color = VLRTheme.colorScheme.onPrimary,
               )
-            }
+            },
           )
       }
 
-      Row(
-        modifier.fillMaxWidth(),
-      ) {
+      Row(modifier.fillMaxWidth()) {
         Column(
           modifier.weight(1f),
           horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.Center
+          verticalArrangement = Arrangement.Center,
         ) {
           if (playerData.alias.isNotEmpty()) {
             Text(
               text = playerData.alias,
               modifier.padding(Local4DPPadding.current),
               style = VLRTheme.typography.titleMedium,
-              maxLines = 1
+              maxLines = 1,
             )
             Text(
               text = playerData.name,
               modifier.padding(Local4DPPadding.current),
               style = VLRTheme.typography.labelLarge,
-              maxLines = 1
+              maxLines = 1,
             )
           } else
             Text(
               text = playerData.name,
               modifier.padding(Local4DPPadding.current),
               style = VLRTheme.typography.titleMedium,
-              maxLines = 1
+              maxLines = 1,
             )
         }
 
         Column(
           modifier.weight(1f),
           horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.Center
+          verticalArrangement = Arrangement.Center,
         ) {
           Text(
             text = playerData.currentTeam?.name ?: "-",
@@ -291,7 +266,7 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
         text = playerSalaryString,
         textAlign = TextAlign.Center,
         maxLines = 1,
-        modifier = modifier.padding(Local4DPPadding.current)
+        modifier = modifier.padding(Local4DPPadding.current),
       )
     }
   }
@@ -300,7 +275,7 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
 @Composable
 fun AgentStatViewPager(
   modifier: Modifier = Modifier,
-  members: StableHolder<List<PlayerData.Agent>>
+  members: StableHolder<List<PlayerData.Agent>>,
 ) {
   val pagerState = rememberPagerState(pageCount = { 4 })
   CardView(modifier.fillMaxWidth()) {
@@ -315,21 +290,14 @@ fun AgentStatViewPager(
       }
     }
     Row(
-      Modifier
-        .fillMaxWidth()
-        .align(Alignment.CenterHorizontally),
-      horizontalArrangement = Arrangement.Center
+      Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
+      horizontalArrangement = Arrangement.Center,
     ) {
       repeat(3) { iteration ->
         val color =
-          if (pagerState.currentPage == iteration) VLRTheme.colorScheme.onPrimaryContainer else VLRTheme.colorScheme.primary
-        Box(
-          modifier = Modifier
-            .size(20.dp)
-            .padding(4.dp)
-            .clip(CircleShape)
-            .background(color)
-        )
+          if (pagerState.currentPage == iteration) VLRTheme.colorScheme.onPrimaryContainer
+          else VLRTheme.colorScheme.primary
+        Box(modifier = Modifier.size(20.dp).padding(4.dp).clip(CircleShape).background(color))
       }
     }
   }
@@ -341,9 +309,7 @@ fun AgentStatKDA(modifier: Modifier = Modifier, members: StableHolder<List<Playe
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "KDA statistics",
-      modifier = modifier
-        .fillMaxWidth()
-        .padding(Local4DPPadding.current)
+      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Agent", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -358,22 +324,22 @@ fun AgentStatKDA(modifier: Modifier = Modifier, members: StableHolder<List<Playe
         Text(
           text = member.k.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = member.d.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = member.a.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = (member.kd).toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
       }
     }
@@ -385,9 +351,7 @@ fun AgentStatCombat(modifier: Modifier = Modifier, members: StableHolder<List<Pl
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "Combat statistics",
-      modifier = modifier
-        .fillMaxWidth()
-        .padding(Local4DPPadding.current)
+      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Agent", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -401,17 +365,17 @@ fun AgentStatCombat(modifier: Modifier = Modifier, members: StableHolder<List<Pl
         Text(
           text = member.acs.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = member.adr.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = member.kast.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
       }
     }
@@ -421,14 +385,12 @@ fun AgentStatCombat(modifier: Modifier = Modifier, members: StableHolder<List<Pl
 @Composable
 fun AgentStatFirstBlood(
   modifier: Modifier = Modifier,
-  members: StableHolder<List<PlayerData.Agent>>
+  members: StableHolder<List<PlayerData.Agent>>,
 ) {
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "First Kill/Death statistics",
-      modifier = modifier
-        .fillMaxWidth()
-        .padding(Local4DPPadding.current)
+      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Agent", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -443,22 +405,22 @@ fun AgentStatFirstBlood(
         Text(
           text = member.fk.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = member.fd.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = member.fkpr.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = member.fdpr.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
       }
     }
@@ -471,9 +433,7 @@ fun AgentStatOverall(modifier: Modifier = Modifier, members: StableHolder<List<P
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "Overall statistics",
-      modifier = modifier
-        .fillMaxWidth()
-        .padding(Local4DPPadding.current)
+      modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
     )
     Row(modifier = modifier.fillMaxWidth()) {
       Text(text = "Agent", modifier = modifier.weight(1.5f), textAlign = TextAlign.Center)
@@ -489,27 +449,27 @@ fun AgentStatOverall(modifier: Modifier = Modifier, members: StableHolder<List<P
         Text(
           text = member.percent.toString() + " %",
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = member.count.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = member.rounds.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = member.kpr.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
         Text(
           text = member.apr.toString(),
           modifier = modifier.weight(1f),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
       }
     }
@@ -521,16 +481,14 @@ fun RowScope.NameAndAgentDetail(modifier: Modifier = Modifier, name: String, img
   Row(modifier.weight(1.5f), verticalAlignment = Alignment.CenterVertically) {
     GlideImage(
       imageModel = { img },
-      modifier = modifier
-        .padding(Local4DP_2DPPadding.current)
-        .size(24.dp),
-      imageOptions = ImageOptions(contentScale = ContentScale.Fit)
+      modifier = modifier.padding(Local4DP_2DPPadding.current).size(24.dp),
+      imageOptions = ImageOptions(contentScale = ContentScale.Fit),
     )
     Text(
       text = name.replaceFirstChar { it.uppercase() },
       modifier = modifier.padding(Local2DPPadding.current),
       textAlign = TextAlign.Start,
-      maxLines = 1
+      maxLines = 1,
     )
   }
 }
@@ -539,17 +497,13 @@ fun RowScope.NameAndAgentDetail(modifier: Modifier = Modifier, name: String, img
 fun PreviousTeam(modifier: Modifier = Modifier, team: Team, action: Action) {
   val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
   CardView(
-    modifier = modifier
-      .clickable { if (team.id != null) action.team(team.id) }
-      .height(120.dp)
+    modifier = modifier.clickable { if (team.id != null) action.team(team.id) }.height(120.dp)
   ) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Text(
         text = team.name,
         style = VLRTheme.typography.titleMedium,
-        modifier = modifier
-          .padding(start = 24.dp, end = 24.dp)
-          .align(Alignment.CenterStart),
+        modifier = modifier.padding(start = 24.dp, end = 24.dp).align(Alignment.CenterStart),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         color = VLRTheme.colorScheme.primary,
@@ -557,12 +511,9 @@ fun PreviousTeam(modifier: Modifier = Modifier, team: Team, action: Action) {
       GlideImage(
         imageModel = { team.img },
         imageOptions =
-        ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
-        modifier = modifier
-          .align(Alignment.CenterEnd)
-          .padding(24.dp)
-          .size(120.dp),
-        component = imageComponent
+          ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
+        modifier = modifier.align(Alignment.CenterEnd).padding(24.dp).size(120.dp),
+        component = imageComponent,
       )
     }
   }

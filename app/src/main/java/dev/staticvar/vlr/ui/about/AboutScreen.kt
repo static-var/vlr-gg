@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,14 +40,12 @@ import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.helper.CardView
-import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
-import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.openAsCustomTab
 
 @Composable
-fun AboutScreen() {
+fun AboutScreen(contentPadding: PaddingValues) {
 
   val context = LocalContext.current
   val currentAppVersion = context.currentAppVersion
@@ -54,8 +53,7 @@ fun AboutScreen() {
   LogEvent(event = AnalyticsEvent.ABOUT)
 
   var simpleEasterEgg by remember { mutableStateOf(false) }
-  Column(modifier = Modifier.fillMaxSize()) {
-    StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
+  Column(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
     Text(
       text = stringResource(id = R.string.app_name),
       modifier =
