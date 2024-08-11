@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -74,9 +76,11 @@ import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
+import dev.staticvar.vlr.ui.common.VlrSegmentedButtons
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.ShareDialog
 import dev.staticvar.vlr.ui.helper.SharingAppBar
+import dev.staticvar.vlr.ui.helper.ShowIfLargeFormFactorDevice
 import dev.staticvar.vlr.ui.match.details_ui.MatchDetails
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
@@ -89,6 +93,7 @@ import dev.staticvar.vlr.utils.readableDate
 import dev.staticvar.vlr.utils.readableTime
 import dev.staticvar.vlr.utils.timeDiff
 import dev.staticvar.vlr.utils.timeToEpoch
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -152,7 +157,9 @@ fun MatchOverviewAdaptive(
     },
     detailPane = {
       selectedItem?.let {
-        AnimatedPane(modifier = modifier) { MatchDetails(viewModel = viewModel, id = it, paddingValues = innerPadding) }
+        AnimatedPane(modifier = modifier) {
+          MatchDetails(viewModel = viewModel, id = it, paddingValues = innerPadding)
+        }
       }
     },
     directive = navigator.scaffoldDirective,
@@ -292,8 +299,6 @@ fun MatchOverviewContainer(
           shareConfirm = { shareDialog = true },
         )
       }
-
-      //    VlrTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
 
       VlrHorizontalViewPager(
         modifier = modifier,
@@ -461,6 +466,18 @@ fun MatchOverviewContainer(
           }
         },
       )
+    }
+
+    ShowIfLargeFormFactorDevice {
+      val scope = rememberCoroutineScope()
+      VlrSegmentedButtons(
+        modifier =
+          Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp).navigationBarsPadding(),
+        highlighted = pagerState.currentPage,
+        items = tabs,
+      ) { _, index ->
+        scope.launch { pagerState.animateScrollToPage(index) }
+      }
     }
   }
 }

@@ -18,14 +18,13 @@ fun VlrSegmentedButtons(
   SingleChoiceSegmentedButtonRow(modifier = modifier) {
     items.forEachIndexed { index, item ->
       SegmentedButton(
-        modifier = Modifier
-          .clip(SegmentedButtonDefaults.itemShape(index = index, count = items.size)),
+        modifier =
+          Modifier.clip(SegmentedButtonDefaults.itemShape(index = index, count = items.size)),
         selected = highlighted == index,
-        onClick = {
-          selected(item, index)
-        },
+        onClick = { selected(item, index) },
         shape = SegmentedButtonDefaults.itemShape(index = index, count = items.size),
-        icon = {}) {
+        icon = {},
+      ) {
         Text(text = item)
       }
     }

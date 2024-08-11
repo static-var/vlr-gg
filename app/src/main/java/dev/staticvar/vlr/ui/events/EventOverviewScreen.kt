@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -47,6 +48,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -77,13 +79,16 @@ import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
+import dev.staticvar.vlr.ui.common.VlrSegmentedButtons
 import dev.staticvar.vlr.ui.helper.CardView
+import dev.staticvar.vlr.ui.helper.ShowIfLargeFormFactorDevice
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.StableHolder
 import dev.staticvar.vlr.utils.Waiting
 import dev.staticvar.vlr.utils.onFail
 import dev.staticvar.vlr.utils.onPass
 import dev.staticvar.vlr.utils.onWaiting
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -247,9 +252,7 @@ fun TournamentPreviewContainer(
       }
     }
 
-  Box(
-    modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh),
-  ) {
+  Box(modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh)) {
     PullToRefreshPill(
       modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 16.dp),
       show = updateState.get() == true || swipeRefresh.progress != 0f,
@@ -333,6 +336,17 @@ fun TournamentPreviewContainer(
           }
         },
       )
+    }
+    ShowIfLargeFormFactorDevice {
+      val scope = rememberCoroutineScope()
+      VlrSegmentedButtons(
+        modifier =
+          Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp).navigationBarsPadding(),
+        highlighted = pagerState.currentPage,
+        items = tabs,
+      ) { _, index ->
+        scope.launch { pagerState.animateScrollToPage(index) }
+      }
     }
   }
 }
