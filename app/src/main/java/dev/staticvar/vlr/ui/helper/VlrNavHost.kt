@@ -15,7 +15,7 @@ import dev.staticvar.vlr.ui.about.AboutScreen
 import dev.staticvar.vlr.ui.events.EventDetails
 import dev.staticvar.vlr.ui.events.EventOverviewAdaptive
 import dev.staticvar.vlr.ui.match.MatchOverviewAdaptive
-import dev.staticvar.vlr.ui.match.details_ui.NewMatchDetails
+import dev.staticvar.vlr.ui.match.details_ui.MatchDetails
 import dev.staticvar.vlr.ui.news.NewsDetailsScreen
 import dev.staticvar.vlr.ui.news.NewsScreenAdaptive
 import dev.staticvar.vlr.ui.player.PlayerDetailsScreen
@@ -160,7 +160,7 @@ fun VlrNavHost(
     ) {
       val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
       onNavigation(Destination.Match.route.replace(Destination.Match.Args.ID, id))
-      NewMatchDetails(viewModel = viewModel, id = id)
+      MatchDetails(viewModel = viewModel, id = id, paddingValues = innerPadding)
     }
     composable(
       Destination.Event.route,

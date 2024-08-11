@@ -7,6 +7,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -86,6 +87,7 @@ import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrScrollableTabRowForViewPager
 import dev.staticvar.vlr.ui.helper.CardView
@@ -262,34 +264,31 @@ fun RanksPreviewContainer(
     verticalArrangement = Arrangement.Top,
   ) {
     if (tabs.isNotEmpty()) {
-      AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.progress != 0f) {
-        LinearProgressIndicator(
-          modifier
-            .fillMaxWidth()
-            .padding(Local16DPPadding.current)
-            .animateContentSize()
-            .testTag("common:loader")
-        )
-      }
       updateState.getError()?.let {
         ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
       }
       VlrScrollableTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
 
-      HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition ->
-        val lazyListState = listOfLazyListState.getOrNull(tabPosition) ?: rememberLazyListState()
-        lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
-        val topTeams = teamMap[tabs[tabPosition]]?.take(25) ?: listOf()
-        if (topTeams.isEmpty()) NoTeamsUI()
-        else {
-          LazyColumn(
-            modifier.fillMaxSize().testTag("rankOverview:live"),
-            verticalArrangement = Arrangement.Top,
-            state = lazyListState,
-            contentPadding = contentPadding,
-          ) {
-            items(topTeams, key = { item -> item.id }) {
-              TeamRankPreview(team = it, selectedItem = selectedItem, action = action)
+      Box(modifier = modifier.fillMaxSize()) {
+        PullToRefreshPill(
+          modifier = modifier.align(Alignment.TopCenter).padding(top = 16.dp),
+          show = updateState.get() == true || swipeRefresh.progress != 0f,
+        )
+        HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition ->
+          val lazyListState = listOfLazyListState.getOrNull(tabPosition) ?: rememberLazyListState()
+          lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+          val topTeams = teamMap[tabs[tabPosition]]?.take(25) ?: listOf()
+          if (topTeams.isEmpty()) NoTeamsUI()
+          else {
+            LazyColumn(
+              modifier.fillMaxSize().testTag("rankOverview:live"),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState,
+              contentPadding = contentPadding,
+            ) {
+              items(topTeams, key = { item -> item.id }) {
+                TeamRankPreview(team = it, selectedItem = selectedItem, action = action)
+              }
             }
           }
         }
