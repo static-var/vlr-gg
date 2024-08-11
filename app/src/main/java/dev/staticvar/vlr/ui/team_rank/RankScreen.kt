@@ -9,7 +9,10 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -55,6 +58,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
@@ -100,6 +104,7 @@ import dev.staticvar.vlr.utils.onWaiting
 fun RankScreenAdaptive(
   modifier: Modifier = Modifier,
   viewModel: VlrViewModel,
+  innerPadding: PaddingValues,
   hideNav: (Boolean) -> Unit,
 ) {
   var selectedItem: String? by rememberSaveable { mutableStateOf(null) }
@@ -127,19 +132,27 @@ fun RankScreenAdaptive(
     navigator.navigateBack()
   }
 
+  val layoutDirection = LocalLayoutDirection.current
   ListDetailPaneScaffold(
     listPane = {
       AnimatedPane(modifier = modifier) {
         RankScreen(
           viewModel = viewModel,
           selectedItem = selectedItem ?: " ",
+          pageSize = { pageSize = it },
+          pagerState = pagerState,
+          listOfLazyListState = listOfLazyListState,
+          contentPadding =
+            PaddingValues(
+              start = innerPadding.calculateStartPadding(layoutDirection),
+              end = innerPadding.calculateEndPadding(layoutDirection),
+              top = 0.dp,
+              bottom = innerPadding.calculateBottomPadding(),
+            ),
           action = {
             selectedItem = it
             navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
           },
-          pageSize = { pageSize = it },
-          pagerState = pagerState,
-          listOfLazyListState = listOfLazyListState,
         )
       }
     },
@@ -161,6 +174,7 @@ fun RankScreen(
   selectedItem: String,
   pagerState: PagerState,
   listOfLazyListState: List<LazyListState>,
+  contentPadding: PaddingValues,
   pageSize: (Int) -> Unit,
   action: (String) -> Unit,
 ) {
@@ -205,6 +219,7 @@ fun RankScreen(
             listOfLazyListState,
             resetScroll,
             selectedItem = selectedItem,
+            contentPadding = contentPadding,
             action = action,
             postResetScroll = { viewModel.postResetScroll() },
             pageSize = pageSize,
@@ -225,6 +240,7 @@ fun RanksPreviewContainer(
   listOfLazyListState: List<LazyListState>,
   resetScroll: Boolean,
   selectedItem: String,
+  contentPadding: PaddingValues,
   pageSize: (Int) -> Unit,
   action: (String) -> Unit,
   postResetScroll: () -> Unit,
@@ -270,6 +286,7 @@ fun RanksPreviewContainer(
             modifier.fillMaxSize().testTag("rankOverview:live"),
             verticalArrangement = Arrangement.Top,
             state = lazyListState,
+            contentPadding = contentPadding,
           ) {
             items(topTeams, key = { item -> item.id }) {
               TeamRankPreview(team = it, selectedItem = selectedItem, action = action)
