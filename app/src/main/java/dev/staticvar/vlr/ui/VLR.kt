@@ -3,7 +3,10 @@ package dev.staticvar.vlr.ui
 import android.annotation.SuppressLint
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.automirrored.outlined.Feed
@@ -24,7 +27,6 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +43,7 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.helper.VlrNavHost
+import dev.staticvar.vlr.ui.helper.plus
 import dev.staticvar.vlr.ui.navabar.NavItem
 import dev.staticvar.vlr.ui.navabar.TopSlot
 import dev.staticvar.vlr.ui.navabar.VlrNavBar
@@ -68,8 +71,6 @@ fun VLR() {
 
   val currentTopSlotItemPosition by
     viewModel.selectedTopSlotItemPosition.collectAsStateWithLifecycle()
-
-  val LocalNavigationSuiteType = compositionLocalOf { NavigationSuiteType.None }
 
   val navItems =
     listOf<NavItem>(
@@ -185,7 +186,9 @@ fun VLR() {
           Box(modifier = Modifier.semantics { testTagsAsResourceId = true }) {
             VlrNavHost(
               navController = navController,
-              innerPadding = PaddingValues(),
+              innerPadding =
+                WindowInsets.statusBars.asPaddingValues() +
+                  WindowInsets.navigationBars.asPaddingValues(),
               paneState = { nav -> hideNav = nav },
             ) {
               currentNav = it
