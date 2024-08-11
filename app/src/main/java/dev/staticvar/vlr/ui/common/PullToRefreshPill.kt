@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -37,7 +38,10 @@ fun BoxScope.PullToRefreshPill(modifier: Modifier = Modifier, show: Boolean) {
       contentColor = VLRTheme.colorScheme.onPrimary,
     ) {
       Row(
-        modifier = Modifier.wrapContentSize().padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+          Modifier.wrapContentSize()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .testTag("common:loader"),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
       ) {
