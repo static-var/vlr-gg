@@ -1,10 +1,10 @@
 package dev.staticvar.vlr.ui.events
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -67,13 +68,13 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentPreview
-import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
 import dev.staticvar.vlr.ui.helper.CardView
@@ -246,97 +247,93 @@ fun TournamentPreviewContainer(
       }
     }
 
-  Column(
+  Box(
     modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh),
-    verticalArrangement = Arrangement.Top,
   ) {
-    AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.progress != 0f) {
-      LinearProgressIndicator(
-        modifier
-          .fillMaxWidth()
-          .padding(Local16DPPadding.current)
-          .animateContentSize()
-          .testTag("common:loader")
+    PullToRefreshPill(
+      modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 16.dp),
+      show = updateState.get() == true || swipeRefresh.progress != 0f,
+    )
+    Column(verticalArrangement = Arrangement.Top) {
+      updateState.getError()?.let {
+        ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
+      }
+      //    VlrTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
+
+      VlrHorizontalViewPager(
+        modifier = modifier,
+        pagerState = pagerState,
+        {
+          if (ongoing.isEmpty()) {
+            NoEventUI(modifier = modifier)
+          } else {
+            val lazyListState = listOfLazyListState[0]
+            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+            LazyColumn(
+              modifier.fillMaxSize().testTag("eventOverview:live"),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState,
+              contentPadding = contentPadding,
+            ) {
+              items(ongoing, key = { item -> item.id }) {
+                TournamentPreview(
+                  modifier = modifier,
+                  tournamentPreview = it,
+                  selectedItem = selectedItem,
+                  action,
+                )
+              }
+            }
+          }
+        },
+        {
+          if (upcoming.isEmpty()) {
+            NoEventUI(modifier = modifier)
+          } else {
+            val lazyListState = listOfLazyListState[1]
+            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+            LazyColumn(
+              modifier.fillMaxSize().testTag("eventOverview:upcoming"),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState,
+              contentPadding = contentPadding,
+            ) {
+              items(upcoming, key = { item -> item.id }) {
+                TournamentPreview(
+                  modifier = modifier,
+                  tournamentPreview = it,
+                  selectedItem = selectedItem,
+                  action,
+                )
+              }
+            }
+          }
+        },
+        {
+          if (completed.isEmpty()) {
+            NoEventUI(modifier = modifier)
+          } else {
+            val lazyListState = listOfLazyListState[2]
+            lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
+            LazyColumn(
+              modifier.fillMaxSize().testTag("eventOverview:result"),
+              verticalArrangement = Arrangement.Top,
+              state = lazyListState,
+              contentPadding = contentPadding,
+            ) {
+              items(completed, key = { item -> item.id }) {
+                TournamentPreview(
+                  modifier = modifier,
+                  tournamentPreview = it,
+                  selectedItem = selectedItem,
+                  action,
+                )
+              }
+            }
+          }
+        },
       )
     }
-    updateState.getError()?.let {
-      ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
-    }
-    //    VlrTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
-
-    VlrHorizontalViewPager(
-      modifier = modifier,
-      pagerState = pagerState,
-      {
-        if (ongoing.isEmpty()) {
-          NoEventUI(modifier = modifier)
-        } else {
-          val lazyListState = listOfLazyListState[0]
-          lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
-          LazyColumn(
-            modifier.fillMaxSize().testTag("eventOverview:live"),
-            verticalArrangement = Arrangement.Top,
-            state = lazyListState,
-            contentPadding = contentPadding,
-          ) {
-            items(ongoing, key = { item -> item.id }) {
-              TournamentPreview(
-                modifier = modifier,
-                tournamentPreview = it,
-                selectedItem = selectedItem,
-                action,
-              )
-            }
-          }
-        }
-      },
-      {
-        if (upcoming.isEmpty()) {
-          NoEventUI(modifier = modifier)
-        } else {
-          val lazyListState = listOfLazyListState[1]
-          lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
-          LazyColumn(
-            modifier.fillMaxSize().testTag("eventOverview:upcoming"),
-            verticalArrangement = Arrangement.Top,
-            state = lazyListState,
-            contentPadding = contentPadding,
-          ) {
-            items(upcoming, key = { item -> item.id }) {
-              TournamentPreview(
-                modifier = modifier,
-                tournamentPreview = it,
-                selectedItem = selectedItem,
-                action,
-              )
-            }
-          }
-        }
-      },
-      {
-        if (completed.isEmpty()) {
-          NoEventUI(modifier = modifier)
-        } else {
-          val lazyListState = listOfLazyListState[2]
-          lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
-          LazyColumn(
-            modifier.fillMaxSize().testTag("eventOverview:result"),
-            verticalArrangement = Arrangement.Top,
-            state = lazyListState,
-            contentPadding = contentPadding,
-          ) {
-            items(completed, key = { item -> item.id }) {
-              TournamentPreview(
-                modifier = modifier,
-                tournamentPreview = it,
-                selectedItem = selectedItem,
-                action,
-              )
-            }
-          }
-        }
-      },
-    )
   }
 }
 

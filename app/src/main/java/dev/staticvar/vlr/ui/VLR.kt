@@ -1,7 +1,9 @@
 package dev.staticvar.vlr.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Feed
 import androidx.compose.material.icons.automirrored.outlined.Feed
@@ -13,10 +15,16 @@ import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Leaderboard
 import androidx.compose.material.icons.outlined.SportsEsports
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +44,7 @@ import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.navabar.NavItem
 import dev.staticvar.vlr.ui.navabar.TopSlot
 import dev.staticvar.vlr.ui.navabar.VlrNavBar
+import dev.staticvar.vlr.ui.theme.VLRTheme
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -55,9 +64,12 @@ fun VLR() {
   }
 
   var currentNav by remember { mutableStateOf(Destination.NewsOverview.route) }
-  backStackEntry?.destination?.route
+  val currentDestination = backStackEntry?.destination?.route
 
-  val currentTopSlotItemPosition by viewModel.selectedTopSlotItemPosition.collectAsStateWithLifecycle()
+  val currentTopSlotItemPosition by
+    viewModel.selectedTopSlotItemPosition.collectAsStateWithLifecycle()
+
+  val LocalNavigationSuiteType = compositionLocalOf { NavigationSuiteType.None }
 
   val navItems =
     listOf<NavItem>(
@@ -118,22 +130,68 @@ fun VLR() {
   val navSuiteType =
     NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
 
-  Scaffold(
-    modifier = Modifier,
-    bottomBar = {
-      VlrNavBar(
-        navController = navController,
-        items = navItems,
-        hazeState = hazeState,
-        isVisible = !hideNav,
-        topSlotSelectedItem = currentTopSlotItemPosition,
-        topSlotAction = { viewModel.updateSelectedTopSlotItemPosition(it) },
-      )
-    },
-  ) { innerPadding ->
-    Box(modifier = Modifier.haze(hazeState).semantics { testTagsAsResourceId = true }) {
-      VlrNavHost(navController = navController, innerPadding = innerPadding, paneState = { nav -> hideNav = nav }) {
-        currentNav = it
+  CompositionLocalProvider(LocalNavigationSuiteType provides navSuiteType) {
+    when (navSuiteType) {
+      NavigationSuiteType.NavigationBar,
+      NavigationSuiteType.None -> {
+        Scaffold(
+          modifier = Modifier,
+          bottomBar = {
+            VlrNavBar(
+              navController = navController,
+              items = navItems,
+              hazeState = hazeState,
+              isVisible = !hideNav,
+              topSlotSelectedItem = currentTopSlotItemPosition,
+              topSlotAction = { viewModel.updateSelectedTopSlotItemPosition(it) },
+            )
+          },
+        ) { innerPadding ->
+          Box(modifier = Modifier.haze(hazeState).semantics { testTagsAsResourceId = true }) {
+            VlrNavHost(
+              navController = navController,
+              innerPadding = innerPadding,
+              paneState = { nav -> hideNav = nav },
+            ) {
+              currentNav = it
+            }
+          }
+        }
+      }
+      else -> {
+        NavigationSuiteScaffold(
+          navigationSuiteItems = {
+            navItems.forEach { navItem ->
+              item(
+                selected = currentDestination == navItem.route,
+                icon = {
+                  Crossfade(currentDestination == navItem.route, label = "NavBarItemIcon") {
+                    Icon(
+                      imageVector = if (it) navItem.selectedIcon else navItem.unselectedIcon,
+                      contentDescription = navItem.title,
+                      tint = VLRTheme.colorScheme.onPrimaryContainer,
+                    )
+                  }
+                },
+                onClick = { navItem.onClick() },
+                label = { Text(text = navItem.title) },
+              )
+            }
+          },
+          layoutType =
+            if (!hideNav || navSuiteType != NavigationSuiteType.NavigationBar) navSuiteType
+            else NavigationSuiteType.None,
+        ) {
+          Box(modifier = Modifier.semantics { testTagsAsResourceId = true }) {
+            VlrNavHost(
+              navController = navController,
+              innerPadding = PaddingValues(),
+              paneState = { nav -> hideNav = nav },
+            ) {
+              currentNav = it
+            }
+          }
+        }
       }
     }
   }

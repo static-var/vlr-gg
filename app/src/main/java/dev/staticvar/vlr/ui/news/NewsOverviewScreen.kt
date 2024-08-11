@@ -1,7 +1,6 @@
 package dev.staticvar.vlr.ui.news
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,9 +9,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -50,18 +49,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
+import com.github.michaelbull.result.getOrElse
 import dev.staticvar.vlr.data.api.response.NewsResponseItem
-import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.helper.CardView
-import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
-import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.Waiting
 import dev.staticvar.vlr.utils.onFail
@@ -120,7 +118,12 @@ fun NewsScreenAdaptive(
 
 @Composable
 @NonSkippableComposable
-fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, contentPadding: PaddingValues, action: (String) -> Unit) {
+fun NewsScreen(
+  viewModel: VlrViewModel,
+  selectedItem: String,
+  contentPadding: PaddingValues,
+  action: (String) -> Unit,
+) {
 
   LogEvent(event = AnalyticsEvent.NEWS_OVERVIEW)
 
@@ -133,7 +136,7 @@ fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, contentPadding: Pa
       .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
-    rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
+    rememberPullRefreshState(updateState.getOrElse { false }, { triggerRefresh = triggerRefresh.not() })
 
   val modifier: Modifier = Modifier
 
@@ -152,24 +155,12 @@ fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, contentPadding: Pa
         data?.let { list ->
           val safeConvertedList =
             kotlin.runCatching { list.sortedByDescending { it.date.timeToEpoch } }
-
-          AnimatedVisibility(
-            visible = updateState.get() == true || swipeRefresh.progress != 0f,
-            modifier = Modifier,
-          ) {
-            Column {
-              StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
-              LinearProgressIndicator(
-                modifier
-                  .fillMaxWidth()
-                  .padding(Local16DPPadding.current)
-                  .animateContentSize()
-                  .testTag("common:loader")
-                  .align(Alignment.CenterHorizontally)
-              )
-            }
-          }
           Box(modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize()) {
+            PullToRefreshPill(
+              modifier =
+                Modifier.align(Alignment.TopCenter).padding(top = 16.dp).statusBarsPadding(),
+              show = updateState.get() == true || swipeRefresh.progress != 0f,
+            )
             LazyColumn(
               state = scrollState,
               modifier = modifier.testTag("newsOverview:root"),
@@ -178,7 +169,6 @@ fun NewsScreen(viewModel: VlrViewModel, selectedItem: String, contentPadding: Pa
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
-
               items(
                 if (safeConvertedList.isFailure) list else safeConvertedList.getOrElse { listOf() },
                 key = { item -> item.link },
