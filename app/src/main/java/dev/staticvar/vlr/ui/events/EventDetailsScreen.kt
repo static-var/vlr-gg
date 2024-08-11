@@ -1,7 +1,6 @@
 package dev.staticvar.vlr.ui.events
 
 import android.Manifest
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,11 +8,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -36,6 +40,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,12 +77,10 @@ import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
-import dev.staticvar.vlr.ui.scrim.NavigationBarSpacer
-import dev.staticvar.vlr.ui.scrim.NavigationBarType
-import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
-import dev.staticvar.vlr.ui.scrim.StatusBarType
+import dev.staticvar.vlr.ui.helper.plus
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.DynamicTheme
@@ -116,7 +119,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
 
   val progressBarVisibility by
     remember(updateState.get(), swipeRefresh.progress) {
-      mutableStateOf(updateState.get() == true || swipeRefresh.progress != 0f)
+      derivedStateOf { updateState.get() == true || swipeRefresh.progress != 0f }
     }
 
   Column(
@@ -141,25 +144,19 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 }
               }
             }
-          AnimatedVisibility(visible = progressBarVisibility) {
-            Column {
-              StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT)
-              LinearProgressIndicator(
-                modifier
-                  .fillMaxWidth()
-                  .padding(Local16DPPadding.current)
-                  .animateContentSize()
-                  .testTag("common:loader")
-                  .align(Alignment.CenterHorizontally)
-              )
-            }
-          }
           Box(modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize()) {
+            PullToRefreshPill(
+              modifier =
+                Modifier.align(Alignment.TopCenter).padding(top = 16.dp).statusBarsPadding(),
+              show = progressBarVisibility,
+            )
             LazyColumn(
               modifier = modifier.fillMaxSize().testTag("eventDetails:root"),
               state = lazyListState,
+              contentPadding =
+              WindowInsets.statusBars.asPaddingValues() +
+                  WindowInsets.navigationBars.asPaddingValues(),
             ) {
-              item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
               }
@@ -232,7 +229,6 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                     color = VLRTheme.colorScheme.primary,
                   )
                 }
-              item { NavigationBarSpacer(navigationBarType = NavigationBarType.TRANSPARENT) }
             }
           }
         }

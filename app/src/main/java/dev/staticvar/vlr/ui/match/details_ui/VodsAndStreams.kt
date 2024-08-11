@@ -12,13 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -115,21 +112,17 @@ fun VideoReferenceUi(
             .fillMaxWidth()
             .padding(horizontal = 4.dp)
         ) {
-          items(videos.vods) { stream ->
-            ElevatedAssistChip(
+          items(videos.vods) { vod ->
+            Button(
               onClick = {
-                intent.data = Uri.parse(stream.url)
+                intent.data = Uri.parse(vod.url)
                 context.startActivity(intent)
               },
               modifier = modifier.padding(horizontal = 4.dp),
-              label = { Text(text = stream.name) },
-              colors =
-              AssistChipDefaults.assistChipColors(
-                containerColor = VLRTheme.colorScheme.primary,
-                labelColor = VLRTheme.colorScheme.onPrimary
-              ),
-              shape = RoundedCornerShape(16.dp)
-            )
+              shape = VLRTheme.shapes.small
+            ) {
+              Text(text = vod.name)
+            }
           }
         }
       }

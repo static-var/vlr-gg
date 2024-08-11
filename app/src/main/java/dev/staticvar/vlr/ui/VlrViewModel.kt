@@ -8,10 +8,12 @@ import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.Waiting
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -23,6 +25,13 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
 
   private var _resetScroll: MutableSharedFlow<Boolean> = MutableSharedFlow(0)
   val resetScroll: SharedFlow<Boolean> = _resetScroll
+
+  private var _selectedTopSlotItemPosition: MutableStateFlow<Int> = MutableStateFlow(0)
+  val selectedTopSlotItemPosition: StateFlow<Int> = _selectedTopSlotItemPosition
+
+  fun updateSelectedTopSlotItemPosition(position: Int) {
+    viewModelScope.launch { _selectedTopSlotItemPosition.update { position } }
+  }
 
   fun hideNavbar(hide: Boolean) {
     viewModelScope.launch { _hideNavBar.emit(hide) }

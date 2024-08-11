@@ -1,7 +1,6 @@
 package dev.staticvar.vlr.ui.helper
 
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -16,7 +15,7 @@ import dev.staticvar.vlr.ui.about.AboutScreen
 import dev.staticvar.vlr.ui.events.EventDetails
 import dev.staticvar.vlr.ui.events.EventOverviewAdaptive
 import dev.staticvar.vlr.ui.match.MatchOverviewAdaptive
-import dev.staticvar.vlr.ui.match.details_ui.NewMatchDetails
+import dev.staticvar.vlr.ui.match.details_ui.MatchDetails
 import dev.staticvar.vlr.ui.news.NewsDetailsScreen
 import dev.staticvar.vlr.ui.news.NewsScreenAdaptive
 import dev.staticvar.vlr.ui.player.PlayerDetailsScreen
@@ -30,6 +29,7 @@ import dev.staticvar.vlr.utils.slideInFromBottom
 @Composable
 fun VlrNavHost(
   navController: NavHostController,
+  innerPadding: PaddingValues,
   paneState: (Boolean) -> Unit,
   onNavigation: (String) -> Unit,
 ) {
@@ -57,7 +57,7 @@ fun VlrNavHost(
       },
     ) {
       onNavigation(Destination.NewsOverview.route)
-      NewsScreenAdaptive(viewModel = viewModel, hideNav = paneState)
+      NewsScreenAdaptive(viewModel = viewModel, hideNav = paneState, innerPadding = innerPadding)
     }
     composable(
       Destination.MatchOverview.route,
@@ -77,7 +77,7 @@ fun VlrNavHost(
       },
     ) {
       onNavigation(Destination.MatchOverview.route)
-      MatchOverviewAdaptive(viewModel = viewModel, hideNav = paneState)
+      MatchOverviewAdaptive(viewModel = viewModel, innerPadding = innerPadding, hideNav = paneState)
     }
     composable(
       Destination.EventOverview.route,
@@ -97,7 +97,7 @@ fun VlrNavHost(
       },
     ) {
       onNavigation(Destination.EventOverview.route)
-      EventOverviewAdaptive(viewModel = viewModel, hideNav = paneState)
+      EventOverviewAdaptive(viewModel = viewModel, innerPadding = innerPadding, hideNav = paneState)
     }
     composable(
       Destination.About.route,
@@ -117,7 +117,7 @@ fun VlrNavHost(
       },
     ) {
       onNavigation(Destination.About.route)
-      AboutScreen()
+      AboutScreen(contentPadding = innerPadding)
     }
     composable(
       Destination.Rank.route,
@@ -137,7 +137,7 @@ fun VlrNavHost(
       },
     ) {
       onNavigation(Destination.Rank.route)
-      RankScreenAdaptive(viewModel = viewModel, hideNav = paneState)
+      RankScreenAdaptive(viewModel = viewModel, innerPadding = innerPadding, hideNav = paneState)
     }
     composable(
       Destination.Match.route,
@@ -160,7 +160,7 @@ fun VlrNavHost(
     ) {
       val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
       onNavigation(Destination.Match.route.replace(Destination.Match.Args.ID, id))
-      NewMatchDetails(viewModel = viewModel, id = id)
+      MatchDetails(viewModel = viewModel, id = id, paddingValues = innerPadding)
     }
     composable(
       Destination.Event.route,

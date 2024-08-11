@@ -7,8 +7,11 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -50,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -62,7 +66,6 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
-import dev.staticvar.vlr.ui.Local16DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DP_4DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
@@ -70,13 +73,15 @@ import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.DateChip
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
 import dev.staticvar.vlr.ui.common.VlrSegmentedButtons
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.ShareDialog
 import dev.staticvar.vlr.ui.helper.SharingAppBar
-import dev.staticvar.vlr.ui.match.details_ui.NewMatchDetails
+import dev.staticvar.vlr.ui.helper.ShowIfLargeFormFactorDevice
+import dev.staticvar.vlr.ui.match.details_ui.MatchDetails
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
 import dev.staticvar.vlr.ui.theme.VLRTheme
@@ -95,6 +100,7 @@ import kotlinx.coroutines.launch
 fun MatchOverviewAdaptive(
   modifier: Modifier = Modifier,
   viewModel: VlrViewModel,
+  innerPadding: PaddingValues,
   hideNav: (Boolean) -> Unit,
 ) {
   var selectedItem: String? by rememberSaveable { mutableStateOf(null) }
@@ -125,6 +131,8 @@ fun MatchOverviewAdaptive(
     navigator.navigateBack()
   }
 
+  val localLayoutDirection = LocalLayoutDirection.current
+
   ListDetailPaneScaffold(
     listPane = {
       AnimatedPane(modifier = modifier) {
@@ -133,6 +141,13 @@ fun MatchOverviewAdaptive(
           pagerState = pagerState,
           selectedItem = selectedItem ?: " ",
           listOfLazyListState = listOfLazyListState,
+          contentPaddingValues =
+            PaddingValues(
+              start = innerPadding.calculateStartPadding(localLayoutDirection),
+              end = innerPadding.calculateEndPadding(localLayoutDirection),
+              top = 0.dp,
+              bottom = innerPadding.calculateBottomPadding(),
+            ),
           action = {
             selectedItem = it
             navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
@@ -142,12 +157,14 @@ fun MatchOverviewAdaptive(
     },
     detailPane = {
       selectedItem?.let {
-        AnimatedPane(modifier = modifier) { NewMatchDetails(viewModel = viewModel, id = it) }
+        AnimatedPane(modifier = modifier) {
+          MatchDetails(viewModel = viewModel, id = it, paddingValues = innerPadding)
+        }
       }
     },
     directive = navigator.scaffoldDirective,
     value = navigator.scaffoldValue,
-    modifier = Modifier.statusBarsPadding().navigationBarsPadding(),
+    modifier = Modifier,
   )
 }
 
@@ -156,6 +173,7 @@ fun MatchOverview(
   viewModel: VlrViewModel,
   pagerState: PagerState,
   selectedItem: String,
+  contentPaddingValues: PaddingValues,
   listOfLazyListState: SnapshotStateList<LazyListState>,
   action: (String) -> Unit,
 ) {
@@ -175,6 +193,14 @@ fun MatchOverview(
 
   val resetScroll by
     remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+
+  val selectedTopItemSlot by viewModel.selectedTopSlotItemPosition.collectAsStateWithLifecycle()
+
+  LaunchedEffect(pagerState.currentPage) {
+    viewModel.updateSelectedTopSlotItemPosition(pagerState.currentPage)
+  }
+
+  LaunchedEffect(selectedTopItemSlot) { pagerState.animateScrollToPage(selectedTopItemSlot) }
 
   val modifier: Modifier = Modifier
   Column(
@@ -196,6 +222,7 @@ fun MatchOverview(
               updateState = updateState,
               resetScroll = resetScroll,
               selectedItem = selectedItem,
+              contentPadding = contentPaddingValues,
               onClick = action,
               postResetScroll = { viewModel.postResetScroll() },
             )
@@ -219,6 +246,7 @@ fun MatchOverviewContainer(
   updateState: Result<Boolean, Throwable?>,
   resetScroll: Boolean,
   selectedItem: String,
+  contentPadding: PaddingValues,
   onClick: (String) -> Unit,
   postResetScroll: () -> Unit,
 ) {
@@ -251,20 +279,12 @@ fun MatchOverviewContainer(
       }
     }
 
-  Box {
-    Column(
-      modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh),
-      verticalArrangement = Arrangement.Top,
-    ) {
-      AnimatedVisibility(visible = updateState.get() == true || swipeRefresh.progress != 0f) {
-        LinearProgressIndicator(
-          modifier
-            .fillMaxWidth()
-            .padding(Local16DPPadding.current)
-            .animateContentSize()
-            .testTag("common:loader")
-        )
-      }
+  Box(modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh)) {
+    PullToRefreshPill(
+      modifier = modifier.align(Alignment.TopCenter).padding(top = 16.dp).statusBarsPadding(),
+      show = updateState.get() == true || swipeRefresh.progress != 0f,
+    )
+    Column(verticalArrangement = Arrangement.Top) {
       updateState.getError()?.let {
         ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
       }
@@ -280,8 +300,6 @@ fun MatchOverviewContainer(
         )
       }
 
-      //    VlrTabRowForViewPager(modifier = modifier, pagerState = pagerState, tabs = tabs)
-
       VlrHorizontalViewPager(
         modifier = modifier,
         pagerState = pagerState,
@@ -296,6 +314,7 @@ fun MatchOverviewContainer(
               modifier.fillMaxSize().testTag("matchOverview:live"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState,
+              contentPadding = contentPadding,
             ) {
               items(ongoing, key = { item -> item.id }) {
                 MatchOverviewPreview(
@@ -345,6 +364,7 @@ fun MatchOverviewContainer(
               modifier.fillMaxSize().testTag("matchOverview:upcoming"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState,
+              contentPadding = contentPadding,
             ) {
               groupedUpcomingMatches.forEach { (date, match)
                 -> // Group heading based on date for sticky header
@@ -401,6 +421,7 @@ fun MatchOverviewContainer(
               modifier.fillMaxSize().testTag("matchOverview:result"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState,
+              contentPadding = contentPadding,
             ) {
               groupedCompletedMatches.forEach { (date, match)
                 -> // Group heading based on date for sticky header
@@ -447,13 +468,16 @@ fun MatchOverviewContainer(
       )
     }
 
-    val scope = rememberCoroutineScope()
-    VlrSegmentedButtons(
-      modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(8.dp),
-      highlighted = pagerState.currentPage,
-      items = tabs,
-    ) { _, index ->
-      scope.launch { pagerState.animateScrollToPage(index) }
+    ShowIfLargeFormFactorDevice {
+      val scope = rememberCoroutineScope()
+      VlrSegmentedButtons(
+        modifier =
+          Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp).navigationBarsPadding(),
+        highlighted = pagerState.currentPage,
+        items = tabs,
+      ) { _, index ->
+        scope.launch { pagerState.animateScrollToPage(index) }
+      }
     }
   }
 }
