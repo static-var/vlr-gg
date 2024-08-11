@@ -52,15 +52,14 @@ private fun UiDevice.visitMatchDetailsAndBack() {
         child < (findObject(By.res("matchOverview:result"))?.children?.size ?: 0)
     ) {
       findObject(By.res("matchOverview:result"))?.children?.let { children ->
-        if (
-          children[child]?.text == null
-        ) { // isClickable didn't work
+        if (children[child]?.text == null) { // isClickable didn't work
 
           children[child].click()
-          val data = wait(
-            Until.hasObject(By.res("details:more_info")),
-            5_000
-          ) // Ensure static Ui elements are loaded
+          val data =
+            wait(
+              Until.hasObject(By.res("details:more_info")),
+              5_000,
+            ) // Ensure static Ui elements are loaded
           if (!data) {
             child++
             return@let
@@ -96,7 +95,7 @@ private fun UiDevice.visitEventDetailsAndBack() {
       findObject(By.res("eventOverview:live"))?.children?.get(it)?.click()
       wait(
         Until.hasObject(By.res("eventDetails:teams")),
-        15_000
+        15_000,
       ) // Ensure static Ui elements are loaded
       wait(Until.hasObject(By.res("eventDetails:teams")), TIMEOUT)
       wait(Until.gone(By.res("common:loader")), TIMEOUT) // Ensure loader is gone
@@ -143,7 +142,8 @@ private fun UiDevice.readNewsAndBack() {
   val newsRoot =
     wait(Until.hasObject(By.res("newsOverview:root")), TIMEOUT) // Ensure news list is available
   if (newsOverview && newsRoot) {
-    findObject(By.res("newsOverview:root"))?.children?.get(0)?.click()
+    findObject(By.res("newsOverview:root"))?.children?.getOrNull(1)?.click()
+      ?: findObject(By.res("newsOverview:root"))?.children?.getOrNull(2)?.click()
     wait(Until.gone(By.res("common:loader")), TIMEOUT) // Ensure loader is gone
     wait(Until.hasObject(By.res("news:root")), TIMEOUT) // Ensure news details are drawn
     findObject(By.res("news:root"))?.fling(Direction.DOWN)
@@ -162,6 +162,5 @@ private fun UiDevice.acceptPermission() {
     }
   }
 }
-
 
 private const val TIMEOUT = 8_000L
