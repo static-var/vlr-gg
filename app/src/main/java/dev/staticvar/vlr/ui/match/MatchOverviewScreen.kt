@@ -530,11 +530,15 @@ fun MatchOverviewPreview(
       Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
         Text(
           text =
-            if (matchPreviewInfo.status.equals(stringResource(id = R.string.live), true))
+          when {
+            matchPreviewInfo.status.equals(stringResource(id = R.string.live), true) -> {
               stringResource(id = R.string.live)
-            else
-              matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})")
-                ?: "",
+            }
+            !matchPreviewInfo.time?.timeDiff.isNullOrBlank() -> {
+              matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})") ?: ""
+            }
+            else -> ""
+          },
           modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
           textAlign = TextAlign.Center,
           style = VLRTheme.typography.bodyMedium,
