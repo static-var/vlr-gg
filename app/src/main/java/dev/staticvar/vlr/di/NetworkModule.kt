@@ -11,6 +11,7 @@ import dev.staticvar.vlr.utils.Constants
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -75,8 +76,16 @@ object NetworkModule {
         }
       }
 
+      install(HttpTimeout) {
+        requestTimeoutMillis = TIMEOUT
+        connectTimeoutMillis = TIMEOUT
+        socketTimeoutMillis = TIMEOUT
+      }
+
       install(ContentEncoding) { gzip() }
 
       engine { interceptors.forEach(::addInterceptor) }
     }
 }
+
+private const val TIMEOUT = 20_000L
