@@ -12,13 +12,20 @@ import dev.staticvar.vlr.BuildConfig
 import dev.staticvar.vlr.data.dao.VlrDao
 import dev.staticvar.vlr.data.db.VlrDB
 import dev.staticvar.vlr.data.db.VlrTypeConverter
-import dev.staticvar.vlr.utils.*
-import io.ktor.client.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.*
+import dev.staticvar.vlr.utils.Constants
+import dev.staticvar.vlr.utils.Endpoints
+import dev.staticvar.vlr.utils.Fail
+import dev.staticvar.vlr.utils.Pass
+import dev.staticvar.vlr.utils.TimeElapsed
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.headers
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.URLProtocol
+import io.ktor.serialization.kotlinx.KotlinxSerializationConverter
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -411,7 +418,7 @@ internal class VlrRepositoryTest {
         val data = awaitItem()
         assertThat(data)
           .isInstanceOf(Pass::class.java) // Pass is a wrapper class around the actual data
-        assertThat(data.dataOrNull()).isNotNull() // Check if data is not empty
+        assertThat(data).isNotNull() // Check if data is not empty
         awaitComplete()
       }
     }
