@@ -2,6 +2,7 @@ package dev.staticvar.vlr.ui.navabar
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -47,40 +48,50 @@ fun VlrNavBar(
   topSlotSelectedItem: Int? = null,
   topSlotAction: ((Int) -> Unit)? = null,
 ) {
+  val tweenAnimSpec = tween<Float>(600)
   // https://issuetracker.google.com/issues/243852341#comment1
   NavBarAnimatedVisibility(isVisible = isVisible) {
     FloatingNavigationBar(
       tonalElevation = 16.dp,
       modifier =
-        Modifier.padding(horizontal = 16.dp)
-          .navigationBarsPadding()
-          .hazeChild(
-            state = hazeState,
-            style = HazeMaterials.thin(),
-            shape = VLRTheme.shapes.extraLarge,
-          ),
+      Modifier
+        .padding(horizontal = 16.dp)
+        .navigationBarsPadding()
+        .hazeChild(
+          state = hazeState,
+          style = HazeMaterials.ultraThin(),
+          shape = VLRTheme.shapes.extraLarge,
+        ),
       containerColor = Color.Transparent,
     ) {
       var topSlot: TopSlot? by remember { mutableStateOf(null) }
 
       AnimatedContent(
         targetState = topSlot,
-        transitionSpec = { scaleIn() + fadeIn() togetherWith scaleOut() + fadeOut() },
+        transitionSpec = {
+          scaleIn(tweenAnimSpec) + fadeIn(tweenAnimSpec) togetherWith scaleOut(
+            tweenAnimSpec
+          ) + fadeOut(tweenAnimSpec)
+        },
       ) {
         when (it) {
           TopSlot.MATCH ->
             MatchTopSlot(currentItem = topSlotSelectedItem ?: 0) { index ->
               topSlotAction?.invoke(index)
             }
+
           TopSlot.EVENT ->
             EventTopSlot(currentItem = topSlotSelectedItem ?: 0) { index ->
               topSlotAction?.invoke(index)
             }
+
           else -> {}
         }
       }
       Row(
-        modifier = Modifier.fillMaxWidth().selectableGroup(),
+        modifier = Modifier
+          .fillMaxWidth()
+          .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         items.forEach { navItem ->
@@ -104,7 +115,7 @@ fun VlrNavBar(
             onClick = navItem.onClick,
             modifier = Modifier.alpha(if (isCurrentDestination) 1f else 0.7f),
             colors =
-              NavigationBarItemDefaults.colors(selectedTextColor = VLRTheme.colorScheme.primary),
+            NavigationBarItemDefaults.colors(selectedTextColor = VLRTheme.colorScheme.primary),
           )
         }
       }
@@ -143,20 +154,25 @@ fun TopSlotContainer(
 ) {
   var localItem by remember(currentItem) { mutableIntStateOf(currentItem) }
   Row(
-    modifier = Modifier.padding(top = 4.dp).fillMaxWidth().selectableGroup(),
+    modifier = Modifier
+      .padding(top = 4.dp)
+      .fillMaxWidth()
+      .selectableGroup(),
     horizontalArrangement = Arrangement.spacedBy(4.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     tabs.forEachIndexed { index, tab ->
       val isSelected = localItem == index
       Button(
-        modifier = modifier.alpha(if (isSelected) 1f else 0.7f).weight(1f),
+        modifier = modifier
+          .alpha(if (isSelected) 1f else 0.7f)
+          .weight(1f),
         onClick = {
           localItem = index
           action(index)
         },
         colors =
-          if (isSelected) ButtonDefaults.buttonColors() else ButtonDefaults.outlinedButtonColors(),
+        if (isSelected) ButtonDefaults.buttonColors() else ButtonDefaults.outlinedButtonColors(),
       ) {
         Text(text = tab, maxLines = 1)
       }
