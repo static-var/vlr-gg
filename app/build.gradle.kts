@@ -24,13 +24,13 @@ plugins {
 }
 
 android {
-  compileSdk = 34
+  compileSdk = 35
   namespace = "dev.staticvar.vlr"
 
   defaultConfig {
     applicationId = "dev.staticvar.vlr"
     minSdk = 23
-    targetSdk = 34
+    targetSdk = 35
     versionCode = 62
     versionName = "v0.5.5"
 

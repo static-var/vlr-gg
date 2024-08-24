@@ -22,13 +22,13 @@ fun NavBarAnimatedVisibility(
       slideInVertically(
         // Enters by sliding up from offset 0 to fullHeight.
         initialOffsetY = { fullHeight -> fullHeight },
-        animationSpec = tween(durationMillis = 400, easing = LinearOutSlowInEasing),
+        animationSpec = tween(durationMillis = 600, easing = LinearOutSlowInEasing),
       ),
     exit =
       slideOutVertically(
         // Exits by sliding up from offset 0 to -fullHeight.
         targetOffsetY = { fullHeight -> fullHeight },
-        animationSpec = tween(durationMillis = 400, easing = FastOutLinearInEasing),
+        animationSpec = tween(durationMillis = 600, easing = FastOutLinearInEasing),
       ),
     modifier = modifier,
     label = "",
