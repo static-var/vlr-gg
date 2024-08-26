@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -48,9 +49,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.staticvar.vlr.data.Heading
 import dev.staticvar.vlr.data.ListItem
 import dev.staticvar.vlr.data.Paragraph
@@ -86,7 +87,11 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
     parsedNews?.get()?.let { news ->
       LazyColumn(
         modifier =
-          modifier.fillMaxSize().padding(horizontal = 8.dp).testTag("news:root").haze(hazeState),
+        modifier
+          .fillMaxSize()
+          .padding(horizontal = 8.dp)
+          .testTag("news:root")
+          .haze(hazeState),
         state = scrollState,
       ) {
         item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }
@@ -118,7 +123,9 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
               imageVector = Icons.Outlined.Share,
               contentDescription = "Share",
               modifier =
-                modifier.clip(shape = VLRTheme.shapes.medium).clickable {
+              modifier
+                .clip(shape = VLRTheme.shapes.medium)
+                .clickable {
                   fireShareIntent(context, news.title, id)
                 },
               tint = VLRTheme.colorScheme.primary,
@@ -151,7 +158,9 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                 Text(
                   text = parsedData.text,
                   style = VLRTheme.typography.labelMedium,
-                  modifier = modifier.fillMaxSize().padding(vertical = 2.dp),
+                  modifier = modifier
+                    .fillMaxSize()
+                    .padding(vertical = 2.dp),
                   textAlign = TextAlign.Center,
                 )
 
@@ -172,14 +181,17 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                 }
 
               is Quote ->
-                Row(modifier.fillMaxWidth().height(IntrinsicSize.Max)) {
+                Row(
+                  modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max)) {
                   Spacer(
                     modifier =
-                      modifier
-                        .width(12.dp)
-                        .padding(4.dp)
-                        .background(VLRTheme.colorScheme.primary)
-                        .fillMaxHeight()
+                    modifier
+                      .width(12.dp)
+                      .padding(4.dp)
+                      .background(VLRTheme.colorScheme.primary)
+                      .fillMaxHeight()
                   )
                   Text(
                     text = parsedData.text,
@@ -201,7 +213,10 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
       ?: parsedNews?.getError()?.let {
         Text(text = it.stackTraceToString(), modifier = Modifier.align(Alignment.Center))
       }
-      ?: LinearProgressIndicator(modifier.testTag("common:loader").align(Alignment.Center))
+      ?: LinearProgressIndicator(
+        modifier
+          .testTag("common:loader")
+          .align(Alignment.Center))
   }
 }
 
@@ -217,20 +232,34 @@ fun BoxScope.ScrollToTopButton(
   val coroutineScope = rememberCoroutineScope()
   AnimatedVisibility(
     visible = showScrollToTop,
-    modifier = modifier.align(Alignment.BottomEnd).navigationBarsPadding().padding(16.dp),
+    modifier = modifier
+      .align(Alignment.BottomEnd)
+      .navigationBarsPadding()
+      .padding(16.dp),
   ) {
     Box(
       modifier =
-        Modifier.background(Color.Transparent)
-          .hazeChild(hazeState, shape = VLRTheme.shapes.large, style = HazeMaterials.ultraThin())
-          .clip(VLRTheme.shapes.large)
-          .border(1.dp, VLRTheme.colorScheme.primary, VLRTheme.shapes.large)
-          .clickable { coroutineScope.launch { scrollState.animateScrollToItem(0) } }
+      Modifier
+        .size(48.dp)
+        .background(Color.Transparent)
+        .clip(VLRTheme.shapes.extraLarge)
+        .hazeChild(
+          hazeState, style = HazeStyle(
+            backgroundColor = VLRTheme.colorScheme.surface,
+            blurRadius = 24.dp,
+            noiseFactor = 0.2f
+          )
+        )
+        .border(1.dp, VLRTheme.colorScheme.primary, VLRTheme.shapes.extraLarge)
+        .clickable { coroutineScope.launch { scrollState.animateScrollToItem(0) } }
     ) {
       Icon(
         imageVector = Icons.Outlined.KeyboardArrowUp,
         contentDescription = "Scroll to Top",
-        modifier = Modifier.background(Color.Transparent).padding(6.dp),
+        modifier = Modifier
+          .align(Alignment.Center)
+          .background(Color.Transparent)
+          .padding(6.dp),
         tint = VLRTheme.colorScheme.primary,
       )
     }

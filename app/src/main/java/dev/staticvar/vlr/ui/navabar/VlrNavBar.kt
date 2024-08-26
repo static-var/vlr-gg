@@ -29,13 +29,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeChild
-import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.theme.VLRTheme
 
@@ -57,10 +58,14 @@ fun VlrNavBar(
       Modifier
         .padding(horizontal = 16.dp)
         .navigationBarsPadding()
+        .clip(VLRTheme.shapes.extraLarge)
         .hazeChild(
           state = hazeState,
-          style = HazeMaterials.ultraThin(),
-          shape = VLRTheme.shapes.extraLarge,
+          style = HazeStyle(
+            backgroundColor = VLRTheme.colorScheme.surface,
+            blurRadius = 24.dp,
+            noiseFactor = 0f
+          )
         ),
       containerColor = Color.Transparent,
     ) {

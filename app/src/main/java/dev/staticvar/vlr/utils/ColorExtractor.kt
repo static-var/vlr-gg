@@ -68,7 +68,7 @@ fun DynamicTheme(
   model: String,
   fallback: Color = VLRTheme.colorScheme.primary,
   useDarkTheme: Boolean = isSystemInDarkTheme(),
-  style: PaletteStyle = PaletteStyle.Content,
+  style: PaletteStyle = PaletteStyle.Vibrant,
   content: @Composable () -> Unit,
 ) {
   val colorExtractor = LocalColorExtractor.current
