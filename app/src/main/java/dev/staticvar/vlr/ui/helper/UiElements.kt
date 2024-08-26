@@ -12,6 +12,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -23,6 +24,7 @@ fun CardView(
   ElevatedCard(
     modifier =
       Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+        .clip(RoundedCornerShape(8.dp))
         .animateContentSize(
           animationSpec =
             spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMedium)
@@ -43,6 +45,7 @@ fun EmphasisCardView(modifier: Modifier = Modifier, content: @Composable ColumnS
     modifier =
       Modifier.fillMaxWidth()
         .padding(horizontal = 16.dp, vertical = 4.dp)
+        .clip(RoundedCornerShape(8.dp))
         .animateContentSize(
           animationSpec =
             spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMedium)
