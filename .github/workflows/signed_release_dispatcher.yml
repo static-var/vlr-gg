@@ -6,12 +6,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: set up JDK 1.8
-        uses: actions/setup-java@v3
+      - uses: actions/checkout@v4
+      - name: set up Java 17
+        uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
-          java-version: '11'
+          java-version: '17'
+          cache: 'gradle'
 
       - name: Decode Keystore
         env:
@@ -61,7 +62,7 @@ jobs:
 
       - name: Push tag
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.0
+        uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           custom_tag: "${{ env.VERSION_NAME }}"
@@ -75,7 +76,7 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           artifacts: ${{ env.APK }}
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           echo ${{ env.VERSION_NAME }} > version
           git config user.name github-actions
