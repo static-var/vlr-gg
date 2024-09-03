@@ -12,7 +12,7 @@ fun VlrHorizontalViewPager(
   pagerState: PagerState,
   vararg contents: @Composable () -> Unit
 ) {
-  HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize()) {
+  HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize(), beyondViewportPageCount = 1) {
     tabPosition ->
     contents[tabPosition]()
   }
