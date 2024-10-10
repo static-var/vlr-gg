@@ -1,5 +1,5 @@
 [versions]
-kotlin = '2.0.10'
+kotlin = '2.0.21'
 compose = "2024.08.00-alpha02"
 detektCompose = "0.4.10"
 benchmark = "1.3.0"
