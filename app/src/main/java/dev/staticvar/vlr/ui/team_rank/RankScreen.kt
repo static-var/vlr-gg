@@ -54,6 +54,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -100,6 +101,7 @@ import dev.staticvar.vlr.utils.Waiting
 import dev.staticvar.vlr.utils.onFail
 import dev.staticvar.vlr.utils.onPass
 import dev.staticvar.vlr.utils.onWaiting
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -112,6 +114,7 @@ fun RankScreenAdaptive(
   var selectedItem: String? by rememberSaveable { mutableStateOf(null) }
   val paneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
   val navigator = rememberListDetailPaneScaffoldNavigator(scaffoldDirective = paneScaffoldDirective)
+  val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(navigator.currentDestination) {
     if (navigator.currentDestination?.pane == ThreePaneScaffoldRole.Secondary) {
@@ -131,7 +134,9 @@ fun RankScreenAdaptive(
 
   BackHandler(navigator.canNavigateBack()) {
     selectedItem = null
-    navigator.navigateBack()
+    coroutineScope.launch {
+      navigator.navigateBack()
+    }
   }
 
   val layoutDirection = LocalLayoutDirection.current
@@ -153,7 +158,9 @@ fun RankScreenAdaptive(
             ),
           action = {
             selectedItem = it
-            navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
+            coroutineScope.launch {
+              navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
+            }
           },
         )
       }

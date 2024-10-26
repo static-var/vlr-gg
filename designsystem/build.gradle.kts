@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+
 plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.kotlin.android)
@@ -32,7 +34,7 @@ android {
     compose = true
   }
   composeCompiler {
-    enableStrongSkippingMode = true
+    featureFlags.set(listOf(ComposeFeatureFlag.StrongSkipping))
 
     reportsDestination = layout.buildDirectory.dir("compose_compiler")
   }

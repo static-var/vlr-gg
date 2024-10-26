@@ -4,6 +4,7 @@
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.io.FileInputStream
 import java.util.Properties
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 
 plugins {
   alias(libs.plugins.android.application)
@@ -118,7 +119,7 @@ android {
     buildConfig = true
   }
   composeCompiler {
-    enableStrongSkippingMode = true
+    featureFlags.set(listOf(ComposeFeatureFlag.StrongSkipping))
 
     reportsDestination = layout.buildDirectory.dir("compose_compiler")
   }

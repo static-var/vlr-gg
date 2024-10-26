@@ -108,6 +108,7 @@ fun MatchOverviewAdaptive(
   val paneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo())
   val navigator = rememberListDetailPaneScaffoldNavigator(scaffoldDirective = paneScaffoldDirective)
   val listOfLazyListState = remember { mutableStateListOf<LazyListState>() }
+  val coroutineScope = rememberCoroutineScope()
 
   if (listOfLazyListState.isEmpty()) {
     repeat(3) { listOfLazyListState.add(rememberLazyListState()) }
@@ -129,7 +130,9 @@ fun MatchOverviewAdaptive(
 
   BackHandler(navigator.canNavigateBack()) {
     selectedItem = null
-    navigator.navigateBack()
+    coroutineScope.launch {
+      navigator.navigateBack()
+    }
   }
 
   val localLayoutDirection = LocalLayoutDirection.current
@@ -151,7 +154,9 @@ fun MatchOverviewAdaptive(
           ),
           action = {
             selectedItem = it
-            navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
+            coroutineScope.launch {
+              navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
+            }
           },
         )
       }
