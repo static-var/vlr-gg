@@ -2,6 +2,7 @@ package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
@@ -29,6 +30,8 @@ data class TeamDetails(
   @SerialName("website") val website: String? = "", // https://www.100thieves.com/
   @SerialName("points") val points: Int? = null, // true
   val createdAt: Long = System.currentTimeMillis(),
+  @ColumnInfo("markedFav", defaultValue = "0")
+  val markedFav: Boolean = false,
 ) {
   @Keep
   @Serializable
@@ -51,6 +54,6 @@ data class TeamDetails(
     @SerialName("id") val id: String = "", // 11225
     @SerialName("img") val img: String = "", // https://owcdn.net/img/6224af0f3fbd0.png
     @SerialName("name") val name: String? = "", // Ethan Arnold
-    @SerialName("role") val role: String? = null // Team Captain
+    @SerialName("role") val role: String? = null, // Team Captain
   )
 }

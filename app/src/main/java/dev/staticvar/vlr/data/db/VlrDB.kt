@@ -14,6 +14,9 @@ import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.data.api.response.TournamentPreview
 import dev.staticvar.vlr.data.dao.VlrDao
+import dev.staticvar.vlr.data.model.EventFav
+import dev.staticvar.vlr.data.model.MatchFav
+import dev.staticvar.vlr.data.model.TeamFav
 import dev.staticvar.vlr.data.model.TopicTracker
 
 @Database(
@@ -26,10 +29,14 @@ import dev.staticvar.vlr.data.model.TopicTracker
       TournamentDetails::class,
       TopicTracker::class,
       TeamDetails::class,
-      PlayerData::class],
+      PlayerData::class,
+      TeamFav::class,
+      MatchFav::class,
+      EventFav::class
+    ],
   exportSchema = true,
-  version = 12,
-  autoMigrations = [AutoMigration(9, 10)]
+  version = 13,
+  autoMigrations = [AutoMigration(9, 10), AutoMigration(12, 13)]
 )
 @TypeConverters(VlrTypeConverter::class)
 abstract class VlrDB : RoomDatabase() {

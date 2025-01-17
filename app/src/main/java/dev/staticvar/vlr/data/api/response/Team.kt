@@ -9,8 +9,7 @@ import kotlinx.serialization.json.JsonNames
 @Keep
 @Serializable
 @Immutable
-data class Team
-constructor(
+data class Team(
   @SerialName("country") @JsonNames("region") val region: String = "", // Canada
   @SerialName("id") val id: String? = "", // 468
   @SerialName("img")
@@ -19,4 +18,5 @@ constructor(
   @SerialName("name") val name: String = "", // Renegades
   @SerialName("score") val score: Int? = null, // 10
   @SerialName("winner") val winner: Boolean? = null, // true
+  val markedFav: Boolean = false,
 )

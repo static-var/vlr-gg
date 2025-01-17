@@ -3,9 +3,9 @@ package dev.staticvar.vlr.data.api.response
 import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.lang.reflect.Member
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -27,6 +27,8 @@ data class MatchInfo(
   @SerialName("videos") val videos: Videos = Videos(),
   @SerialName("data") val matchData: List<MatchDetailData> = listOf(),
   @SerialName("map_count") val mapCount: Int = 0,
+  @ColumnInfo("markedFav", defaultValue = "0")
+  val markedFav: Boolean = false,
   val createdAt: Long = System.currentTimeMillis(),
 ) {
   @Keep
@@ -36,7 +38,7 @@ data class MatchInfo(
     @SerialName("map") val map: String = "", // Fracture
     @SerialName("members") val members: List<Member> = listOf(),
     @SerialName("teams") val teams: List<Team> = listOf(),
-    @SerialName("rounds") val rounds: List<Rounds> = listOf()
+    @SerialName("rounds") val rounds: List<Rounds> = listOf(),
   ) {
     @Keep
     @Serializable
@@ -63,7 +65,7 @@ data class MatchInfo(
       @Immutable
       data class Agent(
         @SerialName("img") val img: String = "", // https://vlr.gg/img/vlr/game/agents/chamber.png
-        @SerialName("name") val name: String = "" // chamber
+        @SerialName("name") val name: String = "", // chamber
       )
     }
 
@@ -75,33 +77,46 @@ data class MatchInfo(
       @SerialName("round_score") val score: String = "", // 1-0
       @SerialName("winner") val winner: Winner = Winner.NOT_PLAYED, // team1
       @SerialName("side") val side: Side = Side.NOT_PLAYED, // defense
-      @SerialName("win_type") val winType: WinType = WinType.NotPlayed // Elimination
+      @SerialName("win_type") val winType: WinType = WinType.NotPlayed, // Elimination
     ) {
       @Keep
       @Serializable
       @Immutable
       enum class Winner {
-        @SerialName("team1") TEAM1,
-        @SerialName("team2") TEAM2,
-        @SerialName("") NOT_PLAYED
+        @SerialName("team1")
+        TEAM1,
+        @SerialName("team2")
+        TEAM2,
+        @SerialName("")
+        NOT_PLAYED
       }
+
       @Keep
       @Serializable
       @Immutable
       enum class Side {
-        @SerialName("attack") ATTACK,
-        @SerialName("defense") DEFENCE,
-        @SerialName("") NOT_PLAYED
+        @SerialName("attack")
+        ATTACK,
+        @SerialName("defense")
+        DEFENCE,
+        @SerialName("")
+        NOT_PLAYED
       }
+
       @Keep
       @Serializable
       @Immutable
       enum class WinType {
-        @SerialName("Elimination") Elimination,
-        @SerialName("Spike exploded") SpikeExploded,
-        @SerialName("Defused") Defused,
-        @SerialName("Time out") TimeOut,
-        @SerialName("Not Played") NotPlayed,
+        @SerialName("Elimination")
+        Elimination,
+        @SerialName("Spike exploded")
+        SpikeExploded,
+        @SerialName("Defused")
+        Defused,
+        @SerialName("Time out")
+        TimeOut,
+        @SerialName("Not Played")
+        NotPlayed,
       }
     }
   }
@@ -111,7 +126,7 @@ data class MatchInfo(
   @Immutable
   data class Head2head(
     @SerialName("match_id") val id: String = "", // 16996
-    @SerialName("teams") val teams: List<Team> = listOf()
+    @SerialName("teams") val teams: List<Team> = listOf(),
   )
 
   @Keep
