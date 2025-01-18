@@ -12,7 +12,7 @@ import dev.staticvar.vlr.data.db.Migration_7_8
 import dev.staticvar.vlr.data.db.VlrDB
 import dev.staticvar.vlr.data.db.VlrTypeConverter
 import dev.staticvar.vlr.utils.Constants
-import io.ktor.client.*
+import io.ktor.client.HttpClient
 import javax.inject.Named
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
@@ -34,6 +34,9 @@ object StorageModule {
       .build()
 
   @Provides @Singleton fun getVlrDao(db: VlrDB) = db.getVlrDao()
+  @Provides @Singleton fun getEventFavDao(db: VlrDB) = db.getEventFavDao()
+  @Provides @Singleton fun getMatchFavDao(db: VlrDB) = db.getMatchFavDao()
+  @Provides @Singleton fun getTeamFavDao(db: VlrDB) = db.getTeamFavDao()
 
   @Provides
   @Singleton

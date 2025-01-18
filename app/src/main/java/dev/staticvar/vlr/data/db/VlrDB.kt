@@ -13,6 +13,9 @@ import dev.staticvar.vlr.data.api.response.PlayerData
 import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.data.api.response.TournamentPreview
+import dev.staticvar.vlr.data.dao.EventFavDao
+import dev.staticvar.vlr.data.dao.MatchFavDao
+import dev.staticvar.vlr.data.dao.TeamFavDao
 import dev.staticvar.vlr.data.dao.VlrDao
 import dev.staticvar.vlr.data.model.EventFav
 import dev.staticvar.vlr.data.model.MatchFav
@@ -41,6 +44,9 @@ import dev.staticvar.vlr.data.model.TopicTracker
 @TypeConverters(VlrTypeConverter::class)
 abstract class VlrDB : RoomDatabase() {
   abstract fun getVlrDao(): VlrDao
+  abstract fun getEventFavDao(): EventFavDao
+  abstract fun getMatchFavDao(): MatchFavDao
+  abstract fun getTeamFavDao(): TeamFavDao
 }
 
 val Migration_7_8 =
