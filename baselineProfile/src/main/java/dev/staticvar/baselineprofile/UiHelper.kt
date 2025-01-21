@@ -104,7 +104,7 @@ private fun UiDevice.visitEventDetailsAndBack() {
       waitForIdle()
       pressBack()
       wait(Until.hasObject(By.res("eventDetails:root")), TIMEOUT)
-      findObject(By.res("eventDetails:root")).fling(Direction.DOWN)
+//      findObject(By.res("eventDetails:root")).fling(Direction.DOWN)
       waitForIdle()
       pressBack()
     }
