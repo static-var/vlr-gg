@@ -120,15 +120,17 @@ fun VlrNavBar(
                 Icon(
                   imageVector = if (it) navItem.selectedIcon else navItem.unselectedIcon,
                   contentDescription = navItem.title,
-                  tint = if(it) VLRTheme.colorScheme.onPrimaryContainer else VLRTheme.colorScheme.primaryContainer,
+                  tint = if (it) VLRTheme.colorScheme.onPrimaryContainer else VLRTheme.colorScheme.primaryContainer,
                 )
               }
             },
             label = { Text(text = navItem.title) },
             onClick = navItem.onClick,
-            modifier = Modifier.alpha(if (isCurrentDestination) 1f else 0.7f),
             colors =
-              NavigationBarItemDefaults.colors(selectedTextColor = VLRTheme.colorScheme.primary, indicatorColor = VLRTheme.colorScheme.primary),
+              NavigationBarItemDefaults.colors(
+                selectedTextColor = VLRTheme.colorScheme.primary,
+                indicatorColor = VLRTheme.colorScheme.primary
+              ),
           )
         }
       }
