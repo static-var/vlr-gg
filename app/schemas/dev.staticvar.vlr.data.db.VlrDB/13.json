@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 13,
-    "identityHash": "54377afb4912ea30954c1590704962f4",
+    "identityHash": "998060450cbeafed7a3452fabb78e7a9",
     "entities": [
       {
         "tableName": "NewsResponseItem",
@@ -50,7 +50,7 @@
       },
       {
         "tableName": "MatchPreviewInfo",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `event` TEXT NOT NULL, `series` TEXT NOT NULL, `status` TEXT NOT NULL, `team1` TEXT NOT NULL, `team2` TEXT NOT NULL, `time` TEXT, `markedFav` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `event` TEXT NOT NULL, `series` TEXT NOT NULL, `status` TEXT NOT NULL, `team1` TEXT NOT NULL, `team2` TEXT NOT NULL, `time` TEXT, `eventId` TEXT NOT NULL DEFAULT '', `markedFav` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -93,6 +93,13 @@
             "columnName": "time",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "eventId",
+            "columnName": "eventId",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
           },
           {
             "fieldPath": "markedFav",
@@ -200,7 +207,7 @@
       },
       {
         "tableName": "TournamentPreview",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dates` TEXT NOT NULL, `id` TEXT NOT NULL, `img` TEXT NOT NULL, `location` TEXT NOT NULL, `prize` TEXT NOT NULL, `status` TEXT NOT NULL, `title` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dates` TEXT NOT NULL, `id` TEXT NOT NULL, `img` TEXT NOT NULL, `location` TEXT NOT NULL, `prize` TEXT NOT NULL, `status` TEXT NOT NULL, `title` TEXT NOT NULL, `markedFav` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "dates",
@@ -243,6 +250,13 @@
             "columnName": "title",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "markedFav",
+            "columnName": "markedFav",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -256,7 +270,7 @@
       },
       {
         "tableName": "TournamentDetails",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `dates` TEXT NOT NULL, `img` TEXT NOT NULL, `location` TEXT NOT NULL, `matches` TEXT NOT NULL, `participants` TEXT NOT NULL, `prize` TEXT NOT NULL, `prizes` TEXT NOT NULL, `subtitle` TEXT NOT NULL, `title` TEXT NOT NULL, `status` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `dates` TEXT NOT NULL, `img` TEXT NOT NULL, `location` TEXT NOT NULL, `matches` TEXT NOT NULL, `participants` TEXT NOT NULL, `prize` TEXT NOT NULL, `prizes` TEXT NOT NULL, `subtitle` TEXT NOT NULL, `title` TEXT NOT NULL, `status` TEXT NOT NULL, `markedFav` INTEGER NOT NULL DEFAULT 0, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -323,6 +337,13 @@
             "columnName": "status",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "markedFav",
+            "columnName": "markedFav",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "createdAt",
@@ -615,7 +636,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '54377afb4912ea30954c1590704962f4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '998060450cbeafed7a3452fabb78e7a9')"
     ]
   }
 }
