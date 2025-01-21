@@ -23,14 +23,19 @@ fun DateChip(modifier: Modifier = Modifier, date: String) {
       onClick = {},
       label = {
         Text(
-          date,
+          text = date,
           textAlign = TextAlign.Center,
+          color = VLRTheme.colorScheme.onPrimaryContainer,
         )
       },
       shape = VLRTheme.shapes.small,
       colors = SuggestionChipDefaults.suggestionChipColors(
         containerColor = VLRTheme.colorScheme.primaryContainer
-      )
+      ),
+      border = SuggestionChipDefaults.suggestionChipBorder(
+        enabled = true,
+        borderColor = VLRTheme.colorScheme.primary
+      ),
     )
   }
 }
