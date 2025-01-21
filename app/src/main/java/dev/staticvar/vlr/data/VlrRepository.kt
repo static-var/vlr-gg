@@ -1,35 +1,57 @@
 package dev.staticvar.vlr.data
 
-import com.github.michaelbull.result.*
-import dev.staticvar.vlr.data.api.response.*
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.get
+import com.github.michaelbull.result.getError
+import dev.staticvar.vlr.data.api.response.MatchInfo
+import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
+import dev.staticvar.vlr.data.api.response.NewsResponseItem
+import dev.staticvar.vlr.data.api.response.PlayerData
+import dev.staticvar.vlr.data.api.response.RankPerRegion
+import dev.staticvar.vlr.data.api.response.TeamDetails
+import dev.staticvar.vlr.data.api.response.TournamentDetails
+import dev.staticvar.vlr.data.api.response.TournamentPreview
+import dev.staticvar.vlr.data.dao.EventFavDao
+import dev.staticvar.vlr.data.dao.MatchFavDao
+import dev.staticvar.vlr.data.dao.TeamFavDao
 import dev.staticvar.vlr.data.dao.VlrDao
+import dev.staticvar.vlr.data.model.EventFav
+import dev.staticvar.vlr.data.model.MatchFav
+import dev.staticvar.vlr.data.model.TeamFav
 import dev.staticvar.vlr.data.model.TopicTracker
 import dev.staticvar.vlr.di.IoDispatcher
 import dev.staticvar.vlr.utils.Endpoints
 import dev.staticvar.vlr.utils.Pass
 import dev.staticvar.vlr.utils.TimeElapsed
 import dev.staticvar.vlr.utils.runSuspendCatching
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
+@Suppress("LongParameterList")
 @Singleton
 class VlrRepository
 @Inject
 constructor(
   private val vlrDao: VlrDao,
+  private val matchFavDao: MatchFavDao,
+  private val eventFavDao: EventFavDao,
+  private val teamFavDao: TeamFavDao,
   private val ktorHttpClient: HttpClient,
   @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-  private val json: Json
+  private val json: Json,
 ) {
   /** Upcoming matches Method returns all the upcoming matches we have stored in db */
   fun upcomingMatches() = vlrDao.getAllMatchesPreviewNoFlow()
@@ -78,7 +100,18 @@ constructor(
     }
 
   /** Get matches from db */
-  fun getMatchesFromDb() = vlrDao.getAllMatchesPreview().map { Pass(it) }
+  fun getMatchesFromDb() = combine(
+    vlrDao.getAllMatchesPreview(),
+    matchFavDao.getFavoriteMatches(),
+    teamFavDao.getFavoriteTeams()
+  ) { matches, matchFavs, teamFavs ->
+    matches.map {
+      it.copy(
+        markedFav = matchFavs.any { fav -> fav.id == it.id }
+            || teamFavs.any { fav -> it.team1.id == fav.id || it.team2.id == fav.id }
+      )
+    }
+  }.map { Pass(it) }
 
   /**
    * Get events from server This method will request server to return the latest events / tournament
@@ -101,7 +134,10 @@ constructor(
     }
 
   /** Get events from db */
-  fun getEventsFromDb() = vlrDao.getTournaments().map { Pass(it) }
+  fun getEventsFromDb() =
+    vlrDao.getTournaments().combine(eventFavDao.getFavoriteEvents()) { tournaments, eventFavs ->
+      tournaments.map { it.copy(markedFav = eventFavs.any { fav -> fav.id == it.id }) }
+    }.map { Pass(it) }
 
   /**
    * Get events from server This method will request server to return the latest events / tournament
@@ -128,7 +164,10 @@ constructor(
     }
 
   /** Get events from db */
-  fun getRanksFromDb() = vlrDao.getTeamDetailsInFlow().map { Pass(it) }
+  fun getRanksFromDb() =
+    vlrDao.getTeamDetailsInFlow().combine(teamFavDao.getFavoriteTeams()) { teams, teamFavs ->
+      teams?.map { it.copy(markedFav = teamFavs.any { fav -> fav.id == it.id }) }
+    }.map { Pass(it) }
 
   /**
    * Get match details from server This will request server to return match data of a given match ID
@@ -157,7 +196,16 @@ constructor(
    *
    * @param id
    */
-  fun getMatchDetailsFromDb(id: String) = vlrDao.getMatchById(id).map { Pass(it) }
+  fun getMatchDetailsFromDb(id: String) = combine(
+    vlrDao.getMatchById(id),
+    matchFavDao.getFavoriteMatches(),
+    teamFavDao.getFavoriteTeams()
+  ) { match, matchFavs, teamFavs ->
+    match?.copy(
+      markedFav = matchFavs.any { fav -> fav.id == match.id }
+          || teamFavs.any { fav -> match.teams.any { it.id == fav.id } }
+    )
+  }.map { Pass(it) }
 
   /**
    * Get event details from server Request for latest Event / Tournament details of a given event
@@ -185,7 +233,10 @@ constructor(
    *
    * @param id
    */
-  fun getEventDetailsFromDb(id: String) = vlrDao.getTournamentById(id).map { Pass(it) }
+  fun getEventDetailsFromDb(id: String) =
+    vlrDao.getTournamentById(id).combine(eventFavDao.getFavoriteEvents()) { tournament, eventFavs ->
+      tournament?.copy(markedFav = eventFavs.any { fav -> fav.id == tournament.id })
+    }.map { Pass(it) }
 
   /**
    * Add a match to be tracked in DB
@@ -235,7 +286,10 @@ constructor(
    *
    * @param id
    */
-  fun getTeamDetailsFromDb(id: String) = vlrDao.getTeamDetailById(id).map { Pass(it) }
+  fun getTeamDetailsFromDb(id: String) =
+    vlrDao.getTeamDetailById(id).combine(teamFavDao.getFavoriteTeams()) { team, teamFavs ->
+      team?.copy(markedFav = teamFavs.any { fav -> fav.id == team.id })
+    }.map { Pass(it) }
 
   /**
    * Get team details
@@ -289,6 +343,22 @@ constructor(
     vlrDao.deleteTournamentDetails(tournamentDetailsRecords)
     vlrDao.deletePlayerData(playerDataRecords)
   }
+
+  suspend fun addFavoriteMatch(id: String) = matchFavDao.addFavMatch(MatchFav(id))
+  suspend fun removeFavoriteMatch(id: String) = matchFavDao.deleteFavMatch(id)
+
+  suspend fun addFavoriteEvent(id: String, matches: List<String>) {
+    eventFavDao.addFavEvent(EventFav(id))
+    matchFavDao.addFavMatches(matches.map { MatchFav(it) })
+  }
+
+  suspend fun removeFavoriteEvent(id: String, matches: List<String>) {
+    eventFavDao.deleteFavEvent(id)
+    matchFavDao.deleteFavMatches(matches)
+  }
+
+  suspend fun addFavoriteTeam(id: String) = teamFavDao.addFavTeam(TeamFav(id))
+  suspend fun removeFavoriteTeam(id: String) = teamFavDao.deleteFavTeam(id)
 }
 
 const val DAY_15: Long = 15 * 24 * 60 * 60 * 1000
