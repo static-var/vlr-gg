@@ -2,6 +2,7 @@ package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
@@ -23,6 +24,8 @@ data class TournamentDetails(
   @SerialName("subtitle") val subtitle: String = "",
   @SerialName("title") val title: String = "", // Toronto VALORANT: Viper's Pit $2K Online Qualifier
   @SerialName("status") val status: Status = Status.UNKNOWN,
+  @ColumnInfo("markedFav", defaultValue = "0")
+  val markedFav: Boolean = false,
   val createdAt: Long = System.currentTimeMillis(),
 ) {
 
