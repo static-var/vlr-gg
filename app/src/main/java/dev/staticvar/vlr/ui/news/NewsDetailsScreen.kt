@@ -49,9 +49,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.staticvar.vlr.data.Heading
 import dev.staticvar.vlr.data.ListItem
 import dev.staticvar.vlr.data.Paragraph
@@ -87,11 +87,11 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
     parsedNews?.get()?.let { news ->
       LazyColumn(
         modifier =
-        modifier
-          .fillMaxSize()
-          .padding(horizontal = 8.dp)
-          .testTag("news:root")
-          .haze(hazeState),
+          modifier
+            .fillMaxSize()
+            .padding(horizontal = 8.dp)
+            .testTag("news:root")
+            .haze(hazeState),
         state = scrollState,
       ) {
         item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }
@@ -123,11 +123,11 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
               imageVector = Icons.Outlined.Share,
               contentDescription = "Share",
               modifier =
-              modifier
-                .clip(shape = VLRTheme.shapes.medium)
-                .clickable {
-                  fireShareIntent(context, news.title, id)
-                },
+                modifier
+                  .clip(shape = VLRTheme.shapes.medium)
+                  .clickable {
+                    fireShareIntent(context, news.title, id)
+                  },
               tint = VLRTheme.colorScheme.primary,
             )
           }
@@ -184,14 +184,15 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                 Row(
                   modifier
                     .fillMaxWidth()
-                    .height(IntrinsicSize.Max)) {
+                    .height(IntrinsicSize.Max)
+                ) {
                   Spacer(
                     modifier =
-                    modifier
-                      .width(12.dp)
-                      .padding(4.dp)
-                      .background(VLRTheme.colorScheme.primary)
-                      .fillMaxHeight()
+                      modifier
+                        .width(12.dp)
+                        .padding(4.dp)
+                        .background(VLRTheme.colorScheme.primary)
+                        .fillMaxHeight()
                   )
                   Text(
                     text = parsedData.text,
@@ -216,7 +217,8 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
       ?: LinearProgressIndicator(
         modifier
           .testTag("common:loader")
-          .align(Alignment.Center))
+          .align(Alignment.Center)
+      )
   }
 }
 
@@ -239,19 +241,13 @@ fun BoxScope.ScrollToTopButton(
   ) {
     Box(
       modifier =
-      Modifier
-        .size(48.dp)
-        .background(Color.Transparent)
-        .clip(VLRTheme.shapes.extraLarge)
-        .hazeChild(
-          hazeState, style = HazeStyle(
-            backgroundColor = VLRTheme.colorScheme.surface,
-            blurRadius = 24.dp,
-            noiseFactor = 0.2f
-          )
-        )
-        .border(1.dp, VLRTheme.colorScheme.primary, VLRTheme.shapes.extraLarge)
-        .clickable { coroutineScope.launch { scrollState.animateScrollToItem(0) } }
+        Modifier
+          .size(48.dp)
+          .background(Color.Transparent)
+          .clip(VLRTheme.shapes.extraLarge)
+          .hazeEffect(hazeState, style = HazeMaterials.regular())
+          .border(1.dp, VLRTheme.colorScheme.primary, VLRTheme.shapes.extraLarge)
+          .clickable { coroutineScope.launch { scrollState.animateScrollToItem(0) } }
     ) {
       Icon(
         imageVector = Icons.Outlined.KeyboardArrowUp,
