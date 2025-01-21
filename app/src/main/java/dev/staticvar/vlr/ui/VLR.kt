@@ -40,7 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeSource
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.helper.VlrNavHost
 import dev.staticvar.vlr.ui.helper.plus
@@ -70,7 +70,7 @@ fun VLR() {
   val currentDestination = backStackEntry?.destination?.route
 
   val currentTopSlotItemPosition by
-    viewModel.selectedTopSlotItemPosition.collectAsStateWithLifecycle()
+    viewModel.selectedTopSlotItemPosition.collectAsStateWithLifecycle(0)
 
   val navItems =
     listOf<NavItem>(
@@ -148,7 +148,7 @@ fun VLR() {
             )
           },
         ) { innerPadding ->
-          Box(modifier = Modifier.haze(hazeState).semantics { testTagsAsResourceId = true }) {
+          Box(modifier = Modifier.hazeSource(hazeState).semantics { testTagsAsResourceId = true }) {
             VlrNavHost(
               navController = navController,
               innerPadding = innerPadding,
