@@ -15,5 +15,6 @@ interface TeamFavDao {
   @Query("DELETE from TeamFav where id = :id")
   suspend fun deleteFavTeam(id: String)
 
+  @Query("SELECT * from TeamFav")
   fun getFavoriteTeams(): Flow<List<TeamFav>>
 }
