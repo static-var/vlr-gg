@@ -8,8 +8,10 @@ import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.Waiting
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -23,11 +25,18 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   private var _resetScroll: MutableSharedFlow<Boolean> = MutableSharedFlow(0)
   val resetScroll: SharedFlow<Boolean> = _resetScroll
 
-  private var _selectedTopSlotItemPosition: MutableSharedFlow<Int> = MutableSharedFlow(0)
-  val selectedTopSlotItemPosition: SharedFlow<Int> = _selectedTopSlotItemPosition
+  private var _selectedMatchTypePosition: MutableStateFlow<Int> = MutableStateFlow(0)
+  val selectedMatchTypePosition: StateFlow<Int> = _selectedMatchTypePosition
 
-  fun updateSelectedTopSlotItemPosition(position: Int) {
-    viewModelScope.launch { _selectedTopSlotItemPosition.emit(position) }
+  fun updateSelectedMatchTypePosition(position: Int) {
+    viewModelScope.launch { _selectedMatchTypePosition.emit(position) }
+  }
+
+  private var _selectedEventTypePosition: MutableStateFlow<Int> = MutableStateFlow(0)
+  val selectedEventTypePosition: StateFlow<Int> = _selectedEventTypePosition
+
+  fun updateSelectedEventTypePosition(position: Int) {
+    viewModelScope.launch { _selectedEventTypePosition.emit(position) }
   }
 
   fun hideNavbar(hide: Boolean) {

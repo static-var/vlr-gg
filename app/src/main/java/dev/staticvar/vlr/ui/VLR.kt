@@ -69,8 +69,11 @@ fun VLR() {
   var currentNav by remember { mutableStateOf(Destination.NewsOverview.route) }
   val currentDestination = backStackEntry?.destination?.route
 
-  val currentTopSlotItemPosition by
-    viewModel.selectedTopSlotItemPosition.collectAsStateWithLifecycle(0)
+  val selectedMatchTypePosition by
+    viewModel.selectedMatchTypePosition.collectAsStateWithLifecycle()
+
+  val selectedEventTypePosition by
+    viewModel.selectedEventTypePosition.collectAsStateWithLifecycle()
 
   val navItems =
     listOf<NavItem>(
@@ -143,8 +146,10 @@ fun VLR() {
               items = navItems,
               hazeState = hazeState,
               isVisible = !hideNav,
-              topSlotSelectedItem = currentTopSlotItemPosition,
-              topSlotAction = { viewModel.updateSelectedTopSlotItemPosition(it) },
+              selectedMatchType = selectedMatchTypePosition,
+              selectedEventType = selectedEventTypePosition,
+              changeMatchType = { viewModel.updateSelectedMatchTypePosition(it) },
+              changeEventType = { viewModel.updateSelectedEventTypePosition(it) },
             )
           },
         ) { innerPadding ->

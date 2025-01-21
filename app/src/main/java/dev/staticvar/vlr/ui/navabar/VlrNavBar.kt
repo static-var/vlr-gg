@@ -43,14 +43,17 @@ import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.ui.theme.transparent
 
+@Suppress("LongParameterList")
 @Composable
 fun VlrNavBar(
   navController: NavController,
   items: List<NavItem>,
   hazeState: HazeState,
   isVisible: Boolean,
-  topSlotSelectedItem: Int? = null,
-  topSlotAction: ((Int) -> Unit)? = null,
+  selectedMatchType: Int? = null,
+  selectedEventType: Int? = null,
+  changeMatchType: ((Int) -> Unit)? = null,
+  changeEventType: ((Int) -> Unit)? = null,
 ) {
   val tweenAnimSpec = tween<Float>(600)
   // https://issuetracker.google.com/issues/243852341#comment1
@@ -89,13 +92,13 @@ fun VlrNavBar(
       ) {
         when (it) {
           TopSlot.MATCH ->
-            MatchTopSlot(currentItem = topSlotSelectedItem ?: 0) { index ->
-              topSlotAction?.invoke(index)
+            MatchTopSlot(currentItem = selectedMatchType ?: 0) { index ->
+              changeMatchType?.invoke(index)
             }
 
           TopSlot.EVENT ->
-            EventTopSlot(currentItem = topSlotSelectedItem ?: 0) { index ->
-              topSlotAction?.invoke(index)
+            EventTopSlot(currentItem = selectedEventType ?: 0) { index ->
+              changeEventType?.invoke(index)
             }
 
           else -> {}

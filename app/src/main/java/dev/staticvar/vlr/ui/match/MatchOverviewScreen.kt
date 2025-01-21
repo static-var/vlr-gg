@@ -204,13 +204,13 @@ fun MatchOverview(
   val resetScroll by
   remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
-  val selectedTopItemSlot by viewModel.selectedTopSlotItemPosition.collectAsStateWithLifecycle(0)
+  val selectedTopItemSlot by viewModel.selectedMatchTypePosition.collectAsStateWithLifecycle()
 
   LaunchedEffect(pagerState.currentPage) {
-    viewModel.updateSelectedTopSlotItemPosition(pagerState.currentPage)
+    viewModel.updateSelectedMatchTypePosition(pagerState.currentPage)
   }
 
-  LaunchedEffect(selectedTopItemSlot) { pagerState.requestScrollToPage(selectedTopItemSlot) }
+  LaunchedEffect(selectedTopItemSlot) { pagerState.scrollToPage(selectedTopItemSlot) }
 
   val modifier: Modifier = Modifier
   Column(
