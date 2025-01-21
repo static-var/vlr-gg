@@ -13,7 +13,7 @@ room = "2.6.1"
 firebase = "33.8.0"
 accompanist = "0.35.0-alpha"
 coroutines = "1.9.0"
-ktor = "3.0.1"
+ktor = "3.0.3"
 ksp = "2.1.0-1.0.29"
 spotless = "6.25.0"
 hiltCompiler = "1.2.0"
@@ -91,8 +91,8 @@ landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version 
 landscapist-animation = { module = "com.github.skydoves:landscapist-animation", version = "2.3.6" }
 coil = { module = "io.coil-kt:coil-compose", version = "2.7.0" }
 
-haze = { module = "dev.chrisbanes.haze:haze", version = "0.9.0-alpha07" }
-haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "0.9.0-alpha07" }
+haze = { module = "dev.chrisbanes.haze:haze", version = "1.2.2" }
+haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "1.2.2" }
 
 kotlin-monad = { module = "com.michael-bull.kotlin-result:kotlin-result", version = "1.1.21" }
 
@@ -104,11 +104,11 @@ browser = { module = "androidx.browser:browser", version = "1.8.0" }
 profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version = "1.4.1" }
 
 work-manager = { module = "androidx.work:work-runtime", version = "2.10.0" }
-jsoup = { module = "org.jsoup:jsoup", version = "1.18.1" }
-immutable-collection = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.7" }
+jsoup = { module = "org.jsoup:jsoup", version = "1.18.3" }
+immutable-collection = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.8" }
 core-desugar = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.4" }
 androidx-collection = { module = "androidx.collection:collection", version.ref = "collections" }
-material-kolor = { module = "com.materialkolor:material-kolor", version = "1.7.0" }
+material-kolor = { module = "com.materialkolor:material-kolor", version = "2.0.0" }
 
 sentry-bom = { module = "io.sentry:sentry-bom", version.ref = "sentry-sdk" }
 sentry = { module = "io.sentry:sentry-android" }
@@ -119,8 +119,8 @@ junit = { module = "junit:junit", version = "4.13.2" }
 truth = { module = "com.google.truth:truth", version = "1.4.4" }
 truth-java8 = { module = "com.google.truth.extensions:truth-java8-extension", version = "1.4.4" }
 
-mockk = { module = "io.mockk:mockk", version = "1.13.12" }
-turbine = { module = "app.cash.turbine:turbine", version = "1.1.0" }
+mockk = { module = "io.mockk:mockk", version = "1.13.16" }
+turbine = { module = "app.cash.turbine:turbine", version = "1.2.0" }
 
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 ktor-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
