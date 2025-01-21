@@ -2,6 +2,9 @@ package dev.staticvar.vlr.ui.events
 
 import android.Manifest
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -102,25 +105,23 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
   val modifier = Modifier
 
   val details by
-    remember(id) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
+  remember(id) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh, id) { viewModel.refreshEventDetails(id) }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh, id) { viewModel.refreshEventDetails(id) }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
   val lazyListState = rememberLazyListState()
 
   val trackerString = id.toEventTopic()
-  val isTracked by
-    remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
 
   val progressBarVisibility by
-    remember(updateState.get(), swipeRefresh.progress) {
-      derivedStateOf { updateState.get() == true || swipeRefresh.progress != 0f }
-    }
+  remember(updateState.get(), swipeRefresh.progress) {
+    derivedStateOf { updateState.get() == true || swipeRefresh.progress != 0f }
+  }
 
   Column(
     modifier = modifier.fillMaxSize(),
@@ -144,18 +145,27 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 }
               }
             }
-          Box(modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize()) {
+          Box(
+            modifier = Modifier
+              .pullRefresh(swipeRefresh)
+              .fillMaxSize()
+          ) {
             PullToRefreshPill(
               modifier =
-                Modifier.align(Alignment.TopCenter).padding(top = 16.dp).statusBarsPadding(),
+                Modifier
+                  .align(Alignment.TopCenter)
+                  .padding(top = 16.dp)
+                  .statusBarsPadding(),
               show = progressBarVisibility,
             )
             LazyColumn(
-              modifier = modifier.fillMaxSize().testTag("eventDetails:root"),
+              modifier = modifier
+                .fillMaxSize()
+                .testTag("eventDetails:root"),
               state = lazyListState,
               contentPadding =
-              WindowInsets.statusBars.asPaddingValues() +
-                  WindowInsets.navigationBars.asPaddingValues(),
+                WindowInsets.statusBars.asPaddingValues() +
+                    WindowInsets.navigationBars.asPaddingValues(),
             ) {
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
@@ -164,17 +174,23 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
               item {
                 TournamentDetailsHeader(
                   tournamentDetails = tournamentDetails,
-                  isTracked = isTracked ?: false,
+                  isTracked = tournamentDetails.markedFav,
                 ) {
-                  when (isTracked) {
+                  when (tournamentDetails.markedFav) {
                     true -> {
                       Firebase.messaging.unsubscribeFromTopic(trackerString).await()
-                      viewModel.removeTopic(trackerString)
+                      viewModel.untrackEvent(
+                        id = tournamentDetails.id,
+                        matches = tournamentDetails.matches.map { it.id }
+                      )
                     }
 
                     false -> {
                       Firebase.messaging.subscribeToTopic(trackerString).await()
-                      viewModel.trackTopic(trackerString)
+                      viewModel.trackEvent(
+                        id = tournamentDetails.id,
+                        matches = tournamentDetails.matches.map { it.id }
+                      )
                     }
 
                     else -> {}
@@ -193,7 +209,9 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 item {
                   Text(
                     text = stringResource(id = R.string.no_team_info_found),
-                    modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
+                    modifier = modifier
+                      .fillMaxWidth()
+                      .padding(Local16DP_8DPPadding.current),
                     textAlign = TextAlign.Center,
                     style = VLRTheme.typography.titleMedium,
                     color = VLRTheme.colorScheme.primary,
@@ -223,7 +241,9 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 item {
                   Text(
                     text = stringResource(id = R.string.no_match_info_found),
-                    modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
+                    modifier = modifier
+                      .fillMaxWidth()
+                      .padding(Local16DP_8DPPadding.current),
                     textAlign = TextAlign.Center,
                     style = VLRTheme.typography.titleMedium,
                     color = VLRTheme.colorScheme.primary,
@@ -251,22 +271,40 @@ fun TournamentDetailsHeader(
 ) {
   val scope = rememberCoroutineScope()
   val context = LocalContext.current
+  val animatedBorder by animateDpAsState(
+    targetValue = if (isTracked) 1.dp else -1.dp,
+    tween(300)
+  )
   val notificationPermission =
     rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
-  CardView(modifier) {
+
+  CardView(
+    modifier.border(animatedBorder, VLRTheme.colorScheme.primary, shape = RoundedCornerShape(8.dp))
+  ) {
     Box(modifier = modifier.fillMaxWidth()) {
-      Row(modifier.fillMaxWidth().padding(Local16DPPadding.current)) {
+      Row(
+        modifier
+          .fillMaxWidth()
+          .padding(Local16DPPadding.current)
+      ) {
         Spacer(modifier = modifier.weight(1f))
         AsyncImage(
           model = tournamentDetails.img,
-          modifier = modifier.size(96.dp).aspectRatio(1f).alpha(0.4f),
+          modifier = modifier
+            .size(96.dp)
+            .aspectRatio(1f)
+            .alpha(0.4f),
           contentDescription = tournamentDetails.title,
           contentScale = ContentScale.FillBounds,
           alignment = Alignment.CenterEnd,
         )
       }
-      Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
+      Column(
+        modifier
+          .fillMaxWidth()
+          .padding(Local8DPPadding.current)
+      ) {
         Text(
           text = tournamentDetails.title,
           style = VLRTheme.typography.headlineSmall,
@@ -281,7 +319,9 @@ fun TournamentDetailsHeader(
             modifier = modifier.padding(Local4DPPadding.current),
           )
         Row(
-          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          modifier
+            .fillMaxWidth()
+            .padding(Local4DP_2DPPadding.current),
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Icon(
@@ -292,7 +332,9 @@ fun TournamentDetailsHeader(
           Text(text = tournamentDetails.dates, modifier = Modifier.padding(horizontal = 4.dp))
         }
         Row(
-          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          modifier
+            .fillMaxWidth()
+            .padding(Local4DP_2DPPadding.current),
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Icon(
@@ -303,7 +345,9 @@ fun TournamentDetailsHeader(
           Text(text = tournamentDetails.prize, modifier = Modifier.padding(horizontal = 4.dp))
         }
         Row(
-          modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+          modifier
+            .fillMaxWidth()
+            .padding(Local4DP_2DPPadding.current),
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Icon(
@@ -330,7 +374,7 @@ fun TournamentDetailsHeader(
 
         if (
           tournamentDetails.status == TournamentDetails.Status.ONGOING ||
-            tournamentDetails.status == TournamentDetails.Status.UPCOMING
+          tournamentDetails.status == TournamentDetails.Status.UPCOMING
         )
           Button(
             onClick = {
@@ -368,19 +412,29 @@ fun EventDetailsTeamSlider(
   val lazyListState = rememberLazyListState()
   Text(
     text = stringResource(R.string.teams),
-    modifier = modifier.padding(Local16DPPadding.current).testTag("eventDetails:teams"),
+    modifier = modifier
+      .padding(Local16DPPadding.current)
+      .testTag("eventDetails:teams"),
     style = VLRTheme.typography.titleMedium,
     color = VLRTheme.colorScheme.primary,
   )
   LazyRow(
-    modifier = modifier.fillMaxWidth().testTag("eventDetails:teamList"),
+    modifier = modifier
+      .fillMaxWidth()
+      .testTag("eventDetails:teamList"),
     state = lazyListState,
   ) {
     items(list.item, key = { list -> list.id }) {
       DynamicTheme(model = it.img, fallback = VLRTheme.colorScheme.primary) {
-        CardView(modifier.width(width = 150.dp).aspectRatio(1f).clickable { onClick(it.id) }) {
+        CardView(
+          modifier
+            .width(width = 150.dp)
+            .aspectRatio(1f)
+            .clickable { onClick(it.id) }) {
           Column(
-            modifier.fillMaxSize().padding(Local8DPPadding.current),
+            modifier
+              .fillMaxSize()
+              .padding(Local8DPPadding.current),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
           ) {
@@ -394,7 +448,10 @@ fun EventDetailsTeamSlider(
             )
             AsyncImage(
               model = it.img,
-              modifier = modifier.size(80.dp).aspectRatio(1f).padding(Local4DPPadding.current),
+              modifier = modifier
+                .size(80.dp)
+                .aspectRatio(1f)
+                .padding(Local4DPPadding.current),
               contentDescription = it.team,
             )
             Text(
@@ -427,7 +484,11 @@ fun EventMatchGroups(
       stringResource(R.string.stage),
     )
 
-  Column(modifier.fillMaxWidth().padding(Local8DPPadding.current)) {
+  Column(
+    modifier
+      .fillMaxWidth()
+      .padding(Local8DPPadding.current)
+  ) {
     Text(
       text = stringResource(id = R.string.games),
       modifier = modifier.padding(Local8DPPadding.current),
@@ -441,7 +502,10 @@ fun EventMatchGroups(
       selectedTabIndex = tabSelection,
       containerColor = VLRTheme.colorScheme.primaryContainer,
       modifier =
-        modifier.fillMaxWidth().padding(Local8DPPadding.current).clip(RoundedCornerShape(16.dp)),
+        modifier
+          .fillMaxWidth()
+          .padding(Local8DPPadding.current)
+          .clip(RoundedCornerShape(16.dp)),
       indicator = { indicators ->
         if (indicators.isNotEmpty()) VLRTabIndicator(indicators, tabSelection)
       },
@@ -466,7 +530,9 @@ fun FilterChips(
   onFilterChange: (Int) -> Unit,
 ) {
   Row(
-    modifier.fillMaxSize().animateContentSize(),
+    modifier
+      .fillMaxSize()
+      .animateContentSize(),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -538,7 +604,9 @@ fun TournamentMatchOverview(
       if (!game.time.equals("TBD", ignoreCase = true))
         Text(
           text = "${game.time} ${game.date}".patternDateTimeToReadable,
-          modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
+          modifier = modifier
+            .fillMaxWidth()
+            .padding(Local8DPPadding.current),
           textAlign = TextAlign.Center,
           style = VLRTheme.typography.labelMedium,
         )

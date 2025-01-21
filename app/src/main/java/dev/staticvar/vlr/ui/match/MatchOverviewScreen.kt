@@ -3,7 +3,10 @@ package dev.staticvar.vlr.ui.match
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -146,12 +150,12 @@ fun MatchOverviewAdaptive(
           selectedItem = selectedItem ?: " ",
           listOfLazyListState = listOfLazyListState,
           contentPaddingValues =
-          PaddingValues(
-            start = innerPadding.calculateStartPadding(localLayoutDirection),
-            end = innerPadding.calculateEndPadding(localLayoutDirection),
-            top = 0.dp,
-            bottom = innerPadding.calculateBottomPadding(),
-          ),
+            PaddingValues(
+              start = innerPadding.calculateStartPadding(localLayoutDirection),
+              end = innerPadding.calculateEndPadding(localLayoutDirection),
+              top = 0.dp,
+              bottom = innerPadding.calculateBottomPadding(),
+            ),
           action = {
             selectedItem = it
             coroutineScope.launch {
@@ -375,10 +379,10 @@ fun MatchOverviewContainer(
       val scope = rememberCoroutineScope()
       VlrSegmentedButtons(
         modifier =
-        Modifier
-          .align(Alignment.BottomCenter)
-          .padding(bottom = 8.dp)
-          .navigationBarsPadding(),
+          Modifier
+            .align(Alignment.BottomCenter)
+            .padding(bottom = 8.dp)
+            .navigationBarsPadding(),
         highlighted = pagerState.currentPage,
         items = tabs,
       ) { _, index ->
@@ -491,25 +495,35 @@ fun MatchOverviewPreview(
   selectedItem: String,
   onAction: (Boolean, MatchPreviewInfo) -> Unit,
 ) {
+  val animatedBorder by animateDpAsState(
+    targetValue = if(matchPreviewInfo.markedFav) 1.dp else -1.dp,
+    tween(300)
+  )
   CardView(
     modifier =
-    modifier.pointerInput(Unit) {
-      detectTapGestures(
-        onPress = {},
-        onDoubleTap = {},
-        onLongPress = { onAction(true, matchPreviewInfo) },
-        onTap = { onAction(false, matchPreviewInfo) },
-      )
-    },
+      modifier
+        .pointerInput(Unit) {
+          detectTapGestures(
+            onPress = {},
+            onDoubleTap = {},
+            onLongPress = { onAction(true, matchPreviewInfo) },
+            onTap = { onAction(false, matchPreviewInfo) },
+          )
+        }
+        .border(
+          width = animatedBorder,
+          color = VLRTheme.colorScheme.primary,
+          shape = RoundedCornerShape(8.dp)
+        ),
     colors =
-    if (matchPreviewInfo.id == selectedItem) {
-      CardDefaults.elevatedCardColors(
-        containerColor = VLRTheme.colorScheme.secondaryContainer,
-        contentColor = VLRTheme.colorScheme.onSecondaryContainer,
-      )
-    } else {
-      CardDefaults.elevatedCardColors()
-    },
+      if (matchPreviewInfo.id == selectedItem) {
+        CardDefaults.elevatedCardColors(
+          containerColor = VLRTheme.colorScheme.secondaryContainer,
+          contentColor = VLRTheme.colorScheme.onSecondaryContainer,
+        )
+      } else {
+        CardDefaults.elevatedCardColors()
+      },
   ) {
     Column(
       modifier = modifier
@@ -519,18 +533,18 @@ fun MatchOverviewPreview(
       Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
         Text(
           text =
-          when {
-            matchPreviewInfo.status.equals(stringResource(id = R.string.live), true) -> {
-              stringResource(id = R.string.live)
-            }
+            when {
+              matchPreviewInfo.status.equals(stringResource(id = R.string.live), true) -> {
+                stringResource(id = R.string.live)
+              }
 
-            !matchPreviewInfo.time?.timeDiff.isNullOrBlank() -> {
-              matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})")
-                ?: ""
-            }
+              !matchPreviewInfo.time?.timeDiff.isNullOrBlank() -> {
+                matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})")
+                  ?: ""
+              }
 
-            else -> ""
-          },
+              else -> ""
+            },
           modifier = modifier
             .fillMaxWidth()
             .padding(Local8DP_4DPPadding.current),

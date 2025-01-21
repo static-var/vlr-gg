@@ -2,6 +2,9 @@ package dev.staticvar.vlr.ui.events
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
@@ -172,18 +176,18 @@ fun EventScreen(
   LogEvent(event = AnalyticsEvent.EVENT_OVERVIEW)
 
   val allTournaments by
-    remember(viewModel) { viewModel.getEvents() }
-      .collectAsStateWithLifecycle(initialValue = Waiting())
+  remember(viewModel) { viewModel.getEvents() }
+    .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshEvents() }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh) { viewModel.refreshEvents() }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
 
   val resetScroll by
-    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val selectedTopItemSlot by viewModel.selectedTopSlotItemPosition.collectAsStateWithLifecycle()
 
@@ -257,9 +261,17 @@ fun TournamentPreviewContainer(
       }
     }
 
-  Box(modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh)) {
+  Box(
+    modifier = modifier
+      .fillMaxSize()
+      .animateContentSize()
+      .pullRefresh(swipeRefresh)
+  ) {
     PullToRefreshPill(
-      modifier = Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(top = 16.dp),
+      modifier = Modifier
+        .align(Alignment.TopCenter)
+        .statusBarsPadding()
+        .padding(top = 16.dp),
       show = updateState.get() == true || swipeRefresh.progress != 0f,
     )
     Column(verticalArrangement = Arrangement.Top) {
@@ -278,7 +290,9 @@ fun TournamentPreviewContainer(
             val lazyListState = listOfLazyListState[0]
             lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
             LazyColumn(
-              modifier.fillMaxSize().testTag("eventOverview:live"),
+              modifier
+                .fillMaxSize()
+                .testTag("eventOverview:live"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState,
               contentPadding = contentPadding,
@@ -301,7 +315,9 @@ fun TournamentPreviewContainer(
             val lazyListState = listOfLazyListState[1]
             lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
             LazyColumn(
-              modifier.fillMaxSize().testTag("eventOverview:upcoming"),
+              modifier
+                .fillMaxSize()
+                .testTag("eventOverview:upcoming"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState,
               contentPadding = contentPadding,
@@ -324,7 +340,9 @@ fun TournamentPreviewContainer(
             val lazyListState = listOfLazyListState[2]
             lazyListState.ScrollHelper(resetScroll = resetScroll, postResetScroll)
             LazyColumn(
-              modifier.fillMaxSize().testTag("eventOverview:result"),
+              modifier
+                .fillMaxSize()
+                .testTag("eventOverview:result"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState,
               contentPadding = contentPadding,
@@ -346,7 +364,10 @@ fun TournamentPreviewContainer(
       val scope = rememberCoroutineScope()
       VlrSegmentedButtons(
         modifier =
-          Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp).navigationBarsPadding(),
+          Modifier
+            .align(Alignment.BottomCenter)
+            .padding(bottom = 8.dp)
+            .navigationBarsPadding(),
         highlighted = pagerState.currentPage,
         items = tabs,
       ) { _, index ->
@@ -378,8 +399,14 @@ fun TournamentPreview(
   selectedItem: String,
   action: (String) -> Unit,
 ) {
+  val animatedBorder by animateDpAsState(
+    targetValue = if (tournamentPreview.markedFav) 1.dp else -1.dp,
+    tween(300)
+  )
   CardView(
-    modifier = modifier.clickable { action(tournamentPreview.id) },
+    modifier = modifier
+      .clickable { action(tournamentPreview.id) }
+      .border(animatedBorder, VLRTheme.colorScheme.primary, shape = RoundedCornerShape(8.dp)),
     colors =
       if (tournamentPreview.id == selectedItem) {
         CardDefaults.elevatedCardColors(
@@ -411,13 +438,13 @@ fun TournamentPreview(
         val inlineLocationContentMap =
           mapOf(
             "location" to
-              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                Icon(
-                  imageVector = Icons.Outlined.LocationOn,
-                  modifier = modifier.size(16.dp),
-                  contentDescription = "",
-                )
-              }
+                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                  Icon(
+                    imageVector = Icons.Outlined.LocationOn,
+                    modifier = modifier.size(16.dp),
+                    contentDescription = "",
+                  )
+                }
           )
         val annotatedDateString = buildAnnotatedString {
           appendInlineContent(id = "date")
@@ -427,19 +454,21 @@ fun TournamentPreview(
         val inlineDateContentMap =
           mapOf(
             "date" to
-              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                Icon(
-                  imageVector = Icons.Outlined.DateRange,
-                  modifier = modifier.size(16.dp),
-                  contentDescription = "",
-                )
-              }
+                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                  Icon(
+                    imageVector = Icons.Outlined.DateRange,
+                    modifier = modifier.size(16.dp),
+                    contentDescription = "",
+                  )
+                }
           )
         Text(
           annotatedLocationString,
           style = VLRTheme.typography.bodyMedium,
           inlineContent = inlineLocationContentMap,
-          modifier = modifier.padding(Local4DPPadding.current).weight(1f),
+          modifier = modifier
+            .padding(Local4DPPadding.current)
+            .weight(1f),
           textAlign = TextAlign.Start,
         )
         Text(
@@ -452,7 +481,9 @@ fun TournamentPreview(
           annotatedDateString,
           style = VLRTheme.typography.bodyMedium,
           inlineContent = inlineDateContentMap,
-          modifier = modifier.padding(Local4DPPadding.current).weight(1f),
+          modifier = modifier
+            .padding(Local4DPPadding.current)
+            .weight(1f),
           textAlign = TextAlign.End,
         )
       }

@@ -20,6 +20,7 @@ data class MatchPreviewInfo(
   @SerialName("team1") val team1: Team = Team(),
   @SerialName("team2") val team2: Team = Team(),
   @SerialName("time") val time: String? = null, // 13h
+  @SerialName("event_id") @ColumnInfo("eventId", defaultValue = "")val eventId: String = "",
   @ColumnInfo("markedFav", defaultValue = "0")
   val markedFav: Boolean = false,
 )

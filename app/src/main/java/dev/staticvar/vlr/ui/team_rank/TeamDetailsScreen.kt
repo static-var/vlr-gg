@@ -2,7 +2,9 @@ package dev.staticvar.vlr.ui.team_rank
 
 import android.Manifest
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
@@ -60,7 +63,6 @@ import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.ui.Local16DP_8DPPadding
 import dev.staticvar.vlr.ui.Local2DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
-import dev.staticvar.vlr.ui.Local4DP_2DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.Local8DP_4DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
@@ -91,17 +93,15 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
   LogEvent(event = AnalyticsEvent.TEAM_OVERVIEW, extra = mapOf("team_id" to id))
 
   val teamDetails by
-    remember(id) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
+  remember(id) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
   var rosterCard by remember { mutableStateOf(false) }
 
   val trackerString = id.toTeamTopic()
-  val isTracked by
-    remember { viewModel.isTopicTracked(trackerString) }.collectAsStateWithLifecycle(null)
 
   var triggerRefresh by remember(viewModel, id) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshTeamDetails(id) }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh) { viewModel.refreshTeamDetails(id) }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(
@@ -112,9 +112,9 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
   val modifier: Modifier = Modifier
 
   val progressBarVisibility by
-    remember(updateState.get(), swipeRefresh.progress) {
-      derivedStateOf { updateState.get() == true || swipeRefresh.progress != 0f }
-    }
+  remember(updateState.get(), swipeRefresh.progress) {
+    derivedStateOf { updateState.get() == true || swipeRefresh.progress != 0f }
+  }
 
   Column(
     modifier = modifier.fillMaxSize(),
@@ -124,16 +124,21 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
     teamDetails
       .onPass {
         data?.let { teamDetail ->
-          Box(modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize()) {
+          Box(modifier = Modifier
+            .pullRefresh(swipeRefresh)
+            .fillMaxSize()) {
             PullToRefreshPill(
-              modifier = Modifier.padding(16.dp).statusBarsPadding().align(Alignment.TopCenter),
+              modifier = Modifier
+                .padding(16.dp)
+                .statusBarsPadding()
+                .align(Alignment.TopCenter),
               show = progressBarVisibility,
             )
             LazyColumn(
               modifier = modifier.fillMaxSize(),
               contentPadding =
                 WindowInsets.statusBars.asPaddingValues() +
-                  WindowInsets.navigationBars.asPaddingValues(),
+                    WindowInsets.navigationBars.asPaddingValues(),
             ) {
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
@@ -143,20 +148,18 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
                   modifier = modifier.testTag("team:banner"),
                   teamDetails = teamDetail,
                   id = id,
-                  isTracked = isTracked ?: false,
+                  isTracked = teamDetail.markedFav,
                 ) {
-                  when (isTracked) {
+                  when (teamDetail.markedFav) {
                     true -> {
                       Firebase.messaging.unsubscribeFromTopic(trackerString).await()
-                      viewModel.removeTopic(trackerString)
+                      viewModel.untrackTeam(teamDetail.id)
                     }
 
                     false -> {
                       Firebase.messaging.subscribeToTopic(trackerString).await()
-                      viewModel.trackTopic(trackerString)
+                      viewModel.trackTeam(teamDetail.id)
                     }
-
-                    else -> {}
                   }
                 }
               }
@@ -203,13 +206,24 @@ fun TeamBanner(
 
   val scope = rememberCoroutineScope()
   val context = LocalContext.current
-
+  val animatedBorder by animateDpAsState(
+    targetValue = if (isTracked) 1.dp else -1.dp,
+    tween(300)
+  )
   val notificationPermission =
     rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
-  CardView(modifier) {
+  CardView(
+    modifier.border(
+      animatedBorder,
+      VLRTheme.colorScheme.primary,
+      shape = RoundedCornerShape(8.dp)
+    )
+  ) {
     Row(
-      modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local16DP_8DPPadding.current),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Text(
@@ -226,7 +240,9 @@ fun TeamBanner(
         )
     }
     Row(
-      modifier = modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local16DP_8DPPadding.current),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       // Server might send rank 0 when ranks are not found over the website.
@@ -250,7 +266,9 @@ fun TeamBanner(
           }
         } else notificationPermission.launchPermissionRequest()
       },
-      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local8DP_4DPPadding.current),
       shape = VLRTheme.shapes.small,
     ) {
       if (processingTopicSubscription) {
@@ -260,7 +278,9 @@ fun TeamBanner(
     }
     Button(
       onClick = { (Constants.VLR_BASE + "team/" + id).openAsCustomTab(context) },
-      modifier = modifier.fillMaxWidth().padding(Local4DP_2DPPadding.current),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(Local8DP_4DPPadding.current),
       shape = VLRTheme.shapes.small,
     ) {
       Text(text = stringResource(id = R.string.view_at_vlr), maxLines = 1)
@@ -277,12 +297,17 @@ fun RosterCard(
   onClick: (String) -> Unit,
 ) {
   CardView(modifier = modifier.testTag("team:roster")) {
-    Column(modifier = modifier.fillMaxWidth().animateContentSize(tween(500))) {
+    Column(modifier = modifier
+      .fillMaxWidth()
+      .animateContentSize(tween(500))) {
       if (!expanded) {
         Row(
-          modifier.fillMaxWidth().padding(Local16DP_8DPPadding.current).clickable {
-            onExpand(true)
-          },
+          modifier
+            .fillMaxWidth()
+            .padding(Local16DP_8DPPadding.current)
+            .clickable {
+              onExpand(true)
+            },
           horizontalArrangement = Arrangement.SpaceBetween,
         ) {
           Text(
@@ -298,7 +323,10 @@ fun RosterCard(
         }
       } else {
         Row(
-          modifier.fillMaxWidth().padding(Local8DPPadding.current).clickable { onExpand(false) },
+          modifier
+            .fillMaxWidth()
+            .padding(Local8DPPadding.current)
+            .clickable { onExpand(false) },
           horizontalArrangement = Arrangement.SpaceBetween,
         ) {
           Text(
@@ -327,7 +355,9 @@ fun RosterCard(
               ),
           ) {
             Row(
-              modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+              modifier = modifier
+                .fillMaxWidth()
+                .padding(Local8DP_4DPPadding.current),
               horizontalArrangement = Arrangement.SpaceBetween,
             ) {
               Text(text = player.alias, style = VLRTheme.typography.titleSmall)
@@ -338,7 +368,9 @@ fun RosterCard(
             }
             Text(
               text = player.name ?: "",
-              modifier = modifier.fillMaxWidth().padding(Local8DP_4DPPadding.current),
+              modifier = modifier
+                .fillMaxWidth()
+                .padding(Local8DP_4DPPadding.current),
               style = VLRTheme.typography.labelMedium,
             )
           }
@@ -415,13 +447,17 @@ fun GameOverviewPreview(
         style = VLRTheme.typography.bodyMedium,
       )
       Row(
-        modifier = modifier.fillMaxWidth().padding(Local4DPPadding.current),
+        modifier = modifier
+          .fillMaxWidth()
+          .padding(Local4DPPadding.current),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
       ) {
         Text(
           text = team,
-          modifier = modifier.weight(1f).padding(Local4DPPadding.current),
+          modifier = modifier
+            .weight(1f)
+            .padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
           textAlign = TextAlign.Center,
@@ -429,7 +465,9 @@ fun GameOverviewPreview(
         )
         Text(
           text = matchPreviewInfo.opponent,
-          modifier = modifier.weight(1f).padding(Local4DPPadding.current),
+          modifier = modifier
+            .weight(1f)
+            .padding(Local4DPPadding.current),
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
           textAlign = TextAlign.Center,
@@ -439,13 +477,17 @@ fun GameOverviewPreview(
       Text(
         text = matchPreviewInfo.score.ifBlank { "TBP" },
         style = VLRTheme.typography.titleSmall,
-        modifier = modifier.fillMaxWidth().padding(Local2DPPadding.current),
+        modifier = modifier
+          .fillMaxWidth()
+          .padding(Local2DPPadding.current),
         textAlign = TextAlign.Center,
         color = VLRTheme.colorScheme.primary,
       )
       Text(
         text = "${matchPreviewInfo.event} - ${matchPreviewInfo.stage}",
-        modifier = modifier.fillMaxWidth().padding(Local8DPPadding.current),
+        modifier = modifier
+          .fillMaxWidth()
+          .padding(Local8DPPadding.current),
         textAlign = TextAlign.Center,
         style = VLRTheme.typography.labelSmall,
       )

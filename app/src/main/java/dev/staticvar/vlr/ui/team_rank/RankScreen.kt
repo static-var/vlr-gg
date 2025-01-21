@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +29,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
@@ -77,8 +81,6 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
-import com.skydoves.landscapist.animation.circular.CircularRevealPlugin
-import com.skydoves.landscapist.components.rememberImageComponent
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.ui.Local16DPPadding
@@ -191,12 +193,12 @@ fun RankScreen(
   LogEvent(event = AnalyticsEvent.RANKING_OVERVIEW)
 
   val allTeams by
-    remember(viewModel) { viewModel.getRanks() }
-      .collectAsStateWithLifecycle(initialValue = Waiting())
+  remember(viewModel) { viewModel.getRanks() }
+    .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshRanks() }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh) { viewModel.refreshRanks() }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(
@@ -205,7 +207,7 @@ fun RankScreen(
     )
 
   val resetScroll by
-    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val modifier: Modifier = Modifier
 
@@ -255,19 +257,22 @@ fun RanksPreviewContainer(
   postResetScroll: () -> Unit,
 ) {
   val teamMap by
-    remember(list) {
-      mutableStateOf(
-        list.item
-          .sortedBy { it.rank }
-          .filter { it.region.isNotEmpty() }
-          .groupBy { it.region.trim() }
-      )
-    }
+  remember(list) {
+    mutableStateOf(
+      list.item
+        .sortedBy { it.rank }
+        .filter { it.region.isNotEmpty() }
+        .groupBy { it.region.trim() }
+    )
+  }
   val tabs by remember { mutableStateOf(teamMap.keys.toList().sorted()) }
   LaunchedEffect(tabs.size) { pageSize(tabs.size) }
 
   Column(
-    modifier = modifier.fillMaxSize().animateContentSize().pullRefresh(swipeRefresh),
+    modifier = modifier
+      .fillMaxSize()
+      .animateContentSize()
+      .pullRefresh(swipeRefresh),
     verticalArrangement = Arrangement.Top,
   ) {
     if (tabs.isNotEmpty()) {
@@ -278,7 +283,9 @@ fun RanksPreviewContainer(
 
       Box(modifier = modifier.fillMaxSize()) {
         PullToRefreshPill(
-          modifier = modifier.align(Alignment.TopCenter).padding(top = 16.dp),
+          modifier = modifier
+            .align(Alignment.TopCenter)
+            .padding(top = 16.dp),
           show = updateState.get() == true || swipeRefresh.progress != 0f,
         )
         HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize()) { tabPosition ->
@@ -288,7 +295,9 @@ fun RanksPreviewContainer(
           if (topTeams.isEmpty()) NoTeamsUI()
           else {
             LazyColumn(
-              modifier.fillMaxSize().testTag("rankOverview:live"),
+              modifier
+                .fillMaxSize()
+                .testTag("rankOverview:live"),
               verticalArrangement = Arrangement.Top,
               state = lazyListState,
               contentPadding = contentPadding,
@@ -359,7 +368,10 @@ fun TeamRankPreview(
   selectedItem: String,
   action: (String) -> Unit,
 ) {
-  val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
+  val animatedBorder by animateDpAsState(
+    targetValue = if (team.markedFav) 1.dp else -1.dp,
+    tween(300)
+  )
 
   DynamicTheme(
     model = team.img,
@@ -367,7 +379,12 @@ fun TeamRankPreview(
     useDarkTheme = isSystemInDarkTheme(),
   ) {
     CardView(
-      modifier = modifier.clickable { action(team.id) }.height(120.dp),
+      modifier = modifier
+        .clickable { action(team.id) }
+        .height(120.dp)
+        .border(
+          animatedBorder, VLRTheme.colorScheme.onSurface, shape = RoundedCornerShape(8.dp)
+        ),
       colors =
         if (selectedItem == team.id) {
           CardDefaults.elevatedCardColors(
@@ -411,13 +428,19 @@ fun TeamRankPreview(
           val inlineLocationContentMap =
             mapOf(
               "location" to
-                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                  Icon(
-                    imageVector = Icons.Outlined.LocationOn,
-                    modifier = modifier.size(16.dp),
-                    contentDescription = "",
-                  )
-                }
+                  InlineTextContent(
+                    Placeholder(
+                      16.sp,
+                      16.sp,
+                      PlaceholderVerticalAlign.TextCenter
+                    )
+                  ) {
+                    Icon(
+                      imageVector = Icons.Outlined.LocationOn,
+                      modifier = modifier.size(16.dp),
+                      contentDescription = "",
+                    )
+                  }
             )
           val annotatedDateString = buildAnnotatedString {
             appendInlineContent(id = "points")
@@ -426,13 +449,19 @@ fun TeamRankPreview(
           val inlineDateContentMap =
             mapOf(
               "points" to
-                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                  Icon(
-                    imageVector = Icons.Outlined.Insights,
-                    modifier = modifier.size(16.dp),
-                    contentDescription = "",
-                  )
-                }
+                  InlineTextContent(
+                    Placeholder(
+                      16.sp,
+                      16.sp,
+                      PlaceholderVerticalAlign.TextCenter
+                    )
+                  ) {
+                    Icon(
+                      imageVector = Icons.Outlined.Insights,
+                      modifier = modifier.size(16.dp),
+                      contentDescription = "",
+                    )
+                  }
             )
           Text(
             text = annotatedLocationString,
