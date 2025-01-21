@@ -4,6 +4,6 @@
     <option name="frameScreenshot" value="true" />
   </component>
   <component name="direct_access_persist.xml">
-    <option name="selectedCloudProject" value="vlr-gg" />
+    <option name="selectedCloudProject" />
   </component>
 </project>
