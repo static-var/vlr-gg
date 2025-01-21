@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun Modifier.takeIf(condition: Boolean, block: Modifier.() -> Modifier): Modifier {
+fun Modifier.takeIf(condition: Boolean, block: @Composable Modifier.() -> Modifier): Modifier {
     return if (condition) {
         block(this)
     } else {
@@ -13,7 +13,7 @@ fun Modifier.takeIf(condition: Boolean, block: Modifier.() -> Modifier): Modifie
 }
 
 @Composable
-fun Modifier.takeIfNot(condition: Boolean, block: Modifier.() -> Modifier): Modifier {
+fun Modifier.takeIfNot(condition: Boolean, block: @Composable Modifier.() -> Modifier): Modifier {
     return if (!condition) {
         block(this)
     } else {
