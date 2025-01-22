@@ -6,7 +6,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +26,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -409,6 +407,7 @@ inline fun PagerContent(
   noinline postResetScroll: () -> Unit,
   crossinline shareStateToggle: (Boolean) -> Unit,
 ) {
+  var shareStateHolder by remember { mutableStateOf(shareState) }
   val haptic = LocalHapticFeedback.current
   if (list.isEmpty()) {
     NoMatchUI(modifier = modifier)
@@ -438,29 +437,31 @@ inline fun PagerContent(
             isSelected = it in shareMatchList,
             selectedItem = selectedItem,
             onAction = { longPress, match ->
-              if (longPress) shareStateToggle(true) // If long press enable share bar
+              if (longPress) {
+                shareStateHolder = true
+                // If long press enable share bar
+                shareStateToggle(true)
+              }
               when {
-                shareState && shareMatchList.contains(match) -> {
+                shareStateHolder && shareMatchList.contains(match) -> {
                   // If in share mode &
                   // If match is already in the list and is being clicked again, remove
-                  // the
-                  // item
+                  // the item
                   shareMatchList.remove(match)
                   haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 }
 
-                shareState &&
+                shareStateHolder &&
                     !shareMatchList.contains(match) &&
                     shareMatchList.size < MAX_SHARABLE_ITEMS -> {
                   // If in share mode &
                   // If list does not have 6 items and if the clicked icon is not already
-                  // in
-                  // the list
+                  // in the list
                   shareMatchList.add(match)
                   haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 }
 
-                !shareState ->
+                !shareStateHolder ->
                   onClick(match.id) // Its a normal click, navigate to the action
               }
             },
@@ -496,7 +497,7 @@ fun MatchOverviewPreview(
   onAction: (Boolean, MatchPreviewInfo) -> Unit,
 ) {
   val animatedBorder by animateDpAsState(
-    targetValue = if(matchPreviewInfo.markedFav) 1.dp else -1.dp,
+    targetValue = if (matchPreviewInfo.markedFav) 1.dp else -1.dp,
     tween(300)
   )
   CardView(
@@ -509,12 +510,7 @@ fun MatchOverviewPreview(
             onLongPress = { onAction(true, matchPreviewInfo) },
             onTap = { onAction(false, matchPreviewInfo) },
           )
-        }
-        .border(
-          width = animatedBorder,
-          color = VLRTheme.colorScheme.primary,
-          shape = RoundedCornerShape(8.dp)
-        ),
+        },
     colors =
       if (matchPreviewInfo.id == selectedItem) {
         CardDefaults.elevatedCardColors(
