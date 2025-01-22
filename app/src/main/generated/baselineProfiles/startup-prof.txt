@@ -5276,7 +5276,7 @@ HSPLandroidx/compose/runtime/ComposerImpl;->getCompoundKeyHash()I
 HSPLandroidx/compose/runtime/ComposerImpl;->getCurrentCompositionLocalMap()Landroidx/compose/runtime/CompositionLocalMap;
 HSPLandroidx/compose/runtime/ComposerImpl;->getCurrentRecomposeScope$runtime_release()Landroidx/compose/runtime/RecomposeScopeImpl;
 HSPLandroidx/compose/runtime/ComposerImpl;->getDefaultsInvalid()Z
-HSPLandroidx/compose/runtime/ComposerImpl;->getInserting()Z
+HPLandroidx/compose/runtime/ComposerImpl;->getInserting()Z
 HSPLandroidx/compose/runtime/ComposerImpl;->getNode(Landroidx/compose/runtime/SlotReader;)Ljava/lang/Object;
 HSPLandroidx/compose/runtime/ComposerImpl;->getReader$runtime_release()Landroidx/compose/runtime/SlotReader;
 HSPLandroidx/compose/runtime/ComposerImpl;->getRecomposeScope()Landroidx/compose/runtime/RecomposeScope;
@@ -6430,7 +6430,6 @@ HSPLandroidx/compose/runtime/changelist/ComposerChangeListWriter$Companion;-><in
 Landroidx/compose/runtime/changelist/FixupList;
 HSPLandroidx/compose/runtime/changelist/FixupList;-><clinit>()V
 HSPLandroidx/compose/runtime/changelist/FixupList;-><init>()V
-HSPLandroidx/compose/runtime/changelist/FixupList;->createAndInsertNode(Lkotlin/jvm/functions/Function0;ILandroidx/compose/runtime/Anchor;)V
 HSPLandroidx/compose/runtime/changelist/FixupList;->endNodeInsert()V
 HSPLandroidx/compose/runtime/changelist/FixupList;->executeAndFlushAllPendingFixups(Landroidx/compose/runtime/Applier;Landroidx/compose/runtime/SlotWriter;Landroidx/compose/runtime/RememberManager;)V
 HSPLandroidx/compose/runtime/changelist/FixupList;->isEmpty()Z
@@ -7136,8 +7135,6 @@ HSPLandroidx/compose/runtime/snapshots/SnapshotDoubleIndexHeap;->swap(II)V
 Landroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;-><clinit>()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;-><init>([J)V
-HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;->add(J)V
-HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;->toArray()[J
 Landroidx/compose/runtime/snapshots/SnapshotIdSet;
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet;-><clinit>()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet;-><init>(JJJ[J)V
@@ -7153,10 +7150,8 @@ HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet$Companion;-><init>()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet$Companion;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet$Companion;->getEMPTY()Landroidx/compose/runtime/snapshots/SnapshotIdSet;
 Landroidx/compose/runtime/snapshots/SnapshotId_jvmKt;
-HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->binarySearch([JJ)I
 HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->snapshotIdArrayWithCapacity(I)[J
 HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->toSnapshotId(I)J
-HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->withIdRemovedAt([JI)[J
 Landroidx/compose/runtime/snapshots/SnapshotKt;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;-><clinit>()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->access$advanceGlobalSnapshot()V
@@ -10091,13 +10086,11 @@ HSPLandroidx/compose/ui/node/LayoutModifierNodeKt;->invalidateMeasurement(Landro
 Landroidx/compose/ui/node/LayoutNode;
 HSPLandroidx/compose/ui/node/LayoutNode;->$r8$lambda$H_fKQj6Zfs_ncgCQhWqRYKHM5Js(Landroidx/compose/ui/node/LayoutNode;Landroidx/compose/ui/node/LayoutNode;)I
 HSPLandroidx/compose/ui/node/LayoutNode;-><clinit>()V
-HSPLandroidx/compose/ui/node/LayoutNode;-><init>(ZI)V
 HSPLandroidx/compose/ui/node/LayoutNode;-><init>(ZIILkotlin/jvm/internal/DefaultConstructorMarker;)V
 HSPLandroidx/compose/ui/node/LayoutNode;->ZComparator$lambda$37(Landroidx/compose/ui/node/LayoutNode;Landroidx/compose/ui/node/LayoutNode;)I
 HSPLandroidx/compose/ui/node/LayoutNode;->access$getConstructor$cp()Lkotlin/jvm/functions/Function0;
 HSPLandroidx/compose/ui/node/LayoutNode;->access$setIgnoreRemeasureRequests$p(Landroidx/compose/ui/node/LayoutNode;Z)V
 HSPLandroidx/compose/ui/node/LayoutNode;->applyModifier(Landroidx/compose/ui/Modifier;)V
-HSPLandroidx/compose/ui/node/LayoutNode;->attach$ui_release(Landroidx/compose/ui/node/Owner;)V
 HSPLandroidx/compose/ui/node/LayoutNode;->clearSubtreeIntrinsicsUsage$ui_release()V
 HSPLandroidx/compose/ui/node/LayoutNode;->clearSubtreePlacementIntrinsicsUsage()V
 HSPLandroidx/compose/ui/node/LayoutNode;->detach$ui_release()V
@@ -10528,7 +10521,6 @@ Landroidx/compose/ui/node/MeasureAndLayoutDelegate$WhenMappings;
 HSPLandroidx/compose/ui/node/MeasureAndLayoutDelegate$WhenMappings;-><clinit>()V
 Landroidx/compose/ui/node/MeasurePassDelegate;
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;-><clinit>()V
-HSPLandroidx/compose/ui/node/MeasurePassDelegate;-><init>(Landroidx/compose/ui/node/LayoutNodeLayoutDelegate;)V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->access$checkChildrenPlaceOrderForUpdates(Landroidx/compose/ui/node/MeasurePassDelegate;)V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->access$clearPlaceOrder(Landroidx/compose/ui/node/MeasurePassDelegate;)V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->access$getPerformMeasureConstraints$p(Landroidx/compose/ui/node/MeasurePassDelegate;)J
@@ -10668,7 +10660,6 @@ Landroidx/compose/ui/node/NodeChainKt$fillVector$1;
 HSPLandroidx/compose/ui/node/NodeChainKt$fillVector$1;-><init>(Landroidx/compose/runtime/collection/MutableVector;)V
 Landroidx/compose/ui/node/NodeCoordinator;
 HSPLandroidx/compose/ui/node/NodeCoordinator;-><clinit>()V
-HSPLandroidx/compose/ui/node/NodeCoordinator;-><init>(Landroidx/compose/ui/node/LayoutNode;)V
 HSPLandroidx/compose/ui/node/NodeCoordinator;->access$drawContainedDrawModifiers(Landroidx/compose/ui/node/NodeCoordinator;Landroidx/compose/ui/graphics/Canvas;Landroidx/compose/ui/graphics/layer/GraphicsLayer;)V
 HSPLandroidx/compose/ui/node/NodeCoordinator;->access$getDrawBlockCanvas$p(Landroidx/compose/ui/node/NodeCoordinator;)Landroidx/compose/ui/graphics/Canvas;
 HSPLandroidx/compose/ui/node/NodeCoordinator;->access$getDrawBlockParentLayer$p(Landroidx/compose/ui/node/NodeCoordinator;)Landroidx/compose/ui/graphics/layer/GraphicsLayer;
@@ -22975,8 +22966,8 @@ HSPLdev/chrisbanes/haze/materials/HazeMaterials;->ultraThin-Iv8Zu3U(JLandroidx/c
 Ldev/staticvar/vlr/ComposableSingletons$MainActivityKt;
 HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;-><clinit>()V
 HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;-><init>()V
-HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;->getLambda-1$dev_staticvar_vlr_63_v0_5_6__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
-HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;->getLambda-2$dev_staticvar_vlr_63_v0_5_6__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
+HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;->getLambda-1$dev_staticvar_vlr_64_v0_5_7__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
+HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;->getLambda-2$dev_staticvar_vlr_64_v0_5_7__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
 Ldev/staticvar/vlr/ComposableSingletons$MainActivityKt$lambda-1$1;
 HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt$lambda-1$1;-><clinit>()V
 HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt$lambda-1$1;-><init>()V
@@ -23591,7 +23582,7 @@ HSPLdev/staticvar/vlr/ui/analytics/LogEventKt$LogEvent$1$1$$ExternalSyntheticLam
 Ldev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt;
 HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt;-><clinit>()V
 HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt;-><init>()V
-HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt;->getLambda-1$dev_staticvar_vlr_63_v0_5_6__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
+HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt;->getLambda-1$dev_staticvar_vlr_64_v0_5_7__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
 Ldev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt$lambda-1$1;
 HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt$lambda-1$1;-><clinit>()V
 HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt$lambda-1$1;-><init>()V

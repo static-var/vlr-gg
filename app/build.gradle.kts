@@ -32,8 +32,8 @@ android {
     applicationId = "dev.staticvar.vlr"
     minSdk = 23
     targetSdk = 35
-    versionCode = 63
-    versionName = "v0.5.6"
+    versionCode = 64
+    versionName = "v0.5.7"
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
@@ -72,18 +72,21 @@ android {
       signingConfig = signingConfigs.getByName("debug")
       matchingFallbacks += mutableListOf("release")
       isDebuggable = false
+      manifestPlaceholders["appName"] = "VLR Benchmark"
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
     }
     getByName("debug") {
       isMinifyEnabled = false
       applicationIdSuffix = ".debug"
+      manifestPlaceholders["appName"] = "VLR Debug"
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
     }
     getByName("release") {
       isShrinkResources = true
       isMinifyEnabled = true
+      manifestPlaceholders["appName"] = "VLR.gg (Unofficial)"
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
       configure<CrashlyticsExtension> { mappingFileUploadEnabled = true }
