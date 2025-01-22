@@ -123,7 +123,7 @@ fun VlrNavBar(
                 Icon(
                   imageVector = if (it) navItem.selectedIcon else navItem.unselectedIcon,
                   contentDescription = navItem.title,
-                  tint = if (it) VLRTheme.colorScheme.onPrimaryContainer else VLRTheme.colorScheme.primaryContainer,
+                  tint = if (it) VLRTheme.colorScheme.onPrimary else VLRTheme.colorScheme.onSurface,
                 )
               }
             },
@@ -132,7 +132,8 @@ fun VlrNavBar(
             colors =
               NavigationBarItemDefaults.colors(
                 selectedTextColor = VLRTheme.colorScheme.primary,
-                indicatorColor = VLRTheme.colorScheme.primary
+                indicatorColor = VLRTheme.colorScheme.primaryContainer,
+                unselectedTextColor = VLRTheme.colorScheme.onSurface
               ),
           )
         }
@@ -190,7 +191,10 @@ fun TopSlotContainer(
           action(index)
         },
         colors =
-          if (isSelected) ButtonDefaults.buttonColors() else ButtonDefaults.outlinedButtonColors(),
+          if (isSelected) ButtonDefaults.buttonColors(
+            containerColor = VLRTheme.colorScheme.primaryContainer,
+            contentColor = VLRTheme.colorScheme.onPrimaryContainer
+          ) else ButtonDefaults.outlinedButtonColors(contentColor = VLRTheme.colorScheme.onSurface),
       ) {
         Text(text = tab, maxLines = 1)
       }
