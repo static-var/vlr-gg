@@ -419,7 +419,6 @@ Landroidx/collection/MutableIntObjectMap;
 HSPLandroidx/collection/MutableIntObjectMap;-><init>(I)V
 HSPLandroidx/collection/MutableIntObjectMap;-><init>(IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 HSPLandroidx/collection/MutableIntObjectMap;->adjustStorage$collection()V
-HSPLandroidx/collection/MutableIntObjectMap;->dropDeletes$collection()V
 HSPLandroidx/collection/MutableIntObjectMap;->findAbsoluteInsertIndex(I)I
 HSPLandroidx/collection/MutableIntObjectMap;->findFirstAvailableSlot(I)I
 HSPLandroidx/collection/MutableIntObjectMap;->initializeGrowth()V
@@ -5276,7 +5275,7 @@ HSPLandroidx/compose/runtime/ComposerImpl;->getCompoundKeyHash()I
 HSPLandroidx/compose/runtime/ComposerImpl;->getCurrentCompositionLocalMap()Landroidx/compose/runtime/CompositionLocalMap;
 HSPLandroidx/compose/runtime/ComposerImpl;->getCurrentRecomposeScope$runtime_release()Landroidx/compose/runtime/RecomposeScopeImpl;
 HSPLandroidx/compose/runtime/ComposerImpl;->getDefaultsInvalid()Z
-HPLandroidx/compose/runtime/ComposerImpl;->getInserting()Z
+HSPLandroidx/compose/runtime/ComposerImpl;->getInserting()Z
 HSPLandroidx/compose/runtime/ComposerImpl;->getNode(Landroidx/compose/runtime/SlotReader;)Ljava/lang/Object;
 HSPLandroidx/compose/runtime/ComposerImpl;->getReader$runtime_release()Landroidx/compose/runtime/SlotReader;
 HSPLandroidx/compose/runtime/ComposerImpl;->getRecomposeScope()Landroidx/compose/runtime/RecomposeScope;
@@ -6430,6 +6429,7 @@ HSPLandroidx/compose/runtime/changelist/ComposerChangeListWriter$Companion;-><in
 Landroidx/compose/runtime/changelist/FixupList;
 HSPLandroidx/compose/runtime/changelist/FixupList;-><clinit>()V
 HSPLandroidx/compose/runtime/changelist/FixupList;-><init>()V
+HSPLandroidx/compose/runtime/changelist/FixupList;->createAndInsertNode(Lkotlin/jvm/functions/Function0;ILandroidx/compose/runtime/Anchor;)V
 HSPLandroidx/compose/runtime/changelist/FixupList;->endNodeInsert()V
 HSPLandroidx/compose/runtime/changelist/FixupList;->executeAndFlushAllPendingFixups(Landroidx/compose/runtime/Applier;Landroidx/compose/runtime/SlotWriter;Landroidx/compose/runtime/RememberManager;)V
 HSPLandroidx/compose/runtime/changelist/FixupList;->isEmpty()Z
@@ -7135,6 +7135,8 @@ HSPLandroidx/compose/runtime/snapshots/SnapshotDoubleIndexHeap;->swap(II)V
 Landroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;-><clinit>()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;-><init>([J)V
+HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;->add(J)V
+HSPLandroidx/compose/runtime/snapshots/SnapshotIdArrayBuilder;->toArray()[J
 Landroidx/compose/runtime/snapshots/SnapshotIdSet;
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet;-><clinit>()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet;-><init>(JJJ[J)V
@@ -7150,8 +7152,10 @@ HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet$Companion;-><init>()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet$Companion;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 HSPLandroidx/compose/runtime/snapshots/SnapshotIdSet$Companion;->getEMPTY()Landroidx/compose/runtime/snapshots/SnapshotIdSet;
 Landroidx/compose/runtime/snapshots/SnapshotId_jvmKt;
+HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->binarySearch([JJ)I
 HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->snapshotIdArrayWithCapacity(I)[J
 HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->toSnapshotId(I)J
+HSPLandroidx/compose/runtime/snapshots/SnapshotId_jvmKt;->withIdRemovedAt([JI)[J
 Landroidx/compose/runtime/snapshots/SnapshotKt;
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;-><clinit>()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotKt;->access$advanceGlobalSnapshot()V
@@ -10086,11 +10090,13 @@ HSPLandroidx/compose/ui/node/LayoutModifierNodeKt;->invalidateMeasurement(Landro
 Landroidx/compose/ui/node/LayoutNode;
 HSPLandroidx/compose/ui/node/LayoutNode;->$r8$lambda$H_fKQj6Zfs_ncgCQhWqRYKHM5Js(Landroidx/compose/ui/node/LayoutNode;Landroidx/compose/ui/node/LayoutNode;)I
 HSPLandroidx/compose/ui/node/LayoutNode;-><clinit>()V
+HSPLandroidx/compose/ui/node/LayoutNode;-><init>(ZI)V
 HSPLandroidx/compose/ui/node/LayoutNode;-><init>(ZIILkotlin/jvm/internal/DefaultConstructorMarker;)V
 HSPLandroidx/compose/ui/node/LayoutNode;->ZComparator$lambda$37(Landroidx/compose/ui/node/LayoutNode;Landroidx/compose/ui/node/LayoutNode;)I
 HSPLandroidx/compose/ui/node/LayoutNode;->access$getConstructor$cp()Lkotlin/jvm/functions/Function0;
 HSPLandroidx/compose/ui/node/LayoutNode;->access$setIgnoreRemeasureRequests$p(Landroidx/compose/ui/node/LayoutNode;Z)V
 HSPLandroidx/compose/ui/node/LayoutNode;->applyModifier(Landroidx/compose/ui/Modifier;)V
+HSPLandroidx/compose/ui/node/LayoutNode;->attach$ui_release(Landroidx/compose/ui/node/Owner;)V
 HSPLandroidx/compose/ui/node/LayoutNode;->clearSubtreeIntrinsicsUsage$ui_release()V
 HSPLandroidx/compose/ui/node/LayoutNode;->clearSubtreePlacementIntrinsicsUsage()V
 HSPLandroidx/compose/ui/node/LayoutNode;->detach$ui_release()V
@@ -10521,6 +10527,7 @@ Landroidx/compose/ui/node/MeasureAndLayoutDelegate$WhenMappings;
 HSPLandroidx/compose/ui/node/MeasureAndLayoutDelegate$WhenMappings;-><clinit>()V
 Landroidx/compose/ui/node/MeasurePassDelegate;
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;-><clinit>()V
+HSPLandroidx/compose/ui/node/MeasurePassDelegate;-><init>(Landroidx/compose/ui/node/LayoutNodeLayoutDelegate;)V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->access$checkChildrenPlaceOrderForUpdates(Landroidx/compose/ui/node/MeasurePassDelegate;)V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->access$clearPlaceOrder(Landroidx/compose/ui/node/MeasurePassDelegate;)V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->access$getPerformMeasureConstraints$p(Landroidx/compose/ui/node/MeasurePassDelegate;)J
@@ -10660,6 +10667,7 @@ Landroidx/compose/ui/node/NodeChainKt$fillVector$1;
 HSPLandroidx/compose/ui/node/NodeChainKt$fillVector$1;-><init>(Landroidx/compose/runtime/collection/MutableVector;)V
 Landroidx/compose/ui/node/NodeCoordinator;
 HSPLandroidx/compose/ui/node/NodeCoordinator;-><clinit>()V
+HSPLandroidx/compose/ui/node/NodeCoordinator;-><init>(Landroidx/compose/ui/node/LayoutNode;)V
 HSPLandroidx/compose/ui/node/NodeCoordinator;->access$drawContainedDrawModifiers(Landroidx/compose/ui/node/NodeCoordinator;Landroidx/compose/ui/graphics/Canvas;Landroidx/compose/ui/graphics/layer/GraphicsLayer;)V
 HSPLandroidx/compose/ui/node/NodeCoordinator;->access$getDrawBlockCanvas$p(Landroidx/compose/ui/node/NodeCoordinator;)Landroidx/compose/ui/graphics/Canvas;
 HSPLandroidx/compose/ui/node/NodeCoordinator;->access$getDrawBlockParentLayer$p(Landroidx/compose/ui/node/NodeCoordinator;)Landroidx/compose/ui/graphics/layer/GraphicsLayer;
@@ -13422,7 +13430,6 @@ Landroidx/concurrent/futures/CallbackToFutureAdapter;
 HSPLandroidx/concurrent/futures/CallbackToFutureAdapter;->getFuture(Landroidx/concurrent/futures/CallbackToFutureAdapter$Resolver;)Lcom/google/common/util/concurrent/ListenableFuture;
 Landroidx/concurrent/futures/CallbackToFutureAdapter$Completer;
 HSPLandroidx/concurrent/futures/CallbackToFutureAdapter$Completer;-><init>()V
-PLandroidx/concurrent/futures/CallbackToFutureAdapter$Completer;->finalize()V
 HSPLandroidx/concurrent/futures/CallbackToFutureAdapter$Completer;->set(Ljava/lang/Object;)Z
 HSPLandroidx/concurrent/futures/CallbackToFutureAdapter$Completer;->setCompletedNormally()V
 Landroidx/concurrent/futures/CallbackToFutureAdapter$Resolver;
@@ -19719,6 +19726,7 @@ HSPLcom/google/firebase/concurrent/CustomThreadFactory$$ExternalSyntheticLambda0
 Lcom/google/firebase/concurrent/DelegatingScheduledExecutorService;
 HSPLcom/google/firebase/concurrent/DelegatingScheduledExecutorService;-><init>(Ljava/util/concurrent/ExecutorService;Ljava/util/concurrent/ScheduledExecutorService;)V
 HSPLcom/google/firebase/concurrent/DelegatingScheduledExecutorService;->execute(Ljava/lang/Runnable;)V
+HSPLcom/google/firebase/concurrent/DelegatingScheduledExecutorService;->submit(Ljava/lang/Runnable;)Ljava/util/concurrent/Future;
 HSPLcom/google/firebase/concurrent/DelegatingScheduledExecutorService;->submit(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
 Lcom/google/firebase/concurrent/ExecutorsRegistrar;
 HSPLcom/google/firebase/concurrent/ExecutorsRegistrar;-><clinit>()V
@@ -19940,6 +19948,8 @@ HSPLcom/google/firebase/crashlytics/internal/common/CLSUUID;->populateTime([B)V
 Lcom/google/firebase/crashlytics/internal/common/CommonUtils;
 HSPLcom/google/firebase/crashlytics/internal/common/CommonUtils;-><clinit>()V
 HSPLcom/google/firebase/crashlytics/internal/common/CommonUtils;->calculateTotalRamInBytes(Landroid/content/Context;)J
+HSPLcom/google/firebase/crashlytics/internal/common/CommonUtils;->canTryConnection(Landroid/content/Context;)Z
+HSPLcom/google/firebase/crashlytics/internal/common/CommonUtils;->checkPermission(Landroid/content/Context;Ljava/lang/String;)Z
 HSPLcom/google/firebase/crashlytics/internal/common/CommonUtils;->closeOrLog(Ljava/io/Closeable;Ljava/lang/String;)V
 HSPLcom/google/firebase/crashlytics/internal/common/CommonUtils;->createInstanceIdFrom([Ljava/lang/String;)Ljava/lang/String;
 HSPLcom/google/firebase/crashlytics/internal/common/CommonUtils;->getBooleanResourceValue(Landroid/content/Context;Ljava/lang/String;Z)Z
@@ -20014,11 +20024,12 @@ HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;-><init>(Lco
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->checkForPreviousCrash()V
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->didPreviousInitializationFail()Z
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->doBackgroundInitialization(Lcom/google/firebase/crashlytics/internal/settings/SettingsProvider;)V
-HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->doBackgroundInitializationAsync(Lcom/google/firebase/crashlytics/internal/settings/SettingsProvider;)Lcom/google/android/gms/tasks/Task;
+HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->finishInitSynchronously(Lcom/google/firebase/crashlytics/internal/settings/SettingsProvider;)V
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->getVersion()Ljava/lang/String;
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->isBuildIdValid(Ljava/lang/String;Z)Z
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->lambda$checkForPreviousCrash$10$com-google-firebase-crashlytics-internal-common-CrashlyticsCore()Ljava/lang/Boolean;
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->lambda$doBackgroundInitializationAsync$0$com-google-firebase-crashlytics-internal-common-CrashlyticsCore(Lcom/google/firebase/crashlytics/internal/settings/SettingsProvider;)V
+HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->lambda$finishInitSynchronously$9$com-google-firebase-crashlytics-internal-common-CrashlyticsCore(Lcom/google/firebase/crashlytics/internal/settings/SettingsProvider;)V
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->lambda$log$2$com-google-firebase-crashlytics-internal-common-CrashlyticsCore(JLjava/lang/String;)V
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->lambda$log$3$com-google-firebase-crashlytics-internal-common-CrashlyticsCore(JLjava/lang/String;)V
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->lambda$setCustomKeys$6$com-google-firebase-crashlytics-internal-common-CrashlyticsCore(Ljava/util/Map;)V
@@ -20028,7 +20039,6 @@ HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->markInitia
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->onPreExecute(Lcom/google/firebase/crashlytics/internal/common/AppData;Lcom/google/firebase/crashlytics/internal/settings/SettingsProvider;)Z
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;->setCustomKeys(Ljava/util/Map;)V
 Lcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda0;
-HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda0;-><init>(Lcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;Lcom/google/firebase/crashlytics/internal/settings/SettingsProvider;)V
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda0;->run()V
 Lcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda1;
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda1;-><init>(Lcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;Ljava/util/Map;)V
@@ -20039,6 +20049,9 @@ HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyn
 Lcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda11;
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda11;-><init>(Lcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;JLjava/lang/String;)V
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda11;->run()V
+Lcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda2;
+HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda2;-><init>(Lcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;Lcom/google/firebase/crashlytics/internal/settings/SettingsProvider;)V
+HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda2;->run()V
 Lcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda3;
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda3;-><init>(Lcom/google/firebase/crashlytics/internal/common/CrashlyticsCore;)V
 HSPLcom/google/firebase/crashlytics/internal/common/CrashlyticsCore$$ExternalSyntheticLambda3;->handleBreadcrumb(Ljava/lang/String;)V
@@ -21191,6 +21204,7 @@ Lcom/google/firebase/perf/config/ConfigurationConstants$CollectionEnabled;
 HSPLcom/google/firebase/perf/config/ConfigurationConstants$CollectionEnabled;-><init>()V
 HSPLcom/google/firebase/perf/config/ConfigurationConstants$CollectionEnabled;->getDeviceCacheFlag()Ljava/lang/String;
 HSPLcom/google/firebase/perf/config/ConfigurationConstants$CollectionEnabled;->getInstance()Lcom/google/firebase/perf/config/ConfigurationConstants$CollectionEnabled;
+HSPLcom/google/firebase/perf/config/ConfigurationConstants$CollectionEnabled;->getMetadataFlag()Ljava/lang/String;
 Lcom/google/firebase/perf/config/ConfigurationConstants$ExperimentTTID;
 HSPLcom/google/firebase/perf/config/ConfigurationConstants$ExperimentTTID;-><init>()V
 HSPLcom/google/firebase/perf/config/ConfigurationConstants$ExperimentTTID;->getDefault()Ljava/lang/Boolean;
@@ -22966,8 +22980,8 @@ HSPLdev/chrisbanes/haze/materials/HazeMaterials;->ultraThin-Iv8Zu3U(JLandroidx/c
 Ldev/staticvar/vlr/ComposableSingletons$MainActivityKt;
 HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;-><clinit>()V
 HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;-><init>()V
-HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;->getLambda-1$dev_staticvar_vlr_64_v0_5_7__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
-HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;->getLambda-2$dev_staticvar_vlr_64_v0_5_7__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
+HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;->getLambda-1$dev_staticvar_vlr_66_v0_6_0__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
+HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt;->getLambda-2$dev_staticvar_vlr_66_v0_6_0__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
 Ldev/staticvar/vlr/ComposableSingletons$MainActivityKt$lambda-1$1;
 HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt$lambda-1$1;-><clinit>()V
 HSPLdev/staticvar/vlr/ComposableSingletons$MainActivityKt$lambda-1$1;-><init>()V
@@ -23582,7 +23596,7 @@ HSPLdev/staticvar/vlr/ui/analytics/LogEventKt$LogEvent$1$1$$ExternalSyntheticLam
 Ldev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt;
 HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt;-><clinit>()V
 HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt;-><init>()V
-HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt;->getLambda-1$dev_staticvar_vlr_64_v0_5_7__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
+HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt;->getLambda-1$dev_staticvar_vlr_66_v0_6_0__nonMinifiedRelease()Lkotlin/jvm/functions/Function2;
 Ldev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt$lambda-1$1;
 HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt$lambda-1$1;-><clinit>()V
 HSPLdev/staticvar/vlr/ui/common/ComposableSingletons$PullToRefreshPillKt$lambda-1$1;-><init>()V
@@ -27040,7 +27054,6 @@ HSPLkotlin/collections/ArraysKt___ArraysJvmKt;->sortWith([Ljava/lang/Object;Ljav
 Lkotlin/collections/ArraysKt___ArraysKt;
 HSPLkotlin/collections/ArraysKt___ArraysKt;->filterNotNull([Ljava/lang/Object;)Ljava/util/List;
 HSPLkotlin/collections/ArraysKt___ArraysKt;->filterNotNullTo([Ljava/lang/Object;Ljava/util/Collection;)Ljava/util/Collection;
-HSPLkotlin/collections/ArraysKt___ArraysKt;->getLastIndex([J)I
 HSPLkotlin/collections/ArraysKt___ArraysKt;->getLastIndex([Ljava/lang/Object;)I
 HSPLkotlin/collections/ArraysKt___ArraysKt;->indexOf([Ljava/lang/Object;Ljava/lang/Object;)I
 HSPLkotlin/collections/ArraysKt___ArraysKt;->toCollection([Ljava/lang/Object;Ljava/util/Collection;)Ljava/util/Collection;
@@ -29378,6 +29391,7 @@ HSPLkotlinx/io/Buffer;->readTo(Lkotlinx/io/RawSink;J)V
 HSPLkotlinx/io/Buffer;->recycleHead$kotlinx_io_core()V
 HSPLkotlinx/io/Buffer;->recycleTail()V
 HSPLkotlinx/io/Buffer;->request(J)Z
+HSPLkotlinx/io/Buffer;->require(J)V
 HSPLkotlinx/io/Buffer;->setHead(Lkotlinx/io/Segment;)V
 HSPLkotlinx/io/Buffer;->setSizeMut(J)V
 HSPLkotlinx/io/Buffer;->setTail(Lkotlinx/io/Segment;)V
@@ -29464,6 +29478,7 @@ Lkotlinx/io/SourcesJvmKt;
 HSPLkotlinx/io/SourcesJvmKt;->readAtMostTo(Lkotlinx/io/Source;Ljava/nio/ByteBuffer;)I
 Lkotlinx/io/SourcesKt;
 HSPLkotlinx/io/SourcesKt;->readByteArray(Lkotlinx/io/Source;)[B
+HSPLkotlinx/io/SourcesKt;->readByteArray(Lkotlinx/io/Source;I)[B
 HSPLkotlinx/io/SourcesKt;->readByteArrayImpl(Lkotlinx/io/Source;I)[B
 HSPLkotlinx/io/SourcesKt;->readShortLe(Lkotlinx/io/Source;)S
 HSPLkotlinx/io/SourcesKt;->readTo$default(Lkotlinx/io/Source;[BIIILjava/lang/Object;)V
@@ -29482,6 +29497,7 @@ HSPLkotlinx/io/files/NioMover$$ExternalSyntheticApiModelOutline0;->m(Ljavax/net/
 HSPLkotlinx/io/files/NioMover$$ExternalSyntheticApiModelOutline0;->m(Ljavax/net/ssl/SSLSocket;)Z
 HSPLkotlinx/io/files/NioMover$$ExternalSyntheticApiModelOutline0;->m(Ljavax/net/ssl/SSLSocket;Z)V
 Lkotlinx/io/internal/_Utf8Kt;
+HSPLkotlinx/io/internal/_Utf8Kt;->commonToUtf8String$default([BIIILjava/lang/Object;)Ljava/lang/String;
 HSPLkotlinx/io/internal/_Utf8Kt;->commonToUtf8String([BII)Ljava/lang/String;
 Lkotlinx/io/unsafe/BufferIterationContext;
 Lkotlinx/io/unsafe/SegmentReadContext;

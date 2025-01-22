@@ -123,7 +123,7 @@ fun VlrNavBar(
                 Icon(
                   imageVector = if (it) navItem.selectedIcon else navItem.unselectedIcon,
                   contentDescription = navItem.title,
-                  tint = if (it) VLRTheme.colorScheme.onPrimary else VLRTheme.colorScheme.onSurface,
+                  tint = if (it) VLRTheme.colorScheme.onPrimaryContainer else VLRTheme.colorScheme.onSurface,
                 )
               }
             },
