@@ -88,6 +88,7 @@ fun MatchInfoMoreOptions(
         Text(text = stringResource(R.string.details))
       }
       detailData.event.date?.let {
+        if (!(detailData.fromEventsFav || detailData.fromTeamsFav))
         if (!it.hasElapsed) {
           var processingTopicSubscription by remember { mutableStateOf(false) }
           Button(

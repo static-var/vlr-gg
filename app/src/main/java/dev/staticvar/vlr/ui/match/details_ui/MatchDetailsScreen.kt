@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -74,6 +75,7 @@ import com.google.firebase.messaging.ktx.messaging
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.ui.Local16DPPadding
+import dev.staticvar.vlr.ui.Local16DP_8DPPadding
 import dev.staticvar.vlr.ui.Local2DPPadding
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
@@ -84,6 +86,7 @@ import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.PullToRefreshPill
+import dev.staticvar.vlr.ui.common.Tag
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
 import dev.staticvar.vlr.ui.helper.plus
@@ -240,7 +243,22 @@ fun MatchOverallAndEventOverview(
 
   Column {
     detailData.event.status?.let {
-      MatchStatusUi(modifier = modifier, state = it, date = detailData.event.date)
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(Local16DP_8DPPadding.current),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+      ) {
+        MatchStatusUi(modifier = Modifier, state = it, date = detailData.event.date)
+        MatchFavSource(
+          modifier = Modifier.weight(1f),
+          markedFav = detailData.markedFav,
+          fromTeamFav = detailData.fromTeamsFav,
+          fromEventFav = detailData.fromEventsFav,
+        )
+      }
+
     }
     Row(modifier = modifier.fillMaxWidth()) {
       HeroScoreBox(
@@ -411,10 +429,36 @@ fun MatchStatusUi(modifier: Modifier, state: String, date: String?) {
       Text(
         text = state.uppercase() + " " + date?.timeDiff,
         modifier = modifier
-          .fillMaxWidth()
           .padding(Local4DPPadding.current),
         textAlign = TextAlign.Center,
         color = VLRTheme.colorScheme.primary,
+      )
+    }
+  }
+}
+
+@Composable
+fun MatchFavSource(
+  modifier: Modifier = Modifier,
+  markedFav: Boolean,
+  fromTeamFav: Boolean,
+  fromEventFav: Boolean,
+) {
+  AnimatedVisibility(
+    visible = markedFav, modifier = modifier
+      .padding(Local4DPPadding.current)
+  ) {
+    Row(
+      horizontalArrangement = Arrangement.End
+    ) {
+      Tag(
+        text =
+          if (fromEventFav && fromTeamFav) stringResource(R.string.team_and_event)
+          else if (fromTeamFav) stringResource(R.string.team)
+          else if (fromEventFav) stringResource(R.string.event)
+          else if (markedFav) stringResource(R.string.match)
+          else "",
+        icon = Icons.Filled.Favorite
       )
     }
   }
@@ -431,7 +475,7 @@ fun HeroScoreBox(
   onClick: (String) -> Unit = {},
 ) {
   val animatedBorder by animateDpAsState(
-    targetValue = if(isFav) 1.dp else -1.dp,
+    targetValue = if (isFav) 1.dp else -1.dp,
     animationSpec = tween(300),
   )
   DynamicTheme(model = imageUrl) {

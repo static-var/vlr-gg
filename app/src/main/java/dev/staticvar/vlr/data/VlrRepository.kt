@@ -103,12 +103,16 @@ constructor(
   fun getMatchesFromDb() = combine(
     vlrDao.getAllMatchesPreview(),
     matchFavDao.getFavoriteMatches(),
+    eventFavDao.getFavoriteEvents(),
     teamFavDao.getFavoriteTeams()
-  ) { matches, matchFavs, teamFavs ->
+  ) { matches, matchFavs, eventFavs, teamFavs ->
     matches.map {
       it.copy(
         markedFav = matchFavs.any { fav -> fav.id == it.id }
             || teamFavs.any { fav -> it.team1.id == fav.id || it.team2.id == fav.id }
+            || eventFavs.any { fav -> fav.id == it.eventId },
+        fromEventsFav = eventFavs.any { fav -> fav.id == it.eventId },
+        fromTeamsFav = teamFavs.any { fav -> it.team1.id == fav.id || it.team2.id == fav.id }
       )
     }
   }.map { Pass(it) }
@@ -199,11 +203,15 @@ constructor(
   fun getMatchDetailsFromDb(id: String) = combine(
     vlrDao.getMatchById(id),
     matchFavDao.getFavoriteMatches(),
+    eventFavDao.getFavoriteEvents(),
     teamFavDao.getFavoriteTeams()
-  ) { match, matchFavs, teamFavs ->
+  ) { match, matchFavs, eventFavs, teamFavs ->
     match?.copy(
       markedFav = matchFavs.any { fav -> fav.id == match.id }
           || teamFavs.any { fav -> match.teams.any { it.id == fav.id } }
+          || eventFavs.any { fav -> fav.id == match.event.id },
+      fromTeamsFav = teamFavs.any { fav -> match.teams.any { it.id == fav.id } },
+      fromEventsFav = eventFavs.any { fav -> fav.id == match.event.id },
     )
   }.map { Pass(it) }
 

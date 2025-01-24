@@ -29,6 +29,10 @@ data class MatchInfo(
   @SerialName("map_count") val mapCount: Int = 0,
   @ColumnInfo("markedFav", defaultValue = "0")
   val markedFav: Boolean = false,
+  @ColumnInfo("fromTeamsFav", defaultValue = "0")
+  val fromTeamsFav: Boolean = false,
+  @ColumnInfo("fromEventsFav", defaultValue = "0")
+  val fromEventsFav: Boolean = false,
   val createdAt: Long = System.currentTimeMillis(),
 ) {
   @Keep

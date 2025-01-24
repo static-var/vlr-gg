@@ -23,4 +23,8 @@ data class MatchPreviewInfo(
   @SerialName("event_id") @ColumnInfo("eventId", defaultValue = "")val eventId: String = "",
   @ColumnInfo("markedFav", defaultValue = "0")
   val markedFav: Boolean = false,
+  @ColumnInfo("fromTeamsFav", defaultValue = "0")
+  val fromTeamsFav: Boolean = false,
+  @ColumnInfo("fromEventsFav", defaultValue = "0")
+  val fromEventsFav: Boolean = false,
 )

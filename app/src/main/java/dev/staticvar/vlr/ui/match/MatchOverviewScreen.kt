@@ -28,6 +28,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -80,6 +82,7 @@ import dev.staticvar.vlr.ui.common.DateChip
 import dev.staticvar.vlr.ui.common.ErrorUi
 import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
+import dev.staticvar.vlr.ui.common.Tag
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
 import dev.staticvar.vlr.ui.common.VlrSegmentedButtons
 import dev.staticvar.vlr.ui.helper.CardView
@@ -533,7 +536,7 @@ fun MatchOverviewPreview(
         .padding(Local4DPPadding.current)
         .animateContentSize()
     ) {
-      Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+      Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(
           text =
             when {
@@ -549,11 +552,32 @@ fun MatchOverviewPreview(
               else -> ""
             },
           modifier = modifier
-            .fillMaxWidth()
             .padding(Local8DP_4DPPadding.current),
-          textAlign = TextAlign.Center,
           style = VLRTheme.typography.bodyMedium,
         )
+
+        Row(
+          modifier = Modifier
+            .weight(1f)
+            .padding(Local8DP_4DPPadding.current),
+          horizontalArrangement = Arrangement.End
+        ) {
+          AnimatedVisibility(
+            visible = matchPreviewInfo.markedFav && !shareMode
+          ) {
+            with(matchPreviewInfo) {
+              Tag(
+                text =
+                  if (fromEventsFav && fromTeamsFav) stringResource(R.string.team_and_event)
+                  else if (fromTeamsFav) stringResource(R.string.team)
+                  else if (fromEventsFav) stringResource(R.string.event)
+                  else if (markedFav) stringResource(R.string.match)
+                  else "",
+                icon = Icons.Filled.Favorite
+              )
+            }
+          }
+        }
 
         if (shareMode)
           Checkbox(checked = isSelected, onCheckedChange = { onAction(false, matchPreviewInfo) })
