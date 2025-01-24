@@ -347,15 +347,8 @@ constructor(
   suspend fun addFavoriteMatch(id: String) = matchFavDao.addFavMatch(MatchFav(id))
   suspend fun removeFavoriteMatch(id: String) = matchFavDao.deleteFavMatch(id)
 
-  suspend fun addFavoriteEvent(id: String, matches: List<String>) {
-    eventFavDao.addFavEvent(EventFav(id))
-    matchFavDao.addFavMatches(matches.map { MatchFav(it) })
-  }
-
-  suspend fun removeFavoriteEvent(id: String, matches: List<String>) {
-    eventFavDao.deleteFavEvent(id)
-    matchFavDao.deleteFavMatches(matches)
-  }
+  suspend fun addFavoriteEvent(id: String) = eventFavDao.addFavEvent(EventFav(id))
+  suspend fun removeFavoriteEvent(id: String) = eventFavDao.deleteFavEvent(id)
 
   suspend fun addFavoriteTeam(id: String) = teamFavDao.addFavTeam(TeamFav(id))
   suspend fun removeFavoriteTeam(id: String) = teamFavDao.deleteFavTeam(id)

@@ -179,18 +179,12 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                   when (tournamentDetails.markedFav) {
                     true -> {
                       Firebase.messaging.unsubscribeFromTopic(trackerString).await()
-                      viewModel.untrackEvent(
-                        id = tournamentDetails.id,
-                        matches = tournamentDetails.matches.map { it.id }
-                      )
+                      viewModel.untrackEvent(id = tournamentDetails.id)
                     }
 
                     false -> {
                       Firebase.messaging.subscribeToTopic(trackerString).await()
-                      viewModel.trackEvent(
-                        id = tournamentDetails.id,
-                        matches = tournamentDetails.matches.map { it.id }
-                      )
+                      viewModel.trackEvent(id = tournamentDetails.id)
                     }
 
                     else -> {}

@@ -113,11 +113,11 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   fun trackMatch(id: String) = viewModelScope.launch { repository.addFavoriteMatch(id) }
   fun untrackMatch(id: String) = viewModelScope.launch { repository.removeFavoriteMatch(id) }
 
-  fun trackEvent(id: String, matches: List<String>) =
-    viewModelScope.launch { repository.addFavoriteEvent(id, matches) }
+  fun trackEvent(id: String) =
+    viewModelScope.launch { repository.addFavoriteEvent(id) }
 
-  fun untrackEvent(id: String, matches: List<String>) =
-    viewModelScope.launch { repository.removeFavoriteEvent(id, matches) }
+  fun untrackEvent(id: String) =
+    viewModelScope.launch { repository.removeFavoriteEvent(id) }
 
   fun trackTeam(id: String) = viewModelScope.launch { repository.addFavoriteTeam(id) }
   fun untrackTeam(id: String) = viewModelScope.launch { repository.removeFavoriteTeam(id) }
