@@ -32,8 +32,8 @@
     <string name="no_ongoing_event">No events</string>
     <string name="no_teams">No teams</string>
     <string name="no_match">No matches</string>
-    <string name="unsubscribe">Unsubscribe</string>
-    <string name="get_notified">Get Notified</string>
+    <string name="unsubscribe">Un-favourite</string>
+    <string name="get_notified">Favourite</string>
     <string name="agent">Agent</string>
     <string name="player">Player</string>
     <string name="acs">ACS</string>
@@ -87,4 +87,8 @@
     <string name="earnings">Total Earnings</string>
     <string name="current_team">Current Team</string>
     <string name="previous_team">Previous Teams</string>
+    <string name="match">Match</string>
+    <string name="team">Team</string>
+    <string name="event">Event</string>
+    <string name="team_and_event">Event &amp; Team</string>
 </resources>
