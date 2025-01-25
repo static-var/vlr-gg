@@ -1,6 +1,7 @@
-v0.6.0
- • ✨ Improved favourite system for matches, events and teams
- • ⚒️ Under the hood improvements
+v0.6.2
+ • ✨ "Get Notified" is now "Favourite"
+ • ✨ Matches, events and teams marked as favourite will be easy to identify
+ • ⚒️ Visual improvements and under the hood updates
 
 v0.5.5
  • ✨ Improved bottom navigation bar UI
