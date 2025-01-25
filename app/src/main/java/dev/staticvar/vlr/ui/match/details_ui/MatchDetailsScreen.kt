@@ -12,6 +12,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -41,7 +42,6 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -85,8 +85,10 @@ import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.Illustration
 import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.Tag
+import dev.staticvar.vlr.ui.common.illustration.Loading
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.EmphasisCardView
 import dev.staticvar.vlr.ui.helper.plus
@@ -227,7 +229,11 @@ fun MatchDetails(viewModel: VlrViewModel, id: String, paddingValues: PaddingValu
           ?: kotlin.run {
             updateState.getError()?.let {
               ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
-            } ?: LinearProgressIndicator(modifier.animateContentSize())
+            } ?: Image(
+              modifier = Modifier.padding(16.dp),
+              imageVector = Illustration.Loading,
+              contentDescription = stringResource(R.string.loading),
+            )
           }
       }
       .onFail { Text(text = message()) }
@@ -403,7 +409,7 @@ fun MatchLiveUi(modifier: Modifier = Modifier) {
   )
 
   Row(
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier,
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
   ) {

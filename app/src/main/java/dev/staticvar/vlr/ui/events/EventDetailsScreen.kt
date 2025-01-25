@@ -4,6 +4,7 @@ import android.Manifest
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -82,7 +83,9 @@ import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.Illustration
 import dev.staticvar.vlr.ui.common.PullToRefreshPill
+import dev.staticvar.vlr.ui.common.illustration.Loading
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.VLRTabIndicator
 import dev.staticvar.vlr.ui.helper.plus
@@ -251,7 +254,11 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
           ?: kotlin.run {
             updateState.getError()?.let {
               ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString())
-            } ?: LinearProgressIndicator(modifier.animateContentSize())
+            } ?: Image(
+              modifier = Modifier.padding(16.dp),
+              imageVector = Illustration.Loading,
+              contentDescription = stringResource(R.string.loading),
+            )
           }
       }
       .onFail { Text(text = message()) }

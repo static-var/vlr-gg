@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -90,9 +91,11 @@ import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.Illustration
 import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.VlrScrollableTabRowForViewPager
+import dev.staticvar.vlr.ui.common.illustration.Loading
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
 import dev.staticvar.vlr.ui.scrim.StatusBarType
@@ -236,7 +239,13 @@ fun RankScreen(
             pageSize = pageSize,
           )
       }
-      .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
+      .onWaiting {
+        Image(
+          modifier = Modifier.padding(16.dp),
+          imageVector = Illustration.Loading,
+          contentDescription = stringResource(R.string.loading),
+        )
+      }
       .onFail { Text(text = message()) }
   }
 }

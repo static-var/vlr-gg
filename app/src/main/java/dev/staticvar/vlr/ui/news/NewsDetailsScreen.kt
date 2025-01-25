@@ -3,6 +3,7 @@ package dev.staticvar.vlr.ui.news
 import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,7 +31,6 @@ import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -43,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,6 +53,7 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.materials.HazeMaterials
+import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.Heading
 import dev.staticvar.vlr.data.ListItem
 import dev.staticvar.vlr.data.Paragraph
@@ -64,6 +66,8 @@ import dev.staticvar.vlr.ui.Local8DPPadding
 import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
+import dev.staticvar.vlr.ui.common.Illustration
+import dev.staticvar.vlr.ui.common.illustration.Loading
 import dev.staticvar.vlr.ui.scrim.NavigationBarSpacer
 import dev.staticvar.vlr.ui.scrim.NavigationBarType
 import dev.staticvar.vlr.ui.scrim.StatusBarSpacer
@@ -213,11 +217,13 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
     }
       ?: parsedNews?.getError()?.let {
         Text(text = it.stackTraceToString(), modifier = Modifier.align(Alignment.Center))
-      }
-      ?: LinearProgressIndicator(
-        modifier
+      } ?: Image(
+        modifier = Modifier
+          .padding(16.dp)
           .testTag("common:loader")
-          .align(Alignment.Center)
+          .align(Alignment.Center),
+        imageVector = Illustration.Loading,
+        contentDescription = stringResource(R.string.loading),
       )
   }
 }

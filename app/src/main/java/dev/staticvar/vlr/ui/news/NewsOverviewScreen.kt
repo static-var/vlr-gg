@@ -1,7 +1,7 @@
 package dev.staticvar.vlr.ui.news
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +22,6 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -44,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,6 +51,7 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.github.michaelbull.result.getOrElse
+import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.NewsResponseItem
 import dev.staticvar.vlr.ui.Local4DPPadding
 import dev.staticvar.vlr.ui.Local8DPPadding
@@ -58,8 +59,10 @@ import dev.staticvar.vlr.ui.VlrViewModel
 import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.Illustration
 import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
+import dev.staticvar.vlr.ui.common.illustration.Loading
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.Waiting
@@ -136,20 +139,22 @@ fun NewsScreen(
   LogEvent(event = AnalyticsEvent.NEWS_OVERVIEW)
 
   val newsInfo by
-    remember(viewModel) { viewModel.getNews() }
-      .collectAsStateWithLifecycle(initialValue = Waiting())
+  remember(viewModel) { viewModel.getNews() }
+    .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-    remember(triggerRefresh) { viewModel.refreshNews() }
-      .collectAsStateWithLifecycle(initialValue = Ok(false))
+  remember(triggerRefresh) { viewModel.refreshNews() }
+    .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
-    rememberPullRefreshState(updateState.getOrElse { false }, { triggerRefresh = triggerRefresh.not() })
+    rememberPullRefreshState(
+      updateState.getOrElse { false },
+      { triggerRefresh = triggerRefresh.not() })
 
   val modifier: Modifier = Modifier
 
   val resetScroll by
-    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
   val scrollState = rememberLazyListState()
   scrollState.ScrollHelper(resetScroll = resetScroll) { viewModel.postResetScroll() }
 
@@ -163,10 +168,15 @@ fun NewsScreen(
         data?.let { list ->
           val safeConvertedList =
             kotlin.runCatching { list.sortedByDescending { it.date.timeToEpoch } }
-          Box(modifier = Modifier.pullRefresh(swipeRefresh).fillMaxSize()) {
+          Box(modifier = Modifier
+            .pullRefresh(swipeRefresh)
+            .fillMaxSize()) {
             PullToRefreshPill(
               modifier =
-                Modifier.align(Alignment.TopCenter).padding(top = 16.dp).statusBarsPadding(),
+                Modifier
+                  .align(Alignment.TopCenter)
+                  .padding(top = 16.dp)
+                  .statusBarsPadding(),
               show = updateState.get() == true || swipeRefresh.progress != 0f,
             )
             LazyColumn(
@@ -192,7 +202,13 @@ fun NewsScreen(
           }
         }
       }
-      .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
+      .onWaiting {
+        Image(
+          modifier = Modifier.padding(16.dp),
+          imageVector = Illustration.Loading,
+          contentDescription = stringResource(R.string.loading),
+        )
+      }
       .onFail { Text(text = message()) }
   }
 }
@@ -235,7 +251,9 @@ fun NewsItem(
         Text(
           text = newsResponseItem.author,
           style = VLRTheme.typography.labelSmall,
-          modifier = modifier.padding(Local4DPPadding.current).weight(1f),
+          modifier = modifier
+            .padding(Local4DPPadding.current)
+            .weight(1f),
         )
         Icon(
           imageVector = Icons.Outlined.DateRange,

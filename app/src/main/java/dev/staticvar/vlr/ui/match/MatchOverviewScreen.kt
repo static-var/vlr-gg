@@ -6,6 +6,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +36,6 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -80,11 +80,14 @@ import dev.staticvar.vlr.ui.analytics.AnalyticsEvent
 import dev.staticvar.vlr.ui.analytics.LogEvent
 import dev.staticvar.vlr.ui.common.DateChip
 import dev.staticvar.vlr.ui.common.ErrorUi
+import dev.staticvar.vlr.ui.common.Illustration
 import dev.staticvar.vlr.ui.common.PullToRefreshPill
 import dev.staticvar.vlr.ui.common.ScrollHelper
 import dev.staticvar.vlr.ui.common.Tag
 import dev.staticvar.vlr.ui.common.VlrHorizontalViewPager
 import dev.staticvar.vlr.ui.common.VlrSegmentedButtons
+import dev.staticvar.vlr.ui.common.illustration.Gaming
+import dev.staticvar.vlr.ui.common.illustration.Loading
 import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.helper.ShareDialog
 import dev.staticvar.vlr.ui.helper.SharingAppBar
@@ -241,7 +244,13 @@ fun MatchOverview(
             )
           }
         }
-        .onWaiting { LinearProgressIndicator(modifier.animateContentSize()) }
+        .onWaiting {
+          Image(
+            modifier = Modifier.padding(16.dp),
+            imageVector = Illustration.Loading,
+            contentDescription = stringResource(R.string.loading),
+          )
+        }
         .onFail { Text(text = message()) }
     }
   }
@@ -479,11 +488,18 @@ inline fun PagerContent(
 
 @Composable
 fun NoMatchUI(modifier: Modifier = Modifier) {
-  Column(modifier = modifier.fillMaxSize()) {
+  Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
     Spacer(modifier = modifier.weight(1f))
+    Image(
+      modifier = Modifier.padding(16.dp),
+      imageVector = Illustration.Gaming,
+      contentDescription = stringResource(R.string.no_match),
+    )
     Text(
       text = stringResource(R.string.no_match),
-      modifier = modifier.fillMaxWidth(),
+      modifier = modifier
+        .fillMaxWidth()
+        .padding(bottom = 72.dp),
       textAlign = TextAlign.Center,
       style = VLRTheme.typography.bodyLarge,
       color = VLRTheme.colorScheme.primary,
