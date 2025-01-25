@@ -38,8 +38,8 @@ import dev.staticvar.vlr.data.model.TopicTracker
       EventFav::class
     ],
   exportSchema = true,
-  version = 13,
-  autoMigrations = [AutoMigration(9, 10), AutoMigration(12, 13)]
+  version = 14,
+  autoMigrations = [AutoMigration(9, 10), AutoMigration(12, 13), AutoMigration(13, 14)]
 )
 @TypeConverters(VlrTypeConverter::class)
 abstract class VlrDB : RoomDatabase() {
