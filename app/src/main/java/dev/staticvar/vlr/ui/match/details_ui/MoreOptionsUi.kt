@@ -8,7 +8,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -108,8 +113,22 @@ fun MatchInfoMoreOptions(
           ) {
             if (processingTopicSubscription) {
               LinearProgressIndicator()
-            } else if (isTracked) Text(text = stringResource(R.string.unsubscribe))
-            else Text(text = stringResource(R.string.get_notified))
+            } else if (isTracked) @Composable {
+              Icon(
+                modifier = Modifier.padding(end = 4.dp).size(14.dp),
+                imageVector = Icons.Outlined.FavoriteBorder,
+                contentDescription = stringResource(R.string.unsubscribe)
+              )
+              Text(text = stringResource(R.string.unsubscribe))
+            }
+            else @Composable {
+              Icon(
+                modifier = Modifier.padding(end = 4.dp).size(14.dp),
+                imageVector = Icons.Filled.Favorite,
+                contentDescription = stringResource(R.string.get_notified)
+              )
+              Text(text = stringResource(R.string.get_notified))
+            }
           }
         }
       }

@@ -28,7 +28,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Paid
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -387,8 +389,22 @@ fun TournamentDetailsHeader(
           ) {
             if (processingTopicSubscription) {
               LinearProgressIndicator()
-            } else if (isTracked) Text(text = stringResource(R.string.unsubscribe))
-            else Text(text = stringResource(R.string.get_notified))
+            } else if (isTracked) @Composable {
+              Icon(
+                modifier = Modifier.padding(end = 4.dp).size(14.dp),
+                imageVector = Icons.Outlined.FavoriteBorder,
+                contentDescription = stringResource(R.string.unsubscribe)
+              )
+              Text(text = stringResource(R.string.unsubscribe))
+            }
+            else @Composable {
+              Icon(
+                modifier = Modifier.padding(end = 4.dp).size(14.dp),
+                imageVector = Icons.Filled.Favorite,
+                contentDescription = stringResource(R.string.get_notified)
+              )
+              Text(text = stringResource(R.string.get_notified))
+            }
           }
       }
     }

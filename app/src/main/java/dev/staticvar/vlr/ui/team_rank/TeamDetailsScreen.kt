@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,8 +25,10 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
@@ -124,9 +127,11 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
     teamDetails
       .onPass {
         data?.let { teamDetail ->
-          Box(modifier = Modifier
-            .pullRefresh(swipeRefresh)
-            .fillMaxSize()) {
+          Box(
+            modifier = Modifier
+              .pullRefresh(swipeRefresh)
+              .fillMaxSize()
+          ) {
             PullToRefreshPill(
               modifier = Modifier
                 .padding(16.dp)
@@ -273,8 +278,26 @@ fun TeamBanner(
     ) {
       if (processingTopicSubscription) {
         LinearProgressIndicator()
-      } else if (isTracked) Text(text = stringResource(R.string.unsubscribe))
-      else Text(text = stringResource(R.string.get_notified))
+      } else if (isTracked) @Composable {
+        Icon(
+          modifier = Modifier
+            .padding(end = 4.dp)
+            .size(14.dp),
+          imageVector = Icons.Outlined.FavoriteBorder,
+          contentDescription = stringResource(R.string.unsubscribe)
+        )
+        Text(text = stringResource(R.string.unsubscribe))
+      }
+      else @Composable {
+        Icon(
+          modifier = Modifier
+            .padding(end = 4.dp)
+            .size(14.dp),
+          imageVector = Icons.Filled.Favorite,
+          contentDescription = stringResource(R.string.get_notified)
+        )
+        Text(text = stringResource(R.string.get_notified))
+      }
     }
     Button(
       onClick = { (Constants.VLR_BASE + "team/" + id).openAsCustomTab(context) },
@@ -297,9 +320,11 @@ fun RosterCard(
   onClick: (String) -> Unit,
 ) {
   CardView(modifier = modifier.testTag("team:roster")) {
-    Column(modifier = modifier
-      .fillMaxWidth()
-      .animateContentSize(tween(500))) {
+    Column(
+      modifier = modifier
+        .fillMaxWidth()
+        .animateContentSize(tween(500))
+    ) {
       if (!expanded) {
         Row(
           modifier
