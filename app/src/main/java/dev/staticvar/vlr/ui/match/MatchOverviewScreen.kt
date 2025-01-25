@@ -389,7 +389,7 @@ fun MatchOverviewContainer(
         highlighted = pagerState.currentPage,
         items = tabs,
       ) { _, index ->
-        scope.launch { pagerState.animateScrollToPage(index) }
+        scope.launch { pagerState.scrollToPage(index) }
       }
     }
   }

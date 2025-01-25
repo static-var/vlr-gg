@@ -423,8 +423,10 @@ fun MatchLiveUi(modifier: Modifier = Modifier) {
 
 @Composable
 fun MatchStatusUi(modifier: Modifier, state: String, date: String?) {
+  // Continue from here for current event live is showing unnecessary space
   ProvideTextStyle(value = VLRTheme.typography.labelLarge) {
-    if (state.equals(stringResource(id = R.string.live), ignoreCase = true)) MatchLiveUi(modifier)
+    if (state.equals(stringResource(id = R.string.live), ignoreCase = true))
+      MatchLiveUi(modifier)
     else {
       Text(
         text = state.uppercase() + " " + date?.timeDiff,
