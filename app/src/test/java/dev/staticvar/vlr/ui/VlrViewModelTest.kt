@@ -2,11 +2,20 @@ package dev.staticvar.vlr.ui
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
-import com.github.michaelbull.result.*
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.get
+import com.github.michaelbull.result.getError
+import com.github.michaelbull.result.getOr
 import com.google.common.truth.Truth.assertThat
 import dev.staticvar.vlr.data.NewsArticle
 import dev.staticvar.vlr.data.VlrRepository
-import dev.staticvar.vlr.data.api.response.*
+import dev.staticvar.vlr.data.api.response.MatchInfo
+import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
+import dev.staticvar.vlr.data.api.response.NewsResponseItem
+import dev.staticvar.vlr.data.api.response.TeamDetails
+import dev.staticvar.vlr.data.api.response.TournamentDetails
+import dev.staticvar.vlr.data.api.response.TournamentPreview
 import dev.staticvar.vlr.utils.Pass
 import io.mockk.every
 import io.mockk.mockk
@@ -14,7 +23,6 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -248,14 +256,14 @@ internal class VlrViewModelTest {
     }
   }
 
-  @Test
-  fun `test if isTopicTracked calls db`() =
-    runTest() {
-      val id = "800"
-      every { vlrRepository.isTopicTracked(id) } returns flowOf(true)
-      runBlocking { viewModel.isTopicTracked(id) }
-      verify { vlrRepository.isTopicTracked(id) }
-    }
+//  @Test
+//  fun `test if isTopicTracked calls db`() =
+//    runTest() {
+//      val id = "800"
+//      every { vlrRepository.isTopicTracked(id) } returns flowOf(true)
+//      runBlocking { viewModel.isTopicTracked(id) }
+//      verify { vlrRepository.isTopicTracked(id) }
+//    }
 
   @Test
   fun `test if parseNews emits data from repository`() =

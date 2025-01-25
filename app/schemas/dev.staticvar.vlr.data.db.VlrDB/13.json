@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 13,
-    "identityHash": "bd1ee5c75356e951d60b65da394c3920",
+    "identityHash": "998060450cbeafed7a3452fabb78e7a9",
     "entities": [
       {
         "tableName": "NewsResponseItem",
@@ -50,7 +50,7 @@
       },
       {
         "tableName": "MatchPreviewInfo",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `event` TEXT NOT NULL, `series` TEXT NOT NULL, `status` TEXT NOT NULL, `team1` TEXT NOT NULL, `team2` TEXT NOT NULL, `time` TEXT, `eventId` TEXT NOT NULL DEFAULT '', `markedFav` INTEGER NOT NULL DEFAULT 0, `fromTeamsFav` INTEGER NOT NULL DEFAULT 0, `fromEventsFav` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `event` TEXT NOT NULL, `series` TEXT NOT NULL, `status` TEXT NOT NULL, `team1` TEXT NOT NULL, `team2` TEXT NOT NULL, `time` TEXT, `eventId` TEXT NOT NULL DEFAULT '', `markedFav` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -107,20 +107,6 @@
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
-          },
-          {
-            "fieldPath": "fromTeamsFav",
-            "columnName": "fromTeamsFav",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
-            "fieldPath": "fromEventsFav",
-            "columnName": "fromEventsFav",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -134,7 +120,7 @@
       },
       {
         "tableName": "MatchInfo",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `event` TEXT NOT NULL, `head2head` TEXT NOT NULL, `note` TEXT NOT NULL, `score` TEXT NOT NULL, `teams` TEXT NOT NULL, `bans` TEXT NOT NULL, `videos` TEXT NOT NULL, `matchData` TEXT NOT NULL, `mapCount` INTEGER NOT NULL, `markedFav` INTEGER NOT NULL DEFAULT 0, `fromTeamsFav` INTEGER NOT NULL DEFAULT 0, `fromEventsFav` INTEGER NOT NULL DEFAULT 0, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `event` TEXT NOT NULL, `head2head` TEXT NOT NULL, `note` TEXT NOT NULL, `score` TEXT NOT NULL, `teams` TEXT NOT NULL, `bans` TEXT NOT NULL, `videos` TEXT NOT NULL, `matchData` TEXT NOT NULL, `mapCount` INTEGER NOT NULL, `markedFav` INTEGER NOT NULL DEFAULT 0, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -199,20 +185,6 @@
           {
             "fieldPath": "markedFav",
             "columnName": "markedFav",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
-            "fieldPath": "fromTeamsFav",
-            "columnName": "fromTeamsFav",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
-            "fieldPath": "fromEventsFav",
-            "columnName": "fromEventsFav",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
@@ -664,7 +636,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bd1ee5c75356e951d60b65da394c3920')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '998060450cbeafed7a3452fabb78e7a9')"
     ]
   }
 }

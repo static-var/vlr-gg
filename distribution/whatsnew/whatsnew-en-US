@@ -1,6 +1,7 @@
-v0.6.2
+v0.6.3
+ • ⚠️ In reworking the entire favourites system, we've had to reset all favourites. We're sorry for the inconvenience. Please re-favourite your teams, matches and events.
  • ✨ "Get Notified" is now "Favourite"
- • ✨ Matches, events and teams marked as favourite will be easy to identify
+ • ✨ Matches, events and teams marked as favourite will now be easy to identify
  • ⚒️ Visual improvements and under the hood updates
 
 v0.5.5
@@ -8,9 +9,4 @@ v0.5.5
  • ⚒️ Better logging to help diagnose crashes
 
 v0.5.4
- • ⚒️ Under the hood improvements
-
-v0.5.3 & v0.5.2
- • ✨ Design improvements
- • ✨ Improved widget
  • ⚒️ Under the hood improvements

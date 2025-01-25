@@ -17,9 +17,9 @@ plugins {
   alias(libs.plugins.secrets.plugin)
   alias(libs.plugins.baselineprofile)
   alias(libs.plugins.firebase.perf)
+  alias(libs.plugins.gms.plugin)
   alias(libs.plugins.firebase.crashlytics)
   alias(libs.plugins.room)
-  alias(libs.plugins.gms.plugin)
   id("vlr.detekt")
   id("vlr.ktfmt")
 }
@@ -32,8 +32,8 @@ android {
     applicationId = "dev.staticvar.vlr"
     minSdk = 23
     targetSdk = 35
-    versionCode = 68
-    versionName = "v0.6.2"
+    versionCode = 69
+    versionName = "v0.6.3"
 
     setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
@@ -71,25 +71,25 @@ android {
       isMinifyEnabled = true
       signingConfig = signingConfigs.getByName("debug")
       matchingFallbacks += mutableListOf("release")
+      configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
       isDebuggable = false
       manifestPlaceholders["appName"] = "VLR Benchmark"
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
     }
     getByName("debug") {
       isMinifyEnabled = false
       applicationIdSuffix = ".debug"
+      configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
       manifestPlaceholders["appName"] = "VLR Debug"
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      configure<CrashlyticsExtension> { mappingFileUploadEnabled = false }
     }
     getByName("release") {
       isShrinkResources = true
       isMinifyEnabled = true
+      configure<CrashlyticsExtension> { mappingFileUploadEnabled = true }
       manifestPlaceholders["appName"] = "VLR.gg (Unofficial)"
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
-      configure<CrashlyticsExtension> { mappingFileUploadEnabled = true }
     }
   }
   compileOptions {
