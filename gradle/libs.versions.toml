@@ -1,6 +1,6 @@
 [versions]
-kotlin = '2.1.0'
-compose = "2025.01.00"
+kotlin = '2.1.10'
+compose = "2025.01.01"
 detektCompose = "0.4.22"
 benchmark = "1.3.3"
 sentry = "4.6.0"
@@ -10,11 +10,11 @@ gradle = "8.8.0"
 hilt = '2.55'
 hiltAndroidGradlePlugin = "2.55"
 room = "2.6.1"
-firebase = "33.8.0"
+firebase = "33.9.0"
 accompanist = "0.37.0"
 coroutines = "1.10.1"
 ktor = "3.0.3"
-ksp = "2.1.0-1.0.29"
+ksp = "2.1.10-1.0.29"
 spotless = "6.25.0"
 hiltCompiler = "1.2.0"
 collections = "1.4.5"
@@ -38,14 +38,14 @@ compose-text = { module = "androidx.compose.ui:ui-text-google-fonts" }
 compose-material = { module = "androidx.compose.material:material" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-runtime = { module = "androidx.compose.runtime:runtime-livedata" }
-compose-navigation = { module = "androidx.navigation:navigation-compose", version = "2.8.5" }
+compose-navigation = { module = "androidx.navigation:navigation-compose", version = "2.8.6" }
 
 compose-m3 = { module = "androidx.compose.material3:material3" }
 compose-m3-window = { module = "androidx.compose.material3:material3-window-size-class" }
 compose-m3-navigation = { module = "androidx.compose.material3:material3-adaptive-navigation-suite" }
-compose-m3-adaptive-android = { module = "androidx.compose.material3.adaptive:adaptive", version = "1.1.0-alpha09" }
-compose-m3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version = "1.1.0-alpha09" }
-compose-m3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version = "1.1.0-alpha09" }
+compose-m3-adaptive-android = { module = "androidx.compose.material3.adaptive:adaptive", version = "1.1.0-beta01" }
+compose-m3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version = "1.1.0-beta01" }
+compose-m3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version = "1.1.0-beta01" }
 
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
@@ -91,8 +91,8 @@ landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version 
 landscapist-animation = { module = "com.github.skydoves:landscapist-animation", version = "2.4.6" }
 coil = { module = "io.coil-kt:coil-compose", version = "2.7.0" }
 
-haze = { module = "dev.chrisbanes.haze:haze", version = "1.2.2" }
-haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "1.2.2" }
+haze = { module = "dev.chrisbanes.haze:haze", version = "1.3.0" }
+haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "1.3.0" }
 
 kotlin-monad = { module = "com.michael-bull.kotlin-result:kotlin-result", version = "2.0.1" }
 
@@ -108,7 +108,7 @@ jsoup = { module = "org.jsoup:jsoup", version = "1.18.3" }
 immutable-collection = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.8" }
 core-desugar = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.4" }
 androidx-collection = { module = "androidx.collection:collection", version.ref = "collections" }
-material-kolor = { module = "com.materialkolor:material-kolor", version = "2.0.0" }
+material-kolor = { module = "com.materialkolor:material-kolor", version = "2.0.2" }
 
 sentry-bom = { module = "io.sentry:sentry-bom", version.ref = "sentry-sdk" }
 sentry = { module = "io.sentry:sentry-android" }
@@ -173,5 +173,5 @@ room = { id = "androidx.room", version.ref = "room" }
 androidTest = { id = "com.android.test", version.ref = "gradle" }
 sentry-plugin = { id = "io.sentry.android.gradle", version.ref = "sentry" }
 firebase-perf = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.2" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.3" }
 gms-plugin = { id = "com.google.gms.google-services", version = "4.4.2" }
