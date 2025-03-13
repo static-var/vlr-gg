@@ -20,7 +20,7 @@ spotless = "6.25.0"
 hiltCompiler = "1.2.0"
 collections = "1.4.5"
 material = "1.12.0"
-
+lumo = "1.2.0"
 
 [libraries]
 build-agp = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
@@ -181,3 +181,4 @@ sentry-plugin = { id = "io.sentry.android.gradle", version.ref = "sentry" }
 firebase-perf = { id = "com.google.firebase.firebase-perf", version = "1.4.2" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.3" }
 gms-plugin = { id = "com.google.gms.google-services", version = "4.4.2" }
+lumo = { id = "com.nomanr.plugin.lumo", version.ref = "lumo" }

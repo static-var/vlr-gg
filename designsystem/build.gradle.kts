@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.compose.compiler)
   id("vlr.detekt")
   id("vlr.ktfmt")
+  alias(libs.plugins.lumo)
 }
 
 android {
