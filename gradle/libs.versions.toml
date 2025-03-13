@@ -13,7 +13,7 @@ room = "2.6.1"
 firebase = "33.9.0"
 accompanist = "0.37.0"
 coroutines = "1.10.1"
-ktor = "3.1.0"
+ktor = "3.1.1"
 sandwich = "2.0.10"
 ksp = "2.1.10-1.0.29"
 spotless = "6.25.0"
@@ -95,8 +95,8 @@ landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version 
 landscapist-animation = { module = "com.github.skydoves:landscapist-animation", version = "2.4.6" }
 coil = { module = "io.coil-kt:coil-compose", version = "2.7.0" }
 
-haze = { module = "dev.chrisbanes.haze:haze", version = "1.3.1" }
-haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "1.3.1" }
+haze = { module = "dev.chrisbanes.haze:haze", version = "1.5.0" }
+haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "1.5.0" }
 
 kotlin-monad = { module = "com.michael-bull.kotlin-result:kotlin-result", version = "2.0.1" }
 

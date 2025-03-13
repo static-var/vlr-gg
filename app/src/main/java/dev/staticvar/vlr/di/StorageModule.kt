@@ -59,7 +59,7 @@ object StorageModule {
     matchFavDao: MatchFavDao,
     eventFavDao: EventFavDao,
     teamFavDao: TeamFavDao,
-    @Named("vlrClient") ktorHttpClient: HttpClient,
+    ktorHttpClient: HttpClient,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     json: Json,
   ) =

@@ -34,8 +34,6 @@ android {
     compose = true
   }
   composeCompiler {
-    featureFlags.set(listOf(ComposeFeatureFlag.StrongSkipping))
-
     reportsDestination = layout.buildDirectory.dir("compose_compiler")
   }
 }
