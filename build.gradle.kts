@@ -21,6 +21,7 @@ plugins {
   id("vlr.secrets")
   alias(libs.plugins.androidTest) apply false
   alias(libs.plugins.firebase.crashlytics) apply false
+  alias(libs.plugins.lumo) apply false
 }
 
 buildscript {
