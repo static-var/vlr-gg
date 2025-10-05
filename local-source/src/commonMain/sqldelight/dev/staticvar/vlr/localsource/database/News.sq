@@ -1,0 +1,61 @@
+-- News and related media tables (news, news_media)
+
+CREATE TABLE news (
+    id TEXT NOT NULL PRIMARY KEY,
+    url TEXT NOT NULL,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    date TEXT NOT NULL,
+    cover_url TEXT NOT NULL,
+    description TEXT,
+    content_html TEXT,
+    last_updated INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX idx_news_date ON news(date);
+CREATE INDEX idx_news_author ON news(author);
+
+CREATE TABLE news_media (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    news_id TEXT NOT NULL,
+    media_type TEXT NOT NULL,
+    media_value TEXT NOT NULL,
+    media_text TEXT,
+    FOREIGN KEY(news_id) REFERENCES news(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_news_media_news_id ON news_media(news_id);
+CREATE INDEX idx_news_media_type ON news_media(news_id, media_type);
+
+-- ============================================================================
+-- QUERIES
+-- ============================================================================
+
+insertNews:
+INSERT OR REPLACE INTO news VALUES ?;
+
+getAllNews:
+SELECT * FROM news ORDER BY date DESC;
+
+getNewsById:
+SELECT * FROM news WHERE id = :newsId;
+
+getNewsByAuthor:
+SELECT * FROM news WHERE author = :author ORDER BY date DESC;
+
+deleteAllNews:
+DELETE FROM news;
+
+deleteNewsById:
+DELETE FROM news WHERE id = :newsId;
+
+-- Media queries
+insertNewsMedia:
+INSERT INTO news_media(news_id, media_type, media_value, media_text)
+VALUES (?, ?, ?, ?);
+
+getNewsMedia:
+SELECT * FROM news_media WHERE news_id = :newsId;
+
+deleteNewsMedia:
+DELETE FROM news_media WHERE news_id = :newsId;
