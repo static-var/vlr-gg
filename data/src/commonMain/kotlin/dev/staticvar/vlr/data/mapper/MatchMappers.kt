@@ -9,6 +9,7 @@ import dev.staticvar.vlr.data.MatchVideos
 import dev.staticvar.vlr.data.Matches
 import dev.staticvar.vlr.remotesource.api.MatchPreviewDto as ApiMatchPreviewDto
 import dev.staticvar.vlr.remotesource.match.MatchDetailsDto
+import dev.staticvar.vlr.remotesource.match.MatchPreviewDto
 import dev.staticvar.vlr.remotesource.match.MapDataDto
 import dev.staticvar.vlr.remotesource.match.PlayerStatsDto
 import dev.staticvar.vlr.remotesource.match.RoundInfoDto
@@ -17,7 +18,7 @@ import dev.staticvar.vlr.remotesource.api.TeamDto as PreviewTeamDto
 import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
 import kotlinx.datetime.Clock
 
-/** Manual mapping for match preview (complex flattening) */
+/** Manual mapping for match preview from API package (complex flattening) */
 internal fun ApiMatchPreviewDto.toEntity(): Matches =
   Matches(
     id = id,
@@ -27,6 +28,32 @@ internal fun ApiMatchPreviewDto.toEntity(): Matches =
     series = series,
     stage = "", // Not available in preview DTO
     status = status.ifEmpty { "UNKNOWN" },
+    time = time ?: "", // DB requires NOT NULL
+    eta = null,
+    note = "", // Not in preview
+    patch = null,
+    team1_id = team1.id ?: "",
+    team1_name = team1.name,
+    team1_logo_url = team1.img,
+    team1_score = team1.score?.toLong(),
+    team2_id = team2.id ?: "",
+    team2_name = team2.name,
+    team2_logo_url = team2.img,
+    team2_score = team2.score?.toLong(),
+    map_count = 0, // Unknown at preview stage
+    last_updated = Clock.System.now().toEpochMilliseconds()
+  )
+
+/** Manual mapping for match preview from match package */
+internal fun MatchPreviewDto.toEntity(): Matches =
+  Matches(
+    id = id,
+    event_id = eventId.takeIf { it.isNotEmpty() },
+    event_name = event,
+    event_logo_url = "", // Not present in preview DTO
+    series = series,
+    stage = "", // Not available in preview DTO
+    status = status?.name ?: "UNKNOWN",
     time = time ?: "", // DB requires NOT NULL
     eta = null,
     note = "", // Not in preview

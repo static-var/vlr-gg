@@ -28,17 +28,24 @@ kotlin {
         implementation(libs.coroutines.core)
         implementation(libs.koin.core)
         implementation(libs.kotlinx.datetime)
+        
+        // SQLDelight coroutines extensions for Flow support
+        implementation("app.cash.sqldelight:coroutines-extensions:2.1.0")
+        
+        // Core
+        implementation(projects.core)
+        
         // Domain layer
         implementation(projects.domain)
 
         // Data sources
         implementation(projects.remoteSource)
+        implementation(projects.localSource)
       }
     }
 
     val androidMain by getting {
       dependencies {
-        implementation(projects.localSource)
         implementation(libs.konvert.annotations)
       }
     }

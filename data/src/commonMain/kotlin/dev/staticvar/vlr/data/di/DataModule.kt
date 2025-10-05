@@ -1,5 +1,7 @@
 package dev.staticvar.vlr.data.di
 
+import dev.staticvar.vlr.data.repository.MatchRepositoryImpl
+import dev.staticvar.vlr.domain.repository.MatchRepository
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -8,5 +10,11 @@ import org.koin.dsl.module
  * Provides repositories and mappers.
  */
 fun dataModule(): Module = module {
-  // Mapping-only module for now. Repository wiring for matches removed pending new mapping implementation.
+  single<MatchRepository> {
+    MatchRepositoryImpl(
+      matchDataSource = get(),
+      database = get(),
+      dispatchers = get()
+    )
+  }
 }
