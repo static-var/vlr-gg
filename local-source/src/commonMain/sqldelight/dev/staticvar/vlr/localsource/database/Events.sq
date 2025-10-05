@@ -1,0 +1,209 @@
+-- Events and related tables (events, event_prizes, event_teams, event_standings, event_matches, favorite_events)
+
+-- Core events table
+CREATE TABLE events (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    subtitle TEXT NOT NULL DEFAULT '',
+    status TEXT,
+    prizes TEXT NOT NULL,
+    dates TEXT NOT NULL,
+    region TEXT,
+    logo_url TEXT NOT NULL,
+    last_updated INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX idx_event_status ON events(status);
+CREATE INDEX idx_event_dates ON events(dates);
+CREATE INDEX idx_event_region ON events(region);
+
+-- Event prizes
+CREATE TABLE event_prizes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id TEXT NOT NULL,
+    position TEXT NOT NULL,
+    prize TEXT NOT NULL,
+    team_id TEXT,
+    team_name TEXT NOT NULL,
+    team_logo_url TEXT NOT NULL,
+    team_country TEXT NOT NULL DEFAULT '',
+    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_event_prizes_event_id ON event_prizes(event_id);
+
+-- Event teams (participants)
+CREATE TABLE event_teams (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id TEXT NOT NULL,
+    team_id TEXT,
+    team_name TEXT NOT NULL,
+    team_logo_url TEXT NOT NULL,
+    seed TEXT,
+    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_event_teams_event_id ON event_teams(event_id);
+CREATE INDEX idx_event_teams_team_id ON event_teams(team_id);
+
+-- Event standings (e.g., group standings)
+CREATE TABLE event_standings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id TEXT NOT NULL,
+    team_name TEXT NOT NULL,
+    team_logo_url TEXT NOT NULL,
+    team_country TEXT NOT NULL,
+    group_name TEXT,
+    wins INTEGER NOT NULL DEFAULT 0,
+    losses INTEGER NOT NULL DEFAULT 0,
+    ties INTEGER NOT NULL DEFAULT 0,
+    map_difference INTEGER NOT NULL DEFAULT 0,
+    round_difference INTEGER NOT NULL DEFAULT 0,
+    round_delta INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_event_standings_event_id ON event_standings(event_id);
+CREATE INDEX idx_event_standings_group ON event_standings(event_id, group_name);
+
+-- Event -> Matches association
+CREATE TABLE event_matches (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id TEXT NOT NULL,
+    match_id TEXT NOT NULL,
+    round TEXT NOT NULL DEFAULT '',
+    stage TEXT NOT NULL DEFAULT '',
+    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE,
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE,
+    UNIQUE(event_id, match_id)
+);
+
+CREATE INDEX idx_event_matches_event_id ON event_matches(event_id);
+CREATE INDEX idx_event_matches_match_id ON event_matches(match_id);
+
+-- Favorite events (device-only, no FK to keep favorites even if event purged locally)
+CREATE TABLE favorite_events (
+    event_id TEXT NOT NULL PRIMARY KEY
+);
+
+-- ============================================================================
+-- QUERIES
+-- ============================================================================
+
+-- Insert / Upsert event
+insertEvent:
+INSERT OR REPLACE INTO events VALUES ?;
+
+-- Get all events with favorite status
+getEventsWithFavoriteStatus:
+SELECT
+    e.*,
+    CAST((fav_e.event_id IS NOT NULL) AS INTEGER) AS is_favorite
+FROM events AS e
+LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id
+ORDER BY e.dates DESC;
+
+-- Get single event with favorite status
+getEventWithFavoriteStatus:
+SELECT
+    e.*,
+    CAST((fav_e.event_id IS NOT NULL) AS INTEGER) AS is_favorite
+FROM events AS e
+LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id
+WHERE e.id = :eventId;
+
+-- Filter events by status
+getEventsByStatus:
+SELECT
+    e.*,
+    CAST((fav_e.event_id IS NOT NULL) AS INTEGER) AS is_favorite
+FROM events AS e
+LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id
+WHERE e.status = :status
+ORDER BY e.dates DESC;
+
+-- Filter events by region
+getEventsByRegion:
+SELECT
+    e.*,
+    CAST((fav_e.event_id IS NOT NULL) AS INTEGER) AS is_favorite
+FROM events AS e
+LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id
+WHERE e.region = :region
+ORDER BY e.dates DESC;
+
+-- Delete all events
+deleteAllEvents:
+DELETE FROM events;
+
+-- Delete event by id
+deleteEventById:
+DELETE FROM events WHERE id = :eventId;
+
+-- ===================== Event Prizes =====================
+insertEventPrize:
+INSERT INTO event_prizes(event_id, position, prize, team_id, team_name, team_logo_url, team_country)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+getEventPrizes:
+SELECT * FROM event_prizes WHERE event_id = :eventId;
+
+deleteEventPrizes:
+DELETE FROM event_prizes WHERE event_id = :eventId;
+
+-- ===================== Event Teams =====================
+insertEventTeam:
+INSERT INTO event_teams(event_id, team_id, team_name, team_logo_url, seed)
+VALUES (?, ?, ?, ?, ?);
+
+getEventTeams:
+SELECT * FROM event_teams WHERE event_id = :eventId;
+
+deleteEventTeams:
+DELETE FROM event_teams WHERE event_id = :eventId;
+
+-- ===================== Event Standings =====================
+insertEventStanding:
+INSERT INTO event_standings(
+    event_id, team_name, team_logo_url, team_country, group_name,
+    wins, losses, ties, map_difference, round_difference, round_delta
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+getEventStandings:
+SELECT * FROM event_standings WHERE event_id = :eventId ORDER BY group_name, wins DESC, map_difference DESC;
+
+getEventStandingsByGroup:
+SELECT * FROM event_standings WHERE event_id = :eventId AND group_name = :groupName ORDER BY wins DESC, map_difference DESC;
+
+deleteEventStandings:
+DELETE FROM event_standings WHERE event_id = :eventId;
+
+-- ===================== Event Matches =====================
+insertEventMatch:
+INSERT INTO event_matches(event_id, match_id, round, stage)
+VALUES (?, ?, ?, ?);
+
+getEventMatches:
+SELECT * FROM event_matches WHERE event_id = :eventId;
+
+deleteEventMatches:
+DELETE FROM event_matches WHERE event_id = :eventId;
+
+-- ===================== Favorites =====================
+addFavoriteEvent:
+INSERT OR IGNORE INTO favorite_events(event_id) VALUES (?);
+
+removeFavoriteEvent:
+DELETE FROM favorite_events WHERE event_id = ?;
+
+isFavoriteEvent:
+SELECT COUNT(*) FROM favorite_events WHERE event_id = :eventId;
+
+getAllFavoriteEvents:
+SELECT
+    e.*,
+    1 AS is_favorite
+FROM events AS e
+INNER JOIN favorite_events AS fav_e ON e.id = fav_e.event_id
+ORDER BY e.dates DESC;
