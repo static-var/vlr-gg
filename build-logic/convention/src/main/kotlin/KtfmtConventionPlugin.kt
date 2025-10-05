@@ -16,11 +16,20 @@ class KtfmtConventionPlugin : Plugin<Project> {
       val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
       pluginManager.apply(libs.findPlugin("spotless-plugin").get().get().pluginId)
+
       extensions.getByType<SpotlessExtension>().apply {
-        kotlin { ktfmt(KTFMT_VERSION).googleStyle() }
         kotlinGradle { ktfmt(KTFMT_VERSION).googleStyle() }
       }
 
+      fun configureKotlinTarget() {
+        extensions.getByType<SpotlessExtension>().apply {
+          kotlin { ktfmt(KTFMT_VERSION).googleStyle() }
+        }
+      }
+
+      pluginManager.withPlugin("org.jetbrains.kotlin.jvm") { configureKotlinTarget() }
+      pluginManager.withPlugin("org.jetbrains.kotlin.android") { configureKotlinTarget() }
+      pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") { configureKotlinTarget() }
     }
   }
 }

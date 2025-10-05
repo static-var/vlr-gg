@@ -141,7 +141,6 @@ android {
 }
 
 dependencies {
-  api(platform(libs.compose.bom.alpha))
   implementation(libs.bundles.base)
   implementation(libs.bundles.compose)
   implementation(libs.bundles.m3)
