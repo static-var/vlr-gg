@@ -1,0 +1,277 @@
+-- Core matches table
+CREATE TABLE matches (
+    id TEXT NOT NULL PRIMARY KEY,
+    event_id TEXT,
+    event_name TEXT NOT NULL,
+    event_logo_url TEXT NOT NULL,
+    series TEXT NOT NULL DEFAULT '',
+    stage TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL,
+    time TEXT NOT NULL,
+    eta TEXT,
+    note TEXT NOT NULL DEFAULT '',
+    patch TEXT,
+    team1_id TEXT NOT NULL,
+    team1_name TEXT NOT NULL,
+    team1_logo_url TEXT NOT NULL,
+    team1_score INTEGER,
+    team2_id TEXT NOT NULL,
+    team2_name TEXT NOT NULL,
+    team2_logo_url TEXT NOT NULL,
+    team2_score INTEGER,
+    map_count INTEGER NOT NULL DEFAULT 0,
+    last_updated INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX idx_match_event_id ON matches(event_id);
+CREATE INDEX idx_match_status_time ON matches(status, time);
+CREATE INDEX idx_match_team1_time ON matches(team1_id, time);
+CREATE INDEX idx_match_team2_time ON matches(team2_id, time);
+
+-- Match maps
+CREATE TABLE match_maps (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    match_id TEXT NOT NULL,
+    map_name TEXT NOT NULL,
+    team1_score INTEGER,
+    team2_score INTEGER,
+    duration TEXT,
+    stats_url TEXT,
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_match_maps_match_id ON match_maps(match_id);
+
+-- Match map rounds
+CREATE TABLE match_map_rounds (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    match_id TEXT NOT NULL,
+    map_name TEXT NOT NULL,
+    round_number INTEGER NOT NULL,
+    round_score TEXT NOT NULL,
+    winner TEXT NOT NULL,
+    side TEXT NOT NULL,
+    win_type TEXT NOT NULL,
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE,
+    UNIQUE(match_id, map_name, round_number)
+);
+
+CREATE INDEX idx_match_rounds_match_map ON match_map_rounds(match_id, map_name);
+
+-- Match map player stats
+CREATE TABLE match_map_player_stats (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    match_id TEXT NOT NULL,
+    map_name TEXT NOT NULL,
+    player_id TEXT NOT NULL,
+    player_name TEXT NOT NULL,
+    team_id TEXT NOT NULL,
+    agent_name TEXT NOT NULL,
+    agent_image_url TEXT NOT NULL DEFAULT '',
+    rating REAL NOT NULL DEFAULT 0.0,
+    acs INTEGER NOT NULL DEFAULT 0,
+    kills INTEGER NOT NULL DEFAULT 0,
+    deaths INTEGER NOT NULL DEFAULT 0,
+    assists INTEGER NOT NULL DEFAULT 0,
+    kast_percent REAL,
+    adr REAL,
+    hs_percent REAL,
+    first_kills INTEGER NOT NULL DEFAULT 0,
+    first_deaths INTEGER NOT NULL DEFAULT 0,
+    first_kills_diff INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_mmps_match_id ON match_map_player_stats(match_id);
+CREATE INDEX idx_mmps_player_id ON match_map_player_stats(player_id);
+CREATE INDEX idx_mmps_map ON match_map_player_stats(match_id, map_name);
+
+-- Match bans
+CREATE TABLE match_bans (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    match_id TEXT NOT NULL,
+    ban_type TEXT NOT NULL,
+    ban_value TEXT NOT NULL,
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_match_bans_match_id ON match_bans(match_id);
+
+-- Match videos
+CREATE TABLE match_videos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    match_id TEXT NOT NULL,
+    video_type TEXT NOT NULL,
+    name TEXT NOT NULL,
+    url TEXT NOT NULL,
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_match_videos_match_id ON match_videos(match_id);
+CREATE INDEX idx_match_videos_type ON match_videos(match_id, video_type);
+
+-- Match previous encounters
+CREATE TABLE match_previous_encounters (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    match_id TEXT NOT NULL,
+    previous_match_id TEXT NOT NULL,
+    team1_name TEXT NOT NULL,
+    team1_score INTEGER,
+    team2_name TEXT NOT NULL,
+    team2_score INTEGER,
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE,
+    FOREIGN KEY(previous_match_id) REFERENCES matches(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_match_prev_encounters_match_id ON match_previous_encounters(match_id);
+
+-- Favorite matches
+CREATE TABLE favorite_matches (
+    match_id TEXT NOT NULL PRIMARY KEY
+);
+
+-- ============================================================================
+-- QUERIES
+-- ============================================================================
+
+-- Insert match
+insertMatch:
+INSERT OR REPLACE INTO matches VALUES ?;
+
+-- Get all matches with favorite status
+getMatchesWithFavoriteStatus:
+SELECT
+    m.*,
+    CAST((fav_m.match_id IS NOT NULL) AS INTEGER) AS is_direct_favorite,
+    0 AS is_event_favorite,
+    0 AS is_team_favorite
+FROM matches AS m
+LEFT JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id
+ORDER BY m.time DESC;
+
+-- Get single match with favorite status
+getMatchWithFavoriteStatus:
+SELECT
+    m.*,
+    CAST((fav_m.match_id IS NOT NULL) AS INTEGER) AS is_direct_favorite,
+    0 AS is_event_favorite,
+    0 AS is_team_favorite
+FROM matches AS m
+LEFT JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id
+WHERE m.id = :matchId;
+
+-- Get matches by status
+getMatchesByStatus:
+SELECT
+    m.*,
+    CAST((fav_m.match_id IS NOT NULL) AS INTEGER) AS is_direct_favorite,
+    0 AS is_event_favorite,
+    0 AS is_team_favorite
+FROM matches AS m
+LEFT JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id
+WHERE m.status = :status
+ORDER BY m.time DESC;
+
+-- Delete all matches
+deleteAllMatches:
+DELETE FROM matches;
+
+-- Delete match by ID
+deleteMatchById:
+DELETE FROM matches WHERE id = :matchId;
+
+-- Match maps queries
+insertMatchMap:
+INSERT OR REPLACE INTO match_maps(match_id, map_name, team1_score, team2_score, duration, stats_url)
+VALUES (?, ?, ?, ?, ?, ?);
+
+getMatchMaps:
+SELECT * FROM match_maps WHERE match_id = :matchId;
+
+deleteMatchMaps:
+DELETE FROM match_maps WHERE match_id = :matchId;
+
+-- Match rounds queries
+insertMatchRound:
+INSERT OR REPLACE INTO match_map_rounds(match_id, map_name, round_number, round_score, winner, side, win_type)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+getMatchRounds:
+SELECT * FROM match_map_rounds WHERE match_id = :matchId ORDER BY map_name, round_number;
+
+getMatchRoundsByMap:
+SELECT * FROM match_map_rounds WHERE match_id = :matchId AND map_name = :mapName ORDER BY round_number;
+
+deleteMatchRounds:
+DELETE FROM match_map_rounds WHERE match_id = :matchId;
+
+-- Player stats queries
+insertPlayerStats:
+INSERT OR REPLACE INTO match_map_player_stats(
+    match_id, map_name, player_id, player_name, team_id, agent_name, agent_image_url,
+    rating, acs, kills, deaths, assists, kast_percent, adr, hs_percent,
+    first_kills, first_deaths, first_kills_diff
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+getMatchPlayerStats:
+SELECT * FROM match_map_player_stats WHERE match_id = :matchId;
+
+getMatchPlayerStatsByMap:
+SELECT * FROM match_map_player_stats WHERE match_id = :matchId AND map_name = :mapName;
+
+deleteMatchPlayerStats:
+DELETE FROM match_map_player_stats WHERE match_id = :matchId;
+
+-- Bans queries
+insertMatchBan:
+INSERT INTO match_bans(match_id, ban_type, ban_value)
+VALUES (?, ?, ?);
+
+getMatchBans:
+SELECT * FROM match_bans WHERE match_id = :matchId;
+
+deleteMatchBans:
+DELETE FROM match_bans WHERE match_id = :matchId;
+
+-- Videos queries
+insertMatchVideo:
+INSERT INTO match_videos(match_id, video_type, name, url)
+VALUES (?, ?, ?, ?);
+
+getMatchVideos:
+SELECT * FROM match_videos WHERE match_id = :matchId;
+
+deleteMatchVideos:
+DELETE FROM match_videos WHERE match_id = :matchId;
+
+-- Previous encounters queries
+insertPreviousEncounter:
+INSERT INTO match_previous_encounters(match_id, previous_match_id, team1_name, team1_score, team2_name, team2_score)
+VALUES (?, ?, ?, ?, ?, ?);
+
+getPreviousEncounters:
+SELECT * FROM match_previous_encounters WHERE match_id = :matchId;
+
+deletePreviousEncounters:
+DELETE FROM match_previous_encounters WHERE match_id = :matchId;
+
+-- Favorite queries
+addFavoriteMatch:
+INSERT OR IGNORE INTO favorite_matches(match_id) VALUES (?);
+
+removeFavoriteMatch:
+DELETE FROM favorite_matches WHERE match_id = ?;
+
+isFavoriteMatch:
+SELECT COUNT(*) FROM favorite_matches WHERE match_id = :matchId;
+
+getAllFavoriteMatches:
+SELECT
+    m.*,
+    1 AS is_direct_favorite,
+    0 AS is_event_favorite,
+    0 AS is_team_favorite
+FROM matches AS m
+INNER JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id
+ORDER BY m.time DESC;
