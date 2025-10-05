@@ -1,0 +1,28 @@
+-- Sync metadata table
+
+CREATE TABLE sync_metadata (
+    entity_type TEXT NOT NULL PRIMARY KEY,
+    last_sync_timestamp INTEGER NOT NULL,
+    version_hash TEXT,
+    record_count INTEGER NOT NULL DEFAULT 0
+);
+
+-- ============================================================================
+-- QUERIES
+-- ============================================================================
+
+upsertSyncMetadata:
+INSERT OR REPLACE INTO sync_metadata(entity_type, last_sync_timestamp, version_hash, record_count)
+VALUES (?, ?, ?, ?);
+
+getSyncMetadata:
+SELECT * FROM sync_metadata WHERE entity_type = :entityType;
+
+getAllSyncMetadata:
+SELECT * FROM sync_metadata ORDER BY entity_type ASC;
+
+deleteSyncMetadata:
+DELETE FROM sync_metadata WHERE entity_type = :entityType;
+
+clearSyncMetadata:
+DELETE FROM sync_metadata;
