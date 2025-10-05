@@ -1,0 +1,65 @@
+-- Simple search table (non-FTS5)
+-- FTS5 virtual tables cause StackOverflowError in SQLDelight 2.1.0
+-- Using regular table with LIKE queries as workaround
+
+CREATE TABLE search_index (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    entity_type TEXT NOT NULL,
+    entity_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    tags TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX idx_search_entity_type ON search_index(entity_type);
+CREATE INDEX idx_search_entity_id ON search_index(entity_type, entity_id);
+CREATE INDEX idx_search_name ON search_index(name);
+
+-- ============================================================================
+-- QUERIES
+-- ============================================================================
+
+deleteSearchByType:
+DELETE FROM search_index WHERE entity_type = ?;
+
+deleteSearchByTypeAndId:
+DELETE FROM search_index WHERE entity_type = ? AND entity_id = ?;
+
+insertSearchEntry:
+INSERT INTO search_index(entity_type, entity_id, name, description, tags)
+VALUES (?, ?, ?, ?, ?);
+
+clearSearchIndex:
+DELETE FROM search_index;
+
+-- Simple LIKE-based search (not as powerful as FTS5, but works)
+search:
+SELECT entity_type, entity_id, name, description
+FROM search_index
+WHERE name LIKE '%' || :query || '%'
+   OR description LIKE '%' || :query || '%'
+   OR tags LIKE '%' || :query || '%'
+ORDER BY 
+    CASE 
+        WHEN name LIKE :query || '%' THEN 1
+        WHEN name LIKE '%' || :query || '%' THEN 2
+        ELSE 3
+    END,
+    name
+LIMIT :limit;
+
+searchByType:
+SELECT entity_id, name, description
+FROM search_index
+WHERE entity_type = :type
+  AND (name LIKE '%' || :query || '%'
+   OR description LIKE '%' || :query || '%'
+   OR tags LIKE '%' || :query || '%')
+ORDER BY 
+    CASE 
+        WHEN name LIKE :query || '%' THEN 1
+        WHEN name LIKE '%' || :query || '%' THEN 2
+        ELSE 3
+    END,
+    name
+LIMIT :limit;
