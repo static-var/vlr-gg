@@ -92,7 +92,7 @@ landscapist-animation = { module = "com.github.skydoves:landscapist-animation", 
 coil = { module = "io.coil-kt:coil-compose", version = "2.7.0" }
 
 haze = { module = "dev.chrisbanes.haze:haze", version = "1.3.0" }
-haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "1.3.0" }
+haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version = "1.7.2" }
 
 kotlin-monad = { module = "com.michael-bull.kotlin-result:kotlin-result", version = "2.0.1" }
 
