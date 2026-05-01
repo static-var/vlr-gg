@@ -12,7 +12,7 @@ import dev.staticvar.vlr.remotesource.player.PlayerAgentStatsDto
 import dev.staticvar.vlr.remotesource.player.PlayerTeamRefDto
 import dev.staticvar.vlr.remotesource.rankings.TeamRankingDto
 import dev.staticvar.vlr.remotesource.standings.TeamStandingDto
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 /**
  * Simple manual mappers for News, Rankings, and Standings.
@@ -26,8 +26,8 @@ import kotlinx.datetime.Clock
 
 internal fun NewsItemDto.toEntity(): News =
   News(
-    id = url, // Use URL as ID for news items
-    url = url,
+    id = url.toArticleId(),
+    url = url.toAbsoluteVlrUrl(),
     title = title,
     author = author,
     date = date,
@@ -39,8 +39,8 @@ internal fun NewsItemDto.toEntity(): News =
 
 internal fun NewsArticleDto.toEntity(): News =
   News(
-    id = id,
-    url = id, // Article DTO uses id as URL
+    id = id.toArticleId(),
+    url = id.toAbsoluteVlrUrl(),
     title = title,
     author = author,
     date = date ?: "",
@@ -63,6 +63,23 @@ internal fun NewsArticleDto.toMediaEntities(articleId: String = id): List<NewsMe
     NewsMedia(id = 0, news_id = articleId, media_type = "video", media_value = vid, media_text = null)
   }
   return linkMedia + imageMedia + videoMedia
+}
+
+private fun String.toAbsoluteVlrUrl(): String {
+  val value = trim()
+  return when {
+    value.startsWith("https://") || value.startsWith("http://") -> value
+    value.startsWith("/") -> "https://www.vlr.gg$value"
+    else -> "https://www.vlr.gg/$value"
+  }
+}
+
+private fun String.toArticleId(): String {
+  val absolute = toAbsoluteVlrUrl()
+  return absolute
+    .removePrefix("https://www.vlr.gg/")
+    .removePrefix("http://www.vlr.gg/")
+    .trim('/')
 }
 
 // ----------------------------- Rankings -----------------------------

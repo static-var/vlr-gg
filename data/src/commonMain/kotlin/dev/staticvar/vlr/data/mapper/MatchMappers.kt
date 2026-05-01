@@ -16,7 +16,7 @@ import dev.staticvar.vlr.remotesource.match.RoundInfoDto
 import dev.staticvar.vlr.remotesource.match.TeamDto as DetailTeamDto
 import dev.staticvar.vlr.remotesource.api.TeamDto as PreviewTeamDto
 import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 /** Manual mapping for match preview from API package (complex flattening) */
 internal fun ApiMatchPreviewDto.toEntity(): Matches =

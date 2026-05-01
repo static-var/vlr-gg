@@ -5,6 +5,7 @@ import dev.staticvar.vlr.data.EventPrizes
 import dev.staticvar.vlr.data.EventStandings
 import dev.staticvar.vlr.data.EventTeams
 import dev.staticvar.vlr.data.Matches
+import dev.staticvar.vlr.data.Players
 import dev.staticvar.vlr.localsource.database.Events
 import dev.staticvar.vlr.data.Teams
 import dev.staticvar.vlr.localsource.database.Team_completed_matches
@@ -13,19 +14,40 @@ import dev.staticvar.vlr.localsource.database.Team_upcoming_matches
 import dev.staticvar.vlr.remotesource.common.EventStatus
 import dev.staticvar.vlr.remotesource.common.MatchStatus
 import dev.staticvar.vlr.remotesource.events.EventDetailsDto
+import dev.staticvar.vlr.remotesource.events.EventListDto
 import dev.staticvar.vlr.remotesource.events.EventMatchDto
 import dev.staticvar.vlr.remotesource.events.EventMatchTeamDto
 import dev.staticvar.vlr.remotesource.events.EventPrizeDto
 import dev.staticvar.vlr.remotesource.events.EventStandingsEntryDto
 import dev.staticvar.vlr.remotesource.events.EventTeamDto
+import dev.staticvar.vlr.remotesource.player.PlayerDetailsDto
 import dev.staticvar.vlr.remotesource.team.CompletedMatchDto
 import dev.staticvar.vlr.remotesource.team.TeamDetailsDto
 import dev.staticvar.vlr.remotesource.team.TeamPlayerDto
 import dev.staticvar.vlr.remotesource.team.UpcomingMatchDto
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 // ----------------------------- Event Mapping -----------------------------
 
+/**
+ * Maps EventListDto (list view) to Events entity.
+ */
+internal fun EventListDto.toEntity(now: Long = Clock.System.now().toEpochMilliseconds()): Events =
+  Events(
+    id = id,
+    name = title,
+    subtitle = "",
+    status = (status ?: EventStatus.UPCOMING).name,
+    prizes = prize,
+    dates = dates,
+    region = location.ifBlank { null },
+    logo_url = img,
+    last_updated = now
+  )
+
+/**
+ * Maps EventDetailsDto (detail view) to Events entity.
+ */
 internal fun EventDetailsDto.toEventEntity(now: Long = Clock.System.now().toEpochMilliseconds()): Events = Events(
   id = id,
   name = title,
@@ -170,6 +192,27 @@ private fun CompletedMatchDto.toEntity(teamId: String): Team_completed_matches? 
     result = score,
   )
 }
+
+// ----------------------------- Player Mapping -----------------------------
+
+internal fun PlayerDetailsDto.toPlayerEntity(id: String, now: Long = Clock.System.now().toEpochMilliseconds()): Players =
+  Players(
+    id = id,
+    name = name,
+    alias = alias,
+    real_name = null, // Not provided in DTO
+    country = country,
+    current_team_id = currentTeam?.id?.takeIf { it.isNotBlank() },
+    image_url = img,
+    twitter_url = twitter,
+    twitch_url = twitch,
+    total_winnings = totalWinnings,
+    last_updated = now
+  )
+
+// Agent stats and team history mappers are already in KonvertMappers.kt:
+// - PlayerAgentStatsDto.toEntity(playerId: String): PlayerAgentStats
+// - PlayerTeamRefDto.toEntity(playerId: String, isCurrent: Boolean?): PlayerTeamHistory
 
 // ----------------------------- Shared Helpers -----------------------------
 
