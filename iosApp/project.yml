@@ -1,0 +1,120 @@
+name: iosApp
+options:
+  minimumXcodeGenVersion: 2.45.0
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: 5.0
+    PRODUCT_BUNDLE_IDENTIFIER: dev.staticvar.vlr.ios
+    PRODUCT_NAME: VLR
+    MARKETING_VERSION: 1.0.0
+    CURRENT_PROJECT_VERSION: 1
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone: YES
+    INFOPLIST_KEY_CFBundleDisplayName: VLR
+    INFOPLIST_KEY_LSRequiresIPhoneOS: YES
+    INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+    INFOPLIST_KEY_UILaunchScreen_Generation: YES
+    TARGETED_DEVICE_FAMILY: "1,2"
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    FRAMEWORK_SEARCH_PATHS:
+      - $(inherited)
+      - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+    OTHER_LDFLAGS:
+      - $(inherited)
+      - -framework
+      - shared
+      - -lsqlite3
+    LD_RUNPATH_SEARCH_PATHS:
+      - $(inherited)
+      - "@executable_path/Frameworks"
+      - "@loader_path/Frameworks"
+
+targets:
+  iosApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: iosApp
+    preBuildScripts:
+      - name: Build shared framework
+        basedOnDependencyAnalysis: false
+        script: |
+          set -euo pipefail
+          USER_HOME="${HOME:-$(eval echo "~${USER:-}")}"
+
+          export REPO_ROOT="$SRCROOT/.."
+          export GENERATED_SWIFT_PATH="$SRCROOT/iosApp/GeneratedBuildConfig.swift"
+
+          if ! java -version >/dev/null 2>&1; then
+            if [ -n "$USER_HOME" ] && [ -x "$USER_HOME/.sdkman/candidates/java/current/bin/java" ]; then
+              export JAVA_HOME="$USER_HOME/.sdkman/candidates/java/current"
+              export PATH="$JAVA_HOME/bin:$PATH"
+            elif [ -x /usr/libexec/java_home ]; then
+              JAVA_HOME="$(/usr/libexec/java_home 2>/dev/null || true)"
+              if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+                export JAVA_HOME
+                export PATH="$JAVA_HOME/bin:$PATH"
+              fi
+            fi
+          fi
+
+          if ! java -version >/dev/null 2>&1; then
+            echo "error: Java runtime not found. Install a JDK or set JAVA_HOME before building iOS." >&2
+            exit 1
+          fi
+
+          python3 <<'PY'
+          import os
+          from pathlib import Path
+
+          repo_root = Path(os.environ["REPO_ROOT"])
+          generated_swift_path = Path(os.environ["GENERATED_SWIFT_PATH"])
+
+          def read_property(path: Path, key: str) -> str:
+              if not path.exists():
+                  return ""
+              for raw_line in path.read_text().splitlines():
+                  line = raw_line.strip()
+                  if not line or line.startswith("#") or "=" not in line:
+                      continue
+                  current_key, value = line.split("=", 1)
+                  if current_key.strip() == key:
+                      return value.strip().strip('"').strip("'")
+              return ""
+
+          token = (
+              read_property(repo_root / ".env", "VLR_AUTH_TOKEN")
+              or read_property(repo_root / "local.properties", "VLR_AUTH_TOKEN")
+              or read_property(repo_root / "local.properties", "TOKEN")
+          )
+
+          if token == "replace-with-your-token":
+              token = ""
+
+          escaped_token = token.replace("\\", "\\\\").replace('"', '\\"')
+          auth_token_literal = f'"{escaped_token}"' if escaped_token else "nil"
+
+          generated_swift_path.parent.mkdir(parents=True, exist_ok=True)
+          generated_swift_path.write_text(
+              "enum GeneratedBuildConfig {\n"
+              f"    static let authToken: String? = {auth_token_literal}\n"
+              "}\n"
+          )
+          PY
+
+          cd "$SRCROOT/.."
+          ./gradle-safe.sh :shared:embedAndSignAppleFrameworkForXcode
+
+schemes:
+  iosApp:
+    build:
+      targets:
+        iosApp: all
+    run:
+      config: Debug
+    archive:
+      config: Release
