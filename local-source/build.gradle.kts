@@ -9,7 +9,7 @@ kotlin {
 
     androidLibrary {
         namespace = "dev.staticvar.vlr.localsource"
-        compileSdk = 35
+        compileSdk = 36
         minSdk = 24
     }
 

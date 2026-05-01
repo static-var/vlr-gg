@@ -3,6 +3,12 @@ plugins {
   alias(libs.plugins.android.kotlin.multiplatform.library)
   alias(libs.plugins.compose.multiplatform)
   alias(libs.plugins.compose.compiler)
+  alias(libs.plugins.kotlin.serialization)
+}
+
+dependencies {
+  lintChecks(project(":lint"))
+  androidRuntimeClasspath(libs.compose.ui.tooling.cmp)
 }
 
 kotlin {
@@ -10,9 +16,11 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.shared"
-    compileSdk = 35
+    compileSdk = 36
     minSdk = 24
   }
+
+  jvm("desktop")
 
   val fastIos = project.findProperty("fastIos") == "true"
   val iosTargets = if (fastIos) {
@@ -37,18 +45,47 @@ kotlin {
         implementation(compose.material3)
         implementation(compose.ui)
         implementation(compose.components.resources)
-        implementation(compose.components.uiToolingPreview)
+        implementation(libs.compose.ui.tooling.preview)
+        implementation(compose.materialIconsExtended)
         implementation(libs.coroutines.core)
+        implementation(libs.kotlinx.serialization)
+        implementation(libs.koin.core)
+        implementation(libs.navigation3.ui.cmp)
+        implementation(projects.designsystem)
+        implementation(projects.core)
+        implementation(projects.localSource)
+        implementation(projects.remoteSource)
+        implementation(projects.data)
+        implementation(projects.featureAbout)
+        implementation(projects.featureEvents)
+        implementation(projects.featureMatches)
+        implementation(projects.featureNews)
+        implementation(projects.featurePlayer)
+        implementation(projects.featureRankings)
+        implementation(projects.featureTeam)
       }
     }
 
     val androidMain by getting {
       dependencies {
-        implementation(compose.preview)
         implementation(libs.activity.compose)
       }
     }
 
     val iosMain by getting
+
+    val commonTest by getting {
+      dependencies {
+        implementation(kotlin("test"))
+      }
+    }
+
+    val desktopMain by getting {
+      dependencies {
+        implementation(compose.desktop.currentOs)
+      }
+    }
+
+    val desktopTest by getting
   }
 }

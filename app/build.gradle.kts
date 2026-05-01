@@ -1,18 +1,17 @@
-@file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
+@file:Suppress("UnstableApiUsage")
 
 
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.io.FileInputStream
 import java.util.Properties
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   alias(libs.plugins.android.application)
-  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.kotlin.parcelize)
-  id("dagger.hilt.android.plugin")
+  alias(libs.plugins.hilt.plugin)
   alias(libs.plugins.ksp.plugin)
   alias(libs.plugins.secrets.plugin)
   alias(libs.plugins.baselineprofile)
@@ -34,8 +33,6 @@ android {
     targetSdk = 35
     versionCode = 69
     versionName = "v0.6.3"
-
-    setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
 
     room {
       schemaDirectory("$projectDir/schemas/")
@@ -97,33 +94,11 @@ android {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_17.toString()
-    freeCompilerArgs =
-      freeCompilerArgs +
-        listOf(
-          "-opt-in=kotlin.RequiresOptIn",
-          "-opt-in=kotlin.contracts.ExperimentalContracts",
-          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-          "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
-          "-opt-in=kotlin.time.ExperimentalTime",
-          "-opt-in=androidx.compose.ui.text.ExperimentalTextApi",
-          "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
-          "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
-          "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-          "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-          "-opt-in=androidx.compose.runtime.InternalComposeApi",
-          "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
-          "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
-        )
-  }
   buildFeatures {
     compose = true
     buildConfig = true
   }
   composeCompiler {
-    featureFlags.set(listOf(ComposeFeatureFlag.StrongSkipping))
-
     reportsDestination = layout.buildDirectory.dir("compose_compiler")
   }
   packaging {
@@ -135,9 +110,32 @@ android {
     saveInSrc = true
     mergeIntoMain = true
     dexLayoutOptimization = true
-    from(projects.baselineprofile.dependencyProject)
+    from(project(":baselineProfile"))
   }
   experimentalProperties["android.experimental.art-profile-r8-rewriting"] = true
+}
+
+kotlin {
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_17)
+    freeCompilerArgs.addAll(
+      listOf(
+        "-opt-in=kotlin.RequiresOptIn",
+        "-opt-in=kotlin.contracts.ExperimentalContracts",
+        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+        "-opt-in=kotlin.time.ExperimentalTime",
+        "-opt-in=androidx.compose.ui.text.ExperimentalTextApi",
+        "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
+        "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
+        "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+        "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+        "-opt-in=androidx.compose.runtime.InternalComposeApi",
+        "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+        "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
+      )
+    )
+  }
 }
 
 dependencies {

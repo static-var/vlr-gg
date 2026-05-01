@@ -8,7 +8,7 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.domain"
-    compileSdk = 35
+    compileSdk = 36
     minSdk = 24
 
     withHostTestBuilder {}
@@ -62,3 +62,7 @@ kotlin {
 //     enabled = false
 //   }
 // }
+
+tasks.register("test") {
+  dependsOn("desktopTest")
+}

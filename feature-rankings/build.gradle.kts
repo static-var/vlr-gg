@@ -3,8 +3,6 @@ plugins {
   alias(libs.plugins.android.kotlin.multiplatform.library)
   alias(libs.plugins.compose.multiplatform)
   alias(libs.plugins.compose.compiler)
-  id("vlr.detekt")
-  id("vlr.ktfmt")
 }
 
 kotlin {
@@ -12,7 +10,7 @@ kotlin {
   applyDefaultHierarchyTemplate()
 
   androidLibrary {
-    namespace = "dev.staticvar.designsystem"
+    namespace = "dev.staticvar.vlr.featurerankings"
     compileSdk = 36
     minSdk = 24
     androidResources.enable = true
@@ -29,7 +27,7 @@ kotlin {
     }
   iosTargets.forEach { target ->
     target.binaries.framework {
-      baseName = "DesignSystem"
+      baseName = "FeatureRankings"
       isStatic = true
     }
   }
@@ -41,38 +39,29 @@ kotlin {
         implementation(compose.foundation)
         implementation(compose.material3)
         implementation(compose.ui)
-        implementation(compose.animation)
-        implementation(libs.compose.icons.lineawesome)
-        @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
         implementation(compose.components.resources)
-        // Keep for future Fleet/Canary support
         implementation(libs.compose.ui.tooling.preview)
+        implementation(libs.coroutines.core)
+        implementation(libs.koin.core)
+        implementation(projects.core)
+        implementation(projects.designsystem)
+        implementation(projects.domain)
       }
     }
 
-    val commonTest by getting { dependencies { implementation(kotlin("test")) } }
+    val commonTest by getting {
+      dependencies {
+        implementation(kotlin("test"))
+        implementation(libs.coroutine.test)
+      }
+    }
 
     val androidMain by getting {
       dependencies {
         implementation(libs.activity.compose)
-        implementation(libs.core)
-        implementation(libs.core.viewtree)
-        implementation(libs.emoji2)
-        implementation(libs.app.compat)
-        implementation(libs.customview.poolingcontainer)
-        implementation(libs.lifecycle.runtime)
-        implementation(libs.lifecycle.viewmodel)
       }
     }
-
-    val desktopMain by getting { dependencies { implementation(compose.desktop.currentOs) } }
   }
-}
-
-listOf("iosX64", "iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
-  tasks
-    .matching { it.name.startsWith(targetPrefix) && it.name.endsWith("Test") }
-    .configureEach { enabled = false }
 }
 
 dependencies {

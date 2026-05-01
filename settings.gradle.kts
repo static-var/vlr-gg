@@ -8,6 +8,9 @@ pluginManagement {
     maven { url = java.net.URI.create("https://androidx.dev/storage/compose-compiler/repository") }
   }
 }
+plugins {
+  id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
+}
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
@@ -37,3 +40,21 @@ include(":remote-source")
 include(":local-source")
 
 include(":core")
+
+include(":designsystem")
+
+include(":lint")
+
+include(":feature-news")
+
+include(":feature-matches")
+
+include(":feature-events")
+
+include(":feature-rankings")
+
+include(":feature-team")
+
+include(":feature-player")
+
+include(":feature-about")

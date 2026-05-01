@@ -9,7 +9,7 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.data"
-    compileSdk = 35
+    compileSdk = 36
     minSdk = 24
 
     withHostTestBuilder {}
@@ -21,6 +21,21 @@ kotlin {
     }
   }
 
+  jvm("desktop")
+
+  val fastIos = project.findProperty("fastIos") == "true"
+  val iosTargets = if (fastIos) {
+    listOf(iosSimulatorArm64())
+  } else {
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64())
+  }
+  iosTargets.forEach { iosTarget ->
+    iosTarget.binaries.framework {
+      baseName = "data"
+      isStatic = true
+    }
+  }
+
   sourceSets {
     val commonMain by getting {
       dependencies {
@@ -28,17 +43,11 @@ kotlin {
         implementation(libs.coroutines.core)
         implementation(libs.koin.core)
         implementation(libs.kotlinx.datetime)
-        
-        // SQLDelight coroutines extensions for Flow support
-        implementation("app.cash.sqldelight:coroutines-extensions:2.1.0")
-        
-        // Core
-        implementation(projects.core)
-        
-        // Domain layer
-        implementation(projects.domain)
 
-        // Data sources
+        implementation("app.cash.sqldelight:coroutines-extensions:2.1.0")
+
+        implementation(projects.core)
+        implementation(projects.domain)
         implementation(projects.remoteSource)
         implementation(projects.localSource)
       }
@@ -59,6 +68,12 @@ kotlin {
       }
     }
 
+    val desktopTest by getting {
+      dependencies {
+        implementation(kotlin("test-junit"))
+        implementation("app.cash.sqldelight:sqlite-driver:2.1.0")
+      }
+    }
   }
 }
 
@@ -69,6 +84,16 @@ ksp {
 
 dependencies {
   add("kspAndroid", libs.konvert.processor)
+}
+
+listOf("iosX64", "iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
+  tasks.matching { it.name.startsWith(targetPrefix) && it.name.endsWith("Test") }.configureEach {
+    enabled = false
+  }
+}
+
+tasks.register("test") {
+  dependsOn("desktopTest")
 }
 
 // iOS test disabling - not needed when iOS targets are commented out

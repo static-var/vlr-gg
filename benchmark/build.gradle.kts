@@ -1,11 +1,11 @@
-@file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
+@file:Suppress("UnstableApiUsage")
 
 import java.io.FileInputStream
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   id("com.android.test")
-  id("org.jetbrains.kotlin.android")
   alias(libs.plugins.baselineprofile)
 }
 
@@ -25,24 +25,11 @@ android {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
-  kotlinOptions { jvmTarget = JavaVersion.VERSION_17.toString() }
   // [END_EXCLUDE]
   // Note that your module name may have different name
   targetProjectPath = ":app"
   // Enable the benchmark to run separately from the app process
   experimentalProperties["android.experimental.self-instrumenting"] = true
-
-  testOptions {
-    managedDevices {
-      devices {
-        create("pixel6Api33", com.android.build.api.dsl.ManagedVirtualDevice::class.java) {
-          device = "Pixel 6"
-          apiLevel = 33
-          systemImageSource = "aosp"
-        }
-      }
-    }
-  }
 
   buildTypes {
     val localProperties = Properties()
@@ -58,6 +45,10 @@ android {
       matchingFallbacks += mutableListOf("release")
     }
   }
+}
+
+kotlin {
+  compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
 }
 
 dependencies { implementation(libs.bundles.benchmark) }

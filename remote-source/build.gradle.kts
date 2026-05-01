@@ -11,7 +11,7 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.remotesource"
-    compileSdk = 35
+    compileSdk = 36
     minSdk = 24
 
     withHostTestBuilder {}
