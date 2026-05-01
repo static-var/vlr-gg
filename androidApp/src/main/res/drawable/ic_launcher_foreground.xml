@@ -4,7 +4,7 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    
+
     <!-- Rising stat bars (background layer) -->
     <group android:alpha="0.6">
         <!-- Bar 1 (shortest) -->
@@ -28,35 +28,35 @@
             android:fillColor="#00F5FF"
             android:pathData="M71,60 L71,85 L78,85 L78,60 Z"/>
     </group>
-    
+
     <!-- Large "V" shape (foreground) -->
     <path
         android:fillColor="#FF4655"
         android:strokeColor="#FFFFFF"
         android:strokeWidth="1"
         android:pathData="M35,25 L54,75 L73,25 L85,25 L60,90 L48,90 L23,25 Z"/>
-    
+
     <!-- Corner brackets for tactical feel -->
     <!-- Top-left -->
     <path
         android:fillColor="#00F5FF"
         android:pathData="M15,15 L25,15 L25,17 L17,17 L17,25 L15,25 Z"/>
-    
+
     <!-- Top-right -->
     <path
         android:fillColor="#00F5FF"
         android:pathData="M83,15 L93,15 L93,25 L91,25 L91,17 L83,17 Z"/>
-    
+
     <!-- Bottom-left -->
     <path
         android:fillColor="#00F5FF"
         android:pathData="M15,83 L17,83 L17,91 L25,91 L25,93 L15,93 Z"/>
-    
+
     <!-- Bottom-right -->
     <path
         android:fillColor="#00F5FF"
         android:pathData="M83,91 L91,91 L91,83 L93,83 L93,93 L83,93 Z"/>
-    
+
     <!-- Small accent dots -->
     <path
         android:fillColor="#FFFFFF"

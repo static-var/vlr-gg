@@ -78,4 +78,3 @@ private fun playerInfo(id: String): PlayerInfo =
     pastTeams = emptyList(),
     agentStats = emptyList(),
   )
-

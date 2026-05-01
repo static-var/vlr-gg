@@ -144,4 +144,3 @@ private fun matchDetails(id: String): MatchDetails =
     matchData = emptyList(),
     mapCount = 0,
   )
-

@@ -80,4 +80,3 @@ private fun teamInfo(id: String): TeamInfo =
     upcomingMatches = emptyList(),
     completedMatches = emptyList(),
   )
-

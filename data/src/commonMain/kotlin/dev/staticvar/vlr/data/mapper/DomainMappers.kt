@@ -137,7 +137,7 @@ internal fun aggregateMatchDetails(
   val mapData = maps.map { map ->
     val mapRounds = rounds.filter { it.map_name == map.map_name }
     val mapPlayers = playerStats.filter { it.map_name == map.map_name }
-    
+
     MapData(
       map = map.map_name,
       members = mapPlayers.groupBy { it.player_id }.map { (_, stats) ->
@@ -315,15 +315,15 @@ internal fun aggregateNewsArticle(
       val text = mediaItem.media_text ?: return@mapNotNull null
       ArticleLink(text = text, url = mediaItem.media_value)
     }
-  
+
   val images = media
     .filter { it.media_type == "image" }
     .map { it.media_value }
-  
+
   val videos = media
     .filter { it.media_type == "video" }
     .map { it.media_value }
-  
+
   return NewsArticle(
     id = news.id,
     url = news.url,
@@ -474,7 +474,7 @@ internal fun aggregatePlayerInfo(
 ): PlayerInfo {
   val currentTeam = teamHistory.firstOrNull { it.is_current == 1L }
   val pastTeams = teamHistory.filter { it.is_current == 0L }
-  
+
   return PlayerInfo(
     id = player.id,
     name = player.name,
@@ -692,7 +692,7 @@ internal fun aggregateCircuitStandings(
         teams = teams.map { it.toCircuitTeam() }
       )
     }
-  
+
   return CircuitStandings(
     year = year,
     circuits = circuits
@@ -707,7 +707,7 @@ internal fun aggregateCircuitRegion(
   standings: List<Standings>
 ): CircuitRegion? {
   if (standings.isEmpty()) return null
-  
+
   return CircuitRegion(
     circuitName = circuitName,
     region = standings.firstOrNull()?.region ?: "",

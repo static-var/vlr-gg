@@ -63,4 +63,3 @@ class NewsHtmlParserTest {
     assertFalse(hrefs.any { it.startsWith("mailto:") }, "Expected mailto links to be excluded")
   }
 }
-

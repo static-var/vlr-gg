@@ -123,4 +123,3 @@ private fun eventDetails(id: String): EventDetails =
     matches = emptyList(),
     standings = emptyList(),
   )
-
