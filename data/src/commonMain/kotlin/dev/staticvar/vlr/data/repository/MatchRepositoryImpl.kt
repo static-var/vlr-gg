@@ -2,7 +2,14 @@ package dev.staticvar.vlr.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.data.MatchBans
+import dev.staticvar.vlr.data.MatchMapPlayerStats
+import dev.staticvar.vlr.data.MatchMapRounds
+import dev.staticvar.vlr.data.MatchMaps
+import dev.staticvar.vlr.data.MatchPreviousEncounters
+import dev.staticvar.vlr.data.MatchVideos
 import dev.staticvar.vlr.data.mapper.aggregateMatchDetails
 import dev.staticvar.vlr.data.mapper.toBanEntities
 import dev.staticvar.vlr.data.mapper.toMapEntities
@@ -19,8 +26,10 @@ import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.localsource.database.VlrDatabase
+import dev.staticvar.vlr.localsource.database.GetMatchWithFavoriteStatus
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -43,69 +52,70 @@ internal class MatchRepositoryImpl(
       .mapToList(dispatchers.io)
       .map { matches -> matches.map { it.toDomain() } }
 
-  override suspend fun getMatchDetails(matchId: String): Result<MatchDetails> =
-    withContext(dispatchers.io) {
-      runCatching {
-        val match = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOne()
-        val maps = matchesQueries.getMatchMaps(matchId).executeAsList()
-        val rounds = matchesQueries.getMatchRounds(matchId).executeAsList()
-        val playerStats = matchesQueries.getMatchPlayerStats(matchId).executeAsList()
-        val bans = matchesQueries.getMatchBans(matchId).executeAsList()
-        val videos = matchesQueries.getMatchVideos(matchId).executeAsList()
-        val previousEncountersDb = matchesQueries.getPreviousEncounters(matchId).executeAsList()
-        
-        val previousEncounters = previousEncountersDb.map { encounter ->
-          PreviousEncounter(
-            id = encounter.previous_match_id,
-            teams = listOf(
-              TeamPreview(
-                id = null,
-                name = encounter.team1_name,
-                region = "",
-                img = "",
-                score = encounter.team1_score?.toInt(),
-                isWinner = run {
-                  val t1 = encounter.team1_score
-                  val t2 = encounter.team2_score
-                  t1 != null && t2 != null && t1 > t2
-                },
-                isFavorite = false
-              ),
-              TeamPreview(
-                id = null,
-                name = encounter.team2_name,
-                region = "",
-                img = "",
-                score = encounter.team2_score?.toInt(),
-                isWinner = run {
-                  val t1 = encounter.team1_score
-                  val t2 = encounter.team2_score
-                  t2 != null && t1 != null && t2 > t1
-                },
-                isFavorite = false
-              )
-            )
-          )
-        }
+  override fun getMatchDetails(matchId: String): Flow<MatchDetails?> {
+    val matchFlow = matchesQueries
+      .getMatchWithFavoriteStatus(matchId)
+      .asFlow()
+      .mapToOneOrNull(dispatchers.io)
 
+    val mapsFlow = matchesQueries
+      .getMatchMaps(matchId)
+      .asFlow()
+      .mapToList(dispatchers.io)
+
+    val roundsFlow = matchesQueries
+      .getMatchRounds(matchId)
+      .asFlow()
+      .mapToList(dispatchers.io)
+
+    val playerStatsFlow = matchesQueries
+      .getMatchPlayerStats(matchId)
+      .asFlow()
+      .mapToList(dispatchers.io)
+
+    val bansFlow = matchesQueries
+      .getMatchBans(matchId)
+      .asFlow()
+      .mapToList(dispatchers.io)
+
+    val videosFlow = matchesQueries
+      .getMatchVideos(matchId)
+      .asFlow()
+      .mapToList(dispatchers.io)
+
+    val previousFlow = matchesQueries
+      .getPreviousEncounters(matchId)
+      .asFlow()
+      .mapToList(dispatchers.io)
+      .map { encounters -> encounters.map { it.toDomainEncounter() } }
+
+    val coreFlow =
+      matchFlow.combine(mapsFlow) { match, maps ->
+        MatchDetailSlices(match = match, maps = maps)
+      }.combine(roundsFlow) { slices, rounds ->
+        slices.copy(rounds = rounds)
+      }.combine(playerStatsFlow) { slices, playerStats ->
+        slices.copy(playerStats = playerStats)
+      }.combine(bansFlow) { slices, bans ->
+        slices.copy(bans = bans)
+      }.combine(videosFlow) { slices, videos ->
+        slices.copy(videos = videos)
+      }
+
+    return coreFlow.combine(previousFlow) { slices, previousEncounters ->
+      slices.match?.let { match ->
         aggregateMatchDetails(
           match = match,
-          maps = maps,
-          rounds = rounds,
-          playerStats = playerStats,
-          bans = bans,
-          videos = videos,
+          maps = slices.maps,
+          rounds = slices.rounds,
+          playerStats = slices.playerStats,
+          bans = slices.bans,
+          videos = slices.videos,
           previousEncounters = previousEncounters
         )
       }
     }
-
-  override fun getFavoriteMatches(): Flow<List<MatchPreview>> =
-    matchesQueries
-      .getAllFavoriteMatches()
-      .asFlow()
-      .mapToList(dispatchers.io)
-      .map { matches -> matches.map { it.toDomain() } }
+  }
 
   override suspend fun addToFavorites(matchId: String): Result<Unit> =
     withContext(dispatchers.io) {
@@ -140,7 +150,7 @@ internal class MatchRepositoryImpl(
    * Refreshes detailed match data from remote and stores in database.
    * Called when user views match details.
    */
-  suspend fun refreshMatchDetails(matchId: String): Result<Unit> =
+  override suspend fun refreshMatchDetails(matchId: String): Result<Unit> =
     withContext(dispatchers.io) {
       matchDataSource.details(matchId).mapCatching { dto ->
         database.transaction {
@@ -153,7 +163,7 @@ internal class MatchRepositoryImpl(
           matchesQueries.deletePreviousEncounters(matchId)
 
           // Insert updated match
-          val matchEntity = dto.toMatchEntity()
+          val matchEntity = dto.toMatchEntity().copy(id = matchId)
           matchesQueries.insertMatch(matchEntity)
 
           // Insert related data
@@ -233,4 +243,43 @@ internal class MatchRepositoryImpl(
         }
       }
     }
+
+  private fun MatchPreviousEncounters.toDomainEncounter(): PreviousEncounter =
+    PreviousEncounter(
+      id = previous_match_id,
+      teams = listOf(
+        TeamPreview(
+          id = null,
+          name = team1_name,
+          region = "",
+          img = "",
+          score = team1_score?.toInt(),
+          isWinner = determineWinner(team1_score, team2_score, true),
+          isFavorite = false
+        ),
+        TeamPreview(
+          id = null,
+          name = team2_name,
+          region = "",
+          img = "",
+          score = team2_score?.toInt(),
+          isWinner = determineWinner(team1_score, team2_score, false),
+          isFavorite = false
+        )
+      )
+    )
+
+  private fun determineWinner(team1Score: Long?, team2Score: Long?, isTeam1: Boolean): Boolean? {
+    if (team1Score == null || team2Score == null) return null
+    return if (isTeam1) team1Score > team2Score else team2Score > team1Score
+  }
+
+  private data class MatchDetailSlices(
+    val match: GetMatchWithFavoriteStatus?,
+    val maps: List<MatchMaps> = emptyList(),
+    val rounds: List<MatchMapRounds> = emptyList(),
+    val playerStats: List<MatchMapPlayerStats> = emptyList(),
+    val bans: List<MatchBans> = emptyList(),
+    val videos: List<MatchVideos> = emptyList()
+  )
 }
