@@ -37,6 +37,9 @@ VALUES (?, ?, ?, ?, ?);
 getRankingsByRegion:
 SELECT * FROM rankings WHERE region = :region ORDER BY rank ASC;
 
+getAllRankings:
+SELECT * FROM rankings ORDER BY region ASC, rank ASC;
+
 deleteRankingsByRegion:
 DELETE FROM rankings WHERE region = :region;
 
@@ -50,11 +53,20 @@ VALUES (?, ?, ?, ?, ?, ?, ?);
 getStandingsByYearAndRegion:
 SELECT * FROM standings WHERE year = :year AND region = :region ORDER BY rank ASC;
 
+getStandingsByYear:
+SELECT * FROM standings WHERE year = :year ORDER BY circuit ASC, rank ASC;
+
 getStandingsByCircuit:
 SELECT * FROM standings WHERE circuit = :circuit ORDER BY year DESC, rank ASC;
 
+getStandingsByYearAndCircuit:
+SELECT * FROM standings WHERE year = :year AND circuit = :circuit ORDER BY rank ASC;
+
 deleteStandingsByYearAndRegion:
 DELETE FROM standings WHERE year = :year AND region = :region;
+
+deleteStandingsByYear:
+DELETE FROM standings WHERE year = :year;
 
 deleteAllStandings:
 DELETE FROM standings;

@@ -5,6 +5,7 @@ import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import dev.staticvar.vlr.localsource.database.DatabaseDispatchers
+import dev.staticvar.vlr.localsource.database.Teams
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -35,7 +36,7 @@ class TeamsQueriesTest {
 
     private fun insertSampleTeam(id: String = "team1", rank: Long = 10) {
         db.teamsQueries.insertTeam(
-            dev.staticvar.vlr.localsource.database.Teams(
+            Teams(
                 id = id,
                 name = "Team One",
                 tag = "T1",
@@ -78,7 +79,7 @@ class TeamsQueriesTest {
         insertSampleTeam("team1")
         insertSampleTeam("team2")
         db.teamsQueries.insertTeam(
-            dev.staticvar.vlr.localsource.database.Teams(
+            Teams(
                 id = "team2",
                 name = "Team Two",
                 tag = "T2",

@@ -6,6 +6,7 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import dev.staticvar.vlr.localsource.database.DatabaseDispatchers
 import dev.staticvar.vlr.localsource.database.Events
+import dev.staticvar.vlr.localsource.database.Matches
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -86,7 +87,7 @@ class EventQueriesTest {
         // need a match first to link event_match
         // minimal match record using matchesQueries
         database.matchesQueries.insertMatch(
-            dev.staticvar.vlr.localsource.database.Matches(
+            Matches(
                 id = "match1", event_id = "event1", event_name = event.name, event_logo_url = "logo.png",
                 series = "Bo3", stage = "Stage1", status = "upcoming", time = "2025-01-01T00:00:00Z",
                 eta = null, note = "", patch = null, team1_id = "t1", team1_name = "Team A",

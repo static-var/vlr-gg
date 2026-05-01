@@ -96,6 +96,15 @@ LEFT JOIN favorite_players AS fav_p ON p.id = fav_p.player_id
 WHERE p.country = :country
 ORDER BY p.name ASC;
 
+getPlayersByTeam:
+SELECT
+    p.*,
+    CAST((fav_p.player_id IS NOT NULL) AS INTEGER) AS is_favorite
+FROM players AS p
+LEFT JOIN favorite_players AS fav_p ON p.id = fav_p.player_id
+WHERE p.current_team_id = :teamId
+ORDER BY p.name ASC;
+
 deleteAllPlayers:
 DELETE FROM players;
 
