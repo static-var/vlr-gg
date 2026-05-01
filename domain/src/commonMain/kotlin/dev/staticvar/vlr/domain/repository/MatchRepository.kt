@@ -16,13 +16,9 @@ interface MatchRepository {
 
   /**
    * Get detailed match information by ID.
+   * Returns Flow for reactive updates when match data changes.
    */
-  suspend fun getMatchDetails(matchId: String): Result<MatchDetails>
-
-  /**
-   * Get favorite matches.
-   */
-  fun getFavoriteMatches(): Flow<List<MatchPreview>>
+  fun getMatchDetails(matchId: String): Flow<MatchDetails?>
 
   /**
    * Mark a match as favorite.
@@ -38,4 +34,9 @@ interface MatchRepository {
    * Refresh matches from remote source.
    */
   suspend fun refreshMatches(): Result<Unit>
+
+  /**
+   * Refresh match detail from remote source.
+   */
+  suspend fun refreshMatchDetails(matchId: String): Result<Unit>
 }
