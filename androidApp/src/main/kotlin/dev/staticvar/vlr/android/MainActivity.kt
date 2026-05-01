@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dev.staticvar.vlr.shared.App
+import dev.staticvar.vlr.shared.di.initializeAppKoin
+import org.koin.android.ext.koin.androidContext
 
 /**
  * Main activity for VLR Android app.
@@ -14,6 +16,16 @@ class MainActivity : ComponentActivity() {
   
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    val authToken =
+      BuildConfig.TOKEN
+        .trim()
+        .removeSurrounding("\"")
+        .removeSurrounding("'")
+        .takeIf { token -> token.isNotBlank() }
+    initializeAppKoin(
+      appDeclaration = { androidContext(this@MainActivity.applicationContext) },
+      authToken = authToken,
+    )
     enableEdgeToEdge()
     
     setContent {
