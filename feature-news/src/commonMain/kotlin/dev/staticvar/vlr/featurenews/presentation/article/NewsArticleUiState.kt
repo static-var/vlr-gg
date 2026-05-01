@@ -1,0 +1,10 @@
+package dev.staticvar.vlr.featurenews.presentation.article
+
+import dev.staticvar.vlr.domain.model.NewsArticle
+
+public data class NewsArticleUiState(
+  val article: NewsArticle? = null,
+  val isLoading: Boolean = true,
+  val isRefreshing: Boolean = false,
+  val errorMessage: String? = null,
+)
