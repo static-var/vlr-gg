@@ -29,9 +29,9 @@ gradlePlugin {
       id = "vlr.detekt"
       implementationClass = "DetektConventionPlugin"
     }
-    register("ktfmt") {
-      id = "vlr.ktfmt"
-      implementationClass = "KtfmtConventionPlugin"
+    register("ktlint") {
+      id = "vlr.ktlint"
+      implementationClass = "KtlintConventionPlugin"
     }
   }
 }

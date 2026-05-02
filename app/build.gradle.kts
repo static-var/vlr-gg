@@ -20,7 +20,7 @@ plugins {
   alias(libs.plugins.firebase.crashlytics)
   alias(libs.plugins.room)
   id("vlr.detekt")
-  id("vlr.ktfmt")
+  id("vlr.ktlint")
 }
 
 android {

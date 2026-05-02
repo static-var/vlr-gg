@@ -4,7 +4,7 @@ plugins {
   alias(libs.plugins.compose.multiplatform)
   alias(libs.plugins.compose.compiler)
   id("vlr.detekt")
-  id("vlr.ktfmt")
+  id("vlr.ktlint")
 }
 
 kotlin {

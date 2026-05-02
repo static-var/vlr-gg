@@ -10,3 +10,4 @@ dependencyResolutionManagement {
 }
 
 include(":convention")
+include(":ktlint-rules")

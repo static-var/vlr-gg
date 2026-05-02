@@ -6,6 +6,7 @@ detektCompose = "0.5.8"
 benchmark = "1.5.0-alpha05"
 composeIcons = "1.1.1"
 detekt = "1.23.8"
+ktlint = "1.8.0"
 gradle = "9.2.0"
 hilt = '2.59.2'
 hiltAndroidGradlePlugin = "2.59.2"
@@ -33,6 +34,8 @@ build-agp = { module = "com.android.tools.build:gradle", version.ref = "gradle" 
 build-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 build-kover = "org.jetbrains.kotlinx:kover:0.6.1"
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektCompose" }
+ktlint-cli-ruleset-core = { module = "com.pinterest.ktlint:ktlint-cli-ruleset-core", version.ref = "ktlint" }
+ktlint-rule-engine-core = { module = "com.pinterest.ktlint:ktlint-rule-engine-core", version.ref = "ktlint" }
 hilt-android-gradle-plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hiltAndroidGradlePlugin" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
@@ -197,6 +200,7 @@ m3 = ["compose-m3", "compose-m3-window", "compose-m3-navigation", "compose-m3-ad
 [plugins]
 hilt-plugin = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 legacy-kapt = { id = "com.android.legacy-kapt", version.ref = "gradle" }
 android-application = { id = "com.android.application", version.ref = "gradle" }

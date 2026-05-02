@@ -19,7 +19,7 @@ plugins {
   alias(libs.plugins.spotless.plugin)
   alias(libs.plugins.firebase.perf) apply false
   id("vlr.detekt")
-  id("vlr.ktfmt")
+  id("vlr.ktlint")
   alias(libs.plugins.androidTest) apply false
   alias(libs.plugins.firebase.crashlytics) apply false
 }
