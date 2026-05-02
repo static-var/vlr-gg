@@ -425,9 +425,9 @@ private fun Team_roster.toTeamPlayer(): TeamPlayer =
   TeamPlayer(
     id = player_id,
     name = player_name,
-    alias = player_name,
+    alias = player_alias.ifBlank { player_name },
     role = role,
-    imageUrl = "",
+    imageUrl = player_image_url,
     country = player_country,
     isStandIn = is_stand_in == 1L,
     isCoach = is_coach == 1L,
@@ -440,11 +440,11 @@ private fun Team_upcoming_matches.toDomain(): TeamUpcomingMatch =
     eventName = event_name,
     eventLogoUrl = event_logo_url,
     eventId = event_id,
-    stage = "",
+    stage = stage,
     opponent = opponent_team_name,
     opponentLogoUrl = opponent_team_logo_url,
     date = date,
-    eta = null
+    eta = eta
   )
 
 private fun Team_completed_matches.toDomain(): TeamCompletedMatch =
@@ -453,7 +453,7 @@ private fun Team_completed_matches.toDomain(): TeamCompletedMatch =
     eventName = event_name,
     eventLogoUrl = event_logo_url,
     eventId = event_id,
-    stage = "",
+    stage = stage,
     opponent = opponent_team_name,
     opponentLogoUrl = opponent_team_logo_url,
     date = date,

@@ -121,7 +121,8 @@ class TeamRepositoryImplTest {
             event = "Event",
             stage = "Stage",
             opponent = "Opponent",
-            date = "2025-01-01"
+            date = "2025-01-01",
+            eta = "2h"
           )
         ),
         completed = listOf(
@@ -156,7 +157,6 @@ class TeamRepositoryImplTest {
           emission.upcomingMatches.isNotEmpty() &&
           emission.completedMatches.isNotEmpty()
         ) {
-          println("updated emission: $emission")
           updated = emission
           cancelAndIgnoreRemainingEvents()
           break@loop
@@ -165,8 +165,14 @@ class TeamRepositoryImplTest {
 
       val details = requireNotNull(updated) { "No emission with populated roster" }
       assertEquals(1, details.roster.size)
+      assertEquals("Player One", details.roster.first().name)
+      assertEquals("p1", details.roster.first().alias)
+      assertEquals("p1.png", details.roster.first().imageUrl)
       assertEquals(1, details.upcomingMatches.size)
+      assertEquals("Stage", details.upcomingMatches.first().stage)
+      assertEquals("2h", details.upcomingMatches.first().eta)
       assertEquals(1, details.completedMatches.size)
+      assertEquals("Final", details.completedMatches.first().stage)
     }
   }
 

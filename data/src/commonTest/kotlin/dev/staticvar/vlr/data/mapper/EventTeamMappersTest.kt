@@ -160,15 +160,21 @@ class EventTeamMappersTest {
     val roster = dto.toRosterEntities("TEAM1")
     assertEquals(2, roster.size)
     assertEquals("P1", roster.first().player_id)
+    assertEquals("Player One", roster.first().player_name)
+    assertEquals("P1", roster.first().player_alias)
+    assertEquals("p1.png", roster.first().player_image_url)
     assertEquals("AliasTwo", roster[1].player_name)
 
     val upcoming = dto.toUpcomingMatchEntities("TEAM1")
     assertEquals(1, upcoming.size)
     assertEquals("UM1", upcoming.first().match_id)
+    assertEquals("StageA", upcoming.first().stage)
+    assertEquals("2h", upcoming.first().eta)
 
     val completed = dto.toCompletedMatchEntities("TEAM1")
     assertEquals(1, completed.size)
     assertEquals("CM1", completed.first().match_id)
+    assertEquals("StageZ", completed.first().stage)
     assertEquals("13:7", completed.first().result)
   }
 

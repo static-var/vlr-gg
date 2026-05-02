@@ -157,7 +157,9 @@ private fun TeamPlayerDto.toEntity(teamId: String): Team_roster =
     id = 0,
     team_id = teamId,
     player_id = id.takeIf { it.isNotBlank() } ?: (teamId + alias),
-    player_name = alias.ifBlank { name ?: "" },
+    player_name = name ?: alias,
+    player_alias = alias,
+    player_image_url = img,
     player_country = "", // country not exposed in remote team player dto
     is_stand_in = 0,
     is_coach = (role?.contains("coach", ignoreCase = true) == true).let { if (it) 1 else 0 },
@@ -178,9 +180,11 @@ private fun UpcomingMatchDto.toEntity(teamId: String): Team_upcoming_matches? {
     opponent_team_name = opponent,
     opponent_team_logo_url = "",
     date = date,
+    eta = eta,
     event_name = event,
     event_logo_url = "",
     event_id = null, // not provided in dto
+    stage = stage,
   )
 }
 
@@ -200,6 +204,7 @@ private fun CompletedMatchDto.toEntity(teamId: String): Team_completed_matches? 
     event_name = event,
     event_logo_url = "",
     event_id = null,
+    stage = stage,
     result = score,
   )
 }

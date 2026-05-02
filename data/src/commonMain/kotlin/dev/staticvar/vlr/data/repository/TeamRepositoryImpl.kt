@@ -126,10 +126,12 @@ internal class TeamRepositoryImpl(
           teamsQueries.deleteCompletedMatches(teamId)
 
           dto.toRosterEntities(teamId).forEach { member ->
-            teamsQueries.insertTeamRosterMember(
+            teamsQueries.insertTeamRosterMemberDetails(
               team_id = member.team_id,
               player_id = member.player_id,
               player_name = member.player_name,
+              player_alias = member.player_alias,
+              player_image_url = member.player_image_url,
               player_country = member.player_country,
               is_stand_in = member.is_stand_in,
               is_coach = member.is_coach,
@@ -139,21 +141,23 @@ internal class TeamRepositoryImpl(
           }
 
           dto.toUpcomingMatchEntities(teamId).forEach { match ->
-            teamsQueries.insertUpcomingMatch(
+            teamsQueries.insertUpcomingMatchDetails(
               team_id = match.team_id,
               match_id = match.match_id,
               opponent_team_id = match.opponent_team_id,
               opponent_team_name = match.opponent_team_name,
               opponent_team_logo_url = match.opponent_team_logo_url,
               date = match.date,
+              eta = match.eta,
               event_name = match.event_name,
               event_logo_url = match.event_logo_url,
-              event_id = match.event_id
+              event_id = match.event_id,
+              stage = match.stage
             )
           }
 
           dto.toCompletedMatchEntities(teamId).forEach { match ->
-            teamsQueries.insertCompletedMatch(
+            teamsQueries.insertCompletedMatchDetails(
               team_id = match.team_id,
               match_id = match.match_id,
               opponent_team_id = match.opponent_team_id,
@@ -163,6 +167,7 @@ internal class TeamRepositoryImpl(
               event_name = match.event_name,
               event_logo_url = match.event_logo_url,
               event_id = match.event_id,
+              stage = match.stage,
               result = match.result
             )
           }
