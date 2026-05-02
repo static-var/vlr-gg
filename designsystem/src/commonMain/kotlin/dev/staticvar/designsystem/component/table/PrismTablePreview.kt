@@ -24,50 +24,7 @@ internal fun PrismTablePreview(
   @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
 ) {
   PrismTheme(variant = variant) {
-    val headerContainerColor = Prism.color.accent
-    val headerContentColor = Prism.color.contentPrimary
-    val headerStickyContainerColor = Prism.color.accentVariant
-    val highlightContentColor = Prism.color.success
-
-    val viewState =
-      PrismTableDefaults.viewState(
-        palette =
-          PrismTablePalette(
-            primary =
-              PrismTableColorGroup(
-                containerColor = Prism.color.surface,
-                contentColor = Prism.color.titleColor,
-                stickyContainerColor = Prism.color.accentSubtle,
-                stickyContentColor = Prism.color.titleColor,
-              ),
-            secondary =
-              PrismTableColorGroup(
-                containerColor = Prism.color.backgroundElevated,
-                contentColor = Prism.color.bodyColor,
-                stickyContainerColor = Prism.color.surfaceVariant,
-                stickyContentColor = Prism.color.titleColor,
-              ),
-          ),
-        borderThickness = Prism.dimens.strokeDefault,
-        borderColor = Prism.color.strokeVariant,
-        cellStyleResolver =
-          PrismTableCellStyleResolver { context ->
-            when {
-              context.isHeader ->
-                PrismTableCellStyle(
-                  containerColor = headerContainerColor,
-                  contentColor = headerContentColor,
-                  stickyContainerColor = headerStickyContainerColor,
-                  stickyContentColor = headerContentColor,
-                )
-
-              context.columnIndex == PrismTablePreviewConstants.ScoreColumnIndex ->
-                PrismTableCellStyle(contentColor = highlightContentColor)
-
-              else -> null
-            }
-          },
-      )
+    val viewState = prismTablePreviewViewState()
 
     Column(
       modifier =
@@ -100,6 +57,63 @@ internal fun PrismTablePreview(
     }
   }
 }
+
+@Composable
+private fun prismTablePreviewViewState(): PrismTableViewState {
+  val headerStyle = prismTablePreviewHeaderStyle()
+  val highlightContentColor = Prism.color.success
+
+  return PrismTableDefaults.viewState(
+    palette =
+      PrismTablePalette(
+        primary =
+          PrismTableColorGroup(
+            containerColor = Prism.color.surface,
+            contentColor = Prism.color.titleColor,
+            stickyContainerColor = Prism.color.accentSubtle,
+            stickyContentColor = Prism.color.titleColor,
+          ),
+        secondary =
+          PrismTableColorGroup(
+            containerColor = Prism.color.backgroundElevated,
+            contentColor = Prism.color.bodyColor,
+            stickyContainerColor = Prism.color.surfaceVariant,
+            stickyContentColor = Prism.color.titleColor,
+          ),
+      ),
+    borderThickness = Prism.dimens.strokeDefault,
+    borderColor = Prism.color.strokeVariant,
+    cellStyleResolver =
+      PrismTableCellStyleResolver { context ->
+        prismTablePreviewCellStyle(
+          context = context,
+          headerStyle = headerStyle,
+          highlightContentColor = highlightContentColor,
+        )
+      },
+  )
+}
+
+private fun prismTablePreviewCellStyle(
+  context: PrismTableCellContext,
+  headerStyle: PrismTableCellStyle,
+  highlightContentColor: androidx.compose.ui.graphics.Color,
+): PrismTableCellStyle? =
+  when {
+    context.isHeader -> headerStyle
+    context.columnIndex == PrismTablePreviewConstants.ScoreColumnIndex ->
+      PrismTableCellStyle(contentColor = highlightContentColor)
+    else -> null
+  }
+
+@Composable
+private fun prismTablePreviewHeaderStyle(): PrismTableCellStyle =
+  PrismTableCellStyle(
+    containerColor = Prism.color.accent,
+    contentColor = Prism.color.contentPrimary,
+    stickyContainerColor = Prism.color.accentVariant,
+    stickyContentColor = Prism.color.contentPrimary,
+  )
 
 private val previewColumns =
   listOf(

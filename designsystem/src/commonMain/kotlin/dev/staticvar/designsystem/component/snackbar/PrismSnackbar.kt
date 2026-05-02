@@ -1,3 +1,5 @@
+@file:Suppress("LongParameterList")
+
 package dev.staticvar.designsystem.component.snackbar
 
 import androidx.compose.foundation.BorderStroke

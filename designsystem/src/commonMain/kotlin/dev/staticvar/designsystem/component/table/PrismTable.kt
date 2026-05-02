@@ -195,55 +195,89 @@ public fun PrismTable(
     }
 
     if (options.stickyFirstColumn) {
-      Column(
-        modifier =
-          Modifier
-            .width(firstColumn.width)
-            .offset {
-              IntOffset(x = 0, y = -verticalScroll.value)
-            }
-            .zIndex(PrismTableLayoutConstants.StickyColumnZIndex),
-      ) {
-        TableCell(
-          value = firstColumn.title,
-          textAlign = firstColumn.textAlign,
-          modifier =
-            Modifier
-              .fillMaxWidth()
-              .height(options.headerHeight),
-          options = options,
-          viewState = viewState,
-          context =
-            PrismTableCellContext(
-              rowIndex = PrismTableLayoutConstants.HeaderRowIndex,
-              columnIndex = PrismTableLayoutConstants.FirstColumnIndex,
-              isHeader = true,
-              isStickyColumn = true,
-            ),
-        )
-
-        rows.forEachIndexed { rowIndex, row ->
-          TableCell(
-            value = row.cells[firstColumn.key].orEmpty(),
-            textAlign = row.resolveTextAlign(firstColumn),
-            modifier =
-              Modifier
-                .fillMaxWidth()
-                .height(options.rowHeight),
-            options = options,
-            viewState = viewState,
-            context =
-              PrismTableCellContext(
-                rowIndex = rowIndex,
-                columnIndex = PrismTableLayoutConstants.FirstColumnIndex,
-                isHeader = false,
-                isStickyColumn = true,
-              ),
-          )
-        }
-      }
+      StickyFirstColumn(
+        column = firstColumn,
+        rows = rows,
+        verticalScrollOffset = verticalScroll.value,
+        options = options,
+        viewState = viewState,
+      )
     }
   }
+}
+
+@Composable
+private fun StickyFirstColumn(
+  column: PrismTableColumn,
+  rows: List<PrismTableRow>,
+  verticalScrollOffset: Int,
+  options: PrismTableOptions,
+  viewState: PrismTableViewState,
+) {
+  Column(
+    modifier =
+      Modifier
+        .width(column.width)
+        .offset { IntOffset(x = 0, y = -verticalScrollOffset) }
+        .zIndex(PrismTableLayoutConstants.StickyColumnZIndex),
+  ) {
+    StickyHeaderCell(column = column, options = options, viewState = viewState)
+    rows.forEachIndexed { rowIndex, row ->
+      StickyBodyCell(
+        row = row,
+        rowIndex = rowIndex,
+        column = column,
+        options = options,
+        viewState = viewState,
+      )
+    }
+  }
+}
+
+@Composable
+private fun StickyHeaderCell(
+  column: PrismTableColumn,
+  options: PrismTableOptions,
+  viewState: PrismTableViewState,
+) {
+  TableCell(
+    value = column.title,
+    textAlign = column.textAlign,
+    modifier = Modifier.fillMaxWidth().height(options.headerHeight),
+    options = options,
+    viewState = viewState,
+    context =
+      PrismTableCellContext(
+        rowIndex = PrismTableLayoutConstants.HeaderRowIndex,
+        columnIndex = PrismTableLayoutConstants.FirstColumnIndex,
+        isHeader = true,
+        isStickyColumn = true,
+      ),
+  )
+}
+
+@Composable
+private fun StickyBodyCell(
+  row: PrismTableRow,
+  rowIndex: Int,
+  column: PrismTableColumn,
+  options: PrismTableOptions,
+  viewState: PrismTableViewState,
+) {
+  TableCell(
+    value = row.cells[column.key].orEmpty(),
+    textAlign = row.resolveTextAlign(column),
+    modifier = Modifier.fillMaxWidth().height(options.rowHeight),
+    options = options,
+    viewState = viewState,
+    context =
+      PrismTableCellContext(
+        rowIndex = rowIndex,
+        columnIndex = PrismTableLayoutConstants.FirstColumnIndex,
+        isHeader = false,
+        isStickyColumn = true,
+      ),
+  )
 }
 
 @Composable

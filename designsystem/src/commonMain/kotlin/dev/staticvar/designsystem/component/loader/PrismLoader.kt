@@ -1,3 +1,5 @@
+@file:Suppress("LongParameterList")
+
 package dev.staticvar.designsystem.component.loader
 
 import androidx.compose.animation.AnimatedContent
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,10 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
@@ -73,31 +76,72 @@ public fun PrismLoader(
   containerContentColor: Color = contentColorFor(containerColor),
   shape: Shape = Prism.shapes.small,
 ) {
-  val (containerWidth, containerHeight, segmentHeight, showLabel) =
-    when (size) {
-      PrismLoaderSize.Small ->
-        LoaderMetrics(
-          containerWidth = PrismLoaderConstants.smallWidth,
-          containerHeight = PrismLoaderConstants.smallHeight,
-          segmentHeight = PrismLoaderConstants.smallSegmentHeight,
-          showLabel = false,
-        )
-      PrismLoaderSize.Medium ->
-        LoaderMetrics(
-          containerWidth = PrismLoaderConstants.mediumWidth,
-          containerHeight = PrismLoaderConstants.mediumHeight,
-          segmentHeight = PrismLoaderConstants.mediumSegmentHeight,
-          showLabel = true,
-        )
-      PrismLoaderSize.Large ->
-        LoaderMetrics(
-          containerWidth = PrismLoaderConstants.largeWidth,
-          containerHeight = PrismLoaderConstants.largeHeight,
-          segmentHeight = PrismLoaderConstants.largeSegmentHeight,
-          showLabel = true,
-        )
-    }
+  val metrics = loaderMetrics(size)
+  val progress = rememberLoaderProgress()
+  val animatedLabelText = loaderLabelText(label = label, phaseProgress = progress.phase)
 
+  PrismSurface(
+    modifier =
+      modifier
+        .width(metrics.containerWidth)
+        .defaultMinSize(minHeight = metrics.containerHeight),
+    color = containerColor,
+    contentColor = containerContentColor,
+    shape = shape,
+    border = BorderStroke(Prism.dimens.strokeDefault, Prism.color.stroke),
+  ) {
+    Box(
+      modifier =
+        Modifier.fillMaxWidth()
+          .heightIn(min = metrics.containerHeight)
+          .padding(Prism.dimens.spacingS),
+    ) {
+      if (metrics.showLabel) {
+        LabeledLoaderContent(
+          label = animatedLabelText,
+          metrics = metrics,
+          colors = LoaderColors(color = color, trackColor = trackColor),
+          progress = progress,
+        )
+      } else {
+        LoaderSegments(
+          modifier = Modifier.fillMaxWidth().align(Alignment.Center),
+          metrics = metrics,
+          colors = LoaderColors(color = color, trackColor = trackColor),
+          progress = progress,
+        )
+      }
+    }
+  }
+}
+
+private fun loaderMetrics(size: PrismLoaderSize): LoaderMetrics =
+  when (size) {
+    PrismLoaderSize.Small ->
+      LoaderMetrics(
+        containerWidth = PrismLoaderConstants.smallWidth,
+        containerHeight = PrismLoaderConstants.smallHeight,
+        segmentHeight = PrismLoaderConstants.smallSegmentHeight,
+        showLabel = false,
+      )
+    PrismLoaderSize.Medium ->
+      LoaderMetrics(
+        containerWidth = PrismLoaderConstants.mediumWidth,
+        containerHeight = PrismLoaderConstants.mediumHeight,
+        segmentHeight = PrismLoaderConstants.mediumSegmentHeight,
+        showLabel = true,
+      )
+    PrismLoaderSize.Large ->
+      LoaderMetrics(
+        containerWidth = PrismLoaderConstants.largeWidth,
+        containerHeight = PrismLoaderConstants.largeHeight,
+        segmentHeight = PrismLoaderConstants.largeSegmentHeight,
+        showLabel = true,
+      )
+  }
+
+@Composable
+private fun rememberLoaderProgress(): LoaderProgress {
   val infiniteTransition = rememberInfiniteTransition(label = "prism_loader")
   val phaseProgress =
     infiniteTransition.animateFloat(
@@ -121,87 +165,100 @@ public fun PrismLoader(
         ),
       label = "prism_loader_pulse",
     )
-  val activePhaseIndex = phaseProgress.value.toInt() % PrismLoaderConstants.phaseLabels.size
-  val phaseLabel = PrismLoaderConstants.phaseLabels[activePhaseIndex]
+
+  return LoaderProgress(phase = phaseProgress.value, pulse = pulseProgress.value)
+}
+
+private fun loaderLabelText(
+  label: String,
+  phaseProgress: Float,
+): String {
+  val phaseLabel = PrismLoaderConstants.phaseLabels[phaseProgress.toInt() % PrismLoaderConstants.phaseLabels.size]
   val resolvedLabel = label.trim()
-  val animatedLabelText = if (resolvedLabel.isEmpty()) phaseLabel else "$resolvedLabel · $phaseLabel"
+  return if (resolvedLabel.isEmpty()) phaseLabel else "$resolvedLabel · $phaseLabel"
+}
+
+@Composable
+private fun LabeledLoaderContent(
+  label: String,
+  metrics: LoaderMetrics,
+  colors: LoaderColors,
+  progress: LoaderProgress,
+) {
+  Column(
+    modifier = Modifier.fillMaxWidth().heightIn(min = metrics.containerHeight),
+    verticalArrangement = Arrangement.SpaceBetween,
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    LoaderPhaseLabel(text = label)
+    LoaderSegments(
+      modifier = Modifier.fillMaxWidth(),
+      metrics = metrics,
+      colors = colors,
+      progress = progress,
+    )
+  }
+}
+
+@Composable
+private fun LoaderPhaseLabel(text: String) {
+  AnimatedContent(
+    targetState = text,
+    transitionSpec = {
+      fadeIn(animationSpec = Prism.anim.slowFade.floatSpec()) togetherWith
+        fadeOut(animationSpec = Prism.anim.standard.floatSpec())
+    },
+    modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingXs),
+    label = "loader_phase_label",
+  ) { animatedLabel ->
+    Text(
+      text = animatedLabel,
+      style = Prism.typography.caption,
+      color = Prism.color.titleColor,
+      textAlign = TextAlign.Center,
+      maxLines = 2,
+      overflow = TextOverflow.Ellipsis,
+    )
+  }
+}
+
+@Composable
+private fun LoaderSegments(
+  modifier: Modifier,
+  metrics: LoaderMetrics,
+  colors: LoaderColors,
+  progress: LoaderProgress,
+) {
+  Row(
+    modifier = modifier,
+    horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+  ) {
+    repeat(PrismLoaderConstants.defaultSegmentCount) { index ->
+      LoaderSegment(index = index, metrics = metrics, colors = colors, progress = progress)
+    }
+  }
+}
+
+@Composable
+private fun RowScope.LoaderSegment(
+  index: Int,
+  metrics: LoaderMetrics,
+  colors: LoaderColors,
+  progress: LoaderProgress,
+) {
+  val distance = (progress.phase - index.toFloat()).absoluteValue
+  val segmentStrength = if (distance >= 1f) 0f else 1f - distance
+  val pulseStrength = (segmentStrength + (progress.pulse * 0.4f)).coerceIn(0f, 1f)
+  val segmentColor = lerp(colors.trackColor, colors.color.copy(alpha = 0.20f), pulseStrength)
+  val segmentBorderColor = lerp(Prism.color.stroke, colors.color, pulseStrength)
 
   PrismSurface(
-    modifier =
-      modifier
-        .width(containerWidth)
-        .defaultMinSize(minHeight = containerHeight),
-    color = containerColor,
-    contentColor = containerContentColor,
-    shape = shape,
-    border = BorderStroke(Prism.dimens.strokeDefault, Prism.color.stroke),
+    modifier = Modifier.weight(1f).height(metrics.segmentHeight),
+    color = segmentColor,
+    shape = Prism.shapes.small,
+    border = BorderStroke(Prism.dimens.strokeDefault, segmentBorderColor),
   ) {
-    Box(
-      modifier =
-        Modifier.fillMaxWidth()
-          .heightIn(min = containerHeight)
-          .padding(Prism.dimens.spacingS),
-    ) {
-      val segmentRow: @Composable (Modifier) -> Unit = { rowModifier ->
-        Row(
-          modifier = rowModifier,
-          horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
-        ) {
-          repeat(PrismLoaderConstants.defaultSegmentCount) { index ->
-            val distance = (phaseProgress.value - index.toFloat()).absoluteValue
-            val segmentStrength =
-              when {
-                distance >= 1f -> 0f
-                else -> 1f - distance
-              }
-            val pulseStrength = (segmentStrength + (pulseProgress.value * 0.4f)).coerceIn(0f, 1f)
-            val segmentColor = lerp(trackColor, color.copy(alpha = 0.20f), pulseStrength)
-            val segmentBorderColor = lerp(Prism.color.stroke, color, pulseStrength)
-
-            PrismSurface(
-              modifier =
-                Modifier.weight(1f)
-                  .height(segmentHeight),
-              color = segmentColor,
-              shape = Prism.shapes.small,
-              border = BorderStroke(Prism.dimens.strokeDefault, segmentBorderColor),
-            ) {
-              Box(modifier = Modifier.fillMaxWidth())
-            }
-          }
-        }
-      }
-
-      if (showLabel) {
-        Column(
-          modifier = Modifier.fillMaxWidth().heightIn(min = containerHeight),
-          verticalArrangement = Arrangement.SpaceBetween,
-          horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-          AnimatedContent(
-            targetState = animatedLabelText,
-            transitionSpec = {
-              fadeIn(animationSpec = Prism.anim.slowFade.floatSpec()) togetherWith
-                fadeOut(animationSpec = Prism.anim.standard.floatSpec())
-            },
-            modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingXs),
-            label = "loader_phase_label",
-          ) { animatedLabel ->
-            Text(
-              text = animatedLabel,
-              style = Prism.typography.caption,
-              color = Prism.color.titleColor,
-              textAlign = TextAlign.Center,
-              maxLines = 2,
-              overflow = TextOverflow.Ellipsis,
-            )
-          }
-          segmentRow(Modifier.fillMaxWidth())
-        }
-      } else {
-        segmentRow(Modifier.fillMaxWidth().align(Alignment.Center))
-      }
-    }
+    Box(modifier = Modifier.fillMaxWidth())
   }
 }
 
@@ -261,4 +318,14 @@ private data class LoaderMetrics(
   val containerHeight: Dp,
   val segmentHeight: Dp,
   val showLabel: Boolean,
+)
+
+private data class LoaderColors(
+  val color: Color,
+  val trackColor: Color,
+)
+
+private data class LoaderProgress(
+  val phase: Float,
+  val pulse: Float,
 )

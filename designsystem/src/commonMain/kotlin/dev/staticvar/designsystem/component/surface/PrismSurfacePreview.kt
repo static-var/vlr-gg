@@ -8,12 +8,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
-import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @PrismPreview
 @Composable
@@ -33,65 +34,29 @@ internal fun PrismSurfacePreview(
         color = Prism.color.titleColor,
       )
 
-      // Accent surface - text automatically becomes light/white
-      PrismSurface(
-        color = Prism.color.accent,
-        shape = RoundedCornerShape(Prism.dimens.cornerM),
-        modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-      ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-          Text("Accent Surface", style = Prism.typography.cardTitle)
-          Text("Content automatically uses light color", style = Prism.typography.bodySmall)
-        }
-      }
+      PrismSurfacePreviewSample(Prism.color.accent, "Accent Surface", "Content automatically uses light color")
+      PrismSurfacePreviewSample(Prism.color.successContainer, "Success Container", "Content uses success color")
+      PrismSurfacePreviewSample(Prism.color.warningContainer, "Warning Container", "Content uses warning color")
+      PrismSurfacePreviewSample(Prism.color.dangerContainer, "Danger Container", "Content uses danger color")
+      PrismSurfacePreviewSample(Prism.color.surfaceVariant, "Surface Variant", "Content uses primary text color")
+    }
+  }
+}
 
-      // Success container
-      PrismSurface(
-        color = Prism.color.successContainer,
-        shape = RoundedCornerShape(Prism.dimens.cornerM),
-        modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-      ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-          Text("Success Container", style = Prism.typography.cardTitle)
-          Text("Content uses success color", style = Prism.typography.bodySmall)
-        }
-      }
-
-      // Warning container
-      PrismSurface(
-        color = Prism.color.warningContainer,
-        shape = RoundedCornerShape(Prism.dimens.cornerM),
-        modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-      ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-          Text("Warning Container", style = Prism.typography.cardTitle)
-          Text("Content uses warning color", style = Prism.typography.bodySmall)
-        }
-      }
-
-      // Danger container
-      PrismSurface(
-        color = Prism.color.dangerContainer,
-        shape = RoundedCornerShape(Prism.dimens.cornerM),
-        modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-      ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-          Text("Danger Container", style = Prism.typography.cardTitle)
-          Text("Content uses danger color", style = Prism.typography.bodySmall)
-        }
-      }
-
-      // Surface variant
-      PrismSurface(
-        color = Prism.color.surfaceVariant,
-        shape = RoundedCornerShape(Prism.dimens.cornerM),
-        modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-      ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-          Text("Surface Variant", style = Prism.typography.cardTitle)
-          Text("Content uses primary text color", style = Prism.typography.bodySmall)
-        }
-      }
+@Composable
+private fun PrismSurfacePreviewSample(
+  color: Color,
+  title: String,
+  subtitle: String,
+) {
+  PrismSurface(
+    color = color,
+    shape = RoundedCornerShape(Prism.dimens.cornerM),
+    modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
+  ) {
+    Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
+      Text(title, style = Prism.typography.cardTitle)
+      Text(subtitle, style = Prism.typography.bodySmall)
     }
   }
 }

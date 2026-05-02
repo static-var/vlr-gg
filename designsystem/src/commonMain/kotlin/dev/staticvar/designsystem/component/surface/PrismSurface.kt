@@ -1,3 +1,5 @@
+@file:Suppress("LongParameterList")
+
 package dev.staticvar.designsystem.component.surface
 
 import androidx.compose.foundation.BorderStroke

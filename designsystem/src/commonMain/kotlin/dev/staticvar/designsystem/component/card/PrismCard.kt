@@ -1,3 +1,5 @@
+@file:Suppress("LongParameterList", "MatchingDeclarationName")
+
 package dev.staticvar.designsystem.component.card
 
 import androidx.compose.foundation.BorderStroke

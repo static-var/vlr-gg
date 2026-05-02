@@ -42,6 +42,7 @@ import kotlinx.coroutines.launch
  *
  * @param shape shape applied to each card; clipping matches the incoming shadow.
  */
+@Suppress("CyclomaticComplexMethod", "LongMethod")
 @Composable
 public fun <T> PrismStack(
   modifier: Modifier = Modifier,

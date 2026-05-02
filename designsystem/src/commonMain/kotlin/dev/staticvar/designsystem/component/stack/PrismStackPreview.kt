@@ -15,11 +15,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardVariant
@@ -28,7 +28,6 @@ import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
-import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @PrismPreview
 @Composable
@@ -58,57 +57,7 @@ internal fun PrismStackPreview(
 
 @Composable
 private fun PrismStackPreviewCard(planet: StackPreviewPlanet) {
-  val planetColors = when (planet.id) {
-    1 -> listOf(
-      Color(0xFF2D1B4E), // Deep purple (Venus night)
-      Color(0xFF6B46C1), // Purple
-      Color(0xFFDB7C26), // Amber/orange (sulfuric clouds)
-      Color(0xFFFFB84D), // Golden yellow
-    )
-    2 -> listOf(
-      Color(0xFF1A0A0A), // Deep black
-      Color(0xFF4A1010), // Dark red
-      Color(0xFFB91C1C), // Mars red
-      Color(0xFFDC6B4A), // Rust orange
-    )
-    3 -> listOf(
-      Color(0xFF3D2817), // Dark brown
-      Color(0xFF92400E), // Brown
-      Color(0xFFEA580C), // Orange (Great Red Spot)
-      Color(0xFFF59E0B), // Amber
-    )
-    4 -> listOf(
-      Color(0xFF312716), // Deep brown
-      Color(0xFF78350F), // Golden brown
-      Color(0xFFD97706), // Amber gold
-      Color(0xFFFBBF24), // Light gold (rings)
-    )
-    5 -> listOf(
-      Color(0xFF0C1844), // Deep space blue
-      Color(0xFF1E3A8A), // Dark blue
-      Color(0xFF1D4ED8), // Neptune blue
-      Color(0xFF3B82F6), // Bright blue
-    )
-    else -> listOf(
-      Color(0xFF0A2540), // Deep ocean blue
-      Color(0xFF0F4C75), // Ocean blue
-      Color(0xFF0891B2), // Cyan (water)
-      Color(0xFF10B981), // Green (land)
-    )
-  }
-
-  val gradientDirection = when (planet.id % 4) {
-    0 -> androidx.compose.ui.geometry.Offset(0f, 0f) to androidx.compose.ui.geometry.Offset.Infinite
-    1 -> androidx.compose.ui.geometry.Offset.Infinite to androidx.compose.ui.geometry.Offset(0f, 0f)
-    2 -> androidx.compose.ui.geometry.Offset(0f, Float.POSITIVE_INFINITY) to androidx.compose.ui.geometry.Offset(Float.POSITIVE_INFINITY, 0f)
-    else -> androidx.compose.ui.geometry.Offset(Float.POSITIVE_INFINITY, 0f) to androidx.compose.ui.geometry.Offset(0f, Float.POSITIVE_INFINITY)
-  }
-
-  val cosmicGradient = Brush.linearGradient(
-    colors = planetColors,
-    start = gradientDirection.first,
-    end = gradientDirection.second,
-  )
+  val cosmicGradient = planetGradient(planet.id)
 
   PrismCard(
     modifier = Modifier.fillMaxWidth().height(220.dp),
@@ -141,6 +90,33 @@ private fun PrismStackPreviewCard(planet: StackPreviewPlanet) {
     }
   }
 }
+
+private fun planetGradient(planetId: Int): Brush {
+  val gradientDirection = planetGradientDirection(planetId)
+  return Brush.linearGradient(
+    colors = planetColors(planetId),
+    start = gradientDirection.first,
+    end = gradientDirection.second,
+  )
+}
+
+private fun planetGradientDirection(planetId: Int): Pair<Offset, Offset> =
+  when (planetId % 4) {
+    0 -> Offset.Zero to Offset.Infinite
+    1 -> Offset.Infinite to Offset.Zero
+    2 -> Offset(0f, Float.POSITIVE_INFINITY) to Offset(Float.POSITIVE_INFINITY, 0f)
+    else -> Offset(Float.POSITIVE_INFINITY, 0f) to Offset(0f, Float.POSITIVE_INFINITY)
+  }
+
+private fun planetColors(planetId: Int): List<Color> =
+  when (planetId) {
+    1 -> listOf(Color(0xFF2D1B4E), Color(0xFF6B46C1), Color(0xFFDB7C26), Color(0xFFFFB84D))
+    2 -> listOf(Color(0xFF1A0A0A), Color(0xFF4A1010), Color(0xFFB91C1C), Color(0xFFDC6B4A))
+    3 -> listOf(Color(0xFF3D2817), Color(0xFF92400E), Color(0xFFEA580C), Color(0xFFF59E0B))
+    4 -> listOf(Color(0xFF312716), Color(0xFF78350F), Color(0xFFD97706), Color(0xFFFBBF24))
+    5 -> listOf(Color(0xFF0C1844), Color(0xFF1E3A8A), Color(0xFF1D4ED8), Color(0xFF3B82F6))
+    else -> listOf(Color(0xFF0A2540), Color(0xFF0F4C75), Color(0xFF0891B2), Color(0xFF10B981))
+  }
 
 private data class StackPreviewPlanet(val id: Int, val name: String, val description: String)
 

@@ -18,8 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
@@ -34,35 +36,40 @@ public fun PrismCheckbox(
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-  val containerColor =
-    when {
-      !enabled -> Prism.color.surfaceDim
-      checked -> Prism.color.accentSubtle
-      else -> Prism.color.surface
-    }
-  val borderColor =
-    when {
-      !enabled -> Prism.color.stroke
-      checked -> Prism.color.accent
-      else -> Prism.color.stroke
-    }
-  val indicatorColor = if (enabled) Prism.color.accent else Prism.color.labelColor
+  val visualState = rememberPrismCheckboxVisualState(checked = checked, enabled = enabled)
+
+  PrismCheckboxTouchTarget(
+    checked = checked,
+    onCheckedChange = onCheckedChange,
+    modifier = modifier,
+    enabled = enabled,
+    interactionSource = interactionSource,
+  ) {
+    PrismCheckboxBox(visualState = visualState)
+  }
+}
+
+@Composable
+private fun rememberPrismCheckboxVisualState(
+  checked: Boolean,
+  enabled: Boolean,
+): PrismCheckboxVisualState {
   val animation = Prism.anim.standard
   val animatedContainerColor by
     animateColorAsState(
-      targetValue = containerColor,
+      targetValue = checkboxContainerColor(checked = checked, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "checkbox_container",
     )
   val animatedBorderColor by
     animateColorAsState(
-      targetValue = borderColor,
+      targetValue = checkboxBorderColor(checked = checked, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "checkbox_border",
     )
   val animatedIndicatorColor by
     animateColorAsState(
-      targetValue = indicatorColor,
+      targetValue = checkboxIndicatorColor(enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "checkbox_indicator",
     )
@@ -85,6 +92,51 @@ public fun PrismCheckbox(
       label = "checkbox_indicator_alpha",
     )
 
+  return PrismCheckboxVisualState(
+      containerColor = animatedContainerColor,
+      borderColor = animatedBorderColor,
+      borderWidth = animatedBorderWidth,
+      indicatorColor = animatedIndicatorColor,
+      indicatorScale = indicatorScale,
+      indicatorAlpha = indicatorAlpha,
+  )
+}
+
+@Composable
+private fun checkboxContainerColor(
+  checked: Boolean,
+  enabled: Boolean,
+): Color =
+  when {
+    !enabled -> Prism.color.surfaceDim
+    checked -> Prism.color.accentSubtle
+    else -> Prism.color.surface
+  }
+
+@Composable
+private fun checkboxBorderColor(
+  checked: Boolean,
+  enabled: Boolean,
+): Color =
+  when {
+    !enabled -> Prism.color.stroke
+    checked -> Prism.color.accent
+    else -> Prism.color.stroke
+  }
+
+@Composable
+private fun checkboxIndicatorColor(enabled: Boolean): Color =
+  if (enabled) Prism.color.accent else Prism.color.labelColor
+
+@Composable
+private fun PrismCheckboxTouchTarget(
+  checked: Boolean,
+  onCheckedChange: (Boolean) -> Unit,
+  modifier: Modifier,
+  enabled: Boolean,
+  interactionSource: MutableInteractionSource,
+  content: @Composable () -> Unit,
+) {
   Box(
     modifier =
       modifier
@@ -102,33 +154,41 @@ public fun PrismCheckbox(
         ),
     contentAlignment = Alignment.Center,
   ) {
-    PrismSurface(
-      modifier = Modifier.size(Prism.dimens.iconM),
-      color = animatedContainerColor,
-      shape = Prism.shapes.small,
-      border =
-        BorderStroke(
-          width = animatedBorderWidth,
-          color = animatedBorderColor,
-        ),
+    content()
+  }
+}
+
+@Composable
+private fun PrismCheckboxBox(visualState: PrismCheckboxVisualState) {
+  PrismSurface(
+    modifier = Modifier.size(Prism.dimens.iconM),
+    color = visualState.containerColor,
+    shape = Prism.shapes.small,
+    border = BorderStroke(width = visualState.borderWidth, color = visualState.borderColor),
+  ) {
+    Box(
+      modifier = Modifier.fillMaxSize().padding(Prism.dimens.spacingXs),
+      contentAlignment = Alignment.Center,
     ) {
       Box(
         modifier =
           Modifier.fillMaxSize()
-            .padding(Prism.dimens.spacingXs),
-        contentAlignment = Alignment.Center,
-      ) {
-        Box(
-          modifier =
-            Modifier.fillMaxSize()
-              .graphicsLayer {
-                scaleX = indicatorScale
-                scaleY = indicatorScale
-                alpha = indicatorAlpha
-              }
-              .background(color = animatedIndicatorColor, shape = Prism.shapes.small),
-        )
-      }
+            .graphicsLayer {
+              scaleX = visualState.indicatorScale
+              scaleY = visualState.indicatorScale
+              alpha = visualState.indicatorAlpha
+            }
+            .background(color = visualState.indicatorColor, shape = Prism.shapes.small),
+      )
     }
   }
 }
+
+private data class PrismCheckboxVisualState(
+  val containerColor: Color,
+  val borderColor: Color,
+  val borderWidth: Dp,
+  val indicatorColor: Color,
+  val indicatorScale: Float,
+  val indicatorAlpha: Float,
+)

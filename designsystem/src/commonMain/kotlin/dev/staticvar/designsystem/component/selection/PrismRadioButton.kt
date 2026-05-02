@@ -17,8 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
@@ -33,35 +35,40 @@ public fun PrismRadioButton(
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-  val containerColor =
-    when {
-      !enabled -> Prism.color.surfaceDim
-      selected -> Prism.color.accentSubtle
-      else -> Prism.color.surface
-    }
-  val borderColor =
-    when {
-      !enabled -> Prism.color.stroke
-      selected -> Prism.color.accent
-      else -> Prism.color.stroke
-    }
-  val indicatorColor = if (enabled) Prism.color.accent else Prism.color.labelColor
+  val visualState = rememberPrismRadioVisualState(selected = selected, enabled = enabled)
+
+  PrismRadioTouchTarget(
+    selected = selected,
+    onClick = onClick,
+    modifier = modifier,
+    enabled = enabled,
+    interactionSource = interactionSource,
+  ) {
+    PrismRadioBox(visualState = visualState)
+  }
+}
+
+@Composable
+private fun rememberPrismRadioVisualState(
+  selected: Boolean,
+  enabled: Boolean,
+): PrismRadioVisualState {
   val animation = Prism.anim.standard
   val animatedContainerColor by
     animateColorAsState(
-      targetValue = containerColor,
+      targetValue = radioContainerColor(selected = selected, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "radio_container",
     )
   val animatedBorderColor by
     animateColorAsState(
-      targetValue = borderColor,
+      targetValue = radioBorderColor(selected = selected, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "radio_border",
     )
   val animatedIndicatorColor by
     animateColorAsState(
-      targetValue = indicatorColor,
+      targetValue = radioIndicatorColor(enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "radio_indicator",
     )
@@ -84,6 +91,51 @@ public fun PrismRadioButton(
       label = "radio_indicator_alpha",
     )
 
+  return PrismRadioVisualState(
+    containerColor = animatedContainerColor,
+    borderColor = animatedBorderColor,
+    borderWidth = animatedBorderWidth,
+    indicatorColor = animatedIndicatorColor,
+    indicatorScale = indicatorScale,
+    indicatorAlpha = indicatorAlpha,
+  )
+}
+
+@Composable
+private fun radioContainerColor(
+  selected: Boolean,
+  enabled: Boolean,
+): Color =
+  when {
+    !enabled -> Prism.color.surfaceDim
+    selected -> Prism.color.accentSubtle
+    else -> Prism.color.surface
+  }
+
+@Composable
+private fun radioBorderColor(
+  selected: Boolean,
+  enabled: Boolean,
+): Color =
+  when {
+    !enabled -> Prism.color.stroke
+    selected -> Prism.color.accent
+    else -> Prism.color.stroke
+  }
+
+@Composable
+private fun radioIndicatorColor(enabled: Boolean): Color =
+  if (enabled) Prism.color.accent else Prism.color.labelColor
+
+@Composable
+private fun PrismRadioTouchTarget(
+  selected: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier,
+  enabled: Boolean,
+  interactionSource: MutableInteractionSource,
+  content: @Composable () -> Unit,
+) {
   Box(
     modifier =
       modifier
@@ -101,32 +153,41 @@ public fun PrismRadioButton(
         ),
     contentAlignment = Alignment.Center,
   ) {
-    PrismSurface(
-      modifier = Modifier.size(Prism.dimens.iconM),
-      color = animatedContainerColor,
-      shape = Prism.shapes.small,
-      border =
-        BorderStroke(
-          width = animatedBorderWidth,
-          color = animatedBorderColor,
-        ),
+    content()
+  }
+}
+
+@Composable
+private fun PrismRadioBox(visualState: PrismRadioVisualState) {
+  PrismSurface(
+    modifier = Modifier.size(Prism.dimens.iconM),
+    color = visualState.containerColor,
+    shape = Prism.shapes.small,
+    border = BorderStroke(width = visualState.borderWidth, color = visualState.borderColor),
+  ) {
+    Box(
+      modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center,
     ) {
       Box(
         modifier =
-          Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-      ) {
-        Box(
-          modifier =
-            Modifier.size(Prism.dimens.spacingS)
-              .graphicsLayer {
-                scaleX = indicatorScale
-                scaleY = indicatorScale
-                alpha = indicatorAlpha
-              }
-              .background(color = animatedIndicatorColor, shape = Prism.shapes.small),
-        )
-      }
+          Modifier.size(Prism.dimens.spacingS)
+            .graphicsLayer {
+              scaleX = visualState.indicatorScale
+              scaleY = visualState.indicatorScale
+              alpha = visualState.indicatorAlpha
+            }
+            .background(color = visualState.indicatorColor, shape = Prism.shapes.small),
+      )
     }
   }
 }
+
+private data class PrismRadioVisualState(
+  val containerColor: Color,
+  val borderColor: Color,
+  val borderWidth: Dp,
+  val indicatorColor: Color,
+  val indicatorScale: Float,
+  val indicatorAlpha: Float,
+)

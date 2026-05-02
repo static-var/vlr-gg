@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package dev.staticvar.designsystem.prism
 
 import androidx.compose.material3.MaterialTheme

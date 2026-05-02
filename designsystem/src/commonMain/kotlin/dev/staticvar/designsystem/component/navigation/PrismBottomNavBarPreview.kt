@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import compose.icons.LineAwesomeIcons
@@ -38,34 +39,7 @@ internal fun PrismBottomNavBarPreview(
 ) {
   PrismTheme(variant = variant) {
     var selectedItemId by remember { mutableStateOf("matches") }
-    val items =
-      remember {
-        listOf(
-          PrismBottomNavItem(
-            id = "matches",
-            label = "Matches",
-            icon = LineAwesomeIcons.HomeSolid,
-          ),
-          PrismBottomNavItem(
-            id = "events",
-            label = "Events",
-            icon = LineAwesomeIcons.Compass,
-            selectedIcon = LineAwesomeIcons.CompassSolid,
-          ),
-          PrismBottomNavItem(
-            id = "schedule",
-            label = "Schedule",
-            icon = LineAwesomeIcons.CalendarAlt,
-            selectedIcon = LineAwesomeIcons.CalendarAltSolid,
-          ),
-          PrismBottomNavItem(
-            id = "news",
-            label = "News",
-            icon = LineAwesomeIcons.Newspaper,
-            selectedIcon = LineAwesomeIcons.NewspaperSolid,
-          ),
-        )
-      }
+    val items = rememberBottomNavPreviewItems()
 
     Column(
       modifier =
@@ -85,28 +59,65 @@ internal fun PrismBottomNavBarPreview(
         onItemSelected = { selectedItemId = it.id },
       )
 
-      Text(
-        text = "BottomNavBarLarge (Rail)",
-        style = Prism.typography.label,
-        color = Prism.color.labelColor,
+      PrismBottomNavRailPreview(
+        items = items,
+        selectedItemId = selectedItemId,
+        onItemSelected = { selectedItemId = it.id },
       )
-      Row(
-        modifier = Modifier.fillMaxWidth().height(320.dp),
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
-      ) {
-        PrismBottomNavBarLarge(
-          items = items,
-          selectedItemId = selectedItemId,
-          onItemSelected = { selectedItemId = it.id },
-          modifier = Modifier.fillMaxHeight(),
-        )
-        Text(
-          text = "Large-screen content",
-          modifier = Modifier.weight(1f).padding(Prism.dimens.spacingM),
-          style = Prism.typography.bodyLarge,
-          color = Prism.color.bodyColor,
-        )
-      }
     }
+  }
+}
+
+@Composable
+private fun rememberBottomNavPreviewItems(): List<PrismBottomNavItem> =
+  remember {
+    listOf(
+      navPreviewItem("matches", "Matches", LineAwesomeIcons.HomeSolid),
+      navPreviewItem("events", "Events", LineAwesomeIcons.Compass, LineAwesomeIcons.CompassSolid),
+      navPreviewItem("schedule", "Schedule", LineAwesomeIcons.CalendarAlt, LineAwesomeIcons.CalendarAltSolid),
+      navPreviewItem("news", "News", LineAwesomeIcons.Newspaper, LineAwesomeIcons.NewspaperSolid),
+    )
+  }
+
+private fun navPreviewItem(
+  id: String,
+  label: String,
+  icon: ImageVector,
+  selectedIcon: ImageVector = icon,
+): PrismBottomNavItem =
+  PrismBottomNavItem(
+    id = id,
+    label = label,
+    icon = icon,
+    selectedIcon = selectedIcon,
+  )
+
+@Composable
+private fun PrismBottomNavRailPreview(
+  items: List<PrismBottomNavItem>,
+  selectedItemId: String,
+  onItemSelected: (PrismBottomNavItem) -> Unit,
+) {
+  Text(
+    text = "BottomNavBarLarge (Rail)",
+    style = Prism.typography.label,
+    color = Prism.color.labelColor,
+  )
+  Row(
+    modifier = Modifier.fillMaxWidth().height(320.dp),
+    horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+  ) {
+    PrismBottomNavBarLarge(
+      items = items,
+      selectedItemId = selectedItemId,
+      onItemSelected = onItemSelected,
+      modifier = Modifier.fillMaxHeight(),
+    )
+    Text(
+      text = "Large-screen content",
+      modifier = Modifier.weight(1f).padding(Prism.dimens.spacingM),
+      style = Prism.typography.bodyLarge,
+      color = Prism.color.bodyColor,
+    )
   }
 }

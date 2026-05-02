@@ -42,55 +42,88 @@ public fun PrismScreenTitleBar(
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
     ) {
       if (preLabel != null) {
-        Text(
-          text = preLabel.uppercase(),
-          style = Prism.typography.caption,
-          color = Prism.color.labelColor,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-        )
+        PrismScreenTitlePreLabel(text = preLabel)
       }
 
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-      ) {
-        if (navigationSlot != null) {
-          Box(
-            modifier = Modifier.size(Prism.dimens.iconM + Prism.dimens.spacingXs),
-            contentAlignment = Alignment.Center,
-          ) {
-            navigationSlot()
-          }
-        }
-        Text(
-          text = title,
-          modifier = Modifier.weight(1f),
-          style = Prism.typography.cardTitle,
-          color = Prism.color.titleColor,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-        )
-
-        if (actions != null) {
-          Row(
-            horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
-            verticalAlignment = Alignment.CenterVertically,
-            content = actions,
-          )
-        }
-      }
+      PrismScreenTitleRow(
+        title = title,
+        navigationSlot = navigationSlot,
+        actions = actions,
+      )
 
       if (subtitle != null) {
-        Text(
-          text = subtitle,
-          style = Prism.typography.bodySmall,
-          color = Prism.color.labelColor,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-        )
+        PrismScreenTitleSubtitle(text = subtitle)
       }
     }
   }
+}
+
+@Composable
+private fun PrismScreenTitlePreLabel(text: String) {
+  Text(
+    text = text.uppercase(),
+    style = Prism.typography.caption,
+    color = Prism.color.labelColor,
+    maxLines = 1,
+    overflow = TextOverflow.Ellipsis,
+  )
+}
+
+@Composable
+private fun PrismScreenTitleRow(
+  title: String,
+  navigationSlot: (@Composable () -> Unit)?,
+  actions: (@Composable RowScope.() -> Unit)?,
+) {
+  Row(
+    modifier = Modifier.fillMaxWidth(),
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+  ) {
+    if (navigationSlot != null) {
+      PrismNavigationSlot(content = navigationSlot)
+    }
+    Text(
+      text = title,
+      modifier = Modifier.weight(1f),
+      style = Prism.typography.cardTitle,
+      color = Prism.color.titleColor,
+      maxLines = 1,
+      overflow = TextOverflow.Ellipsis,
+    )
+
+    if (actions != null) {
+      PrismTitleActions(content = actions)
+    }
+  }
+}
+
+@Composable
+private fun PrismNavigationSlot(content: @Composable () -> Unit) {
+  Box(
+    modifier = Modifier.size(Prism.dimens.iconM + Prism.dimens.spacingXs),
+    contentAlignment = Alignment.Center,
+  ) {
+    content()
+  }
+}
+
+@Composable
+private fun PrismTitleActions(content: @Composable RowScope.() -> Unit) {
+  Row(
+    horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+    verticalAlignment = Alignment.CenterVertically,
+    content = content,
+  )
+}
+
+@Composable
+private fun PrismScreenTitleSubtitle(text: String) {
+  Text(
+    text = text,
+    style = Prism.typography.bodySmall,
+    color = Prism.color.labelColor,
+    maxLines = 1,
+    overflow = TextOverflow.Ellipsis,
+  )
 }
