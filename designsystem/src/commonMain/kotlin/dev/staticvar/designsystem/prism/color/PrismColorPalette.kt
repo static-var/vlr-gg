@@ -7,8 +7,8 @@ import androidx.compose.ui.graphics.Color
  * Standard color palette for the Prism design system.
  *
  * This interface defines semantic color tokens that all theme variants map to.
- * Each theme (Latte, Frappé, etc.) translates its unique colors into this
- * standard palette, ensuring consistency across the design system.
+ * Each theme variant translates its unique colors into this standard palette,
+ * ensuring consistency across the design system.
  *
  * Color categories:
  * - **Backgrounds**: Surface colors for different elevation levels

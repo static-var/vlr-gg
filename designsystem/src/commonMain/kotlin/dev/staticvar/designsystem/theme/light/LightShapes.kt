@@ -1,10 +1,10 @@
-package dev.staticvar.designsystem.theme.brutalist
+package dev.staticvar.designsystem.theme.light
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes
 import androidx.compose.ui.unit.dp
 
-internal object BrutalistShapes {
+internal object LightShapes {
   val shapes: Shapes =
     Shapes(
       extraSmall = RoundedCornerShape(0.dp),

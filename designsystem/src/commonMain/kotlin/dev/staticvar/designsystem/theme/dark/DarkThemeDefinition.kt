@@ -7,8 +7,6 @@ import dev.staticvar.designsystem.prism.color.PrismColorPalette
 import dev.staticvar.designsystem.prism.theme.PrismThemeDefinition
 import dev.staticvar.designsystem.prism.typography.PrismFontFamilies
 import dev.staticvar.designsystem.prism.typography.PrismTypography
-import dev.staticvar.designsystem.theme.brutalist.BrutalistShapes
-import dev.staticvar.designsystem.theme.brutalist.BrutalistTypography
 
 internal object DarkThemeDefinition : PrismThemeDefinition<DarkColorTokens> {
   override fun createColorTokens(): DarkColorTokens = DarkColorTokens()
@@ -20,11 +18,11 @@ internal object DarkThemeDefinition : PrismThemeDefinition<DarkColorTokens> {
   override fun createTypographyTokens(
     palette: PrismColorPalette,
     fonts: PrismFontFamilies,
-  ): PrismTypography = BrutalistTypography.createTokens(palette, fonts)
+  ): PrismTypography = DarkTypography.createTokens(palette, fonts)
 
   override fun createMaterialTypography(tokens: PrismTypography): Typography =
-    BrutalistTypography.createMaterial(tokens)
+    DarkTypography.createMaterial(tokens)
 
   override val shapes: Shapes
-    get() = BrutalistShapes.shapes
+    get() = DarkShapes.shapes
 }
