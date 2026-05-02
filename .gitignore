@@ -218,6 +218,10 @@ atlassian-ide-plugin.xml
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
 crashlytics.properties
+
+# Local licensed Prism fonts. Keep these out of git.
+designsystem/src/commonMain/composeResources/font/prism_body.otf
+designsystem/src/commonMain/composeResources/font/prism_display.otf
 crashlytics-build.properties
 fabric.properties
 

@@ -51,12 +51,12 @@ internal fun PrismSectionTitlePreview(
       )
 
       Text(
-        text = "Construct Mono sample · AGENT 1234",
+        text = "Display sample · AGENT 1234",
         style = Prism.typography.cardTitle,
         color = Prism.color.titleColor,
       )
       Text(
-        text = "Artific sample · The quick brown fox jumps over the lazy dog.",
+        text = "Body sample · The quick brown fox jumps over the lazy dog.",
         style = Prism.typography.bodyLarge,
         color = Prism.color.bodyColor,
       )

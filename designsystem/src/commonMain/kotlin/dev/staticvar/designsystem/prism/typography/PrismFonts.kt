@@ -1,9 +1,15 @@
+@file:Suppress("MatchingDeclarationName")
+
 package dev.staticvar.designsystem.prism.typography
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.font.FontFamily
+import org.jetbrains.compose.resources.Font as ResourceFont
+import org.jetbrains.compose.resources.FontResource
+import vlr.designsystem.generated.resources.Res
+import vlr.designsystem.generated.resources.allFontResources
 
 @Immutable
 internal data class PrismFontFamilies(
@@ -18,15 +24,27 @@ internal data class PrismFontFamilies(
 
 @Composable
 internal fun rememberPrismFontFamilies(): PrismFontFamilies {
-  return remember {
+  val displayFont = fontFamilyResource("prism_display") ?: FontFamily.Default
+  val bodyFont = fontFamilyResource("prism_body") ?: FontFamily.Default
+
+  return remember(displayFont, bodyFont) {
     PrismFontFamilies(
-      display = FontFamily.Default,
-      numeric = FontFamily.Monospace,
-      title = FontFamily.Default,
-      body = FontFamily.Default,
-      label = FontFamily.Default,
-      caption = FontFamily.Default,
-      button = FontFamily.Default,
+      display = displayFont,
+      numeric = displayFont,
+      title = displayFont,
+      body = bodyFont,
+      label = bodyFont,
+      caption = bodyFont,
+      button = bodyFont,
     )
   }
+}
+
+@Composable
+private fun fontFamilyResource(resourceName: String): FontFamily? {
+  return fontResource(resourceName)?.let { fontResource -> FontFamily(ResourceFont(fontResource)) }
+}
+
+private fun fontResource(resourceName: String): FontResource? {
+  return Res.allFontResources[resourceName]
 }
