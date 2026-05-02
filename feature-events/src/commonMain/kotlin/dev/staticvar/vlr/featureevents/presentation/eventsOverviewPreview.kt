@@ -15,11 +15,11 @@ import dev.staticvar.vlr.domain.model.EventStatus
 
 @PrismPreview
 @Composable
-internal fun eventsOverviewPreview(
+internal fun EventsOverviewPreview(
   @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
 ) {
   PrismTheme(variant = variant) {
-    eventsOverviewScreen(
+    EventsOverviewScreen(
       uiState =
         EventsUiState(
           events =

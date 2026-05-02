@@ -16,11 +16,11 @@ import dev.staticvar.vlr.domain.model.TeamPreview
 
 @PrismPreview
 @Composable
-internal fun matchesOverviewPreview(
+internal fun MatchesOverviewPreview(
   @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
 ) {
   PrismTheme(variant = variant) {
-    matchesOverviewScreen(
+    MatchesOverviewScreen(
       uiState =
         MatchesUiState(
           matches =

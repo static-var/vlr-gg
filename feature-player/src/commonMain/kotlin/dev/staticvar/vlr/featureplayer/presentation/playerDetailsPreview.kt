@@ -16,11 +16,11 @@ import dev.staticvar.vlr.domain.model.PlayerTeam
 
 @PrismPreview
 @Composable
-internal fun playerDetailsPreview(
+internal fun PlayerDetailsPreview(
   @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
 ) {
   PrismTheme(variant = variant) {
-    playerDetailsScreen(
+    PlayerDetailsScreen(
       uiState = PlayerDetailsUiState(player = samplePlayerInfo(), isLoading = false),
       onBack = {},
       onTeamSelected = {},

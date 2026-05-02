@@ -51,7 +51,7 @@ public fun TeamDetailsRoute(
     onDispose(viewModel::clear)
   }
 
-  teamDetailsScreen(
+  TeamDetailsScreen(
     uiState = uiState,
     section = section,
     onSectionSelected = { section = it },
@@ -64,7 +64,7 @@ public fun TeamDetailsRoute(
 }
 
 @Composable
-internal fun teamDetailsScreen(
+internal fun TeamDetailsScreen(
   uiState: TeamDetailsUiState,
   section: TeamMatchesSection,
   onSectionSelected: (TeamMatchesSection) -> Unit,
@@ -92,10 +92,10 @@ internal fun teamDetailsScreen(
     )
 
     when {
-      uiState.isLoading -> teamStateMessage(text = "Loading team details…")
+      uiState.isLoading -> TeamStateMessage(text = "Loading team details…")
       uiState.errorMessage != null && team == null ->
-        teamStateMessage(text = uiState.errorMessage ?: "Unable to load team details.")
-      team == null -> teamStateMessage(text = "Team detail is unavailable.")
+        TeamStateMessage(text = uiState.errorMessage ?: "Unable to load team details.")
+      team == null -> TeamStateMessage(text = "Team detail is unavailable.")
       else -> {
         PrismCard(modifier = Modifier.fillMaxWidth(), variant = PrismCardVariant.Outlined) {
           Text(text = team.name, style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
@@ -147,7 +147,7 @@ internal fun teamDetailsScreen(
           when (section) {
             TeamMatchesSection.Upcoming -> {
               if (team.upcomingMatches.isEmpty()) {
-                item { teamStateMessage(text = "No upcoming matches published yet.") }
+                item { TeamStateMessage(text = "No upcoming matches published yet.") }
               } else {
                 items(team.upcomingMatches, key = { it.matchId }) { match ->
                   val eventId = match.eventId
@@ -178,7 +178,7 @@ internal fun teamDetailsScreen(
 
             TeamMatchesSection.Completed -> {
               if (team.completedMatches.isEmpty()) {
-                item { teamStateMessage(text = "No completed matches published yet.") }
+                item { TeamStateMessage(text = "No completed matches published yet.") }
               } else {
                 items(team.completedMatches, key = { it.matchId }) { match ->
                   val eventId = match.eventId
@@ -214,7 +214,7 @@ internal fun teamDetailsScreen(
 }
 
 @Composable
-private fun teamStateMessage(
+private fun TeamStateMessage(
   text: String,
 ) {
   Text(

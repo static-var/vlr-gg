@@ -43,7 +43,7 @@ public fun PlayerDetailsRoute(
     onDispose(viewModel::clear)
   }
 
-  playerDetailsScreen(
+  PlayerDetailsScreen(
     uiState = uiState,
     onBack = onBack,
     onTeamSelected = onTeamSelected,
@@ -52,7 +52,7 @@ public fun PlayerDetailsRoute(
 }
 
 @Composable
-internal fun playerDetailsScreen(
+internal fun PlayerDetailsScreen(
   uiState: PlayerDetailsUiState,
   onBack: () -> Unit,
   onTeamSelected: (String) -> Unit,
@@ -76,10 +76,10 @@ internal fun playerDetailsScreen(
     )
 
     when {
-      uiState.isLoading -> playerStateMessage(text = "Loading player details…")
+      uiState.isLoading -> PlayerStateMessage(text = "Loading player details…")
       uiState.errorMessage != null && player == null ->
-        playerStateMessage(text = uiState.errorMessage ?: "Unable to load player details.")
-      player == null -> playerStateMessage(text = "Player detail is unavailable.")
+        PlayerStateMessage(text = uiState.errorMessage ?: "Unable to load player details.")
+      player == null -> PlayerStateMessage(text = "Player detail is unavailable.")
       else -> {
         PrismCard(modifier = Modifier.fillMaxWidth(), variant = PrismCardVariant.Outlined) {
           Text(
@@ -171,7 +171,7 @@ private fun dev.staticvar.vlr.domain.model.PlayerAgentStat.matchesLabel(): Strin
   "${this.usageCount} picks • ${this.roundsPlayed} rounds"
 
 @Composable
-private fun playerStateMessage(
+private fun PlayerStateMessage(
   text: String,
 ) {
   Text(

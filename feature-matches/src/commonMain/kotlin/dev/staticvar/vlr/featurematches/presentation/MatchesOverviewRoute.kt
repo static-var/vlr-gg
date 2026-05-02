@@ -38,7 +38,7 @@ public fun MatchesOverviewRoute(
     onDispose(viewModel::clear)
   }
 
-  matchesOverviewScreen(
+  MatchesOverviewScreen(
     uiState = uiState,
     onFilterSelected = viewModel::selectFilter,
     onMatchSelected = onMatchSelected,
@@ -47,7 +47,7 @@ public fun MatchesOverviewRoute(
 }
 
 @Composable
-internal fun matchesOverviewScreen(
+internal fun MatchesOverviewScreen(
   uiState: MatchesUiState,
   onFilterSelected: (MatchStatusFilter) -> Unit,
   onMatchSelected: (String) -> Unit,
@@ -85,10 +85,10 @@ internal fun matchesOverviewScreen(
     )
 
     when {
-      uiState.isLoading -> overviewStateMessage(text = "Loading matches…")
+      uiState.isLoading -> OverviewStateMessage(text = "Loading matches…")
       uiState.errorMessage != null && filteredMatches.isEmpty() ->
-        overviewStateMessage(text = uiState.errorMessage ?: "Unable to load matches.")
-      filteredMatches.isEmpty() -> overviewStateMessage(text = "No matches in this bucket yet.")
+        OverviewStateMessage(text = uiState.errorMessage ?: "Unable to load matches.")
+      filteredMatches.isEmpty() -> OverviewStateMessage(text = "No matches in this bucket yet.")
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
@@ -142,7 +142,7 @@ private fun buildScoreLine(match: MatchPreview): String {
 }
 
 @Composable
-private fun overviewStateMessage(
+private fun OverviewStateMessage(
   text: String,
 ) {
   Text(

@@ -17,11 +17,11 @@ import dev.staticvar.vlr.domain.model.TeamUpcomingMatch
 
 @PrismPreview
 @Composable
-internal fun teamDetailsPreview(
+internal fun TeamDetailsPreview(
   @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
 ) {
   PrismTheme(variant = variant) {
-    teamDetailsScreen(
+    TeamDetailsScreen(
       uiState = TeamDetailsUiState(team = sampleTeamInfo(), isLoading = false),
       section = TeamMatchesSection.Upcoming,
       onSectionSelected = {},

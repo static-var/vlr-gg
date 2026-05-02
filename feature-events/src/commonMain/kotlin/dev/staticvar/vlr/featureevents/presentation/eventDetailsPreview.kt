@@ -21,11 +21,11 @@ import dev.staticvar.vlr.domain.model.EventTeam
 
 @PrismPreview
 @Composable
-internal fun eventDetailsPreview(
+internal fun EventDetailsPreview(
   @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
 ) {
   PrismTheme(variant = variant) {
-    eventDetailsScreen(
+    EventDetailsScreen(
       uiState = EventDetailsUiState(event = sampleEventDetails(), isLoading = false),
       section = EventDetailSection.Matches,
       onSectionSelected = {},

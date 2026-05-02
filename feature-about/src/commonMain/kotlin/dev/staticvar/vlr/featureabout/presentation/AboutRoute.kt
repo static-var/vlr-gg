@@ -20,11 +20,11 @@ import dev.staticvar.designsystem.prism.Prism
 public fun AboutRoute(
   modifier: Modifier = Modifier,
 ) {
-  aboutScreen(modifier = modifier)
+  AboutScreen(modifier = modifier)
 }
 
 @Composable
-internal fun aboutScreen(
+internal fun AboutScreen(
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -37,7 +37,7 @@ internal fun aboutScreen(
       preLabel = "about",
     )
 
-    aboutSection(
+    AboutSection(
       title = "Product",
       preLabel = "app",
       lines =
@@ -48,7 +48,7 @@ internal fun aboutScreen(
         ),
     )
 
-    aboutSection(
+    AboutSection(
       title = "Android",
       preLabel = "credits",
       lines =
@@ -60,7 +60,7 @@ internal fun aboutScreen(
         ),
     )
 
-    aboutSection(
+    AboutSection(
       title = "Backend",
       preLabel = "data",
       lines =
@@ -85,7 +85,7 @@ internal fun aboutScreen(
 }
 
 @Composable
-private fun aboutSection(
+private fun AboutSection(
   title: String,
   preLabel: String,
   lines: List<String>,

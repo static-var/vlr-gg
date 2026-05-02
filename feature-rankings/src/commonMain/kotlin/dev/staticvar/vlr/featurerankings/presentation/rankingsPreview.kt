@@ -15,11 +15,11 @@ import dev.staticvar.vlr.domain.model.TeamRanking
 
 @PrismPreview
 @Composable
-internal fun rankingsPreview(
+internal fun RankingsPreview(
   @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
 ) {
   PrismTheme(variant = variant) {
-    rankingsScreen(
+    RankingsScreen(
       uiState =
         RankingsUiState(
           regions =

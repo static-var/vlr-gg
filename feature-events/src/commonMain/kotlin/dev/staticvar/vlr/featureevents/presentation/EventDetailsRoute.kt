@@ -57,7 +57,7 @@ public fun EventDetailsRoute(
     onDispose(viewModel::clear)
   }
 
-  eventDetailsScreen(
+  EventDetailsScreen(
     uiState = uiState,
     section = section,
     onSectionSelected = { section = it },
@@ -69,7 +69,7 @@ public fun EventDetailsRoute(
 }
 
 @Composable
-internal fun eventDetailsScreen(
+internal fun EventDetailsScreen(
   uiState: EventDetailsUiState,
   section: EventDetailSection,
   onSectionSelected: (EventDetailSection) -> Unit,
@@ -96,12 +96,12 @@ internal fun eventDetailsScreen(
     )
 
     when {
-      uiState.isLoading -> eventDetailStateMessage(text = "Loading tournament details…")
+      uiState.isLoading -> EventDetailStateMessage(text = "Loading tournament details…")
       uiState.errorMessage != null && event == null ->
-        eventDetailStateMessage(text = uiState.errorMessage ?: "Unable to load event details.")
-      event == null -> eventDetailStateMessage(text = "Tournament detail is unavailable.")
+        EventDetailStateMessage(text = uiState.errorMessage ?: "Unable to load event details.")
+      event == null -> EventDetailStateMessage(text = "Tournament detail is unavailable.")
       else -> {
-        eventHeaderCard(event = event, onTeamSelected = onTeamSelected)
+        EventHeaderCard(event = event, onTeamSelected = onTeamSelected)
         PrismTabs(
           tabs = EventDetailSection.entries.map { PrismTab(id = it.name, label = it.name) },
           selectedTabId = section.name,
@@ -114,7 +114,7 @@ internal fun eventDetailsScreen(
           when (section) {
             EventDetailSection.Matches -> {
               if (event.matches.isEmpty()) {
-                item { eventDetailStateMessage(text = "No matches published yet.") }
+                item { EventDetailStateMessage(text = "No matches published yet.") }
               } else {
                 item { PrismSectionTitle(title = "Matches", preLabel = "schedule") }
                 items(event.matches, key = EventMatch::matchId) { match ->
@@ -147,7 +147,7 @@ internal fun eventDetailsScreen(
 
             EventDetailSection.Standings -> {
               if (event.standings.isEmpty()) {
-                item { eventDetailStateMessage(text = "No standings available yet.") }
+                item { EventDetailStateMessage(text = "No standings available yet.") }
               } else {
                 item { PrismSectionTitle(title = "Standings", preLabel = "table") }
                 items(event.standings, key = EventStanding::teamName) { standing ->
@@ -176,7 +176,7 @@ internal fun eventDetailsScreen(
 
             EventDetailSection.Prizes -> {
               if (event.prizes.isEmpty()) {
-                item { eventDetailStateMessage(text = "Prize breakdown unavailable.") }
+                item { EventDetailStateMessage(text = "Prize breakdown unavailable.") }
               } else {
                 item { PrismSectionTitle(title = "Prizes", preLabel = "placements") }
                 items(event.prizes, key = { it.position + it.prize }) { prize ->
@@ -214,7 +214,7 @@ internal fun eventDetailsScreen(
 }
 
 @Composable
-private fun eventHeaderCard(
+private fun EventHeaderCard(
   event: EventDetails,
   onTeamSelected: (String) -> Unit,
 ) {
@@ -265,7 +265,7 @@ private fun eventHeaderCard(
 }
 
 @Composable
-private fun eventDetailStateMessage(
+private fun EventDetailStateMessage(
   text: String,
 ) {
   Text(

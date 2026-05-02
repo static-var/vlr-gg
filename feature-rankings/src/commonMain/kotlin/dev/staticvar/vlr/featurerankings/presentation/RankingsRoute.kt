@@ -34,7 +34,7 @@ public fun RankingsRoute(
     onDispose(viewModel::clear)
   }
 
-  rankingsScreen(
+  RankingsScreen(
     uiState = uiState,
     onRegionSelected = viewModel::selectRegion,
     onTeamSelected = onTeamSelected,
@@ -43,7 +43,7 @@ public fun RankingsRoute(
 }
 
 @Composable
-internal fun rankingsScreen(
+internal fun RankingsScreen(
   uiState: RankingsUiState,
   onRegionSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
@@ -74,15 +74,15 @@ internal fun rankingsScreen(
 
     when {
       uiState.isLoading -> {
-        stateMessage(text = "Loading rankings…")
+        StateMessage(text = "Loading rankings…")
       }
 
       uiState.errorMessage != null && selectedRanking == null -> {
-        stateMessage(text = uiState.errorMessage ?: "Unable to load rankings.")
+        StateMessage(text = uiState.errorMessage ?: "Unable to load rankings.")
       }
 
       selectedRanking == null -> {
-        stateMessage(text = "No rankings available yet.")
+        StateMessage(text = "No rankings available yet.")
       }
 
       else -> {
@@ -123,7 +123,7 @@ internal fun rankingsScreen(
 }
 
 @Composable
-private fun stateMessage(
+private fun StateMessage(
   text: String,
 ) {
   Text(

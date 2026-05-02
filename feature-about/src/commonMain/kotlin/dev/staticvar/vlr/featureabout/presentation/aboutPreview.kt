@@ -13,11 +13,11 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun aboutPreview(
+internal fun AboutPreview(
   @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
 ) {
   PrismTheme(variant = variant) {
-    aboutScreen(
+    AboutScreen(
       modifier = Modifier.fillMaxSize().background(Prism.color.background),
     )
   }

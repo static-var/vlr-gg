@@ -38,7 +38,7 @@ public fun EventsOverviewRoute(
     onDispose(viewModel::clear)
   }
 
-  eventsOverviewScreen(
+  EventsOverviewScreen(
     uiState = uiState,
     onFilterSelected = viewModel::selectFilter,
     onEventSelected = onEventSelected,
@@ -47,7 +47,7 @@ public fun EventsOverviewRoute(
 }
 
 @Composable
-internal fun eventsOverviewScreen(
+internal fun EventsOverviewScreen(
   uiState: EventsUiState,
   onFilterSelected: (EventStatusFilter) -> Unit,
   onEventSelected: (String) -> Unit,
@@ -85,10 +85,10 @@ internal fun eventsOverviewScreen(
     )
 
     when {
-      uiState.isLoading -> eventStateMessage(text = "Loading events…")
+      uiState.isLoading -> EventStateMessage(text = "Loading events…")
       uiState.errorMessage != null && filteredEvents.isEmpty() ->
-        eventStateMessage(text = uiState.errorMessage ?: "Unable to load events.")
-      filteredEvents.isEmpty() -> eventStateMessage(text = "No events in this bucket yet.")
+        EventStateMessage(text = uiState.errorMessage ?: "Unable to load events.")
+      filteredEvents.isEmpty() -> EventStateMessage(text = "No events in this bucket yet.")
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
@@ -137,7 +137,7 @@ internal fun eventsOverviewScreen(
 }
 
 @Composable
-private fun eventStateMessage(
+private fun EventStateMessage(
   text: String,
 ) {
   Text(

@@ -52,7 +52,7 @@ public fun MatchDetailsRoute(
     onDispose(viewModel::clear)
   }
 
-  matchDetailsScreen(
+  MatchDetailsScreen(
     uiState = uiState,
     onBack = onBack,
     onEventSelected = onEventSelected,
@@ -63,7 +63,7 @@ public fun MatchDetailsRoute(
 }
 
 @Composable
-internal fun matchDetailsScreen(
+internal fun MatchDetailsScreen(
   uiState: MatchDetailsUiState,
   onBack: () -> Unit,
   onEventSelected: (String) -> Unit,
@@ -89,17 +89,17 @@ internal fun matchDetailsScreen(
     )
 
     when {
-      uiState.isLoading -> detailStateMessage(text = "Loading match details…")
+      uiState.isLoading -> DetailStateMessage(text = "Loading match details…")
       uiState.errorMessage != null && match == null ->
-        detailStateMessage(text = uiState.errorMessage ?: "Unable to load match details.")
-      match == null -> detailStateMessage(text = "Match detail is unavailable.")
+        DetailStateMessage(text = uiState.errorMessage ?: "Unable to load match details.")
+      match == null -> DetailStateMessage(text = "Match detail is unavailable.")
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
           verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
         ) {
           item {
-            matchSummaryCard(
+            MatchSummaryCard(
               match = match,
               onEventSelected = onEventSelected,
               onTeamSelected = onTeamSelected,
@@ -110,7 +110,7 @@ internal fun matchDetailsScreen(
               PrismSectionTitle(title = "Maps", preLabel = "breakdown")
             }
             items(match.matchData, key = MapData::map) { map ->
-              mapCard(
+              MapCard(
                 map = map,
                 onPlayerSelected = onPlayerSelected,
               )
@@ -164,7 +164,7 @@ internal fun matchDetailsScreen(
 }
 
 @Composable
-private fun matchSummaryCard(
+private fun MatchSummaryCard(
   match: MatchDetails,
   onEventSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
@@ -196,7 +196,7 @@ private fun matchSummaryCard(
       horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     ) {
       match.teams.forEach { team ->
-        teamSummaryCard(
+        TeamSummaryCard(
           modifier = Modifier.weight(1f),
           team = team,
           onTeamSelected = onTeamSelected,
@@ -215,7 +215,7 @@ private fun matchSummaryCard(
 }
 
 @Composable
-private fun teamSummaryCard(
+private fun TeamSummaryCard(
   team: TeamDetails,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
@@ -239,7 +239,7 @@ private fun teamSummaryCard(
 }
 
 @Composable
-private fun mapCard(
+private fun MapCard(
   map: MapData,
   onPlayerSelected: (String) -> Unit,
 ) {
@@ -269,7 +269,7 @@ private fun mapCard(
 }
 
 @Composable
-private fun detailStateMessage(
+private fun DetailStateMessage(
   text: String,
 ) {
   Text(

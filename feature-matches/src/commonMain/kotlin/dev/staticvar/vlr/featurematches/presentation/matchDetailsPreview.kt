@@ -27,11 +27,11 @@ import dev.staticvar.vlr.domain.model.VideoReference
 
 @PrismPreview
 @Composable
-internal fun matchDetailsPreview(
+internal fun MatchDetailsPreview(
   @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
 ) {
   PrismTheme(variant = variant) {
-    matchDetailsScreen(
+    MatchDetailsScreen(
       uiState = MatchDetailsUiState(match = sampleMatchDetails(), isLoading = false),
       onBack = {},
       onEventSelected = {},
