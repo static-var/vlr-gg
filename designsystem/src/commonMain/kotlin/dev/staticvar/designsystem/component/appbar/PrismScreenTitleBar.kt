@@ -37,8 +37,8 @@ public fun PrismScreenTitleBar(
   ) {
     Column(
       modifier =
-        Modifier.fillMaxWidth()
-          .padding(horizontal = Prism.dimens.spacingM, vertical = Prism.dimens.spacingS),
+      Modifier.fillMaxWidth()
+        .padding(horizontal = Prism.dimens.spacingM, vertical = Prism.dimens.spacingS),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
     ) {
       if (preLabel != null) {

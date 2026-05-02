@@ -39,10 +39,10 @@ public fun PrismBottomNavBarLarge(
   ) {
     Column(
       modifier =
-        Modifier.fillMaxHeight()
-          .fillMaxWidth()
-          .padding(Prism.dimens.spacingS)
-          .selectableGroup(),
+      Modifier.fillMaxHeight()
+        .fillMaxWidth()
+        .padding(Prism.dimens.spacingS)
+        .selectableGroup(),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     ) {
       items.forEach { item ->
@@ -51,11 +51,11 @@ public fun PrismBottomNavBarLarge(
 
         PrismSurface(
           modifier =
-            Modifier.fillMaxWidth()
-              .selectable(
-                selected = selected,
-                onClick = { onItemSelected(item) },
-                role = Role.Tab,
+          Modifier.fillMaxWidth()
+            .selectable(
+              selected = selected,
+              onClick = { onItemSelected(item) },
+              role = Role.Tab,
             ),
           color = if (selected) Prism.color.accentSubtle else Prism.color.background,
           shape = Prism.shapes.small,
@@ -63,11 +63,11 @@ public fun PrismBottomNavBarLarge(
         ) {
           Row(
             modifier =
-              Modifier.fillMaxWidth()
-                .padding(
-                  horizontal = Prism.dimens.spacingM,
-                  vertical = Prism.dimens.spacingS,
-                ),
+            Modifier.fillMaxWidth()
+              .padding(
+                horizontal = Prism.dimens.spacingM,
+                vertical = Prism.dimens.spacingS,
+              ),
             horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
             verticalAlignment = Alignment.CenterVertically,
           ) {

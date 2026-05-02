@@ -1,7 +1,7 @@
 package dev.staticvar.designsystem.preview
 
-import dev.staticvar.designsystem.prism.PrismVariant
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import dev.staticvar.designsystem.prism.PrismVariant
 
 /**
  * Preview parameter provider for Prism theme variants.

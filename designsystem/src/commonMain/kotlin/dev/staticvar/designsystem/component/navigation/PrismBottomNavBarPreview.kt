@@ -3,8 +3,8 @@ package dev.staticvar.designsystem.component.navigation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,18 +34,16 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismBottomNavBarPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismBottomNavBarPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     var selectedItemId by remember { mutableStateOf("matches") }
     val items = rememberBottomNavPreviewItems()
 
     Column(
       modifier =
-        Modifier.fillMaxWidth()
-          .background(Prism.color.background)
-          .padding(Prism.dimens.spacingM),
+      Modifier.fillMaxWidth()
+        .background(Prism.color.background)
+        .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       Text(
@@ -69,28 +67,26 @@ internal fun PrismBottomNavBarPreview(
 }
 
 @Composable
-private fun rememberBottomNavPreviewItems(): List<PrismBottomNavItem> =
-  remember {
-    listOf(
-      navPreviewItem("matches", "Matches", LineAwesomeIcons.HomeSolid),
-      navPreviewItem("events", "Events", LineAwesomeIcons.Compass, LineAwesomeIcons.CompassSolid),
-      navPreviewItem("schedule", "Schedule", LineAwesomeIcons.CalendarAlt, LineAwesomeIcons.CalendarAltSolid),
-      navPreviewItem("news", "News", LineAwesomeIcons.Newspaper, LineAwesomeIcons.NewspaperSolid),
-    )
-  }
+private fun rememberBottomNavPreviewItems(): List<PrismBottomNavItem> = remember {
+  listOf(
+    navPreviewItem("matches", "Matches", LineAwesomeIcons.HomeSolid),
+    navPreviewItem("events", "Events", LineAwesomeIcons.Compass, LineAwesomeIcons.CompassSolid),
+    navPreviewItem("schedule", "Schedule", LineAwesomeIcons.CalendarAlt, LineAwesomeIcons.CalendarAltSolid),
+    navPreviewItem("news", "News", LineAwesomeIcons.Newspaper, LineAwesomeIcons.NewspaperSolid),
+  )
+}
 
 private fun navPreviewItem(
   id: String,
   label: String,
   icon: ImageVector,
   selectedIcon: ImageVector = icon,
-): PrismBottomNavItem =
-  PrismBottomNavItem(
-    id = id,
-    label = label,
-    icon = icon,
-    selectedIcon = selectedIcon,
-  )
+): PrismBottomNavItem = PrismBottomNavItem(
+  id = id,
+  label = label,
+  icon = icon,
+  selectedIcon = selectedIcon,
+)
 
 @Composable
 private fun PrismBottomNavRailPreview(

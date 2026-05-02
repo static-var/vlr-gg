@@ -50,10 +50,7 @@ public fun PrismCheckbox(
 }
 
 @Composable
-private fun rememberPrismCheckboxVisualState(
-  checked: Boolean,
-  enabled: Boolean,
-): PrismCheckboxVisualState {
+private fun rememberPrismCheckboxVisualState(checked: Boolean, enabled: Boolean): PrismCheckboxVisualState {
   val animation = Prism.anim.standard
   val animatedContainerColor by
     animateColorAsState(
@@ -93,36 +90,28 @@ private fun rememberPrismCheckboxVisualState(
     )
 
   return PrismCheckboxVisualState(
-      containerColor = animatedContainerColor,
-      borderColor = animatedBorderColor,
-      borderWidth = animatedBorderWidth,
-      indicatorColor = animatedIndicatorColor,
-      indicatorScale = indicatorScale,
-      indicatorAlpha = indicatorAlpha,
+    containerColor = animatedContainerColor,
+    borderColor = animatedBorderColor,
+    borderWidth = animatedBorderWidth,
+    indicatorColor = animatedIndicatorColor,
+    indicatorScale = indicatorScale,
+    indicatorAlpha = indicatorAlpha,
   )
 }
 
 @Composable
-private fun checkboxContainerColor(
-  checked: Boolean,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.surfaceDim
-    checked -> Prism.color.accentSubtle
-    else -> Prism.color.surface
-  }
+private fun checkboxContainerColor(checked: Boolean, enabled: Boolean): Color = when {
+  !enabled -> Prism.color.surfaceDim
+  checked -> Prism.color.accentSubtle
+  else -> Prism.color.surface
+}
 
 @Composable
-private fun checkboxBorderColor(
-  checked: Boolean,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.stroke
-    checked -> Prism.color.accent
-    else -> Prism.color.stroke
-  }
+private fun checkboxBorderColor(checked: Boolean, enabled: Boolean): Color = when {
+  !enabled -> Prism.color.stroke
+  checked -> Prism.color.accent
+  else -> Prism.color.stroke
+}
 
 @Composable
 private fun checkboxIndicatorColor(enabled: Boolean): Color =
@@ -139,19 +128,19 @@ private fun PrismCheckboxTouchTarget(
 ) {
   Box(
     modifier =
-      modifier
-        .sizeIn(
-          minWidth = Prism.dimens.touchTargetMin,
-          minHeight = Prism.dimens.touchTargetMin,
-        )
-        .toggleable(
-          value = checked,
-          onValueChange = onCheckedChange,
-          enabled = enabled,
-          role = Role.Checkbox,
-          interactionSource = interactionSource,
-          indication = ripple(),
-        ),
+    modifier
+      .sizeIn(
+        minWidth = Prism.dimens.touchTargetMin,
+        minHeight = Prism.dimens.touchTargetMin,
+      )
+      .toggleable(
+        value = checked,
+        onValueChange = onCheckedChange,
+        enabled = enabled,
+        role = Role.Checkbox,
+        interactionSource = interactionSource,
+        indication = ripple(),
+      ),
     contentAlignment = Alignment.Center,
   ) {
     content()
@@ -172,13 +161,13 @@ private fun PrismCheckboxBox(visualState: PrismCheckboxVisualState) {
     ) {
       Box(
         modifier =
-          Modifier.fillMaxSize()
-            .graphicsLayer {
-              scaleX = visualState.indicatorScale
-              scaleY = visualState.indicatorScale
-              alpha = visualState.indicatorAlpha
-            }
-            .background(color = visualState.indicatorColor, shape = Prism.shapes.small),
+        Modifier.fillMaxSize()
+          .graphicsLayer {
+            scaleX = visualState.indicatorScale
+            scaleY = visualState.indicatorScale
+            alpha = visualState.indicatorAlpha
+          }
+          .background(color = visualState.indicatorColor, shape = Prism.shapes.small),
       )
     }
   }

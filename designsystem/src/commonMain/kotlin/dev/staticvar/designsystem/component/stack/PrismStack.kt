@@ -5,11 +5,11 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -20,18 +20,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -49,7 +49,7 @@ public fun <T> PrismStack(
   list: List<T>,
   onSwipe: (item: T) -> Unit = {},
   shape: Shape = RoundedCornerShape(PrismStackValues.STACK_CARD_CORNER_RADIUS_DP.dp),
-  content: @Composable BoxScope.(item: T) -> Unit
+  content: @Composable BoxScope.(item: T) -> Unit,
 ) {
   if (list.isEmpty()) return
 
@@ -101,7 +101,7 @@ public fun <T> PrismStack(
               shadowElevation = with(density) { layers.hidden.elevation.value.toPx() }
               this.shape = shape
               clip = true
-            }
+            },
         ) {
           content(incomingItem)
         }
@@ -127,31 +127,34 @@ public fun <T> PrismStack(
                     CardVisualState(
                       scale = layers.top.scale.value,
                       offset =
-                        StackPosition.Top.baseOffset +
-                          with(density) { layers.top.dragOffset.value.y.toDp() },
+                      StackPosition.Top.baseOffset +
+                        with(density) { layers.top.dragOffset.value.y.toDp() },
                       elevation = layers.top.elevation.value,
-                      alpha = layers.top.alpha.value
+                      alpha = layers.top.alpha.value,
                     )
+
                   StackPosition.Middle ->
                     CardVisualState(
                       scale = layers.middle.scale.value,
                       offset = layers.middle.offset.value,
                       elevation = layers.middle.elevation.value,
-                      alpha = 1f
+                      alpha = 1f,
                     )
+
                   StackPosition.Bottom ->
                     CardVisualState(
                       scale = layers.bottom.scale.value,
                       offset = layers.bottom.offset.value,
                       elevation = layers.bottom.elevation.value,
-                      alpha = 1f
+                      alpha = 1f,
                     )
+
                   StackPosition.Hidden ->
                     CardVisualState(
                       scale = layers.hidden.scale.value,
                       offset = layers.hidden.offset.value,
                       elevation = layers.hidden.elevation.value,
-                      alpha = 1f
+                      alpha = 1f,
                     )
                 }
 
@@ -210,7 +213,7 @@ public fun <T> PrismStack(
                       launch {
                         layers.top.dragOffset.animateTo(
                           Offset(0f, dragDistance * 2),
-                          animationSpec = tween(PrismStackValues.PHASE_2_DURATION_MS)
+                          animationSpec = tween(PrismStackValues.PHASE_2_DURATION_MS),
                         )
                       }
                       launch {
@@ -219,7 +222,7 @@ public fun <T> PrismStack(
                       launch {
                         layers.top.elevation.animateTo(
                           StackPosition.Hidden.baseElevation,
-                          animationSpec = tween(PrismStackValues.PHASE_2_DURATION_MS)
+                          animationSpec = tween(PrismStackValues.PHASE_2_DURATION_MS),
                         )
                       }
                       if (visibleCards.size > 1) {
@@ -250,7 +253,7 @@ public fun <T> PrismStack(
                   } else {
                     resetTopCard()
                   }
-                }
+                },
               )
             }
         }
@@ -305,12 +308,7 @@ private sealed interface StackPosition {
 }
 
 /** Snapshot of the drawing parameters used while composing a stack layer. */
-private data class CardVisualState(
-  val scale: Float,
-  val offset: Dp,
-  val elevation: Dp,
-  val alpha: Float,
-)
+private data class CardVisualState(val scale: Float, val offset: Dp, val elevation: Dp, val alpha: Float)
 
 /**
  * Aggregates the composable animation state for each visible and incoming layer.

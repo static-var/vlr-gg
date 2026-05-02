@@ -3,12 +3,12 @@
 package dev.staticvar.designsystem.component.carousel
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -17,12 +17,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
-import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
@@ -55,10 +55,7 @@ public enum class PrismCarouselVariant {
   Uncontained,
 }
 
-private data class CarouselConfig(
-  val pageSize: PageSize,
-  val contentPadding: PaddingValues,
-)
+private data class CarouselConfig(val pageSize: PageSize, val contentPadding: PaddingValues)
 
 private object CarouselConstants {
   const val MultibrowseWidthFraction: Float = 0.85f
@@ -73,11 +70,7 @@ private object CarouselConstants {
 }
 
 @Stable
-private data class CarouselTokens(
-  val spacingM: Dp,
-  val spacingS: Dp,
-  val uncontainedContentPadding: PaddingValues,
-)
+private data class CarouselTokens(val spacingM: Dp, val spacingS: Dp, val uncontainedContentPadding: PaddingValues)
 
 @Composable
 private fun rememberCarouselTokens(): CarouselTokens {
@@ -93,17 +86,12 @@ private fun rememberCarouselTokens(): CarouselTokens {
 }
 
 @Stable
-private data class PagerPosition(
-  val page: Int,
-  val offsetFraction: Float,
-)
+private data class PagerPosition(val page: Int, val offsetFraction: Float)
 
 @Composable
-private fun rememberPagerPosition(pagerState: PagerState): State<PagerPosition> =
-  remember(pagerState) {
-    derivedStateOf { PagerPosition(pagerState.currentPage, pagerState.currentPageOffsetFraction) }
-  }
-
+private fun rememberPagerPosition(pagerState: PagerState): State<PagerPosition> = remember(pagerState) {
+  derivedStateOf { PagerPosition(pagerState.currentPage, pagerState.currentPageOffsetFraction) }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -112,35 +100,34 @@ private fun rememberCarouselConfig(
   maxWidth: Dp,
   density: Density,
   tokens: CarouselTokens,
-): CarouselConfig =
-  remember(variant, maxWidth, density, tokens) {
-    when (variant) {
-      PrismCarouselVariant.Hero ->
-        CarouselConfig(
-          pageSize = PageSize.Fill,
-          contentPadding = PaddingValues(0.dp),
-        )
+): CarouselConfig = remember(variant, maxWidth, density, tokens) {
+  when (variant) {
+    PrismCarouselVariant.Hero ->
+      CarouselConfig(
+        pageSize = PageSize.Fill,
+        contentPadding = PaddingValues(0.dp),
+      )
 
-      PrismCarouselVariant.Multibrowse -> {
-        val containerWidthPx = with(density) { maxWidth.toPx() }
-        val targetWidthPx =
-          (containerWidthPx * CarouselConstants.MultibrowseWidthFraction)
-            .coerceAtLeast(with(density) { CarouselConstants.MultibrowseMinWidth.toPx() })
-        val horizontalPaddingPx = ((containerWidthPx - targetWidthPx) / 2f).coerceAtLeast(0f)
+    PrismCarouselVariant.Multibrowse -> {
+      val containerWidthPx = with(density) { maxWidth.toPx() }
+      val targetWidthPx =
+        (containerWidthPx * CarouselConstants.MultibrowseWidthFraction)
+          .coerceAtLeast(with(density) { CarouselConstants.MultibrowseMinWidth.toPx() })
+      val horizontalPaddingPx = ((containerWidthPx - targetWidthPx) / 2f).coerceAtLeast(0f)
 
-        CarouselConfig(
-          pageSize = PageSize.Fixed(with(density) { targetWidthPx.toDp() }),
-          contentPadding = PaddingValues(horizontal = with(density) { horizontalPaddingPx.toDp() }),
-        )
-      }
-
-      PrismCarouselVariant.Uncontained ->
-        CarouselConfig(
-          pageSize = PageSize.Fixed(CarouselConstants.UncontainedPageWidth),
-          contentPadding = tokens.uncontainedContentPadding,
-        )
+      CarouselConfig(
+        pageSize = PageSize.Fixed(with(density) { targetWidthPx.toDp() }),
+        contentPadding = PaddingValues(horizontal = with(density) { horizontalPaddingPx.toDp() }),
+      )
     }
+
+    PrismCarouselVariant.Uncontained ->
+      CarouselConfig(
+        pageSize = PageSize.Fixed(CarouselConstants.UncontainedPageWidth),
+        contentPadding = tokens.uncontainedContentPadding,
+      )
   }
+}
 
 /**
  * Prism design system carousel component.
@@ -248,7 +235,7 @@ private fun CarouselIndicators(
   Row(
     modifier = modifier.wrapContentWidth(Alignment.CenterHorizontally),
     horizontalArrangement =
-      Arrangement.spacedBy(tokens.spacingS, Alignment.CenterHorizontally),
+    Arrangement.spacedBy(tokens.spacingS, Alignment.CenterHorizontally),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     repeat(itemCount) { index ->
@@ -257,8 +244,11 @@ private fun CarouselIndicators(
       val indicatorWidth by
         animateDpAsState(
           targetValue =
-            if (isActive) CarouselConstants.IndicatorActiveWidth
-            else CarouselConstants.IndicatorInactiveWidth,
+          if (isActive) {
+            CarouselConstants.IndicatorActiveWidth
+          } else {
+            CarouselConstants.IndicatorInactiveWidth
+          },
           animationSpec = dpAnimationSpec,
           label = "indicator_width_$index",
         )

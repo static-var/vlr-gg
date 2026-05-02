@@ -30,4 +30,6 @@ internal val LocalPrismDimens =
  * ```
  */
 public val MaterialTheme.prismDimens: PrismDimens
-  @Composable @ReadOnlyComposable get() = LocalPrismDimens.current
+  @Composable
+  @ReadOnlyComposable
+  get() = LocalPrismDimens.current

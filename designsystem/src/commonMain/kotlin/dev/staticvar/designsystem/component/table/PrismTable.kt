@@ -70,10 +70,7 @@ public data class PrismTableColorGroup(
 )
 
 @Immutable
-public data class PrismTablePalette(
-  val primary: PrismTableColorGroup,
-  val secondary: PrismTableColorGroup,
-)
+public data class PrismTablePalette(val primary: PrismTableColorGroup, val secondary: PrismTableColorGroup)
 
 @Immutable
 public data class PrismTableCellContext(
@@ -117,23 +114,22 @@ public object PrismTableDefaults {
     PaddingValues(horizontal = CellPaddingHorizontal, vertical = CellPaddingVertical)
 
   @Composable
-  public fun palette(): PrismTablePalette =
-    PrismTablePalette(
-      primary =
-        PrismTableColorGroup(
-          containerColor = Prism.color.surface,
-          contentColor = Prism.color.titleColor,
-          stickyContainerColor = Prism.color.surfaceVariant,
-          stickyContentColor = Prism.color.titleColor,
-        ),
-      secondary =
-        PrismTableColorGroup(
-          containerColor = Prism.color.backgroundElevated,
-          contentColor = Prism.color.bodyColor,
-          stickyContainerColor = Prism.color.surfaceDim,
-          stickyContentColor = Prism.color.bodyColor,
-        ),
-    )
+  public fun palette(): PrismTablePalette = PrismTablePalette(
+    primary =
+    PrismTableColorGroup(
+      containerColor = Prism.color.surface,
+      contentColor = Prism.color.titleColor,
+      stickyContainerColor = Prism.color.surfaceVariant,
+      stickyContentColor = Prism.color.titleColor,
+    ),
+    secondary =
+    PrismTableColorGroup(
+      containerColor = Prism.color.backgroundElevated,
+      contentColor = Prism.color.bodyColor,
+      stickyContainerColor = Prism.color.surfaceDim,
+      stickyContentColor = Prism.color.bodyColor,
+    ),
+  )
 
   @Composable
   public fun viewState(
@@ -141,13 +137,12 @@ public object PrismTableDefaults {
     borderThickness: Dp = Prism.dimens.strokeDefault,
     borderColor: Color = Prism.color.stroke,
     cellStyleResolver: PrismTableCellStyleResolver? = null,
-  ): PrismTableViewState =
-    PrismTableViewState(
-      palette = palette,
-      borderThickness = borderThickness,
-      borderColor = borderColor,
-      cellStyleResolver = cellStyleResolver,
-    )
+  ): PrismTableViewState = PrismTableViewState(
+    palette = palette,
+    borderThickness = borderThickness,
+    borderColor = borderColor,
+    cellStyleResolver = cellStyleResolver,
+  )
 }
 
 @Composable
@@ -167,15 +162,15 @@ public fun PrismTable(
 
   Box(
     modifier =
-      modifier
-        .border(border)
-        .clipToBounds(),
+    modifier
+      .border(border)
+      .clipToBounds(),
   ) {
     Column(
       modifier =
-        Modifier
-          .verticalScroll(verticalScroll)
-          .horizontalScroll(horizontalScroll),
+      Modifier
+        .verticalScroll(verticalScroll)
+        .horizontalScroll(horizontalScroll),
     ) {
       HeaderRow(
         columns = columns,
@@ -216,10 +211,10 @@ private fun StickyFirstColumn(
 ) {
   Column(
     modifier =
-      Modifier
-        .width(column.width)
-        .offset { IntOffset(x = 0, y = -verticalScrollOffset) }
-        .zIndex(PrismTableLayoutConstants.StickyColumnZIndex),
+    Modifier
+      .width(column.width)
+      .offset { IntOffset(x = 0, y = -verticalScrollOffset) }
+      .zIndex(PrismTableLayoutConstants.StickyColumnZIndex),
   ) {
     StickyHeaderCell(column = column, options = options, viewState = viewState)
     rows.forEachIndexed { rowIndex, row ->
@@ -235,11 +230,7 @@ private fun StickyFirstColumn(
 }
 
 @Composable
-private fun StickyHeaderCell(
-  column: PrismTableColumn,
-  options: PrismTableOptions,
-  viewState: PrismTableViewState,
-) {
+private fun StickyHeaderCell(column: PrismTableColumn, options: PrismTableOptions, viewState: PrismTableViewState) {
   TableCell(
     value = column.title,
     textAlign = column.textAlign,
@@ -247,12 +238,12 @@ private fun StickyHeaderCell(
     options = options,
     viewState = viewState,
     context =
-      PrismTableCellContext(
-        rowIndex = PrismTableLayoutConstants.HeaderRowIndex,
-        columnIndex = PrismTableLayoutConstants.FirstColumnIndex,
-        isHeader = true,
-        isStickyColumn = true,
-      ),
+    PrismTableCellContext(
+      rowIndex = PrismTableLayoutConstants.HeaderRowIndex,
+      columnIndex = PrismTableLayoutConstants.FirstColumnIndex,
+      isHeader = true,
+      isStickyColumn = true,
+    ),
   )
 }
 
@@ -271,12 +262,12 @@ private fun StickyBodyCell(
     options = options,
     viewState = viewState,
     context =
-      PrismTableCellContext(
-        rowIndex = rowIndex,
-        columnIndex = PrismTableLayoutConstants.FirstColumnIndex,
-        isHeader = false,
-        isStickyColumn = true,
-      ),
+    PrismTableCellContext(
+      rowIndex = rowIndex,
+      columnIndex = PrismTableLayoutConstants.FirstColumnIndex,
+      isHeader = false,
+      isStickyColumn = true,
+    ),
   )
 }
 
@@ -293,18 +284,18 @@ private fun HeaderRow(
         value = column.title,
         textAlign = column.textAlign,
         modifier =
-          Modifier
-            .width(column.width)
-            .fillMaxHeight(),
+        Modifier
+          .width(column.width)
+          .fillMaxHeight(),
         options = options,
         viewState = viewState,
         context =
-          PrismTableCellContext(
-            rowIndex = PrismTableLayoutConstants.HeaderRowIndex,
-            columnIndex = columnIndex,
-            isHeader = true,
-            isStickyColumn = false,
-          ),
+        PrismTableCellContext(
+          rowIndex = PrismTableLayoutConstants.HeaderRowIndex,
+          columnIndex = columnIndex,
+          isHeader = true,
+          isStickyColumn = false,
+        ),
       )
     }
   }
@@ -324,18 +315,18 @@ private fun BodyRow(
         value = row.cells[column.key].orEmpty(),
         textAlign = row.resolveTextAlign(column),
         modifier =
-          Modifier
-            .width(column.width)
-            .fillMaxHeight(),
+        Modifier
+          .width(column.width)
+          .fillMaxHeight(),
         options = options,
         viewState = viewState,
         context =
-          PrismTableCellContext(
-            rowIndex = rowIndex,
-            columnIndex = columnIndex,
-            isHeader = false,
-            isStickyColumn = false,
-          ),
+        PrismTableCellContext(
+          rowIndex = rowIndex,
+          columnIndex = columnIndex,
+          isHeader = false,
+          isStickyColumn = false,
+        ),
       )
     }
   }
@@ -354,10 +345,10 @@ private fun TableCell(
 
   Box(
     modifier =
-      modifier
-        .background(colors.containerColor)
-        .border(BorderStroke(width = viewState.borderThickness, color = viewState.borderColor))
-        .padding(options.cellPadding),
+    modifier
+      .background(colors.containerColor)
+      .border(BorderStroke(width = viewState.borderThickness, color = viewState.borderColor))
+      .padding(options.cellPadding),
     contentAlignment = PrismTableDefaults.CellContentAlignment,
   ) {
     Text(
@@ -378,10 +369,7 @@ private fun PrismTableRow.resolveTextAlign(column: PrismTableColumn): TextAlign 
 private fun List<PrismTableColumn>.totalWidth(): Dp =
   this.fold(initial = 0.dp) { total, column -> total + column.width }
 
-private fun resolveColors(
-  viewState: PrismTableViewState,
-  context: PrismTableCellContext,
-): TableCellColors {
+private fun resolveColors(viewState: PrismTableViewState, context: PrismTableCellContext): TableCellColors {
   val defaultRole =
     if (context.isHeader || context.rowIndex % 2 == PrismTableLayoutConstants.EvenRowModulo) {
       PrismTableColorRole.Primary
@@ -414,10 +402,7 @@ private fun resolveColors(
 }
 
 @Immutable
-private data class TableCellColors(
-  val containerColor: Color,
-  val contentColor: Color,
-)
+private data class TableCellColors(val containerColor: Color, val contentColor: Color)
 
 private object PrismTableLayoutConstants {
   const val HeaderRowIndex: Int = -1

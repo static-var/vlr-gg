@@ -81,9 +81,7 @@ public fun PrismSheet(
  * Default drag handle for [PrismModalSheet].
  */
 @Composable
-public fun PrismSheetDragHandle(
-  modifier: Modifier = Modifier,
-) {
+public fun PrismSheetDragHandle(modifier: Modifier = Modifier) {
   val handleWidth = Prism.dimens.spacingXl + Prism.dimens.spacingM
 
   PrismSurface(

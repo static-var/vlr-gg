@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
@@ -31,16 +31,14 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismStackPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismStackPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     val planets = remember { mutableStateOf(sampleStackPlanets) }
     Box(
       modifier =
-        Modifier.fillMaxSize()
-          .background(Prism.color.background)
-          .padding(Prism.dimens.spacingL),
+      Modifier.fillMaxSize()
+        .background(Prism.color.background)
+        .padding(Prism.dimens.spacingL),
       contentAlignment = Alignment.BottomCenter,
     ) {
       PrismStack(
@@ -61,10 +59,8 @@ private fun PrismStackPreviewCard(planet: StackPreviewPlanet) {
 
   PrismCard(
     modifier = Modifier.fillMaxWidth().height(220.dp),
-    variant = PrismCardVariant.Gradient,
-    brush = cosmicGradient,
+    style = PrismCardStyle.Gradient(brush = cosmicGradient),
     shape = Prism.shapes.large,
-    contentColor = Color.White,
   ) {
     Column(
       modifier = Modifier
@@ -100,23 +96,21 @@ private fun planetGradient(planetId: Int): Brush {
   )
 }
 
-private fun planetGradientDirection(planetId: Int): Pair<Offset, Offset> =
-  when (planetId % 4) {
-    0 -> Offset.Zero to Offset.Infinite
-    1 -> Offset.Infinite to Offset.Zero
-    2 -> Offset(0f, Float.POSITIVE_INFINITY) to Offset(Float.POSITIVE_INFINITY, 0f)
-    else -> Offset(Float.POSITIVE_INFINITY, 0f) to Offset(0f, Float.POSITIVE_INFINITY)
-  }
+private fun planetGradientDirection(planetId: Int): Pair<Offset, Offset> = when (planetId % 4) {
+  0 -> Offset.Zero to Offset.Infinite
+  1 -> Offset.Infinite to Offset.Zero
+  2 -> Offset(0f, Float.POSITIVE_INFINITY) to Offset(Float.POSITIVE_INFINITY, 0f)
+  else -> Offset(Float.POSITIVE_INFINITY, 0f) to Offset(0f, Float.POSITIVE_INFINITY)
+}
 
-private fun planetColors(planetId: Int): List<Color> =
-  when (planetId) {
-    1 -> listOf(Color(0xFF2D1B4E), Color(0xFF6B46C1), Color(0xFFDB7C26), Color(0xFFFFB84D))
-    2 -> listOf(Color(0xFF1A0A0A), Color(0xFF4A1010), Color(0xFFB91C1C), Color(0xFFDC6B4A))
-    3 -> listOf(Color(0xFF3D2817), Color(0xFF92400E), Color(0xFFEA580C), Color(0xFFF59E0B))
-    4 -> listOf(Color(0xFF312716), Color(0xFF78350F), Color(0xFFD97706), Color(0xFFFBBF24))
-    5 -> listOf(Color(0xFF0C1844), Color(0xFF1E3A8A), Color(0xFF1D4ED8), Color(0xFF3B82F6))
-    else -> listOf(Color(0xFF0A2540), Color(0xFF0F4C75), Color(0xFF0891B2), Color(0xFF10B981))
-  }
+private fun planetColors(planetId: Int): List<Color> = when (planetId) {
+  1 -> listOf(Color(0xFF2D1B4E), Color(0xFF6B46C1), Color(0xFFDB7C26), Color(0xFFFFB84D))
+  2 -> listOf(Color(0xFF1A0A0A), Color(0xFF4A1010), Color(0xFFB91C1C), Color(0xFFDC6B4A))
+  3 -> listOf(Color(0xFF3D2817), Color(0xFF92400E), Color(0xFFEA580C), Color(0xFFF59E0B))
+  4 -> listOf(Color(0xFF312716), Color(0xFF78350F), Color(0xFFD97706), Color(0xFFFBBF24))
+  5 -> listOf(Color(0xFF0C1844), Color(0xFF1E3A8A), Color(0xFF1D4ED8), Color(0xFF3B82F6))
+  else -> listOf(Color(0xFF0A2540), Color(0xFF0F4C75), Color(0xFF0891B2), Color(0xFF10B981))
+}
 
 private data class StackPreviewPlanet(val id: Int, val name: String, val description: String)
 

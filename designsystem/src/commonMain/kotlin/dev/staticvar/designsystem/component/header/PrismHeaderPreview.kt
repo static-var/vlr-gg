@@ -14,9 +14,7 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismHeaderPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant
-) {
+internal fun PrismHeaderPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     Column(modifier = Modifier.fillMaxWidth().background(Prism.color.background)) {
       PrismHeader(text = "Matches")

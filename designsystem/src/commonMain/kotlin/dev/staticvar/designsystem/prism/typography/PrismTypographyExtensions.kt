@@ -23,4 +23,6 @@ internal val LocalPrismTypography =
  * with Prism-specific roles such as numeric emphasis, section titles, and button text.
  */
 public val MaterialTheme.prismTypography: PrismTypography
-  @Composable @ReadOnlyComposable get() = LocalPrismTypography.current
+  @Composable
+  @ReadOnlyComposable
+  get() = LocalPrismTypography.current

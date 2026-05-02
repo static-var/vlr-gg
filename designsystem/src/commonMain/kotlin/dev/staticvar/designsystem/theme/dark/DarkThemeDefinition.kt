@@ -15,13 +15,10 @@ internal object DarkThemeDefinition : PrismThemeDefinition<DarkColorTokens> {
 
   override fun createColorScheme(palette: PrismColorPalette): ColorScheme = DarkColorScheme.create(palette)
 
-  override fun createTypographyTokens(
-    palette: PrismColorPalette,
-    fonts: PrismFontFamilies,
-  ): PrismTypography = DarkTypography.createTokens(palette, fonts)
+  override fun createTypographyTokens(palette: PrismColorPalette, fonts: PrismFontFamilies): PrismTypography =
+    DarkTypography.createTokens(palette, fonts)
 
-  override fun createMaterialTypography(tokens: PrismTypography): Typography =
-    DarkTypography.createMaterial(tokens)
+  override fun createMaterialTypography(tokens: PrismTypography): Typography = DarkTypography.createMaterial(tokens)
 
   override val shapes: Shapes
     get() = DarkShapes.shapes

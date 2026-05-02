@@ -32,16 +32,24 @@ import dev.staticvar.designsystem.prism.typography.prismTypography
  */
 public object Prism {
   public val typography: PrismTypography
-    @Composable @ReadOnlyComposable get() = MaterialTheme.prismTypography
+    @Composable
+    @ReadOnlyComposable
+    get() = MaterialTheme.prismTypography
 
   public val color: PrismColorPalette
-    @Composable @ReadOnlyComposable get() = MaterialTheme.prismColors
+    @Composable
+    @ReadOnlyComposable
+    get() = MaterialTheme.prismColors
 
   public val dimens: PrismDimens
-    @Composable @ReadOnlyComposable get() = MaterialTheme.prismDimens
+    @Composable
+    @ReadOnlyComposable
+    get() = MaterialTheme.prismDimens
 
   public val shapes: Shapes
-    @Composable @ReadOnlyComposable get() = MaterialTheme.shapes
+    @Composable
+    @ReadOnlyComposable
+    get() = MaterialTheme.shapes
 
   public val anim: PrismAnimationTokens
     get() = DefaultPrismAnimations

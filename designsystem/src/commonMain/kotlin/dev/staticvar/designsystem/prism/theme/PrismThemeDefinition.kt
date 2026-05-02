@@ -17,10 +17,7 @@ internal interface PrismThemeDefinition<ColorTokens : Any> {
 
   fun createColorScheme(palette: PrismColorPalette): ColorScheme
 
-  fun createTypographyTokens(
-    palette: PrismColorPalette,
-    fonts: PrismFontFamilies,
-  ): PrismTypography
+  fun createTypographyTokens(palette: PrismColorPalette, fonts: PrismFontFamilies): PrismTypography
 
   fun createMaterialTypography(tokens: PrismTypography): Typography
 

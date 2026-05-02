@@ -86,9 +86,9 @@ private fun PrismChipGroupInternal(
 ) {
   Row(
     modifier =
-      modifier
-        .horizontalScroll(rememberScrollState())
-        .selectableGroup(),
+    modifier
+      .horizontalScroll(rememberScrollState())
+      .selectableGroup(),
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -105,21 +105,15 @@ private fun PrismChipGroupInternal(
 }
 
 @Composable
-private fun PrismChipItem(
-  chip: PrismChip,
-  selected: Boolean,
-  enabled: Boolean,
-  role: Role,
-  onClick: () -> Unit,
-) {
+private fun PrismChipItem(chip: PrismChip, selected: Boolean, enabled: Boolean, role: Role, onClick: () -> Unit) {
   val visualState = rememberPrismChipVisualState(chipId = chip.id, selected = selected, enabled = enabled)
   val chipIcon = if (selected) chip.selectedIcon ?: chip.icon else chip.icon
 
   PrismSurface(
     modifier =
-      Modifier
-        .heightIn(min = Prism.dimens.controlHeight)
-        .selectable(selected = selected, onClick = onClick, enabled = enabled, role = role),
+    Modifier
+      .heightIn(min = Prism.dimens.controlHeight)
+      .selectable(selected = selected, onClick = onClick, enabled = enabled, role = role),
     color = visualState.containerColor,
     shape = Prism.shapes.small,
     border = BorderStroke(width = Prism.dimens.strokeDefault, color = visualState.borderColor),
@@ -149,11 +143,7 @@ private fun PrismChipItem(
 }
 
 @Composable
-private fun rememberPrismChipVisualState(
-  chipId: String,
-  selected: Boolean,
-  enabled: Boolean,
-): PrismChipVisualState {
+private fun rememberPrismChipVisualState(chipId: String, selected: Boolean, enabled: Boolean): PrismChipVisualState {
   val animation = Prism.anim.standard
   val containerColor by
     animateColorAsState(
@@ -178,40 +168,24 @@ private fun rememberPrismChipVisualState(
 }
 
 @Composable
-private fun chipContainerColor(
-  selected: Boolean,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.surfaceDim
-    selected -> Prism.color.accentSubtle
-    else -> Prism.color.background
-  }
+private fun chipContainerColor(selected: Boolean, enabled: Boolean): Color = when {
+  !enabled -> Prism.color.surfaceDim
+  selected -> Prism.color.accentSubtle
+  else -> Prism.color.background
+}
 
 @Composable
-private fun chipContentColor(
-  selected: Boolean,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.captionColor
-    selected -> Prism.color.accent
-    else -> Prism.color.bodyColor
-  }
+private fun chipContentColor(selected: Boolean, enabled: Boolean): Color = when {
+  !enabled -> Prism.color.captionColor
+  selected -> Prism.color.accent
+  else -> Prism.color.bodyColor
+}
 
 @Composable
-private fun chipBorderColor(
-  selected: Boolean,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.stroke
-    selected -> Prism.color.accent
-    else -> Prism.color.stroke
-  }
+private fun chipBorderColor(selected: Boolean, enabled: Boolean): Color = when {
+  !enabled -> Prism.color.stroke
+  selected -> Prism.color.accent
+  else -> Prism.color.stroke
+}
 
-private data class PrismChipVisualState(
-  val containerColor: Color,
-  val contentColor: Color,
-  val borderColor: Color,
-)
+private data class PrismChipVisualState(val containerColor: Color, val contentColor: Color, val borderColor: Color)

@@ -3,9 +3,6 @@
 package dev.staticvar.designsystem.component.loader
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -13,6 +10,9 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -82,9 +82,9 @@ public fun PrismLoader(
 
   PrismSurface(
     modifier =
-      modifier
-        .width(metrics.containerWidth)
-        .defaultMinSize(minHeight = metrics.containerHeight),
+    modifier
+      .width(metrics.containerWidth)
+      .defaultMinSize(minHeight = metrics.containerHeight),
     color = containerColor,
     contentColor = containerContentColor,
     shape = shape,
@@ -92,9 +92,9 @@ public fun PrismLoader(
   ) {
     Box(
       modifier =
-        Modifier.fillMaxWidth()
-          .heightIn(min = metrics.containerHeight)
-          .padding(Prism.dimens.spacingS),
+      Modifier.fillMaxWidth()
+        .heightIn(min = metrics.containerHeight)
+        .padding(Prism.dimens.spacingS),
     ) {
       if (metrics.showLabel) {
         LabeledLoaderContent(
@@ -115,30 +115,31 @@ public fun PrismLoader(
   }
 }
 
-private fun loaderMetrics(size: PrismLoaderSize): LoaderMetrics =
-  when (size) {
-    PrismLoaderSize.Small ->
-      LoaderMetrics(
-        containerWidth = PrismLoaderConstants.smallWidth,
-        containerHeight = PrismLoaderConstants.smallHeight,
-        segmentHeight = PrismLoaderConstants.smallSegmentHeight,
-        showLabel = false,
-      )
-    PrismLoaderSize.Medium ->
-      LoaderMetrics(
-        containerWidth = PrismLoaderConstants.mediumWidth,
-        containerHeight = PrismLoaderConstants.mediumHeight,
-        segmentHeight = PrismLoaderConstants.mediumSegmentHeight,
-        showLabel = true,
-      )
-    PrismLoaderSize.Large ->
-      LoaderMetrics(
-        containerWidth = PrismLoaderConstants.largeWidth,
-        containerHeight = PrismLoaderConstants.largeHeight,
-        segmentHeight = PrismLoaderConstants.largeSegmentHeight,
-        showLabel = true,
-      )
-  }
+private fun loaderMetrics(size: PrismLoaderSize): LoaderMetrics = when (size) {
+  PrismLoaderSize.Small ->
+    LoaderMetrics(
+      containerWidth = PrismLoaderConstants.smallWidth,
+      containerHeight = PrismLoaderConstants.smallHeight,
+      segmentHeight = PrismLoaderConstants.smallSegmentHeight,
+      showLabel = false,
+    )
+
+  PrismLoaderSize.Medium ->
+    LoaderMetrics(
+      containerWidth = PrismLoaderConstants.mediumWidth,
+      containerHeight = PrismLoaderConstants.mediumHeight,
+      segmentHeight = PrismLoaderConstants.mediumSegmentHeight,
+      showLabel = true,
+    )
+
+  PrismLoaderSize.Large ->
+    LoaderMetrics(
+      containerWidth = PrismLoaderConstants.largeWidth,
+      containerHeight = PrismLoaderConstants.largeHeight,
+      segmentHeight = PrismLoaderConstants.largeSegmentHeight,
+      showLabel = true,
+    )
+}
 
 @Composable
 private fun rememberLoaderProgress(): LoaderProgress {
@@ -148,10 +149,10 @@ private fun rememberLoaderProgress(): LoaderProgress {
       initialValue = 0f,
       targetValue = PrismLoaderConstants.defaultSegmentCount.toFloat(),
       animationSpec =
-        infiniteRepeatable(
-          animation = tween(durationMillis = PrismLoaderConstants.phaseSweepMillis, easing = LinearEasing),
-          repeatMode = RepeatMode.Restart,
-        ),
+      infiniteRepeatable(
+        animation = tween(durationMillis = PrismLoaderConstants.phaseSweepMillis, easing = LinearEasing),
+        repeatMode = RepeatMode.Restart,
+      ),
       label = "prism_loader_phase",
     )
   val pulseProgress =
@@ -159,20 +160,17 @@ private fun rememberLoaderProgress(): LoaderProgress {
       initialValue = 0f,
       targetValue = 1f,
       animationSpec =
-        infiniteRepeatable(
-          animation = tween(durationMillis = PrismLoaderConstants.pulseMillis, easing = FastOutSlowInEasing),
-          repeatMode = RepeatMode.Reverse,
-        ),
+      infiniteRepeatable(
+        animation = tween(durationMillis = PrismLoaderConstants.pulseMillis, easing = FastOutSlowInEasing),
+        repeatMode = RepeatMode.Reverse,
+      ),
       label = "prism_loader_pulse",
     )
 
   return LoaderProgress(phase = phaseProgress.value, pulse = pulseProgress.value)
 }
 
-private fun loaderLabelText(
-  label: String,
-  phaseProgress: Float,
-): String {
+private fun loaderLabelText(label: String, phaseProgress: Float): String {
   val phaseLabel = PrismLoaderConstants.phaseLabels[phaseProgress.toInt() % PrismLoaderConstants.phaseLabels.size]
   val resolvedLabel = label.trim()
   return if (resolvedLabel.isEmpty()) phaseLabel else "$resolvedLabel · $phaseLabel"
@@ -281,9 +279,9 @@ public fun PrismFullscreenLoader(
 
   Box(
     modifier =
-      modifier
-        .fillMaxSize()
-        .background(backgroundColor),
+    modifier
+      .fillMaxSize()
+      .background(backgroundColor),
     contentAlignment = Alignment.Center,
   ) {
     Column(
@@ -320,12 +318,6 @@ private data class LoaderMetrics(
   val showLabel: Boolean,
 )
 
-private data class LoaderColors(
-  val color: Color,
-  val trackColor: Color,
-)
+private data class LoaderColors(val color: Color, val trackColor: Color)
 
-private data class LoaderProgress(
-  val phase: Float,
-  val pulse: Float,
-)
+private data class LoaderProgress(val phase: Float, val pulse: Float)

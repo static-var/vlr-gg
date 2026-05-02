@@ -37,9 +37,9 @@ public fun PrismBottomNavBar(
   ) {
     Row(
       modifier =
-        Modifier.fillMaxWidth()
-          .padding(Prism.dimens.spacingXs)
-          .selectableGroup(),
+      Modifier.fillMaxWidth()
+        .padding(Prism.dimens.spacingXs)
+        .selectableGroup(),
       horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
       verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -49,24 +49,24 @@ public fun PrismBottomNavBar(
 
         PrismSurface(
           modifier =
-            Modifier.weight(1f)
-              .selectable(
-                selected = selected,
-                onClick = { onItemSelected(item) },
-                role = Role.Tab,
-              ),
+          Modifier.weight(1f)
+            .selectable(
+              selected = selected,
+              onClick = { onItemSelected(item) },
+              role = Role.Tab,
+            ),
           color = if (selected) Prism.color.accentSubtle else Prism.color.background,
           shape = Prism.shapes.small,
           border = BorderStroke(Prism.dimens.strokeDefault, borderColor),
         ) {
           Column(
             modifier =
-              Modifier.fillMaxWidth()
-                .heightIn(min = Prism.dimens.spacingXl + Prism.dimens.spacingS)
-                .padding(
-                  horizontal = Prism.dimens.spacingS,
-                  vertical = Prism.dimens.spacingXs,
-                ),
+            Modifier.fillMaxWidth()
+              .heightIn(min = Prism.dimens.spacingXl + Prism.dimens.spacingS)
+              .padding(
+                horizontal = Prism.dimens.spacingS,
+                vertical = Prism.dimens.spacingXs,
+              ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
           ) {

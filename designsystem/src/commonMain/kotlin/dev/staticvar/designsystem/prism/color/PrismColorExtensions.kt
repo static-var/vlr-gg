@@ -32,4 +32,6 @@ internal val LocalPrismColors =
  * ```
  */
 public val MaterialTheme.prismColors: PrismColorPalette
-  @Composable @ReadOnlyComposable get() = LocalPrismColors.current
+  @Composable
+  @ReadOnlyComposable
+  get() = LocalPrismColors.current

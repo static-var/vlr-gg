@@ -23,17 +23,15 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismSwitchPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismSwitchPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     var checked by remember { mutableStateOf(false) }
 
     Column(
       modifier =
-        Modifier.fillMaxWidth()
-          .background(Prism.color.background)
-          .padding(Prism.dimens.spacingM),
+      Modifier.fillMaxWidth()
+        .background(Prism.color.background)
+        .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       Text("Interactive", style = Prism.typography.label, color = Prism.color.labelColor)

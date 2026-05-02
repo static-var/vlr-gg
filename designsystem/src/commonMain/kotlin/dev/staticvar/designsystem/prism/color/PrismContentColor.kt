@@ -31,20 +31,29 @@ public fun contentColorFor(backgroundColor: Color): Color {
   return when (backgroundColor) {
     // Accent containers
     colors.accent -> colors.surface
+
     colors.accentVariant -> colors.surface
+
     colors.accentSubtle -> colors.accent
 
     // Semantic containers
     colors.successContainer -> colors.success
+
     colors.warningContainer -> colors.warning
+
     colors.dangerContainer -> colors.danger
+
     colors.infoContainer -> colors.info
 
     // Surface variants
     colors.surface -> colors.contentPrimary
+
     colors.surfaceVariant -> colors.contentPrimary
+
     colors.surfaceDim -> colors.contentSecondary
+
     colors.backgroundElevated -> colors.contentPrimary
+
     colors.background -> colors.contentPrimary
 
     // Default fallback

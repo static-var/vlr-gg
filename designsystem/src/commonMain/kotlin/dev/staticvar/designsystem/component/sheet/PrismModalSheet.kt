@@ -50,21 +50,21 @@ public fun PrismModalSheet(
   Box(modifier = Modifier.fillMaxSize()) {
     Box(
       modifier =
-        Modifier.fillMaxSize()
-          .background(scrimColor)
-          .clickable(
-            interactionSource = scrimInteractionSource,
-            indication = null,
-            onClick = onDismissRequest,
-          ),
+      Modifier.fillMaxSize()
+        .background(scrimColor)
+        .clickable(
+          interactionSource = scrimInteractionSource,
+          indication = null,
+          onClick = onDismissRequest,
+        ),
     )
 
     PrismSheet(
       modifier =
-        modifier
-          .align(Alignment.BottomCenter)
-          .fillMaxWidth()
-          .padding(horizontal = Prism.dimens.spacingM, vertical = Prism.dimens.spacingM),
+      modifier
+        .align(Alignment.BottomCenter)
+        .fillMaxWidth()
+        .padding(horizontal = Prism.dimens.spacingM, vertical = Prism.dimens.spacingM),
       header = {
         if (dragHandle != null) {
           Box(

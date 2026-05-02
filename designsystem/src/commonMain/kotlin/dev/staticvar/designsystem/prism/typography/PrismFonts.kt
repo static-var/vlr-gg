@@ -6,10 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.font.FontFamily
-import org.jetbrains.compose.resources.Font as ResourceFont
 import org.jetbrains.compose.resources.FontResource
 import vlr.designsystem.generated.resources.Res
 import vlr.designsystem.generated.resources.allFontResources
+import org.jetbrains.compose.resources.Font as ResourceFont
 
 @Immutable
 internal data class PrismFontFamilies(
@@ -41,10 +41,7 @@ internal fun rememberPrismFontFamilies(): PrismFontFamilies {
 }
 
 @Composable
-private fun fontFamilyResource(resourceName: String): FontFamily? {
-  return fontResource(resourceName)?.let { fontResource -> FontFamily(ResourceFont(fontResource)) }
-}
+private fun fontFamilyResource(resourceName: String): FontFamily? =
+  fontResource(resourceName)?.let { fontResource -> FontFamily(ResourceFont(fontResource)) }
 
-private fun fontResource(resourceName: String): FontResource? {
-  return Res.allFontResources[resourceName]
-}
+private fun fontResource(resourceName: String): FontResource? = Res.allFontResources[resourceName]

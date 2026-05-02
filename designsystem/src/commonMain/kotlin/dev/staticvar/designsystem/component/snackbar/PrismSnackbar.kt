@@ -43,8 +43,8 @@ public fun PrismSnackbar(
   ) {
     Row(
       modifier =
-        Modifier.fillMaxWidth()
-          .padding(horizontal = Prism.dimens.spacingM, vertical = Prism.dimens.spacingS),
+      Modifier.fillMaxWidth()
+        .padding(horizontal = Prism.dimens.spacingM, vertical = Prism.dimens.spacingS),
       horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       verticalAlignment = Alignment.CenterVertically,
     ) {

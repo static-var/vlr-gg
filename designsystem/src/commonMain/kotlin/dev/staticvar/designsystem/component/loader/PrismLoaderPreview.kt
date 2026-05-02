@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,15 +22,13 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismLoaderPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismLoaderPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     Column(
       modifier =
-        Modifier.fillMaxWidth()
-          .background(Prism.color.background)
-          .padding(Prism.dimens.spacingM),
+      Modifier.fillMaxWidth()
+        .background(Prism.color.background)
+        .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       Text("PrismLoader", style = Prism.typography.label, color = Prism.color.labelColor)
@@ -49,15 +47,13 @@ internal fun PrismLoaderPreview(
 
 @PrismPreview
 @Composable
-internal fun PrismFullscreenLoaderPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismFullscreenLoaderPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     Box(
       modifier =
-        Modifier.fillMaxWidth()
-          .height(280.dp)
-          .background(Prism.color.background),
+      Modifier.fillMaxWidth()
+        .height(280.dp)
+        .background(Prism.color.background),
     ) {
       PrismFullscreenLoader(
         modifier = Modifier.fillMaxSize(),

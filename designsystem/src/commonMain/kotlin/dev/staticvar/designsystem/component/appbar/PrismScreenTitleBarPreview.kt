@@ -23,15 +23,13 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismScreenTitleBarPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismScreenTitleBarPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     Column(
       modifier =
-        Modifier.fillMaxWidth()
-          .background(Prism.color.background)
-          .padding(Prism.dimens.spacingM),
+      Modifier.fillMaxWidth()
+        .background(Prism.color.background)
+        .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       PrismScreenTitleBar(

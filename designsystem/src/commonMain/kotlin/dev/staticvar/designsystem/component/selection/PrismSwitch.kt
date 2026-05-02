@@ -142,19 +142,19 @@ private fun PrismSwitchTouchTarget(
 ) {
   Box(
     modifier =
-      modifier
-        .sizeIn(
-          minWidth = Prism.dimens.touchTargetMin,
-          minHeight = Prism.dimens.touchTargetMin,
-        )
-        .toggleable(
-          value = checked,
-          onValueChange = onCheckedChange,
-          enabled = enabled,
-          role = Role.Switch,
-          interactionSource = interactionSource,
-          indication = ripple(),
-        ),
+    modifier
+      .sizeIn(
+        minWidth = Prism.dimens.touchTargetMin,
+        minHeight = Prism.dimens.touchTargetMin,
+      )
+      .toggleable(
+        value = checked,
+        onValueChange = onCheckedChange,
+        enabled = enabled,
+        role = Role.Switch,
+        interactionSource = interactionSource,
+        indication = ripple(),
+      ),
     contentAlignment = Alignment.Center,
   ) {
     content()
@@ -180,9 +180,9 @@ private fun PrismSwitchTrack(
     ) {
       Box(
         modifier =
-          Modifier.offset(x = visualState.thumbOffset)
-            .size(thumbSize)
-            .background(color = visualState.thumbColor, shape = Prism.shapes.small),
+        Modifier.offset(x = visualState.thumbOffset)
+          .size(thumbSize)
+          .background(color = visualState.thumbColor, shape = Prism.shapes.small),
       )
     }
   }

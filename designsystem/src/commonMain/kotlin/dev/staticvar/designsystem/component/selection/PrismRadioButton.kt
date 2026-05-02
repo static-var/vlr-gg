@@ -49,10 +49,7 @@ public fun PrismRadioButton(
 }
 
 @Composable
-private fun rememberPrismRadioVisualState(
-  selected: Boolean,
-  enabled: Boolean,
-): PrismRadioVisualState {
+private fun rememberPrismRadioVisualState(selected: Boolean, enabled: Boolean): PrismRadioVisualState {
   val animation = Prism.anim.standard
   val animatedContainerColor by
     animateColorAsState(
@@ -102,30 +99,21 @@ private fun rememberPrismRadioVisualState(
 }
 
 @Composable
-private fun radioContainerColor(
-  selected: Boolean,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.surfaceDim
-    selected -> Prism.color.accentSubtle
-    else -> Prism.color.surface
-  }
+private fun radioContainerColor(selected: Boolean, enabled: Boolean): Color = when {
+  !enabled -> Prism.color.surfaceDim
+  selected -> Prism.color.accentSubtle
+  else -> Prism.color.surface
+}
 
 @Composable
-private fun radioBorderColor(
-  selected: Boolean,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.stroke
-    selected -> Prism.color.accent
-    else -> Prism.color.stroke
-  }
+private fun radioBorderColor(selected: Boolean, enabled: Boolean): Color = when {
+  !enabled -> Prism.color.stroke
+  selected -> Prism.color.accent
+  else -> Prism.color.stroke
+}
 
 @Composable
-private fun radioIndicatorColor(enabled: Boolean): Color =
-  if (enabled) Prism.color.accent else Prism.color.labelColor
+private fun radioIndicatorColor(enabled: Boolean): Color = if (enabled) Prism.color.accent else Prism.color.labelColor
 
 @Composable
 private fun PrismRadioTouchTarget(
@@ -138,19 +126,19 @@ private fun PrismRadioTouchTarget(
 ) {
   Box(
     modifier =
-      modifier
-        .sizeIn(
-          minWidth = Prism.dimens.touchTargetMin,
-          minHeight = Prism.dimens.touchTargetMin,
-        )
-        .selectable(
-          selected = selected,
-          onClick = onClick,
-          enabled = enabled,
-          role = Role.RadioButton,
-          interactionSource = interactionSource,
-          indication = ripple(),
-        ),
+    modifier
+      .sizeIn(
+        minWidth = Prism.dimens.touchTargetMin,
+        minHeight = Prism.dimens.touchTargetMin,
+      )
+      .selectable(
+        selected = selected,
+        onClick = onClick,
+        enabled = enabled,
+        role = Role.RadioButton,
+        interactionSource = interactionSource,
+        indication = ripple(),
+      ),
     contentAlignment = Alignment.Center,
   ) {
     content()
@@ -171,13 +159,13 @@ private fun PrismRadioBox(visualState: PrismRadioVisualState) {
     ) {
       Box(
         modifier =
-          Modifier.size(Prism.dimens.spacingS)
-            .graphicsLayer {
-              scaleX = visualState.indicatorScale
-              scaleY = visualState.indicatorScale
-              alpha = visualState.indicatorAlpha
-            }
-            .background(color = visualState.indicatorColor, shape = Prism.shapes.small),
+        Modifier.size(Prism.dimens.spacingS)
+          .graphicsLayer {
+            scaleX = visualState.indicatorScale
+            scaleY = visualState.indicatorScale
+            alpha = visualState.indicatorAlpha
+          }
+          .background(color = visualState.indicatorColor, shape = Prism.shapes.small),
       )
     }
   }

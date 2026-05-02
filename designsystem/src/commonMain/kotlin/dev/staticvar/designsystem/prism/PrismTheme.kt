@@ -20,10 +20,7 @@ import dev.staticvar.designsystem.theme.light.LightTheme
  * @param content The composable content to theme.
  */
 @Composable
-public fun PrismTheme(
-  variant: PrismVariant = PrismVariant.Light,
-  content: @Composable () -> Unit,
-) {
+public fun PrismTheme(variant: PrismVariant = PrismVariant.Light, content: @Composable () -> Unit) {
   when (variant) {
     PrismVariant.Light -> LightTheme(content)
     PrismVariant.Dark -> DarkTheme(content)

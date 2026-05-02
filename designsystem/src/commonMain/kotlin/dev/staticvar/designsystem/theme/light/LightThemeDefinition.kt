@@ -15,13 +15,10 @@ internal object LightThemeDefinition : PrismThemeDefinition<LightColorTokens> {
 
   override fun createColorScheme(palette: PrismColorPalette): ColorScheme = LightColorScheme.create(palette)
 
-  override fun createTypographyTokens(
-    palette: PrismColorPalette,
-    fonts: PrismFontFamilies,
-  ): PrismTypography = LightTypography.createTokens(palette, fonts)
+  override fun createTypographyTokens(palette: PrismColorPalette, fonts: PrismFontFamilies): PrismTypography =
+    LightTypography.createTokens(palette, fonts)
 
-  override fun createMaterialTypography(tokens: PrismTypography): Typography =
-    LightTypography.createMaterial(tokens)
+  override fun createMaterialTypography(tokens: PrismTypography): Typography = LightTypography.createMaterial(tokens)
 
   override val shapes: Shapes
     get() = LightShapes.shapes

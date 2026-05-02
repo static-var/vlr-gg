@@ -67,10 +67,10 @@ public fun PrismSurface(
 
     Box(
       modifier =
-        modifier
-          .then(if (border != null) Modifier.border(border, shape) else Modifier)
-          .then(backgroundModifier)
-          .clip(shape),
+      modifier
+        .then(if (border != null) Modifier.border(border, shape) else Modifier)
+        .then(backgroundModifier)
+        .clip(shape),
     ) {
       content()
     }

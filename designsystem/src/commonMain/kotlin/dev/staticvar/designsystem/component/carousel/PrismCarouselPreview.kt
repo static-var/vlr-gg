@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
@@ -24,16 +24,14 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismCarouselPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismCarouselPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     Column(
       modifier =
-        Modifier.fillMaxSize()
-          .background(Prism.color.background)
-          .verticalScroll(rememberScrollState())
-          .padding(vertical = Prism.dimens.spacingM),
+      Modifier.fillMaxSize()
+        .background(Prism.color.background)
+        .verticalScroll(rememberScrollState())
+        .padding(vertical = Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXl),
     ) {
       HeroCarouselPreview()
@@ -54,7 +52,7 @@ private fun HeroCarouselPreview() {
     PreviewCarouselCard(
       title = "Featured match ${page + 1}",
       label = "BRUTALIST HERO PANEL",
-      variant = PrismCardVariant.Outlined,
+      style = PrismCardStyle.Outlined,
       modifier = Modifier.fillMaxWidth().height(200.dp).padding(horizontal = Prism.dimens.spacingM),
     )
   }
@@ -71,7 +69,7 @@ private fun MultibrowseCarouselPreview() {
     PreviewCarouselCard(
       title = "Standings block ${page + 1}",
       label = "CENTER EMPHASIS",
-      variant = PrismCardVariant.Filled,
+      style = PrismCardStyle.Filled,
       modifier = Modifier.fillMaxWidth().height(180.dp).padding(horizontal = Prism.dimens.spacingS),
     )
   }
@@ -89,17 +87,14 @@ private fun UncontainedCarouselPreview() {
     PreviewCarouselCard(
       title = "Item ${page + 1}",
       label = "RAIL",
-      variant = PrismCardVariant.Outlined,
+      style = PrismCardStyle.Outlined,
       modifier = Modifier.fillMaxWidth().height(120.dp).padding(horizontal = Prism.dimens.spacingXs),
     )
   }
 }
 
 @Composable
-private fun CarouselPreviewTitle(
-  title: String,
-  subtitle: String,
-) {
+private fun CarouselPreviewTitle(title: String, subtitle: String) {
   Text(
     title,
     style = Prism.typography.sectionTitle,
@@ -115,13 +110,8 @@ private fun CarouselPreviewTitle(
 }
 
 @Composable
-private fun PreviewCarouselCard(
-  title: String,
-  label: String,
-  variant: PrismCardVariant,
-  modifier: Modifier,
-) {
-  PrismCard(modifier = modifier, variant = variant) {
+private fun PreviewCarouselCard(title: String, label: String, style: PrismCardStyle, modifier: Modifier) {
+  PrismCard(modifier = modifier, style = style) {
     Text(title, style = Prism.typography.cardTitle)
     Text(label, style = Prism.typography.caption, color = Prism.color.labelColor)
   }

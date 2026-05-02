@@ -18,14 +18,12 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismSurfacePreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismSurfacePreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     Column(
       modifier =
-        Modifier.fillMaxWidth()
-          .padding(Prism.dimens.spacingM),
+      Modifier.fillMaxWidth()
+        .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       Text(
@@ -44,11 +42,7 @@ internal fun PrismSurfacePreview(
 }
 
 @Composable
-private fun PrismSurfacePreviewSample(
-  color: Color,
-  title: String,
-  subtitle: String,
-) {
+private fun PrismSurfacePreviewSample(color: Color, title: String, subtitle: String) {
   PrismSurface(
     color = color,
     shape = RoundedCornerShape(Prism.dimens.cornerM),
