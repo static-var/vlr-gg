@@ -14,6 +14,7 @@ class DetektConventionPlugin : Plugin<Project> {
 
       tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         jvmTarget = JavaVersion.VERSION_17.toString()
+        exclude("**/generated/**")
       }
       tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
         jvmTarget = JavaVersion.VERSION_17.toString()
@@ -24,8 +25,8 @@ class DetektConventionPlugin : Plugin<Project> {
         allRules = false // activate all available (even unstable) rules.
         autoCorrect = false
         parallel = true
-        config.setFrom("config/detekt/detekt.yml")
-        baseline = file("config/detekt/detekt-baseline.xml")
+        config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+        baseline = rootProject.file("config/detekt/detekt-baseline.xml")
       }
 
       tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
