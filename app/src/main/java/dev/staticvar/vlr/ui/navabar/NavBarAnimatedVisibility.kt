@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.navabar
 
 import androidx.compose.animation.AnimatedVisibility
@@ -19,17 +23,17 @@ fun NavBarAnimatedVisibility(
   AnimatedVisibility(
     visible = isVisible,
     enter =
-      slideInVertically(
-        // Enters by sliding up from offset 0 to fullHeight.
-        initialOffsetY = { fullHeight -> fullHeight },
-        animationSpec = tween(durationMillis = 600, easing = LinearOutSlowInEasing),
-      ),
+    slideInVertically(
+      // Enters by sliding up from offset 0 to fullHeight.
+      initialOffsetY = { fullHeight -> fullHeight },
+      animationSpec = tween(durationMillis = 600, easing = LinearOutSlowInEasing),
+    ),
     exit =
-      slideOutVertically(
-        // Exits by sliding up from offset 0 to -fullHeight.
-        targetOffsetY = { fullHeight -> fullHeight },
-        animationSpec = tween(durationMillis = 600, easing = FastOutLinearInEasing),
-      ),
+    slideOutVertically(
+      // Exits by sliding up from offset 0 to -fullHeight.
+      targetOffsetY = { fullHeight -> fullHeight },
+      animationSpec = tween(durationMillis = 600, easing = FastOutLinearInEasing),
+    ),
     modifier = modifier,
     label = "",
     content = content,

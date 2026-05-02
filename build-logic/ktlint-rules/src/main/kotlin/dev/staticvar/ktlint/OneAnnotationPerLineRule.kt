@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.ktlint
 
 import com.pinterest.ktlint.rule.engine.core.api.AutocorrectDecision

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.domain.model
 
 /**
@@ -30,5 +34,5 @@ enum class MatchStatus {
   UPCOMING,
   LIVE,
   COMPLETED,
-  UNKNOWN
+  UNKNOWN,
 }

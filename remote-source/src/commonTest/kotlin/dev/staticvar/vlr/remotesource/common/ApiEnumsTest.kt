@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.common
 
 import kotlin.test.Test
@@ -13,8 +17,8 @@ class ApiEnumsTest {
       "upcoming" to MatchStatus.UPCOMING,
       "ongoing" to MatchStatus.ONGOING,
       "tbd" to MatchStatus.TBD,
-      "brand_new" to null
-    )
+      "brand_new" to null,
+    ),
   )
 
   @Test
@@ -24,8 +28,8 @@ class ApiEnumsTest {
       "upcoming" to EventStatus.UPCOMING,
       "completed" to EventStatus.COMPLETED,
       "ongoing" to EventStatus.ONGOING,
-      "brand_new" to null
-    )
+      "brand_new" to null,
+    ),
   )
 
   @Test
@@ -37,7 +41,7 @@ class ApiEnumsTest {
       "events" to SearchCategory.EVENT,
       "series" to SearchCategory.SERIES,
       "all" to SearchCategory.ALL,
-      "esports_org" to null
-    )
+      "esports_org" to null,
+    ),
   )
 }

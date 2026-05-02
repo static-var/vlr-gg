@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui
 
 import androidx.lifecycle.ViewModel
@@ -6,7 +10,6 @@ import com.github.michaelbull.result.Ok
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.Waiting
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -14,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class VlrViewModel @Inject constructor(private val repository: VlrRepository) : ViewModel() {
@@ -51,49 +55,37 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
     viewModelScope.launch { _resetScroll.emit(false) }
   }
 
-  fun refreshNews() =
-    repository.updateLatestNews().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
+  fun refreshNews() = repository.updateLatestNews().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
 
-  fun getNews() =
-    repository.getNewsFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
+  fun getNews() = repository.getNewsFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
-  fun refreshMatches() =
-    repository.updateLatestMatches().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
+  fun refreshMatches() = repository.updateLatestMatches().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
 
-  fun getMatches() =
-    repository.getMatchesFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
+  fun getMatches() = repository.getMatchesFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
-  fun refreshEvents() =
-    repository.updateLatestEvents().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
+  fun refreshEvents() = repository.updateLatestEvents().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
 
-  fun getEvents() =
-    repository.getEventsFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
+  fun getEvents() = repository.getEventsFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
-  fun refreshRanks() =
-    repository.updateLatestRanks().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
+  fun refreshRanks() = repository.updateLatestRanks().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
 
-  fun getRanks() =
-    repository.getRanksFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
+  fun getRanks() = repository.getRanksFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
-  fun refreshMatchInfo(id: String) =
-    repository
-      .updateLatestMatchDetails(id)
-      .stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
+  fun refreshMatchInfo(id: String) = repository
+    .updateLatestMatchDetails(id)
+    .stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
 
-  fun getMatchDetails(matchUrl: String) =
-    repository
-      .getMatchDetailsFromDb(matchUrl)
-      .stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
+  fun getMatchDetails(matchUrl: String) = repository
+    .getMatchDetailsFromDb(matchUrl)
+    .stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
-  fun refreshEventDetails(id: String) =
-    repository
-      .updateLatestEventDetails(id)
-      .stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
+  fun refreshEventDetails(id: String) = repository
+    .updateLatestEventDetails(id)
+    .stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
 
-  fun getEventDetails(matchUrl: String) =
-    repository
-      .getEventDetailsFromDb(matchUrl)
-      .stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
+  fun getEventDetails(matchUrl: String) = repository
+    .getEventDetailsFromDb(matchUrl)
+    .stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
   fun refreshTeamDetails(id: String) =
     repository.getTeamDetails(id).stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
@@ -107,19 +99,15 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   fun getPlayerDetails(id: String) =
     repository.getPlayerDetailsFromDb(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
 
-  fun parseNews(id: String) =
-    repository.parseNews(id).stateIn(viewModelScope, SharingStarted.Lazily, null)
+  fun parseNews(id: String) = repository.parseNews(id).stateIn(viewModelScope, SharingStarted.Lazily, null)
 
   fun trackMatch(id: String) = viewModelScope.launch { repository.addFavoriteMatch(id) }
   fun untrackMatch(id: String) = viewModelScope.launch { repository.removeFavoriteMatch(id) }
 
-  fun trackEvent(id: String) =
-    viewModelScope.launch { repository.addFavoriteEvent(id) }
+  fun trackEvent(id: String) = viewModelScope.launch { repository.addFavoriteEvent(id) }
 
-  fun untrackEvent(id: String) =
-    viewModelScope.launch { repository.removeFavoriteEvent(id) }
+  fun untrackEvent(id: String) = viewModelScope.launch { repository.removeFavoriteEvent(id) }
 
   fun trackTeam(id: String) = viewModelScope.launch { repository.addFavoriteTeam(id) }
   fun untrackTeam(id: String) = viewModelScope.launch { repository.removeFavoriteTeam(id) }
-
 }

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.mapper
 
 import dev.staticvar.vlr.data.News
@@ -24,31 +28,29 @@ import kotlin.time.Clock
 
 // ----------------------------- News -----------------------------
 
-internal fun NewsItemDto.toEntity(): News =
-  News(
-    id = url.toArticleId(),
-    url = url.toAbsoluteVlrUrl(),
-    title = title,
-    author = author,
-    date = date,
-    description = description,
-    cover_url = "", // Not provided in NewsItemDto
-    content_html = null,
-    last_updated = Clock.System.now().toEpochMilliseconds()
-  )
+internal fun NewsItemDto.toEntity(): News = News(
+  id = url.toArticleId(),
+  url = url.toAbsoluteVlrUrl(),
+  title = title,
+  author = author,
+  date = date,
+  description = description,
+  cover_url = "", // Not provided in NewsItemDto
+  content_html = null,
+  last_updated = Clock.System.now().toEpochMilliseconds(),
+)
 
-internal fun NewsArticleDto.toEntity(): News =
-  News(
-    id = id.toArticleId(),
-    url = id.toAbsoluteVlrUrl(),
-    title = title,
-    author = author,
-    date = date ?: "",
-    description = null,
-    cover_url = images.firstOrNull() ?: "",
-    content_html = content,
-    last_updated = Clock.System.now().toEpochMilliseconds()
-  )
+internal fun NewsArticleDto.toEntity(): News = News(
+  id = id.toArticleId(),
+  url = id.toAbsoluteVlrUrl(),
+  title = title,
+  author = author,
+  date = date ?: "",
+  description = null,
+  cover_url = images.firstOrNull() ?: "",
+  content_html = content,
+  last_updated = Clock.System.now().toEpochMilliseconds(),
+)
 
 internal fun NewsArticleDto.toMediaEntities(articleId: String = id): List<NewsMedia> {
   val linkMedia = links.mapNotNull { map ->
@@ -84,67 +86,63 @@ private fun String.toArticleId(): String {
 
 // ----------------------------- Rankings -----------------------------
 
-internal fun TeamRankingDto.toEntity(region: String): Rankings =
-  Rankings(
-    team_id = id.toString(),
-    region = region,
-    team_name = name,
-    team_logo = logo,
-    country = country,
-    rank = rank.toLong(),
-    points = points.toString(),
-    last_updated = Clock.System.now().toEpochMilliseconds()
-  )
+internal fun TeamRankingDto.toEntity(region: String): Rankings = Rankings(
+  team_id = id.toString(),
+  region = region,
+  team_name = name,
+  team_logo = logo,
+  country = country,
+  rank = rank.toLong(),
+  points = points.toString(),
+  last_updated = Clock.System.now().toEpochMilliseconds(),
+)
 
 // ----------------------------- Standings -----------------------------
 
-internal fun TeamStandingDto.toEntity(year: Int, circuit: String, region: String): Standings =
-  Standings(
-    team_id = id.toString(),
-    year = year.toLong(),
-    circuit = circuit,
-    region = region,
-    team_name = name,
-    team_logo = logo,
-    country = country,
-    rank = rank.toLong(),
-    points = points.toString(),
-    last_updated = Clock.System.now().toEpochMilliseconds()
-  )
+internal fun TeamStandingDto.toEntity(year: Int, circuit: String, region: String): Standings = Standings(
+  team_id = id.toString(),
+  year = year.toLong(),
+  circuit = circuit,
+  region = region,
+  team_name = name,
+  team_logo = logo,
+  country = country,
+  rank = rank.toLong(),
+  points = points.toString(),
+  last_updated = Clock.System.now().toEpochMilliseconds(),
+)
 
 // ----------------------------- Player Child Tables -----------------------------
 
-internal fun PlayerAgentStatsDto.toEntity(playerId: String): PlayerAgentStats =
-  PlayerAgentStats(
-    id = 0,
-    player_id = playerId,
-    agent_name = name,
-    agent_image_url = img,
-    usage_count = count.toLong(),
-    usage_percent = percent,
-    rounds_played = rounds.toLong(),
-    rating = rating,
-    acs = acs,
-    kd_ratio = kd,
-    adr = adr,
-    kast = kast,
-    kpr = kpr,
-    apr = apr,
-    fkpr = fkpr,
-    fdpr = fdpr,
-    kills = k.toLong(),
-    deaths = d.toLong(),
-    assists = a.toLong(),
-    first_kills = fk.toLong(),
-    first_deaths = fd.toLong()
-  )
+internal fun PlayerAgentStatsDto.toEntity(playerId: String): PlayerAgentStats = PlayerAgentStats(
+  id = 0,
+  player_id = playerId,
+  agent_name = name,
+  agent_image_url = img,
+  usage_count = count.toLong(),
+  usage_percent = percent,
+  rounds_played = rounds.toLong(),
+  rating = rating,
+  acs = acs,
+  kd_ratio = kd,
+  adr = adr,
+  kast = kast,
+  kpr = kpr,
+  apr = apr,
+  fkpr = fkpr,
+  fdpr = fdpr,
+  kills = k.toLong(),
+  deaths = d.toLong(),
+  assists = a.toLong(),
+  first_kills = fk.toLong(),
+  first_deaths = fd.toLong(),
+)
 
-internal fun PlayerTeamRefDto.toEntity(playerId: String, isCurrent: Boolean?): PlayerTeamHistory =
-  PlayerTeamHistory(
-    id = 0,
-    player_id = playerId,
-    team_id = id.takeIf { it.isNotBlank() },
-    team_name = name,
-    team_logo_url = img,
-    is_current = if (isCurrent == true) 1 else 0
-  )
+internal fun PlayerTeamRefDto.toEntity(playerId: String, isCurrent: Boolean?): PlayerTeamHistory = PlayerTeamHistory(
+  id = 0,
+  player_id = playerId,
+  team_id = id.takeIf { it.isNotBlank() },
+  team_name = name,
+  team_logo_url = img,
+  is_current = if (isCurrent == true) 1 else 0,
+)

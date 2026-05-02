@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +21,7 @@ fun DateChip(modifier: Modifier = Modifier, date: String) {
   Column(
     modifier.fillMaxWidth(),
     horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center
+    verticalArrangement = Arrangement.Center,
   ) {
     SuggestionChip(
       onClick = {},
@@ -30,11 +34,11 @@ fun DateChip(modifier: Modifier = Modifier, date: String) {
       },
       shape = VLRTheme.shapes.small,
       colors = SuggestionChipDefaults.suggestionChipColors(
-        containerColor = VLRTheme.colorScheme.primaryContainer
+        containerColor = VLRTheme.colorScheme.primaryContainer,
       ),
       border = SuggestionChipDefaults.suggestionChipBorder(
         enabled = true,
-        borderColor = VLRTheme.colorScheme.primary
+        borderColor = VLRTheme.colorScheme.primary,
       ),
     )
   }

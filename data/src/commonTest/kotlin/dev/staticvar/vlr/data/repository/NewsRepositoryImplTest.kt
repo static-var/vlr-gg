@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.repository
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
@@ -8,16 +12,16 @@ import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.news.NewsArticleDto
 import dev.staticvar.vlr.remotesource.news.NewsDataSource
 import dev.staticvar.vlr.remotesource.news.NewsItemDto
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewsRepositoryImplTest {
@@ -39,7 +43,7 @@ class NewsRepositoryImplTest {
     repository = NewsRepositoryImpl(
       newsDataSource = dataSource,
       database = database,
-      dispatchers = dispatcherProvider
+      dispatchers = dispatcherProvider,
     )
   }
 
@@ -54,13 +58,13 @@ class NewsRepositoryImplTest {
       id = "keep",
       title = "Old Keep",
       description = "Old",
-      contentHtml = "<p>cached</p>"
+      contentHtml = "<p>cached</p>",
     )
     insertNews(
       id = "stale",
       title = "Stale News",
       description = "Stale",
-      contentHtml = "<p>stale</p>"
+      contentHtml = "<p>stale</p>",
     )
 
     dataSource.listResult = Result.success(
@@ -70,16 +74,16 @@ class NewsRepositoryImplTest {
           title = "Keep Updated",
           description = "New Desc",
           date = "2024-01-06",
-          author = "Author"
+          author = "Author",
         ),
         NewsItemDto(
           url = "fresh",
           title = "Fresh Title",
           description = "Fresh Desc",
           date = "2024-01-07",
-          author = "Reporter"
-        )
-      )
+          author = "Reporter",
+        ),
+      ),
     )
 
     val result = repository.refreshNews()
@@ -106,16 +110,16 @@ class NewsRepositoryImplTest {
           title = "Alpha",
           description = "Alpha Desc",
           date = "2024-02-01",
-          author = "A"
+          author = "A",
         ),
         NewsItemDto(
           url = "beta",
           title = "Beta",
           description = "Beta Desc",
           date = "2024-02-02",
-          author = "B"
-        )
-      )
+          author = "B",
+        ),
+      ),
     )
 
     assertTrue(repository.refreshNews().isSuccess)
@@ -134,7 +138,7 @@ class NewsRepositoryImplTest {
       id = "story",
       title = "Story",
       description = "Summary",
-      contentHtml = null
+      contentHtml = null,
     )
 
     dataSource.articleResults["story"] = Result.success(
@@ -146,8 +150,8 @@ class NewsRepositoryImplTest {
         images = listOf("img.png"),
         videos = listOf("clip.mp4"),
         date = "2024-03-01",
-        author = "Reporter"
-      )
+        author = "Reporter",
+      ),
     )
 
     repository.getNewsArticle("story").test {
@@ -185,7 +189,7 @@ class NewsRepositoryImplTest {
     contentHtml: String?,
     author: String = "Author",
     date: String = "2024-01-01",
-    coverUrl: String = ""
+    coverUrl: String = "",
   ) {
     database.newsQueries.insertNews(
       News(
@@ -197,14 +201,12 @@ class NewsRepositoryImplTest {
         cover_url = coverUrl,
         description = description,
         content_html = contentHtml,
-        last_updated = 0
-      )
+        last_updated = 0,
+      ),
     )
   }
 
-  private class TestDispatcherProvider(
-    private val dispatcher: TestDispatcher
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {
     override val default = dispatcher
     override val io = dispatcher
     override val main = dispatcher

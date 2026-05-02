@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.common
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,13 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun VlrHorizontalViewPager(
-  modifier: Modifier,
-  pagerState: PagerState,
-  vararg contents: @Composable () -> Unit
-) {
-  HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize(), beyondViewportPageCount = 1) {
-    tabPosition ->
+fun VlrHorizontalViewPager(modifier: Modifier, pagerState: PagerState, vararg contents: @Composable () -> Unit) {
+  HorizontalPager(state = pagerState, modifier = modifier.fillMaxSize(), beyondViewportPageCount = 1) { tabPosition ->
     contents[tabPosition]()
   }
 }

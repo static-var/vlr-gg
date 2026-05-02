@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
@@ -28,17 +32,16 @@ import kotlinx.coroutines.withContext
 internal class NewsRepositoryImpl(
   private val newsDataSource: NewsDataSource,
   private val database: VlrDatabase,
-  private val dispatchers: DispatcherProvider
+  private val dispatchers: DispatcherProvider,
 ) : NewsRepository {
 
   private val queries = database.newsQueries
 
-  override fun getNewsList(): Flow<List<NewsItem>> =
-    queries
-      .getAllNews()
-      .asFlow()
-      .mapToList(dispatchers.io)
-      .map { entities -> entities.map { it.toNewsItem() } }
+  override fun getNewsList(): Flow<List<NewsItem>> = queries
+    .getAllNews()
+    .asFlow()
+    .mapToList(dispatchers.io)
+    .map { entities -> entities.map { it.toNewsItem() } }
 
   override fun getNewsArticle(articleId: String): Flow<NewsArticle?> {
     val newsFlow = queries
@@ -56,35 +59,33 @@ internal class NewsRepositoryImpl(
     }
   }
 
-  override suspend fun refreshNews(): Result<Unit> =
-    withContext(dispatchers.io) {
-      newsDataSource.list().mapCatching { dtos ->
-        database.transaction {
-          val existing = queries.getAllNews().executeAsList().associateBy { it.id }
-          val remoteIds = mutableSetOf<String>()
+  override suspend fun refreshNews(): Result<Unit> = withContext(dispatchers.io) {
+    newsDataSource.list().mapCatching { dtos ->
+      database.transaction {
+        val existing = queries.getAllNews().executeAsList().associateBy { it.id }
+        val remoteIds = mutableSetOf<String>()
 
-          dtos.forEach { dto ->
-            val entity = dto.toEntity()
-            if (entity.id.isBlank()) return@forEach
-            remoteIds += entity.id
-            val current = existing[entity.id]
-            val merged = mergeListEntity(entity, current)
-            queries.insertNews(merged)
-          }
-
-          val staleIds = existing.keys - remoteIds
-          staleIds.forEach { id -> queries.deleteNewsById(id) }
+        dtos.forEach { dto ->
+          val entity = dto.toEntity()
+          if (entity.id.isBlank()) return@forEach
+          remoteIds += entity.id
+          val current = existing[entity.id]
+          val merged = mergeListEntity(entity, current)
+          queries.insertNews(merged)
         }
-      }
-    }
 
-  override suspend fun refreshNewsArticle(articleId: String): Result<Unit> =
-    withContext(dispatchers.io) {
-      val current = queries.getNewsById(articleId).executeAsOneOrNull()
-      newsDataSource.article(articleId).mapCatching { dto ->
-        persistArticle(dto, articleId, current)
+        val staleIds = existing.keys - remoteIds
+        staleIds.forEach { id -> queries.deleteNewsById(id) }
       }
     }
+  }
+
+  override suspend fun refreshNewsArticle(articleId: String): Result<Unit> = withContext(dispatchers.io) {
+    val current = queries.getNewsById(articleId).executeAsOneOrNull()
+    newsDataSource.article(articleId).mapCatching { dto ->
+      persistArticle(dto, articleId, current)
+    }
+  }
 
   private fun persistArticle(dto: NewsArticleDto, requestedId: String, current: News?) {
     database.transaction {
@@ -97,30 +98,25 @@ internal class NewsRepositoryImpl(
     }
   }
 
-  private fun mergeListEntity(entity: News, current: News?): News =
-    entity.copy(
-      content_html = current?.content_html ?: entity.content_html,
-      cover_url = when {
-        entity.cover_url.isNotBlank() -> entity.cover_url
-        current != null -> current.cover_url
-        else -> entity.cover_url
-      },
-      description = entity.description?.takeIf { it.isNotBlank() } ?: current?.description,
-      date = entity.date.ifBlank { current?.date ?: "" },
-      author = entity.author.ifBlank { current?.author ?: "" }
-    )
+  private fun mergeListEntity(entity: News, current: News?): News = entity.copy(
+    content_html = current?.content_html ?: entity.content_html,
+    cover_url = when {
+      entity.cover_url.isNotBlank() -> entity.cover_url
+      current != null -> current.cover_url
+      else -> entity.cover_url
+    },
+    description = entity.description?.takeIf { it.isNotBlank() } ?: current?.description,
+    date = entity.date.ifBlank { current?.date ?: "" },
+    author = entity.author.ifBlank { current?.author ?: "" },
+  )
 
-  private fun mergeArticleEntity(
-    dto: NewsArticleDto,
-    requestedId: String,
-    current: News?
-  ): News {
+  private fun mergeArticleEntity(dto: NewsArticleDto, requestedId: String, current: News?): News {
     val requestedUrl = requestedId.toAbsoluteVlrUrl()
     val base = dto.toEntity().copy(id = requestedId, url = current?.url ?: requestedUrl)
     return base.copy(
       description = current?.description,
       cover_url = base.cover_url.ifBlank { current?.cover_url ?: "" },
-      date = base.date.ifBlank { current?.date ?: "" }
+      date = base.date.ifBlank { current?.date ?: "" },
     )
   }
 
@@ -129,7 +125,7 @@ internal class NewsRepositoryImpl(
       news_id = articleId,
       media_type = media.media_type,
       media_value = media.media_value,
-      media_text = media.media_text
+      media_text = media.media_text,
     )
   }
 }

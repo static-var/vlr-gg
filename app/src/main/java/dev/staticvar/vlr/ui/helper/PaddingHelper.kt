@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.helper
 
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,7 +17,7 @@ operator fun PaddingValues.plus(paddingValues: PaddingValues): PaddingValues {
     top = calculateTopPadding() + paddingValues.calculateTopPadding(),
     bottom = calculateBottomPadding() + paddingValues.calculateBottomPadding(),
     start =
-      calculateStartPadding(layoutDirection) + paddingValues.calculateStartPadding(layoutDirection),
+    calculateStartPadding(layoutDirection) + paddingValues.calculateStartPadding(layoutDirection),
     end = calculateEndPadding(layoutDirection) + paddingValues.calculateEndPadding(layoutDirection),
   )
 }

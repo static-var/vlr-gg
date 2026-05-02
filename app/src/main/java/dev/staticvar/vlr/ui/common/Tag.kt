@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.common
 
 import androidx.compose.foundation.background
@@ -24,7 +28,7 @@ fun Tag(modifier: Modifier = Modifier, text: String, icon: ImageVector?) {
         modifier = Modifier.size(16.dp).padding(end = 4.dp),
         imageVector = it,
         contentDescription = stringResource(R.string.get_notified),
-        tint = VLRTheme.colorScheme.primary
+        tint = VLRTheme.colorScheme.primary,
       )
     }
     Text(
@@ -34,8 +38,7 @@ fun Tag(modifier: Modifier = Modifier, text: String, icon: ImageVector?) {
         .padding(vertical = 2.dp, horizontal = 4.dp),
       text = text,
       style = VLRTheme.typography.bodySmall,
-      color = VLRTheme.colorScheme.onPrimary
+      color = VLRTheme.colorScheme.onPrimary,
     )
   }
-
 }

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurematches.presentation
 
 import androidx.compose.foundation.background
@@ -16,21 +20,19 @@ import dev.staticvar.vlr.domain.model.TeamPreview
 
 @PrismPreview
 @Composable
-internal fun MatchesOverviewPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun MatchesOverviewPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     MatchesOverviewScreen(
       uiState =
-        MatchesUiState(
-          matches =
-            listOf(
-              sampleMatchPreview(id = "match-1", status = MatchStatus.LIVE),
-              sampleMatchPreview(id = "match-2", status = MatchStatus.UPCOMING),
-            ),
-          selectedStatus = MatchStatusFilter.Live,
-          isLoading = false,
+      MatchesUiState(
+        matches =
+        listOf(
+          sampleMatchPreview(id = "match-1", status = MatchStatus.LIVE),
+          sampleMatchPreview(id = "match-2", status = MatchStatus.UPCOMING),
         ),
+        selectedStatus = MatchStatusFilter.Live,
+        isLoading = false,
+      ),
       onFilterSelected = {},
       onMatchSelected = {},
       modifier = Modifier.fillMaxSize().background(Prism.color.background),
@@ -38,24 +40,22 @@ internal fun MatchesOverviewPreview(
   }
 }
 
-private fun sampleMatchPreview(id: String, status: MatchStatus): MatchPreview =
-  MatchPreview(
-    id = id,
-    event = "Masters Bangkok",
-    series = "Bo3",
-    status = status,
-    team1 = sampleTeamPreview(name = "FNATIC", score = 1),
-    team2 = sampleTeamPreview(name = "Sentinels", score = 0),
-    time = "14:00 CET",
-    eventId = "event-1",
-  )
+private fun sampleMatchPreview(id: String, status: MatchStatus): MatchPreview = MatchPreview(
+  id = id,
+  event = "Masters Bangkok",
+  series = "Bo3",
+  status = status,
+  team1 = sampleTeamPreview(name = "FNATIC", score = 1),
+  team2 = sampleTeamPreview(name = "Sentinels", score = 0),
+  time = "14:00 CET",
+  eventId = "event-1",
+)
 
-private fun sampleTeamPreview(name: String, score: Int): TeamPreview =
-  TeamPreview(
-    id = name.lowercase(),
-    name = name,
-    region = "EMEA",
-    img = "",
-    score = score,
-    isWinner = score > 0,
-  )
+private fun sampleTeamPreview(name: String, score: Int): TeamPreview = TeamPreview(
+  id = name.lowercase(),
+  name = name,
+  region = "EMEA",
+  img = "",
+  score = score,
+  isWinner = score > 0,
+)

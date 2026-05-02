@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.mapper
 
 import dev.staticvar.vlr.data.MatchBans
@@ -8,21 +12,21 @@ import dev.staticvar.vlr.data.MatchPreviousEncounters
 import dev.staticvar.vlr.data.MatchVideos
 import dev.staticvar.vlr.data.Matches
 import dev.staticvar.vlr.remotesource.api.MatchPreviewDto
-import dev.staticvar.vlr.remotesource.api.TeamDto as PreviewTeamDto
 import dev.staticvar.vlr.remotesource.match.AgentInfoDto
 import dev.staticvar.vlr.remotesource.match.EventDto
+import dev.staticvar.vlr.remotesource.match.MapDataDto
 import dev.staticvar.vlr.remotesource.match.MatchDetailsDto
 import dev.staticvar.vlr.remotesource.match.MatchVideosDto
-import dev.staticvar.vlr.remotesource.match.MapDataDto
 import dev.staticvar.vlr.remotesource.match.PlayerStatsDto
 import dev.staticvar.vlr.remotesource.match.PreviousEncounterDto
 import dev.staticvar.vlr.remotesource.match.RoundInfoDto
-import dev.staticvar.vlr.remotesource.match.TeamDto as DetailTeamDto
 import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import dev.staticvar.vlr.remotesource.api.TeamDto as PreviewTeamDto
+import dev.staticvar.vlr.remotesource.match.TeamDto as DetailTeamDto
 
 class MatchMappersTest {
 
@@ -36,7 +40,7 @@ class MatchMappersTest {
       team1 = PreviewTeamDto(id = "t1", name = "Team A", img = "a.png", score = 5, winner = true),
       team2 = PreviewTeamDto(id = "t2", name = "Team B", img = "b.png", score = 3, winner = false),
       time = "2025-01-01T10:00:00Z",
-      eventId = "e1"
+      eventId = "e1",
     )
 
     val entity: Matches = dto.toEntity()
@@ -98,23 +102,23 @@ class MatchMappersTest {
     val teamB = DetailTeamDto(id = "t2", name = "Team B", img = "b.png", score = 11)
     val mapRounds = listOf(
       RoundInfoDto(roundNo = 1, score = "1-0", winner = "team1", side = "attack", winType = "Elimination"),
-      RoundInfoDto(roundNo = 2, score = "1-1", winner = "team2", side = "defense", winType = "Elimination")
+      RoundInfoDto(roundNo = 2, score = "1-1", winner = "team2", side = "defense", winType = "Elimination"),
     )
     val player1 = PlayerStatsDto(
       playerId = "player1", name = "Player One", team = "t1", acs = 250, adr = 140, kills = 20, deaths = 15,
       assists = 5, kast = 75, firstKills = 2, firstDeaths = 1, firstKillsDiff = 1, hsPercent = 22, rating = 1.15f,
-      agents = listOf(AgentInfoDto(name = "Jett", img = "jett.png"))
+      agents = listOf(AgentInfoDto(name = "Jett", img = "jett.png")),
     )
     val player2 = PlayerStatsDto(
       playerId = "player2", name = "Player Two", team = "t2", acs = 200, adr = 120, kills = 18, deaths = 17,
       assists = 4, kast = 70, firstKills = 1, firstDeaths = 2, firstKillsDiff = -1, hsPercent = 18, rating = 0.95f,
-      agents = listOf(AgentInfoDto(name = "Sova", img = "sova.png"))
+      agents = listOf(AgentInfoDto(name = "Sova", img = "sova.png")),
     )
     val mapData = MapDataDto(
       map = "Ascent",
       members = listOf(player1, player2),
       teams = listOf(teamA, teamB),
-      rounds = mapRounds
+      rounds = mapRounds,
     )
     return MatchDetailsDto(
       id = "m_detail_1",
@@ -122,11 +126,11 @@ class MatchMappersTest {
       head2head = listOf(
         PreviousEncounterDto(
           id = "old_match",
-            teams = listOf(
-              DetailTeamDto(id = "t1", name = "Team A", img = "a.png", score = 2),
-              DetailTeamDto(id = "t2", name = "Team B", img = "b.png", score = 1)
-            )
-        )
+          teams = listOf(
+            DetailTeamDto(id = "t1", name = "Team A", img = "a.png", score = 2),
+            DetailTeamDto(id = "t2", name = "Team B", img = "b.png", score = 1),
+          ),
+        ),
       ),
       note = "Decider",
       score = "2:1",
@@ -134,10 +138,10 @@ class MatchMappersTest {
       bans = listOf("Breeze"),
       videos = MatchVideosDto(
         streams = listOf(VideoReferenceDto(name = "Stream", url = "https://twitch.tv/stream")),
-        vods = listOf(VideoReferenceDto(name = "VOD", url = "https://youtube.com/vod"))
+        vods = listOf(VideoReferenceDto(name = "VOD", url = "https://youtube.com/vod")),
       ),
       matchData = listOf(mapData),
-      mapCount = 3
+      mapCount = 3,
     )
   }
 
@@ -153,13 +157,13 @@ class MatchMappersTest {
       team1 = PreviewTeamDto(name = "Alpha", img = "a.png"),
       team2 = PreviewTeamDto(name = "Beta", img = "b.png"),
       time = null, // becomes empty string
-      eventId = ""
+      eventId = "",
     )
     val entity = dto.toEntity()
     assertEquals("m2", entity.id)
     assertEquals("", entity.event_name)
     assertEquals("", entity.series)
-  assertEquals("UNKNOWN", entity.status)
+    assertEquals("UNKNOWN", entity.status)
     assertEquals("", entity.time)
     assertEquals("Alpha", entity.team1_name)
     assertEquals("Beta", entity.team2_name)
@@ -193,12 +197,12 @@ class MatchMappersTest {
           map = "Haven",
           members = emptyList(),
           teams = emptyList(),
-          rounds = emptyList()
-        )
+          rounds = emptyList(),
+        ),
       ),
       head2head = emptyList(),
       bans = emptyList(),
-      videos = MatchVideosDto(streams = emptyList(), vods = emptyList())
+      videos = MatchVideosDto(streams = emptyList(), vods = emptyList()),
     )
     val matchId = emptyDetails.id
     assertEquals(1, emptyDetails.toMapEntities(matchId).size)
@@ -215,7 +219,7 @@ class MatchMappersTest {
     val playerNoAgents = PlayerStatsDto(
       playerId = "pX", name = "Solo", team = "t1", acs = 150, adr = 90, kills = 10, deaths = 8,
       assists = 3, kast = 0, firstKills = 0, firstDeaths = 0, firstKillsDiff = 0, hsPercent = 0, rating = 0.8f,
-      agents = emptyList()
+      agents = emptyList(),
     )
     val d = sampleDetailsDto().copy(
       matchData = listOf(
@@ -224,11 +228,11 @@ class MatchMappersTest {
           members = listOf(playerNoAgents),
           teams = listOf(
             DetailTeamDto(id = "t1", name = "Team A", img = "a.png", score = 13),
-            DetailTeamDto(id = "t2", name = "Team B", img = "b.png", score = 7)
+            DetailTeamDto(id = "t2", name = "Team B", img = "b.png", score = 7),
           ),
-          rounds = emptyList()
-        )
-      )
+          rounds = emptyList(),
+        ),
+      ),
     )
     val rows = d.toPlayerStatEntities(d.id)
     assertEquals(1, rows.size)
@@ -248,10 +252,10 @@ class MatchMappersTest {
         PreviousEncounterDto(
           id = "prev1",
           teams = listOf(
-            DetailTeamDto(id = "t1", name = "Team A", img = "a.png", score = 2) // only one team
-          )
-        )
-      )
+            DetailTeamDto(id = "t1", name = "Team A", img = "a.png", score = 2), // only one team
+          ),
+        ),
+      ),
     )
     val rows = d.toPreviousEncounterEntities(d.id)
     assertEquals(0, rows.size)

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.widget
 
 import android.content.Context
@@ -92,9 +96,9 @@ class ScoreWidget : GlanceAppWidget() {
           ) {
             Image(
               modifier =
-                GlanceModifier.padding(8.dp).cornerRadius(100.dp).clickable {
-                  if (state.get() != true) coroutine.launch(Dispatchers.IO) {}
-                },
+              GlanceModifier.padding(8.dp).cornerRadius(100.dp).clickable {
+                if (state.get() != true) coroutine.launch(Dispatchers.IO) {}
+              },
               provider = ImageProvider(resId = R.drawable.rounded_refresh),
               colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurface),
               contentDescription = "Refresh",
@@ -118,37 +122,33 @@ class ScoreWidget : GlanceAppWidget() {
   }
 
   @Composable
-  fun MatchList(
-    modifier: GlanceModifier = GlanceModifier,
-    list: List<MatchPreviewInfo>,
-    isUpdating: Boolean = false,
-  ) {
+  fun MatchList(modifier: GlanceModifier = GlanceModifier, list: List<MatchPreviewInfo>, isUpdating: Boolean = false) {
     val context = LocalContext.current
     LazyColumn(modifier = modifier.cornerRadius(16.dp).fillMaxWidth()) {
       headerText(isUpdating = isUpdating)
       items(list) {
         Column(
           modifier =
-            GlanceModifier.fillMaxWidth()
-              .cornerRadius(16.dp)
-              .padding(vertical = 4.dp)
-              .clickable(
-                actionStartActivity(
-                  Intent(
-                    Intent.ACTION_VIEW,
-                    "${Constants.DEEP_LINK_BASEURL}${Destination.Match.Args.ID}=${it.id}".toUri(),
-                    context,
-                    MainActivity::class.java,
-                  )
-                )
-              )
+          GlanceModifier.fillMaxWidth()
+            .cornerRadius(16.dp)
+            .padding(vertical = 4.dp)
+            .clickable(
+              actionStartActivity(
+                Intent(
+                  Intent.ACTION_VIEW,
+                  "${Constants.DEEP_LINK_BASEURL}${Destination.Match.Args.ID}=${it.id}".toUri(),
+                  context,
+                  MainActivity::class.java,
+                ),
+              ),
+            ),
         ) {
           Column(
             modifier =
-              GlanceModifier.fillMaxWidth()
-                .cornerRadius(16.dp)
-                .padding(4.dp)
-                .background(GlanceTheme.colors.primaryContainer)
+            GlanceModifier.fillMaxWidth()
+              .cornerRadius(16.dp)
+              .padding(4.dp)
+              .background(GlanceTheme.colors.primaryContainer),
           ) {
             WidgetTimeRow(status = it.status, time = it.time)
             WidgetTeamUiRow(teamNameA = it.team1.name, teamNameB = it.team2.name)
@@ -165,11 +165,11 @@ class ScoreWidget : GlanceAppWidget() {
       Text(
         text = "Updating...",
         style =
-          TextStyle(
-            textAlign = TextAlign.Center,
-            color = ColorProvider(MaterialTheme.colorScheme.onPrimaryContainer),
-            fontSize = 12.sp,
-          ),
+        TextStyle(
+          textAlign = TextAlign.Center,
+          color = ColorProvider(MaterialTheme.colorScheme.onPrimaryContainer),
+          fontSize = 12.sp,
+        ),
         modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 8.dp),
       )
     }
@@ -185,6 +185,5 @@ class ScoreWidget : GlanceAppWidget() {
   }
 }
 
-fun Context.isDarkThemeOn(): Boolean {
-  return resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES
-}
+fun Context.isDarkThemeOn(): Boolean =
+  resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == UI_MODE_NIGHT_YES

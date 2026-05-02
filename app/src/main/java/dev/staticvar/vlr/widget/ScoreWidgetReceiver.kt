@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.widget
 
 import android.content.Context
@@ -18,8 +22,10 @@ class ScoreWidgetReceiver : GlanceAppWidgetReceiver() {
     if (
       intent.data.toString() != "android.appwidget.action.APPWIDGET_DISABLED" ||
       intent.data.toString() != "android.appwidget.action.APPWIDGET_DELETED"
-    )
+    ) {
       context.queueWorker()
-    else context.stopWorker()
+    } else {
+      context.stopWorker()
+    }
   }
 }

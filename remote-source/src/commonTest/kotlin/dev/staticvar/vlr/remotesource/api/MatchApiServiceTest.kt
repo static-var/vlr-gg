@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.api
 
 import io.ktor.client.HttpClient
@@ -15,13 +19,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class MatchApiServiceTest {
-  
+
   private val json = Json {
     ignoreUnknownKeys = true
     isLenient = true
     coerceInputValues = true
   }
-  
+
   @Test
   fun `getMatches returns success with valid JSON`() = runTest {
     val mockEngine = MockEngine {
@@ -51,50 +55,50 @@ class MatchApiServiceTest {
           ]
         """.trimIndent(),
         status = HttpStatusCode.OK,
-        headers = headersOf(HttpHeaders.ContentType, "application/json")
+        headers = headersOf(HttpHeaders.ContentType, "application/json"),
       )
     }
-    
+
     val httpClient = HttpClient(mockEngine) {
       install(ContentNegotiation) {
         json(json)
       }
     }
-    
+
     val service = MatchApiServiceImpl(httpClient)
     val result = service.getMatches()
-    
+
     assertTrue(result.isSuccess)
     val matches = result.getOrThrow()
     assertEquals(1, matches.size)
     assertEquals("123", matches[0].id)
     assertEquals("Champions 2025", matches[0].event)
-  assertEquals("live", matches[0].status)
+    assertEquals("live", matches[0].status)
     assertEquals("Team A", matches[0].team1.name)
     assertEquals("Team B", matches[0].team2.name)
   }
-  
+
   @Test
   fun `getMatches returns failure on network error`() = runTest {
     val mockEngine = MockEngine { request ->
       respond(
         content = "Server Error",
-        status = HttpStatusCode.InternalServerError
+        status = HttpStatusCode.InternalServerError,
       )
     }
-    
+
     val httpClient = HttpClient(mockEngine) {
       install(ContentNegotiation) {
         json(json)
       }
     }
-    
+
     val service = MatchApiServiceImpl(httpClient)
     val result = service.getMatches()
-    
+
     assertTrue(result.isFailure)
   }
-  
+
   @Test
   fun `getMatchDetails returns success with valid JSON`() = runTest {
     val mockEngine = MockEngine {
@@ -123,19 +127,19 @@ class MatchApiServiceTest {
           }
         """.trimIndent(),
         status = HttpStatusCode.OK,
-        headers = headersOf(HttpHeaders.ContentType, "application/json")
+        headers = headersOf(HttpHeaders.ContentType, "application/json"),
       )
     }
-    
+
     val httpClient = HttpClient(mockEngine) {
       install(ContentNegotiation) {
         json(json)
       }
     }
-    
+
     val service = MatchApiServiceImpl(httpClient)
     val result = service.getMatchDetails("123")
-    
+
     assertTrue(result.isSuccess)
     val details = result.getOrThrow()
     assertEquals("123", details.id)

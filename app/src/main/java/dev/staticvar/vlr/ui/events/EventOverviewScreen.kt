@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.events
 
 import androidx.activity.compose.BackHandler
@@ -117,7 +121,9 @@ fun EventOverviewAdaptive(
   LaunchedEffect(navigator.currentDestination) {
     if (navigator.currentDestination?.pane == ThreePaneScaffoldRole.Secondary) {
       hideNav(false)
-    } else hideNav(true)
+    } else {
+      hideNav(true)
+    }
   }
 
   val tabs =
@@ -174,22 +180,21 @@ fun EventScreen(
   listOfLazyListState: SnapshotStateList<LazyListState>,
   action: (String) -> Unit,
 ) {
-
   LogEvent(event = AnalyticsEvent.EVENT_OVERVIEW)
 
   val allTournaments by
-  remember(viewModel) { viewModel.getEvents() }
-    .collectAsStateWithLifecycle(initialValue = Waiting())
+    remember(viewModel) { viewModel.getEvents() }
+      .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh) { viewModel.refreshEvents() }
-    .collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshEvents() }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
 
   val resetScroll by
-  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val selectedTopItemSlot by viewModel.selectedEventTypePosition.collectAsStateWithLifecycle()
 
@@ -249,7 +254,6 @@ fun TournamentPreviewContainer(
   action: (String) -> Unit,
   postResetScroll: () -> Unit,
 ) {
-
   val tabs =
     listOf(
       stringResource(id = R.string.ongoing),
@@ -273,7 +277,7 @@ fun TournamentPreviewContainer(
     modifier = modifier
       .fillMaxSize()
       .animateContentSize()
-      .pullRefresh(swipeRefresh)
+      .pullRefresh(swipeRefresh),
   ) {
     PullToRefreshPill(
       modifier = Modifier
@@ -372,10 +376,10 @@ fun TournamentPreviewContainer(
       val scope = rememberCoroutineScope()
       VlrSegmentedButtons(
         modifier =
-          Modifier
-            .align(Alignment.BottomCenter)
-            .padding(bottom = 8.dp)
-            .navigationBarsPadding(),
+        Modifier
+          .align(Alignment.BottomCenter)
+          .padding(bottom = 8.dp)
+          .navigationBarsPadding(),
         highlighted = pagerState.currentPage,
         items = tabs,
       ) { _, index ->
@@ -409,21 +413,21 @@ fun TournamentPreview(
 ) {
   val animatedBorder by animateDpAsState(
     targetValue = if (tournamentPreview.markedFav) 1.dp else -1.dp,
-    tween(300)
+    tween(300),
   )
   CardView(
     modifier = modifier
       .clickable { action(tournamentPreview.id) }
       .border(animatedBorder, VLRTheme.colorScheme.primary, shape = RoundedCornerShape(8.dp)),
     colors =
-      if (tournamentPreview.id == selectedItem) {
-        CardDefaults.elevatedCardColors(
-          containerColor = VLRTheme.colorScheme.secondaryContainer,
-          contentColor = VLRTheme.colorScheme.onSecondaryContainer,
-        )
-      } else {
-        CardDefaults.elevatedCardColors()
-      },
+    if (tournamentPreview.id == selectedItem) {
+      CardDefaults.elevatedCardColors(
+        containerColor = VLRTheme.colorScheme.secondaryContainer,
+        contentColor = VLRTheme.colorScheme.onSecondaryContainer,
+      )
+    } else {
+      CardDefaults.elevatedCardColors()
+    },
   ) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(
@@ -446,13 +450,13 @@ fun TournamentPreview(
         val inlineLocationContentMap =
           mapOf(
             "location" to
-                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                  Icon(
-                    imageVector = Icons.Outlined.LocationOn,
-                    modifier = modifier.size(16.dp),
-                    contentDescription = "",
-                  )
-                }
+              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                Icon(
+                  imageVector = Icons.Outlined.LocationOn,
+                  modifier = modifier.size(16.dp),
+                  contentDescription = "",
+                )
+              },
           )
         val annotatedDateString = buildAnnotatedString {
           appendInlineContent(id = "date")
@@ -462,13 +466,13 @@ fun TournamentPreview(
         val inlineDateContentMap =
           mapOf(
             "date" to
-                InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
-                  Icon(
-                    imageVector = Icons.Outlined.DateRange,
-                    modifier = modifier.size(16.dp),
-                    contentDescription = "",
-                  )
-                }
+              InlineTextContent(Placeholder(16.sp, 16.sp, PlaceholderVerticalAlign.TextCenter)) {
+                Icon(
+                  imageVector = Icons.Outlined.DateRange,
+                  modifier = modifier.size(16.dp),
+                  contentDescription = "",
+                )
+              },
           )
         Text(
           annotatedLocationString,

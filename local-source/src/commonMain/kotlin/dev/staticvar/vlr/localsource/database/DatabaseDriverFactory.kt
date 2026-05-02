@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.localsource.database
 
 import app.cash.sqldelight.db.SqlDriver
@@ -7,5 +11,5 @@ import app.cash.sqldelight.db.SqlDriver
  * Each platform provides its own implementation.
  */
 expect class DatabaseDriverFactory {
-    fun createDriver(): SqlDriver
+  fun createDriver(): SqlDriver
 }

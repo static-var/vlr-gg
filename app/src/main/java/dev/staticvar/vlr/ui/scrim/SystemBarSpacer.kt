@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.scrim
 
 import androidx.compose.foundation.background
@@ -15,33 +19,33 @@ import dev.staticvar.vlr.ui.theme.elevatedSurfaceColor
 import dev.staticvar.vlr.ui.theme.transparent
 
 @Composable
-fun StatusBarSpacer(
-  modifier: Modifier = Modifier,
-  statusBarType: StatusBarType
-) {
+fun StatusBarSpacer(modifier: Modifier = Modifier, statusBarType: StatusBarType) {
   Spacer(
     modifier
       .windowInsetsTopHeight(WindowInsets.statusBars)
       .fillMaxWidth()
       .background(
-        if (statusBarType == StatusBarType.TRANSPARENT) VLRTheme.colorScheme.transparent
-        else VLRTheme.colorScheme.surface
-      )
+        if (statusBarType == StatusBarType.TRANSPARENT) {
+          VLRTheme.colorScheme.transparent
+        } else {
+          VLRTheme.colorScheme.surface
+        },
+      ),
   )
 }
 
 @Composable
-fun NavigationBarSpacer(
-  modifier: Modifier = Modifier,
-  navigationBarType: NavigationBarType
-) {
+fun NavigationBarSpacer(modifier: Modifier = Modifier, navigationBarType: NavigationBarType) {
   Spacer(
     modifier
       .windowInsetsBottomHeight(WindowInsets.navigationBars)
       .fillMaxWidth()
       .background(
-        if (navigationBarType == NavigationBarType.TRANSPARENT) VLRTheme.colorScheme.transparent
-        else VLRTheme.colorScheme.elevatedSurfaceColor
-      )
+        if (navigationBarType == NavigationBarType.TRANSPARENT) {
+          VLRTheme.colorScheme.transparent
+        } else {
+          VLRTheme.colorScheme.elevatedSurfaceColor
+        },
+      ),
   )
 }

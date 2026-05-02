@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data
 
 import com.github.michaelbull.result.Err
@@ -29,9 +33,6 @@ import dev.staticvar.vlr.utils.runSuspendCatching
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
@@ -39,6 +40,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.time.Duration.Companion.seconds
 
 @Suppress("LongParameterList")
 @Singleton
@@ -60,21 +64,20 @@ constructor(
    * Get news Method which calls API and requests for latest news article info This method won't
    * make the call again till 180 seconds
    */
-  fun updateLatestNews() =
-    flow<Result<Boolean, Throwable?>> {
-      if (TimeElapsed.hasElapsed(Endpoints.NEWS)) {
-        emit(Ok(true))
-        val result = runSuspendCatching {
-          ktorHttpClient.get(Endpoints.NEWS).body<List<NewsResponseItem>>()
-        }
-        result.get()?.let {
-          vlrDao.deleteAndInsertNews(it)
-          TimeElapsed.start(Endpoints.NEWS, 180.seconds)
-          emit(Ok(false))
-        }
-          ?: emit(Err(result.getError()))
+  fun updateLatestNews() = flow<Result<Boolean, Throwable?>> {
+    if (TimeElapsed.hasElapsed(Endpoints.NEWS)) {
+      emit(Ok(true))
+      val result = runSuspendCatching {
+        ktorHttpClient.get(Endpoints.NEWS).body<List<NewsResponseItem>>()
       }
+      result.get()?.let {
+        vlrDao.deleteAndInsertNews(it)
+        TimeElapsed.start(Endpoints.NEWS, 180.seconds)
+        emit(Ok(false))
+      }
+        ?: emit(Err(result.getError()))
     }
+  }
 
   /** Get news from db */
   fun getNewsFromDb() = vlrDao.getNews().map { Pass(it) }
@@ -83,36 +86,35 @@ constructor(
    * Get matches from server This method will request server to return the latest matches This call
    * is made once every 30 seconds
    */
-  fun updateLatestMatches() =
-    flow<Result<Boolean, Throwable?>> {
-      if (TimeElapsed.hasElapsed(Endpoints.MATCHES_OVERVIEW)) {
-        emit(Ok(true))
-        val result = runSuspendCatching {
-          ktorHttpClient.get(Endpoints.MATCHES_OVERVIEW).body<List<MatchPreviewInfo>>()
-        }
-        result.get()?.let {
-          vlrDao.deleteAndInsertMatchPreviewInfo(it)
-          TimeElapsed.start(Endpoints.MATCHES_OVERVIEW, 30.seconds)
-          emit(Ok(false))
-        }
-          ?: emit(Err(result.getError()))
+  fun updateLatestMatches() = flow<Result<Boolean, Throwable?>> {
+    if (TimeElapsed.hasElapsed(Endpoints.MATCHES_OVERVIEW)) {
+      emit(Ok(true))
+      val result = runSuspendCatching {
+        ktorHttpClient.get(Endpoints.MATCHES_OVERVIEW).body<List<MatchPreviewInfo>>()
       }
+      result.get()?.let {
+        vlrDao.deleteAndInsertMatchPreviewInfo(it)
+        TimeElapsed.start(Endpoints.MATCHES_OVERVIEW, 30.seconds)
+        emit(Ok(false))
+      }
+        ?: emit(Err(result.getError()))
     }
+  }
 
   /** Get matches from db */
   fun getMatchesFromDb() = combine(
     vlrDao.getAllMatchesPreview(),
     matchFavDao.getFavoriteMatches(),
     eventFavDao.getFavoriteEvents(),
-    teamFavDao.getFavoriteTeams()
+    teamFavDao.getFavoriteTeams(),
   ) { matches, matchFavs, eventFavs, teamFavs ->
     matches.map {
       it.copy(
-        markedFav = matchFavs.any { fav -> fav.id == it.id }
-            || teamFavs.any { fav -> it.team1.id == fav.id || it.team2.id == fav.id }
-            || eventFavs.any { fav -> fav.id == it.eventId },
+        markedFav = matchFavs.any { fav -> fav.id == it.id } ||
+          teamFavs.any { fav -> it.team1.id == fav.id || it.team2.id == fav.id } ||
+          eventFavs.any { fav -> fav.id == it.eventId },
         fromEventsFav = eventFavs.any { fav -> fav.id == it.eventId },
-        fromTeamsFav = teamFavs.any { fav -> it.team1.id == fav.id || it.team2.id == fav.id }
+        fromTeamsFav = teamFavs.any { fav -> it.team1.id == fav.id || it.team2.id == fav.id },
       )
     }
   }.map { Pass(it) }
@@ -121,57 +123,53 @@ constructor(
    * Get events from server This method will request server to return the latest events / tournament
    * related data This call is made once every 30 seconds
    */
-  fun updateLatestEvents() =
-    flow<Result<Boolean, Throwable?>> {
-      if (TimeElapsed.hasElapsed(Endpoints.EVENTS_OVERVIEW)) {
-        emit(Ok(true))
-        val result = runSuspendCatching {
-          ktorHttpClient.get(Endpoints.EVENTS_OVERVIEW).body<List<TournamentPreview>>()
-        }
-        result.get()?.let {
-          vlrDao.deleteAndInsertTournamentPreview(it)
-          TimeElapsed.start(Endpoints.EVENTS_OVERVIEW, 60.seconds)
-          emit(Ok(false))
-        }
-          ?: emit(Err(result.getError()))
+  fun updateLatestEvents() = flow<Result<Boolean, Throwable?>> {
+    if (TimeElapsed.hasElapsed(Endpoints.EVENTS_OVERVIEW)) {
+      emit(Ok(true))
+      val result = runSuspendCatching {
+        ktorHttpClient.get(Endpoints.EVENTS_OVERVIEW).body<List<TournamentPreview>>()
       }
+      result.get()?.let {
+        vlrDao.deleteAndInsertTournamentPreview(it)
+        TimeElapsed.start(Endpoints.EVENTS_OVERVIEW, 60.seconds)
+        emit(Ok(false))
+      }
+        ?: emit(Err(result.getError()))
     }
+  }
 
   /** Get events from db */
-  fun getEventsFromDb() =
-    vlrDao.getTournaments().combine(eventFavDao.getFavoriteEvents()) { tournaments, eventFavs ->
-      tournaments.map { it.copy(markedFav = eventFavs.any { fav -> fav.id == it.id }) }
-    }.map { Pass(it) }
+  fun getEventsFromDb() = vlrDao.getTournaments().combine(eventFavDao.getFavoriteEvents()) { tournaments, eventFavs ->
+    tournaments.map { it.copy(markedFav = eventFavs.any { fav -> fav.id == it.id }) }
+  }.map { Pass(it) }
 
   /**
    * Get events from server This method will request server to return the latest events / tournament
    * related data This call is made once every 30 seconds
    */
-  fun updateLatestRanks() =
-    flow<Result<Boolean, Throwable?>> {
-      if (TimeElapsed.hasElapsed(Endpoints.RANK_OVERVIEW)) {
-        emit(Ok(true))
-        val result = runSuspendCatching {
-          ktorHttpClient.get(Endpoints.RANK_OVERVIEW).body<List<RankPerRegion>>()
-        }
-        result.get()?.let { ranks ->
-          ranks.forEach { perRegion -> perRegion.teams.forEach { it.region = perRegion.region } }
-          val limitedRanks =
-            ranks.map { RankPerRegion(it.region, it.teams.sortedBy { it.rank }.take(25)) }
-          val teams = limitedRanks.flatMap { it.teams }
-          vlrDao.insertTeamDetails(teams)
-          TimeElapsed.start(Endpoints.RANK_OVERVIEW, 180.seconds)
-          emit(Ok(false))
-        }
-          ?: emit(Err(result.getError()))
+  fun updateLatestRanks() = flow<Result<Boolean, Throwable?>> {
+    if (TimeElapsed.hasElapsed(Endpoints.RANK_OVERVIEW)) {
+      emit(Ok(true))
+      val result = runSuspendCatching {
+        ktorHttpClient.get(Endpoints.RANK_OVERVIEW).body<List<RankPerRegion>>()
       }
+      result.get()?.let { ranks ->
+        ranks.forEach { perRegion -> perRegion.teams.forEach { it.region = perRegion.region } }
+        val limitedRanks =
+          ranks.map { RankPerRegion(it.region, it.teams.sortedBy { it.rank }.take(25)) }
+        val teams = limitedRanks.flatMap { it.teams }
+        vlrDao.insertTeamDetails(teams)
+        TimeElapsed.start(Endpoints.RANK_OVERVIEW, 180.seconds)
+        emit(Ok(false))
+      }
+        ?: emit(Err(result.getError()))
     }
+  }
 
   /** Get events from db */
-  fun getRanksFromDb() =
-    vlrDao.getTeamDetailsInFlow().combine(teamFavDao.getFavoriteTeams()) { teams, teamFavs ->
-      teams?.map { it.copy(markedFav = teamFavs.any { fav -> fav.id == it.id }) }
-    }.map { Pass(it) }
+  fun getRanksFromDb() = vlrDao.getTeamDetailsInFlow().combine(teamFavDao.getFavoriteTeams()) { teams, teamFavs ->
+    teams?.map { it.copy(markedFav = teamFavs.any { fav -> fav.id == it.id }) }
+  }.map { Pass(it) }
 
   /**
    * Get match details from server This will request server to return match data of a given match ID
@@ -179,21 +177,20 @@ constructor(
    *
    * @param id
    */
-  fun updateLatestMatchDetails(id: String) =
-    flow<Result<Boolean, Throwable?>> {
-      val key = Endpoints.matchDetails(id)
-      if (TimeElapsed.hasElapsed(key)) {
-        emit(Ok(true))
-        val result = runSuspendCatching { ktorHttpClient.get(key).body<MatchInfo>() }
-        result.get()?.let {
-          it.id = id
-          vlrDao.insertMatchInfo(it)
-          TimeElapsed.start(key, 30.seconds)
-          emit(Ok(false))
-        }
-          ?: emit(Err(result.getError()))
+  fun updateLatestMatchDetails(id: String) = flow<Result<Boolean, Throwable?>> {
+    val key = Endpoints.matchDetails(id)
+    if (TimeElapsed.hasElapsed(key)) {
+      emit(Ok(true))
+      val result = runSuspendCatching { ktorHttpClient.get(key).body<MatchInfo>() }
+      result.get()?.let {
+        it.id = id
+        vlrDao.insertMatchInfo(it)
+        TimeElapsed.start(key, 30.seconds)
+        emit(Ok(false))
       }
+        ?: emit(Err(result.getError()))
     }
+  }
 
   /**
    * Get match details from db
@@ -204,12 +201,12 @@ constructor(
     vlrDao.getMatchById(id),
     matchFavDao.getFavoriteMatches(),
     eventFavDao.getFavoriteEvents(),
-    teamFavDao.getFavoriteTeams()
+    teamFavDao.getFavoriteTeams(),
   ) { match, matchFavs, eventFavs, teamFavs ->
     match?.copy(
-      markedFav = matchFavs.any { fav -> fav.id == match.id }
-          || teamFavs.any { fav -> match.teams.any { it.id == fav.id } }
-          || eventFavs.any { fav -> fav.id == match.event.id },
+      markedFav = matchFavs.any { fav -> fav.id == match.id } ||
+        teamFavs.any { fav -> match.teams.any { it.id == fav.id } } ||
+        eventFavs.any { fav -> fav.id == match.event.id },
       fromTeamsFav = teamFavs.any { fav -> match.teams.any { it.id == fav.id } },
       fromEventsFav = eventFavs.any { fav -> fav.id == match.event.id },
     )
@@ -221,20 +218,19 @@ constructor(
    *
    * @param id
    */
-  fun updateLatestEventDetails(id: String) =
-    flow<Result<Boolean, Throwable?>> {
-      val key = Endpoints.eventDetails(id)
-      if (TimeElapsed.hasElapsed(key)) {
-        emit(Ok(true))
-        val result = runSuspendCatching { ktorHttpClient.get(key).body<TournamentDetails>() }
-        result.get()?.let {
-          vlrDao.insertTournamentDetails(it)
-          TimeElapsed.start(key, 30.seconds)
-          emit(Ok(false))
-        }
-          ?: emit(Err(result.getError()))
+  fun updateLatestEventDetails(id: String) = flow<Result<Boolean, Throwable?>> {
+    val key = Endpoints.eventDetails(id)
+    if (TimeElapsed.hasElapsed(key)) {
+      emit(Ok(true))
+      val result = runSuspendCatching { ktorHttpClient.get(key).body<TournamentDetails>() }
+      result.get()?.let {
+        vlrDao.insertTournamentDetails(it)
+        TimeElapsed.start(key, 30.seconds)
+        emit(Ok(false))
       }
+        ?: emit(Err(result.getError()))
     }
+  }
 
   /**
    * Get event details from db
@@ -251,8 +247,7 @@ constructor(
    *
    * @param topic
    */
-  suspend fun trackTopic(topic: String) =
-    withContext(ioDispatcher) { vlrDao.insertTopicTracker(TopicTracker(topic)) }
+  suspend fun trackTopic(topic: String) = withContext(ioDispatcher) { vlrDao.insertTopicTracker(TopicTracker(topic)) }
 
   /**
    * Is match tracked
@@ -273,21 +268,20 @@ constructor(
    *
    * @param id
    */
-  fun getTeamDetails(id: String) =
-    flow<Result<Boolean, Throwable?>> {
-      val key = Endpoints.teamDetails(id)
-      if (TimeElapsed.hasElapsed(key)) {
-        emit(Ok(true))
-        val result = runSuspendCatching { ktorHttpClient.get(key).body<TeamDetails>() }
-        result.get()?.let {
-          it.id = id
-          vlrDao.insertTeamDetail(it)
-          TimeElapsed.start(key, 180.seconds)
-          emit(Ok(false))
-        }
-          ?: emit(Err(result.getError()))
+  fun getTeamDetails(id: String) = flow<Result<Boolean, Throwable?>> {
+    val key = Endpoints.teamDetails(id)
+    if (TimeElapsed.hasElapsed(key)) {
+      emit(Ok(true))
+      val result = runSuspendCatching { ktorHttpClient.get(key).body<TeamDetails>() }
+      result.get()?.let {
+        it.id = id
+        vlrDao.insertTeamDetail(it)
+        TimeElapsed.start(key, 180.seconds)
+        emit(Ok(false))
       }
+        ?: emit(Err(result.getError()))
     }
+  }
 
   /**
    * Get event details from db
@@ -304,21 +298,20 @@ constructor(
    *
    * @param id
    */
-  fun getPlayerDetails(id: String) =
-    flow<Result<Boolean, Throwable?>> {
-      val key = Endpoints.playerDetails(id)
-      if (TimeElapsed.hasElapsed(key)) {
-        emit(Ok(true))
-        val result = runSuspendCatching { ktorHttpClient.get(key).body<PlayerData>() }
-        result.get()?.let {
-          it.id = id
-          vlrDao.upsertPlayer(it)
-          TimeElapsed.start(key, 120.seconds)
-          emit(Ok(false))
-        }
-          ?: emit(Err(result.getError()))
+  fun getPlayerDetails(id: String) = flow<Result<Boolean, Throwable?>> {
+    val key = Endpoints.playerDetails(id)
+    if (TimeElapsed.hasElapsed(key)) {
+      emit(Ok(true))
+      val result = runSuspendCatching { ktorHttpClient.get(key).body<PlayerData>() }
+      result.get()?.let {
+        it.id = id
+        vlrDao.upsertPlayer(it)
+        TimeElapsed.start(key, 120.seconds)
+        emit(Ok(false))
       }
+        ?: emit(Err(result.getError()))
     }
+  }
 
   /**
    * Get event details from db

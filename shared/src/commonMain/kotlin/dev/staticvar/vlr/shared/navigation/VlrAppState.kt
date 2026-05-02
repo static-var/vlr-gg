@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.shared.navigation
 
 import androidx.compose.material.icons.Icons
@@ -161,12 +165,11 @@ private val AppRoute.rootNavigationId: String
     else -> NEWS_ID
   }
 
-private fun toRootRoute(itemId: String): AppRoute =
-  when (itemId) {
-    NEWS_ID -> AppRoute.News
-    MATCHES_ID -> AppRoute.Matches
-    EVENTS_ID -> AppRoute.Events
-    RANKINGS_ID -> AppRoute.Rankings
-    ABOUT_ID -> AppRoute.About
-    else -> AppRoute.News
-  }
+private fun toRootRoute(itemId: String): AppRoute = when (itemId) {
+  NEWS_ID -> AppRoute.News
+  MATCHES_ID -> AppRoute.Matches
+  EVENTS_ID -> AppRoute.Events
+  RANKINGS_ID -> AppRoute.Rankings
+  ABOUT_ID -> AppRoute.About
+  else -> AppRoute.News
+}

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.events
 
 import android.Manifest
@@ -104,18 +108,17 @@ import kotlinx.coroutines.tasks.await
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
-
   LogEvent(event = AnalyticsEvent.EVENT_DETAIL, extra = mapOf("event_id" to id))
 
   val modifier = Modifier
 
   val details by
-  remember(id) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
+    remember(id) { viewModel.getEventDetails(id) }.collectAsStateWithLifecycle(Waiting())
 
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh, id) { viewModel.refreshEventDetails(id) }
-    .collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh, id) { viewModel.refreshEventDetails(id) }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
@@ -124,9 +127,9 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
   val trackerString = id.toEventTopic()
 
   val progressBarVisibility by
-  remember(updateState.get(), swipeRefresh.progress) {
-    derivedStateOf { updateState.get() == true || swipeRefresh.progress != 0f }
-  }
+    remember(updateState.get(), swipeRefresh.progress) {
+      derivedStateOf { updateState.get() == true || swipeRefresh.progress != 0f }
+    }
 
   Column(
     modifier = modifier.fillMaxSize(),
@@ -153,14 +156,14 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
           Box(
             modifier = Modifier
               .pullRefresh(swipeRefresh)
-              .fillMaxSize()
+              .fillMaxSize(),
           ) {
             PullToRefreshPill(
               modifier =
-                Modifier
-                  .align(Alignment.TopCenter)
-                  .padding(top = 16.dp)
-                  .statusBarsPadding(),
+              Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp)
+                .statusBarsPadding(),
               show = progressBarVisibility,
             )
             LazyColumn(
@@ -169,8 +172,8 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                 .testTag("eventDetails:root"),
               state = lazyListState,
               contentPadding =
-                WindowInsets.statusBars.asPaddingValues() +
-                    WindowInsets.navigationBars.asPaddingValues(),
+              WindowInsets.statusBars.asPaddingValues() +
+                WindowInsets.navigationBars.asPaddingValues(),
             ) {
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
@@ -196,7 +199,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                   }
                 }
               }
-              if (tournamentDetails.participants.isNotEmpty())
+              if (tournamentDetails.participants.isNotEmpty()) {
                 item {
                   EventDetailsTeamSlider(
                     modifier = modifier,
@@ -204,7 +207,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                     onClick = { viewModel.action.team(it) },
                   )
                 }
-              else
+              } else {
                 item {
                   Text(
                     text = stringResource(id = R.string.no_team_info_found),
@@ -216,7 +219,8 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                     color = VLRTheme.colorScheme.primary,
                   )
                 }
-              if (group.isNotEmpty())
+              }
+              if (group.isNotEmpty()) {
                 group[group.keys.elementAt(tabSelection)]?.let { games ->
                   item {
                     EventMatchGroups(
@@ -236,7 +240,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                     )
                   }
                 }
-              else
+              } else {
                 item {
                   Text(
                     text = stringResource(id = R.string.no_match_info_found),
@@ -248,6 +252,7 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                     color = VLRTheme.colorScheme.primary,
                   )
                 }
+              }
             }
           }
         }
@@ -276,20 +281,19 @@ fun TournamentDetailsHeader(
   val context = LocalContext.current
   val animatedBorder by animateDpAsState(
     targetValue = if (isTracked) 1.dp else -1.dp,
-    tween(300)
+    tween(300),
   )
   val notificationPermission =
     rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
-
   CardView(
-    modifier.border(animatedBorder, VLRTheme.colorScheme.primary, shape = RoundedCornerShape(8.dp))
+    modifier.border(animatedBorder, VLRTheme.colorScheme.primary, shape = RoundedCornerShape(8.dp)),
   ) {
     Box(modifier = modifier.fillMaxWidth()) {
       Row(
         modifier
           .fillMaxWidth()
-          .padding(Local16DPPadding.current)
+          .padding(Local16DPPadding.current),
       ) {
         Spacer(modifier = modifier.weight(1f))
         AsyncImage(
@@ -306,7 +310,7 @@ fun TournamentDetailsHeader(
       Column(
         modifier
           .fillMaxWidth()
-          .padding(Local8DPPadding.current)
+          .padding(Local8DPPadding.current),
       ) {
         Text(
           text = tournamentDetails.title,
@@ -316,11 +320,12 @@ fun TournamentDetailsHeader(
           overflow = TextOverflow.Ellipsis,
           color = VLRTheme.colorScheme.primary,
         )
-        if (tournamentDetails.subtitle.isNotBlank())
+        if (tournamentDetails.subtitle.isNotBlank()) {
           Text(
             text = tournamentDetails.subtitle,
             modifier = modifier.padding(Local4DPPadding.current),
           )
+        }
         Row(
           modifier
             .fillMaxWidth()
@@ -378,7 +383,7 @@ fun TournamentDetailsHeader(
         if (
           tournamentDetails.status == TournamentDetails.Status.ONGOING ||
           tournamentDetails.status == TournamentDetails.Status.UPCOMING
-        )
+        ) {
           Button(
             onClick = {
               if (notificationPermission.status.isGranted) {
@@ -389,30 +394,36 @@ fun TournamentDetailsHeader(
                     processingTopicSubscription = false
                   }
                 }
-              } else notificationPermission.launchPermissionRequest()
+              } else {
+                notificationPermission.launchPermissionRequest()
+              }
             },
             modifier = modifier.fillMaxWidth(),
             shape = VLRTheme.shapes.small,
           ) {
             if (processingTopicSubscription) {
               LinearProgressIndicator()
-            } else if (isTracked) @Composable {
-              Icon(
-                modifier = Modifier.padding(end = 4.dp).size(14.dp),
-                imageVector = Icons.Outlined.FavoriteBorder,
-                contentDescription = stringResource(R.string.unsubscribe)
-              )
-              Text(text = stringResource(R.string.unsubscribe))
-            }
-            else @Composable {
-              Icon(
-                modifier = Modifier.padding(end = 4.dp).size(14.dp),
-                imageVector = Icons.Filled.Favorite,
-                contentDescription = stringResource(R.string.get_notified)
-              )
-              Text(text = stringResource(R.string.get_notified))
+            } else if (isTracked) {
+              @Composable {
+                Icon(
+                  modifier = Modifier.padding(end = 4.dp).size(14.dp),
+                  imageVector = Icons.Outlined.FavoriteBorder,
+                  contentDescription = stringResource(R.string.unsubscribe),
+                )
+                Text(text = stringResource(R.string.unsubscribe))
+              }
+            } else {
+              @Composable {
+                Icon(
+                  modifier = Modifier.padding(end = 4.dp).size(14.dp),
+                  imageVector = Icons.Filled.Favorite,
+                  contentDescription = stringResource(R.string.get_notified),
+                )
+                Text(text = stringResource(R.string.get_notified))
+              }
             }
           }
+        }
       }
     }
   }
@@ -425,7 +436,6 @@ fun EventDetailsTeamSlider(
   list: StableHolder<List<TournamentDetails.Participant>>,
   onClick: (String) -> Unit,
 ) {
-
   val lazyListState = rememberLazyListState()
   Text(
     text = stringResource(R.string.teams),
@@ -447,7 +457,8 @@ fun EventDetailsTeamSlider(
           modifier
             .width(width = 150.dp)
             .aspectRatio(1f)
-            .clickable { onClick(it.id) }) {
+            .clickable { onClick(it.id) },
+        ) {
           Column(
             modifier
               .fillMaxSize()
@@ -504,7 +515,7 @@ fun EventMatchGroups(
   Column(
     modifier
       .fillMaxWidth()
-      .padding(Local8DPPadding.current)
+      .padding(Local8DPPadding.current),
   ) {
     Text(
       text = stringResource(id = R.string.games),
@@ -519,10 +530,10 @@ fun EventMatchGroups(
       selectedTabIndex = tabSelection,
       containerColor = VLRTheme.colorScheme.primaryContainer,
       modifier =
-        modifier
-          .fillMaxWidth()
-          .padding(Local8DPPadding.current)
-          .clip(RoundedCornerShape(16.dp)),
+      modifier
+        .fillMaxWidth()
+        .padding(Local8DPPadding.current)
+        .clip(RoundedCornerShape(16.dp)),
       indicator = { indicators ->
         if (indicators.isNotEmpty()) VLRTabIndicator(indicators, tabSelection)
       },
@@ -540,12 +551,7 @@ fun EventMatchGroups(
 }
 
 @Composable
-fun FilterChips(
-  modifier: Modifier,
-  filterOptions: List<String>,
-  selectedIndex: Int,
-  onFilterChange: (Int) -> Unit,
-) {
+fun FilterChips(modifier: Modifier, filterOptions: List<String>, selectedIndex: Int, onFilterChange: (Int) -> Unit) {
   Row(
     modifier
       .fillMaxSize()
@@ -568,11 +574,7 @@ fun FilterChips(
 }
 
 @Composable
-fun TournamentMatchOverview(
-  modifier: Modifier = Modifier,
-  game: TournamentDetails.Games,
-  onClick: (String) -> Unit,
-) {
+fun TournamentMatchOverview(modifier: Modifier = Modifier, game: TournamentDetails.Games, onClick: (String) -> Unit) {
   CardView(modifier = modifier.clickable { onClick(game.id) }) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(
@@ -618,7 +620,7 @@ fun TournamentMatchOverview(
           overflow = TextOverflow.Ellipsis,
         )
       }
-      if (!game.time.equals("TBD", ignoreCase = true))
+      if (!game.time.equals("TBD", ignoreCase = true)) {
         Text(
           text = "${game.time} ${game.date}".patternDateTimeToReadable,
           modifier = modifier
@@ -627,6 +629,7 @@ fun TournamentMatchOverview(
           textAlign = TextAlign.Center,
           style = VLRTheme.typography.labelMedium,
         )
+      }
     }
   }
 }

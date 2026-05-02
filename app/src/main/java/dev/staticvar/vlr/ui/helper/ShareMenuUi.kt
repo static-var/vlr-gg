@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.helper
 
 import android.content.ClipData
@@ -64,7 +68,7 @@ fun SharingAppBar(
       .fillMaxWidth()
       .height(40.dp)
       .background(VLRTheme.colorScheme.background),
-    verticalAlignment = Alignment.CenterVertically
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     Icon(
       imageVector = Icons.Outlined.Close,
@@ -80,7 +84,7 @@ fun SharingAppBar(
     Text(
       text = "${items.size}/$MAX_SHARABLE_ITEMS",
       modifier = modifier.padding(Local8DP_4DPPadding.current),
-      color = VLRTheme.colorScheme.primary
+      color = VLRTheme.colorScheme.primary,
     )
     Icon(
       imageVector = Icons.AutoMirrored.Outlined.Send,
@@ -90,7 +94,7 @@ fun SharingAppBar(
         .padding(Local8DP_4DPPadding.current)
         .clickable { shareConfirm(true) }
         .size(32.dp),
-      tint = VLRTheme.colorScheme.primary
+      tint = VLRTheme.colorScheme.primary,
     )
   }
 }
@@ -116,14 +120,14 @@ fun ShareDialog(matches: List<MatchPreviewInfo>, onDismiss: () -> Unit) {
           val os: OutputStream = BufferedOutputStream(FileOutputStream(file))
           os.use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, os) }
           fireIntent(context = context, file = imageUri, matches = matches)
-        }
+        },
       )
     },
     confirmButton = {
       Button(onClick = { shareToggle = shareToggle.not() }) {
         Text(text = stringResource(R.string.share))
       }
-    }
+    },
   )
 }
 
@@ -132,21 +136,25 @@ fun SharableListUi(modifier: Modifier = Modifier, matches: List<MatchPreviewInfo
   Column(
     modifier
       .fillMaxWidth()
-      .background(VLRTheme.colorScheme.primaryContainer)) {
+      .background(VLRTheme.colorScheme.primaryContainer),
+  ) {
     CardView(
       colors =
       CardDefaults.cardColors(
         contentColor = VLRTheme.colorScheme.onPrimaryContainer,
-        containerColor = VLRTheme.colorScheme.primaryContainer
-      )
+        containerColor = VLRTheme.colorScheme.primaryContainer,
+      ),
     ) {
       matches.forEachIndexed { index, matchPreviewInfo ->
         SharableMatchUi(match = matchPreviewInfo)
-        if (index != matches.size - 1)
-          HorizontalDivider(modifier = Modifier
-            .fillMaxWidth()
-            .padding(2.dp)
-            .height(0.5.dp))
+        if (index != matches.size - 1) {
+          HorizontalDivider(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(2.dp)
+              .height(0.5.dp),
+          )
+        }
       }
     }
   }
@@ -156,24 +164,29 @@ fun SharableListUi(modifier: Modifier = Modifier, matches: List<MatchPreviewInfo
 fun SharableMatchUi(modifier: Modifier = Modifier, match: MatchPreviewInfo) {
   Text(
     text =
-    if (match.status.equals(stringResource(R.string.live), true)) stringResource(R.string.live)
-    else match.time?.readableDateAndTimeWithZone ?: "",
+    if (match.status.equals(stringResource(R.string.live), true)) {
+      stringResource(R.string.live)
+    } else {
+      match.time?.readableDateAndTimeWithZone ?: ""
+    },
     modifier = modifier
       .fillMaxWidth()
       .padding(Local2DPPadding.current),
     textAlign = TextAlign.Center,
-    style = VLRTheme.typography.labelSmall
+    style = VLRTheme.typography.labelSmall,
   )
-  Row(modifier = modifier
-    .fillMaxWidth()
-    .padding(Local4DP_2DPPadding.current)) {
+  Row(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(Local4DP_2DPPadding.current),
+  ) {
     Text(
       text = match.team1.name,
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       modifier = modifier.weight(3f),
       textAlign = TextAlign.Start,
-      style = VLRTheme.typography.bodySmall
+      style = VLRTheme.typography.bodySmall,
     )
     Text(
       text = match.team1.score?.toString() ?: "-",
@@ -181,19 +194,21 @@ fun SharableMatchUi(modifier: Modifier = Modifier, match: MatchPreviewInfo) {
       maxLines = 1,
       modifier = modifier.weight(1f),
       textAlign = TextAlign.End,
-      style = VLRTheme.typography.bodySmall
+      style = VLRTheme.typography.bodySmall,
     )
   }
-  Row(modifier = modifier
-    .fillMaxWidth()
-    .padding(Local4DP_2DPPadding.current)) {
+  Row(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(Local4DP_2DPPadding.current),
+  ) {
     Text(
       text = match.team2.name,
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       modifier = modifier.weight(3f),
       textAlign = TextAlign.Start,
-      style = VLRTheme.typography.bodySmall
+      style = VLRTheme.typography.bodySmall,
     )
     Text(
       text = match.team2.score?.toString() ?: "-",
@@ -201,7 +216,7 @@ fun SharableMatchUi(modifier: Modifier = Modifier, match: MatchPreviewInfo) {
       maxLines = 1,
       modifier = modifier.weight(1f),
       textAlign = TextAlign.End,
-      style = VLRTheme.typography.bodySmall
+      style = VLRTheme.typography.bodySmall,
     )
   }
 }
@@ -210,7 +225,7 @@ fun fireIntent(context: Context, file: Uri, matches: List<MatchPreviewInfo>) {
   val string = buildString {
     matches.forEach {
       appendLine(
-        "${it.team1.name} vs ${it.team2.name} | ${it.time?.readableDateAndTimeWithZone} | ${it.id.internalUrlFromId()} | ${it.id.websiteUrlFromId()}"
+        "${it.team1.name} vs ${it.team2.name} | ${it.time?.readableDateAndTimeWithZone} | ${it.id.internalUrlFromId()} | ${it.id.websiteUrlFromId()}",
       )
       appendLine()
     }
@@ -226,7 +241,7 @@ fun fireIntent(context: Context, file: Uri, matches: List<MatchPreviewInfo>) {
       clipData =
         ClipData(
           ClipDescription("Matches shared from VLR.app", arrayOf("image/png")),
-          ClipData.Item(file)
+          ClipData.Item(file),
         )
     }
   context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_with)))

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureplayer.presentation
 
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
@@ -5,8 +9,6 @@ import dev.staticvar.vlr.domain.model.PlayerInfo
 import dev.staticvar.vlr.domain.repository.PlayerRepository
 import dev.staticvar.vlr.featureplayer.usecase.ObservePlayerDetailsUseCase
 import dev.staticvar.vlr.featureplayer.usecase.RefreshPlayerDetailsUseCase
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +18,8 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlayerDetailsViewModelTest {
@@ -56,32 +60,28 @@ class PlayerDetailsViewModelTest {
     }
   }
 
-  private fun createViewModel(repository: FakePlayerRepository): PlayerDetailsViewModel =
-    PlayerDetailsViewModel(
-      observePlayerDetailsUseCase = ObservePlayerDetailsUseCase(repository),
-      refreshPlayerDetailsUseCase = RefreshPlayerDetailsUseCase(repository),
-      dispatchers = dispatchers,
-    )
+  private fun createViewModel(repository: FakePlayerRepository): PlayerDetailsViewModel = PlayerDetailsViewModel(
+    observePlayerDetailsUseCase = ObservePlayerDetailsUseCase(repository),
+    refreshPlayerDetailsUseCase = RefreshPlayerDetailsUseCase(repository),
+    dispatchers = dispatchers,
+  )
 
-  private fun playerInfo(playerId: String): PlayerInfo =
-    PlayerInfo(
-      id = playerId,
-      name = "Boaster",
-      alias = "boaster",
-      realName = null,
-      country = "UK",
-      imageUrl = "",
-      twitterUrl = null,
-      twitchUrl = null,
-      totalWinnings = 0.0,
-      currentTeam = null,
-      pastTeams = emptyList(),
-      agentStats = emptyList(),
-    )
+  private fun playerInfo(playerId: String): PlayerInfo = PlayerInfo(
+    id = playerId,
+    name = "Boaster",
+    alias = "boaster",
+    realName = null,
+    country = "UK",
+    imageUrl = "",
+    twitterUrl = null,
+    twitchUrl = null,
+    totalWinnings = 0.0,
+    currentTeam = null,
+    pastTeams = emptyList(),
+    agentStats = emptyList(),
+  )
 
-  private class FakePlayerRepository(
-    player: PlayerInfo? = null,
-  ) : PlayerRepository {
+  private class FakePlayerRepository(player: PlayerInfo? = null) : PlayerRepository {
     val observedPlayerIds: MutableList<String> = mutableListOf()
     val refreshDetailRequests: MutableList<String> = mutableListOf()
     private val detailsByPlayerId: MutableMap<String, MutableStateFlow<PlayerInfo?>> = mutableMapOf()
@@ -107,9 +107,7 @@ class PlayerDetailsViewModelTest {
     }
   }
 
-  private class TestDispatcherProvider(
-    dispatcher: TestDispatcher,
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(dispatcher: TestDispatcher) : DispatcherProvider {
     override val default: CoroutineDispatcher = dispatcher
     override val io: CoroutineDispatcher = dispatcher
     override val main: CoroutineDispatcher = dispatcher

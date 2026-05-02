@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.common
 
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,17 +25,17 @@ fun VlrTabRowForViewPager(modifier: Modifier, pagerState: PagerState, tabs: List
   TabRow(
     modifier = modifier.fillMaxWidth(),
     selectedTabIndex = pagerState.currentPage,
-    indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
+    indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) },
   ) {
     tabs.forEachIndexed { index, title ->
       Tab(
         selected = pagerState.currentPage == index,
-        onClick = { scope.launch { pagerState.scrollToPage(index) } }
+        onClick = { scope.launch { pagerState.scrollToPage(index) } },
       ) {
         Text(
           text = title,
           modifier = modifier.padding(Local16DPPadding.current).fillMaxWidth(),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
       }
     }
@@ -39,26 +43,22 @@ fun VlrTabRowForViewPager(modifier: Modifier, pagerState: PagerState, tabs: List
 }
 
 @Composable
-fun VlrScrollableTabRowForViewPager(
-  modifier: Modifier,
-  pagerState: PagerState,
-  tabs: List<String>
-) {
+fun VlrScrollableTabRowForViewPager(modifier: Modifier, pagerState: PagerState, tabs: List<String>) {
   val scope = rememberCoroutineScope()
   ScrollableTabRow(
     modifier = modifier.fillMaxWidth(),
     selectedTabIndex = pagerState.currentPage,
-    indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) }
+    indicator = { indicators -> VLRTabIndicator(indicators, pagerState.currentPage) },
   ) {
     tabs.forEachIndexed { index, title ->
       Tab(
         selected = pagerState.currentPage == index,
-        onClick = { scope.launch { pagerState.scrollToPage(index) } }
+        onClick = { scope.launch { pagerState.scrollToPage(index) } },
       ) {
         Text(
           text = title,
           modifier = modifier.padding(Local16DPPadding.current).fillMaxWidth(),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
       }
     }

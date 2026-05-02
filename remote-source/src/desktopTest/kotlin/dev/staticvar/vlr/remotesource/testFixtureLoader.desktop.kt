@@ -1,9 +1,13 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource
 
-import kotlin.io.use
 import kotlinx.io.asSource
 import kotlinx.io.buffered
 import kotlinx.io.readString
+import kotlin.io.use
 
 internal actual fun readFixture(fileName: String): String {
   val loader = requireNotNull(Thread.currentThread().contextClassLoader) {

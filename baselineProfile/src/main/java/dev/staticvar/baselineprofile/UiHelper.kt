@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.baselineprofile
 
 import androidx.benchmark.macro.MacrobenchmarkScope
@@ -49,7 +53,7 @@ private fun UiDevice.visitMatchDetailsAndBack() {
     // Visit match details screen 2 times
     while (
       visitedMatchDetails < 1 &&
-        child < (findObject(By.res("matchOverview:result"))?.children?.size ?: 0)
+      child < (findObject(By.res("matchOverview:result"))?.children?.size ?: 0)
     ) {
       findObject(By.res("matchOverview:result"))?.children?.let { children ->
         if (children[child]?.text == null) { // isClickable didn't work

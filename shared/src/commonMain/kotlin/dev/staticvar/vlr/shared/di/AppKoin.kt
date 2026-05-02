@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.shared.di
 
 import dev.staticvar.vlr.core.di.dispatcherModule
@@ -34,12 +38,10 @@ internal fun buildDefaultNetworkHeaders(authToken: String?): Map<String, String>
   return headers
 }
 
-internal fun buildNetworkConfiguration(authToken: String?): NetworkConfiguration {
-  return NetworkConfiguration(
-    host = AppNetworkDefaults.ApiHost,
-    defaultHeaders = buildDefaultNetworkHeaders(authToken = authToken),
-  )
-}
+internal fun buildNetworkConfiguration(authToken: String?): NetworkConfiguration = NetworkConfiguration(
+  host = AppNetworkDefaults.ApiHost,
+  defaultHeaders = buildDefaultNetworkHeaders(authToken = authToken),
+)
 
 public fun initializeAppKoin(
   appDeclaration: KoinAppDeclaration = {},

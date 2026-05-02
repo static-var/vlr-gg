@@ -1,11 +1,14 @@
-
-import com.diffplug.spotless.FormatterFunc
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 import com.diffplug.gradle.spotless.SpotlessExtension
-import java.io.Serializable
+import com.diffplug.spotless.FormatterFunc
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.getByType
+import java.io.Serializable
 
 class KtlintConventionPlugin : Plugin<Project> {
 
@@ -13,6 +16,9 @@ class KtlintConventionPlugin : Plugin<Project> {
     private const val KTLINT_VERSION = "1.8.0"
     private const val VLR_KTLINT_RULES = "dev.staticvar:ktlint-rules:1.0.0"
     private const val ONE_ANNOTATION_PER_LINE_STEP = "oneAnnotationPerLine"
+    private const val KOTLIN_LICENSE_DELIMITER = "(@file|package|import)"
+    private const val KOTLIN_SCRIPT_LICENSE_DELIMITER =
+      "(@file|pluginManagement|plugins|enableFeaturePreview|dependencyResolutionManagement|rootProject|includeBuild|include|import)"
   }
 
   override fun apply(project: Project) {
@@ -23,19 +29,15 @@ class KtlintConventionPlugin : Plugin<Project> {
 
       extensions.getByType<SpotlessExtension>().apply {
         kotlinGradle {
-          target("*.gradle.kts")
-          ktlint(KTLINT_VERSION)
-            .customRuleSets(listOf(VLR_KTLINT_RULES))
-            .editorConfigOverride(KTLINT_EDITOR_CONFIG_OVERRIDE)
-          custom(ONE_ANNOTATION_PER_LINE_STEP, OneAnnotationPerLineFormatter)
-          bumpThisNumberIfACustomStepChanges(1)
-        }
-      }
-
-      fun configureKotlinTarget() {
-        extensions.getByType<SpotlessExtension>().apply {
-          kotlin {
-            target("src/**/*.kt")
+          val runsKtlint = shouldRunKtlint()
+          if (this@with == rootProject) {
+            target("**/*.gradle.kts")
+            targetExclude("**/build/**")
+          } else {
+            target("*.gradle.kts")
+          }
+          licenseHeaderFile(rootProject.file("license-header.txt"), KOTLIN_SCRIPT_LICENSE_DELIMITER)
+          if (runsKtlint) {
             ktlint(KTLINT_VERSION)
               .customRuleSets(listOf(VLR_KTLINT_RULES))
               .editorConfigOverride(KTLINT_EDITOR_CONFIG_OVERRIDE)
@@ -44,6 +46,30 @@ class KtlintConventionPlugin : Plugin<Project> {
           }
         }
       }
+
+      fun configureKotlinTarget() {
+        extensions.getByType<SpotlessExtension>().apply {
+          kotlin {
+            val runsKtlint = shouldRunKtlint()
+            if (this@with == rootProject) {
+              target("**/*.kt")
+              targetExclude("**/build/**")
+            } else {
+              target("src/**/*.kt")
+            }
+            licenseHeaderFile(rootProject.file("license-header.txt"), KOTLIN_LICENSE_DELIMITER)
+            if (runsKtlint) {
+              ktlint(KTLINT_VERSION)
+                .customRuleSets(listOf(VLR_KTLINT_RULES))
+                .editorConfigOverride(KTLINT_EDITOR_CONFIG_OVERRIDE)
+              custom(ONE_ANNOTATION_PER_LINE_STEP, OneAnnotationPerLineFormatter)
+              bumpThisNumberIfACustomStepChanges(1)
+            }
+          }
+        }
+      }
+
+      if (this == rootProject) configureKotlinTarget()
 
       pluginManager.withPlugin("org.jetbrains.kotlin.jvm") { configureKotlinTarget() }
       pluginManager.withPlugin("org.jetbrains.kotlin.android") { configureKotlinTarget() }
@@ -54,6 +80,9 @@ class KtlintConventionPlugin : Plugin<Project> {
       }
     }
   }
+
+  private fun Project.shouldRunKtlint(): Boolean =
+    this != rootProject && name != "app"
 }
 
 private object OneAnnotationPerLineFormatter : FormatterFunc, Serializable {
@@ -71,11 +100,10 @@ private val KTLINT_EDITOR_CONFIG_OVERRIDE =
     "ktlint_standard_property-naming" to "disabled",
   )
 
-private fun String.formatOneAnnotationPerLine(): String =
-  split('\n')
-    .joinToString(separator = "\n") { line ->
-      line.formatAnnotationRun()
-    }
+private fun String.formatOneAnnotationPerLine(): String = split('\n')
+  .joinToString(separator = "\n") { line ->
+    line.formatAnnotationRun()
+  }
 
 private fun String.formatAnnotationRun(): String {
   val indent = takeWhile(Char::isWhitespace)

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.utils
 
 import android.content.Context
@@ -8,12 +12,13 @@ import androidx.annotation.Keep
 @Keep
 enum class DomainVerificationStatus {
   VERIFIED,
-  NOT_VERIFIED
+  NOT_VERIFIED,
 }
 
 fun domainVerificationStatus(context: Context): DomainVerificationStatus {
-  if(android.os.Build.VERSION.SDK_INT <= 30)
+  if (android.os.Build.VERSION.SDK_INT <= 30) {
     return DomainVerificationStatus.VERIFIED
+  }
 
   val manager = context.getSystemService(DomainVerificationManager::class.java)
   val userState = manager.getDomainVerificationUserState(context.packageName)
@@ -25,6 +30,9 @@ fun domainVerificationStatus(context: Context): DomainVerificationStatus {
       ?.size
       ?: 0
 
-  return if (unapprovedDomains > 0) DomainVerificationStatus.NOT_VERIFIED
-  else DomainVerificationStatus.VERIFIED
+  return if (unapprovedDomains > 0) {
+    DomainVerificationStatus.NOT_VERIFIED
+  } else {
+    DomainVerificationStatus.VERIFIED
+  }
 }

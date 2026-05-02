@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.utils
 
 import com.github.michaelbull.result.Err
@@ -25,7 +29,6 @@ public suspend inline fun <V> runSuspendCatching(block: () -> V): ResultMonad<V,
     Err(e)
   }
 }
-
 
 inline fun <T, R> T.cancellableRunCatching(block: T.() -> R): Result<R> {
   contract { callsInPlace(block, InvocationKind.EXACTLY_ONCE) }

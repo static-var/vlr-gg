@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.utils
 
 import java.time.Duration
@@ -81,7 +85,6 @@ val String.timeToEpoch: Long
       .atOffset(ZoneOffset.UTC)
       .atZoneSameInstant(deviceZoneId)
       .toEpochSecond()
-
 
 val String.patternDateTimeToReadable: String
   get() = LocalDateTime.parse(this, DateTimeFormatter.ofPattern(CUSTOM_DATE_TIME_PATTERN))

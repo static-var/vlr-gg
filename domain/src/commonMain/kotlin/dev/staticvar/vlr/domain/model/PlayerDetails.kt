@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.domain.model
 
 /**
@@ -22,12 +26,7 @@ data class PlayerInfo(
 /**
  * Team reference for a player.
  */
-data class PlayerTeam(
-  val id: String?,
-  val name: String,
-  val logoUrl: String,
-  val isCurrent: Boolean,
-)
+data class PlayerTeam(val id: String?, val name: String, val logoUrl: String, val isCurrent: Boolean)
 
 /**
  * Agent statistics for a player.

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.common
 
 import kotlinx.serialization.KSerializer
@@ -15,7 +19,8 @@ enum class MatchStatus(val wireName: String) {
   ONGOING("ongoing"),
   UPCOMING("upcoming"),
   LIVE("live"),
-  TBD("tbd");
+  TBD("tbd"),
+  ;
 
   companion object {
     private val byWire = entries.associateBy(MatchStatus::wireName)
@@ -29,14 +34,16 @@ object MatchStatusNullableSerializer : KSerializer<MatchStatus?> {
   override fun serialize(encoder: Encoder, value: MatchStatus?) {
     encoder.encodeString(value?.wireName ?: "unknown")
   }
-  override fun deserialize(decoder: Decoder): MatchStatus? = MatchStatus.fromWire(runCatching { decoder.decodeString() }.getOrNull())
+  override fun deserialize(decoder: Decoder): MatchStatus? =
+    MatchStatus.fromWire(runCatching { decoder.decodeString() }.getOrNull())
 }
 
 @Serializable
 enum class EventStatus(val wireName: String) {
   COMPLETED("completed"),
   ONGOING("ongoing"),
-  UPCOMING("upcoming");
+  UPCOMING("upcoming"),
+  ;
 
   companion object {
     private val byWire = entries.associateBy(EventStatus::wireName)
@@ -46,8 +53,11 @@ enum class EventStatus(val wireName: String) {
 
 object EventStatusNullableSerializer : KSerializer<EventStatus?> {
   override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("EventStatusNullable", PrimitiveKind.STRING)
-  override fun serialize(encoder: Encoder, value: EventStatus?) { encoder.encodeString(value?.wireName ?: "unknown") }
-  override fun deserialize(decoder: Decoder): EventStatus? = EventStatus.fromWire(runCatching { decoder.decodeString() }.getOrNull())
+  override fun serialize(encoder: Encoder, value: EventStatus?) {
+    encoder.encodeString(value?.wireName ?: "unknown")
+  }
+  override fun deserialize(decoder: Decoder): EventStatus? =
+    EventStatus.fromWire(runCatching { decoder.decodeString() }.getOrNull())
 }
 
 @Serializable
@@ -56,7 +66,8 @@ enum class SearchCategory(val wireName: String) {
   TEAM("teams"),
   PLAYER("players"),
   EVENT("events"),
-  SERIES("series");
+  SERIES("series"),
+  ;
 
   companion object {
     private val byWire = entries.associateBy(SearchCategory::wireName)
@@ -66,6 +77,9 @@ enum class SearchCategory(val wireName: String) {
 
 object SearchCategoryNullableSerializer : KSerializer<SearchCategory?> {
   override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("SearchCategoryNullable", PrimitiveKind.STRING)
-  override fun serialize(encoder: Encoder, value: SearchCategory?) { encoder.encodeString(value?.wireName ?: "unknown") }
-  override fun deserialize(decoder: Decoder): SearchCategory? = SearchCategory.fromWire(runCatching { decoder.decodeString() }.getOrNull())
+  override fun serialize(encoder: Encoder, value: SearchCategory?) {
+    encoder.encodeString(value?.wireName ?: "unknown")
+  }
+  override fun deserialize(decoder: Decoder): SearchCategory? =
+    SearchCategory.fromWire(runCatching { decoder.decodeString() }.getOrNull())
 }

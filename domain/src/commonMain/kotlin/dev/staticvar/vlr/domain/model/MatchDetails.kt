@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.domain.model
 
 /**
@@ -38,20 +42,11 @@ data class TeamDetails(
   val isFavorite: Boolean = false,
 )
 
-data class PreviousEncounter(
-  val id: String,
-  val teams: List<TeamPreview>,
-)
+data class PreviousEncounter(val id: String, val teams: List<TeamPreview>)
 
-data class MatchVideos(
-  val streams: List<VideoReference>,
-  val vods: List<VideoReference>,
-)
+data class MatchVideos(val streams: List<VideoReference>, val vods: List<VideoReference>)
 
-data class VideoReference(
-  val name: String,
-  val url: String,
-)
+data class VideoReference(val name: String, val url: String)
 
 data class MapData(
   val map: String,
@@ -78,10 +73,7 @@ data class PlayerStats(
   val agents: List<AgentInfo>,
 )
 
-data class AgentInfo(
-  val name: String,
-  val img: String,
-)
+data class AgentInfo(val name: String, val img: String)
 
 data class RoundInfo(
   val roundNo: Int,
@@ -94,13 +86,13 @@ data class RoundInfo(
 enum class RoundWinner {
   TEAM1,
   TEAM2,
-  NOT_PLAYED
+  NOT_PLAYED,
 }
 
 enum class RoundSide {
   ATTACK,
   DEFENCE,
-  NOT_PLAYED
+  NOT_PLAYED,
 }
 
 enum class RoundWinType {
@@ -108,5 +100,5 @@ enum class RoundWinType {
   SPIKE_EXPLODED,
   DEFUSED,
   TIME_OUT,
-  NOT_PLAYED
+  NOT_PLAYED,
 }

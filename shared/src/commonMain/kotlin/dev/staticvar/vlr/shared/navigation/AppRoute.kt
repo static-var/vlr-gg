@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.shared.navigation
 
 import androidx.navigation3.runtime.NavKey
@@ -21,24 +25,16 @@ public sealed interface AppRoute : NavKey {
   public data object About : AppRoute
 
   @Serializable
-  public data class MatchDetails(
-    val matchId: String,
-  ) : AppRoute
+  public data class MatchDetails(val matchId: String) : AppRoute
 
   @Serializable
-  public data class EventDetails(
-    val eventId: String,
-  ) : AppRoute
+  public data class EventDetails(val eventId: String) : AppRoute
 
   @Serializable
-  public data class TeamDetails(
-    val teamId: String,
-  ) : AppRoute
+  public data class TeamDetails(val teamId: String) : AppRoute
 
   @Serializable
-  public data class PlayerDetails(
-    val playerId: String,
-  ) : AppRoute
+  public data class PlayerDetails(val playerId: String) : AppRoute
 }
 
 public val AppRoute.rootDestination: AppRoute
@@ -50,8 +46,12 @@ public val AppRoute.rootDestination: AppRoute
       AppRoute.Rankings,
       AppRoute.About,
       -> this
+
       is AppRoute.MatchDetails -> AppRoute.Matches
+
       is AppRoute.EventDetails -> AppRoute.Events
+
       is AppRoute.TeamDetails -> AppRoute.Rankings
+
       is AppRoute.PlayerDetails -> AppRoute.Rankings
     }

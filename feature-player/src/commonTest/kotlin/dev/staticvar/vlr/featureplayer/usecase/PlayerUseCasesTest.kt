@@ -1,14 +1,18 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureplayer.usecase
 
 import dev.staticvar.vlr.domain.model.PlayerInfo
 import dev.staticvar.vlr.domain.repository.PlayerRepository
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlayerUseCasesTest {
@@ -37,9 +41,7 @@ class PlayerUseCasesTest {
     }
   }
 
-  private class FakePlayerRepository(
-    private val player: PlayerInfo?,
-  ) : PlayerRepository {
+  private class FakePlayerRepository(private val player: PlayerInfo?) : PlayerRepository {
     var observedPlayerId: String? = null
       private set
     var refreshedPlayerId: String? = null
@@ -63,18 +65,17 @@ class PlayerUseCasesTest {
   }
 }
 
-private fun playerInfo(id: String): PlayerInfo =
-  PlayerInfo(
-    id = id,
-    name = "Boaster",
-    alias = "boaster",
-    realName = null,
-    country = "UK",
-    imageUrl = "",
-    twitterUrl = null,
-    twitchUrl = null,
-    totalWinnings = 0.0,
-    currentTeam = null,
-    pastTeams = emptyList(),
-    agentStats = emptyList(),
-  )
+private fun playerInfo(id: String): PlayerInfo = PlayerInfo(
+  id = id,
+  name = "Boaster",
+  alias = "boaster",
+  realName = null,
+  country = "UK",
+  imageUrl = "",
+  twitterUrl = null,
+  twitchUrl = null,
+  totalWinnings = 0.0,
+  currentTeam = null,
+  pastTeams = emptyList(),
+  agentStats = emptyList(),
+)

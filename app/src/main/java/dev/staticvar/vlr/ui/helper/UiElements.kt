@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.helper
 
 import androidx.compose.animation.animateContentSize
@@ -23,17 +27,17 @@ fun CardView(
 ) {
   ElevatedCard(
     modifier =
-      Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-        .clip(RoundedCornerShape(8.dp))
-        .animateContentSize(
-          animationSpec =
-            spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMedium)
-        )
-        .then(modifier),
+    Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+      .clip(RoundedCornerShape(8.dp))
+      .animateContentSize(
+        animationSpec =
+        spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMedium),
+      )
+      .then(modifier),
     shape = RoundedCornerShape(8.dp),
     colors = colors,
     elevation =
-      CardDefaults.elevatedCardElevation(defaultElevation = 8.dp, pressedElevation = 12.dp),
+    CardDefaults.elevatedCardElevation(defaultElevation = 8.dp, pressedElevation = 12.dp),
   ) {
     content(this)
   }
@@ -43,17 +47,17 @@ fun CardView(
 fun EmphasisCardView(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
   ElevatedCard(
     modifier =
-      Modifier.fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 4.dp)
-        .clip(RoundedCornerShape(8.dp))
-        .animateContentSize(
-          animationSpec =
-            spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMedium)
-        )
-        .then(modifier),
+    Modifier.fillMaxWidth()
+      .padding(horizontal = 16.dp, vertical = 4.dp)
+      .clip(RoundedCornerShape(8.dp))
+      .animateContentSize(
+        animationSpec =
+        spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMedium),
+      )
+      .then(modifier),
     shape = RoundedCornerShape(8.dp),
     elevation =
-      CardDefaults.elevatedCardElevation(defaultElevation = 12.dp, pressedElevation = 16.dp),
+    CardDefaults.elevatedCardElevation(defaultElevation = 12.dp, pressedElevation = 16.dp),
   ) {
     content(this)
   }

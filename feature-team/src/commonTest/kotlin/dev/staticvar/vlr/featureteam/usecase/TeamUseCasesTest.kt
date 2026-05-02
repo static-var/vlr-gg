@@ -1,14 +1,18 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureteam.usecase
 
 import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.domain.repository.TeamRepository
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TeamUseCasesTest {
@@ -37,9 +41,7 @@ class TeamUseCasesTest {
     }
   }
 
-  private class FakeTeamRepository(
-    private val team: TeamInfo?,
-  ) : TeamRepository {
+  private class FakeTeamRepository(private val team: TeamInfo?) : TeamRepository {
     var observedTeamId: String? = null
       private set
     var refreshedTeamId: String? = null
@@ -65,18 +67,17 @@ class TeamUseCasesTest {
   }
 }
 
-private fun teamInfo(id: String): TeamInfo =
-  TeamInfo(
-    id = id,
-    name = "FNATIC",
-    tag = "FNC",
-    logoUrl = "",
-    region = "EMEA",
-    country = "EU",
-    rank = 1,
-    website = null,
-    twitter = null,
-    roster = emptyList(),
-    upcomingMatches = emptyList(),
-    completedMatches = emptyList(),
-  )
+private fun teamInfo(id: String): TeamInfo = TeamInfo(
+  id = id,
+  name = "FNATIC",
+  tag = "FNC",
+  logoUrl = "",
+  region = "EMEA",
+  country = "EU",
+  rank = 1,
+  website = null,
+  twitter = null,
+  roster = emptyList(),
+  upcomingMatches = emptyList(),
+  completedMatches = emptyList(),
+)

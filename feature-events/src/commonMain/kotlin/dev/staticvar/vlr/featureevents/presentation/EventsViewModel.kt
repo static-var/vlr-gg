@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureevents.presentation
 
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
@@ -76,10 +80,9 @@ public class EventsViewModel(
   }
 }
 
-private fun eventStatusToFilter(status: EventStatus): EventStatusFilter =
-  when (status) {
-    EventStatus.ONGOING -> EventStatusFilter.Ongoing
-    EventStatus.UPCOMING -> EventStatusFilter.Upcoming
-    EventStatus.COMPLETED -> EventStatusFilter.Completed
-    EventStatus.UNKNOWN -> EventStatusFilter.Ongoing
-  }
+private fun eventStatusToFilter(status: EventStatus): EventStatusFilter = when (status) {
+  EventStatus.ONGOING -> EventStatusFilter.Ongoing
+  EventStatus.UPCOMING -> EventStatusFilter.Upcoming
+  EventStatus.COMPLETED -> EventStatusFilter.Completed
+  EventStatus.UNKNOWN -> EventStatusFilter.Ongoing
+}

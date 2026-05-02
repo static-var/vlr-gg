@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurerankings.presentation
 
 import androidx.compose.foundation.layout.Arrangement
@@ -24,10 +28,7 @@ import dev.staticvar.designsystem.prism.Prism
 import org.koin.mp.KoinPlatform
 
 @Composable
-public fun RankingsRoute(
-  onTeamSelected: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+public fun RankingsRoute(onTeamSelected: (String) -> Unit, modifier: Modifier = Modifier) {
   val viewModel: RankingsViewModel = rememberKoinInstance()
   val uiState: RankingsUiState by viewModel.uiState.collectAsState()
 
@@ -124,7 +125,6 @@ internal fun RankingsScreen(
 }
 
 @Composable
-private inline fun <reified T : Any> rememberKoinInstance(): T =
-  remember {
-    KoinPlatform.getKoin().get<T>()
-  }
+private inline fun <reified T : Any> rememberKoinInstance(): T = remember {
+  KoinPlatform.getKoin().get<T>()
+}

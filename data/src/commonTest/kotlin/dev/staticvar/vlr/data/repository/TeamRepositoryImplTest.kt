@@ -1,26 +1,30 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.repository
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.cash.turbine.test
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.data.Teams
-import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.domain.model.TeamInfo
+import dev.staticvar.vlr.localsource.database.VlrDatabase
+import dev.staticvar.vlr.remotesource.team.CompletedMatchDto
 import dev.staticvar.vlr.remotesource.team.TeamDataSource
 import dev.staticvar.vlr.remotesource.team.TeamDetailsDto
 import dev.staticvar.vlr.remotesource.team.TeamPlayerDto
 import dev.staticvar.vlr.remotesource.team.UpcomingMatchDto
-import dev.staticvar.vlr.remotesource.team.CompletedMatchDto
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TeamRepositoryImplTest {
@@ -42,7 +46,7 @@ class TeamRepositoryImplTest {
     repository = TeamRepositoryImpl(
       teamDataSource = dataSource,
       database = database,
-      dispatchers = dispatcherProvider
+      dispatchers = dispatcherProvider,
     )
   }
 
@@ -59,7 +63,7 @@ class TeamRepositoryImplTest {
       tag = "ONE",
       region = "NA",
       country = "US",
-      rank = 1
+      rank = 1,
     )
     insertTeam(
       id = "team2",
@@ -67,7 +71,7 @@ class TeamRepositoryImplTest {
       tag = "TWO",
       region = "EU",
       country = "DE",
-      rank = 2
+      rank = 2,
     )
     assertTrue(repository.addToFavorites("team2").isSuccess)
 
@@ -93,7 +97,7 @@ class TeamRepositoryImplTest {
       tag = "ONE",
       region = "NA",
       country = "US",
-      rank = 1
+      rank = 1,
     )
 
     dataSource.detailResults["team1"] = Result.success(
@@ -112,8 +116,8 @@ class TeamRepositoryImplTest {
             name = "Player One",
             alias = "p1",
             role = "Duelist",
-            img = "p1.png"
-          )
+            img = "p1.png",
+          ),
         ),
         upcoming = listOf(
           UpcomingMatchDto(
@@ -122,8 +126,8 @@ class TeamRepositoryImplTest {
             stage = "Stage",
             opponent = "Opponent",
             date = "2025-01-01",
-            eta = "2h"
-          )
+            eta = "2h",
+          ),
         ),
         completed = listOf(
           CompletedMatchDto(
@@ -132,10 +136,10 @@ class TeamRepositoryImplTest {
             stage = "Final",
             opponent = "Old Opponent",
             date = "2024-12-01",
-            score = "2-1"
-          )
-        )
-      )
+            score = "2-1",
+          ),
+        ),
+      ),
     )
 
     repository.getTeamDetails("team1").test {
@@ -184,7 +188,7 @@ class TeamRepositoryImplTest {
       tag = "FAV",
       region = "NA",
       country = "US",
-      rank = 1
+      rank = 1,
     )
 
     assertTrue(repository.addToFavorites("team1").isSuccess)
@@ -206,14 +210,7 @@ class TeamRepositoryImplTest {
     }
   }
 
-  private fun insertTeam(
-    id: String,
-    name: String,
-    tag: String,
-    region: String,
-    country: String,
-    rank: Int
-  ) {
+  private fun insertTeam(id: String, name: String, tag: String, region: String, country: String, rank: Int) {
     database.teamsQueries.insertTeam(
       Teams(
         id = id,
@@ -227,14 +224,12 @@ class TeamRepositoryImplTest {
         rank = rank.toLong(),
         website = null,
         twitter = null,
-        last_updated = 0
-      )
+        last_updated = 0,
+      ),
     )
   }
 
-  private class TestDispatcherProvider(
-    private val dispatcher: TestDispatcher
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {
     override val default = dispatcher
     override val io = dispatcher
     override val main = dispatcher

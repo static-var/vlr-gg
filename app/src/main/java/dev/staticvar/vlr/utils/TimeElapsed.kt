@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.utils
 
 import androidx.annotation.VisibleForTesting
@@ -17,22 +21,21 @@ object TimeElapsed {
     // Create a new entry in map or override existing with expiration time
     timeMap[key] = (Calendar.getInstance().timeInMillis + expireIn.inWholeMilliseconds)
     println(
-      "$key started at ${Calendar.getInstance().timeInMillis} will expire in ${expireIn.absoluteValue}"
+      "$key started at ${Calendar.getInstance().timeInMillis} will expire in ${expireIn.absoluteValue}",
     )
   }
 
-  fun hasElapsed(key: String): Boolean {
-    return timeMap[key]?.let { expireDuration ->
-      // If key exists then perform check
-      println(
-        "Elapsed check for $key, current time ${Calendar.getInstance().timeInMillis}, set to expire at $expireDuration"
-      )
-      expireDuration < Calendar.getInstance().timeInMillis
-    }
-      ?: true.also { // Key doesn't exist, return true
-        println("$key not in records")
-      }
+  fun hasElapsed(key: String): Boolean = timeMap[key]?.let { expireDuration ->
+    // If key exists then perform check
+    println(
+      "Elapsed check for $key, current time ${Calendar.getInstance().timeInMillis}, set to expire at $expireDuration",
+    )
+    expireDuration < Calendar.getInstance().timeInMillis
   }
+    ?: true.also {
+      // Key doesn't exist, return true
+      println("$key not in records")
+    }
 
   fun reset(key: String) {
     // Set expired time
@@ -41,5 +44,6 @@ object TimeElapsed {
   }
 
   @VisibleForTesting internal fun timeForKey(key: String) = timeMap[key]
+
   @VisibleForTesting internal fun resetCache() = timeMap.clear()
 }

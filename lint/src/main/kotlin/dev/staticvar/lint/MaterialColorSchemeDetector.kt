@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.lint
 
 import com.android.tools.lint.client.api.UElementHandler
@@ -11,27 +15,28 @@ import com.android.tools.lint.detector.api.Severity
 import com.android.tools.lint.detector.api.SourceCodeScanner
 import org.jetbrains.uast.UQualifiedReferenceExpression
 
-internal class MaterialColorSchemeDetector : Detector(), SourceCodeScanner {
+internal class MaterialColorSchemeDetector :
+  Detector(),
+  SourceCodeScanner {
   override fun getApplicableUastTypes(): List<Class<out org.jetbrains.uast.UElement>> =
     listOf(UQualifiedReferenceExpression::class.java)
 
-  override fun createUastHandler(context: JavaContext): UElementHandler =
-    object : UElementHandler() {
-      override fun visitQualifiedReferenceExpression(node: UQualifiedReferenceExpression) {
-        val reference = node.asSourceString()
-        if (
-          reference.startsWith(MATERIAL_THEME_COLOR_SCHEME) ||
-            reference.startsWith(MATERIAL_THEME_COLORS)
-        ) {
-          context.report(
-            ISSUE,
-            node,
-            context.getNameLocation(node),
-            "Use MaterialTheme.prismColors instead of $reference.",
-          )
-        }
+  override fun createUastHandler(context: JavaContext): UElementHandler = object : UElementHandler() {
+    override fun visitQualifiedReferenceExpression(node: UQualifiedReferenceExpression) {
+      val reference = node.asSourceString()
+      if (
+        reference.startsWith(MATERIAL_THEME_COLOR_SCHEME) ||
+        reference.startsWith(MATERIAL_THEME_COLORS)
+      ) {
+        context.report(
+          ISSUE,
+          node,
+          context.getNameLocation(node),
+          "Use MaterialTheme.prismColors instead of $reference.",
+        )
       }
     }
+  }
 
   companion object {
     private const val MATERIAL_THEME_COLOR_SCHEME = "MaterialTheme.colorScheme"
@@ -42,16 +47,16 @@ internal class MaterialColorSchemeDetector : Detector(), SourceCodeScanner {
         id = "PrismColorUsage",
         briefDescription = "Prefer MaterialTheme.prismColors",
         explanation =
-          "Prism exposes an extended color palette via MaterialTheme.prismColors. " +
-            "Reference it instead of MaterialTheme.colorScheme or MaterialTheme.colors.",
+        "Prism exposes an extended color palette via MaterialTheme.prismColors. " +
+          "Reference it instead of MaterialTheme.colorScheme or MaterialTheme.colors.",
         category = Category.CORRECTNESS,
         priority = 6,
         severity = Severity.WARNING,
         implementation =
-          Implementation(
-            MaterialColorSchemeDetector::class.java,
-            Scope.JAVA_FILE_SCOPE,
-          ),
+        Implementation(
+          MaterialColorSchemeDetector::class.java,
+          Scope.JAVA_FILE_SCOPE,
+        ),
       )
   }
 }

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.db
 
 import androidx.room.ProvidedTypeConverter
@@ -62,7 +66,7 @@ class VlrTypeConverter @Inject constructor(private val json: Json) {
   fun stringToListOfTeams(data: String): List<Team> {
     return json.decodeFromString(data)
   }
-  
+
   @TypeConverter
   fun listOfGamesToString(data: List<TournamentDetails.Games>): String {
     return json.encodeToString(data)

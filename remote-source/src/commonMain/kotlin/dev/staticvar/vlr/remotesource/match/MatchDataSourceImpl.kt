@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.match
 
 import dev.staticvar.vlr.remotesource.common.ApiPaths
@@ -5,9 +9,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 
-internal class MatchDataSourceImpl(
-  private val client: HttpClient,
-) : MatchDataSource {
+internal class MatchDataSourceImpl(private val client: HttpClient) : MatchDataSource {
   override suspend fun list(): Result<List<MatchPreviewDto>> = runCatching {
     client.get(ApiPaths.MATCHES).body()
   }

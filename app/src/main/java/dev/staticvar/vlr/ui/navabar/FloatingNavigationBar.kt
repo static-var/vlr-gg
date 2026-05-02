@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.navabar
 
 import androidx.compose.foundation.BorderStroke
@@ -34,17 +38,17 @@ fun FloatingNavigationBar(
     tonalElevation = tonalElevation,
     shape = shape,
     border =
-      BorderStroke(
-        width = 0.5.dp,
-        brush =
-          Brush.verticalGradient(
-            colors =
-              listOf(
-                MaterialTheme.colorScheme.surfaceVariant,
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-              )
-          ),
+    BorderStroke(
+      width = 0.5.dp,
+      brush =
+      Brush.verticalGradient(
+        colors =
+        listOf(
+          MaterialTheme.colorScheme.surfaceVariant,
+          MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+        ),
       ),
+    ),
     modifier = modifier,
   ) {
     Column(

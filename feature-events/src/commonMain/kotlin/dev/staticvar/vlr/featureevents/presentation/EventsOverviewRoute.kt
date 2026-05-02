@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureevents.presentation
 
 import androidx.compose.foundation.layout.Arrangement
@@ -28,10 +32,7 @@ import dev.staticvar.vlr.domain.model.EventStatus
 import org.koin.mp.KoinPlatform
 
 @Composable
-public fun EventsOverviewRoute(
-  onEventSelected: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+public fun EventsOverviewRoute(onEventSelected: (String) -> Unit, modifier: Modifier = Modifier) {
   val viewModel: EventsViewModel = rememberKoinInstance()
   val uiState: EventsUiState by viewModel.uiState.collectAsState()
 
@@ -76,20 +77,23 @@ internal fun EventsOverviewScreen(
     )
     PrismTabs(
       tabs =
-        listOf(
-          PrismTab(id = EventStatusFilter.Ongoing.name, label = "Ongoing"),
-          PrismTab(id = EventStatusFilter.Upcoming.name, label = "Upcoming"),
-          PrismTab(id = EventStatusFilter.Completed.name, label = "Completed"),
-        ),
+      listOf(
+        PrismTab(id = EventStatusFilter.Ongoing.name, label = "Ongoing"),
+        PrismTab(id = EventStatusFilter.Upcoming.name, label = "Upcoming"),
+        PrismTab(id = EventStatusFilter.Completed.name, label = "Completed"),
+      ),
       selectedTabId = uiState.selectedStatus.name,
       onTabSelected = { onFilterSelected(EventStatusFilter.valueOf(it.id)) },
     )
 
     when {
       uiState.isLoading -> PrismStateMessage(text = "Loading events…")
+
       uiState.errorMessage != null && filteredEvents.isEmpty() ->
         PrismStateMessage(text = uiState.errorMessage ?: "Unable to load events.")
+
       filteredEvents.isEmpty() -> PrismStateMessage(text = "No events in this bucket yet.")
+
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
@@ -104,12 +108,12 @@ internal fun EventsOverviewScreen(
               PrismTag(
                 text = event.status.name,
                 style =
-                  when (event.status) {
-                    EventStatus.ONGOING -> PrismTagStyle.Danger
-                    EventStatus.UPCOMING -> PrismTagStyle.Info
-                    EventStatus.COMPLETED -> PrismTagStyle.Success
-                    EventStatus.UNKNOWN -> PrismTagStyle.Neutral
-                  },
+                when (event.status) {
+                  EventStatus.ONGOING -> PrismTagStyle.Danger
+                  EventStatus.UPCOMING -> PrismTagStyle.Info
+                  EventStatus.COMPLETED -> PrismTagStyle.Success
+                  EventStatus.UNKNOWN -> PrismTagStyle.Neutral
+                },
               )
               Text(
                 text = event.title,
@@ -138,7 +142,6 @@ internal fun EventsOverviewScreen(
 }
 
 @Composable
-private inline fun <reified T : Any> rememberKoinInstance(): T =
-  remember {
-    KoinPlatform.getKoin().get<T>()
-  }
+private inline fun <reified T : Any> rememberKoinInstance(): T = remember {
+  KoinPlatform.getKoin().get<T>()
+}

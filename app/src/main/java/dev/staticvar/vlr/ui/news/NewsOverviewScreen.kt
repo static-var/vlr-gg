@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.news
 
 import androidx.activity.compose.BackHandler
@@ -89,7 +93,9 @@ fun NewsScreenAdaptive(
   LaunchedEffect(navigator.currentDestination) {
     if (navigator.currentDestination?.pane == ThreePaneScaffoldRole.Secondary) {
       hideNav(false)
-    } else hideNav(true)
+    } else {
+      hideNav(true)
+    }
   }
 
   BackHandler(navigator.canNavigateBack()) {
@@ -98,7 +104,6 @@ fun NewsScreenAdaptive(
       navigator.navigateBack()
     }
   }
-
 
   ListDetailPaneScaffold(
     listPane = {
@@ -135,26 +140,26 @@ fun NewsScreen(
   contentPadding: PaddingValues,
   action: (String) -> Unit,
 ) {
-
   LogEvent(event = AnalyticsEvent.NEWS_OVERVIEW)
 
   val newsInfo by
-  remember(viewModel) { viewModel.getNews() }
-    .collectAsStateWithLifecycle(initialValue = Waiting())
+    remember(viewModel) { viewModel.getNews() }
+      .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh) { viewModel.refreshNews() }
-    .collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshNews() }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(
       updateState.getOrElse { false },
-      { triggerRefresh = triggerRefresh.not() })
+      { triggerRefresh = triggerRefresh.not() },
+    )
 
   val modifier: Modifier = Modifier
 
   val resetScroll by
-  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
   val scrollState = rememberLazyListState()
   scrollState.ScrollHelper(resetScroll = resetScroll) { viewModel.postResetScroll() }
 
@@ -168,15 +173,17 @@ fun NewsScreen(
         data?.let { list ->
           val safeConvertedList =
             kotlin.runCatching { list.sortedByDescending { it.date.timeToEpoch } }
-          Box(modifier = Modifier
-            .pullRefresh(swipeRefresh)
-            .fillMaxSize()) {
+          Box(
+            modifier = Modifier
+              .pullRefresh(swipeRefresh)
+              .fillMaxSize(),
+          ) {
             PullToRefreshPill(
               modifier =
-                Modifier
-                  .align(Alignment.TopCenter)
-                  .padding(top = 16.dp)
-                  .statusBarsPadding(),
+              Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp)
+                .statusBarsPadding(),
               show = updateState.get() == true || swipeRefresh.progress != 0f,
             )
             LazyColumn(
@@ -223,14 +230,14 @@ fun NewsItem(
   CardView(
     modifier = modifier.clickable { action(newsResponseItem.link.split("/")[3]) },
     colors =
-      if (newsResponseItem.link.contains(selectedItem)) {
-        CardDefaults.elevatedCardColors(
-          containerColor = VLRTheme.colorScheme.secondaryContainer,
-          contentColor = VLRTheme.colorScheme.onSecondaryContainer,
-        )
-      } else {
-        CardDefaults.elevatedCardColors()
-      },
+    if (newsResponseItem.link.contains(selectedItem)) {
+      CardDefaults.elevatedCardColors(
+        containerColor = VLRTheme.colorScheme.secondaryContainer,
+        contentColor = VLRTheme.colorScheme.onSecondaryContainer,
+      )
+    } else {
+      CardDefaults.elevatedCardColors()
+    },
   ) {
     Column(modifier = modifier.padding(Local8DPPadding.current)) {
       Text(
@@ -263,8 +270,11 @@ fun NewsItem(
         val convertedDate = kotlin.runCatching { newsResponseItem.date.readableDate }
         Text(
           text =
-            if (convertedDate.isSuccess) convertedDate.getOrDefault(newsResponseItem.date)
-            else newsResponseItem.date,
+          if (convertedDate.isSuccess) {
+            convertedDate.getOrDefault(newsResponseItem.date)
+          } else {
+            newsResponseItem.date
+          },
           style = VLRTheme.typography.labelSmall,
           modifier = modifier.padding(Local4DPPadding.current),
         )

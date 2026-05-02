@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -266,15 +270,14 @@ internal class VlrViewModelTest {
 //    }
 
   @Test
-  fun `test if parseNews emits data from repository`() =
-    runTest() {
-      val id = "800"
-      val data = NewsArticle()
-      every { vlrRepository.parseNews(id) } returns flowOf(Ok(NewsArticle()))
-      viewModel.parseNews(id).test {
-        skipItems(1)
-        assertThat(awaitItem()?.getOr(NewsArticle())).isEqualTo(data)
-      }
-      verify { vlrRepository.parseNews(id) }
+  fun `test if parseNews emits data from repository`() = runTest {
+    val id = "800"
+    val data = NewsArticle()
+    every { vlrRepository.parseNews(id) } returns flowOf(Ok(NewsArticle()))
+    viewModel.parseNews(id).test {
+      skipItems(1)
+      assertThat(awaitItem()?.getOr(NewsArticle())).isEqualTo(data)
     }
+    verify { vlrRepository.parseNews(id) }
+  }
 }

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data
 
 import androidx.core.util.lruCache
@@ -20,60 +24,59 @@ object NewsParser {
    * @param id
    * @param json
    */
-  fun parser(id: String, json: Json) =
-    flow<Result<NewsArticle, Throwable>> {
-      runSuspendCatching {
-        val cached = cache[id]
-        if (cached != null) {
-          cached
-        } else {
-          val webpage = Jsoup.connect("https://www.vlr.gg/$id").get() // Read webpage
-          val headerHtml =
-            webpage.select(
-              ".article-header"
-            ) // Separate the section with author and top level article info
-          val text = webpage.select(".article-body") // Separate body of the article
+  fun parser(id: String, json: Json) = flow<Result<NewsArticle, Throwable>> {
+    runSuspendCatching {
+      val cached = cache[id]
+      if (cached != null) {
+        cached
+      } else {
+        val webpage = Jsoup.connect("https://www.vlr.gg/$id").get() // Read webpage
+        val headerHtml =
+          webpage.select(
+            ".article-header",
+          ) // Separate the section with author and top level article info
+        val text = webpage.select(".article-body") // Separate body of the article
 
-          NewsArticle(
-            headerHtml.first()?.let {
-              it
-                .select(".wf-title")
-                .first()
-                ?.wholeText()
-                ?.replace(Regex("\\s+"), " ")
-                ?.trim() // Fetch title of the article
-            }
-              ?: "",
-            headerHtml.first()?.let {
-              it
-                .select(".article-meta-author")
-                .first()
-                ?.wholeText()
-                ?.replace(Regex("\\s+"), " ")
-                ?.trim()
-            } // Fetch author name
-              ?: "",
-            headerHtml.first()?.let {
-              it
-                .select(".js-date-toggle")
-                .first()
-                ?.wholeText()
-                ?.replace(Regex("\\s+"), " ")
-                ?.trim() // Fetch publishing time of the article
-            }
-              ?: "",
-            text.first()?.let { elements ->
-              elements
-                .select(".wf-hover-card")
-                .remove() // Remove hover card from HTML before parsing
-              elements.children().map { recursiveTextFinder(it, json) }.flatten()
-            }
-          ).also {
-            cache.put(id, it)
+        NewsArticle(
+          headerHtml.first()?.let {
+            it
+              .select(".wf-title")
+              .first()
+              ?.wholeText()
+              ?.replace(Regex("\\s+"), " ")
+              ?.trim() // Fetch title of the article
           }
+            ?: "",
+          headerHtml.first()?.let {
+            it
+              .select(".article-meta-author")
+              .first()
+              ?.wholeText()
+              ?.replace(Regex("\\s+"), " ")
+              ?.trim()
+          } // Fetch author name
+            ?: "",
+          headerHtml.first()?.let {
+            it
+              .select(".js-date-toggle")
+              .first()
+              ?.wholeText()
+              ?.replace(Regex("\\s+"), " ")
+              ?.trim() // Fetch publishing time of the article
+          }
+            ?: "",
+          text.first()?.let { elements ->
+            elements
+              .select(".wf-hover-card")
+              .remove() // Remove hover card from HTML before parsing
+            elements.children().map { recursiveTextFinder(it, json) }.flatten()
+          },
+        ).also {
+          cache.put(id, it)
         }
-      }.also { emit(it) }
-    }
+      }
+    }.also { emit(it) }
+  }
 
   /**
    * Recursive text finder the method ignores unknown and unnecessary document tags and reads data
@@ -83,24 +86,25 @@ object NewsParser {
    * @param json
    * @return
    */
-  private fun recursiveTextFinder(element: Element, json: Json): List<HtmlDataType> {
-    return if (element.tagName() == "iframe")
+  private fun recursiveTextFinder(element: Element, json: Json): List<HtmlDataType> =
+    if (element.tagName() == "iframe") {
       listOf(Video(element.attr("src"))) // Identify Videos / clips from the page
-    else if (element.tagName() == "em")
+    } else if (element.tagName() == "em") {
       listOf(Subtext(element.wholeText().trim())) // Identify subtexts from the page
-    else if (element.tagName() == "h1")
+    } else if (element.tagName() == "h1") {
       listOf(Heading(element.wholeText().trim())) // Identify headings from the page
-    else if (element.tagName() == "li")
+    } else if (element.tagName() == "li") {
       listOf<HtmlDataType>(
-        ListItem(element.text().trim().trimStart('/'))
+        ListItem(element.text().trim().trimStart('/')),
       ) // Identify list points from the page
-    else if (element.tagName() == "blockquote")
+    } else if (element.tagName() == "blockquote") {
       listOf<HtmlDataType>(Quote(element.wholeText().trim())) // Identify quotes from the page
-    else if (
+    } else if (
       element.tagName() == "p" && element.hasText() && element.wholeText().isNotBlank()
-    ) // Identify paragraph text from the page
+    ) {
+      // Identify paragraph text from the page
       listOf(Paragraph(element.wholeText().replace(Regex("\\s+"), " ").trim()))
-    else if (
+    } else if (
       element.tagName() == "div" && element.select(".tweet").isNotEmpty()
     ) { // Identify tags which contain tweet
       val url = element.attr("data-url")
@@ -113,11 +117,15 @@ object NewsParser {
     } else {
       if (
         element.tagName() == "p" && element.hasText() && element.wholeText().isNotBlank()
-      ) // Identify paragraph text which were not identified before from the page
+      ) {
+        // Identify paragraph text which were not identified before from the page
         listOf(Paragraph(element.text().replace(Regex("\\s+"), " ").trim()))
-      else if (element.text().isBlank()) listOf() else listOf(Unknown(element.html()))
+      } else if (element.text().isBlank()) {
+        listOf()
+      } else {
+        listOf(Unknown(element.html()))
+      }
     }
-  }
 
   /**
    * Get tweet embed

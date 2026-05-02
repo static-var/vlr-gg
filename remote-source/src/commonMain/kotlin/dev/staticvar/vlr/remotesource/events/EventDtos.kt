@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.events
 
 import dev.staticvar.vlr.remotesource.common.EventStatus
@@ -11,7 +15,8 @@ import kotlinx.serialization.Serializable
 data class EventListDto(
   @SerialName("id") val id: String = "",
   @SerialName("title") val title: String = "",
-  @SerialName("status") @Serializable(with = EventStatusNullableSerializer::class) val status: EventStatus? = null,
+  @SerialName("status")
+  @Serializable(with = EventStatusNullableSerializer::class) val status: EventStatus? = null,
   @SerialName("prize") val prize: String = "",
   @SerialName("dates") val dates: String = "",
   @SerialName("location") val location: String = "",
@@ -54,7 +59,8 @@ data class EventMatchDto(
   @SerialName("time") val time: String = "",
   @SerialName("date") val date: String = "",
   @SerialName("eta") val eta: String? = null,
-  @SerialName("status") @Serializable(with = MatchStatusNullableSerializer::class) val status: MatchStatus? = null,
+  @SerialName("status")
+  @Serializable(with = MatchStatusNullableSerializer::class) val status: MatchStatus? = null,
   @SerialName("teams") val teams: List<EventMatchTeamDto> = emptyList(),
   @SerialName("round") val round: String = "",
   @SerialName("stage") val stage: String = "",
@@ -82,7 +88,8 @@ data class EventDetailsDto(
   @SerialName("dates") val dates: String = "",
   @SerialName("prize") val prize: String = "",
   @SerialName("location") val location: String = "",
-  @SerialName("status") @Serializable(with = EventStatusNullableSerializer::class) val status: EventStatus? = null,
+  @SerialName("status")
+  @Serializable(with = EventStatusNullableSerializer::class) val status: EventStatus? = null,
   @SerialName("img") val img: String = "",
   @SerialName("prizes") val prizes: List<EventPrizeDto> = emptyList(),
   @SerialName("teams") val teams: List<EventTeamDto> = emptyList(),

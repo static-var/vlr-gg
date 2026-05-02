@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.android.kotlin.multiplatform.library)
@@ -17,7 +21,7 @@ kotlin {
   listOf(
     iosX64(),
     iosArm64(),
-    iosSimulatorArm64()
+    iosSimulatorArm64(),
   ).forEach { iosTarget ->
     iosTarget.binaries.framework {
       baseName = "Core"

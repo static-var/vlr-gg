@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.match
 
 import dev.staticvar.vlr.remotesource.common.MatchStatus
@@ -34,7 +38,8 @@ data class EventDto(
   @SerialName("img") val img: String = "",
   @SerialName("date") val date: String? = null,
   @SerialName("patch") val patch: String? = null,
-  @SerialName("status") @Serializable(with = MatchStatusNullableSerializer::class) val status: MatchStatus? = null,
+  @SerialName("status")
+  @Serializable(with = MatchStatusNullableSerializer::class) val status: MatchStatus? = null,
 )
 
 @Serializable
@@ -50,10 +55,7 @@ data class MatchVideosDto(
 )
 
 @Serializable
-data class VideoReferenceDto(
-  @SerialName("name") val name: String = "",
-  @SerialName("url") val url: String = "",
-)
+data class VideoReferenceDto(@SerialName("name") val name: String = "", @SerialName("url") val url: String = "")
 
 @Serializable
 data class MapDataDto(
@@ -83,10 +85,7 @@ data class PlayerStatsDto(
 )
 
 @Serializable
-data class AgentInfoDto(
-  @SerialName("name") val name: String = "",
-  @SerialName("img") val img: String = "",
-)
+data class AgentInfoDto(@SerialName("name") val name: String = "", @SerialName("img") val img: String = "")
 
 @Serializable
 data class RoundInfoDto(

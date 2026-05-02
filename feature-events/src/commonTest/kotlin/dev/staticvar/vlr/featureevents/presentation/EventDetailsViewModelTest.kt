@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureevents.presentation
 
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
@@ -7,8 +11,6 @@ import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.featureevents.usecase.ObserveEventDetailsUseCase
 import dev.staticvar.vlr.featureevents.usecase.RefreshEventDetailsUseCase
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +20,8 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EventDetailsViewModelTest {
@@ -40,16 +44,13 @@ class EventDetailsViewModelTest {
     }
   }
 
-  private fun createViewModel(repository: FakeEventRepository): EventDetailsViewModel =
-    EventDetailsViewModel(
-      observeEventDetailsUseCase = ObserveEventDetailsUseCase(repository),
-      refreshEventDetailsUseCase = RefreshEventDetailsUseCase(repository),
-      dispatchers = dispatchers,
-    )
+  private fun createViewModel(repository: FakeEventRepository): EventDetailsViewModel = EventDetailsViewModel(
+    observeEventDetailsUseCase = ObserveEventDetailsUseCase(repository),
+    refreshEventDetailsUseCase = RefreshEventDetailsUseCase(repository),
+    dispatchers = dispatchers,
+  )
 
-  private class FakeEventRepository(
-    details: EventDetails? = null,
-  ) : EventRepository {
+  private class FakeEventRepository(details: EventDetails? = null) : EventRepository {
     val refreshDetailRequests: MutableList<String> = mutableListOf()
     private val detailsByEventId: MutableMap<String, MutableStateFlow<EventDetails?>> = mutableMapOf()
 
@@ -59,25 +60,24 @@ class EventDetailsViewModelTest {
 
     override fun getEvents(): Flow<List<EventPreview>> = flowOf(emptyList())
 
-    override fun getEventDetails(eventId: String): Flow<EventDetails?> =
-      detailsByEventId.getOrPut(eventId) {
-        MutableStateFlow(
-          EventDetails(
-            id = eventId,
-            title = "Champions",
-            subtitle = "Stage 1",
-            status = EventStatus.ONGOING,
-            prize = "$" + "100k",
-            dates = "Mar 1 - Mar 7",
-            region = "Global",
-            logoUrl = "",
-            prizes = emptyList(),
-            teams = emptyList(),
-            matches = emptyList(),
-            standings = emptyList(),
-          ),
-        )
-      }
+    override fun getEventDetails(eventId: String): Flow<EventDetails?> = detailsByEventId.getOrPut(eventId) {
+      MutableStateFlow(
+        EventDetails(
+          id = eventId,
+          title = "Champions",
+          subtitle = "Stage 1",
+          status = EventStatus.ONGOING,
+          prize = "$" + "100k",
+          dates = "Mar 1 - Mar 7",
+          region = "Global",
+          logoUrl = "",
+          prizes = emptyList(),
+          teams = emptyList(),
+          matches = emptyList(),
+          standings = emptyList(),
+        ),
+      )
+    }
 
     override suspend fun addToFavorites(eventId: String): Result<Unit> = Result.success(Unit)
 
@@ -91,9 +91,7 @@ class EventDetailsViewModelTest {
     }
   }
 
-  private class TestDispatcherProvider(
-    dispatcher: TestDispatcher,
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(dispatcher: TestDispatcher) : DispatcherProvider {
     override val default: CoroutineDispatcher = dispatcher
     override val io: CoroutineDispatcher = dispatcher
     override val main: CoroutineDispatcher = dispatcher

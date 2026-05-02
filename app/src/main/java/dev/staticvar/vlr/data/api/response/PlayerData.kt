@@ -1,12 +1,15 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.api.response
 
-
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import androidx.annotation.Keep
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Immutable
 @Keep

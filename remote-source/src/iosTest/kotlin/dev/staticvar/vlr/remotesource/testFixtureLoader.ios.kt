@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource
 
 import kotlinx.io.buffered
@@ -14,7 +18,7 @@ internal actual fun readFixture(fileName: String): String {
   val resourceName = fileName.substring(0, separatorIndex)
   val resourceExtension = fileName.substring(separatorIndex + 1)
   val resourcePath = requireNotNull(
-    NSBundle.mainBundle.pathForResource(resourceName, resourceExtension)
+    NSBundle.mainBundle.pathForResource(resourceName, resourceExtension),
   ) {
     "Fixture $fileName was not bundled with the iOS test target."
   }

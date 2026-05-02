@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.api
 
 import kotlinx.serialization.SerialName
@@ -45,10 +49,7 @@ class MatchVideosDto(
 )
 
 @Serializable
-class VideoReferenceDto(
-  @SerialName("name") val name: String = "",
-  @SerialName("url") val url: String = "",
-)
+class VideoReferenceDto(@SerialName("name") val name: String = "", @SerialName("url") val url: String = "")
 
 @Serializable
 class MapDataDto(
@@ -78,10 +79,7 @@ class PlayerStatsDto(
 )
 
 @Serializable
-class AgentInfoDto(
-  @SerialName("name") val name: String = "",
-  @SerialName("img") val img: String = "",
-)
+class AgentInfoDto(@SerialName("name") val name: String = "", @SerialName("img") val img: String = "")
 
 @Serializable
 class RoundInfoDto(

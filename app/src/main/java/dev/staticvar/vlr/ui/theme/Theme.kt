@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.theme
 
 import android.content.Context
@@ -81,7 +85,7 @@ private val LightColorScheme =
 fun VLRTheme(
   darkTheme: Boolean = isSystemInDarkTheme(),
   dynamicColor: Boolean = true,
-  content: @Composable () -> Unit
+  content: @Composable () -> Unit,
 ) {
   val colorScheme =
     when {
@@ -89,7 +93,9 @@ fun VLRTheme(
         val context = LocalContext.current
         if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
       }
+
       darkTheme -> DarkColorScheme
+
       else -> LightColorScheme
     }
 
@@ -102,7 +108,7 @@ fun VLRTheme(
     colorScheme = colorScheme,
     typography = Typography,
     shapes = Shapes,
-    content = content
+    content = content,
   )
 }
 
@@ -111,14 +117,16 @@ fun WidgetTheme(
   context: Context,
   darkTheme: Boolean = isSystemInDarkTheme(),
   dynamicColor: Boolean = true,
-  content: @Composable () -> Unit
+  content: @Composable () -> Unit,
 ) {
   val colorScheme =
     when {
       dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
         if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
       }
+
       darkTheme -> DarkColorScheme
+
       else -> LightColorScheme
     }
 
@@ -126,7 +134,7 @@ fun WidgetTheme(
     colorScheme = colorScheme,
     typography = Typography,
     shapes = Shapes,
-    content = content
+    content = content,
   )
 }
 
@@ -134,7 +142,8 @@ const val LIGHT_THEME_ALPHA = 0.2f
 const val DARK_THEME_ALPHA = 0.05f
 
 val VLRTheme
-  @Composable get() = MaterialTheme
+  @Composable
+  get() = MaterialTheme
 
 val ColorScheme.tintedBackground: Color
   @Composable

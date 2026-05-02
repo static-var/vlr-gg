@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.helper
 
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,17 +41,23 @@ fun VlrNavHost(
 
   NavHost(
     navController = navController,
-    startDestination = Destination.NewsOverview.route
+    startDestination = Destination.NewsOverview.route,
   ) {
     composable(
       Destination.NewsOverview.route,
       enterTransition = {
-        if (targetState.destination.route == initialState.destination.route) null
-        else slideInFromBottom
+        if (targetState.destination.route == initialState.destination.route) {
+          null
+        } else {
+          slideInFromBottom
+        }
       },
       popEnterTransition = {
-        if (targetState.destination.route == initialState.destination.route) null
-        else slideInFromBottom
+        if (targetState.destination.route == initialState.destination.route) {
+          null
+        } else {
+          slideInFromBottom
+        }
       },
       exitTransition = {
         if (targetState.destination.route == initialState.destination.route) null else fadeOut
@@ -62,12 +72,18 @@ fun VlrNavHost(
     composable(
       Destination.MatchOverview.route,
       enterTransition = {
-        if (targetState.destination.route == initialState.destination.route) null
-        else slideInFromBottom
+        if (targetState.destination.route == initialState.destination.route) {
+          null
+        } else {
+          slideInFromBottom
+        }
       },
       popEnterTransition = {
-        if (targetState.destination.route == initialState.destination.route) null
-        else slideInFromBottom
+        if (targetState.destination.route == initialState.destination.route) {
+          null
+        } else {
+          slideInFromBottom
+        }
       },
       exitTransition = {
         if (targetState.destination.route == initialState.destination.route) null else fadeOut
@@ -82,12 +98,18 @@ fun VlrNavHost(
     composable(
       Destination.EventOverview.route,
       enterTransition = {
-        if (targetState.destination.route == initialState.destination.route) null
-        else slideInFromBottom
+        if (targetState.destination.route == initialState.destination.route) {
+          null
+        } else {
+          slideInFromBottom
+        }
       },
       popEnterTransition = {
-        if (targetState.destination.route == initialState.destination.route) null
-        else slideInFromBottom
+        if (targetState.destination.route == initialState.destination.route) {
+          null
+        } else {
+          slideInFromBottom
+        }
       },
       exitTransition = {
         if (targetState.destination.route == initialState.destination.route) null else fadeOut
@@ -102,12 +124,18 @@ fun VlrNavHost(
     composable(
       Destination.About.route,
       enterTransition = {
-        if (targetState.destination.route == initialState.destination.route) null
-        else slideInFromBottom
+        if (targetState.destination.route == initialState.destination.route) {
+          null
+        } else {
+          slideInFromBottom
+        }
       },
       popEnterTransition = {
-        if (targetState.destination.route == initialState.destination.route) null
-        else slideInFromBottom
+        if (targetState.destination.route == initialState.destination.route) {
+          null
+        } else {
+          slideInFromBottom
+        }
       },
       exitTransition = {
         if (targetState.destination.route == initialState.destination.route) null else fadeOut
@@ -122,12 +150,18 @@ fun VlrNavHost(
     composable(
       Destination.Rank.route,
       enterTransition = {
-        if (targetState.destination.route == initialState.destination.route) null
-        else slideInFromBottom
+        if (targetState.destination.route == initialState.destination.route) {
+          null
+        } else {
+          slideInFromBottom
+        }
       },
       popEnterTransition = {
-        if (targetState.destination.route == initialState.destination.route) null
-        else slideInFromBottom
+        if (targetState.destination.route == initialState.destination.route) {
+          null
+        } else {
+          slideInFromBottom
+        }
       },
       exitTransition = {
         if (targetState.destination.route == initialState.destination.route) null else fadeOut
@@ -155,8 +189,8 @@ fun VlrNavHost(
         navDeepLink {
           uriPattern =
             "${Constants.DEEP_LINK_2_BASEURL}${Destination.Match.Args.ID}={${Destination.Match.Args.ID}}"
-        }
-      )
+        },
+      ),
     ) {
       val id = it.arguments?.getString(Destination.Match.Args.ID) ?: ""
       onNavigation(Destination.Match.route.replace(Destination.Match.Args.ID, id))
@@ -178,8 +212,8 @@ fun VlrNavHost(
         navDeepLink {
           uriPattern =
             "${Constants.DEEP_LINK_2_BASEURL}${Destination.Event.route}={${Destination.Event.Args.ID}}"
-        }
-      )
+        },
+      ),
     ) {
       val id = it.arguments?.getString(Destination.Event.Args.ID) ?: ""
       onNavigation(Destination.Event.route.replace(Destination.Event.Args.ID, id))
@@ -201,7 +235,7 @@ fun VlrNavHost(
           uriPattern =
             "${Constants.DEEP_LINK_2_BASEURL}${Destination.Team.route}={${Destination.Team.Args.ID}}"
         },
-      )
+      ),
     ) {
       val id = it.arguments?.getString(Destination.Team.Args.ID) ?: ""
       onNavigation(Destination.Event.route.replace(Destination.Team.Args.ID, id))
@@ -223,7 +257,7 @@ fun VlrNavHost(
           uriPattern =
             "${Constants.DEEP_LINK_2_BASEURL}${Destination.Player.route}={${Destination.Player.Args.ID}}"
         },
-      )
+      ),
     ) {
       val id = it.arguments?.getString(Destination.Player.Args.ID) ?: ""
       onNavigation(Destination.Player.route.replace(Destination.Player.Args.ID, id))
@@ -245,8 +279,8 @@ fun VlrNavHost(
         navDeepLink {
           uriPattern =
             "${Constants.DEEP_LINK_2_BASEURL}news={${Destination.News.Args.ID}}"
-        }
-      )
+        },
+      ),
     ) {
       onNavigation(Destination.News.route)
       val id = it.arguments?.getString(Destination.News.Args.ID) ?: ""

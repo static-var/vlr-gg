@@ -1,6 +1,10 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   alias(libs.plugins.android.application)
@@ -21,11 +25,13 @@ if (envFile.exists()) {
 }
 
 val authToken =
-  (System.getenv("VLR_AUTH_TOKEN")
-    ?: localProperties.getProperty("TOKEN")
-    ?: localProperties.getProperty("VLR_AUTH_TOKEN")
-    ?: envProperties.getProperty("VLR_AUTH_TOKEN")
-    ?: "")
+  (
+    System.getenv("VLR_AUTH_TOKEN")
+      ?: localProperties.getProperty("TOKEN")
+      ?: localProperties.getProperty("VLR_AUTH_TOKEN")
+      ?: envProperties.getProperty("VLR_AUTH_TOKEN")
+      ?: ""
+    )
     .trim()
     .removeSurrounding("\"")
     .removeSurrounding("'")
@@ -34,7 +40,7 @@ val escapedAuthToken = authToken.replace("\\", "\\\\").replace("\"", "\\\"")
 android {
   namespace = "dev.staticvar.vlr.android"
   compileSdk = 36
-  
+
   defaultConfig {
     applicationId = "dev.staticvar.vlr"
     minSdk = 24
@@ -42,30 +48,30 @@ android {
     versionCode = 1
     versionName = "1.0.0"
     buildConfigField("String", "TOKEN", "\"$escapedAuthToken\"")
-    
+
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
-  
+
   buildTypes {
     release {
       isMinifyEnabled = false
       proguardFiles(
         getDefaultProguardFile("proguard-android-optimize.txt"),
-        "proguard-rules.pro"
+        "proguard-rules.pro",
       )
     }
   }
-  
+
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
-  
+
   buildFeatures {
     compose = true
     buildConfig = true
   }
-  
+
   packaging {
     resources {
       excludes += "/META-INF/{AL2.0,LGPL2.1}"

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
@@ -14,7 +18,8 @@ import kotlinx.serialization.json.JsonNames
 @Immutable
 @Entity
 data class TeamDetails(
-  @PrimaryKey @SerialName("id") var id: String = "", // United States
+  @PrimaryKey
+  @SerialName("id") var id: String = "", // United States
   @SerialName("country") val country: String = "", // United States
   @JsonNames("logo")
   @SerialName("img")

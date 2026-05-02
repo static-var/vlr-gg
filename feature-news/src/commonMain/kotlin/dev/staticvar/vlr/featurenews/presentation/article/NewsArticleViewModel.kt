@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurenews.presentation.article
 
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
@@ -66,10 +70,7 @@ public class NewsArticleViewModel(
     scope.cancel()
   }
 
-  private suspend fun refreshInternal(
-    articleId: String,
-    showRefreshing: Boolean,
-  ) {
+  private suspend fun refreshInternal(articleId: String, showRefreshing: Boolean) {
     if (showRefreshing) {
       mutableUiState.update { it.copy(isRefreshing = true, errorMessage = null) }
     }

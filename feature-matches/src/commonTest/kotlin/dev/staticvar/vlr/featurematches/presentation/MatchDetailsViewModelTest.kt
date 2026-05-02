@@ -1,15 +1,17 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurematches.presentation
 
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
-import dev.staticvar.vlr.domain.model.MatchDetails
-import dev.staticvar.vlr.domain.model.MatchVideos
 import dev.staticvar.vlr.domain.model.EventInfo
+import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
+import dev.staticvar.vlr.domain.model.MatchVideos
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchDetailsUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchDetailsUseCase
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +21,8 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MatchDetailsViewModelTest {
@@ -59,39 +63,35 @@ class MatchDetailsViewModelTest {
     }
   }
 
-  private fun createViewModel(repository: FakeMatchRepository): MatchDetailsViewModel =
-    MatchDetailsViewModel(
-      observeMatchDetailsUseCase = ObserveMatchDetailsUseCase(repository),
-      refreshMatchDetailsUseCase = RefreshMatchDetailsUseCase(repository),
-      dispatchers = dispatchers,
-    )
+  private fun createViewModel(repository: FakeMatchRepository): MatchDetailsViewModel = MatchDetailsViewModel(
+    observeMatchDetailsUseCase = ObserveMatchDetailsUseCase(repository),
+    refreshMatchDetailsUseCase = RefreshMatchDetailsUseCase(repository),
+    dispatchers = dispatchers,
+  )
 
-  private fun matchDetails(matchId: String): MatchDetails =
-    MatchDetails(
-      id = matchId,
-      event = EventInfo(
-        id = "event-1",
-        name = "Masters",
-        series = "Bo3",
-        stage = "Playoffs",
-        img = "",
-        date = "Today",
-        patch = null,
-        status = "LIVE",
-      ),
-      head2head = emptyList(),
-      note = "",
-      score = "0:0",
-      teams = emptyList(),
-      bans = emptyList(),
-      videos = MatchVideos(streams = emptyList(), vods = emptyList()),
-      matchData = emptyList(),
-      mapCount = 0,
-    )
+  private fun matchDetails(matchId: String): MatchDetails = MatchDetails(
+    id = matchId,
+    event = EventInfo(
+      id = "event-1",
+      name = "Masters",
+      series = "Bo3",
+      stage = "Playoffs",
+      img = "",
+      date = "Today",
+      patch = null,
+      status = "LIVE",
+    ),
+    head2head = emptyList(),
+    note = "",
+    score = "0:0",
+    teams = emptyList(),
+    bans = emptyList(),
+    videos = MatchVideos(streams = emptyList(), vods = emptyList()),
+    matchData = emptyList(),
+    mapCount = 0,
+  )
 
-  private class FakeMatchRepository(
-    details: MatchDetails? = null,
-  ) : MatchRepository {
+  private class FakeMatchRepository(details: MatchDetails? = null) : MatchRepository {
     val observedMatchIds: MutableList<String> = mutableListOf()
     val refreshDetailRequests: MutableList<String> = mutableListOf()
     private val detailsByMatchId: MutableMap<String, MutableStateFlow<MatchDetails?>> = mutableMapOf()
@@ -119,9 +119,7 @@ class MatchDetailsViewModelTest {
     }
   }
 
-  private class TestDispatcherProvider(
-    dispatcher: TestDispatcher,
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(dispatcher: TestDispatcher) : DispatcherProvider {
     override val default: CoroutineDispatcher = dispatcher
     override val io: CoroutineDispatcher = dispatcher
     override val main: CoroutineDispatcher = dispatcher

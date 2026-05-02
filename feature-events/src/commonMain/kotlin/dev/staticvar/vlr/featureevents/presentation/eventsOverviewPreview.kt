@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureevents.presentation
 
 import androidx.compose.foundation.background
@@ -15,21 +19,19 @@ import dev.staticvar.vlr.domain.model.EventStatus
 
 @PrismPreview
 @Composable
-internal fun EventsOverviewPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun EventsOverviewPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     EventsOverviewScreen(
       uiState =
-        EventsUiState(
-          events =
-            listOf(
-              sampleEventPreview(id = "event-1", status = EventStatus.ONGOING),
-              sampleEventPreview(id = "event-2", status = EventStatus.UPCOMING),
-            ),
-          selectedStatus = EventStatusFilter.Ongoing,
-          isLoading = false,
+      EventsUiState(
+        events =
+        listOf(
+          sampleEventPreview(id = "event-1", status = EventStatus.ONGOING),
+          sampleEventPreview(id = "event-2", status = EventStatus.UPCOMING),
         ),
+        selectedStatus = EventStatusFilter.Ongoing,
+        isLoading = false,
+      ),
       onFilterSelected = {},
       onEventSelected = {},
       modifier = Modifier.fillMaxSize().background(Prism.color.background),
@@ -37,13 +39,12 @@ internal fun EventsOverviewPreview(
   }
 }
 
-private fun sampleEventPreview(id: String, status: EventStatus): EventPreview =
-  EventPreview(
-    id = id,
-    title = "Champions Tour $id",
-    status = status,
-    prize = "$" + "250k",
-    dates = "Mar 8 - Mar 16",
-    region = "Global",
-    logoUrl = "",
-  )
+private fun sampleEventPreview(id: String, status: EventStatus): EventPreview = EventPreview(
+  id = id,
+  title = "Champions Tour $id",
+  status = status,
+  prize = "$" + "250k",
+  dates = "Mar 8 - Mar 16",
+  region = "Global",
+  logoUrl = "",
+)

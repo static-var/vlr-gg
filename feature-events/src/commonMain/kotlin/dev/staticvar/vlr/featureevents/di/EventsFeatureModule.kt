@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureevents.di
 
 import dev.staticvar.vlr.featureevents.presentation.EventDetailsViewModel

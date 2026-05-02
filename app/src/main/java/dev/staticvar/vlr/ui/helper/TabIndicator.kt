@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.helper
 
 import androidx.compose.foundation.background
@@ -18,11 +22,11 @@ import dev.staticvar.vlr.ui.theme.VLRTheme
 fun VLRTabIndicator(indicators: List<TabPosition>, position: Int) {
   Box(
     modifier =
-      Modifier.tabIndicatorOffset(indicators[position])
-        .fillMaxWidth()
-        .height(12.dp)
-        .padding(horizontal = 24.dp, vertical = 4.dp)
-        .clip(RoundedCornerShape(6.dp))
-        .background(color = VLRTheme.colorScheme.primary)
+    Modifier.tabIndicatorOffset(indicators[position])
+      .fillMaxWidth()
+      .height(12.dp)
+      .padding(horizontal = 24.dp, vertical = 4.dp)
+      .clip(RoundedCornerShape(6.dp))
+      .background(color = VLRTheme.colorScheme.primary),
   )
 }

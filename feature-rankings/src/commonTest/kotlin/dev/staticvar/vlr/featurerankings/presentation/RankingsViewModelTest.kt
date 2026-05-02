@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurerankings.presentation
 
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
@@ -6,8 +10,6 @@ import dev.staticvar.vlr.domain.model.TeamRanking
 import dev.staticvar.vlr.domain.repository.RankingsRepository
 import dev.staticvar.vlr.featurerankings.usecase.ObserveRankingsUseCase
 import dev.staticvar.vlr.featurerankings.usecase.RefreshRankingsUseCase
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +18,8 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RankingsViewModelTest {
@@ -28,10 +32,10 @@ class RankingsViewModelTest {
       val repository =
         FakeRankingsRepository(
           rankings =
-            listOf(
-              ranking(region = "EMEA", teamName = "FNATIC", rank = 1),
-              ranking(region = "Americas", teamName = "G2", rank = 1),
-            ),
+          listOf(
+            ranking(region = "EMEA", teamName = "FNATIC", rank = 1),
+            ranking(region = "Americas", teamName = "G2", rank = 1),
+          ),
         )
 
       val viewModel = createViewModel(repository)
@@ -59,36 +63,28 @@ class RankingsViewModelTest {
     }
   }
 
-  private fun createViewModel(repository: FakeRankingsRepository): RankingsViewModel =
-    RankingsViewModel(
-      observeRankingsUseCase = ObserveRankingsUseCase(repository),
-      refreshRankingsUseCase = RefreshRankingsUseCase(repository),
-      dispatchers = dispatchers,
-    )
+  private fun createViewModel(repository: FakeRankingsRepository): RankingsViewModel = RankingsViewModel(
+    observeRankingsUseCase = ObserveRankingsUseCase(repository),
+    refreshRankingsUseCase = RefreshRankingsUseCase(repository),
+    dispatchers = dispatchers,
+  )
 
-  private fun ranking(
-    region: String,
-    teamName: String,
-    rank: Int,
-  ): RegionalRanking =
-    RegionalRanking(
-      region = region,
-      teams =
-        listOf(
-          TeamRanking(
-            teamId = "$region-$rank",
-            teamName = teamName,
-            teamLogo = "",
-            country = region,
-            rank = rank,
-            points = "100",
-          ),
-        ),
-    )
+  private fun ranking(region: String, teamName: String, rank: Int): RegionalRanking = RegionalRanking(
+    region = region,
+    teams =
+    listOf(
+      TeamRanking(
+        teamId = "$region-$rank",
+        teamName = teamName,
+        teamLogo = "",
+        country = region,
+        rank = rank,
+        points = "100",
+      ),
+    ),
+  )
 
-  private class FakeRankingsRepository(
-    rankings: List<RegionalRanking>,
-  ) : RankingsRepository {
+  private class FakeRankingsRepository(rankings: List<RegionalRanking>) : RankingsRepository {
     private val rankingsFlow = MutableStateFlow(rankings)
     var refreshCallCount: Int = 0
       private set
@@ -104,9 +100,7 @@ class RankingsViewModelTest {
     }
   }
 
-  private class TestDispatcherProvider(
-    dispatcher: TestDispatcher,
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(dispatcher: TestDispatcher) : DispatcherProvider {
     override val default: CoroutineDispatcher = dispatcher
     override val io: CoroutineDispatcher = dispatcher
     override val main: CoroutineDispatcher = dispatcher

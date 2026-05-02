@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.baselineprofile
 
 import androidx.benchmark.macro.junit4.BaselineProfileRule
@@ -9,10 +13,9 @@ class StartupProfileGenerator {
   val baselineProfileRule = BaselineProfileRule()
 
   @Test
-  fun startup() =
-    baselineProfileRule.collect(
-      packageName = "dev.staticvar.vlr",
-      maxIterations = 5,
-      includeInStartupProfile = true
-    ) { startActivityAndWait() }
+  fun startup() = baselineProfileRule.collect(
+    packageName = "dev.staticvar.vlr",
+    maxIterations = 5,
+    includeInStartupProfile = true,
+  ) { startActivityAndWait() }
 }

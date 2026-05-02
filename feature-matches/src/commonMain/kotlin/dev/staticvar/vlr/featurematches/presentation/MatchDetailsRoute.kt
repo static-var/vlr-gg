@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurematches.presentation
 
 import androidx.compose.foundation.clickable
@@ -91,9 +95,12 @@ internal fun MatchDetailsScreen(
 
     when {
       uiState.isLoading -> PrismStateMessage(text = "Loading match details…")
+
       uiState.errorMessage != null && match == null ->
         PrismStateMessage(text = uiState.errorMessage ?: "Unable to load match details.")
+
       match == null -> PrismStateMessage(text = "Match detail is unavailable.")
+
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
@@ -216,11 +223,7 @@ private fun MatchSummaryCard(
 }
 
 @Composable
-private fun TeamSummaryCard(
-  team: TeamDetails,
-  onTeamSelected: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun TeamSummaryCard(team: TeamDetails, onTeamSelected: (String) -> Unit, modifier: Modifier = Modifier) {
   PrismCard(
     modifier = modifier.fillMaxWidth(),
     style = PrismCardStyle.Filled,
@@ -240,10 +243,7 @@ private fun TeamSummaryCard(
 }
 
 @Composable
-private fun MapCard(
-  map: MapData,
-  onPlayerSelected: (String) -> Unit,
-) {
+private fun MapCard(map: MapData, onPlayerSelected: (String) -> Unit) {
   PrismCard(
     modifier = Modifier.fillMaxWidth(),
     style = PrismCardStyle.Outlined,

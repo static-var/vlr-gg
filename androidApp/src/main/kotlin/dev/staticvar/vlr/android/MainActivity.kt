@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.android
 
 import android.os.Bundle
@@ -13,7 +17,7 @@ import org.koin.android.ext.koin.androidContext
  * Uses shared Compose UI from the shared module.
  */
 class MainActivity : ComponentActivity() {
-  
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     val authToken =
@@ -27,7 +31,7 @@ class MainActivity : ComponentActivity() {
       authToken = authToken,
     )
     enableEdgeToEdge()
-    
+
     setContent {
       App()
     }

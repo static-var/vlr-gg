@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 @file:Suppress("MatchingDeclarationName")
 
 package dev.staticvar.designsystem.prism.typography

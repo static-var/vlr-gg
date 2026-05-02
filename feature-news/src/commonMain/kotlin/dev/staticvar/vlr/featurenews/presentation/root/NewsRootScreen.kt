@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurenews.presentation.root
 
 import androidx.compose.foundation.background
@@ -26,11 +30,11 @@ import androidx.navigation3.ui.NavDisplay
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.featurenews.navigation.NewsRoute
-import dev.staticvar.vlr.featurenews.presentation.article.NewsArticleUiState
 import dev.staticvar.vlr.featurenews.presentation.article.NewsArticleScreen
+import dev.staticvar.vlr.featurenews.presentation.article.NewsArticleUiState
 import dev.staticvar.vlr.featurenews.presentation.article.NewsArticleViewModel
-import dev.staticvar.vlr.featurenews.presentation.list.NewsListUiState
 import dev.staticvar.vlr.featurenews.presentation.list.NewsListScreen
+import dev.staticvar.vlr.featurenews.presentation.list.NewsListUiState
 import dev.staticvar.vlr.featurenews.presentation.list.NewsListViewModel
 import org.koin.mp.KoinPlatform
 
@@ -39,9 +43,7 @@ private object NewsLayoutConstants {
 }
 
 @Composable
-public fun NewsRootScreen(
-  modifier: Modifier = Modifier,
-) {
+public fun NewsRootScreen(modifier: Modifier = Modifier) {
   val listViewModel: NewsListViewModel = rememberKoinInstance()
   val articleViewModel: NewsArticleViewModel = rememberKoinInstance()
   val listUiState by listViewModel.uiState.collectAsState()
@@ -106,26 +108,26 @@ private fun NewsCompactLayout(
       }
     },
     entryProvider =
-      entryProvider {
-        entry<NewsRoute.List> {
-          NewsListScreen(
-            uiState = listUiState,
-            selectedArticleId = null,
-            onArticleSelected = onArticleSelected,
-            onRefresh = onRefreshList,
-            modifier = Modifier.fillMaxSize(),
-          )
-        }
-        entry<NewsRoute.Article> { route ->
-          NewsArticleScreen(
-            uiState = articleUiState,
-            onBack = { backStack.removeLastOrNull() },
-            onRefresh = onRefreshArticle,
-            showBackAction = true,
-            modifier = Modifier.fillMaxSize(),
-          )
-        }
-      },
+    entryProvider {
+      entry<NewsRoute.List> {
+        NewsListScreen(
+          uiState = listUiState,
+          selectedArticleId = null,
+          onArticleSelected = onArticleSelected,
+          onRefresh = onRefreshList,
+          modifier = Modifier.fillMaxSize(),
+        )
+      }
+      entry<NewsRoute.Article> { route ->
+        NewsArticleScreen(
+          uiState = articleUiState,
+          onBack = { backStack.removeLastOrNull() },
+          onRefresh = onRefreshArticle,
+          showBackAction = true,
+          modifier = Modifier.fillMaxSize(),
+        )
+      }
+    },
     modifier = Modifier.fillMaxSize(),
   )
 }
@@ -145,9 +147,9 @@ private fun NewsLargeLayout(
   ) {
     Box(
       modifier =
-        Modifier
-          .weight(0.42f)
-          .fillMaxSize(),
+      Modifier
+        .weight(0.42f)
+        .fillMaxSize(),
     ) {
       NewsListScreen(
         uiState = listUiState,
@@ -160,9 +162,9 @@ private fun NewsLargeLayout(
 
     Box(
       modifier =
-        Modifier
-          .weight(0.58f)
-          .fillMaxSize(),
+      Modifier
+        .weight(0.58f)
+        .fillMaxSize(),
     ) {
       if (selectedArticleId != null) {
         NewsArticleScreen(
@@ -197,20 +199,14 @@ private fun NewsLargeLayout(
   }
 }
 
-private fun pushArticleRoute(
-  backStack: MutableList<NewsRoute>,
-  articleId: String,
-) {
+private fun pushArticleRoute(backStack: MutableList<NewsRoute>, articleId: String) {
   if ((backStack.lastOrNull() as? NewsRoute.Article)?.articleId == articleId) {
     return
   }
   backStack.add(NewsRoute.Article(articleId = articleId))
 }
 
-private fun upsertArticleRoute(
-  backStack: MutableList<NewsRoute>,
-  articleId: String,
-) {
+private fun upsertArticleRoute(backStack: MutableList<NewsRoute>, articleId: String) {
   val articleRoute: NewsRoute.Article = NewsRoute.Article(articleId = articleId)
   if (backStack.isNotEmpty() && backStack.last() is NewsRoute.Article) {
     backStack[backStack.lastIndex] = articleRoute
@@ -220,7 +216,6 @@ private fun upsertArticleRoute(
 }
 
 @Composable
-private inline fun <reified T : Any> rememberKoinInstance(): T =
-  remember {
-    KoinPlatform.getKoin().get<T>()
-  }
+private inline fun <reified T : Any> rememberKoinInstance(): T = remember {
+  KoinPlatform.getKoin().get<T>()
+}

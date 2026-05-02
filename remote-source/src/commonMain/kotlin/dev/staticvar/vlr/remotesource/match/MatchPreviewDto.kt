@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.match
 
 import dev.staticvar.vlr.remotesource.common.MatchStatus
@@ -10,7 +14,8 @@ data class MatchPreviewDto(
   @SerialName("id") val id: String = "",
   @SerialName("event") val event: String = "",
   @SerialName("series") val series: String = "",
-  @SerialName("status") @Serializable(with = MatchStatusNullableSerializer::class) val status: MatchStatus? = null,
+  @SerialName("status")
+  @Serializable(with = MatchStatusNullableSerializer::class) val status: MatchStatus? = null,
   @SerialName("team1") val team1: TeamDto = TeamDto(name = ""),
   @SerialName("team2") val team2: TeamDto = TeamDto(name = ""),
   @SerialName("time") val time: String? = null,

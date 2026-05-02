@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.mapper
 
 import dev.staticvar.vlr.remotesource.news.NewsArticleDto
@@ -20,7 +24,7 @@ class NewsArticleAndPlayerChildMappersTest {
       images = listOf("img1.png", "img2.png"),
       videos = listOf("vid1.mp4"),
       date = "2024-01-01",
-      author = "Author"
+      author = "Author",
     )
 
     val entity = dto.toEntity()
@@ -45,7 +49,7 @@ class NewsArticleAndPlayerChildMappersTest {
       images = emptyList(),
       videos = emptyList(),
       date = null,
-      author = ""
+      author = "",
     )
     val entity = dto.toEntity()
     assertEquals("n2", entity.id)
@@ -76,7 +80,7 @@ class NewsArticleAndPlayerChildMappersTest {
       d = 160,
       a = 40,
       fk = 18,
-      fd = 6
+      fd = 6,
     )
     val agentEntity = agentDto.toEntity("p1")
     assertEquals("Jett", agentEntity.agent_name)

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.match
 
 import androidx.activity.compose.BackHandler
@@ -127,7 +131,9 @@ fun MatchOverviewAdaptive(
   LaunchedEffect(navigator.currentDestination) {
     if (navigator.currentDestination?.pane == ThreePaneScaffoldRole.Secondary) {
       hideNav(false)
-    } else hideNav(true)
+    } else {
+      hideNav(true)
+    }
   }
 
   val tabs =
@@ -156,12 +162,12 @@ fun MatchOverviewAdaptive(
           selectedItem = selectedItem ?: " ",
           listOfLazyListState = listOfLazyListState,
           contentPaddingValues =
-            PaddingValues(
-              start = innerPadding.calculateStartPadding(localLayoutDirection),
-              end = innerPadding.calculateEndPadding(localLayoutDirection),
-              top = 0.dp,
-              bottom = innerPadding.calculateBottomPadding(),
-            ),
+          PaddingValues(
+            start = innerPadding.calculateStartPadding(localLayoutDirection),
+            end = innerPadding.calculateEndPadding(localLayoutDirection),
+            top = 0.dp,
+            bottom = innerPadding.calculateBottomPadding(),
+          ),
           action = {
             selectedItem = it
             coroutineScope.launch {
@@ -193,22 +199,21 @@ fun MatchOverview(
   listOfLazyListState: SnapshotStateList<LazyListState>,
   action: (String) -> Unit,
 ) {
-
   LogEvent(event = AnalyticsEvent.MATCH_OVERVIEW)
 
   val allMatches by
-  remember(viewModel) { viewModel.getMatches() }
-    .collectAsStateWithLifecycle(initialValue = Waiting())
+    remember(viewModel) { viewModel.getMatches() }
+      .collectAsStateWithLifecycle(initialValue = Waiting())
   var triggerRefresh by remember(viewModel) { mutableStateOf(true) }
   val updateState by
-  remember(triggerRefresh) { viewModel.refreshMatches() }
-    .collectAsStateWithLifecycle(initialValue = Ok(false))
+    remember(triggerRefresh) { viewModel.refreshMatches() }
+      .collectAsStateWithLifecycle(initialValue = Ok(false))
 
   val swipeRefresh =
     rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
 
   val resetScroll by
-  remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
+    remember { viewModel.resetScroll }.collectAsStateWithLifecycle(initialValue = false)
 
   val selectedTopItemSlot by viewModel.selectedMatchTypePosition.collectAsStateWithLifecycle()
 
@@ -305,7 +310,7 @@ fun MatchOverviewContainer(
     modifier = modifier
       .fillMaxSize()
       .animateContentSize()
-      .pullRefresh(swipeRefresh)
+      .pullRefresh(swipeRefresh),
   ) {
     PullToRefreshPill(
       modifier = modifier
@@ -391,10 +396,10 @@ fun MatchOverviewContainer(
       val scope = rememberCoroutineScope()
       VlrSegmentedButtons(
         modifier =
-          Modifier
-            .align(Alignment.BottomCenter)
-            .padding(bottom = 8.dp)
-            .navigationBarsPadding(),
+        Modifier
+          .align(Alignment.BottomCenter)
+          .padding(bottom = 8.dp)
+          .navigationBarsPadding(),
         highlighted = pagerState.currentPage,
         items = tabs,
       ) { _, index ->
@@ -466,8 +471,8 @@ inline fun PagerContent(
                 }
 
                 shareStateHolder &&
-                    !shareMatchList.contains(match) &&
-                    shareMatchList.size < MAX_SHARABLE_ITEMS -> {
+                  !shareMatchList.contains(match) &&
+                  shareMatchList.size < MAX_SHARABLE_ITEMS -> {
                   // If in share mode &
                   // If list does not have 6 items and if the clicked icon is not already
                   // in the list
@@ -519,54 +524,54 @@ fun MatchOverviewPreview(
 ) {
   val animatedBorder by animateDpAsState(
     targetValue = if (matchPreviewInfo.markedFav) 1.dp else -1.dp,
-    tween(300)
+    tween(300),
   )
   CardView(
     modifier =
-      modifier
-        .border(
-          width = animatedBorder,
-          color = VLRTheme.colorScheme.primary,
-          shape = RoundedCornerShape(8.dp)
+    modifier
+      .border(
+        width = animatedBorder,
+        color = VLRTheme.colorScheme.primary,
+        shape = RoundedCornerShape(8.dp),
+      )
+      .pointerInput(Unit) {
+        detectTapGestures(
+          onPress = {},
+          onDoubleTap = {},
+          onLongPress = { onAction(true, matchPreviewInfo) },
+          onTap = { onAction(false, matchPreviewInfo) },
         )
-        .pointerInput(Unit) {
-          detectTapGestures(
-            onPress = {},
-            onDoubleTap = {},
-            onLongPress = { onAction(true, matchPreviewInfo) },
-            onTap = { onAction(false, matchPreviewInfo) },
-          )
-        },
-    colors =
-      if (matchPreviewInfo.id == selectedItem) {
-        CardDefaults.elevatedCardColors(
-          containerColor = VLRTheme.colorScheme.secondaryContainer,
-          contentColor = VLRTheme.colorScheme.onSecondaryContainer,
-        )
-      } else {
-        CardDefaults.elevatedCardColors()
       },
+    colors =
+    if (matchPreviewInfo.id == selectedItem) {
+      CardDefaults.elevatedCardColors(
+        containerColor = VLRTheme.colorScheme.secondaryContainer,
+        contentColor = VLRTheme.colorScheme.onSecondaryContainer,
+      )
+    } else {
+      CardDefaults.elevatedCardColors()
+    },
   ) {
     Column(
       modifier = modifier
         .padding(Local4DPPadding.current)
-        .animateContentSize()
+        .animateContentSize(),
     ) {
       Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(
           text =
-            when {
-              matchPreviewInfo.status.equals(stringResource(id = R.string.live), true) -> {
-                stringResource(id = R.string.live)
-              }
+          when {
+            matchPreviewInfo.status.equals(stringResource(id = R.string.live), true) -> {
+              stringResource(id = R.string.live)
+            }
 
-              !matchPreviewInfo.time?.timeDiff.isNullOrBlank() -> {
-                matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})")
-                  ?: ""
-              }
+            !matchPreviewInfo.time?.timeDiff.isNullOrBlank() -> {
+              matchPreviewInfo.time?.timeDiff?.plus(" (${matchPreviewInfo.time.readableTime})")
+                ?: ""
+            }
 
-              else -> ""
-            },
+            else -> ""
+          },
           modifier = modifier
             .padding(Local8DP_4DPPadding.current),
           style = VLRTheme.typography.bodyMedium,
@@ -576,27 +581,34 @@ fun MatchOverviewPreview(
           modifier = Modifier
             .weight(1f)
             .padding(Local8DP_4DPPadding.current),
-          horizontalArrangement = Arrangement.End
+          horizontalArrangement = Arrangement.End,
         ) {
           AnimatedVisibility(
-            visible = matchPreviewInfo.markedFav && !shareMode
+            visible = matchPreviewInfo.markedFav && !shareMode,
           ) {
             with(matchPreviewInfo) {
               Tag(
                 text =
-                  if (fromEventsFav && fromTeamsFav) stringResource(R.string.team_and_event)
-                  else if (fromTeamsFav) stringResource(R.string.team)
-                  else if (fromEventsFav) stringResource(R.string.event)
-                  else if (markedFav) stringResource(R.string.match)
-                  else "",
-                icon = Icons.Filled.Favorite
+                if (fromEventsFav && fromTeamsFav) {
+                  stringResource(R.string.team_and_event)
+                } else if (fromTeamsFav) {
+                  stringResource(R.string.team)
+                } else if (fromEventsFav) {
+                  stringResource(R.string.event)
+                } else if (markedFav) {
+                  stringResource(R.string.match)
+                } else {
+                  ""
+                },
+                icon = Icons.Filled.Favorite,
               )
             }
           }
         }
 
-        if (shareMode)
+        if (shareMode) {
           Checkbox(checked = isSelected, onCheckedChange = { onAction(false, matchPreviewInfo) })
+        }
       }
       Row(
         modifier = modifier.padding(Local8DP_4DPPadding.current),
@@ -651,6 +663,4 @@ fun MatchOverviewPreview(
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
-  return (currentPage - page) + currentPageOffsetFraction
-}
+fun PagerState.calculateCurrentOffsetForPage(page: Int): Float = (currentPage - page) + currentPageOffsetFraction

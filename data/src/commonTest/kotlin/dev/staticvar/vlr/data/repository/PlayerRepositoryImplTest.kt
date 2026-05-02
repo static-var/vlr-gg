@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.repository
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
@@ -9,17 +13,17 @@ import dev.staticvar.vlr.remotesource.player.PlayerAgentStatsDto
 import dev.staticvar.vlr.remotesource.player.PlayerDataSource
 import dev.staticvar.vlr.remotesource.player.PlayerDetailsDto
 import dev.staticvar.vlr.remotesource.player.PlayerTeamRefDto
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlayerRepositoryImplTest {
@@ -41,7 +45,7 @@ class PlayerRepositoryImplTest {
     repository = PlayerRepositoryImpl(
       playerDataSource = dataSource,
       database = database,
-      dispatchers = dispatcherProvider
+      dispatchers = dispatcherProvider,
     )
   }
 
@@ -61,14 +65,14 @@ class PlayerRepositoryImplTest {
         country = "BR",
         img = "player.png",
         agents = listOf(
-          PlayerAgentStatsDto(name = "Sova", count = 50, percent = 25.0, rounds = 200, rating = 1.1)
+          PlayerAgentStatsDto(name = "Sova", count = 50, percent = 25.0, rounds = 200, rating = 1.1),
         ),
         totalWinnings = 12345.0,
         currentTeam = PlayerTeamRefDto(id = "teamA", name = "Team A", img = "teamA.png"),
         pastTeams = listOf(
-          PlayerTeamRefDto(id = "teamB", name = "Team B", img = "teamB.png")
-        )
-      )
+          PlayerTeamRefDto(id = "teamB", name = "Team B", img = "teamB.png"),
+        ),
+      ),
     )
 
     val result = repository.refreshPlayerDetails("player1")
@@ -96,8 +100,8 @@ class PlayerRepositoryImplTest {
         twitter_url = "@p1",
         twitch_url = "twitch.tv/p1",
         total_winnings = 5000.0,
-        last_updated = 0L
-      )
+        last_updated = 0L,
+      ),
     )
     database.playersQueries.insertPlayerAgentStat(
       player_id = "player1",
@@ -119,14 +123,14 @@ class PlayerRepositoryImplTest {
       deaths = 150L,
       assists = 80L,
       first_kills = 30L,
-      first_deaths = 15L
+      first_deaths = 15L,
     )
     database.playersQueries.insertPlayerTeamHistory(
       player_id = "player1",
       team_id = "teamA",
       team_name = "Team A",
       team_logo_url = "teamA.png",
-      is_current = 1L
+      is_current = 1L,
     )
     assertTrue(repository.addToFavorites("player1").isSuccess)
 
@@ -165,8 +169,8 @@ class PlayerRepositoryImplTest {
           img = "player2.png",
           agents = listOf(PlayerAgentStatsDto(name = "Jett", count = 60, percent = 30.0)),
           totalWinnings = 999.0,
-          currentTeam = PlayerTeamRefDto(id = "teamC", name = "Team C", img = "teamC.png")
-        )
+          currentTeam = PlayerTeamRefDto(id = "teamC", name = "Team C", img = "teamC.png"),
+        ),
       )
 
       val refreshResult = repository.refreshPlayerDetails("player2")
@@ -190,9 +194,7 @@ class PlayerRepositoryImplTest {
       detailsResults[id] ?: Result.failure(IllegalStateException("No details for $id"))
   }
 
-  private class TestDispatcherProvider(
-    private val dispatcher: TestDispatcher
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {
     override val default = dispatcher
     override val io = dispatcher
     override val main = dispatcher

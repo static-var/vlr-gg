@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurerankings.presentation
 
 import androidx.compose.foundation.background
@@ -15,41 +19,39 @@ import dev.staticvar.vlr.domain.model.TeamRanking
 
 @PrismPreview
 @Composable
-internal fun RankingsPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun RankingsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     RankingsScreen(
       uiState =
-        RankingsUiState(
-          regions =
+      RankingsUiState(
+        regions =
+        listOf(
+          RegionalRanking(
+            region = "EMEA",
+            teams =
             listOf(
-              RegionalRanking(
-                region = "EMEA",
-                teams =
-                  listOf(
-                    TeamRanking(
-                      teamId = "fnc",
-                      teamName = "FNATIC",
-                      teamLogo = "",
-                      country = "EU",
-                      rank = 1,
-                      points = "100",
-                    ),
-                    TeamRanking(
-                      teamId = "vit",
-                      teamName = "Vitality",
-                      teamLogo = "",
-                      country = "EU",
-                      rank = 2,
-                      points = "88",
-                    ),
-                  ),
+              TeamRanking(
+                teamId = "fnc",
+                teamName = "FNATIC",
+                teamLogo = "",
+                country = "EU",
+                rank = 1,
+                points = "100",
+              ),
+              TeamRanking(
+                teamId = "vit",
+                teamName = "Vitality",
+                teamLogo = "",
+                country = "EU",
+                rank = 2,
+                points = "88",
               ),
             ),
-          selectedRegion = "EMEA",
-          isLoading = false,
+          ),
         ),
+        selectedRegion = "EMEA",
+        isLoading = false,
+      ),
       onRegionSelected = {},
       onTeamSelected = {},
       modifier = Modifier.fillMaxSize().background(Prism.color.background),

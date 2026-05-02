@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.search
 
 import dev.staticvar.vlr.remotesource.common.SearchCategory
@@ -10,6 +14,7 @@ data class SearchResultDto(
   @SerialName("id") val id: String = "",
   @SerialName("name") val name: String = "",
   @SerialName("img") val img: String = "",
-  @SerialName("category") @Serializable(with = SearchCategoryNullableSerializer::class) val category: SearchCategory? = null,
+  @SerialName("category")
+  @Serializable(with = SearchCategoryNullableSerializer::class) val category: SearchCategory? = null,
   @SerialName("description") val description: String? = null,
 )

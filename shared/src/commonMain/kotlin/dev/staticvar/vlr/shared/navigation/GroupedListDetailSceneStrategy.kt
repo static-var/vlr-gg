@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.shared.navigation
 
 import androidx.compose.foundation.layout.Arrangement
@@ -35,9 +39,7 @@ internal class GroupedListDetailScene<T : Any>(
   }
 }
 
-internal class GroupedListDetailSceneStrategy<T : Any>(
-  private val enabled: Boolean,
-) : SceneStrategy<T> {
+internal class GroupedListDetailSceneStrategy<T : Any>(private val enabled: Boolean) : SceneStrategy<T> {
   override fun SceneStrategyScope<T>.calculateScene(entries: List<NavEntry<T>>): Scene<T>? {
     if (!enabled) {
       return null
@@ -61,12 +63,9 @@ internal class GroupedListDetailSceneStrategy<T : Any>(
 }
 
 @Composable
-internal fun <T : Any> rememberGroupedListDetailSceneStrategy(
-  enabled: Boolean,
-): SceneStrategy<T> =
-  remember(enabled) {
-    GroupedListDetailSceneStrategy(enabled = enabled)
-  }
+internal fun <T : Any> rememberGroupedListDetailSceneStrategy(enabled: Boolean): SceneStrategy<T> = remember(enabled) {
+  GroupedListDetailSceneStrategy(enabled = enabled)
+}
 
 internal fun listPane(group: String): Map<String, Any> = mapOf(ListGroupKey to group)
 

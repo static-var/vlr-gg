@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -41,7 +45,7 @@ class DetektConventionPlugin : Plugin<Project> {
       }
 
       dependencies.apply {
-        add("detektPlugins",  libs.findLibrary("detekt-compose").get())
+        add("detektPlugins", libs.findLibrary("detekt-compose").get())
       }
     }
   }

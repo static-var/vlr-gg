@@ -1,10 +1,13 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 @file:Suppress("UnstableApiUsage")
 
-
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   alias(libs.plugins.android.application)
@@ -133,7 +136,7 @@ kotlin {
         "-opt-in=androidx.compose.runtime.InternalComposeApi",
         "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
         "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
-      )
+      ),
     )
   }
 }
@@ -149,7 +152,6 @@ dependencies {
   implementation(libs.firebase.messaging)
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.analytics)
-
 
   implementation(libs.bundles.lifecycle)
 

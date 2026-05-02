@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.network
 
 import io.ktor.client.HttpClient
@@ -18,37 +22,36 @@ import kotlinx.serialization.json.Json
  * Desktop (JVM) implementation of HttpClientFactory using the Java engine.
  */
 actual class HttpClientFactory {
-  actual fun create(json: Json, configuration: NetworkConfiguration): HttpClient =
-    HttpClient(Java) {
-      defaultRequest {
-        url {
-          host = configuration.host
-          protocol = configuration.defaultProtocol
-        }
-        headers { configuration.defaultHeaders.forEach { append(it.key, it.value) } }
+  actual fun create(json: Json, configuration: NetworkConfiguration): HttpClient = HttpClient(Java) {
+    defaultRequest {
+      url {
+        host = configuration.host
+        protocol = configuration.defaultProtocol
       }
+      headers { configuration.defaultHeaders.forEach { append(it.key, it.value) } }
+    }
 
-      install(ContentNegotiation) { json(json) }
+    install(ContentNegotiation) { json(json) }
 
-      install(HttpTimeout) {
-        requestTimeoutMillis = configuration.timeoutMillis
-        connectTimeoutMillis = configuration.timeoutMillis
-        socketTimeoutMillis = configuration.timeoutMillis
-      }
+    install(HttpTimeout) {
+      requestTimeoutMillis = configuration.timeoutMillis
+      connectTimeoutMillis = configuration.timeoutMillis
+      socketTimeoutMillis = configuration.timeoutMillis
+    }
 
-      if (configuration.enableCompression) {
-        install(ContentEncoding) { gzip() }
-      }
+    if (configuration.enableCompression) {
+      install(ContentEncoding) { gzip() }
+    }
 
-      if (configuration.enableNetworkLogs) {
-        install(Logging) {
-          logger = object : Logger {
-            override fun log(message: String) {
-              println("Ktor: $message")
-            }
+    if (configuration.enableNetworkLogs) {
+      install(Logging) {
+        logger = object : Logger {
+          override fun log(message: String) {
+            println("Ktor: $message")
           }
-          level = LogLevel.INFO
         }
+        level = LogLevel.INFO
       }
     }
+  }
 }

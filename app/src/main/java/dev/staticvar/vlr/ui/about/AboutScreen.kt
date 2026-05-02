@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.about
 
 import android.content.Context
@@ -46,7 +50,6 @@ import dev.staticvar.vlr.utils.openAsCustomTab
 
 @Composable
 fun AboutScreen(contentPadding: PaddingValues) {
-
   val context = LocalContext.current
   val currentAppVersion = context.currentAppVersion
 
@@ -57,9 +60,9 @@ fun AboutScreen(contentPadding: PaddingValues) {
     Text(
       text = stringResource(id = R.string.app_name),
       modifier =
-        Modifier.fillMaxWidth()
-          .padding(Local16DPPadding.current)
-          .combinedClickable(onLongClick = { simpleEasterEgg = true }, onClick = {}),
+      Modifier.fillMaxWidth()
+        .padding(Local16DPPadding.current)
+        .combinedClickable(onLongClick = { simpleEasterEgg = true }, onClick = {}),
       textAlign = TextAlign.Center,
       style = VLRTheme.typography.headlineSmall,
       color = VLRTheme.colorScheme.primary,
@@ -153,7 +156,7 @@ fun AndroidCard(modifier: Modifier = Modifier) {
 @Composable
 fun BackendCard(modifier: Modifier = Modifier) {
   val context = LocalContext.current
-  CardView() {
+  CardView {
     Text(
       text = "Backend",
       modifier = modifier.padding(Local8DPPadding.current),
@@ -207,7 +210,7 @@ fun BackendCard(modifier: Modifier = Modifier) {
 @Composable
 fun FeedbackCard(modifier: Modifier = Modifier) {
   val context = LocalContext.current
-  CardView() {
+  CardView {
     Text(
       text = stringResource(id = R.string.feedback),
       modifier = modifier.padding(Local8DPPadding.current),
@@ -258,7 +261,7 @@ fun VersionFooter(currentAppVersion: String, simpleEasterEgg: Boolean) {
       }
     }
 
-    SelectionContainer() {
+    SelectionContainer {
       Text(
         text = token,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),

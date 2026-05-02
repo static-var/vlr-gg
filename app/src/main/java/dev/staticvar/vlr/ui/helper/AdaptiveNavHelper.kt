@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.helper
 
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
@@ -10,8 +14,11 @@ fun ShowIfLargeFormFactorDevice(content: @Composable () -> Unit) {
 
   when (navigationType) {
     NavigationSuiteType.None,
-    NavigationSuiteType.NavigationBar -> {}
+    NavigationSuiteType.NavigationBar,
+    -> {}
+
     NavigationSuiteType.NavigationRail,
-    NavigationSuiteType.NavigationDrawer -> content()
+    NavigationSuiteType.NavigationDrawer,
+    -> content()
   }
 }

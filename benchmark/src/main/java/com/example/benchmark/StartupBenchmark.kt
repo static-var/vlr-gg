@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package com.example.benchmark
 
 import android.os.Build
@@ -42,34 +46,32 @@ abstract class AbstractStartupBenchmark(private val startupMode: StartupMode) {
   @get:Rule val benchmarkRule = MacrobenchmarkRule()
 
   @RequiresApi(Build.VERSION_CODES.N)
-  @Test fun startupNoCompilation() = startup(CompilationMode.None())
+  @Test
+  fun startupNoCompilation() = startup(CompilationMode.None())
 
   @RequiresApi(Build.VERSION_CODES.N)
   @Test
-  fun startupBaselineProfileDisabled() =
-    startup(
-      CompilationMode.Partial(
-        baselineProfileMode = BaselineProfileMode.Disable,
-        warmupIterations = 1
-      )
-    )
+  fun startupBaselineProfileDisabled() = startup(
+    CompilationMode.Partial(
+      baselineProfileMode = BaselineProfileMode.Disable,
+      warmupIterations = 1,
+    ),
+  )
 
   @RequiresApi(Build.VERSION_CODES.N)
   @Test
-  fun startupBaselineProfile() =
-    startup(CompilationMode.Partial(baselineProfileMode = BaselineProfileMode.Require))
+  fun startupBaselineProfile() = startup(CompilationMode.Partial(baselineProfileMode = BaselineProfileMode.Require))
 
   @Test fun startupFullCompilation() = startup(CompilationMode.Full())
 
-  private fun startup(compilationMode: CompilationMode) =
-    benchmarkRule.measureRepeated(
-      packageName = "dev.staticvar.vlr",
-      metrics = listOf(StartupTimingMetric(), FrameTimingMetric()),
-      compilationMode = compilationMode,
-      iterations = 5,
-      startupMode = startupMode,
-      setupBlock = { pressHome() }
-    ) { userflow() }
+  private fun startup(compilationMode: CompilationMode) = benchmarkRule.measureRepeated(
+    packageName = "dev.staticvar.vlr",
+    metrics = listOf(StartupTimingMetric(), FrameTimingMetric()),
+    compilationMode = compilationMode,
+    iterations = 5,
+    startupMode = startupMode,
+    setupBlock = { pressHome() },
+  ) { userflow() }
 }
 
 // ColdStartupBenchmark_startupNoCompilation

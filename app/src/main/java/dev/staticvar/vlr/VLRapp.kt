@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr
 
 import android.app.Application
@@ -26,7 +30,10 @@ import dev.staticvar.vlr.workers.queueObsoleteRecord
 import javax.inject.Inject
 
 @HiltAndroidApp
-class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
+class VLRapp :
+  Application(),
+  Configuration.Provider,
+  ImageLoaderFactory {
 
   @Inject lateinit var workerFactory: HiltWorkerFactory
 
@@ -53,7 +60,7 @@ class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
 
   private fun strictMode() {
     StrictMode.setThreadPolicy(
-      ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build()
+      ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build(),
     )
     StrictMode.setVmPolicy(VmPolicy.Builder().detectAll().penaltyLog().penaltyDeath().build())
   }
@@ -73,16 +80,14 @@ class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
   override val workManagerConfiguration: Configuration
     get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
 
-  override fun newImageLoader(): ImageLoader {
-    return ImageLoader.Builder(this)
-      .crossfade(true)
-      .memoryCache { MemoryCache.Builder(this).maxSizePercent(0.25).build() }
-      .diskCache {
-        DiskCache.Builder()
-          .directory(this.cacheDir.resolve("image_cache"))
-          .maxSizePercent(0.02)
-          .build()
-      }
-      .build()
-  }
+  override fun newImageLoader(): ImageLoader = ImageLoader.Builder(this)
+    .crossfade(true)
+    .memoryCache { MemoryCache.Builder(this).maxSizePercent(0.25).build() }
+    .diskCache {
+      DiskCache.Builder()
+        .directory(this.cacheDir.resolve("image_cache"))
+        .maxSizePercent(0.02)
+        .build()
+    }
+    .build()
 }

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurenews.presentation.list
 
 import androidx.compose.foundation.layout.Arrangement
@@ -35,9 +39,9 @@ internal fun NewsListScreen(
 ) {
   Column(
     modifier =
-      modifier
-        .fillMaxSize()
-        .padding(Prism.dimens.spacingM),
+    modifier
+      .fillMaxSize()
+      .padding(Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(
@@ -93,11 +97,7 @@ internal fun NewsListScreen(
 }
 
 @Composable
-private fun EmptyNewsList(
-  errorMessage: String?,
-  onRefresh: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun EmptyNewsList(errorMessage: String?, onRefresh: () -> Unit, modifier: Modifier = Modifier) {
   Box(modifier = modifier, contentAlignment = Alignment.Center) {
     PrismCard(
       modifier = Modifier.fillMaxWidth(),
@@ -128,11 +128,7 @@ private fun EmptyNewsList(
 }
 
 @Composable
-private fun NewsListItem(
-  item: NewsItem,
-  selected: Boolean,
-  onClick: () -> Unit,
-) {
+private fun NewsListItem(item: NewsItem, selected: Boolean, onClick: () -> Unit) {
   PrismCard(
     modifier = Modifier.fillMaxWidth(),
     style = if (selected) PrismCardStyle.Filled else PrismCardStyle.Outlined,

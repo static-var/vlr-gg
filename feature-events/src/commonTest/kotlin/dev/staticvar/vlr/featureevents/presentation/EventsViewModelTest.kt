@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureevents.presentation
 
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
@@ -7,8 +11,6 @@ import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.featureevents.usecase.ObserveEventListUseCase
 import dev.staticvar.vlr.featureevents.usecase.RefreshEventsUseCase
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +20,8 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EventsViewModelTest {
@@ -57,27 +61,23 @@ class EventsViewModelTest {
     }
   }
 
-  private fun createViewModel(repository: FakeEventRepository): EventsViewModel =
-    EventsViewModel(
-      observeEventListUseCase = ObserveEventListUseCase(repository),
-      refreshEventsUseCase = RefreshEventsUseCase(repository),
-      dispatchers = dispatchers,
-    )
+  private fun createViewModel(repository: FakeEventRepository): EventsViewModel = EventsViewModel(
+    observeEventListUseCase = ObserveEventListUseCase(repository),
+    refreshEventsUseCase = RefreshEventsUseCase(repository),
+    dispatchers = dispatchers,
+  )
 
-  private fun eventPreview(id: String, status: EventStatus): EventPreview =
-    EventPreview(
-      id = id,
-      title = "Champions",
-      status = status,
-      prize = "$" + "100k",
-      dates = "Mar 1 - Mar 7",
-      region = "Global",
-      logoUrl = "",
-    )
+  private fun eventPreview(id: String, status: EventStatus): EventPreview = EventPreview(
+    id = id,
+    title = "Champions",
+    status = status,
+    prize = "$" + "100k",
+    dates = "Mar 1 - Mar 7",
+    region = "Global",
+    logoUrl = "",
+  )
 
-  private class FakeEventRepository(
-    events: List<EventPreview>,
-  ) : EventRepository {
+  private class FakeEventRepository(events: List<EventPreview>) : EventRepository {
     private val eventsFlow = MutableStateFlow(events)
     var refreshEventsCallCount: Int = 0
       private set
@@ -98,9 +98,7 @@ class EventsViewModelTest {
     override suspend fun refreshEventDetails(eventId: String): Result<Unit> = Result.success(Unit)
   }
 
-  private class TestDispatcherProvider(
-    dispatcher: TestDispatcher,
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(dispatcher: TestDispatcher) : DispatcherProvider {
     override val default: CoroutineDispatcher = dispatcher
     override val io: CoroutineDispatcher = dispatcher
     override val main: CoroutineDispatcher = dispatcher

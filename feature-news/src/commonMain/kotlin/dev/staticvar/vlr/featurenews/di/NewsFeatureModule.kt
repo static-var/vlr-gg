@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurenews.di
 
 import dev.staticvar.vlr.featurenews.presentation.article.NewsArticleViewModel
@@ -9,25 +13,24 @@ import dev.staticvar.vlr.featurenews.usecase.RefreshNewsUseCase
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
-public fun newsFeatureModule(): Module =
-  module {
-    factory { ObserveNewsListUseCase(newsRepository = get()) }
-    factory { RefreshNewsUseCase(newsRepository = get()) }
-    factory { ObserveNewsArticleUseCase(newsRepository = get()) }
-    factory { RefreshNewsArticleUseCase(newsRepository = get()) }
+public fun newsFeatureModule(): Module = module {
+  factory { ObserveNewsListUseCase(newsRepository = get()) }
+  factory { RefreshNewsUseCase(newsRepository = get()) }
+  factory { ObserveNewsArticleUseCase(newsRepository = get()) }
+  factory { RefreshNewsArticleUseCase(newsRepository = get()) }
 
-    factory {
-      NewsListViewModel(
-        observeNewsListUseCase = get(),
-        refreshNewsUseCase = get(),
-        dispatchers = get(),
-      )
-    }
-    factory {
-      NewsArticleViewModel(
-        observeNewsArticleUseCase = get(),
-        refreshNewsArticleUseCase = get(),
-        dispatchers = get(),
-      )
-    }
+  factory {
+    NewsListViewModel(
+      observeNewsListUseCase = get(),
+      refreshNewsUseCase = get(),
+      dispatchers = get(),
+    )
   }
+  factory {
+    NewsArticleViewModel(
+      observeNewsArticleUseCase = get(),
+      refreshNewsArticleUseCase = get(),
+      dispatchers = get(),
+    )
+  }
+}

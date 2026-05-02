@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.navabar
 
 import androidx.compose.animation.AnimatedContent
@@ -61,23 +65,24 @@ fun VlrNavBar(
     FloatingNavigationBar(
       tonalElevation = 16.dp,
       modifier =
-        Modifier
-          .padding(horizontal = 16.dp)
-          .navigationBarsPadding()
-          .clip(VLRTheme.shapes.extraLarge)
-          .hazeEffect(
-            state = hazeState,
-            style = HazeMaterials.ultraThin()
-          )
-          .border(
-            width = 0.5.dp,
-            brush = Brush.verticalGradient(
-              colors = listOf(
-                VLRTheme.colorScheme.primary,
-                VLRTheme.colorScheme.transparent,
-              )
-            ), shape = VLRTheme.shapes.extraLarge
+      Modifier
+        .padding(horizontal = 16.dp)
+        .navigationBarsPadding()
+        .clip(VLRTheme.shapes.extraLarge)
+        .hazeEffect(
+          state = hazeState,
+          style = HazeMaterials.ultraThin(),
+        )
+        .border(
+          width = 0.5.dp,
+          brush = Brush.verticalGradient(
+            colors = listOf(
+              VLRTheme.colorScheme.primary,
+              VLRTheme.colorScheme.transparent,
+            ),
           ),
+          shape = VLRTheme.shapes.extraLarge,
+        ),
       containerColor = Color.Transparent,
     ) {
       var topSlot: TopSlot? by remember { mutableStateOf(null) }
@@ -86,7 +91,7 @@ fun VlrNavBar(
         targetState = topSlot,
         transitionSpec = {
           scaleIn(tweenAnimSpec) + fadeIn(tweenAnimSpec) togetherWith scaleOut(
-            tweenAnimSpec
+            tweenAnimSpec,
           ) + fadeOut(tweenAnimSpec)
         },
       ) {
@@ -130,11 +135,11 @@ fun VlrNavBar(
             label = { Text(text = navItem.title) },
             onClick = navItem.onClick,
             colors =
-              NavigationBarItemDefaults.colors(
-                selectedTextColor = VLRTheme.colorScheme.primary,
-                indicatorColor = VLRTheme.colorScheme.primaryContainer,
-                unselectedTextColor = VLRTheme.colorScheme.onSurface
-              ),
+            NavigationBarItemDefaults.colors(
+              selectedTextColor = VLRTheme.colorScheme.primary,
+              indicatorColor = VLRTheme.colorScheme.primaryContainer,
+              unselectedTextColor = VLRTheme.colorScheme.onSurface,
+            ),
           )
         }
       }
@@ -165,12 +170,7 @@ fun EventTopSlot(modifier: Modifier = Modifier, currentItem: Int, action: (Int) 
 }
 
 @Composable
-fun TopSlotContainer(
-  modifier: Modifier = Modifier,
-  tabs: List<String>,
-  currentItem: Int,
-  action: (Int) -> Unit,
-) {
+fun TopSlotContainer(modifier: Modifier = Modifier, tabs: List<String>, currentItem: Int, action: (Int) -> Unit) {
   var localItem by remember(currentItem) { mutableIntStateOf(currentItem) }
   Row(
     modifier = Modifier
@@ -191,10 +191,14 @@ fun TopSlotContainer(
           action(index)
         },
         colors =
-          if (isSelected) ButtonDefaults.buttonColors(
+        if (isSelected) {
+          ButtonDefaults.buttonColors(
             containerColor = VLRTheme.colorScheme.primaryContainer,
-            contentColor = VLRTheme.colorScheme.onPrimaryContainer
-          ) else ButtonDefaults.outlinedButtonColors(contentColor = VLRTheme.colorScheme.onSurface),
+            contentColor = VLRTheme.colorScheme.onPrimaryContainer,
+          )
+        } else {
+          ButtonDefaults.outlinedButtonColors(contentColor = VLRTheme.colorScheme.onSurface)
+        },
       ) {
         Text(text = tab, maxLines = 1)
       }

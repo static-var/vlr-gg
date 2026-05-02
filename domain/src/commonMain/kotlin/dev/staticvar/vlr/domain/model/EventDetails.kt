@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.domain.model
 
 /**
@@ -22,31 +26,17 @@ data class EventDetails(
 /**
  * Prize placement for an event.
  */
-data class EventPrize(
-  val position: String,
-  val prize: String,
-  val team: EventPrizeTeam?,
-)
+data class EventPrize(val position: String, val prize: String, val team: EventPrizeTeam?)
 
 /**
  * Team that won a prize.
  */
-data class EventPrizeTeam(
-  val id: String?,
-  val name: String,
-  val logoUrl: String,
-  val country: String,
-)
+data class EventPrizeTeam(val id: String?, val name: String, val logoUrl: String, val country: String)
 
 /**
  * Team participating in an event.
  */
-data class EventTeam(
-  val id: String?,
-  val name: String,
-  val logoUrl: String,
-  val seed: String?,
-)
+data class EventTeam(val id: String?, val name: String, val logoUrl: String, val seed: String?)
 
 /**
  * Match within an event.
@@ -65,11 +55,7 @@ data class EventMatch(
 /**
  * Team in an event match.
  */
-data class EventMatchTeam(
-  val name: String,
-  val region: String,
-  val score: Int?,
-)
+data class EventMatchTeam(val name: String, val region: String, val score: Int?)
 
 /**
  * Standings entry for an event.
@@ -94,5 +80,5 @@ enum class EventStatus {
   UPCOMING,
   ONGOING,
   COMPLETED,
-  UNKNOWN
+  UNKNOWN,
 }

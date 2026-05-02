@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.utils
 
 import android.content.Context
@@ -20,9 +24,9 @@ import com.materialkolor.ktx.harmonize
 import com.materialkolor.ktx.themeColor
 import dev.staticvar.vlr.ui.LocalColorExtractor
 import dev.staticvar.vlr.ui.theme.VLRTheme
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 class ColorExtractor(private val context: Context) {
   private val cache = lruCache<String, Color>(150)
@@ -88,10 +92,7 @@ fun DynamicTheme(
 }
 
 @Composable
-fun rememberDynamicColor(
-  model: String,
-  fallback: Color = VLRTheme.colorScheme.primary,
-): Color {
+fun rememberDynamicColor(model: String, fallback: Color = VLRTheme.colorScheme.primary): Color {
   val colorExtractor = LocalColorExtractor.current
   val color by
     produceState<Color?>(initialValue = fallback, model, colorExtractor) {

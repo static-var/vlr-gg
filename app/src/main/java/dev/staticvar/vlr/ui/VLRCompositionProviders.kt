@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui
 
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,6 +32,6 @@ fun PaddingLocalCompositions(content: @Composable () -> Unit) {
     Local8DP_4DPPadding provides PaddingValues(horizontal = 8.dp, vertical = 4.dp),
     Local4DPPadding provides PaddingValues(4.dp),
     Local4DP_2DPPadding provides PaddingValues(horizontal = 4.dp, vertical = 2.dp),
-    Local2DPPadding provides PaddingValues(horizontal = 2.dp)
+    Local2DPPadding provides PaddingValues(horizontal = 2.dp),
   ) { content() }
 }

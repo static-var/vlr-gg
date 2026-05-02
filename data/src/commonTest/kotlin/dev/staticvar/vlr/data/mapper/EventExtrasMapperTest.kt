@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.mapper
 
 import dev.staticvar.vlr.remotesource.events.EventPrizeDto
@@ -14,7 +18,7 @@ class EventExtrasMapperTest {
     val dto = EventPrizeDto(
       position = "1st",
       prize = "$1000",
-      team = EventPrizeTeamDto(id = "T1", name = "Alpha", img = "a.png", country = "us")
+      team = EventPrizeTeamDto(id = "T1", name = "Alpha", img = "a.png", country = "us"),
     )
     val entity = dto.toPrizeEntity("E1")
     assertEquals("E1", entity.event_id)

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.localsource.di
 
 import dev.staticvar.vlr.localsource.database.DatabaseDriverFactory
@@ -9,8 +13,8 @@ import org.koin.dsl.module
  * Koin module for local-source dependencies.
  */
 val localSourceModule = module {
-    single { get<DatabaseDriverFactory>().createDriver() }
-    single { VlrDatabase(get()) }
+  single { get<DatabaseDriverFactory>().createDriver() }
+  single { VlrDatabase(get()) }
 }
 
 /**

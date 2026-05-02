@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.repository
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
@@ -16,16 +20,16 @@ import dev.staticvar.vlr.remotesource.events.EventMatchTeamDto
 import dev.staticvar.vlr.remotesource.events.EventPrizeDto
 import dev.staticvar.vlr.remotesource.events.EventStandingsEntryDto
 import dev.staticvar.vlr.remotesource.events.EventTeamDto
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EventRepositoryImplTest {
@@ -47,7 +51,7 @@ class EventRepositoryImplTest {
     repository = EventRepositoryImpl(
       eventDataSource = dataSource,
       database = database,
-      dispatchers = dispatcherProvider
+      dispatchers = dispatcherProvider,
     )
   }
 
@@ -65,7 +69,7 @@ class EventRepositoryImplTest {
       status = "ONGOING",
       prizes = "$1",
       dates = "Old date",
-      region = "NA"
+      region = "NA",
     )
     insertEvent(
       id = "stale",
@@ -74,7 +78,7 @@ class EventRepositoryImplTest {
       status = "COMPLETED",
       prizes = "$2",
       dates = "2000-01-01",
-      region = "EU"
+      region = "EU",
     )
 
     dataSource.listResult = Result.success(
@@ -86,7 +90,7 @@ class EventRepositoryImplTest {
           prize = "$10",
           dates = "2025-01-01",
           location = "NA",
-          img = "logo.png"
+          img = "logo.png",
         ),
         EventListDto(
           id = "fresh",
@@ -95,9 +99,9 @@ class EventRepositoryImplTest {
           prize = "$5",
           dates = "2025-02-01",
           location = "APAC",
-          img = "fresh.png"
-        )
-      )
+          img = "fresh.png",
+        ),
+      ),
     )
 
     val result = repository.refreshEvents()
@@ -120,7 +124,7 @@ class EventRepositoryImplTest {
       status = "UPCOMING",
       prizes = "$1",
       dates = "2025-01-01",
-      region = "NA"
+      region = "NA",
     )
     insertEvent(
       id = "event2",
@@ -129,7 +133,7 @@ class EventRepositoryImplTest {
       status = "COMPLETED",
       prizes = "$2",
       dates = "2025-01-02",
-      region = "EU"
+      region = "EU",
     )
 
     assertTrue(repository.addToFavorites("event2").isSuccess)
@@ -163,9 +167,9 @@ class EventRepositoryImplTest {
           prize = "$1",
           dates = "2025-01-01",
           location = "NA",
-          img = "event.png"
-        )
-      )
+          img = "event.png",
+        ),
+      ),
     )
     assertTrue(repository.refreshEvents().isSuccess)
     assertEquals(1, database.eventsQueries.getEventsWithFavoriteStatus().executeAsList().size)
@@ -181,10 +185,10 @@ class EventRepositoryImplTest {
         status = EventStatus.ONGOING,
         img = "event.png",
         prizes = listOf(
-          EventPrizeDto(position = "1st", prize = "$10")
+          EventPrizeDto(position = "1st", prize = "$10"),
         ),
         teams = listOf(
-          EventTeamDto(name = "Team A", id = "ta", img = "a.png")
+          EventTeamDto(name = "Team A", id = "ta", img = "a.png"),
         ),
         matches = listOf(
           EventMatchDto(
@@ -197,9 +201,9 @@ class EventRepositoryImplTest {
             round = "Upper",
             teams = listOf(
               EventMatchTeamDto(name = "Team A", region = "NA", score = 2),
-              EventMatchTeamDto(name = "Team B", region = "EU", score = 1)
-            )
-          )
+              EventMatchTeamDto(name = "Team B", region = "EU", score = 1),
+            ),
+          ),
         ),
         standings = listOf(
           EventStandingsEntryDto(
@@ -210,10 +214,10 @@ class EventRepositoryImplTest {
             ties = 0,
             mapDifference = 6,
             roundDifference = 20,
-            roundDelta = 15
-          )
-        )
-      )
+            roundDelta = 15,
+          ),
+        ),
+      ),
     )
     val preparedDetail = requireNotNull(dataSource.detailResults["event1"]).getOrNull()
     requireNotNull(preparedDetail)
@@ -271,7 +275,7 @@ class EventRepositoryImplTest {
     status: String?,
     prizes: String,
     dates: String,
-    region: String?
+    region: String?,
   ) {
     eventsQueries().insertEvent(
       Events(
@@ -283,17 +287,14 @@ class EventRepositoryImplTest {
         dates = dates,
         region = region,
         logo_url = "$id.png",
-        last_updated = 0
-      )
+        last_updated = 0,
+      ),
     )
   }
 
   private fun eventsQueries() = database.eventsQueries
 
-
-  private class TestDispatcherProvider(
-    private val dispatcher: TestDispatcher
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {
     override val default = dispatcher
     override val io = dispatcher
     override val main = dispatcher

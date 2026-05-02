@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.services
 
 import android.app.NotificationManager
@@ -18,7 +22,7 @@ import dev.staticvar.vlr.ui.Destination
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.i
 
-class VlrFirebaseNotificationService() : FirebaseMessagingService() {
+class VlrFirebaseNotificationService : FirebaseMessagingService() {
 
   override fun onNewToken(p0: String) {
     super.onNewToken(p0)
@@ -36,9 +40,9 @@ class VlrFirebaseNotificationService() : FirebaseMessagingService() {
     val taskDetailIntent =
       Intent(
         Intent.ACTION_VIEW,
-        "${Constants.DEEP_LINK_BASEURL}${Destination.Match.Args.ID}=${matchId}".toUri(),
+        "${Constants.DEEP_LINK_BASEURL}${Destination.Match.Args.ID}=$matchId".toUri(),
         this,
-        MainActivity::class.java
+        MainActivity::class.java,
       )
 
     val pending: PendingIntent =

@@ -1,9 +1,15 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.di
 
 import dev.staticvar.vlr.remotesource.events.EventDataSource
 import dev.staticvar.vlr.remotesource.events.EventDataSourceImpl
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
 import dev.staticvar.vlr.remotesource.match.MatchDataSourceImpl
+import dev.staticvar.vlr.remotesource.network.HttpClientFactory
+import dev.staticvar.vlr.remotesource.network.NetworkConfiguration
 import dev.staticvar.vlr.remotesource.news.NewsDataSource
 import dev.staticvar.vlr.remotesource.news.NewsDataSourceImpl
 import dev.staticvar.vlr.remotesource.player.PlayerDataSource
@@ -18,8 +24,6 @@ import dev.staticvar.vlr.remotesource.team.TeamDataSource
 import dev.staticvar.vlr.remotesource.team.TeamDataSourceImpl
 import dev.staticvar.vlr.remotesource.version.VersionDataSource
 import dev.staticvar.vlr.remotesource.version.VersionDataSourceImpl
-import dev.staticvar.vlr.remotesource.network.HttpClientFactory
-import dev.staticvar.vlr.remotesource.network.NetworkConfiguration
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
@@ -33,7 +37,7 @@ import org.koin.dsl.module
 fun remoteSourceModule(configuration: NetworkConfiguration): Module = module {
   // Network configuration
   single { configuration }
-  
+
   // JSON serializer
   single {
     Json {
@@ -43,15 +47,15 @@ fun remoteSourceModule(configuration: NetworkConfiguration): Module = module {
       prettyPrint = false
     }
   }
-  
+
   // HttpClient factory
   singleOf(::HttpClientFactory)
-  
+
   // HttpClient instance
   single<HttpClient> {
     get<HttpClientFactory>().create(get(), get())
   }
-  
+
   // DataSources
   single<MatchDataSource> { MatchDataSourceImpl(get()) }
   single<EventDataSource> { EventDataSourceImpl(get()) }

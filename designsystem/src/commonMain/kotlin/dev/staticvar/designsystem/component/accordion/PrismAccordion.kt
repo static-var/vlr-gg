@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 @file:Suppress("CyclomaticComplexMethod", "LongParameterList", "MatchingDeclarationName")
 
 package dev.staticvar.designsystem.component.accordion

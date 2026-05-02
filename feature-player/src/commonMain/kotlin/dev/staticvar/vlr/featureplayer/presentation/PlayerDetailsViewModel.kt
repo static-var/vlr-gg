@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureplayer.presentation
 
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
@@ -64,10 +68,7 @@ public class PlayerDetailsViewModel(
     scope.cancel()
   }
 
-  private suspend fun refreshInternal(
-    playerId: String,
-    showRefreshing: Boolean,
-  ) {
+  private suspend fun refreshInternal(playerId: String, showRefreshing: Boolean) {
     if (showRefreshing) {
       mutableUiState.update { it.copy(isRefreshing = true, errorMessage = null) }
     }

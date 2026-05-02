@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.utils
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -5,13 +9,13 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkObject
-import java.util.*
-import kotlin.time.Duration.Companion.seconds
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
+import java.util.*
+import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
 @Config(manifest = Config.NONE)

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.api
 
 import io.ktor.client.HttpClient
@@ -13,21 +17,19 @@ interface MatchApiService {
    * Fetch all match previews (overview list).
    */
   suspend fun getMatches(): Result<List<MatchPreviewDto>>
-  
+
   /**
    * Fetch detailed match information by ID.
    */
   suspend fun getMatchDetails(matchId: String): Result<MatchDetailsDto>
 }
 
-internal class MatchApiServiceImpl(
-  private val httpClient: HttpClient,
-) : MatchApiService {
-  
+internal class MatchApiServiceImpl(private val httpClient: HttpClient) : MatchApiService {
+
   override suspend fun getMatches(): Result<List<MatchPreviewDto>> = runCatching {
     httpClient.get("/api/v1/matches/").body<List<MatchPreviewDto>>()
   }
-  
+
   override suspend fun getMatchDetails(matchId: String): Result<MatchDetailsDto> = runCatching {
     httpClient.get("/api/v1/matches/$matchId").body<MatchDetailsDto>()
   }

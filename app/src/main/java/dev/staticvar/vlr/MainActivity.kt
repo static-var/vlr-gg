@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr
 
 import android.os.Bundle
@@ -23,7 +27,7 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
     super.onCreate(savedInstanceState)
     setContent {
-      VLRTheme() {
+      VLRTheme {
         CompositionLocalProvider(LocalColorExtractor provides colorExtractor) {
           PaddingLocalCompositions { VLR() }
         }

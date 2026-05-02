@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.domain.model
 
 /**
@@ -17,16 +21,9 @@ data class NewsArticle(
 /**
  * Media content associated with a news article.
  */
-data class NewsArticleMedia(
-  val links: List<ArticleLink>,
-  val images: List<String>,
-  val videos: List<String>,
-)
+data class NewsArticleMedia(val links: List<ArticleLink>, val images: List<String>, val videos: List<String>)
 
 /**
  * A link within an article with display text and URL.
  */
-data class ArticleLink(
-  val text: String,
-  val url: String,
-)
+data class ArticleLink(val text: String, val url: String)

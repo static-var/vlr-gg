@@ -1,10 +1,14 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.repository
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.cash.turbine.test
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
-import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.common.MatchStatus
 import dev.staticvar.vlr.remotesource.match.AgentInfoDto
 import dev.staticvar.vlr.remotesource.match.EventDto
@@ -18,16 +22,16 @@ import dev.staticvar.vlr.remotesource.match.PreviousEncounterDto
 import dev.staticvar.vlr.remotesource.match.RoundInfoDto
 import dev.staticvar.vlr.remotesource.match.TeamDto
 import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.advanceUntilIdle
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MatchRepositoryImplTest {
@@ -49,7 +53,7 @@ class MatchRepositoryImplTest {
     repository = MatchRepositoryImpl(
       matchDataSource = dataSource,
       database = database,
-      dispatchers = dispatcherProvider
+      dispatchers = dispatcherProvider,
     )
   }
 
@@ -70,9 +74,9 @@ class MatchRepositoryImplTest {
           team1 = TeamDto(id = "t1", name = "Alpha", img = "alpha.png"),
           team2 = TeamDto(id = "t2", name = "Beta", img = "beta.png"),
           time = "2025-01-01",
-          eventId = "event1"
-        )
-      )
+          eventId = "event1",
+        ),
+      ),
     )
 
     val result = repository.refreshMatches()
@@ -103,7 +107,7 @@ class MatchRepositoryImplTest {
           team1 = TeamDto(id = "t1", name = "Alpha", img = "alpha.png"),
           team2 = TeamDto(id = "t2", name = "Beta", img = "beta.png"),
           time = "2025-01-01",
-          eventId = "event1"
+          eventId = "event1",
         ),
         MatchPreviewDto(
           id = "old1",
@@ -113,9 +117,9 @@ class MatchRepositoryImplTest {
           team1 = TeamDto(id = "oa", name = "Omega", img = "omega.png"),
           team2 = TeamDto(id = "ob", name = "Sigma", img = "sigma.png"),
           time = "2024-12-01",
-          eventId = "event-old"
-        )
-      )
+          eventId = "event-old",
+        ),
+      ),
     )
     assertTrue(repository.refreshMatches().isSuccess)
 
@@ -130,27 +134,27 @@ class MatchRepositoryImplTest {
           img = "event.png",
           date = "2025-01-01",
           patch = "8.0",
-          status = MatchStatus.COMPLETED
+          status = MatchStatus.COMPLETED,
         ),
         head2head = listOf(
           PreviousEncounterDto(
             id = "old1",
             teams = listOf(
               TeamDto(name = "Alpha", score = 2),
-              TeamDto(name = "Beta", score = 1)
-            )
-          )
+              TeamDto(name = "Beta", score = 1),
+            ),
+          ),
         ),
         note = "Grand final",
         score = "2:1",
         teams = listOf(
           TeamDto(id = "t1", name = "Alpha", region = "NA", img = "alpha.png", score = 2, winner = true),
-          TeamDto(id = "t2", name = "Beta", region = "EU", img = "beta.png", score = 1, winner = false)
+          TeamDto(id = "t2", name = "Beta", region = "EU", img = "beta.png", score = 1, winner = false),
         ),
         bans = listOf("Split"),
         videos = MatchVideosDto(
           streams = listOf(VideoReferenceDto(name = "Stream", url = "https://stream")),
-          vods = listOf(VideoReferenceDto(name = "Vod", url = "https://vod"))
+          vods = listOf(VideoReferenceDto(name = "Vod", url = "https://vod")),
         ),
         matchData = listOf(
           MapDataDto(
@@ -171,12 +175,12 @@ class MatchRepositoryImplTest {
                 firstKillsDiff = 2,
                 hsPercent = 28,
                 rating = 1.25f,
-                agents = listOf(AgentInfoDto(name = "Jett", img = "jett.png"))
-              )
+                agents = listOf(AgentInfoDto(name = "Jett", img = "jett.png")),
+              ),
             ),
             teams = listOf(
               TeamDto(id = "t1", name = "Alpha", score = 13, winner = true),
-              TeamDto(id = "t2", name = "Beta", score = 9, winner = false)
+              TeamDto(id = "t2", name = "Beta", score = 9, winner = false),
             ),
             rounds = listOf(
               RoundInfoDto(
@@ -184,13 +188,13 @@ class MatchRepositoryImplTest {
                 score = "1-0",
                 winner = "TEAM1",
                 side = "ATTACK",
-                winType = "ELIMINATION"
-              )
-            )
-          )
+                winType = "ELIMINATION",
+              ),
+            ),
+          ),
         ),
-        mapCount = 3
-      )
+        mapCount = 3,
+      ),
     )
 
     repository.getMatchDetails("match1").test {
@@ -248,9 +252,9 @@ class MatchRepositoryImplTest {
           team1 = TeamDto(id = "t1", name = "Alpha", img = "alpha.png"),
           team2 = TeamDto(id = "t2", name = "Beta", img = "beta.png"),
           time = "2025-01-01",
-          eventId = "event1"
-        )
-      )
+          eventId = "event1",
+        ),
+      ),
     )
 
     assertTrue(repository.refreshMatches().isSuccess)
@@ -265,9 +269,7 @@ class MatchRepositoryImplTest {
     }
   }
 
-  private class TestDispatcherProvider(
-    private val dispatcher: TestDispatcher
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {
     override val default = dispatcher
     override val io = dispatcher
     override val main = dispatcher

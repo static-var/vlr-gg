@@ -1,16 +1,20 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureevents.usecase
 
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.repository.EventRepository
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EventsUseCasesTest {
@@ -97,29 +101,27 @@ class EventsUseCasesTest {
   }
 }
 
-private fun eventPreview(id: String): EventPreview =
-  EventPreview(
-    id = id,
-    title = "Champions",
-    status = EventStatus.ONGOING,
-    prize = "$" + "100k",
-    dates = "Mar 1 - Mar 7",
-    region = "Global",
-    logoUrl = "",
-  )
+private fun eventPreview(id: String): EventPreview = EventPreview(
+  id = id,
+  title = "Champions",
+  status = EventStatus.ONGOING,
+  prize = "$" + "100k",
+  dates = "Mar 1 - Mar 7",
+  region = "Global",
+  logoUrl = "",
+)
 
-private fun eventDetails(id: String): EventDetails =
-  EventDetails(
-    id = id,
-    title = "Champions",
-    subtitle = "Stage 1",
-    status = EventStatus.ONGOING,
-    prize = "$" + "100k",
-    dates = "Mar 1 - Mar 7",
-    region = "Global",
-    logoUrl = "",
-    prizes = emptyList(),
-    teams = emptyList(),
-    matches = emptyList(),
-    standings = emptyList(),
-  )
+private fun eventDetails(id: String): EventDetails = EventDetails(
+  id = id,
+  title = "Champions",
+  subtitle = "Stage 1",
+  status = EventStatus.ONGOING,
+  prize = "$" + "100k",
+  dates = "Mar 1 - Mar 7",
+  region = "Global",
+  logoUrl = "",
+  prizes = emptyList(),
+  teams = emptyList(),
+  matches = emptyList(),
+  standings = emptyList(),
+)

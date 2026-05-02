@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.widget
 
 import android.content.Intent
@@ -38,21 +42,17 @@ fun WidgetTimeRow(modifier: GlanceModifier = GlanceModifier, status: String, tim
       text = if (status.equals("LIVE", true)) "LIVE" else time?.readableDateAndTime ?: "",
       modifier = GlanceModifier.fillMaxWidth(),
       style =
-        TextStyle(
-          textAlign = TextAlign.Center,
-          color = GlanceTheme.colors.onPrimaryContainer,
-          fontSize = 12.sp,
-        ),
+      TextStyle(
+        textAlign = TextAlign.Center,
+        color = GlanceTheme.colors.onPrimaryContainer,
+        fontSize = 12.sp,
+      ),
     )
   }
 }
 
 @Composable
-fun WidgetTeamUiRow(
-  modifier: GlanceModifier = GlanceModifier,
-  teamNameA: String,
-  teamNameB: String,
-) {
+fun WidgetTeamUiRow(modifier: GlanceModifier = GlanceModifier, teamNameA: String, teamNameB: String) {
   Row(
     modifier.fillMaxWidth(),
     verticalAlignment = Alignment.Vertical.CenterVertically,
@@ -61,33 +61,29 @@ fun WidgetTeamUiRow(
     Text(
       text = teamNameA,
       style =
-        TextStyle(
-          color = GlanceTheme.colors.onPrimaryContainer,
-          textAlign = TextAlign.Center,
-          fontWeight = FontWeight.Bold,
-        ),
+      TextStyle(
+        color = GlanceTheme.colors.onPrimaryContainer,
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.Bold,
+      ),
       modifier = GlanceModifier.defaultWeight().padding(1.dp),
       maxLines = 1,
     )
     Text(
       text = teamNameB,
       style =
-        TextStyle(
-          color = GlanceTheme.colors.onPrimaryContainer,
-          textAlign = TextAlign.Center,
-          fontWeight = FontWeight.Bold,
-        ),
+      TextStyle(
+        color = GlanceTheme.colors.onPrimaryContainer,
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.Bold,
+      ),
       modifier = GlanceModifier.defaultWeight().padding(1.dp),
     )
   }
 }
 
 @Composable
-fun WidgetScoreUiRow(
-  modifier: GlanceModifier = GlanceModifier,
-  teamScoreA: Int?,
-  teamScoreB: Int?,
-) {
+fun WidgetScoreUiRow(modifier: GlanceModifier = GlanceModifier, teamScoreA: Int?, teamScoreB: Int?) {
   Row(
     modifier.fillMaxWidth(),
     verticalAlignment = Alignment.Vertical.CenterVertically,
@@ -96,13 +92,13 @@ fun WidgetScoreUiRow(
     Text(
       text = teamScoreA?.toString() ?: "-",
       style =
-        TextStyle(color = GlanceTheme.colors.onPrimaryContainer, textAlign = TextAlign.Center),
+      TextStyle(color = GlanceTheme.colors.onPrimaryContainer, textAlign = TextAlign.Center),
       modifier = GlanceModifier.defaultWeight().padding(1.dp),
     )
     Text(
       text = teamScoreB?.toString() ?: "-",
       style =
-        TextStyle(color = GlanceTheme.colors.onPrimaryContainer, textAlign = TextAlign.Center),
+      TextStyle(color = GlanceTheme.colors.onPrimaryContainer, textAlign = TextAlign.Center),
       modifier = GlanceModifier.defaultWeight().padding(1.dp),
       maxLines = 1,
     )
@@ -114,21 +110,21 @@ fun WidgetUnableToUpdateUi(modifier: GlanceModifier = GlanceModifier) {
   val context = LocalContext.current
   Column(
     modifier =
-      modifier
-        .fillMaxSize()
-        .padding(8.dp)
-        .background(GlanceTheme.colors.primaryContainer)
-        .cornerRadius(16.dp)
-        .clickable(
-          actionStartActivity(
-            Intent(
-              Intent.ACTION_VIEW,
-              "${Constants.DEEP_LINK_BASEURL}${Destination.MatchOverview}".toUri(),
-              context,
-              MainActivity::class.java,
-            )
-          )
+    modifier
+      .fillMaxSize()
+      .padding(8.dp)
+      .background(GlanceTheme.colors.primaryContainer)
+      .cornerRadius(16.dp)
+      .clickable(
+        actionStartActivity(
+          Intent(
+            Intent.ACTION_VIEW,
+            "${Constants.DEEP_LINK_BASEURL}${Destination.MatchOverview}".toUri(),
+            context,
+            MainActivity::class.java,
+          ),
         ),
+      ),
     verticalAlignment = Alignment.Vertical.CenterVertically,
     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
   ) {
@@ -143,20 +139,22 @@ fun LazyListScope.headerText(isUpdating: Boolean = false) {
   item {
     Text(
       text =
-        if (isUpdating) "Updating..."
-        else
-          "Last updated at ${
-        LocalTime
-          .now()
-          .atOffset(ZoneOffset.UTC)
-          .format(DateTimeFormatter.ofPattern("HH:mm a"))
-      }",
+      if (isUpdating) {
+        "Updating..."
+      } else {
+        "Last updated at ${
+          LocalTime
+            .now()
+            .atOffset(ZoneOffset.UTC)
+            .format(DateTimeFormatter.ofPattern("HH:mm a"))
+        }"
+      },
       style =
-        TextStyle(
-          textAlign = TextAlign.Center,
-          color = GlanceTheme.colors.onSurface,
-          fontSize = 12.sp,
-        ),
+      TextStyle(
+        textAlign = TextAlign.Center,
+        color = GlanceTheme.colors.onSurface,
+        fontSize = 12.sp,
+      ),
       modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 8.dp),
     )
   }

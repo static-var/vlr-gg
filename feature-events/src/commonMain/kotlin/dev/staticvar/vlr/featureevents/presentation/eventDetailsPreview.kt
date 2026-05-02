@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureevents.presentation
 
 import androidx.compose.foundation.background
@@ -21,9 +25,7 @@ import dev.staticvar.vlr.domain.model.EventTeam
 
 @PrismPreview
 @Composable
-internal fun EventDetailsPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun EventDetailsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     EventDetailsScreen(
       uiState = EventDetailsUiState(event = sampleEventDetails(), isLoading = false),
@@ -37,59 +39,58 @@ internal fun EventDetailsPreview(
   }
 }
 
-private fun sampleEventDetails(): EventDetails =
-  EventDetails(
-    id = "event-1",
-    title = "Masters Bangkok",
-    subtitle = "Playoffs",
-    status = EventStatus.ONGOING,
-    prize = "$" + "250k",
-    dates = "Mar 8 - Mar 16",
-    region = "Global",
-    logoUrl = "",
-    prizes =
+private fun sampleEventDetails(): EventDetails = EventDetails(
+  id = "event-1",
+  title = "Masters Bangkok",
+  subtitle = "Playoffs",
+  status = EventStatus.ONGOING,
+  prize = "$" + "250k",
+  dates = "Mar 8 - Mar 16",
+  region = "Global",
+  logoUrl = "",
+  prizes =
+  listOf(
+    EventPrize(
+      position = "1st",
+      prize = "$" + "100k",
+      team = EventPrizeTeam(id = "fnc", name = "FNATIC", logoUrl = "", country = "EU"),
+    ),
+  ),
+  teams =
+  listOf(
+    EventTeam(id = "fnc", name = "FNATIC", logoUrl = "", seed = "#1"),
+    EventTeam(id = "sen", name = "Sentinels", logoUrl = "", seed = "#2"),
+  ),
+  matches =
+  listOf(
+    EventMatch(
+      matchId = "match-1",
+      time = "14:00 CET",
+      date = "Mar 8",
+      eta = "Live now",
+      status = "LIVE",
+      teams =
       listOf(
-        EventPrize(
-          position = "1st",
-          prize = "$" + "100k",
-          team = EventPrizeTeam(id = "fnc", name = "FNATIC", logoUrl = "", country = "EU"),
-        ),
+        EventMatchTeam(name = "FNATIC", region = "EMEA", score = 1),
+        EventMatchTeam(name = "Sentinels", region = "Americas", score = 0),
       ),
-    teams =
-      listOf(
-        EventTeam(id = "fnc", name = "FNATIC", logoUrl = "", seed = "#1"),
-        EventTeam(id = "sen", name = "Sentinels", logoUrl = "", seed = "#2"),
-      ),
-    matches =
-      listOf(
-        EventMatch(
-          matchId = "match-1",
-          time = "14:00 CET",
-          date = "Mar 8",
-          eta = "Live now",
-          status = "LIVE",
-          teams =
-            listOf(
-              EventMatchTeam(name = "FNATIC", region = "EMEA", score = 1),
-              EventMatchTeam(name = "Sentinels", region = "Americas", score = 0),
-            ),
-          round = "Upper Final",
-          stage = "Playoffs",
-        ),
-      ),
-    standings =
-      listOf(
-        EventStanding(
-          teamName = "FNATIC",
-          teamLogoUrl = "",
-          teamCountry = "EU",
-          groupName = "Playoffs",
-          wins = 2,
-          losses = 0,
-          ties = 0,
-          mapDifference = 3,
-          roundDifference = 19,
-          roundDelta = 19,
-        ),
-      ),
-  )
+      round = "Upper Final",
+      stage = "Playoffs",
+    ),
+  ),
+  standings =
+  listOf(
+    EventStanding(
+      teamName = "FNATIC",
+      teamLogoUrl = "",
+      teamCountry = "EU",
+      groupName = "Playoffs",
+      wins = 2,
+      losses = 0,
+      ties = 0,
+      mapDifference = 3,
+      roundDifference = 19,
+      roundDelta = 19,
+    ),
+  ),
+)

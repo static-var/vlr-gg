@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.di
 
 import dev.staticvar.vlr.data.repository.CircuitStandingsRepositoryImpl
@@ -26,49 +30,49 @@ fun dataModule(): Module = module {
     MatchRepositoryImpl(
       matchDataSource = get(),
       database = get(),
-      dispatchers = get()
+      dispatchers = get(),
     )
   }
   single<NewsRepository> {
     NewsRepositoryImpl(
       newsDataSource = get(),
       database = get(),
-      dispatchers = get()
+      dispatchers = get(),
     )
   }
   single<EventRepository> {
     EventRepositoryImpl(
       eventDataSource = get(),
       database = get(),
-      dispatchers = get()
+      dispatchers = get(),
     )
   }
   single<TeamRepository> {
     TeamRepositoryImpl(
       teamDataSource = get(),
       database = get(),
-      dispatchers = get()
+      dispatchers = get(),
     )
   }
   single<RankingsRepository> {
     RankingsRepositoryImpl(
       rankingsDataSource = get(),
       database = get(),
-      dispatchers = get()
+      dispatchers = get(),
     )
   }
   single<PlayerRepository> {
     PlayerRepositoryImpl(
       playerDataSource = get(),
       database = get(),
-      dispatchers = get()
+      dispatchers = get(),
     )
   }
   single<CircuitStandingsRepository> {
     CircuitStandingsRepositoryImpl(
       standingsDataSource = get(),
       database = get(),
-      dispatchers = get()
+      dispatchers = get(),
     )
   }
 }

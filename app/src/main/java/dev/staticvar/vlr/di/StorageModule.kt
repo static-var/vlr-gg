@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.di
 
 import android.app.Application
@@ -16,10 +20,10 @@ import dev.staticvar.vlr.data.db.VlrDB
 import dev.staticvar.vlr.data.db.VlrTypeConverter
 import dev.staticvar.vlr.utils.Constants
 import io.ktor.client.HttpClient
-import javax.inject.Named
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.serialization.json.Json
+import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -41,12 +45,15 @@ object StorageModule {
   @Provides
   @Singleton
   fun getVlrDao(db: VlrDB) = db.getVlrDao()
+
   @Provides
   @Singleton
   fun getEventFavDao(db: VlrDB) = db.getEventFavDao()
+
   @Provides
   @Singleton
   fun getMatchFavDao(db: VlrDB) = db.getMatchFavDao()
+
   @Provides
   @Singleton
   fun getTeamFavDao(db: VlrDB) = db.getTeamFavDao()
@@ -62,6 +69,5 @@ object StorageModule {
     @Named("vlrClient") ktorHttpClient: HttpClient,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
     json: Json,
-  ) =
-    VlrRepository(vlrDao, matchFavDao, eventFavDao, teamFavDao, ktorHttpClient, ioDispatcher, json)
+  ) = VlrRepository(vlrDao, matchFavDao, eventFavDao, teamFavDao, ktorHttpClient, ioDispatcher, json)
 }

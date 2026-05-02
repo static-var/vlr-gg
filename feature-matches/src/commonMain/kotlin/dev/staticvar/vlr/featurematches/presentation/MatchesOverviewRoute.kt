@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurematches.presentation
 
 import androidx.compose.foundation.layout.Arrangement
@@ -28,10 +32,7 @@ import dev.staticvar.vlr.domain.model.MatchStatus
 import org.koin.mp.KoinPlatform
 
 @Composable
-public fun MatchesOverviewRoute(
-  onMatchSelected: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+public fun MatchesOverviewRoute(onMatchSelected: (String) -> Unit, modifier: Modifier = Modifier) {
   val viewModel: MatchesViewModel = rememberKoinInstance()
   val uiState: MatchesUiState by viewModel.uiState.collectAsState()
 
@@ -76,20 +77,23 @@ internal fun MatchesOverviewScreen(
     )
     PrismTabs(
       tabs =
-        listOf(
-          PrismTab(id = MatchStatusFilter.Live.name, label = "Live"),
-          PrismTab(id = MatchStatusFilter.Upcoming.name, label = "Upcoming"),
-          PrismTab(id = MatchStatusFilter.Completed.name, label = "Completed"),
-        ),
+      listOf(
+        PrismTab(id = MatchStatusFilter.Live.name, label = "Live"),
+        PrismTab(id = MatchStatusFilter.Upcoming.name, label = "Upcoming"),
+        PrismTab(id = MatchStatusFilter.Completed.name, label = "Completed"),
+      ),
       selectedTabId = uiState.selectedStatus.name,
       onTabSelected = { onFilterSelected(MatchStatusFilter.valueOf(it.id)) },
     )
 
     when {
       uiState.isLoading -> PrismStateMessage(text = "Loading matches…")
+
       uiState.errorMessage != null && filteredMatches.isEmpty() ->
         PrismStateMessage(text = uiState.errorMessage ?: "Unable to load matches.")
+
       filteredMatches.isEmpty() -> PrismStateMessage(text = "No matches in this bucket yet.")
+
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
@@ -104,12 +108,12 @@ internal fun MatchesOverviewScreen(
               PrismTag(
                 text = match.status.name,
                 style =
-                  when (match.status) {
-                    MatchStatus.LIVE -> PrismTagStyle.Danger
-                    MatchStatus.UPCOMING -> PrismTagStyle.Info
-                    MatchStatus.COMPLETED -> PrismTagStyle.Success
-                    MatchStatus.UNKNOWN -> PrismTagStyle.Neutral
-                  },
+                when (match.status) {
+                  MatchStatus.LIVE -> PrismTagStyle.Danger
+                  MatchStatus.UPCOMING -> PrismTagStyle.Info
+                  MatchStatus.COMPLETED -> PrismTagStyle.Success
+                  MatchStatus.UNKNOWN -> PrismTagStyle.Neutral
+                },
               )
               Text(
                 text = "${match.team1.name} vs ${match.team2.name}",
@@ -143,7 +147,6 @@ private fun buildScoreLine(match: MatchPreview): String {
 }
 
 @Composable
-private inline fun <reified T : Any> rememberKoinInstance(): T =
-  remember {
-    KoinPlatform.getKoin().get<T>()
-  }
+private inline fun <reified T : Any> rememberKoinInstance(): T = remember {
+  KoinPlatform.getKoin().get<T>()
+}

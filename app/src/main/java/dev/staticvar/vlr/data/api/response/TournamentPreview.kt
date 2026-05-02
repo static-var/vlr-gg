@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
@@ -14,7 +18,8 @@ import kotlinx.serialization.Serializable
 @Immutable
 data class TournamentPreview(
   @SerialName("dates") val dates: String = "", // Feb 13—14
-  @SerialName("id") @PrimaryKey val id: String = "", // 890
+  @SerialName("id")
+  @PrimaryKey val id: String = "", // 890
   @SerialName("img") val img: String = "", // https://owcdn.net/img/62099d2b41b45.png
   @SerialName("location") val location: String = "", // ca
   @SerialName("prize") val prize: String = "", // $1,572

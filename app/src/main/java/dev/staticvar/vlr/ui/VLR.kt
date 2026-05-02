@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui
 
 import android.annotation.SuppressLint
@@ -92,8 +96,11 @@ fun VLR() {
         Icons.Filled.SportsEsports,
         Icons.Outlined.SportsEsports,
         onClick = {
-          if (currentNav == Destination.MatchOverview.route) resetScroll()
-          else action.matchOverview().also { println("Match overview navigation") }
+          if (currentNav == Destination.MatchOverview.route) {
+            resetScroll()
+          } else {
+            action.matchOverview().also { println("Match overview navigation") }
+          }
         },
         topSlot = TopSlot.MATCH,
       ),
@@ -137,7 +144,8 @@ fun VLR() {
   CompositionLocalProvider(LocalNavigationSuiteType provides navSuiteType) {
     when (navSuiteType) {
       NavigationSuiteType.NavigationBar,
-      NavigationSuiteType.None -> {
+      NavigationSuiteType.None,
+      -> {
         Scaffold(
           modifier = Modifier,
           bottomBar = {
@@ -164,6 +172,7 @@ fun VLR() {
           }
         }
       }
+
       else -> {
         NavigationSuiteScaffold(
           navigationSuiteItems = {
@@ -185,15 +194,18 @@ fun VLR() {
             }
           },
           layoutType =
-            if (!hideNav || navSuiteType != NavigationSuiteType.NavigationBar) navSuiteType
-            else NavigationSuiteType.None,
+          if (!hideNav || navSuiteType != NavigationSuiteType.NavigationBar) {
+            navSuiteType
+          } else {
+            NavigationSuiteType.None
+          },
         ) {
           Box(modifier = Modifier.semantics { testTagsAsResourceId = true }) {
             VlrNavHost(
               navController = navController,
               innerPadding =
-                WindowInsets.statusBars.asPaddingValues() +
-                  WindowInsets.navigationBars.asPaddingValues(),
+              WindowInsets.statusBars.asPaddingValues() +
+                WindowInsets.navigationBars.asPaddingValues(),
               paneState = { nav -> hideNav = nav },
             ) {
               currentNav = it

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.common
 
 import androidx.compose.animation.AnimatedVisibility
@@ -39,9 +43,9 @@ fun BoxScope.PullToRefreshPill(modifier: Modifier = Modifier, show: Boolean) {
     ) {
       Row(
         modifier =
-          Modifier.wrapContentSize()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .testTag("common:loader"),
+        Modifier.wrapContentSize()
+          .padding(horizontal = 16.dp, vertical = 8.dp)
+          .testTag("common:loader"),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
       ) {

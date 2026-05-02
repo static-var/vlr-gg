@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.news
 
 import dev.staticvar.vlr.remotesource.common.ApiPaths
@@ -10,21 +14,20 @@ internal class NewsDataSourceImpl(private val client: HttpClient) : NewsDataSour
     client.get(ApiPaths.NEWS).body()
   }
 
-  override suspend fun article(id: String): Result<NewsArticleDto> =
-    runCatching {
-      val apiDto: NewsArticleDto? =
-        runCatching { client.get(ApiPaths.news(id)).body<NewsArticleDto>() }.getOrNull()
-      if (apiDto != null && apiDto.content.isNotBlank()) {
-        apiDto
-      } else {
-        val html: String = client.get(vlrArticleUrl(id)).body()
-        NewsHtmlParser.parse(
-          articleId = normalizeArticleId(id),
-          html = html,
-          fallback = apiDto,
-        )
-      }
+  override suspend fun article(id: String): Result<NewsArticleDto> = runCatching {
+    val apiDto: NewsArticleDto? =
+      runCatching { client.get(ApiPaths.news(id)).body<NewsArticleDto>() }.getOrNull()
+    if (apiDto != null && apiDto.content.isNotBlank()) {
+      apiDto
+    } else {
+      val html: String = client.get(vlrArticleUrl(id)).body()
+      NewsHtmlParser.parse(
+        articleId = normalizeArticleId(id),
+        html = html,
+        fallback = apiDto,
+      )
     }
+  }
 }
 
 private fun normalizeArticleId(id: String): String {

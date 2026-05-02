@@ -1,12 +1,16 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.HttpResponseData
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -24,12 +28,11 @@ internal fun testJson(): Json = Json {
 }
 
 internal fun mockClient(
-  handler: suspend MockRequestHandleScope.(request: HttpRequestData) -> HttpResponseData
-): HttpClient =
-  HttpClient(MockEngine) {
-    install(ContentNegotiation) { json(testJson()) }
-    engine { this.addHandler(handler) }
-  }
+  handler: suspend MockRequestHandleScope.(request: HttpRequestData) -> HttpResponseData,
+): HttpClient = HttpClient(MockEngine) {
+  install(ContentNegotiation) { json(testJson()) }
+  engine { this.addHandler(handler) }
+}
 
 internal fun jsonHeaders() = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
 

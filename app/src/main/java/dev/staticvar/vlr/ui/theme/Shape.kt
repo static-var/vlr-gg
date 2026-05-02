@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,5 +12,5 @@ val Shapes =
   Shapes(
     small = RoundedCornerShape(8.dp),
     medium = RoundedCornerShape(12.dp),
-    large = RoundedCornerShape(16.dp)
+    large = RoundedCornerShape(16.dp),
   )

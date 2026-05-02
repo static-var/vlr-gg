@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurenews.presentation.article
 
 private val HtmlTagRegex: Regex = Regex("<[^>]+>")
@@ -24,16 +28,15 @@ internal fun articleParagraphs(contentHtml: String): List<String> {
     .filter { paragraph -> paragraph.isNotBlank() }
 }
 
-private fun String.stripHtml(): String =
-  replace(HtmlTagRegex, " ")
-    .replace(HtmlEntityRegex) { match ->
-      when (match.value) {
-        "&nbsp;" -> " "
-        "&amp;" -> "&"
-        "&quot;" -> "\""
-        "&#39;" -> "'"
-        else -> match.value
-      }
+private fun String.stripHtml(): String = replace(HtmlTagRegex, " ")
+  .replace(HtmlEntityRegex) { match ->
+    when (match.value) {
+      "&nbsp;" -> " "
+      "&amp;" -> "&"
+      "&quot;" -> "\""
+      "&#39;" -> "'"
+      else -> match.value
     }
-    .replace(Regex("\\s+"), " ")
-    .trim()
+  }
+  .replace(Regex("\\s+"), " ")
+  .trim()

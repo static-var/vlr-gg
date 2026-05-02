@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureplayer.presentation
 
 import androidx.compose.foundation.clickable
@@ -78,9 +82,12 @@ internal fun PlayerDetailsScreen(
 
     when {
       uiState.isLoading -> PrismStateMessage(text = "Loading player details…")
+
       uiState.errorMessage != null && player == null ->
         PrismStateMessage(text = uiState.errorMessage ?: "Unable to load player details.")
+
       player == null -> PrismStateMessage(text = "Player detail is unavailable.")
+
       else -> {
         PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
           Text(

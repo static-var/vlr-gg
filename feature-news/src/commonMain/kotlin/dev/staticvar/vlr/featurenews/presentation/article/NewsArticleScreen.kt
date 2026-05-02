@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurenews.presentation.article
 
 import androidx.compose.foundation.layout.Arrangement
@@ -35,9 +39,9 @@ internal fun NewsArticleScreen(
 
   Column(
     modifier =
-      modifier
-        .fillMaxSize()
-        .padding(Prism.dimens.spacingM),
+    modifier
+      .fillMaxSize()
+      .padding(Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(
@@ -45,18 +49,18 @@ internal fun NewsArticleScreen(
       subtitle = article?.author?.ifBlank { null } ?: article?.date,
       preLabel = "NEWS DETAIL",
       navigationSlot =
-        if (showBackAction) {
-          {
-            PrismButton(
-              onClick = onBack,
-              style = PrismButtonStyle.Secondary,
-            ) {
-              Text("BACK")
-            }
+      if (showBackAction) {
+        {
+          PrismButton(
+            onClick = onBack,
+            style = PrismButtonStyle.Secondary,
+          ) {
+            Text("BACK")
           }
-        } else {
-          null
-        },
+        }
+      } else {
+        null
+      },
       actions = {
         PrismButton(
           onClick = onRefresh,

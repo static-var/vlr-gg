@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.di
 
 import android.net.TrafficStats
@@ -19,11 +23,11 @@ import io.ktor.client.request.headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
-import javax.inject.Named
-import javax.inject.Singleton
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
+import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -31,61 +35,56 @@ object NetworkModule {
 
   @Provides
   @Singleton
-  fun provideJsonParser(): Json {
-    return Json {
-      ignoreUnknownKeys = true
-      isLenient = true
-    }
+  fun provideJsonParser(): Json = Json {
+    ignoreUnknownKeys = true
+    isLenient = true
   }
 
   @Provides
   @Singleton
   @IntoSet
-  fun provideHttpLoggingInterceptor(): Interceptor {
-    return HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+  fun provideHttpLoggingInterceptor(): Interceptor = HttpLoggingInterceptor().apply {
+    level = HttpLoggingInterceptor.Level.BODY
   }
 
   @Provides
   @Singleton
   @IntoSet
-  fun provideThreadTaggerInterceptor(): Interceptor {
-    return Interceptor { chain ->
-      TrafficStats.setThreadStatsTag(Thread.currentThread().id.toInt())
-      chain.proceed(chain.request())
-    }
+  fun provideThreadTaggerInterceptor(): Interceptor = Interceptor { chain ->
+    TrafficStats.setThreadStatsTag(Thread.currentThread().id.toInt())
+    chain.proceed(chain.request())
   }
 
   @Provides
   @Singleton
   @Named("vlrClient")
-  fun provideKtorHttpClient(json: Json, interceptors: Set<@JvmSuppressWildcards Interceptor>) =
-    HttpClient(OkHttp) {
-      defaultRequest {
-        host = Constants.BASE_URL
-        url { protocol = URLProtocol.HTTPS }
-      }
-      install(ContentNegotiation) { json(json) }
-
-      install(DefaultRequest) {
-        headers {
-          append(HttpHeaders.AcceptEncoding, "gzip")
-          append(HttpHeaders.Authorization, BuildConfig.TOKEN)
-          append(Constants.APPLICATION_HEADER, BuildConfig.APPLICATION_ID)
-          append(Constants.BUILD_TYPE_HEADER, BuildConfig.BUILD_TYPE)
-          append(Constants.VERSION_HEADER, BuildConfig.VERSION_NAME)
-        }
-      }
-
-      install(HttpTimeout) {
-        requestTimeoutMillis = TIMEOUT
-        connectTimeoutMillis = TIMEOUT
-        socketTimeoutMillis = TIMEOUT
-      }
-
-      install(ContentEncoding) { gzip() }
-
-      engine { interceptors.forEach(::addInterceptor) }
+  fun provideKtorHttpClient(json: Json, interceptors: Set<@JvmSuppressWildcards Interceptor>) = HttpClient(OkHttp) {
+    defaultRequest {
+      host = Constants.BASE_URL
+      url { protocol = URLProtocol.HTTPS }
     }
+    install(ContentNegotiation) { json(json) }
+
+    install(DefaultRequest) {
+      headers {
+        append(HttpHeaders.AcceptEncoding, "gzip")
+        append(HttpHeaders.Authorization, BuildConfig.TOKEN)
+        append(Constants.APPLICATION_HEADER, BuildConfig.APPLICATION_ID)
+        append(Constants.BUILD_TYPE_HEADER, BuildConfig.BUILD_TYPE)
+        append(Constants.VERSION_HEADER, BuildConfig.VERSION_NAME)
+      }
+    }
+
+    install(HttpTimeout) {
+      requestTimeoutMillis = TIMEOUT
+      connectTimeoutMillis = TIMEOUT
+      socketTimeoutMillis = TIMEOUT
+    }
+
+    install(ContentEncoding) { gzip() }
+
+    engine { interceptors.forEach(::addInterceptor) }
+  }
 }
 
 private const val TIMEOUT = 20_000L

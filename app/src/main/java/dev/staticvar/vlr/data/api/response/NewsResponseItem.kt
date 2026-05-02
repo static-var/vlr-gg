@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
@@ -17,6 +21,8 @@ data class NewsResponseItem(
   @SerialName("description")
   val description: String =
     "", // BDS are going international in 2022 after several months of unsuccessful results.
-  @SerialName("url") @PrimaryKey val link: String = "", // /67532/report-bds-to-overhaul-roster
+  @SerialName("url")
+  @PrimaryKey
+  val link: String = "", // /67532/report-bds-to-overhaul-roster
   @SerialName("title") val title: String = "" // Report: BDS to overhaul roster
 )

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
@@ -89,10 +93,12 @@ data class MatchInfo(
       enum class Winner {
         @SerialName("team1")
         TEAM1,
+
         @SerialName("team2")
         TEAM2,
+
         @SerialName("")
-        NOT_PLAYED
+        NOT_PLAYED,
       }
 
       @Keep
@@ -101,10 +107,12 @@ data class MatchInfo(
       enum class Side {
         @SerialName("attack")
         ATTACK,
+
         @SerialName("defense")
         DEFENCE,
+
         @SerialName("")
-        NOT_PLAYED
+        NOT_PLAYED,
       }
 
       @Keep
@@ -113,12 +121,16 @@ data class MatchInfo(
       enum class WinType {
         @SerialName("Elimination")
         Elimination,
+
         @SerialName("Spike exploded")
         SpikeExploded,
+
         @SerialName("Defused")
         Defused,
+
         @SerialName("Time out")
         TimeOut,
+
         @SerialName("Not Played")
         NotPlayed,
       }
@@ -144,9 +156,6 @@ data class MatchInfo(
     @Keep
     @Serializable
     @Immutable
-    data class ReferenceVideo(
-      @SerialName("name") val name: String = "",
-      @SerialName("url") val url: String = "",
-    )
+    data class ReferenceVideo(@SerialName("name") val name: String = "", @SerialName("url") val url: String = "")
   }
 }

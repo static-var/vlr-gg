@@ -1,13 +1,13 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.remotesource.news
 
 import com.fleeksoft.ksoup.Ksoup
 
 internal object NewsHtmlParser {
-  fun parse(
-    articleId: String,
-    html: String,
-    fallback: NewsArticleDto? = null,
-  ): NewsArticleDto {
+  fun parse(articleId: String, html: String, fallback: NewsArticleDto? = null): NewsArticleDto {
     val document = Ksoup.parse(html)
     val header = document.select(".article-header").first()
     val body = document.select(".article-body").first()
@@ -16,7 +16,9 @@ internal object NewsHtmlParser {
 
     val resolvedId = fallback?.id?.ifBlank { articleId } ?: articleId
     val title = header?.select(".wf-title")?.firstOrNull()?.text().normalize().ifBlank { fallback?.title.orEmpty() }
-    val author = header?.select(".article-meta-author")?.firstOrNull()?.text().normalize().ifBlank { fallback?.author.orEmpty() }
+    val author = header?.select(".article-meta-author")?.firstOrNull()?.text().normalize().ifBlank {
+      fallback?.author.orEmpty()
+    }
     val date = header?.select(".js-date-toggle")?.firstOrNull()?.text().normalize().ifBlank { fallback?.date.orEmpty() }
     // Preserve markup so downstream UI can render lists/headings more accurately.
     val content = body?.html()?.trim().orEmpty().ifBlank { fallback?.content.orEmpty() }
@@ -27,7 +29,11 @@ internal object NewsHtmlParser {
         ?.mapNotNull { element ->
           val rawHref = element.attr("href").trim()
           if (rawHref.isBlank() || rawHref.startsWith("#")) return@mapNotNull null
-          if (rawHref.startsWith("mailto:") || rawHref.startsWith("tel:") || rawHref.startsWith("javascript:")) return@mapNotNull null
+          if (rawHref.startsWith("mailto:") || rawHref.startsWith("tel:") ||
+            rawHref.startsWith("javascript:")
+          ) {
+            return@mapNotNull null
+          }
 
           val href =
             rawHref
@@ -46,7 +52,11 @@ internal object NewsHtmlParser {
         ?.mapNotNull { map ->
           val rawHref = map["href"]?.trim().orEmpty()
           if (rawHref.isBlank() || rawHref.startsWith("#")) return@mapNotNull null
-          if (rawHref.startsWith("mailto:") || rawHref.startsWith("tel:") || rawHref.startsWith("javascript:")) return@mapNotNull null
+          if (rawHref.startsWith("mailto:") || rawHref.startsWith("tel:") ||
+            rawHref.startsWith("javascript:")
+          ) {
+            return@mapNotNull null
+          }
 
           val href =
             rawHref

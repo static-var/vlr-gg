@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.repository
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
@@ -8,15 +12,15 @@ import dev.staticvar.vlr.remotesource.standings.CircuitStandingDto
 import dev.staticvar.vlr.remotesource.standings.StandingsDataSource
 import dev.staticvar.vlr.remotesource.standings.StandingsDto
 import dev.staticvar.vlr.remotesource.standings.TeamStandingDto
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.runTest
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CircuitStandingsRepositoryImplTest {
@@ -38,7 +42,7 @@ class CircuitStandingsRepositoryImplTest {
     repository = CircuitStandingsRepositoryImpl(
       standingsDataSource = dataSource,
       database = database,
-      dispatchers = dispatcherProvider
+      dispatchers = dispatcherProvider,
     )
   }
 
@@ -62,12 +66,12 @@ class CircuitStandingsRepositoryImplTest {
                 logo = "g2.png",
                 rank = 1,
                 points = 30,
-                country = "United States"
-              )
-            )
-          )
-        )
-      )
+                country = "United States",
+              ),
+            ),
+          ),
+        ),
+      ),
     )
 
     val result = repository.refreshStandings(2025)
@@ -94,9 +98,7 @@ class CircuitStandingsRepositoryImplTest {
     override suspend fun byYear(year: Int): Result<StandingsDto> = result
   }
 
-  private class TestDispatcherProvider(
-    private val dispatcher: TestDispatcher
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {
     override val default = dispatcher
     override val io = dispatcher
     override val main = dispatcher

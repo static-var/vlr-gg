@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.workers
 
 import android.content.Context
@@ -21,14 +25,16 @@ class WidgetUpdateWorker
 constructor(
   @Assisted private val appContext: Context,
   @Assisted workerParams: WorkerParameters,
-  private val vlrRepository: VlrRepository
+  private val vlrRepository: VlrRepository,
 ) : CoroutineWorker(appContext, workerParams) {
   override suspend fun doWork(): Result {
     val widgetsEnabled = appContext.areWidgetsEnabled()
     if (widgetsEnabled) {
       vlrRepository.updateLatestMatches().onEach { i { "Updating widget $it" } }.collect()
       ScoreWidget().updateAll(appContext)
-    } else e { "No Widget to update" }
+    } else {
+      e { "No Widget to update" }
+    }
     return Result.success()
   }
 }

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package com.example.benchmark
 
 import androidx.benchmark.macro.MacrobenchmarkScope
@@ -49,7 +53,7 @@ private fun UiDevice.visitMatchDetailsAndBack() {
     // Visit match details screen 2 times
     while (
       visitedMatchDetails < 1 &&
-        child < (findObject(By.res("matchOverview:result"))?.children?.size ?: 0)
+      child < (findObject(By.res("matchOverview:result"))?.children?.size ?: 0)
     ) {
       findObject(By.res("matchOverview:result"))?.children?.let { children ->
         if (
@@ -59,7 +63,7 @@ private fun UiDevice.visitMatchDetailsAndBack() {
           children[child].click()
           val data = wait(
             Until.hasObject(By.res("details:more_info")),
-            5_000
+            5_000,
           ) // Ensure static Ui elements are loaded
           if (!data) {
             child++
@@ -96,7 +100,7 @@ private fun UiDevice.visitEventDetailsAndBack() {
       findObject(By.res("eventOverview:live"))?.children?.get(it)?.click()
       wait(
         Until.hasObject(By.res("eventDetails:teams")),
-        15_000
+        15_000,
       ) // Ensure static Ui elements are loaded
       wait(Until.hasObject(By.res("eventDetails:teams")), TIMEOUT)
       wait(Until.gone(By.res("common:loader")), TIMEOUT) // Ensure loader is gone
@@ -162,6 +166,5 @@ private fun UiDevice.acceptPermission() {
     }
   }
 }
-
 
 private const val TIMEOUT = 8_000L

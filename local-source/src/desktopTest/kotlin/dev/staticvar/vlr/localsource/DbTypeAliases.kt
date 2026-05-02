@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.localsource
 
 // Type aliases to provide Kotlin-style names for underscored SQLDelight generated classes

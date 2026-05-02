@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.player
 
 import androidx.compose.animation.animateContentSize
@@ -82,7 +86,6 @@ import dev.staticvar.vlr.utils.onWaiting
 
 @Composable
 fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
-
   LogEvent(event = AnalyticsEvent.PLAYER_OVERVIEW, extra = mapOf("player_id" to id))
 
   val playerDetails by
@@ -119,8 +122,8 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
             LazyColumn(
               modifier = modifier.fillMaxSize(),
               contentPadding =
-                WindowInsets.statusBars.asPaddingValues() +
-                  WindowInsets.navigationBars.asPaddingValues(),
+              WindowInsets.statusBars.asPaddingValues() +
+                WindowInsets.navigationBars.asPaddingValues(),
             ) {
               updateState.getError()?.let {
                 item { ErrorUi(modifier = modifier, exceptionMessage = it.stackTraceToString()) }
@@ -140,7 +143,7 @@ fun PlayerDetailsScreen(viewModel: VlrViewModel, id: String) {
                   Text(
                     text = stringResource(R.string.previous_team),
                     modifier =
-                      modifier.padding(Local16DPPadding.current).testTag("playerDetail:teams"),
+                    modifier.padding(Local16DPPadding.current).testTag("playerDetail:teams"),
                     style = VLRTheme.typography.titleMedium,
                     color = VLRTheme.colorScheme.primary,
                   )
@@ -178,11 +181,11 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
         GlideImage(
           imageModel = { playerData.img },
           modifier =
-            modifier
-              .size(120.dp)
-              .padding(Local8DPPadding.current)
-              .background(VLRTheme.colorScheme.primary, shape)
-              .clip(shape),
+          modifier
+            .size(120.dp)
+            .padding(Local8DPPadding.current)
+            .background(VLRTheme.colorScheme.primary, shape)
+            .clip(shape),
           loading = {
             CircularProgressIndicator(
               modifier = Modifier.align(Alignment.Center).testTag("player:img"),
@@ -190,16 +193,16 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
             )
           },
         )
-        if (playerData.currentTeam?.img != null)
+        if (playerData.currentTeam?.img != null) {
           GlideImage(
             imageModel = { playerData.currentTeam.img },
             modifier =
-              modifier
-                .size(120.dp)
-                .padding(Local8DPPadding.current)
-                .background(VLRTheme.colorScheme.primary, shape)
-                .padding(Local8DPPadding.current)
-                .clip(shape),
+            modifier
+              .size(120.dp)
+              .padding(Local8DPPadding.current)
+              .background(VLRTheme.colorScheme.primary, shape)
+              .padding(Local8DPPadding.current)
+              .clip(shape),
             loading = {
               CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
@@ -207,6 +210,7 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
               )
             },
           )
+        }
       }
 
       Row(modifier.fillMaxWidth()) {
@@ -228,13 +232,14 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
               style = VLRTheme.typography.labelLarge,
               maxLines = 1,
             )
-          } else
+          } else {
             Text(
               text = playerData.name,
               modifier.padding(Local4DPPadding.current),
               style = VLRTheme.typography.titleMedium,
               maxLines = 1,
             )
+          }
         }
 
         Column(
@@ -273,10 +278,7 @@ fun PlayerHeaderUi(modifier: Modifier, playerData: PlayerData) {
 }
 
 @Composable
-fun AgentStatViewPager(
-  modifier: Modifier = Modifier,
-  members: StableHolder<List<PlayerData.Agent>>,
-) {
+fun AgentStatViewPager(modifier: Modifier = Modifier, members: StableHolder<List<PlayerData.Agent>>) {
   val pagerState = rememberPagerState(pageCount = { 4 })
   CardView(modifier.fillMaxWidth()) {
     ProvideTextStyle(value = VLRTheme.typography.labelMedium) {
@@ -295,8 +297,11 @@ fun AgentStatViewPager(
     ) {
       repeat(3) { iteration ->
         val color =
-          if (pagerState.currentPage == iteration) VLRTheme.colorScheme.onPrimaryContainer
-          else VLRTheme.colorScheme.primary
+          if (pagerState.currentPage == iteration) {
+            VLRTheme.colorScheme.onPrimaryContainer
+          } else {
+            VLRTheme.colorScheme.primary
+          }
         Box(modifier = Modifier.size(20.dp).padding(4.dp).clip(CircleShape).background(color))
       }
     }
@@ -305,7 +310,6 @@ fun AgentStatViewPager(
 
 @Composable
 fun AgentStatKDA(modifier: Modifier = Modifier, members: StableHolder<List<PlayerData.Agent>>) {
-
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "KDA statistics",
@@ -383,10 +387,7 @@ fun AgentStatCombat(modifier: Modifier = Modifier, members: StableHolder<List<Pl
 }
 
 @Composable
-fun AgentStatFirstBlood(
-  modifier: Modifier = Modifier,
-  members: StableHolder<List<PlayerData.Agent>>,
-) {
+fun AgentStatFirstBlood(modifier: Modifier = Modifier, members: StableHolder<List<PlayerData.Agent>>) {
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "First Kill/Death statistics",
@@ -429,7 +430,6 @@ fun AgentStatFirstBlood(
 
 @Composable
 fun AgentStatOverall(modifier: Modifier = Modifier, members: StableHolder<List<PlayerData.Agent>>) {
-
   Column(modifier = modifier.fillMaxWidth()) {
     StatTitle(
       text = "Overall statistics",
@@ -497,7 +497,7 @@ fun RowScope.NameAndAgentDetail(modifier: Modifier = Modifier, name: String, img
 fun PreviousTeam(modifier: Modifier = Modifier, team: Team, action: Action) {
   val imageComponent = rememberImageComponent { add(CircularRevealPlugin()) }
   CardView(
-    modifier = modifier.clickable { if (team.id != null) action.team(team.id) }.height(120.dp)
+    modifier = modifier.clickable { if (team.id != null) action.team(team.id) }.height(120.dp),
   ) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
       Text(
@@ -511,7 +511,7 @@ fun PreviousTeam(modifier: Modifier = Modifier, team: Team, action: Action) {
       GlideImage(
         imageModel = { team.img },
         imageOptions =
-          ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
+        ImageOptions(contentScale = ContentScale.Fit, alignment = Alignment.CenterEnd),
         modifier = modifier.align(Alignment.CenterEnd).padding(24.dp).size(120.dp),
         component = imageComponent,
       )

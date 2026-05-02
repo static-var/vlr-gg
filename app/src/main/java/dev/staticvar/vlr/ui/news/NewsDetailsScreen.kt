@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.ui.news
 
 import android.content.Context
@@ -91,11 +95,11 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
     parsedNews?.get()?.let { news ->
       LazyColumn(
         modifier =
-          modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp)
-            .testTag("news:root")
-            .haze(hazeState),
+        modifier
+          .fillMaxSize()
+          .padding(horizontal = 8.dp)
+          .testTag("news:root")
+          .haze(hazeState),
         state = scrollState,
       ) {
         item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }
@@ -127,11 +131,11 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
               imageVector = Icons.Outlined.Share,
               contentDescription = "Share",
               modifier =
-                modifier
-                  .clip(shape = VLRTheme.shapes.medium)
-                  .clickable {
-                    fireShareIntent(context, news.title, id)
-                  },
+              modifier
+                .clip(shape = VLRTheme.shapes.medium)
+                .clickable {
+                  fireShareIntent(context, news.title, id)
+                },
               tint = VLRTheme.colorScheme.primary,
             )
           }
@@ -188,15 +192,15 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
                 Row(
                   modifier
                     .fillMaxWidth()
-                    .height(IntrinsicSize.Max)
+                    .height(IntrinsicSize.Max),
                 ) {
                   Spacer(
                     modifier =
-                      modifier
-                        .width(12.dp)
-                        .padding(4.dp)
-                        .background(VLRTheme.colorScheme.primary)
-                        .fillMaxHeight()
+                    modifier
+                      .width(12.dp)
+                      .padding(4.dp)
+                      .background(VLRTheme.colorScheme.primary)
+                      .fillMaxHeight(),
                   )
                   Text(
                     text = parsedData.text,
@@ -218,23 +222,18 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
       ?: parsedNews?.getError()?.let {
         Text(text = it.stackTraceToString(), modifier = Modifier.align(Alignment.Center))
       } ?: Image(
-        modifier = Modifier
-          .padding(16.dp)
-          .testTag("common:loader")
-          .align(Alignment.Center),
-        imageVector = Illustration.Loading,
-        contentDescription = stringResource(R.string.loading),
-      )
+      modifier = Modifier
+        .padding(16.dp)
+        .testTag("common:loader")
+        .align(Alignment.Center),
+      imageVector = Illustration.Loading,
+      contentDescription = stringResource(R.string.loading),
+    )
   }
 }
 
 @Composable
-fun BoxScope.ScrollToTopButton(
-  modifier: Modifier = Modifier,
-  scrollState: LazyListState,
-  hazeState: HazeState,
-) {
-
+fun BoxScope.ScrollToTopButton(modifier: Modifier = Modifier, scrollState: LazyListState, hazeState: HazeState) {
   val showScrollToTop by remember { derivedStateOf { scrollState.firstVisibleItemIndex > 0 } }
 
   val coroutineScope = rememberCoroutineScope()
@@ -247,13 +246,13 @@ fun BoxScope.ScrollToTopButton(
   ) {
     Box(
       modifier =
-        Modifier
-          .size(48.dp)
-          .background(Color.Transparent)
-          .clip(VLRTheme.shapes.extraLarge)
-          .hazeEffect(hazeState, style = HazeMaterials.regular())
-          .border(1.dp, VLRTheme.colorScheme.primary, VLRTheme.shapes.extraLarge)
-          .clickable { coroutineScope.launch { scrollState.animateScrollToItem(0) } }
+      Modifier
+        .size(48.dp)
+        .background(Color.Transparent)
+        .clip(VLRTheme.shapes.extraLarge)
+        .hazeEffect(hazeState, style = HazeMaterials.regular())
+        .border(1.dp, VLRTheme.colorScheme.primary, VLRTheme.shapes.extraLarge)
+        .clickable { coroutineScope.launch { scrollState.animateScrollToItem(0) } },
     ) {
       Icon(
         imageVector = Icons.Outlined.KeyboardArrowUp,
@@ -274,9 +273,9 @@ fun fireShareIntent(context: Context, title: String, id: String) {
     appendLine(
       "Check out the complete article here : ${internalDeepLinkForNews(id)} | ${
         websiteUrlForNews(
-          id
+          id,
         )
-      }"
+      }",
     )
   }
   val intent =

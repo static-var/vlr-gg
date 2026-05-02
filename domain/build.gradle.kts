@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 plugins {
   kotlin("multiplatform")
   id("com.android.kotlin.multiplatform.library")
@@ -23,7 +27,7 @@ kotlin {
   listOf(
     iosX64(),
     iosArm64(),
-    iosSimulatorArm64()
+    iosSimulatorArm64(),
   )
   jvm("desktop")
 

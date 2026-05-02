@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.shared.navigation
 
 import androidx.navigation3.runtime.NavKey
@@ -28,11 +32,11 @@ class VlrAppStateTest {
     val appState =
       VlrAppState(
         backStack =
-          mutableListOf<NavKey>(
-            AppRoute.Events,
-            AppRoute.MatchDetails(matchId = "match-1"),
-            AppRoute.PlayerDetails(playerId = "player-1"),
-          ),
+        mutableListOf<NavKey>(
+          AppRoute.Events,
+          AppRoute.MatchDetails(matchId = "match-1"),
+          AppRoute.PlayerDetails(playerId = "player-1"),
+        ),
         navigationItems = emptyList(),
       )
 
@@ -50,11 +54,11 @@ class VlrAppStateTest {
     val appState =
       VlrAppState(
         backStack =
-          mutableListOf<NavKey>(
-            AppRoute.Rankings,
-            AppRoute.TeamDetails(teamId = "team-old"),
-            AppRoute.PlayerDetails(playerId = "player-1"),
-          ),
+        mutableListOf<NavKey>(
+          AppRoute.Rankings,
+          AppRoute.TeamDetails(teamId = "team-old"),
+          AppRoute.PlayerDetails(playerId = "player-1"),
+        ),
         navigationItems = emptyList(),
       )
 

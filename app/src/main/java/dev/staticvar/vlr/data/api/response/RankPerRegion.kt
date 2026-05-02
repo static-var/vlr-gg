@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.api.response
 
 import androidx.annotation.Keep
@@ -10,5 +14,5 @@ import kotlinx.serialization.Serializable
 @Immutable
 data class RankPerRegion(
   @SerialName("region") val region: String = "",
-  @SerialName("teams") val teams: List<TeamDetails> = listOf()
+  @SerialName("teams") val teams: List<TeamDetails> = listOf(),
 )

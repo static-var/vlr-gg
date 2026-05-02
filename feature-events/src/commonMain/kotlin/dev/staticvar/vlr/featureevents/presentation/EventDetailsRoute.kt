@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureevents.presentation
 
 import androidx.compose.foundation.clickable
@@ -28,8 +32,8 @@ import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
-import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.state.PrismStateMessage
+import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventDetails
@@ -98,9 +102,12 @@ internal fun EventDetailsScreen(
 
     when {
       uiState.isLoading -> PrismStateMessage(text = "Loading tournament details…")
+
       uiState.errorMessage != null && event == null ->
         PrismStateMessage(text = uiState.errorMessage ?: "Unable to load event details.")
+
       event == null -> PrismStateMessage(text = "Tournament detail is unavailable.")
+
       else -> {
         EventHeaderCard(event = event, onTeamSelected = onTeamSelected)
         PrismTabs(
@@ -215,20 +222,17 @@ internal fun EventDetailsScreen(
 }
 
 @Composable
-private fun EventHeaderCard(
-  event: EventDetails,
-  onTeamSelected: (String) -> Unit,
-) {
+private fun EventHeaderCard(event: EventDetails, onTeamSelected: (String) -> Unit) {
   PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
     PrismTag(
       text = event.status.name,
       style =
-        when (event.status) {
-          EventStatus.ONGOING -> PrismTagStyle.Danger
-          EventStatus.UPCOMING -> PrismTagStyle.Info
-          EventStatus.COMPLETED -> PrismTagStyle.Success
-          EventStatus.UNKNOWN -> PrismTagStyle.Neutral
-        },
+      when (event.status) {
+        EventStatus.ONGOING -> PrismTagStyle.Danger
+        EventStatus.UPCOMING -> PrismTagStyle.Info
+        EventStatus.COMPLETED -> PrismTagStyle.Success
+        EventStatus.UNKNOWN -> PrismTagStyle.Neutral
+      },
     )
     Text(
       text = event.title,

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurematches.di
 
 import dev.staticvar.vlr.featurematches.presentation.MatchDetailsViewModel

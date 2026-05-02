@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.repository
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
@@ -7,15 +11,15 @@ import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.rankings.RankingDto
 import dev.staticvar.vlr.remotesource.rankings.RankingsDataSource
 import dev.staticvar.vlr.remotesource.rankings.TeamRankingDto
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.runTest
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RankingsRepositoryImplTest {
@@ -37,7 +41,7 @@ class RankingsRepositoryImplTest {
     repository = RankingsRepositoryImpl(
       rankingsDataSource = dataSource,
       database = database,
-      dispatchers = dispatcherProvider
+      dispatchers = dispatcherProvider,
     )
   }
 
@@ -57,16 +61,16 @@ class RankingsRepositoryImplTest {
           region = "NA",
           teams = listOf(
             TeamRankingDto(id = 11, name = "Alpha", rank = 1, points = 120, country = "US"),
-            TeamRankingDto(id = 12, name = "Beta", rank = 2, points = 100, country = "CA")
-          )
+            TeamRankingDto(id = 12, name = "Beta", rank = 2, points = 100, country = "CA"),
+          ),
         ),
         RankingDto(
           region = "APAC",
           teams = listOf(
-            TeamRankingDto(id = 21, name = "Gamma", rank = 1, points = 140, country = "KR")
-          )
-        )
-      )
+            TeamRankingDto(id = 21, name = "Gamma", rank = 1, points = 140, country = "KR"),
+          ),
+        ),
+      ),
     )
 
     val result = repository.refreshRankings()
@@ -91,7 +95,7 @@ class RankingsRepositoryImplTest {
       "US",
       1L,
       "100",
-      0L
+      0L,
     )
     database.rankingsQueries.insertRankingDetails(
       "team2",
@@ -101,7 +105,7 @@ class RankingsRepositoryImplTest {
       "CA",
       2L,
       "80",
-      0L
+      0L,
     )
     database.rankingsQueries.insertRankingDetails(
       "team3",
@@ -111,7 +115,7 @@ class RankingsRepositoryImplTest {
       "DE",
       1L,
       "90",
-      0L
+      0L,
     )
 
     repository.getAllRankings().test {
@@ -141,9 +145,7 @@ class RankingsRepositoryImplTest {
     override suspend fun list(): Result<List<RankingDto>> = listResult
   }
 
-  private class TestDispatcherProvider(
-    private val dispatcher: TestDispatcher
-  ) : DispatcherProvider {
+  private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {
     override val default = dispatcher
     override val io = dispatcher
     override val main = dispatcher

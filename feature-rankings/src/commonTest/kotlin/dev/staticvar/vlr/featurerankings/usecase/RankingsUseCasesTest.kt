@@ -1,15 +1,19 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurerankings.usecase
 
 import dev.staticvar.vlr.domain.model.RegionalRanking
 import dev.staticvar.vlr.domain.model.TeamRanking
 import dev.staticvar.vlr.domain.repository.RankingsRepository
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RankingsUseCasesTest {
@@ -21,16 +25,16 @@ class RankingsUseCasesTest {
           RegionalRanking(
             region = "EMEA",
             teams =
-              listOf(
-                TeamRanking(
-                  teamId = "fnc",
-                  teamName = "FNATIC",
-                  teamLogo = "",
-                  country = "EU",
-                  rank = 1,
-                  points = "100",
-                ),
+            listOf(
+              TeamRanking(
+                teamId = "fnc",
+                teamName = "FNATIC",
+                teamLogo = "",
+                country = "EU",
+                rank = 1,
+                points = "100",
               ),
+            ),
           ),
         )
       val repository = FakeRankingsRepository(rankings = expected)
@@ -53,9 +57,7 @@ class RankingsUseCasesTest {
     }
   }
 
-  private class FakeRankingsRepository(
-    rankings: List<RegionalRanking>,
-  ) : RankingsRepository {
+  private class FakeRankingsRepository(rankings: List<RegionalRanking>) : RankingsRepository {
     private val rankingsFlow: Flow<List<RegionalRanking>> = flowOf(rankings)
     var refreshCalls: Int = 0
       private set

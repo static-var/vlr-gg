@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featurematches.presentation
 
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
@@ -76,10 +80,9 @@ public class MatchesViewModel(
   }
 }
 
-private fun matchStatusToFilter(status: MatchStatus): MatchStatusFilter =
-  when (status) {
-    MatchStatus.LIVE -> MatchStatusFilter.Live
-    MatchStatus.UPCOMING -> MatchStatusFilter.Upcoming
-    MatchStatus.COMPLETED -> MatchStatusFilter.Completed
-    MatchStatus.UNKNOWN -> MatchStatusFilter.Live
-  }
+private fun matchStatusToFilter(status: MatchStatus): MatchStatusFilter = when (status) {
+  MatchStatus.LIVE -> MatchStatusFilter.Live
+  MatchStatus.UPCOMING -> MatchStatusFilter.Upcoming
+  MatchStatus.COMPLETED -> MatchStatusFilter.Completed
+  MatchStatus.UNKNOWN -> MatchStatusFilter.Live
+}

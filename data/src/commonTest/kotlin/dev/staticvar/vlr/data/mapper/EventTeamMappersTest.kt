@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.data.mapper
 
 import dev.staticvar.vlr.localsource.database.Events
@@ -32,10 +36,10 @@ class EventTeamMappersTest {
       status = EventStatus.ONGOING,
       img = "logo.png",
       prizes = listOf(
-        EventPrizeDto("1st", "$500", EventPrizeTeamDto("T1","Team 1","t1.png","us")),
-        EventPrizeDto("2nd", "$300", EventPrizeTeamDto("T2","Team 2","t2.png","br")),
+        EventPrizeDto("1st", "$500", EventPrizeTeamDto("T1", "Team 1", "t1.png", "us")),
+        EventPrizeDto("2nd", "$300", EventPrizeTeamDto("T2", "Team 2", "t2.png", "br")),
       ),
-      teams = listOf(EventTeamDto("Team 1","T1","t1.png","1"), EventTeamDto("Team 2","T2","t2.png",null)),
+      teams = listOf(EventTeamDto("Team 1", "T1", "t1.png", "1"), EventTeamDto("Team 2", "T2", "t2.png", null)),
       matches = listOf(
         EventMatchDto(
           id = "M1",
@@ -44,17 +48,17 @@ class EventTeamMappersTest {
           eta = "1h",
           status = MatchStatus.LIVE,
           teams = listOf(
-            EventMatchTeamDto("Team 1","na",13),
-            EventMatchTeamDto("Team 2","na",7)
+            EventMatchTeamDto("Team 1", "na", 13),
+            EventMatchTeamDto("Team 2", "na", 7),
           ),
           round = "R1",
-          stage = "StageA"
-        )
+          stage = "StageA",
+        ),
       ),
       standings = listOf(
-        EventStandingsEntryDto("t1.png","Team 1","us",3,1,0,20,10,10,"A"),
-        EventStandingsEntryDto("t2.png","Team 2","br",1,3,0,-10,-20,-10,"A"),
-      )
+        EventStandingsEntryDto("t1.png", "Team 1", "us", 3, 1, 0, 20, 10, 10, "A"),
+        EventStandingsEntryDto("t2.png", "Team 2", "br", 1, 3, 0, -10, -20, -10, "A"),
+      ),
     )
 
     val eventEntity = dto.toEventEntity(now = 111L)
@@ -103,7 +107,7 @@ class EventTeamMappersTest {
       status = null,
       img = "",
       prizes = emptyList(),
-      teams = listOf(EventTeamDto("NoIdTeam","","",null)),
+      teams = listOf(EventTeamDto("NoIdTeam", "", "", null)),
       matches = listOf(
         EventMatchDto(
           id = "", // blank -> should be ignored
@@ -113,20 +117,20 @@ class EventTeamMappersTest {
           status = null,
           teams = emptyList(),
           round = "",
-          stage = ""
-        )
+          stage = "",
+        ),
       ),
-      standings = emptyList()
+      standings = emptyList(),
     )
 
     val eventEntity = dto.toEventEntity(now = 5L)
-  assertEquals(EventStatus.UPCOMING.name, eventEntity.status) // null status normalized to UPCOMING
+    assertEquals(EventStatus.UPCOMING.name, eventEntity.status) // null status normalized to UPCOMING
     assertTrue(dto.toPrizeEntities().isEmpty())
     assertEquals(1, dto.toTeamEntities().size)
     assertEquals(null, dto.toTeamEntities().first().team_id) // blank id -> null
     assertTrue(dto.toStandingEntities().isEmpty())
     assertTrue(dto.toEventMatchLinkEntities().isEmpty())
-  // blank match id should NOT produce link entity
+    // blank match id should NOT produce link entity
   }
 
   @Test
@@ -141,15 +145,15 @@ class EventTeamMappersTest {
       rank = 5,
       region = "na",
       roster = listOf(
-        TeamPlayerDto("P1","Player One","P1","Duelist","p1.png"),
-        TeamPlayerDto("P2",null,"AliasTwo",null,"p2.png"),
+        TeamPlayerDto("P1", "Player One", "P1", "Duelist", "p1.png"),
+        TeamPlayerDto("P2", null, "AliasTwo", null, "p2.png"),
       ),
       upcoming = listOf(
-        UpcomingMatchDto("UM1","Championship","StageA","Rivals","2024-01-03","2h")
+        UpcomingMatchDto("UM1", "Championship", "StageA", "Rivals", "2024-01-03", "2h"),
       ),
       completed = listOf(
-        CompletedMatchDto("CM1","Qualifier","StageZ","OtherTeam","2024-01-01","13:7")
-      )
+        CompletedMatchDto("CM1", "Qualifier", "StageZ", "OtherTeam", "2024-01-01", "13:7"),
+      ),
     )
 
     val core = dto.toTeamEntity(id = "TEAM1", now = 333L)
@@ -189,9 +193,9 @@ class EventTeamMappersTest {
       country = "",
       rank = 0,
       region = "",
-      roster = listOf(TeamPlayerDto("","Unnamed","","Coach","")),
-      upcoming = listOf(UpcomingMatchDto("","","","","","")),
-      completed = listOf(CompletedMatchDto("","","","","","")),
+      roster = listOf(TeamPlayerDto("", "Unnamed", "", "Coach", "")),
+      upcoming = listOf(UpcomingMatchDto("", "", "", "", "", "")),
+      completed = listOf(CompletedMatchDto("", "", "", "", "", "")),
     )
 
     val core = dto.toTeamEntity(id = "GHOST", now = 1L)

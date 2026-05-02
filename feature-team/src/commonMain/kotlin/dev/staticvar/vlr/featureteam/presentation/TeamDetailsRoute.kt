@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.featureteam.presentation
 
 import androidx.compose.foundation.clickable
@@ -94,9 +98,12 @@ internal fun TeamDetailsScreen(
 
     when {
       uiState.isLoading -> PrismStateMessage(text = "Loading team details…")
+
       uiState.errorMessage != null && team == null ->
         PrismStateMessage(text = uiState.errorMessage ?: "Unable to load team details.")
+
       team == null -> PrismStateMessage(text = "Team detail is unavailable.")
+
       else -> {
         PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
           Text(text = team.name, style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
@@ -127,7 +134,11 @@ internal fun TeamDetailsScreen(
               ) {
                 Text(text = player.alias, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
                 Text(
-                  text = listOfNotNull(player.name.takeIf(String::isNotBlank), player.role, player.country).joinToString(" • "),
+                  text = listOfNotNull(
+                    player.name.takeIf(String::isNotBlank),
+                    player.role,
+                    player.country,
+                  ).joinToString(" • "),
                   modifier = Modifier.padding(top = Prism.dimens.spacingXs),
                   style = Prism.typography.bodySmall,
                   color = Prism.color.labelColor,
