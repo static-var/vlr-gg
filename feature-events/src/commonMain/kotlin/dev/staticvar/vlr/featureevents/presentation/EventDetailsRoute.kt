@@ -22,14 +22,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonVariant
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.tag.PrismTag
-import dev.staticvar.designsystem.component.tag.PrismTagVariant
+import dev.staticvar.designsystem.component.state.PrismStateMessage
+import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventMatch
@@ -89,17 +90,17 @@ internal fun EventDetailsScreen(
       subtitle = event?.subtitle?.ifBlank { event.dates } ?: "Event breakdown",
       preLabel = "event",
       actions = {
-        PrismButton(onClick = onBack, variant = PrismButtonVariant.Tertiary) {
+        PrismButton(onClick = onBack, style = PrismButtonStyle.Tertiary) {
           Text(text = "Back")
         }
       },
     )
 
     when {
-      uiState.isLoading -> EventDetailStateMessage(text = "Loading tournament details…")
+      uiState.isLoading -> PrismStateMessage(text = "Loading tournament details…")
       uiState.errorMessage != null && event == null ->
-        EventDetailStateMessage(text = uiState.errorMessage ?: "Unable to load event details.")
-      event == null -> EventDetailStateMessage(text = "Tournament detail is unavailable.")
+        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load event details.")
+      event == null -> PrismStateMessage(text = "Tournament detail is unavailable.")
       else -> {
         EventHeaderCard(event = event, onTeamSelected = onTeamSelected)
         PrismTabs(
@@ -114,13 +115,13 @@ internal fun EventDetailsScreen(
           when (section) {
             EventDetailSection.Matches -> {
               if (event.matches.isEmpty()) {
-                item { EventDetailStateMessage(text = "No matches published yet.") }
+                item { PrismStateMessage(text = "No matches published yet.") }
               } else {
                 item { PrismSectionTitle(title = "Matches", preLabel = "schedule") }
                 items(event.matches, key = EventMatch::matchId) { match ->
                   PrismCard(
                     modifier = Modifier.fillMaxWidth(),
-                    variant = PrismCardVariant.Outlined,
+                    style = PrismCardStyle.Outlined,
                     onClick = { onMatchSelected(match.matchId) },
                   ) {
                     Text(
@@ -147,11 +148,11 @@ internal fun EventDetailsScreen(
 
             EventDetailSection.Standings -> {
               if (event.standings.isEmpty()) {
-                item { EventDetailStateMessage(text = "No standings available yet.") }
+                item { PrismStateMessage(text = "No standings available yet.") }
               } else {
                 item { PrismSectionTitle(title = "Standings", preLabel = "table") }
                 items(event.standings, key = EventStanding::teamName) { standing ->
-                  PrismCard(modifier = Modifier.fillMaxWidth(), variant = PrismCardVariant.Outlined) {
+                  PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
                     Text(
                       text = standing.teamName,
                       style = Prism.typography.cardTitle,
@@ -176,13 +177,13 @@ internal fun EventDetailsScreen(
 
             EventDetailSection.Prizes -> {
               if (event.prizes.isEmpty()) {
-                item { EventDetailStateMessage(text = "Prize breakdown unavailable.") }
+                item { PrismStateMessage(text = "Prize breakdown unavailable.") }
               } else {
                 item { PrismSectionTitle(title = "Prizes", preLabel = "placements") }
                 items(event.prizes, key = { it.position + it.prize }) { prize ->
                   val prizeTeam = prize.team
                   val prizeTeamId = prizeTeam?.id
-                  PrismCard(modifier = Modifier.fillMaxWidth(), variant = PrismCardVariant.Outlined) {
+                  PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
                     Text(
                       text = "${prize.position} • ${prize.prize}",
                       style = Prism.typography.cardTitle,
@@ -218,15 +219,15 @@ private fun EventHeaderCard(
   event: EventDetails,
   onTeamSelected: (String) -> Unit,
 ) {
-  PrismCard(modifier = Modifier.fillMaxWidth(), variant = PrismCardVariant.Outlined) {
+  PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
     PrismTag(
       text = event.status.name,
-      variant =
+      style =
         when (event.status) {
-          EventStatus.ONGOING -> PrismTagVariant.Danger
-          EventStatus.UPCOMING -> PrismTagVariant.Info
-          EventStatus.COMPLETED -> PrismTagVariant.Success
-          EventStatus.UNKNOWN -> PrismTagVariant.Neutral
+          EventStatus.ONGOING -> PrismTagStyle.Danger
+          EventStatus.UPCOMING -> PrismTagStyle.Info
+          EventStatus.COMPLETED -> PrismTagStyle.Success
+          EventStatus.UNKNOWN -> PrismTagStyle.Neutral
         },
     )
     Text(
@@ -262,16 +263,4 @@ private fun EventHeaderCard(
       }
     }
   }
-}
-
-@Composable
-private fun EventDetailStateMessage(
-  text: String,
-) {
-  Text(
-    text = text,
-    modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-    style = Prism.typography.bodyLarge,
-    color = Prism.color.labelColor,
-  )
 }

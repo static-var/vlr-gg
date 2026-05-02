@@ -30,7 +30,8 @@ import dev.staticvar.designsystem.prism.Prism
  * Standard horizontal tabs with a brutalist underline treatment.
  *
  * Unlike [PrismSegmentedFilterTabs], this component is intended for content section
- * switching rather than compact equal-width filters.
+ * switching rather than compact equal-width filters. [style] controls state colors,
+ * indicator thickness, and baseline color.
  */
 @Composable
 public fun PrismTabs(
@@ -39,16 +40,17 @@ public fun PrismTabs(
   onTabSelected: (PrismTab) -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  style: PrismTabStyle = PrismTabStyle.Underlined,
 ) {
   val scrollState = rememberScrollState()
 
   Column(modifier = modifier.fillMaxWidth()) {
     Row(
       modifier =
-        Modifier.fillMaxWidth()
-          .heightIn(min = Prism.dimens.controlHeight)
-          .horizontalScroll(scrollState)
-          .selectableGroup(),
+      Modifier.fillMaxWidth()
+        .heightIn(min = Prism.dimens.controlHeight)
+        .horizontalScroll(scrollState)
+        .selectableGroup(),
       verticalAlignment = Alignment.Bottom,
     ) {
       tabs.forEach { tab ->
@@ -56,11 +58,12 @@ public fun PrismTabs(
           tab = tab,
           selected = tab.id == selectedTabId,
           enabled = enabled && tab.enabled,
+          style = style,
           onClick = { onTabSelected(tab) },
         )
       }
     }
-    PrismTabsBaseline()
+    PrismTabsBaseline(style = style)
   }
 }
 
@@ -69,18 +72,25 @@ private fun PrismTabItem(
   tab: PrismTab,
   selected: Boolean,
   enabled: Boolean,
+  style: PrismTabStyle,
   onClick: () -> Unit,
 ) {
-  val visualState = rememberPrismTabVisualState(tabId = tab.id, selected = selected, enabled = enabled)
+  val visualState =
+    rememberPrismTabVisualState(
+      tabId = tab.id,
+      selected = selected,
+      enabled = enabled,
+      style = style,
+    )
   Column(
     modifier =
-      Modifier.widthIn(min = Prism.dimens.controlHeight * 2)
-        .selectable(selected = selected, enabled = enabled, role = Role.Tab, onClick = onClick)
-        .padding(
-          start = Prism.dimens.spacingM,
-          end = Prism.dimens.spacingM,
-          top = Prism.dimens.spacingXs,
-        ),
+    Modifier.widthIn(min = Prism.dimens.controlHeight * 2)
+      .selectable(selected = selected, enabled = enabled, role = Role.Tab, onClick = onClick)
+      .padding(
+        start = Prism.dimens.spacingM,
+        end = Prism.dimens.spacingM,
+        top = Prism.dimens.spacingXs,
+      ),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Text(
@@ -93,9 +103,9 @@ private fun PrismTabItem(
     )
     Box(
       modifier =
-        Modifier.fillMaxWidth()
-          .background(visualState.indicatorColor)
-          .heightIn(min = visualState.indicatorHeight),
+      Modifier.fillMaxWidth()
+        .background(visualState.indicatorColor)
+        .heightIn(min = visualState.indicatorHeight),
     )
   }
 }
@@ -105,23 +115,24 @@ private fun rememberPrismTabVisualState(
   tabId: String,
   selected: Boolean,
   enabled: Boolean,
+  style: PrismTabStyle,
 ): PrismTabVisualState {
   val animation = Prism.anim.standard
   val contentColor by
     animateColorAsState(
-      targetValue = tabContentColor(selected = selected, enabled = enabled),
+      targetValue = style.contentColor(selected = selected, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "tabs_content_$tabId",
     )
   val indicatorColor by
     animateColorAsState(
-      targetValue = tabIndicatorColor(selected = selected, enabled = enabled),
+      targetValue = style.indicatorColor(selected = selected, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "tabs_indicator_$tabId",
     )
   val indicatorHeight by
     animateDpAsState(
-      targetValue = if (selected) Prism.dimens.strokeThick else Prism.dimens.strokeDefault,
+      targetValue = style.indicatorHeight(selected = selected),
       animationSpec = animation.dpSpec(),
       label = "tabs_indicator_height_$tabId",
     )
@@ -130,39 +141,13 @@ private fun rememberPrismTabVisualState(
 }
 
 @Composable
-private fun tabContentColor(
-  selected: Boolean,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.captionColor
-    selected -> Prism.color.titleColor
-    else -> Prism.color.labelColor
-  }
-
-@Composable
-private fun tabIndicatorColor(
-  selected: Boolean,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.stroke
-    selected -> Prism.color.accent
-    else -> Prism.color.strokeVariant
-  }
-
-@Composable
-private fun PrismTabsBaseline() {
+private fun PrismTabsBaseline(style: PrismTabStyle) {
   Box(
     modifier =
-      Modifier.fillMaxWidth()
-        .background(Prism.color.strokeVariant)
-        .heightIn(min = Prism.dimens.strokeDefault),
+    Modifier.fillMaxWidth()
+      .background(style.baselineColor)
+      .heightIn(min = Prism.dimens.strokeDefault),
   )
 }
 
-private data class PrismTabVisualState(
-  val contentColor: Color,
-  val indicatorColor: Color,
-  val indicatorHeight: Dp,
-)
+private data class PrismTabVisualState(val contentColor: Color, val indicatorColor: Color, val indicatorHeight: Dp)

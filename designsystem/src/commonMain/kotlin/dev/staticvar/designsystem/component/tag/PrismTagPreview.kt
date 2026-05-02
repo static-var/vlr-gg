@@ -18,34 +18,32 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismTagPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismTagPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     Column(
       modifier =
-        Modifier.fillMaxWidth()
-          .background(Prism.color.background)
-          .padding(Prism.dimens.spacingM),
+      Modifier.fillMaxWidth()
+        .background(Prism.color.background)
+        .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       Text("PrismTag", style = Prism.typography.label, color = Prism.color.labelColor)
 
       Row(horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
         PrismTag(text = "neutral")
-        PrismTag(text = "live", variant = PrismTagVariant.Accent)
-        PrismTag(text = "final", variant = PrismTagVariant.Info)
+        PrismTag(text = "live", style = PrismTagStyle.Accent)
+        PrismTag(text = "final", style = PrismTagStyle.Info)
       }
 
       Row(horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-        PrismTag(text = "success", variant = PrismTagVariant.Success)
-        PrismTag(text = "warning", variant = PrismTagVariant.Warning)
-        PrismTag(text = "danger", variant = PrismTagVariant.Danger)
+        PrismTag(text = "success", style = PrismTagStyle.Success)
+        PrismTag(text = "warning", style = PrismTagStyle.Warning)
+        PrismTag(text = "danger", style = PrismTagStyle.Danger)
       }
 
       Row(horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
         PrismTag(text = "disabled", enabled = false)
-        PrismTag(text = "sync", variant = PrismTagVariant.Accent, enabled = false)
+        PrismTag(text = "sync", style = PrismTagStyle.Accent, enabled = false)
       }
     }
   }

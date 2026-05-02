@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonVariant
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
@@ -21,15 +21,13 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismSheetPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismSheetPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     Column(
       modifier =
-        Modifier.fillMaxWidth()
-          .background(Prism.color.background)
-          .padding(Prism.dimens.spacingM),
+      Modifier.fillMaxWidth()
+        .background(Prism.color.background)
+        .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       PrismSheet(
@@ -45,11 +43,11 @@ internal fun PrismSheetPreview(
           PrismButton(
             onClick = {},
             modifier = Modifier.padding(end = Prism.dimens.spacingS),
-            variant = PrismButtonVariant.Secondary,
+            style = PrismButtonStyle.Secondary,
           ) {
             Text("Reset")
           }
-          PrismButton(onClick = {}, variant = PrismButtonVariant.Primary) { Text("Apply") }
+          PrismButton(onClick = {}, style = PrismButtonStyle.Primary) { Text("Apply") }
         },
       ) {
         Text("Region: EMEA", style = Prism.typography.bodyLarge)
@@ -62,14 +60,12 @@ internal fun PrismSheetPreview(
 
 @PrismPreview
 @Composable
-internal fun PrismModalSheetPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismModalSheetPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     Box(
       modifier =
-        Modifier.fillMaxSize()
-          .background(Prism.color.background),
+      Modifier.fillMaxSize()
+        .background(Prism.color.background),
     ) {
       PrismModalSheet(
         visible = true,
@@ -83,7 +79,7 @@ internal fun PrismModalSheetPreview(
           )
         },
         footer = {
-          PrismButton(onClick = {}, variant = PrismButtonVariant.Primary) { Text("Save") }
+          PrismButton(onClick = {}, style = PrismButtonStyle.Primary) { Text("Save") }
         },
       ) {
         Text("Enable match reminder for Fnatic vs TH", style = Prism.typography.bodyLarge)

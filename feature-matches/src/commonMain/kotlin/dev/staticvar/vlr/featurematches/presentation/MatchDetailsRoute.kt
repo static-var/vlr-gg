@@ -19,12 +19,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonVariant
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.component.tag.PrismTag
-import dev.staticvar.designsystem.component.tag.PrismTagVariant
+import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.MatchDetails
@@ -82,17 +83,17 @@ internal fun MatchDetailsScreen(
       subtitle = match?.event?.series ?: "Detailed match breakdown.",
       preLabel = "match",
       actions = {
-        PrismButton(onClick = onBack, variant = PrismButtonVariant.Tertiary) {
+        PrismButton(onClick = onBack, style = PrismButtonStyle.Tertiary) {
           Text(text = "Back")
         }
       },
     )
 
     when {
-      uiState.isLoading -> DetailStateMessage(text = "Loading match details…")
+      uiState.isLoading -> PrismStateMessage(text = "Loading match details…")
       uiState.errorMessage != null && match == null ->
-        DetailStateMessage(text = uiState.errorMessage ?: "Unable to load match details.")
-      match == null -> DetailStateMessage(text = "Match detail is unavailable.")
+        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load match details.")
+      match == null -> PrismStateMessage(text = "Match detail is unavailable.")
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
@@ -123,7 +124,7 @@ internal fun MatchDetailsScreen(
             items(match.head2head, key = PreviousEncounter::id) { encounter ->
               PrismCard(
                 modifier = Modifier.fillMaxWidth(),
-                variant = PrismCardVariant.Outlined,
+                style = PrismCardStyle.Outlined,
                 onClick = { },
               ) {
                 Text(
@@ -146,7 +147,7 @@ internal fun MatchDetailsScreen(
               PrismSectionTitle(title = "Streams & VODs", preLabel = "media")
             }
             items(videos, key = { it.name + it.url }) { video ->
-              PrismCard(modifier = Modifier.fillMaxWidth(), variant = PrismCardVariant.Outlined) {
+              PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
                 Text(text = video.name, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
                 Text(
                   text = video.url,
@@ -171,11 +172,11 @@ private fun MatchSummaryCard(
 ) {
   PrismCard(
     modifier = Modifier.fillMaxWidth(),
-    variant = PrismCardVariant.Outlined,
+    style = PrismCardStyle.Outlined,
   ) {
     PrismTag(
       text = match.event.status ?: "Unknown",
-      variant = if (match.event.status.equals("live", ignoreCase = true)) PrismTagVariant.Danger else PrismTagVariant.Info,
+      style = if (match.event.status.equals("live", ignoreCase = true)) PrismTagStyle.Danger else PrismTagStyle.Info,
     )
     Text(
       text = match.score.ifBlank { "Score pending" },
@@ -222,7 +223,7 @@ private fun TeamSummaryCard(
 ) {
   PrismCard(
     modifier = modifier.fillMaxWidth(),
-    variant = PrismCardVariant.Filled,
+    style = PrismCardStyle.Filled,
     onClick = {
       val teamId: String = team.id ?: return@PrismCard
       onTeamSelected(teamId)
@@ -245,7 +246,7 @@ private fun MapCard(
 ) {
   PrismCard(
     modifier = Modifier.fillMaxWidth(),
-    variant = PrismCardVariant.Outlined,
+    style = PrismCardStyle.Outlined,
   ) {
     Text(text = map.map, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
     Text(
@@ -266,16 +267,4 @@ private fun MapCard(
       )
     }
   }
-}
-
-@Composable
-private fun DetailStateMessage(
-  text: String,
-) {
-  Text(
-    text = text,
-    modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-    style = Prism.typography.bodyLarge,
-    color = Prism.color.labelColor,
-  )
 }

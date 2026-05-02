@@ -12,21 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.prism.Prism
 
 @Composable
-public fun AboutRoute(
-  modifier: Modifier = Modifier,
-) {
+public fun AboutRoute(modifier: Modifier = Modifier) {
   AboutScreen(modifier = modifier)
 }
 
 @Composable
-internal fun AboutScreen(
-  modifier: Modifier = Modifier,
-) {
+internal fun AboutScreen(modifier: Modifier = Modifier) {
   Column(
     modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
@@ -41,38 +37,38 @@ internal fun AboutScreen(
       title = "Product",
       preLabel = "app",
       lines =
-        listOf(
-          "Cross-platform VLR companion built with Kotlin Multiplatform and Compose.",
-          "Shared domain/data layers feed match, event, ranking, team, player, and news experiences.",
-          "Large-screen navigation is designed to scale beyond phone-sized assumptions.",
-        ),
+      listOf(
+        "Cross-platform VLR companion built with Kotlin Multiplatform and Compose.",
+        "Shared domain/data layers feed match, event, ranking, team, player, and news experiences.",
+        "Large-screen navigation is designed to scale beyond phone-sized assumptions.",
+      ),
     )
 
     AboutSection(
       title = "Android",
       preLabel = "credits",
       lines =
-        listOf(
-          "staticvar.dev",
-          "github.com/static-var",
-          "github.com/static-var/vlr-gg",
-          "github.com/sponsors/static-var",
-        ),
+      listOf(
+        "staticvar.dev",
+        "github.com/static-var",
+        "github.com/static-var/vlr-gg",
+        "github.com/sponsors/static-var",
+      ),
     )
 
     AboutSection(
       title = "Backend",
       preLabel = "data",
       lines =
-        listOf(
-          "akhilnarang.dev",
-          "github.com/akhilnarang",
-          "github.com/akhilnarang/vlrgg-scraper",
-          "API host: vlr-scraper.akhilnarang.dev",
-        ),
+      listOf(
+        "akhilnarang.dev",
+        "github.com/akhilnarang",
+        "github.com/akhilnarang/vlrgg-scraper",
+        "API host: vlr-scraper.akhilnarang.dev",
+      ),
     )
 
-    PrismCard(modifier = Modifier.fillMaxWidth(), variant = PrismCardVariant.Outlined) {
+    PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
       PrismSectionTitle(title = "Design principles", preLabel = "ui")
       Text(
         text = "Flat surfaces. Sharp borders. High contrast. Minimal ceremony. If a component needs a motivational speech before it makes sense, it probably shouldn’t exist.",
@@ -85,12 +81,8 @@ internal fun AboutScreen(
 }
 
 @Composable
-private fun AboutSection(
-  title: String,
-  preLabel: String,
-  lines: List<String>,
-) {
-  PrismCard(modifier = Modifier.fillMaxWidth(), variant = PrismCardVariant.Outlined) {
+private fun AboutSection(title: String, preLabel: String, lines: List<String>) {
+  PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
     PrismSectionTitle(title = title, preLabel = preLabel)
     lines.forEachIndexed { index, line ->
       Text(

@@ -16,11 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
+import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.component.tag.PrismTag
-import dev.staticvar.designsystem.component.tag.PrismTagVariant
+import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
@@ -85,10 +86,10 @@ internal fun EventsOverviewScreen(
     )
 
     when {
-      uiState.isLoading -> EventStateMessage(text = "Loading events…")
+      uiState.isLoading -> PrismStateMessage(text = "Loading events…")
       uiState.errorMessage != null && filteredEvents.isEmpty() ->
-        EventStateMessage(text = uiState.errorMessage ?: "Unable to load events.")
-      filteredEvents.isEmpty() -> EventStateMessage(text = "No events in this bucket yet.")
+        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load events.")
+      filteredEvents.isEmpty() -> PrismStateMessage(text = "No events in this bucket yet.")
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
@@ -97,17 +98,17 @@ internal fun EventsOverviewScreen(
           items(filteredEvents, key = EventPreview::id) { event ->
             PrismCard(
               modifier = Modifier.fillMaxWidth(),
-              variant = PrismCardVariant.Outlined,
+              style = PrismCardStyle.Outlined,
               onClick = { onEventSelected(event.id) },
             ) {
               PrismTag(
                 text = event.status.name,
-                variant =
+                style =
                   when (event.status) {
-                    EventStatus.ONGOING -> PrismTagVariant.Danger
-                    EventStatus.UPCOMING -> PrismTagVariant.Info
-                    EventStatus.COMPLETED -> PrismTagVariant.Success
-                    EventStatus.UNKNOWN -> PrismTagVariant.Neutral
+                    EventStatus.ONGOING -> PrismTagStyle.Danger
+                    EventStatus.UPCOMING -> PrismTagStyle.Info
+                    EventStatus.COMPLETED -> PrismTagStyle.Success
+                    EventStatus.UNKNOWN -> PrismTagStyle.Neutral
                   },
               )
               Text(
@@ -134,18 +135,6 @@ internal fun EventsOverviewScreen(
       }
     }
   }
-}
-
-@Composable
-private fun EventStateMessage(
-  text: String,
-) {
-  Text(
-    text = text,
-    modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-    style = Prism.typography.bodyLarge,
-    color = Prism.color.labelColor,
-  )
 }
 
 @Composable

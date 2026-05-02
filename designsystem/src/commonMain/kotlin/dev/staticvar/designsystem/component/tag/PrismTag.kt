@@ -1,5 +1,3 @@
-@file:Suppress("CyclomaticComplexMethod")
-
 package dev.staticvar.designsystem.component.tag
 
 import androidx.compose.animation.animateColorAsState
@@ -26,34 +24,28 @@ private object PrismTagConstants {
   val LabelLetterSpacing = 0.4.sp
 }
 
-public enum class PrismTagVariant {
-  Neutral,
-  Accent,
-  Success,
-  Warning,
-  Danger,
-  Info,
-}
-
 /**
  * Compact, non-interactive brutalist tag for status and metadata labels.
+ *
+ * The visual treatment is supplied by [PrismTagStyle], which owns token-backed color and border
+ * decisions while this composable keeps the tag layout and content behavior.
  */
 @Composable
 public fun PrismTag(
   text: String,
   modifier: Modifier = Modifier,
-  variant: PrismTagVariant = PrismTagVariant.Neutral,
+  style: PrismTagStyle = PrismTagStyle.Neutral,
   enabled: Boolean = true,
   leadingContent: (@Composable () -> Unit)? = null,
 ) {
-  val visualState = rememberPrismTagVisualState(variant = variant, enabled = enabled)
+  val visualState = rememberPrismTagVisualState(style = style, enabled = enabled)
   val resolvedText = text.trim().uppercase()
 
   PrismSurface(
     modifier = modifier,
     color = visualState.containerColor,
     shape = Prism.shapes.small,
-    border = BorderStroke(Prism.dimens.strokeDefault, visualState.borderColor),
+    border = visualState.border,
   ) {
     PrismTagContent(
       text = resolvedText,
@@ -64,39 +56,36 @@ public fun PrismTag(
 }
 
 @Composable
-private fun rememberPrismTagVisualState(
-  variant: PrismTagVariant,
-  enabled: Boolean,
-): PrismTagVisualState {
+private fun rememberPrismTagVisualState(style: PrismTagStyle, enabled: Boolean): PrismTagVisualState {
   val animation = Prism.anim.standard
   val containerColor by
     animateColorAsState(
-      targetValue = tagContainerColor(variant = variant, enabled = enabled),
+      targetValue = if (enabled) style.containerColor else style.disabledContainerColor,
       animationSpec = animation.colorSpec(),
       label = "tag_container",
     )
   val contentColor by
     animateColorAsState(
-      targetValue = tagContentColor(variant = variant, enabled = enabled),
+      targetValue = if (enabled) style.contentColor else style.disabledContentColor,
       animationSpec = animation.colorSpec(),
       label = "tag_content",
     )
   val borderColor by
     animateColorAsState(
-      targetValue = tagBorderColor(variant = variant, enabled = enabled),
+      targetValue = if (enabled) style.borderColor else style.disabledBorderColor,
       animationSpec = animation.colorSpec(),
       label = "tag_border",
     )
 
-  return PrismTagVisualState(containerColor, contentColor, borderColor)
+  return PrismTagVisualState(
+    containerColor = containerColor,
+    contentColor = contentColor,
+    border = BorderStroke(width = Prism.dimens.strokeDefault, color = borderColor),
+  )
 }
 
 @Composable
-private fun PrismTagContent(
-  text: String,
-  contentColor: Color,
-  leadingContent: (@Composable () -> Unit)?,
-) {
+private fun PrismTagContent(text: String, contentColor: Color, leadingContent: (@Composable () -> Unit)?) {
   Row(
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
     verticalAlignment = Alignment.CenterVertically,
@@ -114,11 +103,11 @@ private fun PrismTagContent(
       text = text,
       modifier = Modifier.align(Alignment.CenterVertically).padding(Prism.dimens.spacingXs),
       style =
-        Prism.typography.caption.copy(
-          fontSize = PrismTagConstants.LabelFontSize,
-          lineHeight = PrismTagConstants.LabelLineHeight,
-          letterSpacing = PrismTagConstants.LabelLetterSpacing,
-        ),
+      Prism.typography.caption.copy(
+        fontSize = PrismTagConstants.LabelFontSize,
+        lineHeight = PrismTagConstants.LabelLineHeight,
+        letterSpacing = PrismTagConstants.LabelLetterSpacing,
+      ),
       color = contentColor,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
@@ -126,53 +115,4 @@ private fun PrismTagContent(
   }
 }
 
-@Composable
-private fun tagContainerColor(
-  variant: PrismTagVariant,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.surfaceDim
-    variant == PrismTagVariant.Neutral -> Prism.color.surface
-    variant == PrismTagVariant.Accent -> Prism.color.accentSubtle
-    variant == PrismTagVariant.Success -> Prism.color.successContainer
-    variant == PrismTagVariant.Warning -> Prism.color.warningContainer
-    variant == PrismTagVariant.Danger -> Prism.color.dangerContainer
-    else -> Prism.color.infoContainer
-  }
-
-@Composable
-private fun tagContentColor(
-  variant: PrismTagVariant,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.captionColor
-    variant == PrismTagVariant.Neutral -> Prism.color.labelColor
-    variant == PrismTagVariant.Accent -> Prism.color.accent
-    variant == PrismTagVariant.Success -> Prism.color.success
-    variant == PrismTagVariant.Warning -> Prism.color.warning
-    variant == PrismTagVariant.Danger -> Prism.color.danger
-    else -> Prism.color.info
-  }
-
-@Composable
-private fun tagBorderColor(
-  variant: PrismTagVariant,
-  enabled: Boolean,
-): Color =
-  when {
-    !enabled -> Prism.color.stroke
-    variant == PrismTagVariant.Neutral -> Prism.color.stroke
-    variant == PrismTagVariant.Accent -> Prism.color.accent
-    variant == PrismTagVariant.Success -> Prism.color.success
-    variant == PrismTagVariant.Warning -> Prism.color.warning
-    variant == PrismTagVariant.Danger -> Prism.color.danger
-    else -> Prism.color.info
-  }
-
-private data class PrismTagVisualState(
-  val containerColor: Color,
-  val contentColor: Color,
-  val borderColor: Color,
-)
+private data class PrismTagVisualState(val containerColor: Color, val contentColor: Color, val border: BorderStroke)

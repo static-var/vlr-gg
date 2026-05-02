@@ -21,9 +21,7 @@ import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismSegmentedFilterTabsPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismSegmentedFilterTabsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     var selectedTabId by remember { mutableStateOf("all") }
     val tabs =
@@ -38,9 +36,9 @@ internal fun PrismSegmentedFilterTabsPreview(
 
     Column(
       modifier =
-        Modifier.fillMaxWidth()
-          .background(Prism.color.background)
-          .padding(Prism.dimens.spacingM),
+      Modifier.fillMaxWidth()
+        .background(Prism.color.background)
+        .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       Text("Segmented Filters", style = Prism.typography.label, color = Prism.color.labelColor)

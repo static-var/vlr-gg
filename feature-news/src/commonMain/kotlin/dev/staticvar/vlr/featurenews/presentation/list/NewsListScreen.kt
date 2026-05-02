@@ -15,13 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonVariant
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.tag.PrismTag
-import dev.staticvar.designsystem.component.tag.PrismTagVariant
+import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsItem
 
@@ -47,7 +47,7 @@ internal fun NewsListScreen(
       actions = {
         PrismButton(
           onClick = onRefresh,
-          variant = PrismButtonVariant.Secondary,
+          style = PrismButtonStyle.Secondary,
         ) {
           Text("REFRESH")
         }
@@ -101,7 +101,7 @@ private fun EmptyNewsList(
   Box(modifier = modifier, contentAlignment = Alignment.Center) {
     PrismCard(
       modifier = Modifier.fillMaxWidth(),
-      variant = PrismCardVariant.Outlined,
+      style = PrismCardStyle.Outlined,
     ) {
       Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
         PrismSectionTitle(
@@ -118,7 +118,7 @@ private fun EmptyNewsList(
         }
         PrismButton(
           onClick = onRefresh,
-          variant = PrismButtonVariant.Primary,
+          style = PrismButtonStyle.Primary,
         ) {
           Text("TRY AGAIN")
         }
@@ -135,7 +135,7 @@ private fun NewsListItem(
 ) {
   PrismCard(
     modifier = Modifier.fillMaxWidth(),
-    variant = if (selected) PrismCardVariant.Filled else PrismCardVariant.Outlined,
+    style = if (selected) PrismCardStyle.Filled else PrismCardStyle.Outlined,
     onClick = onClick,
   ) {
     Column(
@@ -148,11 +148,11 @@ private fun NewsListItem(
       ) {
         PrismTag(
           text = item.author.ifBlank { "unknown" },
-          variant = PrismTagVariant.Accent,
+          style = PrismTagStyle.Accent,
         )
         PrismTag(
           text = item.date.ifBlank { "recent" },
-          variant = PrismTagVariant.Info,
+          style = PrismTagStyle.Info,
         )
       }
 

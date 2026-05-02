@@ -17,31 +17,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import dev.staticvar.designsystem.component.card.PrismCard
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
-import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
-internal fun PrismAccordionPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismAccordionPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     LazyColumn(
       modifier = Modifier.fillMaxWidth().background(Prism.color.background),
       contentPadding = PaddingValues(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingL),
     ) {
-      item { AccordionSectionLabel("Outlined Variant") }
-      item { BasicAccordionPreview(PrismAccordionVariant.Outlined, "Team roster", "Flat border, no elevation") }
-      item { AccordionSectionLabel("Filled Variant") }
-      item { BasicAccordionPreview(PrismAccordionVariant.Filled, "Settings", "Filled background, flat surface") }
-      item { AccordionSectionLabel("Minimal Variant") }
-      item { BasicAccordionPreview(PrismAccordionVariant.Minimal, "FAQ", "No border, transparent") }
+      item { AccordionSectionLabel("Outlined Style") }
+      item {
+        BasicAccordionPreview(PrismAccordionStyle.Outlined, "Outlined", "Team roster", "Flat border, no elevation")
+      }
+      item { AccordionSectionLabel("Filled Style") }
+      item {
+        BasicAccordionPreview(PrismAccordionStyle.Filled, "Filled", "Settings", "Filled background, flat surface")
+      }
+      item { AccordionSectionLabel("Minimal Style") }
+      item { BasicAccordionPreview(PrismAccordionStyle.Minimal, "Minimal", "FAQ", "No border, transparent") }
       item { AccordionSectionLabel("Controlled - Expanded") }
       item { ControlledAccordionPreview() }
       item { AccordionSectionLabel("With Nested Cards") }
@@ -57,17 +59,18 @@ private fun AccordionSectionLabel(text: String) {
 }
 
 @Composable
-private fun BasicAccordionPreview(
-  variant: PrismAccordionVariant,
-  title: String,
-  subtitle: String,
-) {
+private fun BasicAccordionPreview(style: PrismAccordionStyle, styleName: String, title: String, subtitle: String) {
   PrismAccordion(
     modifier = Modifier.fillMaxWidth(),
-    variant = variant,
+    style = style,
     header = { AccordionHeader(title = title, subtitle = subtitle) },
   ) {
-    Text("${variant.name.lowercase().replaceFirstChar { it.uppercase() }} accordions show variant styling", style = Prism.typography.bodyLarge)
+    Text(
+      "${styleName.lowercase().replaceFirstChar {
+        it.uppercase()
+      }} accordions show style-driven visuals",
+      style = Prism.typography.bodyLarge,
+    )
     Text("Useful for structured content groups", style = Prism.typography.bodySmall)
   }
 }
@@ -77,7 +80,7 @@ private fun ControlledAccordionPreview() {
   var expanded by remember { mutableStateOf(true) }
   PrismAccordion(
     modifier = Modifier.fillMaxWidth(),
-    variant = PrismAccordionVariant.Outlined,
+    style = PrismAccordionStyle.Outlined,
     header = { AccordionHeader("Controlled accordion", "State is owned externally") },
     expanded = expanded,
     onExpandedChange = { expanded = it },
@@ -91,8 +94,8 @@ private fun ControlledAccordionPreview() {
 private fun NestedCardsAccordionPreview() {
   PrismAccordion(
     modifier = Modifier.fillMaxWidth(),
-    variant = PrismAccordionVariant.Filled,
-    header = { AccordionHeader("Match cards", "Filled variant with nested cards") },
+    style = PrismAccordionStyle.Filled,
+    header = { AccordionHeader("Match cards", "Filled style with nested cards") },
     expanded = true,
   ) {
     AccordionPreviewCard("Paper Rex 13 - 10 FNATIC", "Lotus · Upper bracket final")
@@ -101,10 +104,7 @@ private fun NestedCardsAccordionPreview() {
 }
 
 @Composable
-private fun AccordionHeader(
-  title: String,
-  subtitle: String,
-) {
+private fun AccordionHeader(title: String, subtitle: String) {
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
     Text(title, style = Prism.typography.bodyLarge)
     Text(subtitle, style = Prism.typography.caption, color = Prism.color.labelColor)
@@ -112,13 +112,10 @@ private fun AccordionHeader(
 }
 
 @Composable
-private fun AccordionPreviewCard(
-  title: String,
-  subtitle: String,
-) {
+private fun AccordionPreviewCard(title: String, subtitle: String) {
   PrismCard(
     modifier = Modifier.fillMaxWidth(),
-    variant = PrismCardVariant.Outlined,
+    style = PrismCardStyle.Outlined,
   ) {
     Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
       Text(title, style = Prism.typography.bodyLarge)

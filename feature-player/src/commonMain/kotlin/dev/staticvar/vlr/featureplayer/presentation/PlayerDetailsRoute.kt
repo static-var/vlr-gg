@@ -18,10 +18,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonVariant
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import org.koin.mp.KoinPlatform
 
@@ -69,19 +70,19 @@ internal fun PlayerDetailsScreen(
       subtitle = player?.realName ?: player?.country ?: "Agent pool and team history",
       preLabel = "player",
       actions = {
-        PrismButton(onClick = onBack, variant = PrismButtonVariant.Tertiary) {
+        PrismButton(onClick = onBack, style = PrismButtonStyle.Tertiary) {
           Text(text = "Back")
         }
       },
     )
 
     when {
-      uiState.isLoading -> PlayerStateMessage(text = "Loading player details…")
+      uiState.isLoading -> PrismStateMessage(text = "Loading player details…")
       uiState.errorMessage != null && player == null ->
-        PlayerStateMessage(text = uiState.errorMessage ?: "Unable to load player details.")
-      player == null -> PlayerStateMessage(text = "Player detail is unavailable.")
+        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load player details.")
+      player == null -> PrismStateMessage(text = "Player detail is unavailable.")
       else -> {
-        PrismCard(modifier = Modifier.fillMaxWidth(), variant = PrismCardVariant.Outlined) {
+        PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
           Text(
             text = player.alias.ifBlank { player.name },
             style = Prism.typography.sectionTitle,
@@ -118,7 +119,7 @@ internal fun PlayerDetailsScreen(
             verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
           ) {
             items(player.agentStats, key = { it.agentName }) { stat ->
-              PrismCard(modifier = Modifier.fillMaxWidth(), variant = PrismCardVariant.Outlined) {
+              PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
                 Text(text = stat.agentName, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
                 Text(
                   text = "${stat.usagePercent}% usage • ${stat.matchesLabel()}",
@@ -145,7 +146,7 @@ internal fun PlayerDetailsScreen(
             items(player.pastTeams, key = { (it.id ?: it.name) + it.isCurrent }) { team ->
               PrismCard(
                 modifier = Modifier.fillMaxWidth(),
-                variant = PrismCardVariant.Outlined,
+                style = PrismCardStyle.Outlined,
                 onClick = {
                   val id: String = team.id ?: return@PrismCard
                   onTeamSelected(id)
@@ -169,15 +170,3 @@ internal fun PlayerDetailsScreen(
 
 private fun dev.staticvar.vlr.domain.model.PlayerAgentStat.matchesLabel(): String =
   "${this.usageCount} picks • ${this.roundsPlayed} rounds"
-
-@Composable
-private fun PlayerStateMessage(
-  text: String,
-) {
-  Text(
-    text = text,
-    modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-    style = Prism.typography.bodyLarge,
-    color = Prism.color.labelColor,
-  )
-}

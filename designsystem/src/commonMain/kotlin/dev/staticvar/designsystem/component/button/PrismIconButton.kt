@@ -2,7 +2,6 @@
 
 package dev.staticvar.designsystem.component.button
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -37,6 +36,7 @@ public fun PrismIconButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   size: PrismIconButtonSize = PrismIconButtonSize.Medium,
+  style: PrismIconButtonStyle = PrismIconButtonStyle.Bordered,
   enabled: Boolean = true,
   selected: Boolean = false,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -49,48 +49,34 @@ public fun PrismIconButton(
       PrismIconButtonSize.XL -> Prism.dimens.iconL + Prism.dimens.spacingL to Prism.dimens.iconL
     }
 
-  val containerColor =
-    when {
-      !enabled -> Prism.color.surfaceDim
-      selected -> Prism.color.accentSubtle
-      else -> Prism.color.surface
-    }
-  val borderColor =
-    when {
-      !enabled -> Prism.color.stroke
-      selected -> Prism.color.strokeVariant
-      else -> Prism.color.stroke
-    }
-  val iconColor = if (enabled) Prism.color.titleColor else Prism.color.labelColor
-
   Box(
     modifier =
-      modifier
-        .sizeIn(
-          minWidth = Prism.dimens.touchTargetMin,
-          minHeight = Prism.dimens.touchTargetMin,
-        )
-        .clickable(
-          onClick = onClick,
-          enabled = enabled,
-          role = Role.Button,
-          interactionSource = interactionSource,
-          indication = ripple(),
-        ),
+    modifier
+      .sizeIn(
+        minWidth = Prism.dimens.touchTargetMin,
+        minHeight = Prism.dimens.touchTargetMin,
+      )
+      .clickable(
+        onClick = onClick,
+        enabled = enabled,
+        role = Role.Button,
+        interactionSource = interactionSource,
+        indication = ripple(),
+      ),
     contentAlignment = Alignment.Center,
   ) {
     PrismSurface(
       modifier = Modifier.size(containerSize),
-      color = containerColor,
+      color = style.containerColor(enabled = enabled, selected = selected),
       shape = Prism.shapes.small,
-      border = BorderStroke(Prism.dimens.strokeDefault, borderColor),
+      border = style.border(enabled = enabled, selected = selected),
     ) {
       Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Icon(
           imageVector = icon,
           contentDescription = contentDescription,
           modifier = Modifier.size(iconSize),
-          tint = iconColor,
+          tint = style.iconColor(enabled = enabled, selected = selected),
         )
       }
     }

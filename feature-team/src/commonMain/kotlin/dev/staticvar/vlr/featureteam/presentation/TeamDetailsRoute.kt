@@ -21,12 +21,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonVariant
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import org.koin.mp.KoinPlatform
 
@@ -85,19 +86,19 @@ internal fun TeamDetailsScreen(
       subtitle = team?.tag?.ifBlank { team.country } ?: "Roster and recent form",
       preLabel = "team",
       actions = {
-        PrismButton(onClick = onBack, variant = PrismButtonVariant.Tertiary) {
+        PrismButton(onClick = onBack, style = PrismButtonStyle.Tertiary) {
           Text(text = "Back")
         }
       },
     )
 
     when {
-      uiState.isLoading -> TeamStateMessage(text = "Loading team details…")
+      uiState.isLoading -> PrismStateMessage(text = "Loading team details…")
       uiState.errorMessage != null && team == null ->
-        TeamStateMessage(text = uiState.errorMessage ?: "Unable to load team details.")
-      team == null -> TeamStateMessage(text = "Team detail is unavailable.")
+        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load team details.")
+      team == null -> PrismStateMessage(text = "Team detail is unavailable.")
       else -> {
-        PrismCard(modifier = Modifier.fillMaxWidth(), variant = PrismCardVariant.Outlined) {
+        PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
           Text(text = team.name, style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
           Text(
             text = listOfNotNull(team.tag.takeIf(String::isNotBlank), team.region, team.country).joinToString(" • "),
@@ -121,7 +122,7 @@ internal fun TeamDetailsScreen(
             items(team.roster, key = { it.id }) { player ->
               PrismCard(
                 modifier = Modifier.fillMaxWidth(),
-                variant = PrismCardVariant.Outlined,
+                style = PrismCardStyle.Outlined,
                 onClick = { onPlayerSelected(player.id) },
               ) {
                 Text(text = player.alias, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
@@ -147,13 +148,13 @@ internal fun TeamDetailsScreen(
           when (section) {
             TeamMatchesSection.Upcoming -> {
               if (team.upcomingMatches.isEmpty()) {
-                item { TeamStateMessage(text = "No upcoming matches published yet.") }
+                item { PrismStateMessage(text = "No upcoming matches published yet.") }
               } else {
                 items(team.upcomingMatches, key = { it.matchId }) { match ->
                   val eventId = match.eventId
                   PrismCard(
                     modifier = Modifier.fillMaxWidth(),
-                    variant = PrismCardVariant.Outlined,
+                    style = PrismCardStyle.Outlined,
                     onClick = { onMatchSelected(match.matchId) },
                   ) {
                     Text(text = match.opponent, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
@@ -178,13 +179,13 @@ internal fun TeamDetailsScreen(
 
             TeamMatchesSection.Completed -> {
               if (team.completedMatches.isEmpty()) {
-                item { TeamStateMessage(text = "No completed matches published yet.") }
+                item { PrismStateMessage(text = "No completed matches published yet.") }
               } else {
                 items(team.completedMatches, key = { it.matchId }) { match ->
                   val eventId = match.eventId
                   PrismCard(
                     modifier = Modifier.fillMaxWidth(),
-                    variant = PrismCardVariant.Outlined,
+                    style = PrismCardStyle.Outlined,
                     onClick = { onMatchSelected(match.matchId) },
                   ) {
                     Text(text = match.opponent, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
@@ -211,16 +212,4 @@ internal fun TeamDetailsScreen(
       }
     }
   }
-}
-
-@Composable
-private fun TeamStateMessage(
-  text: String,
-) {
-  Text(
-    text = text,
-    modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-    style = Prism.typography.bodyLarge,
-    color = Prism.color.labelColor,
-  )
 }

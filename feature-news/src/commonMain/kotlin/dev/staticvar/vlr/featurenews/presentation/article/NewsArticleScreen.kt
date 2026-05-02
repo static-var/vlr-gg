@@ -13,13 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonVariant
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.tag.PrismTag
-import dev.staticvar.designsystem.component.tag.PrismTagVariant
+import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsArticle
 
@@ -49,7 +49,7 @@ internal fun NewsArticleScreen(
           {
             PrismButton(
               onClick = onBack,
-              variant = PrismButtonVariant.Secondary,
+              style = PrismButtonStyle.Secondary,
             ) {
               Text("BACK")
             }
@@ -60,7 +60,7 @@ internal fun NewsArticleScreen(
       actions = {
         PrismButton(
           onClick = onRefresh,
-          variant = PrismButtonVariant.Tertiary,
+          style = PrismButtonStyle.Tertiary,
         ) {
           Text("REFRESH")
         }
@@ -79,7 +79,7 @@ internal fun NewsArticleScreen(
       article == null -> {
         PrismCard(
           modifier = Modifier.fillMaxWidth(),
-          variant = PrismCardVariant.Outlined,
+          style = PrismCardStyle.Outlined,
         ) {
           Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
             PrismSectionTitle(
@@ -136,7 +136,7 @@ internal fun NewsArticleScreen(
             items(article.media.links) { link ->
               PrismTag(
                 text = link.text.ifBlank { link.url },
-                variant = PrismTagVariant.Info,
+                style = PrismTagStyle.Info,
               )
             }
           }
@@ -155,25 +155,25 @@ private fun RowOfMetaTags(article: NewsArticle) {
     if (article.author.isNotBlank()) {
       PrismTag(
         text = article.author,
-        variant = PrismTagVariant.Accent,
+        style = PrismTagStyle.Accent,
       )
     }
     if (article.date.isNotBlank()) {
       PrismTag(
         text = article.date,
-        variant = PrismTagVariant.Neutral,
+        style = PrismTagStyle.Neutral,
       )
     }
     if (article.media.images.isNotEmpty()) {
       PrismTag(
         text = "${article.media.images.size} image",
-        variant = PrismTagVariant.Success,
+        style = PrismTagStyle.Success,
       )
     }
     if (article.media.videos.isNotEmpty()) {
       PrismTag(
         text = "${article.media.videos.size} video",
-        variant = PrismTagVariant.Warning,
+        style = PrismTagStyle.Warning,
       )
     }
   }

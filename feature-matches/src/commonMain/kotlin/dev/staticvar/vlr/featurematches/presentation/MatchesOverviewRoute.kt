@@ -16,11 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
+import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.component.tag.PrismTag
-import dev.staticvar.designsystem.component.tag.PrismTagVariant
+import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
@@ -85,10 +86,10 @@ internal fun MatchesOverviewScreen(
     )
 
     when {
-      uiState.isLoading -> OverviewStateMessage(text = "Loading matches…")
+      uiState.isLoading -> PrismStateMessage(text = "Loading matches…")
       uiState.errorMessage != null && filteredMatches.isEmpty() ->
-        OverviewStateMessage(text = uiState.errorMessage ?: "Unable to load matches.")
-      filteredMatches.isEmpty() -> OverviewStateMessage(text = "No matches in this bucket yet.")
+        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load matches.")
+      filteredMatches.isEmpty() -> PrismStateMessage(text = "No matches in this bucket yet.")
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
@@ -97,17 +98,17 @@ internal fun MatchesOverviewScreen(
           items(filteredMatches, key = MatchPreview::id) { match ->
             PrismCard(
               modifier = Modifier.fillMaxWidth(),
-              variant = PrismCardVariant.Outlined,
+              style = PrismCardStyle.Outlined,
               onClick = { onMatchSelected(match.id) },
             ) {
               PrismTag(
                 text = match.status.name,
-                variant =
+                style =
                   when (match.status) {
-                    MatchStatus.LIVE -> PrismTagVariant.Danger
-                    MatchStatus.UPCOMING -> PrismTagVariant.Info
-                    MatchStatus.COMPLETED -> PrismTagVariant.Success
-                    MatchStatus.UNKNOWN -> PrismTagVariant.Neutral
+                    MatchStatus.LIVE -> PrismTagStyle.Danger
+                    MatchStatus.UPCOMING -> PrismTagStyle.Info
+                    MatchStatus.COMPLETED -> PrismTagStyle.Success
+                    MatchStatus.UNKNOWN -> PrismTagStyle.Neutral
                   },
               )
               Text(
@@ -139,18 +140,6 @@ internal fun MatchesOverviewScreen(
 private fun buildScoreLine(match: MatchPreview): String {
   val score = "${match.team1.score ?: "-"} : ${match.team2.score ?: "-"}"
   return listOfNotNull(score, match.time).joinToString(separator = " • ")
-}
-
-@Composable
-private fun OverviewStateMessage(
-  text: String,
-) {
-  Text(
-    text = text,
-    modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-    style = Prism.typography.bodyLarge,
-    color = Prism.color.labelColor,
-  )
 }
 
 @Composable

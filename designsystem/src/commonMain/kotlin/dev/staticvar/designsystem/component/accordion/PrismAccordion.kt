@@ -8,7 +8,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -39,20 +38,6 @@ import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.AngleDownSolid
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.designsystem.prism.color.contentColorFor
-
-/**
- * Accordion variants for the Prism design system.
- *
- * - **Outlined**: Accordion with flat border
- * - **Filled**: Accordion with filled background
- * - **Minimal**: Accordion with minimal styling (no border)
- */
-public enum class PrismAccordionVariant {
-  Outlined,
-  Filled,
-  Minimal,
-}
 
 /**
  * Prism design system accordion component.
@@ -61,17 +46,17 @@ public enum class PrismAccordionVariant {
  *
  * Example usage:
  * ```
- * // Outlined variant
+ * // Outlined style
  * PrismAccordion(
- *   variant = PrismAccordionVariant.Outlined,
+ *   style = PrismAccordionStyle.Outlined,
  *   header = { Text("Click to expand") }
  * ) {
  *   Text("Hidden content")
  * }
  *
- * // Outlined variant
+ * // Filled style
  * PrismAccordion(
- *   variant = PrismAccordionVariant.Outlined,
+ *   style = PrismAccordionStyle.Filled,
  *   header = { Text("Settings") }
  * ) {
  *   Text("Configuration options")
@@ -80,13 +65,11 @@ public enum class PrismAccordionVariant {
  *
  * @param header Composable for the always-visible header
  * @param modifier Modifier to apply to the accordion
- * @param variant Visual variant of the accordion
+ * @param style Visual treatment of the accordion
  * @param expanded Whether the accordion is expanded (controlled)
  * @param onExpandedChange Callback when expansion state changes
  * @param enabled Whether the accordion can be toggled
  * @param shape Shape of the accordion
- * @param color Background color (automatically adjusted per variant)
- * @param contentColor Content color for children
  * @param showIndicator Whether to show expansion indicator
  * @param interactionSource Interaction source for click effects
  * @param content Expandable content
@@ -95,59 +78,51 @@ public enum class PrismAccordionVariant {
 public fun PrismAccordion(
   header: @Composable () -> Unit,
   modifier: Modifier = Modifier,
-  variant: PrismAccordionVariant = PrismAccordionVariant.Outlined,
+  style: PrismAccordionStyle = PrismAccordionStyle.Outlined,
   expanded: Boolean = false,
   onExpandedChange: ((Boolean) -> Unit)? = null,
   enabled: Boolean = true,
   shape: Shape = Prism.shapes.medium,
-  color: Color = Prism.color.surface,
-  contentColor: Color = contentColorFor(color),
   showIndicator: Boolean = true,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   content: @Composable ColumnScope.() -> Unit,
 ) {
   var internalExpanded by rememberSaveable(expanded) { mutableStateOf(expanded) }
   val isExpanded = onExpandedChange?.let { expanded } ?: internalExpanded
-  val colors =
-    rememberAccordionColors(
-      variant = variant,
-      color = color,
-      contentColor = contentColor,
-    )
-  val border = accordionBorder(variant)
 
   PrismSurface(
     modifier = modifier,
-    color = colors.containerColor,
-    contentColor = colors.contentColor,
+    color = style.containerColor,
+    contentColor = style.contentColor,
     shape = shape,
-    border = border,
+    border = style.border,
   ) {
     Column(modifier = Modifier.fillMaxWidth()) {
       Row(
         modifier =
-          Modifier.fillMaxWidth()
-            .clickable(
-              onClick = {
-                onExpandedChange?.invoke(!isExpanded) ?: run { internalExpanded = !internalExpanded }
-              },
-              enabled = enabled,
-              role = Role.Button,
-              interactionSource = interactionSource,
-              indication = ripple(),
-            )
-            .padding(horizontal = Prism.dimens.spacingM, vertical = Prism.dimens.spacingS),
+        Modifier.fillMaxWidth()
+          .clickable(
+            onClick = {
+              onExpandedChange?.invoke(!isExpanded) ?: run { internalExpanded = !internalExpanded }
+            },
+            enabled = enabled,
+            role = Role.Button,
+            interactionSource = interactionSource,
+            indication = ripple(),
+          )
+          .padding(horizontal = Prism.dimens.spacingM, vertical = Prism.dimens.spacingS),
         verticalAlignment = Alignment.CenterVertically,
       ) {
         AccordionHeaderContent(
           header = header,
           isExpanded = isExpanded,
           showIndicator = showIndicator,
+          indicatorColor = style.indicatorColor,
         )
       }
 
       if (isExpanded) {
-        AccordionDivider()
+        AccordionDivider(color = style.dividerColor)
       }
 
       AccordionExpandableContent(isExpanded = isExpanded, content = content)
@@ -156,44 +131,11 @@ public fun PrismAccordion(
 }
 
 @Composable
-private fun rememberAccordionColors(
-  variant: PrismAccordionVariant,
-  color: Color,
-  contentColor: Color,
-): AccordionColors {
-  val containerColor =
-    when (variant) {
-      PrismAccordionVariant.Filled ->
-        if (color == Prism.color.surface) Prism.color.surfaceVariant else color
-      PrismAccordionVariant.Minimal ->
-        if (color == Prism.color.surface) Color.Transparent else color
-      else -> color
-    }
-  val resolvedContentColor =
-    when {
-      contentColor != contentColorFor(color) -> contentColor
-      variant == PrismAccordionVariant.Filled && color == Prism.color.surface ->
-        Prism.color.contentPrimary
-      variant == PrismAccordionVariant.Minimal -> Prism.color.contentPrimary
-      else -> contentColorFor(containerColor)
-    }
-
-  return AccordionColors(containerColor = containerColor, contentColor = resolvedContentColor)
-}
-
-@Composable
-private fun accordionBorder(variant: PrismAccordionVariant): BorderStroke? =
-  when (variant) {
-    PrismAccordionVariant.Outlined ->
-      BorderStroke(width = Prism.dimens.strokeDefault, color = Prism.color.stroke)
-    else -> null
-  }
-
-@Composable
 private fun RowScope.AccordionHeaderContent(
   header: @Composable () -> Unit,
   isExpanded: Boolean,
   showIndicator: Boolean,
+  indicatorColor: Color,
 ) {
   val rotationAngle by
     animateFloatAsState(
@@ -208,25 +150,22 @@ private fun RowScope.AccordionHeaderContent(
       imageVector = LineAwesomeIcons.AngleDownSolid,
       contentDescription = if (isExpanded) "Collapse section" else "Expand section",
       modifier = Modifier.rotate(rotationAngle).size(Prism.dimens.iconM),
-      tint = Prism.color.labelColor,
+      tint = indicatorColor,
     )
   }
 }
 
 @Composable
-private fun AccordionDivider() {
+private fun AccordionDivider(color: Color) {
   HorizontalDivider(
     modifier = Modifier.fillMaxWidth().padding(horizontal = Prism.dimens.spacingM),
     thickness = Prism.dimens.strokeDefault,
-    color = Prism.color.stroke,
+    color = color,
   )
 }
 
 @Composable
-private fun AccordionExpandableContent(
-  isExpanded: Boolean,
-  content: @Composable ColumnScope.() -> Unit,
-) {
+private fun AccordionExpandableContent(isExpanded: Boolean, content: @Composable ColumnScope.() -> Unit) {
   AnimatedVisibility(
     visible = isExpanded,
     enter = expandVertically(animationSpec = tween(durationMillis = 300), expandFrom = Alignment.Top),
@@ -234,20 +173,15 @@ private fun AccordionExpandableContent(
   ) {
     Column(
       modifier =
-        Modifier.fillMaxWidth()
-          .animateContentSize(animationSpec = tween(durationMillis = 300))
-          .padding(
-            horizontal = Prism.dimens.spacingM,
-            vertical = Prism.dimens.spacingS,
-          ),
+      Modifier.fillMaxWidth()
+        .animateContentSize(animationSpec = tween(durationMillis = 300))
+        .padding(
+          horizontal = Prism.dimens.spacingM,
+          vertical = Prism.dimens.spacingS,
+        ),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     ) {
       content()
     }
   }
 }
-
-private data class AccordionColors(
-  val containerColor: Color,
-  val contentColor: Color,
-)

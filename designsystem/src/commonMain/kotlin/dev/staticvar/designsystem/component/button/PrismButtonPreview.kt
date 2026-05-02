@@ -8,45 +8,43 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
-import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @PrismPreview
 @Composable
-internal fun PrismButtonPreview(
-  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
-) {
+internal fun PrismButtonPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     Column(
       modifier =
-        Modifier.fillMaxWidth()
-          .background(Prism.color.background)
-          .padding(Prism.dimens.spacingM),
+      Modifier.fillMaxWidth()
+        .background(Prism.color.background)
+        .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       Text("Primary", style = Prism.typography.label, color = Prism.color.labelColor)
-      PrismButton(onClick = {}, variant = PrismButtonVariant.Primary) { Text("Primary Button") }
+      PrismButton(onClick = {}, style = PrismButtonStyle.Primary) { Text("Primary Button") }
 
       Text("Secondary", style = Prism.typography.label, color = Prism.color.labelColor)
-      PrismButton(onClick = {}, variant = PrismButtonVariant.Secondary) {
+      PrismButton(onClick = {}, style = PrismButtonStyle.Secondary) {
         Text("Secondary Button")
       }
 
       Text("Tertiary", style = Prism.typography.label, color = Prism.color.labelColor)
-      PrismButton(onClick = {}, variant = PrismButtonVariant.Tertiary) { Text("Tertiary Button") }
+      PrismButton(onClick = {}, style = PrismButtonStyle.Tertiary) { Text("Tertiary Button") }
 
       Text("Disabled States", style = Prism.typography.label, color = Prism.color.labelColor)
-      PrismButton(onClick = {}, variant = PrismButtonVariant.Primary, enabled = false) {
+      PrismButton(onClick = {}, style = PrismButtonStyle.Primary, enabled = false) {
         Text("Disabled Primary")
       }
-      PrismButton(onClick = {}, variant = PrismButtonVariant.Secondary, enabled = false) {
+      PrismButton(onClick = {}, style = PrismButtonStyle.Secondary, enabled = false) {
         Text("Disabled Secondary")
       }
-      PrismButton(onClick = {}, variant = PrismButtonVariant.Tertiary, enabled = false) {
+      PrismButton(onClick = {}, style = PrismButtonStyle.Tertiary, enabled = false) {
         Text("Disabled Tertiary")
       }
     }

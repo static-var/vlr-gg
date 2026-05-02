@@ -16,9 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardVariant
+import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
+import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import org.koin.mp.KoinPlatform
 
@@ -74,15 +75,15 @@ internal fun RankingsScreen(
 
     when {
       uiState.isLoading -> {
-        StateMessage(text = "Loading rankings…")
+        PrismStateMessage(text = "Loading rankings…")
       }
 
       uiState.errorMessage != null && selectedRanking == null -> {
-        StateMessage(text = uiState.errorMessage ?: "Unable to load rankings.")
+        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load rankings.")
       }
 
       selectedRanking == null -> {
-        StateMessage(text = "No rankings available yet.")
+        PrismStateMessage(text = "No rankings available yet.")
       }
 
       else -> {
@@ -100,7 +101,7 @@ internal fun RankingsScreen(
           items(selectedRanking.teams, key = { it.teamId }) { team ->
             PrismCard(
               modifier = Modifier.fillMaxWidth(),
-              variant = PrismCardVariant.Outlined,
+              style = PrismCardStyle.Outlined,
               onClick = { onTeamSelected(team.teamId) },
             ) {
               Text(
@@ -120,18 +121,6 @@ internal fun RankingsScreen(
       }
     }
   }
-}
-
-@Composable
-private fun StateMessage(
-  text: String,
-) {
-  Text(
-    text = text,
-    modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
-    style = Prism.typography.bodyLarge,
-    color = Prism.color.labelColor,
-  )
 }
 
 @Composable
