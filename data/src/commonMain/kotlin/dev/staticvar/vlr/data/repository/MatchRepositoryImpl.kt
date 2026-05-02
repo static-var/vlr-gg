@@ -4,6 +4,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.data.Matches
 import dev.staticvar.vlr.data.MatchBans
 import dev.staticvar.vlr.data.MatchMapPlayerStats
 import dev.staticvar.vlr.data.MatchMapRounds
@@ -27,6 +28,7 @@ import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.localsource.database.GetMatchWithFavoriteStatus
+import dev.staticvar.vlr.localsource.database.GetMatchesWithFavoriteStatus
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -137,11 +139,21 @@ internal class MatchRepositoryImpl(
     withContext(dispatchers.io) {
       matchDataSource.list().mapCatching { dtos ->
         database.transaction {
-          matchesQueries.deleteAllMatches()
+          val existing = matchesQueries
+            .getMatchesWithFavoriteStatus()
+            .executeAsList()
+            .associateBy { it.id }
+          val remoteIds = mutableSetOf<String>()
+
           dtos.forEach { dto ->
             val entity = dto.toEntity()
-            matchesQueries.insertMatch(entity)
+            if (entity.id.isBlank()) return@forEach
+            remoteIds += entity.id
+            upsertMatch(mergeMatchListEntity(entity, existing[entity.id]))
           }
+
+          val staleIds = existing.keys - remoteIds
+          staleIds.forEach { id -> matchesQueries.deleteMatchById(id) }
         }
       }
     }
@@ -164,7 +176,7 @@ internal class MatchRepositoryImpl(
 
           // Insert updated match
           val matchEntity = dto.toMatchEntity().copy(id = matchId)
-          matchesQueries.insertMatch(matchEntity)
+          upsertMatch(matchEntity)
 
           // Insert related data
           dto.toMapEntities(matchId).forEach { map ->
@@ -268,6 +280,81 @@ internal class MatchRepositoryImpl(
         )
       )
     )
+
+  private fun mergeMatchListEntity(
+    entity: Matches,
+    current: GetMatchesWithFavoriteStatus?
+  ): Matches {
+    if (current == null) return entity
+    return entity.copy(
+      event_id = entity.event_id ?: current.event_id,
+      event_logo_url = entity.event_logo_url.ifBlank { current.event_logo_url },
+      stage = entity.stage.ifBlank { current.stage },
+      status = entity.status.ifBlank { current.status },
+      eta = entity.eta ?: current.eta,
+      note = entity.note.ifBlank { current.note },
+      patch = entity.patch ?: current.patch,
+      team1_id = entity.team1_id.ifBlank { current.team1_id },
+      team1_name = entity.team1_name.ifBlank { current.team1_name },
+      team1_logo_url = entity.team1_logo_url.ifBlank { current.team1_logo_url },
+      team1_score = entity.team1_score ?: current.team1_score,
+      team2_id = entity.team2_id.ifBlank { current.team2_id },
+      team2_name = entity.team2_name.ifBlank { current.team2_name },
+      team2_logo_url = entity.team2_logo_url.ifBlank { current.team2_logo_url },
+      team2_score = entity.team2_score ?: current.team2_score,
+      map_count = entity.map_count.takeIf { it > 0 } ?: current.map_count,
+      last_updated = entity.last_updated
+    )
+  }
+
+  private fun upsertMatch(entity: Matches) {
+    matchesQueries.updateMatch(
+      event_id = entity.event_id,
+      event_name = entity.event_name,
+      event_logo_url = entity.event_logo_url,
+      series = entity.series,
+      stage = entity.stage,
+      status = entity.status,
+      time = entity.time,
+      eta = entity.eta,
+      note = entity.note,
+      patch = entity.patch,
+      team1_id = entity.team1_id,
+      team1_name = entity.team1_name,
+      team1_logo_url = entity.team1_logo_url,
+      team1_score = entity.team1_score,
+      team2_id = entity.team2_id,
+      team2_name = entity.team2_name,
+      team2_logo_url = entity.team2_logo_url,
+      team2_score = entity.team2_score,
+      map_count = entity.map_count,
+      last_updated = entity.last_updated,
+      id = entity.id
+    )
+    matchesQueries.insertMatchIfMissing(
+      id = entity.id,
+      event_id = entity.event_id,
+      event_name = entity.event_name,
+      event_logo_url = entity.event_logo_url,
+      series = entity.series,
+      stage = entity.stage,
+      status = entity.status,
+      time = entity.time,
+      eta = entity.eta,
+      note = entity.note,
+      patch = entity.patch,
+      team1_id = entity.team1_id,
+      team1_name = entity.team1_name,
+      team1_logo_url = entity.team1_logo_url,
+      team1_score = entity.team1_score,
+      team2_id = entity.team2_id,
+      team2_name = entity.team2_name,
+      team2_logo_url = entity.team2_logo_url,
+      team2_score = entity.team2_score,
+      map_count = entity.map_count,
+      last_updated = entity.last_updated
+    )
+  }
 
   private fun determineWinner(team1Score: Long?, team2Score: Long?, isTeam1: Boolean): Boolean? {
     if (team1Score == null || team2Score == null) return null

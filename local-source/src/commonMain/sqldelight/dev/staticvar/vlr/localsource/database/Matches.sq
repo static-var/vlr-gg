@@ -138,6 +138,39 @@ CREATE TABLE favorite_matches (
 insertMatch:
 INSERT OR REPLACE INTO matches VALUES ?;
 
+insertMatchIfMissing:
+INSERT OR IGNORE INTO matches(
+    id, event_id, event_name, event_logo_url, series, stage, status, time, eta,
+    note, patch, team1_id, team1_name, team1_logo_url, team1_score,
+    team2_id, team2_name, team2_logo_url, team2_score, map_count, last_updated
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateMatch:
+UPDATE matches
+SET
+    event_id = ?,
+    event_name = ?,
+    event_logo_url = ?,
+    series = ?,
+    stage = ?,
+    status = ?,
+    time = ?,
+    eta = ?,
+    note = ?,
+    patch = ?,
+    team1_id = ?,
+    team1_name = ?,
+    team1_logo_url = ?,
+    team1_score = ?,
+    team2_id = ?,
+    team2_name = ?,
+    team2_logo_url = ?,
+    team2_score = ?,
+    map_count = ?,
+    last_updated = ?
+WHERE id = ?;
+
 -- Get all matches with favorite status
 getMatchesWithFavoriteStatus:
 SELECT

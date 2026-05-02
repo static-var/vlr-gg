@@ -121,7 +121,7 @@ class MatchRepositoryImplTest {
 
     dataSource.detailResults["match1"] = Result.success(
       MatchDetailsDto(
-        id = "match1",
+        id = "",
         event = EventDto(
           id = "event1",
           name = "Champions",
@@ -221,6 +221,48 @@ class MatchRepositoryImplTest {
     assertEquals("Grand final", stored.note)
     assertEquals(3L, stored.map_count)
     assertEquals("COMPLETED", stored.status)
+
+    assertTrue(repository.refreshMatches().isSuccess)
+    val storedAfterListRefresh = database.matchesQueries.getMatchWithFavoriteStatus("match1").executeAsOne()
+    assertEquals("Grand final", storedAfterListRefresh.note)
+    assertEquals("Playoffs", storedAfterListRefresh.stage)
+    assertEquals("event.png", storedAfterListRefresh.event_logo_url)
+    assertEquals(3L, storedAfterListRefresh.map_count)
+    assertEquals(1, database.matchesQueries.getMatchMaps("match1").executeAsList().size)
+    assertEquals(1, database.matchesQueries.getMatchRounds("match1").executeAsList().size)
+    assertEquals(1, database.matchesQueries.getMatchPlayerStats("match1").executeAsList().size)
+    assertEquals(1, database.matchesQueries.getMatchBans("match1").executeAsList().size)
+    assertEquals(2, database.matchesQueries.getMatchVideos("match1").executeAsList().size)
+    assertEquals(1, database.matchesQueries.getPreviousEncounters("match1").executeAsList().size)
+  }
+
+  @Test
+  fun refreshMatches_preservesFavoriteFlag() = runTest(dispatcher) {
+    dataSource.listResult = Result.success(
+      listOf(
+        MatchPreviewDto(
+          id = "match1",
+          event = "Champions",
+          series = "Stage 1",
+          status = MatchStatus.UPCOMING,
+          team1 = TeamDto(id = "t1", name = "Alpha", img = "alpha.png"),
+          team2 = TeamDto(id = "t2", name = "Beta", img = "beta.png"),
+          time = "2025-01-01",
+          eventId = "event1"
+        )
+      )
+    )
+
+    assertTrue(repository.refreshMatches().isSuccess)
+    assertTrue(repository.addToFavorites("match1").isSuccess)
+    assertTrue(repository.refreshMatches().isSuccess)
+
+    repository.getMatches().test {
+      val emission = awaitItem()
+      val match = emission.first { it.id == "match1" }
+      assertTrue(match.isFavorite)
+      cancelAndIgnoreRemainingEvents()
+    }
   }
 
   private class TestDispatcherProvider(
