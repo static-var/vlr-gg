@@ -44,7 +44,7 @@ kotlin {
         implementation(libs.koin.core)
         implementation(libs.kotlinx.datetime)
 
-        implementation("app.cash.sqldelight:coroutines-extensions:2.1.0")
+        implementation(libs.sqldelight.coroutines)
 
         implementation(projects.core)
         implementation(projects.domain)
@@ -71,7 +71,7 @@ kotlin {
     val desktopTest by getting {
       dependencies {
         implementation(kotlin("test-junit"))
-        implementation("app.cash.sqldelight:sqlite-driver:2.1.0")
+        implementation(libs.sqldelight.sqlite.driver)
       }
     }
   }
