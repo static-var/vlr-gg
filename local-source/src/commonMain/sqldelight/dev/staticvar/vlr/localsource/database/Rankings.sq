@@ -3,6 +3,9 @@
 CREATE TABLE rankings (
     team_id TEXT NOT NULL,
     region TEXT NOT NULL,
+    team_name TEXT NOT NULL DEFAULT '',
+    team_logo TEXT NOT NULL DEFAULT '',
+    country TEXT NOT NULL DEFAULT '',
     rank INTEGER NOT NULL,
     points TEXT NOT NULL,
     last_updated INTEGER NOT NULL DEFAULT 0,
@@ -17,6 +20,9 @@ CREATE TABLE standings (
     year INTEGER NOT NULL,
     circuit TEXT NOT NULL,
     region TEXT NOT NULL,
+    team_name TEXT NOT NULL DEFAULT '',
+    team_logo TEXT NOT NULL DEFAULT '',
+    country TEXT NOT NULL DEFAULT '',
     rank INTEGER NOT NULL,
     points TEXT NOT NULL,
     last_updated INTEGER NOT NULL DEFAULT 0,
@@ -34,6 +40,10 @@ insertRanking:
 INSERT OR REPLACE INTO rankings(team_id, region, rank, points, last_updated)
 VALUES (?, ?, ?, ?, ?);
 
+insertRankingDetails:
+INSERT OR REPLACE INTO rankings(team_id, region, team_name, team_logo, country, rank, points, last_updated)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
 getRankingsByRegion:
 SELECT * FROM rankings WHERE region = :region ORDER BY rank ASC;
 
@@ -49,6 +59,10 @@ DELETE FROM rankings;
 insertStanding:
 INSERT OR REPLACE INTO standings(team_id, year, circuit, region, rank, points, last_updated)
 VALUES (?, ?, ?, ?, ?, ?, ?);
+
+insertStandingDetails:
+INSERT OR REPLACE INTO standings(team_id, year, circuit, region, team_name, team_logo, country, rank, points, last_updated)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 getStandingsByYearAndRegion:
 SELECT * FROM standings WHERE year = :year AND region = :region ORDER BY rank ASC;

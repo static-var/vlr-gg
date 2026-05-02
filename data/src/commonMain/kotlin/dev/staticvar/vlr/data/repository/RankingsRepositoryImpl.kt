@@ -44,9 +44,12 @@ internal class RankingsRepositoryImpl(
           rankingDtos.forEach { ranking ->
             ranking.teams.forEach { team ->
               val entity = team.toEntity(ranking.region)
-              rankingsQueries.insertRanking(
+              rankingsQueries.insertRankingDetails(
                 team_id = entity.team_id,
                 region = entity.region,
+                team_name = entity.team_name,
+                team_logo = entity.team_logo,
+                country = entity.country,
                 rank = entity.rank,
                 points = entity.points,
                 last_updated = entity.last_updated

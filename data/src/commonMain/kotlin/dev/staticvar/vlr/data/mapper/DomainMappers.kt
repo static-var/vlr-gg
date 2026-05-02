@@ -565,9 +565,9 @@ internal fun List<Rankings>.toRegionalRankings(): List<RegionalRanking> =
 private fun Rankings.toTeamRanking(): TeamRanking =
   TeamRanking(
     teamId = team_id,
-    teamName = "",
-    teamLogo = "",
-    country = "",
+    teamName = team_name,
+    teamLogo = team_logo,
+    country = country,
     rank = rank.toInt(),
     points = points
   )
@@ -730,9 +730,9 @@ internal fun aggregateCircuitRegion(
 private fun Standings.toCircuitTeam(): CircuitTeam =
   CircuitTeam(
     id = team_id,
-    name = "",
-    logo = "",
+    name = team_name,
+    logo = team_logo,
     rank = rank.toInt(),
     points = points.toInt(),
-    country = ""
+    country = country
   )

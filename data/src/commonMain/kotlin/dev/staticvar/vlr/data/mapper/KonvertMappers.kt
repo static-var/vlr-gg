@@ -88,6 +88,9 @@ internal fun TeamRankingDto.toEntity(region: String): Rankings =
   Rankings(
     team_id = id.toString(),
     region = region,
+    team_name = name,
+    team_logo = logo,
+    country = country,
     rank = rank.toLong(),
     points = points.toString(),
     last_updated = Clock.System.now().toEpochMilliseconds()
@@ -101,6 +104,9 @@ internal fun TeamStandingDto.toEntity(year: Int, circuit: String, region: String
     year = year.toLong(),
     circuit = circuit,
     region = region,
+    team_name = name,
+    team_logo = logo,
+    country = country,
     rank = rank.toLong(),
     points = points.toString(),
     last_updated = Clock.System.now().toEpochMilliseconds()

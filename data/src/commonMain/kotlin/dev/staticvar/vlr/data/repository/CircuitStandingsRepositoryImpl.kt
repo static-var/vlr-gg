@@ -58,11 +58,14 @@ internal class CircuitStandingsRepositoryImpl(
                 circuit = circuit.region,
                 region = circuit.region
               )
-              rankingsQueries.insertStanding(
+              rankingsQueries.insertStandingDetails(
                 team_id = entity.team_id,
                 year = entity.year,
                 circuit = entity.circuit,
                 region = entity.region,
+                team_name = entity.team_name,
+                team_logo = entity.team_logo,
+                country = entity.country,
                 rank = entity.rank,
                 points = entity.points,
                 last_updated = entity.last_updated

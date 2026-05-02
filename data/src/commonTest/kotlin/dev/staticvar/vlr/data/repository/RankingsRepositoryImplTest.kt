@@ -74,6 +74,8 @@ class RankingsRepositoryImplTest {
 
     val na = database.rankingsQueries.getRankingsByRegion("NA").executeAsList()
     assertEquals(listOf(1, 2), na.map { it.rank.toInt() })
+    assertEquals("Alpha", na.first().team_name)
+    assertEquals("US", na.first().country)
     val apac = database.rankingsQueries.getRankingsByRegion("APAC").executeAsList()
     assertEquals(1, apac.size)
     assertTrue(database.rankingsQueries.getRankingsByRegion("EU").executeAsList().isEmpty())
@@ -81,15 +83,45 @@ class RankingsRepositoryImplTest {
 
   @Test
   fun getAllRankings_groupsByRegion() = runTest(dispatcher) {
-    database.rankingsQueries.insertRanking("team1", "NA", 1L, "100", 0L)
-    database.rankingsQueries.insertRanking("team2", "NA", 2L, "80", 0L)
-    database.rankingsQueries.insertRanking("team3", "EMEA", 1L, "90", 0L)
+    database.rankingsQueries.insertRankingDetails(
+      "team1",
+      "NA",
+      "Alpha",
+      "alpha.png",
+      "US",
+      1L,
+      "100",
+      0L
+    )
+    database.rankingsQueries.insertRankingDetails(
+      "team2",
+      "NA",
+      "Beta",
+      "beta.png",
+      "CA",
+      2L,
+      "80",
+      0L
+    )
+    database.rankingsQueries.insertRankingDetails(
+      "team3",
+      "EMEA",
+      "Gamma",
+      "gamma.png",
+      "DE",
+      1L,
+      "90",
+      0L
+    )
 
     repository.getAllRankings().test {
       val emission = awaitItem()
       assertEquals(2, emission.size)
       val na = emission.first { it.region == "NA" }
       assertEquals(listOf(1, 2), na.teams.map { it.rank })
+      assertEquals(listOf("Alpha", "Beta"), na.teams.map { it.teamName })
+      assertEquals(listOf("alpha.png", "beta.png"), na.teams.map { it.teamLogo })
+      assertEquals(listOf("US", "CA"), na.teams.map { it.country })
       val emea = emission.first { it.region == "EMEA" }
       assertEquals(listOf("team3"), emea.teams.map { it.teamId })
       cancelAndIgnoreRemainingEvents()
