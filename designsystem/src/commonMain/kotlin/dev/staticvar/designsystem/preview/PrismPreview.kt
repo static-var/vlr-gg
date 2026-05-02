@@ -24,10 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
  * Note: Preview names will show as "variant 0", "variant 1", etc.
  * This is a limitation of Compose Preview - it cannot dynamically
  * name previews based on parameter values.
- *
- * Note: Android Studio Preview can fall back to system fonts for
- * fonts loaded via `org.jetbrains.compose.resources.Font` from
- * `composeResources`. Validate final typography on-device/desktop.
  */
 @Preview(name = "Prism Themes", group = "Prism", showBackground = true)
 public annotation class PrismPreview
