@@ -4,8 +4,10 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.cash.turbine.test
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.data.Events
+import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.common.EventStatus
+import dev.staticvar.vlr.remotesource.common.MatchStatus
 import dev.staticvar.vlr.remotesource.events.EventDataSource
 import dev.staticvar.vlr.remotesource.events.EventDetailsDto
 import dev.staticvar.vlr.remotesource.events.EventListDto
@@ -189,6 +191,8 @@ class EventRepositoryImplTest {
             id = "match1",
             time = "10:00",
             date = "2025-01-02",
+            eta = "2h",
+            status = MatchStatus.COMPLETED,
             stage = "Group",
             round = "Upper",
             teams = listOf(
@@ -224,22 +228,39 @@ class EventRepositoryImplTest {
       val refreshResult = repository.refreshEventDetails("event1")
       assertTrue(refreshResult.isSuccess)
       advanceUntilIdle()
+      assertEquals(1, database.eventsQueries.getEventMatches("event1").executeAsList().size)
 
+      var updated: EventDetails? = null
       for (i in 0 until 5) {
         val details = awaitItem()
         if (
           details?.prizes?.isNotEmpty() == true &&
           details.teams.isNotEmpty() &&
-          details.standings.isNotEmpty()
+          details.standings.isNotEmpty() &&
+          details.matches.isNotEmpty()
         ) {
-          assertEquals("Subtitle", details.subtitle)
-          assertEquals(1, details.prizes.size)
-          assertEquals(1, details.teams.size)
-          assertEquals(1, details.standings.size)
+          updated = details
           cancelAndIgnoreRemainingEvents()
           break
         }
       }
+      val details = requireNotNull(updated)
+      assertEquals("Subtitle", details.subtitle)
+      assertEquals(1, details.prizes.size)
+      assertEquals(1, details.teams.size)
+      assertEquals(1, details.standings.size)
+      assertEquals(1, details.matches.size)
+      val match = details.matches.first()
+      assertEquals("match1", match.matchId)
+      assertEquals("10:00", match.time)
+      assertEquals("2025-01-02", match.date)
+      assertEquals("2h", match.eta)
+      assertEquals("completed", match.status)
+      assertEquals("Upper", match.round)
+      assertEquals("Group", match.stage)
+      assertEquals(listOf("Team A", "Team B"), match.teams.map { it.name })
+      assertEquals(listOf("NA", "EU"), match.teams.map { it.region })
+      assertEquals(listOf(2, 1), match.teams.map { it.score })
     }
   }
 

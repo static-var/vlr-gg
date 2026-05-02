@@ -663,14 +663,26 @@ private fun EventStandings.toDomain(): EventStanding =
 private fun EventMatches.toDomain(): EventMatch =
   EventMatch(
     matchId = match_id,
-    time = "",
-    date = "",
-    eta = null,
-    status = "",
-    teams = emptyList(),
+    time = time,
+    date = date,
+    eta = eta,
+    status = status,
+    teams = listOfNotNull(
+      team1_name.toEventMatchTeam(team1_region, team1_score),
+      team2_name.toEventMatchTeam(team2_region, team2_score)
+    ),
     round = round,
     stage = stage
   )
+
+private fun String.toEventMatchTeam(region: String, score: Long?): EventMatchTeam? =
+  takeIf { it.isNotBlank() }?.let {
+    EventMatchTeam(
+      name = it,
+      region = region,
+      score = score?.toInt()
+    )
+  }
 
 // ============================================================================
 // CIRCUIT STANDINGS MAPPERS

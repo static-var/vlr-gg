@@ -71,10 +71,19 @@ CREATE TABLE event_matches (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     event_id TEXT NOT NULL,
     match_id TEXT NOT NULL,
+    time TEXT NOT NULL DEFAULT '',
+    date TEXT NOT NULL DEFAULT '',
+    eta TEXT,
+    status TEXT NOT NULL DEFAULT '',
+    team1_name TEXT NOT NULL DEFAULT '',
+    team1_region TEXT NOT NULL DEFAULT '',
+    team1_score INTEGER,
+    team2_name TEXT NOT NULL DEFAULT '',
+    team2_region TEXT NOT NULL DEFAULT '',
+    team2_score INTEGER,
     round TEXT NOT NULL DEFAULT '',
     stage TEXT NOT NULL DEFAULT '',
     FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE,
-    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE,
     UNIQUE(event_id, match_id)
 );
 
@@ -183,6 +192,15 @@ DELETE FROM event_standings WHERE event_id = :eventId;
 insertEventMatch:
 INSERT INTO event_matches(event_id, match_id, round, stage)
 VALUES (?, ?, ?, ?);
+
+insertEventMatchDetails:
+INSERT OR REPLACE INTO event_matches(
+    event_id, match_id, time, date, eta, status,
+    team1_name, team1_region, team1_score,
+    team2_name, team2_region, team2_score,
+    round, stage
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 getEventMatches:
 SELECT * FROM event_matches WHERE event_id = :eventId;

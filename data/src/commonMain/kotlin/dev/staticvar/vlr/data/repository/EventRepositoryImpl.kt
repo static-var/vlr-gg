@@ -12,6 +12,7 @@ import dev.staticvar.vlr.data.Events
 import dev.staticvar.vlr.data.mapper.aggregateEventDetails
 import dev.staticvar.vlr.data.mapper.toEntity
 import dev.staticvar.vlr.data.mapper.toEventEntity
+import dev.staticvar.vlr.data.mapper.toEventMatchLinkEntities
 import dev.staticvar.vlr.data.mapper.toEventPreview
 import dev.staticvar.vlr.data.mapper.toPrizeEntities
 import dev.staticvar.vlr.data.mapper.toStandingEntities
@@ -178,7 +179,24 @@ internal class EventRepositoryImpl(
             )
           }
 
-          // Event match links depend on match data being present locally; omit storing when missing.
+          normalizedDto.toEventMatchLinkEntities().forEach { match ->
+            eventsQueries.insertEventMatchDetails(
+              event_id = match.event_id,
+              match_id = match.match_id,
+              time = match.time,
+              date = match.date,
+              eta = match.eta,
+              status = match.status,
+              team1_name = match.team1_name,
+              team1_region = match.team1_region,
+              team1_score = match.team1_score,
+              team2_name = match.team2_name,
+              team2_region = match.team2_region,
+              team2_score = match.team2_score,
+              round = match.round,
+              stage = match.stage
+            )
+          }
         }
       }
     }

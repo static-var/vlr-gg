@@ -16,7 +16,6 @@ import dev.staticvar.vlr.remotesource.common.MatchStatus
 import dev.staticvar.vlr.remotesource.events.EventDetailsDto
 import dev.staticvar.vlr.remotesource.events.EventListDto
 import dev.staticvar.vlr.remotesource.events.EventMatchDto
-import dev.staticvar.vlr.remotesource.events.EventMatchTeamDto
 import dev.staticvar.vlr.remotesource.events.EventPrizeDto
 import dev.staticvar.vlr.remotesource.events.EventStandingsEntryDto
 import dev.staticvar.vlr.remotesource.events.EventTeamDto
@@ -112,10 +111,22 @@ internal fun EventDetailsDto.toEventMatchLinkEntities(): List<EventMatches> =
 
 private fun EventMatchDto.toLinkEntity(parentEventId: String): EventMatches? =
   id.takeIf { it.isNotBlank() }?.let { matchId ->
+    val firstTeam = teams.getOrNull(0)
+    val secondTeam = teams.getOrNull(1)
     EventMatches(
       id = 0,
       event_id = parentEventId,
       match_id = matchId,
+      time = time,
+      date = date,
+      eta = eta,
+      status = status?.wireName ?: "",
+      team1_name = firstTeam?.name ?: "",
+      team1_region = firstTeam?.region ?: "",
+      team1_score = firstTeam?.score?.toLong(),
+      team2_name = secondTeam?.name ?: "",
+      team2_region = secondTeam?.region ?: "",
+      team2_score = secondTeam?.score?.toLong(),
       round = round,
       stage = stage,
     )
@@ -215,5 +226,3 @@ internal fun PlayerDetailsDto.toPlayerEntity(id: String, now: Long = Clock.Syste
 // - PlayerTeamRefDto.toEntity(playerId: String, isCurrent: Boolean?): PlayerTeamHistory
 
 // ----------------------------- Shared Helpers -----------------------------
-
-private fun EventMatchTeamDto.safeScore(): Long = this.score?.toLong() ?: 0L

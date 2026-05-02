@@ -2,6 +2,7 @@ package dev.staticvar.vlr.data.mapper
 
 import dev.staticvar.vlr.localsource.database.Events
 import dev.staticvar.vlr.remotesource.common.EventStatus
+import dev.staticvar.vlr.remotesource.common.MatchStatus
 import dev.staticvar.vlr.remotesource.events.EventDetailsDto
 import dev.staticvar.vlr.remotesource.events.EventMatchDto
 import dev.staticvar.vlr.remotesource.events.EventMatchTeamDto
@@ -40,8 +41,8 @@ class EventTeamMappersTest {
           id = "M1",
           time = "12:00",
           date = "2024-01-02",
-          eta = null,
-          status = null,
+          eta = "1h",
+          status = MatchStatus.LIVE,
           teams = listOf(
             EventMatchTeamDto("Team 1","na",13),
             EventMatchTeamDto("Team 2","na",7)
@@ -78,9 +79,16 @@ class EventTeamMappersTest {
     val matchLinks = dto.toEventMatchLinkEntities()
     assertEquals(1, matchLinks.size)
     assertEquals("M1", matchLinks.first().match_id)
-
-  // only link entity validation (no full match entity mapping here)
-  assertEquals("M1", matchLinks.first().match_id)
+    val matchLink = matchLinks.first()
+    assertEquals("12:00", matchLink.time)
+    assertEquals("2024-01-02", matchLink.date)
+    assertEquals("1h", matchLink.eta)
+    assertEquals("live", matchLink.status)
+    assertEquals("Team 1", matchLink.team1_name)
+    assertEquals("na", matchLink.team1_region)
+    assertEquals(13L, matchLink.team1_score)
+    assertEquals("Team 2", matchLink.team2_name)
+    assertEquals(7L, matchLink.team2_score)
   }
 
   @Test
