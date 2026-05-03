@@ -4,12 +4,15 @@
  */
 package dev.staticvar.vlr.sharedui.component.common
 
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Instant
 
 public fun formatMatchPreviewTime(isoUtcTime: String?, timeZone: TimeZone = TimeZone.currentSystemDefault()): String? {
-  val instant = isoUtcTime?.let { time -> runCatching { Instant.parse(time) }.getOrNull() } ?: return null
+  val instant = isoUtcTime
+    ?.takeIf(String::isNotBlank)
+    ?.let { time -> runCatching { Instant.parse(time) }.getOrNull() }
+    ?: return null
   val dateTime = instant.toLocalDateTime(timeZone)
 
   return "${dateTime.month.name.shortName()} ${dateTime.dayOfMonth}, " +
