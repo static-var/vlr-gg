@@ -36,6 +36,8 @@ include(":iosApp")
 
 include(":shared")
 
+include(":shared-ui")
+
 include(":domain")
 
 include(":data")
