@@ -22,6 +22,7 @@ internal data class PrismFontFamilies(
   val title: FontFamily,
   val body: FontFamily,
   val label: FontFamily,
+  val labelAlt: FontFamily,
   val caption: FontFamily,
   val button: FontFamily,
 )
@@ -38,6 +39,7 @@ internal fun rememberPrismFontFamilies(): PrismFontFamilies {
       title = displayFont,
       body = bodyFont,
       label = bodyFont,
+      labelAlt = displayFont,
       caption = bodyFont,
       button = bodyFont,
     )

@@ -32,6 +32,7 @@ public data class PrismTypography(
   val bodyLarge: TextStyle,
   val bodySmall: TextStyle,
   val label: TextStyle,
+  val labelAlt: TextStyle,
   val caption: TextStyle,
   val button: TextStyle,
   val numericPrimary: TextStyle,

@@ -71,6 +71,14 @@ internal object DarkTypography {
       lineHeight = 14.sp,
       letterSpacing = 0.5.sp,
     ),
+    labelAlt =
+    TextStyle(
+      fontFamily = fonts.labelAlt,
+      fontWeight = FontWeight.Normal,
+      fontSize = 12.sp,
+      lineHeight = 14.sp,
+      letterSpacing = 0.5.sp,
+    ),
     caption =
     TextStyle(
       fontFamily = fonts.caption,
