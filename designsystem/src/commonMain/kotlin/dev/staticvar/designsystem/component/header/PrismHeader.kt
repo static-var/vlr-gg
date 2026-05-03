@@ -15,7 +15,7 @@ public fun PrismHeader(modifier: Modifier = Modifier, text: String) {
   Text(
     "// $text",
     modifier.padding(Prism.dimens.spacingXs),
-    style = Prism.typography.cardTitle,
+    style = Prism.typography.labelAlt,
     color = Prism.color.labelColor,
   )
 }
