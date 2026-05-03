@@ -46,6 +46,7 @@ kotlin {
         implementation(compose.ui)
         implementation(compose.components.resources)
         implementation(libs.compose.ui.tooling.preview)
+        implementation(libs.kotlinx.datetime)
         implementation(projects.designsystem)
         implementation(projects.domain)
       }
