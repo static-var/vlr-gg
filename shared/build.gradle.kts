@@ -60,6 +60,7 @@ kotlin {
         implementation(projects.localSource)
         implementation(projects.remoteSource)
         implementation(projects.data)
+        implementation(projects.sharedUi)
         implementation(projects.featureAbout)
         implementation(projects.featureEvents)
         implementation(projects.featureMatches)

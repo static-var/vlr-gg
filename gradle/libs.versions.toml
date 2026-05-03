@@ -5,6 +5,7 @@ compose-multiplatform = "1.10.3"
 detektCompose = "0.5.8"
 benchmark = "1.5.0-alpha05"
 composeIcons = "1.1.1"
+coil = "3.4.0"
 detekt = "1.23.8"
 ktlint = "1.8.0"
 gradle = "9.2.0"
@@ -76,6 +77,8 @@ m3 = { module = "androidx.compose.material3:material3" }
 
 compose-icons = { module = "androidx.compose.material:material-icons-extended" }
 compose-icons-lineawesome = { module = "br.com.devsrsouza.compose.icons:line-awesome", version.ref = "composeIcons" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
 core = { module = "androidx.core:core-ktx", version = "1.18.0" }
 app-compat = { module = "androidx.appcompat:appcompat", version = "1.7.1" }

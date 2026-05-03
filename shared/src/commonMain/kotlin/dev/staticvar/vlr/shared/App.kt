@@ -10,6 +10,7 @@ import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.vlr.shared.navigation.AppNavHost
 import dev.staticvar.vlr.shared.navigation.rememberVlrAppState
+import dev.staticvar.vlr.sharedui.image.ProvideSharedImageLoader
 
 /**
  * Main entry point for the shared Compose UI.
@@ -17,6 +18,8 @@ import dev.staticvar.vlr.shared.navigation.rememberVlrAppState
  */
 @Composable
 public fun App() {
+  ProvideSharedImageLoader()
+
   val appState = rememberVlrAppState()
   val variant = if (isSystemInDarkTheme()) PrismVariant.Dark else PrismVariant.Light
   PrismTheme(variant = variant) {

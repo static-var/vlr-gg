@@ -46,6 +46,8 @@ kotlin {
         implementation(compose.ui)
         implementation(compose.components.resources)
         implementation(libs.compose.ui.tooling.preview)
+        implementation(libs.coil.compose)
+        implementation(libs.coil.network.ktor3)
         implementation(libs.kotlinx.datetime)
         implementation(projects.designsystem)
         implementation(projects.domain)
@@ -61,12 +63,20 @@ kotlin {
     val androidMain by getting {
       dependencies {
         implementation(libs.activity.compose)
+        implementation(libs.ktor.okhttp)
       }
     }
 
     val desktopMain by getting {
       dependencies {
         implementation(compose.desktop.currentOs)
+        implementation(libs.ktor.java)
+      }
+    }
+
+    val iosMain by getting {
+      dependencies {
+        implementation(libs.ktor.darwin)
       }
     }
   }
