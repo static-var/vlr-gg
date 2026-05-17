@@ -19,6 +19,8 @@ import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
 import dev.staticvar.designsystem.component.divider.PrismDividerStyle
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
@@ -44,7 +46,15 @@ public fun MatchPreviewItem(modifier: Modifier = Modifier, matchPreview: MatchPr
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-      PrismHeader(text = matchPreview.event)
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+      ) {
+        if (matchPreview.isFavorite) {
+          PrismFavoriteIcon(selected = true, size = PrismFavoriteIconSize.Small)
+        }
+        PrismHeader(text = matchPreview.event)
+      }
       val time = formatMatchPreviewTime(isoUtcTime = matchPreview.time)
       when (matchPreview.status) {
         MatchStatus.LIVE -> PrismTag(text = "LIVE", style = PrismTagStyle.Accent)

@@ -33,14 +33,15 @@ internal fun MatchPreviewItemPreview(@PreviewParameter(PrismPreviewProvider::cla
         .padding(16.dp),
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-      MatchPreviewItem(matchPreview = sampleMatchPreview(status = MatchStatus.LIVE))
+      MatchPreviewItem(matchPreview = sampleMatchPreview(status = MatchStatus.LIVE, isFavorite = true))
       MatchPreviewItem(matchPreview = sampleMatchPreview(status = MatchStatus.UPCOMING))
-      MatchPreviewItem(matchPreview = sampleMatchPreview(status = MatchStatus.COMPLETED))
+      MatchPreviewItem(matchPreview = sampleMatchPreview(status = MatchStatus.COMPLETED, isFavorite = true))
+      MatchPreviewItem(matchPreview = sampleMatchPreview(status = MatchStatus.UPCOMING))
     }
   }
 }
 
-private fun sampleMatchPreview(status: MatchStatus): MatchPreview = MatchPreview(
+private fun sampleMatchPreview(status: MatchStatus, isFavorite: Boolean = false): MatchPreview = MatchPreview(
   id = "542270",
   event = "Valorant Champions 2025",
   series = "Playoffs-Upper Final",
@@ -59,6 +60,7 @@ private fun sampleMatchPreview(status: MatchStatus): MatchPreview = MatchPreview
   ),
   time = "2025-10-03T11:00:00Z",
   eventId = "2283",
+  isFavorite = isFavorite,
 )
 
 private fun sampleTeamPreview(id: String, name: String, score: Int?, isWinner: Boolean?): TeamPreview = TeamPreview(
