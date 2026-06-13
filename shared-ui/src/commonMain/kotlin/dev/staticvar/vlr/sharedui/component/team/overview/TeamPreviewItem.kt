@@ -17,8 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
@@ -27,6 +25,7 @@ import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.TeamInfo
+import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 
 /**
@@ -36,72 +35,66 @@ import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 public fun TeamPreviewItem(team: TeamInfo, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
   val upcomingSoonCount = remember(team.upcomingMatches) { team.matchesInNext7Days().size }
 
-  PrismCard(
-    modifier = modifier,
-    style = if (team.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
-    onClick = onClick,
-  ) {
-    Row(
+  FavoriteTicketCardBox(selected = team.isFavorite, modifier = modifier) {
+    PrismCard(
       modifier = Modifier.fillMaxWidth(),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.SpaceBetween,
+      style = if (team.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
+      onClick = onClick,
     ) {
       Row(
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+        horizontalArrangement = Arrangement.SpaceBetween,
       ) {
-        if (team.isFavorite) {
-          PrismFavoriteIcon(selected = true, size = PrismFavoriteIconSize.Small)
-        }
         PrismHeader(text = team.region.ifBlank { "team" })
+        if (team.rank > 0) {
+          PrismTag(text = "#${team.rank}", style = PrismTagStyle.Accent)
+        } else {
+          PrismTag(text = "unranked")
+        }
       }
-      if (team.rank > 0) {
-        PrismTag(text = "#${team.rank}", style = PrismTagStyle.Accent)
-      } else {
-        PrismTag(text = "unranked")
-      }
-    }
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = Prism.dimens.spacingS),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-    ) {
-      SharedNetworkIcon(
-        imageUrl = team.logoUrl,
-        contentDescription = team.name,
-        size = PrismIconSize.Large,
-        style = PrismIconStyle.Bordered,
-        tint = if (team.isFavorite) PrismIconTint.Alt else PrismIconTint.Primary,
-      )
-      Column(modifier = Modifier.weight(1f)) {
-        Text(
-          text = team.name,
-          style = Prism.typography.cardTitle,
-          color = Prism.color.titleColor,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-        )
-        Text(
-          text = team.subtitle,
-          modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-          style = Prism.typography.bodySmall,
-          color = Prism.color.labelColor,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-        )
-      }
-    }
-    if (team.roster.isNotEmpty() || upcomingSoonCount > 0) {
       Row(
         modifier = Modifier
           .fillMaxWidth()
           .padding(top = Prism.dimens.spacingS),
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       ) {
-        PrismTag(text = "${team.roster.size} players", style = PrismTagStyle.Info)
-        PrismTag(text = "$upcomingSoonCount next 7d", style = PrismTagStyle.Info)
+        SharedNetworkIcon(
+          imageUrl = team.logoUrl,
+          contentDescription = team.name,
+          size = PrismIconSize.Large,
+          style = PrismIconStyle.Bordered,
+          tint = if (team.isFavorite) PrismIconTint.Alt else PrismIconTint.Primary,
+        )
+        Column(modifier = Modifier.weight(1f)) {
+          Text(
+            text = team.name,
+            style = Prism.typography.cardTitle,
+            color = Prism.color.titleColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+          )
+          Text(
+            text = team.subtitle,
+            modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+            style = Prism.typography.bodySmall,
+            color = Prism.color.labelColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+          )
+        }
+      }
+      if (team.roster.isNotEmpty() || upcomingSoonCount > 0) {
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = Prism.dimens.spacingS),
+          horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+        ) {
+          PrismTag(text = "${team.roster.size} players", style = PrismTagStyle.Info)
+          PrismTag(text = "$upcomingSoonCount next 7d", style = PrismTagStyle.Info)
+        }
       }
     }
   }

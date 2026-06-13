@@ -16,8 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
@@ -27,64 +25,59 @@ import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
+import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 
 @Composable
 public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPreview) {
-  PrismCard(
-    modifier = modifier,
-    style = if (eventPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
-  ) {
-    Row(
+  FavoriteTicketCardBox(selected = eventPreview.isFavorite, modifier = modifier) {
+    PrismCard(
       modifier = Modifier.fillMaxWidth(),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.SpaceBetween,
+      style = if (eventPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
     ) {
       Row(
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+        horizontalArrangement = Arrangement.SpaceBetween,
       ) {
-        if (eventPreview.isFavorite) {
-          PrismFavoriteIcon(selected = true, size = PrismFavoriteIconSize.Small)
-        }
         PrismHeader(text = eventPreview.region)
+        PrismTag(text = eventPreview.status.label, style = eventPreview.status.tagStyle)
       }
-      PrismTag(text = eventPreview.status.label, style = eventPreview.status.tagStyle)
-    }
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = Prism.dimens.spacingS),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      SharedNetworkIcon(
-        imageUrl = eventPreview.logoUrl,
-        contentDescription = eventPreview.title,
-        size = PrismIconSize.Large,
-        style = PrismIconStyle.Bordered,
-        tint = PrismIconTint.Primary,
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(top = Prism.dimens.spacingS),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        SharedNetworkIcon(
+          imageUrl = eventPreview.logoUrl,
+          contentDescription = eventPreview.title,
+          size = PrismIconSize.Large,
+          style = PrismIconStyle.Bordered,
+          tint = PrismIconTint.Primary,
+        )
+        Column(modifier = Modifier.padding(start = Prism.dimens.spacingS)) {
+          Text(
+            text = eventPreview.title,
+            style = Prism.typography.cardTitle,
+            color = Prism.color.titleColor,
+          )
+          Text(
+            text = eventPreview.dates,
+            modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+            style = Prism.typography.label,
+            color = Prism.color.bodyColor,
+          )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+      }
+      Text(
+        text = eventPreview.prize,
+        modifier = Modifier.padding(top = Prism.dimens.spacingS),
+        style = Prism.typography.bodySmall,
+        color = Prism.color.labelColor,
       )
-      Column(modifier = Modifier.padding(start = Prism.dimens.spacingS)) {
-        Text(
-          text = eventPreview.title,
-          style = Prism.typography.cardTitle,
-          color = Prism.color.titleColor,
-        )
-        Text(
-          text = eventPreview.dates,
-          modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-          style = Prism.typography.label,
-          color = Prism.color.bodyColor,
-        )
-      }
-      Spacer(modifier = Modifier.weight(1f))
     }
-    Text(
-      text = eventPreview.prize,
-      modifier = Modifier.padding(top = Prism.dimens.spacingS),
-      style = Prism.typography.bodySmall,
-      color = Prism.color.labelColor,
-    )
   }
 }
 

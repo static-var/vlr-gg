@@ -31,6 +31,7 @@ internal fun PrismFavoriteIconPreview(@PreviewParameter(PrismPreviewProvider::cl
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       PrismFavoriteIconPreviewRow()
+      PrismFavoriteIconBarePreviewRow()
     }
   }
 }
@@ -44,5 +45,17 @@ private fun PrismFavoriteIconPreviewRow() {
     PrismFavoriteIcon(selected = true, size = PrismFavoriteIconSize.Medium)
     PrismFavoriteIcon(selected = false, size = PrismFavoriteIconSize.Large)
     PrismFavoriteIcon(selected = true, size = PrismFavoriteIconSize.Large)
+  }
+}
+
+@Composable
+private fun PrismFavoriteIconBarePreviewRow() {
+  Row(horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
+    PrismFavoriteIcon(selected = false, size = PrismFavoriteIconSize.Small, style = PrismFavoriteIconStyle.Bare)
+    PrismFavoriteIcon(selected = true, size = PrismFavoriteIconSize.Small, style = PrismFavoriteIconStyle.Bare)
+    PrismFavoriteIcon(selected = false, size = PrismFavoriteIconSize.Medium, style = PrismFavoriteIconStyle.Bare)
+    PrismFavoriteIcon(selected = true, size = PrismFavoriteIconSize.Medium, style = PrismFavoriteIconStyle.Bare)
+    PrismFavoriteIcon(selected = false, size = PrismFavoriteIconSize.Large, style = PrismFavoriteIconStyle.Bare)
+    PrismFavoriteIcon(selected = true, size = PrismFavoriteIconSize.Large, style = PrismFavoriteIconStyle.Bare)
   }
 }

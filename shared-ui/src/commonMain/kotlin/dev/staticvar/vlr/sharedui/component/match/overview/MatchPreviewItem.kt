@@ -19,8 +19,6 @@ import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
 import dev.staticvar.designsystem.component.divider.PrismDividerStyle
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
@@ -31,55 +29,50 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
+import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 
 @Composable
 public fun MatchPreviewItem(modifier: Modifier = Modifier, matchPreview: MatchPreview) {
-  PrismCard(
-    modifier = modifier,
-    style = if (matchPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
-  ) {
-    Row(
-      modifier = Modifier
-        .fillMaxWidth(),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.SpaceBetween,
+  FavoriteTicketCardBox(selected = matchPreview.isFavorite, modifier = modifier) {
+    PrismCard(
+      modifier = Modifier.fillMaxWidth(),
+      style = if (matchPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
     ) {
       Row(
+        modifier = Modifier
+          .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+        horizontalArrangement = Arrangement.SpaceBetween,
       ) {
-        if (matchPreview.isFavorite) {
-          PrismFavoriteIcon(selected = true, size = PrismFavoriteIconSize.Small)
-        }
         PrismHeader(text = matchPreview.event)
-      }
-      val time = formatMatchPreviewTime(isoUtcTime = matchPreview.time)
-      when (matchPreview.status) {
-        MatchStatus.LIVE -> PrismTag(text = "LIVE", style = PrismTagStyle.Accent)
+        val time = formatMatchPreviewTime(isoUtcTime = matchPreview.time)
+        when (matchPreview.status) {
+          MatchStatus.LIVE -> PrismTag(text = "LIVE", style = PrismTagStyle.Accent)
 
-        MatchStatus.UPCOMING,
-        MatchStatus.COMPLETED,
-        -> time?.let { formattedTime -> PrismTag(text = formattedTime) }
+          MatchStatus.UPCOMING,
+          MatchStatus.COMPLETED,
+          -> time?.let { formattedTime -> PrismTag(text = formattedTime) }
 
-        MatchStatus.UNKNOWN -> Unit
+          MatchStatus.UNKNOWN -> Unit
+        }
       }
-    }
-    ScoreBox(team1 = matchPreview.team1, team2 = matchPreview.team2, state = matchPreview.status)
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(Prism.dimens.spacingXs),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.Center,
-    ) {
-      Text(
-        text = matchPreview.series,
-        style = Prism.typography.label,
-        color = Prism.color.labelColor,
-        modifier = Modifier.padding(Prism.dimens.spacingXs),
-      )
+      ScoreBox(team1 = matchPreview.team1, team2 = matchPreview.team2, state = matchPreview.status)
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(Prism.dimens.spacingXs),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+      ) {
+        Text(
+          text = matchPreview.series,
+          style = Prism.typography.label,
+          color = Prism.color.labelColor,
+          modifier = Modifier.padding(Prism.dimens.spacingXs),
+        )
+      }
     }
   }
 }

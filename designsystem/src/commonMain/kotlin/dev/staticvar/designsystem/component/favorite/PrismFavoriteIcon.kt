@@ -4,7 +4,6 @@
  */
 package dev.staticvar.designsystem.component.favorite
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -37,10 +36,10 @@ public fun PrismFavoriteIcon(
   selected: Boolean,
   modifier: Modifier = Modifier,
   size: PrismFavoriteIconSize = PrismFavoriteIconSize.Medium,
+  style: PrismFavoriteIconStyle = PrismFavoriteIconStyle.Boxed,
   contentDescription: String? = if (selected) "Favorite" else "Not favorite",
 ) {
   val markColor = if (selected) Prism.color.accent else Prism.color.labelColor
-  val containerColor = if (selected) Prism.color.surfaceDim else Prism.color.surface
   val borderColor = Prism.color.stroke
 
   PrismSurface(
@@ -53,9 +52,9 @@ public fun PrismFavoriteIcon(
           Modifier.semantics { this.contentDescription = contentDescription }
         },
       ),
-    color = containerColor,
+    color = style.containerColor(selected = selected),
     shape = Prism.shapes.small,
-    border = BorderStroke(width = Prism.dimens.strokeDefault, color = borderColor),
+    border = style.border(selected = selected),
   ) {
     Box(modifier = Modifier.size(size.containerSize), contentAlignment = Alignment.Center) {
       Canvas(modifier = Modifier.size(size.containerSize)) {
