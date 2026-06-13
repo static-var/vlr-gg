@@ -2,18 +2,19 @@
  * Copyright (c) 2022-2026 Shreyansh Lodha
  * SPDX-License-Identifier: MIT
  */
-package dev.staticvar.vlr.sharedui.component.event.overview
+package dev.staticvar.vlr.sharedui.component.team.overview
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
@@ -25,15 +26,20 @@ import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.vlr.domain.model.EventPreview
-import dev.staticvar.vlr.domain.model.EventStatus
+import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 
+/**
+ * Compact team list item for team indexes, favorites, and ranking drill-downs.
+ */
 @Composable
-public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPreview) {
+public fun TeamPreviewItem(team: TeamInfo, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
+  val upcomingSoonCount = remember(team.upcomingMatches) { team.matchesInNext7Days().size }
+
   PrismCard(
     modifier = modifier,
-    style = if (eventPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
+    style = if (team.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
+    onClick = onClick,
   ) {
     Row(
       modifier = Modifier.fillMaxWidth(),
@@ -44,62 +50,66 @@ public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPr
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
       ) {
-        if (eventPreview.isFavorite) {
+        if (team.isFavorite) {
           PrismFavoriteIcon(selected = true, size = PrismFavoriteIconSize.Small)
         }
-        PrismHeader(text = eventPreview.region)
+        PrismHeader(text = team.region.ifBlank { "team" })
       }
-      PrismTag(text = eventPreview.status.label, style = eventPreview.status.tagStyle)
+      if (team.rank > 0) {
+        PrismTag(text = "#${team.rank}", style = PrismTagStyle.Accent)
+      } else {
+        PrismTag(text = "unranked")
+      }
     }
     Row(
       modifier = Modifier
         .fillMaxWidth()
         .padding(top = Prism.dimens.spacingS),
       verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     ) {
       SharedNetworkIcon(
-        imageUrl = eventPreview.logoUrl,
-        contentDescription = eventPreview.title,
+        imageUrl = team.logoUrl,
+        contentDescription = team.name,
         size = PrismIconSize.Large,
         style = PrismIconStyle.Bordered,
-        tint = PrismIconTint.Primary,
+        tint = if (team.isFavorite) PrismIconTint.Alt else PrismIconTint.Primary,
       )
-      Column(modifier = Modifier.padding(start = Prism.dimens.spacingS)) {
+      Column(modifier = Modifier.weight(1f)) {
         Text(
-          text = eventPreview.title,
+          text = team.name,
           style = Prism.typography.cardTitle,
           color = Prism.color.titleColor,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
         )
         Text(
-          text = eventPreview.dates,
+          text = team.subtitle,
           modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-          style = Prism.typography.label,
-          color = Prism.color.bodyColor,
+          style = Prism.typography.bodySmall,
+          color = Prism.color.labelColor,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
         )
       }
-      Spacer(modifier = Modifier.weight(1f))
     }
-    Text(
-      text = eventPreview.prize,
-      modifier = Modifier.padding(top = Prism.dimens.spacingS),
-      style = Prism.typography.bodySmall,
-      color = Prism.color.labelColor,
-    )
+    if (team.roster.isNotEmpty() || upcomingSoonCount > 0) {
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(top = Prism.dimens.spacingS),
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+      ) {
+        PrismTag(text = "${team.roster.size} players", style = PrismTagStyle.Info)
+        PrismTag(text = "$upcomingSoonCount next 7d", style = PrismTagStyle.Info)
+      }
+    }
   }
 }
 
-private val EventStatus.label: String
-  get() = when (this) {
-    EventStatus.ONGOING -> "ONGOING"
-    EventStatus.UPCOMING -> "UPCOMING"
-    EventStatus.COMPLETED -> "COMPLETED"
-    EventStatus.UNKNOWN -> "UNKNOWN"
-  }
-
-private val EventStatus.tagStyle: PrismTagStyle
-  get() = when (this) {
-    EventStatus.ONGOING -> PrismTagStyle.Danger
-    EventStatus.UPCOMING -> PrismTagStyle.Info
-    EventStatus.COMPLETED -> PrismTagStyle.Success
-    EventStatus.UNKNOWN -> PrismTagStyle.Neutral
-  }
+private val TeamInfo.subtitle: String
+  get() =
+    listOfNotNull(
+      tag.takeIf(String::isNotBlank),
+      country.takeIf(String::isNotBlank),
+    ).joinToString(" • ").ifBlank { "Team profile" }

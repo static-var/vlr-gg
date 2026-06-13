@@ -36,6 +36,7 @@ kotlin {
       dependencies {
         implementation(libs.kotlin.stdlib)
         implementation(libs.coroutines.core)
+        implementation(libs.kotlinx.datetime)
       }
     }
 

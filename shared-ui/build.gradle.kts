@@ -2,11 +2,16 @@
  * Copyright (c) 2022-2026 Shreyansh Lodha
  * SPDX-License-Identifier: MIT
  */
+import org.gradle.api.attributes.Attribute
+import org.gradle.api.attributes.AttributeDisambiguationRule
+import org.gradle.api.attributes.MultipleCandidatesDetails
+
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.android.kotlin.multiplatform.library)
   alias(libs.plugins.compose.multiplatform)
   alias(libs.plugins.compose.compiler)
+  alias(libs.plugins.agentpreview)
   id("vlr.ktlint")
 }
 
@@ -78,6 +83,36 @@ kotlin {
       dependencies {
         implementation(libs.ktor.darwin)
       }
+    }
+  }
+}
+
+abstract class AgentPreviewArtifactTypeRule : AttributeDisambiguationRule<String> {
+  override fun execute(details: MultipleCandidatesDetails<String>) {
+    when {
+      "jar" in details.candidateValues -> details.closestMatch("jar")
+      "android-classes-jar" in details.candidateValues -> details.closestMatch("android-classes-jar")
+    }
+  }
+}
+
+dependencies {
+  attributesSchema {
+    attribute(Attribute.of("artifactType", String::class.java)) {
+      disambiguationRules.add(AgentPreviewArtifactTypeRule::class.java)
+    }
+  }
+}
+
+agentPreview {
+  maxPreviewParameterValues.set(8)
+  accessibilityCheck.set(true)
+  android {
+    viewport("phone", 393, 852)
+    viewport("tablet", 840, 1100)
+    screenshot {
+      cropToContent.set(true)
+      cropPaddingDp.set(20)
     }
   }
 }
