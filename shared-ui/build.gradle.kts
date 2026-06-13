@@ -110,11 +110,18 @@ agentPreview {
   android {
     viewport("phone", 393, 852)
     viewport("tablet", 840, 1100)
+    assetsDirs.from(
+      project(":designsystem").layout.buildDirectory.dir("generated/assets/copyAndroidMainComposeResourcesToAndroidAssets"),
+    )
     screenshot {
       cropToContent.set(true)
       cropPaddingDp.set(20)
     }
   }
+}
+
+tasks.named("captureComposePreviews").configure {
+  dependsOn(":designsystem:copyAndroidMainComposeResourcesToAndroidAssets")
 }
 
 listOf("iosX64", "iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
