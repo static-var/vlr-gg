@@ -27,12 +27,12 @@ internal object DarkPalette {
     contentSecondary = tokens.textSecondary,
     contentTertiary = tokens.textTertiary,
     success = tokens.success,
-    successContainer = tokens.surface,
+    successContainer = tokens.successContainer,
     warning = tokens.warning,
-    warningContainer = tokens.surface,
+    warningContainer = tokens.warningContainer,
     danger = tokens.danger,
-    dangerContainer = tokens.surface,
+    dangerContainer = tokens.dangerContainer,
     info = tokens.info,
-    infoContainer = tokens.surface,
+    infoContainer = tokens.infoContainer,
   )
 }

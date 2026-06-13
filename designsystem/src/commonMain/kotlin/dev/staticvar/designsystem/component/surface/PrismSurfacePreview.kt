@@ -4,6 +4,7 @@
  */
 package dev.staticvar.designsystem.component.surface
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,7 @@ internal fun PrismSurfacePreview(@PreviewParameter(PrismPreviewProvider::class) 
     Column(
       modifier =
       Modifier.fillMaxWidth()
+        .background(Prism.color.background)
         .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {

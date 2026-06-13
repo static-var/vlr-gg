@@ -20,7 +20,11 @@ internal data class LightColorTokens(
   val border: Color = Color(0xFFE5E5E5),
   val borderStrong: Color = Color(0xFF000000),
   val success: Color = Color(0xFF15803D),
+  val successContainer: Color = Color(0xFFDCFCE7),
   val warning: Color = Color(0xFFB45309),
+  val warningContainer: Color = Color(0xFFFEF3C7),
   val danger: Color = Color(0xFFB91C1C),
+  val dangerContainer: Color = Color(0xFFFEE2E2),
   val info: Color = Color(0xFF6D28D9),
+  val infoContainer: Color = Color(0xFFEDE9FE),
 )
