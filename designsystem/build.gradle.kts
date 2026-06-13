@@ -7,6 +7,7 @@ plugins {
   alias(libs.plugins.android.kotlin.multiplatform.library)
   alias(libs.plugins.compose.multiplatform)
   alias(libs.plugins.compose.compiler)
+  alias(libs.plugins.agentpreview)
   id("vlr.detekt")
   id("vlr.ktlint")
 }
@@ -70,6 +71,18 @@ kotlin {
     }
 
     val desktopMain by getting { dependencies { implementation(compose.desktop.currentOs) } }
+  }
+}
+
+agentPreview {
+  maxPreviewParameterValues.set(8)
+  android {
+    viewport("phone", 393, 852)
+    viewport("tablet", 840, 1100)
+    screenshot {
+      cropToContent.set(true)
+      cropPaddingDp.set(20)
+    }
   }
 }
 
