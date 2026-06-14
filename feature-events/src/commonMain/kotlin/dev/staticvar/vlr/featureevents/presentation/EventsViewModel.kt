@@ -33,7 +33,7 @@ public class EventsViewModel(
     scope.launch {
       observeEventListUseCase().collect { events ->
         mutableUiState.update { current ->
-          current.copy(
+          current.withEvents(
             events = events,
             isLoading = false,
             errorMessage = if (events.isNotEmpty()) null else current.errorMessage,
@@ -52,7 +52,7 @@ public class EventsViewModel(
   }
 
   public fun selectFilter(filter: EventStatusFilter) {
-    mutableUiState.update { it.copy(selectedStatus = filter) }
+    mutableUiState.update { it.withSelectedStatus(filter) }
   }
 
   public fun refresh() {
@@ -85,4 +85,28 @@ private fun eventStatusToFilter(status: EventStatus): EventStatusFilter = when (
   EventStatus.UPCOMING -> EventStatusFilter.Upcoming
   EventStatus.COMPLETED -> EventStatusFilter.Completed
   EventStatus.UNKNOWN -> EventStatusFilter.Ongoing
+}
+
+private fun EventsUiState.withEvents(
+  events: List<EventPreview>,
+  isLoading: Boolean,
+  errorMessage: String?,
+): EventsUiState = copy(
+  events = events,
+  filteredEvents = events.filterByStatus(selectedStatus),
+  isLoading = isLoading,
+  errorMessage = errorMessage,
+)
+
+private fun EventsUiState.withSelectedStatus(filter: EventStatusFilter): EventsUiState = copy(
+  selectedStatus = filter,
+  filteredEvents = events.filterByStatus(filter),
+)
+
+private fun List<EventPreview>.filterByStatus(filter: EventStatusFilter): List<EventPreview> = filter { event ->
+  when (filter) {
+    EventStatusFilter.Ongoing -> event.status == EventStatus.ONGOING
+    EventStatusFilter.Upcoming -> event.status == EventStatus.UPCOMING
+    EventStatusFilter.Completed -> event.status == EventStatus.COMPLETED
+  }
 }

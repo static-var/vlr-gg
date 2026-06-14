@@ -55,17 +55,6 @@ internal fun EventsOverviewScreen(
   onEventSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val filteredEvents =
-    remember(uiState.events, uiState.selectedStatus) {
-      uiState.events.filter { event ->
-        when (uiState.selectedStatus) {
-          EventStatusFilter.Ongoing -> event.status == EventStatus.ONGOING
-          EventStatusFilter.Upcoming -> event.status == EventStatus.UPCOMING
-          EventStatusFilter.Completed -> event.status == EventStatus.COMPLETED
-        }
-      }
-    }
-
   Column(
     modifier = modifier.fillMaxSize().padding(Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
@@ -89,17 +78,17 @@ internal fun EventsOverviewScreen(
     when {
       uiState.isLoading -> PrismStateMessage(text = "Loading events…")
 
-      uiState.errorMessage != null && filteredEvents.isEmpty() ->
+      uiState.errorMessage != null && uiState.filteredEvents.isEmpty() ->
         PrismStateMessage(text = uiState.errorMessage ?: "Unable to load events.")
 
-      filteredEvents.isEmpty() -> PrismStateMessage(text = "No events in this bucket yet.")
+      uiState.filteredEvents.isEmpty() -> PrismStateMessage(text = "No events in this bucket yet.")
 
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
           verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
         ) {
-          items(filteredEvents, key = EventPreview::id) { event ->
+          items(uiState.filteredEvents, key = EventPreview::id) { event ->
             PrismCard(
               modifier = Modifier.fillMaxWidth(),
               style = PrismCardStyle.Outlined,

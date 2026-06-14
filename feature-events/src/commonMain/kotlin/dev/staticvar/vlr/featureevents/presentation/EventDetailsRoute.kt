@@ -4,14 +4,14 @@
  */
 package dev.staticvar.vlr.featureevents.presentation
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,22 +24,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
-import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
-import dev.staticvar.designsystem.component.tag.PrismTag
-import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.domain.model.EventStanding
-import dev.staticvar.vlr.domain.model.EventStatus
+import dev.staticvar.vlr.domain.model.EventTeam
+import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailHeaderItem
+import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailMatchItem
+import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPrizeItem
+import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailStandingItem
+import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailTeamItem
 import org.koin.mp.KoinPlatform
 
 @Composable
@@ -109,7 +111,8 @@ internal fun EventDetailsScreen(
       event == null -> PrismStateMessage(text = "Tournament detail is unavailable.")
 
       else -> {
-        EventHeaderCard(event = event, onTeamSelected = onTeamSelected)
+        EventDetailHeaderItem(event = event)
+        EventParticipantsRail(teams = event.teams.take(8), onTeamSelected = onTeamSelected)
         PrismTabs(
           tabs = EventDetailSection.entries.map { PrismTab(id = it.name, label = it.name) },
           selectedTabId = section.name,
@@ -126,29 +129,7 @@ internal fun EventDetailsScreen(
               } else {
                 item { PrismSectionTitle(title = "Matches", preLabel = "schedule") }
                 items(event.matches, key = EventMatch::matchId) { match ->
-                  PrismCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    style = PrismCardStyle.Outlined,
-                    onClick = { onMatchSelected(match.matchId) },
-                  ) {
-                    Text(
-                      text = match.teams.joinToString(" vs ") { it.name },
-                      style = Prism.typography.cardTitle,
-                      color = Prism.color.titleColor,
-                    )
-                    Text(
-                      text = "${match.stage} • ${match.round} • ${match.status}",
-                      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                      style = Prism.typography.bodySmall,
-                      color = Prism.color.labelColor,
-                    )
-                    Text(
-                      text = listOfNotNull(match.eta, "${match.date} ${match.time}".trim()).joinToString(" • "),
-                      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                      style = Prism.typography.label,
-                      color = Prism.color.bodyColor,
-                    )
-                  }
+                  EventDetailMatchItem(match = match, onClick = { onMatchSelected(match.matchId) })
                 }
               }
             }
@@ -159,25 +140,7 @@ internal fun EventDetailsScreen(
               } else {
                 item { PrismSectionTitle(title = "Standings", preLabel = "table") }
                 items(event.standings, key = EventStanding::teamName) { standing ->
-                  PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
-                    Text(
-                      text = standing.teamName,
-                      style = Prism.typography.cardTitle,
-                      color = Prism.color.titleColor,
-                    )
-                    Text(
-                      text = "${standing.teamCountry} • ${standing.groupName ?: "Open bracket"}",
-                      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                      style = Prism.typography.bodySmall,
-                      color = Prism.color.labelColor,
-                    )
-                    Text(
-                      text = "${standing.wins}-${standing.losses}-${standing.ties} • RD ${standing.roundDifference}",
-                      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                      style = Prism.typography.label,
-                      color = Prism.color.bodyColor,
-                    )
-                  }
+                  EventDetailStandingItem(standing = standing)
                 }
               }
             }
@@ -190,27 +153,10 @@ internal fun EventDetailsScreen(
                 items(event.prizes, key = { it.position + it.prize }) { prize ->
                   val prizeTeam = prize.team
                   val prizeTeamId = prizeTeam?.id
-                  PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
-                    Text(
-                      text = "${prize.position} • ${prize.prize}",
-                      style = Prism.typography.cardTitle,
-                      color = Prism.color.titleColor,
-                    )
-                    Text(
-                      text = prizeTeam?.name ?: "TBD",
-                      modifier = Modifier
-                        .padding(top = Prism.dimens.spacingXs)
-                        .let { base ->
-                          if (prizeTeamId != null) {
-                            base.clickable { onTeamSelected(prizeTeamId) }
-                          } else {
-                            base
-                          }
-                        },
-                      style = Prism.typography.bodySmall,
-                      color = if (prizeTeamId != null) Prism.color.accent else Prism.color.labelColor,
-                    )
-                  }
+                  EventDetailPrizeItem(
+                    prize = prize,
+                    onTeamClick = prizeTeamId?.let { teamId -> { onTeamSelected(teamId) } },
+                  )
                 }
               }
             }
@@ -222,46 +168,24 @@ internal fun EventDetailsScreen(
 }
 
 @Composable
-private fun EventHeaderCard(event: EventDetails, onTeamSelected: (String) -> Unit) {
-  PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
-    PrismTag(
-      text = event.status.name,
-      style =
-      when (event.status) {
-        EventStatus.ONGOING -> PrismTagStyle.Danger
-        EventStatus.UPCOMING -> PrismTagStyle.Info
-        EventStatus.COMPLETED -> PrismTagStyle.Success
-        EventStatus.UNKNOWN -> PrismTagStyle.Neutral
-      },
-    )
-    Text(
-      text = event.title,
-      modifier = Modifier.padding(top = Prism.dimens.spacingS),
-      style = Prism.typography.sectionTitle,
-      color = Prism.color.titleColor,
-    )
-    Text(
-      text = "${event.region} • ${event.dates} • ${event.prize}",
-      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-      style = Prism.typography.bodySmall,
-      color = Prism.color.labelColor,
-    )
-    if (event.teams.isNotEmpty()) {
-      PrismSectionTitle(
-        title = "Participants",
-        preLabel = "teams",
-        modifier = Modifier.padding(top = Prism.dimens.spacingM),
-      )
-      Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
-        event.teams.take(8).forEach { team ->
+private fun EventParticipantsRail(
+  teams: List<EventTeam>,
+  onTeamSelected: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  if (teams.isNotEmpty()) {
+    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
+      PrismSectionTitle(title = "Participants", preLabel = "teams")
+      LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+      ) {
+        items(teams) { team ->
           val teamId = team.id
-          Text(
-            text = listOfNotNull(team.name, team.seed).joinToString(" • "),
-            modifier = Modifier
-              .fillMaxWidth()
-              .let { base -> if (teamId != null) base.clickable { onTeamSelected(teamId) } else base },
-            style = Prism.typography.bodySmall,
-            color = if (teamId != null) Prism.color.accent else Prism.color.bodyColor,
+          EventDetailTeamItem(
+            team = team,
+            modifier = Modifier.width(148.dp),
+            onClick = teamId?.let { id -> { onTeamSelected(id) } },
           )
         }
       }

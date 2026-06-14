@@ -50,6 +50,7 @@ kotlin {
         implementation(projects.core)
         implementation(projects.designsystem)
         implementation(projects.domain)
+        implementation(projects.sharedUi)
       }
     }
 

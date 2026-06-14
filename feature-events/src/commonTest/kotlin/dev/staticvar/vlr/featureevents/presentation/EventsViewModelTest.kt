@@ -40,6 +40,7 @@ class EventsViewModelTest {
       advanceUntilIdle()
 
       assertEquals(EventStatusFilter.Completed, viewModel.uiState.value.selectedStatus)
+      assertEquals(listOf("e1"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
       assertEquals(0, repository.refreshEventsCallCount)
 
       viewModel.clear()
@@ -56,6 +57,29 @@ class EventsViewModelTest {
 
       assertEquals(1, repository.refreshEventsCallCount)
       assertEquals(false, viewModel.uiState.value.isLoading)
+
+      viewModel.clear()
+    }
+  }
+
+  @Test
+  fun selectFilterUpdatesFilteredEvents() {
+    runTest(dispatcher) {
+      val repository =
+        FakeEventRepository(
+          events =
+          listOf(
+            eventPreview(id = "ongoing-1", status = EventStatus.ONGOING),
+            eventPreview(id = "upcoming-1", status = EventStatus.UPCOMING),
+            eventPreview(id = "completed-1", status = EventStatus.COMPLETED),
+          ),
+        )
+      val viewModel = createViewModel(repository)
+      advanceUntilIdle()
+
+      viewModel.selectFilter(EventStatusFilter.Upcoming)
+
+      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
 
       viewModel.clear()
     }
