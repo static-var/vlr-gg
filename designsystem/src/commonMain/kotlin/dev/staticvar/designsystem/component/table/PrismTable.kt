@@ -57,6 +57,8 @@ public data class PrismTableOptions(
   val rowHeight: Dp = PrismTableDefaults.RowHeight,
   val headerHeight: Dp = PrismTableDefaults.HeaderHeight,
   val bodyMaxLines: Int = PrismTableDefaults.BodyMaxLines,
+  val bodyOverflow: TextOverflow = TextOverflow.Ellipsis,
+  val headerOverflow: TextOverflow = TextOverflow.Ellipsis,
   val cellPadding: PaddingValues = PrismTableDefaults.cellPadding(),
 )
 
@@ -360,7 +362,7 @@ private fun TableCell(
       color = colors.contentColor,
       style = if (context.isHeader) Prism.typography.label else Prism.typography.bodySmall,
       maxLines = if (context.isHeader) 1 else options.bodyMaxLines.coerceAtLeast(1),
-      overflow = TextOverflow.Ellipsis,
+      overflow = if (context.isHeader) options.headerOverflow else options.bodyOverflow,
       textAlign = textAlign,
       modifier = Modifier.fillMaxWidth(),
     )
