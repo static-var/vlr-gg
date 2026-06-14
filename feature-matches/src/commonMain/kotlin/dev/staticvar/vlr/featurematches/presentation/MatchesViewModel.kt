@@ -33,7 +33,7 @@ public class MatchesViewModel(
     scope.launch {
       observeMatchListUseCase().collect { matches ->
         mutableUiState.update { current ->
-          current.copy(
+          current.withMatches(
             matches = matches,
             isLoading = false,
             errorMessage = if (matches.isNotEmpty()) null else current.errorMessage,
@@ -52,7 +52,7 @@ public class MatchesViewModel(
   }
 
   public fun selectFilter(filter: MatchStatusFilter) {
-    mutableUiState.update { it.copy(selectedStatus = filter) }
+    mutableUiState.update { it.withSelectedStatus(filter) }
   }
 
   public fun refresh() {
@@ -85,4 +85,28 @@ private fun matchStatusToFilter(status: MatchStatus): MatchStatusFilter = when (
   MatchStatus.UPCOMING -> MatchStatusFilter.Upcoming
   MatchStatus.COMPLETED -> MatchStatusFilter.Completed
   MatchStatus.UNKNOWN -> MatchStatusFilter.Live
+}
+
+private fun MatchesUiState.withMatches(
+  matches: List<MatchPreview>,
+  isLoading: Boolean,
+  errorMessage: String?,
+): MatchesUiState = copy(
+  matches = matches,
+  filteredMatches = matches.filterByStatus(selectedStatus),
+  isLoading = isLoading,
+  errorMessage = errorMessage,
+)
+
+private fun MatchesUiState.withSelectedStatus(filter: MatchStatusFilter): MatchesUiState = copy(
+  selectedStatus = filter,
+  filteredMatches = matches.filterByStatus(filter),
+)
+
+private fun List<MatchPreview>.filterByStatus(filter: MatchStatusFilter): List<MatchPreview> = filter { match ->
+  when (filter) {
+    MatchStatusFilter.Live -> match.status == MatchStatus.LIVE
+    MatchStatusFilter.Upcoming -> match.status == MatchStatus.UPCOMING
+    MatchStatusFilter.Completed -> match.status == MatchStatus.COMPLETED
+  }
 }

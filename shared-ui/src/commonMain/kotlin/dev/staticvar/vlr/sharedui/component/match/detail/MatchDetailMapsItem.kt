@@ -27,6 +27,7 @@ public fun MatchDetailMapsItem(
   onMapSelected: (Int?) -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  onPlayerSelected: ((String) -> Unit)? = null,
 ) {
   Column(
     modifier = modifier.fillMaxWidth(),
@@ -44,7 +45,11 @@ public fun MatchDetailMapsItem(
         )
       },
     )
-    MatchDetailMapBreakdown(maps = maps, selectedMapIndex = selectedMapIndex)
+    MatchDetailMapBreakdown(
+      maps = maps,
+      selectedMapIndex = selectedMapIndex,
+      onPlayerSelected = onPlayerSelected,
+    )
   }
 }
 

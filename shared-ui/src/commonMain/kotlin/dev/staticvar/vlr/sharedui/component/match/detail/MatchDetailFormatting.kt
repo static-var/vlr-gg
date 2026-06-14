@@ -27,6 +27,7 @@ internal data class MatchDetailHeadToHeadSummary(
 
 internal data class MatchDetailPlayerStatsRow(
   val key: String,
+  val playerId: String?,
   val mapName: String?,
   val playerName: String,
   val agentNames: String,
@@ -42,6 +43,7 @@ private data class PlayerStatsAggregate(
   val key: String,
   val playerName: String,
   val agentNames: List<String>,
+  val playerId: String?,
   val acsTotal: Int,
   val killsTotal: Int,
   val deathsTotal: Int,
@@ -146,6 +148,7 @@ internal fun List<MapData>.toAllMapPlayerStatsRows(): List<MatchDetailPlayerStat
 private fun PlayerStats.toPlayerStatsRow(keyPrefix: String, index: Int, mapName: String?): MatchDetailPlayerStatsRow =
   MatchDetailPlayerStatsRow(
     key = "$keyPrefix-$playerId-$index",
+    playerId = playerId.takeIf(String::isNotBlank),
     mapName = mapName,
     playerName = name.ifBlank { "Unknown" },
     agentNames = agents.joinToString(separator = ", ") { agent -> agent.name }.ifBlank { "-" },
@@ -165,6 +168,7 @@ private fun PlayerStats.toStatsAggregate(key: String): PlayerStatsAggregate = Pl
   key = key,
   playerName = name.ifBlank { "Unknown" },
   agentNames = agents.map(AgentInfo::name).filter(String::isNotBlank).distinct(),
+  playerId = playerId.takeIf(String::isNotBlank),
   acsTotal = acs,
   killsTotal = kills,
   deathsTotal = deaths,
@@ -176,6 +180,7 @@ private fun PlayerStats.toStatsAggregate(key: String): PlayerStatsAggregate = Pl
 
 private operator fun PlayerStatsAggregate.plus(player: PlayerStats): PlayerStatsAggregate = copy(
   agentNames = (agentNames + player.agents.map(AgentInfo::name).filter(String::isNotBlank)).distinct(),
+  playerId = playerId ?: player.playerId.takeIf(String::isNotBlank),
   acsTotal = acsTotal + player.acs,
   killsTotal = killsTotal + player.kills,
   deathsTotal = deathsTotal + player.deaths,
@@ -187,6 +192,7 @@ private operator fun PlayerStatsAggregate.plus(player: PlayerStats): PlayerStats
 
 private fun PlayerStatsAggregate.toPlayerStatsRow(): MatchDetailPlayerStatsRow = MatchDetailPlayerStatsRow(
   key = "all-$key",
+  playerId = playerId,
   mapName = null,
   playerName = playerName,
   agentNames = agentNames.joinToString(separator = ", ").ifBlank { "-" },

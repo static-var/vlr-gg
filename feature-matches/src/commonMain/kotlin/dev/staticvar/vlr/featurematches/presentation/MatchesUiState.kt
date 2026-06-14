@@ -8,6 +8,7 @@ import dev.staticvar.vlr.domain.model.MatchPreview
 
 public data class MatchesUiState(
   val matches: List<MatchPreview> = emptyList(),
+  val filteredMatches: List<MatchPreview> = emptyList(),
   val selectedStatus: MatchStatusFilter = MatchStatusFilter.Live,
   val isLoading: Boolean = true,
   val isRefreshing: Boolean = false,

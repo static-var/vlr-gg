@@ -45,6 +45,7 @@ class MatchesViewModelTest {
       advanceUntilIdle()
 
       assertEquals(MatchStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
+      assertEquals(listOf("m1"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
       assertEquals(0, repository.refreshMatchesCallCount)
 
       viewModel.clear()
@@ -61,6 +62,29 @@ class MatchesViewModelTest {
 
       assertEquals(1, repository.refreshMatchesCallCount)
       assertEquals(false, viewModel.uiState.value.isLoading)
+
+      viewModel.clear()
+    }
+  }
+
+  @Test
+  fun selectFilterUpdatesFilteredMatches() {
+    runTest(dispatcher) {
+      val repository =
+        FakeMatchRepository(
+          matches =
+          listOf(
+            matchPreview(id = "live-1", status = MatchStatus.LIVE),
+            matchPreview(id = "upcoming-1", status = MatchStatus.UPCOMING),
+            matchPreview(id = "completed-1", status = MatchStatus.COMPLETED),
+          ),
+        )
+      val viewModel = createViewModel(repository)
+      advanceUntilIdle()
+
+      viewModel.selectFilter(MatchStatusFilter.Completed)
+
+      assertEquals(listOf("completed-1"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
 
       viewModel.clear()
     }

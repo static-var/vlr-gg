@@ -110,6 +110,7 @@ class MatchDetailFormattingTest {
     assertEquals("12", rows[0].assists)
     assertEquals("75", rows[0].kast)
     assertEquals("1.2", rows[0].rating)
+    assertEquals("boaster", rows[0].playerId)
   }
 
   @Test

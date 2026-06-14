@@ -55,17 +55,6 @@ internal fun MatchesOverviewScreen(
   onMatchSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val filteredMatches =
-    remember(uiState.matches, uiState.selectedStatus) {
-      uiState.matches.filter { match ->
-        when (uiState.selectedStatus) {
-          MatchStatusFilter.Live -> match.status == MatchStatus.LIVE
-          MatchStatusFilter.Upcoming -> match.status == MatchStatus.UPCOMING
-          MatchStatusFilter.Completed -> match.status == MatchStatus.COMPLETED
-        }
-      }
-    }
-
   Column(
     modifier = modifier.fillMaxSize().padding(Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
@@ -89,17 +78,17 @@ internal fun MatchesOverviewScreen(
     when {
       uiState.isLoading -> PrismStateMessage(text = "Loading matches…")
 
-      uiState.errorMessage != null && filteredMatches.isEmpty() ->
+      uiState.errorMessage != null && uiState.filteredMatches.isEmpty() ->
         PrismStateMessage(text = uiState.errorMessage ?: "Unable to load matches.")
 
-      filteredMatches.isEmpty() -> PrismStateMessage(text = "No matches in this bucket yet.")
+      uiState.filteredMatches.isEmpty() -> PrismStateMessage(text = "No matches in this bucket yet.")
 
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
           verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
         ) {
-          items(filteredMatches, key = MatchPreview::id) { match ->
+          items(uiState.filteredMatches, key = MatchPreview::id) { match ->
             PrismCard(
               modifier = Modifier.fillMaxWidth(),
               style = PrismCardStyle.Outlined,

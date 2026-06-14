@@ -7,6 +7,7 @@ package dev.staticvar.designsystem.component.table
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -49,6 +51,7 @@ public data class PrismTableRow(
   val key: String,
   val cells: Map<String, String>,
   val cellTextAlignments: Map<String, TextAlign> = emptyMap(),
+  val onClick: (() -> Unit)? = null,
 )
 
 @Immutable
@@ -267,6 +270,7 @@ private fun StickyBodyCell(
     modifier = Modifier.fillMaxWidth().height(options.rowHeight),
     options = options,
     viewState = viewState,
+    onClick = row.onClick,
     context =
     PrismTableCellContext(
       rowIndex = rowIndex,
@@ -326,6 +330,7 @@ private fun BodyRow(
           .fillMaxHeight(),
         options = options,
         viewState = viewState,
+        onClick = row.onClick,
         context =
         PrismTableCellContext(
           rowIndex = rowIndex,
@@ -346,12 +351,19 @@ private fun TableCell(
   options: PrismTableOptions,
   viewState: PrismTableViewState,
   context: PrismTableCellContext,
+  onClick: (() -> Unit)? = null,
 ) {
   val colors = resolveColors(viewState = viewState, context = context)
+  val clickModifier = if (!context.isHeader && onClick != null) {
+    Modifier.clickable(role = Role.Button, onClick = onClick)
+  } else {
+    Modifier
+  }
 
   Box(
     modifier =
     modifier
+      .then(clickModifier)
       .background(colors.containerColor)
       .border(BorderStroke(width = viewState.borderThickness, color = viewState.borderColor))
       .padding(options.cellPadding),

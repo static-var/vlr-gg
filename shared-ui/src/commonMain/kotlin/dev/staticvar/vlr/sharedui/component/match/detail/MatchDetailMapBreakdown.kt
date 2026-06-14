@@ -32,7 +32,12 @@ import dev.staticvar.vlr.domain.model.TeamDetails
  * the selected map renders score metadata and the full player stat table.
  */
 @Composable
-public fun MatchDetailMapBreakdown(maps: List<MapData>, selectedMapIndex: Int?, modifier: Modifier = Modifier) {
+public fun MatchDetailMapBreakdown(
+  maps: List<MapData>,
+  selectedMapIndex: Int?,
+  modifier: Modifier = Modifier,
+  onPlayerSelected: ((String) -> Unit)? = null,
+) {
   val selectedMap = maps.resolveSelectedMap(selectedMapIndex)
 
   PrismSurface(
@@ -48,8 +53,12 @@ public fun MatchDetailMapBreakdown(maps: List<MapData>, selectedMapIndex: Int?, 
     ) {
       when {
         maps.isEmpty() -> EmptyMapBreakdown()
-        selectedMap == null -> AllMapsBreakdown(maps = maps)
-        else -> SingleMapBreakdown(map = selectedMap, mapIndex = maps.indexOf(selectedMap))
+        selectedMap == null -> AllMapsBreakdown(maps = maps, onPlayerSelected = onPlayerSelected)
+        else -> SingleMapBreakdown(
+          map = selectedMap,
+          mapIndex = maps.indexOf(selectedMap),
+          onPlayerSelected = onPlayerSelected,
+        )
       }
     }
   }
@@ -65,18 +74,18 @@ private fun EmptyMapBreakdown() {
 }
 
 @Composable
-private fun AllMapsBreakdown(maps: List<MapData>) {
+private fun AllMapsBreakdown(maps: List<MapData>, onPlayerSelected: ((String) -> Unit)?) {
   MatchDetailMapBreakdownHeader(
     title = "Combined stats",
     subtitle = maps.matchDetailAllMapsMeta(),
     tag = "All maps",
     tagStyle = PrismTagStyle.Neutral,
   )
-  MatchDetailAllMapPlayerStatsTable(maps = maps)
+  MatchDetailAllMapPlayerStatsTable(maps = maps, onPlayerSelected = onPlayerSelected)
 }
 
 @Composable
-private fun SingleMapBreakdown(map: MapData, mapIndex: Int) {
+private fun SingleMapBreakdown(map: MapData, mapIndex: Int, onPlayerSelected: ((String) -> Unit)?) {
   MatchDetailMapBreakdownHeader(
     title = map.matchDetailMapName(),
     subtitle = map.matchDetailMapMeta(index = mapIndex.takeIf { it >= 0 }),
@@ -85,7 +94,7 @@ private fun SingleMapBreakdown(map: MapData, mapIndex: Int) {
   )
   MatchDetailMapScoreLine(map = map)
   PrismDivider(style = PrismDividerStyle.Hairline)
-  MatchDetailPlayerStatsTable(map = map)
+  MatchDetailPlayerStatsTable(map = map, onPlayerSelected = onPlayerSelected)
 }
 
 @Composable

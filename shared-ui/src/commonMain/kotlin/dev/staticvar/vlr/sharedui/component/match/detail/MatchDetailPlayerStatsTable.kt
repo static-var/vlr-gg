@@ -36,11 +36,16 @@ private object MatchDetailStatsTableColumns {
  * the design system.
  */
 @Composable
-public fun MatchDetailPlayerStatsTable(map: MapData, modifier: Modifier = Modifier) {
+public fun MatchDetailPlayerStatsTable(
+  map: MapData,
+  modifier: Modifier = Modifier,
+  onPlayerSelected: ((String) -> Unit)? = null,
+) {
   MatchDetailPlayerStatsTable(
     rows = remember(map) { map.toPlayerStatsRows() },
     includeMapName = false,
     modifier = modifier,
+    onPlayerSelected = onPlayerSelected,
   )
 }
 
@@ -48,11 +53,16 @@ public fun MatchDetailPlayerStatsTable(map: MapData, modifier: Modifier = Modifi
  * Dense player stat table for aggregate all-map breakdowns.
  */
 @Composable
-public fun MatchDetailAllMapPlayerStatsTable(maps: List<MapData>, modifier: Modifier = Modifier) {
+public fun MatchDetailAllMapPlayerStatsTable(
+  maps: List<MapData>,
+  modifier: Modifier = Modifier,
+  onPlayerSelected: ((String) -> Unit)? = null,
+) {
   MatchDetailPlayerStatsTable(
     rows = remember(maps) { maps.toAllMapPlayerStatsRows() },
     includeMapName = false,
     modifier = modifier,
+    onPlayerSelected = onPlayerSelected,
   )
 }
 
@@ -61,10 +71,15 @@ private fun MatchDetailPlayerStatsTable(
   rows: List<MatchDetailPlayerStatsRow>,
   includeMapName: Boolean,
   modifier: Modifier = Modifier,
+  onPlayerSelected: ((String) -> Unit)?,
 ) {
   PrismTable(
     columns = remember(includeMapName) { playerStatsColumns(includeMapName = includeMapName) },
-    rows = remember(rows, includeMapName) { rows.map { row -> row.toPrismTableRow(includeMapName = includeMapName) } },
+    rows = remember(rows, includeMapName, onPlayerSelected) {
+      rows.map { row ->
+        row.toPrismTableRow(includeMapName = includeMapName, onPlayerSelected = onPlayerSelected)
+      }
+    },
     modifier = modifier,
     options = PrismTableOptions(
       stickyFirstColumn = true,
@@ -101,7 +116,10 @@ private fun playerStatsColumns(includeMapName: Boolean): List<PrismTableColumn> 
   }
 }
 
-private fun MatchDetailPlayerStatsRow.toPrismTableRow(includeMapName: Boolean): PrismTableRow {
+private fun MatchDetailPlayerStatsRow.toPrismTableRow(
+  includeMapName: Boolean,
+  onPlayerSelected: ((String) -> Unit)?,
+): PrismTableRow {
   val cells = mutableMapOf(
     MatchDetailStatsTableColumns.Player to playerName,
     MatchDetailStatsTableColumns.Agent to agentNames,
@@ -119,6 +137,7 @@ private fun MatchDetailPlayerStatsRow.toPrismTableRow(includeMapName: Boolean): 
   return PrismTableRow(
     key = key,
     cells = cells,
+    onClick = playerId?.let { id -> onPlayerSelected?.let { onClick -> { onClick(id) } } },
     cellTextAlignments = mapOf(
       MatchDetailStatsTableColumns.Acs to TextAlign.End,
       MatchDetailStatsTableColumns.Kills to TextAlign.End,
