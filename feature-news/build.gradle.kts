@@ -55,6 +55,14 @@ kotlin {
         implementation(projects.core)
         implementation(projects.designsystem)
         implementation(projects.domain)
+        implementation(projects.sharedUi)
+      }
+    }
+
+    val commonTest by getting {
+      dependencies {
+        implementation(kotlin("test"))
+        implementation(libs.coroutine.test)
       }
     }
 

@@ -50,6 +50,29 @@ class VlrAppStateTest {
   }
 
   @Test
+  fun showRootNewsArticleReplacesNestedTail() {
+    val appState =
+      VlrAppState(
+        backStack =
+        mutableListOf<NavKey>(
+          AppRoute.News,
+          AppRoute.MatchDetails(matchId = "match-1"),
+          AppRoute.PlayerDetails(playerId = "player-1"),
+        ),
+        navigationItems = emptyList(),
+      )
+
+    appState.showRootNewsArticle(articleId = "article-9")
+
+    assertEquals(
+      listOf<NavKey>(AppRoute.News, AppRoute.NewsArticle(articleId = "article-9")),
+      appState.backStack,
+    )
+    assertEquals(AppRoute.News, AppRoute.NewsArticle(articleId = "article-9").rootDestination)
+    assertTrue(appState.canNavigateBack)
+  }
+
+  @Test
   fun replaceTeamDetailsDropsExistingTeamAndPlayerRoutes() {
     val appState =
       VlrAppState(

@@ -7,7 +7,6 @@ package dev.staticvar.vlr.featurenews.presentation.list
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,10 +23,8 @@ import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
-import dev.staticvar.designsystem.component.tag.PrismTag
-import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.vlr.domain.model.NewsItem
+import dev.staticvar.vlr.sharedui.component.news.overview.NewsPreviewItem
 
 @Composable
 internal fun NewsListScreen(
@@ -84,10 +81,11 @@ internal fun NewsListScreen(
             items = uiState.items,
             key = { item -> item.id },
           ) { item ->
-            NewsListItem(
-              item = item,
+            NewsPreviewItem(
+              newsItem = item,
               selected = selectedArticleId == item.id,
               onClick = { onArticleSelected(item.id) },
+              modifier = Modifier.fillMaxWidth(),
             )
           }
         }
@@ -122,48 +120,6 @@ private fun EmptyNewsList(errorMessage: String?, onRefresh: () -> Unit, modifier
         ) {
           Text("TRY AGAIN")
         }
-      }
-    }
-  }
-}
-
-@Composable
-private fun NewsListItem(item: NewsItem, selected: Boolean, onClick: () -> Unit) {
-  PrismCard(
-    modifier = Modifier.fillMaxWidth(),
-    style = if (selected) PrismCardStyle.Filled else PrismCardStyle.Outlined,
-    onClick = onClick,
-  ) {
-    Column(
-      modifier = Modifier.fillMaxWidth(),
-      verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-    ) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
-      ) {
-        PrismTag(
-          text = item.author.ifBlank { "unknown" },
-          style = PrismTagStyle.Accent,
-        )
-        PrismTag(
-          text = item.date.ifBlank { "recent" },
-          style = PrismTagStyle.Info,
-        )
-      }
-
-      Text(
-        text = item.title,
-        style = Prism.typography.cardTitle,
-        color = Prism.color.titleColor,
-      )
-
-      if (item.description.isNotBlank()) {
-        Text(
-          text = item.description,
-          style = Prism.typography.bodySmall,
-          color = Prism.color.bodyColor,
-        )
       }
     }
   }

@@ -31,6 +31,9 @@ public sealed interface AppRoute : NavKey {
   public data class EventDetails(val eventId: String) : AppRoute
 
   @Serializable
+  public data class NewsArticle(val articleId: String) : AppRoute
+
+  @Serializable
   public data class TeamDetails(val teamId: String) : AppRoute
 
   @Serializable
@@ -50,6 +53,8 @@ public val AppRoute.rootDestination: AppRoute
       is AppRoute.MatchDetails -> AppRoute.Matches
 
       is AppRoute.EventDetails -> AppRoute.Events
+
+      is AppRoute.NewsArticle -> AppRoute.News
 
       is AppRoute.TeamDetails -> AppRoute.Rankings
 

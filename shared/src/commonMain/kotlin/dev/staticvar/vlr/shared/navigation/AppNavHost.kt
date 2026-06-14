@@ -29,6 +29,7 @@ import dev.staticvar.vlr.featureevents.presentation.EventDetailsRoute
 import dev.staticvar.vlr.featureevents.presentation.EventsOverviewRoute
 import dev.staticvar.vlr.featurematches.presentation.MatchDetailsRoute
 import dev.staticvar.vlr.featurematches.presentation.MatchesOverviewRoute
+import dev.staticvar.vlr.featurenews.presentation.article.NewsArticleRoute
 import dev.staticvar.vlr.featurenews.presentation.root.NewsRootScreen
 import dev.staticvar.vlr.featureplayer.presentation.PlayerDetailsRoute
 import dev.staticvar.vlr.featurerankings.presentation.RankingsRoute
@@ -88,8 +89,19 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
 
 @Composable
 private fun appEntryProvider(appState: VlrAppState) = entryProvider<NavKey> {
-  entry<AppRoute.News> {
-    NewsRootScreen(modifier = Modifier.fillMaxSize())
+  entry<AppRoute.News>(metadata = listPane(group = "news")) {
+    NewsRootScreen(
+      onArticleSelected = appState::showRootNewsArticle,
+      selectedArticleId = (appState.backStack.lastOrNull() as? AppRoute.NewsArticle)?.articleId,
+      modifier = Modifier.fillMaxSize(),
+    )
+  }
+  entry<AppRoute.NewsArticle>(metadata = detailPane(group = "news")) { route ->
+    NewsArticleRoute(
+      articleId = route.articleId,
+      onBack = appState::navigateUp,
+      modifier = Modifier.fillMaxSize(),
+    )
   }
   entry<AppRoute.Matches>(metadata = listPane(group = "matches")) {
     MatchesOverviewRoute(
