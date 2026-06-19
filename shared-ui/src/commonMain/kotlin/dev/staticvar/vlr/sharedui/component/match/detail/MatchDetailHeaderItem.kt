@@ -7,11 +7,11 @@
 package dev.staticvar.vlr.sharedui.component.match.detail
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.card.PrismCard
@@ -41,31 +42,35 @@ import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 public fun MatchDetailHeaderItem(
   match: MatchDetails,
   modifier: Modifier = Modifier,
-  actions: (@Composable RowScope.() -> Unit)? = null,
+  onEventSelected: ((String) -> Unit)? = null,
+  onTeamSelected: ((String) -> Unit)? = null,
 ) {
   FavoriteTicketCardBox(selected = match.isFavorite, modifier = modifier.fillMaxWidth()) {
     PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
+      val eventClickModifier = match.event.id.takeIf(String::isNotBlank)
+        ?.let { eventId ->
+          onEventSelected?.let { eventSelected ->
+            Modifier.clickable(role = Role.Button) { eventSelected(eventId) }
+          }
+        }
+        ?: Modifier
+
       Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
       ) {
-        PrismHeader(text = match.event.name.ifBlank { "match" })
+        PrismHeader(
+          text = match.event.name.ifBlank { "match" },
+          modifier = eventClickModifier,
+        )
         PrismTag(text = match.event.status.matchDetailStatusLabel, style = match.event.status.matchDetailStatusTagStyle)
       }
 
-      Text(
-        text = match.matchDetailTitle(),
-        modifier = Modifier.padding(top = Prism.dimens.spacingS),
-        style = Prism.typography.sectionTitle,
-        color = Prism.color.titleColor,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-      )
       match.matchDetailMeta().takeIf(String::isNotBlank)?.let { meta ->
         Text(
           text = meta,
-          modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+          modifier = Modifier.padding(top = Prism.dimens.spacingS),
           style = Prism.typography.bodySmall,
           color = Prism.color.labelColor,
           maxLines = 2,
@@ -78,7 +83,7 @@ public fun MatchDetailHeaderItem(
           if (index > 0) {
             PrismDivider(style = PrismDividerStyle.Hairline)
           }
-          MatchDetailTeamScoreRow(team = team)
+          MatchDetailTeamScoreRow(team = team, onTeamSelected = onTeamSelected)
         }
       }
 
@@ -91,22 +96,16 @@ public fun MatchDetailHeaderItem(
         thirdLabel = "Bans",
         modifier = Modifier.padding(top = Prism.dimens.spacingS),
       )
-
-      if (actions != null) {
-        Row(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = Prism.dimens.spacingS),
-          horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
-          content = actions,
-        )
-      }
     }
   }
 }
 
 @Composable
-private fun MatchDetailTeamScoreRow(team: TeamDetails, modifier: Modifier = Modifier) {
+private fun MatchDetailTeamScoreRow(
+  team: TeamDetails,
+  modifier: Modifier = Modifier,
+  onTeamSelected: ((String) -> Unit)? = null,
+) {
   MatchDetailTeamScoreRow(
     teamName = team.name,
     score = team.score?.toString() ?: "-",
@@ -114,6 +113,9 @@ private fun MatchDetailTeamScoreRow(team: TeamDetails, modifier: Modifier = Modi
     region = team.region,
     imageUrl = team.img,
     isWinner = team.isWinner == true,
+    onClick = team.id?.takeIf(String::isNotBlank)?.let { teamId ->
+      onTeamSelected?.let { onClick -> { onClick(teamId) } }
+    },
   )
 }
 

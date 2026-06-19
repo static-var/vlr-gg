@@ -11,6 +11,7 @@ import dev.staticvar.vlr.domain.model.PlayerStats
 import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamDetails
 import dev.staticvar.vlr.domain.model.TeamPreview
+import kotlin.math.round
 import kotlin.math.roundToInt
 
 internal const val AllMapsOptionId: String = "all"
@@ -37,13 +38,24 @@ internal data class MatchDetailPlayerStatsRow(
   val assists: String,
   val kast: String,
   val rating: String,
+  val teamColorRole: MatchDetailPlayerStatsTeamColorRole,
+  val teamName: String,
+  val teamLogoUrl: String,
 )
+
+internal enum class MatchDetailPlayerStatsTeamColorRole {
+  Accent,
+  Neutral,
+}
 
 private data class PlayerStatsAggregate(
   val key: String,
   val playerName: String,
   val agentNames: List<String>,
   val playerId: String?,
+  val teamKey: String?,
+  val teamName: String,
+  val teamLogoUrl: String,
   val acsTotal: Int,
   val killsTotal: Int,
   val deathsTotal: Int,
@@ -52,13 +64,6 @@ private data class PlayerStatsAggregate(
   val ratingTotal: Float,
   val mapsPlayed: Int,
 )
-
-internal fun MatchDetails.matchDetailTitle(): String = teams
-  .take(2)
-  .map(TeamDetails::name)
-  .filter(String::isNotBlank)
-  .joinToString(separator = " vs ")
-  .ifBlank { event.name.ifBlank { "Match details" } }
 
 internal fun MatchDetails.matchDetailMeta(): String = listOfNotNull(
   event.stage.takeIf(String::isNotBlank),
@@ -127,25 +132,45 @@ internal fun List<MapData>.matchDetailAllMapsMeta(): String {
 
 internal fun MapData.toPlayerStatsRows(mapName: String? = null): List<MatchDetailPlayerStatsRow> =
   members.mapIndexed { index, player ->
-    player.toPlayerStatsRow(keyPrefix = matchDetailMapName(), index = index, mapName = mapName)
+    player.toPlayerStatsRow(
+      keyPrefix = matchDetailMapName(),
+      index = index,
+      mapName = mapName,
+      teamColorRole = resolvePlayerTeamColorRole(player.team),
+      team = resolvePlayerTeam(player.team),
+    )
   }
 
-internal fun List<MapData>.toAllMapPlayerStatsRows(): List<MatchDetailPlayerStatsRow> = filter(MapData::hasPlayedScore)
-  .flatMap(MapData::members)
-  .fold(linkedMapOf<String, PlayerStatsAggregate>()) { aggregates, player ->
-    val key = player.aggregateKey()
-    val existing = aggregates[key]
-    aggregates[key] = if (existing == null) {
-      player.toStatsAggregate(key = key)
-    } else {
-      existing + player
+internal fun List<MapData>.toAllMapPlayerStatsRows(): List<MatchDetailPlayerStatsRow> {
+  val winnerTeamKey = toPlayerStatsWinnerTeamKey()
+  return filter(MapData::hasPlayedScore)
+    .fold(linkedMapOf<String, PlayerStatsAggregate>()) { aggregates, map ->
+      map.members.forEach { player ->
+        val key = player.aggregateKey()
+        val team = map.resolvePlayerTeam(player.team)
+        val teamKey = team?.teamKey()
+        val existing = aggregates[key]
+        aggregates[key] = if (existing == null) {
+          player.toStatsAggregate(key = key, team = team)
+        } else {
+          existing.withPlayer(player = player, mapTeam = team)
+        }
+      }
+      aggregates
     }
-    aggregates
-  }
-  .values
-  .map(PlayerStatsAggregate::toPlayerStatsRow)
+    .values
+    .map { aggregate ->
+      aggregate.toPlayerStatsRow(winnerTeamKey = winnerTeamKey)
+    }
+}
 
-private fun PlayerStats.toPlayerStatsRow(keyPrefix: String, index: Int, mapName: String?): MatchDetailPlayerStatsRow =
+private fun PlayerStats.toPlayerStatsRow(
+  keyPrefix: String,
+  index: Int,
+  mapName: String?,
+  teamColorRole: MatchDetailPlayerStatsTeamColorRole,
+  team: TeamDetails?,
+): MatchDetailPlayerStatsRow =
   MatchDetailPlayerStatsRow(
     key = "$keyPrefix-$playerId-$index",
     playerId = playerId.takeIf(String::isNotBlank),
@@ -158,39 +183,86 @@ private fun PlayerStats.toPlayerStatsRow(keyPrefix: String, index: Int, mapName:
     assists = assists.toString(),
     kast = kast.toString(),
     rating = rating.toCompactRating(),
+    teamColorRole = teamColorRole,
+    teamName = team?.name.orEmpty(),
+    teamLogoUrl = team?.img.orEmpty(),
   )
+
+private fun MapData.resolvePlayerTeamColorRole(playerTeam: String): MatchDetailPlayerStatsTeamColorRole {
+  val winnerTeam = winningTeam() ?: return MatchDetailPlayerStatsTeamColorRole.Neutral
+  val resolvedPlayerTeam = teams.firstOrNull { team -> team.matchesPlayerTeam(playerTeam) }
+    ?: return MatchDetailPlayerStatsTeamColorRole.Neutral
+
+  return if (resolvedPlayerTeam.matchesTeam(winnerTeam)) {
+    MatchDetailPlayerStatsTeamColorRole.Accent
+  } else {
+    MatchDetailPlayerStatsTeamColorRole.Neutral
+  }
+}
+
+private fun MapData.resolvePlayerTeam(playerTeam: String): TeamDetails? = teams
+  .firstOrNull { team -> team.matchesPlayerTeam(playerTeam) }
+
+private fun MapData.winningTeam(): TeamDetails? = teams
+  .firstOrNull { it.isWinner == true } ?: teams.firstByScoreWinner()
+
+private fun List<MapData>.toPlayerStatsWinnerTeamKey(): String? {
+  val winnerKeys = mapNotNull { it.winningTeam()?.teamKey() }
+  if (winnerKeys.isEmpty()) return null
+
+  val winnerCounts = winnerKeys.groupingBy { it }.eachCount()
+  val maxWins = winnerCounts.values.maxOrNull() ?: return null
+  val topWinners = winnerCounts.filterValues { it == maxWins }
+  return if (topWinners.size == 1) topWinners.keys.first() else null
+}
+
+private fun List<TeamDetails>.firstByScoreWinner(): TeamDetails? {
+  val firstTeam = getOrNull(0) ?: return null
+  val secondTeam = getOrNull(1) ?: return null
+  val firstTeamScore = firstTeam.score
+  val secondTeamScore = secondTeam.score
+
+  return when {
+    firstTeamScore == null || secondTeamScore == null -> null
+    firstTeamScore > secondTeamScore -> firstTeam
+    firstTeamScore < secondTeamScore -> secondTeam
+    else -> null
+  }
+}
+
+private fun TeamDetails.matchesPlayerTeam(playerTeam: String): Boolean {
+  val normalizedPlayerTeam = playerTeam.trim()
+  if (normalizedPlayerTeam.isBlank()) return false
+
+  val teamId = id?.trim().orEmpty()
+
+  return (teamId.isNotBlank() && teamId.equals(normalizedPlayerTeam, ignoreCase = true)) ||
+    name.equals(normalizedPlayerTeam, ignoreCase = true)
+}
+
+private fun TeamDetails.teamKey(): String? {
+  val teamId = id?.trim().orEmpty()
+  return when {
+    teamId.isNotBlank() -> "id:${teamId.lowercase()}"
+    name.trim().isNotBlank() -> "name:${name.trim().lowercase()}"
+    else -> null
+  }
+}
+
+private fun TeamDetails.matchesTeam(other: TeamDetails): Boolean {
+  val thisId = id?.trim().orEmpty()
+  val otherId = other.id?.trim().orEmpty()
+  return when {
+    thisId.isNotBlank() && otherId.isNotBlank() -> thisId == otherId
+    else -> name.equals(other.name, ignoreCase = true)
+  }
+}
 
 private fun MapData.hasPlayedScore(): Boolean = teams.any { team -> team.score != null }
 
 private fun PlayerStats.aggregateKey(): String = playerId.takeIf(String::isNotBlank) ?: "$team-$name"
 
-private fun PlayerStats.toStatsAggregate(key: String): PlayerStatsAggregate = PlayerStatsAggregate(
-  key = key,
-  playerName = name.ifBlank { "Unknown" },
-  agentNames = agents.map(AgentInfo::name).filter(String::isNotBlank).distinct(),
-  playerId = playerId.takeIf(String::isNotBlank),
-  acsTotal = acs,
-  killsTotal = kills,
-  deathsTotal = deaths,
-  assistsTotal = assists,
-  kastTotal = kast,
-  ratingTotal = rating,
-  mapsPlayed = 1,
-)
-
-private operator fun PlayerStatsAggregate.plus(player: PlayerStats): PlayerStatsAggregate = copy(
-  agentNames = (agentNames + player.agents.map(AgentInfo::name).filter(String::isNotBlank)).distinct(),
-  playerId = playerId ?: player.playerId.takeIf(String::isNotBlank),
-  acsTotal = acsTotal + player.acs,
-  killsTotal = killsTotal + player.kills,
-  deathsTotal = deathsTotal + player.deaths,
-  assistsTotal = assistsTotal + player.assists,
-  kastTotal = kastTotal + player.kast,
-  ratingTotal = ratingTotal + player.rating,
-  mapsPlayed = mapsPlayed + 1,
-)
-
-private fun PlayerStatsAggregate.toPlayerStatsRow(): MatchDetailPlayerStatsRow = MatchDetailPlayerStatsRow(
+private fun PlayerStatsAggregate.toPlayerStatsRow(winnerTeamKey: String?): MatchDetailPlayerStatsRow = MatchDetailPlayerStatsRow(
   key = "all-$key",
   playerId = playerId,
   mapName = null,
@@ -202,6 +274,44 @@ private fun PlayerStatsAggregate.toPlayerStatsRow(): MatchDetailPlayerStatsRow =
   assists = assistsTotal.toString(),
   kast = (kastTotal.toFloat() / mapsPlayed).toRoundedIntString(),
   rating = (ratingTotal / mapsPlayed).toCompactRating(),
+  teamColorRole = winnerTeamKey
+    ?.takeIf { teamKey != null && it == teamKey }
+    ?.let { MatchDetailPlayerStatsTeamColorRole.Accent }
+    ?: MatchDetailPlayerStatsTeamColorRole.Neutral,
+  teamName = teamName,
+  teamLogoUrl = teamLogoUrl,
+)
+
+private fun PlayerStats.toStatsAggregate(key: String, team: TeamDetails?): PlayerStatsAggregate = PlayerStatsAggregate(
+  key = key,
+  playerName = name.ifBlank { "Unknown" },
+  agentNames = agents.map(AgentInfo::name).filter(String::isNotBlank).distinct(),
+  playerId = playerId.takeIf(String::isNotBlank),
+  teamKey = team?.teamKey(),
+  teamName = team?.name.orEmpty(),
+  teamLogoUrl = team?.img.orEmpty(),
+  acsTotal = acs,
+  killsTotal = kills,
+  deathsTotal = deaths,
+  assistsTotal = assists,
+  kastTotal = kast,
+  ratingTotal = rating,
+  mapsPlayed = 1,
+)
+
+private fun PlayerStatsAggregate.withPlayer(player: PlayerStats, mapTeam: TeamDetails?): PlayerStatsAggregate = copy(
+  agentNames = (agentNames + player.agents.map(AgentInfo::name).filter(String::isNotBlank)).distinct(),
+  playerId = playerId ?: player.playerId.takeIf(String::isNotBlank),
+  teamKey = teamKey ?: mapTeam?.teamKey(),
+  teamName = teamName.ifBlank { mapTeam?.name.orEmpty() },
+  teamLogoUrl = teamLogoUrl.ifBlank { mapTeam?.img.orEmpty() },
+  acsTotal = acsTotal + player.acs,
+  killsTotal = killsTotal + player.kills,
+  deathsTotal = deathsTotal + player.deaths,
+  assistsTotal = assistsTotal + player.assists,
+  kastTotal = kastTotal + player.kast,
+  ratingTotal = ratingTotal + player.rating,
+  mapsPlayed = mapsPlayed + 1,
 )
 
 internal fun List<PreviousEncounter>.matchDetailHeadToHeadSummary(): MatchDetailHeadToHeadSummary? {
@@ -253,7 +363,7 @@ private fun TeamPreview.matchesTeam(candidate: TeamPreview): Boolean =
     ?: (name == candidate.name)
 
 private fun Float.toCompactRating(): String {
-  val rounded = kotlin.math.round(this * 100.0f) / 100.0f
+  val rounded = round(this * 100.0f) / 100.0f
   return rounded.toString().trimEnd('0').trimEnd('.')
 }
 

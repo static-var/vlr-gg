@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.sharedui.component.match.detail
 
+import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.vlr.domain.model.AgentInfo
 import dev.staticvar.vlr.domain.model.EventInfo
@@ -43,6 +44,53 @@ class MatchDetailFormattingTest {
     val maps = listOf(mapData(name = "Lotus"))
 
     assertEquals("Lotus", maps.resolveSelectedMap(selectedMapIndex = null)?.map)
+  }
+
+  @Test
+  fun selectedMapPlayerRowsUseTeamColorRoleForMatchingTeam() {
+    val rows = mapData(
+      name = "Lotus",
+      members = listOf(
+        playerStats(name = "Boaster", id = "boaster", team = "FNATIC"),
+        playerStats(name = "P1", id = "p1", team = "sen"),
+      ),
+    ).toPlayerStatsRows()
+
+    assertEquals(2, rows.size)
+    assertEquals(MatchDetailPlayerStatsTeamColorRole.Accent, rows[0].teamColorRole)
+    assertEquals(MatchDetailPlayerStatsTeamColorRole.Neutral, rows[1].teamColorRole)
+    assertEquals("FNATIC", rows[0].teamName)
+    assertEquals("fnatic.png", rows[0].teamLogoUrl)
+    assertEquals("Sentinels", rows[1].teamName)
+    assertEquals("sentinels.png", rows[1].teamLogoUrl)
+  }
+
+  @Test
+  fun allMapAggregateRowsUseWinningTeamColorRole() {
+    val rows = listOf(
+      mapData(
+        name = "Lotus",
+        firstScore = 13,
+        secondScore = 9,
+        members = listOf(
+          playerStats(name = "Boaster", id = "boaster", team = "fnc"),
+          playerStats(name = "Sentinel", id = "sen-player", team = "sen", agent = "Jett"),
+        ),
+      ),
+      mapData(
+        name = "Haven",
+        firstScore = 13,
+        secondScore = 11,
+        members = listOf(
+          playerStats(name = "Boaster", id = "boaster", team = "fnc", agent = "Viper"),
+          playerStats(name = "Sentinel", id = "sen-player", team = "sen", agent = "Phoenix"),
+        ),
+      ),
+    ).toAllMapPlayerStatsRows()
+
+    assertEquals(2, rows.size)
+    assertEquals(MatchDetailPlayerStatsTeamColorRole.Accent, rows.single { it.playerName == "Boaster" }.teamColorRole)
+    assertEquals(MatchDetailPlayerStatsTeamColorRole.Neutral, rows.single { it.playerName == "Sentinel" }.teamColorRole)
   }
 
   @Test
@@ -121,6 +169,14 @@ class MatchDetailFormattingTest {
     )
 
     assertEquals("1 played map • sorted by map order", maps.matchDetailAllMapsMeta())
+  }
+
+  @Test
+  fun statsTableMaxHeightCapsVisibleRows() {
+    assertEquals(40.dp, matchDetailStatsTableMaxHeight(rowCount = 0))
+    assertEquals(160.dp, matchDetailStatsTableMaxHeight(rowCount = 2))
+    assertEquals(640.dp, matchDetailStatsTableMaxHeight(rowCount = 10))
+    assertEquals(640.dp, matchDetailStatsTableMaxHeight(rowCount = 14))
   }
 
   @Test
@@ -232,8 +288,15 @@ class MatchDetailFormattingTest {
     map = name,
     members = members,
     teams = listOf(
-      TeamDetails(id = "fnc", name = "FNATIC", region = "EMEA", img = "", score = firstScore, isWinner = true),
-      TeamDetails(id = "sen", name = "Sentinels", region = "Americas", img = "", score = secondScore, isWinner = false),
+      TeamDetails(id = "fnc", name = "FNATIC", region = "EMEA", img = "fnatic.png", score = firstScore, isWinner = true),
+      TeamDetails(
+        id = "sen",
+        name = "Sentinels",
+        region = "Americas",
+        img = "sentinels.png",
+        score = secondScore,
+        isWinner = false,
+      ),
     ),
     rounds = emptyList(),
   )
@@ -242,6 +305,7 @@ class MatchDetailFormattingTest {
     name: String,
     id: String = name.lowercase().replace(" ", "-"),
     agent: String = "Omen",
+    team: String = "FNATIC",
     acs: Int = 231,
     kills: Int = 18,
     deaths: Int = 12,
@@ -251,7 +315,7 @@ class MatchDetailFormattingTest {
   ): PlayerStats = PlayerStats(
     playerId = id,
     name = name,
-    team = "FNATIC",
+    team = team,
     acs = acs,
     adr = 152,
     kills = kills,

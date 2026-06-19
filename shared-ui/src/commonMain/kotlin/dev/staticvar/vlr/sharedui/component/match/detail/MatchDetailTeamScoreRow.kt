@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.sharedui.component.match.detail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
@@ -35,10 +37,16 @@ public fun MatchDetailTeamScoreRow(
   imageUrl: String? = null,
   isWinner: Boolean = false,
   showLogo: Boolean = true,
+  onClick: (() -> Unit)? = null,
 ) {
+  val clickModifier = onClick?.let { clickAction ->
+    Modifier.clickable(role = Role.Button, onClick = clickAction)
+  } ?: Modifier
+
   Row(
     modifier = modifier
       .fillMaxWidth()
+      .then(clickModifier)
       .padding(vertical = Prism.dimens.spacingXs),
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
