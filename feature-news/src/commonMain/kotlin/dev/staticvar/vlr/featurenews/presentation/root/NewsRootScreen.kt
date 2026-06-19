@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.featurenews.presentation.root
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -12,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.featurenews.presentation.list.NewsListScreen
 import dev.staticvar.vlr.featurenews.presentation.list.NewsListViewModel

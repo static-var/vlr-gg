@@ -38,7 +38,7 @@ internal fun NewsListScreen(
     modifier =
     modifier
       .fillMaxSize()
-      .padding(Prism.dimens.spacingM),
+      .padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(

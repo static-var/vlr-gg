@@ -57,7 +57,7 @@ internal fun RankingsScreen(
   }
 
   Column(
-    modifier = modifier.fillMaxSize().padding(Prism.dimens.spacingM),
+    modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(
