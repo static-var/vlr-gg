@@ -91,12 +91,16 @@ private fun EventsUiState.withEvents(
   events: List<EventPreview>,
   isLoading: Boolean,
   errorMessage: String?,
-): EventsUiState = copy(
-  events = events,
-  filteredEvents = events.filterByStatus(selectedStatus),
-  isLoading = isLoading,
-  errorMessage = errorMessage,
-)
+): EventsUiState {
+  val availableStatus = events.availableStatusOrSelected(selectedStatus)
+  return copy(
+    events = events,
+    selectedStatus = availableStatus,
+    filteredEvents = events.filterByStatus(availableStatus),
+    isLoading = isLoading,
+    errorMessage = errorMessage,
+  )
+}
 
 private fun EventsUiState.withSelectedStatus(filter: EventStatusFilter): EventsUiState = copy(
   selectedStatus = filter,
@@ -110,3 +114,8 @@ private fun List<EventPreview>.filterByStatus(filter: EventStatusFilter): List<E
     EventStatusFilter.Completed -> event.status == EventStatus.COMPLETED
   }
 }
+
+private fun List<EventPreview>.availableStatusOrSelected(selectedStatus: EventStatusFilter): EventStatusFilter =
+  EventStatusFilter.entries.firstOrNull { filter -> filter == selectedStatus && filterByStatus(filter).isNotEmpty() }
+    ?: EventStatusFilter.entries.firstOrNull { filter -> filterByStatus(filter).isNotEmpty() }
+    ?: selectedStatus

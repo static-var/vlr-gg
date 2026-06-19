@@ -5,9 +5,11 @@
 package dev.staticvar.vlr.featureevents.presentation
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,11 +25,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
+import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
+import dev.staticvar.designsystem.component.loader.PrismLoader
+import dev.staticvar.designsystem.component.loader.PrismLoaderSize
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
@@ -42,6 +48,9 @@ import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailMatchItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPrizeItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailStandingItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailTeamItem
+import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
+import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGroupSelector
+import dev.staticvar.vlr.sharedui.component.event.detail.groupEventMatches
 import org.koin.mp.KoinPlatform
 
 @Composable
@@ -54,7 +63,9 @@ public fun EventDetailsRoute(
 ) {
   val viewModel: EventDetailsViewModel = remember(eventId) { KoinPlatform.getKoin().get<EventDetailsViewModel>() }
   val uiState: EventDetailsUiState by viewModel.uiState.collectAsState()
-  var section: EventDetailSection by rememberSaveable { mutableStateOf(EventDetailSection.Matches) }
+  var section: EventDetailSection by rememberSaveable(eventId) { mutableStateOf(EventDetailSection.Matches) }
+  var matchGrouping: EventMatchGrouping by rememberSaveable(eventId) { mutableStateOf(EventMatchGrouping.Status) }
+  var selectedMatchGroupName: String? by rememberSaveable(eventId, matchGrouping) { mutableStateOf(null) }
 
   LaunchedEffect(eventId) {
     viewModel.openEvent(eventId)
@@ -67,7 +78,14 @@ public fun EventDetailsRoute(
   EventDetailsScreen(
     uiState = uiState,
     section = section,
+    matchGrouping = matchGrouping,
+    selectedMatchGroupName = selectedMatchGroupName,
     onSectionSelected = { section = it },
+    onMatchGroupingSelected = { grouping ->
+      matchGrouping = grouping
+      selectedMatchGroupName = null
+    },
+    onMatchGroupSelected = { selectedMatchGroupName = it },
     onBack = onBack,
     onMatchSelected = onMatchSelected,
     onTeamSelected = onTeamSelected,
@@ -79,7 +97,11 @@ public fun EventDetailsRoute(
 internal fun EventDetailsScreen(
   uiState: EventDetailsUiState,
   section: EventDetailSection,
+  matchGrouping: EventMatchGrouping,
+  selectedMatchGroupName: String?,
   onSectionSelected: (EventDetailSection) -> Unit,
+  onMatchGroupingSelected: (EventMatchGrouping) -> Unit,
+  onMatchGroupSelected: (String) -> Unit,
   onBack: () -> Unit,
   onMatchSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
@@ -92,8 +114,12 @@ internal fun EventDetailsScreen(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(
-      title = event?.title ?: "Tournament details",
-      subtitle = event?.subtitle?.ifBlank { event.dates } ?: "Event breakdown",
+      title = if (uiState.isLoading) "Tournament details" else event?.title ?: "Tournament details",
+      subtitle = if (uiState.isLoading) {
+        "Loading event breakdown."
+      } else {
+        event?.subtitle?.ifBlank { event.dates } ?: "Event breakdown"
+      },
       preLabel = "event",
       actions = {
         PrismButton(onClick = onBack, style = PrismButtonStyle.Tertiary) {
@@ -103,7 +129,11 @@ internal fun EventDetailsScreen(
     )
 
     when {
-      uiState.isLoading -> PrismStateMessage(text = "Loading tournament details…")
+      uiState.isLoading -> PrismFullscreenLoader(
+        modifier = Modifier.fillMaxSize(),
+        label = "EVENT",
+        supportingText = "Loading tournament details",
+      )
 
       uiState.errorMessage != null && event == null ->
         PrismStateMessage(text = uiState.errorMessage ?: "Unable to load event details.")
@@ -111,24 +141,51 @@ internal fun EventDetailsScreen(
       event == null -> PrismStateMessage(text = "Tournament detail is unavailable.")
 
       else -> {
-        EventDetailHeaderItem(event = event)
-        EventParticipantsRail(teams = event.teams.take(8), onTeamSelected = onTeamSelected)
-        PrismTabs(
-          tabs = EventDetailSection.entries.map { PrismTab(id = it.name, label = it.name) },
-          selectedTabId = section.name,
-          onTabSelected = { onSectionSelected(EventDetailSection.valueOf(it.id)) },
-        )
+        val groupedMatches = remember(event.matches, matchGrouping) { event.matches.groupEventMatches(matchGrouping) }
+        val groupNames = groupedMatches.keys.toList()
+        val resolvedMatchGroupName = selectedMatchGroupName.takeIf { it in groupedMatches } ?: groupNames.firstOrNull()
+        val visibleMatches = resolvedMatchGroupName?.let { groupName -> groupedMatches[groupName] }.orEmpty()
+
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
-          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
         ) {
+          item {
+            EventDetailHeaderItem(event = event)
+          }
+          if (event.teams.isNotEmpty()) {
+            item {
+              EventParticipantsRail(teams = event.teams.take(8), onTeamSelected = onTeamSelected)
+            }
+          }
+          item {
+            PrismTabs(
+              tabs = EventDetailSection.entries.map { PrismTab(id = it.name, label = it.name) },
+              selectedTabId = section.name,
+              onTabSelected = { onSectionSelected(EventDetailSection.valueOf(it.id)) },
+            )
+          }
           when (section) {
             EventDetailSection.Matches -> {
               if (event.matches.isEmpty()) {
-                item { PrismStateMessage(text = "No matches published yet.") }
+                item {
+                  if (uiState.isRefreshing) {
+                    EventDetailInlineLoader(label = "MATCHES")
+                  } else {
+                    PrismStateMessage(text = "No matches published yet.")
+                  }
+                }
               } else {
-                item { PrismSectionTitle(title = "Matches", preLabel = "schedule") }
-                items(event.matches, key = EventMatch::matchId) { match ->
+                item {
+                  EventMatchGroupSelector(
+                    grouping = matchGrouping,
+                    groupNames = groupNames,
+                    selectedGroupName = resolvedMatchGroupName,
+                    onGroupingSelected = onMatchGroupingSelected,
+                    onGroupSelected = onMatchGroupSelected,
+                  )
+                }
+                items(visibleMatches, key = EventMatch::matchId) { match ->
                   EventDetailMatchItem(match = match, onClick = { onMatchSelected(match.matchId) })
                 }
               }
@@ -136,7 +193,13 @@ internal fun EventDetailsScreen(
 
             EventDetailSection.Standings -> {
               if (event.standings.isEmpty()) {
-                item { PrismStateMessage(text = "No standings available yet.") }
+                item {
+                  if (uiState.isRefreshing) {
+                    EventDetailInlineLoader(label = "STANDINGS")
+                  } else {
+                    PrismStateMessage(text = "No standings available yet.")
+                  }
+                }
               } else {
                 item { PrismSectionTitle(title = "Standings", preLabel = "table") }
                 items(event.standings, key = EventStanding::teamName) { standing ->
@@ -147,7 +210,13 @@ internal fun EventDetailsScreen(
 
             EventDetailSection.Prizes -> {
               if (event.prizes.isEmpty()) {
-                item { PrismStateMessage(text = "Prize breakdown unavailable.") }
+                item {
+                  if (uiState.isRefreshing) {
+                    EventDetailInlineLoader(label = "PRIZES")
+                  } else {
+                    PrismStateMessage(text = "Prize breakdown unavailable.")
+                  }
+                }
               } else {
                 item { PrismSectionTitle(title = "Prizes", preLabel = "placements") }
                 items(event.prizes, key = { it.position + it.prize }) { prize ->
@@ -164,6 +233,19 @@ internal fun EventDetailsScreen(
         }
       }
     }
+  }
+}
+
+@Composable
+private fun EventDetailInlineLoader(label: String) {
+  Box(
+    modifier = Modifier.fillMaxWidth().height(180.dp),
+    contentAlignment = Alignment.Center,
+  ) {
+    PrismLoader(
+      size = PrismLoaderSize.Medium,
+      label = label,
+    )
   }
 }
 

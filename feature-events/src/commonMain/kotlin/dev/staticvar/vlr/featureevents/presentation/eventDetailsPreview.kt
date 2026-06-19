@@ -22,6 +22,7 @@ import dev.staticvar.vlr.domain.model.EventPrizeTeam
 import dev.staticvar.vlr.domain.model.EventStanding
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.model.EventTeam
+import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 
 @PrismPreview
 @Composable
@@ -30,7 +31,11 @@ internal fun EventDetailsPreview(@PreviewParameter(PrismPreviewProvider::class) 
     EventDetailsScreen(
       uiState = EventDetailsUiState(event = sampleEventDetails(), isLoading = false),
       section = EventDetailSection.Matches,
+      matchGrouping = EventMatchGrouping.Status,
+      selectedMatchGroupName = null,
       onSectionSelected = {},
+      onMatchGroupingSelected = {},
+      onMatchGroupSelected = {},
       onBack = {},
       onMatchSelected = {},
       onTeamSelected = {},

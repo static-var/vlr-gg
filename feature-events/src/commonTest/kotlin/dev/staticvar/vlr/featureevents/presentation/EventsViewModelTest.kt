@@ -63,6 +63,25 @@ class EventsViewModelTest {
   }
 
   @Test
+  fun initSelectsAvailableFilterAfterEmptyCacheRefresh() {
+    runTest(dispatcher) {
+      val repository =
+        FakeEventRepository(
+          events = emptyList(),
+          refreshedEvents = listOf(eventPreview(id = "upcoming-1", status = EventStatus.UPCOMING)),
+        )
+
+      val viewModel = createViewModel(repository)
+      advanceUntilIdle()
+
+      assertEquals(EventStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
+      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+
+      viewModel.clear()
+    }
+  }
+
+  @Test
   fun selectFilterUpdatesFilteredEvents() {
     runTest(dispatcher) {
       val repository =
@@ -101,7 +120,10 @@ class EventsViewModelTest {
     logoUrl = "",
   )
 
-  private class FakeEventRepository(events: List<EventPreview>) : EventRepository {
+  private class FakeEventRepository(
+    events: List<EventPreview>,
+    private val refreshedEvents: List<EventPreview> = events,
+  ) : EventRepository {
     private val eventsFlow = MutableStateFlow(events)
     var refreshEventsCallCount: Int = 0
       private set
@@ -116,6 +138,7 @@ class EventsViewModelTest {
 
     override suspend fun refreshEvents(): Result<Unit> {
       refreshEventsCallCount += 1
+      eventsFlow.value = refreshedEvents
       return Result.success(Unit)
     }
 
