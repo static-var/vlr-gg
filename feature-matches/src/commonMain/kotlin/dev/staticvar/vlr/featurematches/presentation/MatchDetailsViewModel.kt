@@ -5,12 +5,12 @@
 package dev.staticvar.vlr.featurematches.presentation
 
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchDetailsUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchDetailsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +26,7 @@ public class MatchDetailsViewModel(
   private val mutableUiState: MutableStateFlow<MatchDetailsUiState> = MutableStateFlow(MatchDetailsUiState())
   private var currentMatchId: String? = null
   private var observeMatchJob: Job? = null
+  private var refreshMatchJob: Job? = null
 
   public val uiState: StateFlow<MatchDetailsUiState> = mutableUiState.asStateFlow()
 
@@ -39,18 +40,28 @@ public class MatchDetailsViewModel(
     mutableUiState.value = MatchDetailsUiState(isLoading = true)
     observeMatchJob =
       scope.launch {
-        var initialRefreshRequested = false
+        var missingMatchRefreshRequested = false
+        var incompleteDetailsRefreshRequested = false
         observeMatchDetailsUseCase(matchId).collect { match ->
           mutableUiState.update { current ->
+            val isIncompleteCachedMatch = match?.needsDetailRefresh() == true
             current.copy(
               match = match,
-              isLoading = false,
+              isLoading = match == null || isIncompleteCachedMatch,
               errorMessage = if (match != null) null else current.errorMessage,
             )
           }
-          if (!initialRefreshRequested && match == null) {
-            initialRefreshRequested = true
-            refreshInternal(matchId = matchId, showRefreshing = false)
+          if (!missingMatchRefreshRequested && match == null) {
+            missingMatchRefreshRequested = true
+            refreshMatchJob = scope.launch {
+              refreshInternal(matchId = matchId, showRefreshing = false)
+            }
+          }
+          if (!incompleteDetailsRefreshRequested && match?.needsDetailRefresh() == true) {
+            incompleteDetailsRefreshRequested = true
+            refreshMatchJob = scope.launch {
+              refreshInternal(matchId = matchId, showRefreshing = true)
+            }
           }
         }
       }
@@ -58,14 +69,14 @@ public class MatchDetailsViewModel(
 
   public fun refresh() {
     val matchId: String = currentMatchId ?: return
-    scope.launch {
+    refreshMatchJob?.cancel()
+    refreshMatchJob = scope.launch {
       refreshInternal(matchId = matchId, showRefreshing = true)
     }
   }
 
   public fun clear() {
     observeMatchJob?.cancel()
-    scope.cancel()
   }
 
   private suspend fun refreshInternal(matchId: String, showRefreshing: Boolean) {
@@ -74,11 +85,15 @@ public class MatchDetailsViewModel(
     }
     val refreshResult: Result<Unit> = refreshMatchDetailsUseCase(matchId)
     mutableUiState.update { current ->
+      val keepLoadingForCachedShell = refreshResult.isSuccess && current.match?.needsDetailRefresh() == true
       current.copy(
-        isLoading = false,
+        isLoading = keepLoadingForCachedShell,
         isRefreshing = false,
         errorMessage = refreshResult.exceptionOrNull()?.message,
       )
     }
   }
 }
+
+private fun MatchDetails.needsDetailRefresh(): Boolean =
+  matchData.isEmpty() && head2head.isEmpty() && videos.streams.isEmpty() && videos.vods.isEmpty()

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -19,16 +18,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.state.PrismStateMessage
-import dev.staticvar.designsystem.component.tag.PrismTag
-import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
-import dev.staticvar.vlr.domain.model.MatchStatus
+import dev.staticvar.vlr.sharedui.component.match.overview.MatchPreviewItem
 import org.koin.mp.KoinPlatform
 
 @Composable
@@ -56,7 +51,7 @@ internal fun MatchesOverviewScreen(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier.fillMaxSize().padding(Prism.dimens.spacingM),
+    modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(
@@ -89,50 +84,16 @@ internal fun MatchesOverviewScreen(
           verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
         ) {
           items(uiState.filteredMatches, key = MatchPreview::id) { match ->
-            PrismCard(
+            MatchPreviewItem(
+              matchPreview = match,
               modifier = Modifier.fillMaxWidth(),
-              style = PrismCardStyle.Outlined,
               onClick = { onMatchSelected(match.id) },
-            ) {
-              PrismTag(
-                text = match.status.name,
-                style =
-                when (match.status) {
-                  MatchStatus.LIVE -> PrismTagStyle.Danger
-                  MatchStatus.UPCOMING -> PrismTagStyle.Info
-                  MatchStatus.COMPLETED -> PrismTagStyle.Success
-                  MatchStatus.UNKNOWN -> PrismTagStyle.Neutral
-                },
-              )
-              Text(
-                text = "${match.team1.name} vs ${match.team2.name}",
-                modifier = Modifier.padding(top = Prism.dimens.spacingS),
-                style = Prism.typography.cardTitle,
-                color = Prism.color.titleColor,
-              )
-              Text(
-                text = "${match.event} • ${match.series}",
-                modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                style = Prism.typography.bodySmall,
-                color = Prism.color.labelColor,
-              )
-              Text(
-                text = buildScoreLine(match),
-                modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                style = Prism.typography.label,
-                color = Prism.color.bodyColor,
-              )
-            }
+            )
           }
         }
       }
     }
   }
-}
-
-private fun buildScoreLine(match: MatchPreview): String {
-  val score = "${match.team1.score ?: "-"} : ${match.team2.score ?: "-"}"
-  return listOfNotNull(score, match.time).joinToString(separator = " • ")
 }
 
 @Composable

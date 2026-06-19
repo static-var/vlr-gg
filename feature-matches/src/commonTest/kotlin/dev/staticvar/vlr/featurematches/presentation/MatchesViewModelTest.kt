@@ -68,6 +68,25 @@ class MatchesViewModelTest {
   }
 
   @Test
+  fun initSelectsAvailableFilterAfterEmptyCacheRefresh() {
+    runTest(dispatcher) {
+      val repository =
+        FakeMatchRepository(
+          matches = emptyList(),
+          refreshedMatches = listOf(matchPreview(id = "upcoming-1", status = MatchStatus.UPCOMING)),
+        )
+
+      val viewModel = createViewModel(repository)
+      advanceUntilIdle()
+
+      assertEquals(MatchStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
+      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
+
+      viewModel.clear()
+    }
+  }
+
+  @Test
   fun selectFilterUpdatesFilteredMatches() {
     runTest(dispatcher) {
       val repository =
@@ -116,7 +135,10 @@ class MatchesViewModelTest {
     isWinner = null,
   )
 
-  private class FakeMatchRepository(matches: List<MatchPreview>) : MatchRepository {
+  private class FakeMatchRepository(
+    matches: List<MatchPreview>,
+    private val refreshedMatches: List<MatchPreview> = matches,
+  ) : MatchRepository {
     private val matchesFlow = MutableStateFlow(matches)
     var refreshMatchesCallCount: Int = 0
       private set
@@ -131,6 +153,7 @@ class MatchesViewModelTest {
 
     override suspend fun refreshMatches(): Result<Unit> {
       refreshMatchesCallCount += 1
+      matchesFlow.value = refreshedMatches
       return Result.success(Unit)
     }
 

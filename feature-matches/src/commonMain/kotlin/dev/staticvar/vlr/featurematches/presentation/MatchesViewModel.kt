@@ -91,12 +91,16 @@ private fun MatchesUiState.withMatches(
   matches: List<MatchPreview>,
   isLoading: Boolean,
   errorMessage: String?,
-): MatchesUiState = copy(
-  matches = matches,
-  filteredMatches = matches.filterByStatus(selectedStatus),
-  isLoading = isLoading,
-  errorMessage = errorMessage,
-)
+): MatchesUiState {
+  val availableStatus = matches.availableStatusOrSelected(selectedStatus)
+  return copy(
+    matches = matches,
+    selectedStatus = availableStatus,
+    filteredMatches = matches.filterByStatus(availableStatus),
+    isLoading = isLoading,
+    errorMessage = errorMessage,
+  )
+}
 
 private fun MatchesUiState.withSelectedStatus(filter: MatchStatusFilter): MatchesUiState = copy(
   selectedStatus = filter,
@@ -110,3 +114,8 @@ private fun List<MatchPreview>.filterByStatus(filter: MatchStatusFilter): List<M
     MatchStatusFilter.Completed -> match.status == MatchStatus.COMPLETED
   }
 }
+
+private fun List<MatchPreview>.availableStatusOrSelected(selectedStatus: MatchStatusFilter): MatchStatusFilter =
+  MatchStatusFilter.entries.firstOrNull { filter -> filter == selectedStatus && filterByStatus(filter).isNotEmpty() }
+    ?: MatchStatusFilter.entries.firstOrNull { filter -> filterByStatus(filter).isNotEmpty() }
+    ?: selectedStatus
