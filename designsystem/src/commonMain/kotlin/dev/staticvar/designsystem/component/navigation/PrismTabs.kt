@@ -93,6 +93,7 @@ private fun PrismTabItem(
   Column(
     modifier =
     Modifier.widthIn(min = visualState.minWidth)
+      .heightIn(min = Prism.dimens.touchTargetMin)
       .selectable(selected = selected, enabled = enabled, role = Role.Tab, onClick = onClick)
       .alpha(if (enabled) 1f else 0.72f)
       .drawWithContent {

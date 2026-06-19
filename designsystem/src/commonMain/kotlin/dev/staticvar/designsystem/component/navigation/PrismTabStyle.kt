@@ -101,7 +101,7 @@ public sealed interface PrismTabStyle {
     override val minWidth: Dp
       @Composable
       @ReadOnlyComposable
-      get() = Prism.dimens.touchTargetMin * 2
+      get() = Prism.dimens.touchTargetMin
   }
 
   public companion object {

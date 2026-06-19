@@ -87,6 +87,7 @@ public data class PrismTableCellContext(
   val columnIndex: Int,
   val isHeader: Boolean,
   val isStickyColumn: Boolean,
+  val columnKey: String = "",
 )
 
 @Immutable
@@ -100,6 +101,10 @@ public data class PrismTableCellStyle(
 
 public fun interface PrismTableCellStyleResolver {
   public fun resolve(context: PrismTableCellContext): PrismTableCellStyle?
+}
+
+public fun interface PrismTableCellContentResolver {
+  public fun resolve(context: PrismTableCellContext, value: String): (@Composable () -> Unit)?
 }
 
 @Immutable
@@ -161,6 +166,7 @@ public fun PrismTable(
   modifier: Modifier = Modifier,
   options: PrismTableOptions = PrismTableOptions(),
   viewState: PrismTableViewState = PrismTableDefaults.viewState(),
+  cellContentResolver: PrismTableCellContentResolver? = null,
 ) {
   if (columns.isEmpty()) return
 
@@ -185,6 +191,7 @@ public fun PrismTable(
         columns = columns,
         options = options,
         viewState = viewState,
+        cellContentResolver = cellContentResolver,
       )
 
       rows.forEachIndexed { rowIndex, row ->
@@ -194,6 +201,7 @@ public fun PrismTable(
           columns = columns,
           options = options,
           viewState = viewState,
+          cellContentResolver = cellContentResolver,
         )
       }
     }
@@ -205,6 +213,7 @@ public fun PrismTable(
         verticalScrollOffset = verticalScroll.value,
         options = options,
         viewState = viewState,
+        cellContentResolver = cellContentResolver,
       )
     }
   }
@@ -217,6 +226,7 @@ private fun StickyFirstColumn(
   verticalScrollOffset: Int,
   options: PrismTableOptions,
   viewState: PrismTableViewState,
+  cellContentResolver: PrismTableCellContentResolver?,
 ) {
   Column(
     modifier =
@@ -225,7 +235,12 @@ private fun StickyFirstColumn(
       .offset { IntOffset(x = 0, y = -verticalScrollOffset) }
       .zIndex(PrismTableLayoutConstants.StickyColumnZIndex),
   ) {
-    StickyHeaderCell(column = column, options = options, viewState = viewState)
+    StickyHeaderCell(
+      column = column,
+      options = options,
+      viewState = viewState,
+      cellContentResolver = cellContentResolver,
+    )
     rows.forEachIndexed { rowIndex, row ->
       StickyBodyCell(
         row = row,
@@ -233,13 +248,19 @@ private fun StickyFirstColumn(
         column = column,
         options = options,
         viewState = viewState,
+        cellContentResolver = cellContentResolver,
       )
     }
   }
 }
 
 @Composable
-private fun StickyHeaderCell(column: PrismTableColumn, options: PrismTableOptions, viewState: PrismTableViewState) {
+private fun StickyHeaderCell(
+  column: PrismTableColumn,
+  options: PrismTableOptions,
+  viewState: PrismTableViewState,
+  cellContentResolver: PrismTableCellContentResolver?,
+) {
   TableCell(
     value = column.title,
     textAlign = column.textAlign,
@@ -252,7 +273,9 @@ private fun StickyHeaderCell(column: PrismTableColumn, options: PrismTableOption
       columnIndex = PrismTableLayoutConstants.FirstColumnIndex,
       isHeader = true,
       isStickyColumn = true,
+      columnKey = column.key,
     ),
+    cellContentResolver = cellContentResolver,
   )
 }
 
@@ -263,6 +286,7 @@ private fun StickyBodyCell(
   column: PrismTableColumn,
   options: PrismTableOptions,
   viewState: PrismTableViewState,
+  cellContentResolver: PrismTableCellContentResolver?,
 ) {
   TableCell(
     value = row.cells[column.key].orEmpty(),
@@ -277,7 +301,9 @@ private fun StickyBodyCell(
       columnIndex = PrismTableLayoutConstants.FirstColumnIndex,
       isHeader = false,
       isStickyColumn = true,
+      columnKey = column.key,
     ),
+    cellContentResolver = cellContentResolver,
   )
 }
 
@@ -286,6 +312,7 @@ private fun HeaderRow(
   columns: List<PrismTableColumn>,
   options: PrismTableOptions,
   viewState: PrismTableViewState,
+  cellContentResolver: PrismTableCellContentResolver?,
   modifier: Modifier = Modifier,
 ) {
   Row(modifier = modifier.height(options.headerHeight).requiredWidth(columns.totalWidth())) {
@@ -305,7 +332,9 @@ private fun HeaderRow(
           columnIndex = columnIndex,
           isHeader = true,
           isStickyColumn = false,
+          columnKey = column.key,
         ),
+        cellContentResolver = cellContentResolver,
       )
     }
   }
@@ -318,6 +347,7 @@ private fun BodyRow(
   columns: List<PrismTableColumn>,
   options: PrismTableOptions,
   viewState: PrismTableViewState,
+  cellContentResolver: PrismTableCellContentResolver?,
 ) {
   Row(modifier = Modifier.height(options.rowHeight)) {
     columns.forEachIndexed { columnIndex, column ->
@@ -337,7 +367,9 @@ private fun BodyRow(
           columnIndex = columnIndex,
           isHeader = false,
           isStickyColumn = false,
+          columnKey = column.key,
         ),
+        cellContentResolver = cellContentResolver,
       )
     }
   }
@@ -352,6 +384,7 @@ private fun TableCell(
   viewState: PrismTableViewState,
   context: PrismTableCellContext,
   onClick: (() -> Unit)? = null,
+  cellContentResolver: PrismTableCellContentResolver? = null,
 ) {
   val colors = resolveColors(viewState = viewState, context = context)
   val clickModifier = if (!context.isHeader && onClick != null) {
@@ -369,15 +402,16 @@ private fun TableCell(
       .padding(options.cellPadding),
     contentAlignment = PrismTableDefaults.CellContentAlignment,
   ) {
-    Text(
-      text = value,
-      color = colors.contentColor,
-      style = if (context.isHeader) Prism.typography.label else Prism.typography.bodySmall,
-      maxLines = if (context.isHeader) 1 else options.bodyMaxLines.coerceAtLeast(1),
-      overflow = if (context.isHeader) options.headerOverflow else options.bodyOverflow,
-      textAlign = textAlign,
-      modifier = Modifier.fillMaxWidth(),
-    )
+    cellContentResolver?.resolve(context = context, value = value)?.invoke()
+      ?: Text(
+        text = value,
+        color = colors.contentColor,
+        style = if (context.isHeader) Prism.typography.label else Prism.typography.bodySmall,
+        maxLines = if (context.isHeader) 1 else options.bodyMaxLines.coerceAtLeast(1),
+        overflow = if (context.isHeader) options.headerOverflow else options.bodyOverflow,
+        textAlign = textAlign,
+        modifier = Modifier.fillMaxWidth(),
+      )
   }
 }
 

@@ -4,6 +4,12 @@
  */
 package dev.staticvar.vlr.shared.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,10 +46,7 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
   val navItems = remember(appState.navigationItems) { appState.navigationItems }
 
   androidx.compose.foundation.layout.BoxWithConstraints(
-    modifier =
-    modifier
-      .fillMaxSize()
-      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Vertical)),
+    modifier = modifier.fillMaxSize(),
   ) {
     val showSceneLayout: Boolean = maxWidth >= sceneBreakpoint
     val showRail: Boolean = maxWidth >= railBreakpoint
@@ -51,7 +54,10 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
 
     if (showRail) {
       Row(
-        modifier = Modifier.fillMaxSize().padding(Prism.dimens.spacingM),
+        modifier = Modifier
+          .fillMaxSize()
+          .windowInsetsPadding(WindowInsets.safeDrawing)
+          .padding(Prism.dimens.spacingM),
         horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
       ) {
         PrismBottomNavBarLarge(
@@ -64,28 +70,69 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
           onBack = appState::navigateUp,
           sceneStrategy = sceneStrategy,
           entryProvider = appEntryProvider(appState),
+          transitionSpec = { navigationForwardTransition() },
+          popTransitionSpec = { navigationBackTransition() },
+          predictivePopTransitionSpec = { navigationBackTransition() },
           modifier = Modifier.weight(1f).fillMaxSize(),
         )
       }
     } else {
-      Column(modifier = Modifier.fillMaxSize()) {
+      Column(
+        modifier = Modifier.fillMaxSize(),
+      ) {
         NavDisplay(
           backStack = appState.backStack,
           onBack = appState::navigateUp,
           sceneStrategy = sceneStrategy,
           entryProvider = appEntryProvider(appState),
+          transitionSpec = { navigationForwardTransition() },
+          popTransitionSpec = { navigationBackTransition() },
+          predictivePopTransitionSpec = { navigationBackTransition() },
           modifier = Modifier.weight(1f).fillMaxWidth(),
         )
         PrismBottomNavBar(
           items = navItems,
           selectedItemId = appState.selectedNavigationItemId,
           onItemSelected = appState::selectRoot,
-          modifier = Modifier.padding(Prism.dimens.spacingM),
+          modifier = Modifier.fillMaxWidth(),
         )
       }
     }
   }
 }
+
+private fun navigationForwardTransition() = (
+  fadeIn(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)) +
+    slideInHorizontally(
+      animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
+      initialOffsetX = { width -> width / NavigationSlideOffsetDivisor },
+    )
+  ) togetherWith
+  (
+    fadeOut(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)) +
+      slideOutHorizontally(
+        animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
+        targetOffsetX = { width -> -width / NavigationSlideOffsetDivisor },
+      )
+    )
+
+private fun navigationBackTransition() = (
+  fadeIn(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)) +
+    slideInHorizontally(
+      animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
+      initialOffsetX = { width -> -width / NavigationSlideOffsetDivisor },
+    )
+  ) togetherWith
+  (
+    fadeOut(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)) +
+      slideOutHorizontally(
+        animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
+        targetOffsetX = { width -> width / NavigationSlideOffsetDivisor },
+      )
+    )
+
+private const val NavigationTransitionDurationMillis: Int = 180
+private const val NavigationSlideOffsetDivisor: Int = 8
 
 @Composable
 private fun appEntryProvider(appState: VlrAppState) = entryProvider<NavKey> {
