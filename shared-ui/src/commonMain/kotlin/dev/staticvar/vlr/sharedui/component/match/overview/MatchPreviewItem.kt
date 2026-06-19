@@ -34,11 +34,16 @@ import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 
 @Composable
-public fun MatchPreviewItem(modifier: Modifier = Modifier, matchPreview: MatchPreview) {
+public fun MatchPreviewItem(
+  modifier: Modifier = Modifier,
+  matchPreview: MatchPreview,
+  onClick: (() -> Unit)? = null,
+) {
   FavoriteTicketCardBox(selected = matchPreview.isFavorite, modifier = modifier) {
     PrismCard(
       modifier = Modifier.fillMaxWidth(),
       style = if (matchPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
+      onClick = onClick,
     ) {
       Row(
         modifier = Modifier

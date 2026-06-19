@@ -29,11 +29,16 @@ import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 
 @Composable
-public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPreview) {
+public fun EventPreviewItem(
+  modifier: Modifier = Modifier,
+  eventPreview: EventPreview,
+  onClick: (() -> Unit)? = null,
+) {
   FavoriteTicketCardBox(selected = eventPreview.isFavorite, modifier = modifier) {
     PrismCard(
       modifier = Modifier.fillMaxWidth(),
       style = if (eventPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
+      onClick = onClick,
     ) {
       Row(
         modifier = Modifier.fillMaxWidth(),

@@ -6,6 +6,7 @@ package dev.staticvar.vlr.sharedui.component.event.detail
 
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventMatch
+import kotlin.math.round
 
 public enum class EventMatchGrouping(public val label: String) {
   Status(label = "Status"),
@@ -28,7 +29,7 @@ internal fun EventMatch.eventMatchSchedule(): String = listOfNotNull(
   listOf(date, time).filter(String::isNotBlank).joinToString(separator = " ").ifBlank { null },
 ).joinToString(separator = " • ")
 
-internal fun List<EventMatch>.groupEventMatches(grouping: EventMatchGrouping): Map<String, List<EventMatch>> =
+public fun List<EventMatch>.groupEventMatches(grouping: EventMatchGrouping): Map<String, List<EventMatch>> =
   groupBy { match ->
     when (grouping) {
       EventMatchGrouping.Status -> match.status
@@ -56,6 +57,6 @@ private fun String.eventGroupLabel(): String = trim()
   .replaceFirstChar { char -> char.uppercase() }
 
 private fun Double.toCompactDecimal(): String {
-  val rounded = kotlin.math.round(this * 100.0) / 100.0
+  val rounded = round(this * 100.0) / 100.0
   return rounded.toString().trimEnd('0').trimEnd('.')
 }

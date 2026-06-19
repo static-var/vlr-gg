@@ -70,7 +70,7 @@ public fun NewsPreviewItem(
             style = PrismTagStyle.Accent,
           )
           PrismTag(
-            text = newsItem.date.ifBlank { "recent" },
+            text = formatNewsPreviewDate(newsItem.date),
             style = PrismTagStyle.Info,
           )
         }
