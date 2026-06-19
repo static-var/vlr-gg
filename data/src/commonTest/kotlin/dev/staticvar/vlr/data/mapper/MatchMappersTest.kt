@@ -183,10 +183,36 @@ class MatchMappersTest {
 
   @Test
   fun `details dto malformed score produces null team scores`() {
-    val d = sampleDetailsDto().copy(score = "abc")
+    val d = sampleDetailsDto().copy(
+      score = "abc",
+      teams = listOf(
+        DetailTeamDto(id = "t1", name = "Team A", img = "a.png", score = null),
+        DetailTeamDto(id = "t2", name = "Team B", img = "b.png", score = null),
+      ),
+    )
     val entity = d.toMatchEntity()
     assertEquals(null, entity.team1_score)
     assertEquals(null, entity.team2_score)
+  }
+
+  @Test
+  fun `details dto parses dash separated match score`() {
+    val d = sampleDetailsDto().copy(score = "2-1")
+
+    val entity = d.toMatchEntity()
+
+    assertEquals(2L, entity.team1_score)
+    assertEquals(1L, entity.team2_score)
+  }
+
+  @Test
+  fun `details dto falls back to top level team scores when score is missing`() {
+    val d = sampleDetailsDto().copy(score = "")
+
+    val entity = d.toMatchEntity()
+
+    assertEquals(13L, entity.team1_score)
+    assertEquals(11L, entity.team2_score)
   }
 
   @Test
@@ -243,6 +269,33 @@ class MatchMappersTest {
     // kast_percent & hs_percent should be null because zeros become null via toDoubleOrNullSafe
     assertEquals(null, row.kast_percent)
     assertEquals(null, row.hs_percent)
+  }
+
+  @Test
+  fun `player stats use agent title when API omits agent name`() {
+    val playerWithTitledAgent = PlayerStatsDto(
+      playerId = "pY", name = "Anchor", team = "t1", acs = 210, adr = 120, kills = 15, deaths = 10,
+      assists = 6, kast = 80, firstKills = 1, firstDeaths = 0, firstKillsDiff = 1, hsPercent = 24, rating = 1.1f,
+      agents = listOf(AgentInfoDto(title = "Killjoy", img = "killjoy.png")),
+    )
+    val d = sampleDetailsDto().copy(
+      matchData = listOf(
+        MapDataDto(
+          map = "Icebox",
+          members = listOf(playerWithTitledAgent),
+          teams = listOf(
+            DetailTeamDto(id = "t1", name = "Team A", img = "a.png", score = 13),
+            DetailTeamDto(id = "t2", name = "Team B", img = "b.png", score = 7),
+          ),
+          rounds = emptyList(),
+        ),
+      ),
+    )
+
+    val row = d.toPlayerStatEntities(d.id).single()
+
+    assertEquals("Killjoy", row.agent_name)
+    assertEquals("killjoy.png", row.agent_image_url)
   }
 
   @Test

@@ -242,6 +242,7 @@ internal class MatchRepositoryImpl(
         }
 
         dto.toPreviousEncounterEntities(matchId).forEach { encounter ->
+          ensurePreviousEncounterMatchExists(matchEntity, encounter)
           matchesQueries.insertPreviousEncounter(
             match_id = encounter.match_id,
             previous_match_id = encounter.previous_match_id,
@@ -253,6 +254,32 @@ internal class MatchRepositoryImpl(
         }
       }
     }
+  }
+
+  private fun ensurePreviousEncounterMatchExists(parentMatch: Matches, encounter: MatchPreviousEncounters) {
+    matchesQueries.insertMatchIfMissing(
+      id = encounter.previous_match_id,
+      event_id = parentMatch.event_id,
+      event_name = parentMatch.event_name,
+      event_logo_url = parentMatch.event_logo_url,
+      series = parentMatch.series,
+      stage = parentMatch.stage,
+      status = "COMPLETED",
+      time = parentMatch.time,
+      eta = null,
+      note = "",
+      patch = parentMatch.patch,
+      team1_id = "",
+      team1_name = encounter.team1_name,
+      team1_logo_url = "",
+      team1_score = encounter.team1_score,
+      team2_id = "",
+      team2_name = encounter.team2_name,
+      team2_logo_url = "",
+      team2_score = encounter.team2_score,
+      map_count = 0,
+      last_updated = parentMatch.last_updated,
+    )
   }
 
   private fun MatchPreviousEncounters.toDomainEncounter(): PreviousEncounter = PreviousEncounter(

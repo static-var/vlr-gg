@@ -85,7 +85,11 @@ data class PlayerStatsDto(
 )
 
 @Serializable
-data class AgentInfoDto(@SerialName("name") val name: String = "", @SerialName("img") val img: String = "")
+data class AgentInfoDto(
+  @SerialName("name") val name: String = "",
+  @SerialName("title") val title: String = "",
+  @SerialName("img") val img: String = "",
+)
 
 @Serializable
 data class RoundInfoDto(

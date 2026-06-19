@@ -11,6 +11,7 @@ import dev.staticvar.vlr.data.MatchMaps
 import dev.staticvar.vlr.data.MatchPreviousEncounters
 import dev.staticvar.vlr.data.MatchVideos
 import dev.staticvar.vlr.data.Matches
+import dev.staticvar.vlr.remotesource.match.AgentInfoDto
 import dev.staticvar.vlr.remotesource.match.MapDataDto
 import dev.staticvar.vlr.remotesource.match.MatchDetailsDto
 import dev.staticvar.vlr.remotesource.match.MatchPreviewDto
@@ -78,6 +79,7 @@ internal fun MatchPreviewDto.toEntity(): Matches = Matches(
 internal fun MatchDetailsDto.toMatchEntity(): Matches {
   val team1 = teams.getOrNull(0)
   val team2 = teams.getOrNull(1)
+  val parsedScore = parseMatchScore(score)
   return Matches(
     id = id.ifEmpty { event.id + "_" + (team1?.name ?: "") + "_vs_" + (team2?.name ?: "") },
     event_id = event.id,
@@ -93,18 +95,23 @@ internal fun MatchDetailsDto.toMatchEntity(): Matches {
     team1_id = team1?.id ?: team1?.name ?: "", // Some APIs omit id
     team1_name = team1?.name ?: "",
     team1_logo_url = team1?.img ?: "",
-    team1_score = parseScoreComponent(score, 0),
+    team1_score = parsedScore?.first ?: team1?.score?.toLong(),
     team2_id = team2?.id ?: team2?.name ?: "",
     team2_name = team2?.name ?: "",
     team2_logo_url = team2?.img ?: "",
-    team2_score = parseScoreComponent(score, 1),
+    team2_score = parsedScore?.second ?: team2?.score?.toLong(),
     map_count = mapCount.toLong(),
     last_updated = Clock.System.now().toEpochMilliseconds(),
   )
 }
 
-private fun parseScoreComponent(score: String, index: Int): Long? =
-  score.split(":").takeIf { it.size == 2 }?.getOrNull(index)?.trim()?.toLongOrNull()
+private fun parseMatchScore(score: String): Pair<Long, Long>? {
+  val parts = score.split(":", "-").map(String::trim).filter(String::isNotEmpty)
+  if (parts.size != 2) return null
+  val firstScore = parts[0].toLongOrNull() ?: return null
+  val secondScore = parts[1].toLongOrNull() ?: return null
+  return firstScore to secondScore
+}
 
 // Maps table rows
 internal fun MatchDetailsDto.toMapEntities(matchId: String): List<MatchMaps> = matchData.map { mapDto ->
@@ -142,7 +149,7 @@ internal fun MatchDetailsDto.toPlayerStatEntities(matchId: String): List<MatchMa
       if (player.agents.isEmpty()) {
         listOf(player.toStatEntity(matchId, mapDto.map, null))
       } else {
-        player.agents.map { agent -> player.toStatEntity(matchId, mapDto.map, agent.name to agent.img) }
+        player.agents.map { agent -> player.toStatEntity(matchId, mapDto.map, agent.displayName to agent.img) }
       }
     }
   }
@@ -175,6 +182,9 @@ private fun PlayerStatsDto.toStatEntity(
 
 private fun Int.toDoubleOrNullSafe(): Double? = this.takeIf { it != 0 }?.toDouble()
 
+private val AgentInfoDto.displayName: String
+  get() = name.ifBlank { title }
+
 // Bans (simple string list; ban_type hard-coded as "map" until other types appear)
 internal fun MatchDetailsDto.toBanEntities(matchId: String): List<MatchBans> = bans.map { value ->
   MatchBans(
@@ -201,6 +211,7 @@ private fun VideoReferenceDto.toVideoEntity(matchId: String, type: String): Matc
 // Previous encounters
 internal fun MatchDetailsDto.toPreviousEncounterEntities(matchId: String): List<MatchPreviousEncounters> =
   head2head.mapNotNull { prev ->
+    val previousMatchId = prev.id.takeIf { it.isNotBlank() } ?: return@mapNotNull null
     val t1 = prev.teams.getOrNull(0)
     val t2 = prev.teams.getOrNull(1)
     if (t1 == null || t2 == null) {
@@ -209,7 +220,7 @@ internal fun MatchDetailsDto.toPreviousEncounterEntities(matchId: String): List<
       MatchPreviousEncounters(
         id = 0,
         match_id = matchId,
-        previous_match_id = prev.id.ifEmpty { "" },
+        previous_match_id = previousMatchId,
         team1_name = t1.name,
         team1_score = t1.score?.toLong(),
         team2_name = t2.name,

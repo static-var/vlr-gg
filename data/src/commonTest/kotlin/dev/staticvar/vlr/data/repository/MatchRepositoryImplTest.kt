@@ -241,6 +241,62 @@ class MatchRepositoryImplTest {
   }
 
   @Test
+  fun refreshMatchDetailsStoresPreviousEncountersThatAreNotCachedMatches() = runTest(dispatcher) {
+    dataSource.listResult = Result.success(
+      listOf(
+        MatchPreviewDto(
+          id = "match1",
+          event = "Champions",
+          series = "Stage 1",
+          status = MatchStatus.LIVE,
+          team1 = TeamDto(id = "t1", name = "Alpha", img = "alpha.png"),
+          team2 = TeamDto(id = "t2", name = "Beta", img = "beta.png"),
+          time = "2025-01-01",
+          eventId = "event1",
+        ),
+      ),
+    )
+    assertTrue(repository.refreshMatches().isSuccess)
+
+    dataSource.detailResults["match1"] = Result.success(
+      MatchDetailsDto(
+        event = EventDto(
+          id = "event1",
+          name = "Champions",
+          series = "Stage 1",
+          stage = "Playoffs",
+          img = "event.png",
+          status = MatchStatus.COMPLETED,
+        ),
+        head2head = listOf(
+          PreviousEncounterDto(
+            id = "uncached-previous-match",
+            teams = listOf(
+              TeamDto(name = "Alpha", score = 2),
+              TeamDto(name = "Beta", score = 1),
+            ),
+          ),
+        ),
+        teams = listOf(
+          TeamDto(id = "t1", name = "Alpha", img = "alpha-detail.png", score = 2),
+          TeamDto(id = "t2", name = "Beta", img = "beta-detail.png", score = 1),
+        ),
+      ),
+    )
+
+    val result = repository.refreshMatchDetails("match1")
+
+    assertTrue(result.isSuccess)
+    val previousEncounter = database.matchesQueries.getPreviousEncounters("match1").executeAsOne()
+    assertEquals("uncached-previous-match", previousEncounter.previous_match_id)
+    val previousMatch = database.matchesQueries
+      .getMatchWithFavoriteStatus("uncached-previous-match")
+      .executeAsOne()
+    assertEquals("Alpha", previousMatch.team1_name)
+    assertEquals("Beta", previousMatch.team2_name)
+  }
+
+  @Test
   fun refreshMatches_preservesFavoriteFlag() = runTest(dispatcher) {
     dataSource.listResult = Result.success(
       listOf(
