@@ -4,12 +4,6 @@
  */
 package dev.staticvar.vlr.shared.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Article
-import androidx.compose.material.icons.outlined.EmojiEvents
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Leaderboard
-import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -19,6 +13,16 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.savedstate.serialization.SavedStateConfiguration
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavItem
+import dev.staticvar.designsystem.prism.icon.about.StairStepAbout
+import dev.staticvar.designsystem.prism.icon.about.StairStepAboutFilled
+import dev.staticvar.designsystem.prism.icon.events.StairStepEvents
+import dev.staticvar.designsystem.prism.icon.events.StairStepEventsFilled
+import dev.staticvar.designsystem.prism.icon.matches.StairStepMatches
+import dev.staticvar.designsystem.prism.icon.matches.StairStepMatchesFilled
+import dev.staticvar.designsystem.prism.icon.news.StairStepNews
+import dev.staticvar.designsystem.prism.icon.news.StairStepNewsFilled
+import dev.staticvar.designsystem.prism.icon.rankings.StairStepRankings
+import dev.staticvar.designsystem.prism.icon.rankings.StairStepRankingsFilled
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -53,11 +57,11 @@ private val appRouteSavedStateConfiguration: SavedStateConfiguration =
 
 private val rootNavigationItems: List<PrismBottomNavItem> =
   listOf(
-    PrismBottomNavItem(id = NEWS_ID, label = "News", icon = Icons.Outlined.Article),
-    PrismBottomNavItem(id = MATCHES_ID, label = "Matches", icon = Icons.Outlined.SportsEsports),
-    PrismBottomNavItem(id = EVENTS_ID, label = "Events", icon = Icons.Outlined.EmojiEvents),
-    PrismBottomNavItem(id = RANKINGS_ID, label = "Rankings", icon = Icons.Outlined.Leaderboard),
-    PrismBottomNavItem(id = ABOUT_ID, label = "About", icon = Icons.Outlined.Info),
+    PrismBottomNavItem(id = NEWS_ID, label = "News", icon = StairStepNews, selectedIcon = StairStepNewsFilled),
+    PrismBottomNavItem(id = MATCHES_ID, label = "Matches", icon = StairStepMatches, selectedIcon = StairStepMatchesFilled),
+    PrismBottomNavItem(id = EVENTS_ID, label = "Events", icon = StairStepEvents, selectedIcon = StairStepEventsFilled),
+    PrismBottomNavItem(id = RANKINGS_ID, label = "Rankings", icon = StairStepRankings, selectedIcon = StairStepRankingsFilled),
+    PrismBottomNavItem(id = ABOUT_ID, label = "About", icon = StairStepAbout, selectedIcon = StairStepAboutFilled),
   )
 
 /**
