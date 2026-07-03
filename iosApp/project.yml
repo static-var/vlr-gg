@@ -12,12 +12,8 @@ settings:
     CURRENT_PROJECT_VERSION: 1
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
-    GENERATE_INFOPLIST_FILE: YES
-    INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone: YES
-    INFOPLIST_KEY_CFBundleDisplayName: VLR
-    INFOPLIST_KEY_LSRequiresIPhoneOS: YES
-    INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
-    INFOPLIST_KEY_UILaunchScreen_Generation: YES
+    GENERATE_INFOPLIST_FILE: NO
+    INFOPLIST_FILE: iosApp/Info.plist
     TARGETED_DEVICE_FAMILY: "1,2"
     ENABLE_USER_SCRIPT_SANDBOXING: NO
     FRAMEWORK_SEARCH_PATHS:
@@ -86,14 +82,25 @@ targets:
                       return value.strip().strip('"').strip("'")
               return ""
 
-          token = (
-              read_property(repo_root / ".env", "VLR_AUTH_TOKEN")
-              or read_property(repo_root / "local.properties", "VLR_AUTH_TOKEN")
-              or read_property(repo_root / "local.properties", "TOKEN")
-          )
+          def normalize_token(value):
+              token = (value or "").strip().strip('"').strip("'")
+              if token == "replace-with-your-token":
+                  return ""
+              return token
 
-          if token == "replace-with-your-token":
-              token = ""
+          token = next(
+              (
+                  candidate
+                  for candidate in (
+                      normalize_token(os.environ.get("VLR_AUTH_TOKEN")),
+                      normalize_token(read_property(repo_root / "local.properties", "TOKEN")),
+                      normalize_token(read_property(repo_root / "local.properties", "VLR_AUTH_TOKEN")),
+                      normalize_token(read_property(repo_root / ".env", "VLR_AUTH_TOKEN")),
+                  )
+                  if candidate
+              ),
+              "",
+          )
 
           escaped_token = token.replace("\\", "\\\\").replace('"', '\\"')
           auth_token_literal = f'"{escaped_token}"' if escaped_token else "nil"
