@@ -57,7 +57,6 @@ internal fun MatchesOverviewScreen(
     PrismScreenTitleBar(
       title = "Match overview",
       subtitle = "Live, upcoming, and completed series sourced from the shared domain layer.",
-      preLabel = "matches",
     )
     PrismTabs(
       tabs =

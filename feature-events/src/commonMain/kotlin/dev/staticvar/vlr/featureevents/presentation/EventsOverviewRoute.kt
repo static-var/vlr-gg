@@ -57,7 +57,6 @@ internal fun EventsOverviewScreen(
     PrismScreenTitleBar(
       title = "Tournament overview",
       subtitle = "Current, upcoming, and completed events.",
-      preLabel = "events",
     )
     PrismTabs(
       tabs =

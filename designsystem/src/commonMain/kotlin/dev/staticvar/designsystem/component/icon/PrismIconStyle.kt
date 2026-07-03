@@ -52,6 +52,24 @@ public sealed interface PrismIconStyle {
       get() = BorderStroke(width = Prism.dimens.strokeDefault, color = Prism.color.stroke)
   }
 
+  /** Bordered icon treatment for app metadata, team marks, and compact visual anchors. */
+  public data object Borderless : PrismIconStyle {
+    override val containerColor: Color
+      @Composable
+      @ReadOnlyComposable
+      get() = Prism.color.surface
+
+    override val contentColor: Color
+      @Composable
+      @ReadOnlyComposable
+      get() = Prism.color.titleColor
+
+    override val border: BorderStroke?
+      @Composable
+      @ReadOnlyComposable
+      get() = null
+  }
+
   /** Borderless icon treatment for icons already placed in a strong parent container. */
   public data object Plain : PrismIconStyle {
     override val containerColor: Color

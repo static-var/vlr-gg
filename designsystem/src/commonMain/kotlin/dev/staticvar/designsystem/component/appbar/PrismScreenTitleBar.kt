@@ -4,130 +4,108 @@
  */
 package dev.staticvar.designsystem.component.appbar
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
-import dev.staticvar.designsystem.component.surface.PrismSurface
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
+import dev.staticvar.designsystem.component.header.PrismHeader
+import dev.staticvar.designsystem.component.icon.PrismIcon
+import dev.staticvar.designsystem.component.icon.PrismIconStyle
+import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.icon.back.StairStepBack
 
 /**
- * Brutalist screen title/app bar block with optional navigation and action slots.
+ * Compact screen title bar with optional navigation, subtitle, and trailing content.
+ *
+ * [style] controls the token-backed height, spacing, and title treatment while this composable
+ * owns inset handling and slot placement. [onBackPress] renders the standard app-bar back
+ * affordance; [actions] supports call sites that provide trailing controls.
  */
 @Composable
 public fun PrismScreenTitleBar(
   title: String,
   modifier: Modifier = Modifier,
   subtitle: String? = null,
-  preLabel: String? = null,
-  navigationSlot: (@Composable () -> Unit)? = null,
+  onBackPress: (() -> Unit)? = null,
   actions: (@Composable RowScope.() -> Unit)? = null,
+  style: PrismScreenTitleBarStyle = PrismScreenTitleBarStyle.Default,
 ) {
-  PrismSurface(
-    modifier = modifier.fillMaxWidth(),
-    color = Prism.color.background,
-    shape = Prism.shapes.medium,
-    border = BorderStroke(Prism.dimens.strokeDefault, Prism.color.stroke),
-  ) {
-    Column(
-      modifier =
-      Modifier.fillMaxWidth()
-        .padding(horizontal = Prism.dimens.spacingM, vertical = Prism.dimens.spacingS),
-      verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
-    ) {
-      if (preLabel != null) {
-        PrismScreenTitlePreLabel(text = preLabel)
-      }
-
-      PrismScreenTitleRow(
-        title = title,
-        navigationSlot = navigationSlot,
-        actions = actions,
-      )
-
-      if (subtitle != null) {
-        PrismScreenTitleSubtitle(text = subtitle)
-      }
-    }
+  val systemBarHeight = with(LocalDensity.current) {
+    WindowInsets.statusBars.getTop(this).toDp()
   }
-}
+  val hasNavigation = onBackPress != null
 
-@Composable
-private fun PrismScreenTitlePreLabel(text: String) {
-  Text(
-    text = text.uppercase(),
-    style = Prism.typography.caption,
-    color = Prism.color.labelColor,
-    maxLines = 1,
-    overflow = TextOverflow.Ellipsis,
-  )
-}
-
-@Composable
-private fun PrismScreenTitleRow(
-  title: String,
-  navigationSlot: (@Composable () -> Unit)?,
-  actions: (@Composable RowScope.() -> Unit)?,
-) {
   Row(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = modifier
+      .height(style.containerHeight + systemBarHeight)
+      .padding(horizontal = style.horizontalPadding, vertical = style.verticalPadding)
+      .windowInsetsPadding(WindowInsets.statusBars),
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
-    if (navigationSlot != null) {
-      PrismNavigationSlot(content = navigationSlot)
-    }
-    Text(
-      text = title,
-      modifier = Modifier.weight(1f),
-      style = Prism.typography.cardTitle,
-      color = Prism.color.titleColor,
-      maxLines = 1,
-      overflow = TextOverflow.Ellipsis,
+    PrismScreenTitleNavigationSlot(
+      onBackPress = onBackPress,
     )
-
+    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
+      subtitle?.let { text ->
+        PrismHeader(
+          text = text,
+          modifier = Modifier.padding(
+            horizontal = style.subtitleHorizontalPadding(hasNavigation = hasNavigation),
+          ),
+        )
+      }
+      Text(
+        text = title,
+        modifier = Modifier
+          .padding(horizontal = style.titleHorizontalPadding(hasNavigation = hasNavigation))
+          .fillMaxHeight(),
+        style = style.titleTextStyle,
+      )
+    }
     if (actions != null) {
-      PrismTitleActions(content = actions)
+      PrismScreenTitleActions(content = actions)
     }
   }
 }
 
 @Composable
-private fun PrismNavigationSlot(content: @Composable () -> Unit) {
-  Box(
-    modifier = Modifier.size(Prism.dimens.iconM + Prism.dimens.spacingXs),
-    contentAlignment = Alignment.Center,
-  ) {
-    content()
+private fun PrismScreenTitleNavigationSlot(
+  onBackPress: (() -> Unit)?,
+) {
+  if (onBackPress != null) {
+    PrismIcon(
+      imageVector = StairStepBack,
+      contentDescription = "Back",
+      modifier = Modifier.clickable(
+        role = Role.Button,
+        onClick = onBackPress,
+      ),
+      tint = PrismIconTint.Inverted,
+      style = PrismIconStyle.Borderless
+    )
   }
 }
 
 @Composable
-private fun PrismTitleActions(content: @Composable RowScope.() -> Unit) {
+private fun PrismScreenTitleActions(content: @Composable RowScope.() -> Unit) {
   Row(
-    horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+    horizontalArrangement = Arrangement.spacedBy(PrismScreenTitleBarStyle.Default.actionSpacing),
     verticalAlignment = Alignment.CenterVertically,
     content = content,
-  )
-}
-
-@Composable
-private fun PrismScreenTitleSubtitle(text: String) {
-  Text(
-    text = text,
-    style = Prism.typography.bodySmall,
-    color = Prism.color.labelColor,
-    maxLines = 1,
-    overflow = TextOverflow.Ellipsis,
   )
 }

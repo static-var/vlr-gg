@@ -21,8 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
@@ -72,12 +70,7 @@ internal fun PlayerDetailsScreen(
     PrismScreenTitleBar(
       title = player?.alias?.ifBlank { player.name } ?: "Player details",
       subtitle = player?.realName ?: player?.country ?: "Agent pool and team history",
-      preLabel = "player",
-      actions = {
-        PrismButton(onClick = onBack, style = PrismButtonStyle.Tertiary) {
-          Text(text = "Back")
-        }
-      },
+      onBackPress = onBack,
     )
 
     when {

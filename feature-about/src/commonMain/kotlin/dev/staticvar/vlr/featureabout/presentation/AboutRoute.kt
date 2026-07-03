@@ -34,7 +34,6 @@ internal fun AboutScreen(modifier: Modifier = Modifier) {
     PrismScreenTitleBar(
       title = "About VLR",
       subtitle = "What this app is, where the data comes from, and why the UI looks like it means business.",
-      preLabel = "about",
     )
 
     AboutSection(

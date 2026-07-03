@@ -29,8 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.loader.PrismLoader
 import dev.staticvar.designsystem.component.loader.PrismLoaderSize
@@ -120,12 +118,7 @@ internal fun EventDetailsScreen(
       } else {
         event?.subtitle?.ifBlank { event.dates } ?: "Event breakdown"
       },
-      preLabel = "event",
-      actions = {
-        PrismButton(onClick = onBack, style = PrismButtonStyle.Tertiary) {
-          Text(text = "Back")
-        }
-      },
+      onBackPress = onBack,
     )
 
     when {

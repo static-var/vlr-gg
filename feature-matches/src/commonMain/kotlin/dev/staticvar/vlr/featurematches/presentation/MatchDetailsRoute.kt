@@ -28,8 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.loader.PrismLoader
 import dev.staticvar.designsystem.component.loader.PrismLoaderSize
@@ -93,12 +91,7 @@ internal fun MatchDetailsScreen(
     PrismScreenTitleBar(
       title = if (uiState.isLoading) "Match details" else match?.event?.name ?: "Match details",
       subtitle = if (uiState.isLoading) "Loading match breakdown." else match?.event?.series ?: "Detailed match breakdown.",
-      preLabel = "match",
-      actions = {
-        PrismButton(onClick = onBack, style = PrismButtonStyle.Tertiary) {
-          Text(text = "Back")
-        }
-      },
+      onBackPress = onBack,
     )
 
     when {

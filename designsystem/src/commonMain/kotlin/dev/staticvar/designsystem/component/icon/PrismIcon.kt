@@ -13,6 +13,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -60,7 +61,7 @@ public fun PrismIcon(
 ) {
   PrismSurface(
     modifier = modifier.size(size.containerSize),
-    color = style.containerColor,
+    color = tint.containerColor(style = style),
     shape = Prism.shapes.small,
     border = style.border,
   ) {
@@ -76,7 +77,7 @@ public fun PrismIcon(
         contentDescription = contentDescription,
         modifier = Modifier.size(size.contentSize),
         contentScale = contentScale,
-        colorFilter = tint.colorFilter(style = style),
+        colorFilter = tint.contentColorFilter(style = style),
       )
     }
   }
@@ -86,21 +87,33 @@ public fun PrismIcon(
  * Tint mode for [PrismIcon].
  *
  * Use [Primary] for the style's normal foreground color, [Alt] for Prism's accent/purple color,
- * and [None] for full-color artwork such as team logos.
+ * [Inverted] to fill the container with the normal foreground and tint content with the container
+ * color, and [None] for full-color artwork such as team logos.
  */
 @Immutable
 public enum class PrismIconTint {
   None,
   Primary,
   Alt,
+  Inverted,
 }
 
 @Composable
-private fun PrismIconTint.colorFilter(style: PrismIconStyle): ColorFilter? {
+private fun PrismIconTint.containerColor(style: PrismIconStyle): Color = when (this) {
+  PrismIconTint.Inverted -> style.contentColor
+  PrismIconTint.None,
+  PrismIconTint.Primary,
+  PrismIconTint.Alt,
+  -> style.containerColor
+}
+
+@Composable
+private fun PrismIconTint.contentColorFilter(style: PrismIconStyle): ColorFilter? {
   val color = when (this) {
     PrismIconTint.None -> null
     PrismIconTint.Primary -> style.contentColor
     PrismIconTint.Alt -> Prism.color.accent
+    PrismIconTint.Inverted -> style.containerColor
   }
 
   return color?.let(ColorFilter::tint)

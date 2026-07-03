@@ -78,20 +78,7 @@ internal fun NewsArticleScreen(
     PrismScreenTitleBar(
       title = article?.title ?: "Article",
       subtitle = article?.author?.ifBlank { null } ?: article?.date,
-      preLabel = "news detail",
-      navigationSlot =
-      if (showBackAction) {
-        {
-          PrismButton(
-            onClick = onBack,
-            style = PrismButtonStyle.Secondary,
-          ) {
-            Text("Back")
-          }
-        }
-      } else {
-        null
-      },
+      onBackPress = onBack.takeIf { showBackAction },
       actions = {
         PrismButton(
           onClick = onRefresh,

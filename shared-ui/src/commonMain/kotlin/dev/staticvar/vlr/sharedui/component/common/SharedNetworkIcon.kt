@@ -87,7 +87,13 @@ private fun SharedNetworkIconFallback(
   val containerSize = size.fallbackContainerSize
   PrismSurface(
     modifier = modifier.size(containerSize),
-    color = style.containerColor,
+    color = when (tint) {
+      PrismIconTint.Inverted -> style.contentColor
+      PrismIconTint.None,
+      PrismIconTint.Primary,
+      PrismIconTint.Alt,
+      -> style.containerColor
+    },
     shape = Prism.shapes.small,
     border = style.border ?: BorderStroke(width = Prism.dimens.strokeDefault, color = Prism.color.stroke),
   ) {
@@ -97,9 +103,12 @@ private fun SharedNetworkIconFallback(
         style = Prism.typography.label,
         color = when (tint) {
           PrismIconTint.Alt -> Prism.color.accent
+
           PrismIconTint.None,
           PrismIconTint.Primary,
           -> style.contentColor
+
+          PrismIconTint.Inverted -> style.containerColor
         },
       )
     }

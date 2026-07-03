@@ -24,8 +24,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
@@ -88,12 +86,7 @@ internal fun TeamDetailsScreen(
     PrismScreenTitleBar(
       title = team?.name ?: "Team details",
       subtitle = team?.tag?.ifBlank { team.country } ?: "Roster and recent form",
-      preLabel = "team",
-      actions = {
-        PrismButton(onClick = onBack, style = PrismButtonStyle.Tertiary) {
-          Text(text = "Back")
-        }
-      },
+      onBackPress = onBack,
     )
 
     when {

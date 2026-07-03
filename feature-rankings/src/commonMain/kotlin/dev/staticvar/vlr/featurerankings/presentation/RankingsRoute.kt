@@ -6,9 +6,12 @@ package dev.staticvar.vlr.featurerankings.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -62,8 +65,7 @@ internal fun RankingsScreen(
   ) {
     PrismScreenTitleBar(
       title = "Ranking",
-      subtitle = "Regional team standings with direct drill-down into team details.",
-      preLabel = "global",
+      subtitle = "Regional team standings",
     )
 
     if (uiState.regions.isNotEmpty()) {

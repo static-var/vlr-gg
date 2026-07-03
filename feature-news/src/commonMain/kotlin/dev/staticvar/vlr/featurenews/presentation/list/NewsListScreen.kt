@@ -44,7 +44,6 @@ internal fun NewsListScreen(
     PrismScreenTitleBar(
       title = "NEWS",
       subtitle = "OFFLINE-FIRST FEED",
-      preLabel = "VLR",
       actions = {
         PrismButton(
           onClick = onRefresh,

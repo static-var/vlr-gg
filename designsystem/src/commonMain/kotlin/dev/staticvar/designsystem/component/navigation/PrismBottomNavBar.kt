@@ -2,7 +2,6 @@
  * Copyright (c) 2022-2026 Shreyansh Lodha
  * SPDX-License-Identifier: MIT
  */
-
 package dev.staticvar.designsystem.component.navigation
 
 import androidx.compose.animation.animateColor
@@ -29,18 +28,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.zIndex
-import dev.staticvar.designsystem.prism.Prism
 
+/**
+ * Bottom navigation bar for compact screens.
+ *
+ * [style] owns the token-backed colors, dimensions, typography, and selected-item motion values.
+ * This composable owns item selection and layout.
+ */
 @Composable
 public fun PrismBottomNavBar(
   items: List<PrismBottomNavItem>,
   selectedItemId: String,
   onItemSelected: (PrismBottomNavItem) -> Unit,
   modifier: Modifier = Modifier,
+  style: PrismBottomNavBarStyle = PrismBottomNavBarStyle.Default,
 ) {
   val systemBarHeight = with(LocalDensity.current) {
     WindowInsets.navigationBars.getBottom(this).toDp()
@@ -48,8 +55,8 @@ public fun PrismBottomNavBar(
   Row(
     modifier = modifier
       .fillMaxWidth()
-      .height(48.dp + systemBarHeight)
-      .background(Prism.color.background),
+      .height(style.containerHeight + systemBarHeight)
+      .background(style.containerColor),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -57,6 +64,7 @@ public fun PrismBottomNavBar(
       PrismBottomNavItem(
         item = item,
         selected = item.id == selectedItemId,
+        style = style,
         onClick = { onItemSelected(item) },
       )
     }
@@ -64,66 +72,97 @@ public fun PrismBottomNavBar(
 }
 
 @Composable
-private fun RowScope.PrismBottomNavItem(item: PrismBottomNavItem, selected: Boolean, onClick: () -> Unit) {
-  val transition = updateTransition(
-    targetState = selected,
-    label = "BottomNavItemSelection",
-  )
-  val offsetY by transition.animateDp(
-    transitionSpec = { tween(800) },
-    label = "BottomNavItemOffset",
-  ) { isSelected ->
-    if (isSelected) (-12).dp else 0.dp
-  }
-  val weight by transition.animateFloat(
-    transitionSpec = { tween(800) },
-    label = "BottomNavItemWeight",
-  ) { isSelected ->
-    if (isSelected) 1.1f else 1f
-  }
-  val contentColor by transition.animateColor(
-    transitionSpec = { tween(800) },
-    label = "BottomNavItemContentColor",
-  ) { isSelected ->
-    if (isSelected) Prism.color.background else Prism.color.labelColor
-  }
-  val backgroundColor by transition.animateColor(
-    transitionSpec = { tween(800) },
-    label = "BottomNavItemBackgroundColor",
-  ) { isSelected ->
-    if (isSelected) Prism.color.accent else Prism.color.background
-  }
+private fun RowScope.PrismBottomNavItem(
+  item: PrismBottomNavItem,
+  selected: Boolean,
+  style: PrismBottomNavBarStyle,
+  onClick: () -> Unit,
+) {
+  val visualState = rememberPrismBottomNavItemVisualState(selected = selected, style = style)
 
   Column(
     modifier = Modifier
-      .weight(weight)
+      .weight(visualState.weight)
       .fillMaxHeight()
       .clickable(enabled = true, onClick = onClick)
-      .background(backgroundColor)
-      .zIndex(if (selected) 1f else 0f),
+      .background(visualState.backgroundColor)
+      .zIndex(visualState.zIndex),
   ) {
     Column(
       modifier = Modifier
         .fillMaxWidth()
-        .height(48.dp)
-        .offset(y = offsetY)
-        .background(backgroundColor),
+        .height(style.itemHeight)
+        .offset(y = visualState.offsetY)
+        .background(visualState.backgroundColor),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center,
     ) {
-      Spacer(modifier = Modifier.height(8.dp))
+      Spacer(modifier = Modifier.height(style.itemTopSpacing))
       Icon(
         imageVector = if (selected) item.selectedIcon else item.icon,
         contentDescription = item.label,
-        tint = contentColor,
+        tint = visualState.contentColor,
       )
       Text(
         text = item.label,
-        style = Prism.typography.caption,
-        color = contentColor,
+        style = visualState.labelTextStyle,
+        color = visualState.contentColor,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
       )
     }
   }
 }
+
+@Composable
+private fun rememberPrismBottomNavItemVisualState(
+  selected: Boolean,
+  style: PrismBottomNavBarStyle,
+): PrismBottomNavItemVisualState {
+  val transition = updateTransition(
+    targetState = selected,
+    label = "BottomNavItemSelection",
+  )
+  val offsetY by transition.animateDp(
+    transitionSpec = { tween(style.selectionAnimationDurationMillis) },
+    label = "BottomNavItemOffset",
+  ) { isSelected ->
+    style.itemOffsetY(selected = isSelected)
+  }
+  val weight by transition.animateFloat(
+    transitionSpec = { tween(style.selectionAnimationDurationMillis) },
+    label = "BottomNavItemWeight",
+  ) { isSelected ->
+    style.itemWeight(selected = isSelected)
+  }
+  val contentColor by transition.animateColor(
+    transitionSpec = { tween(style.selectionAnimationDurationMillis) },
+    label = "BottomNavItemContentColor",
+  ) { isSelected ->
+    style.contentColor(selected = isSelected)
+  }
+  val backgroundColor by transition.animateColor(
+    transitionSpec = { tween(style.selectionAnimationDurationMillis) },
+    label = "BottomNavItemBackgroundColor",
+  ) { isSelected ->
+    style.itemContainerColor(selected = isSelected)
+  }
+
+  return PrismBottomNavItemVisualState(
+    offsetY = offsetY,
+    weight = weight,
+    contentColor = contentColor,
+    backgroundColor = backgroundColor,
+    zIndex = style.itemZIndex(selected = selected),
+    labelTextStyle = style.labelTextStyle,
+  )
+}
+
+private data class PrismBottomNavItemVisualState(
+  val offsetY: Dp,
+  val weight: Float,
+  val contentColor: Color,
+  val backgroundColor: Color,
+  val zIndex: Float,
+  val labelTextStyle: TextStyle,
+)
