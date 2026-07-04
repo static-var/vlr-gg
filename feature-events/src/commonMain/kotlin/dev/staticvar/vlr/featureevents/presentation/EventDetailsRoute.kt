@@ -7,9 +7,11 @@ package dev.staticvar.vlr.featureevents.presentation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -108,7 +110,7 @@ internal fun EventDetailsScreen(
   val event = uiState.event
 
   Column(
-    modifier = modifier.fillMaxSize().padding(Prism.dimens.spacingM),
+    modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(
@@ -222,6 +224,9 @@ internal fun EventDetailsScreen(
                 }
               }
             }
+          }
+          item {
+            Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
           }
         }
       }

@@ -28,7 +28,7 @@ public fun AboutRoute(modifier: Modifier = Modifier) {
 @Composable
 internal fun AboutScreen(modifier: Modifier = Modifier) {
   Column(
-    modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Prism.dimens.spacingM),
+    modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(

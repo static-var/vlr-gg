@@ -6,7 +6,10 @@ package dev.staticvar.vlr.featurenews.presentation.article
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
@@ -72,7 +75,7 @@ internal fun NewsArticleScreen(
     modifier =
     modifier
       .fillMaxSize()
-      .padding(Prism.dimens.spacingM),
+      .padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(
@@ -135,6 +138,9 @@ internal fun NewsArticleScreen(
           }
           item(key = "media") {
             NewsDetailMediaSummaryItem(media = article.media)
+          }
+          item(key = "navigation-bar-spacer") {
+            Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
           }
         }
       }

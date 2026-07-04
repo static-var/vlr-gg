@@ -9,12 +9,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -85,12 +86,17 @@ internal fun MatchDetailsScreen(
   var selectedMapIndex: Int? by remember(match?.id) { mutableStateOf<Int?>(null) }
 
   Column(
-    modifier = modifier.fillMaxSize().padding(Prism.dimens.spacingM),
+    modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(
       title = if (uiState.isLoading) "Match details" else match?.event?.name ?: "Match details",
-      subtitle = if (uiState.isLoading) "Loading match breakdown." else match?.event?.series ?: "Detailed match breakdown.",
+      subtitle = if (uiState.isLoading) {
+        "Loading match breakdown."
+      } else {
+        match?.event?.series
+          ?: "Detailed match breakdown."
+      },
       onBackPress = onBack,
     )
 
@@ -157,6 +163,9 @@ internal fun MatchDetailsScreen(
                 onVideoSelected = { url -> uriHandler.openUri(url.asExternalUrl()) },
               )
             }
+          }
+          item {
+            Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
           }
         }
       }
