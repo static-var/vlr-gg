@@ -25,32 +25,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavBar
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavBarLarge
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.vlr.featureabout.presentation.AboutRoute
-import dev.staticvar.vlr.featureevents.presentation.EventDetailsRoute
-import dev.staticvar.vlr.featureevents.presentation.EventsOverviewRoute
-import dev.staticvar.vlr.featurematches.presentation.MatchDetailsRoute
-import dev.staticvar.vlr.featurematches.presentation.MatchesOverviewRoute
-import dev.staticvar.vlr.featurenews.presentation.article.NewsArticleRoute
-import dev.staticvar.vlr.featurenews.presentation.root.NewsRootScreen
-import dev.staticvar.vlr.featureplayer.presentation.PlayerDetailsRoute
-import dev.staticvar.vlr.featurerankings.presentation.RankingsRoute
-import dev.staticvar.vlr.featureteam.presentation.TeamDetailsRoute
+import org.koin.compose.navigation3.koinEntryProvider
+import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.mp.KoinPlatform
 
+@OptIn(KoinExperimentalAPI::class)
 @Composable
 public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
   val navItems = remember(appState.navigationItems) { appState.navigationItems }
+  val entryProvider = koinEntryProvider<NavKey>()
+  TrackNavigationScopes(backStack = appState.backStack)
 
-  androidx.compose.foundation.layout.BoxWithConstraints(
-    modifier = modifier.fillMaxSize(),
-  ) {
+  ProvideVlrAppState(appState = appState) {
+    androidx.compose.foundation.layout.BoxWithConstraints(
+      modifier = modifier.fillMaxSize(),
+    ) {
     val showSceneLayout: Boolean = maxWidth >= sceneBreakpoint
     val showRail: Boolean = maxWidth >= railBreakpoint
     val sceneStrategy = rememberGroupedListDetailSceneStrategy<NavKey>(enabled = showSceneLayout)
@@ -72,7 +71,7 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
           backStack = appState.backStack,
           onBack = appState::navigateUp,
           sceneStrategy = sceneStrategy,
-          entryProvider = appEntryProvider(appState),
+          entryProvider = entryProvider,
           transitionSpec = { navigationForwardTransition() },
           popTransitionSpec = { navigationBackTransition() },
           predictivePopTransitionSpec = { navigationBackTransition() },
@@ -87,7 +86,7 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
           backStack = appState.backStack,
           onBack = appState::navigateUp,
           sceneStrategy = sceneStrategy,
-          entryProvider = appEntryProvider(appState),
+          entryProvider = entryProvider,
           transitionSpec = { navigationForwardTransition() },
           popTransitionSpec = { navigationBackTransition() },
           predictivePopTransitionSpec = { navigationBackTransition() },
@@ -112,6 +111,31 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
           )
         }
       }
+    }
+  }
+  }
+}
+
+@Composable
+private fun TrackNavigationScopes(backStack: List<NavKey>) {
+  val knownScopeIds = remember { mutableStateSetOf<String>() }
+  val activeScopeIds = remember(backStack.toList()) {
+    backStack.mapNotNull { route -> (route as? AppRoute)?.navigationScopeId }.toSet()
+  }
+
+  LaunchedEffect(activeScopeIds) {
+    val staleScopeIds = knownScopeIds.filterNot(activeScopeIds::contains)
+    staleScopeIds.forEach { scopeId ->
+      KoinPlatform.getKoin().getScopeOrNull(scopeId)?.close()
+      knownScopeIds.remove(scopeId)
+    }
+    knownScopeIds.addAll(activeScopeIds)
+  }
+
+  DisposableEffect(Unit) {
+    onDispose {
+      knownScopeIds.forEach { scopeId -> KoinPlatform.getKoin().getScopeOrNull(scopeId)?.close() }
+      knownScopeIds.clear()
     }
   }
 }
@@ -148,79 +172,3 @@ private fun navigationBackTransition() = (
 
 private const val NavigationTransitionDurationMillis: Int = 180
 private const val NavigationSlideOffsetDivisor: Int = 8
-
-@Composable
-private fun appEntryProvider(appState: VlrAppState) = entryProvider<NavKey> {
-  entry<AppRoute.News>(metadata = listPane(group = "news")) {
-    NewsRootScreen(
-      onArticleSelected = appState::showRootNewsArticle,
-      selectedArticleId = (appState.backStack.lastOrNull() as? AppRoute.NewsArticle)?.articleId,
-      modifier = Modifier.fillMaxSize(),
-    )
-  }
-  entry<AppRoute.NewsArticle>(metadata = detailPane(group = "news")) { route ->
-    NewsArticleRoute(
-      articleId = route.articleId,
-      onBack = appState::navigateUp,
-      modifier = Modifier.fillMaxSize(),
-    )
-  }
-  entry<AppRoute.Matches>(metadata = listPane(group = "matches")) {
-    MatchesOverviewRoute(
-      onMatchSelected = appState::showRootMatchDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
-  }
-  entry<AppRoute.MatchDetails>(metadata = detailPane(group = "matches")) { route ->
-    MatchDetailsRoute(
-      matchId = route.matchId,
-      onBack = appState::navigateUp,
-      onEventSelected = appState::showEventDetails,
-      onTeamSelected = appState::showTeamDetails,
-      onPlayerSelected = appState::showPlayerDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
-  }
-  entry<AppRoute.Events>(metadata = listPane(group = "events")) {
-    EventsOverviewRoute(
-      onEventSelected = appState::showRootEventDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
-  }
-  entry<AppRoute.EventDetails>(metadata = detailPane(group = "events")) { route ->
-    EventDetailsRoute(
-      eventId = route.eventId,
-      onBack = appState::navigateUp,
-      onMatchSelected = appState::showMatchDetails,
-      onTeamSelected = appState::showTeamDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
-  }
-  entry<AppRoute.Rankings>(metadata = listPane(group = "rankings")) {
-    RankingsRoute(
-      onTeamSelected = appState::showRootTeamDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
-  }
-  entry<AppRoute.TeamDetails>(metadata = listPane(group = "team") + detailPane(group = "rankings")) { route ->
-    TeamDetailsRoute(
-      teamId = route.teamId,
-      onBack = appState::navigateUp,
-      onMatchSelected = appState::showMatchDetails,
-      onPlayerSelected = appState::replacePlayerDetails,
-      onEventSelected = appState::showEventDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
-  }
-  entry<AppRoute.PlayerDetails>(metadata = detailPane(group = "team")) { route ->
-    PlayerDetailsRoute(
-      playerId = route.playerId,
-      onBack = appState::navigateUp,
-      onTeamSelected = appState::replaceTeamDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
-  }
-  entry<AppRoute.About> {
-    AboutRoute(modifier = Modifier.fillMaxSize())
-  }
-}

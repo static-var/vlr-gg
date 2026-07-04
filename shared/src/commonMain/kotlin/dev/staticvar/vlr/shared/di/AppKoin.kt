@@ -15,6 +15,7 @@ import dev.staticvar.vlr.featureteam.di.teamFeatureModule
 import dev.staticvar.vlr.localsource.di.localSourceModule
 import dev.staticvar.vlr.localsource.di.platformLocalSourceModule
 import dev.staticvar.vlr.remotesource.di.remoteSourceModule
+import dev.staticvar.vlr.shared.navigation.appNavigationModule
 import dev.staticvar.vlr.remotesource.network.NetworkConfiguration
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
@@ -66,6 +67,7 @@ public fun initializeAppKoin(
       rankingsFeatureModule(),
       teamFeatureModule(),
       playerFeatureModule(),
+      appNavigationModule(),
     )
   }
 }
