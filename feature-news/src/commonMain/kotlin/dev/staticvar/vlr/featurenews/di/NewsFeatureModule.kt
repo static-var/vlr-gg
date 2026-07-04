@@ -11,7 +11,12 @@ import dev.staticvar.vlr.featurenews.usecase.ObserveNewsListUseCase
 import dev.staticvar.vlr.featurenews.usecase.RefreshNewsArticleUseCase
 import dev.staticvar.vlr.featurenews.usecase.RefreshNewsUseCase
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.onClose
+import org.koin.core.module.dsl.withOptions
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
+
+private const val NavigationEntryScopeQualifier: String = "navigation-entry"
 
 public fun newsFeatureModule(): Module = module {
   factory { ObserveNewsListUseCase(newsRepository = get()) }
@@ -19,18 +24,24 @@ public fun newsFeatureModule(): Module = module {
   factory { ObserveNewsArticleUseCase(newsRepository = get()) }
   factory { RefreshNewsArticleUseCase(newsRepository = get()) }
 
-  factory {
-    NewsListViewModel(
-      observeNewsListUseCase = get(),
-      refreshNewsUseCase = get(),
-      dispatchers = get(),
-    )
-  }
-  factory {
-    NewsArticleViewModel(
-      observeNewsArticleUseCase = get(),
-      refreshNewsArticleUseCase = get(),
-      dispatchers = get(),
-    )
+  scope(named(NavigationEntryScopeQualifier)) {
+    scoped {
+      NewsListViewModel(
+        observeNewsListUseCase = get(),
+        refreshNewsUseCase = get(),
+        dispatchers = get(),
+      )
+    } withOptions {
+      onClose { viewModel -> viewModel?.clear() }
+    }
+    scoped {
+      NewsArticleViewModel(
+        observeNewsArticleUseCase = get(),
+        refreshNewsArticleUseCase = get(),
+        dispatchers = get(),
+      )
+    } withOptions {
+      onClose { viewModel -> viewModel?.clear() }
+    }
   }
 }
