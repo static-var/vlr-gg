@@ -11,6 +11,7 @@ import dev.staticvar.designsystem.prism.color.PrismColorPalette
 import dev.staticvar.designsystem.prism.theme.PrismThemeDefinition
 import dev.staticvar.designsystem.prism.typography.PrismFontFamilies
 import dev.staticvar.designsystem.prism.typography.PrismTypography
+import dev.staticvar.designsystem.theme.PrismTypographyTokens
 
 internal object LightThemeDefinition : PrismThemeDefinition<LightColorTokens> {
   override fun createColorTokens(): LightColorTokens = LightColorTokens()
@@ -20,9 +21,9 @@ internal object LightThemeDefinition : PrismThemeDefinition<LightColorTokens> {
   override fun createColorScheme(palette: PrismColorPalette): ColorScheme = LightColorScheme.create(palette)
 
   override fun createTypographyTokens(palette: PrismColorPalette, fonts: PrismFontFamilies): PrismTypography =
-    LightTypography.createTokens(palette, fonts)
+    PrismTypographyTokens.createTokens(fonts)
 
-  override fun createMaterialTypography(tokens: PrismTypography): Typography = LightTypography.createMaterial(tokens)
+  override fun createMaterialTypography(tokens: PrismTypography): Typography = PrismTypographyTokens.createMaterial(tokens)
 
   override val shapes: Shapes
     get() = LightShapes.shapes
