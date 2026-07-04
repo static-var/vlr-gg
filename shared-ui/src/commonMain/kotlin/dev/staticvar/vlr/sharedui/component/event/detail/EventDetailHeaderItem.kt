@@ -4,13 +4,10 @@
  */
 package dev.staticvar.vlr.sharedui.component.event.detail
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,10 +22,11 @@ import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
-import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventDetails
+import dev.staticvar.vlr.sharedui.component.common.DetailStatItem
+import dev.staticvar.vlr.sharedui.component.common.DetailStatStrip
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 
@@ -88,10 +86,12 @@ public fun EventDetailHeaderItem(
         )
       }
 
-      EventDetailStatStrip(
-        dates = event.dates,
-        prize = event.prize,
-        region = event.region,
+      DetailStatStrip(
+        items = listOf(
+          DetailStatItem(value = event.eventHeroTeamsStat(), label = "Teams"),
+          DetailStatItem(value = event.prize.eventHeroPrizeStat().ifBlank { "TBD" }, label = "Prize"),
+          DetailStatItem(value = event.region.eventHeroRegionStat(), label = "Region"),
+        ),
         modifier = Modifier.padding(top = Prism.dimens.spacingS),
       )
 
@@ -118,57 +118,3 @@ public fun EventDetailHeaderItem(
   }
 }
 
-@Composable
-private fun EventDetailStatStrip(dates: String, prize: String, region: String, modifier: Modifier = Modifier) {
-  Row(modifier = modifier.fillMaxWidth()) {
-    EventDetailStatCell(
-      value = dates.eventHeroDateStat().ifBlank { "TBD" },
-      label = "Dates",
-      modifier = Modifier.weight(1f),
-    )
-    EventDetailStatCell(
-      value = prize.eventHeroPrizeStat().ifBlank { "TBD" },
-      label = "Prize",
-      modifier = Modifier.weight(1f),
-    )
-    EventDetailStatCell(
-      value = region.ifBlank { "Region" },
-      label = "Region",
-      modifier = Modifier.weight(1f),
-    )
-  }
-}
-
-@Composable
-private fun EventDetailStatCell(value: String, label: String, modifier: Modifier = Modifier) {
-  PrismSurface(
-    modifier = modifier.heightIn(min = Prism.dimens.controlHeight),
-    color = Prism.color.surface,
-    border = BorderStroke(width = Prism.dimens.strokeDefault, color = Prism.color.stroke),
-  ) {
-    Box(
-      modifier = Modifier
-        .heightIn(min = Prism.dimens.controlHeight)
-        .padding(Prism.dimens.spacingS),
-      contentAlignment = Alignment.CenterStart,
-    ) {
-      Column {
-        Text(
-          text = value,
-          style = Prism.typography.cardTitle,
-          color = Prism.color.titleColor,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-        )
-        Text(
-          text = label,
-          modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-          style = Prism.typography.caption,
-          color = Prism.color.labelColor,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-        )
-      }
-    }
-  }
-}

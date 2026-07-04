@@ -6,6 +6,7 @@ package dev.staticvar.vlr.sharedui.component.event.detail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,22 +32,24 @@ import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 public fun EventDetailTeamItem(team: EventTeam, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
   PrismCard(modifier = modifier, style = PrismCardStyle.Filled, onClick = onClick) {
     Column(
+      modifier = Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+      verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs, Alignment.CenterVertically),
     ) {
       SharedNetworkIcon(
         imageUrl = team.logoUrl,
         contentDescription = team.name,
         size = PrismIconSize.Large,
-        style = PrismIconStyle.Bordered,
-        tint = PrismIconTint.Primary,
+        style = PrismIconStyle.Borderless,
+        tint = PrismIconTint.Alt,
       )
       Text(
         text = team.name,
-        style = Prism.typography.cardTitle,
+        style = Prism.typography.bodySmall,
         color = Prism.color.titleColor,
         textAlign = TextAlign.Center,
-        maxLines = 2,
+        modifier = Modifier.fillMaxWidth(),
+        maxLines = 1,
         overflow = TextOverflow.Ellipsis,
       )
       team.seed?.takeIf(String::isNotBlank)?.let { seed ->

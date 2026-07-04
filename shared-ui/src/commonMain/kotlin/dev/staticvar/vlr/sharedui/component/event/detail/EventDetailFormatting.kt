@@ -42,15 +42,31 @@ internal fun String.eventHeroDateStat(): String = substringBefore(delimiter = "-
   .trim()
   .ifBlank { this }
 
+internal fun EventDetails.eventHeroTeamsStat(): String = when (teams.size) {
+  0 -> "TBD"
+  1 -> "1 team"
+  else -> "${teams.size} teams"
+}
+
 internal fun String.eventHeroPrizeStat(): String {
-  val compactPrize = replace("$", "")
+  val primaryPrize = primaryCurrencyValue()
+  val compactPrize = primaryPrize
+    .replace("$", "")
     .replace(",", "")
     .toDoubleOrNull()
     ?.takeIf { value -> value >= 1_000_000.0 }
     ?.let { value -> "$${(value / 1_000_000.0).toCompactDecimal()}M" }
 
-  return compactPrize ?: this
+  return compactPrize ?: primaryPrize
 }
+
+internal fun String.eventHeroRegionStat(): String = trim().ifBlank { "REGION" }.uppercase()
+
+private fun String.primaryCurrencyValue(): String = trim()
+  .substringBefore("/")
+  .substringBefore("(")
+  .substringBefore("•")
+  .trim()
 
 private fun String.eventGroupLabel(): String = trim()
   .ifBlank { "Unknown" }
