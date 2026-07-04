@@ -158,7 +158,11 @@ private fun MatchDetailPlayerCell(row: MatchDetailPlayerStatsRow, playerName: St
       contentDescription = row.teamName.ifBlank { null },
       size = PrismIconSize.Small,
       style = PrismIconStyle.Bordered,
-      tint = PrismIconTint.None,
+      tint = if (row.teamColorRole == MatchDetailPlayerStatsTeamColorRole.Accent) {
+        PrismIconTint.Alt
+      } else {
+        PrismIconTint.Primary
+      },
     )
     Text(
       text = playerName,
