@@ -39,6 +39,7 @@ internal fun MatchDetailsPreview(@PreviewParameter(PrismPreviewProvider::class) 
       onEventSelected = {},
       onTeamSelected = {},
       onPlayerSelected = {},
+      onMatchSelected = {},
       modifier = Modifier.fillMaxSize().background(Prism.color.background),
     )
   }

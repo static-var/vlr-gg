@@ -72,15 +72,26 @@ internal fun MatchDetails.matchDetailMeta(): String = listOfNotNull(
 
 internal fun MatchDetails.matchDetailDateStat(): String = event.date?.takeIf(String::isNotBlank) ?: "Pending"
 
+internal fun MatchDetails.matchDetailMapCountStat(): String = when {
+  !hasMatchDetailStats() -> "-"
+  mapCount == 1 -> "1 map"
+  mapCount > 1 -> "$mapCount maps"
+  else -> "-"
+}
+
 internal fun MatchDetails.matchDetailStageStat(): String = event.stage.takeIf(String::isNotBlank) ?: "Stage"
 
-internal fun MatchDetails.matchDetailPatchStat(): String = event.patch?.takeIf(String::isNotBlank) ?: "Patch"
+internal fun MatchDetails.matchDetailPatchStat(): String = event.patch?.takeIf(String::isNotBlank) ?: "-"
 
-internal fun MatchDetails.matchDetailBanStat(): String = when (bans.size) {
-  0 -> "No bans"
-  1 -> "1 ban"
-  else -> "${bans.size} bans"
+internal fun MatchDetails.matchDetailBanStat(): String = when {
+  !hasMatchDetailStats() -> "-"
+  bans.size == 1 -> "1 ban"
+  bans.size > 1 -> "${bans.size} bans"
+  else -> "-"
 }
+
+private fun MatchDetails.hasMatchDetailStats(): Boolean =
+  !event.status.equals("upcoming", ignoreCase = true) && (matchData.isNotEmpty() || bans.isNotEmpty())
 
 internal fun List<MapData>.matchDetailMapOptions(): List<MatchDetailMapOption> {
   val mapOptions = mapIndexed { index, map ->

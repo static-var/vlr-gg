@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,7 +39,7 @@ import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadIt
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
-import org.koin.mp.KoinPlatform
+import org.koin.compose.currentKoinScope
 
 @Composable
 public fun MatchDetailsRoute(
@@ -49,18 +48,17 @@ public fun MatchDetailsRoute(
   onEventSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   onPlayerSelected: (String) -> Unit,
+  onMatchSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val viewModel: MatchDetailsViewModel = remember(matchId) { KoinPlatform.getKoin().get<MatchDetailsViewModel>() }
+  val scope = currentKoinScope()
+  val viewModel: MatchDetailsViewModel = remember(scope) { scope.get<MatchDetailsViewModel>() }
   val uiState: MatchDetailsUiState by viewModel.uiState.collectAsState()
 
   LaunchedEffect(matchId) {
     viewModel.openMatch(matchId)
   }
 
-  DisposableEffect(viewModel) {
-    onDispose(viewModel::clear)
-  }
 
   MatchDetailsScreen(
     uiState = uiState,
@@ -68,6 +66,7 @@ public fun MatchDetailsRoute(
     onEventSelected = onEventSelected,
     onTeamSelected = onTeamSelected,
     onPlayerSelected = onPlayerSelected,
+    onMatchSelected = onMatchSelected,
     modifier = modifier,
   )
 }
@@ -79,6 +78,7 @@ internal fun MatchDetailsScreen(
   onEventSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   onPlayerSelected: (String) -> Unit,
+  onMatchSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val match = uiState.match
@@ -150,7 +150,7 @@ internal fun MatchDetailsScreen(
           }
           if (match.head2head.isNotEmpty()) {
             item {
-              MatchDetailHeadToHeadItem(encounters = match.head2head)
+              MatchDetailHeadToHeadItem(encounters = match.head2head, onEncounterSelected = onMatchSelected)
             }
           }
           if (match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()) {
