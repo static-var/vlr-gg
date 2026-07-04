@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,7 +50,7 @@ import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailTeamItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGroupSelector
 import dev.staticvar.vlr.sharedui.component.event.detail.groupEventMatches
-import org.koin.mp.KoinPlatform
+import org.koin.compose.currentKoinScope
 
 @Composable
 public fun EventDetailsRoute(
@@ -61,7 +60,8 @@ public fun EventDetailsRoute(
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val viewModel: EventDetailsViewModel = remember(eventId) { KoinPlatform.getKoin().get<EventDetailsViewModel>() }
+  val scope = currentKoinScope()
+  val viewModel: EventDetailsViewModel = remember(scope) { scope.get<EventDetailsViewModel>() }
   val uiState: EventDetailsUiState by viewModel.uiState.collectAsState()
   var section: EventDetailSection by rememberSaveable(eventId) { mutableStateOf(EventDetailSection.Matches) }
   var matchGrouping: EventMatchGrouping by rememberSaveable(eventId) { mutableStateOf(EventMatchGrouping.Status) }
@@ -71,9 +71,6 @@ public fun EventDetailsRoute(
     viewModel.openEvent(eventId)
   }
 
-  DisposableEffect(viewModel) {
-    onDispose(viewModel::clear)
-  }
 
   EventDetailsScreen(
     uiState = uiState,

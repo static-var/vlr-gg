@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,7 +32,7 @@ import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
-import org.koin.mp.KoinPlatform
+import org.koin.compose.currentKoinScope
 
 @Composable
 public fun TeamDetailsRoute(
@@ -44,7 +43,8 @@ public fun TeamDetailsRoute(
   onEventSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val viewModel: TeamDetailsViewModel = remember(teamId) { KoinPlatform.getKoin().get<TeamDetailsViewModel>() }
+  val scope = currentKoinScope()
+  val viewModel: TeamDetailsViewModel = remember(scope) { scope.get<TeamDetailsViewModel>() }
   val uiState: TeamDetailsUiState by viewModel.uiState.collectAsState()
   var section: TeamMatchesSection by rememberSaveable { mutableStateOf(TeamMatchesSection.Upcoming) }
 
@@ -52,9 +52,6 @@ public fun TeamDetailsRoute(
     viewModel.openTeam(teamId)
   }
 
-  DisposableEffect(viewModel) {
-    onDispose(viewModel::clear)
-  }
 
   TeamDetailsScreen(
     uiState = uiState,

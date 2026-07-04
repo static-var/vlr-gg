@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -24,16 +23,13 @@ import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.sharedui.component.match.overview.MatchPreviewItem
-import org.koin.mp.KoinPlatform
+import org.koin.compose.currentKoinScope
 
 @Composable
 public fun MatchesOverviewRoute(onMatchSelected: (String) -> Unit, modifier: Modifier = Modifier) {
   val viewModel: MatchesViewModel = rememberKoinInstance()
   val uiState: MatchesUiState by viewModel.uiState.collectAsState()
 
-  DisposableEffect(Unit) {
-    onDispose(viewModel::clear)
-  }
 
   MatchesOverviewScreen(
     uiState = uiState,
@@ -96,6 +92,7 @@ internal fun MatchesOverviewScreen(
 }
 
 @Composable
-private inline fun <reified T : Any> rememberKoinInstance(): T = remember {
-  KoinPlatform.getKoin().get<T>()
+private inline fun <reified T : Any> rememberKoinInstance(): T {
+  val scope = currentKoinScope()
+  return remember(scope) { scope.get<T>() }
 }
