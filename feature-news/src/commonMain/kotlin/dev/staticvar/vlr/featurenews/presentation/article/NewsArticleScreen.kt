@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,7 +32,7 @@ import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailMediaSummaryItem
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailReferencesItem
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailStoryItem
-import org.koin.mp.KoinPlatform
+import org.koin.compose.currentKoinScope
 
 @Composable
 public fun NewsArticleRoute(
@@ -41,16 +40,14 @@ public fun NewsArticleRoute(
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val viewModel: NewsArticleViewModel = remember(articleId) { KoinPlatform.getKoin().get<NewsArticleViewModel>() }
+  val scope = currentKoinScope()
+  val viewModel: NewsArticleViewModel = remember(scope) { scope.get<NewsArticleViewModel>() }
   val uiState by viewModel.uiState.collectAsState()
 
   LaunchedEffect(articleId) {
     viewModel.openArticle(articleId)
   }
 
-  DisposableEffect(viewModel) {
-    onDispose(viewModel::clear)
-  }
 
   NewsArticleScreen(
     uiState = uiState,
