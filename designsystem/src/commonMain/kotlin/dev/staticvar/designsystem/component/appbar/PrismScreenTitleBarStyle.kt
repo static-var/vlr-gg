@@ -59,7 +59,7 @@ public sealed interface PrismScreenTitleBarStyle {
     override val containerHeight: Dp
       @Composable
       @ReadOnlyComposable
-      get() = Prism.dimens.touchTargetMin + Prism.dimens.spacingM
+      get() = Prism.dimens.touchTargetMin + Prism.dimens.spacingS
 
     override val horizontalPadding: Dp
       @Composable
@@ -95,5 +95,5 @@ public sealed interface PrismScreenTitleBarStyle {
 
 private object PrismScreenTitleBarDefaults {
   val noPadding: Dp = 0.dp
-  val titleFontSize = 22.sp
+  val titleFontSize = 18.sp
 }

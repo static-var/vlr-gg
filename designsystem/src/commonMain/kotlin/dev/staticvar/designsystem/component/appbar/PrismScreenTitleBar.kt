@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -21,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.icon.PrismIcon
@@ -70,10 +70,12 @@ public fun PrismScreenTitleBar(
       }
       Text(
         text = title,
-        modifier = Modifier
-          .padding(horizontal = style.titleHorizontalPadding(hasNavigation = hasNavigation))
-          .fillMaxHeight(),
+        modifier = Modifier.padding(
+          horizontal = style.titleHorizontalPadding(hasNavigation = hasNavigation),
+        ),
         style = style.titleTextStyle,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
       )
     }
     if (actions != null) {
