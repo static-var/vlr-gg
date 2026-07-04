@@ -81,6 +81,9 @@ public class VlrAppState internal constructor(
   public val canNavigateBack: Boolean
     get() = backStack.size > 1
 
+  public val shouldShowBottomNavigation: Boolean
+    get() = backStack.lastOrNull() is AppRoute.Root
+
   public fun selectRoot(item: PrismBottomNavItem) {
     selectRoot(route = toRootRoute(item.id))
   }

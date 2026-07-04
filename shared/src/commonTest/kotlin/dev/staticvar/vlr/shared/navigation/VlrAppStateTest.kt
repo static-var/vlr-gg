@@ -73,6 +73,25 @@ class VlrAppStateTest {
   }
 
   @Test
+  fun bottomNavigationVisibleOnlyOnRootRoutes() {
+    val appState =
+      VlrAppState(
+        backStack = mutableListOf<NavKey>(AppRoute.News),
+        navigationItems = emptyList(),
+      )
+
+    assertTrue(appState.shouldShowBottomNavigation)
+
+    appState.showRootNewsArticle(articleId = "article-1")
+
+    assertFalse(appState.shouldShowBottomNavigation)
+
+    appState.selectRoot(AppRoute.Matches)
+
+    assertTrue(appState.shouldShowBottomNavigation)
+  }
+
+  @Test
   fun replaceTeamDetailsDropsExistingTeamAndPlayerRoutes() {
     val appState =
       VlrAppState(

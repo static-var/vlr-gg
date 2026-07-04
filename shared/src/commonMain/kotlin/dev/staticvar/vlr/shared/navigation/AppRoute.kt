@@ -9,20 +9,22 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public sealed interface AppRoute : NavKey {
-  @Serializable
-  public data object News : AppRoute
+  public sealed interface Root : AppRoute
 
   @Serializable
-  public data object Matches : AppRoute
+  public data object News : Root
 
   @Serializable
-  public data object Events : AppRoute
+  public data object Matches : Root
 
   @Serializable
-  public data object Rankings : AppRoute
+  public data object Events : Root
 
   @Serializable
-  public data object About : AppRoute
+  public data object Rankings : Root
+
+  @Serializable
+  public data object About : Root
 
   @Serializable
   public data class MatchDetails(val matchId: String) : AppRoute

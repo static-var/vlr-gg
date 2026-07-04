@@ -4,11 +4,14 @@
  */
 package dev.staticvar.vlr.shared.navigation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -90,12 +93,24 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
           predictivePopTransitionSpec = { navigationBackTransition() },
           modifier = Modifier.weight(1f).fillMaxWidth(),
         )
-        PrismBottomNavBar(
-          items = navItems,
-          selectedItemId = appState.selectedNavigationItemId,
-          onItemSelected = appState::selectRoot,
-          modifier = Modifier.fillMaxWidth(),
-        )
+        AnimatedVisibility(
+          visible = appState.shouldShowBottomNavigation,
+          enter = slideInVertically(
+            animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
+            initialOffsetY = { height -> height },
+          ) + fadeIn(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)),
+          exit = slideOutVertically(
+            animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
+            targetOffsetY = { height -> height },
+          ) + fadeOut(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)),
+        ) {
+          PrismBottomNavBar(
+            items = navItems,
+            selectedItemId = appState.selectedNavigationItemId,
+            onItemSelected = appState::selectRoot,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
       }
     }
   }
