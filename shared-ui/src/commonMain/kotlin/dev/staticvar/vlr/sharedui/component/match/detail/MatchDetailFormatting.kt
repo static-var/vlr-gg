@@ -62,7 +62,7 @@ private data class PlayerStatsAggregate(
   val assistsTotal: Int,
   val kastTotal: Int,
   val ratingTotal: Float,
-  val mapsPlayed: Int,
+  val recordedStatsCount: Int,
 )
 
 internal fun MatchDetails.matchDetailMeta(): String = listOfNotNull(
@@ -177,12 +177,12 @@ private fun PlayerStats.toPlayerStatsRow(
     mapName = mapName,
     playerName = name.ifBlank { "Unknown" },
     agentNames = agents.joinToString(separator = ", ") { agent -> agent.name }.ifBlank { "-" },
-    acs = acs.toString(),
-    kills = kills.toString(),
-    deaths = deaths.toString(),
-    assists = assists.toString(),
-    kast = kast.toString(),
-    rating = rating.toCompactRating(),
+    acs = recordedStatOrDash(acs.toString()),
+    kills = recordedStatOrDash(kills.toString()),
+    deaths = recordedStatOrDash(deaths.toString()),
+    assists = recordedStatOrDash(assists.toString()),
+    kast = recordedStatOrDash(kast.toString()),
+    rating = recordedStatOrDash(rating.toCompactRating()),
     teamColorRole = teamColorRole,
     teamName = team?.name.orEmpty(),
     teamLogoUrl = team?.img.orEmpty(),
@@ -262,57 +262,84 @@ private fun MapData.hasPlayedScore(): Boolean = teams.any { team -> team.score !
 
 private fun PlayerStats.aggregateKey(): String = playerId.takeIf(String::isNotBlank) ?: "$team-$name"
 
-private fun PlayerStatsAggregate.toPlayerStatsRow(winnerTeamKey: String?): MatchDetailPlayerStatsRow = MatchDetailPlayerStatsRow(
-  key = "all-$key",
-  playerId = playerId,
-  mapName = null,
-  playerName = playerName,
-  agentNames = agentNames.joinToString(separator = ", ").ifBlank { "-" },
-  acs = (acsTotal.toFloat() / mapsPlayed).toRoundedIntString(),
-  kills = killsTotal.toString(),
-  deaths = deathsTotal.toString(),
-  assists = assistsTotal.toString(),
-  kast = (kastTotal.toFloat() / mapsPlayed).toRoundedIntString(),
-  rating = (ratingTotal / mapsPlayed).toCompactRating(),
-  teamColorRole = winnerTeamKey
-    ?.takeIf { teamKey != null && it == teamKey }
-    ?.let { MatchDetailPlayerStatsTeamColorRole.Accent }
-    ?: MatchDetailPlayerStatsTeamColorRole.Neutral,
-  teamName = teamName,
-  teamLogoUrl = teamLogoUrl,
-)
+private fun PlayerStatsAggregate.toPlayerStatsRow(winnerTeamKey: String?): MatchDetailPlayerStatsRow {
+  val divisor = recordedStatsCount.takeIf { it > 0 }
+  return MatchDetailPlayerStatsRow(
+    key = "all-$key",
+    playerId = playerId,
+    mapName = null,
+    playerName = playerName,
+    agentNames = agentNames.joinToString(separator = ", ").ifBlank { "-" },
+    acs = divisor?.let { (acsTotal.toFloat() / it).toRoundedIntString() } ?: "-",
+    kills = divisor?.let { killsTotal.toString() } ?: "-",
+    deaths = divisor?.let { deathsTotal.toString() } ?: "-",
+    assists = divisor?.let { assistsTotal.toString() } ?: "-",
+    kast = divisor?.let { (kastTotal.toFloat() / it).toRoundedIntString() } ?: "-",
+    rating = divisor?.let { (ratingTotal / it).toCompactRating() } ?: "-",
+    teamColorRole = winnerTeamKey
+      ?.takeIf { teamKey != null && it == teamKey }
+      ?.let { MatchDetailPlayerStatsTeamColorRole.Accent }
+      ?: MatchDetailPlayerStatsTeamColorRole.Neutral,
+    teamName = teamName,
+    teamLogoUrl = teamLogoUrl,
+  )
+}
 
-private fun PlayerStats.toStatsAggregate(key: String, team: TeamDetails?): PlayerStatsAggregate = PlayerStatsAggregate(
-  key = key,
-  playerName = name.ifBlank { "Unknown" },
-  agentNames = agents.map(AgentInfo::name).filter(String::isNotBlank).distinct(),
-  playerId = playerId.takeIf(String::isNotBlank),
-  teamKey = team?.teamKey(),
-  teamName = team?.name.orEmpty(),
-  teamLogoUrl = team?.img.orEmpty(),
-  acsTotal = acs,
-  killsTotal = kills,
-  deathsTotal = deaths,
-  assistsTotal = assists,
-  kastTotal = kast,
-  ratingTotal = rating,
-  mapsPlayed = 1,
-)
+private fun PlayerStats.toStatsAggregate(key: String, team: TeamDetails?): PlayerStatsAggregate {
+  val hasRecordedStats = hasRecordedStats()
+  return PlayerStatsAggregate(
+    key = key,
+    playerName = name.ifBlank { "Unknown" },
+    agentNames = agents.map(AgentInfo::name).filter(String::isNotBlank).distinct(),
+    playerId = playerId.takeIf(String::isNotBlank),
+    teamKey = team?.teamKey(),
+    teamName = team?.name.orEmpty(),
+    teamLogoUrl = team?.img.orEmpty(),
+    acsTotal = acs.takeIf { hasRecordedStats } ?: 0,
+    killsTotal = kills.takeIf { hasRecordedStats } ?: 0,
+    deathsTotal = deaths.takeIf { hasRecordedStats } ?: 0,
+    assistsTotal = assists.takeIf { hasRecordedStats } ?: 0,
+    kastTotal = kast.takeIf { hasRecordedStats } ?: 0,
+    ratingTotal = rating.takeIf { hasRecordedStats } ?: 0f,
+    recordedStatsCount = if (hasRecordedStats) 1 else 0,
+  )
+}
 
-private fun PlayerStatsAggregate.withPlayer(player: PlayerStats, mapTeam: TeamDetails?): PlayerStatsAggregate = copy(
-  agentNames = (agentNames + player.agents.map(AgentInfo::name).filter(String::isNotBlank)).distinct(),
-  playerId = playerId ?: player.playerId.takeIf(String::isNotBlank),
-  teamKey = teamKey ?: mapTeam?.teamKey(),
-  teamName = teamName.ifBlank { mapTeam?.name.orEmpty() },
-  teamLogoUrl = teamLogoUrl.ifBlank { mapTeam?.img.orEmpty() },
-  acsTotal = acsTotal + player.acs,
-  killsTotal = killsTotal + player.kills,
-  deathsTotal = deathsTotal + player.deaths,
-  assistsTotal = assistsTotal + player.assists,
-  kastTotal = kastTotal + player.kast,
-  ratingTotal = ratingTotal + player.rating,
-  mapsPlayed = mapsPlayed + 1,
-)
+private fun PlayerStatsAggregate.withPlayer(player: PlayerStats, mapTeam: TeamDetails?): PlayerStatsAggregate {
+  val hasRecordedStats = player.hasRecordedStats()
+  return copy(
+    agentNames = (agentNames + player.agents.map(AgentInfo::name).filter(String::isNotBlank)).distinct(),
+    playerId = playerId ?: player.playerId.takeIf(String::isNotBlank),
+    teamKey = teamKey ?: mapTeam?.teamKey(),
+    teamName = teamName.ifBlank { mapTeam?.name.orEmpty() },
+    teamLogoUrl = teamLogoUrl.ifBlank { mapTeam?.img.orEmpty() },
+    acsTotal = acsTotal + player.acs.takeIf { hasRecordedStats }.orZero(),
+    killsTotal = killsTotal + player.kills.takeIf { hasRecordedStats }.orZero(),
+    deathsTotal = deathsTotal + player.deaths.takeIf { hasRecordedStats }.orZero(),
+    assistsTotal = assistsTotal + player.assists.takeIf { hasRecordedStats }.orZero(),
+    kastTotal = kastTotal + player.kast.takeIf { hasRecordedStats }.orZero(),
+    ratingTotal = ratingTotal + (player.rating.takeIf { hasRecordedStats } ?: 0f),
+    recordedStatsCount = recordedStatsCount + if (hasRecordedStats) 1 else 0,
+  )
+}
+
+private fun PlayerStats.recordedStatOrDash(value: String): String = if (hasRecordedStats()) value else "-"
+
+private fun PlayerStats.hasRecordedStats(): Boolean =
+  agents.isNotEmpty() ||
+    acs != 0 ||
+    adr != 0 ||
+    kills != 0 ||
+    deaths != 0 ||
+    assists != 0 ||
+    kast != 0 ||
+    firstKills != 0 ||
+    firstDeaths != 0 ||
+    firstKillsDiff != 0 ||
+    hsPercent != 0 ||
+    rating != 0f
+
+private fun Int?.orZero(): Int = this ?: 0
 
 internal fun List<PreviousEncounter>.matchDetailHeadToHeadSummary(): MatchDetailHeadToHeadSummary? {
   val firstEncounterTeams = firstOrNull()?.teams?.take(2) ?: return null

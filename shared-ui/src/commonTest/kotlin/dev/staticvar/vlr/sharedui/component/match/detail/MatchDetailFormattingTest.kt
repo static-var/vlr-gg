@@ -162,6 +162,91 @@ class MatchDetailFormattingTest {
   }
 
   @Test
+  fun selectedMapPlayerRowsUseDashWhenStatsAreUnavailable() {
+    val rows = mapData(
+      name = "Haven",
+      members = listOf(
+        PlayerStats(
+          playerId = "slowly",
+          name = "slowly",
+          team = "FNATIC",
+          acs = 0,
+          adr = 0,
+          kills = 0,
+          deaths = 0,
+          assists = 0,
+          kast = 0,
+          firstKills = 0,
+          firstDeaths = 0,
+          firstKillsDiff = 0,
+          hsPercent = 0,
+          rating = 0f,
+          agents = emptyList(),
+        ),
+      ),
+    ).toPlayerStatsRows()
+
+    assertEquals("-", rows.single().acs)
+    assertEquals("-", rows.single().kills)
+    assertEquals("-", rows.single().deaths)
+    assertEquals("-", rows.single().assists)
+    assertEquals("-", rows.single().kast)
+    assertEquals("-", rows.single().rating)
+  }
+
+  @Test
+  fun allMapPlayerRowsIgnoreUnavailableStatsInAverages() {
+    val rows = listOf(
+      mapData(
+        name = "Lotus",
+        members = listOf(
+          playerStats(
+            id = "boaster",
+            name = "Boaster",
+            agent = "Omen",
+            acs = 200,
+            kills = 10,
+            deaths = 5,
+            assists = 4,
+            kast = 70,
+            rating = 1.1f,
+          ),
+        ),
+      ),
+      mapData(
+        name = "Haven",
+        members = listOf(
+          PlayerStats(
+            playerId = "boaster",
+            name = "Boaster",
+            team = "FNATIC",
+            acs = 0,
+            adr = 0,
+            kills = 0,
+            deaths = 0,
+            assists = 0,
+            kast = 0,
+            firstKills = 0,
+            firstDeaths = 0,
+            firstKillsDiff = 0,
+            hsPercent = 0,
+            rating = 0f,
+            agents = emptyList(),
+          ),
+        ),
+      ),
+    ).toAllMapPlayerStatsRows()
+
+    assertEquals(1, rows.size)
+    assertEquals("200", rows[0].acs)
+    assertEquals("10", rows[0].kills)
+    assertEquals("5", rows[0].deaths)
+    assertEquals("4", rows[0].assists)
+    assertEquals("70", rows[0].kast)
+    assertEquals("1.1", rows[0].rating)
+  }
+
+  @Test
   fun allMapMetaCountsPlayedMaps() {
     val maps = listOf(
       mapData(name = "Lotus"),
