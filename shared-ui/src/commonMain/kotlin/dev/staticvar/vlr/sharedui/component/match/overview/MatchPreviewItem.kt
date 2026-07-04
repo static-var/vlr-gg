@@ -7,7 +7,6 @@ package dev.staticvar.vlr.sharedui.component.match.overview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -15,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
@@ -34,11 +34,7 @@ import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 
 @Composable
-public fun MatchPreviewItem(
-  modifier: Modifier = Modifier,
-  matchPreview: MatchPreview,
-  onClick: (() -> Unit)? = null,
-) {
+public fun MatchPreviewItem(modifier: Modifier = Modifier, matchPreview: MatchPreview, onClick: (() -> Unit)? = null) {
   FavoriteTicketCardBox(selected = matchPreview.isFavorite, modifier = modifier) {
     PrismCard(
       modifier = Modifier.fillMaxWidth(),
@@ -51,10 +47,13 @@ public fun MatchPreviewItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
       ) {
-        PrismHeader(text = matchPreview.event)
+        PrismHeader(text = matchPreview.event, modifier = Modifier.weight(1f))
         val time = formatMatchPreviewTime(isoUtcTime = matchPreview.time)
         when (matchPreview.status) {
-          MatchStatus.LIVE -> PrismTag(text = "LIVE", style = PrismTagStyle.Accent)
+          MatchStatus.LIVE -> PrismTag(
+            text = "LIVE",
+            style = PrismTagStyle.Accent,
+          )
 
           MatchStatus.UPCOMING,
           MatchStatus.COMPLETED,
@@ -128,21 +127,24 @@ private fun TeamScoreRow(team: TeamPreview, useAltColor: Boolean, modifier: Modi
       imageUrl = team.img,
       contentDescription = team.name,
       size = PrismIconSize.Large,
-      style = PrismIconStyle.Bordered,
+      style = PrismIconStyle.Borderless,
       tint = if (useAltColor) PrismIconTint.Alt else PrismIconTint.Primary,
     )
     Text(
       text = team.name,
       style = Prism.typography.headline,
       color = if (useAltColor) Prism.color.accent else Prism.color.labelColor,
-      modifier = Modifier.padding(start = Prism.dimens.spacingXs),
+      maxLines = 1,
+      overflow = TextOverflow.Ellipsis,
+      modifier = Modifier
+        .padding(start = Prism.dimens.spacingXs)
+        .weight(1f),
     )
-    Spacer(modifier.weight(1f))
     Text(
       text = team.score?.toString() ?: "-",
       style = Prism.typography.headline,
       color = if (useAltColor) Prism.color.accent else Prism.color.labelColor,
-      modifier = Modifier,
+      modifier = Modifier.padding(start = Prism.dimens.spacingXs),
     )
   }
 }
