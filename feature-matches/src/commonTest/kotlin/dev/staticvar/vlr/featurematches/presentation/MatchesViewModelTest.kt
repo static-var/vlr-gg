@@ -46,7 +46,7 @@ class MatchesViewModelTest {
 
       assertEquals(MatchStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
       assertEquals(listOf("m1"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
-      assertEquals(0, repository.refreshMatchesCallCount)
+      assertEquals(1, repository.refreshMatchesCallCount)
 
       viewModel.clear()
     }
@@ -87,6 +87,34 @@ class MatchesViewModelTest {
   }
 
   @Test
+  fun ordersMatchesByStatusTiming() {
+    runTest(dispatcher) {
+      val repository = FakeMatchRepository(
+        matches = listOf(
+          matchPreview(id = "live-later", status = MatchStatus.LIVE, time = "2025-01-01T12:00:00Z"),
+          matchPreview(id = "completed-older", status = MatchStatus.COMPLETED, time = "2025-01-01T10:00:00Z"),
+          matchPreview(id = "upcoming-later", status = MatchStatus.UPCOMING, time = "2025-01-01T14:00:00Z"),
+          matchPreview(id = "completed-newer", status = MatchStatus.COMPLETED, time = "2025-01-01T11:00:00Z"),
+          matchPreview(id = "live-earlier", status = MatchStatus.LIVE, time = "2025-01-01T09:00:00Z"),
+          matchPreview(id = "upcoming-earlier", status = MatchStatus.UPCOMING, time = "2025-01-01T13:00:00Z"),
+        ),
+      )
+      val viewModel = createViewModel(repository)
+      advanceUntilIdle()
+
+      assertEquals(listOf("live-earlier", "live-later"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
+
+      viewModel.selectFilter(MatchStatusFilter.Upcoming)
+      assertEquals(listOf("upcoming-earlier", "upcoming-later"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
+
+      viewModel.selectFilter(MatchStatusFilter.Completed)
+      assertEquals(listOf("completed-newer", "completed-older"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
+
+      viewModel.clear()
+    }
+  }
+
+  @Test
   fun selectFilterUpdatesFilteredMatches() {
     runTest(dispatcher) {
       val repository =
@@ -115,14 +143,18 @@ class MatchesViewModelTest {
     dispatchers = dispatchers,
   )
 
-  private fun matchPreview(id: String, status: MatchStatus): MatchPreview = MatchPreview(
+  private fun matchPreview(
+    id: String,
+    status: MatchStatus,
+    time: String? = "2025-01-01T12:00:00Z",
+  ): MatchPreview = MatchPreview(
     id = id,
     event = "Masters",
     series = "Bo3",
     status = status,
     team1 = teamPreview(name = "Alpha"),
     team2 = teamPreview(name = "Bravo"),
-    time = "12:00",
+    time = time,
     eventId = "event-1",
   )
 

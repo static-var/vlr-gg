@@ -47,6 +47,7 @@ public class EventsViewModel(
         refreshInternal(showRefreshing = false)
       } else {
         selectFilter(eventStatusToFilter(initialEvents.first().status))
+        refreshInternal(showRefreshing = true)
       }
     }
   }
@@ -107,12 +108,81 @@ private fun EventsUiState.withSelectedStatus(filter: EventStatusFilter): EventsU
   filteredEvents = events.filterByStatus(filter),
 )
 
-private fun List<EventPreview>.filterByStatus(filter: EventStatusFilter): List<EventPreview> = filter { event ->
-  when (filter) {
-    EventStatusFilter.Ongoing -> event.status == EventStatus.ONGOING
-    EventStatusFilter.Upcoming -> event.status == EventStatus.UPCOMING
-    EventStatusFilter.Completed -> event.status == EventStatus.COMPLETED
+private fun List<EventPreview>.filterByStatus(filter: EventStatusFilter): List<EventPreview> {
+  val filtered = filter { event ->
+    when (filter) {
+      EventStatusFilter.Ongoing -> event.status == EventStatus.ONGOING
+      EventStatusFilter.Upcoming -> event.status == EventStatus.UPCOMING
+      EventStatusFilter.Completed -> event.status == EventStatus.COMPLETED
+    }
   }
+  return when (filter) {
+    EventStatusFilter.Ongoing -> filtered.sortedBy { event -> event.dateRangeSortValue(DateRangeBoundary.Start, nullsLast = true) }
+    EventStatusFilter.Upcoming -> filtered.sortedBy { event -> event.dateRangeSortValue(DateRangeBoundary.Start, nullsLast = true) }
+    EventStatusFilter.Completed -> filtered.sortedByDescending { event ->
+      event.dateRangeSortValue(DateRangeBoundary.End, nullsLast = false)
+    }
+  }
+}
+
+private enum class DateRangeBoundary {
+  Start,
+  End,
+}
+
+private fun EventPreview.dateRangeSortValue(boundary: DateRangeBoundary, nullsLast: Boolean): Int {
+  val values = dates.dateSortValues()
+  return when (boundary) {
+    DateRangeBoundary.Start -> values.firstOrNull()
+    DateRangeBoundary.End -> values.lastOrNull()
+  } ?: if (nullsLast) Int.MAX_VALUE else Int.MIN_VALUE
+}
+
+private fun String.dateSortValues(): List<Int> {
+  val normalized = replace("–", "-").replace("—", "-")
+  val parts = normalized.split("-").map(String::trim).filter(String::isNotEmpty)
+  var lastMonth: Int? = null
+  return parts.mapNotNull { part ->
+    val value = part.dateSortValue(defaultMonth = lastMonth)
+    part.monthFromText()?.let { month -> lastMonth = month }
+    value
+  }
+}
+
+private fun String.dateSortValue(defaultMonth: Int?): Int? {
+  isoDateSortValue()?.let { return it }
+  val tokens = split(Regex("\\s+"))
+  val monthIndex = tokens.indexOfFirst { token -> token.monthNumber() != null }
+  val month = if (monthIndex == -1) defaultMonth else tokens[monthIndex].monthNumber()
+  val dayTokens = if (monthIndex == -1) tokens else tokens.drop(monthIndex + 1)
+  val day = dayTokens.firstNotNullOfOrNull { token -> token.filter(Char::isDigit).toIntOrNull() } ?: return null
+  return month?.let { it * 100 + day }
+}
+
+private fun String.monthFromText(): Int? = split(Regex("\\s+")).firstNotNullOfOrNull { token -> token.monthNumber() }
+
+private fun String.isoDateSortValue(): Int? {
+  val match = Regex("(\\d{4})-(\\d{2})-(\\d{2})").find(this) ?: return null
+  val year = match.groupValues[1].toIntOrNull() ?: return null
+  val month = match.groupValues[2].toIntOrNull() ?: return null
+  val day = match.groupValues[3].toIntOrNull() ?: return null
+  return year * 10_000 + month * 100 + day
+}
+
+private fun String.monthNumber(): Int? = when (lowercase().trimEnd('.')) {
+  "jan", "january" -> 1
+  "feb", "february" -> 2
+  "mar", "march" -> 3
+  "apr", "april" -> 4
+  "may" -> 5
+  "jun", "june" -> 6
+  "jul", "july" -> 7
+  "aug", "august" -> 8
+  "sep", "sept", "september" -> 9
+  "oct", "october" -> 10
+  "nov", "november" -> 11
+  "dec", "december" -> 12
+  else -> null
 }
 
 private fun List<EventPreview>.availableStatusOrSelected(selectedStatus: EventStatusFilter): EventStatusFilter =

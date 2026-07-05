@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 public class MatchesViewModel(
   private val observeMatchListUseCase: ObserveMatchListUseCase,
@@ -47,6 +49,7 @@ public class MatchesViewModel(
         refreshInternal(showRefreshing = false)
       } else {
         selectFilter(matchStatusToFilter(initialMatches.first().status))
+        refreshInternal(showRefreshing = true)
       }
     }
   }
@@ -107,13 +110,31 @@ private fun MatchesUiState.withSelectedStatus(filter: MatchStatusFilter): Matche
   filteredMatches = matches.filterByStatus(filter),
 )
 
-private fun List<MatchPreview>.filterByStatus(filter: MatchStatusFilter): List<MatchPreview> = filter { match ->
-  when (filter) {
-    MatchStatusFilter.Live -> match.status == MatchStatus.LIVE
-    MatchStatusFilter.Upcoming -> match.status == MatchStatus.UPCOMING
-    MatchStatusFilter.Completed -> match.status == MatchStatus.COMPLETED
+private fun List<MatchPreview>.filterByStatus(filter: MatchStatusFilter): List<MatchPreview> {
+  val filtered = filter { match ->
+    when (filter) {
+      MatchStatusFilter.Live -> match.status == MatchStatus.LIVE
+      MatchStatusFilter.Upcoming -> match.status == MatchStatus.UPCOMING
+      MatchStatusFilter.Completed -> match.status == MatchStatus.COMPLETED
+    }
+  }
+  return when (filter) {
+    MatchStatusFilter.Live -> filtered.sortedBy { match -> match.sortEpochMillis(nullsLast = true) }
+    MatchStatusFilter.Upcoming -> filtered.sortedWith(upcomingMatchComparator(nowEpochMillis = Clock.System.now().toEpochMilliseconds()))
+    MatchStatusFilter.Completed -> filtered.sortedByDescending { match -> match.sortEpochMillis(nullsLast = false) }
   }
 }
+
+private fun upcomingMatchComparator(nowEpochMillis: Long): Comparator<MatchPreview> = compareBy<MatchPreview> { match ->
+  match.sortEpochMillis(nullsLast = true) < nowEpochMillis
+}.thenBy { match ->
+  match.sortEpochMillis(nullsLast = true)
+}
+
+private fun MatchPreview.sortEpochMillis(nullsLast: Boolean): Long = time
+  ?.takeIf(String::isNotBlank)
+  ?.let { value -> runCatching { Instant.parse(value).toEpochMilliseconds() }.getOrNull() }
+  ?: if (nullsLast) Long.MAX_VALUE else Long.MIN_VALUE
 
 private fun List<MatchPreview>.availableStatusOrSelected(selectedStatus: MatchStatusFilter): MatchStatusFilter =
   MatchStatusFilter.entries.firstOrNull { filter -> filter == selectedStatus && filterByStatus(filter).isNotEmpty() }

@@ -41,7 +41,7 @@ class EventsViewModelTest {
 
       assertEquals(EventStatusFilter.Completed, viewModel.uiState.value.selectedStatus)
       assertEquals(listOf("e1"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
-      assertEquals(0, repository.refreshEventsCallCount)
+      assertEquals(1, repository.refreshEventsCallCount)
 
       viewModel.clear()
     }
@@ -82,6 +82,34 @@ class EventsViewModelTest {
   }
 
   @Test
+  fun ordersEventsByStatusTiming() {
+    runTest(dispatcher) {
+      val repository = FakeEventRepository(
+        events = listOf(
+          eventPreview(id = "ongoing-later", status = EventStatus.ONGOING, dates = "Mar 8 - Mar 16"),
+          eventPreview(id = "completed-older", status = EventStatus.COMPLETED, dates = "Feb 1 - Feb 5"),
+          eventPreview(id = "upcoming-later", status = EventStatus.UPCOMING, dates = "Apr 8 - Apr 16"),
+          eventPreview(id = "completed-newer", status = EventStatus.COMPLETED, dates = "Mar 1 - Mar 7"),
+          eventPreview(id = "ongoing-earlier", status = EventStatus.ONGOING, dates = "Mar 1 - Mar 7"),
+          eventPreview(id = "upcoming-earlier", status = EventStatus.UPCOMING, dates = "Apr 1 - Apr 7"),
+        ),
+      )
+      val viewModel = createViewModel(repository)
+      advanceUntilIdle()
+
+      assertEquals(listOf("ongoing-earlier", "ongoing-later"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+
+      viewModel.selectFilter(EventStatusFilter.Upcoming)
+      assertEquals(listOf("upcoming-earlier", "upcoming-later"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+
+      viewModel.selectFilter(EventStatusFilter.Completed)
+      assertEquals(listOf("completed-newer", "completed-older"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+
+      viewModel.clear()
+    }
+  }
+
+  @Test
   fun selectFilterUpdatesFilteredEvents() {
     runTest(dispatcher) {
       val repository =
@@ -110,12 +138,16 @@ class EventsViewModelTest {
     dispatchers = dispatchers,
   )
 
-  private fun eventPreview(id: String, status: EventStatus): EventPreview = EventPreview(
+  private fun eventPreview(
+    id: String,
+    status: EventStatus,
+    dates: String = "Mar 1 - Mar 7",
+  ): EventPreview = EventPreview(
     id = id,
     title = "Champions",
     status = status,
     prize = "$" + "100k",
-    dates = "Mar 1 - Mar 7",
+    dates = dates,
     region = "Global",
     logoUrl = "",
   )
