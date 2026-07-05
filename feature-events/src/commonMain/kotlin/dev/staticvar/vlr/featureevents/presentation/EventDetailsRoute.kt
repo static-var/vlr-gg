@@ -19,13 +19,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -50,39 +44,28 @@ import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailTeamItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGroupSelector
 import dev.staticvar.vlr.sharedui.component.event.detail.groupEventMatches
-import org.koin.compose.currentKoinScope
-
 @Composable
 public fun EventDetailsRoute(
-  eventId: String,
+  uiState: EventDetailsUiState,
+  section: EventDetailSection,
+  matchGrouping: EventMatchGrouping,
+  selectedMatchGroupName: String?,
+  onSectionSelected: (EventDetailSection) -> Unit,
+  onMatchGroupingSelected: (EventMatchGrouping) -> Unit,
+  onMatchGroupSelected: (String) -> Unit,
   onBack: () -> Unit,
   onMatchSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val scope = currentKoinScope()
-  val viewModel: EventDetailsViewModel = remember(scope) { scope.get<EventDetailsViewModel>() }
-  val uiState: EventDetailsUiState by viewModel.uiState.collectAsState()
-  var section: EventDetailSection by rememberSaveable(eventId) { mutableStateOf(EventDetailSection.Matches) }
-  var matchGrouping: EventMatchGrouping by rememberSaveable(eventId) { mutableStateOf(EventMatchGrouping.Status) }
-  var selectedMatchGroupName: String? by rememberSaveable(eventId, matchGrouping) { mutableStateOf(null) }
-
-  LaunchedEffect(eventId) {
-    viewModel.openEvent(eventId)
-  }
-
-
   EventDetailsScreen(
     uiState = uiState,
     section = section,
     matchGrouping = matchGrouping,
     selectedMatchGroupName = selectedMatchGroupName,
-    onSectionSelected = { section = it },
-    onMatchGroupingSelected = { grouping ->
-      matchGrouping = grouping
-      selectedMatchGroupName = null
-    },
-    onMatchGroupSelected = { selectedMatchGroupName = it },
+    onSectionSelected = onSectionSelected,
+    onMatchGroupingSelected = onMatchGroupingSelected,
+    onMatchGroupSelected = onMatchGroupSelected,
     onBack = onBack,
     onMatchSelected = onMatchSelected,
     onTeamSelected = onTeamSelected,

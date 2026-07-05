@@ -16,13 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
@@ -32,31 +25,21 @@ import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
-import org.koin.compose.currentKoinScope
-
 @Composable
 public fun TeamDetailsRoute(
-  teamId: String,
+  uiState: TeamDetailsUiState,
+  section: TeamMatchesSection,
+  onSectionSelected: (TeamMatchesSection) -> Unit,
   onBack: () -> Unit,
   onMatchSelected: (String) -> Unit,
   onPlayerSelected: (String) -> Unit,
   onEventSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val scope = currentKoinScope()
-  val viewModel: TeamDetailsViewModel = remember(scope) { scope.get<TeamDetailsViewModel>() }
-  val uiState: TeamDetailsUiState by viewModel.uiState.collectAsState()
-  var section: TeamMatchesSection by rememberSaveable { mutableStateOf(TeamMatchesSection.Upcoming) }
-
-  LaunchedEffect(teamId) {
-    viewModel.openTeam(teamId)
-  }
-
-
   TeamDetailsScreen(
     uiState = uiState,
     section = section,
-    onSectionSelected = { section = it },
+    onSectionSelected = onSectionSelected,
     onBack = onBack,
     onMatchSelected = onMatchSelected,
     onPlayerSelected = onPlayerSelected,

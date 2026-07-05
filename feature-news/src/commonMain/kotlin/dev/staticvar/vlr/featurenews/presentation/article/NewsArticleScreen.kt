@@ -14,10 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
@@ -32,27 +28,17 @@ import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailMediaSummaryItem
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailReferencesItem
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailStoryItem
-import org.koin.compose.currentKoinScope
-
 @Composable
 public fun NewsArticleRoute(
-  articleId: String,
+  uiState: NewsArticleUiState,
   onBack: () -> Unit,
+  onRefresh: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val scope = currentKoinScope()
-  val viewModel: NewsArticleViewModel = remember(scope) { scope.get<NewsArticleViewModel>() }
-  val uiState by viewModel.uiState.collectAsState()
-
-  LaunchedEffect(articleId) {
-    viewModel.openArticle(articleId)
-  }
-
-
   NewsArticleScreen(
     uiState = uiState,
     onBack = onBack,
-    onRefresh = viewModel::refresh,
+    onRefresh = onRefresh,
     showBackAction = true,
     modifier = modifier,
   )

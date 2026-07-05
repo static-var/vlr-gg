@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.navigation.PrismTab
@@ -23,17 +20,16 @@ import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.sharedui.component.match.overview.MatchPreviewItem
-import org.koin.compose.currentKoinScope
-
 @Composable
-public fun MatchesOverviewRoute(onMatchSelected: (String) -> Unit, modifier: Modifier = Modifier) {
-  val viewModel: MatchesViewModel = rememberKoinInstance()
-  val uiState: MatchesUiState by viewModel.uiState.collectAsState()
-
-
+public fun MatchesOverviewRoute(
+  uiState: MatchesUiState,
+  onFilterSelected: (MatchStatusFilter) -> Unit,
+  onMatchSelected: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
   MatchesOverviewScreen(
     uiState = uiState,
-    onFilterSelected = viewModel::selectFilter,
+    onFilterSelected = onFilterSelected,
     onMatchSelected = onMatchSelected,
     modifier = modifier,
   )
@@ -89,10 +85,4 @@ internal fun MatchesOverviewScreen(
       }
     }
   }
-}
-
-@Composable
-private inline fun <reified T : Any> rememberKoinInstance(): T {
-  val scope = currentKoinScope()
-  return remember(scope) { scope.get<T>() }
 }

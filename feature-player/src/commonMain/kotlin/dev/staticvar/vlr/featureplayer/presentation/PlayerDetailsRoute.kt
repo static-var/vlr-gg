@@ -16,10 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
@@ -27,24 +23,13 @@ import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
-import org.koin.compose.currentKoinScope
-
 @Composable
 public fun PlayerDetailsRoute(
-  playerId: String,
+  uiState: PlayerDetailsUiState,
   onBack: () -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val scope = currentKoinScope()
-  val viewModel: PlayerDetailsViewModel = remember(scope) { scope.get<PlayerDetailsViewModel>() }
-  val uiState: PlayerDetailsUiState by viewModel.uiState.collectAsState()
-
-  LaunchedEffect(playerId) {
-    viewModel.openPlayer(playerId)
-  }
-
-
   PlayerDetailsScreen(
     uiState = uiState,
     onBack = onBack,

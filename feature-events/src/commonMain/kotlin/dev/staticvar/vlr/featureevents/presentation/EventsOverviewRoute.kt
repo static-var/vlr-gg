@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.navigation.PrismTab
@@ -23,17 +20,16 @@ import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.sharedui.component.event.overview.EventPreviewItem
-import org.koin.compose.currentKoinScope
-
 @Composable
-public fun EventsOverviewRoute(onEventSelected: (String) -> Unit, modifier: Modifier = Modifier) {
-  val viewModel: EventsViewModel = rememberKoinInstance()
-  val uiState: EventsUiState by viewModel.uiState.collectAsState()
-
-
+public fun EventsOverviewRoute(
+  uiState: EventsUiState,
+  onFilterSelected: (EventStatusFilter) -> Unit,
+  onEventSelected: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
   EventsOverviewScreen(
     uiState = uiState,
-    onFilterSelected = viewModel::selectFilter,
+    onFilterSelected = onFilterSelected,
     onEventSelected = onEventSelected,
     modifier = modifier,
   )
@@ -89,10 +85,4 @@ internal fun EventsOverviewScreen(
       }
     }
   }
-}
-
-@Composable
-private inline fun <reified T : Any> rememberKoinInstance(): T {
-  val scope = currentKoinScope()
-  return remember(scope) { scope.get<T>() }
 }

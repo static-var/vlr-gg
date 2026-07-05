@@ -16,8 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
@@ -27,17 +25,16 @@ import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
-import org.koin.compose.currentKoinScope
-
 @Composable
-public fun RankingsRoute(onTeamSelected: (String) -> Unit, modifier: Modifier = Modifier) {
-  val viewModel: RankingsViewModel = rememberKoinInstance()
-  val uiState: RankingsUiState by viewModel.uiState.collectAsState()
-
-
+public fun RankingsRoute(
+  uiState: RankingsUiState,
+  onRegionSelected: (String) -> Unit,
+  onTeamSelected: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
   RankingsScreen(
     uiState = uiState,
-    onRegionSelected = viewModel::selectRegion,
+    onRegionSelected = onRegionSelected,
     onTeamSelected = onTeamSelected,
     modifier = modifier,
   )
@@ -120,10 +117,4 @@ internal fun RankingsScreen(
       }
     }
   }
-}
-
-@Composable
-private inline fun <reified T : Any> rememberKoinInstance(): T {
-  val scope = currentKoinScope()
-  return remember(scope) { scope.get<T>() }
 }

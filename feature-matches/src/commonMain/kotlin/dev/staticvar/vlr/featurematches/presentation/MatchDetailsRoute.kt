@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,11 +37,9 @@ import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadIt
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
-import org.koin.compose.currentKoinScope
-
 @Composable
 public fun MatchDetailsRoute(
-  matchId: String,
+  uiState: MatchDetailsUiState,
   onBack: () -> Unit,
   onEventSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
@@ -51,15 +47,6 @@ public fun MatchDetailsRoute(
   onMatchSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val scope = currentKoinScope()
-  val viewModel: MatchDetailsViewModel = remember(scope) { scope.get<MatchDetailsViewModel>() }
-  val uiState: MatchDetailsUiState by viewModel.uiState.collectAsState()
-
-  LaunchedEffect(matchId) {
-    viewModel.openMatch(matchId)
-  }
-
-
   MatchDetailsScreen(
     uiState = uiState,
     onBack = onBack,
