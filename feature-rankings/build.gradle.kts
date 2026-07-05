@@ -47,7 +47,6 @@ kotlin {
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.coroutines.core)
         implementation(libs.koin.core)
-        implementation(libs.koin.compose)
         implementation(projects.core)
         implementation(projects.designsystem)
         implementation(projects.domain)
