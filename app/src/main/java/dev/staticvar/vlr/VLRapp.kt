@@ -42,11 +42,11 @@ class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
 
   private fun firebaseInit() {
     Firebase.performance.isPerformanceCollectionEnabled = true
-    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+    FirebaseMessaging.getInstance().register().addOnCompleteListener { task ->
       if (task.isSuccessful) {
-        i { "FCM Token ${task.result}" }
+        i { "Firebase Messaging registration complete" }
       } else {
-        e { "FCM Token error" }
+        e(message = { "Firebase Messaging registration failed" }, throwable = task.exception)
       }
     }
   }
