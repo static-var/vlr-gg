@@ -50,8 +50,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.Heading
@@ -95,7 +95,7 @@ fun NewsDetailsScreen(viewModel: VlrViewModel, id: String) {
             .fillMaxSize()
             .padding(horizontal = 8.dp)
             .testTag("news:root")
-            .haze(hazeState),
+            .hazeSource(hazeState),
         state = scrollState,
       ) {
         item { StatusBarSpacer(statusBarType = StatusBarType.TRANSPARENT) }

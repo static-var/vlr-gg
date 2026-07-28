@@ -33,7 +33,7 @@ object StorageModule {
   @Singleton
   fun db(application: Application, converter: VlrTypeConverter) =
     Room.databaseBuilder(application, VlrDB::class.java, Constants.DB_NAME)
-      .fallbackToDestructiveMigration()
+      .fallbackToDestructiveMigration(dropAllTables = false)
       .addTypeConverter(converter)
       .addMigrations(Migration_7_8)
       .build()

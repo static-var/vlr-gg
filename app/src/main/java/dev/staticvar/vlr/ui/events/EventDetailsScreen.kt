@@ -39,11 +39,12 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -515,17 +516,16 @@ fun EventMatchGroups(
 
     FilterChips(modifier, filterOptions, selectedIndex) { onFilterChange(it) }
 
-    ScrollableTabRow(
+    SecondaryScrollableTabRow(
       selectedTabIndex = tabSelection,
       containerColor = VLRTheme.colorScheme.primaryContainer,
+      contentColor = TabRowDefaults.primaryContentColor,
       modifier =
         modifier
           .fillMaxWidth()
           .padding(Local8DPPadding.current)
           .clip(RoundedCornerShape(16.dp)),
-      indicator = { indicators ->
-        if (indicators.isNotEmpty()) VLRTabIndicator(indicators, tabSelection)
-      },
+      indicator = { VLRTabIndicator(tabSelection) },
     ) {
       group.item.keys.forEachIndexed { index, s ->
         Tab(selected = tabSelection == index, onClick = { onTabChange(index) }) {
