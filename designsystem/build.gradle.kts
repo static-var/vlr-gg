@@ -1,16 +1,16 @@
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+import com.android.build.api.dsl.LibraryExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   alias(libs.plugins.android.library)
-  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.compose.compiler)
   id("vlr.detekt")
   id("vlr.ktfmt")
 }
 
-android {
+extensions.configure<LibraryExtension> {
   namespace = "dev.staticvar.designsystem"
-  compileSdk = 34
+  compileSdk = 36
 
   defaultConfig {
     minSdk = 24
@@ -29,19 +29,14 @@ android {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
-  kotlinOptions { jvmTarget = JavaVersion.VERSION_17.toString() }
-  buildFeatures {
-    compose = true
-  }
-  composeCompiler {
-    featureFlags.set(listOf(ComposeFeatureFlag.StrongSkipping))
-
-    reportsDestination = layout.buildDirectory.dir("compose_compiler")
-  }
+  buildFeatures { compose = true }
+  composeCompiler { reportsDestination = layout.buildDirectory.dir("compose_compiler") }
 }
 
+kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
+
 dependencies {
-  api(platform(libs.compose.bom.alpha))
+  api(platform(libs.compose.bom))
   implementation(libs.bundles.base)
   implementation(libs.bundles.compose)
   implementation(libs.bundles.m3)

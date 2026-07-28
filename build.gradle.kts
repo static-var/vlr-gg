@@ -1,10 +1,7 @@
-@file:Suppress("DSL_SCOPE_VIOLATION")
 plugins {
   alias(libs.plugins.android.application) apply false
   alias(libs.plugins.android.library) apply false
-  alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.compose.compiler) apply false
-  alias(libs.plugins.kotlin.kapt) apply false
   alias(libs.plugins.hilt.plugin) apply false
   alias(libs.plugins.ksp.plugin) apply false
   alias(libs.plugins.secrets.plugin) apply false
@@ -19,18 +16,4 @@ plugins {
   id("vlr.ktfmt")
   alias(libs.plugins.androidTest) apply false
   alias(libs.plugins.firebase.crashlytics) apply false
-}
-
-buildscript {
-  repositories {
-    google()
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath(libs.build.agp)
-    classpath(libs.build.kotlin)
-    classpath(libs.kotlin.serialization)
-    classpath(libs.hilt.android.gradle.plugin)
-  }
 }

@@ -1,4 +1,7 @@
 @file:Suppress("UnstableApiUsage")
+
+rootProject.name = "build-logic"
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {

@@ -1,21 +1,22 @@
-@file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
+@file:Suppress("UnstableApiUsage")
 
+import com.android.build.api.dsl.TestExtension
 import java.io.FileInputStream
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   id("com.android.test")
-  id("org.jetbrains.kotlin.android")
   alias(libs.plugins.baselineprofile)
 }
 
-android {
+extensions.configure<TestExtension> {
   namespace = "com.example.benchmark"
-  compileSdk = 34
+  compileSdk = 36
 
   defaultConfig {
-    minSdk = 23 // Macrobenchmark doesn't work with SDK lower than 23
-    targetSdk = 34
+    minSdk = 24
+    targetSdk = 36
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
@@ -25,7 +26,6 @@ android {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
-  kotlinOptions { jvmTarget = JavaVersion.VERSION_17.toString() }
   // [END_EXCLUDE]
   // Note that your module name may have different name
   targetProjectPath = ":app"
@@ -34,8 +34,8 @@ android {
 
   testOptions {
     managedDevices {
-      devices {
-        create("pixel6Api33", com.android.build.api.dsl.ManagedVirtualDevice::class.java) {
+      localDevices {
+        create("pixel6Api33") {
           device = "Pixel 6"
           apiLevel = 33
           systemImageSource = "aosp"
@@ -57,6 +57,12 @@ android {
       // Selects release buildType if the benchmark buildType not available in other modules.
       matchingFallbacks += mutableListOf("release")
     }
+  }
+}
+
+kotlin {
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_17)
   }
 }
 

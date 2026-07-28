@@ -14,9 +14,9 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.perf.ktx.performance
+import com.google.firebase.perf.performance
 import dagger.hilt.android.HiltAndroidApp
 import dev.staticvar.vlr.utils.Logger
 import dev.staticvar.vlr.utils.e

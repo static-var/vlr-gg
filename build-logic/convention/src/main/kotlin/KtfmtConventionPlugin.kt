@@ -17,10 +17,15 @@ class KtfmtConventionPlugin : Plugin<Project> {
 
       pluginManager.apply(libs.findPlugin("spotless-plugin").get().get().pluginId)
       extensions.getByType<SpotlessExtension>().apply {
-        kotlin { ktfmt(KTFMT_VERSION).googleStyle() }
-        kotlinGradle { ktfmt(KTFMT_VERSION).googleStyle() }
+        kotlin {
+          target("src/**/*.kt")
+          ktfmt(KTFMT_VERSION).googleStyle()
+        }
+        kotlinGradle {
+          target("*.gradle.kts")
+          ktfmt(KTFMT_VERSION).googleStyle()
+        }
       }
-
     }
   }
 }
