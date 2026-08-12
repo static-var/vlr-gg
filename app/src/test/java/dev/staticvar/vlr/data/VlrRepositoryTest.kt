@@ -19,6 +19,7 @@ import dev.staticvar.vlr.utils.Pass
 import dev.staticvar.vlr.utils.TimeElapsed
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.headers
@@ -69,8 +70,6 @@ internal class VlrRepositoryTest {
           append(Constants.APPLICATION_HEADER, BuildConfig.APPLICATION_ID)
         }
       }
-      expectSuccess = true
-
       install(ContentNegotiation) {
         register(ContentType.Application.Json, KotlinxSerializationConverter(json))
       }
@@ -172,7 +171,7 @@ internal class VlrRepositoryTest {
       repository.updateLatestMatches().test {
         assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
         assertThat(awaitItem().getError())
-          .isNotNull() // Api call complete, should error [Err(ServerResponseException)]
+          .isInstanceOf(ServerResponseException::class.java)
         awaitComplete()
       }
     }

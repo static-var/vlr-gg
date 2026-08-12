@@ -21,7 +21,6 @@ import dagger.hilt.android.HiltAndroidApp
 import dev.staticvar.vlr.utils.Logger
 import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.i
-import dev.staticvar.vlr.utils.queueWorker
 import dev.staticvar.vlr.workers.queueObsoleteRecord
 import javax.inject.Inject
 
@@ -36,7 +35,6 @@ class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
     Logger.init(true)
     firebaseInit()
     createNotificationChannel()
-    queueWorker()
     queueObsoleteRecord()
   }
 

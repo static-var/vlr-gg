@@ -28,6 +28,7 @@ import dev.staticvar.vlr.utils.TimeElapsed
 import dev.staticvar.vlr.utils.runSuspendCatching
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.get
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -88,7 +89,9 @@ constructor(
       if (TimeElapsed.hasElapsed(Endpoints.MATCHES_OVERVIEW)) {
         emit(Ok(true))
         val result = runSuspendCatching {
-          ktorHttpClient.get(Endpoints.MATCHES_OVERVIEW).body<List<MatchPreviewInfo>>()
+          ktorHttpClient
+            .get(Endpoints.MATCHES_OVERVIEW) { expectSuccess = true }
+            .body<List<MatchPreviewInfo>>()
         }
         result.get()?.let {
           vlrDao.deleteAndInsertMatchPreviewInfo(it)

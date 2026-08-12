@@ -1,6 +1,7 @@
 package dev.staticvar.vlr.widget
 
 import android.content.Intent
+import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,9 +28,7 @@ import dev.staticvar.vlr.MainActivity
 import dev.staticvar.vlr.ui.Destination
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.readableDateAndTime
-import java.time.LocalTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
+import java.util.Date
 
 @Composable
 fun WidgetTimeRow(modifier: GlanceModifier = GlanceModifier, status: String, time: String?) {
@@ -139,18 +138,14 @@ fun WidgetUnableToUpdateUi(modifier: GlanceModifier = GlanceModifier) {
   }
 }
 
-fun LazyListScope.headerText(isUpdating: Boolean = false) {
+internal fun LazyListScope.headerText(lastUpdatedAt: Long?) {
   item {
+    val context = LocalContext.current
     Text(
       text =
-        if (isUpdating) "Updating..."
-        else
-          "Last updated at ${
-        LocalTime
-          .now()
-          .atOffset(ZoneOffset.UTC)
-          .format(DateTimeFormatter.ofPattern("HH:mm a"))
-      }",
+        lastUpdatedAt?.let {
+          "Last updated ${DateFormat.getTimeFormat(context).format(Date(it))}"
+        } ?: "Last update unavailable",
       style =
         TextStyle(
           textAlign = TextAlign.Center,
