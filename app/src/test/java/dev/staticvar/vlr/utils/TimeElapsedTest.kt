@@ -40,6 +40,15 @@ internal class TimeElapsedTest {
   }
 
   @Test
+  fun `start records when the cache entry was refreshed`() {
+    every { Calendar.getInstance().timeInMillis } returns 1_234
+
+    TimeElapsed.start(key1, duration1)
+
+    assertThat(TimeElapsed.lastStartedAtMillis(key1)).isEqualTo(1_234)
+  }
+
+  @Test
   fun `test if start will override entry in the map`() {
     TimeElapsed.start(key1, duration1)
     assertThat(TimeElapsed.hasElapsed(key1)).isFalse()
@@ -62,6 +71,7 @@ internal class TimeElapsedTest {
     assertThat(TimeElapsed.timeForKey(key1)).isEqualTo(duration1.inWholeMilliseconds)
     TimeElapsed.reset(key1)
     assertThat(TimeElapsed.timeForKey(key1)).isLessThan(0)
+    assertThat(TimeElapsed.lastStartedAtMillis(key1)).isNull()
     assertThat(TimeElapsed.hasElapsed(key1)).isTrue()
   }
 

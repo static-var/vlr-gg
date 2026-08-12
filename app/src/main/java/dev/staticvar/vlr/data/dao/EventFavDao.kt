@@ -15,6 +15,9 @@ interface EventFavDao {
   @Query("DELETE from EventFav where id = :id")
   suspend fun deleteFavEvent(id: String)
 
+  @Query("SELECT EXISTS(SELECT 1 FROM EventFav WHERE id = :id)")
+  suspend fun isFavorite(id: String): Boolean
+
   @Query("SELECT * from EventFav")
   fun getFavoriteEvents(): Flow<List<EventFav>>
 }

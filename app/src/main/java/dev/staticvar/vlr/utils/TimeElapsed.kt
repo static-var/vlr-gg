@@ -11,23 +11,27 @@ import kotlin.time.Duration
  * @constructor Create empty Time elapsed
  */
 object TimeElapsed {
-  private var timeMap: MutableMap<String, Long> = mutableMapOf()
+  private data class TimeEntry(val expiresAtMillis: Long, val startedAtMillis: Long?)
+
+  private var timeMap: MutableMap<String, TimeEntry> = mutableMapOf()
 
   fun start(key: String, expireIn: Duration) {
-    // Create a new entry in map or override existing with expiration time
-    timeMap[key] = (Calendar.getInstance().timeInMillis + expireIn.inWholeMilliseconds)
-    println(
-      "$key started at ${Calendar.getInstance().timeInMillis} will expire in ${expireIn.absoluteValue}"
-    )
+    val startedAtMillis = Calendar.getInstance().timeInMillis
+    timeMap[key] =
+      TimeEntry(
+        expiresAtMillis = startedAtMillis + expireIn.inWholeMilliseconds,
+        startedAtMillis = startedAtMillis,
+      )
+    println("$key started at $startedAtMillis will expire in ${expireIn.absoluteValue}")
   }
 
   fun hasElapsed(key: String): Boolean {
-    return timeMap[key]?.let { expireDuration ->
-      // If key exists then perform check
+    return timeMap[key]?.let { entry ->
+      val currentTimeMillis = Calendar.getInstance().timeInMillis
       println(
-        "Elapsed check for $key, current time ${Calendar.getInstance().timeInMillis}, set to expire at $expireDuration"
+        "Elapsed check for $key, current time $currentTimeMillis, set to expire at ${entry.expiresAtMillis}"
       )
-      expireDuration < Calendar.getInstance().timeInMillis
+      entry.expiresAtMillis < currentTimeMillis
     }
       ?: true.also { // Key doesn't exist, return true
         println("$key not in records")
@@ -35,11 +39,16 @@ object TimeElapsed {
   }
 
   fun reset(key: String) {
-    // Set expired time
     i { "Resetting $key" }
-    timeMap[key] = Calendar.getInstance().timeInMillis - 1
+    timeMap[key] =
+      TimeEntry(
+        expiresAtMillis = Calendar.getInstance().timeInMillis - 1,
+        startedAtMillis = null,
+      )
   }
 
-  @VisibleForTesting internal fun timeForKey(key: String) = timeMap[key]
+  internal fun lastStartedAtMillis(key: String) = timeMap[key]?.startedAtMillis
+
+  @VisibleForTesting internal fun timeForKey(key: String) = timeMap[key]?.expiresAtMillis
   @VisibleForTesting internal fun resetCache() = timeMap.clear()
 }

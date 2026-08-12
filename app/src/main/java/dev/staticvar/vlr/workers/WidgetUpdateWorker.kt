@@ -11,6 +11,8 @@ import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.areWidgetsEnabled
 import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.i
+import dev.staticvar.vlr.utils.WidgetWorkKind
+import dev.staticvar.vlr.utils.WIDGET_WORK_KIND_KEY
 import dev.staticvar.vlr.utils.recordWidgetUpdateMillis
 import dev.staticvar.vlr.utils.stopWorker
 import dev.staticvar.vlr.widget.ScoreWidget
@@ -60,11 +62,12 @@ constructor(
       refreshError?.let(::workResultFor)
         ?: if (attemptedNetworkRefresh && !completedNetworkRefresh) {
           e { "Widget refresh ended before the network update completed" }
-          Result.failure()
+          terminalFailureResult()
         } else {
-          if (completedNetworkRefresh) {
-            appContext.recordWidgetUpdateMillis(System.currentTimeMillis())
-          }
+          val updateMillis =
+            vlrRepository.latestMatchesUpdatedAtMillis()
+              ?: System.currentTimeMillis().takeIf { completedNetworkRefresh }
+          updateMillis?.let { appContext.recordWidgetUpdateMillis(it) }
           ScoreWidget().updateAll(appContext)
           Result.success()
         }
@@ -78,16 +81,23 @@ constructor(
   private fun workResultFor(error: Throwable?): Result {
     if (error == null) {
       e { "Widget refresh failed without an error" }
-      return Result.failure()
+      return terminalFailureResult()
     }
 
     e(message = { "Widget refresh failed" }, throwable = error)
     return if (error.isTransientRefreshFailure() && runAttemptCount < MAX_REFRESH_ATTEMPTS - 1) {
       Result.retry()
     } else {
-      Result.failure()
+      terminalFailureResult()
     }
   }
+
+  private fun terminalFailureResult(): Result =
+    if (inputData.getString(WIDGET_WORK_KIND_KEY) == WidgetWorkKind.ONE_TIME.name) {
+      Result.failure()
+    } else {
+      Result.success()
+    }
 
   private fun Throwable.isTransientRefreshFailure(): Boolean {
     return when (this) {

@@ -15,6 +15,9 @@ interface TeamFavDao {
   @Query("DELETE from TeamFav where id = :id")
   suspend fun deleteFavTeam(id: String)
 
+  @Query("SELECT EXISTS(SELECT 1 FROM TeamFav WHERE id = :id)")
+  suspend fun isFavorite(id: String): Boolean
+
   @Query("SELECT * from TeamFav")
   fun getFavoriteTeams(): Flow<List<TeamFav>>
 }

@@ -71,8 +71,6 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.firebase.Firebase
-import com.google.firebase.messaging.messaging
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.ui.Local16DPPadding
@@ -101,7 +99,6 @@ import dev.staticvar.vlr.utils.openAsCustomTab
 import dev.staticvar.vlr.utils.patternDateTimeToReadable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
@@ -122,7 +119,6 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
     rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
   val lazyListState = rememberLazyListState()
 
-  val trackerString = id.toEventTopic()
 
   val progressBarVisibility by
   remember(updateState.get(), swipeRefresh.progress) {
@@ -182,18 +178,8 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                   tournamentDetails = tournamentDetails,
                   isTracked = tournamentDetails.markedFav,
                 ) {
-                  when (tournamentDetails.markedFav) {
-                    true -> {
-                      Firebase.messaging.unsubscribeFromTopic(trackerString).await()
-                      viewModel.untrackEvent(id = tournamentDetails.id)
-                    }
-
-                    false -> {
-                      Firebase.messaging.subscribeToTopic(trackerString).await()
-                      viewModel.trackEvent(id = tournamentDetails.id)
-                    }
-
-                    else -> {}
+                  tournamentDetails.markedFav?.let { isFavorite ->
+                    viewModel.setEventFavorite(tournamentDetails.id, favorite = !isFavorite)
                   }
                 }
               }
@@ -630,5 +616,3 @@ fun TournamentMatchOverview(
     }
   }
 }
-
-private fun String.toEventTopic() = "event-$this"

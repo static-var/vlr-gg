@@ -17,9 +17,6 @@ import dev.staticvar.vlr.data.dao.EventFavDao
 import dev.staticvar.vlr.data.dao.MatchFavDao
 import dev.staticvar.vlr.data.dao.TeamFavDao
 import dev.staticvar.vlr.data.dao.VlrDao
-import dev.staticvar.vlr.data.model.EventFav
-import dev.staticvar.vlr.data.model.MatchFav
-import dev.staticvar.vlr.data.model.TeamFav
 import dev.staticvar.vlr.data.model.TopicTracker
 import dev.staticvar.vlr.di.IoDispatcher
 import dev.staticvar.vlr.utils.Endpoints
@@ -101,6 +98,9 @@ constructor(
           ?: emit(Err(result.getError()))
       }
     }
+
+  internal fun latestMatchesUpdatedAtMillis(): Long? =
+    TimeElapsed.lastStartedAtMillis(Endpoints.MATCHES_OVERVIEW)
 
   /** Get matches from db */
   fun getMatchesFromDb() = combine(
@@ -355,14 +355,6 @@ constructor(
     vlrDao.deletePlayerData(playerDataRecords)
   }
 
-  suspend fun addFavoriteMatch(id: String) = matchFavDao.addFavMatch(MatchFav(id))
-  suspend fun removeFavoriteMatch(id: String) = matchFavDao.deleteFavMatch(id)
-
-  suspend fun addFavoriteEvent(id: String) = eventFavDao.addFavEvent(EventFav(id))
-  suspend fun removeFavoriteEvent(id: String) = eventFavDao.deleteFavEvent(id)
-
-  suspend fun addFavoriteTeam(id: String) = teamFavDao.addFavTeam(TeamFav(id))
-  suspend fun removeFavoriteTeam(id: String) = teamFavDao.deleteFavTeam(id)
 }
 
 const val DAY_15: Long = 15 * 24 * 60 * 60 * 1000

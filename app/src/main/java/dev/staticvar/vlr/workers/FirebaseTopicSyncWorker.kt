@@ -11,16 +11,17 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.google.firebase.messaging.FirebaseMessaging
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import dev.staticvar.vlr.data.FavoriteTopic
+import dev.staticvar.vlr.data.FavoriteTopicCoordinator
+import dev.staticvar.vlr.data.FavoriteTopicType
 import dev.staticvar.vlr.data.dao.EventFavDao
 import dev.staticvar.vlr.data.dao.MatchFavDao
 import dev.staticvar.vlr.data.dao.TeamFavDao
 import dev.staticvar.vlr.utils.e
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.tasks.await
 
 @HiltWorker
 class FirebaseTopicSyncWorker
@@ -31,6 +32,7 @@ constructor(
   private val matchFavDao: MatchFavDao,
   private val eventFavDao: EventFavDao,
   private val teamFavDao: TeamFavDao,
+  private val topicCoordinator: FavoriteTopicCoordinator,
 ) : CoroutineWorker(appContext, workerParams) {
 
   override suspend fun doWork(): Result {
@@ -43,9 +45,7 @@ constructor(
     }
 
     return try {
-      trackedTopics().forEach { topic ->
-        FirebaseMessaging.getInstance().subscribeToTopic(topic).await()
-      }
+      trackedTopics().forEach { topic -> topicCoordinator.restoreIfFavorite(topic) }
 
       preferences.edit(commit = true) {
         putString(LAST_SYNCED_INSTALLATION_ID, installationId)
@@ -59,12 +59,18 @@ constructor(
     }
   }
 
-  private suspend fun trackedTopics(): Set<String> =
+  private suspend fun trackedTopics(): Set<FavoriteTopic> =
     buildSet {
-      matchFavDao.getFavoriteMatches().first().mapTo(this) { favorite -> "match-${favorite.id}" }
-      eventFavDao.getFavoriteEvents().first().mapTo(this) { favorite -> "event-${favorite.id}" }
-      teamFavDao.getFavoriteTeams().first().mapTo(this) { favorite -> "team-${favorite.id}" }
-    }.filterTo(mutableSetOf()) { topic -> topic.substringAfter('-').isNotBlank() }
+      matchFavDao.getFavoriteMatches().first().mapTo(this) { favorite ->
+        FavoriteTopic(FavoriteTopicType.MATCH, favorite.id)
+      }
+      eventFavDao.getFavoriteEvents().first().mapTo(this) { favorite ->
+        FavoriteTopic(FavoriteTopicType.EVENT, favorite.id)
+      }
+      teamFavDao.getFavoriteTeams().first().mapTo(this) { favorite ->
+        FavoriteTopic(FavoriteTopicType.TEAM, favorite.id)
+      }
+    }.filterTo(mutableSetOf()) { topic -> topic.id.isNotBlank() }
 }
 
 fun Context.enqueueFirebaseTopicSync(installationId: String) {
@@ -81,6 +87,6 @@ fun Context.enqueueFirebaseTopicSync(installationId: String) {
 }
 
 private const val FIREBASE_TOPIC_SYNC_WORK = "firebase_topic_sync"
-private const val INPUT_INSTALLATION_ID = "firebase_installation_id"
-private const val PREFERENCES_NAME = "firebase_topic_sync"
+internal const val INPUT_INSTALLATION_ID = "firebase_installation_id"
+internal const val PREFERENCES_NAME = "firebase_topic_sync"
 private const val LAST_SYNCED_INSTALLATION_ID = "last_synced_installation_id"

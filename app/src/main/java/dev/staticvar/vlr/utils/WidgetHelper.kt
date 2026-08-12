@@ -12,13 +12,20 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.workDataOf
 import dev.staticvar.vlr.widget.ScoreWidget
 import dev.staticvar.vlr.workers.WidgetUpdateWorker
 import java.util.concurrent.TimeUnit
 
 private const val WIDGET_PERIODIC_WORK = "widget_update"
 private const val WIDGET_REFRESH_WORK = "widget_refresh"
+internal const val WIDGET_WORK_KIND_KEY = "widget_work_kind"
 internal val widgetLastUpdateMillisKey = longPreferencesKey("last_widget_update_millis")
+
+internal enum class WidgetWorkKind {
+  PERIODIC,
+  ONE_TIME,
+}
 
 suspend fun Context.areWidgetsEnabled() =
   GlanceAppWidgetManager(this).getGlanceIds(ScoreWidget::class.java).isNotEmpty()
@@ -27,6 +34,7 @@ fun Context.queueWorker() {
   val work =
     PeriodicWorkRequestBuilder<WidgetUpdateWorker>(15, TimeUnit.MINUTES)
       .setConstraints(widgetNetworkConstraints())
+      .setInputData(workDataOf(WIDGET_WORK_KIND_KEY to WidgetWorkKind.PERIODIC.name))
       .build()
   WorkManager.getInstance(this)
     .enqueueUniquePeriodicWork(
@@ -40,6 +48,7 @@ fun Context.queueWidgetRefresh() {
   val work =
     OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
       .setConstraints(widgetNetworkConstraints())
+      .setInputData(workDataOf(WIDGET_WORK_KIND_KEY to WidgetWorkKind.ONE_TIME.name))
       .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
       .build()
   WorkManager.getInstance(this)

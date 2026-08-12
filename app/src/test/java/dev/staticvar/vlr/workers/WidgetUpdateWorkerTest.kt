@@ -6,11 +6,13 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.google.common.truth.Truth.assertThat
 import dev.staticvar.vlr.data.VlrRepository
+import dev.staticvar.vlr.utils.WIDGET_WORK_KIND_KEY
 import dev.staticvar.vlr.utils.areWidgetsEnabled
 import dev.staticvar.vlr.utils.recordWidgetUpdateMillis
 import dev.staticvar.vlr.utils.stopWorker
@@ -45,6 +47,7 @@ class WidgetUpdateWorkerTest {
   fun setUp() {
     context = ApplicationProvider.getApplicationContext()
     repository = mockk()
+    every { repository.latestMatchesUpdatedAtMillis() } returns null
     mockkStatic("dev.staticvar.vlr.utils.WidgetHelperKt")
     coEvery { context.areWidgetsEnabled() } returns true
     coEvery { context.recordWidgetUpdateMillis(any()) } returns Unit
@@ -68,13 +71,55 @@ class WidgetUpdateWorkerTest {
   }
 
   @Test
-  fun `transient refresh stops retrying after three attempts`() = runTest {
+  fun `one-time refresh stops retrying after three attempts`() = runTest {
     every { repository.updateLatestMatches() } returns
       flowOf<Result<Boolean, Throwable?>>(Err(IOException("offline")))
 
     val result = newWorker(runAttemptCount = 2).doWork()
 
     assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+  }
+
+  @Test
+  fun `periodic refresh defers transient failure after three attempts`() = runTest {
+    every { repository.updateLatestMatches() } returns
+      flowOf<Result<Boolean, Throwable?>>(Err(IOException("offline")))
+
+    val result = newWorker(runAttemptCount = 2, periodic = true).doWork()
+
+    assertThat(result).isEqualTo(ListenableWorker.Result.success())
+  }
+
+  @Test
+  fun `legacy untyped refresh defers terminal failure to the next interval`() = runTest {
+    every { repository.updateLatestMatches() } returns
+      flowOf<Result<Boolean, Throwable?>>(Err(IllegalArgumentException("invalid response")))
+
+    val result = newWorker(legacyUntyped = true).doWork()
+
+    assertThat(result).isEqualTo(ListenableWorker.Result.success())
+  }
+
+  @Test
+  fun `periodic refresh defers non-transient failure to the next interval`() = runTest {
+    every { repository.updateLatestMatches() } returns
+      flowOf<Result<Boolean, Throwable?>>(Err(IllegalArgumentException("invalid response")))
+
+    val result = newWorker(periodic = true).doWork()
+
+    assertThat(result).isEqualTo(ListenableWorker.Result.success())
+  }
+
+  @Test
+  fun `cached refresh records the original freshness timestamp`() = runTest {
+    val cachedRefreshMillis = 1_234L
+    every { repository.updateLatestMatches() } returns flowOf()
+    every { repository.latestMatchesUpdatedAtMillis() } returns cachedRefreshMillis
+
+    val result = newWorker().doWork()
+
+    assertThat(result).isEqualTo(ListenableWorker.Result.success())
+    coVerify(exactly = 1) { context.recordWidgetUpdateMillis(cachedRefreshMillis) }
   }
 
   @Test
@@ -120,21 +165,29 @@ class WidgetUpdateWorkerTest {
 
   @Test
   fun `completed refresh records freshness and succeeds`() = runTest {
+    val refreshMillis = 1_234L
     every { repository.updateLatestMatches() } returns flowOf(Ok(true), Ok(false))
-    val beforeRefresh = System.currentTimeMillis()
+    every { repository.latestMatchesUpdatedAtMillis() } returns refreshMillis
 
     val result = newWorker().doWork()
 
-    val afterRefresh = System.currentTimeMillis()
     assertThat(result).isEqualTo(ListenableWorker.Result.success())
-    coVerify(exactly = 1) {
-      context.recordWidgetUpdateMillis(match { it in beforeRefresh..afterRefresh })
-    }
+    coVerify(exactly = 1) { context.recordWidgetUpdateMillis(refreshMillis) }
   }
 
-  private fun newWorker(runAttemptCount: Int = 0): WidgetUpdateWorker {
+  private fun newWorker(
+    runAttemptCount: Int = 0,
+    periodic: Boolean = false,
+    legacyUntyped: Boolean = false,
+  ): WidgetUpdateWorker {
     val workerParameters = mockk<WorkerParameters>(relaxed = true)
     every { workerParameters.runAttemptCount } returns runAttemptCount
+    every { workerParameters.inputData } returns
+      if (legacyUntyped) {
+        workDataOf()
+      } else {
+        workDataOf(WIDGET_WORK_KIND_KEY to if (periodic) "PERIODIC" else "ONE_TIME")
+      }
     return WidgetUpdateWorker(
       appContext = context,
       workerParams = workerParameters,

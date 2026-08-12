@@ -60,8 +60,6 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.firebase.Firebase
-import com.google.firebase.messaging.messaging
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.ui.Local16DP_8DPPadding
@@ -91,7 +89,6 @@ import dev.staticvar.vlr.utils.openAsCustomTab
 import dev.staticvar.vlr.utils.readableDateAndTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 @Composable
 fun TeamScreen(viewModel: VlrViewModel, id: String) {
@@ -102,7 +99,6 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
   remember(id) { viewModel.getTeamDetails(id) }.collectAsState(initial = Waiting())
   var rosterCard by remember { mutableStateOf(false) }
 
-  val trackerString = id.toTeamTopic()
 
   var triggerRefresh by remember(viewModel, id) { mutableStateOf(true) }
   val updateState by
@@ -158,16 +154,8 @@ fun TeamScreen(viewModel: VlrViewModel, id: String) {
                   id = id,
                   isTracked = teamDetail.markedFav,
                 ) {
-                  when (teamDetail.markedFav) {
-                    true -> {
-                      Firebase.messaging.unsubscribeFromTopic(trackerString).await()
-                      viewModel.untrackTeam(teamDetail.id)
-                    }
-
-                    false -> {
-                      Firebase.messaging.subscribeToTopic(trackerString).await()
-                      viewModel.trackTeam(teamDetail.id)
-                    }
+                  teamDetail.markedFav?.let { isFavorite ->
+                    viewModel.setTeamFavorite(teamDetail.id, favorite = !isFavorite)
                   }
                 }
               }
@@ -526,5 +514,3 @@ fun GameOverviewPreview(
     }
   }
 }
-
-private fun String.toTeamTopic() = "team-$this"
