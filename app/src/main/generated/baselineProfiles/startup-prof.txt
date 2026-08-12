@@ -9766,7 +9766,6 @@ Landroidx/compose/ui/graphics/vector/PathParserKt;
 HSPLandroidx/compose/ui/graphics/vector/PathParserKt;-><clinit>()V
 HSPLandroidx/compose/ui/graphics/vector/PathParserKt;->arcToBezier(Landroidx/compose/ui/graphics/Path;DDDDDDDDD)V
 HSPLandroidx/compose/ui/graphics/vector/PathParserKt;->drawArc(Landroidx/compose/ui/graphics/Path;DDDDDDDZZ)V
-HSPLandroidx/compose/ui/graphics/vector/PathParserKt;->toPath(Ljava/util/List;Landroidx/compose/ui/graphics/Path;)Landroidx/compose/ui/graphics/Path;
 Landroidx/compose/ui/graphics/vector/VNode;
 HSPLandroidx/compose/ui/graphics/vector/VNode;-><clinit>()V
 HSPLandroidx/compose/ui/graphics/vector/VNode;-><init>()V
@@ -11367,7 +11366,7 @@ HSPLandroidx/compose/ui/node/NodeCoordinator;->getWrappedBy$ui()Landroidx/compos
 HSPLandroidx/compose/ui/node/NodeCoordinator;->getZIndex()F
 HSPLandroidx/compose/ui/node/NodeCoordinator;->hasNode-H91voCI(I)Z
 HSPLandroidx/compose/ui/node/NodeCoordinator;->head-H91voCI(I)Landroidx/compose/ui/Modifier$Node;
-HPLandroidx/compose/ui/node/NodeCoordinator;->headNode(Z)Landroidx/compose/ui/Modifier$Node;
+HSPLandroidx/compose/ui/node/NodeCoordinator;->headNode(Z)Landroidx/compose/ui/Modifier$Node;
 HSPLandroidx/compose/ui/node/NodeCoordinator;->invalidateLayer()V
 HSPLandroidx/compose/ui/node/NodeCoordinator;->isAttached()Z
 HSPLandroidx/compose/ui/node/NodeCoordinator;->isValidOwnerScope()Z
@@ -14263,7 +14262,6 @@ Landroidx/concurrent/futures/CallbackToFutureAdapter;
 HSPLandroidx/concurrent/futures/CallbackToFutureAdapter;->getFuture(Landroidx/concurrent/futures/CallbackToFutureAdapter$Resolver;)Lcom/google/common/util/concurrent/ListenableFuture;
 Landroidx/concurrent/futures/CallbackToFutureAdapter$Completer;
 HSPLandroidx/concurrent/futures/CallbackToFutureAdapter$Completer;-><init>()V
-PLandroidx/concurrent/futures/CallbackToFutureAdapter$Completer;->finalize()V
 HSPLandroidx/concurrent/futures/CallbackToFutureAdapter$Completer;->set(Ljava/lang/Object;)Z
 HSPLandroidx/concurrent/futures/CallbackToFutureAdapter$Completer;->setCompletedNormally()V
 Landroidx/concurrent/futures/CallbackToFutureAdapter$Resolver;
@@ -19346,7 +19344,6 @@ HSPLcom/google/android/datatransport/runtime/util/PriorityMapping;->toInt(Lcom/g
 HSPLcom/google/android/datatransport/runtime/util/PriorityMapping;->valueOf(I)Lcom/google/android/datatransport/Priority;
 Lcom/google/android/gms/ads/identifier/AdvertisingIdClient;
 HSPLcom/google/android/gms/ads/identifier/AdvertisingIdClient;-><init>(Landroid/content/Context;JZZ)V
-PLcom/google/android/gms/ads/identifier/AdvertisingIdClient;->finalize()V
 HSPLcom/google/android/gms/ads/identifier/AdvertisingIdClient;->getAdvertisingIdInfo(Landroid/content/Context;)Lcom/google/android/gms/ads/identifier/AdvertisingIdClient$Info;
 HSPLcom/google/android/gms/ads/identifier/AdvertisingIdClient;->setShouldSkipGmsCoreVersionCheck(Z)V
 HSPLcom/google/android/gms/ads/identifier/AdvertisingIdClient;->zza()V
@@ -21283,7 +21280,10 @@ Lcom/google/android/gms/measurement/AppMeasurementJobService;
 HSPLcom/google/android/gms/measurement/AppMeasurementJobService;-><init>()V
 HSPLcom/google/android/gms/measurement/AppMeasurementJobService;->onCreate()V
 HSPLcom/google/android/gms/measurement/AppMeasurementJobService;->onDestroy()V
+HSPLcom/google/android/gms/measurement/AppMeasurementJobService;->onStartJob(Landroid/app/job/JobParameters;)Z
+HSPLcom/google/android/gms/measurement/AppMeasurementJobService;->onStopJob(Landroid/app/job/JobParameters;)Z
 HSPLcom/google/android/gms/measurement/AppMeasurementJobService;->onUnbind(Landroid/content/Intent;)Z
+HSPLcom/google/android/gms/measurement/AppMeasurementJobService;->zzb(Landroid/app/job/JobParameters;Z)V
 HSPLcom/google/android/gms/measurement/AppMeasurementJobService;->zzd()Lcom/google/android/gms/measurement/internal/zznt;
 Lcom/google/android/gms/measurement/AppMeasurementService;
 HSPLcom/google/android/gms/measurement/AppMeasurementService;-><init>()V
@@ -22347,13 +22347,22 @@ HSPLcom/google/android/gms/measurement/internal/zznn;->zzbc()Z
 HSPLcom/google/android/gms/measurement/internal/zznn;->zzc(Lcom/google/android/gms/measurement/internal/zzr;Lcom/google/android/gms/measurement/internal/zzjl;)Landroid/util/Pair;
 HSPLcom/google/android/gms/measurement/internal/zznn;->zzd(Ljava/lang/String;)Landroid/util/Pair;
 HSPLcom/google/android/gms/measurement/internal/zznn;->zzf(Lcom/google/android/gms/measurement/internal/zzr;Lcom/google/android/gms/measurement/internal/zzjl;)Ljava/lang/String;
+Lcom/google/android/gms/measurement/internal/zzno;
+HSPLcom/google/android/gms/measurement/internal/zzno;-><init>(Lcom/google/android/gms/measurement/internal/zznt;Lcom/google/android/gms/measurement/internal/zzpg;Ljava/lang/Runnable;)V
+HSPLcom/google/android/gms/measurement/internal/zzno;->run()V
 Lcom/google/android/gms/measurement/internal/zznp;
+Lcom/google/android/gms/measurement/internal/zznq;
+HSPLcom/google/android/gms/measurement/internal/zznq;-><init>(Lcom/google/android/gms/measurement/internal/zznt;Lcom/google/android/gms/measurement/internal/zzgu;Landroid/app/job/JobParameters;)V
+HSPLcom/google/android/gms/measurement/internal/zznq;->run()V
 Lcom/google/android/gms/measurement/internal/zznt;
 HSPLcom/google/android/gms/measurement/internal/zznt;-><init>(Landroid/content/Context;)V
 HSPLcom/google/android/gms/measurement/internal/zznt;->zza()V
 HSPLcom/google/android/gms/measurement/internal/zznt;->zzb()V
 HSPLcom/google/android/gms/measurement/internal/zznt;->zzd(Landroid/content/Intent;)Landroid/os/IBinder;
+HSPLcom/google/android/gms/measurement/internal/zznt;->zze(Landroid/app/job/JobParameters;)Z
+HSPLcom/google/android/gms/measurement/internal/zznt;->zzg(Lcom/google/android/gms/measurement/internal/zzgu;Landroid/app/job/JobParameters;)V
 HSPLcom/google/android/gms/measurement/internal/zznt;->zzj(Landroid/content/Intent;)Z
+HSPLcom/google/android/gms/measurement/internal/zznt;->zzk(Lcom/google/android/gms/measurement/internal/zzpg;Ljava/lang/Runnable;)V
 Lcom/google/android/gms/measurement/internal/zznu;
 HSPLcom/google/android/gms/measurement/internal/zznu;-><init>(Lcom/google/android/gms/measurement/internal/zzoc;J)V
 HSPLcom/google/android/gms/measurement/internal/zznu;->run()V
@@ -22439,6 +22448,7 @@ HSPLcom/google/android/gms/measurement/internal/zzpg;->zzH(Lcom/google/android/g
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zzM()V
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zzX(Lcom/google/android/gms/measurement/internal/zzh;)V
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zzY(Ljava/lang/String;ILjava/lang/Throwable;[BLjava/util/Map;)V
+HSPLcom/google/android/gms/measurement/internal/zzpg;->zzZ(Ljava/lang/Runnable;)V
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zza(Landroid/content/Context;)Lcom/google/android/gms/measurement/internal/zzpg;
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zzaG()V
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zzaH(Ljava/lang/String;J)Z
@@ -22448,6 +22458,7 @@ HSPLcom/google/android/gms/measurement/internal/zzpg;->zzaN()V
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zzaS(Lcom/google/android/gms/measurement/internal/zzr;)Z
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zzaT(Lcom/google/android/gms/measurement/internal/zzos;)Lcom/google/android/gms/measurement/internal/zzos;
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zzaU(Lcom/google/android/gms/measurement/internal/zzr;)Ljava/lang/Boolean;
+HSPLcom/google/android/gms/measurement/internal/zzpg;->zzaV()Lcom/google/android/gms/measurement/internal/zzae;
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zzaW()Lcom/google/android/gms/measurement/internal/zzgu;
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zzaX()Lcom/google/android/gms/measurement/internal/zzhz;
 HSPLcom/google/android/gms/measurement/internal/zzpg;->zzaZ()Landroid/content/Context;
@@ -24952,6 +24963,7 @@ HSPLcom/google/firebase/perf/config/DeviceCacheManager;-><clinit>()V
 HSPLcom/google/firebase/perf/config/DeviceCacheManager;-><init>(Ljava/util/concurrent/ExecutorService;)V
 HSPLcom/google/firebase/perf/config/DeviceCacheManager;->getBoolean(Ljava/lang/String;)Lcom/google/firebase/perf/util/Optional;
 HSPLcom/google/firebase/perf/config/DeviceCacheManager;->getDouble(Ljava/lang/String;)Lcom/google/firebase/perf/util/Optional;
+HSPLcom/google/firebase/perf/config/DeviceCacheManager;->getFirebaseApplicationContext()Landroid/content/Context;
 HSPLcom/google/firebase/perf/config/DeviceCacheManager;->getInstance()Lcom/google/firebase/perf/config/DeviceCacheManager;
 HSPLcom/google/firebase/perf/config/DeviceCacheManager;->getLong(Ljava/lang/String;)Lcom/google/firebase/perf/util/Optional;
 HSPLcom/google/firebase/perf/config/DeviceCacheManager;->getString(Ljava/lang/String;)Lcom/google/firebase/perf/util/Optional;
@@ -25263,6 +25275,7 @@ HSPLcom/google/firebase/perf/transport/TransportManager;->syncLog(Lcom/google/fi
 HSPLcom/google/firebase/perf/transport/TransportManager;->updateFirebaseInstallationIdIfPossibleAndNeeded()V
 HSPLcom/google/firebase/perf/transport/TransportManager;->updateFirebasePerformanceIfPossibleAndNeeded()V
 Lcom/google/firebase/perf/transport/TransportManager$$ExternalSyntheticLambda0;
+HSPLcom/google/firebase/perf/transport/TransportManager$$ExternalSyntheticLambda0;-><init>(Lcom/google/firebase/perf/transport/TransportManager;)V
 HSPLcom/google/firebase/perf/transport/TransportManager$$ExternalSyntheticLambda0;->run()V
 Lcom/google/firebase/perf/transport/TransportManager$$ExternalSyntheticLambda2;
 HSPLcom/google/firebase/perf/transport/TransportManager$$ExternalSyntheticLambda2;-><init>(Lcom/google/firebase/perf/transport/TransportManager;Lcom/google/firebase/perf/v1/TraceMetric;Lcom/google/firebase/perf/v1/ApplicationProcessState;)V
@@ -27261,6 +27274,12 @@ HSPLdev/staticvar/vlr/VlrFileProvider;-><clinit>()V
 HSPLdev/staticvar/vlr/VlrFileProvider;-><init>()V
 HSPLdev/staticvar/vlr/VlrFileProvider;-><init>(I)V
 HSPLdev/staticvar/vlr/VlrFileProvider;-><init>(IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+Ldev/staticvar/vlr/data/FavoriteTopicCoordinator;
+HSPLdev/staticvar/vlr/data/FavoriteTopicCoordinator;-><clinit>()V
+HSPLdev/staticvar/vlr/data/FavoriteTopicCoordinator;-><init>(Ldev/staticvar/vlr/data/dao/MatchFavDao;Ldev/staticvar/vlr/data/dao/EventFavDao;Ldev/staticvar/vlr/data/dao/TeamFavDao;Ldev/staticvar/vlr/data/FirebaseTopicSubscriber;)V
+Ldev/staticvar/vlr/data/FirebaseTopicSubscriber;
+HSPLdev/staticvar/vlr/data/FirebaseTopicSubscriber;-><clinit>()V
+HSPLdev/staticvar/vlr/data/FirebaseTopicSubscriber;-><init>()V
 Ldev/staticvar/vlr/data/VlrRepository;
 HSPLdev/staticvar/vlr/data/VlrRepository;-><clinit>()V
 HSPLdev/staticvar/vlr/data/VlrRepository;-><init>(Ldev/staticvar/vlr/data/dao/VlrDao;Ldev/staticvar/vlr/data/dao/MatchFavDao;Ldev/staticvar/vlr/data/dao/EventFavDao;Ldev/staticvar/vlr/data/dao/TeamFavDao;Lio/ktor/client/HttpClient;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/serialization/json/Json;)V
@@ -27698,7 +27717,7 @@ HSPLdev/staticvar/vlr/ui/VLRKt$$ExternalSyntheticLambda8;-><init>(Ldev/chrisbane
 HSPLdev/staticvar/vlr/ui/VLRKt$$ExternalSyntheticLambda8;->invoke(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 Ldev/staticvar/vlr/ui/VlrViewModel;
 HSPLdev/staticvar/vlr/ui/VlrViewModel;-><clinit>()V
-HSPLdev/staticvar/vlr/ui/VlrViewModel;-><init>(Ldev/staticvar/vlr/data/VlrRepository;)V
+HSPLdev/staticvar/vlr/ui/VlrViewModel;-><init>(Ldev/staticvar/vlr/data/VlrRepository;Ldev/staticvar/vlr/data/FavoriteTopicCoordinator;)V
 HSPLdev/staticvar/vlr/ui/VlrViewModel;->getNews()Lkotlinx/coroutines/flow/StateFlow;
 HSPLdev/staticvar/vlr/ui/VlrViewModel;->getResetScroll()Lkotlinx/coroutines/flow/SharedFlow;
 HSPLdev/staticvar/vlr/ui/VlrViewModel;->getSelectedEventTypePosition()Lkotlinx/coroutines/flow/StateFlow;
@@ -28201,6 +28220,8 @@ HSPLdev/staticvar/vlr/utils/TimeElapsed;-><clinit>()V
 HSPLdev/staticvar/vlr/utils/TimeElapsed;-><init>()V
 HSPLdev/staticvar/vlr/utils/TimeElapsed;->hasElapsed(Ljava/lang/String;)Z
 HSPLdev/staticvar/vlr/utils/TimeElapsed;->start-HG0u8IE(Ljava/lang/String;J)V
+Ldev/staticvar/vlr/utils/TimeElapsed$TimeEntry;
+HSPLdev/staticvar/vlr/utils/TimeElapsed$TimeEntry;-><init>(JLjava/lang/Long;)V
 Ldev/staticvar/vlr/utils/TimeHelperKt;
 HSPLdev/staticvar/vlr/utils/TimeHelperKt;-><clinit>()V
 HSPLdev/staticvar/vlr/utils/TimeHelperKt;->getReadableDate(Ljava/lang/String;)Ljava/lang/String;
@@ -35417,6 +35438,7 @@ HSPLokio/AsyncTimeout;-><init>()V
 HSPLokio/AsyncTimeout;->access$getCompanion$p()Lokio/AsyncTimeout$Companion;
 HSPLokio/AsyncTimeout;->access$getCondition$cp()Ljava/util/concurrent/locks/Condition;
 HSPLokio/AsyncTimeout;->access$getIDLE_TIMEOUT_MILLIS$cp()J
+HSPLokio/AsyncTimeout;->access$getIDLE_TIMEOUT_NANOS$cp()J
 HSPLokio/AsyncTimeout;->access$getIdleSentinel$cp()Lokio/AsyncTimeout;
 HSPLokio/AsyncTimeout;->access$getLock$cp()Ljava/util/concurrent/locks/ReentrantLock;
 HSPLokio/AsyncTimeout;->access$getQueue$cp()Lokio/PriorityQueue;
