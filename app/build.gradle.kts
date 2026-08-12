@@ -28,7 +28,7 @@ plugins {
 }
 
 extensions.configure<ApplicationExtension> {
-  compileSdk = 36
+  compileSdk = 37
   namespace = "dev.staticvar.vlr"
 
   defaultConfig {
@@ -164,7 +164,6 @@ dependencies {
   implementation(libs.browser)
   implementation(libs.webkit)
 
-  implementation(libs.immutable.collection)
   implementation(libs.androidx.collection)
 
   implementation(libs.material.kolor)
@@ -185,7 +184,6 @@ dependencies {
   implementation(libs.kotlinx.serialization)
 
   implementation(libs.bundles.ktor)
-  implementation(libs.logging.interceptor)
 
   implementation(libs.jsoup)
   implementation(libs.landscapist.glide)
@@ -196,4 +194,5 @@ dependencies {
   coreLibraryDesugaring(libs.core.desugar)
 
   testImplementation(libs.bundles.testing)
+  testImplementation(libs.work.testing)
 }

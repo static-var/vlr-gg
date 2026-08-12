@@ -12,7 +12,7 @@ plugins {
 
 extensions.configure<TestExtension> {
   namespace = "com.example.benchmark"
-  compileSdk = 36
+  compileSdk = 37
 
   defaultConfig {
     minSdk = 24

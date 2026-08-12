@@ -17,7 +17,6 @@ afterEvaluate {
 
 dependencies {
   compileOnly(libs.build.agp)
-  compileOnly(libs.build.kover)
   compileOnly(libs.build.kotlin)
   compileOnly(libs.detekt.gradle)
   compileOnly(libs.spotless.gradle)

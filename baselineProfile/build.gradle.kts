@@ -8,7 +8,7 @@ plugins {
 
 extensions.configure<TestExtension> {
   namespace = "dev.staticvar.baselineprofile"
-  compileSdk = 36
+  compileSdk = 37
 
   defaultConfig {
     minSdk = 28
