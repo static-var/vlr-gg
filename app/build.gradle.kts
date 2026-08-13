@@ -7,8 +7,8 @@ import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val vlrApplicationId = "dev.staticvar.vlr"
-val vlrVersionCode = 69
-val vlrVersionName = "v0.6.3"
+val vlrVersionCode = 70
+val vlrVersionName = "v0.6.4"
 
 plugins {
   alias(libs.plugins.android.application)
