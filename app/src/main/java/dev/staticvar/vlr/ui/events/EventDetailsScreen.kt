@@ -39,11 +39,12 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -70,8 +71,6 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.ktx.messaging
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.ui.Local16DPPadding
@@ -100,7 +99,6 @@ import dev.staticvar.vlr.utils.openAsCustomTab
 import dev.staticvar.vlr.utils.patternDateTimeToReadable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 @Composable
 fun EventDetails(viewModel: VlrViewModel, id: String) {
@@ -121,7 +119,6 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
     rememberPullRefreshState(updateState.get() ?: false, { triggerRefresh = triggerRefresh.not() })
   val lazyListState = rememberLazyListState()
 
-  val trackerString = id.toEventTopic()
 
   val progressBarVisibility by
   remember(updateState.get(), swipeRefresh.progress) {
@@ -181,18 +178,8 @@ fun EventDetails(viewModel: VlrViewModel, id: String) {
                   tournamentDetails = tournamentDetails,
                   isTracked = tournamentDetails.markedFav,
                 ) {
-                  when (tournamentDetails.markedFav) {
-                    true -> {
-                      Firebase.messaging.unsubscribeFromTopic(trackerString).await()
-                      viewModel.untrackEvent(id = tournamentDetails.id)
-                    }
-
-                    false -> {
-                      Firebase.messaging.subscribeToTopic(trackerString).await()
-                      viewModel.trackEvent(id = tournamentDetails.id)
-                    }
-
-                    else -> {}
+                  tournamentDetails.markedFav?.let { isFavorite ->
+                    viewModel.setEventFavorite(tournamentDetails.id, favorite = !isFavorite)
                   }
                 }
               }
@@ -515,17 +502,16 @@ fun EventMatchGroups(
 
     FilterChips(modifier, filterOptions, selectedIndex) { onFilterChange(it) }
 
-    ScrollableTabRow(
+    SecondaryScrollableTabRow(
       selectedTabIndex = tabSelection,
       containerColor = VLRTheme.colorScheme.primaryContainer,
+      contentColor = TabRowDefaults.primaryContentColor,
       modifier =
         modifier
           .fillMaxWidth()
           .padding(Local8DPPadding.current)
           .clip(RoundedCornerShape(16.dp)),
-      indicator = { indicators ->
-        if (indicators.isNotEmpty()) VLRTabIndicator(indicators, tabSelection)
-      },
+      indicator = { VLRTabIndicator(tabSelection) },
     ) {
       group.item.keys.forEachIndexed { index, s ->
         Tab(selected = tabSelection == index, onClick = { onTabChange(index) }) {
@@ -630,5 +616,3 @@ fun TournamentMatchOverview(
     }
   }
 }
-
-private fun String.toEventTopic() = "event-$this"

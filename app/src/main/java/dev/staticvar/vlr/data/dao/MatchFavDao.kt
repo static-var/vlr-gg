@@ -21,6 +21,9 @@ interface MatchFavDao {
   @Query("DELETE from MatchFav where id in (:ids)")
   suspend fun deleteFavMatches(ids: List<String>)
 
+  @Query("SELECT EXISTS(SELECT 1 FROM MatchFav WHERE id = :id)")
+  suspend fun isFavorite(id: String): Boolean
+
   @Query("SELECT * from MatchFav")
   fun getFavoriteMatches(): Flow<List<MatchFav>>
 }

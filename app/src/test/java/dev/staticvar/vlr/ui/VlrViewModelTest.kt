@@ -9,6 +9,7 @@ import com.github.michaelbull.result.getError
 import com.github.michaelbull.result.getOr
 import com.google.common.truth.Truth.assertThat
 import dev.staticvar.vlr.data.NewsArticle
+import dev.staticvar.vlr.data.FavoriteTopicCoordinator
 import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
@@ -37,8 +38,9 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE)
 internal class VlrViewModelTest {
   private val vlrRepository = mockk<VlrRepository>()
+  private val favoriteTopicCoordinator = mockk<FavoriteTopicCoordinator>()
 
-  private val viewModel = VlrViewModel(vlrRepository)
+  private val viewModel = VlrViewModel(vlrRepository, favoriteTopicCoordinator)
 
   private val testDispatcher = StandardTestDispatcher(name = "Test dispatcher")
 

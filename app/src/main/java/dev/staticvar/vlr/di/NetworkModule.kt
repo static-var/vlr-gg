@@ -1,6 +1,5 @@
 package dev.staticvar.vlr.di
 
-import android.net.TrafficStats
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,16 +42,6 @@ object NetworkModule {
   @IntoSet
   fun provideHttpLoggingInterceptor(): Interceptor {
     return HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-  }
-
-  @Provides
-  @Singleton
-  @IntoSet
-  fun provideThreadTaggerInterceptor(): Interceptor {
-    return Interceptor { chain ->
-      TrafficStats.setThreadStatsTag(Thread.currentThread().id.toInt())
-      chain.proceed(chain.request())
-    }
   }
 
   @Provides

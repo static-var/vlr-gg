@@ -1,6 +1,5 @@
 package dev.staticvar.vlr.ui.theme
 
-import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
@@ -14,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.glance.GlanceTheme
+import androidx.glance.material3.ColorProviders
 
 private val DarkColorScheme =
   darkColorScheme(
@@ -107,26 +108,18 @@ fun VLRTheme(
 }
 
 @Composable
-fun WidgetTheme(
-  context: Context,
-  darkTheme: Boolean = isSystemInDarkTheme(),
-  dynamicColor: Boolean = true,
+internal fun WidgetTheme(
   content: @Composable () -> Unit
 ) {
-  val colorScheme =
-    when {
-      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-        if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-      }
-      darkTheme -> DarkColorScheme
-      else -> LightColorScheme
+  val colors =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      GlanceTheme.colors
+    } else {
+      ColorProviders(light = LightColorScheme, dark = DarkColorScheme)
     }
-
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = Typography,
-    shapes = Shapes,
-    content = content
+  GlanceTheme(
+    colors = colors,
+    content = content,
   )
 }
 

@@ -70,8 +70,6 @@ import coil.compose.AsyncImage
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.ktx.messaging
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.ui.Local16DPPadding
@@ -102,7 +100,6 @@ import dev.staticvar.vlr.utils.domainVerificationStatus
 import dev.staticvar.vlr.utils.onFail
 import dev.staticvar.vlr.utils.onPass
 import dev.staticvar.vlr.utils.timeDiff
-import kotlinx.coroutines.tasks.await
 
 @Composable
 fun MatchDetails(viewModel: VlrViewModel, id: String, paddingValues: PaddingValues) {
@@ -112,7 +109,6 @@ fun MatchDetails(viewModel: VlrViewModel, id: String, paddingValues: PaddingValu
   val modifier: Modifier = Modifier
 
   val details by remember(id) { viewModel.getMatchDetails(id) }.collectAsState(Waiting())
-  val trackerString = id.toMatchTopic()
 
   var triggerRefresh by remember { mutableStateOf(true) }
   val updateState by
@@ -180,18 +176,8 @@ fun MatchDetails(viewModel: VlrViewModel, id: String, paddingValues: PaddingValu
                   eventId = matchInfo.event.id,
                   onEventClick = viewModel.action.event,
                   onSubButton = {
-                    when (matchInfo.markedFav) {
-                      true -> {
-                        Firebase.messaging.unsubscribeFromTopic(trackerString).await()
-                        viewModel.untrackMatch(matchInfo.id)
-                      }
-
-                      false -> {
-                        Firebase.messaging.subscribeToTopic(trackerString).await()
-                        viewModel.trackMatch(matchInfo.id)
-                      }
-
-                      else -> {}
+                    matchInfo.markedFav?.let { isFavorite ->
+                      viewModel.setMatchFavorite(matchInfo.id, favorite = !isFavorite)
                     }
                   },
                 )
@@ -344,7 +330,6 @@ fun MapStatsCard(
   }
 }
 
-private fun String.toMatchTopic() = "match-$this"
 
 @Composable
 fun MapBox(modifier: Modifier = Modifier, matchInfo: MatchInfo, onPlayerClick: (String) -> Unit) {

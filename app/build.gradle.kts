@@ -1,18 +1,21 @@
-@file:Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
+@file:Suppress("UnstableApiUsage")
 
-
+import com.android.build.api.dsl.ApplicationExtension
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.io.FileInputStream
 import java.util.Properties
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+val vlrApplicationId = "dev.staticvar.vlr"
+val vlrVersionCode = 69
+val vlrVersionName = "v0.6.3"
 
 plugins {
   alias(libs.plugins.android.application)
-  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.kotlin.parcelize)
-  id("dagger.hilt.android.plugin")
+  alias(libs.plugins.hilt.plugin)
   alias(libs.plugins.ksp.plugin)
   alias(libs.plugins.secrets.plugin)
   alias(libs.plugins.baselineprofile)
@@ -24,39 +27,30 @@ plugins {
   id("vlr.ktfmt")
 }
 
-android {
-  compileSdk = 35
+extensions.configure<ApplicationExtension> {
+  compileSdk = 37
   namespace = "dev.staticvar.vlr"
 
   defaultConfig {
-    applicationId = "dev.staticvar.vlr"
-    minSdk = 23
-    targetSdk = 35
-    versionCode = 69
-    versionName = "v0.6.3"
+    applicationId = vlrApplicationId
+    minSdk = 24
+    targetSdk = 36
+    versionCode = vlrVersionCode
+    versionName = vlrVersionName
 
-    setProperty("archivesBaseName", "${applicationId}-${versionCode}(${versionName})")
-
-    room {
-      schemaDirectory("$projectDir/schemas/")
-    }
+    room { schemaDirectory("$projectDir/schemas/") }
   }
 
   signingConfigs {
     create("release") {
-      val prop = Properties().apply {
-        load(FileInputStream(File(rootProject.rootDir, "local.properties")))
-      }
+      val prop =
+        Properties().apply { load(FileInputStream(File(rootProject.rootDir, "local.properties"))) }
       storeFile = file("keystore/vlr-gg.jks")
       storePassword =
-        System.getenv("SIGNING_STORE_PASSWORD")
-          ?: prop.getProperty("store.password") as String
+        System.getenv("SIGNING_STORE_PASSWORD") ?: prop.getProperty("store.password") as String
       keyPassword =
-        System.getenv("SIGNING_KEY_PASSWORD")
-          ?: prop.getProperty("key.password") as String
-      keyAlias =
-        System.getenv("SIGNING_KEY_ALIAS")
-          ?: prop.getProperty("key.alias") as String
+        System.getenv("SIGNING_KEY_PASSWORD") ?: prop.getProperty("key.password") as String
+      keyAlias = System.getenv("SIGNING_KEY_ALIAS") ?: prop.getProperty("key.alias") as String
     }
   }
 
@@ -97,35 +91,11 @@ android {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_17.toString()
-    freeCompilerArgs =
-      freeCompilerArgs +
-        listOf(
-          "-opt-in=kotlin.RequiresOptIn",
-          "-opt-in=kotlin.contracts.ExperimentalContracts",
-          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-          "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
-          "-opt-in=kotlin.time.ExperimentalTime",
-          "-opt-in=androidx.compose.ui.text.ExperimentalTextApi",
-          "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
-          "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
-          "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-          "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-          "-opt-in=androidx.compose.runtime.InternalComposeApi",
-          "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
-          "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
-        )
-  }
   buildFeatures {
     compose = true
     buildConfig = true
   }
-  composeCompiler {
-    featureFlags.set(listOf(ComposeFeatureFlag.StrongSkipping))
-
-    reportsDestination = layout.buildDirectory.dir("compose_compiler")
-  }
+  composeCompiler { reportsDestination = layout.buildDirectory.dir("compose_compiler") }
   packaging {
     jniLibs { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}") }
     resources { excludes += listOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/DEPENDENCIES") }
@@ -135,24 +105,48 @@ android {
     saveInSrc = true
     mergeIntoMain = true
     dexLayoutOptimization = true
-    from(projects.baselineprofile.dependencyProject)
   }
   experimentalProperties["android.experimental.art-profile-r8-rewriting"] = true
 }
 
+base { archivesName.set("$vlrApplicationId-$vlrVersionCode($vlrVersionName)") }
+
+kotlin {
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_17)
+    optIn.addAll(
+      "kotlin.RequiresOptIn",
+      "kotlin.contracts.ExperimentalContracts",
+      "kotlinx.coroutines.ExperimentalCoroutinesApi",
+      "kotlinx.serialization.ExperimentalSerializationApi",
+      "kotlin.time.ExperimentalTime",
+      "androidx.compose.ui.text.ExperimentalTextApi",
+      "androidx.compose.ui.ExperimentalComposeUiApi",
+      "androidx.compose.animation.ExperimentalAnimationApi",
+      "androidx.compose.foundation.ExperimentalFoundationApi",
+      "androidx.compose.material3.ExperimentalMaterial3Api",
+      "androidx.compose.runtime.InternalComposeApi",
+      "androidx.compose.material.ExperimentalMaterialApi",
+      "com.google.accompanist.permissions.ExperimentalPermissionsApi",
+    )
+  }
+}
+
 dependencies {
-  api(platform(libs.compose.bom.alpha))
+  baselineProfile(project(":baselineprofile"))
+
+  api(platform(libs.compose.bom))
   implementation(libs.bundles.base)
   implementation(libs.bundles.compose)
   implementation(libs.bundles.m3)
   implementation(libs.compose.icons)
 
   implementation(platform(libs.firebase.bom))
+  implementation(libs.firebase.installations)
   implementation(libs.firebase.perf)
   implementation(libs.firebase.messaging)
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.analytics)
-
 
   implementation(libs.bundles.lifecycle)
 
@@ -170,7 +164,6 @@ dependencies {
   implementation(libs.browser)
   implementation(libs.webkit)
 
-  implementation(libs.immutable.collection)
   implementation(libs.androidx.collection)
 
   implementation(libs.material.kolor)
@@ -191,7 +184,6 @@ dependencies {
   implementation(libs.kotlinx.serialization)
 
   implementation(libs.bundles.ktor)
-  implementation(libs.logging.interceptor)
 
   implementation(libs.jsoup)
   implementation(libs.landscapist.glide)
@@ -202,4 +194,5 @@ dependencies {
   coreLibraryDesugaring(libs.core.desugar)
 
   testImplementation(libs.bundles.testing)
+  testImplementation(libs.work.testing)
 }

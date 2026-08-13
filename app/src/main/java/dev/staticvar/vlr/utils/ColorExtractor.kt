@@ -80,7 +80,7 @@ fun DynamicTheme(
     }
   DynamicMaterialTheme(
     seedColor = color ?: fallback,
-    useDarkTheme = useDarkTheme,
+    isDark = useDarkTheme,
     animate = true,
     style = style,
     content = content,

@@ -14,14 +14,13 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.perf.ktx.performance
+import com.google.firebase.perf.performance
 import dagger.hilt.android.HiltAndroidApp
 import dev.staticvar.vlr.utils.Logger
 import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.i
-import dev.staticvar.vlr.utils.queueWorker
 import dev.staticvar.vlr.workers.queueObsoleteRecord
 import javax.inject.Inject
 
@@ -36,17 +35,16 @@ class VLRapp() : Application(), Configuration.Provider, ImageLoaderFactory {
     Logger.init(true)
     firebaseInit()
     createNotificationChannel()
-    queueWorker()
     queueObsoleteRecord()
   }
 
   private fun firebaseInit() {
     Firebase.performance.isPerformanceCollectionEnabled = true
-    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+    FirebaseMessaging.getInstance().register().addOnCompleteListener { task ->
       if (task.isSuccessful) {
-        i { "FCM Token ${task.result}" }
+        i { "Firebase Messaging registration complete" }
       } else {
-        e { "FCM Token error" }
+        e(message = { "Firebase Messaging registration failed" }, throwable = task.exception)
       }
     }
   }

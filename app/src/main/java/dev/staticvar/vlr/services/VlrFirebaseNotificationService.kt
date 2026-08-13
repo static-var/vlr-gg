@@ -17,11 +17,13 @@ import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.Destination
 import dev.staticvar.vlr.utils.Constants
 import dev.staticvar.vlr.utils.i
+import dev.staticvar.vlr.workers.enqueueFirebaseTopicSync
 
 class VlrFirebaseNotificationService() : FirebaseMessagingService() {
 
-  override fun onNewToken(p0: String) {
-    super.onNewToken(p0)
+  override fun onRegistered(installationId: String) {
+    i { "Firebase Messaging installation registered" }
+    applicationContext.enqueueFirebaseTopicSync(installationId)
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {

@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
 import dev.staticvar.vlr.R
 import dev.staticvar.vlr.ui.Local16DPPadding
@@ -43,6 +45,8 @@ import dev.staticvar.vlr.ui.helper.CardView
 import dev.staticvar.vlr.ui.theme.VLRTheme
 import dev.staticvar.vlr.utils.e
 import dev.staticvar.vlr.utils.openAsCustomTab
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun AboutScreen(contentPadding: PaddingValues) {
@@ -247,20 +251,23 @@ fun VersionFooter(currentAppVersion: String, simpleEasterEgg: Boolean) {
     color = VLRTheme.colorScheme.primary,
   )
   if (simpleEasterEgg) {
-    var token by remember(simpleEasterEgg) { mutableStateOf("processing") }
+    var installationId by remember { mutableStateOf("registering") }
 
-    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-      if (task.isSuccessful) {
-        token = task.result
-        println("Token $token")
-      } else {
-        e { "FCM Token error" }
+    LaunchedEffect(Unit) {
+      try {
+        FirebaseMessaging.getInstance().register().await()
+        installationId = FirebaseInstallations.getInstance().id.await()
+      } catch (cancellation: CancellationException) {
+        throw cancellation
+      } catch (throwable: Exception) {
+        installationId = "registration failed"
+        e(message = { "Firebase Messaging registration failed" }, throwable = throwable)
       }
     }
 
     SelectionContainer() {
       Text(
-        text = token,
+        text = installationId,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
         style = VLRTheme.typography.bodySmall,
         textAlign = TextAlign.Center,

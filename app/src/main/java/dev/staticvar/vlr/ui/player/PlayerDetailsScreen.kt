@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -499,7 +498,7 @@ fun PreviousTeam(modifier: Modifier = Modifier, team: Team, action: Action) {
   CardView(
     modifier = modifier.clickable { if (team.id != null) action.team(team.id) }.height(120.dp)
   ) {
-    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxWidth()) {
       Text(
         text = team.name,
         style = VLRTheme.typography.titleMedium,

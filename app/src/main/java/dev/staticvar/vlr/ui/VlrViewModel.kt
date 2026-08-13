@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.Ok
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.staticvar.vlr.data.FavoriteTopic
+import dev.staticvar.vlr.data.FavoriteTopicCoordinator
+import dev.staticvar.vlr.data.FavoriteTopicType
 import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.utils.Waiting
 import javax.inject.Inject
@@ -16,7 +19,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class VlrViewModel @Inject constructor(private val repository: VlrRepository) : ViewModel() {
+class VlrViewModel
+@Inject
+constructor(
+  private val repository: VlrRepository,
+  private val favoriteTopicCoordinator: FavoriteTopicCoordinator,
+) : ViewModel() {
   lateinit var action: Action
 
   private var _hideNavBar: MutableSharedFlow<Boolean> = MutableSharedFlow(0)
@@ -110,16 +118,16 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
   fun parseNews(id: String) =
     repository.parseNews(id).stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-  fun trackMatch(id: String) = viewModelScope.launch { repository.addFavoriteMatch(id) }
-  fun untrackMatch(id: String) = viewModelScope.launch { repository.removeFavoriteMatch(id) }
+  suspend fun setMatchFavorite(id: String, favorite: Boolean) {
+    favoriteTopicCoordinator.setFavorite(FavoriteTopic(FavoriteTopicType.MATCH, id), favorite)
+  }
 
-  fun trackEvent(id: String) =
-    viewModelScope.launch { repository.addFavoriteEvent(id) }
+  suspend fun setEventFavorite(id: String, favorite: Boolean) {
+    favoriteTopicCoordinator.setFavorite(FavoriteTopic(FavoriteTopicType.EVENT, id), favorite)
+  }
 
-  fun untrackEvent(id: String) =
-    viewModelScope.launch { repository.removeFavoriteEvent(id) }
-
-  fun trackTeam(id: String) = viewModelScope.launch { repository.addFavoriteTeam(id) }
-  fun untrackTeam(id: String) = viewModelScope.launch { repository.removeFavoriteTeam(id) }
+  suspend fun setTeamFavorite(id: String, favorite: Boolean) {
+    favoriteTopicCoordinator.setFavorite(FavoriteTopic(FavoriteTopicType.TEAM, id), favorite)
+  }
 
 }
