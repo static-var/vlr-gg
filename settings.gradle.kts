@@ -27,3 +27,4 @@ include(":app")
 include(":benchmark")
 
 include(":baselineprofile")
+project(":baselineprofile").projectDir = file("baselineProfile")
