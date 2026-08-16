@@ -1,4 +1,4 @@
-v0.6.4
- • ✨ Score widgets are more reliable, refresh on demand and show when they last updated
- • 🔔 Favourite notifications now stay in sync more reliably
- • ⚒️ Performance, stability and compatibility improvements
+v0.6.5
+ • 🧭 Bottom navigation now selects the correct section immediately
+ • ✨ Match and event filters now appear as soon as you open their sections
+ • ⚒️ Updated performance profiles for smoother navigation
