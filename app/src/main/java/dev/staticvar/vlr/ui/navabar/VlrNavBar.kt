@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,7 +34,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.materials.HazeMaterials
@@ -46,7 +44,7 @@ import dev.staticvar.vlr.ui.theme.transparent
 @Suppress("LongParameterList")
 @Composable
 fun VlrNavBar(
-  navController: NavController,
+  currentDestination: String?,
   items: List<NavItem>,
   hazeState: HazeState,
   isVisible: Boolean,
@@ -80,7 +78,7 @@ fun VlrNavBar(
           ),
       containerColor = Color.Transparent,
     ) {
-      var topSlot: TopSlot? by remember { mutableStateOf(null) }
+      val topSlot = items.firstOrNull { it.route == currentDestination }?.topSlot
 
       AnimatedContent(
         targetState = topSlot,
@@ -111,10 +109,7 @@ fun VlrNavBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         items.forEach { navItem ->
-          val isCurrentDestination = navController.currentDestination?.route == navItem.route
-          if (isCurrentDestination) {
-            topSlot = navItem.topSlot
-          }
+          val isCurrentDestination = currentDestination == navItem.route
 
           NavigationBarItem(
             selected = isCurrentDestination,

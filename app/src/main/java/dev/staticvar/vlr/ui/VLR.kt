@@ -142,7 +142,7 @@ fun VLR() {
           modifier = Modifier,
           bottomBar = {
             VlrNavBar(
-              navController = navController,
+              currentDestination = currentDestination,
               items = navItems,
               hazeState = hazeState,
               isVisible = !hideNav,
