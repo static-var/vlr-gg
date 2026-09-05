@@ -114,7 +114,11 @@ targets:
           PY
 
           cd "$SRCROOT/.."
-          ./gradle-safe.sh :shared:embedAndSignAppleFrameworkForXcode
+          if command -v build-brief >/dev/null 2>&1; then
+            build-brief ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+          else
+            ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+          fi
 
 schemes:
   iosApp:
