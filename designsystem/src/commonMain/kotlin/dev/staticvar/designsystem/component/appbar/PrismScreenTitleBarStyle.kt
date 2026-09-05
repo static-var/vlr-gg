@@ -21,7 +21,7 @@ import dev.staticvar.designsystem.prism.Prism
  */
 @Immutable
 public sealed interface PrismScreenTitleBarStyle {
-  /** Height of the content row before status-bar inset is added. */
+  /** Minimum height of the content row before status-bar inset is added. */
   @get:Composable
   @get:ReadOnlyComposable
   public val containerHeight: Dp
@@ -95,5 +95,5 @@ public sealed interface PrismScreenTitleBarStyle {
 
 private object PrismScreenTitleBarDefaults {
   val noPadding: Dp = 0.dp
-  val titleFontSize = 18.sp
+  val titleFontSize = 16.sp
 }

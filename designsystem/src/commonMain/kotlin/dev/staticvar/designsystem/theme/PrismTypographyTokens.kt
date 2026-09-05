@@ -17,29 +17,29 @@ internal object PrismTypographyTokens {
     display =
     TextStyle(
       fontFamily = fonts.display,
-      fontWeight = FontWeight.Normal,
-      fontSize = 36.sp,
+      fontWeight = FontWeight.SemiBold,
+      fontSize = 32.sp,
       letterSpacing = (-0.25).sp,
     ),
     headline =
     TextStyle(
       fontFamily = fonts.display,
-      fontWeight = FontWeight.Normal,
-      fontSize = 28.sp,
+      fontWeight = FontWeight.SemiBold,
+      fontSize = 24.sp,
       letterSpacing = 0.sp,
     ),
     sectionTitle =
     TextStyle(
       fontFamily = fonts.title,
-      fontWeight = FontWeight.Normal,
-      fontSize = 24.sp,
+      fontWeight = FontWeight.SemiBold,
+      fontSize = 21.sp,
       letterSpacing = 0.sp,
     ),
     cardTitle =
     TextStyle(
       fontFamily = fonts.title,
-      fontWeight = FontWeight.Normal,
-      fontSize = 20.sp,
+      fontWeight = FontWeight.SemiBold,
+      fontSize = 18.sp,
       letterSpacing = 0.sp,
     ),
     bodyLarge =
@@ -67,7 +67,7 @@ internal object PrismTypographyTokens {
     TextStyle(
       fontFamily = fonts.labelAlt,
       fontWeight = FontWeight.Normal,
-      fontSize = 12.sp,
+      fontSize = 11.sp,
       letterSpacing = 0.5.sp,
     ),
     caption =
@@ -88,14 +88,14 @@ internal object PrismTypographyTokens {
     TextStyle(
       fontFamily = fonts.numeric,
       fontWeight = FontWeight.Normal,
-      fontSize = 28.sp,
+      fontSize = 24.sp,
       letterSpacing = (-0.25).sp,
     ),
     numericSecondary =
     TextStyle(
       fontFamily = fonts.numeric,
       fontWeight = FontWeight.Normal,
-      fontSize = 16.sp,
+      fontSize = 14.sp,
       letterSpacing = 0.sp,
     ),
     overline =
@@ -110,13 +110,13 @@ internal object PrismTypographyTokens {
   fun createMaterial(tokens: PrismTypography): Typography = Typography(
     displayLarge = tokens.display,
     displayMedium = tokens.headline,
-    displaySmall = tokens.sectionTitle.resize(30, 36, 0f),
+    displaySmall = tokens.sectionTitle.resize(26, 32, 0f),
     headlineLarge = tokens.sectionTitle,
-    headlineMedium = tokens.cardTitle.resize(24, 30, 0f),
+    headlineMedium = tokens.cardTitle.resize(21, 26, 0f),
     headlineSmall = tokens.cardTitle,
     titleLarge = tokens.cardTitle,
-    titleMedium = tokens.cardTitle.resize(16, 20, 0.15f),
-    titleSmall = tokens.cardTitle.resize(14, 18, 0.1f),
+    titleMedium = tokens.cardTitle.resize(14, 18, 0.15f),
+    titleSmall = tokens.cardTitle.resize(12, 16, 0.1f),
     bodyLarge = tokens.bodyLarge,
     bodyMedium = tokens.bodySmall,
     bodySmall = tokens.bodySmall.resize(12, 15, 0.4f),

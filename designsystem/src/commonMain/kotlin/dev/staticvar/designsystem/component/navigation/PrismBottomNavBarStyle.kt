@@ -129,5 +129,5 @@ private object PrismBottomNavBarDefaults {
   const val selectedItemZIndex: Float = 1f
   val unselectedItemOffset: Dp = 0.dp
   val selectedItemOffset: Dp = 12.dp
-  val labelFontSize = 14.sp
+  val labelFontSize = 12.sp
 }
