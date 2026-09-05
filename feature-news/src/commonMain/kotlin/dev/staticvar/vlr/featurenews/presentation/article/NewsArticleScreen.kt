@@ -63,7 +63,7 @@ internal fun NewsArticleScreen(
   ) {
     PrismScreenTitleBar(
       title = article?.title ?: "Article",
-      subtitle = article?.author?.ifBlank { null } ?: article?.date,
+      subtitle = article?.author?.takeIf(String::isNotBlank)?.let { "By $it" } ?: "Inside competitive VALORANT",
       onBackPress = onBack.takeIf { showBackAction },
       actions = {
         PrismButton(

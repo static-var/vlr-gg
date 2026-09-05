@@ -67,7 +67,7 @@ internal fun TeamDetailsScreen(
   ) {
     PrismScreenTitleBar(
       title = team?.name ?: "Team details",
-      subtitle = team?.tag?.ifBlank { team.country } ?: "Roster and recent form",
+      subtitle = "Roster, results and recent form",
       onBackPress = onBack,
     )
 

@@ -43,7 +43,7 @@ internal fun NewsListScreen(
   ) {
     PrismScreenTitleBar(
       title = "NEWS",
-      subtitle = "OFFLINE-FIRST FEED",
+      subtitle = "Stories from competitive VALORANT",
       actions = {
         PrismButton(
           onClick = onRefresh,

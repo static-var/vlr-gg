@@ -53,7 +53,7 @@ internal fun PlayerDetailsScreen(
   ) {
     PrismScreenTitleBar(
       title = player?.alias?.ifBlank { player.name } ?: "Player details",
-      subtitle = player?.realName ?: player?.country ?: "Agent pool and team history",
+      subtitle = "Stats, agents and team history",
       onBackPress = onBack,
     )
 

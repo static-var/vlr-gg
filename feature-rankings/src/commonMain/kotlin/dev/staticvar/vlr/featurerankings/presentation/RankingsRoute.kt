@@ -58,7 +58,7 @@ internal fun RankingsScreen(
   ) {
     PrismScreenTitleBar(
       title = "Ranking",
-      subtitle = "Regional team standings",
+      subtitle = "The top teams in every region",
     )
 
     if (uiState.regions.isNotEmpty()) {

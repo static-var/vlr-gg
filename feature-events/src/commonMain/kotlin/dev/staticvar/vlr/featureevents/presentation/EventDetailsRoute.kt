@@ -95,11 +95,7 @@ internal fun EventDetailsScreen(
   ) {
     PrismScreenTitleBar(
       title = if (uiState.isLoading) "Tournament details" else event?.title ?: "Tournament details",
-      subtitle = if (uiState.isLoading) {
-        "Loading event breakdown."
-      } else {
-        event?.subtitle?.ifBlank { event.dates } ?: "Event breakdown"
-      },
+      subtitle = "Teams, matches and standings",
       onBackPress = onBack,
     )
 
