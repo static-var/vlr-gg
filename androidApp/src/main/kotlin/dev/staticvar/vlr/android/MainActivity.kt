@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.staticvar.vlr.shared.App
 import dev.staticvar.vlr.shared.di.initializeAppKoin
 import org.koin.android.ext.koin.androidContext
@@ -19,6 +20,7 @@ import org.koin.android.ext.koin.androidContext
 class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    installSplashScreen()
     super.onCreate(savedInstanceState)
     val authToken =
       BuildConfig.TOKEN

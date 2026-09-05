@@ -99,6 +99,7 @@ dependencies {
 
   // Activity Compose
   implementation(libs.activity.compose)
+  implementation(libs.splashscreen)
   implementation(libs.koin.android)
 
   // Project modules
