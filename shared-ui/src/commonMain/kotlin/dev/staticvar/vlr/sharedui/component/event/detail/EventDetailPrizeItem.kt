@@ -62,7 +62,7 @@ public fun EventDetailPrizeItem(prize: EventPrize, modifier: Modifier = Modifier
           contentDescription = team.name,
           size = PrismIconSize.Medium,
           style = PrismIconStyle.Bordered,
-          tint = PrismIconTint.Primary,
+          tint = PrismIconTint.None,
         )
       }
       Text(

@@ -41,7 +41,7 @@ public fun EventDetailStandingItem(standing: EventStanding, modifier: Modifier =
         contentDescription = standing.teamName,
         size = PrismIconSize.Medium,
         style = PrismIconStyle.Bordered,
-        tint = PrismIconTint.Primary,
+        tint = PrismIconTint.None,
       )
       Column(modifier = Modifier.weight(1f)) {
         Text(

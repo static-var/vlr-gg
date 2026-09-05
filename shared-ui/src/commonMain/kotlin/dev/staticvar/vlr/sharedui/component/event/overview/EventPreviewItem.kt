@@ -59,7 +59,7 @@ public fun EventPreviewItem(
           contentDescription = eventPreview.title,
           size = PrismIconSize.Large,
           style = PrismIconStyle.Bordered,
-          tint = PrismIconTint.Primary,
+          tint = PrismIconTint.None,
         )
         Column(modifier = Modifier.padding(start = Prism.dimens.spacingS)) {
           Text(

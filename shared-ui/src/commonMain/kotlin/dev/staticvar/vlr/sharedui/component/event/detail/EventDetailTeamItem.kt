@@ -41,7 +41,7 @@ public fun EventDetailTeamItem(team: EventTeam, modifier: Modifier = Modifier, o
         contentDescription = team.name,
         size = PrismIconSize.Large,
         style = PrismIconStyle.Borderless,
-        tint = PrismIconTint.Alt,
+        tint = PrismIconTint.None,
       )
       Text(
         text = team.name,

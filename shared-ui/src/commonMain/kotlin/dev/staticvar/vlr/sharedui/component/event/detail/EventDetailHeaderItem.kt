@@ -82,7 +82,7 @@ public fun EventDetailHeaderItem(
           contentDescription = event.title,
           size = PrismIconSize.Hero,
           style = PrismIconStyle.Bordered,
-          tint = if (event.isFavorite) PrismIconTint.Alt else PrismIconTint.Primary,
+          tint = PrismIconTint.None,
         )
       }
 
