@@ -20,9 +20,6 @@ import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
 import dev.staticvar.designsystem.component.divider.PrismDividerStyle
 import dev.staticvar.designsystem.component.header.PrismHeader
-import dev.staticvar.designsystem.component.icon.PrismIconSize
-import dev.staticvar.designsystem.component.icon.PrismIconStyle
-import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
@@ -30,7 +27,6 @@ import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
-import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 
 @Composable
@@ -123,22 +119,13 @@ private fun TeamScoreRow(team: TeamPreview, useAltColor: Boolean, modifier: Modi
     modifier = modifier.fillMaxWidth().padding(vertical = Prism.dimens.spacingXs),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    SharedNetworkIcon(
-      imageUrl = team.img,
-      contentDescription = team.name,
-      size = PrismIconSize.Large,
-      style = PrismIconStyle.Borderless,
-      tint = if (useAltColor) PrismIconTint.Alt else PrismIconTint.Primary,
-    )
     Text(
       text = team.name,
       style = Prism.typography.headline,
       color = if (useAltColor) Prism.color.accent else Prism.color.labelColor,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
-      modifier = Modifier
-        .padding(start = Prism.dimens.spacingXs)
-        .weight(1f),
+      modifier = Modifier.weight(1f),
     )
     Text(
       text = team.score?.toString() ?: "-",
