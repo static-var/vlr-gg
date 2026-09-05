@@ -35,12 +35,14 @@ kotlin {
         implementation(libs.kotlin.stdlib)
         implementation(libs.coroutines.core)
         implementation(libs.koin.core)
+        implementation(libs.multiplatform.settings)
       }
     }
 
     val commonTest by getting {
       dependencies {
         implementation(libs.kotlin.test)
+        implementation(libs.multiplatform.settings.test)
       }
     }
 
