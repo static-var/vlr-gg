@@ -23,14 +23,15 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
 import vlr.designsystem.generated.resources.Res
-import vlr.designsystem.generated.resources.allFontResources
+import vlr.designsystem.generated.resources.chakra_petch_regular
+import vlr.designsystem.generated.resources.space_grotesk_regular
 import org.jetbrains.compose.resources.Font as ResourceFont
 
 @PrismPreview
 @Composable
 internal fun PrismFontDiagnosticPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
-  val body = FontFamily(ResourceFont(requireNotNull(Res.allFontResources["prism_body"])))
-  val display = FontFamily(ResourceFont(requireNotNull(Res.allFontResources["prism_display"])))
+  val body = FontFamily(ResourceFont(Res.font.space_grotesk_regular))
+  val display = FontFamily(ResourceFont(Res.font.chakra_petch_regular))
 
   PrismTheme(variant = variant) {
     Column(
@@ -41,7 +42,7 @@ internal fun PrismFontDiagnosticPreview(@PreviewParameter(PrismPreviewProvider::
       verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
       Text(
-        text = "prism_body.otf",
+        text = "Space Grotesk Regular",
         color = Prism.color.bodyColor,
         style = Prism.typography.caption,
       )
@@ -55,7 +56,7 @@ internal fun PrismFontDiagnosticPreview(@PreviewParameter(PrismPreviewProvider::
         ),
       )
       Text(
-        text = "prism_display.otf",
+        text = "Chakra Petch Regular",
         color = Prism.color.bodyColor,
         style = Prism.typography.caption,
       )

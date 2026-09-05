@@ -238,3 +238,6 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/android,androidstudio
 .zed/
+
+# Archived local fonts, excluded from app resources.
+designsystem/local-fonts/

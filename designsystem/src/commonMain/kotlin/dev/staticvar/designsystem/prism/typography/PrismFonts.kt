@@ -10,9 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.font.FontFamily
-import org.jetbrains.compose.resources.FontResource
 import vlr.designsystem.generated.resources.Res
-import vlr.designsystem.generated.resources.allFontResources
+import vlr.designsystem.generated.resources.chakra_petch_regular
+import vlr.designsystem.generated.resources.space_grotesk_regular
 import org.jetbrains.compose.resources.Font as ResourceFont
 
 @Immutable
@@ -29,8 +29,8 @@ internal data class PrismFontFamilies(
 
 @Composable
 internal fun rememberPrismFontFamilies(): PrismFontFamilies {
-  val displayFont = fontFamilyResource("prism_display") ?: FontFamily.Default
-  val bodyFont = fontFamilyResource("prism_body") ?: FontFamily.Default
+  val displayFont = FontFamily(ResourceFont(Res.font.chakra_petch_regular))
+  val bodyFont = FontFamily(ResourceFont(Res.font.space_grotesk_regular))
 
   return remember(displayFont, bodyFont) {
     PrismFontFamilies(
@@ -45,9 +45,3 @@ internal fun rememberPrismFontFamilies(): PrismFontFamilies {
     )
   }
 }
-
-@Composable
-private fun fontFamilyResource(resourceName: String): FontFamily? =
-  fontResource(resourceName)?.let { fontResource -> FontFamily(ResourceFont(fontResource)) }
-
-private fun fontResource(resourceName: String): FontResource? = Res.allFontResources[resourceName]
