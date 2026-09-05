@@ -23,13 +23,14 @@ internal fun <ColorTokens : Any> ProvidePrismTheme(
   definition: PrismThemeDefinition<ColorTokens>,
   content: @Composable () -> Unit,
 ) {
-  val tokens = remember { definition.createColorTokens() }
-  val palette = remember(tokens) { definition.createPalette(tokens) }
-  val colorScheme = remember(palette) { definition.createColorScheme(palette) }
+  val tokens = remember(definition) { definition.createColorTokens() }
+  val palette = remember(definition, tokens) { definition.createPalette(tokens) }
+  val colorScheme = remember(definition, palette) { definition.createColorScheme(palette) }
 
   val fonts = rememberPrismFontFamilies()
-  val typographyTokens = remember(palette, fonts) { definition.createTypographyTokens(palette, fonts) }
-  val materialTypography = remember(typographyTokens) { definition.createMaterialTypography(typographyTokens) }
+  val typographyTokens = remember(definition, palette, fonts) { definition.createTypographyTokens(palette, fonts) }
+  val materialTypography =
+    remember(definition, typographyTokens) { definition.createMaterialTypography(typographyTokens) }
 
   val dimens = remember { PrismDimens() }
 

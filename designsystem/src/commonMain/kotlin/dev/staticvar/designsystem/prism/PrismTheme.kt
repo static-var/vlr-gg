@@ -5,28 +5,23 @@
 package dev.staticvar.designsystem.prism
 
 import androidx.compose.runtime.Composable
+import dev.staticvar.designsystem.theme.catppuccin.CatppuccinTheme
 import dev.staticvar.designsystem.theme.dark.DarkTheme
 import dev.staticvar.designsystem.theme.light.LightTheme
 
-/**
- * Main Prism theme router.
- *
- * Routes to the appropriate theme implementation based on the variant.
- *
- * Example usage:
- * ```
- * PrismTheme(variant = PrismVariant.Light) {
- *   Text("Hello", color = MaterialTheme.prismColors.titleColor)
- * }
- * ```
- *
- * @param variant The theme variant to use. Defaults to [PrismVariant.Light].
- * @param content The composable content to theme.
- */
+/** Applies a color [family] in the requested light or dark [variant]. */
 @Composable
-public fun PrismTheme(variant: PrismVariant = PrismVariant.Light, content: @Composable () -> Unit) {
-  when (variant) {
-    PrismVariant.Light -> LightTheme(content)
-    PrismVariant.Dark -> DarkTheme(content)
+public fun PrismTheme(
+  variant: PrismVariant = PrismVariant.Light,
+  family: PrismThemeFamily = PrismThemeFamily.Brutalist,
+  content: @Composable () -> Unit,
+) {
+  when (family) {
+    PrismThemeFamily.Brutalist -> when (variant) {
+      PrismVariant.Light -> LightTheme(content)
+      PrismVariant.Dark -> DarkTheme(content)
+    }
+
+    PrismThemeFamily.Catppuccin -> CatppuccinTheme(variant, content)
   }
 }

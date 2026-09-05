@@ -42,7 +42,7 @@ public fun PrismModalSheet(
   shape: Shape = Prism.shapes.large,
   color: Color = Prism.color.backgroundElevated,
   contentColor: Color = contentColorFor(color),
-  scrimColor: Color = Prism.color.titleColor.copy(alpha = PrismModalSheetConstants.ScrimAlpha),
+  scrimColor: Color = Prism.color.scrim.copy(alpha = PrismModalSheetConstants.ScrimAlpha),
   content: @Composable ColumnScope.() -> Unit,
 ) {
   if (!visible) {

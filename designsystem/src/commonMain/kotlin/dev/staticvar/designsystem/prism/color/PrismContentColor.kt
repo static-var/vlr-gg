@@ -30,37 +30,18 @@ import dev.staticvar.designsystem.prism.Prism
  */
 @Composable
 @ReadOnlyComposable
-public fun contentColorFor(backgroundColor: Color): Color {
-  val colors = Prism.color
-  return when (backgroundColor) {
-    // Accent containers
-    colors.accent -> colors.surface
+public fun contentColorFor(backgroundColor: Color): Color = Prism.color.contentColorFor(backgroundColor)
 
-    colors.accentVariant -> colors.surface
-
-    colors.accentSubtle -> colors.accent
-
-    // Semantic containers
-    colors.successContainer -> colors.success
-
-    colors.warningContainer -> colors.warning
-
-    colors.dangerContainer -> colors.danger
-
-    colors.infoContainer -> colors.info
-
-    // Surface variants
-    colors.surface -> colors.contentPrimary
-
-    colors.surfaceVariant -> colors.contentPrimary
-
-    colors.surfaceDim -> colors.contentSecondary
-
-    colors.backgroundElevated -> colors.contentPrimary
-
-    colors.background -> colors.contentPrimary
-
-    // Default fallback
-    else -> colors.contentPrimary
-  }
+/** Resolves semantic container/content pairs without requiring a composition. */
+public fun PrismColorPalette.contentColorFor(backgroundColor: Color): Color = when (backgroundColor) {
+  accent -> onAccent
+  accentVariant -> onAccentVariant
+  accentSubtle -> accent
+  danger -> onDanger
+  successContainer -> success
+  warningContainer -> warning
+  dangerContainer -> danger
+  infoContainer -> info
+  surfaceDim -> contentSecondary
+  else -> contentPrimary
 }

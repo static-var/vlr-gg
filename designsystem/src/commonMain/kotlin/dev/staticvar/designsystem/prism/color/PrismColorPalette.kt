@@ -29,6 +29,8 @@ public data class PrismColorPalette(
   val surface: Color,
   val surfaceVariant: Color,
   val surfaceDim: Color,
+  val inverseSurface: Color,
+  val onInverseSurface: Color,
 
   // Borders & Dividers
   val stroke: Color,
@@ -39,6 +41,9 @@ public data class PrismColorPalette(
   val accent: Color,
   val accentVariant: Color,
   val accentSubtle: Color,
+  val onAccent: Color,
+  val onAccentVariant: Color,
+  val inverseAccent: Color,
 
   // Content/Text Colors
   val titleColor: Color,
@@ -55,7 +60,11 @@ public data class PrismColorPalette(
   val warning: Color,
   val warningContainer: Color,
   val danger: Color,
+  val onDanger: Color,
   val dangerContainer: Color,
   val info: Color,
   val infoContainer: Color,
+
+  // Overlay color stays dark in both appearances.
+  val scrim: Color,
 )

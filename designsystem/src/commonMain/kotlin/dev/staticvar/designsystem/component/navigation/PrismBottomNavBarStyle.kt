@@ -102,8 +102,7 @@ public sealed interface PrismBottomNavBarStyle {
 
     @Composable
     @ReadOnlyComposable
-    override fun contentColor(selected: Boolean): Color =
-      if (selected) Prism.color.background else Prism.color.labelColor
+    override fun contentColor(selected: Boolean): Color = if (selected) Prism.color.onAccent else Prism.color.labelColor
 
     @Composable
     @ReadOnlyComposable
