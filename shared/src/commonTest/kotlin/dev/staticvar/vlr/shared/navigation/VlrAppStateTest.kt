@@ -11,6 +11,23 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class VlrAppStateTest {
+  @Test
+  fun settingsOpensOnceUnderAboutAndBackRestoresRoot() {
+    val appState = VlrAppState(
+      backStack = mutableListOf<NavKey>(AppRoute.About),
+      navigationItems = emptyList(),
+    )
+    appState.showSettings()
+    appState.showSettings()
+    assertEquals(listOf<NavKey>(AppRoute.About, AppRoute.Settings), appState.backStack)
+    assertEquals(AppRoute.About, AppRoute.Settings.rootDestination)
+    assertEquals("about", appState.selectedNavigationItemId)
+    assertFalse(appState.shouldShowBottomNavigation)
+    appState.navigateUp()
+    assertEquals(listOf<NavKey>(AppRoute.About), appState.backStack)
+    assertTrue(appState.shouldShowBottomNavigation)
+  }
+
 
   @Test
   fun selectRootClearsSecondaryRoutes() {

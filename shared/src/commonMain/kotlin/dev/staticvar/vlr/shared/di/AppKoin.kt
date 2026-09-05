@@ -4,7 +4,9 @@
  */
 package dev.staticvar.vlr.shared.di
 
+import dev.staticvar.vlr.core.di.appearanceModule
 import dev.staticvar.vlr.core.di.dispatcherModule
+import dev.staticvar.vlr.core.di.platformAppearanceModule
 import dev.staticvar.vlr.data.di.dataModule
 import dev.staticvar.vlr.featureevents.di.eventsFeatureModule
 import dev.staticvar.vlr.featurematches.di.matchesFeatureModule
@@ -15,8 +17,8 @@ import dev.staticvar.vlr.featureteam.di.teamFeatureModule
 import dev.staticvar.vlr.localsource.di.localSourceModule
 import dev.staticvar.vlr.localsource.di.platformLocalSourceModule
 import dev.staticvar.vlr.remotesource.di.remoteSourceModule
-import dev.staticvar.vlr.shared.navigation.appNavigationModule
 import dev.staticvar.vlr.remotesource.network.NetworkConfiguration
+import dev.staticvar.vlr.shared.navigation.appNavigationModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.mp.KoinPlatform
@@ -57,6 +59,8 @@ public fun initializeAppKoin(
     appDeclaration()
     modules(
       dispatcherModule(),
+      platformAppearanceModule,
+      appearanceModule(),
       remoteSourceModule(configuration = networkConfiguration),
       platformLocalSourceModule,
       localSourceModule,

@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.shared.navigation
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -16,11 +17,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import dev.staticvar.vlr.core.settings.AppearanceRepository
 import dev.staticvar.vlr.featureabout.presentation.AboutRoute
+import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailSection
 import dev.staticvar.vlr.featureevents.presentation.EventDetailsRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailsViewModel
-import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.featureevents.presentation.EventsOverviewRoute
 import dev.staticvar.vlr.featureevents.presentation.EventsViewModel
 import dev.staticvar.vlr.featurematches.presentation.MatchDetailsRoute
@@ -38,6 +40,7 @@ import dev.staticvar.vlr.featurerankings.presentation.RankingsViewModel
 import dev.staticvar.vlr.featureteam.presentation.TeamDetailsRoute
 import dev.staticvar.vlr.featureteam.presentation.TeamDetailsViewModel
 import dev.staticvar.vlr.featureteam.presentation.TeamMatchesSection
+import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import org.koin.compose.ComposeContextWrapper
 import org.koin.compose.LocalKoinScopeContext
 import org.koin.compose.currentKoinScope
@@ -219,7 +222,24 @@ internal fun appNavigationModule(): Module = module {
   }
   navigation<AppRoute.About> { route ->
     NavigationEntryScope(route = route) {
-      AboutRoute(modifier = Modifier.fillMaxSize())
+      AboutRoute(
+        onSettings = LocalVlrAppState.current::showSettings,
+        modifier = Modifier.fillMaxSize(),
+      )
+    }
+  }
+  navigation<AppRoute.Settings> { route ->
+    NavigationEntryScope(route = route) {
+      val repository = rememberScoped<AppearanceRepository>()
+      val appearance by repository.settings.collectAsState()
+      SettingsRoute(
+        isDark = appearance.isDark(isSystemInDarkTheme()),
+        family = appearance.family,
+        onModeSelected = repository::setMode,
+        onFamilySelected = repository::setFamily,
+        onBack = LocalVlrAppState.current::navigateUp,
+        modifier = Modifier.fillMaxSize(),
+      )
     }
   }
 }

@@ -46,6 +46,7 @@ private val appRouteSavedStateConfiguration: SavedStateConfiguration =
           subclass(AppRoute.Events::class, AppRoute.Events.serializer())
           subclass(AppRoute.Rankings::class, AppRoute.Rankings.serializer())
           subclass(AppRoute.About::class, AppRoute.About.serializer())
+          subclass(AppRoute.Settings::class, AppRoute.Settings.serializer())
           subclass(AppRoute.MatchDetails::class, AppRoute.MatchDetails.serializer())
           subclass(AppRoute.EventDetails::class, AppRoute.EventDetails.serializer())
           subclass(AppRoute.NewsArticle::class, AppRoute.NewsArticle.serializer())
@@ -113,6 +114,10 @@ public class VlrAppState internal constructor(
 
   public fun showRootTeamDetails(teamId: String) {
     replaceWithDetail(route = AppRoute.TeamDetails(teamId = teamId))
+  }
+
+  public fun showSettings() {
+    pushRoute(route = AppRoute.Settings)
   }
 
   public fun showMatchDetails(matchId: String) {

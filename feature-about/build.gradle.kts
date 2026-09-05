@@ -46,6 +46,7 @@ kotlin {
         implementation(compose.components.resources)
         implementation(libs.compose.ui.tooling.preview)
         implementation(projects.designsystem)
+        implementation(projects.core)
       }
     }
 

@@ -5,12 +5,23 @@
 package dev.staticvar.vlr.shared
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
+import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
+import dev.staticvar.vlr.core.settings.AppearanceRepository
+import dev.staticvar.vlr.core.settings.ThemeFamily
+import dev.staticvar.vlr.shared.appearance.ApplyPlatformAppearance
 import dev.staticvar.vlr.shared.navigation.AppNavHost
 import dev.staticvar.vlr.shared.navigation.rememberVlrAppState
 import dev.staticvar.vlr.sharedui.image.ProvideSharedImageLoader
+import org.koin.compose.koinInject
 
 /**
  * Main entry point for the shared Compose UI.
@@ -21,8 +32,22 @@ public fun App() {
   ProvideSharedImageLoader()
 
   val appState = rememberVlrAppState()
-  val variant = if (isSystemInDarkTheme()) PrismVariant.Dark else PrismVariant.Light
-  PrismTheme(variant = variant) {
-    AppNavHost(appState = appState)
+  val appearanceRepository = koinInject<AppearanceRepository>()
+  val appearance by appearanceRepository.settings.collectAsState()
+  val isDark = appearance.isDark(isSystemInDarkTheme())
+  val variant = if (isDark) PrismVariant.Dark else PrismVariant.Light
+  val family = when (appearance.family) {
+    ThemeFamily.Brutalist -> PrismThemeFamily.Brutalist
+    ThemeFamily.Catppuccin -> PrismThemeFamily.Catppuccin
+  }
+  PrismTheme(variant = variant, family = family) {
+    ApplyPlatformAppearance(isDark = isDark, followSystem = appearance.mode == null)
+    Surface(
+      modifier = Modifier.fillMaxSize(),
+      color = Prism.color.background,
+      contentColor = Prism.color.contentPrimary,
+    ) {
+      AppNavHost(appState = appState)
+    }
   }
 }

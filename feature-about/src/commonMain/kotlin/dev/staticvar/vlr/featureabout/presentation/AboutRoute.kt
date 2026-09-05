@@ -15,25 +15,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.prism.Prism
 
 @Composable
-public fun AboutRoute(modifier: Modifier = Modifier) {
-  AboutScreen(modifier = modifier)
+public fun AboutRoute(onSettings: () -> Unit, modifier: Modifier = Modifier) {
+  AboutScreen(onSettings = onSettings, modifier = modifier)
 }
 
 @Composable
-internal fun AboutScreen(modifier: Modifier = Modifier) {
+internal fun AboutScreen(modifier: Modifier = Modifier, onSettings: () -> Unit = {}) {
   Column(
     modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(
       title = "About VLR",
-      subtitle = "What this app is, where the data comes from, and why the UI looks like it means business.",
+      subtitle = "The app and the people behind it",
+      actions = {
+        PrismButton(onClick = onSettings, style = PrismButtonStyle.Secondary) {
+          Text("Settings")
+        }
+      },
     )
 
     AboutSection(
@@ -41,14 +48,14 @@ internal fun AboutScreen(modifier: Modifier = Modifier) {
       preLabel = "app",
       lines =
       listOf(
-        "Cross-platform VLR companion built with Kotlin Multiplatform and Compose.",
-        "Shared domain/data layers feed match, event, ranking, team, player, and news experiences.",
-        "Large-screen navigation is designed to scale beyond phone-sized assumptions.",
+        "Follow VALORANT matches, tournaments, teams, players, and news.",
+        "Match schedules, results, and rankings from VLR.gg.",
+        "Available on Android, iOS, and desktop.",
       ),
     )
 
     AboutSection(
-      title = "Android",
+      title = "App",
       preLabel = "credits",
       lines =
       listOf(
@@ -72,9 +79,9 @@ internal fun AboutScreen(modifier: Modifier = Modifier) {
     )
 
     PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
-      PrismSectionTitle(title = "Design principles", preLabel = "ui")
+      PrismSectionTitle(title = "Appearance", preLabel = "ui")
       Text(
-        text = "Flat surfaces. Sharp borders. High contrast. Minimal ceremony. If a component needs a motivational speech before it makes sense, it probably shouldn’t exist.",
+        text = "Choose Brutalist or Catppuccin in Settings. Both themes include light and dark modes.",
         modifier = Modifier.padding(top = Prism.dimens.spacingS),
         style = Prism.typography.bodyLarge,
         color = Prism.color.bodyColor,
