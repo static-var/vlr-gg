@@ -183,16 +183,16 @@ private fun playerStatsColumns(includeMapName: Boolean): List<PrismTableColumn> 
   val baseColumns = listOf(
     PrismTableColumn(key = MatchDetailStatsTableColumns.Player, title = "Player", width = 144.dp),
     PrismTableColumn(key = MatchDetailStatsTableColumns.Agent, title = "Agent", width = 116.dp),
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Acs, title = "ACS", width = 64.dp, textAlign = TextAlign.End),
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Kills, title = "K", width = 56.dp, textAlign = TextAlign.End),
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Deaths, title = "D", width = 56.dp, textAlign = TextAlign.End),
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Assists, title = "A", width = 56.dp, textAlign = TextAlign.End),
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Kast, title = "KAST", width = 72.dp, textAlign = TextAlign.End),
+    PrismTableColumn(key = MatchDetailStatsTableColumns.Acs, title = "ACS", width = 64.dp, textAlign = TextAlign.Center),
+    PrismTableColumn(key = MatchDetailStatsTableColumns.Kills, title = "K", width = 56.dp, textAlign = TextAlign.Center),
+    PrismTableColumn(key = MatchDetailStatsTableColumns.Deaths, title = "D", width = 56.dp, textAlign = TextAlign.Center),
+    PrismTableColumn(key = MatchDetailStatsTableColumns.Assists, title = "A", width = 56.dp, textAlign = TextAlign.Center),
+    PrismTableColumn(key = MatchDetailStatsTableColumns.Kast, title = "KAST", width = 72.dp, textAlign = TextAlign.Center),
     PrismTableColumn(
       key = MatchDetailStatsTableColumns.Rating,
       title = "Rating",
       width = 76.dp,
-      textAlign = TextAlign.End,
+      textAlign = TextAlign.Center,
     ),
   )
 
@@ -226,12 +226,12 @@ private fun MatchDetailPlayerStatsRow.toPrismTableRow(
     cells = cells,
     onClick = playerId?.let { id -> onPlayerSelected?.let { onClick -> { onClick(id) } } },
     cellTextAlignments = mapOf(
-      MatchDetailStatsTableColumns.Acs to TextAlign.End,
-      MatchDetailStatsTableColumns.Kills to TextAlign.End,
-      MatchDetailStatsTableColumns.Deaths to TextAlign.End,
-      MatchDetailStatsTableColumns.Assists to TextAlign.End,
-      MatchDetailStatsTableColumns.Kast to TextAlign.End,
-      MatchDetailStatsTableColumns.Rating to TextAlign.End,
+      MatchDetailStatsTableColumns.Acs to TextAlign.Center,
+      MatchDetailStatsTableColumns.Kills to TextAlign.Center,
+      MatchDetailStatsTableColumns.Deaths to TextAlign.Center,
+      MatchDetailStatsTableColumns.Assists to TextAlign.Center,
+      MatchDetailStatsTableColumns.Kast to TextAlign.Center,
+      MatchDetailStatsTableColumns.Rating to TextAlign.Center,
     ),
   )
 }

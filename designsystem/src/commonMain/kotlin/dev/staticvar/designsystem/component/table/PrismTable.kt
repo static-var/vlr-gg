@@ -5,6 +5,7 @@
 package dev.staticvar.designsystem.component.table
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -27,7 +29,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -174,12 +179,21 @@ public fun PrismTable(
   val verticalScroll = rememberScrollState()
   val firstColumn = columns.first()
   val border = BorderStroke(width = viewState.borderThickness, color = viewState.borderColor)
+  val indicatorColor = Prism.color.accent
+  val indicatorTrackColor = Prism.color.stroke
 
   Box(
     modifier =
     modifier
-      .border(border)
-      .clipToBounds(),
+      .border(border, Prism.shapes.medium)
+      .clip(Prism.shapes.medium)
+      .tableScrollIndicator(
+        state = horizontalScroll,
+        pinnedWidth = if (options.stickyFirstColumn) firstColumn.width else 0.dp,
+        color = indicatorColor,
+        trackColor = indicatorTrackColor,
+        thickness = viewState.borderThickness,
+      ),
   ) {
     Column(
       modifier =
@@ -210,7 +224,7 @@ public fun PrismTable(
       StickyFirstColumn(
         column = firstColumn,
         rows = rows,
-        verticalScrollOffset = verticalScroll.value,
+        verticalScroll = verticalScroll,
         options = options,
         viewState = viewState,
         cellContentResolver = cellContentResolver,
@@ -219,11 +233,32 @@ public fun PrismTable(
   }
 }
 
+private fun Modifier.tableScrollIndicator(
+  state: ScrollState,
+  pinnedWidth: Dp,
+  color: Color,
+  trackColor: Color,
+  thickness: Dp,
+): Modifier = drawWithContent {
+  drawContent()
+  if (state.maxValue > 0 && state.maxValue != Int.MAX_VALUE) {
+    val inset = thickness.toPx() * 2
+    val start = pinnedWidth.toPx() + inset
+    val trackWidth = (size.width - start - inset).coerceAtLeast(0f)
+    val viewport = (size.width - pinnedWidth.toPx()).coerceAtLeast(0f)
+    val thumbWidth = trackWidth * viewport / (viewport + state.maxValue)
+    val thumbOffset = (trackWidth - thumbWidth) * state.value / state.maxValue
+    val y = size.height - inset - thickness.toPx()
+    drawRect(trackColor, Offset(start, y), Size(trackWidth, thickness.toPx()))
+    drawRect(color, Offset(start + thumbOffset, y), Size(thumbWidth, thickness.toPx()))
+  }
+}
+
 @Composable
 private fun StickyFirstColumn(
   column: PrismTableColumn,
   rows: List<PrismTableRow>,
-  verticalScrollOffset: Int,
+  verticalScroll: ScrollState,
   options: PrismTableOptions,
   viewState: PrismTableViewState,
   cellContentResolver: PrismTableCellContentResolver?,
@@ -232,7 +267,8 @@ private fun StickyFirstColumn(
     modifier =
     Modifier
       .width(column.width)
-      .offset { IntOffset(x = 0, y = -verticalScrollOffset) }
+      .wrapContentHeight(align = Alignment.Top, unbounded = true)
+      .offset { IntOffset(x = 0, y = -verticalScroll.value) }
       .zIndex(PrismTableLayoutConstants.StickyColumnZIndex),
   ) {
     StickyHeaderCell(
