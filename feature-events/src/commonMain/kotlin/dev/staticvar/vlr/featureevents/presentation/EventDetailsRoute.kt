@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -190,7 +191,10 @@ internal fun EventDetailsScreen(
                 }
               } else {
                 item { PrismSectionTitle(title = "Prizes", preLabel = "placements") }
-                items(event.prizes, key = { it.position + it.prize }) { prize ->
+                itemsIndexed(
+                  items = event.prizes,
+                  key = { index, prize -> "${prize.position}-${prize.prize}-${prize.team?.id}-$index" },
+                ) { _, prize ->
                   val prizeTeam = prize.team
                   val prizeTeamId = prizeTeam?.id
                   EventDetailPrizeItem(
