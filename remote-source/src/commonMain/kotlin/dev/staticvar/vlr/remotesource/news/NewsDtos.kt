@@ -39,6 +39,7 @@ data class ArticleBlockDto(
   val start: Int = 1,
   val url: String? = null,
   val alt: String? = null,
+  val player: ArticleVideoPlayerDto? = null,
 )
 
 @Serializable
@@ -47,4 +48,12 @@ data class ArticleTextRunDto(
   val url: String? = null,
   val bold: Boolean = false,
   val italic: Boolean = false,
+)
+
+@Serializable
+data class ArticleVideoPlayerDto(
+  val provider: String,
+  @SerialName("media_id") val mediaId: String,
+  @SerialName("player_url") val playerUrl: String,
+  @SerialName("external_url") val externalUrl: String,
 )

@@ -32,6 +32,7 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsArticle
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.news.detail.newsDetailStoryItems
+import dev.staticvar.vlr.sharedui.component.news.detail.rememberArticleVideoPlaybackState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -59,6 +60,7 @@ internal fun NewsArticleScreen(
   modifier: Modifier = Modifier,
 ) {
   val article: NewsArticle? = uiState.article
+  val videoPlayback = rememberArticleVideoPlaybackState(article?.id.orEmpty())
   val uriHandler = LocalUriHandler.current
   val scrollState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
@@ -140,7 +142,7 @@ internal fun NewsArticleScreen(
           item(key = "header") {
             NewsDetailHeaderItem(article = article)
           }
-          newsDetailStoryItems(article = article)
+          newsDetailStoryItems(article = article, playback = videoPlayback)
           item(key = "source") {
             PrismButton(
               onClick = { uriHandler.openUri(article.url) },

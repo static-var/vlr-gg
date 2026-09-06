@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.sharedui.component.news.detail
 
 import dev.staticvar.vlr.domain.model.ArticleBlock
+import dev.staticvar.vlr.domain.model.ArticleVideoPlayer
 import dev.staticvar.vlr.domain.model.NewsArticle
 
 internal data class NewsDetailTextRun(
@@ -26,7 +27,7 @@ internal sealed interface NewsDetailContentBlock {
 
   data class Image(val url: String, val alt: String? = null) : NewsDetailContentBlock
 
-  data class Video(val url: String) : NewsDetailContentBlock
+  data class Video(val url: String, val player: ArticleVideoPlayer? = null) : NewsDetailContentBlock
 }
 
 // Article API content references the response arrays by index. Links use double braces;
@@ -61,7 +62,7 @@ private fun structuredContentBlocks(block: ArticleBlock): List<NewsDetailContent
     )
 
     "video" -> listOf(
-      block.url?.newsDetailWebUrl()?.let { NewsDetailContentBlock.Video(it) }
+      block.url?.newsDetailWebUrl()?.let { NewsDetailContentBlock.Video(it, block.player) }
         ?: NewsDetailContentBlock.Text(listOf(NewsDetailTextRun("Video unavailable"))),
     )
 

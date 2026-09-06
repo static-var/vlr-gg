@@ -48,30 +48,33 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsArticle
 
 /** Adds individually laid out article blocks in document order. */
-public fun LazyListScope.newsDetailStoryItems(article: NewsArticle) {
+public fun LazyListScope.newsDetailStoryItems(article: NewsArticle, playback: ArticleVideoPlaybackState) {
   itemsIndexed(
     items = newsDetailContentBlocks(article),
     key = { index, _ -> "article-${article.id}-$index" },
     contentType = { _, block -> block::class.simpleName },
-  ) { _, block ->
-    NewsDetailArticleContent(block)
+  ) { index, block ->
+    NewsDetailArticleContent(block, playback, "${article.id}-$index")
   }
 }
 
 @Composable
 public fun NewsDetailStoryItem(article: NewsArticle, modifier: Modifier = Modifier) {
   val blocks = remember(article) { newsDetailContentBlocks(article) }
+  val playback = rememberArticleVideoPlaybackState(article.id)
   Column(
     modifier = modifier.fillMaxWidth(),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
-    blocks.forEach { block -> NewsDetailArticleContent(block) }
+    blocks.forEachIndexed { index, block -> NewsDetailArticleContent(block, playback, "${article.id}-$index") }
   }
 }
 
 @Composable
 private fun NewsDetailArticleContent(
   block: NewsDetailContentBlock,
+  playback: ArticleVideoPlaybackState,
+  itemKey: String,
 ) {
   when (block) {
     is NewsDetailContentBlock.Text -> ArticleText(block.runs)
@@ -90,10 +93,12 @@ private fun NewsDetailArticleContent(
 
     is NewsDetailContentBlock.Quote -> ArticleChildren(
       block.children,
+      playback,
+      itemKey,
       Modifier.background(Prism.color.surfaceVariant).padding(Prism.dimens.spacingM),
     )
 
-    is NewsDetailContentBlock.ListItem -> ArticleChildren(block.children)
+    is NewsDetailContentBlock.ListItem -> ArticleChildren(block.children, playback, itemKey)
 
     is NewsDetailContentBlock.ListBlock -> Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
       block.children.forEachIndexed { index, child ->
@@ -103,24 +108,26 @@ private fun NewsDetailArticleContent(
             style = Prism.typography.bodyLarge,
             color = Prism.color.bodyColor,
           )
-          Box(Modifier.weight(1f)) { NewsDetailArticleContent(child) }
+          Box(Modifier.weight(1f)) { NewsDetailArticleContent(child, playback, "$itemKey-$index") }
         }
       }
     }
 
     is NewsDetailContentBlock.Image -> ArticleImage(block.url, block.alt)
 
-    is NewsDetailContentBlock.Video -> ArticleMediaLink(block.url, "Watch video")
+    is NewsDetailContentBlock.Video -> ArticleVideoPlayer(block, playback, itemKey)
   }
 }
 
 @Composable
 private fun ArticleChildren(
   children: List<NewsDetailContentBlock>,
+  playback: ArticleVideoPlaybackState,
+  itemKey: String,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-    children.forEach { child -> NewsDetailArticleContent(child) }
+    children.forEachIndexed { index, child -> NewsDetailArticleContent(child, playback, "$itemKey-$index") }
   }
 }
 

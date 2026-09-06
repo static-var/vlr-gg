@@ -1,5 +1,6 @@
 package dev.staticvar.vlr.data.mapper
 
+import dev.staticvar.vlr.domain.model.ArticleVideoPlayer
 import dev.staticvar.vlr.domain.model.ArticleBlock
 import dev.staticvar.vlr.domain.model.ArticleTextRun
 import dev.staticvar.vlr.remotesource.news.ArticleBlockDto
@@ -16,6 +17,7 @@ internal fun ArticleBlockDto.toDomain(): ArticleBlock = ArticleBlock(
   start = start,
   url = url,
   alt = alt,
+  player = player?.let { ArticleVideoPlayer(it.provider, it.mediaId, it.playerUrl, it.externalUrl) },
 )
 
 internal fun decodeArticleBlocks(rows: List<String>): List<ArticleBlock> = runCatching {

@@ -50,7 +50,7 @@ public class NewsArticleViewModel(
             )
           }
 
-          if (!initialRefreshRequested && (article == null || article.blocks.isEmpty())) {
+          if (!initialRefreshRequested && (article == null || article.blocks.isEmpty() || article.blocks.any { it.needsVideoPlayer() })) {
             initialRefreshRequested = true
             refreshInternal(articleId = articleId, showRefreshing = article != null)
           }
@@ -86,3 +86,6 @@ public class NewsArticleViewModel(
     }
   }
 }
+
+private fun dev.staticvar.vlr.domain.model.ArticleBlock.needsVideoPlayer(): Boolean =
+  (type == "video" && player == null) || children.any { it.needsVideoPlayer() }

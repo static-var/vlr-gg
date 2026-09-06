@@ -9,6 +9,7 @@ import dev.staticvar.vlr.remotesource.singleResponseClient
 import dev.staticvar.vlr.remotesource.jsonHeaders
 import dev.staticvar.vlr.remotesource.mockClient
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
@@ -18,6 +19,27 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class NewsDataSourceTest {
+  @Test
+  fun resolves_provider_players_only_against_api_origin_and_preserves_nested_metadata() = runTest {
+    val client = mockClient {
+      respond("""{"blocks":[
+        {"type":"video","player":{"provider":"youtube","media_id":"vbBd_Hu6o2M","player_url":"/media/youtube/vbBd_Hu6o2M","external_url":"https://wrong.example"}},
+        {"type":"blockquote","children":[{"type":"video","player":{"provider":"twitch","media_id":"Example-Clip_12","player_url":"/media/twitch/Example-Clip_12","external_url":"https://wrong.example"}}]},
+        {"type":"video","player":{"provider":"youtube","media_id":"vbBd_Hu6o2M","player_url":"https://wrong.example/player","external_url":"https://wrong.example"}}
+      ]}""", headers = jsonHeaders())
+    }.config { defaultRequest { url("https://api.example:8443") } }
+    try {
+      val blocks = NewsDataSourceImpl(client).article("1").getOrThrow().blocks
+      assertEquals("https://api.example:8443/media/youtube/vbBd_Hu6o2M", blocks[0].player?.playerUrl)
+      assertEquals("https://www.youtube.com/watch?v=vbBd_Hu6o2M", blocks[0].player?.externalUrl)
+      assertEquals("https://api.example:8443/media/twitch/Example-Clip_12", blocks[1].children[0].player?.playerUrl)
+      assertEquals("https://clips.twitch.tv/Example-Clip_12", blocks[1].children[0].player?.externalUrl)
+      assertEquals(null, blocks[2].player)
+    } finally {
+      client.close()
+    }
+  }
+
   @Test
   fun decodes_real_backend_interview_with_video_before_questions_and_quoted_answers() = runTest {
     val client = singleResponseClient(readFixture("news_structured_interview_748106.json"))

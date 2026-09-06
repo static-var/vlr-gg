@@ -39,6 +39,7 @@ data class ArticleBlock(
   val start: Int = 1,
   val url: String? = null,
   val alt: String? = null,
+  val player: ArticleVideoPlayer? = null,
 )
 
 data class ArticleTextRun(
@@ -46,4 +47,11 @@ data class ArticleTextRun(
   val url: String? = null,
   val bold: Boolean = false,
   val italic: Boolean = false,
+)
+
+data class ArticleVideoPlayer(
+  val provider: String,
+  val mediaId: String,
+  val playerUrl: String,
+  val externalUrl: String,
 )

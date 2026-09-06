@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.data.mapper
 
 import dev.staticvar.vlr.remotesource.news.NewsArticleDto
+import dev.staticvar.vlr.remotesource.news.ArticleVideoPlayerDto
 import dev.staticvar.vlr.remotesource.news.ArticleBlockDto
 import dev.staticvar.vlr.remotesource.news.ArticleTextRunDto
 import dev.staticvar.vlr.remotesource.player.PlayerAgentStatsDto
@@ -36,7 +37,9 @@ class NewsArticleAndPlayerChildMappersTest {
       ArticleBlockDto("list", ordered = true, start = 4, children = listOf(
         ArticleBlockDto("list_item", children = listOf(ArticleBlockDto("paragraph",
           runs = listOf(ArticleTextRunDto("Answer"))))))),
-      ArticleBlockDto("video", url = "https://example.com/video"),
+      ArticleBlockDto("video", url = "https://example.com/video", player = ArticleVideoPlayerDto(
+        "youtube", "vbBd_Hu6o2M", "https://api.example/media/youtube/vbBd_Hu6o2M", "https://www.youtube.com/watch?v=vbBd_Hu6o2M",
+      )),
     )
     val dto = NewsArticleDto(id = "structured", content = "Fallback", blocks = blocks)
     val rows = dto.toMediaEntities().mapIndexed { index, row -> row.copy(id = index.toLong()) }
