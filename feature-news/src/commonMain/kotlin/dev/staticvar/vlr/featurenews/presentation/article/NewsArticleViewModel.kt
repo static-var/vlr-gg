@@ -50,7 +50,7 @@ public class NewsArticleViewModel(
             )
           }
 
-          if (!initialRefreshRequested && (article == null || article.contentHtml.isBlank())) {
+          if (!initialRefreshRequested && (article == null || article.blocks.isEmpty())) {
             initialRefreshRequested = true
             refreshInternal(articleId = articleId, showRefreshing = article != null)
           }
@@ -73,6 +73,8 @@ public class NewsArticleViewModel(
   private suspend fun refreshInternal(articleId: String, showRefreshing: Boolean) {
     if (showRefreshing) {
       mutableUiState.update { it.copy(isRefreshing = true, errorMessage = null) }
+    } else {
+      mutableUiState.update { it.copy(isLoading = true, errorMessage = null) }
     }
     val refreshResult: Result<Unit> = refreshNewsArticleUseCase(articleId)
     mutableUiState.update { current ->

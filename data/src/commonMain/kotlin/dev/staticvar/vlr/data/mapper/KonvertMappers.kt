@@ -53,10 +53,14 @@ internal fun NewsArticleDto.toEntity(): News = News(
 )
 
 internal fun NewsArticleDto.toMediaEntities(articleId: String = id): List<NewsMedia> {
-  val linkMedia = links.mapNotNull { map ->
-    val text = map["text"] ?: return@mapNotNull null
-    val href = map["href"] ?: return@mapNotNull null
-    NewsMedia(id = 0, news_id = articleId, media_type = "link", media_value = href, media_text = text)
+  val linkMedia = links.map { map ->
+    NewsMedia(
+      id = 0,
+      news_id = articleId,
+      media_type = "link",
+      media_value = map["url"].orEmpty(),
+      media_text = map["text"].orEmpty(),
+    )
   }
   val imageMedia = images.map { url ->
     NewsMedia(id = 0, news_id = articleId, media_type = "image", media_value = url, media_text = null)
@@ -64,7 +68,11 @@ internal fun NewsArticleDto.toMediaEntities(articleId: String = id): List<NewsMe
   val videoMedia = videos.map { vid ->
     NewsMedia(id = 0, news_id = articleId, media_type = "video", media_value = vid, media_text = null)
   }
-  return linkMedia + imageMedia + videoMedia
+  val blockMedia = blocks.map { block ->
+    NewsMedia(id = 0, news_id = articleId, media_type = "block",
+      media_value = articleBlockJson.encodeToString(block), media_text = null)
+  }
+  return linkMedia + imageMedia + videoMedia + blockMedia
 }
 
 private fun String.toAbsoluteVlrUrl(): String {

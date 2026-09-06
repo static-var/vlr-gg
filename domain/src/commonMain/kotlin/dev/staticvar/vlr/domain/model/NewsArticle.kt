@@ -16,6 +16,7 @@ data class NewsArticle(
   val coverUrl: String,
   val contentHtml: String,
   val media: NewsArticleMedia,
+  val blocks: List<ArticleBlock> = emptyList(),
 )
 
 /**
@@ -27,3 +28,22 @@ data class NewsArticleMedia(val links: List<ArticleLink>, val images: List<Strin
  * A link within an article with display text and URL.
  */
 data class ArticleLink(val text: String, val url: String)
+
+/** Structured content in source document order, including nested lists and quotations. */
+data class ArticleBlock(
+  val type: String,
+  val runs: List<ArticleTextRun> = emptyList(),
+  val children: List<ArticleBlock> = emptyList(),
+  val level: Int = 2,
+  val ordered: Boolean = false,
+  val start: Int = 1,
+  val url: String? = null,
+  val alt: String? = null,
+)
+
+data class ArticleTextRun(
+  val text: String,
+  val url: String? = null,
+  val bold: Boolean = false,
+  val italic: Boolean = false,
+)

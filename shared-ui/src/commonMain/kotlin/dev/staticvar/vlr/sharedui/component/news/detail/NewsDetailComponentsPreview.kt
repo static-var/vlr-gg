@@ -37,8 +37,6 @@ internal fun NewsDetailComponentsPreview(@PreviewParameter(PrismPreviewProvider:
     ) {
       NewsDetailHeaderItem(article = article)
       NewsDetailStoryItem(article = article)
-      NewsDetailReferencesItem(links = article.media.links, onLinkSelected = {})
-      NewsDetailMediaSummaryItem(media = article.media)
     }
   }
 }
@@ -51,19 +49,25 @@ private fun sampleNewsArticle(): NewsArticle = NewsArticle(
   date = "2h ago",
   coverUrl = "",
   contentHtml = """
-    <p>The final Swiss round settled the playoff field after three close maps and a late defensive stand.</p>
-    <img src="https://vlr.gg/img/stage.jpg" alt="Toronto stage photo">
-    <p>Teams now enter a compact knockout schedule with little time to reset between opponents.</p>
-    <ul><li>FNATIC secured the top seed.</li><li>Sentinels stayed alive with a narrow decider.</li></ul>
-    <iframe src="https://youtube.com/embed/masters-recap"></iframe>
-    <p>The next round opens with rematches across both sides of the bracket.</p>
+    The final Swiss round settled the playoff field after three close maps and a late defensive stand.
+
+    Teams now enter a compact knockout schedule. See the {{link_0}} and {{link_1}}.
+
+    - FNATIC secured the top seed.
+    - Sentinels stayed alive with a narrow decider.
+
+    The next round opens with rematches across both sides of the bracket.
+
+    {image_0}
+
+    {video_0}
   """.trimIndent(),
   media = NewsArticleMedia(
     links = listOf(
       ArticleLink(text = "Full bracket", url = "https://vlr.gg/event/bracket"),
       ArticleLink(text = "Match archive", url = "https://vlr.gg/matches"),
     ),
-    images = listOf("bracket.png", "stage.png"),
-    videos = listOf("recap.mp4"),
+    images = listOf("https://owcdn.net/img/6a9b276b7e86b.jpg"),
+    videos = listOf("https://www.youtube.com/watch?v=vbBd_Hu6o2M"),
   ),
 )

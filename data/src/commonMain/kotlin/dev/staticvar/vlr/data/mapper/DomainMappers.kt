@@ -303,18 +303,19 @@ internal fun News.toNewsItem(): NewsItem = NewsItem(
  * Aggregates News entity with its media to create domain NewsArticle model.
  */
 internal fun aggregateNewsArticle(news: News, media: List<NewsMedia>): NewsArticle {
-  val links = media
+  // API placeholders address each media array by index, including empty entries.
+  val orderedMedia = media.sortedBy { it.id }
+  val links = orderedMedia
     .filter { it.media_type == "link" }
-    .mapNotNull { mediaItem ->
-      val text = mediaItem.media_text ?: return@mapNotNull null
-      ArticleLink(text = text, url = mediaItem.media_value)
+    .map { mediaItem ->
+      ArticleLink(text = mediaItem.media_text.orEmpty(), url = mediaItem.media_value)
     }
 
-  val images = media
+  val images = orderedMedia
     .filter { it.media_type == "image" }
     .map { it.media_value }
 
-  val videos = media
+  val videos = orderedMedia
     .filter { it.media_type == "video" }
     .map { it.media_value }
 
@@ -326,6 +327,7 @@ internal fun aggregateNewsArticle(news: News, media: List<NewsMedia>): NewsArtic
     date = news.date,
     coverUrl = news.cover_url,
     contentHtml = news.content_html ?: "",
+    blocks = decodeArticleBlocks(orderedMedia.filter { it.media_type == "block" }.map { it.media_value }),
     media = NewsArticleMedia(
       links = links,
       images = images,

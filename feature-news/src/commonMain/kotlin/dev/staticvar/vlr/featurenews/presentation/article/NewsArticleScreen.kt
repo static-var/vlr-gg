@@ -12,9 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
@@ -25,9 +31,9 @@ import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsArticle
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailHeaderItem
-import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailMediaSummaryItem
-import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailReferencesItem
-import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailStoryItem
+import dev.staticvar.vlr.sharedui.component.news.detail.newsDetailStoryItems
+import kotlinx.coroutines.launch
+
 @Composable
 public fun NewsArticleRoute(
   uiState: NewsArticleUiState,
@@ -53,6 +59,10 @@ internal fun NewsArticleScreen(
   modifier: Modifier = Modifier,
 ) {
   val article: NewsArticle? = uiState.article
+  val uriHandler = LocalUriHandler.current
+  val scrollState = rememberLazyListState()
+  val coroutineScope = rememberCoroutineScope()
+  val showScrollToTop by remember { derivedStateOf { scrollState.firstVisibleItemIndex > 0 } }
 
   Column(
     modifier =
@@ -62,29 +72,45 @@ internal fun NewsArticleScreen(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PrismScreenTitleBar(
-      title = article?.title ?: "Article",
-      subtitle = article?.author?.takeIf(String::isNotBlank)?.let { "By $it" } ?: "Inside competitive VALORANT",
+      title = "News",
       onBackPress = onBack.takeIf { showBackAction },
       actions = {
+        if (showScrollToTop) {
+          PrismButton(
+            onClick = { coroutineScope.launch { scrollState.animateScrollToItem(0) } },
+            style = PrismButtonStyle.Tertiary,
+          ) {
+            Text("Top")
+          }
+        }
         PrismButton(
           onClick = onRefresh,
+          enabled = !uiState.isRefreshing,
           style = PrismButtonStyle.Tertiary,
         ) {
-          Text("Refresh")
+          Text(if (uiState.isRefreshing) "Refreshing" else "Refresh")
         }
       },
     )
 
+    if (uiState.errorMessage != null && !article?.contentHtml.isNullOrBlank()) {
+      Text(
+        text = "Could not refresh this article. Showing the saved version.",
+        style = Prism.typography.caption,
+        color = Prism.color.labelColor,
+      )
+    }
+
     when {
-      uiState.isLoading && article == null -> {
+      (uiState.isLoading || uiState.isRefreshing) && article?.contentHtml.isNullOrBlank() -> {
         PrismFullscreenLoader(
           modifier = Modifier.fillMaxSize(),
           label = "Loading article",
-          supportingText = "Reading story from local cache and remote updates",
+          supportingText = "Loading the full story",
         )
       }
 
-      article == null -> {
+      article == null || article.contentHtml.isBlank() -> {
         PrismCard(
           style = PrismCardStyle.Outlined,
         ) {
@@ -108,19 +134,20 @@ internal fun NewsArticleScreen(
       else -> {
         LazyColumn(
           modifier = Modifier.fillMaxSize(),
+          state = scrollState,
           verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
         ) {
           item(key = "header") {
             NewsDetailHeaderItem(article = article)
           }
-          item(key = "story") {
-            NewsDetailStoryItem(article = article)
-          }
-          item(key = "references") {
-            NewsDetailReferencesItem(links = article.media.links)
-          }
-          item(key = "media") {
-            NewsDetailMediaSummaryItem(media = article.media)
+          newsDetailStoryItems(article = article)
+          item(key = "source") {
+            PrismButton(
+              onClick = { uriHandler.openUri(article.url) },
+              style = PrismButtonStyle.Tertiary,
+            ) {
+              Text("Read on VLR.gg")
+            }
           }
           item(key = "navigation-bar-spacer") {
             Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())

@@ -5,6 +5,8 @@
 package dev.staticvar.vlr.data.mapper
 
 import dev.staticvar.vlr.remotesource.news.NewsArticleDto
+import dev.staticvar.vlr.remotesource.news.ArticleBlockDto
+import dev.staticvar.vlr.remotesource.news.ArticleTextRunDto
 import dev.staticvar.vlr.remotesource.player.PlayerAgentStatsDto
 import dev.staticvar.vlr.remotesource.player.PlayerTeamRefDto
 import kotlin.test.Test
@@ -15,12 +17,41 @@ import kotlin.test.assertTrue
 class NewsArticleAndPlayerChildMappersTest {
 
   @Test
+  fun `malformed cached block falls back to whole legacy article instead of dropping a paragraph`() {
+    assertEquals(emptyList(), decodeArticleBlocks(listOf(
+      """{"type":"paragraph","runs":[{"text":"First"}]}""",
+      """{"type":"paragraph","runs":broken}""",
+    )))
+  }
+
+  @Test
+  fun `structured blocks survive cache mapping with nested formatting and media order`() {
+    val blocks = listOf(
+      ArticleBlockDto("paragraph", runs = listOf(ArticleTextRunDto("Intro", italic = true))),
+      ArticleBlockDto("image", url = "https://example.com/photo.jpg", alt = "Team"),
+      ArticleBlockDto("caption", runs = listOf(ArticleTextRunDto("Credit"))),
+      ArticleBlockDto("heading", level = 3, runs = listOf(ArticleTextRunDto("Interview"))),
+      ArticleBlockDto("blockquote", children = listOf(ArticleBlockDto("paragraph",
+        runs = listOf(ArticleTextRunDto("Question", url = "https://example.com", bold = true))))),
+      ArticleBlockDto("list", ordered = true, start = 4, children = listOf(
+        ArticleBlockDto("list_item", children = listOf(ArticleBlockDto("paragraph",
+          runs = listOf(ArticleTextRunDto("Answer"))))))),
+      ArticleBlockDto("video", url = "https://example.com/video"),
+    )
+    val dto = NewsArticleDto(id = "structured", content = "Fallback", blocks = blocks)
+    val rows = dto.toMediaEntities().mapIndexed { index, row -> row.copy(id = index.toLong()) }
+    val result = aggregateNewsArticle(dto.toEntity(), rows.reversed())
+    assertEquals(blocks.map { it.toDomain() }, result.blocks)
+    assertEquals("Fallback", result.contentHtml)
+  }
+
+  @Test
   fun `news article entity and media mapping positive`() {
     val dto = NewsArticleDto(
       id = "n1",
       title = "Title",
       content = "<p>Content</p>",
-      links = listOf(mapOf("text" to "Site", "href" to "https://x.y")),
+      links = listOf(mapOf("text" to "Site", "url" to "https://x.y")),
       images = listOf("img1.png", "img2.png"),
       videos = listOf("vid1.mp4"),
       date = "2024-01-01",
@@ -45,7 +76,7 @@ class NewsArticleAndPlayerChildMappersTest {
       id = "n2",
       title = "",
       content = "",
-      links = listOf(mapOf("text" to "MissingHref")), // invalid link
+      links = listOf(mapOf("text" to "MissingUrl")),
       images = emptyList(),
       videos = emptyList(),
       date = null,
@@ -56,7 +87,35 @@ class NewsArticleAndPlayerChildMappersTest {
     assertEquals("", entity.cover_url) // Schema has NOT NULL, so empty string
     assertEquals("", entity.date)
     val media = dto.toMediaEntities()
-    assertTrue(media.isEmpty())
+    assertEquals("", media.single().media_value)
+    assertEquals("MissingUrl", media.single().media_text)
+  }
+
+  @Test
+  fun `article roundtrip keeps placeholder indices content and media order`() {
+    val content = "Intro {{link_2}}\n\n{video_1}\n\n{image_2}\n\n{{link_0}}"
+    val dto = NewsArticleDto(
+      id = "750321",
+      content = content,
+      links = listOf(
+        mapOf("text" to "First", "url" to "https://example.com/first"),
+        emptyMap(),
+        mapOf("text" to "Third", "url" to "https://example.com/third"),
+        mapOf("text" to "First", "url" to "https://example.com/first"),
+      ),
+      images = listOf("first.png", "", "third.png", "first.png"),
+      videos = listOf("", "second.mp4"),
+    )
+    val rows = dto.toMediaEntities().mapIndexed { index, row ->
+      row.copy(id = index.toLong() + 1, media_text = row.media_text?.takeUnless { it.isEmpty() })
+    }
+    val article = aggregateNewsArticle(dto.toEntity(), rows.reversed())
+
+    assertEquals(content, article.contentHtml)
+    assertEquals(dto.links.map { it["text"].orEmpty() }, article.media.links.map { it.text })
+    assertEquals(dto.links.map { it["url"].orEmpty() }, article.media.links.map { it.url })
+    assertEquals(dto.images, article.media.images)
+    assertEquals(dto.videos, article.media.videos)
   }
 
   @Test
