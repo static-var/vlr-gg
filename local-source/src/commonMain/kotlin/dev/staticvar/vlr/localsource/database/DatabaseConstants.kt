@@ -9,8 +9,7 @@ package dev.staticvar.vlr.localsource.database
  */
 internal object DatabaseConstants {
   /**
-   * Database name used across all platforms.
-   * Named "vlr_kmp" to avoid conflicts with existing Room database.
+   * Reuses the legacy Android Room filename for the one-time KMP reset.
    */
-  const val DATABASE_NAME = "vlr_kmp.db"
+  const val DATABASE_NAME = "vlr"
 }

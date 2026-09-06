@@ -76,8 +76,6 @@ sqldelight {
     create("VlrDatabase") {
       packageName.set("dev.staticvar.vlr.localsource.database")
       schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
-      // Disable migration verification for initial schema
-      verifyMigrations.set(false)
     }
   }
 }

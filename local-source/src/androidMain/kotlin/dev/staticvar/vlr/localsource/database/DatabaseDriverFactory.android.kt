@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.localsource.database
 
 import android.content.Context
+import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 
@@ -16,8 +17,14 @@ actual class DatabaseDriverFactory(private val context: Context) {
     schema = VlrDatabase.Schema,
     context = context,
     name = DatabaseConstants.DATABASE_NAME,
-  ).also { driver ->
-    // Enable foreign key constraints
-    driver.execute(null, "PRAGMA foreign_keys = ON", 0)
-  }
+    callback = object : AndroidSqliteDriver.Callback(VlrDatabase.Schema) {
+      override fun onConfigure(db: SupportSQLiteDatabase) {
+        db.setForeignKeyConstraintsEnabled(true)
+      }
+
+      override fun onDowngrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        RoomToKmpMigration.migrate(AndroidSqliteDriver(db))
+      }
+    },
+  )
 }
