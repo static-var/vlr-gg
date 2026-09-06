@@ -46,6 +46,7 @@ kotlin {
         implementation(compose.components.resources)
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.coroutines.core)
+        implementation(libs.kotlinx.datetime)
         implementation(libs.koin.core)
         implementation(projects.core)
         implementation(projects.designsystem)
@@ -58,12 +59,15 @@ kotlin {
       dependencies {
         implementation(kotlin("test"))
         implementation(libs.coroutine.test)
+        implementation(libs.multiplatform.settings)
+        implementation(libs.multiplatform.settings.test)
       }
     }
 
     val androidMain by getting {
       dependencies {
         implementation(libs.activity.compose)
+        implementation(libs.core)
       }
     }
   }

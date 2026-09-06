@@ -5,6 +5,8 @@
 package dev.staticvar.vlr.featurematches.presentation
 
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
+import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchDetailsUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchDetailsUseCase
@@ -21,9 +23,17 @@ public class MatchDetailsViewModel(
   private val observeMatchDetailsUseCase: ObserveMatchDetailsUseCase,
   private val refreshMatchDetailsUseCase: RefreshMatchDetailsUseCase,
   dispatchers: DispatcherProvider,
+  private val preferencesRepository: MatchDetailsPreferencesRepository,
 ) {
   private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatchers.main)
-  private val mutableUiState: MutableStateFlow<MatchDetailsUiState> = MutableStateFlow(MatchDetailsUiState())
+  private val mutableUiState: MutableStateFlow<MatchDetailsUiState> = MutableStateFlow(
+    MatchDetailsUiState(preferences = preferencesRepository.preferences.value),
+  )
+  private val observePreferencesJob: Job = scope.launch {
+    preferencesRepository.preferences.collect { preferences ->
+      mutableUiState.update { it.copy(preferences = preferences) }
+    }
+  }
   private var currentMatchId: String? = null
   private var observeMatchJob: Job? = null
   private var refreshMatchJob: Job? = null
@@ -37,7 +47,10 @@ public class MatchDetailsViewModel(
 
     currentMatchId = matchId
     observeMatchJob?.cancel()
-    mutableUiState.value = MatchDetailsUiState(isLoading = true)
+    mutableUiState.value = MatchDetailsUiState(
+      isLoading = true,
+      preferences = preferencesRepository.preferences.value,
+    )
     observeMatchJob =
       scope.launch {
         var missingMatchRefreshRequested = false
@@ -67,6 +80,11 @@ public class MatchDetailsViewModel(
       }
   }
 
+  public fun setPreferences(preferences: MatchDetailsPreferences) {
+    preferencesRepository.setPreferences(preferences)
+    mutableUiState.update { it.copy(preferences = preferences) }
+  }
+
   public fun refresh() {
     val matchId: String = currentMatchId ?: return
     refreshMatchJob?.cancel()
@@ -77,6 +95,7 @@ public class MatchDetailsViewModel(
 
   public fun clear() {
     observeMatchJob?.cancel()
+    observePreferencesJob.cancel()
   }
 
   private suspend fun refreshInternal(matchId: String, showRefreshing: Boolean) {

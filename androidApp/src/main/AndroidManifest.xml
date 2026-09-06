@@ -8,6 +8,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VLR">
         
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.calendar"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/calendar_paths" />
+        </provider>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

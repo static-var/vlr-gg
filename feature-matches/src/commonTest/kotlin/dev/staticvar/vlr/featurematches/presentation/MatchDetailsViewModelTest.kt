@@ -4,7 +4,10 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
+import com.russhwolf.settings.MapSettings
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
+import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
 import dev.staticvar.vlr.domain.model.EventInfo
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.MatchDetails
@@ -142,10 +145,60 @@ class MatchDetailsViewModelTest {
     }
   }
 
-  private fun createViewModel(repository: FakeMatchRepository): MatchDetailsViewModel = MatchDetailsViewModel(
+  @Test
+  fun sectionChoicesAreAvailableImmediatelyAndSurviveOpeningAnotherMatch() {
+    runTest(dispatcher) {
+      val storage = MapSettings()
+      val preferencesRepository = MatchDetailsPreferencesRepository(storage)
+      val preferences = MatchDetailsPreferences(showBreakdown = false, showHeadToHead = false)
+      preferencesRepository.setPreferences(preferences)
+      val repository = FakeMatchRepository(details = matchDetails("match-1", hasDetails = true))
+      val viewModel = createViewModel(repository, preferencesRepository)
+
+      assertEquals(preferences, viewModel.uiState.value.preferences)
+      viewModel.openMatch("match-1")
+      advanceUntilIdle()
+      viewModel.openMatch("match-2")
+      assertEquals(preferences, viewModel.uiState.value.preferences)
+      advanceUntilIdle()
+
+      val changed = preferences.copy(showMedia = false)
+      viewModel.setPreferences(changed)
+      assertEquals(changed, viewModel.uiState.value.preferences)
+      assertEquals(changed, MatchDetailsPreferencesRepository(storage).preferences.value)
+      viewModel.clear()
+    }
+  }
+
+  @Test
+  fun sectionChoicesUpdateOtherOpenMatchDetailsWithoutRefetching() {
+    runTest(dispatcher) {
+      val preferencesRepository = MatchDetailsPreferencesRepository(MapSettings())
+      val repository = FakeMatchRepository(details = matchDetails("match-1", hasDetails = true))
+      val first = createViewModel(repository, preferencesRepository)
+      val second = createViewModel(repository, preferencesRepository)
+      first.openMatch("match-1")
+      second.openMatch("match-1")
+      advanceUntilIdle()
+
+      first.setPreferences(MatchDetailsPreferences(showMedia = false))
+      advanceUntilIdle()
+
+      assertEquals(first.uiState.value.preferences, second.uiState.value.preferences)
+      assertEquals(emptyList(), repository.refreshDetailRequests)
+      first.clear()
+      second.clear()
+    }
+  }
+
+  private fun createViewModel(
+    repository: FakeMatchRepository,
+    preferencesRepository: MatchDetailsPreferencesRepository = MatchDetailsPreferencesRepository(MapSettings()),
+  ): MatchDetailsViewModel = MatchDetailsViewModel(
     observeMatchDetailsUseCase = ObserveMatchDetailsUseCase(repository),
     refreshMatchDetailsUseCase = RefreshMatchDetailsUseCase(repository),
     dispatchers = dispatchers,
+    preferencesRepository = preferencesRepository,
   )
 
   private fun matchDetails(matchId: String, hasDetails: Boolean = false): MatchDetails = MatchDetails(

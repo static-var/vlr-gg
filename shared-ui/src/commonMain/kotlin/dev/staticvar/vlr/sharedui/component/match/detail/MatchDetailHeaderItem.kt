@@ -41,6 +41,7 @@ public fun MatchDetailHeaderItem(
   modifier: Modifier = Modifier,
   onEventSelected: ((String) -> Unit)? = null,
   onTeamSelected: ((String) -> Unit)? = null,
+  actions: (@Composable () -> Unit)? = null,
 ) {
   FavoriteTicketCardBox(selected = match.isFavorite, modifier = modifier.fillMaxWidth()) {
     PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
@@ -92,6 +93,11 @@ public fun MatchDetailHeaderItem(
         ),
         modifier = Modifier.padding(top = Prism.dimens.spacingS),
       )
+      if (actions != null) {
+        Column(modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)) {
+          actions()
+        }
+      }
     }
   }
 }
@@ -114,4 +120,3 @@ private fun MatchDetailTeamScoreRow(
     },
   )
 }
-

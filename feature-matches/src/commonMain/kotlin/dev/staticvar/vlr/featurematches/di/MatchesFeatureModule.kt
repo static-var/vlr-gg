@@ -37,6 +37,7 @@ public fun matchesFeatureModule(): Module = module {
       MatchDetailsViewModel(
         observeMatchDetailsUseCase = get(),
         refreshMatchDetailsUseCase = get(),
+        preferencesRepository = get(),
         dispatchers = get(),
       )
     } withOptions {

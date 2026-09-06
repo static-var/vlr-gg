@@ -32,6 +32,7 @@ import dev.staticvar.designsystem.component.loader.PrismLoaderSize
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
@@ -46,6 +47,7 @@ public fun MatchDetailsRoute(
   onPlayerSelected: (String) -> Unit,
   onMatchSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onPreferencesChange: (MatchDetailsPreferences) -> Unit = {},
 ) {
   MatchDetailsScreen(
     uiState = uiState,
@@ -55,6 +57,7 @@ public fun MatchDetailsRoute(
     onPlayerSelected = onPlayerSelected,
     onMatchSelected = onMatchSelected,
     modifier = modifier,
+    onPreferencesChange = onPreferencesChange,
   )
 }
 
@@ -67,90 +70,109 @@ internal fun MatchDetailsScreen(
   onPlayerSelected: (String) -> Unit,
   onMatchSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onPreferencesChange: (MatchDetailsPreferences) -> Unit = {},
 ) {
   val match = uiState.match
   val uriHandler = LocalUriHandler.current
   var selectedMapIndex: Int? by remember(match?.id) { mutableStateOf<Int?>(null) }
 
-  Column(
-    modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
-    verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
-  ) {
-    PrismScreenTitleBar(
-      title = if (uiState.isLoading) "Match details" else match?.event?.name ?: "Match details",
-      subtitle = "Maps, scores and player stats",
-      onBackPress = onBack,
-    )
-
-    when {
-      uiState.isLoading -> PrismFullscreenLoader(
-        modifier = Modifier.fillMaxSize(),
-        label = "MATCH",
-        supportingText = "Loading match details",
+  Box(modifier = modifier.fillMaxSize()) {
+    Column(
+      modifier = Modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
+      verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+    ) {
+      PrismScreenTitleBar(
+        title = if (uiState.isLoading) "Match details" else match?.event?.name ?: "Match details",
+        subtitle = "Maps, scores and player stats",
+        onBackPress = onBack,
       )
 
-      uiState.errorMessage != null && match == null ->
-        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load match details.")
-
-      match == null -> PrismStateMessage(text = "Match detail is unavailable.")
-
-      else -> {
-        val hasDetailedContent =
-          match.matchData.isNotEmpty() ||
-            match.head2head.isNotEmpty() ||
-            match.videos.streams.isNotEmpty() ||
-            match.videos.vods.isNotEmpty()
-        LazyColumn(
+      when {
+        uiState.isLoading -> PrismFullscreenLoader(
           modifier = Modifier.fillMaxSize(),
-          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
-        ) {
-          item {
-            MatchDetailHeaderItem(
-              match = match,
-              onEventSelected = onEventSelected,
-              onTeamSelected = onTeamSelected,
-            )
-          }
-          if (!hasDetailedContent) {
+          label = "MATCH",
+          supportingText = "Loading match details",
+        )
+
+        uiState.errorMessage != null && match == null ->
+          PrismStateMessage(text = uiState.errorMessage ?: "Unable to load match details.")
+
+        match == null -> PrismStateMessage(text = "Match detail is unavailable.")
+
+        else -> {
+          val hasDetailedContent =
+            match.matchData.isNotEmpty() ||
+              match.head2head.isNotEmpty() ||
+              match.videos.streams.isNotEmpty() ||
+              match.videos.vods.isNotEmpty()
+          LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+          ) {
             item {
-              when {
-                uiState.isRefreshing -> MatchDetailInlineLoader()
-                !uiState.errorMessage.isNullOrBlank() -> PrismStateMessage(text = uiState.errorMessage)
-                else -> PrismStateMessage(text = "Detailed breakdown is not available for this match yet.")
+              MatchDetailHeaderItem(
+                match = match,
+                onEventSelected = onEventSelected,
+                onTeamSelected = onTeamSelected,
+                actions = if (match.shouldShowCalendarAction()) {
+                  { MatchCalendarAction(match) }
+                } else {
+                  null
+                },
+              )
+            }
+            if (!hasDetailedContent && uiState.preferences.showBreakdown) {
+              item {
+                when {
+                  uiState.isRefreshing -> MatchDetailInlineLoader()
+                  !uiState.errorMessage.isNullOrBlank() -> PrismStateMessage(text = uiState.errorMessage)
+                  else -> PrismStateMessage(text = "Detailed breakdown is not available for this match yet.")
+                }
               }
             }
-          }
-          if (match.matchData.isNotEmpty()) {
-            item {
-              MatchDetailMapsItem(
-                maps = match.matchData,
-                selectedMapIndex = selectedMapIndex,
-                onMapSelected = { selectedMapIndex = it },
-                onPlayerSelected = onPlayerSelected,
-              )
+            if (uiState.preferences.showBreakdown && match.matchData.isNotEmpty()) {
+              item {
+                MatchDetailMapsItem(
+                  maps = match.matchData,
+                  selectedMapIndex = selectedMapIndex,
+                  onMapSelected = { selectedMapIndex = it },
+                  onPlayerSelected = onPlayerSelected,
+                )
+              }
             }
-          }
-          if (match.head2head.isNotEmpty()) {
-            item {
-              MatchDetailHeadToHeadItem(encounters = match.head2head, onEncounterSelected = onMatchSelected)
+            if (uiState.preferences.showHeadToHead && match.head2head.isNotEmpty()) {
+              item {
+                MatchDetailHeadToHeadItem(encounters = match.head2head, onEncounterSelected = onMatchSelected)
+              }
             }
-          }
-          if (match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()) {
-            item {
-              PrismSectionTitle(title = "Streams & VODs", preLabel = "media")
+            if (uiState.preferences.showMedia && (match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty())) {
+              item {
+                PrismSectionTitle(title = "Streams & VODs", preLabel = "media")
+              }
+              item {
+                MatchDetailMediaRow(
+                  match = match,
+                  onVideoSelected = { url -> uriHandler.openUri(url.asExternalUrl()) },
+                )
+              }
             }
             item {
-              MatchDetailMediaRow(
-                match = match,
-                onVideoSelected = { url -> uriHandler.openUri(url.asExternalUrl()) },
-              )
+              Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth().height(88.dp))
             }
-          }
-          item {
-            Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
           }
         }
       }
+    }
+    if (match != null && !uiState.isLoading && (
+        match.matchData.isNotEmpty() || match.head2head.isNotEmpty() ||
+          match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()
+        )
+    ) {
+      MatchDetailOptionsSheet(
+        match = match,
+        preferences = uiState.preferences,
+        onPreferencesChange = onPreferencesChange,
+      )
     }
   }
 }

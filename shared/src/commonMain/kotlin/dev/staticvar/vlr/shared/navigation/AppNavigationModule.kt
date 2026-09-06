@@ -113,6 +113,7 @@ internal fun appNavigationModule(): Module = module {
 
       MatchDetailsRoute(
         uiState = uiState,
+        onPreferencesChange = viewModel::setPreferences,
         onBack = appState::navigateUp,
         onEventSelected = appState::showEventDetails,
         onTeamSelected = appState::showTeamDetails,
