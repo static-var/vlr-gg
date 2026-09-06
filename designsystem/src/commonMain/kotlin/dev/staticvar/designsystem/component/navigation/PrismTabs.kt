@@ -29,6 +29,8 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -90,6 +92,7 @@ private fun PrismTabItem(
       enabled = enabled,
       style = style,
     )
+  val shape = Prism.shapes.small
   Column(
     modifier =
     Modifier.widthIn(min = visualState.minWidth)
@@ -105,38 +108,10 @@ private fun PrismTabItem(
           val indicatorTop = visualState.indicatorOffsetY.toPx()
           val indicatorWidth = (size.width - indicatorInset * 2).coerceAtLeast(0f)
           val indicatorLeft = indicatorInset
-          val indicatorRight = indicatorLeft + indicatorWidth
-          val borderCenter = borderWidth / 2f
-
-          drawLine(
+          drawOutline(
+            outline = shape.createOutline(size, layoutDirection, this),
             color = visualState.indicatorBorderColor,
-            start = Offset(x = borderCenter, y = borderCenter),
-            end = Offset(x = indicatorLeft, y = borderCenter),
-            strokeWidth = borderWidth,
-          )
-          drawLine(
-            color = visualState.indicatorBorderColor,
-            start = Offset(x = indicatorRight, y = borderCenter),
-            end = Offset(x = size.width - borderCenter, y = borderCenter),
-            strokeWidth = borderWidth,
-          )
-          drawLine(
-            color = visualState.indicatorBorderColor,
-            start = Offset(x = borderCenter, y = borderCenter),
-            end = Offset(x = borderCenter, y = size.height - borderCenter),
-            strokeWidth = borderWidth,
-          )
-          drawLine(
-            color = visualState.indicatorBorderColor,
-            start = Offset(x = size.width - borderCenter, y = borderCenter),
-            end = Offset(x = size.width - borderCenter, y = size.height - borderCenter),
-            strokeWidth = borderWidth,
-          )
-          drawLine(
-            color = visualState.indicatorBorderColor,
-            start = Offset(x = borderCenter, y = size.height - borderCenter),
-            end = Offset(x = size.width - borderCenter, y = size.height - borderCenter),
-            strokeWidth = borderWidth,
+            style = Stroke(width = borderWidth),
           )
 
           drawRect(

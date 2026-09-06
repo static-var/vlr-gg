@@ -93,7 +93,7 @@ private fun RowScope.PrismBottomNavItem(
         .fillMaxWidth()
         .height(style.itemHeight)
         .offset(y = visualState.offsetY)
-        .background(visualState.backgroundColor),
+        .background(visualState.backgroundColor, shape = style.itemShape),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center,
     ) {

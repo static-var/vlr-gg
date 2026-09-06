@@ -5,11 +5,14 @@
 package dev.staticvar.designsystem.component.navigation
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.prism.Prism
 
 /**
@@ -45,8 +48,23 @@ public sealed interface PrismSegmentedFilterTabStyle {
   @ReadOnlyComposable
   public fun borderWidth(selected: Boolean): Dp
 
+  @Composable
+  @ReadOnlyComposable
+  public fun tabShape(first: Boolean, last: Boolean): Shape
+
   /** Default flat segmented filter style. */
   public data object Flat : PrismSegmentedFilterTabStyle {
+    @Composable
+    @ReadOnlyComposable
+    override fun tabShape(first: Boolean, last: Boolean): Shape = Prism.shapes.small.let { shape ->
+      shape.copy(
+        topStart = if (first) shape.topStart else CornerSize(0.dp),
+        bottomStart = if (first) shape.bottomStart else CornerSize(0.dp),
+        topEnd = if (last) shape.topEnd else CornerSize(0.dp),
+        bottomEnd = if (last) shape.bottomEnd else CornerSize(0.dp),
+      )
+    }
+
     override val groupContainerColor: Color
       @Composable
       @ReadOnlyComposable

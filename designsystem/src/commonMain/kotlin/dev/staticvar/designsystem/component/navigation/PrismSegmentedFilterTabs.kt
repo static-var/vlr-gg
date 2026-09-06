@@ -23,13 +23,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
 /**
- * Segmented filter tabs styled for flat brutalist layouts.
+ * Segmented filter tabs using the active theme's surfaces and shapes.
  *
  * [style] controls the group surface and each tab's selected, unselected, and disabled colors and
  * border treatment.
@@ -56,9 +57,10 @@ public fun PrismSegmentedFilterTabs(
         .selectableGroup(),
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      tabs.forEach { tab ->
+      tabs.forEachIndexed { index, tab ->
         PrismSegmentedFilterTabItem(
           tab = tab,
+          shape = style.tabShape(first = index == 0, last = index == tabs.lastIndex),
           selected = tab.id == selectedTabId,
           enabled = enabled && tab.enabled,
           style = style,
@@ -72,6 +74,7 @@ public fun PrismSegmentedFilterTabs(
 @Composable
 private fun RowScope.PrismSegmentedFilterTabItem(
   tab: PrismSegmentedFilterTab,
+  shape: Shape,
   selected: Boolean,
   enabled: Boolean,
   style: PrismSegmentedFilterTabStyle,
@@ -90,7 +93,7 @@ private fun RowScope.PrismSegmentedFilterTabItem(
       .heightIn(min = Prism.dimens.controlHeight)
       .selectable(selected = selected, onClick = onClick, enabled = enabled, role = Role.Tab),
     color = visualState.containerColor,
-    shape = Prism.shapes.small,
+    shape = shape,
     border = visualState.border,
   ) {
     Box(

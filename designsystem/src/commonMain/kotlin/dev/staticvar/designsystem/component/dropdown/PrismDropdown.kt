@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -20,11 +21,14 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -32,7 +36,7 @@ import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
 /**
- * Compact Prism dropdown with a brutalist trigger and hard-edged menu.
+ * Compact Prism dropdown using the active theme's surfaces and shapes.
  */
 @Composable
 public fun PrismDropdown(
@@ -45,9 +49,11 @@ public fun PrismDropdown(
   style: PrismDropdownStyle = PrismDropdownStyle.Brutalist,
 ) {
   var expanded by remember { mutableStateOf(false) }
+  var anchorWidth by remember { mutableIntStateOf(0) }
+  val menuWidth = with(LocalDensity.current) { anchorWidth.toDp() }.coerceAtLeast(style.menuWidth)
   val selectedOption = options.firstOrNull { option -> option.id == selectedOptionId } ?: options.firstOrNull()
 
-  Box(modifier = modifier.width(style.triggerWidth)) {
+  Box(modifier = modifier.width(style.triggerWidth).onSizeChanged { anchorWidth = it.width }) {
     PrismDropdownTrigger(
       label = label,
       selectedLabel = selectedOption?.label.orEmpty(),
@@ -59,10 +65,9 @@ public fun PrismDropdown(
     DropdownMenu(
       expanded = expanded,
       onDismissRequest = { expanded = false },
-      modifier = Modifier
-        .width(style.menuWidth)
-        .background(Prism.color.surface)
-        .border(style.menuBorder),
+      modifier = Modifier.width(menuWidth),
+      shape = Prism.shapes.small,
+      border = style.menuBorder,
       containerColor = Prism.color.surface,
       tonalElevation = Prism.dimens.elevationNone,
       shadowElevation = Prism.dimens.elevationNone,
@@ -93,7 +98,7 @@ private fun PrismDropdownTrigger(
 ) {
   PrismSurface(
     modifier = Modifier
-      .width(style.triggerWidth)
+      .fillMaxWidth()
       .heightIn(min = Prism.dimens.controlHeight)
       .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
     color = style.triggerContainerColor(enabled = enabled),
@@ -152,7 +157,7 @@ private fun PrismDropdownMenuItem(
 ) {
   PrismSurface(
     modifier = Modifier
-      .width(style.menuWidth)
+      .fillMaxWidth()
       .heightIn(min = style.optionMinHeight)
       .clickable(enabled = option.enabled, role = Role.Button, onClick = onClick),
     color = style.optionContainerColor(selected = selected, enabled = option.enabled),

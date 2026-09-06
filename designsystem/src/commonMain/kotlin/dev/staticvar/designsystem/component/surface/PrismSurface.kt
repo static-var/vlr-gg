@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.color.contentColorFor
@@ -58,7 +57,7 @@ public fun PrismSurface(
   color: Color = Prism.color.surface,
   brush: Brush? = null,
   contentColor: Color = contentColorFor(color),
-  shape: Shape = RectangleShape,
+  shape: Shape = Prism.shapes.small,
   border: BorderStroke? = null,
   content: @Composable () -> Unit,
 ) {

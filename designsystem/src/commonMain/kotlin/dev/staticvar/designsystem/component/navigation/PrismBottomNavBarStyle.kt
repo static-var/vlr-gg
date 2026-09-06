@@ -4,10 +4,12 @@
  */
 package dev.staticvar.designsystem.component.navigation
 
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -31,6 +33,10 @@ public sealed interface PrismBottomNavBarStyle {
   @get:Composable
   @get:ReadOnlyComposable
   public val containerColor: Color
+
+  @get:Composable
+  @get:ReadOnlyComposable
+  public val itemShape: Shape
 
   /** Height of each item content lane. */
   @get:Composable
@@ -77,6 +83,11 @@ public sealed interface PrismBottomNavBarStyle {
       @Composable
       @ReadOnlyComposable
       get() = Prism.color.background
+
+    override val itemShape: Shape
+      @Composable
+      @ReadOnlyComposable
+      get() = Prism.shapes.small.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp))
 
     override val itemHeight: Dp
       @Composable
