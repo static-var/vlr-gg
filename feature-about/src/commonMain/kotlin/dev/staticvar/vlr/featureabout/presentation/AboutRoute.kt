@@ -81,7 +81,7 @@ internal fun AboutScreen(modifier: Modifier = Modifier, onSettings: () -> Unit =
     PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
       PrismSectionTitle(title = "Appearance", preLabel = "ui")
       Text(
-        text = "Choose Brutalist or Catppuccin in Settings. Both themes include light and dark modes.",
+        text = "Choose Brutalist or Catppuccin in Settings. Brutalist offers light and dark modes. Catppuccin comes in Latte, Frappé, Macchiato, and Mocha.",
         modifier = Modifier.padding(top = Prism.dimens.spacingS),
         style = Prism.typography.bodyLarge,
         color = Prism.color.bodyColor,

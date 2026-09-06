@@ -40,6 +40,49 @@ class AppearanceRepositoryTest {
     val storage = MapSettings()
     storage.putString("appearance.mode", "unknown")
     storage.putString("appearance.family", "unknown")
+    storage.putString("appearance.catppuccin_flavour", "unknown")
     assertEquals(AppearanceSettings(), AppearanceRepository(storage).settings.value)
+  }
+
+  @Test
+  fun eachFlavourPersistsAndDeterminesBrightnessIndependentlyOfBrutalistMode() {
+    val storage = MapSettings()
+    val repository = AppearanceRepository(storage)
+    repository.setMode(AppearanceMode.Light)
+    repository.setFamily(ThemeFamily.Catppuccin)
+    CatppuccinFlavour.entries.forEach { flavour ->
+      repository.setCatppuccinFlavour(flavour)
+      val restored = AppearanceRepository(storage).settings.value
+      assertEquals(flavour, restored.catppuccinFlavour)
+      assertEquals(AppearanceMode.Light, restored.mode)
+      assertEquals(flavour != CatppuccinFlavour.Latte, restored.isDark(systemIsDark = false))
+      assertEquals(flavour != CatppuccinFlavour.Latte, restored.isDark(systemIsDark = true))
+    }
+  }
+
+  @Test
+  fun switchingFamiliesPreservesBothChoicesAcrossRestart() {
+    val storage = MapSettings()
+    val repository = AppearanceRepository(storage)
+    repository.setMode(AppearanceMode.Dark)
+    repository.setFamily(ThemeFamily.Catppuccin)
+    repository.setCatppuccinFlavour(CatppuccinFlavour.Latte)
+    assertFalse(repository.settings.value.isDark(systemIsDark = true))
+    repository.setFamily(ThemeFamily.Brutalist)
+    assertTrue(repository.settings.value.isDark(systemIsDark = false))
+    val restored = AppearanceRepository(storage)
+    restored.setFamily(ThemeFamily.Catppuccin)
+    assertEquals(CatppuccinFlavour.Latte, restored.settings.value.catppuccinFlavour)
+    assertFalse(restored.settings.value.isDark(systemIsDark = true))
+    assertEquals(AppearanceMode.Dark, restored.settings.value.mode)
+  }
+
+  @Test
+  fun untouchedFlavourDefaultDoesNotChangeWhenBrutalistModeChanges() {
+    val storage = MapSettings()
+    val repository = AppearanceRepository(storage)
+    repository.setMode(AppearanceMode.Light)
+    assertEquals(repository.settings.value, AppearanceRepository(storage).settings.value)
+    assertEquals(CatppuccinFlavour.Frappe, repository.settings.value.catppuccinFlavour)
   }
 }

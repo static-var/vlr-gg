@@ -17,6 +17,9 @@ public class AppearanceRepository(private val storage: Settings) {
       mode = AppearanceMode.entries.firstOrNull { it.name == storage.getStringOrNull(ModeKey) },
       family = ThemeFamily.entries.firstOrNull { it.name == storage.getStringOrNull(FamilyKey) }
         ?: ThemeFamily.Brutalist,
+      catppuccinFlavour = CatppuccinFlavour.entries.firstOrNull {
+        it.name == storage.getStringOrNull(FlavourKey)
+      } ?: CatppuccinFlavour.Frappe,
     ),
   )
   public val settings: StateFlow<AppearanceSettings> = mutableSettings.asStateFlow()
@@ -31,8 +34,14 @@ public class AppearanceRepository(private val storage: Settings) {
     mutableSettings.update { it.copy(family = family) }
   }
 
+  public fun setCatppuccinFlavour(flavour: CatppuccinFlavour) {
+    storage.putString(FlavourKey, flavour.name)
+    mutableSettings.update { it.copy(catppuccinFlavour = flavour) }
+  }
+
   private companion object {
     const val ModeKey: String = "appearance.mode"
     const val FamilyKey: String = "appearance.family"
+    const val FlavourKey: String = "appearance.catppuccin_flavour"
   }
 }

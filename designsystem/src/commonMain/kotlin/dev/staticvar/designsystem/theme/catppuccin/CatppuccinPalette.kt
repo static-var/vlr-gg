@@ -49,7 +49,7 @@ internal object CatppuccinPalette {
       dangerContainer = lerp(containerBase, tokens.red, 0.07f),
       info = tokens.blue.foreground(isDark, 0.15f),
       infoContainer = lerp(containerBase, tokens.blue, 0.07f),
-      scrim = CatppuccinColorTokens.Frappe.crust,
+      scrim = if (isDark) tokens.crust else CatppuccinColorTokens.Frappe.crust,
     )
   }
   private fun Color.foreground(isDark: Boolean, lightShade: Float): Color =

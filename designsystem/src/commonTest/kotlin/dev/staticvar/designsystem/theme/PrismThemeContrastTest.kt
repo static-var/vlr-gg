@@ -7,7 +7,7 @@ package dev.staticvar.designsystem.theme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.luminance
-import dev.staticvar.designsystem.prism.PrismThemeFamily
+import dev.staticvar.designsystem.prism.PrismCatppuccinFlavour
 import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.designsystem.prism.color.PrismColorPalette
 import dev.staticvar.designsystem.prism.color.contentColorFor
@@ -67,8 +67,8 @@ internal class PrismThemeContrastTest {
   }
 
   @Test
-  fun materialDialogsMenusAndInverseContentUseTheFamilyPalette() = forEachTheme { name, palette, variant ->
-    val scheme = createPrismColorScheme(palette, variant == PrismVariant.Dark)
+  fun materialDialogsMenusAndInverseContentUseTheFamilyPalette() = forEachTheme { name, palette, isDark ->
+    val scheme = createPrismColorScheme(palette, isDark)
     val containers = listOf(
       scheme.surfaceContainerLowest,
       scheme.surfaceContainerLow,
@@ -93,29 +93,38 @@ internal class PrismThemeContrastTest {
   }
 
   @Test
-  fun darkSurfacesSeparateElevationAndScrimsDarkenBothModes() = forEachTheme { name, palette, variant ->
-    if (variant == PrismVariant.Dark) {
+  fun darkSurfacesSeparateElevationAndScrimsDarkenBothModes() = forEachTheme { name, palette, isDark ->
+    if (isDark) {
       assertNotEquals(palette.surface, palette.surfaceVariant, "$name needs a distinct raised surface")
     }
     val overlay = palette.scrim.copy(alpha = 0.64f).compositeOver(palette.surface)
     assertTrue(overlay.luminance() < palette.surface.luminance(), "$name scrim should darken the screen")
   }
 
-  private fun forEachTheme(block: (String, PrismColorPalette, PrismVariant) -> Unit) {
-    PrismThemeFamily.entries.forEach { family ->
-      PrismVariant.entries.forEach { variant ->
-        val palette = when (family) {
-          PrismThemeFamily.Brutalist -> when (variant) {
-            PrismVariant.Dark -> DarkPalette.create()
-            PrismVariant.Light -> LightPalette.create()
-          }
+  @Test
+  fun catppuccinFlavoursHaveDistinctPalettesAndTheExpectedAppearance() {
+    val palettes = PrismCatppuccinFlavour.entries.map { flavour ->
+      val definition = CatppuccinThemeDefinition(flavour)
+      definition.createPalette(definition.createColorTokens())
+    }
+    assertEquals(4, palettes.map { it.background }.toSet().size)
+    PrismCatppuccinFlavour.entries.zip(palettes).forEach { (flavour, palette) ->
+      assertEquals(flavour.isDark, palette.background.luminance() < palette.contentPrimary.luminance())
+    }
+  }
 
-          PrismThemeFamily.Catppuccin -> CatppuccinThemeDefinition(variant).let {
-            it.createPalette(it.createColorTokens())
-          }
-        }
-        block("$family/$variant", palette, variant)
+  private fun forEachTheme(block: (String, PrismColorPalette, Boolean) -> Unit) {
+    PrismVariant.entries.forEach { variant ->
+      val palette = when (variant) {
+        PrismVariant.Dark -> DarkPalette.create()
+        PrismVariant.Light -> LightPalette.create()
       }
+      block("Brutalist/$variant", palette, variant == PrismVariant.Dark)
+    }
+    PrismCatppuccinFlavour.entries.forEach { flavour ->
+      val definition = CatppuccinThemeDefinition(flavour)
+      val palette = definition.createPalette(definition.createColorTokens())
+      block("Catppuccin/$flavour", palette, flavour.isDark)
     }
   }
 

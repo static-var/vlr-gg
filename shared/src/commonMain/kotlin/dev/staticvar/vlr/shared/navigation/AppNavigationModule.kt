@@ -235,8 +235,10 @@ internal fun appNavigationModule(): Module = module {
       SettingsRoute(
         isDark = appearance.isDark(isSystemInDarkTheme()),
         family = appearance.family,
+        catppuccinFlavour = appearance.catppuccinFlavour,
         onModeSelected = repository::setMode,
         onFamilySelected = repository::setFamily,
+        onFlavourSelected = repository::setCatppuccinFlavour,
         onBack = LocalVlrAppState.current::navigateUp,
         modifier = Modifier.fillMaxSize(),
       )

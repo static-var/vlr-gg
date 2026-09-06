@@ -22,11 +22,14 @@ import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
-import dev.staticvar.designsystem.component.navigation.PrismSegmentedFilterTab
-import dev.staticvar.designsystem.component.navigation.PrismSegmentedFilterTabs
+import dev.staticvar.designsystem.component.dropdown.PrismDropdown
+import dev.staticvar.designsystem.component.dropdown.PrismDropdownOption
+import dev.staticvar.designsystem.component.selection.PrismSegmentedButtonOption
+import dev.staticvar.designsystem.component.selection.PrismSegmentedButtons
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.settings.AppearanceMode
+import dev.staticvar.vlr.core.settings.CatppuccinFlavour
 import dev.staticvar.vlr.core.settings.ThemeFamily
 
 /** Appearance controls shared by Android, iOS, and desktop. Changes apply immediately. */
@@ -34,8 +37,10 @@ import dev.staticvar.vlr.core.settings.ThemeFamily
 public fun SettingsRoute(
   isDark: Boolean,
   family: ThemeFamily,
+  catppuccinFlavour: CatppuccinFlavour,
   onModeSelected: (AppearanceMode) -> Unit,
   onFamilySelected: (ThemeFamily) -> Unit,
+  onFlavourSelected: (CatppuccinFlavour) -> Unit,
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -53,39 +58,61 @@ public fun SettingsRoute(
     )
     PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
       Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-        PrismSectionTitle(title = "Appearance", preLabel = "display")
-        Text("Choose a light or dark look.", style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
-        PrismSegmentedFilterTabs(
-          tabs = modeTabs,
-          selectedTabId = if (isDark) AppearanceMode.Dark.name else AppearanceMode.Light.name,
-          onTabSelected = { onModeSelected(AppearanceMode.valueOf(it.id)) },
+        PrismSectionTitle(title = "Theme", preLabel = "color")
+        Text(
+          "Choose the palette that feels right for you.",
+          style = Prism.typography.bodySmall,
+          color = Prism.color.bodyColor,
+        )
+        PrismSegmentedButtons(
+          options = familyOptions,
+          selectedOptionId = family.name,
+          onOptionSelected = { onFamilySelected(ThemeFamily.valueOf(it.id)) },
         )
       }
     }
     PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
       Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-        PrismSectionTitle(title = "Theme", preLabel = "color")
-        Text(
-          "Catppuccin uses Latte in light mode and Frappé in dark mode.",
-          style = Prism.typography.bodySmall,
-          color = Prism.color.bodyColor,
-        )
-        PrismSegmentedFilterTabs(
-          tabs = familyTabs,
-          selectedTabId = family.name,
-          onTabSelected = { onFamilySelected(ThemeFamily.valueOf(it.id)) },
-        )
+        if (family == ThemeFamily.Brutalist) {
+          PrismSectionTitle(title = "Appearance", preLabel = "display")
+          Text("Choose a light or dark look.", style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
+          PrismSegmentedButtons(
+            options = modeOptions,
+            selectedOptionId = if (isDark) AppearanceMode.Dark.name else AppearanceMode.Light.name,
+            onOptionSelected = { onModeSelected(AppearanceMode.valueOf(it.id)) },
+          )
+        } else {
+          PrismSectionTitle(title = "Flavour", preLabel = "catppuccin")
+          Text(
+            "Latte is light. Frappé, Macchiato, and Mocha offer three shades of dark.",
+            style = Prism.typography.bodySmall,
+            color = Prism.color.bodyColor,
+          )
+          PrismDropdown(
+            modifier = Modifier.fillMaxWidth(),
+            options = flavourOptions,
+            selectedOptionId = catppuccinFlavour.name,
+            onOptionSelected = { onFlavourSelected(CatppuccinFlavour.valueOf(it.id)) },
+          )
+        }
       }
     }
   }
 }
 
-private val modeTabs = listOf(
-  PrismSegmentedFilterTab(AppearanceMode.Light.name, "Light"),
-  PrismSegmentedFilterTab(AppearanceMode.Dark.name, "Dark"),
+private val modeOptions = listOf(
+  PrismSegmentedButtonOption(AppearanceMode.Light.name, "Light"),
+  PrismSegmentedButtonOption(AppearanceMode.Dark.name, "Dark"),
 )
 
-private val familyTabs = listOf(
-  PrismSegmentedFilterTab(ThemeFamily.Brutalist.name, "Brutalist"),
-  PrismSegmentedFilterTab(ThemeFamily.Catppuccin.name, "Catppuccin"),
+private val familyOptions = listOf(
+  PrismSegmentedButtonOption(ThemeFamily.Brutalist.name, "Brutalist"),
+  PrismSegmentedButtonOption(ThemeFamily.Catppuccin.name, "Catppuccin"),
+)
+
+private val flavourOptions = listOf(
+  PrismDropdownOption(CatppuccinFlavour.Latte.name, "Latte"),
+  PrismDropdownOption(CatppuccinFlavour.Frappe.name, "Frappé"),
+  PrismDropdownOption(CatppuccinFlavour.Macchiato.name, "Macchiato"),
+  PrismDropdownOption(CatppuccinFlavour.Mocha.name, "Mocha"),
 )

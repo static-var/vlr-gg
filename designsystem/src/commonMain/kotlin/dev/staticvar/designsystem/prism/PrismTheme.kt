@@ -5,23 +5,37 @@
 package dev.staticvar.designsystem.prism
 
 import androidx.compose.runtime.Composable
-import dev.staticvar.designsystem.theme.catppuccin.CatppuccinTheme
-import dev.staticvar.designsystem.theme.dark.DarkTheme
-import dev.staticvar.designsystem.theme.light.LightTheme
+import androidx.compose.runtime.remember
+import dev.staticvar.designsystem.prism.theme.PrismThemeDefinition
+import dev.staticvar.designsystem.prism.theme.ProvidePrismTheme
+import dev.staticvar.designsystem.theme.catppuccin.CatppuccinThemeDefinition
+import dev.staticvar.designsystem.theme.dark.DarkThemeDefinition
+import dev.staticvar.designsystem.theme.light.LightThemeDefinition
 
-/** Applies a color [family] in the requested light or dark [variant]. */
+/**
+ * Applies a theme [family]. Brutalist uses [variant]; Catppuccin uses [catppuccinFlavour].
+ * When omitted, the Catppuccin flavour follows [variant] with Latte or Frappé.
+ */
 @Composable
 public fun PrismTheme(
   variant: PrismVariant = PrismVariant.Light,
   family: PrismThemeFamily = PrismThemeFamily.Brutalist,
+  catppuccinFlavour: PrismCatppuccinFlavour = if (variant == PrismVariant.Light) {
+    PrismCatppuccinFlavour.Latte
+  } else {
+    PrismCatppuccinFlavour.Frappe
+  },
   content: @Composable () -> Unit,
 ) {
-  when (family) {
-    PrismThemeFamily.Brutalist -> when (variant) {
-      PrismVariant.Light -> LightTheme(content)
-      PrismVariant.Dark -> DarkTheme(content)
-    }
+  val definition: PrismThemeDefinition<*> = remember(family, variant, catppuccinFlavour) {
+    when (family) {
+      PrismThemeFamily.Brutalist -> when (variant) {
+        PrismVariant.Light -> LightThemeDefinition
+        PrismVariant.Dark -> DarkThemeDefinition
+      }
 
-    PrismThemeFamily.Catppuccin -> CatppuccinTheme(variant, content)
+      PrismThemeFamily.Catppuccin -> CatppuccinThemeDefinition(catppuccinFlavour)
+    }
   }
+  ProvidePrismTheme(definition = definition, content = content)
 }

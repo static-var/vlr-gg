@@ -12,10 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.PrismCatppuccinFlavour
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.vlr.core.settings.AppearanceRepository
+import dev.staticvar.vlr.core.settings.CatppuccinFlavour
 import dev.staticvar.vlr.core.settings.ThemeFamily
 import dev.staticvar.vlr.shared.appearance.ApplyPlatformAppearance
 import dev.staticvar.vlr.shared.navigation.AppNavHost
@@ -40,8 +42,17 @@ public fun App() {
     ThemeFamily.Brutalist -> PrismThemeFamily.Brutalist
     ThemeFamily.Catppuccin -> PrismThemeFamily.Catppuccin
   }
-  PrismTheme(variant = variant, family = family) {
-    ApplyPlatformAppearance(isDark = isDark, followSystem = appearance.mode == null)
+  val flavour = when (appearance.catppuccinFlavour) {
+    CatppuccinFlavour.Latte -> PrismCatppuccinFlavour.Latte
+    CatppuccinFlavour.Frappe -> PrismCatppuccinFlavour.Frappe
+    CatppuccinFlavour.Macchiato -> PrismCatppuccinFlavour.Macchiato
+    CatppuccinFlavour.Mocha -> PrismCatppuccinFlavour.Mocha
+  }
+  PrismTheme(variant = variant, family = family, catppuccinFlavour = flavour) {
+    ApplyPlatformAppearance(
+      isDark = isDark,
+      followSystem = appearance.family == ThemeFamily.Brutalist && appearance.mode == null,
+    )
     Surface(
       modifier = Modifier.fillMaxSize(),
       color = Prism.color.background,

@@ -8,8 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
+import dev.staticvar.designsystem.prism.PrismCatppuccinFlavour
 import dev.staticvar.designsystem.prism.PrismTheme
+import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
+import dev.staticvar.vlr.core.settings.CatppuccinFlavour
 import dev.staticvar.vlr.core.settings.ThemeFamily
 
 @PrismPreview
@@ -19,8 +22,29 @@ internal fun SettingsPreview(@PreviewParameter(PrismPreviewProvider::class) vari
     SettingsRoute(
       isDark = variant == PrismVariant.Dark,
       family = ThemeFamily.Brutalist,
+      catppuccinFlavour = CatppuccinFlavour.Frappe,
       onModeSelected = {},
       onFamilySelected = {},
+      onFlavourSelected = {},
+      onBack = {},
+    )
+  }
+}
+
+@PrismPreview
+@Composable
+internal fun CatppuccinSettingsPreview() {
+  PrismTheme(
+    family = PrismThemeFamily.Catppuccin,
+    catppuccinFlavour = PrismCatppuccinFlavour.Macchiato,
+  ) {
+    SettingsRoute(
+      isDark = true,
+      family = ThemeFamily.Catppuccin,
+      catppuccinFlavour = CatppuccinFlavour.Macchiato,
+      onModeSelected = {},
+      onFamilySelected = {},
+      onFlavourSelected = {},
       onBack = {},
     )
   }

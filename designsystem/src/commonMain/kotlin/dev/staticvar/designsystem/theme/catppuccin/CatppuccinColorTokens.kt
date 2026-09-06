@@ -58,5 +58,37 @@ internal data class CatppuccinColorTokens(
       red = Color(0xFFE78284),
       blue = Color(0xFF8CAAEE),
     )
+    val Macchiato: CatppuccinColorTokens = CatppuccinColorTokens(
+      base = Color(0xFF24273A),
+      mantle = Color(0xFF1E2030),
+      crust = Color(0xFF181926),
+      surface0 = Color(0xFF363A4F),
+      overlay2 = Color(0xFF939AB7),
+      text = Color(0xFFCAD3F5),
+      subtext1 = Color(0xFFB8C0E0),
+      subtext0 = Color(0xFFA5ADCB),
+      mauve = Color(0xFFC6A0F6),
+      lavender = Color(0xFFB7BDF8),
+      green = Color(0xFFA6DA95),
+      yellow = Color(0xFFEED49F),
+      red = Color(0xFFED8796),
+      blue = Color(0xFF8AADF4),
+    )
+    val Mocha: CatppuccinColorTokens = CatppuccinColorTokens(
+      base = Color(0xFF1E1E2E),
+      mantle = Color(0xFF181825),
+      crust = Color(0xFF11111B),
+      surface0 = Color(0xFF313244),
+      overlay2 = Color(0xFF9399B2),
+      text = Color(0xFFCDD6F4),
+      subtext1 = Color(0xFFBAC2DE),
+      subtext0 = Color(0xFFA6ADC8),
+      mauve = Color(0xFFCBA6F7),
+      lavender = Color(0xFFB4BEFE),
+      green = Color(0xFFA6E3A1),
+      yellow = Color(0xFFF9E2AF),
+      red = Color(0xFFF38BA8),
+      blue = Color(0xFF89B4FA),
+    )
   }
 }
