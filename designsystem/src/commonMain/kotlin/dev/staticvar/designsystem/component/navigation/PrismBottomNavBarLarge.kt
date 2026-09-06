@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Icon
@@ -26,7 +26,7 @@ import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
 /**
- * Large-form-factor brutalist navigation rail.
+ * Large-form-factor brutalist navigation rail with a preferred width of 220 dp.
  */
 @Composable
 public fun PrismBottomNavBarLarge(
@@ -36,7 +36,7 @@ public fun PrismBottomNavBarLarge(
   modifier: Modifier = Modifier,
 ) {
   PrismSurface(
-    modifier = modifier.fillMaxHeight().widthIn(min = 220.dp),
+    modifier = modifier.fillMaxHeight().width(220.dp),
     color = Prism.color.background,
     shape = Prism.shapes.medium,
     border = BorderStroke(Prism.dimens.strokeDefault, Prism.color.stroke),
