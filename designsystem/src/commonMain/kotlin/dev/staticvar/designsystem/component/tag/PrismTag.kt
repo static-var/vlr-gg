@@ -18,18 +18,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
 private object PrismTagConstants {
+  val ExtraHorizontalPadding = 2.dp
   val LabelFontSize = 10.sp
   val LabelLineHeight = 12.sp
   val LabelLetterSpacing = 0.4.sp
 }
 
 /**
- * Compact, non-interactive brutalist tag for status and metadata labels.
+ * Compact, non-interactive tag for status and metadata labels.
  *
  * The visual treatment is supplied by [PrismTagStyle], which owns token-backed color and border
  * decisions while this composable keeps the tag layout and content behavior.
@@ -91,6 +93,7 @@ private fun rememberPrismTagVisualState(style: PrismTagStyle, enabled: Boolean):
 @Composable
 private fun PrismTagContent(text: String, contentColor: Color, leadingContent: (@Composable () -> Unit)?) {
   Row(
+    modifier = Modifier.padding(horizontal = PrismTagConstants.ExtraHorizontalPadding),
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
     verticalAlignment = Alignment.CenterVertically,
   ) {

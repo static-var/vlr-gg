@@ -14,11 +14,11 @@ import dev.staticvar.designsystem.prism.Prism
 @Composable
 public fun PrismHeader(modifier: Modifier = Modifier, text: String) {
   Text(
-    "// $text",
+    "// ${text.uppercase()}",
     modifier.padding(Prism.dimens.spacingXs),
     style = Prism.typography.labelAlt,
     color = Prism.color.labelColor,
     maxLines = 1,
-    overflow = TextOverflow.Ellipsis
+    overflow = TextOverflow.Ellipsis,
   )
 }

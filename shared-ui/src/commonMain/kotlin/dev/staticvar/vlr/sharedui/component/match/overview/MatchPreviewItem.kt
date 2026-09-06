@@ -62,7 +62,7 @@ public fun MatchPreviewItem(modifier: Modifier = Modifier, matchPreview: MatchPr
       Row(
         modifier = Modifier
           .fillMaxWidth()
-          .padding(Prism.dimens.spacingXs),
+          .padding(top = Prism.dimens.spacingS, start = Prism.dimens.spacingS, end = Prism.dimens.spacingS),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
       ) {
@@ -70,7 +70,6 @@ public fun MatchPreviewItem(modifier: Modifier = Modifier, matchPreview: MatchPr
           text = matchPreview.series,
           style = Prism.typography.label,
           color = Prism.color.labelColor,
-          modifier = Modifier.padding(Prism.dimens.spacingXs),
         )
       }
     }

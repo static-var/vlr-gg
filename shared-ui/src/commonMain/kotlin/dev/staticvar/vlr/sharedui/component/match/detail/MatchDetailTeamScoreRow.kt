@@ -57,7 +57,7 @@ public fun MatchDetailTeamScoreRow(
         contentDescription = teamName,
         size = PrismIconSize.Large,
         style = PrismIconStyle.Bordered,
-        tint = if (isWinner) PrismIconTint.Alt else PrismIconTint.Primary,
+        tint = PrismIconTint.None,
       )
     }
     Text(
