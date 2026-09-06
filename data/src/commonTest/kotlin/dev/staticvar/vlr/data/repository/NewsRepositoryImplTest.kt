@@ -9,6 +9,8 @@ import app.cash.turbine.test
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.data.News
 import dev.staticvar.vlr.localsource.database.VlrDatabase
+import dev.staticvar.vlr.remotesource.news.ArticleBlockDto
+import dev.staticvar.vlr.remotesource.news.ArticleTextRunDto
 import dev.staticvar.vlr.remotesource.news.NewsArticleDto
 import dev.staticvar.vlr.remotesource.news.NewsDataSource
 import dev.staticvar.vlr.remotesource.news.NewsItemDto
@@ -102,6 +104,37 @@ class NewsRepositoryImplTest {
   }
 
   @Test
+  fun refreshNews_preserves_cached_article_media_and_placeholder_content() = runTest(dispatcher) {
+    val content = "Cached {{link_0}}\n\n{image_0}\n\n{video_0}"
+    dataSource.articleResults["story"] = Result.success(
+      NewsArticleDto(
+        id = "story",
+        title = "Original title",
+        content = content,
+        blocks = listOf(ArticleBlockDto("paragraph", runs = listOf(ArticleTextRunDto("Cached", bold = true))),
+          ArticleBlockDto("image", url = "https://example.com/image.jpg")),
+        links = listOf(mapOf("text" to "Source", "url" to "https://example.com")),
+        images = listOf("image.jpg"),
+        videos = listOf("video.mp4"),
+      ),
+    )
+    assertTrue(repository.refreshNewsArticle("story").isSuccess)
+    val cachedMedia = database.newsQueries.getNewsMedia("story").executeAsList()
+    assertEquals(5, cachedMedia.size)
+
+    dataSource.listResult = Result.success(
+      listOf(NewsItemDto(url = "story", title = "Updated title", description = "Updated summary")),
+    )
+    assertTrue(repository.refreshNews().isSuccess)
+
+    val stored = database.newsQueries.getNewsById("story").executeAsOne()
+    assertEquals("Updated title", stored.title)
+    assertEquals("Updated summary", stored.description)
+    assertEquals(content, stored.content_html)
+    assertEquals(cachedMedia, database.newsQueries.getNewsMedia("story").executeAsList())
+  }
+
+  @Test
   fun getNewsList_emitsStoredItems() = runTest(dispatcher) {
     dataSource.listResult = Result.success(
       listOf(
@@ -145,9 +178,13 @@ class NewsRepositoryImplTest {
       NewsArticleDto(
         id = "story",
         title = "Story",
-        content = "<p>Remote Body</p>",
-        links = listOf(mapOf("text" to "Source", "href" to "https://example.com")),
-        images = listOf("img.png"),
+        content = "Remote {{link_2}}\n\n{video_0}\n\n{image_1}",
+        links = listOf(
+          mapOf("text" to "Earlier", "url" to "https://example.com/earlier"),
+          emptyMap(),
+          mapOf("text" to "Source", "url" to "https://example.com"),
+        ),
+        images = listOf("", "img.png"),
         videos = listOf("clip.mp4"),
         date = "2024-03-01",
         author = "Reporter",
@@ -165,17 +202,18 @@ class NewsRepositoryImplTest {
     advanceUntilIdle()
 
     val storedArticle = database.newsQueries.getNewsById("story").executeAsOne()
-    assertEquals("<p>Remote Body</p>", storedArticle.content_html)
+    assertEquals("Remote {{link_2}}\n\n{video_0}\n\n{image_1}", storedArticle.content_html)
     val storedMedia = database.newsQueries.getNewsMedia("story").executeAsList()
-    assertEquals(3, storedMedia.size)
+    assertEquals(6, storedMedia.size)
 
     repository.getNewsArticle("story").test {
       val article = awaitItem()
       requireNotNull(article)
-      assertEquals("<p>Remote Body</p>", article.contentHtml)
-      assertEquals(listOf("img.png"), article.media.images)
+      assertEquals("Remote {{link_2}}\n\n{video_0}\n\n{image_1}", article.contentHtml)
+      assertEquals(listOf("", "img.png"), article.media.images)
       assertEquals(listOf("clip.mp4"), article.media.videos)
-      assertEquals("Source", article.media.links.firstOrNull()?.text)
+      assertEquals(listOf("Earlier", "", "Source"), article.media.links.map { it.text })
+      assertEquals("https://example.com", article.media.links[2].url)
       cancelAndIgnoreRemainingEvents()
     }
 

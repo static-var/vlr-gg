@@ -71,7 +71,21 @@ internal class NewsRepositoryImpl(
           remoteIds += entity.id
           val current = existing[entity.id]
           val merged = mergeListEntity(entity, current)
-          queries.insertNews(merged)
+          if (current == null) {
+            queries.insertNews(merged)
+          } else {
+            queries.updateNews(
+              url = merged.url,
+              title = merged.title,
+              author = merged.author,
+              date = merged.date,
+              cover_url = merged.cover_url,
+              description = merged.description,
+              content_html = merged.content_html,
+              last_updated = merged.last_updated,
+              id = merged.id,
+            )
+          }
         }
 
         val staleIds = existing.keys - remoteIds

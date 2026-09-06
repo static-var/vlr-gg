@@ -34,6 +34,18 @@ CREATE INDEX idx_news_media_type ON news_media(news_id, media_type);
 insertNews:
 INSERT OR REPLACE INTO news VALUES ?;
 
+updateNews:
+UPDATE news SET
+    url = :url,
+    title = :title,
+    author = :author,
+    date = :date,
+    cover_url = :cover_url,
+    description = :description,
+    content_html = :content_html,
+    last_updated = :last_updated
+WHERE id = :id;
+
 getAllNews:
 SELECT * FROM news ORDER BY date DESC;
 
