@@ -15,7 +15,6 @@ import dev.staticvar.vlr.localsource.database.Events
 import dev.staticvar.vlr.localsource.database.Team_completed_matches
 import dev.staticvar.vlr.localsource.database.Team_roster
 import dev.staticvar.vlr.localsource.database.Team_upcoming_matches
-import dev.staticvar.vlr.remotesource.common.EventStatus
 import dev.staticvar.vlr.remotesource.common.MatchStatus
 import dev.staticvar.vlr.remotesource.events.EventDetailsDto
 import dev.staticvar.vlr.remotesource.events.EventListDto
@@ -39,7 +38,7 @@ internal fun EventListDto.toEntity(now: Long = Clock.System.now().toEpochMillise
   id = id,
   name = title,
   subtitle = "",
-  status = (status ?: EventStatus.UPCOMING).name,
+  status = status?.name ?: "UNKNOWN",
   prizes = prize,
   dates = dates,
   region = location.ifBlank { null },
@@ -54,7 +53,7 @@ internal fun EventDetailsDto.toEventEntity(now: Long = Clock.System.now().toEpoc
   id = id,
   name = title,
   subtitle = subtitle,
-  status = (status ?: EventStatus.UPCOMING).name, // default to UPCOMING when null
+  status = status?.name ?: "UNKNOWN",
   prizes = prize,
   dates = dates,
   region = location.ifBlank { null },

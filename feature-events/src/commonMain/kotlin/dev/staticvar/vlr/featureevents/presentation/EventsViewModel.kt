@@ -85,7 +85,8 @@ private fun eventStatusToFilter(status: EventStatus): EventStatusFilter = when (
   EventStatus.ONGOING -> EventStatusFilter.Ongoing
   EventStatus.UPCOMING -> EventStatusFilter.Upcoming
   EventStatus.COMPLETED -> EventStatusFilter.Completed
-  EventStatus.UNKNOWN -> EventStatusFilter.Ongoing
+  EventStatus.PAUSED -> EventStatusFilter.Paused
+  EventStatus.UNKNOWN -> EventStatusFilter.Unknown
 }
 
 private fun EventsUiState.withEvents(
@@ -114,9 +115,12 @@ private fun List<EventPreview>.filterByStatus(filter: EventStatusFilter): List<E
       EventStatusFilter.Ongoing -> event.status == EventStatus.ONGOING
       EventStatusFilter.Upcoming -> event.status == EventStatus.UPCOMING
       EventStatusFilter.Completed -> event.status == EventStatus.COMPLETED
+      EventStatusFilter.Paused -> event.status == EventStatus.PAUSED
+      EventStatusFilter.Unknown -> event.status == EventStatus.UNKNOWN
     }
   }
   return when (filter) {
+    EventStatusFilter.Paused, EventStatusFilter.Unknown,
     EventStatusFilter.Ongoing -> filtered.sortedBy { event -> event.dateRangeSortValue(DateRangeBoundary.Start, nullsLast = true) }
     EventStatusFilter.Upcoming -> filtered.sortedBy { event -> event.dateRangeSortValue(DateRangeBoundary.Start, nullsLast = true) }
     EventStatusFilter.Completed -> filtered.sortedByDescending { event ->

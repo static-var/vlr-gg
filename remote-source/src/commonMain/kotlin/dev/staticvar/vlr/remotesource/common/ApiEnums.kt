@@ -42,6 +42,7 @@ object MatchStatusNullableSerializer : KSerializer<MatchStatus?> {
 enum class EventStatus(val wireName: String) {
   COMPLETED("completed"),
   ONGOING("ongoing"),
+  PAUSED("paused"),
   UPCOMING("upcoming"),
   ;
 

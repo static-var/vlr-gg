@@ -89,6 +89,7 @@ public fun EventPreviewItem(
 private val EventStatus.label: String
   get() = when (this) {
     EventStatus.ONGOING -> "ONGOING"
+    EventStatus.PAUSED -> "PAUSED"
     EventStatus.UPCOMING -> "UPCOMING"
     EventStatus.COMPLETED -> "COMPLETED"
     EventStatus.UNKNOWN -> "UNKNOWN"
@@ -97,6 +98,7 @@ private val EventStatus.label: String
 private val EventStatus.tagStyle: PrismTagStyle
   get() = when (this) {
     EventStatus.ONGOING -> PrismTagStyle.Danger
+    EventStatus.PAUSED -> PrismTagStyle.Neutral
     EventStatus.UPCOMING -> PrismTagStyle.Info
     EventStatus.COMPLETED -> PrismTagStyle.Success
     EventStatus.UNKNOWN -> PrismTagStyle.Neutral

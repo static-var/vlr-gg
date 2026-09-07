@@ -29,6 +29,29 @@ class EventsViewModelTest {
   private val dispatchers = TestDispatcherProvider(dispatcher)
 
   @Test
+  fun pausedAndUnknownEventsRemainAccessibleOutsideUpcoming() = runTest(dispatcher) {
+    val repository = FakeEventRepository(
+      events = listOf(
+        eventPreview(id = "paused", status = EventStatus.PAUSED),
+        eventPreview(id = "unknown", status = EventStatus.UNKNOWN),
+        eventPreview(id = "upcoming", status = EventStatus.UPCOMING),
+      ),
+    )
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    assertEquals(EventStatusFilter.Paused, viewModel.uiState.value.selectedStatus)
+    assertEquals(listOf("paused"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+    viewModel.selectFilter(EventStatusFilter.Unknown)
+    advanceUntilIdle()
+    assertEquals(listOf("unknown"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+    viewModel.selectFilter(EventStatusFilter.Upcoming)
+    advanceUntilIdle()
+    assertEquals(listOf("upcoming"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+    viewModel.clear()
+  }
+
+  @Test
   fun initSelectsFilterFromFirstEventStatus() {
     runTest(dispatcher) {
       val repository =

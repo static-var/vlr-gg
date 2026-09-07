@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.featureevents.presentation
 
+import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.model.EventPreview
 
 public data class EventsUiState(
@@ -19,4 +20,15 @@ public enum class EventStatusFilter {
   Ongoing,
   Upcoming,
   Completed,
+  Paused,
+  Unknown,
 }
+
+internal val EventsUiState.visibleStatusFilters: List<EventStatusFilter>
+  get() = EventStatusFilter.entries.filter { filter ->
+    filter == selectedStatus || when (filter) {
+      EventStatusFilter.Paused -> events.any { it.status == EventStatus.PAUSED }
+      EventStatusFilter.Unknown -> events.any { it.status == EventStatus.UNKNOWN }
+      else -> true
+    }
+  }

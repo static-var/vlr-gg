@@ -79,6 +79,7 @@ data class EventStanding(
 enum class EventStatus {
   UPCOMING,
   ONGOING,
+  PAUSED,
   COMPLETED,
   UNKNOWN,
 }

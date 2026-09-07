@@ -51,12 +51,7 @@ internal fun EventsOverviewScreen(
       subtitle = "Tournaments around the world",
     )
     PrismTabs(
-      tabs =
-      listOf(
-        PrismTab(id = EventStatusFilter.Ongoing.name, label = "Ongoing"),
-        PrismTab(id = EventStatusFilter.Upcoming.name, label = "Upcoming"),
-        PrismTab(id = EventStatusFilter.Completed.name, label = "Completed"),
-      ),
+      tabs = uiState.visibleStatusFilters.map { filter -> PrismTab(id = filter.name, label = filter.name) },
       selectedTabId = uiState.selectedStatus.name,
       onTabSelected = { onFilterSelected(EventStatusFilter.valueOf(it.id)) },
     )

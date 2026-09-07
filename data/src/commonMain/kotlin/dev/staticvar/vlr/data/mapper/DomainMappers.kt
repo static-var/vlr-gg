@@ -603,6 +603,7 @@ internal fun aggregateEventDetails(
 private fun String?.toEventStatus(): EventStatus = when (this?.uppercase()) {
   "UPCOMING" -> EventStatus.UPCOMING
   "ONGOING" -> EventStatus.ONGOING
+  "PAUSED" -> EventStatus.PAUSED
   "COMPLETED" -> EventStatus.COMPLETED
   else -> EventStatus.UNKNOWN
 }

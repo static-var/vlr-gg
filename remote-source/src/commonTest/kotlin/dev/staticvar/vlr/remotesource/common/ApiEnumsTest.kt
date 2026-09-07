@@ -28,6 +28,7 @@ class ApiEnumsTest {
       "upcoming" to EventStatus.UPCOMING,
       "completed" to EventStatus.COMPLETED,
       "ongoing" to EventStatus.ONGOING,
+      "paused" to EventStatus.PAUSED,
       "brand_new" to null,
     ),
   )

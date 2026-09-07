@@ -10,6 +10,7 @@ import dev.staticvar.vlr.domain.model.EventStatus
 internal val EventStatus.eventDetailLabel: String
   get() = when (this) {
     EventStatus.ONGOING -> "ONGOING"
+    EventStatus.PAUSED -> "PAUSED"
     EventStatus.UPCOMING -> "UPCOMING"
     EventStatus.COMPLETED -> "COMPLETED"
     EventStatus.UNKNOWN -> "UNKNOWN"
@@ -18,6 +19,7 @@ internal val EventStatus.eventDetailLabel: String
 internal val EventStatus.eventDetailTagStyle: PrismTagStyle
   get() = when (this) {
     EventStatus.ONGOING -> PrismTagStyle.Danger
+    EventStatus.PAUSED -> PrismTagStyle.Neutral
     EventStatus.UPCOMING -> PrismTagStyle.Info
     EventStatus.COMPLETED -> PrismTagStyle.Success
     EventStatus.UNKNOWN -> PrismTagStyle.Neutral

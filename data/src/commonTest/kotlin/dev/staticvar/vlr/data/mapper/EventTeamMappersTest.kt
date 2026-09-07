@@ -4,9 +4,11 @@
  */
 package dev.staticvar.vlr.data.mapper
 
+import dev.staticvar.vlr.localsource.database.GetEventsWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.Events
 import dev.staticvar.vlr.remotesource.common.EventStatus
 import dev.staticvar.vlr.remotesource.common.MatchStatus
+import dev.staticvar.vlr.remotesource.events.EventListDto
 import dev.staticvar.vlr.remotesource.events.EventDetailsDto
 import dev.staticvar.vlr.remotesource.events.EventMatchDto
 import dev.staticvar.vlr.remotesource.events.EventMatchTeamDto
@@ -23,6 +25,28 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class EventTeamMappersTest {
+
+  @Test
+  fun `event status survives list persistence and unknown stays unknown`() {
+    listOf(EventStatus.PAUSED to "PAUSED", null to "UNKNOWN").forEach { (status, storedStatus) ->
+      val entity = EventListDto(id = "2634", status = status).toEntity(now = 1L)
+      assertEquals(storedStatus, entity.status)
+      assertEquals(storedStatus, EventDetailsDto(id = "2634", status = status).toEventEntity(now = 1L).status)
+      val cached = GetEventsWithFavoriteStatus(
+        id = entity.id,
+        name = entity.name,
+        subtitle = entity.subtitle,
+        status = entity.status,
+        prizes = entity.prizes,
+        dates = entity.dates,
+        region = entity.region,
+        logo_url = entity.logo_url,
+        last_updated = entity.last_updated,
+        is_favorite = 0L,
+      )
+      assertEquals(storedStatus, cached.toEventPreview().status.name)
+    }
+  }
 
   @Test
   fun `event mapping positive`() {
@@ -124,7 +148,7 @@ class EventTeamMappersTest {
     )
 
     val eventEntity = dto.toEventEntity(now = 5L)
-    assertEquals(EventStatus.UPCOMING.name, eventEntity.status) // null status normalized to UPCOMING
+    assertEquals("UNKNOWN", eventEntity.status)
     assertTrue(dto.toPrizeEntities().isEmpty())
     assertEquals(1, dto.toTeamEntities().size)
     assertEquals(null, dto.toTeamEntities().first().team_id) // blank id -> null

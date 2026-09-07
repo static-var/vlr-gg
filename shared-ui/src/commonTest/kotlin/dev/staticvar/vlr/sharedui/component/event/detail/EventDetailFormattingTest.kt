@@ -13,6 +13,12 @@ import kotlin.test.assertEquals
 
 class EventDetailFormattingTest {
   @Test
+  fun pausedAndUnknownStatusesKeepTheirOwnLabels() {
+    assertEquals("PAUSED", EventStatus.PAUSED.eventDetailLabel)
+    assertEquals("UNKNOWN", EventStatus.UNKNOWN.eventDetailLabel)
+  }
+
+  @Test
   fun eventMetaSkipsBlankValues() {
     val event = eventDetails(region = "Americas", dates = "", prize = "$50,000")
 
