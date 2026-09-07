@@ -135,6 +135,30 @@ class NewsRepositoryImplTest {
   }
 
   @Test
+  fun refreshNews_preservesServerOrder_afterReorderingAndArticleRefresh() = runTest(dispatcher) {
+    val stories = listOf("zebra", "alpha", "middle").map { id ->
+      NewsItemDto(url = id, title = id, date = "2026-09-06")
+    }
+    dataSource.listResult = Result.success(stories)
+    assertTrue(repository.refreshNews().isSuccess)
+
+    repository.getNewsList().test {
+      assertEquals(listOf("zebra", "alpha", "middle"), awaitItem().map { it.id })
+
+      dataSource.listResult = Result.success(stories.reversed())
+      assertTrue(repository.refreshNews().isSuccess)
+      assertEquals(listOf("middle", "alpha", "zebra"), awaitItem().map { it.id })
+
+      dataSource.articleResults["alpha"] = Result.success(
+        NewsArticleDto(id = "alpha", title = "Updated article", content = "Content"),
+      )
+      assertTrue(repository.refreshNewsArticle("alpha").isSuccess)
+      assertEquals(listOf("middle", "alpha", "zebra"), awaitItem().map { it.id })
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun getNewsList_emitsStoredItems() = runTest(dispatcher) {
     dataSource.listResult = Result.success(
       listOf(
@@ -239,6 +263,7 @@ class NewsRepositoryImplTest {
         cover_url = coverUrl,
         description = description,
         content_html = contentHtml,
+        list_position = null,
         last_updated = 0,
       ),
     )

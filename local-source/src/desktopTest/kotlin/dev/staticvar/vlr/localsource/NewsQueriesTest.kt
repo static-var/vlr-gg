@@ -103,6 +103,7 @@ class NewsQueriesTest {
         cover_url = "https://example.com/$id.png",
         description = null,
         content_html = null,
+        list_position = null,
         last_updated = 0
     )
 }

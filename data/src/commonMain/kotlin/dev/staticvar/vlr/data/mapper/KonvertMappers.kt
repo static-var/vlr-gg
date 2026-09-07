@@ -28,7 +28,7 @@ import kotlin.time.Clock
 
 // ----------------------------- News -----------------------------
 
-internal fun NewsItemDto.toEntity(): News = News(
+internal fun NewsItemDto.toEntity(listPosition: Long): News = News(
   id = url.toArticleId(),
   url = url.toAbsoluteVlrUrl(),
   title = title,
@@ -37,6 +37,7 @@ internal fun NewsItemDto.toEntity(): News = News(
   description = description,
   cover_url = "", // Not provided in NewsItemDto
   content_html = null,
+  list_position = listPosition,
   last_updated = Clock.System.now().toEpochMilliseconds(),
 )
 
@@ -49,6 +50,7 @@ internal fun NewsArticleDto.toEntity(): News = News(
   description = null,
   cover_url = images.firstOrNull() ?: "",
   content_html = content,
+  list_position = null,
   last_updated = Clock.System.now().toEpochMilliseconds(),
 )
 

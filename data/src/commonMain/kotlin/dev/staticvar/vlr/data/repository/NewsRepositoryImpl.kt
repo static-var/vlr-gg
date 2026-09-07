@@ -65,9 +65,9 @@ internal class NewsRepositoryImpl(
         val existing = queries.getAllNews().executeAsList().associateBy { it.id }
         val remoteIds = mutableSetOf<String>()
 
-        dtos.forEach { dto ->
-          val entity = dto.toEntity()
-          if (entity.id.isBlank()) return@forEach
+        dtos.forEachIndexed { index, dto ->
+          val entity = dto.toEntity(listPosition = index.toLong())
+          if (entity.id.isBlank()) return@forEachIndexed
           remoteIds += entity.id
           val current = existing[entity.id]
           val merged = mergeListEntity(entity, current)
@@ -82,6 +82,7 @@ internal class NewsRepositoryImpl(
               cover_url = merged.cover_url,
               description = merged.description,
               content_html = merged.content_html,
+              list_position = merged.list_position,
               last_updated = merged.last_updated,
               id = merged.id,
             )
@@ -95,14 +96,14 @@ internal class NewsRepositoryImpl(
   }
 
   override suspend fun refreshNewsArticle(articleId: String): Result<Unit> = withContext(dispatchers.io) {
-    val current = queries.getNewsById(articleId).executeAsOneOrNull()
     newsDataSource.article(articleId).mapCatching { dto ->
-      persistArticle(dto, articleId, current)
+      persistArticle(dto, articleId)
     }
   }
 
-  private fun persistArticle(dto: NewsArticleDto, requestedId: String, current: News?) {
+  private fun persistArticle(dto: NewsArticleDto, requestedId: String) {
     database.transaction {
+      val current = queries.getNewsById(requestedId).executeAsOneOrNull()
       val articleEntity = mergeArticleEntity(dto, requestedId, current)
       queries.insertNews(articleEntity)
       queries.deleteNewsMedia(articleEntity.id)
@@ -128,6 +129,7 @@ internal class NewsRepositoryImpl(
     val requestedUrl = requestedId.toAbsoluteVlrUrl()
     val base = dto.toEntity().copy(id = requestedId, url = current?.url ?: requestedUrl)
     return base.copy(
+      list_position = current?.list_position,
       description = current?.description,
       cover_url = base.cover_url.ifBlank { current?.cover_url ?: "" },
       date = base.date.ifBlank { current?.date ?: "" },
