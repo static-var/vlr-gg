@@ -33,4 +33,17 @@ public sealed interface PrismSheetStyle {
       @ReadOnlyComposable
       get() = BorderStroke(Prism.dimens.strokeDefault, Prism.color.stroke)
   }
+
+  public data object Modal : PrismSheetStyle {
+    override val frame: PrismFrameTokens
+      @Composable
+      @ReadOnlyComposable
+      get() = PrismFrameTokens(border = Prism.frames.panel.border)
+
+    override val border: BorderStroke
+      @Composable
+      @ReadOnlyComposable
+      get() = BorderStroke(Prism.dimens.strokeDefault, Prism.color.stroke)
+  }
+
 }

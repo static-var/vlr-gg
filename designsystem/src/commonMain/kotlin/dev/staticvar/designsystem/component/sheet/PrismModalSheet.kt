@@ -19,16 +19,22 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -41,11 +47,13 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.color.contentColorFor
 
 private object PrismModalSheetConstants {
   const val ScrimAlpha: Float = 0.64f
+  const val MaxHeightFraction: Float = 0.9f
 }
 
 /**
@@ -62,7 +70,7 @@ public fun PrismModalSheet(
   header: (@Composable ColumnScope.() -> Unit)? = null,
   footer: (@Composable RowScope.() -> Unit)? = null,
   dragHandle: (@Composable () -> Unit)? = { PrismSheetDragHandle() },
-  shape: Shape = Prism.shapes.large,
+  shape: Shape = Prism.shapes.large.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
   color: Color = Prism.color.backgroundElevated,
   contentColor: Color = contentColorFor(color),
   scrimColor: Color = Prism.color.scrim.copy(alpha = PrismModalSheetConstants.ScrimAlpha),
@@ -120,7 +128,7 @@ private fun AnimatedVisibilityScope.PrismModalSheetContent(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val density = LocalDensity.current
-  val bottomSpacing = WindowInsets.safeDrawing.getBottom(density) + with(density) { Prism.dimens.spacingM.roundToPx() }
+  val bottomInset = with(density) { WindowInsets.safeDrawing.getBottom(this).toDp() }
   Box(Modifier.fillMaxSize()) {
     Box(
       Modifier.fillMaxSize()
@@ -135,22 +143,34 @@ private fun AnimatedVisibilityScope.PrismModalSheetContent(
           onClick = onDismissRequest,
         ),
     )
-    Box(Modifier.fillMaxSize().safeDrawingPadding().imePadding().padding(Prism.dimens.spacingM)) {
+    BoxWithConstraints(
+      Modifier.fillMaxSize()
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
+        .imePadding(),
+    ) {
       PrismSheet(
         modifier =
         modifier.align(Alignment.BottomCenter)
+          .heightIn(max = maxHeight * PrismModalSheetConstants.MaxHeightFraction)
           .animateEnterExit(
-            enter = slideInVertically(Prism.anim.sheetEnter.intOffsetSpec()) { it + bottomSpacing },
-            exit = slideOutVertically(Prism.anim.sheetExit.intOffsetSpec()) { it + bottomSpacing },
+            enter = slideInVertically(Prism.anim.sheetEnter.intOffsetSpec()) { it },
+            exit = slideOutVertically(Prism.anim.sheetExit.intOffsetSpec()) { it },
           )
           .fillMaxWidth()
           .semantics { if (title != null) paneTitle = title },
         header = { PrismModalSheetHeader(dragHandle, header) },
         footer = footer,
         shape = shape,
+        style = PrismSheetStyle.Modal,
         color = color,
         contentColor = contentColor,
         scrollState = rememberScrollState(),
+        contentPadding = PaddingValues(
+          start = Prism.dimens.spacingM,
+          top = Prism.dimens.spacingM,
+          end = Prism.dimens.spacingM,
+          bottom = Prism.dimens.spacingM + bottomInset,
+        ),
         content = content,
       )
     }
