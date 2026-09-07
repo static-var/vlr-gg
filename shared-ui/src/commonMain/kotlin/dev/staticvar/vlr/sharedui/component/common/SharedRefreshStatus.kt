@@ -10,22 +10,14 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
-import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.prism.Prism
 
 @Composable
@@ -34,10 +26,11 @@ public fun SharedRefreshStatus(
   errorMessage: String?,
   onRefresh: () -> Unit,
   modifier: Modifier = Modifier,
+  errorDetails: String? = null,
 ) {
   val status = when {
     isRefreshing -> RefreshStatus.Refreshing
-    errorMessage != null -> RefreshStatus.Failed(errorMessage)
+    errorMessage != null -> RefreshStatus.Failed(errorMessage, errorDetails)
     else -> RefreshStatus.Idle
   }
   val animation = Prism.anim.standard
@@ -63,25 +56,12 @@ public fun SharedRefreshStatus(
           trackColor = Prism.color.accentSubtle,
         )
       }
-      is RefreshStatus.Failed -> Row(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = Prism.dimens.spacingM)
-          .padding(horizontal = Prism.dimens.spacingM, vertical = Prism.dimens.spacingS)
-          .semantics { liveRegion = LiveRegionMode.Polite },
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(
-          text = currentStatus.message,
-          modifier = Modifier.weight(1f),
-          color = Prism.color.danger,
-          style = Prism.typography.bodySmall,
-        )
-        PrismButton(onClick = onRefresh, style = PrismButtonStyle.Tertiary) {
-          Text("Retry")
-        }
-      }
+      is RefreshStatus.Failed -> SharedLoadError(
+        errorMessage = currentStatus.message,
+        errorDetails = currentStatus.details,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
+      )
     }
   }
 }
@@ -89,5 +69,5 @@ public fun SharedRefreshStatus(
 private sealed interface RefreshStatus {
   data object Idle : RefreshStatus
   data object Refreshing : RefreshStatus
-  data class Failed(val message: String) : RefreshStatus
+  data class Failed(val message: String, val details: String?) : RefreshStatus
 }
