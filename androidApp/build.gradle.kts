@@ -108,6 +108,7 @@ dependencies {
 
   // Project modules
   implementation(projects.shared)
+  implementation(projects.sharedUi)
   implementation(projects.designsystem)
   lintChecks(project(":lint"))
 }

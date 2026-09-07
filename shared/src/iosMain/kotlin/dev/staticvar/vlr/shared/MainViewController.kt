@@ -6,9 +6,12 @@
 
 package dev.staticvar.vlr.shared
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.window.ComposeUIViewController
 import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.iosNetworkModule
+import dev.staticvar.vlr.sharedui.share.LocalImageSharer
+import dev.staticvar.vlr.sharedui.share.rememberIosImageSharer
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSBundle
 import platform.Foundation.NSProcessInfo
@@ -36,7 +39,11 @@ fun MainViewController(authToken: String? = null): UIViewController {
       appDeclaration = { modules(iosNetworkModule) },
       authToken = resolveAuthToken(authToken),
     )
-    ComposeUIViewController { App() }
+    ComposeUIViewController {
+      CompositionLocalProvider(LocalImageSharer provides rememberIosImageSharer()) {
+        App()
+      }
+    }
   } catch (throwable: Throwable) {
     logThrowable("Synchronous Kotlin startup failure", throwable)
     processUnhandledException(throwable)

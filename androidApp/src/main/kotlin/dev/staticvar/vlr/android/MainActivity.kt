@@ -8,10 +8,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.staticvar.vlr.shared.App
 import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.androidNetworkModule
+import dev.staticvar.vlr.sharedui.share.LocalImageSharer
+import dev.staticvar.vlr.sharedui.share.rememberAndroidImageSharer
 import org.koin.android.ext.koin.androidContext
 
 /**
@@ -39,7 +42,9 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
 
     setContent {
-      App()
+      CompositionLocalProvider(LocalImageSharer provides rememberAndroidImageSharer()) {
+        App()
+      }
     }
   }
 }
