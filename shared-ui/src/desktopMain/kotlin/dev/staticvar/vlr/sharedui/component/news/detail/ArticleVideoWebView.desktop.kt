@@ -10,6 +10,11 @@ import androidx.compose.ui.Modifier
 internal actual fun supportsArticleVideoWebView(): Boolean = false
 
 @Composable
-internal actual fun ArticleVideoWebView(playerUrl: String, modifier: Modifier, onError: () -> Unit) {
+internal actual fun ArticleVideoWebView(
+  playerUrl: String,
+  modifier: Modifier,
+  contentScale: Float,
+  onError: () -> Unit,
+) {
   androidx.compose.runtime.LaunchedEffect(playerUrl) { onError() }
 }

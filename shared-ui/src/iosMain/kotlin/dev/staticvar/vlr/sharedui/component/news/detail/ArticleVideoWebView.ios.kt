@@ -47,7 +47,12 @@ import platform.darwin.NSObject
 internal actual fun supportsArticleVideoWebView(): Boolean = true
 
 @Composable
-internal actual fun ArticleVideoWebView(playerUrl: String, modifier: Modifier, onError: () -> Unit) {
+internal actual fun ArticleVideoWebView(
+  playerUrl: String,
+  modifier: Modifier,
+  contentScale: Float,
+  onError: () -> Unit,
+) {
   val currentOnError = rememberUpdatedState(onError)
   val delegate = remember(playerUrl) { ArticlePlayerDelegate(playerUrl) { currentOnError.value() } }
   val webView = remember(playerUrl) {
@@ -88,6 +93,7 @@ internal actual fun ArticleVideoWebView(playerUrl: String, modifier: Modifier, o
     UIKitView(
       factory = { webView },
       modifier = modifier,
+      update = { it.pageZoom = contentScale.toDouble() },
       properties = UIKitInteropProperties(isNativeAccessibilityEnabled = true),
     )
   }
