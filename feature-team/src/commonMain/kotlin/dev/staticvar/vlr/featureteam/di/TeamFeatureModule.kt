@@ -8,25 +8,18 @@ import dev.staticvar.vlr.featureteam.presentation.TeamDetailsViewModel
 import dev.staticvar.vlr.featureteam.usecase.ObserveTeamDetailsUseCase
 import dev.staticvar.vlr.featureteam.usecase.RefreshTeamDetailsUseCase
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.onClose
-import org.koin.core.module.dsl.withOptions
-import org.koin.core.qualifier.named
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
-
-private const val NavigationEntryScopeQualifier: String = "navigation-entry"
 
 public fun teamFeatureModule(): Module = module {
   factory { ObserveTeamDetailsUseCase(teamRepository = get()) }
   factory { RefreshTeamDetailsUseCase(teamRepository = get()) }
-  scope(named(NavigationEntryScopeQualifier)) {
-    scoped {
-      TeamDetailsViewModel(
-        observeTeamDetailsUseCase = get(),
-        refreshTeamDetailsUseCase = get(),
-        dispatchers = get(),
-      )
-    } withOptions {
-      onClose { viewModel -> viewModel?.clear() }
-    }
+  viewModel { parameters ->
+    TeamDetailsViewModel(
+      teamId = parameters.get(),
+      observeTeamDetailsUseCase = get(),
+      refreshTeamDetailsUseCase = get(),
+      networkMonitor = get(),
+    )
   }
 }

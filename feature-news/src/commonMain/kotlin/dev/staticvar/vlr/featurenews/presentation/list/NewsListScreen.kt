@@ -23,6 +23,7 @@ import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.news.overview.NewsPreviewItem
 
@@ -41,18 +42,27 @@ internal fun NewsListScreen(
       .padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
-    PrismScreenTitleBar(
-      title = "NEWS",
-      subtitle = "Stories from competitive VALORANT",
-      actions = {
-        PrismButton(
-          onClick = onRefresh,
-          style = PrismButtonStyle.Secondary,
-        ) {
-          Text("REFRESH")
-        }
-      },
-    )
+    Column {
+      PrismScreenTitleBar(
+        title = "NEWS",
+        subtitle = "Stories from competitive VALORANT",
+        actions = {
+          PrismButton(
+            onClick = onRefresh,
+            enabled = !uiState.isRefreshing,
+            style = PrismButtonStyle.Secondary,
+          ) {
+            Text("REFRESH")
+          }
+        },
+      )
+
+      SharedRefreshStatus(
+        isRefreshing = uiState.isRefreshing,
+        errorMessage = uiState.errorMessage,
+        onRefresh = onRefresh,
+      )
+    }
 
     when {
       uiState.isLoading && uiState.items.isEmpty() -> {

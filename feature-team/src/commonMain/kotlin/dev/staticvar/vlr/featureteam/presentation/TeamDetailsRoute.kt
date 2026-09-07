@@ -25,6 +25,8 @@ import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+
 @Composable
 public fun TeamDetailsRoute(
   uiState: TeamDetailsUiState,
@@ -35,6 +37,7 @@ public fun TeamDetailsRoute(
   onPlayerSelected: (String) -> Unit,
   onEventSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   TeamDetailsScreen(
     uiState = uiState,
@@ -45,6 +48,7 @@ public fun TeamDetailsRoute(
     onPlayerSelected = onPlayerSelected,
     onEventSelected = onEventSelected,
     modifier = modifier,
+    onRefresh = onRefresh,
   )
 }
 
@@ -58,6 +62,7 @@ internal fun TeamDetailsScreen(
   onPlayerSelected: (String) -> Unit,
   onEventSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   val team = uiState.team
 
@@ -65,17 +70,22 @@ internal fun TeamDetailsScreen(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
-    PrismScreenTitleBar(
-      title = team?.name ?: "Team details",
-      subtitle = "Roster, results and recent form",
-      onBackPress = onBack,
-    )
+    Column {
+      PrismScreenTitleBar(
+        title = team?.name ?: "Team details",
+        subtitle = "Roster, results and recent form",
+        onBackPress = onBack,
+      )
+
+      SharedRefreshStatus(
+        isRefreshing = uiState.isRefreshing,
+        errorMessage = uiState.errorMessage,
+        onRefresh = onRefresh,
+      )
+    }
 
     when {
       uiState.isLoading -> PrismStateMessage(text = "Loading team details…")
-
-      uiState.errorMessage != null && team == null ->
-        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load team details.")
 
       team == null -> PrismStateMessage(text = "Team detail is unavailable.")
 

@@ -4,96 +4,42 @@
  */
 package dev.staticvar.vlr.featureevents.presentation
 
-import dev.staticvar.vlr.core.coroutines.DispatcherProvider
-import dev.staticvar.vlr.domain.model.EventDetails
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.refresh.RefreshController
 import dev.staticvar.vlr.featureevents.usecase.ObserveEventDetailsUseCase
 import dev.staticvar.vlr.featureevents.usecase.RefreshEventDetailsUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 
 public class EventDetailsViewModel(
-  private val observeEventDetailsUseCase: ObserveEventDetailsUseCase,
-  private val refreshEventDetailsUseCase: RefreshEventDetailsUseCase,
-  dispatchers: DispatcherProvider,
-) {
-  private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatchers.main)
-  private val mutableUiState: MutableStateFlow<EventDetailsUiState> = MutableStateFlow(EventDetailsUiState())
-  private var currentEventId: String? = null
-  private var observeEventJob: Job? = null
-  private var refreshEventJob: Job? = null
+  eventId: String,
+  observeEventDetailsUseCase: ObserveEventDetailsUseCase,
+  refreshEventDetailsUseCase: RefreshEventDetailsUseCase,
+  networkMonitor: NetworkMonitor,
+) : ViewModel() {
+  public val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
 
-  public val uiState: StateFlow<EventDetailsUiState> = mutableUiState.asStateFlow()
+  private val refresher = RefreshController(viewModelScope, networkMonitor) { refreshEventDetailsUseCase(eventId) }
 
-  public fun openEvent(eventId: String) {
-    if (currentEventId == eventId && observeEventJob?.isActive == true) {
-      return
-    }
+  public val uiState: StateFlow<EventDetailsUiState> = combine(
+    observeEventDetailsUseCase(eventId),
+    refresher.state,
+  ) { event, refresh ->
+    EventDetailsUiState(
+      event = event,
+      isLoading = false,
+      isRefreshing = refresh.isRefreshing,
+      errorMessage = refresh.errorMessage,
+    )
+  }.stateIn(
+    viewModelScope,
+    SharingStarted.Eagerly,
+    EventDetailsUiState(),
+  )
 
-    currentEventId = eventId
-    observeEventJob?.cancel()
-    mutableUiState.value = EventDetailsUiState(isLoading = true)
-    observeEventJob =
-      scope.launch {
-        var missingEventRefreshRequested = false
-        var incompleteDetailsRefreshRequested = false
-        observeEventDetailsUseCase(eventId).collect { event ->
-          mutableUiState.update { current ->
-            val isIncompleteCachedEvent = event?.needsDetailRefresh() == true
-            current.copy(
-              event = event,
-              isLoading = event == null || isIncompleteCachedEvent,
-              errorMessage = if (event != null) null else current.errorMessage,
-            )
-          }
-          if (!missingEventRefreshRequested && event == null) {
-            missingEventRefreshRequested = true
-            refreshEventJob = scope.launch {
-              refreshInternal(eventId = eventId, showRefreshing = false)
-            }
-          }
-          if (!incompleteDetailsRefreshRequested && event?.needsDetailRefresh() == true) {
-            incompleteDetailsRefreshRequested = true
-            refreshEventJob = scope.launch {
-              refreshInternal(eventId = eventId, showRefreshing = true)
-            }
-          }
-        }
-      }
-  }
-
-  public fun refresh() {
-    val eventId: String = currentEventId ?: return
-    refreshEventJob?.cancel()
-    refreshEventJob = scope.launch {
-      refreshInternal(eventId = eventId, showRefreshing = true)
-    }
-  }
-
-  public fun clear() {
-    observeEventJob?.cancel()
-  }
-
-  private suspend fun refreshInternal(eventId: String, showRefreshing: Boolean) {
-    if (showRefreshing) {
-      mutableUiState.update { it.copy(isRefreshing = true, errorMessage = null) }
-    }
-    val refreshResult: Result<Unit> = refreshEventDetailsUseCase(eventId)
-    mutableUiState.update { current ->
-      val keepLoadingForCachedShell = refreshResult.isSuccess && current.event?.needsDetailRefresh() == true
-      current.copy(
-        isLoading = keepLoadingForCachedShell,
-        isRefreshing = false,
-        errorMessage = refreshResult.exceptionOrNull()?.message,
-      )
-    }
-  }
-
-  private fun EventDetails.needsDetailRefresh(): Boolean =
-    prizes.isEmpty() && teams.isEmpty() && matches.isEmpty() && standings.isEmpty()
+  public fun refresh(): Unit = refresher.refresh()
 }

@@ -4,67 +4,119 @@
  */
 package dev.staticvar.vlr.featureteam.presentation
 
-import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import androidx.lifecycle.ViewModelStore
+import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.featureteam.usecase.ObserveTeamDetailsUseCase
 import dev.staticvar.vlr.featureteam.usecase.RefreshTeamDetailsUseCase
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TeamDetailsViewModelTest {
   private val dispatcher = StandardTestDispatcher()
-  private val dispatchers = TestDispatcherProvider(dispatcher)
+  private val viewModelStore = ViewModelStore()
+
+  @BeforeTest
+  fun setUp() {
+    Dispatchers.setMain(dispatcher)
+  }
+
+  @AfterTest
+  fun tearDown() {
+    viewModelStore.clear()
+    Dispatchers.resetMain()
+  }
 
   @Test
-  fun openTeamRefreshesWhenDetailsAreMissing() {
+  fun initFinishesLoadingWithoutNetworkWhenDetailsAreMissing() {
     runTest(dispatcher) {
       val repository = FakeTeamRepository()
       val viewModel = createViewModel(repository)
 
-      viewModel.openTeam("team-1")
       advanceUntilIdle()
 
-      assertEquals(listOf("team-1"), repository.refreshDetailRequests)
+      assertEquals(emptyList(), repository.refreshDetailRequests)
       assertEquals(false, viewModel.uiState.value.isLoading)
-
-      viewModel.clear()
     }
   }
 
   @Test
-  fun openTeamSameIdDoesNotRequeryWhileActive() {
+  fun initObservesCachedProfileOnce() {
     runTest(dispatcher) {
       val repository = FakeTeamRepository(team = teamInfo("team-1"))
       val viewModel = createViewModel(repository)
 
-      viewModel.openTeam("team-1")
-      advanceUntilIdle()
-      viewModel.openTeam("team-1")
       advanceUntilIdle()
 
+      assertEquals(teamInfo("team-1"), viewModel.uiState.value.team)
       assertEquals(listOf("team-1"), repository.observedTeamIds)
       assertEquals(emptyList(), repository.refreshDetailRequests)
-
-      viewModel.clear()
     }
   }
 
+  @Test
+  fun refreshCoalescesAndKeepsCacheOnFailure() = runTest(dispatcher) {
+    val cached = teamInfo("team-1")
+    val repository = FakeTeamRepository(team = cached)
+    val gate = CompletableDeferred<Unit>()
+    repository.refreshGate = gate
+    repository.refreshResult = Result.failure(IllegalStateException("offline"))
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.refresh()
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(listOf("team-1"), repository.refreshDetailRequests)
+    assertEquals(true, viewModel.uiState.value.isRefreshing)
+    assertEquals(cached, viewModel.uiState.value.team)
+
+    gate.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.isRefreshing)
+    assertEquals("offline", viewModel.uiState.value.errorMessage)
+    assertEquals(cached, viewModel.uiState.value.team)
+  }
+
+  @Test
+  fun clearingViewModelStoreCancelsItsRefresh() = runTest(dispatcher) {
+    val repository = FakeTeamRepository(team = teamInfo("team-1"))
+    repository.refreshGate = CompletableDeferred()
+    val viewModel = createViewModel(repository)
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(listOf("team-1"), repository.refreshDetailRequests)
+
+    viewModelStore.clear()
+    advanceUntilIdle()
+    assertEquals(true, repository.refreshCancelled)
+    assertEquals(listOf("team-1"), repository.refreshDetailRequests)
+  }
+
   private fun createViewModel(repository: FakeTeamRepository): TeamDetailsViewModel = TeamDetailsViewModel(
+    teamId = "team-1",
     observeTeamDetailsUseCase = ObserveTeamDetailsUseCase(repository),
     refreshTeamDetailsUseCase = RefreshTeamDetailsUseCase(repository),
-    dispatchers = dispatchers,
-  )
+    networkMonitor = object : NetworkMonitor {
+      override val isOnline = MutableStateFlow(true)
+    },
+  ).also { viewModelStore.put("viewModel", it) }
 
   private fun teamInfo(teamId: String): TeamInfo = TeamInfo(
     id = teamId,
@@ -82,6 +134,9 @@ class TeamDetailsViewModelTest {
   )
 
   private class FakeTeamRepository(team: TeamInfo? = null) : TeamRepository {
+    var refreshCancelled: Boolean = false
+    var refreshGate: CompletableDeferred<Unit>? = null
+    var refreshResult: Result<Unit> = Result.success(Unit)
     val observedTeamIds: MutableList<String> = mutableListOf()
     val refreshDetailRequests: MutableList<String> = mutableListOf()
     private val detailsByTeamId: MutableMap<String, MutableStateFlow<TeamInfo?>> = mutableMapOf()
@@ -105,13 +160,13 @@ class TeamDetailsViewModelTest {
 
     override suspend fun refreshTeamDetails(teamId: String): Result<Unit> {
       refreshDetailRequests += teamId
-      return Result.success(Unit)
+      try {
+        refreshGate?.await()
+        return refreshResult
+      } catch (cancelled: CancellationException) {
+        refreshCancelled = true
+        throw cancelled
+      }
     }
-  }
-
-  private class TestDispatcherProvider(dispatcher: TestDispatcher) : DispatcherProvider {
-    override val default: CoroutineDispatcher = dispatcher
-    override val io: CoroutineDispatcher = dispatcher
-    override val main: CoroutineDispatcher = dispatcher
   }
 }

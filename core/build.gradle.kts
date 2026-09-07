@@ -42,6 +42,7 @@ kotlin {
     val commonTest by getting {
       dependencies {
         implementation(libs.kotlin.test)
+        implementation(libs.coroutine.test)
         implementation(libs.multiplatform.settings.test)
       }
     }

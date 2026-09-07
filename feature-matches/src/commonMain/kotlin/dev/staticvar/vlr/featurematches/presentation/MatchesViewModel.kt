@@ -4,83 +4,60 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
-import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.refresh.RefreshController
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchListUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchesUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.Instant
 
 public class MatchesViewModel(
-  private val observeMatchListUseCase: ObserveMatchListUseCase,
-  private val refreshMatchesUseCase: RefreshMatchesUseCase,
-  dispatchers: DispatcherProvider,
-) {
-  private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatchers.main)
-  private val mutableUiState: MutableStateFlow<MatchesUiState> = MutableStateFlow(MatchesUiState())
+  observeMatchListUseCase: ObserveMatchListUseCase,
+  refreshMatchesUseCase: RefreshMatchesUseCase,
+  networkMonitor: NetworkMonitor,
+) : ViewModel() {
+  public val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
 
-  public val uiState: StateFlow<MatchesUiState> = mutableUiState.asStateFlow()
-
-  init {
-    scope.launch {
-      observeMatchListUseCase().collect { matches ->
-        mutableUiState.update { current ->
-          current.withMatches(
-            matches = matches,
-            isLoading = false,
-            errorMessage = if (matches.isNotEmpty()) null else current.errorMessage,
-          )
-        }
-      }
-    }
-    scope.launch(dispatchers.io) {
-      val initialMatches: List<MatchPreview> = observeMatchListUseCase().first()
-      if (initialMatches.isEmpty()) {
-        refreshInternal(showRefreshing = false)
-      } else {
-        selectFilter(matchStatusToFilter(initialMatches.first().status))
-        refreshInternal(showRefreshing = true)
-      }
+  private val refresher = RefreshController(viewModelScope, networkMonitor) { refreshMatchesUseCase() }
+  private val selectedFilter = MutableStateFlow<MatchStatusFilter?>(null)
+  private val matches = observeMatchListUseCase().onEach { matches ->
+    selectedFilter.update { selected ->
+      val preferred = selected ?: matches.firstOrNull()?.status?.let(::matchStatusToFilter)
+        ?: MatchStatusFilter.Live
+      matches.availableStatusOrSelected(preferred)
     }
   }
+
+  public val uiState: StateFlow<MatchesUiState> = combine(
+    matches, selectedFilter, refresher.state,
+  ) { matches, selected, refresh ->
+    val filter = selected ?: MatchStatusFilter.Live
+    MatchesUiState(
+      matches = matches,
+      filteredMatches = matches.filterByStatus(filter),
+      selectedStatus = filter,
+      isLoading = false,
+      isRefreshing = refresh.isRefreshing,
+      errorMessage = refresh.errorMessage,
+    )
+  }.stateIn(viewModelScope, SharingStarted.Eagerly, MatchesUiState())
 
   public fun selectFilter(filter: MatchStatusFilter) {
-    mutableUiState.update { it.withSelectedStatus(filter) }
+    selectedFilter.value = filter
   }
 
-  public fun refresh() {
-    scope.launch {
-      refreshInternal(showRefreshing = true)
-    }
-  }
-
-  public fun clear() {
-    scope.cancel()
-  }
-
-  private suspend fun refreshInternal(showRefreshing: Boolean) {
-    if (showRefreshing) {
-      mutableUiState.update { it.copy(isRefreshing = true, errorMessage = null) }
-    }
-    val refreshResult: Result<Unit> = refreshMatchesUseCase()
-    mutableUiState.update { current ->
-      current.copy(
-        isLoading = false,
-        isRefreshing = false,
-        errorMessage = refreshResult.exceptionOrNull()?.message,
-      )
-    }
-  }
+  public fun refresh(): Unit = refresher.refresh()
 }
 
 private fun matchStatusToFilter(status: MatchStatus): MatchStatusFilter = when (status) {
@@ -89,26 +66,6 @@ private fun matchStatusToFilter(status: MatchStatus): MatchStatusFilter = when (
   MatchStatus.COMPLETED -> MatchStatusFilter.Completed
   MatchStatus.UNKNOWN -> MatchStatusFilter.Live
 }
-
-private fun MatchesUiState.withMatches(
-  matches: List<MatchPreview>,
-  isLoading: Boolean,
-  errorMessage: String?,
-): MatchesUiState {
-  val availableStatus = matches.availableStatusOrSelected(selectedStatus)
-  return copy(
-    matches = matches,
-    selectedStatus = availableStatus,
-    filteredMatches = matches.filterByStatus(availableStatus),
-    isLoading = isLoading,
-    errorMessage = errorMessage,
-  )
-}
-
-private fun MatchesUiState.withSelectedStatus(filter: MatchStatusFilter): MatchesUiState = copy(
-  selectedStatus = filter,
-  filteredMatches = matches.filterByStatus(filter),
-)
 
 private fun List<MatchPreview>.filterByStatus(filter: MatchStatusFilter): List<MatchPreview> {
   val filtered = filter { match ->

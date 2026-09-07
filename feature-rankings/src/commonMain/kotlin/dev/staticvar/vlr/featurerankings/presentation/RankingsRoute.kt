@@ -25,18 +25,22 @@ import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+
 @Composable
 public fun RankingsRoute(
   uiState: RankingsUiState,
   onRegionSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   RankingsScreen(
     uiState = uiState,
     onRegionSelected = onRegionSelected,
     onTeamSelected = onTeamSelected,
     modifier = modifier,
+    onRefresh = onRefresh,
   )
 }
 
@@ -46,6 +50,7 @@ internal fun RankingsScreen(
   onRegionSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   val selectedRegion = uiState.selectedRegion
   val selectedRanking = remember(uiState.regions, selectedRegion) {
@@ -56,10 +61,18 @@ internal fun RankingsScreen(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
-    PrismScreenTitleBar(
-      title = "Ranking",
-      subtitle = "The top teams in every region",
-    )
+    Column {
+      PrismScreenTitleBar(
+        title = "Ranking",
+        subtitle = "The top teams in every region",
+      )
+
+      SharedRefreshStatus(
+        isRefreshing = uiState.isRefreshing,
+        errorMessage = uiState.errorMessage,
+        onRefresh = onRefresh,
+      )
+    }
 
     if (uiState.regions.isNotEmpty()) {
       PrismTabs(
@@ -72,10 +85,6 @@ internal fun RankingsScreen(
     when {
       uiState.isLoading -> {
         PrismStateMessage(text = "Loading rankings…")
-      }
-
-      uiState.errorMessage != null && selectedRanking == null -> {
-        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load rankings.")
       }
 
       selectedRanking == null -> {

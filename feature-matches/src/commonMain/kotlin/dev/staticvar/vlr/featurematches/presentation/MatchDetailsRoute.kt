@@ -38,6 +38,8 @@ import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadIt
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+
 @Composable
 public fun MatchDetailsRoute(
   uiState: MatchDetailsUiState,
@@ -47,6 +49,7 @@ public fun MatchDetailsRoute(
   onPlayerSelected: (String) -> Unit,
   onMatchSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
   onPreferencesChange: (MatchDetailsPreferences) -> Unit = {},
 ) {
   MatchDetailsScreen(
@@ -57,6 +60,7 @@ public fun MatchDetailsRoute(
     onPlayerSelected = onPlayerSelected,
     onMatchSelected = onMatchSelected,
     modifier = modifier,
+    onRefresh = onRefresh,
     onPreferencesChange = onPreferencesChange,
   )
 }
@@ -70,6 +74,7 @@ internal fun MatchDetailsScreen(
   onPlayerSelected: (String) -> Unit,
   onMatchSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
   onPreferencesChange: (MatchDetailsPreferences) -> Unit = {},
 ) {
   val match = uiState.match
@@ -81,12 +86,19 @@ internal fun MatchDetailsScreen(
       modifier = Modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
-      PrismScreenTitleBar(
-        title = if (uiState.isLoading) "Match details" else match?.event?.name ?: "Match details",
-        subtitle = "Maps, scores and player stats",
-        onBackPress = onBack,
-      )
+      Column {
+        PrismScreenTitleBar(
+          title = if (uiState.isLoading) "Match details" else match?.event?.name ?: "Match details",
+          subtitle = "Maps, scores and player stats",
+          onBackPress = onBack,
+        )
 
+        SharedRefreshStatus(
+          isRefreshing = uiState.isRefreshing,
+          errorMessage = uiState.errorMessage,
+          onRefresh = onRefresh,
+        )
+      }
       when {
         uiState.isLoading -> PrismFullscreenLoader(
           modifier = Modifier.fillMaxSize(),

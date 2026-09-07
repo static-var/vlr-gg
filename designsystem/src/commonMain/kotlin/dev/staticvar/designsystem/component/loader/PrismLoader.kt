@@ -204,11 +204,12 @@ private fun LabeledLoaderContent(
 
 @Composable
 private fun LoaderPhaseLabel(text: String) {
+  val animations = Prism.anim
   AnimatedContent(
     targetState = text,
     transitionSpec = {
-      fadeIn(animationSpec = Prism.anim.slowFade.floatSpec()) togetherWith
-        fadeOut(animationSpec = Prism.anim.standard.floatSpec())
+      fadeIn(animationSpec = animations.slowFade.floatSpec()) togetherWith
+        fadeOut(animationSpec = animations.standard.floatSpec())
     },
     modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingXs),
     label = "loader_phase_label",

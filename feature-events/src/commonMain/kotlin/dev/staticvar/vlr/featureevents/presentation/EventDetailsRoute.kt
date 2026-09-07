@@ -5,12 +5,10 @@
 package dev.staticvar.vlr.featureevents.presentation
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -18,25 +16,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
-import dev.staticvar.designsystem.component.loader.PrismLoader
-import dev.staticvar.designsystem.component.loader.PrismLoaderSize
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.domain.model.EventStanding
 import dev.staticvar.vlr.domain.model.EventTeam
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailMatchItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPrizeItem
@@ -58,6 +52,7 @@ public fun EventDetailsRoute(
   onMatchSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   EventDetailsScreen(
     uiState = uiState,
@@ -71,6 +66,7 @@ public fun EventDetailsRoute(
     onMatchSelected = onMatchSelected,
     onTeamSelected = onTeamSelected,
     modifier = modifier,
+    onRefresh = onRefresh,
   )
 }
 
@@ -87,6 +83,7 @@ internal fun EventDetailsScreen(
   onMatchSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   val event = uiState.event
 
@@ -94,11 +91,15 @@ internal fun EventDetailsScreen(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
-    PrismScreenTitleBar(
-      title = if (uiState.isLoading) "Tournament details" else event?.title ?: "Tournament details",
-      subtitle = "Teams, matches and standings",
-      onBackPress = onBack,
-    )
+    Column {
+      PrismScreenTitleBar(
+        title = if (uiState.isLoading) "Tournament details" else event?.title ?: "Tournament details",
+        subtitle = "Teams, matches and standings",
+        onBackPress = onBack,
+      )
+
+      SharedRefreshStatus(uiState.isRefreshing, uiState.errorMessage, onRefresh)
+    }
 
     when {
       uiState.isLoading -> PrismFullscreenLoader(
@@ -141,11 +142,7 @@ internal fun EventDetailsScreen(
             EventDetailSection.Matches -> {
               if (event.matches.isEmpty()) {
                 item {
-                  if (uiState.isRefreshing) {
-                    EventDetailInlineLoader(label = "MATCHES")
-                  } else {
-                    PrismStateMessage(text = "No matches published yet.")
-                  }
+                  PrismStateMessage(text = "No matches published yet.")
                 }
               } else {
                 item {
@@ -166,11 +163,7 @@ internal fun EventDetailsScreen(
             EventDetailSection.Standings -> {
               if (event.standings.isEmpty()) {
                 item {
-                  if (uiState.isRefreshing) {
-                    EventDetailInlineLoader(label = "STANDINGS")
-                  } else {
-                    PrismStateMessage(text = "No standings available yet.")
-                  }
+                  PrismStateMessage(text = "No standings available yet.")
                 }
               } else {
                 item { PrismSectionTitle(title = "Standings", preLabel = "table") }
@@ -183,11 +176,7 @@ internal fun EventDetailsScreen(
             EventDetailSection.Prizes -> {
               if (event.prizes.isEmpty()) {
                 item {
-                  if (uiState.isRefreshing) {
-                    EventDetailInlineLoader(label = "PRIZES")
-                  } else {
-                    PrismStateMessage(text = "Prize breakdown unavailable.")
-                  }
+                  PrismStateMessage(text = "Prize breakdown unavailable.")
                 }
               } else {
                 item { PrismSectionTitle(title = "Prizes", preLabel = "placements") }
@@ -211,19 +200,6 @@ internal fun EventDetailsScreen(
         }
       }
     }
-  }
-}
-
-@Composable
-private fun EventDetailInlineLoader(label: String) {
-  Box(
-    modifier = Modifier.fillMaxWidth().height(180.dp),
-    contentAlignment = Alignment.Center,
-  ) {
-    PrismLoader(
-      size = PrismLoaderSize.Medium,
-      label = label,
-    )
   }
 }
 

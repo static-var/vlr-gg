@@ -4,29 +4,47 @@
  */
 package dev.staticvar.vlr.featureevents.presentation
 
-import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import androidx.lifecycle.ViewModelStore
+import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.featureevents.usecase.ObserveEventListUseCase
 import dev.staticvar.vlr.featureevents.usecase.RefreshEventsUseCase
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EventsViewModelTest {
   private val dispatcher = StandardTestDispatcher()
-  private val dispatchers = TestDispatcherProvider(dispatcher)
+  private val viewModelStore = ViewModelStore()
+  private var nextViewModelKey = 0
+
+  @BeforeTest
+  fun setUp() {
+    Dispatchers.setMain(dispatcher)
+  }
+
+  @AfterTest
+  fun tearDown() {
+    viewModelStore.clear()
+    Dispatchers.resetMain()
+  }
 
   @Test
   fun pausedAndUnknownEventsRemainAccessibleOutsideUpcoming() = runTest(dispatcher) {
@@ -48,7 +66,6 @@ class EventsViewModelTest {
     viewModel.selectFilter(EventStatusFilter.Upcoming)
     advanceUntilIdle()
     assertEquals(listOf("upcoming"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
-    viewModel.clear()
   }
 
   @Test
@@ -64,24 +81,20 @@ class EventsViewModelTest {
 
       assertEquals(EventStatusFilter.Completed, viewModel.uiState.value.selectedStatus)
       assertEquals(listOf("e1"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
-      assertEquals(1, repository.refreshEventsCallCount)
-
-      viewModel.clear()
+      assertEquals(0, repository.refreshEventsCallCount)
     }
   }
 
   @Test
-  fun initRefreshesWhenEventsAreEmpty() {
+  fun emptyOfflineCacheStopsLoadingWithoutStartingNetwork() {
     runTest(dispatcher) {
       val repository = FakeEventRepository(events = emptyList())
 
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
 
-      assertEquals(1, repository.refreshEventsCallCount)
+      assertEquals(0, repository.refreshEventsCallCount)
       assertEquals(false, viewModel.uiState.value.isLoading)
-
-      viewModel.clear()
     }
   }
 
@@ -97,10 +110,11 @@ class EventsViewModelTest {
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
 
+      viewModel.refresh()
+      advanceUntilIdle()
+
       assertEquals(EventStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
       assertEquals(listOf("upcoming-1"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
-
-      viewModel.clear()
     }
   }
 
@@ -123,12 +137,12 @@ class EventsViewModelTest {
       assertEquals(listOf("ongoing-earlier", "ongoing-later"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
 
       viewModel.selectFilter(EventStatusFilter.Upcoming)
+      advanceUntilIdle()
       assertEquals(listOf("upcoming-earlier", "upcoming-later"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
 
       viewModel.selectFilter(EventStatusFilter.Completed)
+      advanceUntilIdle()
       assertEquals(listOf("completed-newer", "completed-older"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
-
-      viewModel.clear()
     }
   }
 
@@ -148,18 +162,63 @@ class EventsViewModelTest {
       advanceUntilIdle()
 
       viewModel.selectFilter(EventStatusFilter.Upcoming)
+      advanceUntilIdle()
 
       assertEquals(listOf("upcoming-1"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
-
-      viewModel.clear()
     }
+  }
+
+  @Test
+  fun refreshKeepsCacheVisibleAndReportsFailure() = runTest(dispatcher) {
+    val cached = listOf(eventPreview(id = "cached", status = EventStatus.ONGOING))
+    val repository = FakeEventRepository(cached)
+    repository.blockRefresh = true
+    repository.refreshResult = Result.failure(IllegalStateException("Offline"))
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(1, repository.refreshEventsCallCount)
+    assertEquals(cached, viewModel.uiState.value.events)
+    assertEquals(true, viewModel.uiState.value.isRefreshing)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+
+    repository.allowRefresh.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.isRefreshing)
+    assertEquals("Offline", viewModel.uiState.value.errorMessage)
+    assertEquals(cached, viewModel.uiState.value.events)
+  }
+
+  @Test
+  fun emptyRefreshKeepsSelectedPausedOrUnknownTabVisible() = runTest(dispatcher) {
+    listOf(EventStatus.PAUSED to EventStatusFilter.Paused, EventStatus.UNKNOWN to EventStatusFilter.Unknown)
+      .forEach { (status, filter) ->
+        val repository = FakeEventRepository(
+          events = listOf(eventPreview(id = "event", status = status)),
+          refreshedEvents = emptyList(),
+        )
+        val viewModel = createViewModel(repository)
+        advanceUntilIdle()
+        viewModel.refresh()
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals(filter, state.selectedStatus)
+        assertTrue(state.filteredEvents.isEmpty())
+        assertTrue(filter in state.visibleStatusFilters)
+
+      }
   }
 
   private fun createViewModel(repository: FakeEventRepository): EventsViewModel = EventsViewModel(
     observeEventListUseCase = ObserveEventListUseCase(repository),
     refreshEventsUseCase = RefreshEventsUseCase(repository),
-    dispatchers = dispatchers,
-  )
+    networkMonitor = object : NetworkMonitor {
+      override val isOnline = MutableStateFlow(true)
+    },
+  ).also { viewModelStore.put("viewModel-${nextViewModelKey++}", it) }
 
   private fun eventPreview(
     id: String,
@@ -180,6 +239,9 @@ class EventsViewModelTest {
     private val refreshedEvents: List<EventPreview> = events,
   ) : EventRepository {
     private val eventsFlow = MutableStateFlow(events)
+    var blockRefresh = false
+    val allowRefresh = CompletableDeferred<Unit>()
+    var refreshResult: Result<Unit> = Result.success(Unit)
     var refreshEventsCallCount: Int = 0
       private set
 
@@ -193,16 +255,11 @@ class EventsViewModelTest {
 
     override suspend fun refreshEvents(): Result<Unit> {
       refreshEventsCallCount += 1
-      eventsFlow.value = refreshedEvents
-      return Result.success(Unit)
+      if (blockRefresh) allowRefresh.await()
+      if (refreshResult.isSuccess) eventsFlow.value = refreshedEvents
+      return refreshResult
     }
 
     override suspend fun refreshEventDetails(eventId: String): Result<Unit> = Result.success(Unit)
-  }
-
-  private class TestDispatcherProvider(dispatcher: TestDispatcher) : DispatcherProvider {
-    override val default: CoroutineDispatcher = dispatcher
-    override val io: CoroutineDispatcher = dispatcher
-    override val main: CoroutineDispatcher = dispatcher
   }
 }

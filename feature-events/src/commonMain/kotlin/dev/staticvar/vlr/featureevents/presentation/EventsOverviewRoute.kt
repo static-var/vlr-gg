@@ -19,6 +19,7 @@ import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventPreview
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.event.overview.EventPreviewItem
 @Composable
 public fun EventsOverviewRoute(
@@ -26,12 +27,14 @@ public fun EventsOverviewRoute(
   onFilterSelected: (EventStatusFilter) -> Unit,
   onEventSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   EventsOverviewScreen(
     uiState = uiState,
     onFilterSelected = onFilterSelected,
     onEventSelected = onEventSelected,
     modifier = modifier,
+    onRefresh = onRefresh,
   )
 }
 
@@ -41,15 +44,19 @@ internal fun EventsOverviewScreen(
   onFilterSelected: (EventStatusFilter) -> Unit,
   onEventSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   Column(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
-    PrismScreenTitleBar(
-      title = "Tournament overview",
-      subtitle = "Tournaments around the world",
-    )
+    Column {
+      PrismScreenTitleBar(
+        title = "Tournament overview",
+        subtitle = "Tournaments around the world",
+      )
+      SharedRefreshStatus(uiState.isRefreshing, uiState.errorMessage, onRefresh)
+    }
     PrismTabs(
       tabs = uiState.visibleStatusFilters.map { filter -> PrismTab(id = filter.name, label = filter.name) },
       selectedTabId = uiState.selectedStatus.name,

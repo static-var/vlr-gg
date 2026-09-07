@@ -91,6 +91,9 @@ emoji2 = { module = "androidx.emoji2:emoji2", version = "1.6.0" }
 
 lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.10.0" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.10.0" }
+lifecycle-viewmodel-core = { module = "androidx.lifecycle:lifecycle-viewmodel", version = "2.10.0" }
+lifecycle-viewmodel-compose-cmp = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.10.0" }
+lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0" }
 
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 
@@ -147,6 +150,8 @@ material-kolor = { module = "com.materialkolor:material-kolor", version = "4.1.1
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-core-viewmodel = { module = "io.insert-koin:koin-core-viewmodel", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 poko-annotations = { module = "dev.drewhamilton.poko:poko-annotations", version.ref = "poko" }

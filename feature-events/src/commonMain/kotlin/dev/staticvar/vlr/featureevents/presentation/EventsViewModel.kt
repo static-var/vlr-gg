@@ -4,81 +4,58 @@
  */
 package dev.staticvar.vlr.featureevents.presentation
 
-import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.refresh.RefreshController
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.featureevents.usecase.ObserveEventListUseCase
 import dev.staticvar.vlr.featureevents.usecase.RefreshEventsUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 public class EventsViewModel(
-  private val observeEventListUseCase: ObserveEventListUseCase,
-  private val refreshEventsUseCase: RefreshEventsUseCase,
-  dispatchers: DispatcherProvider,
-) {
-  private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatchers.main)
-  private val mutableUiState: MutableStateFlow<EventsUiState> = MutableStateFlow(EventsUiState())
+  observeEventListUseCase: ObserveEventListUseCase,
+  refreshEventsUseCase: RefreshEventsUseCase,
+  networkMonitor: NetworkMonitor,
+) : ViewModel() {
+  public val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
 
-  public val uiState: StateFlow<EventsUiState> = mutableUiState.asStateFlow()
-
-  init {
-    scope.launch {
-      observeEventListUseCase().collect { events ->
-        mutableUiState.update { current ->
-          current.withEvents(
-            events = events,
-            isLoading = false,
-            errorMessage = if (events.isNotEmpty()) null else current.errorMessage,
-          )
-        }
-      }
-    }
-    scope.launch(dispatchers.io) {
-      val initialEvents: List<EventPreview> = observeEventListUseCase().first()
-      if (initialEvents.isEmpty()) {
-        refreshInternal(showRefreshing = false)
-      } else {
-        selectFilter(eventStatusToFilter(initialEvents.first().status))
-        refreshInternal(showRefreshing = true)
-      }
+  private val refresher = RefreshController(viewModelScope, networkMonitor) { refreshEventsUseCase() }
+  private val selectedFilter = MutableStateFlow<EventStatusFilter?>(null)
+  private val events = observeEventListUseCase().onEach { events ->
+    selectedFilter.update { selected ->
+      val preferred = selected ?: events.firstOrNull()?.status?.let(::eventStatusToFilter)
+        ?: EventStatusFilter.Ongoing
+      events.availableStatusOrSelected(preferred)
     }
   }
+
+  public val uiState: StateFlow<EventsUiState> = combine(
+    events, selectedFilter, refresher.state,
+  ) { events, selected, refresh ->
+    val filter = selected ?: EventStatusFilter.Ongoing
+    EventsUiState(
+      events = events,
+      filteredEvents = events.filterByStatus(filter),
+      selectedStatus = filter,
+      isLoading = false,
+      isRefreshing = refresh.isRefreshing,
+      errorMessage = refresh.errorMessage,
+    )
+  }.stateIn(viewModelScope, SharingStarted.Eagerly, EventsUiState())
 
   public fun selectFilter(filter: EventStatusFilter) {
-    mutableUiState.update { it.withSelectedStatus(filter) }
+    selectedFilter.value = filter
   }
 
-  public fun refresh() {
-    scope.launch {
-      refreshInternal(showRefreshing = true)
-    }
-  }
-
-  public fun clear() {
-    scope.cancel()
-  }
-
-  private suspend fun refreshInternal(showRefreshing: Boolean) {
-    if (showRefreshing) {
-      mutableUiState.update { it.copy(isRefreshing = true, errorMessage = null) }
-    }
-    val refreshResult: Result<Unit> = refreshEventsUseCase()
-    mutableUiState.update { current ->
-      current.copy(
-        isLoading = false,
-        isRefreshing = false,
-        errorMessage = refreshResult.exceptionOrNull()?.message,
-      )
-    }
-  }
+  public fun refresh(): Unit = refresher.refresh()
 }
 
 private fun eventStatusToFilter(status: EventStatus): EventStatusFilter = when (status) {
@@ -88,26 +65,6 @@ private fun eventStatusToFilter(status: EventStatus): EventStatusFilter = when (
   EventStatus.PAUSED -> EventStatusFilter.Paused
   EventStatus.UNKNOWN -> EventStatusFilter.Unknown
 }
-
-private fun EventsUiState.withEvents(
-  events: List<EventPreview>,
-  isLoading: Boolean,
-  errorMessage: String?,
-): EventsUiState {
-  val availableStatus = events.availableStatusOrSelected(selectedStatus)
-  return copy(
-    events = events,
-    selectedStatus = availableStatus,
-    filteredEvents = events.filterByStatus(availableStatus),
-    isLoading = isLoading,
-    errorMessage = errorMessage,
-  )
-}
-
-private fun EventsUiState.withSelectedStatus(filter: EventStatusFilter): EventsUiState = copy(
-  selectedStatus = filter,
-  filteredEvents = events.filterByStatus(filter),
-)
 
 private fun List<EventPreview>.filterByStatus(filter: EventStatusFilter): List<EventPreview> {
   val filtered = filter { event ->

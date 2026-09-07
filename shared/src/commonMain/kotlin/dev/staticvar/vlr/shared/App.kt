@@ -8,7 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
@@ -16,14 +16,14 @@ import dev.staticvar.designsystem.prism.PrismCatppuccinFlavour
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
-import dev.staticvar.vlr.core.settings.AppearanceRepository
 import dev.staticvar.vlr.core.settings.CatppuccinFlavour
 import dev.staticvar.vlr.core.settings.ThemeFamily
+import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
 import dev.staticvar.vlr.shared.appearance.ApplyPlatformAppearance
 import dev.staticvar.vlr.shared.navigation.AppNavHost
 import dev.staticvar.vlr.shared.navigation.rememberVlrAppState
 import dev.staticvar.vlr.sharedui.image.ProvideSharedImageLoader
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * Main entry point for the shared Compose UI.
@@ -34,8 +34,8 @@ public fun App() {
   ProvideSharedImageLoader()
 
   val appState = rememberVlrAppState()
-  val appearanceRepository = koinInject<AppearanceRepository>()
-  val appearance by appearanceRepository.settings.collectAsState()
+  val viewModel = koinViewModel<AppearanceViewModel>()
+  val appearance by viewModel.appearance.collectAsStateWithLifecycle()
   val isDark = appearance.isDark(isSystemInDarkTheme())
   val variant = if (isDark) PrismVariant.Dark else PrismVariant.Light
   val family = when (appearance.family) {

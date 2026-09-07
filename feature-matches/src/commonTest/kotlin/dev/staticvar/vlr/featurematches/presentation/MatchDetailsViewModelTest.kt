@@ -4,8 +4,9 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
+import androidx.lifecycle.ViewModelStore
 import com.russhwolf.settings.MapSettings
-import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
 import dev.staticvar.vlr.domain.model.EventInfo
@@ -16,137 +17,110 @@ import dev.staticvar.vlr.domain.model.MatchVideos
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchDetailsUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchDetailsUseCase
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MatchDetailsViewModelTest {
   private val dispatcher = StandardTestDispatcher()
-  private val dispatchers = TestDispatcherProvider(dispatcher)
+  private val viewModelStore = ViewModelStore()
+  private var nextViewModelKey = 0
+
+  @BeforeTest
+  fun setUp() {
+    Dispatchers.setMain(dispatcher)
+  }
+
+  @AfterTest
+  fun tearDown() {
+    viewModelStore.clear()
+    Dispatchers.resetMain()
+  }
 
   @Test
-  fun openMatchRefreshesWhenDetailsAreMissing() {
+  fun observesMissingOrPartialCacheWithoutFetching() {
     runTest(dispatcher) {
       val repository = FakeMatchRepository()
       val viewModel = createViewModel(repository)
 
-      viewModel.openMatch("match-1")
       advanceUntilIdle()
-
-      assertEquals(listOf("match-1"), repository.refreshDetailRequests)
       assertEquals(false, viewModel.uiState.value.isLoading)
+      assertEquals(null, viewModel.uiState.value.match)
 
-      viewModel.clear()
-    }
-  }
-
-  @Test
-  fun openMatchSameIdDoesNotRequeryWhileActive() {
-    runTest(dispatcher) {
-      val repository = FakeMatchRepository(details = matchDetails("match-1", hasDetails = true))
-      val viewModel = createViewModel(repository)
-
-      viewModel.openMatch("match-1")
+      val shell = matchDetails("match-1")
+      repository.publishDetails(shell)
       advanceUntilIdle()
-      viewModel.openMatch("match-1")
-      advanceUntilIdle()
-
+      assertEquals(shell, viewModel.uiState.value.match)
+      assertEquals(false, viewModel.uiState.value.isLoading)
       assertEquals(listOf("match-1"), repository.observedMatchIds)
       assertEquals(emptyList(), repository.refreshDetailRequests)
-
-      viewModel.clear()
     }
   }
 
   @Test
-  fun openMatchRefreshesWhenOnlyPreviewRowIsCached() {
+  fun refreshUpdatesPopulatedStaleDetails() {
     runTest(dispatcher) {
-      val repository = FakeMatchRepository(details = matchDetails("match-1", hasDetails = false))
+      val cached = matchDetails("match-1", hasDetails = true)
+      val repository = FakeMatchRepository(details = cached)
+      repository.blockDetailRefresh = true
       val viewModel = createViewModel(repository)
 
-      viewModel.openMatch("match-1")
       advanceUntilIdle()
-
+      viewModel.refresh()
+      advanceUntilIdle()
       assertEquals(listOf("match-1"), repository.refreshDetailRequests)
-
-      viewModel.clear()
-    }
-  }
-
-  @Test
-  fun openMatchRefreshesCachedShellAfterMissingRowRefresh() {
-    runTest(dispatcher) {
-      val repository = FakeMatchRepository()
-      val viewModel = createViewModel(repository)
-
-      viewModel.openMatch("match-1")
-      advanceUntilIdle()
-      repository.publishDetails(matchDetails("match-1", hasDetails = false))
-      advanceUntilIdle()
-
-      assertEquals(listOf("match-1", "match-1"), repository.refreshDetailRequests)
-
-      viewModel.clear()
-    }
-  }
-
-  @Test
-  fun clearKeepsInFlightDetailRefreshAliveForCachePopulation() {
-    runTest(dispatcher) {
-      val repository = FakeMatchRepository(details = matchDetails("match-1", hasDetails = false))
-      repository.blockDetailRefresh = true
-      val viewModel = createViewModel(repository)
-
-      viewModel.openMatch("match-1")
-      advanceUntilIdle()
-      repository.refreshStarted.await()
-
-      viewModel.clear()
-      repository.allowRefresh.complete(Unit)
-      advanceUntilIdle()
-
-      assertEquals(true, repository.refreshCompleted)
-    }
-  }
-
-  @Test
-  fun openMatchKeepsLoadingWhileCachedShellRefreshIsInFlight() {
-    runTest(dispatcher) {
-      val repository = FakeMatchRepository(details = matchDetails("match-1", hasDetails = false))
-      repository.blockDetailRefresh = true
-      val viewModel = createViewModel(repository)
-
-      viewModel.openMatch("match-1")
-      advanceUntilIdle()
-      repository.refreshStarted.await()
-
-      assertEquals(true, viewModel.uiState.value.isLoading)
-
-      repository.allowRefresh.complete(Unit)
-      advanceUntilIdle()
-
-      assertEquals(true, viewModel.uiState.value.isLoading)
-
-      repository.publishDetails(matchDetails("match-1", hasDetails = true))
-      advanceUntilIdle()
-
+      assertEquals(cached, viewModel.uiState.value.match)
       assertEquals(false, viewModel.uiState.value.isLoading)
-      viewModel.clear()
+      assertEquals(true, viewModel.uiState.value.isRefreshing)
+
+      val fresh = cached.copy(score = "2:1")
+      repository.publishDetails(fresh)
+      repository.allowRefresh.complete(Unit)
+      advanceUntilIdle()
+      assertEquals(fresh, viewModel.uiState.value.match)
+      assertEquals(false, viewModel.uiState.value.isRefreshing)
     }
   }
 
   @Test
-  fun sectionChoicesAreAvailableImmediatelyAndSurviveOpeningAnotherMatch() {
+  fun failedRefreshKeepsCachedDetailsAndCanRetry() {
+    runTest(dispatcher) {
+      val cached = matchDetails("match-1", hasDetails = true)
+      val repository = FakeMatchRepository(details = cached)
+      repository.refreshResult = Result.failure(IllegalStateException("Offline"))
+      val viewModel = createViewModel(repository)
+
+      advanceUntilIdle()
+      viewModel.refresh()
+      advanceUntilIdle()
+      assertEquals(cached, viewModel.uiState.value.match)
+      assertEquals("Offline", viewModel.uiState.value.errorMessage)
+      assertEquals(false, viewModel.uiState.value.isRefreshing)
+
+      repository.refreshResult = Result.success(Unit)
+      viewModel.refresh()
+      advanceUntilIdle()
+      assertEquals(null, viewModel.uiState.value.errorMessage)
+      assertEquals(listOf("match-1", "match-1"), repository.refreshDetailRequests)
+    }
+  }
+
+  @Test
+  fun sectionChoicesAreAvailableImmediatelyAndPersistChanges() {
     runTest(dispatcher) {
       val storage = MapSettings()
       val preferencesRepository = MatchDetailsPreferencesRepository(storage)
@@ -156,17 +130,16 @@ class MatchDetailsViewModelTest {
       val viewModel = createViewModel(repository, preferencesRepository)
 
       assertEquals(preferences, viewModel.uiState.value.preferences)
-      viewModel.openMatch("match-1")
+
       advanceUntilIdle()
-      viewModel.openMatch("match-2")
+
       assertEquals(preferences, viewModel.uiState.value.preferences)
-      advanceUntilIdle()
 
       val changed = preferences.copy(showMedia = false)
       viewModel.setPreferences(changed)
+      advanceUntilIdle()
       assertEquals(changed, viewModel.uiState.value.preferences)
       assertEquals(changed, MatchDetailsPreferencesRepository(storage).preferences.value)
-      viewModel.clear()
     }
   }
 
@@ -177,8 +150,7 @@ class MatchDetailsViewModelTest {
       val repository = FakeMatchRepository(details = matchDetails("match-1", hasDetails = true))
       val first = createViewModel(repository, preferencesRepository)
       val second = createViewModel(repository, preferencesRepository)
-      first.openMatch("match-1")
-      second.openMatch("match-1")
+
       advanceUntilIdle()
 
       first.setPreferences(MatchDetailsPreferences(showMedia = false))
@@ -186,20 +158,44 @@ class MatchDetailsViewModelTest {
 
       assertEquals(first.uiState.value.preferences, second.uiState.value.preferences)
       assertEquals(emptyList(), repository.refreshDetailRequests)
-      first.clear()
-      second.clear()
+
     }
+  }
+
+  @Test
+  fun clearingStoreCancelsRefreshAndDatabaseObservation() = runTest(dispatcher) {
+    val cached = matchDetails("match-1", hasDetails = true)
+    val repository = FakeMatchRepository(details = cached)
+    repository.blockDetailRefresh = true
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.refresh()
+    advanceUntilIdle()
+    viewModel.refresh()
+    viewModelStore.clear()
+    advanceUntilIdle()
+
+    assertEquals(true, repository.refreshCancelled)
+    repository.publishDetails(cached.copy(score = "2:1"))
+    repository.allowRefresh.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(cached, viewModel.uiState.value.match)
+    assertEquals(listOf("match-1"), repository.refreshDetailRequests)
   }
 
   private fun createViewModel(
     repository: FakeMatchRepository,
     preferencesRepository: MatchDetailsPreferencesRepository = MatchDetailsPreferencesRepository(MapSettings()),
   ): MatchDetailsViewModel = MatchDetailsViewModel(
+    matchId = "match-1",
     observeMatchDetailsUseCase = ObserveMatchDetailsUseCase(repository),
     refreshMatchDetailsUseCase = RefreshMatchDetailsUseCase(repository),
-    dispatchers = dispatchers,
+    networkMonitor = object : NetworkMonitor {
+      override val isOnline = MutableStateFlow(true)
+    },
     preferencesRepository = preferencesRepository,
-  )
+  ).also { viewModelStore.put("viewModel-${nextViewModelKey++}", it) }
 
   private fun matchDetails(matchId: String, hasDetails: Boolean = false): MatchDetails = MatchDetails(
     id = matchId,
@@ -233,10 +229,10 @@ class MatchDetailsViewModelTest {
   private class FakeMatchRepository(details: MatchDetails? = null) : MatchRepository {
     val observedMatchIds: MutableList<String> = mutableListOf()
     val refreshDetailRequests: MutableList<String> = mutableListOf()
+    var refreshCancelled: Boolean = false
     var blockDetailRefresh: Boolean = false
-    val refreshStarted: CompletableDeferred<Unit> = CompletableDeferred()
     val allowRefresh: CompletableDeferred<Unit> = CompletableDeferred()
-    var refreshCompleted: Boolean = false
+    var refreshResult: Result<Unit> = Result.success(Unit)
     private val detailsByMatchId: MutableMap<String, MutableStateFlow<MatchDetails?>> = mutableMapOf()
 
     init {
@@ -262,18 +258,15 @@ class MatchDetailsViewModelTest {
 
     override suspend fun refreshMatchDetails(matchId: String): Result<Unit> {
       refreshDetailRequests += matchId
-      refreshStarted.complete(Unit)
       if (blockDetailRefresh) {
-        allowRefresh.await()
+        try {
+          allowRefresh.await()
+        } catch (exception: CancellationException) {
+          refreshCancelled = true
+          throw exception
+        }
       }
-      refreshCompleted = true
-      return Result.success(Unit)
+      return refreshResult
     }
-  }
-
-  private class TestDispatcherProvider(dispatcher: TestDispatcher) : DispatcherProvider {
-    override val default: CoroutineDispatcher = dispatcher
-    override val io: CoroutineDispatcher = dispatcher
-    override val main: CoroutineDispatcher = dispatcher
   }
 }

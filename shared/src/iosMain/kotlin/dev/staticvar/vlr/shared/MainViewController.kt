@@ -8,6 +8,7 @@ package dev.staticvar.vlr.shared
 
 import androidx.compose.ui.window.ComposeUIViewController
 import dev.staticvar.vlr.shared.di.initializeAppKoin
+import dev.staticvar.vlr.shared.network.iosNetworkModule
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSBundle
 import platform.Foundation.NSProcessInfo
@@ -31,7 +32,10 @@ fun MainViewController(authToken: String? = null): UIViewController {
   ensureUnhandledExceptionLoggingInstalled()
 
   return try {
-    initializeAppKoin(authToken = resolveAuthToken(authToken))
+    initializeAppKoin(
+      appDeclaration = { modules(iosNetworkModule) },
+      authToken = resolveAuthToken(authToken),
+    )
     ComposeUIViewController { App() }
   } catch (throwable: Throwable) {
     logThrowable("Synchronous Kotlin startup failure", throwable)

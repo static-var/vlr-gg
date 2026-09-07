@@ -23,18 +23,22 @@ import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+
 @Composable
 public fun PlayerDetailsRoute(
   uiState: PlayerDetailsUiState,
   onBack: () -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   PlayerDetailsScreen(
     uiState = uiState,
     onBack = onBack,
     onTeamSelected = onTeamSelected,
     modifier = modifier,
+    onRefresh = onRefresh,
   )
 }
 
@@ -44,6 +48,7 @@ internal fun PlayerDetailsScreen(
   onBack: () -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   val player = uiState.player
 
@@ -51,17 +56,22 @@ internal fun PlayerDetailsScreen(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
-    PrismScreenTitleBar(
-      title = player?.alias?.ifBlank { player.name } ?: "Player details",
-      subtitle = "Stats, agents and team history",
-      onBackPress = onBack,
-    )
+    Column {
+      PrismScreenTitleBar(
+        title = player?.alias?.ifBlank { player.name } ?: "Player details",
+        subtitle = "Stats, agents and team history",
+        onBackPress = onBack,
+      )
+
+      SharedRefreshStatus(
+        isRefreshing = uiState.isRefreshing,
+        errorMessage = uiState.errorMessage,
+        onRefresh = onRefresh,
+      )
+    }
 
     when {
       uiState.isLoading -> PrismStateMessage(text = "Loading player details…")
-
-      uiState.errorMessage != null && player == null ->
-        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load player details.")
 
       player == null -> PrismStateMessage(text = "Player detail is unavailable.")
 

@@ -50,6 +50,8 @@ kotlin {
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.coroutines.core)
         implementation(libs.koin.core)
+        implementation(libs.koin.core.viewmodel)
+        api(libs.lifecycle.viewmodel.core)
         implementation(libs.navigation3.ui.cmp)
 
         implementation(projects.core)

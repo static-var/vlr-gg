@@ -4,81 +4,40 @@
  */
 package dev.staticvar.vlr.featureteam.presentation
 
-import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.refresh.RefreshController
 import dev.staticvar.vlr.featureteam.usecase.ObserveTeamDetailsUseCase
 import dev.staticvar.vlr.featureteam.usecase.RefreshTeamDetailsUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 
 public class TeamDetailsViewModel(
-  private val observeTeamDetailsUseCase: ObserveTeamDetailsUseCase,
-  private val refreshTeamDetailsUseCase: RefreshTeamDetailsUseCase,
-  dispatchers: DispatcherProvider,
-) {
-  private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatchers.main)
-  private val mutableUiState: MutableStateFlow<TeamDetailsUiState> = MutableStateFlow(TeamDetailsUiState())
-  private var currentTeamId: String? = null
-  private var observeTeamJob: Job? = null
+  teamId: String,
+  observeTeamDetailsUseCase: ObserveTeamDetailsUseCase,
+  refreshTeamDetailsUseCase: RefreshTeamDetailsUseCase,
+  networkMonitor: NetworkMonitor,
+) : ViewModel() {
+  public val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
 
-  public val uiState: StateFlow<TeamDetailsUiState> = mutableUiState.asStateFlow()
-
-  public fun openTeam(teamId: String) {
-    if (currentTeamId == teamId && observeTeamJob?.isActive == true) {
-      return
-    }
-
-    currentTeamId = teamId
-    observeTeamJob?.cancel()
-    mutableUiState.value = TeamDetailsUiState(isLoading = true)
-    observeTeamJob =
-      scope.launch {
-        var initialRefreshRequested = false
-        observeTeamDetailsUseCase(teamId).collect { team ->
-          mutableUiState.update { current ->
-            current.copy(
-              team = team,
-              isLoading = false,
-              errorMessage = if (team != null) null else current.errorMessage,
-            )
-          }
-          if (!initialRefreshRequested && team == null) {
-            initialRefreshRequested = true
-            refreshInternal(teamId = teamId, showRefreshing = false)
-          }
-        }
-      }
+  private val refresher: RefreshController = RefreshController(viewModelScope, networkMonitor) {
+    refreshTeamDetailsUseCase(teamId)
   }
+
+  public val uiState: StateFlow<TeamDetailsUiState> =
+    combine(observeTeamDetailsUseCase(teamId), refresher.state) { team, refresh ->
+      TeamDetailsUiState(
+        team = team,
+        isLoading = false,
+        isRefreshing = refresh.isRefreshing,
+        errorMessage = refresh.errorMessage,
+      )
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, TeamDetailsUiState())
 
   public fun refresh() {
-    val teamId: String = currentTeamId ?: return
-    scope.launch {
-      refreshInternal(teamId = teamId, showRefreshing = true)
-    }
-  }
-
-  public fun clear() {
-    observeTeamJob?.cancel()
-    scope.cancel()
-  }
-
-  private suspend fun refreshInternal(teamId: String, showRefreshing: Boolean) {
-    if (showRefreshing) {
-      mutableUiState.update { it.copy(isRefreshing = true, errorMessage = null) }
-    }
-    val refreshResult: Result<Unit> = refreshTeamDetailsUseCase(teamId)
-    mutableUiState.update { current ->
-      current.copy(
-        isLoading = false,
-        isRefreshing = false,
-        errorMessage = refreshResult.exceptionOrNull()?.message,
-      )
-    }
+    refresher.refresh()
   }
 }

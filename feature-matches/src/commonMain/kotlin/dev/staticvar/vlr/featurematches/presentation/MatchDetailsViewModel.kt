@@ -4,115 +4,51 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
-import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.refresh.RefreshController
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
-import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchDetailsUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchDetailsUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 
 public class MatchDetailsViewModel(
-  private val observeMatchDetailsUseCase: ObserveMatchDetailsUseCase,
-  private val refreshMatchDetailsUseCase: RefreshMatchDetailsUseCase,
-  dispatchers: DispatcherProvider,
+  matchId: String,
+  observeMatchDetailsUseCase: ObserveMatchDetailsUseCase,
+  refreshMatchDetailsUseCase: RefreshMatchDetailsUseCase,
+  networkMonitor: NetworkMonitor,
   private val preferencesRepository: MatchDetailsPreferencesRepository,
-) {
-  private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + dispatchers.main)
-  private val mutableUiState: MutableStateFlow<MatchDetailsUiState> = MutableStateFlow(
+) : ViewModel() {
+  public val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
+
+  private val refresher = RefreshController(viewModelScope, networkMonitor) { refreshMatchDetailsUseCase(matchId) }
+
+  public val uiState: StateFlow<MatchDetailsUiState> = combine(
+    observeMatchDetailsUseCase(matchId),
+    refresher.state,
+    preferencesRepository.preferences,
+  ) { match, refresh, preferences ->
+    MatchDetailsUiState(
+      match = match,
+      preferences = preferences,
+      isLoading = false,
+      isRefreshing = refresh.isRefreshing,
+      errorMessage = refresh.errorMessage,
+    )
+  }.stateIn(
+    viewModelScope,
+    SharingStarted.Eagerly,
     MatchDetailsUiState(preferences = preferencesRepository.preferences.value),
   )
-  private val observePreferencesJob: Job = scope.launch {
-    preferencesRepository.preferences.collect { preferences ->
-      mutableUiState.update { it.copy(preferences = preferences) }
-    }
-  }
-  private var currentMatchId: String? = null
-  private var observeMatchJob: Job? = null
-  private var refreshMatchJob: Job? = null
-
-  public val uiState: StateFlow<MatchDetailsUiState> = mutableUiState.asStateFlow()
-
-  public fun openMatch(matchId: String) {
-    if (currentMatchId == matchId && observeMatchJob?.isActive == true) {
-      return
-    }
-
-    currentMatchId = matchId
-    observeMatchJob?.cancel()
-    mutableUiState.value = MatchDetailsUiState(
-      isLoading = true,
-      preferences = preferencesRepository.preferences.value,
-    )
-    observeMatchJob =
-      scope.launch {
-        var missingMatchRefreshRequested = false
-        var incompleteDetailsRefreshRequested = false
-        observeMatchDetailsUseCase(matchId).collect { match ->
-          mutableUiState.update { current ->
-            val isIncompleteCachedMatch = match?.needsDetailRefresh() == true
-            current.copy(
-              match = match,
-              isLoading = match == null || isIncompleteCachedMatch,
-              errorMessage = if (match != null) null else current.errorMessage,
-            )
-          }
-          if (!missingMatchRefreshRequested && match == null) {
-            missingMatchRefreshRequested = true
-            refreshMatchJob = scope.launch {
-              refreshInternal(matchId = matchId, showRefreshing = false)
-            }
-          }
-          if (!incompleteDetailsRefreshRequested && match?.needsDetailRefresh() == true) {
-            incompleteDetailsRefreshRequested = true
-            refreshMatchJob = scope.launch {
-              refreshInternal(matchId = matchId, showRefreshing = true)
-            }
-          }
-        }
-      }
-  }
 
   public fun setPreferences(preferences: MatchDetailsPreferences) {
     preferencesRepository.setPreferences(preferences)
-    mutableUiState.update { it.copy(preferences = preferences) }
   }
 
-  public fun refresh() {
-    val matchId: String = currentMatchId ?: return
-    refreshMatchJob?.cancel()
-    refreshMatchJob = scope.launch {
-      refreshInternal(matchId = matchId, showRefreshing = true)
-    }
-  }
-
-  public fun clear() {
-    observeMatchJob?.cancel()
-    observePreferencesJob.cancel()
-  }
-
-  private suspend fun refreshInternal(matchId: String, showRefreshing: Boolean) {
-    if (showRefreshing) {
-      mutableUiState.update { it.copy(isRefreshing = true, errorMessage = null) }
-    }
-    val refreshResult: Result<Unit> = refreshMatchDetailsUseCase(matchId)
-    mutableUiState.update { current ->
-      val keepLoadingForCachedShell = refreshResult.isSuccess && current.match?.needsDetailRefresh() == true
-      current.copy(
-        isLoading = keepLoadingForCachedShell,
-        isRefreshing = false,
-        errorMessage = refreshResult.exceptionOrNull()?.message,
-      )
-    }
-  }
+  public fun refresh(): Unit = refresher.refresh()
 }
-
-private fun MatchDetails.needsDetailRefresh(): Boolean =
-  matchData.isEmpty() && head2head.isEmpty() && videos.streams.isEmpty() && videos.vods.isEmpty()

@@ -28,6 +28,7 @@ import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsArticle
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailHeaderItem
@@ -73,38 +74,38 @@ internal fun NewsArticleScreen(
       .padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
-    PrismScreenTitleBar(
-      title = "News",
-      onBackPress = onBack.takeIf { showBackAction },
-      actions = {
-        if (showScrollToTop) {
+    Column {
+      PrismScreenTitleBar(
+        title = "News",
+        onBackPress = onBack.takeIf { showBackAction },
+        actions = {
+          if (showScrollToTop) {
+            PrismButton(
+              onClick = { coroutineScope.launch { scrollState.animateScrollToItem(0) } },
+              style = PrismButtonStyle.Tertiary,
+            ) {
+              Text("Top")
+            }
+          }
           PrismButton(
-            onClick = { coroutineScope.launch { scrollState.animateScrollToItem(0) } },
+            onClick = onRefresh,
+            enabled = !uiState.isRefreshing,
             style = PrismButtonStyle.Tertiary,
           ) {
-            Text("Top")
+            Text(if (uiState.isRefreshing) "Refreshing" else "Refresh")
           }
-        }
-        PrismButton(
-          onClick = onRefresh,
-          enabled = !uiState.isRefreshing,
-          style = PrismButtonStyle.Tertiary,
-        ) {
-          Text(if (uiState.isRefreshing) "Refreshing" else "Refresh")
-        }
-      },
-    )
+        },
+      )
 
-    if (uiState.errorMessage != null && !article?.contentHtml.isNullOrBlank()) {
-      Text(
-        text = "Could not refresh this article. Showing the saved version.",
-        style = Prism.typography.caption,
-        color = Prism.color.labelColor,
+      SharedRefreshStatus(
+        isRefreshing = uiState.isRefreshing,
+        errorMessage = uiState.errorMessage,
+        onRefresh = onRefresh,
       )
     }
 
     when {
-      (uiState.isLoading || uiState.isRefreshing) && article?.contentHtml.isNullOrBlank() -> {
+      uiState.isLoading && article?.contentHtml.isNullOrBlank() -> {
         PrismFullscreenLoader(
           modifier = Modifier.fillMaxSize(),
           label = "Loading article",

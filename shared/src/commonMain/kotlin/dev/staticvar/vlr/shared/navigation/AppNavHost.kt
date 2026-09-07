@@ -25,117 +25,96 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavBar
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavBarLarge
 import dev.staticvar.designsystem.prism.Prism
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
-import org.koin.mp.KoinPlatform
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
   val navItems = remember(appState.navigationItems) { appState.navigationItems }
   val entryProvider = koinEntryProvider<NavKey>()
-  TrackNavigationScopes(backStack = appState.backStack)
+  val entryDecorators = listOf(
+    rememberSaveableStateHolderNavEntryDecorator<NavKey>(),
+    rememberViewModelStoreNavEntryDecorator<NavKey>(),
+  )
 
   ProvideVlrAppState(appState = appState) {
     androidx.compose.foundation.layout.BoxWithConstraints(
       modifier = modifier.fillMaxSize(),
     ) {
-    val showSceneLayout: Boolean = maxWidth >= sceneBreakpoint
-    val showRail: Boolean = maxWidth >= railBreakpoint
-    val sceneStrategy = rememberGroupedListDetailSceneStrategy<NavKey>(enabled = showSceneLayout)
+      val showSceneLayout: Boolean = maxWidth >= sceneBreakpoint
+      val showRail: Boolean = maxWidth >= railBreakpoint
+      val sceneStrategy = rememberGroupedListDetailSceneStrategy<NavKey>(enabled = showSceneLayout)
 
-    if (showRail) {
-      Row(
-        modifier = Modifier
-          .fillMaxSize()
-          .windowInsetsPadding(WindowInsets.safeDrawing)
-          .padding(Prism.dimens.spacingM),
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
-      ) {
-        PrismBottomNavBarLarge(
-          items = navItems,
-          selectedItemId = appState.selectedNavigationItemId,
-          onItemSelected = appState::selectRoot,
-        )
-        NavDisplay(
-          backStack = appState.backStack,
-          onBack = appState::navigateUp,
-          sceneStrategy = sceneStrategy,
-          entryProvider = entryProvider,
-          transitionSpec = { navigationForwardTransition() },
-          popTransitionSpec = { navigationBackTransition() },
-          predictivePopTransitionSpec = { navigationBackTransition() },
-          modifier = Modifier.weight(1f).fillMaxSize(),
-        )
-      }
-    } else {
-      Column(
-        modifier = Modifier.fillMaxSize(),
-      ) {
-        NavDisplay(
-          backStack = appState.backStack,
-          onBack = appState::navigateUp,
-          sceneStrategy = sceneStrategy,
-          entryProvider = entryProvider,
-          transitionSpec = { navigationForwardTransition() },
-          popTransitionSpec = { navigationBackTransition() },
-          predictivePopTransitionSpec = { navigationBackTransition() },
-          modifier = Modifier.weight(1f).fillMaxWidth(),
-        )
-        AnimatedVisibility(
-          visible = appState.shouldShowBottomNavigation,
-          enter = slideInVertically(
-            animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
-            initialOffsetY = { height -> height },
-          ) + fadeIn(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)),
-          exit = slideOutVertically(
-            animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
-            targetOffsetY = { height -> height },
-          ) + fadeOut(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)),
+      if (showRail) {
+        Row(
+          modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .padding(Prism.dimens.spacingM),
+          horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
         ) {
-          PrismBottomNavBar(
+          PrismBottomNavBarLarge(
             items = navItems,
             selectedItemId = appState.selectedNavigationItemId,
             onItemSelected = appState::selectRoot,
-            modifier = Modifier.fillMaxWidth(),
+          )
+          NavDisplay(
+            backStack = appState.backStack,
+            onBack = appState::navigateUp,
+            sceneStrategy = sceneStrategy,
+            entryProvider = entryProvider,
+            entryDecorators = entryDecorators,
+            transitionSpec = { navigationForwardTransition() },
+            popTransitionSpec = { navigationBackTransition() },
+            predictivePopTransitionSpec = { navigationBackTransition() },
+            modifier = Modifier.weight(1f).fillMaxSize(),
           )
         }
+      } else {
+        Column(
+          modifier = Modifier.fillMaxSize(),
+        ) {
+          NavDisplay(
+            backStack = appState.backStack,
+            onBack = appState::navigateUp,
+            sceneStrategy = sceneStrategy,
+            entryProvider = entryProvider,
+            entryDecorators = entryDecorators,
+            transitionSpec = { navigationForwardTransition() },
+            popTransitionSpec = { navigationBackTransition() },
+            predictivePopTransitionSpec = { navigationBackTransition() },
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+          )
+          AnimatedVisibility(
+            visible = appState.shouldShowBottomNavigation,
+            enter = slideInVertically(
+              animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
+              initialOffsetY = { height -> height },
+            ) + fadeIn(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)),
+            exit = slideOutVertically(
+              animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
+              targetOffsetY = { height -> height },
+            ) + fadeOut(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)),
+          ) {
+            PrismBottomNavBar(
+              items = navItems,
+              selectedItemId = appState.selectedNavigationItemId,
+              onItemSelected = appState::selectRoot,
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
+        }
       }
-    }
-  }
-  }
-}
-
-@Composable
-private fun TrackNavigationScopes(backStack: List<NavKey>) {
-  val knownScopeIds = remember { mutableStateSetOf<String>() }
-  val activeScopeIds = remember(backStack.toList()) {
-    backStack.mapNotNull { route -> (route as? AppRoute)?.navigationScopeId }.toSet()
-  }
-
-  LaunchedEffect(activeScopeIds) {
-    val staleScopeIds = knownScopeIds.filterNot(activeScopeIds::contains)
-    staleScopeIds.forEach { scopeId ->
-      KoinPlatform.getKoin().getScopeOrNull(scopeId)?.close()
-      knownScopeIds.remove(scopeId)
-    }
-    knownScopeIds.addAll(activeScopeIds)
-  }
-
-  DisposableEffect(Unit) {
-    onDispose {
-      knownScopeIds.forEach { scopeId -> KoinPlatform.getKoin().getScopeOrNull(scopeId)?.close() }
-      knownScopeIds.clear()
     }
   }
 }

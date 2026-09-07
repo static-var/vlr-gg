@@ -4,7 +4,8 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
-import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import androidx.lifecycle.ViewModelStore
+import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
@@ -12,22 +13,37 @@ import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchListUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchesUseCase
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MatchesViewModelTest {
   private val dispatcher = StandardTestDispatcher()
-  private val dispatchers = TestDispatcherProvider(dispatcher)
+  private val viewModelStore = ViewModelStore()
+  private var nextViewModelKey = 0
+
+  @BeforeTest
+  fun setUp() {
+    Dispatchers.setMain(dispatcher)
+  }
+
+  @AfterTest
+  fun tearDown() {
+    viewModelStore.clear()
+    Dispatchers.resetMain()
+  }
 
   @Test
   fun initSelectsFilterFromFirstMatchStatus() {
@@ -46,24 +62,20 @@ class MatchesViewModelTest {
 
       assertEquals(MatchStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
       assertEquals(listOf("m1"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
-      assertEquals(1, repository.refreshMatchesCallCount)
-
-      viewModel.clear()
+      assertEquals(0, repository.refreshMatchesCallCount)
     }
   }
 
   @Test
-  fun initRefreshesWhenMatchesAreEmpty() {
+  fun initFinishesLoadingEmptyCacheWithoutFetching() {
     runTest(dispatcher) {
       val repository = FakeMatchRepository(matches = emptyList())
 
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
 
-      assertEquals(1, repository.refreshMatchesCallCount)
+      assertEquals(0, repository.refreshMatchesCallCount)
       assertEquals(false, viewModel.uiState.value.isLoading)
-
-      viewModel.clear()
     }
   }
 
@@ -78,11 +90,11 @@ class MatchesViewModelTest {
 
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
+      viewModel.refresh()
+      advanceUntilIdle()
 
       assertEquals(MatchStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
       assertEquals(listOf("upcoming-1"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
-
-      viewModel.clear()
     }
   }
 
@@ -105,12 +117,12 @@ class MatchesViewModelTest {
       assertEquals(listOf("live-earlier", "live-later"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
 
       viewModel.selectFilter(MatchStatusFilter.Upcoming)
+      advanceUntilIdle()
       assertEquals(listOf("upcoming-earlier", "upcoming-later"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
 
       viewModel.selectFilter(MatchStatusFilter.Completed)
+      advanceUntilIdle()
       assertEquals(listOf("completed-newer", "completed-older"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
-
-      viewModel.clear()
     }
   }
 
@@ -130,18 +142,19 @@ class MatchesViewModelTest {
       advanceUntilIdle()
 
       viewModel.selectFilter(MatchStatusFilter.Completed)
+      advanceUntilIdle()
 
       assertEquals(listOf("completed-1"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
-
-      viewModel.clear()
     }
   }
 
   private fun createViewModel(repository: FakeMatchRepository): MatchesViewModel = MatchesViewModel(
     observeMatchListUseCase = ObserveMatchListUseCase(repository),
     refreshMatchesUseCase = RefreshMatchesUseCase(repository),
-    dispatchers = dispatchers,
-  )
+    networkMonitor = object : NetworkMonitor {
+      override val isOnline = MutableStateFlow(true)
+    },
+  ).also { viewModelStore.put("viewModel-${nextViewModelKey++}", it) }
 
   private fun matchPreview(
     id: String,
@@ -190,11 +203,5 @@ class MatchesViewModelTest {
     }
 
     override suspend fun refreshMatchDetails(matchId: String): Result<Unit> = Result.success(Unit)
-  }
-
-  private class TestDispatcherProvider(dispatcher: TestDispatcher) : DispatcherProvider {
-    override val default: CoroutineDispatcher = dispatcher
-    override val io: CoroutineDispatcher = dispatcher
-    override val main: CoroutineDispatcher = dispatcher
   }
 }

@@ -4,29 +4,45 @@
  */
 package dev.staticvar.vlr.featurenews.presentation.list
 
-import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import androidx.lifecycle.ViewModelStore
+import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.domain.model.NewsArticle
-import dev.staticvar.vlr.domain.model.NewsArticleMedia
 import dev.staticvar.vlr.domain.model.NewsItem
 import dev.staticvar.vlr.domain.repository.NewsRepository
 import dev.staticvar.vlr.featurenews.usecase.ObserveNewsListUseCase
 import dev.staticvar.vlr.featurenews.usecase.RefreshNewsUseCase
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewsListViewModelTest {
   private val dispatcher = StandardTestDispatcher()
-  private val dispatchers = TestDispatcherProvider(dispatcher)
+  private val viewModelStore = ViewModelStore()
+
+  @BeforeTest
+  fun setUp() {
+    Dispatchers.setMain(dispatcher)
+  }
+
+  @AfterTest
+  fun tearDown() {
+    viewModelStore.clear()
+    Dispatchers.resetMain()
+  }
 
   @Test
   fun initCollectsCachedNewsWithoutRefresh() {
@@ -39,31 +55,57 @@ class NewsListViewModelTest {
       assertEquals(listOf(newsItem("news-1")), viewModel.uiState.value.items)
       assertEquals(false, viewModel.uiState.value.isLoading)
       assertEquals(0, repository.refreshNewsCallCount)
-
-      viewModel.clear()
     }
   }
 
   @Test
-  fun initRefreshesWhenNewsListIsEmpty() {
+  fun emptyCacheFinishesLoadingWithoutAutomaticNetworkRequest() {
     runTest(dispatcher) {
       val repository = FakeNewsRepository(items = emptyList())
 
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
 
-      assertEquals(1, repository.refreshNewsCallCount)
+      assertEquals(0, repository.refreshNewsCallCount)
       assertEquals(false, viewModel.uiState.value.isLoading)
-
-      viewModel.clear()
     }
+  }
+
+  @Test
+  fun refreshCoalescesAndKeepsCacheAndFailureThroughDatabaseUpdates() = runTest(dispatcher) {
+    val cached = newsItem("cached")
+    val repository = FakeNewsRepository(listOf(cached))
+    repository.refreshResult = Result.failure(IllegalStateException("Offline"))
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.refresh()
+    viewModel.refresh()
+    runCurrent()
+    assertEquals(1, repository.refreshNewsCallCount)
+    assertEquals(listOf(cached), viewModel.uiState.value.items)
+    assertEquals(true, viewModel.uiState.value.isRefreshing)
+    advanceUntilIdle()
+    assertEquals("Offline", viewModel.uiState.value.errorMessage)
+    assertEquals(false, viewModel.uiState.value.isRefreshing)
+
+    repository.itemsFlow.value = listOf(cached.copy(title = "Saved update"))
+    advanceUntilIdle()
+    assertEquals("Offline", viewModel.uiState.value.errorMessage)
+    repository.refreshResult = Result.success(Unit)
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+    assertEquals("Saved update", viewModel.uiState.value.items.single().title)
   }
 
   private fun createViewModel(repository: FakeNewsRepository): NewsListViewModel = NewsListViewModel(
     observeNewsListUseCase = ObserveNewsListUseCase(repository),
     refreshNewsUseCase = RefreshNewsUseCase(repository),
-    dispatchers = dispatchers,
-  )
+    networkMonitor = object : NetworkMonitor {
+      override val isOnline = MutableStateFlow(true)
+    },
+  ).also { viewModelStore.put("viewModel", it) }
 
   private fun newsItem(id: String): NewsItem = NewsItem(
     id = id,
@@ -76,7 +118,8 @@ class NewsListViewModelTest {
   )
 
   private class FakeNewsRepository(items: List<NewsItem>) : NewsRepository {
-    private val itemsFlow = MutableStateFlow(items)
+    val itemsFlow = MutableStateFlow(items)
+    var refreshResult: Result<Unit> = Result.success(Unit)
     var refreshNewsCallCount: Int = 0
       private set
 
@@ -86,15 +129,10 @@ class NewsListViewModelTest {
 
     override suspend fun refreshNews(): Result<Unit> {
       refreshNewsCallCount += 1
-      return Result.success(Unit)
+      delay(100)
+      return refreshResult
     }
 
     override suspend fun refreshNewsArticle(articleId: String): Result<Unit> = Result.success(Unit)
-  }
-
-  private class TestDispatcherProvider(dispatcher: TestDispatcher) : DispatcherProvider {
-    override val default: CoroutineDispatcher = dispatcher
-    override val io: CoroutineDispatcher = dispatcher
-    override val main: CoroutineDispatcher = dispatcher
   }
 }

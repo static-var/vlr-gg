@@ -20,18 +20,22 @@ import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.sharedui.component.match.overview.MatchPreviewItem
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+
 @Composable
 public fun MatchesOverviewRoute(
   uiState: MatchesUiState,
   onFilterSelected: (MatchStatusFilter) -> Unit,
   onMatchSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   MatchesOverviewScreen(
     uiState = uiState,
     onFilterSelected = onFilterSelected,
     onMatchSelected = onMatchSelected,
     modifier = modifier,
+    onRefresh = onRefresh,
   )
 }
 
@@ -41,15 +45,23 @@ internal fun MatchesOverviewScreen(
   onFilterSelected: (MatchStatusFilter) -> Unit,
   onMatchSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRefresh: () -> Unit = {},
 ) {
   Column(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
-    PrismScreenTitleBar(
-      title = "Match overview",
-      subtitle = "Results, schedules and live scores",
-    )
+    Column {
+      PrismScreenTitleBar(
+        title = "Match overview",
+        subtitle = "Results, schedules and live scores",
+      )
+      SharedRefreshStatus(
+        isRefreshing = uiState.isRefreshing,
+        errorMessage = uiState.errorMessage,
+        onRefresh = onRefresh,
+      )
+    }
     PrismTabs(
       tabs =
       listOf(
