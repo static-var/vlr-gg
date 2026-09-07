@@ -81,7 +81,7 @@ public fun EventDetailHeaderItem(
           imageUrl = event.logoUrl,
           contentDescription = event.title,
           size = PrismIconSize.Hero,
-          style = PrismIconStyle.Bordered,
+          style = PrismIconStyle.Plain,
           tint = PrismIconTint.None,
         )
       }
@@ -117,4 +117,3 @@ public fun EventDetailHeaderItem(
     }
   }
 }
-

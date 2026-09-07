@@ -52,13 +52,13 @@ public fun EventPreviewItem(
         modifier = Modifier
           .fillMaxWidth()
           .padding(top = Prism.dimens.spacingS),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
       ) {
         SharedNetworkIcon(
           imageUrl = eventPreview.logoUrl,
           contentDescription = eventPreview.title,
           size = PrismIconSize.Large,
-          style = PrismIconStyle.Bordered,
+          style = PrismIconStyle.Plain,
           tint = PrismIconTint.None,
         )
         Column(modifier = Modifier.padding(start = Prism.dimens.spacingS)) {

@@ -4,7 +4,6 @@
  */
 package dev.staticvar.vlr.sharedui.component.common
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -95,7 +94,7 @@ private fun SharedNetworkIconFallback(
       -> style.containerColor
     },
     shape = Prism.shapes.small,
-    border = style.border ?: BorderStroke(width = Prism.dimens.strokeDefault, color = Prism.color.stroke),
+    border = style.border,
   ) {
     Box(modifier = Modifier.size(containerSize), contentAlignment = Alignment.Center) {
       Text(

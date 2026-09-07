@@ -56,11 +56,11 @@ public fun MatchDetailHeaderItem(
       Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       ) {
         PrismHeader(
           text = match.event.name.ifBlank { "match" },
-          modifier = eventClickModifier,
+          modifier = Modifier.weight(1f).then(eventClickModifier),
         )
         PrismTag(text = match.event.status.matchDetailStatusLabel, style = match.event.status.matchDetailStatusTagStyle)
       }
