@@ -22,6 +22,14 @@ import kotlin.test.assertNull
 
 class MatchDetailFormattingTest {
   @Test
+  fun knownMapCountIsShownWithoutPlayerStats() {
+    val match = matchDetails().copy(id = "734308", mapCount = 5)
+    assertEquals("5 maps", match.matchDetailMapCountStat())
+    assertEquals("1 map", match.copy(mapCount = 1).matchDetailMapCountStat())
+    assertEquals("-", match.copy(mapCount = 0).matchDetailMapCountStat())
+  }
+
+  @Test
   fun mapOptionsIncludeAllOnlyForMultipleMaps() {
     val oneMap = listOf(mapData(name = "Lotus"))
     val twoMaps = listOf(mapData(name = "Lotus"), mapData(name = "Haven"))

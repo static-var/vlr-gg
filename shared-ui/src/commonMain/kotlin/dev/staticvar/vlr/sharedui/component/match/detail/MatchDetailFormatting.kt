@@ -73,7 +73,6 @@ internal fun MatchDetails.matchDetailMeta(): String = listOfNotNull(
 internal fun MatchDetails.matchDetailDateStat(): String = event.date?.takeIf(String::isNotBlank) ?: "Pending"
 
 internal fun MatchDetails.matchDetailMapCountStat(): String = when {
-  !hasMatchDetailStats() -> "-"
   mapCount == 1 -> "1 map"
   mapCount > 1 -> "$mapCount maps"
   else -> "-"
