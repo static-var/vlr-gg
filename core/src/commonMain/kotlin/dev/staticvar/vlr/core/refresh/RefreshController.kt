@@ -30,15 +30,22 @@ class RefreshController(
     scope.launch {
       for (request in requests) {
         networkMonitor.isOnline.first { it }
-        mutableState.value = RefreshState(isRefreshing = true)
+        mutableState.update { it.copy(isRefreshing = true, errorMessage = null, errorDetails = null) }
         try {
           action().getOrThrow()
           currentCoroutineContext().ensureActive()
+          mutableState.update { it.copy(hasCompleted = true) }
         } catch (cancellation: CancellationException) {
           throw cancellation
         } catch (error: Exception) {
           currentCoroutineContext().ensureActive()
-          mutableState.update { it.copy(errorMessage = error.message ?: "Could not refresh data") }
+          mutableState.update {
+            it.copy(
+              hasCompleted = true,
+              errorMessage = error.message ?: "Could not refresh data",
+              errorDetails = error.stackTraceToString(),
+            )
+          }
         } finally {
           mutableState.update { it.copy(isRefreshing = false) }
         }

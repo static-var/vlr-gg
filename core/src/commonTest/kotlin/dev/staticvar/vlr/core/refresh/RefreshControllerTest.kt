@@ -41,7 +41,7 @@ class RefreshControllerTest {
     firstRequest.complete(Unit)
     runCurrent()
     assertEquals(2, calls)
-    assertEquals(RefreshState(), controller.state.value)
+    assertEquals(RefreshState(hasCompleted = true), controller.state.value)
   }
 
   @Test
@@ -98,12 +98,15 @@ class RefreshControllerTest {
 
     controller.refresh()
     runCurrent()
-    assertEquals(RefreshState(errorMessage = "Unavailable"), controller.state.value)
+    assertTrue(controller.state.value.hasCompleted)
+    assertFalse(controller.state.value.isLoading(hasContent = false))
+    assertEquals("Unavailable", controller.state.value.errorMessage)
+    assertTrue(controller.state.value.errorDetails.orEmpty().contains("IllegalStateException: Unavailable"))
 
     controller.refresh()
     runCurrent()
     assertEquals(2, calls)
-    assertEquals(RefreshState(), controller.state.value)
+    assertEquals(RefreshState(hasCompleted = true), controller.state.value)
   }
 
   @Test
