@@ -90,28 +90,32 @@ internal fun TeamDetailsScreen(
       team == null -> PrismStateMessage(text = "Team detail is unavailable.")
 
       else -> {
-        PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
-          Text(text = team.name, style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
-          Text(
-            text = listOfNotNull(team.tag.takeIf(String::isNotBlank), team.region, team.country).joinToString(" • "),
-            modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-            style = Prism.typography.bodySmall,
-            color = Prism.color.labelColor,
-          )
-          Text(
-            text = if (team.rank > 0) "#${team.rank}" else "Unranked",
-            modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-            style = Prism.typography.label,
-            color = Prism.color.bodyColor,
-          )
-        }
-        if (team.roster.isNotEmpty()) {
-          PrismSectionTitle(title = "Roster", preLabel = "players")
-          LazyColumn(
-            modifier = Modifier.fillMaxWidth().weight(1f, fill = false),
-            verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-          ) {
-            items(team.roster, key = { it.id }) { player ->
+        LazyColumn(
+          modifier = Modifier.fillMaxWidth().weight(1f),
+          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+        ) {
+          item(key = "summary") {
+            PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
+              Text(text = team.name, style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
+              Text(
+                text = listOfNotNull(team.tag.takeIf(String::isNotBlank), team.region, team.country).joinToString(" • "),
+                modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+                style = Prism.typography.bodySmall,
+                color = Prism.color.labelColor,
+              )
+              Text(
+                text = if (team.rank > 0) "#${team.rank}" else "Unranked",
+                modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+                style = Prism.typography.label,
+                color = Prism.color.bodyColor,
+              )
+            }
+          }
+          if (team.roster.isNotEmpty()) {
+            item(key = "roster-title") {
+              PrismSectionTitle(title = "Roster", preLabel = "players")
+            }
+            items(team.roster, key = { "player:${it.id}" }) { player ->
               PrismCard(
                 modifier = Modifier.fillMaxWidth(),
                 style = PrismCardStyle.Outlined,
@@ -120,10 +124,10 @@ internal fun TeamDetailsScreen(
                 Text(text = player.alias, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
                 Text(
                   text = listOfNotNull(
-                    player.name.takeIf(String::isNotBlank),
+                    player.name,
                     player.role,
                     player.country,
-                  ).joinToString(" • "),
+                  ).filter(String::isNotBlank).joinToString(" • "),
                   modifier = Modifier.padding(top = Prism.dimens.spacingXs),
                   style = Prism.typography.bodySmall,
                   color = Prism.color.labelColor,
@@ -131,22 +135,19 @@ internal fun TeamDetailsScreen(
               }
             }
           }
-        }
-        PrismTabs(
-          tabs = TeamMatchesSection.entries.map { PrismTab(id = it.name, label = it.name) },
-          selectedTabId = section.name,
-          onTabSelected = { onSectionSelected(TeamMatchesSection.valueOf(it.id)) },
-        )
-        LazyColumn(
-          modifier = Modifier.fillMaxSize(),
-          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-        ) {
+          item(key = "match-tabs") {
+            PrismTabs(
+              tabs = TeamMatchesSection.entries.map { PrismTab(id = it.name, label = it.name) },
+              selectedTabId = section.name,
+              onTabSelected = { onSectionSelected(TeamMatchesSection.valueOf(it.id)) },
+            )
+          }
           when (section) {
             TeamMatchesSection.Upcoming -> {
               if (team.upcomingMatches.isEmpty()) {
                 item { PrismStateMessage(text = "No upcoming matches published yet.") }
               } else {
-                items(team.upcomingMatches, key = { it.matchId }) { match ->
+                items(team.upcomingMatches, key = { "upcoming:${it.matchId}" }) { match ->
                   val eventId = match.eventId
                   PrismCard(
                     modifier = Modifier.fillMaxWidth(),
@@ -177,7 +178,7 @@ internal fun TeamDetailsScreen(
               if (team.completedMatches.isEmpty()) {
                 item { PrismStateMessage(text = "No completed matches published yet.") }
               } else {
-                items(team.completedMatches, key = { it.matchId }) { match ->
+                items(team.completedMatches, key = { "completed:${it.matchId}" }) { match ->
                   val eventId = match.eventId
                   PrismCard(
                     modifier = Modifier.fillMaxWidth(),
