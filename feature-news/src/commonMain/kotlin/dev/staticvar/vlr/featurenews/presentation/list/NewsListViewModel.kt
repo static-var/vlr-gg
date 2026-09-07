@@ -30,9 +30,10 @@ public class NewsListViewModel(
     combine(observeNewsListUseCase(), refresher.state) { items, refresh ->
       NewsListUiState(
         items = items,
-        isLoading = false,
+        isLoading = refresh.isLoading(hasContent = items.isNotEmpty()),
         isRefreshing = refresh.isRefreshing,
         errorMessage = refresh.errorMessage,
+        errorDetails = refresh.errorDetails,
       )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, NewsListUiState())
 

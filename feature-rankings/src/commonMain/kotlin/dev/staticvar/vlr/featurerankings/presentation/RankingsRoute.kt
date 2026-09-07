@@ -25,6 +25,7 @@ import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 
 @Composable
@@ -69,7 +70,8 @@ internal fun RankingsScreen(
 
       SharedRefreshStatus(
         isRefreshing = uiState.isRefreshing,
-        errorMessage = uiState.errorMessage,
+        errorMessage = uiState.errorMessage.takeIf { uiState.regions.isNotEmpty() },
+        errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
       )
     }
@@ -83,8 +85,18 @@ internal fun RankingsScreen(
     }
 
     when {
-      uiState.isLoading -> {
+      uiState.isLoading && uiState.regions.isEmpty() -> {
         PrismStateMessage(text = "Loading rankings…")
+      }
+
+      uiState.errorMessage != null && uiState.regions.isEmpty() -> {
+        SharedLoadError(
+          errorMessage = uiState.errorMessage,
+          errorDetails = uiState.errorDetails,
+          onRefresh = onRefresh,
+          centered = true,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
       }
 
       selectedRanking == null -> {

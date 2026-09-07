@@ -19,6 +19,7 @@ import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventPreview
+import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.event.overview.EventPreviewItem
 @Composable
@@ -55,7 +56,12 @@ internal fun EventsOverviewScreen(
         title = "Tournament overview",
         subtitle = "Tournaments around the world",
       )
-      SharedRefreshStatus(uiState.isRefreshing, uiState.errorMessage, onRefresh)
+      SharedRefreshStatus(
+        isRefreshing = uiState.isRefreshing,
+        errorMessage = uiState.errorMessage.takeIf { uiState.events.isNotEmpty() },
+        errorDetails = uiState.errorDetails,
+        onRefresh = onRefresh,
+      )
     }
     PrismTabs(
       tabs = uiState.visibleStatusFilters.map { filter -> PrismTab(id = filter.name, label = filter.name) },
@@ -64,10 +70,16 @@ internal fun EventsOverviewScreen(
     )
 
     when {
-      uiState.isLoading -> PrismStateMessage(text = "Loading events…")
+      uiState.isLoading && uiState.events.isEmpty() -> PrismStateMessage(text = "Loading events…")
 
-      uiState.errorMessage != null && uiState.filteredEvents.isEmpty() ->
-        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load events.")
+      uiState.errorMessage != null && uiState.events.isEmpty() ->
+        SharedLoadError(
+          errorMessage = uiState.errorMessage,
+          errorDetails = uiState.errorDetails,
+          onRefresh = onRefresh,
+          centered = true,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
 
       uiState.filteredEvents.isEmpty() -> PrismStateMessage(text = "No events in this bucket yet.")
 

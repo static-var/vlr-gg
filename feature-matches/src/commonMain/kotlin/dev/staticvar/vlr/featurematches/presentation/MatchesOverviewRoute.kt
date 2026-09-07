@@ -20,6 +20,7 @@ import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.sharedui.component.match.overview.MatchPreviewItem
+import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 
 @Composable
@@ -58,7 +59,8 @@ internal fun MatchesOverviewScreen(
       )
       SharedRefreshStatus(
         isRefreshing = uiState.isRefreshing,
-        errorMessage = uiState.errorMessage,
+        errorMessage = uiState.errorMessage.takeIf { uiState.matches.isNotEmpty() },
+        errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
       )
     }
@@ -74,10 +76,16 @@ internal fun MatchesOverviewScreen(
     )
 
     when {
-      uiState.isLoading -> PrismStateMessage(text = "Loading matches…")
+      uiState.isLoading && uiState.matches.isEmpty() -> PrismStateMessage(text = "Loading matches…")
 
-      uiState.errorMessage != null && uiState.filteredMatches.isEmpty() ->
-        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load matches.")
+      uiState.errorMessage != null && uiState.matches.isEmpty() ->
+        SharedLoadError(
+          errorMessage = uiState.errorMessage,
+          errorDetails = uiState.errorDetails,
+          onRefresh = onRefresh,
+          centered = true,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
 
       uiState.filteredMatches.isEmpty() -> PrismStateMessage(text = "No matches in this bucket yet.")
 

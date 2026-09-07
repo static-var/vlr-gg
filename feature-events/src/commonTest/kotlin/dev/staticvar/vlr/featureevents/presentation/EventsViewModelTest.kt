@@ -86,7 +86,7 @@ class EventsViewModelTest {
   }
 
   @Test
-  fun emptyOfflineCacheStopsLoadingWithoutStartingNetwork() {
+  fun emptyOfflineCacheKeepsLoadingWithoutStartingNetwork() {
     runTest(dispatcher) {
       val repository = FakeEventRepository(events = emptyList())
 
@@ -94,7 +94,7 @@ class EventsViewModelTest {
       advanceUntilIdle()
 
       assertEquals(0, repository.refreshEventsCallCount)
-      assertEquals(false, viewModel.uiState.value.isLoading)
+      assertEquals(true, viewModel.uiState.value.isLoading)
     }
   }
 

@@ -23,6 +23,7 @@ import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.news.overview.NewsPreviewItem
@@ -59,7 +60,8 @@ internal fun NewsListScreen(
 
       SharedRefreshStatus(
         isRefreshing = uiState.isRefreshing,
-        errorMessage = uiState.errorMessage,
+        errorMessage = uiState.errorMessage.takeIf { uiState.items.isNotEmpty() },
+        errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
       )
     }
@@ -73,9 +75,18 @@ internal fun NewsListScreen(
         )
       }
 
+      uiState.items.isEmpty() && uiState.errorMessage != null -> {
+        SharedLoadError(
+          errorMessage = uiState.errorMessage,
+          errorDetails = uiState.errorDetails,
+          onRefresh = onRefresh,
+          centered = true,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
+      }
+
       uiState.items.isEmpty() -> {
         EmptyNewsList(
-          errorMessage = uiState.errorMessage,
           onRefresh = onRefresh,
           modifier = Modifier.fillMaxSize(),
         )
@@ -104,7 +115,7 @@ internal fun NewsListScreen(
 }
 
 @Composable
-private fun EmptyNewsList(errorMessage: String?, onRefresh: () -> Unit, modifier: Modifier = Modifier) {
+private fun EmptyNewsList(onRefresh: () -> Unit, modifier: Modifier = Modifier) {
   Box(modifier = modifier, contentAlignment = Alignment.Center) {
     PrismCard(
       modifier = Modifier.fillMaxWidth(),
@@ -112,22 +123,15 @@ private fun EmptyNewsList(errorMessage: String?, onRefresh: () -> Unit, modifier
     ) {
       Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
         PrismSectionTitle(
-          title = "No stories cached",
+          title = "No stories published yet",
           preLabel = "news",
           showDivider = false,
         )
-        if (!errorMessage.isNullOrBlank()) {
-          Text(
-            text = errorMessage,
-            style = Prism.typography.bodySmall,
-            color = Prism.color.labelColor,
-          )
-        }
         PrismButton(
           onClick = onRefresh,
           style = PrismButtonStyle.Primary,
         ) {
-          Text("TRY AGAIN")
+          Text("REFRESH")
         }
       }
     }

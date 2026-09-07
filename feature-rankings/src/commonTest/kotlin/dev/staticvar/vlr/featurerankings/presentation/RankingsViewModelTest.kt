@@ -63,7 +63,7 @@ class RankingsViewModelTest {
   }
 
   @Test
-  fun initFinishesLoadingWithoutNetworkWhenRankingsAreEmpty() {
+  fun initKeepsLoadingUntilInitialRefreshCompletes() {
     runTest(dispatcher) {
       val repository = FakeRankingsRepository(rankings = emptyList())
 
@@ -71,7 +71,7 @@ class RankingsViewModelTest {
       advanceUntilIdle()
 
       assertEquals(0, repository.refreshCallCount)
-      assertEquals(false, viewModel.uiState.value.isLoading)
+      assertEquals(true, viewModel.uiState.value.isLoading)
     }
   }
 

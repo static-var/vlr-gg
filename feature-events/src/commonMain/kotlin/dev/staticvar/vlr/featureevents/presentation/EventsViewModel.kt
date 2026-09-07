@@ -45,9 +45,10 @@ public class EventsViewModel(
       events = events,
       filteredEvents = events.filterByStatus(filter),
       selectedStatus = filter,
-      isLoading = false,
+      isLoading = refresh.isLoading(hasContent = events.isNotEmpty()),
       isRefreshing = refresh.isRefreshing,
       errorMessage = refresh.errorMessage,
+      errorDetails = refresh.errorDetails,
     )
   }.stateIn(viewModelScope, SharingStarted.Eagerly, EventsUiState())
 

@@ -27,6 +27,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewsListViewModelTest {
@@ -59,7 +60,7 @@ class NewsListViewModelTest {
   }
 
   @Test
-  fun emptyCacheFinishesLoadingWithoutAutomaticNetworkRequest() {
+  fun emptyCacheKeepsLoadingUntilInitialRefreshCompletes() {
     runTest(dispatcher) {
       val repository = FakeNewsRepository(items = emptyList())
 
@@ -67,8 +68,29 @@ class NewsListViewModelTest {
       advanceUntilIdle()
 
       assertEquals(0, repository.refreshNewsCallCount)
-      assertEquals(false, viewModel.uiState.value.isLoading)
+      assertEquals(true, viewModel.uiState.value.isLoading)
     }
+  }
+
+  @Test
+  fun emptyDatabaseRemainsLoadingDuringRequestAndSuccessfulEmptyResultIsNotAnError() = runTest(dispatcher) {
+    val repository = FakeNewsRepository(items = emptyList())
+    val viewModel = createViewModel(repository)
+    runCurrent()
+    assertEquals(true, viewModel.uiState.value.isLoading)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+
+    viewModel.refresh()
+    runCurrent()
+    assertEquals(true, viewModel.uiState.value.isLoading)
+    assertEquals(true, viewModel.uiState.value.isRefreshing)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(emptyList(), viewModel.uiState.value.items)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+    assertEquals(null, viewModel.uiState.value.errorDetails)
   }
 
   @Test
@@ -87,15 +109,20 @@ class NewsListViewModelTest {
     assertEquals(true, viewModel.uiState.value.isRefreshing)
     advanceUntilIdle()
     assertEquals("Offline", viewModel.uiState.value.errorMessage)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertTrue(viewModel.uiState.value.errorDetails.orEmpty().contains("IllegalStateException: Offline"))
     assertEquals(false, viewModel.uiState.value.isRefreshing)
 
     repository.itemsFlow.value = listOf(cached.copy(title = "Saved update"))
     advanceUntilIdle()
     assertEquals("Offline", viewModel.uiState.value.errorMessage)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertTrue(viewModel.uiState.value.errorDetails.orEmpty().contains("IllegalStateException: Offline"))
     repository.refreshResult = Result.success(Unit)
     viewModel.refresh()
     advanceUntilIdle()
     assertEquals(null, viewModel.uiState.value.errorMessage)
+    assertEquals(null, viewModel.uiState.value.errorDetails)
     assertEquals("Saved update", viewModel.uiState.value.items.single().title)
   }
 

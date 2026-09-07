@@ -33,9 +33,10 @@ public class RankingsViewModel(
       RankingsUiState(
         regions = rankings,
         selectedRegion = region ?: rankings.firstOrNull()?.region,
-        isLoading = false,
+        isLoading = refresh.isLoading(hasContent = rankings.isNotEmpty()),
         isRefreshing = refresh.isRefreshing,
         errorMessage = refresh.errorMessage,
+        errorDetails = refresh.errorDetails,
       )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, RankingsUiState())
 

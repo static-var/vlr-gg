@@ -47,9 +47,10 @@ public class MatchesViewModel(
       matches = matches,
       filteredMatches = matches.filterByStatus(filter),
       selectedStatus = filter,
-      isLoading = false,
+      isLoading = refresh.isLoading(hasContent = matches.isNotEmpty()),
       isRefreshing = refresh.isRefreshing,
       errorMessage = refresh.errorMessage,
+      errorDetails = refresh.errorDetails,
     )
   }.stateIn(viewModelScope, SharingStarted.Eagerly, MatchesUiState())
 

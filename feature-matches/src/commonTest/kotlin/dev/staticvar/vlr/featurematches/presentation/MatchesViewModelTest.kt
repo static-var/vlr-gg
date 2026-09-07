@@ -67,7 +67,7 @@ class MatchesViewModelTest {
   }
 
   @Test
-  fun initFinishesLoadingEmptyCacheWithoutFetching() {
+  fun initKeepsLoadingEmptyCacheWithoutFetching() {
     runTest(dispatcher) {
       val repository = FakeMatchRepository(matches = emptyList())
 
@@ -75,8 +75,24 @@ class MatchesViewModelTest {
       advanceUntilIdle()
 
       assertEquals(0, repository.refreshMatchesCallCount)
-      assertEquals(false, viewModel.uiState.value.isLoading)
+      assertEquals(true, viewModel.uiState.value.isLoading)
     }
+  }
+
+  @Test
+  fun selectingEmptyFilterDoesNotHideExistingCacheBehindLoading() = runTest(dispatcher) {
+    val cached = matchPreview(id = "cached", status = MatchStatus.COMPLETED)
+    val repository = FakeMatchRepository(matches = listOf(cached))
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.selectFilter(MatchStatusFilter.Live)
+    advanceUntilIdle()
+
+    assertEquals(emptyList(), viewModel.uiState.value.filteredMatches)
+    assertEquals(listOf(cached), viewModel.uiState.value.matches)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
   }
 
   @Test

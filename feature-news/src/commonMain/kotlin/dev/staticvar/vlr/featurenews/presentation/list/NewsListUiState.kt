@@ -11,4 +11,5 @@ public data class NewsListUiState(
   val isLoading: Boolean = true,
   val isRefreshing: Boolean = false,
   val errorMessage: String? = null,
+  val errorDetails: String? = null,
 )
