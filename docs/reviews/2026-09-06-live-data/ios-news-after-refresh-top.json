@@ -1,0 +1,49 @@
+{
+  "type": "runtime-snapshot",
+  "rs": "1",
+  "screenHash": "0kmnt2g",
+  "seq": 32,
+  "count": 76,
+  "targets": [
+    "e22|tap|button|JENOPELLE, SEP 6, 2026, Global brushes aside T1 to set up Grand Final rematch with Nongshim||",
+    "e28|tap|button|4KANDERS0NY, SEP 6, 2026, LOUD continues miracle run to qualify for Champions, LOUD complete their miracle run by booking a spot in the grand finals, and qualifying for Champions Shanghai||",
+    "e35|tap|button|JENOPELLE, SEP 6, 2026, Global Esports pulls off miraculous reverse-sweep to lift first VCT title, You read that right: Global Esports are the Pacific Stage 2 champions.||",
+    "e42|tap|button|WEIVY, SEP 6, 2026, Red Bull Home Ground arrives in LA for 2026 off-season, The Red Bull Home Ground off-season tournament is coming back for its sixth installment in 2026, live in Los Angeles at the Shrine Auditorium and WePlay Studios from December 10-13.||",
+    "e55|tap|button|News, News||",
+    "e61|tap|button|Matches, Matches||",
+    "e65|tap|button|Events, Events||",
+    "e69|tap|button|Rankings, Rankings||",
+    "e73|tap|button|About, About||",
+    "e17|tap|button|REFRESH||",
+    "e49|tap|button|||"
+  ],
+  "scroll": [
+    "e10|swipe|scroll-view|||"
+  ],
+  "text": [
+    "e16|text|text|// STORIES FROM COMPETITIVE VALORANT||",
+    "e18|text|text|REFRESH||",
+    "e19|text|text|NEWS||",
+    "e24|text|text|JENOPELLE||",
+    "e26|text|text|SEP 6, 2026||",
+    "e27|text|text|Global brushes aside T1 to set up Grand Final rematch with Nongshim||",
+    "e30|text|text|4KANDERS0NY||",
+    "e32|text|text|SEP 6, 2026||",
+    "e33|text|text|LOUD continues miracle run to qualify for Champions||",
+    "e34|text|text|LOUD complete their miracle run by booking a spot in the grand finals, and qualifying for Champions Shanghai||",
+    "e37|text|text|JENOPELLE||",
+    "e39|text|text|SEP 6, 2026||",
+    "e40|text|text|Global Esports pulls off miraculous reverse-sweep to lift first VCT title||",
+    "e41|text|text|You read that right: Global Esports are the Pacific Stage 2 champions.||",
+    "e44|text|text|WEIVY||",
+    "e46|text|text|SEP 6, 2026||",
+    "e47|text|text|Red Bull Home Ground arrives in LA for 2026 off-season||",
+    "e48|text|text|The Red Bull Home Ground off-season tournament is coming back for its sixth installment in 2026, live in Los Angeles at the Shrine Auditorium and WePlay Studios from December 10-13.||",
+    "e58|text|text|News||",
+    "e64|text|text|Matches||",
+    "e68|text|text|Events||",
+    "e72|text|text|Rankings||",
+    "e76|text|text|About||"
+  ],
+  "udid": "8B6863E9-A1BC-42DE-821B-2A0406C47DD1"
+}

@@ -1,0 +1,2632 @@
+[
+  {
+    "team_id": "120",
+    "region": "North America",
+    "team_name": "100 Thieves",
+    "team_logo": "https://owcdn.net/img/603c00d5c5a08.png",
+    "country": "United States",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686983
+  },
+  {
+    "team_id": "1034",
+    "region": "North America",
+    "team_name": "NRG",
+    "team_logo": "https://owcdn.net/img/6610f026c1a9e.png",
+    "country": "United States",
+    "rank": 2,
+    "points": "1883",
+    "last_updated": 1788717686983
+  },
+  {
+    "team_id": "2359",
+    "region": "North America",
+    "team_name": "LEVIAT\u00c1N",
+    "team_logo": "https://owcdn.net/img/61b8888cc3860.png",
+    "country": "Argentina",
+    "rank": 3,
+    "points": "1878",
+    "last_updated": 1788717686983
+  },
+  {
+    "team_id": "11058",
+    "region": "North America",
+    "team_name": "G2 Esports",
+    "team_logo": "https://owcdn.net/img/633822848a741.png",
+    "country": "United States",
+    "rank": 4,
+    "points": "1809",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "9353",
+    "region": "North America",
+    "team_name": "Shopify Rebellion Black",
+    "team_logo": "https://owcdn.net/img/679314c8ac387.png",
+    "country": "United States",
+    "rank": 5,
+    "points": "1722",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "13920",
+    "region": "North America",
+    "team_name": "SaD Esports",
+    "team_logo": "https://owcdn.net/img/6528e9505cb61.png",
+    "country": "United States",
+    "rank": 6,
+    "points": "1722",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "11001",
+    "region": "North America",
+    "team_name": "M80",
+    "team_logo": "https://owcdn.net/img/6945c73504452.png",
+    "country": "United States",
+    "rank": 7,
+    "points": "1704",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "5601",
+    "region": "North America",
+    "team_name": "Nightblood Gaming",
+    "team_logo": "https://owcdn.net/img/61f13e1258cab.png",
+    "country": "United States",
+    "rank": 8,
+    "points": "1647",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "427",
+    "region": "North America",
+    "team_name": "ENVY",
+    "team_logo": "https://owcdn.net/img/5f3ca822464a3.png",
+    "country": "United States",
+    "rank": 9,
+    "points": "1627",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "2",
+    "region": "North America",
+    "team_name": "Sentinels",
+    "team_logo": "https://owcdn.net/img/62875027c8e06.png",
+    "country": "United States",
+    "rank": 10,
+    "points": "1605",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "22672",
+    "region": "North America",
+    "team_name": "barbeque chicken",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "International",
+    "rank": 11,
+    "points": "1602",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "5248",
+    "region": "North America",
+    "team_name": "Evil Geniuses",
+    "team_logo": "https://owcdn.net/img/667462f046618.png",
+    "country": "United States",
+    "rank": 12,
+    "points": "1591",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "6985",
+    "region": "North America",
+    "team_name": "QoR",
+    "team_logo": "https://owcdn.net/img/63e9a11797f41.png",
+    "country": "United States",
+    "rank": 13,
+    "points": "1588",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "188",
+    "region": "North America",
+    "team_name": "Cloud9",
+    "team_logo": "https://owcdn.net/img/628addcbd509e.png",
+    "country": "United States",
+    "rank": 14,
+    "points": "1583",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "12900",
+    "region": "North America",
+    "team_name": "Maryville University",
+    "team_logo": "https://owcdn.net/img/6457181dc433a.png",
+    "country": "United States",
+    "rank": 15,
+    "points": "1581",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "21714",
+    "region": "North America",
+    "team_name": "Division One",
+    "team_logo": "https://owcdn.net/img/69da93c726b68.png",
+    "country": "United States",
+    "rank": 16,
+    "points": "1578",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "15769",
+    "region": "North America",
+    "team_name": "yves saint laurent",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "United States",
+    "rank": 17,
+    "points": "1563",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "21054",
+    "region": "North America",
+    "team_name": "Evil Geniuses Academy",
+    "team_logo": "https://owcdn.net/img/667462f046618.png",
+    "country": "United States",
+    "rank": 18,
+    "points": "1561",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "22876",
+    "region": "North America",
+    "team_name": "KIN Esports",
+    "team_logo": "https://owcdn.net/img/6a489051cd081.png",
+    "country": "United States",
+    "rank": 19,
+    "points": "1541",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "22924",
+    "region": "North America",
+    "team_name": "BOSS BABY",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "International",
+    "rank": 20,
+    "points": "1537",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "20897",
+    "region": "North America",
+    "team_name": "Jackpot",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "International",
+    "rank": 21,
+    "points": "1522",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "16910",
+    "region": "North America",
+    "team_name": "Pigeons",
+    "team_logo": "https://owcdn.net/img/68514906c5b54.png",
+    "country": "Canada",
+    "rank": 22,
+    "points": "1522",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "21457",
+    "region": "North America",
+    "team_name": "How to Train a Dragon",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "International",
+    "rank": 23,
+    "points": "1515",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "22278",
+    "region": "North America",
+    "team_name": "really good players",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "International",
+    "rank": 24,
+    "points": "1503",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "10087",
+    "region": "North America",
+    "team_name": "Team Digital",
+    "team_logo": "https://owcdn.net/img/6a05543614dd2.png",
+    "country": "United States",
+    "rank": 25,
+    "points": "1499",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "876",
+    "region": "Europe",
+    "team_name": "Enterprise Esports",
+    "team_logo": "https://owcdn.net/img/68643d0b1c72b.png",
+    "country": "Czech Republic",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "8877",
+    "region": "Europe",
+    "team_name": "Karmine Corp",
+    "team_logo": "https://owcdn.net/img/627403a0d9e48.png",
+    "country": "Europe",
+    "rank": 2,
+    "points": "1990",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "20085",
+    "region": "Europe",
+    "team_name": "Fire Flux Esports",
+    "team_logo": "https://owcdn.net/img/68e6e1bcca45d.png",
+    "country": "T\u00fcrkiye",
+    "rank": 3,
+    "points": "1975",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "2059",
+    "region": "Europe",
+    "team_name": "Team Vitality",
+    "team_logo": "https://owcdn.net/img/6466d79e1ed40.png",
+    "country": "Europe",
+    "rank": 4,
+    "points": "1940",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "474",
+    "region": "Europe",
+    "team_name": "Team Liquid",
+    "team_logo": "https://owcdn.net/img/640c381f0603f.png",
+    "country": "Europe",
+    "rank": 5,
+    "points": "1923",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "14478",
+    "region": "Europe",
+    "team_name": "Eintracht Frankfurt",
+    "team_logo": "https://owcdn.net/img/659d1013d5cf5.png",
+    "country": "Germany",
+    "rank": 6,
+    "points": "1910",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "397",
+    "region": "Europe",
+    "team_name": "BBL Esports",
+    "team_logo": "https://owcdn.net/img/65b8ccef5e273.png",
+    "country": "T\u00fcrkiye",
+    "rank": 7,
+    "points": "1898",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "1184",
+    "region": "Europe",
+    "team_name": "FUT Esports",
+    "team_logo": "https://owcdn.net/img/632be9976b8fe.png",
+    "country": "T\u00fcrkiye",
+    "rank": 8,
+    "points": "1886",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "1001",
+    "region": "Europe",
+    "team_name": "Team Heretics",
+    "team_logo": "https://owcdn.net/img/637b755224c12.png",
+    "country": "Europe",
+    "rank": 9,
+    "points": "1844",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "11232",
+    "region": "Europe",
+    "team_name": "Joblife",
+    "team_logo": "https://owcdn.net/img/63a944e6cbe49.png",
+    "country": "Europe",
+    "rank": 10,
+    "points": "1819",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "21715",
+    "region": "Europe",
+    "team_name": "Natus Vincere Junior",
+    "team_logo": "https://owcdn.net/img/62a4109ddbd7f.png",
+    "country": "Ukraine",
+    "rank": 11,
+    "points": "1817",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "12694",
+    "region": "Europe",
+    "team_name": "Gentle Mates",
+    "team_logo": "https://owcdn.net/img/6670153fa9120.png",
+    "country": "Europe",
+    "rank": 12,
+    "points": "1793",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "17297",
+    "region": "Europe",
+    "team_name": "Team Liquid Academy",
+    "team_logo": "https://owcdn.net/img/640c381f0603f.png",
+    "country": "Europe",
+    "rank": 13,
+    "points": "1791",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "6882",
+    "region": "Europe",
+    "team_name": "FOKUS",
+    "team_logo": "https://owcdn.net/img/627934cd0b505.png",
+    "country": "Germany",
+    "rank": 14,
+    "points": "1782",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "5214",
+    "region": "Europe",
+    "team_name": "CGN Esports",
+    "team_logo": "https://owcdn.net/img/60defafec983c.png",
+    "country": "Germany",
+    "rank": 15,
+    "points": "1770",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "2593",
+    "region": "Europe",
+    "team_name": "FNATIC",
+    "team_logo": "https://owcdn.net/img/62a40cc2b5e29.png",
+    "country": "Europe",
+    "rank": 16,
+    "points": "1752",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "7967",
+    "region": "Europe",
+    "team_name": "Mandatory",
+    "team_logo": "https://owcdn.net/img/695c961fbab82.png",
+    "country": "France",
+    "rank": 17,
+    "points": "1745",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "6392",
+    "region": "Europe",
+    "team_name": "Eternal Fire",
+    "team_logo": "https://owcdn.net/img/6628980dcdaea.png",
+    "country": "T\u00fcrkiye",
+    "rank": 18,
+    "points": "1736",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "19218",
+    "region": "Europe",
+    "team_name": "Misa Esports",
+    "team_logo": "https://owcdn.net/img/6887b1d2edd20.png",
+    "country": "T\u00fcrkiye",
+    "rank": 19,
+    "points": "1724",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "4616",
+    "region": "Europe",
+    "team_name": "UCAM Esports Club",
+    "team_logo": "https://owcdn.net/img/5f7f77ef1e2f0.png",
+    "country": "Europe",
+    "rank": 20,
+    "points": "1717",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "22601",
+    "region": "Europe",
+    "team_name": "\u00c7ilekler",
+    "team_logo": "https://owcdn.net/img/6a528de2088e7.png",
+    "country": "T\u00fcrkiye",
+    "rank": 21,
+    "points": "1713",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "12355",
+    "region": "Europe",
+    "team_name": "Bitfix Gaming",
+    "team_logo": "https://owcdn.net/img/642c76a94a808.png",
+    "country": "Norway",
+    "rank": 22,
+    "points": "1710",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "4915",
+    "region": "Europe",
+    "team_name": "Natus Vincere",
+    "team_logo": "https://owcdn.net/img/62a4109ddbd7f.png",
+    "country": "Europe",
+    "rank": 23,
+    "points": "1702",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "14461",
+    "region": "Europe",
+    "team_name": "Bar\u00e7a eSports",
+    "team_logo": "https://owcdn.net/img/65843488833d1.png",
+    "country": "Spain",
+    "rank": 24,
+    "points": "1678",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "14525",
+    "region": "Europe",
+    "team_name": "BRATAN MIX",
+    "team_logo": "https://owcdn.net/img/693491eb49246.png",
+    "country": "Europe",
+    "rank": 25,
+    "points": "1675",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "6961",
+    "region": "Brazil",
+    "team_name": "LOUD",
+    "team_logo": "https://owcdn.net/img/62bbec8dc1b9f.png",
+    "country": "Brazil",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "7386",
+    "region": "Brazil",
+    "team_name": "MIBR",
+    "team_logo": "https://owcdn.net/img/632be7626d6d9.png",
+    "country": "Brazil",
+    "rank": 2,
+    "points": "1890",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "19265",
+    "region": "Brazil",
+    "team_name": "Team Solid",
+    "team_logo": "https://owcdn.net/img/689d0fc04ad22.png",
+    "country": "Brazil",
+    "rank": 3,
+    "points": "1884",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "15072",
+    "region": "Brazil",
+    "team_name": "2Game Esports",
+    "team_logo": "https://owcdn.net/img/67725c368d524.png",
+    "country": "Brazil",
+    "rank": 4,
+    "points": "1767",
+    "last_updated": 1788717686984
+  },
+  {
+    "team_id": "22500",
+    "region": "Brazil",
+    "team_name": "44 AIM",
+    "team_logo": "https://owcdn.net/img/6a665bf71d297.png",
+    "country": "Brazil",
+    "rank": 5,
+    "points": "1759",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "16606",
+    "region": "Brazil",
+    "team_name": "MIBR Academy",
+    "team_logo": "https://owcdn.net/img/67127fdb2ae3e.png",
+    "country": "Brazil",
+    "rank": 6,
+    "points": "1744",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "2406",
+    "region": "Brazil",
+    "team_name": "FURIA",
+    "team_logo": "https://owcdn.net/img/632be843b7d51.png",
+    "country": "Brazil",
+    "rank": 7,
+    "points": "1723",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "23141",
+    "region": "Brazil",
+    "team_name": "Fluxo W7M",
+    "team_logo": "https://owcdn.net/img/6a76a37807aad.png",
+    "country": "Brazil",
+    "rank": 8,
+    "points": "1715",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "20741",
+    "region": "Brazil",
+    "team_name": "Next",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Brazil",
+    "rank": 9,
+    "points": "1692",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "14642",
+    "region": "Brazil",
+    "team_name": "Afrogames",
+    "team_logo": "https://owcdn.net/img/66a90f0206157.png",
+    "country": "Brazil",
+    "rank": 10,
+    "points": "1686",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "18622",
+    "region": "Brazil",
+    "team_name": "ELEVATE",
+    "team_logo": "https://owcdn.net/img/65990c8ab7c2b.png",
+    "country": "Brazil",
+    "rank": 11,
+    "points": "1668",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "17094",
+    "region": "Brazil",
+    "team_name": "FURIA Academy",
+    "team_logo": "https://owcdn.net/img/67a18f336c9f4.png",
+    "country": "Brazil",
+    "rank": 12,
+    "points": "1667",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "23180",
+    "region": "Brazil",
+    "team_name": "Arashi",
+    "team_logo": "https://owcdn.net/img/6a14f3716a980.png",
+    "country": "Brazil",
+    "rank": 13,
+    "points": "1667",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "22328",
+    "region": "Brazil",
+    "team_name": "A NOVA ORDEM",
+    "team_logo": "https://owcdn.net/img/6a0a204905c30.png",
+    "country": "Brazil",
+    "rank": 14,
+    "points": "1646",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "22336",
+    "region": "Brazil",
+    "team_name": "SYMPHONY E-SPORTS",
+    "team_logo": "https://owcdn.net/img/6a0a2110cb14e.png",
+    "country": "Brazil",
+    "rank": 15,
+    "points": "1644",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "22534",
+    "region": "Brazil",
+    "team_name": "BiDaDos",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Brazil",
+    "rank": 16,
+    "points": "1629",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "13719",
+    "region": "Brazil",
+    "team_name": "AXKRUM",
+    "team_logo": "https://owcdn.net/img/6871724c55f08.png",
+    "country": "Brazil",
+    "rank": 17,
+    "points": "1614",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "9201",
+    "region": "Brazil",
+    "team_name": "DELIRA",
+    "team_logo": "https://owcdn.net/img/6882bfb415971.png",
+    "country": "Brazil",
+    "rank": 18,
+    "points": "1611",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "19635",
+    "region": "Brazil",
+    "team_name": "ASDDSASDD",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Brazil",
+    "rank": 19,
+    "points": "1606",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "22325",
+    "region": "Brazil",
+    "team_name": "Juventus Gaming",
+    "team_logo": "https://owcdn.net/img/6a0a2005dfd84.png",
+    "country": "Brazil",
+    "rank": 20,
+    "points": "1605",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "8532",
+    "region": "Brazil",
+    "team_name": "TotalePRO",
+    "team_logo": "https://owcdn.net/img/63954830c1054.png",
+    "country": "Brazil",
+    "rank": 21,
+    "points": "1601",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "19639",
+    "region": "Brazil",
+    "team_name": "Xethra",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Brazil",
+    "rank": 22,
+    "points": "1596",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "448",
+    "region": "Brazil",
+    "team_name": "OSKARAVELHO",
+    "team_logo": "https://owcdn.net/img/61de0106e2795.png",
+    "country": "Brazil",
+    "rank": 23,
+    "points": "1589",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "14558",
+    "region": "Brazil",
+    "team_name": "Fenda Dos Streamers",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Brazil",
+    "rank": 24,
+    "points": "1588",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "19659",
+    "region": "Brazil",
+    "team_name": "Salam\u00ea Mingu\u00ea",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Brazil",
+    "rank": 25,
+    "points": "1588",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "918",
+    "region": "Asia-Pacific",
+    "team_name": "Global Esports",
+    "team_logo": "https://owcdn.net/img/629f316ddd4dd.png",
+    "country": "India",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "624",
+    "region": "Asia-Pacific",
+    "team_name": "Paper Rex",
+    "team_logo": "https://owcdn.net/img/62bbeba74d5cb.png",
+    "country": "Singapore",
+    "rank": 2,
+    "points": "1972",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "623",
+    "region": "Asia-Pacific",
+    "team_name": "Sharper Esports",
+    "team_logo": "https://owcdn.net/img/698dc40a29cda.png",
+    "country": "Thailand",
+    "rank": 3,
+    "points": "1959",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "466",
+    "region": "Asia-Pacific",
+    "team_name": "BOOM Esports",
+    "team_logo": "https://owcdn.net/img/629f1bdae82ab.png",
+    "country": "Indonesia",
+    "rank": 4,
+    "points": "1829",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "17167",
+    "region": "Asia-Pacific",
+    "team_name": "Xipto Esports",
+    "team_logo": "https://owcdn.net/img/67742094e5e85.png",
+    "country": "Thailand",
+    "rank": 5,
+    "points": "1806",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "3713",
+    "region": "Asia-Pacific",
+    "team_name": "S8UL Esports",
+    "team_logo": "https://owcdn.net/img/67becb3c72954.png",
+    "country": "India",
+    "rank": 6,
+    "points": "1800",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "878",
+    "region": "Asia-Pacific",
+    "team_name": "Rex Regum Qeon",
+    "team_logo": "https://owcdn.net/img/629f17f51e7a3.png",
+    "country": "Indonesia",
+    "rank": 7,
+    "points": "1782",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "3136",
+    "region": "Asia-Pacific",
+    "team_name": "Oasis Gaming",
+    "team_logo": "https://owcdn.net/img/629f15187dd71.png",
+    "country": "Philippines",
+    "rank": 8,
+    "points": "1778",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "18117",
+    "region": "Asia-Pacific",
+    "team_name": "Motiv Esports",
+    "team_logo": "https://owcdn.net/img/67e27ccb492e8.png",
+    "country": "Singapore",
+    "rank": 9,
+    "points": "1761",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "4050",
+    "region": "Asia-Pacific",
+    "team_name": "FULL SENSE",
+    "team_logo": "https://owcdn.net/img/6537a7954d915.png",
+    "country": "Thailand",
+    "rank": 10,
+    "points": "1749",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "17180",
+    "region": "Asia-Pacific",
+    "team_name": "Revenant XSpark",
+    "team_logo": "https://owcdn.net/img/6a20030faecd7.png",
+    "country": "India",
+    "rank": 11,
+    "points": "1741",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "16301",
+    "region": "Asia-Pacific",
+    "team_name": "Trinity",
+    "team_logo": "https://owcdn.net/img/698c77f5ed4d3.png",
+    "country": "Mongolia",
+    "rank": 12,
+    "points": "1734",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "22130",
+    "region": "Asia-Pacific",
+    "team_name": "Jade Lions",
+    "team_logo": "https://owcdn.net/img/6a0bcef0ae6ac.png",
+    "country": "Philippines",
+    "rank": 13,
+    "points": "1718",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "22341",
+    "region": "Asia-Pacific",
+    "team_name": "No Salary Peek",
+    "team_logo": "https://owcdn.net/img/6a4cbcbee47ec.png",
+    "country": "India",
+    "rank": 14,
+    "points": "1698",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "18035",
+    "region": "Asia-Pacific",
+    "team_name": "LIT Penguin",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Taiwan",
+    "rank": 15,
+    "points": "1687",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "21859",
+    "region": "Asia-Pacific",
+    "team_name": "1Tap Esports",
+    "team_logo": "https://owcdn.net/img/69e5bce9370ea.png",
+    "country": "Vietnam",
+    "rank": 16,
+    "points": "1682",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "19032",
+    "region": "Asia-Pacific",
+    "team_name": "Kertanegara Esports",
+    "team_logo": "https://owcdn.net/img/68fc8ce9d5383.png",
+    "country": "Indonesia",
+    "rank": 17,
+    "points": "1675",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "19266",
+    "region": "Asia-Pacific",
+    "team_name": "\u4f60\u5f8c\u9762\u6709\u8eca",
+    "team_logo": "https://owcdn.net/img/69eec1e5df817.png",
+    "country": "Taiwan",
+    "rank": 18,
+    "points": "1670",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "14617",
+    "region": "Asia-Pacific",
+    "team_name": "XGOD",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Thailand",
+    "rank": 19,
+    "points": "1667",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "16800",
+    "region": "Asia-Pacific",
+    "team_name": "OverPowered Youths",
+    "team_logo": "https://owcdn.net/img/697f22d9db59b.png",
+    "country": "Singapore",
+    "rank": 20,
+    "points": "1666",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "8303",
+    "region": "Asia-Pacific",
+    "team_name": "S2 Esports",
+    "team_logo": "https://owcdn.net/img/636f05b23aae9.png",
+    "country": "Taiwan",
+    "rank": 21,
+    "points": "1651",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "15685",
+    "region": "Asia-Pacific",
+    "team_name": "Asterisk",
+    "team_logo": "https://owcdn.net/img/66ed612a08e34.png",
+    "country": "India",
+    "rank": 22,
+    "points": "1648",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "20596",
+    "region": "Asia-Pacific",
+    "team_name": "SIGN Esports",
+    "team_logo": "https://owcdn.net/img/69adf8ca7becf.png",
+    "country": "India",
+    "rank": 23,
+    "points": "1648",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "22963",
+    "region": "Asia-Pacific",
+    "team_name": "Shang",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Vietnam",
+    "rank": 24,
+    "points": "1645",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "21997",
+    "region": "Asia-Pacific",
+    "team_name": "Zorvex",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Philippines",
+    "rank": 25,
+    "points": "1643",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "11060",
+    "region": "Korea",
+    "team_name": "Nongshim RedForce",
+    "team_logo": "https://owcdn.net/img/6399bb707aacb.png",
+    "country": "South Korea",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "14",
+    "region": "Korea",
+    "team_name": "T1",
+    "team_logo": "https://owcdn.net/img/62fe0b8f6b084.png",
+    "country": "South Korea",
+    "rank": 2,
+    "points": "1908",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "17",
+    "region": "Korea",
+    "team_name": "Gen.G",
+    "team_logo": "https://owcdn.net/img/6970c986eddc6.png",
+    "country": "South Korea",
+    "rank": 3,
+    "points": "1861",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "19189",
+    "region": "Korea",
+    "team_name": "ONSIDE GAMING",
+    "team_logo": "https://owcdn.net/img/6863ccdfabea7.png",
+    "country": "South Korea",
+    "rank": 4,
+    "points": "1769",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "8185",
+    "region": "Korea",
+    "team_name": "KIWOOM DRX",
+    "team_logo": "https://owcdn.net/img/6a353ee73ab25.png",
+    "country": "South Korea",
+    "rank": 5,
+    "points": "1749",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "9749",
+    "region": "Korea",
+    "team_name": "DRX Academy",
+    "team_logo": "https://owcdn.net/img/6a353ee73ab25.png",
+    "country": "South Korea",
+    "rank": 6,
+    "points": "1573",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "15578",
+    "region": "Korea",
+    "team_name": "T1 Academy",
+    "team_logo": "https://owcdn.net/img/5ea85d21e625f.png",
+    "country": "South Korea",
+    "rank": 7,
+    "points": "1570",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "20617",
+    "region": "Korea",
+    "team_name": "Strom Reign",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "South Korea",
+    "rank": 8,
+    "points": "1554",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "11348",
+    "region": "Korea",
+    "team_name": "Dplus Esports",
+    "team_logo": "https://owcdn.net/img/63bbe4f904433.png",
+    "country": "South Korea",
+    "rank": 9,
+    "points": "1528",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "17392",
+    "region": "Korea",
+    "team_name": "Gen.G Global Academy",
+    "team_logo": "https://owcdn.net/img/6970c986eddc6.png",
+    "country": "South Korea",
+    "rank": 10,
+    "points": "1520",
+    "last_updated": 1788717686985
+  },
+  {
+    "team_id": "20611",
+    "region": "Korea",
+    "team_name": "Egennam (\uc5d0\uac90\ub0a8)",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "South Korea",
+    "rank": 11,
+    "points": "1508",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "14602",
+    "region": "Korea",
+    "team_name": "ReturN",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "South Korea",
+    "rank": 12,
+    "points": "1494",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "20609",
+    "region": "Korea",
+    "team_name": "Formula1",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "South Korea",
+    "rank": 13,
+    "points": "1493",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "14584",
+    "region": "Korea",
+    "team_name": "Frozen 3",
+    "team_logo": "https://owcdn.net/img/65bbe9c3793f2.png",
+    "country": "South Korea",
+    "rank": 14,
+    "points": "1491",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "16699",
+    "region": "Korea",
+    "team_name": "SOLATI",
+    "team_logo": "https://owcdn.net/img/67308676a02e9.png",
+    "country": "South Korea",
+    "rank": 15,
+    "points": "1477",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "20789",
+    "region": "Korea",
+    "team_name": "DRX Youth",
+    "team_logo": "https://owcdn.net/img/6a353ee73ab25.png",
+    "country": "South Korea",
+    "rank": 16,
+    "points": "1475",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "22548",
+    "region": "Korea",
+    "team_name": "So:sweet",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "South Korea",
+    "rank": 17,
+    "points": "1406",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "22549",
+    "region": "Korea",
+    "team_name": "X-CAST",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "South Korea",
+    "rank": 18,
+    "points": "1394",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "21347",
+    "region": "Korea",
+    "team_name": "\ub371\uc2a4\ucd1d\ub300\ud558\uc2b9\uc9c4\ub18d\uad6c\uacf5",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "South Korea",
+    "rank": 19,
+    "points": "1354",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "731",
+    "region": "China",
+    "team_name": "TYLOO",
+    "team_logo": "https://owcdn.net/img/63eb60fb08390.png",
+    "country": "China",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "13581",
+    "region": "China",
+    "team_name": "Xi Lai Gaming",
+    "team_logo": "https://owcdn.net/img/671742f863b9b.png",
+    "country": "China",
+    "rank": 2,
+    "points": "1941",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "12064",
+    "region": "China",
+    "team_name": "Nova Esports",
+    "team_logo": "https://owcdn.net/img/6404c0174250b.png",
+    "country": "China",
+    "rank": 3,
+    "points": "1932",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "1120",
+    "region": "China",
+    "team_name": "EDward Gaming",
+    "team_logo": "https://owcdn.net/img/62c82049253b2.png",
+    "country": "China",
+    "rank": 4,
+    "points": "1911",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "12010",
+    "region": "China",
+    "team_name": "Bilibili Gaming",
+    "team_logo": "https://owcdn.net/img/63f25d72216c1.png",
+    "country": "China",
+    "rank": 5,
+    "points": "1840",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "13576",
+    "region": "China",
+    "team_name": "JD Gaming",
+    "team_logo": "https://owcdn.net/img/64f9825408326.png",
+    "country": "China",
+    "rank": 6,
+    "points": "1831",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "11985",
+    "region": "China",
+    "team_name": "Rare Atom",
+    "team_logo": "https://owcdn.net/img/63eb5aa842f05.png",
+    "country": "China",
+    "rank": 7,
+    "points": "1815",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "1119",
+    "region": "China",
+    "team_name": "All Gamers",
+    "team_logo": "https://owcdn.net/img/6549c2b905061.png",
+    "country": "China",
+    "rank": 8,
+    "points": "1802",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "12784",
+    "region": "China",
+    "team_name": "KeepBest Gaming",
+    "team_logo": "https://owcdn.net/img/64461a1131da5.png",
+    "country": "China",
+    "rank": 9,
+    "points": "1721",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "19531",
+    "region": "China",
+    "team_name": "Any Questions Gaming",
+    "team_logo": "https://owcdn.net/img/68ecda499e5e2.png",
+    "country": "China",
+    "rank": 10,
+    "points": "1703",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "14137",
+    "region": "China",
+    "team_name": "Titan Esports Club",
+    "team_logo": "https://owcdn.net/img/65487414b8562.png",
+    "country": "China",
+    "rank": 11,
+    "points": "1701",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "12685",
+    "region": "China",
+    "team_name": "Trace Esports",
+    "team_logo": "https://owcdn.net/img/6433a2cc3ae72.png",
+    "country": "China",
+    "rank": 12,
+    "points": "1692",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "1224",
+    "region": "China",
+    "team_name": "Weibo Gaming",
+    "team_logo": "https://owcdn.net/img/62232bd14e5d7.png",
+    "country": "China",
+    "rank": 13,
+    "points": "1687",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "11981",
+    "region": "China",
+    "team_name": "Dragon Ranger Gaming",
+    "team_logo": "https://owcdn.net/img/642233fc01f26.png",
+    "country": "China",
+    "rank": 14,
+    "points": "1684",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "15893",
+    "region": "China",
+    "team_name": "Ambitious Legend Gaming",
+    "team_logo": "https://owcdn.net/img/66afb234af337.png",
+    "country": "China",
+    "rank": 15,
+    "points": "1661",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "11328",
+    "region": "China",
+    "team_name": "FunPlus Phoenix",
+    "team_logo": "https://owcdn.net/img/65a17b313b131.png",
+    "country": "China",
+    "rank": 16,
+    "points": "1650",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "12785",
+    "region": "China",
+    "team_name": "Octagonal Disposition Gaming",
+    "team_logo": "https://owcdn.net/img/68ecda6aa00d1.png",
+    "country": "China",
+    "rank": 17,
+    "points": "1645",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "13790",
+    "region": "China",
+    "team_name": "Wolves Esports",
+    "team_logo": "https://owcdn.net/img/651d33f8e6a1f.png",
+    "country": "China",
+    "rank": 18,
+    "points": "1540",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "11229",
+    "region": "Japan",
+    "team_name": "VARREL",
+    "team_logo": "https://owcdn.net/img/63a74624cc76a.png",
+    "country": "Japan",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "104",
+    "region": "Japan",
+    "team_name": "REJECT",
+    "team_logo": "https://owcdn.net/img/62a4139de7f7e.png",
+    "country": "Japan",
+    "rank": 2,
+    "points": "1975",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "278",
+    "region": "Japan",
+    "team_name": "DetonatioN FocusMe",
+    "team_logo": "https://owcdn.net/img/63972e548cdc9.png",
+    "country": "Japan",
+    "rank": 3,
+    "points": "1964",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "294",
+    "region": "Japan",
+    "team_name": "CREST GAMING Zst",
+    "team_logo": "https://owcdn.net/img/63a33a790ae62.png",
+    "country": "Japan",
+    "rank": 4,
+    "points": "1893",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "18299",
+    "region": "Japan",
+    "team_name": "QT DIG\u221e",
+    "team_logo": "https://owcdn.net/img/67f4e2e7b3802.png",
+    "country": "Japan",
+    "rank": 5,
+    "points": "1869",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "2934",
+    "region": "Japan",
+    "team_name": "FENNEL",
+    "team_logo": "https://owcdn.net/img/60d3986152cd4.png",
+    "country": "Japan",
+    "rank": 6,
+    "points": "1840",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "14375",
+    "region": "Japan",
+    "team_name": "RIDDLE ORDER",
+    "team_logo": "https://owcdn.net/img/6569a81625295.png",
+    "country": "Japan",
+    "rank": 7,
+    "points": "1837",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "282",
+    "region": "Japan",
+    "team_name": "SCARZ",
+    "team_logo": "https://owcdn.net/img/60693f9ee7109.png",
+    "country": "Japan",
+    "rank": 8,
+    "points": "1781",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "5448",
+    "region": "Japan",
+    "team_name": "ZETA DIVISION",
+    "team_logo": "https://owcdn.net/img/62a411783d94d.png",
+    "country": "Japan",
+    "rank": 9,
+    "points": "1777",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "6869",
+    "region": "Japan",
+    "team_name": "IGZIST",
+    "team_logo": "https://owcdn.net/img/61b3107a6a139.png",
+    "country": "Japan",
+    "rank": 10,
+    "points": "1742",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "11490",
+    "region": "Japan",
+    "team_name": "Murash Gaming",
+    "team_logo": "https://owcdn.net/img/697f337f890f1.png",
+    "country": "Japan",
+    "rank": 11,
+    "points": "1721",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "19770",
+    "region": "Japan",
+    "team_name": "GYOSON GAMING",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Japan",
+    "rank": 12,
+    "points": "1686",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "5148",
+    "region": "Japan",
+    "team_name": "Insomnia",
+    "team_logo": "https://owcdn.net/img/6a1be9015b7b5.png",
+    "country": "Japan",
+    "rank": 13,
+    "points": "1676",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "6997",
+    "region": "Japan",
+    "team_name": "ZETA DIVISION Academy",
+    "team_logo": "https://owcdn.net/img/62a411783d94d.png",
+    "country": "Japan",
+    "rank": 14,
+    "points": "1671",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "19881",
+    "region": "Japan",
+    "team_name": "Kirihana Academy",
+    "team_logo": "https://owcdn.net/img/6a01774cd48ef.png",
+    "country": "Japan",
+    "rank": 15,
+    "points": "1668",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "2108",
+    "region": "Japan",
+    "team_name": "BLUE BEES.ESP",
+    "team_logo": "https://owcdn.net/img/62a4128bd26f3.png",
+    "country": "Japan",
+    "rank": 16,
+    "points": "1663",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "11233",
+    "region": "Japan",
+    "team_name": "BC SWELL",
+    "team_logo": "https://owcdn.net/img/63a9cf9538384.png",
+    "country": "Japan",
+    "rank": 17,
+    "points": "1657",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "21367",
+    "region": "Japan",
+    "team_name": "REIGNITE FOXX",
+    "team_logo": "https://owcdn.net/img/634006b15d271.png",
+    "country": "Japan",
+    "rank": 18,
+    "points": "1651",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "14676",
+    "region": "Japan",
+    "team_name": "ALESTAR",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Japan",
+    "rank": 19,
+    "points": "1641",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "22281",
+    "region": "Japan",
+    "team_name": "KING GUY",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Japan",
+    "rank": 20,
+    "points": "1641",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "16529",
+    "region": "Japan",
+    "team_name": "Team SEIBI",
+    "team_logo": "https://owcdn.net/img/672228c89f94b.png",
+    "country": "Japan",
+    "rank": 21,
+    "points": "1640",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "16244",
+    "region": "Japan",
+    "team_name": "PARON",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Japan",
+    "rank": 22,
+    "points": "1620",
+    "last_updated": 1788717686986
+  },
+  {
+    "team_id": "17882",
+    "region": "Japan",
+    "team_name": "NORTHEPTION Youth",
+    "team_logo": "https://owcdn.net/img/649905216b9e3.png",
+    "country": "Japan",
+    "rank": 23,
+    "points": "1619",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "21339",
+    "region": "Japan",
+    "team_name": "WEC C",
+    "team_logo": "https://owcdn.net/img/69b040c581192.png",
+    "country": "Japan",
+    "rank": 24,
+    "points": "1615",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "18984",
+    "region": "Japan",
+    "team_name": "FAV gaming Youth",
+    "team_logo": "https://owcdn.net/img/623be8f0125f2.png",
+    "country": "Japan",
+    "rank": 25,
+    "points": "1586",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "22142",
+    "region": "Latin America South",
+    "team_name": "BESTIA",
+    "team_logo": "https://owcdn.net/img/69ea66a9d008c.png",
+    "country": "Chile",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "2355",
+    "region": "Latin America South",
+    "team_name": "KR\u00dc Esports",
+    "team_logo": "https://owcdn.net/img/63976677069e1.png",
+    "country": "Argentina",
+    "rank": 2,
+    "points": "1940",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "19791",
+    "region": "Latin America South",
+    "team_name": "KR\u00dc SPARK",
+    "team_logo": "https://owcdn.net/img/69cfd386538cf.png",
+    "country": "Argentina",
+    "rank": 3,
+    "points": "1930",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "16971",
+    "region": "Latin America South",
+    "team_name": "ShindeN",
+    "team_logo": "https://owcdn.net/img/6748dec4df18c.png",
+    "country": "Argentina",
+    "rank": 4,
+    "points": "1911",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "20296",
+    "region": "Latin America South",
+    "team_name": "Berliners",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Argentina",
+    "rank": 5,
+    "points": "1834",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "20178",
+    "region": "Latin America South",
+    "team_name": "FLOW TIM CHEESE",
+    "team_logo": "https://owcdn.net/img/692f9af945d88.png",
+    "country": "Chile",
+    "rank": 6,
+    "points": "1814",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "2360",
+    "region": "Latin America South",
+    "team_name": "Kaos Latin Gamers",
+    "team_logo": "https://owcdn.net/img/600b19ed2c674.png",
+    "country": "Chile",
+    "rank": 7,
+    "points": "1798",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "367",
+    "region": "Latin America South",
+    "team_name": "9z Globant",
+    "team_logo": "https://owcdn.net/img/65e447b0c2415.png",
+    "country": "Chile",
+    "rank": 8,
+    "points": "1782",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "17321",
+    "region": "Latin America South",
+    "team_name": "Eternal Flame",
+    "team_logo": "https://owcdn.net/img/68019d9c43742.png",
+    "country": "Chile",
+    "rank": 9,
+    "points": "1757",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "16781",
+    "region": "Latin America South",
+    "team_name": "Freddyneta",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Chile",
+    "rank": 10,
+    "points": "1738",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "20209",
+    "region": "Latin America South",
+    "team_name": "University War",
+    "team_logo": "https://owcdn.net/img/65df25f7afcad.png",
+    "country": "Chile",
+    "rank": 11,
+    "points": "1731",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "17320",
+    "region": "Latin America South",
+    "team_name": "Quantum Void",
+    "team_logo": "https://owcdn.net/img/6a3f23fc3b6f7.png",
+    "country": "Chile",
+    "rank": 12,
+    "points": "1711",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "17300",
+    "region": "Latin America South",
+    "team_name": "TOYO eSports",
+    "team_logo": "https://owcdn.net/img/69eab150c57a1.png",
+    "country": "Paraguay",
+    "rank": 13,
+    "points": "1710",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "23078",
+    "region": "Latin America South",
+    "team_name": "Lost Puppies Dark",
+    "team_logo": "https://owcdn.net/img/6a97609ebf2b5.png",
+    "country": "Argentina",
+    "rank": 14,
+    "points": "1710",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "20293",
+    "region": "Latin America South",
+    "team_name": "Sdufen Esports",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Argentina",
+    "rank": 15,
+    "points": "1702",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "17313",
+    "region": "Latin America South",
+    "team_name": "Dolphins Gaming",
+    "team_logo": "https://owcdn.net/img/67b8d1de2d8eb.png",
+    "country": "Chile",
+    "rank": 16,
+    "points": "1677",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "9427",
+    "region": "Latin America South",
+    "team_name": "OXEN",
+    "team_logo": "https://owcdn.net/img/62cdc31a970d0.png",
+    "country": "Argentina",
+    "rank": 17,
+    "points": "1653",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "7511",
+    "region": "Latin America South",
+    "team_name": "KR\u00dc BLAZE",
+    "team_logo": "https://owcdn.net/img/6704ad6a515a1.png",
+    "country": "Chile",
+    "rank": 18,
+    "points": "1579",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "17252",
+    "region": "Latin America North",
+    "team_name": "FUEGO",
+    "team_logo": "https://owcdn.net/img/678f90b7b65e5.png",
+    "country": "Colombia",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "10376",
+    "region": "Latin America North",
+    "team_name": "Contra",
+    "team_logo": "https://owcdn.net/img/66572b1da4d79.png",
+    "country": "Colombia",
+    "rank": 2,
+    "points": "1907",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "17257",
+    "region": "Latin America North",
+    "team_name": "DCT eSports",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "International",
+    "rank": 3,
+    "points": "1872",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "7269",
+    "region": "Latin America North",
+    "team_name": "FUSION",
+    "team_logo": "https://owcdn.net/img/63bde15e27452.png",
+    "country": "International",
+    "rank": 4,
+    "points": "1864",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "21459",
+    "region": "Latin America North",
+    "team_name": "STREAMER ARENA",
+    "team_logo": "https://owcdn.net/img/69c4c2382b847.png",
+    "country": "Venezuela",
+    "rank": 5,
+    "points": "1859",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "2131",
+    "region": "Latin America North",
+    "team_name": "Chivas Esports",
+    "team_logo": "https://owcdn.net/img/63ce2eedbe573.png",
+    "country": "Mexico",
+    "rank": 6,
+    "points": "1834",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "20808",
+    "region": "Latin America North",
+    "team_name": "LAZER",
+    "team_logo": "https://owcdn.net/img/698051cea67f9.png",
+    "country": "Mexico",
+    "rank": 7,
+    "points": "1750",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "15624",
+    "region": "Latin America North",
+    "team_name": "KTANA Esports",
+    "team_logo": "https://owcdn.net/img/67174040b82f5.png",
+    "country": "Mexico",
+    "rank": 8,
+    "points": "1711",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "22282",
+    "region": "Oceania",
+    "team_name": "Yi-Jing",
+    "team_logo": "https://owcdn.net/img/681895643e00c.png",
+    "country": "Australia",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "18234",
+    "region": "Oceania",
+    "team_name": "Full House",
+    "team_logo": "https://owcdn.net/img/6808dc8300397.png",
+    "country": "Australia",
+    "rank": 2,
+    "points": "1919",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "21065",
+    "region": "Oceania",
+    "team_name": "BaosLittleBuns",
+    "team_logo": "https://owcdn.net/img/6997315127f0f.png",
+    "country": "Australia",
+    "rank": 3,
+    "points": "1882",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "22234",
+    "region": "Oceania",
+    "team_name": "MeatZn",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "New Zealand",
+    "rank": 4,
+    "points": "1760",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "13849",
+    "region": "Oceania",
+    "team_name": "Justice For Tomorrow",
+    "team_logo": "https://owcdn.net/img/65eee36191b62.png",
+    "country": "Australia",
+    "rank": 5,
+    "points": "1752",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "21862",
+    "region": "Oceania",
+    "team_name": "Squishy Cheeks",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Australia",
+    "rank": 6,
+    "points": "1723",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "14281",
+    "region": "Oceania",
+    "team_name": "Arcade Esports",
+    "team_logo": "https://owcdn.net/img/65e5c65968f8d.png",
+    "country": "Australia",
+    "rank": 7,
+    "points": "1696",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "22370",
+    "region": "Oceania",
+    "team_name": "RNM",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "International",
+    "rank": 8,
+    "points": "1678",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "18894",
+    "region": "Oceania",
+    "team_name": "rabbit gang",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Australia",
+    "rank": 9,
+    "points": "1673",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "21666",
+    "region": "Oceania",
+    "team_name": "TROOPERS",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Australia",
+    "rank": 10,
+    "points": "1672",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "22380",
+    "region": "Oceania",
+    "team_name": "ZO Esports",
+    "team_logo": "https://owcdn.net/img/6a2478f25f27b.png",
+    "country": "International",
+    "rank": 11,
+    "points": "1651",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "23246",
+    "region": "Oceania",
+    "team_name": "Crusaders",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Australia",
+    "rank": 12,
+    "points": "1649",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "22251",
+    "region": "Oceania",
+    "team_name": "Evolve",
+    "team_logo": "https://owcdn.net/img/6a26acaf34ecf.png",
+    "country": "Australia",
+    "rank": 13,
+    "points": "1638",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "22602",
+    "region": "Oceania",
+    "team_name": "hippo",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Australia",
+    "rank": 14,
+    "points": "1634",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "21891",
+    "region": "Oceania",
+    "team_name": "Please Peg",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Australia",
+    "rank": 15,
+    "points": "1634",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "20166",
+    "region": "Oceania",
+    "team_name": "Densi's Kittens",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Australia",
+    "rank": 16,
+    "points": "1618",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "19178",
+    "region": "Oceania",
+    "team_name": "Crimson Nova X",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Australia",
+    "rank": 17,
+    "points": "1609",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "16729",
+    "region": "Oceania",
+    "team_name": "Balkan Tuah",
+    "team_logo": "https://owcdn.net/img/67f4e60244eff.png",
+    "country": "Australia",
+    "rank": 18,
+    "points": "1609",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "15226",
+    "region": "Oceania",
+    "team_name": "Overheat",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Australia",
+    "rank": 19,
+    "points": "1608",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "22226",
+    "region": "Oceania",
+    "team_name": "Angelo",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "International",
+    "rank": 20,
+    "points": "1607",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "18265",
+    "region": "Oceania",
+    "team_name": "TXG",
+    "team_logo": "https://owcdn.net/img/6a130924edb9f.png",
+    "country": "Australia",
+    "rank": 21,
+    "points": "1604",
+    "last_updated": 1788717686987
+  },
+  {
+    "team_id": "21872",
+    "region": "Oceania",
+    "team_name": "Horizon",
+    "team_logo": "https://owcdn.net/img/69d26cc063a88.png",
+    "country": "Australia",
+    "rank": 22,
+    "points": "1600",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "23044",
+    "region": "Oceania",
+    "team_name": "Big T and Friends",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Australia",
+    "rank": 23,
+    "points": "1596",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "6192",
+    "region": "Oceania",
+    "team_name": "Trident Esports",
+    "team_logo": "https://owcdn.net/img/6135ed5106d2c.png",
+    "country": "Australia",
+    "rank": 24,
+    "points": "1592",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "21863",
+    "region": "Oceania",
+    "team_name": "Traffic Cones",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Australia",
+    "rank": 25,
+    "points": "1591",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "1458",
+    "region": "MENA",
+    "team_name": "The Ultimates",
+    "team_logo": "https://owcdn.net/img/65cb2b05be39e.png",
+    "country": "Saudi Arabia",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "18120",
+    "region": "MENA",
+    "team_name": "Stallions Esports",
+    "team_logo": "https://owcdn.net/img/68366aa3c10fd.png",
+    "country": "Saudi Arabia",
+    "rank": 2,
+    "points": "1977",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "12934",
+    "region": "MENA",
+    "team_name": "Twisted Minds Orchid",
+    "team_logo": "https://owcdn.net/img/64cca8a13521a.png",
+    "country": "Saudi Arabia",
+    "rank": 3,
+    "points": "1798",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "13589",
+    "region": "MENA",
+    "team_name": "Ghools Esports",
+    "team_logo": "https://owcdn.net/img/6989d854eb259.png",
+    "country": "Tunisia",
+    "rank": 4,
+    "points": "1791",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "17985",
+    "region": "MENA",
+    "team_name": "BAAM Esports",
+    "team_logo": "https://owcdn.net/img/67caae5a045bd.png",
+    "country": "Egypt",
+    "rank": 5,
+    "points": "1773",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "1471",
+    "region": "MENA",
+    "team_name": "Team RA'AD",
+    "team_logo": "https://owcdn.net/img/61d48692758bc.png",
+    "country": "Egypt",
+    "rank": 6,
+    "points": "1772",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "20568",
+    "region": "MENA",
+    "team_name": "3MK",
+    "team_logo": "https://owcdn.net/img/69271127b18c9.png",
+    "country": "Algeria",
+    "rank": 7,
+    "points": "1740",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "11231",
+    "region": "MENA",
+    "team_name": "Team To Glory",
+    "team_logo": "https://owcdn.net/img/63e3d87972464.png",
+    "country": "Morocco",
+    "rank": 8,
+    "points": "1740",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "17988",
+    "region": "MENA",
+    "team_name": "Yung",
+    "team_logo": "https://owcdn.net/img/698053fc386fd.png",
+    "country": "Saudi Arabia",
+    "rank": 9,
+    "points": "1736",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "2290",
+    "region": "MENA",
+    "team_name": "Gamax Esports",
+    "team_logo": "https://owcdn.net/img/64c0df3369bcd.png",
+    "country": "Egypt",
+    "rank": 10,
+    "points": "1733",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "21491",
+    "region": "MENA",
+    "team_name": "FAST-WIN",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Morocco",
+    "rank": 11,
+    "points": "1729",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "15649",
+    "region": "MENA",
+    "team_name": "VoidWalkers",
+    "team_logo": "https://owcdn.net/img/69b1c54474b9f.png",
+    "country": "Morocco",
+    "rank": 12,
+    "points": "1726",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "16074",
+    "region": "MENA",
+    "team_name": "Near Reality Squad",
+    "team_logo": "https://owcdn.net/img/69205e47e39a7.png",
+    "country": "Lebanon",
+    "rank": 13,
+    "points": "1724",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "21489",
+    "region": "MENA",
+    "team_name": "JSK ESPORTS",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Tunisia",
+    "rank": 14,
+    "points": "1723",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "21495",
+    "region": "MENA",
+    "team_name": "Fearless Faction",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Algeria",
+    "rank": 15,
+    "points": "1717",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "21527",
+    "region": "MENA",
+    "team_name": "EGA eSports",
+    "team_logo": "https://owcdn.net/img/69abe5f14c00c.png",
+    "country": "International",
+    "rank": 16,
+    "points": "1712",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "20626",
+    "region": "MENA",
+    "team_name": "suspects",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Kuwait",
+    "rank": 17,
+    "points": "1711",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "20570",
+    "region": "MENA",
+    "team_name": "Jordan Unit",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Jordan",
+    "rank": 18,
+    "points": "1709",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "18121",
+    "region": "MENA",
+    "team_name": "RAFHA eSPORTS",
+    "team_logo": "https://owcdn.net/img/695b6100996bc.png",
+    "country": "Egypt",
+    "rank": 19,
+    "points": "1701",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "20629",
+    "region": "MENA",
+    "team_name": "CINYPS E-SPORTS",
+    "team_logo": "https://owcdn.net/img/69ac96419217f.png",
+    "country": "Libya",
+    "rank": 20,
+    "points": "1700",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "20622",
+    "region": "MENA",
+    "team_name": "Saudi Elite Team",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Saudi Arabia",
+    "rank": 21,
+    "points": "1695",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "20624",
+    "region": "MENA",
+    "team_name": "snap",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Qatar",
+    "rank": 22,
+    "points": "1695",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "20623",
+    "region": "MENA",
+    "team_name": "PeakSouls",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Palestine",
+    "rank": 23,
+    "points": "1692",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "19666",
+    "region": "MENA",
+    "team_name": "BAZ ESPORTS",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "International",
+    "rank": 24,
+    "points": "1689",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "16077",
+    "region": "MENA",
+    "team_name": "Vibranium Esports",
+    "team_logo": "https://owcdn.net/img/695ca09e6dc74.png",
+    "country": "Jordan",
+    "rank": 25,
+    "points": "1681",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "12900",
+    "region": "Collegiate",
+    "team_name": "Maryville University",
+    "team_logo": "https://owcdn.net/img/6457181dc433a.png",
+    "country": "United States",
+    "rank": 1,
+    "points": "2000",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "10448",
+    "region": "Collegiate",
+    "team_name": "Winthrop University",
+    "team_logo": "https://owcdn.net/img/636c2f2592313.png",
+    "country": "United States",
+    "rank": 2,
+    "points": "1884",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "10533",
+    "region": "Collegiate",
+    "team_name": "Northwood University",
+    "team_logo": "https://owcdn.net/img/636c597cd68a7.png",
+    "country": "United States",
+    "rank": 3,
+    "points": "1847",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "10479",
+    "region": "Collegiate",
+    "team_name": "Fisher Navy",
+    "team_logo": "https://owcdn.net/img/63b525814a4ef.png",
+    "country": "United States",
+    "rank": 4,
+    "points": "1777",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "10577",
+    "region": "Collegiate",
+    "team_name": "UC Irvine",
+    "team_logo": "https://owcdn.net/img/63bca3eb92319.png",
+    "country": "United States",
+    "rank": 5,
+    "points": "1696",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "11917",
+    "region": "Collegiate",
+    "team_name": "Columbia College",
+    "team_logo": "https://owcdn.net/img/642437560fcab.png",
+    "country": "United States",
+    "rank": 6,
+    "points": "1677",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "8998",
+    "region": "Collegiate",
+    "team_name": "UWaterloo Gold",
+    "team_logo": "https://owcdn.net/img/636ee7fde12b6.png",
+    "country": "Canada",
+    "rank": 7,
+    "points": "1668",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "11361",
+    "region": "Collegiate",
+    "team_name": "UCSD Gold",
+    "team_logo": "https://owcdn.net/img/627fe238c5975.png",
+    "country": "United States",
+    "rank": 8,
+    "points": "1668",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "11243",
+    "region": "Collegiate",
+    "team_name": "University of Virginia",
+    "team_logo": "https://owcdn.net/img/663e51957374c.png",
+    "country": "United States",
+    "rank": 9,
+    "points": "1647",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "10475",
+    "region": "Collegiate",
+    "team_name": "uOttawa Garnet",
+    "team_logo": "https://owcdn.net/img/636c5ba5cbb7a.png",
+    "country": "Canada",
+    "rank": 10,
+    "points": "1646",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "20885",
+    "region": "Collegiate",
+    "team_name": "Rutgers University",
+    "team_logo": "https://owcdn.net/img/6a627bb45abe8.png",
+    "country": "International",
+    "rank": 11,
+    "points": "1644",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "13505",
+    "region": "Collegiate",
+    "team_name": "MBU Spartans",
+    "team_logo": "https://owcdn.net/img/6519bc01608d1.png",
+    "country": "United States",
+    "rank": 12,
+    "points": "1641",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "13636",
+    "region": "Collegiate",
+    "team_name": "Harrisburg University",
+    "team_logo": "https://owcdn.net/img/6504e8d17f695.png",
+    "country": "United States",
+    "rank": 13,
+    "points": "1634",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "14182",
+    "region": "Collegiate",
+    "team_name": "Siena Heights University",
+    "team_logo": "https://owcdn.net/img/67fd7cab890c6.png",
+    "country": "United States",
+    "rank": 14,
+    "points": "1630",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "7812",
+    "region": "Collegiate",
+    "team_name": "UAESA Green",
+    "team_logo": "https://owcdn.net/img/61f3ddd29e55a.png",
+    "country": "Canada",
+    "rank": 15,
+    "points": "1629",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "10482",
+    "region": "Collegiate",
+    "team_name": "West Virginia University",
+    "team_logo": "https://owcdn.net/img/663e50bc0927c.png",
+    "country": "United States",
+    "rank": 16,
+    "points": "1622",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "9975",
+    "region": "Collegiate",
+    "team_name": "St. Clair Saints",
+    "team_logo": "https://owcdn.net/img/653fbdd4e0d9a.png",
+    "country": "Canada",
+    "rank": 17,
+    "points": "1621",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "10562",
+    "region": "Collegiate",
+    "team_name": "ASU Sun Devils",
+    "team_logo": "https://owcdn.net/img/67eb36c0e3c10.png",
+    "country": "United States",
+    "rank": 18,
+    "points": "1617",
+    "last_updated": 1788717686988
+  },
+  {
+    "team_id": "10511",
+    "region": "Collegiate",
+    "team_name": "UH Premiere",
+    "team_logo": "https://owcdn.net/img/636d5d1c5e899.png",
+    "country": "United States",
+    "rank": 19,
+    "points": "1615",
+    "last_updated": 1788717686989
+  },
+  {
+    "team_id": "12671",
+    "region": "Collegiate",
+    "team_name": "Radford University",
+    "team_logo": "https://owcdn.net/img/64323b200358a.png",
+    "country": "United States",
+    "rank": 20,
+    "points": "1609",
+    "last_updated": 1788717686989
+  },
+  {
+    "team_id": "15374",
+    "region": "Collegiate",
+    "team_name": "USC Gold",
+    "team_logo": "https://owcdn.net/img/636c5be25f886.png",
+    "country": "United States",
+    "rank": 21,
+    "points": "1605",
+    "last_updated": 1788717686989
+  },
+  {
+    "team_id": "18179",
+    "region": "Collegiate",
+    "team_name": "Cleveland State",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "United States",
+    "rank": 22,
+    "points": "1604",
+    "last_updated": 1788717686989
+  },
+  {
+    "team_id": "10452",
+    "region": "Collegiate",
+    "team_name": "UGA Black",
+    "team_logo": "https://owcdn.net/img/63712e172919e.png",
+    "country": "United States",
+    "rank": 23,
+    "points": "1603",
+    "last_updated": 1788717686989
+  },
+  {
+    "team_id": "2467",
+    "region": "Collegiate",
+    "team_name": "VVT Premier",
+    "team_logo": "https://owcdn.net/img/67a2fa619e363.png",
+    "country": "United States",
+    "rank": 24,
+    "points": "1598",
+    "last_updated": 1788717686989
+  },
+  {
+    "team_id": "19379",
+    "region": "Collegiate",
+    "team_name": "UMN Nova",
+    "team_logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+    "country": "Indonesia",
+    "rank": 25,
+    "points": "1597",
+    "last_updated": 1788717686989
+  }
+]

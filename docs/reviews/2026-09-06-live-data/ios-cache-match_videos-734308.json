@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "match_id": "734308",
+    "video_type": "stream",
+    "name": "VCT Americas",
+    "url": "https://www.twitch.tv/valorant_americas"
+  },
+  {
+    "id": 2,
+    "match_id": "734308",
+    "video_type": "stream",
+    "name": "Valorant Brazil",
+    "url": "https://www.twitch.tv/valorant_br"
+  },
+  {
+    "id": 3,
+    "match_id": "734308",
+    "video_type": "stream",
+    "name": "Valorant LATAM",
+    "url": "https://www.twitch.tv/valorant_la"
+  },
+  {
+    "id": 4,
+    "match_id": "734308",
+    "video_type": "stream",
+    "name": "VCT Americas (YT)",
+    "url": "https://www.youtube.com/@valorant_americas/live"
+  },
+  {
+    "id": 5,
+    "match_id": "734308",
+    "video_type": "stream",
+    "name": "VAL Esports BR (YT)",
+    "url": "https://www.youtube.com/@valesportsbr/live"
+  },
+  {
+    "id": 6,
+    "match_id": "734308",
+    "video_type": "stream",
+    "name": "VAL Esports LA (YT)",
+    "url": "https://www.youtube.com/@VALORANTEsportsLA/live"
+  }
+]

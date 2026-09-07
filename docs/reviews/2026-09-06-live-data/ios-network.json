@@ -1,0 +1,6014 @@
+[
+  {
+    "captured_at": "2026-09-06T17:56:13.185834Z",
+    "path": "/api/v1/news/",
+    "kind": "request"
+  },
+  {
+    "captured_at": "2026-09-06T17:56:13.619241Z",
+    "path": "/api/v1/news/",
+    "status": 200,
+    "kind": "response",
+    "data": [
+      {
+        "url": "https://www.vlr.gg/752729/red-bull-home-ground-arrives-in-la-for-2026-off-season",
+        "title": "Red Bull Home Ground arrives in LA for 2026 off-season",
+        "description": "The Red Bull Home Ground off-season tournament is coming back for its sixth installment in 2026, live in Los Angeles at the Shrine Auditorium and WePlay Studios from December 10-13.",
+        "date": "2026-09-05T18:30:00Z",
+        "author": "weivy"
+      },
+      {
+        "url": "https://www.vlr.gg/752452/global-esports-pulls-off-miraculous-reverse-sweep-to-lift-first-vct-title",
+        "title": "Global Esports pulls off miraculous reverse-sweep to lift first VCT title",
+        "description": "You read that right: Global Esports are the Pacific Stage 2 champions.",
+        "date": "2026-09-05T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/752130/loud-continues-miracle-run-to-qualify-for-champions",
+        "title": "LOUD continues miracle run to qualify for Champions",
+        "description": "LOUD complete their miracle run by booking a spot in the grand finals, and qualifying for Champions Shanghai",
+        "date": "2026-09-05T18:30:00Z",
+        "author": "4kanders0ny"
+      },
+      {
+        "url": "https://www.vlr.gg/751992/global-brushes-aside-t1-to-set-up-grand-final-rematch-with-nongshim",
+        "title": "Global brushes aside T1 to set up Grand Final rematch with Nongshim",
+        "description": "",
+        "date": "2026-09-05T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/750858/100-thieves-seizes-champions-berth-loud-takes-down-g2",
+        "title": "100 Thieves seizes Champions berth, LOUD takes down G2",
+        "description": "100 Thieves secure the fifteenth spot at Champions, while LOUD continue their hunt for the last one.",
+        "date": "2026-09-04T18:30:00Z",
+        "author": "raezeri"
+      },
+      {
+        "url": "https://www.vlr.gg/750541/team-heretics-releases-koshmaras",
+        "title": "Team Heretics releases koshmaras",
+        "description": "After a trophy-lifting 2026 with Heretics, koshmaras is out.",
+        "date": "2026-09-04T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/750321/varrel-sent-home-as-global-t1-seal-champions-shanghai-slots",
+        "title": "VARREL sent home as Global, T1 seal Champions Shanghai slots",
+        "description": "Pacific Stage 2 has reached its penultimate day, with the region's four Champs representatives now sealed.",
+        "date": "2026-09-04T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/749695/boo-ends-four-year-run-with-team-heretics",
+        "title": "Boo ends four year run with Team Heretics",
+        "description": "Heretics' is moving on from their long time IGL.",
+        "date": "2026-09-03T18:30:00Z",
+        "author": "CongoBat"
+      },
+      {
+        "url": "https://www.vlr.gg/749683/navi-lets-chloric-and-exit-explore-options",
+        "title": "NAVI lets chloric and ExiT explore options",
+        "description": "NAVI lets go of some of their newest pieces.",
+        "date": "2026-09-03T18:30:00Z",
+        "author": "CongoBat"
+      },
+      {
+        "url": "https://www.vlr.gg/749157/gentle-mates-allows-starxo-to-explore-options",
+        "title": "Gentle Mates allows starxo to explore options",
+        "description": "The Mates' IGL is nearing the end of his contract and has been allowed to explore other options.",
+        "date": "2026-09-01T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/748524/g2-books-tickets-to-shanghai-loud-continues-playoffs-run",
+        "title": "G2 books tickets to Shanghai, LOUD continues playoffs run",
+        "description": "Big names fall as Americas narrows down to the top four.",
+        "date": "2026-08-30T18:30:00Z",
+        "author": "CongoBat"
+      },
+      {
+        "url": "https://www.vlr.gg/748106/n4rrate-after-i-got-kicked-i-didnt-know-if-i-wanted-to-keep-competing-this-season",
+        "title": "N4RRATE: \"After I got kicked, I didn't know if I wanted to keep competing [this] season.\"",
+        "description": "VLR interviewed Karmine Corp's Marshall \"N4RRATE\" Massey following Karmine Corp's victory against Tean Liquid in the grand final of EMEA's Stage 2 Finals.",
+        "date": "2026-08-30T18:30:00Z",
+        "author": "ChickenJoe"
+      },
+      {
+        "url": "https://www.vlr.gg/748079/kicks-we-really-could-have-shown-a-better-performance-on-ascent-and-summit",
+        "title": "Kicks: \"We really could have shown a better performance on Ascent and Summit.\"",
+        "description": "VLR interviewed Team Liquid's Kimmie \"Kicks\" Laasner following Team Liquid's defeat against Karmine Corp in the grand final of EMEA's Stage 2 Finals.",
+        "date": "2026-08-30T18:30:00Z",
+        "author": "ChickenJoe"
+      },
+      {
+        "url": "https://www.vlr.gg/747849/karmine-corp-completes-redemption-story-lifting-emea-stage-2-title",
+        "title": "Karmine Corp completes redemption story, lifting EMEA Stage 2 title",
+        "description": "A magical story for KC, defeating Liquid 3-1 to complete its return to the top.",
+        "date": "2026-08-30T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/747744/mini-i-think-vitality-is-our-closest-shot-and-has-the-caliber-to-make-a-deep-run",
+        "title": "mini: \"I think Vitality is our closest shot and has the caliber to [make a deep run].\"",
+        "description": "VLR interviewed Jacob \"mini\" Harris ahead of EMEA Stage 2's grand final.",
+        "date": "2026-08-29T18:30:00Z",
+        "author": "ChickenJoe"
+      },
+      {
+        "url": "https://www.vlr.gg/747556/lohan-were-actually-the-best-teams-in-europe-right-now",
+        "title": "LohaN: \"We're actually the best teams in Europe right now.\"",
+        "description": "VLR interviewed Team Liquid's Ivo \"LohaN\" Alvino following Team Liquid's victory against FUT Esports in the lower final of EMEA's Stage 2 Finals.",
+        "date": "2026-08-29T18:30:00Z",
+        "author": "ChickenJoe"
+      },
+      {
+        "url": "https://www.vlr.gg/747061/g2-and-mibr-send-furia-and-eg-home-in-stage-2-playoffs",
+        "title": "G2 and MIBR send FURIA and EG home in Stage 2 playoffs",
+        "description": "G2 and MIBR keep their S\u00e3o Paulo and Shanghai hopes alive.",
+        "date": "2026-08-29T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/747034/bambino-coming-into-shanghai-we-have-a-lot-we-need-to-work-on",
+        "title": "Bambino: \"Coming into Shanghai, we have a lot we need to work on.\"",
+        "description": "VLR interviewed FUT Esports' Tyler \"Bambino\" Jay following FUT's defeat against Team Liquid in the lower final of EMEA's Stage 2 Finals.",
+        "date": "2026-08-29T18:30:00Z",
+        "author": "ChickenJoe"
+      },
+      {
+        "url": "https://www.vlr.gg/746984/team-liquid-eliminates-fut-esports-to-keep-lower-bracket-run-alive",
+        "title": "Team Liquid eliminates FUT Esports to keep lower-bracket run alive",
+        "description": "Team Liquid is one win away from completing a lower-bracket run.",
+        "date": "2026-08-29T18:30:00Z",
+        "author": "ChickenJoe"
+      },
+      {
+        "url": "https://www.vlr.gg/746906/nrg-announces-end-of-nrg-academy-program",
+        "title": "NRG announces end of NRG Academy program",
+        "description": "NRG becomes the latest VCT team to part ways with its academy.",
+        "date": "2026-08-28T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/746519/varrel-and-t1-set-sail-for-busan-sending-paper-rex-and-gen-g-home",
+        "title": "VARREL and T1 set sail for Busan, sending Paper Rex and Gen.G home",
+        "description": "VARREL proves the first time wasn't a fluke, and T1 reigns supreme in another Korean derby.",
+        "date": "2026-08-28T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/746225/nrg-and-100-thieves-book-places-in-upper-final",
+        "title": "NRG and 100 Thieves book places in upper final",
+        "description": "NRG and 100 Thieves defeat LOUD and LEV respectively to qualify for S\u00e3o Paulo.",
+        "date": "2026-08-28T18:30:00Z",
+        "author": "4kanders0ny"
+      },
+      {
+        "url": "https://www.vlr.gg/745965/karmine-corp-liquid-earn-champions-shanghai-berths",
+        "title": "Karmine Corp, Liquid earn Champions Shanghai berths",
+        "description": "Karmine Corp and Liquid stake their claims to the final two Champions spots with 2-0 victories over FUT and Fire Flux.",
+        "date": "2026-08-28T18:30:00Z",
+        "author": "raezeri"
+      },
+      {
+        "url": "https://www.vlr.gg/745317/prx-and-t1-eliminate-onside-and-krx",
+        "title": "PRX and T1 eliminate ONSIDE and KRX",
+        "description": "PRX and T1 press on in the lower bracket.",
+        "date": "2026-08-27T18:30:00Z",
+        "author": "raezeri"
+      },
+      {
+        "url": "https://www.vlr.gg/745185/fpx-cuts-ties-with-kovaq-following-internal-investigation",
+        "title": "FPX cuts ties with KovaQ following internal investigation",
+        "description": "The IGL has been cut after allegations of \"inappropriate remarks\".",
+        "date": "2026-08-27T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/745060/loud-and-leviat-n-dominate-advance-over-play-in-teams",
+        "title": "LOUD and LEVIAT\u00c1N dominate, advance over Play-In teams",
+        "description": "LOUD and LEV haven't missed a beat, returning to hand out Ls to a pair of Play-In teams.",
+        "date": "2026-08-27T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/744584/nongshim-and-global-punch-busan-tickets-with-nongshim-locked-for-shanghai",
+        "title": "Nongshim and Global punch Busan tickets, with Nongshim locked for Shanghai",
+        "description": "Nongshim RedForce and Global Esports pick up their second straight wins in the playoffs, setting up a collision-course meeting in the Upper Final.",
+        "date": "2026-08-26T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/744122/nongshim-global-advance-in-stage-2-playoffs-over-prx-and-krx",
+        "title": "Nongshim, Global advance in Stage 2 playoffs over PRX and KRX",
+        "description": "Nongshim downs Paper Rex and Global makes history with its first win over KRX.",
+        "date": "2026-08-25T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/743747/riot-unveils-gc-pacific-format-and-bracket",
+        "title": "Riot unveils GC Pacific format and bracket",
+        "description": "GC Pacific in Bali is just around the corner!",
+        "date": "2026-08-23T18:30:00Z",
+        "author": "jenopelle"
+      },
+      {
+        "url": "https://www.vlr.gg/743646/g2-and-eg-earn-playoff-spots-over-envy-and-kr",
+        "title": "G2 and EG earn playoff spots over ENVY and KR\u00dc",
+        "description": "G2 and EG seize the final playoff slots in Americas.",
+        "date": "2026-08-23T18:30:00Z",
+        "author": "raezeri"
+      }
+    ]
+  },
+  {
+    "captured_at": "2026-09-06T17:57:51.136909Z",
+    "path": "/api/v1/matches/",
+    "kind": "request"
+  },
+  {
+    "captured_at": "2026-09-06T17:57:51.247503Z",
+    "path": "/api/v1/matches/",
+    "status": 200,
+    "kind": "response",
+    "data": [
+      {
+        "id": "734308",
+        "team1": {
+          "name": "100 Thieves",
+          "id": "120",
+          "score": 0
+        },
+        "team2": {
+          "name": "LOUD",
+          "id": "6961",
+          "score": 0
+        },
+        "status": "live",
+        "time": "2026-09-06T17:00:00Z",
+        "event": "VCT 2026: Americas Stage 2",
+        "series": "Playoffs\u2013Grand Final",
+        "event_id": "2977"
+      },
+      {
+        "id": "747672",
+        "team1": {
+          "name": "Catboys",
+          "id": "23296",
+          "score": null
+        },
+        "team2": {
+          "name": "HooK Esport",
+          "id": "19166",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-07T16:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Lower Round 3",
+        "event_id": "3077"
+      },
+      {
+        "id": "724901",
+        "team1": {
+          "name": "FlyQuest RED",
+          "id": "6456",
+          "score": null
+        },
+        "team2": {
+          "name": "Shopify Rebellion Gold",
+          "id": "14278",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-08T21:00:00Z",
+        "event": "Game Changers 2026: North America Stage 2",
+        "series": "Playoffs\u2013Upper Final",
+        "event_id": "3037"
+      },
+      {
+        "id": "748627",
+        "team1": {
+          "name": "Bilibili Gaming",
+          "id": "12010",
+          "score": null
+        },
+        "team2": {
+          "name": "KeepBest Gaming",
+          "id": "12784",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-09T09:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Quarterfinals",
+        "event_id": "3105"
+      },
+      {
+        "id": "748628",
+        "team1": {
+          "name": "Titan Esports Club",
+          "id": "14137",
+          "score": null
+        },
+        "team2": {
+          "name": "Unsettled Resentment",
+          "id": "21919",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-09T11:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Quarterfinals",
+        "event_id": "3105"
+      },
+      {
+        "id": "731780",
+        "team1": {
+          "name": "Evil Geniuses GC",
+          "id": "9547",
+          "score": null
+        },
+        "team2": {
+          "name": "Ushiras",
+          "id": "23123",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-09T20:00:00Z",
+        "event": "Game Changers 2026: Brazil Finals",
+        "series": "Main Event\u2013Lower Round 3",
+        "event_id": "3086"
+      },
+      {
+        "id": "731774",
+        "team1": {
+          "name": "MIBR GC",
+          "id": "8050",
+          "score": null
+        },
+        "team2": {
+          "name": "Team Liquid Brazil",
+          "id": "7055",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-09T23:00:00Z",
+        "event": "Game Changers 2026: Brazil Finals",
+        "series": "Main Event\u2013Upper Final",
+        "event_id": "3086"
+      },
+      {
+        "id": "748629",
+        "team1": {
+          "name": "Nova Esports",
+          "id": "12064",
+          "score": null
+        },
+        "team2": {
+          "name": "FunPlus Phoenix",
+          "id": "11328",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-10T09:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Quarterfinals",
+        "event_id": "3105"
+      },
+      {
+        "id": "748630",
+        "team1": {
+          "name": "JD Gaming",
+          "id": "13576",
+          "score": null
+        },
+        "team2": {
+          "name": "Any Questions Gaming",
+          "id": "19531",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-10T11:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Quarterfinals",
+        "event_id": "3105"
+      },
+      {
+        "id": "731782",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-10T20:00:00Z",
+        "event": "Game Changers 2026: Brazil Finals",
+        "series": "Main Event\u2013Lower Final",
+        "event_id": "3086"
+      },
+      {
+        "id": "748631",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-11T09:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Semifinals",
+        "event_id": "3105"
+      },
+      {
+        "id": "748632",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-11T11:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Semifinals",
+        "event_id": "3105"
+      },
+      {
+        "id": "747662",
+        "team1": {
+          "name": "CGN Esports",
+          "id": "5214",
+          "score": null
+        },
+        "team2": {
+          "name": "Twisted Saints Esports",
+          "id": "16629",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-11T15:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Upper Final",
+        "event_id": "3077"
+      },
+      {
+        "id": "731775",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-11T20:00:00Z",
+        "event": "Game Changers 2026: Brazil Finals",
+        "series": "Main Event\u2013Grand Final",
+        "event_id": "3086"
+      },
+      {
+        "id": "748634",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-12T09:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Consolation Final",
+        "event_id": "3105"
+      },
+      {
+        "id": "748633",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-13T09:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Grand Final",
+        "event_id": "3105"
+      },
+      {
+        "id": "747663",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-13T13:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Grand Final",
+        "event_id": "3077"
+      },
+      {
+        "id": "743596",
+        "team1": {
+          "name": "Gen.G GC",
+          "id": "21858",
+          "score": null
+        },
+        "team2": {
+          "name": "Rising Esports GC",
+          "id": "19323",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-14T07:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Upper Quarterfinals",
+        "event_id": "3065"
+      },
+      {
+        "id": "743597",
+        "team1": {
+          "name": "FENNEL GC",
+          "id": "9516",
+          "score": null
+        },
+        "team2": {
+          "name": "RGL wiwiwi",
+          "id": "23237",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-14T09:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Upper Quarterfinals",
+        "event_id": "3065"
+      },
+      {
+        "id": "744483",
+        "team1": {
+          "name": "Akave Esports GC",
+          "id": "7412",
+          "score": null
+        },
+        "team2": {
+          "name": "KR\u00dc BLAZE",
+          "id": "7511",
+          "score": null
+        },
+        "status": "tbd",
+        "time": "2026-09-13T18:30:00Z",
+        "event": "Game Changers 2026: LATAM Main Event",
+        "series": "Regional Final\u2013Main Event",
+        "event_id": "3082"
+      },
+      {
+        "id": "743598",
+        "team1": {
+          "name": "Team Falcons Vega",
+          "id": "9314",
+          "score": null
+        },
+        "team2": {
+          "name": "swaglord9000",
+          "id": "15880",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-15T05:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Upper Quarterfinals",
+        "event_id": "3065"
+      },
+      {
+        "id": "743599",
+        "team1": {
+          "name": "FULL SENSE SISU",
+          "id": "23236",
+          "score": null
+        },
+        "team2": {
+          "name": "Sasanqua",
+          "id": "9517",
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-15T07:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Upper Quarterfinals",
+        "event_id": "3065"
+      },
+      {
+        "id": "743600",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-15T09:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Upper Semifinals",
+        "event_id": "3065"
+      },
+      {
+        "id": "743601",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-16T05:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Upper Semifinals",
+        "event_id": "3065"
+      },
+      {
+        "id": "743604",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-16T07:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Lower Round 1",
+        "event_id": "3065"
+      },
+      {
+        "id": "743605",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-16T09:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Lower Round 1",
+        "event_id": "3065"
+      },
+      {
+        "id": "743606",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-17T08:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Lower Round 2",
+        "event_id": "3065"
+      },
+      {
+        "id": "743607",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-17T10:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Lower Round 2",
+        "event_id": "3065"
+      },
+      {
+        "id": "743602",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-18T08:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Upper Final",
+        "event_id": "3065"
+      },
+      {
+        "id": "743608",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-18T10:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Lower Round 3",
+        "event_id": "3065"
+      },
+      {
+        "id": "743609",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-19T08:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Lower Final",
+        "event_id": "3065"
+      },
+      {
+        "id": "743603",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-09-20T08:00:00Z",
+        "event": "Game Changers 2026: Pacific",
+        "series": "Main Event\u2013Grand Final",
+        "event_id": "3065"
+      },
+      {
+        "id": "744485",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-10-14T18:00:00Z",
+        "event": "Game Changers 2026: Americas Last Chance Qualifier",
+        "series": "Main Event\u2013Round Robin",
+        "event_id": "3099"
+      },
+      {
+        "id": "744486",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-10-14T20:00:00Z",
+        "event": "Game Changers 2026: Americas Last Chance Qualifier",
+        "series": "Main Event\u2013Round Robin",
+        "event_id": "3099"
+      },
+      {
+        "id": "744487",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-10-14T22:00:00Z",
+        "event": "Game Changers 2026: Americas Last Chance Qualifier",
+        "series": "Main Event\u2013Round Robin",
+        "event_id": "3099"
+      },
+      {
+        "id": "744488",
+        "team1": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "team2": {
+          "name": "TBD",
+          "id": null,
+          "score": null
+        },
+        "status": "upcoming",
+        "time": "2026-10-15T21:00:00Z",
+        "event": "Game Changers 2026: Americas Last Chance Qualifier",
+        "series": "Main Event\u2013Grand Final",
+        "event_id": "3099"
+      },
+      {
+        "id": "748626",
+        "team1": {
+          "name": "Dragon Ranger Gaming",
+          "id": "11981",
+          "score": 0
+        },
+        "team2": {
+          "name": "Any Questions Gaming",
+          "id": "19531",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-06T10:45:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Round of 16",
+        "event_id": "3105"
+      },
+      {
+        "id": "748625",
+        "team1": {
+          "name": "All Gamers",
+          "id": "1119",
+          "score": 0
+        },
+        "team2": {
+          "name": "JD Gaming",
+          "id": "13576",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-06T09:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Round of 16",
+        "event_id": "3105"
+      },
+      {
+        "id": "742481",
+        "team1": {
+          "name": "Nongshim RedForce",
+          "id": "11060",
+          "score": 2
+        },
+        "team2": {
+          "name": "Global Esports",
+          "id": "918",
+          "score": 3
+        },
+        "status": "completed",
+        "time": "2026-09-06T08:00:00Z",
+        "event": "VCT 2026: Pacific Stage 2",
+        "series": "Playoffs\u2013Grand Final",
+        "event_id": "2776"
+      },
+      {
+        "id": "734314",
+        "team1": {
+          "name": "NRG",
+          "id": "1034",
+          "score": 2
+        },
+        "team2": {
+          "name": "LOUD",
+          "id": "6961",
+          "score": 3
+        },
+        "status": "completed",
+        "time": "2026-09-05T18:00:00Z",
+        "event": "VCT 2026: Americas Stage 2",
+        "series": "Playoffs\u2013Lower Final",
+        "event_id": "2977"
+      },
+      {
+        "id": "747673",
+        "team1": {
+          "name": "Glacial Guardians",
+          "id": "17037",
+          "score": 2
+        },
+        "team2": {
+          "name": "BERG",
+          "id": "23295",
+          "score": 1
+        },
+        "status": "completed",
+        "time": "2026-09-05T15:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Lower Round 3",
+        "event_id": "3077"
+      },
+      {
+        "id": "748624",
+        "team1": {
+          "name": "FunPlus Phoenix",
+          "id": "11328",
+          "score": 2
+        },
+        "team2": {
+          "name": "A Team",
+          "id": "20603",
+          "score": 1
+        },
+        "status": "completed",
+        "time": "2026-09-05T12:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Round of 16",
+        "event_id": "3105"
+      },
+      {
+        "id": "748623",
+        "team1": {
+          "name": "Nova Esports",
+          "id": "12064",
+          "score": 2
+        },
+        "team2": {
+          "name": "EDward Gaming",
+          "id": "1120",
+          "score": 1
+        },
+        "status": "completed",
+        "time": "2026-09-05T09:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Round of 16",
+        "event_id": "3105"
+      },
+      {
+        "id": "742487",
+        "team1": {
+          "name": "Global Esports",
+          "id": "918",
+          "score": 3
+        },
+        "team2": {
+          "name": "T1",
+          "id": "14",
+          "score": 1
+        },
+        "status": "completed",
+        "time": "2026-09-05T08:00:00Z",
+        "event": "VCT 2026: Pacific Stage 2",
+        "series": "Playoffs\u2013Lower Final",
+        "event_id": "2776"
+      },
+      {
+        "id": "734313",
+        "team1": {
+          "name": "G2 Esports",
+          "id": "11058",
+          "score": 0
+        },
+        "team2": {
+          "name": "LOUD",
+          "id": "6961",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-04T19:05:00Z",
+        "event": "VCT 2026: Americas Stage 2",
+        "series": "Playoffs\u2013Lower Round 3",
+        "event_id": "2977"
+      },
+      {
+        "id": "747660",
+        "team1": {
+          "name": "GamerZ Esports",
+          "id": "23120",
+          "score": 0
+        },
+        "team2": {
+          "name": "CGN Esports",
+          "id": "5214",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-04T18:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Upper Semifinals",
+        "event_id": "3077"
+      },
+      {
+        "id": "734307",
+        "team1": {
+          "name": "NRG",
+          "id": "1034",
+          "score": 0
+        },
+        "team2": {
+          "name": "100 Thieves",
+          "id": "120",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-04T17:00:00Z",
+        "event": "VCT 2026: Americas Stage 2",
+        "series": "Playoffs\u2013Upper Final",
+        "event_id": "2977"
+      },
+      {
+        "id": "747669",
+        "team1": {
+          "name": "ALTERNATE aTTaX",
+          "id": "8826",
+          "score": 1
+        },
+        "team2": {
+          "name": "HooK Esport",
+          "id": "19166",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-04T15:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Lower Round 2",
+        "event_id": "3077"
+      },
+      {
+        "id": "748622",
+        "team1": {
+          "name": "Trace Esports",
+          "id": "12685",
+          "score": 0
+        },
+        "team2": {
+          "name": "Unsettled Resentment",
+          "id": "21919",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-04T12:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Round of 16",
+        "event_id": "3105"
+      },
+      {
+        "id": "742486",
+        "team1": {
+          "name": "VARREL",
+          "id": "11229",
+          "score": 0
+        },
+        "team2": {
+          "name": "T1",
+          "id": "14",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-04T11:00:00Z",
+        "event": "VCT 2026: Pacific Stage 2",
+        "series": "Playoffs\u2013Lower Round 3",
+        "event_id": "2776"
+      },
+      {
+        "id": "748621",
+        "team1": {
+          "name": "Titan Esports Club",
+          "id": "14137",
+          "score": 2
+        },
+        "team2": {
+          "name": "TYLOO",
+          "id": "731",
+          "score": 1
+        },
+        "status": "completed",
+        "time": "2026-09-04T09:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Round of 16",
+        "event_id": "3105"
+      },
+      {
+        "id": "742480",
+        "team1": {
+          "name": "Nongshim RedForce",
+          "id": "11060",
+          "score": 2
+        },
+        "team2": {
+          "name": "Global Esports",
+          "id": "918",
+          "score": 1
+        },
+        "status": "completed",
+        "time": "2026-09-04T08:00:00Z",
+        "event": "VCT 2026: Pacific Stage 2",
+        "series": "Playoffs\u2013Upper Final",
+        "event_id": "2776"
+      },
+      {
+        "id": "724906",
+        "team1": {
+          "name": "Axolotl",
+          "id": "22920",
+          "score": 0
+        },
+        "team2": {
+          "name": "HIMMERS",
+          "id": "22720",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-03T23:45:00Z",
+        "event": "Game Changers 2026: North America Stage 2",
+        "series": "Playoffs\u2013Lower Round 2",
+        "event_id": "3037"
+      },
+      {
+        "id": "724905",
+        "team1": {
+          "name": "SwimTrek Blue",
+          "id": "21711",
+          "score": 1
+        },
+        "team2": {
+          "name": "The Spiders",
+          "id": "22718",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-03T21:00:00Z",
+        "event": "Game Changers 2026: North America Stage 2",
+        "series": "Playoffs\u2013Lower Round 2",
+        "event_id": "3037"
+      },
+      {
+        "id": "748620",
+        "team1": {
+          "name": "Wolves Esports",
+          "id": "13790",
+          "score": 0
+        },
+        "team2": {
+          "name": "KeepBest Gaming",
+          "id": "12784",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-03T11:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Round of 16",
+        "event_id": "3105"
+      },
+      {
+        "id": "748619",
+        "team1": {
+          "name": "Bilibili Gaming",
+          "id": "12010",
+          "score": 2
+        },
+        "team2": {
+          "name": "Xi Lai Gaming",
+          "id": "13581",
+          "score": 0
+        },
+        "status": "completed",
+        "time": "2026-09-03T09:00:00Z",
+        "event": "China Evolution Series 2026: Act 3",
+        "series": "Main Event\u2013Round of 16",
+        "event_id": "3105"
+      },
+      {
+        "id": "724900",
+        "team1": {
+          "name": "SwimTrek Blue",
+          "id": "21711",
+          "score": 0
+        },
+        "team2": {
+          "name": "Shopify Rebellion Gold",
+          "id": "14278",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-03T00:15:00Z",
+        "event": "Game Changers 2026: North America Stage 2",
+        "series": "Playoffs\u2013Upper Semifinals",
+        "event_id": "3037"
+      },
+      {
+        "id": "724904",
+        "team1": {
+          "name": "Cloud9 GC",
+          "id": "22918",
+          "score": 1
+        },
+        "team2": {
+          "name": "HIMMERS",
+          "id": "22720",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-02T23:30:00Z",
+        "event": "Game Changers 2026: North America Stage 2",
+        "series": "Playoffs\u2013Lower Round 1",
+        "event_id": "3037"
+      },
+      {
+        "id": "724899",
+        "team1": {
+          "name": "FlyQuest RED",
+          "id": "6456",
+          "score": 2
+        },
+        "team2": {
+          "name": "Axolotl",
+          "id": "22920",
+          "score": 1
+        },
+        "status": "completed",
+        "time": "2026-09-02T21:00:00Z",
+        "event": "Game Changers 2026: North America Stage 2",
+        "series": "Playoffs\u2013Upper Semifinals",
+        "event_id": "3037"
+      },
+      {
+        "id": "724903",
+        "team1": {
+          "name": "MVSK Secret",
+          "id": "22919",
+          "score": 1
+        },
+        "team2": {
+          "name": "The Spiders",
+          "id": "22718",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-02T21:00:00Z",
+        "event": "Game Changers 2026: North America Stage 2",
+        "series": "Playoffs\u2013Lower Round 1",
+        "event_id": "3037"
+      },
+      {
+        "id": "747657",
+        "team1": {
+          "name": "Glacial Guardians",
+          "id": "17037",
+          "score": 0
+        },
+        "team2": {
+          "name": "CGN Esports",
+          "id": "5214",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-02T18:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Upper Quarterfinals",
+        "event_id": "3077"
+      },
+      {
+        "id": "747656",
+        "team1": {
+          "name": "BERG",
+          "id": "23295",
+          "score": 0
+        },
+        "team2": {
+          "name": "GamerZ Esports",
+          "id": "23120",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-02T15:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Upper Quarterfinals",
+        "event_id": "3077"
+      },
+      {
+        "id": "724897",
+        "team1": {
+          "name": "SwimTrek Blue",
+          "id": "21711",
+          "score": 2
+        },
+        "team2": {
+          "name": "Cloud9 GC",
+          "id": "22918",
+          "score": 0
+        },
+        "status": "completed",
+        "time": "2026-09-01T23:15:00Z",
+        "event": "Game Changers 2026: North America Stage 2",
+        "series": "Playoffs\u2013Upper Quarterfinals",
+        "event_id": "3037"
+      },
+      {
+        "id": "724898",
+        "team1": {
+          "name": "Shopify Rebellion Gold",
+          "id": "14278",
+          "score": 2
+        },
+        "team2": {
+          "name": "HIMMERS",
+          "id": "22720",
+          "score": 0
+        },
+        "status": "completed",
+        "time": "2026-09-01T23:00:00Z",
+        "event": "Game Changers 2026: North America Stage 2",
+        "series": "Playoffs\u2013Upper Quarterfinals",
+        "event_id": "3037"
+      },
+      {
+        "id": "724895",
+        "team1": {
+          "name": "FlyQuest RED",
+          "id": "6456",
+          "score": 2
+        },
+        "team2": {
+          "name": "MVSK Secret",
+          "id": "22919",
+          "score": 0
+        },
+        "status": "completed",
+        "time": "2026-09-01T21:00:00Z",
+        "event": "Game Changers 2026: North America Stage 2",
+        "series": "Playoffs\u2013Upper Quarterfinals",
+        "event_id": "3037"
+      },
+      {
+        "id": "724896",
+        "team1": {
+          "name": "The Spiders",
+          "id": "22718",
+          "score": 0
+        },
+        "team2": {
+          "name": "Axolotl",
+          "id": "22920",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-09-01T21:00:00Z",
+        "event": "Game Changers 2026: North America Stage 2",
+        "series": "Playoffs\u2013Upper Quarterfinals",
+        "event_id": "3037"
+      },
+      {
+        "id": "747652",
+        "team1": {
+          "name": "ALTERNATE aTTaX",
+          "id": "8826",
+          "score": 13
+        },
+        "team2": {
+          "name": "Valorando",
+          "id": "42",
+          "score": 6
+        },
+        "status": "completed",
+        "time": "2026-09-01T18:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Upper Round of 16",
+        "event_id": "3077"
+      },
+      {
+        "id": "747653",
+        "team1": {
+          "name": "RIZON",
+          "id": "5091",
+          "score": 13
+        },
+        "team2": {
+          "name": "Eintracht Frankfurt Team Vision",
+          "id": "23294",
+          "score": 4
+        },
+        "status": "completed",
+        "time": "2026-09-01T17:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Upper Round of 16",
+        "event_id": "3077"
+      },
+      {
+        "id": "747655",
+        "team1": {
+          "name": "Catboys",
+          "id": "23296",
+          "score": 13
+        },
+        "team2": {
+          "name": "SGE and Friends",
+          "id": "23315",
+          "score": 4
+        },
+        "status": "completed",
+        "time": "2026-09-01T15:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Upper Round of 16",
+        "event_id": "3077"
+      },
+      {
+        "id": "747651",
+        "team1": {
+          "name": "HooK Esport",
+          "id": "19166",
+          "score": 7
+        },
+        "team2": {
+          "name": "CGN Esports",
+          "id": "5214",
+          "score": 13
+        },
+        "status": "completed",
+        "time": "2026-08-31T18:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Upper Round of 16",
+        "event_id": "3077"
+      },
+      {
+        "id": "747650",
+        "team1": {
+          "name": "RIZON Cherry",
+          "id": "23342",
+          "score": 1
+        },
+        "team2": {
+          "name": "Glacial Guardians",
+          "id": "17037",
+          "score": 13
+        },
+        "status": "completed",
+        "time": "2026-08-31T17:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Upper Round of 16",
+        "event_id": "3077"
+      },
+      {
+        "id": "747648",
+        "team1": {
+          "name": "ALTERNATE aTTaX Ruby",
+          "id": "11496",
+          "score": 3
+        },
+        "team2": {
+          "name": "BERG",
+          "id": "23295",
+          "score": 13
+        },
+        "status": "completed",
+        "time": "2026-08-31T16:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Upper Round of 16",
+        "event_id": "3077"
+      },
+      {
+        "id": "747649",
+        "team1": {
+          "name": "GamerZ Esports",
+          "id": "23120",
+          "score": 13
+        },
+        "team2": {
+          "name": "Sissi State Punks",
+          "id": "5233",
+          "score": 10
+        },
+        "status": "completed",
+        "time": "2026-08-31T15:00:00Z",
+        "event": "THE POKAL 2026",
+        "series": "Playoffs\u2013Upper Round of 16",
+        "event_id": "3077"
+      },
+      {
+        "id": "734312",
+        "team1": {
+          "name": "LOUD",
+          "id": "6961",
+          "score": 2
+        },
+        "team2": {
+          "name": "MIBR",
+          "id": "7386",
+          "score": 0
+        },
+        "status": "completed",
+        "time": "2026-08-31T00:10:00Z",
+        "event": "VCT 2026: Americas Stage 2",
+        "series": "Playoffs\u2013Lower Round 2",
+        "event_id": "2977"
+      },
+      {
+        "id": "734311",
+        "team1": {
+          "name": "LEVIAT\u00c1N",
+          "id": "2359",
+          "score": 1
+        },
+        "team2": {
+          "name": "G2 Esports",
+          "id": "11058",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-08-30T21:00:00Z",
+        "event": "VCT 2026: Americas Stage 2",
+        "series": "Playoffs\u2013Lower Round 2",
+        "event_id": "2977"
+      },
+      {
+        "id": "731401",
+        "team1": {
+          "name": "Karmine Corp",
+          "id": "8877",
+          "score": 3
+        },
+        "team2": {
+          "name": "Team Liquid",
+          "id": "474",
+          "score": 1
+        },
+        "status": "completed",
+        "time": "2026-08-30T15:00:00Z",
+        "event": "VCT 2026: EMEA Stage 2",
+        "series": "Playoffs\u2013Grand Final",
+        "event_id": "2976"
+      },
+      {
+        "id": "732793",
+        "team1": {
+          "name": "Gentle Mates GC",
+          "id": "21093",
+          "score": 2
+        },
+        "team2": {
+          "name": "G2 Gozen",
+          "id": "6530",
+          "score": 3
+        },
+        "status": "completed",
+        "time": "2026-08-30T08:00:00Z",
+        "event": "Game Changers 2026: EMEA Stage 3",
+        "series": "Playoffs\u2013Grand Final",
+        "event_id": "3028"
+      },
+      {
+        "id": "734310",
+        "team1": {
+          "name": "MIBR",
+          "id": "7386",
+          "score": 2
+        },
+        "team2": {
+          "name": "Evil Geniuses",
+          "id": "5248",
+          "score": 1
+        },
+        "status": "completed",
+        "time": "2026-08-30T00:00:00Z",
+        "event": "VCT 2026: Americas Stage 2",
+        "series": "Playoffs\u2013Lower Round 1",
+        "event_id": "2977"
+      },
+      {
+        "id": "734309",
+        "team1": {
+          "name": "FURIA",
+          "id": "2406",
+          "score": 1
+        },
+        "team2": {
+          "name": "G2 Esports",
+          "id": "11058",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-08-29T21:00:00Z",
+        "event": "VCT 2026: Americas Stage 2",
+        "series": "Playoffs\u2013Lower Round 1",
+        "event_id": "2977"
+      },
+      {
+        "id": "731408",
+        "team1": {
+          "name": "FUT Esports",
+          "id": "1184",
+          "score": 0
+        },
+        "team2": {
+          "name": "Team Liquid",
+          "id": "474",
+          "score": 3
+        },
+        "status": "completed",
+        "time": "2026-08-29T15:00:00Z",
+        "event": "VCT 2026: EMEA Stage 2",
+        "series": "Playoffs\u2013Lower Final",
+        "event_id": "2976"
+      },
+      {
+        "id": "742485",
+        "team1": {
+          "name": "Gen.G",
+          "id": "17",
+          "score": 0
+        },
+        "team2": {
+          "name": "T1",
+          "id": "14",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-08-29T11:00:00Z",
+        "event": "VCT 2026: Pacific Stage 2",
+        "series": "Playoffs\u2013Lower Round 2",
+        "event_id": "2776"
+      },
+      {
+        "id": "742484",
+        "team1": {
+          "name": "VARREL",
+          "id": "11229",
+          "score": 2
+        },
+        "team2": {
+          "name": "Paper Rex",
+          "id": "624",
+          "score": 1
+        },
+        "status": "completed",
+        "time": "2026-08-29T08:00:00Z",
+        "event": "VCT 2026: Pacific Stage 2",
+        "series": "Playoffs\u2013Lower Round 2",
+        "event_id": "2776"
+      },
+      {
+        "id": "734305",
+        "team1": {
+          "name": "100 Thieves",
+          "id": "120",
+          "score": 2
+        },
+        "team2": {
+          "name": "LEVIAT\u00c1N",
+          "id": "2359",
+          "score": 0
+        },
+        "status": "completed",
+        "time": "2026-08-29T00:20:00Z",
+        "event": "VCT 2026: Americas Stage 2",
+        "series": "Playoffs\u2013Upper Semifinals",
+        "event_id": "2977"
+      },
+      {
+        "id": "734304",
+        "team1": {
+          "name": "NRG",
+          "id": "1034",
+          "score": 2
+        },
+        "team2": {
+          "name": "LOUD",
+          "id": "6961",
+          "score": 1
+        },
+        "status": "completed",
+        "time": "2026-08-28T21:00:00Z",
+        "event": "VCT 2026: Americas Stage 2",
+        "series": "Playoffs\u2013Upper Semifinals",
+        "event_id": "2977"
+      },
+      {
+        "id": "731407",
+        "team1": {
+          "name": "Team Liquid",
+          "id": "474",
+          "score": 2
+        },
+        "team2": {
+          "name": "Fire Flux Esports",
+          "id": "20085",
+          "score": 0
+        },
+        "status": "completed",
+        "time": "2026-08-28T16:30:00Z",
+        "event": "VCT 2026: EMEA Stage 2",
+        "series": "Playoffs\u2013Lower Round 3",
+        "event_id": "2976"
+      },
+      {
+        "id": "731400",
+        "team1": {
+          "name": "FUT Esports",
+          "id": "1184",
+          "score": 0
+        },
+        "team2": {
+          "name": "Karmine Corp",
+          "id": "8877",
+          "score": 2
+        },
+        "status": "completed",
+        "time": "2026-08-28T14:00:00Z",
+        "event": "VCT 2026: EMEA Stage 2",
+        "series": "Playoffs\u2013Upper Final",
+        "event_id": "2976"
+      }
+    ]
+  },
+  {
+    "captured_at": "2026-09-06T18:00:13.870185Z",
+    "path": "/api/v1/events/",
+    "kind": "request"
+  },
+  {
+    "captured_at": "2026-09-06T18:00:13.994244Z",
+    "path": "/api/v1/events/",
+    "status": 200,
+    "kind": "response",
+    "data": [
+      {
+        "id": "2977",
+        "title": "VCT 2026: Americas Stage 2",
+        "status": "ongoing",
+        "prize": "$250,000",
+        "dates": "Jul 17\u2014Sep 7",
+        "location": "br",
+        "img": "https://owcdn.net/img/640f5ab71dfbb.png"
+      },
+      {
+        "id": "3110",
+        "title": "Monsters Reloaded 2026: EMEA Qualifier",
+        "status": "ongoing",
+        "prize": "$0",
+        "dates": "Sep 6\u201422",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6a9881a15d725.png"
+      },
+      {
+        "id": "3082",
+        "title": "Game Changers 2026: LATAM Main Event",
+        "status": "ongoing",
+        "prize": "TBD",
+        "dates": "Aug 3\u2014Sep 14",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3086",
+        "title": "Game Changers 2026: Brazil Finals",
+        "status": "ongoing",
+        "prize": "$19,518",
+        "dates": "Aug 10\u2014Sep 12",
+        "location": "br",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3084",
+        "title": "EZmode Turbo Tuesdays 2026",
+        "status": "ongoing",
+        "prize": "$1,467",
+        "dates": "Aug 18\u2014TBD",
+        "location": "au",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+      },
+      {
+        "id": "3096",
+        "title": "Wave OCE 2026: Breakwater Open",
+        "status": "ongoing",
+        "prize": "$717",
+        "dates": "Aug 31\u2014Oct 4",
+        "location": "au",
+        "img": "https://owcdn.net/img/6a93a8f3d5484.png"
+      },
+      {
+        "id": "3108",
+        "title": "EVC: The Surge 13",
+        "status": "ongoing",
+        "prize": "$3,000",
+        "dates": "Sep 1\u20146",
+        "location": "eu",
+        "img": "https://owcdn.net/img/67c9159528a14.png"
+      },
+      {
+        "id": "3105",
+        "title": "China Evolution Series 2026: Act 3",
+        "status": "ongoing",
+        "prize": "$0",
+        "dates": "Sep 3\u201413",
+        "location": "cn",
+        "img": "https://owcdn.net/img/67a5eb9b2ccea.png"
+      },
+      {
+        "id": "3114",
+        "title": "Monsters Reloaded 2026: Turkish Qualifier",
+        "status": "ongoing",
+        "prize": "$2,000",
+        "dates": "Sep 3\u201424",
+        "location": "tr",
+        "img": "https://owcdn.net/img/6a9881a15d725.png"
+      },
+      {
+        "id": "3120",
+        "title": "FunhaverGG: Back to Basics 2.0 #4",
+        "status": "ongoing",
+        "prize": "$1,000",
+        "dates": "Sep 5\u20147",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3077",
+        "title": "THE POKAL 2026",
+        "status": "ongoing",
+        "prize": "$2,550",
+        "dates": "Aug 31\u2014Sep 14",
+        "location": "de",
+        "img": "https://owcdn.net/img/6531b4013bc83.png"
+      },
+      {
+        "id": "3037",
+        "title": "Game Changers 2026: North America Stage 2",
+        "status": "ongoing",
+        "prize": "$60,000",
+        "dates": "Jun 17\u2014Sep 18",
+        "location": "us",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3097",
+        "title": "R2 New Dawn 2026",
+        "status": "upcoming",
+        "prize": "$539",
+        "dates": "Sep 7\u201419",
+        "location": "au",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+      },
+      {
+        "id": "3085",
+        "title": "Fortress (touch)Grassroots Esports 2026: Series 2",
+        "status": "upcoming",
+        "prize": "TBD",
+        "dates": "Sep 12\u201413",
+        "location": "au",
+        "img": "https://owcdn.net/img/681eeaf6b7202.png"
+      },
+      {
+        "id": "3065",
+        "title": "Game Changers 2026: Pacific",
+        "status": "upcoming",
+        "prize": "$20,000",
+        "dates": "Sep 14\u201420",
+        "location": "id",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3115",
+        "title": "Spike Series: Pulse #5",
+        "status": "upcoming",
+        "prize": "$3,600",
+        "dates": "Sep 14\u201421",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6a566cc65660b.png"
+      },
+      {
+        "id": "2766",
+        "title": "Valorant Champions 2026",
+        "status": "upcoming",
+        "prize": "$2,250,000",
+        "dates": "Sep 24\u2014Oct 18",
+        "location": "cn",
+        "img": "https://owcdn.net/img/692fc60a022bb.png"
+      },
+      {
+        "id": "3116",
+        "title": "RBCORP Tournament #3",
+        "status": "upcoming",
+        "prize": "$1,855",
+        "dates": "Sep 24\u201428",
+        "location": "fr",
+        "img": "https://owcdn.net/img/6a0b407563c04.png"
+      },
+      {
+        "id": "3112",
+        "title": "Monsters Reloaded 2026",
+        "status": "upcoming",
+        "prize": "$35,000",
+        "dates": "Sep 26\u2014Oct 25",
+        "location": "tr",
+        "img": "https://owcdn.net/img/6a9881a15d725.png"
+      },
+      {
+        "id": "3107",
+        "title": "Haste Cup 2026",
+        "status": "upcoming",
+        "prize": "$715",
+        "dates": "Sep 27",
+        "location": "au",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+      },
+      {
+        "id": "3118",
+        "title": "FGC 2026 Qualifier: EMEA",
+        "status": "upcoming",
+        "prize": "$0",
+        "dates": "Oct 2\u20145",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6a98a3baa2604.png"
+      },
+      {
+        "id": "3099",
+        "title": "Game Changers 2026: Americas Last Chance Qualifier",
+        "status": "upcoming",
+        "prize": "$0",
+        "dates": "Oct 14\u201416",
+        "location": "br",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3119",
+        "title": "FGC 2026",
+        "status": "upcoming",
+        "prize": "$15,000",
+        "dates": "Oct 30\u2014Nov 2",
+        "location": "de",
+        "img": "https://owcdn.net/img/6a98a3baa2604.png"
+      },
+      {
+        "id": "3008",
+        "title": "Esports Nations Cup 2027",
+        "status": "upcoming",
+        "prize": "$1,500,000",
+        "dates": "Nov 1\u2014TBD",
+        "location": "sa",
+        "img": "https://owcdn.net/img/6a1440ca673d3.png"
+      },
+      {
+        "id": "2776",
+        "title": "VCT 2026: Pacific Stage 2",
+        "status": "completed",
+        "prize": "$250,000",
+        "dates": "Jul 16\u2014Sep 6",
+        "location": "kr",
+        "img": "https://owcdn.net/img/640f5ae002674.png"
+      },
+      {
+        "id": "3106",
+        "title": "Source League 2026: Summer Split",
+        "status": "completed",
+        "prize": "$0",
+        "dates": "Jul 27\u2014Sep 3",
+        "location": "it",
+        "img": "https://owcdn.net/img/697233880af43.png"
+      },
+      {
+        "id": "3098",
+        "title": "Tashbunny Cup 2026",
+        "status": "completed",
+        "prize": "$248",
+        "dates": "Aug 30\u201431",
+        "location": "my",
+        "img": "https://owcdn.net/img/6a92d9b814712.png"
+      },
+      {
+        "id": "3028",
+        "title": "Game Changers 2026: EMEA Stage 3",
+        "status": "completed",
+        "prize": "$41,064",
+        "dates": "Jul 20\u2014Aug 31",
+        "location": "eu",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3100",
+        "title": "FunhaverGG: Back to Basics 2.0 #3",
+        "status": "completed",
+        "prize": "$1,000",
+        "dates": "Aug 29\u201431",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3102",
+        "title": "Raidiant Academy 2026: 303",
+        "status": "completed",
+        "prize": "$2,000",
+        "dates": "Aug 30\u201431",
+        "location": "us",
+        "img": "https://owcdn.net/img/65e3d189100fa.png"
+      },
+      {
+        "id": "2976",
+        "title": "VCT 2026: EMEA Stage 2",
+        "status": "completed",
+        "prize": "$250,000",
+        "dates": "Jul 15\u2014Aug 31",
+        "location": "es",
+        "img": "https://owcdn.net/img/65ab59620a233.png"
+      },
+      {
+        "id": "3072",
+        "title": "Samurai Cup: Winter Finals 2026",
+        "status": "completed",
+        "prize": "$383",
+        "dates": "Jul 20\u2014Aug 31",
+        "location": "br",
+        "img": "https://owcdn.net/img/6a63a925be970.png"
+      },
+      {
+        "id": "3111",
+        "title": "VAL//HALLA 2026: Season 1",
+        "status": "completed",
+        "prize": "$4,741",
+        "dates": "Aug 1\u201431",
+        "location": "us",
+        "img": "https://owcdn.net/img/6a96c2093fb9f.png"
+      },
+      {
+        "id": "3117",
+        "title": "VALORANT UK Circuit 2026 - August Cup",
+        "status": "completed",
+        "prize": "$677",
+        "dates": "Aug 29\u201431",
+        "location": "gb",
+        "img": "https://owcdn.net/img/66fdc73b19a03.png"
+      },
+      {
+        "id": "3060",
+        "title": "Bell Esports Challenge 2026",
+        "status": "completed",
+        "prize": "$9,525",
+        "dates": "Jul 12\u2014Aug 30",
+        "location": "ca",
+        "img": "https://owcdn.net/img/6a52fa9d9da95.png"
+      },
+      {
+        "id": "3113",
+        "title": "Circuito Tormenta 2026: Kings of Barcelona",
+        "status": "completed",
+        "prize": "$579",
+        "dates": "Aug 29\u201430",
+        "location": "es",
+        "img": "https://owcdn.net/img/6361d0078005a.png"
+      },
+      {
+        "id": "3094",
+        "title": "Game Changers 2026: EMEA Cash Cup August",
+        "status": "completed",
+        "prize": "$2,337",
+        "dates": "Aug 22\u201430",
+        "location": "eu",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3101",
+        "title": "KOV Masters 2026: Summer",
+        "status": "completed",
+        "prize": "$581",
+        "dates": "Aug 22\u201429",
+        "location": "kr",
+        "img": "https://owcdn.net/img/6a92db172e112.png"
+      },
+      {
+        "id": "3090",
+        "title": "FGC 2026 Qualifier: LATAM",
+        "status": "completed",
+        "prize": "$0",
+        "dates": "Aug 15\u201426",
+        "location": "br",
+        "img": "https://owcdn.net/img/6a7f879d4c40d.png"
+      },
+      {
+        "id": "3095",
+        "title": "Tenax Series Season 7",
+        "status": "completed",
+        "prize": "$500",
+        "dates": "Aug 16\u201425",
+        "location": "us",
+        "img": "https://owcdn.net/img/68eea4e69deef.png"
+      },
+      {
+        "id": "3103",
+        "title": "Spike Series 2026: LATAM South #1",
+        "status": "completed",
+        "prize": "$900",
+        "dates": "Aug 18\u201424",
+        "location": "un",
+        "img": "https://owcdn.net/img/6a566cc65660b.png"
+      },
+      {
+        "id": "3093",
+        "title": "FunhaverGG: Free 4 All",
+        "status": "completed",
+        "prize": "$1,500",
+        "dates": "Aug 22\u201424",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3109",
+        "title": "Circuito Tormenta Back on Track - Premium Cup",
+        "status": "completed",
+        "prize": "$584",
+        "dates": "Aug 22\u201424",
+        "location": "es",
+        "img": "https://owcdn.net/img/6a96c248d3a95.png"
+      },
+      {
+        "id": "2978",
+        "title": "VCT 2026: China Stage 2",
+        "status": "completed",
+        "prize": "$250,000",
+        "dates": "Jul 9\u2014Aug 23",
+        "location": "cn",
+        "img": "https://owcdn.net/img/65dd97cea9a25.png"
+      },
+      {
+        "id": "3092",
+        "title": "Welsh Esports League: Season 11",
+        "status": "completed",
+        "prize": "$805",
+        "dates": "Jul 28\u2014Aug 19",
+        "location": "wa",
+        "img": "https://owcdn.net/img/67bcb65b6544e.png"
+      },
+      {
+        "id": "3079",
+        "title": "LG Life's Good Tournament 2026",
+        "status": "completed",
+        "prize": "$1,636",
+        "dates": "Jul 18\u2014Aug 15",
+        "location": "vn",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+      },
+      {
+        "id": "3076",
+        "title": "The Major Six 2026",
+        "status": "completed",
+        "prize": "$5,235",
+        "dates": "Jul 5\u2014Aug 15",
+        "location": "tw",
+        "img": "https://owcdn.net/img/6a669fb573b99.png"
+      },
+      {
+        "id": "3091",
+        "title": "FunhaverGG: Back to Basics 2.0 #2",
+        "status": "completed",
+        "prize": "$1,000",
+        "dates": "Aug 15",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3104",
+        "title": "Laop Cup 2026: Season 3",
+        "status": "completed",
+        "prize": "$394",
+        "dates": "Jul 11\u2014Aug 14",
+        "location": "tw",
+        "img": "https://owcdn.net/img/6a952ef37b1fa.png"
+      },
+      {
+        "id": "3087",
+        "title": "FunhaverGG: Back to Basics 2.0 #1",
+        "status": "completed",
+        "prize": "$1,000",
+        "dates": "Aug 8\u201410",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3083",
+        "title": "Spike Series: Pulse #4",
+        "status": "completed",
+        "prize": "$3,593",
+        "dates": "Aug 3\u201410",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6a566cc65660b.png"
+      },
+      {
+        "id": "3068",
+        "title": "Game Changers 2026: Brazil Last Chance Qualifier",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Jul 17\u2014Aug 3",
+        "location": "br",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3080",
+        "title": "HL TAURI SERIES: SOVEREIGN Edition 1",
+        "status": "completed",
+        "prize": "$1,731",
+        "dates": "Jul 29\u2014Aug 3",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6a70f57f97c2e.png"
+      },
+      {
+        "id": "3070",
+        "title": "Summer Protocol 2026",
+        "status": "completed",
+        "prize": "$559",
+        "dates": "Jul 19\u2014Aug 2",
+        "location": "id",
+        "img": "https://owcdn.net/img/687c7bfcd7c1a.png"
+      },
+      {
+        "id": "3078",
+        "title": "FunhaverGG: Mad Science - LOCKED",
+        "status": "completed",
+        "prize": "$500",
+        "dates": "Aug 1\u20142",
+        "location": "us",
+        "img": "https://owcdn.net/img/679ee0d830fd6.png"
+      },
+      {
+        "id": "2634",
+        "title": "Momentum Gaming: Detonation Series",
+        "status": "paused",
+        "prize": "$381",
+        "dates": "Sep 6\u2014May 16",
+        "location": "in",
+        "img": "https://owcdn.net/img/6a1e4f427095e.png"
+      },
+      {
+        "id": "2814",
+        "title": "TXG Valorant Circuit 2026: Invitational",
+        "status": "completed",
+        "prize": "$1,500",
+        "dates": "Jul 24\u2014Aug 2",
+        "location": "au",
+        "img": "https://owcdn.net/img/695e0f749b196.png"
+      },
+      {
+        "id": "3069",
+        "title": "Road 2 Invitational 2026",
+        "status": "completed",
+        "prize": "$358",
+        "dates": "Jul 23\u2014Aug 2",
+        "location": "au",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+      },
+      {
+        "id": "3081",
+        "title": "Peak of Legends 2026",
+        "status": "completed",
+        "prize": "$4,628",
+        "dates": "Jul 16\u2014Aug 1",
+        "location": "tw",
+        "img": "https://owcdn.net/img/6a710fa2184be.png"
+      },
+      {
+        "id": "3059",
+        "title": "China National Tournament 2026: Pro Qualifier",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Jul 9\u201430",
+        "location": "cn",
+        "img": "https://owcdn.net/img/6924f636c08a0.png"
+      },
+      {
+        "id": "3063",
+        "title": "VCL 26: Americas Last Chance Qualifier",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Jul 28\u201430",
+        "location": "mx",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+      },
+      {
+        "id": "3089",
+        "title": "Game Changers 2026: LATAM North Swift Cup 2",
+        "status": "completed",
+        "prize": "$862",
+        "dates": "Jul 22\u201430",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3088",
+        "title": "Game Changers 2026: LATAM South Swift Cup 2",
+        "status": "completed",
+        "prize": "$860",
+        "dates": "Jul 21\u201429",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "2984",
+        "title": "Valorant Prime League",
+        "status": "completed",
+        "prize": "$500",
+        "dates": "May 27\u2014Jul 28",
+        "location": "br",
+        "img": "https://owcdn.net/img/6a0a1dd68912b.png"
+      },
+      {
+        "id": "3062",
+        "title": "VCL 26: Latin America Finals",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Jul 27\u201428",
+        "location": "mx",
+        "img": "https://owcdn.net/img/63cbac52cf906.png"
+      },
+      {
+        "id": "3071",
+        "title": "FunhaverGG WILD//WEST: LAN",
+        "status": "completed",
+        "prize": "$10,000",
+        "dates": "Jul 23\u201427",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3074",
+        "title": "Raidiant Academy 2026: 302",
+        "status": "completed",
+        "prize": "$2,000",
+        "dates": "Jul 26\u201427",
+        "location": "us",
+        "img": "https://owcdn.net/img/65e3d189100fa.png"
+      },
+      {
+        "id": "3054",
+        "title": "EVC: The Surge 12",
+        "status": "completed",
+        "prize": "$2,500",
+        "dates": "Jul 21\u201426",
+        "location": "eu",
+        "img": "https://owcdn.net/img/67c9159528a14.png"
+      },
+      {
+        "id": "2974",
+        "title": "Challengers 2026: Japan Split 2",
+        "status": "completed",
+        "prize": "$22,633",
+        "dates": "May 11\u2014Jul 26",
+        "location": "jp",
+        "img": "https://owcdn.net/img/6964a9e385d88.png"
+      },
+      {
+        "id": "2991",
+        "title": "Challengers 2026: Japan Season Finals",
+        "status": "completed",
+        "prize": "$15,088",
+        "dates": "Jul 5\u201426",
+        "location": "jp",
+        "img": "https://owcdn.net/img/6964a9e385d88.png"
+      },
+      {
+        "id": "3024",
+        "title": "Nuvy Circuit 2026 - Season 1",
+        "status": "completed",
+        "prize": "$450",
+        "dates": "Apr 14\u2014Jul 26",
+        "location": "un",
+        "img": "https://owcdn.net/img/6a24fdb752895.png"
+      },
+      {
+        "id": "3048",
+        "title": "Twitch Rivals 2026: Abe's $100,000 Valorant Invitational",
+        "status": "completed",
+        "prize": "$100,000",
+        "dates": "Jul 18\u201425",
+        "location": "us",
+        "img": "https://owcdn.net/img/6303782ad36a8.png"
+      },
+      {
+        "id": "3006",
+        "title": "Game Changers 2026: Korea Split 2",
+        "status": "completed",
+        "prize": "$6,634",
+        "dates": "Jun 15\u2014Jul 20",
+        "location": "kr",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3067",
+        "title": "FunhaverGG: Plain 2.0 #3",
+        "status": "completed",
+        "prize": "$800",
+        "dates": "Jul 18\u201420",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3066",
+        "title": "Game Changers 2026: EMEA Cash Cup July",
+        "status": "completed",
+        "prize": "$2,288",
+        "dates": "Jul 11\u201420",
+        "location": "eu",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      }
+    ]
+  },
+  {
+    "captured_at": "2026-09-06T18:00:49.094423Z",
+    "path": "/api/v1/events/3097",
+    "kind": "request"
+  },
+  {
+    "captured_at": "2026-09-06T18:00:50.017866Z",
+    "path": "/api/v1/events/3097",
+    "status": 200,
+    "kind": "response",
+    "data": {
+      "id": "3097",
+      "title": "R2 New Dawn 2026",
+      "subtitle": "",
+      "dates": "Sep 7\u201319, 2026",
+      "prize": "750 AUD~ $539",
+      "location": "au",
+      "status": "upcoming",
+      "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+      "prizes": [
+        {
+          "position": "1st",
+          "prize": "400 AUD",
+          "team": null
+        },
+        {
+          "position": "2nd",
+          "prize": "250 AUD",
+          "team": null
+        },
+        {
+          "position": "3rd",
+          "prize": "100 AUD",
+          "team": null
+        },
+        {
+          "position": "4th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "5th\u20138th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "5th\u20138th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "5th\u20138th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "5th\u20138th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "9th\u201316th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "9th\u201316th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "9th\u201316th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "9th\u201316th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "9th\u201316th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "9th\u201316th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "9th\u201316th",
+          "prize": "-",
+          "team": null
+        },
+        {
+          "position": "9th\u201316th",
+          "prize": "-",
+          "team": null
+        }
+      ],
+      "teams": [
+        {
+          "name": "Disproportion",
+          "id": "23241",
+          "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+          "seed": null
+        },
+        {
+          "name": "VorTechX",
+          "id": "23245",
+          "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+          "seed": null
+        },
+        {
+          "name": "Southern Crest",
+          "id": "23244",
+          "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+          "seed": null
+        },
+        {
+          "name": "Tickle Monsters",
+          "id": "22689",
+          "img": "https://owcdn.net/img/6a3945991ba9b.png",
+          "seed": null
+        },
+        {
+          "name": "Solarex",
+          "id": "20394",
+          "img": "https://owcdn.net/img/69d3dfbbc1176.png",
+          "seed": null
+        },
+        {
+          "name": "Trident Esports",
+          "id": "6192",
+          "img": "https://owcdn.net/img/6135ed5106d2c.png",
+          "seed": null
+        },
+        {
+          "name": "Celestial",
+          "id": "18891",
+          "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+          "seed": null
+        },
+        {
+          "name": "Crusaders",
+          "id": "23246",
+          "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+          "seed": null
+        },
+        {
+          "name": "NORTHBOUND",
+          "id": "23247",
+          "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+          "seed": null
+        },
+        {
+          "name": "Prime ASD",
+          "id": "23248",
+          "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+          "seed": null
+        },
+        {
+          "name": "Arcade Esports",
+          "id": "14281",
+          "img": "https://owcdn.net/img/65e5c65968f8d.png",
+          "seed": null
+        },
+        {
+          "name": "TROOPERS",
+          "id": "21666",
+          "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+          "seed": null
+        },
+        {
+          "name": "Noob Esports GC",
+          "id": "18068",
+          "img": "https://owcdn.net/img/67d7e2622f48c.png",
+          "seed": null
+        },
+        {
+          "name": "KOKO",
+          "id": "21061",
+          "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+          "seed": null
+        },
+        {
+          "name": "Error 404",
+          "id": "20390",
+          "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+          "seed": null
+        },
+        {
+          "name": "Evolve",
+          "id": "22251",
+          "img": "https://owcdn.net/img/6a26acaf34ecf.png",
+          "seed": null
+        }
+      ],
+      "matches": [
+        {
+          "id": "744454",
+          "time": "08:00:00",
+          "date": "2026-09-07",
+          "eta": "13h 59m",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "NORTHBOUND",
+              "region": "un",
+              "score": null
+            },
+            {
+              "name": "Prime ASD",
+              "region": "un",
+              "score": null
+            }
+          ],
+          "round": "Round of 16",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744455",
+          "time": "08:00:00",
+          "date": "2026-09-07",
+          "eta": "13h 59m",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "Arcade Esports",
+              "region": "au",
+              "score": null
+            },
+            {
+              "name": "TROOPERS",
+              "region": "au",
+              "score": null
+            }
+          ],
+          "round": "Round of 16",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744456",
+          "time": "10:00:00",
+          "date": "2026-09-07",
+          "eta": "15h 59m",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "Noob Esports GC",
+              "region": "au",
+              "score": null
+            },
+            {
+              "name": "KOKO",
+              "region": "au",
+              "score": null
+            }
+          ],
+          "round": "Round of 16",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744457",
+          "time": "10:00:00",
+          "date": "2026-09-07",
+          "eta": "15h 59m",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "Error 404",
+              "region": "au",
+              "score": null
+            },
+            {
+              "name": "Evolve",
+              "region": "au",
+              "score": null
+            }
+          ],
+          "round": "Round of 16",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744450",
+          "time": "08:00:00",
+          "date": "2026-09-08",
+          "eta": "1d 13h",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "Disproportion",
+              "region": "au",
+              "score": null
+            },
+            {
+              "name": "VorTechX",
+              "region": "un",
+              "score": null
+            }
+          ],
+          "round": "Round of 16",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744451",
+          "time": "08:00:00",
+          "date": "2026-09-08",
+          "eta": "1d 13h",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "Southern Crest",
+              "region": "un",
+              "score": null
+            },
+            {
+              "name": "Tickle Monsters",
+              "region": "au",
+              "score": null
+            }
+          ],
+          "round": "Round of 16",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744452",
+          "time": "10:00:00",
+          "date": "2026-09-08",
+          "eta": "1d 15h",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "Solarex",
+              "region": "au",
+              "score": null
+            },
+            {
+              "name": "Trident Esports",
+              "region": "au",
+              "score": null
+            }
+          ],
+          "round": "Round of 16",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744453",
+          "time": "10:00:00",
+          "date": "2026-09-08",
+          "eta": "1d 15h",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "Celestial",
+              "region": "au",
+              "score": null
+            },
+            {
+              "name": "Crusaders",
+              "region": "au",
+              "score": null
+            }
+          ],
+          "round": "Round of 16",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744458",
+          "time": "08:00:00",
+          "date": "2026-09-10",
+          "eta": "3d 13h",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            },
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            }
+          ],
+          "round": "Quarterfinals",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744459",
+          "time": "08:00:00",
+          "date": "2026-09-10",
+          "eta": "3d 13h",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            },
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            }
+          ],
+          "round": "Quarterfinals",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744460",
+          "time": "10:00:00",
+          "date": "2026-09-10",
+          "eta": "3d 15h",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            },
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            }
+          ],
+          "round": "Quarterfinals",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744461",
+          "time": "10:00:00",
+          "date": "2026-09-10",
+          "eta": "3d 15h",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            },
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            }
+          ],
+          "round": "Quarterfinals",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744462",
+          "time": "08:00:00",
+          "date": "2026-09-17",
+          "eta": "1w 3d",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            },
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            }
+          ],
+          "round": "Semifinals",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744463",
+          "time": "08:00:00",
+          "date": "2026-09-17",
+          "eta": "1w 3d",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            },
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            }
+          ],
+          "round": "Semifinals",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744465",
+          "time": "08:00:00",
+          "date": "2026-09-18",
+          "eta": "1w 4d",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            },
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            }
+          ],
+          "round": "Consolation Final",
+          "stage": "Main Event"
+        },
+        {
+          "id": "744464",
+          "time": "03:00:00",
+          "date": "2026-09-19",
+          "eta": "1w 5d",
+          "status": "upcoming",
+          "teams": [
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            },
+            {
+              "name": "TBD",
+              "region": "un",
+              "score": null
+            }
+          ],
+          "round": "Grand Final",
+          "stage": "Main Event"
+        }
+      ],
+      "standings": []
+    }
+  },
+  {
+    "captured_at": "2026-09-06T18:01:26.935280Z",
+    "path": "/api/v1/rankings/",
+    "kind": "request"
+  },
+  {
+    "captured_at": "2026-09-06T18:01:26.976035Z",
+    "path": "/api/v1/rankings/",
+    "status": 200,
+    "kind": "response",
+    "data": [
+      {
+        "region": "North America",
+        "teams": [
+          {
+            "name": "100 Thieves",
+            "id": 120,
+            "logo": "https://owcdn.net/img/603c00d5c5a08.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "United States"
+          },
+          {
+            "name": "NRG",
+            "id": 1034,
+            "logo": "https://owcdn.net/img/6610f026c1a9e.png",
+            "rank": 2,
+            "points": 1883,
+            "country": "United States"
+          },
+          {
+            "name": "LEVIAT\u00c1N",
+            "id": 2359,
+            "logo": "https://owcdn.net/img/61b8888cc3860.png",
+            "rank": 3,
+            "points": 1878,
+            "country": "Argentina"
+          },
+          {
+            "name": "G2 Esports",
+            "id": 11058,
+            "logo": "https://owcdn.net/img/633822848a741.png",
+            "rank": 4,
+            "points": 1809,
+            "country": "United States"
+          },
+          {
+            "name": "Shopify Rebellion Black",
+            "id": 9353,
+            "logo": "https://owcdn.net/img/679314c8ac387.png",
+            "rank": 5,
+            "points": 1722,
+            "country": "United States"
+          },
+          {
+            "name": "SaD Esports",
+            "id": 13920,
+            "logo": "https://owcdn.net/img/6528e9505cb61.png",
+            "rank": 6,
+            "points": 1722,
+            "country": "United States"
+          },
+          {
+            "name": "M80",
+            "id": 11001,
+            "logo": "https://owcdn.net/img/6945c73504452.png",
+            "rank": 7,
+            "points": 1704,
+            "country": "United States"
+          },
+          {
+            "name": "Nightblood Gaming",
+            "id": 5601,
+            "logo": "https://owcdn.net/img/61f13e1258cab.png",
+            "rank": 8,
+            "points": 1647,
+            "country": "United States"
+          },
+          {
+            "name": "ENVY",
+            "id": 427,
+            "logo": "https://owcdn.net/img/5f3ca822464a3.png",
+            "rank": 9,
+            "points": 1627,
+            "country": "United States"
+          },
+          {
+            "name": "Sentinels",
+            "id": 2,
+            "logo": "https://owcdn.net/img/62875027c8e06.png",
+            "rank": 10,
+            "points": 1605,
+            "country": "United States"
+          },
+          {
+            "name": "barbeque chicken",
+            "id": 22672,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 11,
+            "points": 1602,
+            "country": "International"
+          },
+          {
+            "name": "Evil Geniuses",
+            "id": 5248,
+            "logo": "https://owcdn.net/img/667462f046618.png",
+            "rank": 12,
+            "points": 1591,
+            "country": "United States"
+          },
+          {
+            "name": "QoR",
+            "id": 6985,
+            "logo": "https://owcdn.net/img/63e9a11797f41.png",
+            "rank": 13,
+            "points": 1588,
+            "country": "United States"
+          },
+          {
+            "name": "Cloud9",
+            "id": 188,
+            "logo": "https://owcdn.net/img/628addcbd509e.png",
+            "rank": 14,
+            "points": 1583,
+            "country": "United States"
+          },
+          {
+            "name": "Maryville University",
+            "id": 12900,
+            "logo": "https://owcdn.net/img/6457181dc433a.png",
+            "rank": 15,
+            "points": 1581,
+            "country": "United States"
+          },
+          {
+            "name": "Division One",
+            "id": 21714,
+            "logo": "https://owcdn.net/img/69da93c726b68.png",
+            "rank": 16,
+            "points": 1578,
+            "country": "United States"
+          },
+          {
+            "name": "yves saint laurent",
+            "id": 15769,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 17,
+            "points": 1563,
+            "country": "United States"
+          },
+          {
+            "name": "Evil Geniuses Academy",
+            "id": 21054,
+            "logo": "https://owcdn.net/img/667462f046618.png",
+            "rank": 18,
+            "points": 1561,
+            "country": "United States"
+          },
+          {
+            "name": "KIN Esports",
+            "id": 22876,
+            "logo": "https://owcdn.net/img/6a489051cd081.png",
+            "rank": 19,
+            "points": 1541,
+            "country": "United States"
+          },
+          {
+            "name": "BOSS BABY",
+            "id": 22924,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 20,
+            "points": 1537,
+            "country": "International"
+          },
+          {
+            "name": "Jackpot",
+            "id": 20897,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 21,
+            "points": 1522,
+            "country": "International"
+          },
+          {
+            "name": "Pigeons",
+            "id": 16910,
+            "logo": "https://owcdn.net/img/68514906c5b54.png",
+            "rank": 22,
+            "points": 1522,
+            "country": "Canada"
+          },
+          {
+            "name": "How to Train a Dragon",
+            "id": 21457,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 23,
+            "points": 1515,
+            "country": "International"
+          },
+          {
+            "name": "really good players",
+            "id": 22278,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 24,
+            "points": 1503,
+            "country": "International"
+          },
+          {
+            "name": "Team Digital",
+            "id": 10087,
+            "logo": "https://owcdn.net/img/6a05543614dd2.png",
+            "rank": 25,
+            "points": 1499,
+            "country": "United States"
+          }
+        ]
+      },
+      {
+        "region": "Europe",
+        "teams": [
+          {
+            "name": "Enterprise Esports",
+            "id": 876,
+            "logo": "https://owcdn.net/img/68643d0b1c72b.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "Czech Republic"
+          },
+          {
+            "name": "Karmine Corp",
+            "id": 8877,
+            "logo": "https://owcdn.net/img/627403a0d9e48.png",
+            "rank": 2,
+            "points": 1990,
+            "country": "Europe"
+          },
+          {
+            "name": "Fire Flux Esports",
+            "id": 20085,
+            "logo": "https://owcdn.net/img/68e6e1bcca45d.png",
+            "rank": 3,
+            "points": 1975,
+            "country": "T\u00fcrkiye"
+          },
+          {
+            "name": "Team Vitality",
+            "id": 2059,
+            "logo": "https://owcdn.net/img/6466d79e1ed40.png",
+            "rank": 4,
+            "points": 1940,
+            "country": "Europe"
+          },
+          {
+            "name": "Team Liquid",
+            "id": 474,
+            "logo": "https://owcdn.net/img/640c381f0603f.png",
+            "rank": 5,
+            "points": 1923,
+            "country": "Europe"
+          },
+          {
+            "name": "Eintracht Frankfurt",
+            "id": 14478,
+            "logo": "https://owcdn.net/img/659d1013d5cf5.png",
+            "rank": 6,
+            "points": 1910,
+            "country": "Germany"
+          },
+          {
+            "name": "BBL Esports",
+            "id": 397,
+            "logo": "https://owcdn.net/img/65b8ccef5e273.png",
+            "rank": 7,
+            "points": 1898,
+            "country": "T\u00fcrkiye"
+          },
+          {
+            "name": "FUT Esports",
+            "id": 1184,
+            "logo": "https://owcdn.net/img/632be9976b8fe.png",
+            "rank": 8,
+            "points": 1886,
+            "country": "T\u00fcrkiye"
+          },
+          {
+            "name": "Team Heretics",
+            "id": 1001,
+            "logo": "https://owcdn.net/img/637b755224c12.png",
+            "rank": 9,
+            "points": 1844,
+            "country": "Europe"
+          },
+          {
+            "name": "Joblife",
+            "id": 11232,
+            "logo": "https://owcdn.net/img/63a944e6cbe49.png",
+            "rank": 10,
+            "points": 1819,
+            "country": "Europe"
+          },
+          {
+            "name": "Natus Vincere Junior",
+            "id": 21715,
+            "logo": "https://owcdn.net/img/62a4109ddbd7f.png",
+            "rank": 11,
+            "points": 1817,
+            "country": "Ukraine"
+          },
+          {
+            "name": "Gentle Mates",
+            "id": 12694,
+            "logo": "https://owcdn.net/img/6670153fa9120.png",
+            "rank": 12,
+            "points": 1793,
+            "country": "Europe"
+          },
+          {
+            "name": "Team Liquid Academy",
+            "id": 17297,
+            "logo": "https://owcdn.net/img/640c381f0603f.png",
+            "rank": 13,
+            "points": 1791,
+            "country": "Europe"
+          },
+          {
+            "name": "FOKUS",
+            "id": 6882,
+            "logo": "https://owcdn.net/img/627934cd0b505.png",
+            "rank": 14,
+            "points": 1782,
+            "country": "Germany"
+          },
+          {
+            "name": "CGN Esports",
+            "id": 5214,
+            "logo": "https://owcdn.net/img/60defafec983c.png",
+            "rank": 15,
+            "points": 1770,
+            "country": "Germany"
+          },
+          {
+            "name": "FNATIC",
+            "id": 2593,
+            "logo": "https://owcdn.net/img/62a40cc2b5e29.png",
+            "rank": 16,
+            "points": 1752,
+            "country": "Europe"
+          },
+          {
+            "name": "Mandatory",
+            "id": 7967,
+            "logo": "https://owcdn.net/img/695c961fbab82.png",
+            "rank": 17,
+            "points": 1745,
+            "country": "France"
+          },
+          {
+            "name": "Eternal Fire",
+            "id": 6392,
+            "logo": "https://owcdn.net/img/6628980dcdaea.png",
+            "rank": 18,
+            "points": 1736,
+            "country": "T\u00fcrkiye"
+          },
+          {
+            "name": "Misa Esports",
+            "id": 19218,
+            "logo": "https://owcdn.net/img/6887b1d2edd20.png",
+            "rank": 19,
+            "points": 1724,
+            "country": "T\u00fcrkiye"
+          },
+          {
+            "name": "UCAM Esports Club",
+            "id": 4616,
+            "logo": "https://owcdn.net/img/5f7f77ef1e2f0.png",
+            "rank": 20,
+            "points": 1717,
+            "country": "Europe"
+          },
+          {
+            "name": "\u00c7ilekler",
+            "id": 22601,
+            "logo": "https://owcdn.net/img/6a528de2088e7.png",
+            "rank": 21,
+            "points": 1713,
+            "country": "T\u00fcrkiye"
+          },
+          {
+            "name": "Bitfix Gaming",
+            "id": 12355,
+            "logo": "https://owcdn.net/img/642c76a94a808.png",
+            "rank": 22,
+            "points": 1710,
+            "country": "Norway"
+          },
+          {
+            "name": "Natus Vincere",
+            "id": 4915,
+            "logo": "https://owcdn.net/img/62a4109ddbd7f.png",
+            "rank": 23,
+            "points": 1702,
+            "country": "Europe"
+          },
+          {
+            "name": "Bar\u00e7a eSports",
+            "id": 14461,
+            "logo": "https://owcdn.net/img/65843488833d1.png",
+            "rank": 24,
+            "points": 1678,
+            "country": "Spain"
+          },
+          {
+            "name": "BRATAN MIX",
+            "id": 14525,
+            "logo": "https://owcdn.net/img/693491eb49246.png",
+            "rank": 25,
+            "points": 1675,
+            "country": "Europe"
+          }
+        ]
+      },
+      {
+        "region": "Brazil",
+        "teams": [
+          {
+            "name": "LOUD",
+            "id": 6961,
+            "logo": "https://owcdn.net/img/62bbec8dc1b9f.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "Brazil"
+          },
+          {
+            "name": "MIBR",
+            "id": 7386,
+            "logo": "https://owcdn.net/img/632be7626d6d9.png",
+            "rank": 2,
+            "points": 1890,
+            "country": "Brazil"
+          },
+          {
+            "name": "Team Solid",
+            "id": 19265,
+            "logo": "https://owcdn.net/img/689d0fc04ad22.png",
+            "rank": 3,
+            "points": 1884,
+            "country": "Brazil"
+          },
+          {
+            "name": "2Game Esports",
+            "id": 15072,
+            "logo": "https://owcdn.net/img/67725c368d524.png",
+            "rank": 4,
+            "points": 1767,
+            "country": "Brazil"
+          },
+          {
+            "name": "44 AIM",
+            "id": 22500,
+            "logo": "https://owcdn.net/img/6a665bf71d297.png",
+            "rank": 5,
+            "points": 1759,
+            "country": "Brazil"
+          },
+          {
+            "name": "MIBR Academy",
+            "id": 16606,
+            "logo": "https://owcdn.net/img/67127fdb2ae3e.png",
+            "rank": 6,
+            "points": 1744,
+            "country": "Brazil"
+          },
+          {
+            "name": "FURIA",
+            "id": 2406,
+            "logo": "https://owcdn.net/img/632be843b7d51.png",
+            "rank": 7,
+            "points": 1723,
+            "country": "Brazil"
+          },
+          {
+            "name": "Fluxo W7M",
+            "id": 23141,
+            "logo": "https://owcdn.net/img/6a76a37807aad.png",
+            "rank": 8,
+            "points": 1715,
+            "country": "Brazil"
+          },
+          {
+            "name": "Next",
+            "id": 20741,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 9,
+            "points": 1692,
+            "country": "Brazil"
+          },
+          {
+            "name": "Afrogames",
+            "id": 14642,
+            "logo": "https://owcdn.net/img/66a90f0206157.png",
+            "rank": 10,
+            "points": 1686,
+            "country": "Brazil"
+          },
+          {
+            "name": "ELEVATE",
+            "id": 18622,
+            "logo": "https://owcdn.net/img/65990c8ab7c2b.png",
+            "rank": 11,
+            "points": 1668,
+            "country": "Brazil"
+          },
+          {
+            "name": "FURIA Academy",
+            "id": 17094,
+            "logo": "https://owcdn.net/img/67a18f336c9f4.png",
+            "rank": 12,
+            "points": 1667,
+            "country": "Brazil"
+          },
+          {
+            "name": "Arashi",
+            "id": 23180,
+            "logo": "https://owcdn.net/img/6a14f3716a980.png",
+            "rank": 13,
+            "points": 1667,
+            "country": "Brazil"
+          },
+          {
+            "name": "A NOVA ORDEM",
+            "id": 22328,
+            "logo": "https://owcdn.net/img/6a0a204905c30.png",
+            "rank": 14,
+            "points": 1646,
+            "country": "Brazil"
+          },
+          {
+            "name": "SYMPHONY E-SPORTS",
+            "id": 22336,
+            "logo": "https://owcdn.net/img/6a0a2110cb14e.png",
+            "rank": 15,
+            "points": 1644,
+            "country": "Brazil"
+          },
+          {
+            "name": "BiDaDos",
+            "id": 22534,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 16,
+            "points": 1629,
+            "country": "Brazil"
+          },
+          {
+            "name": "AXKRUM",
+            "id": 13719,
+            "logo": "https://owcdn.net/img/6871724c55f08.png",
+            "rank": 17,
+            "points": 1614,
+            "country": "Brazil"
+          },
+          {
+            "name": "DELIRA",
+            "id": 9201,
+            "logo": "https://owcdn.net/img/6882bfb415971.png",
+            "rank": 18,
+            "points": 1611,
+            "country": "Brazil"
+          },
+          {
+            "name": "ASDDSASDD",
+            "id": 19635,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 19,
+            "points": 1606,
+            "country": "Brazil"
+          },
+          {
+            "name": "Juventus Gaming",
+            "id": 22325,
+            "logo": "https://owcdn.net/img/6a0a2005dfd84.png",
+            "rank": 20,
+            "points": 1605,
+            "country": "Brazil"
+          },
+          {
+            "name": "TotalePRO",
+            "id": 8532,
+            "logo": "https://owcdn.net/img/63954830c1054.png",
+            "rank": 21,
+            "points": 1601,
+            "country": "Brazil"
+          },
+          {
+            "name": "Xethra",
+            "id": 19639,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 22,
+            "points": 1596,
+            "country": "Brazil"
+          },
+          {
+            "name": "OSKARAVELHO",
+            "id": 448,
+            "logo": "https://owcdn.net/img/61de0106e2795.png",
+            "rank": 23,
+            "points": 1589,
+            "country": "Brazil"
+          },
+          {
+            "name": "Fenda Dos Streamers",
+            "id": 14558,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 24,
+            "points": 1588,
+            "country": "Brazil"
+          },
+          {
+            "name": "Salam\u00ea Mingu\u00ea",
+            "id": 19659,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 25,
+            "points": 1588,
+            "country": "Brazil"
+          }
+        ]
+      },
+      {
+        "region": "Asia-Pacific",
+        "teams": [
+          {
+            "name": "Global Esports",
+            "id": 918,
+            "logo": "https://owcdn.net/img/629f316ddd4dd.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "India"
+          },
+          {
+            "name": "Paper Rex",
+            "id": 624,
+            "logo": "https://owcdn.net/img/62bbeba74d5cb.png",
+            "rank": 2,
+            "points": 1972,
+            "country": "Singapore"
+          },
+          {
+            "name": "Sharper Esports",
+            "id": 623,
+            "logo": "https://owcdn.net/img/698dc40a29cda.png",
+            "rank": 3,
+            "points": 1959,
+            "country": "Thailand"
+          },
+          {
+            "name": "BOOM Esports",
+            "id": 466,
+            "logo": "https://owcdn.net/img/629f1bdae82ab.png",
+            "rank": 4,
+            "points": 1829,
+            "country": "Indonesia"
+          },
+          {
+            "name": "Xipto Esports",
+            "id": 17167,
+            "logo": "https://owcdn.net/img/67742094e5e85.png",
+            "rank": 5,
+            "points": 1806,
+            "country": "Thailand"
+          },
+          {
+            "name": "S8UL Esports",
+            "id": 3713,
+            "logo": "https://owcdn.net/img/67becb3c72954.png",
+            "rank": 6,
+            "points": 1800,
+            "country": "India"
+          },
+          {
+            "name": "Rex Regum Qeon",
+            "id": 878,
+            "logo": "https://owcdn.net/img/629f17f51e7a3.png",
+            "rank": 7,
+            "points": 1782,
+            "country": "Indonesia"
+          },
+          {
+            "name": "Oasis Gaming",
+            "id": 3136,
+            "logo": "https://owcdn.net/img/629f15187dd71.png",
+            "rank": 8,
+            "points": 1778,
+            "country": "Philippines"
+          },
+          {
+            "name": "Motiv Esports",
+            "id": 18117,
+            "logo": "https://owcdn.net/img/67e27ccb492e8.png",
+            "rank": 9,
+            "points": 1761,
+            "country": "Singapore"
+          },
+          {
+            "name": "FULL SENSE",
+            "id": 4050,
+            "logo": "https://owcdn.net/img/6537a7954d915.png",
+            "rank": 10,
+            "points": 1749,
+            "country": "Thailand"
+          },
+          {
+            "name": "Revenant XSpark",
+            "id": 17180,
+            "logo": "https://owcdn.net/img/6a20030faecd7.png",
+            "rank": 11,
+            "points": 1741,
+            "country": "India"
+          },
+          {
+            "name": "Trinity",
+            "id": 16301,
+            "logo": "https://owcdn.net/img/698c77f5ed4d3.png",
+            "rank": 12,
+            "points": 1734,
+            "country": "Mongolia"
+          },
+          {
+            "name": "Jade Lions",
+            "id": 22130,
+            "logo": "https://owcdn.net/img/6a0bcef0ae6ac.png",
+            "rank": 13,
+            "points": 1718,
+            "country": "Philippines"
+          },
+          {
+            "name": "No Salary Peek",
+            "id": 22341,
+            "logo": "https://owcdn.net/img/6a4cbcbee47ec.png",
+            "rank": 14,
+            "points": 1698,
+            "country": "India"
+          },
+          {
+            "name": "LIT Penguin",
+            "id": 18035,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 15,
+            "points": 1687,
+            "country": "Taiwan"
+          },
+          {
+            "name": "1Tap Esports",
+            "id": 21859,
+            "logo": "https://owcdn.net/img/69e5bce9370ea.png",
+            "rank": 16,
+            "points": 1682,
+            "country": "Vietnam"
+          },
+          {
+            "name": "Kertanegara Esports",
+            "id": 19032,
+            "logo": "https://owcdn.net/img/68fc8ce9d5383.png",
+            "rank": 17,
+            "points": 1675,
+            "country": "Indonesia"
+          },
+          {
+            "name": "\u4f60\u5f8c\u9762\u6709\u8eca",
+            "id": 19266,
+            "logo": "https://owcdn.net/img/69eec1e5df817.png",
+            "rank": 18,
+            "points": 1670,
+            "country": "Taiwan"
+          },
+          {
+            "name": "XGOD",
+            "id": 14617,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 19,
+            "points": 1667,
+            "country": "Thailand"
+          },
+          {
+            "name": "OverPowered Youths",
+            "id": 16800,
+            "logo": "https://owcdn.net/img/697f22d9db59b.png",
+            "rank": 20,
+            "points": 1666,
+            "country": "Singapore"
+          },
+          {
+            "name": "S2 Esports",
+            "id": 8303,
+            "logo": "https://owcdn.net/img/636f05b23aae9.png",
+            "rank": 21,
+            "points": 1651,
+            "country": "Taiwan"
+          },
+          {
+            "name": "Asterisk",
+            "id": 15685,
+            "logo": "https://owcdn.net/img/66ed612a08e34.png",
+            "rank": 22,
+            "points": 1648,
+            "country": "India"
+          },
+          {
+            "name": "SIGN Esports",
+            "id": 20596,
+            "logo": "https://owcdn.net/img/69adf8ca7becf.png",
+            "rank": 23,
+            "points": 1648,
+            "country": "India"
+          },
+          {
+            "name": "Shang",
+            "id": 22963,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 24,
+            "points": 1645,
+            "country": "Vietnam"
+          },
+          {
+            "name": "Zorvex",
+            "id": 21997,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 25,
+            "points": 1643,
+            "country": "Philippines"
+          }
+        ]
+      },
+      {
+        "region": "Korea",
+        "teams": [
+          {
+            "name": "Nongshim RedForce",
+            "id": 11060,
+            "logo": "https://owcdn.net/img/6399bb707aacb.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "South Korea"
+          },
+          {
+            "name": "T1",
+            "id": 14,
+            "logo": "https://owcdn.net/img/62fe0b8f6b084.png",
+            "rank": 2,
+            "points": 1908,
+            "country": "South Korea"
+          },
+          {
+            "name": "Gen.G",
+            "id": 17,
+            "logo": "https://owcdn.net/img/6970c986eddc6.png",
+            "rank": 3,
+            "points": 1861,
+            "country": "South Korea"
+          },
+          {
+            "name": "ONSIDE GAMING",
+            "id": 19189,
+            "logo": "https://owcdn.net/img/6863ccdfabea7.png",
+            "rank": 4,
+            "points": 1769,
+            "country": "South Korea"
+          },
+          {
+            "name": "KIWOOM DRX",
+            "id": 8185,
+            "logo": "https://owcdn.net/img/6a353ee73ab25.png",
+            "rank": 5,
+            "points": 1749,
+            "country": "South Korea"
+          },
+          {
+            "name": "DRX Academy",
+            "id": 9749,
+            "logo": "https://owcdn.net/img/6a353ee73ab25.png",
+            "rank": 6,
+            "points": 1573,
+            "country": "South Korea"
+          },
+          {
+            "name": "T1 Academy",
+            "id": 15578,
+            "logo": "https://owcdn.net/img/5ea85d21e625f.png",
+            "rank": 7,
+            "points": 1570,
+            "country": "South Korea"
+          },
+          {
+            "name": "Strom Reign",
+            "id": 20617,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 8,
+            "points": 1554,
+            "country": "South Korea"
+          },
+          {
+            "name": "Dplus Esports",
+            "id": 11348,
+            "logo": "https://owcdn.net/img/63bbe4f904433.png",
+            "rank": 9,
+            "points": 1528,
+            "country": "South Korea"
+          },
+          {
+            "name": "Gen.G Global Academy",
+            "id": 17392,
+            "logo": "https://owcdn.net/img/6970c986eddc6.png",
+            "rank": 10,
+            "points": 1520,
+            "country": "South Korea"
+          },
+          {
+            "name": "Egennam (\uc5d0\uac90\ub0a8)",
+            "id": 20611,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 11,
+            "points": 1508,
+            "country": "South Korea"
+          },
+          {
+            "name": "ReturN",
+            "id": 14602,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 12,
+            "points": 1494,
+            "country": "South Korea"
+          },
+          {
+            "name": "Formula1",
+            "id": 20609,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 13,
+            "points": 1493,
+            "country": "South Korea"
+          },
+          {
+            "name": "Frozen 3",
+            "id": 14584,
+            "logo": "https://owcdn.net/img/65bbe9c3793f2.png",
+            "rank": 14,
+            "points": 1491,
+            "country": "South Korea"
+          },
+          {
+            "name": "SOLATI",
+            "id": 16699,
+            "logo": "https://owcdn.net/img/67308676a02e9.png",
+            "rank": 15,
+            "points": 1477,
+            "country": "South Korea"
+          },
+          {
+            "name": "DRX Youth",
+            "id": 20789,
+            "logo": "https://owcdn.net/img/6a353ee73ab25.png",
+            "rank": 16,
+            "points": 1475,
+            "country": "South Korea"
+          },
+          {
+            "name": "So:sweet",
+            "id": 22548,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 17,
+            "points": 1406,
+            "country": "South Korea"
+          },
+          {
+            "name": "X-CAST",
+            "id": 22549,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 18,
+            "points": 1394,
+            "country": "South Korea"
+          },
+          {
+            "name": "\ub371\uc2a4\ucd1d\ub300\ud558\uc2b9\uc9c4\ub18d\uad6c\uacf5",
+            "id": 21347,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 19,
+            "points": 1354,
+            "country": "South Korea"
+          }
+        ]
+      },
+      {
+        "region": "China",
+        "teams": [
+          {
+            "name": "TYLOO",
+            "id": 731,
+            "logo": "https://owcdn.net/img/63eb60fb08390.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "China"
+          },
+          {
+            "name": "Xi Lai Gaming",
+            "id": 13581,
+            "logo": "https://owcdn.net/img/671742f863b9b.png",
+            "rank": 2,
+            "points": 1941,
+            "country": "China"
+          },
+          {
+            "name": "Nova Esports",
+            "id": 12064,
+            "logo": "https://owcdn.net/img/6404c0174250b.png",
+            "rank": 3,
+            "points": 1932,
+            "country": "China"
+          },
+          {
+            "name": "EDward Gaming",
+            "id": 1120,
+            "logo": "https://owcdn.net/img/62c82049253b2.png",
+            "rank": 4,
+            "points": 1911,
+            "country": "China"
+          },
+          {
+            "name": "Bilibili Gaming",
+            "id": 12010,
+            "logo": "https://owcdn.net/img/63f25d72216c1.png",
+            "rank": 5,
+            "points": 1840,
+            "country": "China"
+          },
+          {
+            "name": "JD Gaming",
+            "id": 13576,
+            "logo": "https://owcdn.net/img/64f9825408326.png",
+            "rank": 6,
+            "points": 1831,
+            "country": "China"
+          },
+          {
+            "name": "Rare Atom",
+            "id": 11985,
+            "logo": "https://owcdn.net/img/63eb5aa842f05.png",
+            "rank": 7,
+            "points": 1815,
+            "country": "China"
+          },
+          {
+            "name": "All Gamers",
+            "id": 1119,
+            "logo": "https://owcdn.net/img/6549c2b905061.png",
+            "rank": 8,
+            "points": 1802,
+            "country": "China"
+          },
+          {
+            "name": "KeepBest Gaming",
+            "id": 12784,
+            "logo": "https://owcdn.net/img/64461a1131da5.png",
+            "rank": 9,
+            "points": 1721,
+            "country": "China"
+          },
+          {
+            "name": "Any Questions Gaming",
+            "id": 19531,
+            "logo": "https://owcdn.net/img/68ecda499e5e2.png",
+            "rank": 10,
+            "points": 1703,
+            "country": "China"
+          },
+          {
+            "name": "Titan Esports Club",
+            "id": 14137,
+            "logo": "https://owcdn.net/img/65487414b8562.png",
+            "rank": 11,
+            "points": 1701,
+            "country": "China"
+          },
+          {
+            "name": "Trace Esports",
+            "id": 12685,
+            "logo": "https://owcdn.net/img/6433a2cc3ae72.png",
+            "rank": 12,
+            "points": 1692,
+            "country": "China"
+          },
+          {
+            "name": "Weibo Gaming",
+            "id": 1224,
+            "logo": "https://owcdn.net/img/62232bd14e5d7.png",
+            "rank": 13,
+            "points": 1687,
+            "country": "China"
+          },
+          {
+            "name": "Dragon Ranger Gaming",
+            "id": 11981,
+            "logo": "https://owcdn.net/img/642233fc01f26.png",
+            "rank": 14,
+            "points": 1684,
+            "country": "China"
+          },
+          {
+            "name": "Ambitious Legend Gaming",
+            "id": 15893,
+            "logo": "https://owcdn.net/img/66afb234af337.png",
+            "rank": 15,
+            "points": 1661,
+            "country": "China"
+          },
+          {
+            "name": "FunPlus Phoenix",
+            "id": 11328,
+            "logo": "https://owcdn.net/img/65a17b313b131.png",
+            "rank": 16,
+            "points": 1650,
+            "country": "China"
+          },
+          {
+            "name": "Octagonal Disposition Gaming",
+            "id": 12785,
+            "logo": "https://owcdn.net/img/68ecda6aa00d1.png",
+            "rank": 17,
+            "points": 1645,
+            "country": "China"
+          },
+          {
+            "name": "Wolves Esports",
+            "id": 13790,
+            "logo": "https://owcdn.net/img/651d33f8e6a1f.png",
+            "rank": 18,
+            "points": 1540,
+            "country": "China"
+          }
+        ]
+      },
+      {
+        "region": "Japan",
+        "teams": [
+          {
+            "name": "VARREL",
+            "id": 11229,
+            "logo": "https://owcdn.net/img/63a74624cc76a.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "Japan"
+          },
+          {
+            "name": "REJECT",
+            "id": 104,
+            "logo": "https://owcdn.net/img/62a4139de7f7e.png",
+            "rank": 2,
+            "points": 1975,
+            "country": "Japan"
+          },
+          {
+            "name": "DetonatioN FocusMe",
+            "id": 278,
+            "logo": "https://owcdn.net/img/63972e548cdc9.png",
+            "rank": 3,
+            "points": 1964,
+            "country": "Japan"
+          },
+          {
+            "name": "CREST GAMING Zst",
+            "id": 294,
+            "logo": "https://owcdn.net/img/63a33a790ae62.png",
+            "rank": 4,
+            "points": 1893,
+            "country": "Japan"
+          },
+          {
+            "name": "QT DIG\u221e",
+            "id": 18299,
+            "logo": "https://owcdn.net/img/67f4e2e7b3802.png",
+            "rank": 5,
+            "points": 1869,
+            "country": "Japan"
+          },
+          {
+            "name": "FENNEL",
+            "id": 2934,
+            "logo": "https://owcdn.net/img/60d3986152cd4.png",
+            "rank": 6,
+            "points": 1840,
+            "country": "Japan"
+          },
+          {
+            "name": "RIDDLE ORDER",
+            "id": 14375,
+            "logo": "https://owcdn.net/img/6569a81625295.png",
+            "rank": 7,
+            "points": 1837,
+            "country": "Japan"
+          },
+          {
+            "name": "SCARZ",
+            "id": 282,
+            "logo": "https://owcdn.net/img/60693f9ee7109.png",
+            "rank": 8,
+            "points": 1781,
+            "country": "Japan"
+          },
+          {
+            "name": "ZETA DIVISION",
+            "id": 5448,
+            "logo": "https://owcdn.net/img/62a411783d94d.png",
+            "rank": 9,
+            "points": 1777,
+            "country": "Japan"
+          },
+          {
+            "name": "IGZIST",
+            "id": 6869,
+            "logo": "https://owcdn.net/img/61b3107a6a139.png",
+            "rank": 10,
+            "points": 1742,
+            "country": "Japan"
+          },
+          {
+            "name": "Murash Gaming",
+            "id": 11490,
+            "logo": "https://owcdn.net/img/697f337f890f1.png",
+            "rank": 11,
+            "points": 1721,
+            "country": "Japan"
+          },
+          {
+            "name": "GYOSON GAMING",
+            "id": 19770,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 12,
+            "points": 1686,
+            "country": "Japan"
+          },
+          {
+            "name": "Insomnia",
+            "id": 5148,
+            "logo": "https://owcdn.net/img/6a1be9015b7b5.png",
+            "rank": 13,
+            "points": 1676,
+            "country": "Japan"
+          },
+          {
+            "name": "ZETA DIVISION Academy",
+            "id": 6997,
+            "logo": "https://owcdn.net/img/62a411783d94d.png",
+            "rank": 14,
+            "points": 1671,
+            "country": "Japan"
+          },
+          {
+            "name": "Kirihana Academy",
+            "id": 19881,
+            "logo": "https://owcdn.net/img/6a01774cd48ef.png",
+            "rank": 15,
+            "points": 1668,
+            "country": "Japan"
+          },
+          {
+            "name": "BLUE BEES.ESP",
+            "id": 2108,
+            "logo": "https://owcdn.net/img/62a4128bd26f3.png",
+            "rank": 16,
+            "points": 1663,
+            "country": "Japan"
+          },
+          {
+            "name": "BC SWELL",
+            "id": 11233,
+            "logo": "https://owcdn.net/img/63a9cf9538384.png",
+            "rank": 17,
+            "points": 1657,
+            "country": "Japan"
+          },
+          {
+            "name": "REIGNITE FOXX",
+            "id": 21367,
+            "logo": "https://owcdn.net/img/634006b15d271.png",
+            "rank": 18,
+            "points": 1651,
+            "country": "Japan"
+          },
+          {
+            "name": "ALESTAR",
+            "id": 14676,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 19,
+            "points": 1641,
+            "country": "Japan"
+          },
+          {
+            "name": "KING GUY",
+            "id": 22281,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 20,
+            "points": 1641,
+            "country": "Japan"
+          },
+          {
+            "name": "Team SEIBI",
+            "id": 16529,
+            "logo": "https://owcdn.net/img/672228c89f94b.png",
+            "rank": 21,
+            "points": 1640,
+            "country": "Japan"
+          },
+          {
+            "name": "PARON",
+            "id": 16244,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 22,
+            "points": 1620,
+            "country": "Japan"
+          },
+          {
+            "name": "NORTHEPTION Youth",
+            "id": 17882,
+            "logo": "https://owcdn.net/img/649905216b9e3.png",
+            "rank": 23,
+            "points": 1619,
+            "country": "Japan"
+          },
+          {
+            "name": "WEC C",
+            "id": 21339,
+            "logo": "https://owcdn.net/img/69b040c581192.png",
+            "rank": 24,
+            "points": 1615,
+            "country": "Japan"
+          },
+          {
+            "name": "FAV gaming Youth",
+            "id": 18984,
+            "logo": "https://owcdn.net/img/623be8f0125f2.png",
+            "rank": 25,
+            "points": 1586,
+            "country": "Japan"
+          }
+        ]
+      },
+      {
+        "region": "Latin America South",
+        "teams": [
+          {
+            "name": "BESTIA",
+            "id": 22142,
+            "logo": "https://owcdn.net/img/69ea66a9d008c.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "Chile"
+          },
+          {
+            "name": "KR\u00dc Esports",
+            "id": 2355,
+            "logo": "https://owcdn.net/img/63976677069e1.png",
+            "rank": 2,
+            "points": 1940,
+            "country": "Argentina"
+          },
+          {
+            "name": "KR\u00dc SPARK",
+            "id": 19791,
+            "logo": "https://owcdn.net/img/69cfd386538cf.png",
+            "rank": 3,
+            "points": 1930,
+            "country": "Argentina"
+          },
+          {
+            "name": "ShindeN",
+            "id": 16971,
+            "logo": "https://owcdn.net/img/6748dec4df18c.png",
+            "rank": 4,
+            "points": 1911,
+            "country": "Argentina"
+          },
+          {
+            "name": "Berliners",
+            "id": 20296,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 5,
+            "points": 1834,
+            "country": "Argentina"
+          },
+          {
+            "name": "FLOW TIM CHEESE",
+            "id": 20178,
+            "logo": "https://owcdn.net/img/692f9af945d88.png",
+            "rank": 6,
+            "points": 1814,
+            "country": "Chile"
+          },
+          {
+            "name": "Kaos Latin Gamers",
+            "id": 2360,
+            "logo": "https://owcdn.net/img/600b19ed2c674.png",
+            "rank": 7,
+            "points": 1798,
+            "country": "Chile"
+          },
+          {
+            "name": "9z Globant",
+            "id": 367,
+            "logo": "https://owcdn.net/img/65e447b0c2415.png",
+            "rank": 8,
+            "points": 1782,
+            "country": "Chile"
+          },
+          {
+            "name": "Eternal Flame",
+            "id": 17321,
+            "logo": "https://owcdn.net/img/68019d9c43742.png",
+            "rank": 9,
+            "points": 1757,
+            "country": "Chile"
+          },
+          {
+            "name": "Freddyneta",
+            "id": 16781,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 10,
+            "points": 1738,
+            "country": "Chile"
+          },
+          {
+            "name": "University War",
+            "id": 20209,
+            "logo": "https://owcdn.net/img/65df25f7afcad.png",
+            "rank": 11,
+            "points": 1731,
+            "country": "Chile"
+          },
+          {
+            "name": "Quantum Void",
+            "id": 17320,
+            "logo": "https://owcdn.net/img/6a3f23fc3b6f7.png",
+            "rank": 12,
+            "points": 1711,
+            "country": "Chile"
+          },
+          {
+            "name": "TOYO eSports",
+            "id": 17300,
+            "logo": "https://owcdn.net/img/69eab150c57a1.png",
+            "rank": 13,
+            "points": 1710,
+            "country": "Paraguay"
+          },
+          {
+            "name": "Lost Puppies Dark",
+            "id": 23078,
+            "logo": "https://owcdn.net/img/6a97609ebf2b5.png",
+            "rank": 14,
+            "points": 1710,
+            "country": "Argentina"
+          },
+          {
+            "name": "Sdufen Esports",
+            "id": 20293,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 15,
+            "points": 1702,
+            "country": "Argentina"
+          },
+          {
+            "name": "Dolphins Gaming",
+            "id": 17313,
+            "logo": "https://owcdn.net/img/67b8d1de2d8eb.png",
+            "rank": 16,
+            "points": 1677,
+            "country": "Chile"
+          },
+          {
+            "name": "OXEN",
+            "id": 9427,
+            "logo": "https://owcdn.net/img/62cdc31a970d0.png",
+            "rank": 17,
+            "points": 1653,
+            "country": "Argentina"
+          },
+          {
+            "name": "KR\u00dc BLAZE",
+            "id": 7511,
+            "logo": "https://owcdn.net/img/6704ad6a515a1.png",
+            "rank": 18,
+            "points": 1579,
+            "country": "Chile"
+          }
+        ]
+      },
+      {
+        "region": "Latin America North",
+        "teams": [
+          {
+            "name": "FUEGO",
+            "id": 17252,
+            "logo": "https://owcdn.net/img/678f90b7b65e5.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "Colombia"
+          },
+          {
+            "name": "Contra",
+            "id": 10376,
+            "logo": "https://owcdn.net/img/66572b1da4d79.png",
+            "rank": 2,
+            "points": 1907,
+            "country": "Colombia"
+          },
+          {
+            "name": "DCT eSports",
+            "id": 17257,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 3,
+            "points": 1872,
+            "country": "International"
+          },
+          {
+            "name": "FUSION",
+            "id": 7269,
+            "logo": "https://owcdn.net/img/63bde15e27452.png",
+            "rank": 4,
+            "points": 1864,
+            "country": "International"
+          },
+          {
+            "name": "STREAMER ARENA",
+            "id": 21459,
+            "logo": "https://owcdn.net/img/69c4c2382b847.png",
+            "rank": 5,
+            "points": 1859,
+            "country": "Venezuela"
+          },
+          {
+            "name": "Chivas Esports",
+            "id": 2131,
+            "logo": "https://owcdn.net/img/63ce2eedbe573.png",
+            "rank": 6,
+            "points": 1834,
+            "country": "Mexico"
+          },
+          {
+            "name": "LAZER",
+            "id": 20808,
+            "logo": "https://owcdn.net/img/698051cea67f9.png",
+            "rank": 7,
+            "points": 1750,
+            "country": "Mexico"
+          },
+          {
+            "name": "KTANA Esports",
+            "id": 15624,
+            "logo": "https://owcdn.net/img/67174040b82f5.png",
+            "rank": 8,
+            "points": 1711,
+            "country": "Mexico"
+          }
+        ]
+      },
+      {
+        "region": "Oceania",
+        "teams": [
+          {
+            "name": "Yi-Jing",
+            "id": 22282,
+            "logo": "https://owcdn.net/img/681895643e00c.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "Australia"
+          },
+          {
+            "name": "Full House",
+            "id": 18234,
+            "logo": "https://owcdn.net/img/6808dc8300397.png",
+            "rank": 2,
+            "points": 1919,
+            "country": "Australia"
+          },
+          {
+            "name": "BaosLittleBuns",
+            "id": 21065,
+            "logo": "https://owcdn.net/img/6997315127f0f.png",
+            "rank": 3,
+            "points": 1882,
+            "country": "Australia"
+          },
+          {
+            "name": "MeatZn",
+            "id": 22234,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 4,
+            "points": 1760,
+            "country": "New Zealand"
+          },
+          {
+            "name": "Justice For Tomorrow",
+            "id": 13849,
+            "logo": "https://owcdn.net/img/65eee36191b62.png",
+            "rank": 5,
+            "points": 1752,
+            "country": "Australia"
+          },
+          {
+            "name": "Squishy Cheeks",
+            "id": 21862,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 6,
+            "points": 1723,
+            "country": "Australia"
+          },
+          {
+            "name": "Arcade Esports",
+            "id": 14281,
+            "logo": "https://owcdn.net/img/65e5c65968f8d.png",
+            "rank": 7,
+            "points": 1696,
+            "country": "Australia"
+          },
+          {
+            "name": "RNM",
+            "id": 22370,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 8,
+            "points": 1678,
+            "country": "International"
+          },
+          {
+            "name": "rabbit gang",
+            "id": 18894,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 9,
+            "points": 1673,
+            "country": "Australia"
+          },
+          {
+            "name": "TROOPERS",
+            "id": 21666,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 10,
+            "points": 1672,
+            "country": "Australia"
+          },
+          {
+            "name": "ZO Esports",
+            "id": 22380,
+            "logo": "https://owcdn.net/img/6a2478f25f27b.png",
+            "rank": 11,
+            "points": 1651,
+            "country": "International"
+          },
+          {
+            "name": "Crusaders",
+            "id": 23246,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 12,
+            "points": 1649,
+            "country": "Australia"
+          },
+          {
+            "name": "Evolve",
+            "id": 22251,
+            "logo": "https://owcdn.net/img/6a26acaf34ecf.png",
+            "rank": 13,
+            "points": 1638,
+            "country": "Australia"
+          },
+          {
+            "name": "hippo",
+            "id": 22602,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 14,
+            "points": 1634,
+            "country": "Australia"
+          },
+          {
+            "name": "Please Peg",
+            "id": 21891,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 15,
+            "points": 1634,
+            "country": "Australia"
+          },
+          {
+            "name": "Densi's Kittens",
+            "id": 20166,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 16,
+            "points": 1618,
+            "country": "Australia"
+          },
+          {
+            "name": "Crimson Nova X",
+            "id": 19178,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 17,
+            "points": 1609,
+            "country": "Australia"
+          },
+          {
+            "name": "Balkan Tuah",
+            "id": 16729,
+            "logo": "https://owcdn.net/img/67f4e60244eff.png",
+            "rank": 18,
+            "points": 1609,
+            "country": "Australia"
+          },
+          {
+            "name": "Overheat",
+            "id": 15226,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 19,
+            "points": 1608,
+            "country": "Australia"
+          },
+          {
+            "name": "Angelo",
+            "id": 22226,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 20,
+            "points": 1607,
+            "country": "International"
+          },
+          {
+            "name": "TXG",
+            "id": 18265,
+            "logo": "https://owcdn.net/img/6a130924edb9f.png",
+            "rank": 21,
+            "points": 1604,
+            "country": "Australia"
+          },
+          {
+            "name": "Horizon",
+            "id": 21872,
+            "logo": "https://owcdn.net/img/69d26cc063a88.png",
+            "rank": 22,
+            "points": 1600,
+            "country": "Australia"
+          },
+          {
+            "name": "Big T and Friends",
+            "id": 23044,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 23,
+            "points": 1596,
+            "country": "Australia"
+          },
+          {
+            "name": "Trident Esports",
+            "id": 6192,
+            "logo": "https://owcdn.net/img/6135ed5106d2c.png",
+            "rank": 24,
+            "points": 1592,
+            "country": "Australia"
+          },
+          {
+            "name": "Traffic Cones",
+            "id": 21863,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 25,
+            "points": 1591,
+            "country": "Australia"
+          }
+        ]
+      },
+      {
+        "region": "MENA",
+        "teams": [
+          {
+            "name": "The Ultimates",
+            "id": 1458,
+            "logo": "https://owcdn.net/img/65cb2b05be39e.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "Saudi Arabia"
+          },
+          {
+            "name": "Stallions Esports",
+            "id": 18120,
+            "logo": "https://owcdn.net/img/68366aa3c10fd.png",
+            "rank": 2,
+            "points": 1977,
+            "country": "Saudi Arabia"
+          },
+          {
+            "name": "Twisted Minds Orchid",
+            "id": 12934,
+            "logo": "https://owcdn.net/img/64cca8a13521a.png",
+            "rank": 3,
+            "points": 1798,
+            "country": "Saudi Arabia"
+          },
+          {
+            "name": "Ghools Esports",
+            "id": 13589,
+            "logo": "https://owcdn.net/img/6989d854eb259.png",
+            "rank": 4,
+            "points": 1791,
+            "country": "Tunisia"
+          },
+          {
+            "name": "BAAM Esports",
+            "id": 17985,
+            "logo": "https://owcdn.net/img/67caae5a045bd.png",
+            "rank": 5,
+            "points": 1773,
+            "country": "Egypt"
+          },
+          {
+            "name": "Team RA'AD",
+            "id": 1471,
+            "logo": "https://owcdn.net/img/61d48692758bc.png",
+            "rank": 6,
+            "points": 1772,
+            "country": "Egypt"
+          },
+          {
+            "name": "3MK",
+            "id": 20568,
+            "logo": "https://owcdn.net/img/69271127b18c9.png",
+            "rank": 7,
+            "points": 1740,
+            "country": "Algeria"
+          },
+          {
+            "name": "Team To Glory",
+            "id": 11231,
+            "logo": "https://owcdn.net/img/63e3d87972464.png",
+            "rank": 8,
+            "points": 1740,
+            "country": "Morocco"
+          },
+          {
+            "name": "Yung",
+            "id": 17988,
+            "logo": "https://owcdn.net/img/698053fc386fd.png",
+            "rank": 9,
+            "points": 1736,
+            "country": "Saudi Arabia"
+          },
+          {
+            "name": "Gamax Esports",
+            "id": 2290,
+            "logo": "https://owcdn.net/img/64c0df3369bcd.png",
+            "rank": 10,
+            "points": 1733,
+            "country": "Egypt"
+          },
+          {
+            "name": "FAST-WIN",
+            "id": 21491,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 11,
+            "points": 1729,
+            "country": "Morocco"
+          },
+          {
+            "name": "VoidWalkers",
+            "id": 15649,
+            "logo": "https://owcdn.net/img/69b1c54474b9f.png",
+            "rank": 12,
+            "points": 1726,
+            "country": "Morocco"
+          },
+          {
+            "name": "Near Reality Squad",
+            "id": 16074,
+            "logo": "https://owcdn.net/img/69205e47e39a7.png",
+            "rank": 13,
+            "points": 1724,
+            "country": "Lebanon"
+          },
+          {
+            "name": "JSK ESPORTS",
+            "id": 21489,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 14,
+            "points": 1723,
+            "country": "Tunisia"
+          },
+          {
+            "name": "Fearless Faction",
+            "id": 21495,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 15,
+            "points": 1717,
+            "country": "Algeria"
+          },
+          {
+            "name": "EGA eSports",
+            "id": 21527,
+            "logo": "https://owcdn.net/img/69abe5f14c00c.png",
+            "rank": 16,
+            "points": 1712,
+            "country": "International"
+          },
+          {
+            "name": "suspects",
+            "id": 20626,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 17,
+            "points": 1711,
+            "country": "Kuwait"
+          },
+          {
+            "name": "Jordan Unit",
+            "id": 20570,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 18,
+            "points": 1709,
+            "country": "Jordan"
+          },
+          {
+            "name": "RAFHA eSPORTS",
+            "id": 18121,
+            "logo": "https://owcdn.net/img/695b6100996bc.png",
+            "rank": 19,
+            "points": 1701,
+            "country": "Egypt"
+          },
+          {
+            "name": "CINYPS E-SPORTS",
+            "id": 20629,
+            "logo": "https://owcdn.net/img/69ac96419217f.png",
+            "rank": 20,
+            "points": 1700,
+            "country": "Libya"
+          },
+          {
+            "name": "Saudi Elite Team",
+            "id": 20622,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 21,
+            "points": 1695,
+            "country": "Saudi Arabia"
+          },
+          {
+            "name": "snap",
+            "id": 20624,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 22,
+            "points": 1695,
+            "country": "Qatar"
+          },
+          {
+            "name": "PeakSouls",
+            "id": 20623,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 23,
+            "points": 1692,
+            "country": "Palestine"
+          },
+          {
+            "name": "BAZ ESPORTS",
+            "id": 19666,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 24,
+            "points": 1689,
+            "country": "International"
+          },
+          {
+            "name": "Vibranium Esports",
+            "id": 16077,
+            "logo": "https://owcdn.net/img/695ca09e6dc74.png",
+            "rank": 25,
+            "points": 1681,
+            "country": "Jordan"
+          }
+        ]
+      },
+      {
+        "region": "Collegiate",
+        "teams": [
+          {
+            "name": "Maryville University",
+            "id": 12900,
+            "logo": "https://owcdn.net/img/6457181dc433a.png",
+            "rank": 1,
+            "points": 2000,
+            "country": "United States"
+          },
+          {
+            "name": "Winthrop University",
+            "id": 10448,
+            "logo": "https://owcdn.net/img/636c2f2592313.png",
+            "rank": 2,
+            "points": 1884,
+            "country": "United States"
+          },
+          {
+            "name": "Northwood University",
+            "id": 10533,
+            "logo": "https://owcdn.net/img/636c597cd68a7.png",
+            "rank": 3,
+            "points": 1847,
+            "country": "United States"
+          },
+          {
+            "name": "Fisher Navy",
+            "id": 10479,
+            "logo": "https://owcdn.net/img/63b525814a4ef.png",
+            "rank": 4,
+            "points": 1777,
+            "country": "United States"
+          },
+          {
+            "name": "UC Irvine",
+            "id": 10577,
+            "logo": "https://owcdn.net/img/63bca3eb92319.png",
+            "rank": 5,
+            "points": 1696,
+            "country": "United States"
+          },
+          {
+            "name": "Columbia College",
+            "id": 11917,
+            "logo": "https://owcdn.net/img/642437560fcab.png",
+            "rank": 6,
+            "points": 1677,
+            "country": "United States"
+          },
+          {
+            "name": "UWaterloo Gold",
+            "id": 8998,
+            "logo": "https://owcdn.net/img/636ee7fde12b6.png",
+            "rank": 7,
+            "points": 1668,
+            "country": "Canada"
+          },
+          {
+            "name": "UCSD Gold",
+            "id": 11361,
+            "logo": "https://owcdn.net/img/627fe238c5975.png",
+            "rank": 8,
+            "points": 1668,
+            "country": "United States"
+          },
+          {
+            "name": "University of Virginia",
+            "id": 11243,
+            "logo": "https://owcdn.net/img/663e51957374c.png",
+            "rank": 9,
+            "points": 1647,
+            "country": "United States"
+          },
+          {
+            "name": "uOttawa Garnet",
+            "id": 10475,
+            "logo": "https://owcdn.net/img/636c5ba5cbb7a.png",
+            "rank": 10,
+            "points": 1646,
+            "country": "Canada"
+          },
+          {
+            "name": "Rutgers University",
+            "id": 20885,
+            "logo": "https://owcdn.net/img/6a627bb45abe8.png",
+            "rank": 11,
+            "points": 1644,
+            "country": "International"
+          },
+          {
+            "name": "MBU Spartans",
+            "id": 13505,
+            "logo": "https://owcdn.net/img/6519bc01608d1.png",
+            "rank": 12,
+            "points": 1641,
+            "country": "United States"
+          },
+          {
+            "name": "Harrisburg University",
+            "id": 13636,
+            "logo": "https://owcdn.net/img/6504e8d17f695.png",
+            "rank": 13,
+            "points": 1634,
+            "country": "United States"
+          },
+          {
+            "name": "Siena Heights University",
+            "id": 14182,
+            "logo": "https://owcdn.net/img/67fd7cab890c6.png",
+            "rank": 14,
+            "points": 1630,
+            "country": "United States"
+          },
+          {
+            "name": "UAESA Green",
+            "id": 7812,
+            "logo": "https://owcdn.net/img/61f3ddd29e55a.png",
+            "rank": 15,
+            "points": 1629,
+            "country": "Canada"
+          },
+          {
+            "name": "West Virginia University",
+            "id": 10482,
+            "logo": "https://owcdn.net/img/663e50bc0927c.png",
+            "rank": 16,
+            "points": 1622,
+            "country": "United States"
+          },
+          {
+            "name": "St. Clair Saints",
+            "id": 9975,
+            "logo": "https://owcdn.net/img/653fbdd4e0d9a.png",
+            "rank": 17,
+            "points": 1621,
+            "country": "Canada"
+          },
+          {
+            "name": "ASU Sun Devils",
+            "id": 10562,
+            "logo": "https://owcdn.net/img/67eb36c0e3c10.png",
+            "rank": 18,
+            "points": 1617,
+            "country": "United States"
+          },
+          {
+            "name": "UH Premiere",
+            "id": 10511,
+            "logo": "https://owcdn.net/img/636d5d1c5e899.png",
+            "rank": 19,
+            "points": 1615,
+            "country": "United States"
+          },
+          {
+            "name": "Radford University",
+            "id": 12671,
+            "logo": "https://owcdn.net/img/64323b200358a.png",
+            "rank": 20,
+            "points": 1609,
+            "country": "United States"
+          },
+          {
+            "name": "USC Gold",
+            "id": 15374,
+            "logo": "https://owcdn.net/img/636c5be25f886.png",
+            "rank": 21,
+            "points": 1605,
+            "country": "United States"
+          },
+          {
+            "name": "Cleveland State",
+            "id": 18179,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 22,
+            "points": 1604,
+            "country": "United States"
+          },
+          {
+            "name": "UGA Black",
+            "id": 10452,
+            "logo": "https://owcdn.net/img/63712e172919e.png",
+            "rank": 23,
+            "points": 1603,
+            "country": "United States"
+          },
+          {
+            "name": "VVT Premier",
+            "id": 2467,
+            "logo": "https://owcdn.net/img/67a2fa619e363.png",
+            "rank": 24,
+            "points": 1598,
+            "country": "United States"
+          },
+          {
+            "name": "UMN Nova",
+            "id": 19379,
+            "logo": "https://www.vlr.gg/img/vlr/tmp/vlr.png",
+            "rank": 25,
+            "points": 1597,
+            "country": "Indonesia"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "captured_at": "2026-09-06T18:03:57.446297Z",
+    "path": "/api/v1/matches/734308",
+    "kind": "request"
+  },
+  {
+    "captured_at": "2026-09-06T18:03:59.161047Z",
+    "path": "/api/v1/matches/734308",
+    "status": 200,
+    "kind": "response",
+    "data": {
+      "teams": [
+        {
+          "name": "100 Thieves",
+          "score": 0,
+          "img": "https://owcdn.net/img/603c00d5c5a08.png",
+          "id": "120"
+        },
+        {
+          "name": "LOUD",
+          "score": 0,
+          "img": "https://owcdn.net/img/62bbec8dc1b9f.png",
+          "id": "6961"
+        }
+      ],
+      "bans": [],
+      "event": {
+        "id": "2977",
+        "img": "https://owcdn.net/img/640f5ab71dfbb.png",
+        "series": "VCT 2026: Americas Stage 2",
+        "stage": "Playoffs: Grand Final",
+        "date": "2026-09-06T17:00:00Z",
+        "patch": null,
+        "status": "live"
+      },
+      "videos": {
+        "streams": [
+          {
+            "name": "VCT Americas",
+            "url": "https://www.twitch.tv/valorant_americas"
+          },
+          {
+            "name": "Valorant Brazil",
+            "url": "https://www.twitch.tv/valorant_br"
+          },
+          {
+            "name": "Valorant LATAM",
+            "url": "https://www.twitch.tv/valorant_la"
+          },
+          {
+            "name": "VCT Americas (YT)",
+            "url": "https://www.youtube.com/@valorant_americas/live"
+          },
+          {
+            "name": "VAL Esports BR (YT)",
+            "url": "https://www.youtube.com/@valesportsbr/live"
+          },
+          {
+            "name": "VAL Esports LA (YT)",
+            "url": "https://www.youtube.com/@VALORANTEsportsLA/live"
+          }
+        ],
+        "vods": []
+      },
+      "map_count": 5,
+      "data": [],
+      "previous_encounters": [
+        {
+          "teams": [
+            {
+              "name": "100 Thieves",
+              "score": 2
+            },
+            {
+              "name": "LOUD",
+              "score": 0
+            }
+          ],
+          "match_id": "706379"
+        },
+        {
+          "teams": [
+            {
+              "name": "100 Thieves",
+              "score": 3
+            },
+            {
+              "name": "LOUD",
+              "score": 0
+            }
+          ],
+          "match_id": "681333"
+        },
+        {
+          "teams": [
+            {
+              "name": "100 Thieves",
+              "score": 2
+            },
+            {
+              "name": "LOUD",
+              "score": 0
+            }
+          ],
+          "match_id": "660376"
+        },
+        {
+          "teams": [
+            {
+              "name": "100 Thieves",
+              "score": 2
+            },
+            {
+              "name": "LOUD",
+              "score": 1
+            }
+          ],
+          "match_id": "596409"
+        },
+        {
+          "teams": [
+            {
+              "name": "100 Thieves",
+              "score": 2
+            },
+            {
+              "name": "LOUD",
+              "score": 1
+            }
+          ],
+          "match_id": "509824"
+        }
+      ]
+    }
+  },
+  {
+    "captured_at": "2026-09-06T18:06:07.653573Z",
+    "path": "/api/v1/events/",
+    "kind": "request"
+  },
+  {
+    "captured_at": "2026-09-06T18:06:07.758149Z",
+    "path": "/api/v1/events/",
+    "status": 200,
+    "kind": "response",
+    "data": [
+      {
+        "id": "2977",
+        "title": "VCT 2026: Americas Stage 2",
+        "status": "ongoing",
+        "prize": "$250,000",
+        "dates": "Jul 17\u2014Sep 7",
+        "location": "br",
+        "img": "https://owcdn.net/img/640f5ab71dfbb.png"
+      },
+      {
+        "id": "3110",
+        "title": "Monsters Reloaded 2026: EMEA Qualifier",
+        "status": "ongoing",
+        "prize": "$0",
+        "dates": "Sep 6\u201422",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6a9881a15d725.png"
+      },
+      {
+        "id": "3082",
+        "title": "Game Changers 2026: LATAM Main Event",
+        "status": "ongoing",
+        "prize": "TBD",
+        "dates": "Aug 3\u2014Sep 14",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3086",
+        "title": "Game Changers 2026: Brazil Finals",
+        "status": "ongoing",
+        "prize": "$19,518",
+        "dates": "Aug 10\u2014Sep 12",
+        "location": "br",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3084",
+        "title": "EZmode Turbo Tuesdays 2026",
+        "status": "ongoing",
+        "prize": "$1,467",
+        "dates": "Aug 18\u2014TBD",
+        "location": "au",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+      },
+      {
+        "id": "3096",
+        "title": "Wave OCE 2026: Breakwater Open",
+        "status": "ongoing",
+        "prize": "$717",
+        "dates": "Aug 31\u2014Oct 4",
+        "location": "au",
+        "img": "https://owcdn.net/img/6a93a8f3d5484.png"
+      },
+      {
+        "id": "3108",
+        "title": "EVC: The Surge 13",
+        "status": "ongoing",
+        "prize": "$3,000",
+        "dates": "Sep 1\u20146",
+        "location": "eu",
+        "img": "https://owcdn.net/img/67c9159528a14.png"
+      },
+      {
+        "id": "3105",
+        "title": "China Evolution Series 2026: Act 3",
+        "status": "ongoing",
+        "prize": "$0",
+        "dates": "Sep 3\u201413",
+        "location": "cn",
+        "img": "https://owcdn.net/img/67a5eb9b2ccea.png"
+      },
+      {
+        "id": "3114",
+        "title": "Monsters Reloaded 2026: Turkish Qualifier",
+        "status": "ongoing",
+        "prize": "$2,000",
+        "dates": "Sep 3\u201424",
+        "location": "tr",
+        "img": "https://owcdn.net/img/6a9881a15d725.png"
+      },
+      {
+        "id": "3120",
+        "title": "FunhaverGG: Back to Basics 2.0 #4",
+        "status": "ongoing",
+        "prize": "$1,000",
+        "dates": "Sep 5\u20147",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3077",
+        "title": "THE POKAL 2026",
+        "status": "ongoing",
+        "prize": "$2,550",
+        "dates": "Aug 31\u2014Sep 14",
+        "location": "de",
+        "img": "https://owcdn.net/img/6531b4013bc83.png"
+      },
+      {
+        "id": "3037",
+        "title": "Game Changers 2026: North America Stage 2",
+        "status": "ongoing",
+        "prize": "$60,000",
+        "dates": "Jun 17\u2014Sep 18",
+        "location": "us",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3097",
+        "title": "R2 New Dawn 2026",
+        "status": "upcoming",
+        "prize": "$539",
+        "dates": "Sep 7\u201419",
+        "location": "au",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+      },
+      {
+        "id": "3085",
+        "title": "Fortress (touch)Grassroots Esports 2026: Series 2",
+        "status": "upcoming",
+        "prize": "TBD",
+        "dates": "Sep 12\u201413",
+        "location": "au",
+        "img": "https://owcdn.net/img/681eeaf6b7202.png"
+      },
+      {
+        "id": "3065",
+        "title": "Game Changers 2026: Pacific",
+        "status": "upcoming",
+        "prize": "$20,000",
+        "dates": "Sep 14\u201420",
+        "location": "id",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3115",
+        "title": "Spike Series: Pulse #5",
+        "status": "upcoming",
+        "prize": "$3,600",
+        "dates": "Sep 14\u201421",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6a566cc65660b.png"
+      },
+      {
+        "id": "2766",
+        "title": "Valorant Champions 2026",
+        "status": "upcoming",
+        "prize": "$2,250,000",
+        "dates": "Sep 24\u2014Oct 18",
+        "location": "cn",
+        "img": "https://owcdn.net/img/692fc60a022bb.png"
+      },
+      {
+        "id": "3116",
+        "title": "RBCORP Tournament #3",
+        "status": "upcoming",
+        "prize": "$1,855",
+        "dates": "Sep 24\u201428",
+        "location": "fr",
+        "img": "https://owcdn.net/img/6a0b407563c04.png"
+      },
+      {
+        "id": "3112",
+        "title": "Monsters Reloaded 2026",
+        "status": "upcoming",
+        "prize": "$35,000",
+        "dates": "Sep 26\u2014Oct 25",
+        "location": "tr",
+        "img": "https://owcdn.net/img/6a9881a15d725.png"
+      },
+      {
+        "id": "3107",
+        "title": "Haste Cup 2026",
+        "status": "upcoming",
+        "prize": "$715",
+        "dates": "Sep 27",
+        "location": "au",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+      },
+      {
+        "id": "3118",
+        "title": "FGC 2026 Qualifier: EMEA",
+        "status": "upcoming",
+        "prize": "$0",
+        "dates": "Oct 2\u20145",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6a98a3baa2604.png"
+      },
+      {
+        "id": "3099",
+        "title": "Game Changers 2026: Americas Last Chance Qualifier",
+        "status": "upcoming",
+        "prize": "$0",
+        "dates": "Oct 14\u201416",
+        "location": "br",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3119",
+        "title": "FGC 2026",
+        "status": "upcoming",
+        "prize": "$15,000",
+        "dates": "Oct 30\u2014Nov 2",
+        "location": "de",
+        "img": "https://owcdn.net/img/6a98a3baa2604.png"
+      },
+      {
+        "id": "3008",
+        "title": "Esports Nations Cup 2027",
+        "status": "upcoming",
+        "prize": "$1,500,000",
+        "dates": "Nov 1\u2014TBD",
+        "location": "sa",
+        "img": "https://owcdn.net/img/6a1440ca673d3.png"
+      },
+      {
+        "id": "2776",
+        "title": "VCT 2026: Pacific Stage 2",
+        "status": "completed",
+        "prize": "$250,000",
+        "dates": "Jul 16\u2014Sep 6",
+        "location": "kr",
+        "img": "https://owcdn.net/img/640f5ae002674.png"
+      },
+      {
+        "id": "3106",
+        "title": "Source League 2026: Summer Split",
+        "status": "completed",
+        "prize": "$0",
+        "dates": "Jul 27\u2014Sep 3",
+        "location": "it",
+        "img": "https://owcdn.net/img/697233880af43.png"
+      },
+      {
+        "id": "3098",
+        "title": "Tashbunny Cup 2026",
+        "status": "completed",
+        "prize": "$248",
+        "dates": "Aug 30\u201431",
+        "location": "my",
+        "img": "https://owcdn.net/img/6a92d9b814712.png"
+      },
+      {
+        "id": "3028",
+        "title": "Game Changers 2026: EMEA Stage 3",
+        "status": "completed",
+        "prize": "$41,064",
+        "dates": "Jul 20\u2014Aug 31",
+        "location": "eu",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3100",
+        "title": "FunhaverGG: Back to Basics 2.0 #3",
+        "status": "completed",
+        "prize": "$1,000",
+        "dates": "Aug 29\u201431",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3102",
+        "title": "Raidiant Academy 2026: 303",
+        "status": "completed",
+        "prize": "$2,000",
+        "dates": "Aug 30\u201431",
+        "location": "us",
+        "img": "https://owcdn.net/img/65e3d189100fa.png"
+      },
+      {
+        "id": "2976",
+        "title": "VCT 2026: EMEA Stage 2",
+        "status": "completed",
+        "prize": "$250,000",
+        "dates": "Jul 15\u2014Aug 31",
+        "location": "es",
+        "img": "https://owcdn.net/img/65ab59620a233.png"
+      },
+      {
+        "id": "3072",
+        "title": "Samurai Cup: Winter Finals 2026",
+        "status": "completed",
+        "prize": "$383",
+        "dates": "Jul 20\u2014Aug 31",
+        "location": "br",
+        "img": "https://owcdn.net/img/6a63a925be970.png"
+      },
+      {
+        "id": "3111",
+        "title": "VAL//HALLA 2026: Season 1",
+        "status": "completed",
+        "prize": "$4,741",
+        "dates": "Aug 1\u201431",
+        "location": "us",
+        "img": "https://owcdn.net/img/6a96c2093fb9f.png"
+      },
+      {
+        "id": "3117",
+        "title": "VALORANT UK Circuit 2026 - August Cup",
+        "status": "completed",
+        "prize": "$677",
+        "dates": "Aug 29\u201431",
+        "location": "gb",
+        "img": "https://owcdn.net/img/66fdc73b19a03.png"
+      },
+      {
+        "id": "3060",
+        "title": "Bell Esports Challenge 2026",
+        "status": "completed",
+        "prize": "$9,525",
+        "dates": "Jul 12\u2014Aug 30",
+        "location": "ca",
+        "img": "https://owcdn.net/img/6a52fa9d9da95.png"
+      },
+      {
+        "id": "3113",
+        "title": "Circuito Tormenta 2026: Kings of Barcelona",
+        "status": "completed",
+        "prize": "$579",
+        "dates": "Aug 29\u201430",
+        "location": "es",
+        "img": "https://owcdn.net/img/6361d0078005a.png"
+      },
+      {
+        "id": "3094",
+        "title": "Game Changers 2026: EMEA Cash Cup August",
+        "status": "completed",
+        "prize": "$2,337",
+        "dates": "Aug 22\u201430",
+        "location": "eu",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3101",
+        "title": "KOV Masters 2026: Summer",
+        "status": "completed",
+        "prize": "$581",
+        "dates": "Aug 22\u201429",
+        "location": "kr",
+        "img": "https://owcdn.net/img/6a92db172e112.png"
+      },
+      {
+        "id": "3090",
+        "title": "FGC 2026 Qualifier: LATAM",
+        "status": "completed",
+        "prize": "$0",
+        "dates": "Aug 15\u201426",
+        "location": "br",
+        "img": "https://owcdn.net/img/6a7f879d4c40d.png"
+      },
+      {
+        "id": "3095",
+        "title": "Tenax Series Season 7",
+        "status": "completed",
+        "prize": "$500",
+        "dates": "Aug 16\u201425",
+        "location": "us",
+        "img": "https://owcdn.net/img/68eea4e69deef.png"
+      },
+      {
+        "id": "3103",
+        "title": "Spike Series 2026: LATAM South #1",
+        "status": "completed",
+        "prize": "$900",
+        "dates": "Aug 18\u201424",
+        "location": "un",
+        "img": "https://owcdn.net/img/6a566cc65660b.png"
+      },
+      {
+        "id": "3093",
+        "title": "FunhaverGG: Free 4 All",
+        "status": "completed",
+        "prize": "$1,500",
+        "dates": "Aug 22\u201424",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3109",
+        "title": "Circuito Tormenta Back on Track - Premium Cup",
+        "status": "completed",
+        "prize": "$584",
+        "dates": "Aug 22\u201424",
+        "location": "es",
+        "img": "https://owcdn.net/img/6a96c248d3a95.png"
+      },
+      {
+        "id": "2978",
+        "title": "VCT 2026: China Stage 2",
+        "status": "completed",
+        "prize": "$250,000",
+        "dates": "Jul 9\u2014Aug 23",
+        "location": "cn",
+        "img": "https://owcdn.net/img/65dd97cea9a25.png"
+      },
+      {
+        "id": "3092",
+        "title": "Welsh Esports League: Season 11",
+        "status": "completed",
+        "prize": "$805",
+        "dates": "Jul 28\u2014Aug 19",
+        "location": "wa",
+        "img": "https://owcdn.net/img/67bcb65b6544e.png"
+      },
+      {
+        "id": "3079",
+        "title": "LG Life's Good Tournament 2026",
+        "status": "completed",
+        "prize": "$1,636",
+        "dates": "Jul 18\u2014Aug 15",
+        "location": "vn",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+      },
+      {
+        "id": "3076",
+        "title": "The Major Six 2026",
+        "status": "completed",
+        "prize": "$5,235",
+        "dates": "Jul 5\u2014Aug 15",
+        "location": "tw",
+        "img": "https://owcdn.net/img/6a669fb573b99.png"
+      },
+      {
+        "id": "3091",
+        "title": "FunhaverGG: Back to Basics 2.0 #2",
+        "status": "completed",
+        "prize": "$1,000",
+        "dates": "Aug 15",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3104",
+        "title": "Laop Cup 2026: Season 3",
+        "status": "completed",
+        "prize": "$394",
+        "dates": "Jul 11\u2014Aug 14",
+        "location": "tw",
+        "img": "https://owcdn.net/img/6a952ef37b1fa.png"
+      },
+      {
+        "id": "3087",
+        "title": "FunhaverGG: Back to Basics 2.0 #1",
+        "status": "completed",
+        "prize": "$1,000",
+        "dates": "Aug 8\u201410",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3083",
+        "title": "Spike Series: Pulse #4",
+        "status": "completed",
+        "prize": "$3,593",
+        "dates": "Aug 3\u201410",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6a566cc65660b.png"
+      },
+      {
+        "id": "3068",
+        "title": "Game Changers 2026: Brazil Last Chance Qualifier",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Jul 17\u2014Aug 3",
+        "location": "br",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3080",
+        "title": "HL TAURI SERIES: SOVEREIGN Edition 1",
+        "status": "completed",
+        "prize": "$1,731",
+        "dates": "Jul 29\u2014Aug 3",
+        "location": "eu",
+        "img": "https://owcdn.net/img/6a70f57f97c2e.png"
+      },
+      {
+        "id": "3070",
+        "title": "Summer Protocol 2026",
+        "status": "completed",
+        "prize": "$559",
+        "dates": "Jul 19\u2014Aug 2",
+        "location": "id",
+        "img": "https://owcdn.net/img/687c7bfcd7c1a.png"
+      },
+      {
+        "id": "3078",
+        "title": "FunhaverGG: Mad Science - LOCKED",
+        "status": "completed",
+        "prize": "$500",
+        "dates": "Aug 1\u20142",
+        "location": "us",
+        "img": "https://owcdn.net/img/679ee0d830fd6.png"
+      },
+      {
+        "id": "2634",
+        "title": "Momentum Gaming: Detonation Series",
+        "status": "paused",
+        "prize": "$381",
+        "dates": "Sep 6\u2014May 16",
+        "location": "in",
+        "img": "https://owcdn.net/img/6a1e4f427095e.png"
+      },
+      {
+        "id": "2814",
+        "title": "TXG Valorant Circuit 2026: Invitational",
+        "status": "completed",
+        "prize": "$1,500",
+        "dates": "Jul 24\u2014Aug 2",
+        "location": "au",
+        "img": "https://owcdn.net/img/695e0f749b196.png"
+      },
+      {
+        "id": "3069",
+        "title": "Road 2 Invitational 2026",
+        "status": "completed",
+        "prize": "$358",
+        "dates": "Jul 23\u2014Aug 2",
+        "location": "au",
+        "img": "https://www.vlr.gg/img/vlr/tmp/vlr.png"
+      },
+      {
+        "id": "3081",
+        "title": "Peak of Legends 2026",
+        "status": "completed",
+        "prize": "$4,628",
+        "dates": "Jul 16\u2014Aug 1",
+        "location": "tw",
+        "img": "https://owcdn.net/img/6a710fa2184be.png"
+      },
+      {
+        "id": "3059",
+        "title": "China National Tournament 2026: Pro Qualifier",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Jul 9\u201430",
+        "location": "cn",
+        "img": "https://owcdn.net/img/6924f636c08a0.png"
+      },
+      {
+        "id": "3063",
+        "title": "VCL 26: Americas Last Chance Qualifier",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Jul 28\u201430",
+        "location": "mx",
+        "img": "https://owcdn.net/img/6009f963577f4.png"
+      },
+      {
+        "id": "3089",
+        "title": "Game Changers 2026: LATAM North Swift Cup 2",
+        "status": "completed",
+        "prize": "$862",
+        "dates": "Jul 22\u201430",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3088",
+        "title": "Game Changers 2026: LATAM South Swift Cup 2",
+        "status": "completed",
+        "prize": "$860",
+        "dates": "Jul 21\u201429",
+        "location": "un",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "2984",
+        "title": "Valorant Prime League",
+        "status": "completed",
+        "prize": "$500",
+        "dates": "May 27\u2014Jul 28",
+        "location": "br",
+        "img": "https://owcdn.net/img/6a0a1dd68912b.png"
+      },
+      {
+        "id": "3062",
+        "title": "VCL 26: Latin America Finals",
+        "status": "completed",
+        "prize": "TBD",
+        "dates": "Jul 27\u201428",
+        "location": "mx",
+        "img": "https://owcdn.net/img/63cbac52cf906.png"
+      },
+      {
+        "id": "3071",
+        "title": "FunhaverGG WILD//WEST: LAN",
+        "status": "completed",
+        "prize": "$10,000",
+        "dates": "Jul 23\u201427",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3074",
+        "title": "Raidiant Academy 2026: 302",
+        "status": "completed",
+        "prize": "$2,000",
+        "dates": "Jul 26\u201427",
+        "location": "us",
+        "img": "https://owcdn.net/img/65e3d189100fa.png"
+      },
+      {
+        "id": "3054",
+        "title": "EVC: The Surge 12",
+        "status": "completed",
+        "prize": "$2,500",
+        "dates": "Jul 21\u201426",
+        "location": "eu",
+        "img": "https://owcdn.net/img/67c9159528a14.png"
+      },
+      {
+        "id": "2974",
+        "title": "Challengers 2026: Japan Split 2",
+        "status": "completed",
+        "prize": "$22,633",
+        "dates": "May 11\u2014Jul 26",
+        "location": "jp",
+        "img": "https://owcdn.net/img/6964a9e385d88.png"
+      },
+      {
+        "id": "2991",
+        "title": "Challengers 2026: Japan Season Finals",
+        "status": "completed",
+        "prize": "$15,088",
+        "dates": "Jul 5\u201426",
+        "location": "jp",
+        "img": "https://owcdn.net/img/6964a9e385d88.png"
+      },
+      {
+        "id": "3024",
+        "title": "Nuvy Circuit 2026 - Season 1",
+        "status": "completed",
+        "prize": "$450",
+        "dates": "Apr 14\u2014Jul 26",
+        "location": "un",
+        "img": "https://owcdn.net/img/6a24fdb752895.png"
+      },
+      {
+        "id": "3048",
+        "title": "Twitch Rivals 2026: Abe's $100,000 Valorant Invitational",
+        "status": "completed",
+        "prize": "$100,000",
+        "dates": "Jul 18\u201425",
+        "location": "us",
+        "img": "https://owcdn.net/img/6303782ad36a8.png"
+      },
+      {
+        "id": "3006",
+        "title": "Game Changers 2026: Korea Split 2",
+        "status": "completed",
+        "prize": "$6,634",
+        "dates": "Jun 15\u2014Jul 20",
+        "location": "kr",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      },
+      {
+        "id": "3067",
+        "title": "FunhaverGG: Plain 2.0 #3",
+        "status": "completed",
+        "prize": "$800",
+        "dates": "Jul 18\u201420",
+        "location": "us",
+        "img": "https://owcdn.net/img/6711f3334e8bf.png"
+      },
+      {
+        "id": "3066",
+        "title": "Game Changers 2026: EMEA Cash Cup July",
+        "status": "completed",
+        "prize": "$2,288",
+        "dates": "Jul 11\u201420",
+        "location": "eu",
+        "img": "https://owcdn.net/img/604be13d01964.png"
+      }
+    ]
+  }
+]

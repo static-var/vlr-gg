@@ -1,0 +1,48 @@
+{
+  "type": "runtime-snapshot",
+  "rs": "1",
+  "screenHash": "16i7g7k",
+  "seq": 35,
+  "count": 65,
+  "targets": [
+    "e23|tap|button|// VCT 2026: AMERICAS STAGE 2||",
+    "e27|tap|button|100 Thieves, 100 Thieves, 0||",
+    "e36|tap|button|LOUD, LOUD, 0||",
+    "e57|tap|button|STREAM: VCT Americas (YT)||",
+    "e59|tap|button|STREAM: VAL Esports BR (YT)||",
+    "e61|tap|button|STREAM: VAL Esports LA (YT)||",
+    "e15|tap|button|Back||",
+    "e51|tap|button|STREAM: VCT Americas||",
+    "e53|tap|button|STREAM: Valorant Brazil||",
+    "e55|tap|button|STREAM: Valorant LATAM||",
+    "e64|tap|button|Match options||"
+  ],
+  "scroll": [
+    "e10|swipe|scroll-view|||"
+  ],
+  "text": [
+    "e18|text|text|// MAPS, SCORES AND PLAYER STATS||",
+    "e19|text|text|VCT 2026: Americas Stage 2||",
+    "e25|text|text|LIVE||",
+    "e26|text|text|Playoffs: Grand Final • Playoffs–Grand Final||",
+    "e31|text|text|100 Thieves||",
+    "e32|text|text|0||",
+    "e40|text|text|LOUD||",
+    "e41|text|text|0||",
+    "e43|text|text|-||",
+    "e44|text|text|-||",
+    "e45|text|text|-||",
+    "e46|text|text|Maps||",
+    "e47|text|text|Patch||",
+    "e48|text|text|Bans||",
+    "e49|text|text|MEDIA||",
+    "e50|text|text|Streams & VODs||",
+    "e52|text|text|STREAM: VCT Americas||",
+    "e54|text|text|STREAM: Valorant Brazil||",
+    "e56|text|text|STREAM: Valorant LATAM||",
+    "e58|text|text|STREAM: VCT Americas (YT)||",
+    "e60|text|text|STREAM: VAL Esports BR (YT)||",
+    "e62|text|text|STREAM: VAL Esports LA (YT)||"
+  ],
+  "udid": "8B6863E9-A1BC-42DE-821B-2A0406C47DD1"
+}

@@ -1,0 +1,50 @@
+{
+  "type": "runtime-snapshot",
+  "rs": "1",
+  "screenHash": "14px2ri",
+  "seq": 27,
+  "count": 74,
+  "targets": [
+    "e22|tap|button|JENOPELLE, SEP 5, 2026, VARREL sent home as Global, T1 seal Champions Shanghai slots, Pacific Stage 2 has reached its penultimate day, with the region's four Champs representatives now sealed.||",
+    "e29|tap|button|JENOPELLE, SEP 5, 2026, Team Heretics releases koshmaras, After a trophy-lifting 2026 with Heretics, koshmaras is out.||",
+    "e36|tap|button|RAEZERI, SEP 5, 2026, 100 Thieves seizes Champions berth, LOUD takes down G2, 100 Thieves secure the fifteenth spot at Champions, while LOUD continue their hunt for the last one.||",
+    "e43|tap|button|CONGOBAT, SEP 4, 2026, NAVI lets chloric and ExiT explore options, NAVI lets go of some of their newest pieces.||",
+    "e53|tap|button|News, News||",
+    "e59|tap|button|Matches, Matches||",
+    "e63|tap|button|Events, Events||",
+    "e67|tap|button|Rankings, Rankings||",
+    "e71|tap|button|About, About||",
+    "e17|tap|button|REFRESH||",
+    "e50|tap|button|||"
+  ],
+  "scroll": [
+    "e10|swipe|scroll-view|||"
+  ],
+  "text": [
+    "e16|text|text|// STORIES FROM COMPETITIVE VALORANT||",
+    "e18|text|text|REFRESH||",
+    "e19|text|text|NEWS||",
+    "e24|text|text|JENOPELLE||",
+    "e26|text|text|SEP 5, 2026||",
+    "e27|text|text|VARREL sent home as Global, T1 seal Champions Shanghai slots||",
+    "e28|text|text|Pacific Stage 2 has reached its penultimate day, with the region's four Champs representatives now sealed.||",
+    "e31|text|text|JENOPELLE||",
+    "e33|text|text|SEP 5, 2026||",
+    "e34|text|text|Team Heretics releases koshmaras||",
+    "e35|text|text|After a trophy-lifting 2026 with Heretics, koshmaras is out.||",
+    "e38|text|text|RAEZERI||",
+    "e40|text|text|SEP 5, 2026||",
+    "e41|text|text|100 Thieves seizes Champions berth, LOUD takes down G2||",
+    "e42|text|text|100 Thieves secure the fifteenth spot at Champions, while LOUD continue their hunt for the last one.||",
+    "e45|text|text|CONGOBAT||",
+    "e47|text|text|SEP 4, 2026||",
+    "e48|text|text|NAVI lets chloric and ExiT explore options||",
+    "e49|text|text|NAVI lets go of some of their newest pieces.||",
+    "e56|text|text|News||",
+    "e62|text|text|Matches||",
+    "e66|text|text|Events||",
+    "e70|text|text|Rankings||",
+    "e74|text|text|About||"
+  ],
+  "udid": "8B6863E9-A1BC-42DE-821B-2A0406C47DD1"
+}

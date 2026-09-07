@@ -1,0 +1,41 @@
+{
+  "type": "runtime-snapshot",
+  "rs": "1",
+  "screenHash": "1ouz93y",
+  "seq": 34,
+  "count": 63,
+  "targets": [
+    "e30|tap|button|// VCT 2026: AMERICAS STAGE 2, LIVE, 100 Thieves, 0, LOUD||",
+    "e42|tap|button|News, News||",
+    "e48|tap|button|Matches, Matches||",
+    "e52|tap|button|Events, Events||",
+    "e56|tap|button|Rankings, Rankings||",
+    "e60|tap|button|About, About||",
+    "e19|tap|button|Live||",
+    "e22|tap|button|Upcoming||",
+    "e25|tap|button|Completed||"
+  ],
+  "scroll": [
+    "e10|swipe|scroll-view|||"
+  ],
+  "text": [
+    "e15|text|text|// RESULTS, SCHEDULES AND LIVE SCORES||",
+    "e16|text|text|Match overview||",
+    "e21|text|text|Live||",
+    "e24|text|text|Upcoming||",
+    "e27|text|text|Completed||",
+    "e33|text|text|LIVE||",
+    "e31|text|text|// VCT 2026: AMERICAS STAGE 2||",
+    "e34|text|text|100 Thieves||",
+    "e35|text|text|0||",
+    "e39|text|text|LOUD||",
+    "e40|text|text|0||",
+    "e41|text|text|Playoffs–Grand Final||",
+    "e51|text|text|Matches||",
+    "e45|text|text|News||",
+    "e55|text|text|Events||",
+    "e59|text|text|Rankings||",
+    "e63|text|text|About||"
+  ],
+  "udid": "8B6863E9-A1BC-42DE-821B-2A0406C47DD1"
+}

@@ -1,0 +1,13 @@
+{
+  "process_id_before_and_after": 56479,
+  "screen": "News article",
+  "before": {
+    "last_updated": 1788721380192,
+    "rows": 30
+  },
+  "after": {
+    "last_updated": 1788721398854,
+    "rows": 30
+  },
+  "refreshed_on_resume": true
+}
