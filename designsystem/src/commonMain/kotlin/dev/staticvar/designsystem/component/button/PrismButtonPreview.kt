@@ -17,12 +17,24 @@ import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
+import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
 internal fun PrismButtonPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
-  PrismTheme(variant = variant) {
+  PrismButtonPreviewContent(variant, PrismThemeFamily.Brutalist)
+}
+
+@PrismPreview
+@Composable
+internal fun PrismButtonConsolePreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+  PrismButtonPreviewContent(variant, PrismThemeFamily.Console)
+}
+
+@Composable
+private fun PrismButtonPreviewContent(variant: PrismVariant, family: PrismThemeFamily) {
+  PrismTheme(variant = variant, family = family) {
     Column(
       modifier =
       Modifier.fillMaxWidth()

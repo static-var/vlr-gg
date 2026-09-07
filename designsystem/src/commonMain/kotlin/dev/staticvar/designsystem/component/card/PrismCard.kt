@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.DpOffset
+import dev.staticvar.designsystem.component.frame.rememberPrismPressProgress
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
@@ -62,6 +65,11 @@ public fun PrismCard(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   content: @Composable ColumnScope.() -> Unit,
 ) {
+  val frame = style.frame
+  val pressProgress by rememberPrismPressProgress(
+    interactionSource,
+    enabled = enabled && onClick != null && frame.shadowOffset != DpOffset.Zero,
+  )
   val finalModifier =
     if (onClick != null) {
       modifier.clickable(
@@ -69,7 +77,7 @@ public fun PrismCard(
         enabled = enabled,
         role = Role.Button,
         interactionSource = interactionSource,
-        indication = ripple(),
+        indication = if (frame.shadowOffset == DpOffset.Zero) ripple() else null,
       )
     } else {
       modifier
@@ -82,6 +90,8 @@ public fun PrismCard(
     contentColor = style.contentColor,
     shape = shape,
     border = style.border,
+    frame = frame,
+    pressProgress = pressProgress,
   ) {
     Column(modifier = Modifier.padding(Prism.dimens.spacingM)) { content() }
   }

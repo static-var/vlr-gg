@@ -7,6 +7,7 @@
 package dev.staticvar.designsystem.component.sheet
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +29,7 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.color.contentColorFor
 
 /**
- * Flat bordered sheet surface for persistent/non-modal use-cases.
+ * Bordered sheet with a theme frame. Optional scrolling stays inside its fixed border and shadow.
  */
 @Composable
 public fun PrismSheet(
@@ -37,6 +39,8 @@ public fun PrismSheet(
   shape: Shape = Prism.shapes.large,
   color: Color = Prism.color.backgroundElevated,
   contentColor: Color = contentColorFor(color),
+  style: PrismSheetStyle = PrismSheetStyle.Standard,
+  scrollState: ScrollState? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   PrismSurface(
@@ -44,10 +48,13 @@ public fun PrismSheet(
     color = color,
     contentColor = contentColor,
     shape = shape,
-    border = BorderStroke(Prism.dimens.strokeDefault, Prism.color.stroke),
+    border = style.border,
+    frame = style.frame,
   ) {
     Column(
-      modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM),
+      modifier = Modifier.fillMaxWidth()
+        .then(if (scrollState != null) Modifier.verticalScroll(scrollState) else Modifier)
+        .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       if (header != null) {

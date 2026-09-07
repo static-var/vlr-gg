@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontFamily
 import vlr.designsystem.generated.resources.Res
 import vlr.designsystem.generated.resources.chakra_petch_regular
 import vlr.designsystem.generated.resources.space_grotesk_regular
+import vlr.designsystem.generated.resources.vt323_regular
 import org.jetbrains.compose.resources.Font as ResourceFont
 
 @Immutable
@@ -25,6 +26,7 @@ internal data class PrismFontFamilies(
   val labelAlt: FontFamily,
   val caption: FontFamily,
   val button: FontFamily,
+  val pixel: FontFamily = display,
 )
 
 @Composable
@@ -32,7 +34,9 @@ internal fun rememberPrismFontFamilies(): PrismFontFamilies {
   val displayFont = FontFamily(ResourceFont(Res.font.chakra_petch_regular))
   val bodyFont = FontFamily(ResourceFont(Res.font.space_grotesk_regular))
 
-  return remember(displayFont, bodyFont) {
+  val pixelFont = FontFamily(ResourceFont(Res.font.vt323_regular))
+
+  return remember(displayFont, bodyFont, pixelFont) {
     PrismFontFamilies(
       display = displayFont,
       numeric = displayFont,
@@ -42,6 +46,7 @@ internal fun rememberPrismFontFamilies(): PrismFontFamilies {
       labelAlt = displayFont,
       caption = bodyFont,
       button = bodyFont,
+      pixel = pixelFont,
     )
   }
 }

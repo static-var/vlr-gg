@@ -26,7 +26,7 @@ import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
 /**
- * Large-form-factor brutalist navigation rail with a preferred width of 220 dp.
+ * Large-form-factor navigation rail with a preferred width of 220 dp.
  */
 @Composable
 public fun PrismBottomNavBarLarge(
@@ -34,6 +34,7 @@ public fun PrismBottomNavBarLarge(
   selectedItemId: String,
   onItemSelected: (PrismBottomNavItem) -> Unit,
   modifier: Modifier = Modifier,
+  style: PrismNavigationRailStyle = PrismNavigationRailStyle.Default,
 ) {
   PrismSurface(
     modifier = modifier.fillMaxHeight().width(220.dp),
@@ -51,7 +52,6 @@ public fun PrismBottomNavBarLarge(
     ) {
       items.forEach { item ->
         val selected = item.id == selectedItemId
-        val borderColor = if (selected) Prism.color.accent else Prism.color.stroke
 
         PrismSurface(
           modifier =
@@ -61,9 +61,9 @@ public fun PrismBottomNavBarLarge(
               onClick = { onItemSelected(item) },
               role = Role.Tab,
             ),
-          color = if (selected) Prism.color.accentSubtle else Prism.color.background,
+          color = style.containerColor(selected),
           shape = Prism.shapes.small,
-          border = BorderStroke(Prism.dimens.strokeDefault, borderColor),
+          frame = style.frame.copy(border = style.border(selected)),
         ) {
           Row(
             modifier =
@@ -78,14 +78,14 @@ public fun PrismBottomNavBarLarge(
             Icon(
               imageVector = if (selected) item.selectedIcon else item.icon,
               contentDescription = item.label,
-              tint = if (selected) Prism.color.titleColor else Prism.color.labelColor,
+              tint = style.iconColor(selected),
             )
 
             Text(
               text = item.label,
               modifier = Modifier.weight(1f),
               style = Prism.typography.button,
-              color = if (selected) Prism.color.titleColor else Prism.color.bodyColor,
+              color = style.contentColor(selected),
               maxLines = 1,
               overflow = TextOverflow.Ellipsis,
             )

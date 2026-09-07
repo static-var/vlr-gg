@@ -27,11 +27,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.staticvar.designsystem.component.frame.prismFrame
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
@@ -65,10 +69,13 @@ public fun PrismDropdown(
     DropdownMenu(
       expanded = expanded,
       onDismissRequest = { expanded = false },
-      modifier = Modifier.width(menuWidth),
-      shape = Prism.shapes.small,
-      border = style.menuBorder,
-      containerColor = Prism.color.surface,
+      modifier = Modifier.width(menuWidth)
+        .prismFrame(style.menuFrame, Prism.shapes.small)
+        .background(Prism.color.surface, Prism.shapes.small)
+        .border(style.menuFrame.border ?: style.menuBorder, Prism.shapes.small)
+        .clip(Prism.shapes.small),
+      shape = RectangleShape,
+      containerColor = Color.Transparent,
       tonalElevation = Prism.dimens.elevationNone,
       shadowElevation = Prism.dimens.elevationNone,
     ) {
@@ -103,6 +110,7 @@ private fun PrismDropdownTrigger(
       .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
     color = style.triggerContainerColor(enabled = enabled),
     border = style.triggerBorder(expanded = expanded, enabled = enabled),
+    frame = style.triggerFrame,
   ) {
     Row(
       modifier = Modifier.heightIn(min = Prism.dimens.controlHeight),

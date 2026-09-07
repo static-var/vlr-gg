@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
+import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
 
 @Preview(name = "Cards - Light", group = "Prism/Card", showBackground = true)
@@ -29,9 +30,21 @@ internal fun PrismCardDarkPreview() {
   PrismCardPreviewContent(variant = PrismVariant.Dark)
 }
 
+@Preview(name = "Console Cards - Light", group = "Prism/Card", showBackground = true)
 @Composable
-private fun PrismCardPreviewContent(variant: PrismVariant) {
-  PrismTheme(variant = variant) {
+internal fun PrismCardConsoleLightPreview() {
+  PrismCardPreviewContent(PrismVariant.Light, PrismThemeFamily.Console)
+}
+
+@Preview(name = "Console Cards - Dark", group = "Prism/Card", showBackground = true)
+@Composable
+internal fun PrismCardConsoleDarkPreview() {
+  PrismCardPreviewContent(PrismVariant.Dark, PrismThemeFamily.Console)
+}
+
+@Composable
+private fun PrismCardPreviewContent(variant: PrismVariant, family: PrismThemeFamily = PrismThemeFamily.Brutalist) {
+  PrismTheme(variant = variant, family = family) {
     Column(
       modifier =
       Modifier.fillMaxWidth()

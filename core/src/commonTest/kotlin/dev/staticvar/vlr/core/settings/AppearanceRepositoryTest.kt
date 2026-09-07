@@ -36,6 +36,34 @@ class AppearanceRepositoryTest {
   }
 
   @Test
+  fun consoleRestoresSystemAndExplicitModesWithoutChangingCatppuccinFlavour() {
+    val storage = MapSettings()
+    val repository = AppearanceRepository(storage)
+    repository.setCatppuccinFlavour(CatppuccinFlavour.Latte)
+    repository.setFamily(ThemeFamily.Console)
+
+    val systemAppearance = AppearanceRepository(storage).settings.value
+    assertEquals(ThemeFamily.Console, systemAppearance.family)
+    assertEquals(null, systemAppearance.mode)
+    assertFalse(systemAppearance.isDark(systemIsDark = false))
+    assertTrue(systemAppearance.isDark(systemIsDark = true))
+
+    AppearanceMode.entries.forEach { mode ->
+      repository.setMode(mode)
+      val restored = AppearanceRepository(storage)
+      assertEquals(ThemeFamily.Console, restored.settings.value.family)
+      assertEquals(mode, restored.settings.value.mode)
+      assertEquals(mode == AppearanceMode.Dark, restored.settings.value.isDark(systemIsDark = false))
+      assertEquals(mode == AppearanceMode.Dark, restored.settings.value.isDark(systemIsDark = true))
+      restored.setFamily(ThemeFamily.Catppuccin)
+      assertEquals(CatppuccinFlavour.Latte, restored.settings.value.catppuccinFlavour)
+      assertFalse(restored.settings.value.isDark(systemIsDark = true))
+      restored.setFamily(ThemeFamily.Console)
+      assertEquals(mode, AppearanceRepository(storage).settings.value.mode)
+    }
+  }
+
+  @Test
   fun unknownStoredValuesUseDefaults() {
     val storage = MapSettings()
     storage.putString("appearance.mode", "unknown")

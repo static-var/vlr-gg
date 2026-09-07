@@ -51,7 +51,7 @@ public fun PrismTag(
     modifier = modifier,
     color = visualState.containerColor,
     shape = Prism.shapes.small,
-    border = visualState.border,
+    frame = style.frame.copy(border = visualState.border),
   ) {
     PrismTagContent(
       text = resolvedText,
@@ -63,7 +63,7 @@ public fun PrismTag(
 
 @Composable
 private fun rememberPrismTagVisualState(style: PrismTagStyle, enabled: Boolean): PrismTagVisualState {
-  val animation = Prism.anim.standard
+  val animation = Prism.anim.selection
   val containerColor by
     animateColorAsState(
       targetValue = if (enabled) style.containerColor else style.disabledContainerColor,
@@ -86,7 +86,7 @@ private fun rememberPrismTagVisualState(style: PrismTagStyle, enabled: Boolean):
   return PrismTagVisualState(
     containerColor = containerColor,
     contentColor = contentColor,
-    border = BorderStroke(width = Prism.dimens.strokeDefault, color = borderColor),
+    border = BorderStroke(width = style.border.width, color = borderColor),
   )
 }
 

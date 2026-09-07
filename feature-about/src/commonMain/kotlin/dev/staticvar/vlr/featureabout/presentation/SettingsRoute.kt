@@ -73,27 +73,30 @@ public fun SettingsRoute(
     }
     PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
       Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-        if (family == ThemeFamily.Brutalist) {
-          PrismSectionTitle(title = "Appearance", preLabel = "display")
-          Text("Choose a light or dark look.", style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
-          PrismSegmentedButtons(
-            options = modeOptions,
-            selectedOptionId = if (isDark) AppearanceMode.Dark.name else AppearanceMode.Light.name,
-            onOptionSelected = { onModeSelected(AppearanceMode.valueOf(it.id)) },
-          )
-        } else {
-          PrismSectionTitle(title = "Flavour", preLabel = "catppuccin")
-          Text(
-            "Latte is light. Frappé, Macchiato, and Mocha offer three shades of dark.",
-            style = Prism.typography.bodySmall,
-            color = Prism.color.bodyColor,
-          )
-          PrismDropdown(
-            modifier = Modifier.fillMaxWidth(),
-            options = flavourOptions,
-            selectedOptionId = catppuccinFlavour.name,
-            onOptionSelected = { onFlavourSelected(CatppuccinFlavour.valueOf(it.id)) },
-          )
+        when (family) {
+          ThemeFamily.Brutalist, ThemeFamily.Console -> {
+            PrismSectionTitle(title = "Appearance", preLabel = "display")
+            Text("Choose a light or dark look.", style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
+            PrismSegmentedButtons(
+              options = modeOptions,
+              selectedOptionId = if (isDark) AppearanceMode.Dark.name else AppearanceMode.Light.name,
+              onOptionSelected = { onModeSelected(AppearanceMode.valueOf(it.id)) },
+            )
+          }
+          ThemeFamily.Catppuccin -> {
+            PrismSectionTitle(title = "Flavour", preLabel = "catppuccin")
+            Text(
+              "Latte is light. Frappé, Macchiato, and Mocha offer three shades of dark.",
+              style = Prism.typography.bodySmall,
+              color = Prism.color.bodyColor,
+            )
+            PrismDropdown(
+              modifier = Modifier.fillMaxWidth(),
+              options = flavourOptions,
+              selectedOptionId = catppuccinFlavour.name,
+              onOptionSelected = { onFlavourSelected(CatppuccinFlavour.valueOf(it.id)) },
+            )
+          }
         }
       }
     }
@@ -108,6 +111,7 @@ private val modeOptions = listOf(
 private val familyOptions = listOf(
   PrismSegmentedButtonOption(ThemeFamily.Brutalist.name, "Brutalist"),
   PrismSegmentedButtonOption(ThemeFamily.Catppuccin.name, "Catppuccin"),
+  PrismSegmentedButtonOption(ThemeFamily.Console.name, "Console"),
 )
 
 private val flavourOptions = listOf(

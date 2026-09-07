@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
 /**
  * Visual treatment for [PrismTabs].
@@ -21,6 +22,11 @@ import dev.staticvar.designsystem.prism.Prism
  */
 @Immutable
 public sealed interface PrismTabStyle {
+  @get:Composable
+  @get:ReadOnlyComposable
+  public val frame: PrismFrameTokens
+    get() = Prism.frames.control
+
   @Composable
   @ReadOnlyComposable
   public fun containerColor(selected: Boolean, enabled: Boolean): Color
@@ -93,7 +99,8 @@ public sealed interface PrismTabStyle {
     @Composable
     @ReadOnlyComposable
     override fun border(selected: Boolean, enabled: Boolean): BorderStroke {
-      val width = if (selected && enabled) Prism.dimens.strokeThick else Prism.dimens.strokeDefault
+      val width =
+        frame.border?.width ?: if (selected && enabled) Prism.dimens.strokeThick else Prism.dimens.strokeDefault
       val color = if (enabled) Prism.color.stroke else Prism.color.strokeVariant
       return BorderStroke(width = width, color = color)
     }

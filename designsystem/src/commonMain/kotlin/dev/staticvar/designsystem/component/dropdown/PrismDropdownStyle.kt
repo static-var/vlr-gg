@@ -12,12 +12,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
 /**
  * Visual treatment for [PrismDropdown].
  */
 @Immutable
 public sealed interface PrismDropdownStyle {
+  @get:Composable
+  @get:ReadOnlyComposable
+  public val triggerFrame: PrismFrameTokens
+    get() = Prism.frames.control
+
+  @get:Composable
+  @get:ReadOnlyComposable
+  public val menuFrame: PrismFrameTokens
+    get() = Prism.frames.panel
+
   @get:Composable
   @get:ReadOnlyComposable
   public val triggerWidth: Dp

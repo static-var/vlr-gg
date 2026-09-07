@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.animation.PrismAnimationPreset
 
 /**
  * Visual treatment for [PrismBottomNavBar].
@@ -53,8 +54,10 @@ public sealed interface PrismBottomNavBarStyle {
   @get:ReadOnlyComposable
   public val labelTextStyle: TextStyle
 
-  /** Animation duration for selected-item color, offset, and weight changes. */
-  public val selectionAnimationDurationMillis: Int
+  /** Theme motion for selected-item color, offset, and weight changes. */
+  @get:Composable
+  @get:ReadOnlyComposable
+  public val selectionAnimation: PrismAnimationPreset
 
   @Composable
   @ReadOnlyComposable
@@ -104,7 +107,10 @@ public sealed interface PrismBottomNavBarStyle {
       @ReadOnlyComposable
       get() = Prism.typography.sectionTitle.copy(fontSize = PrismBottomNavBarDefaults.labelFontSize)
 
-    override val selectionAnimationDurationMillis: Int = PrismBottomNavBarDefaults.selectionAnimationDurationMillis
+    override val selectionAnimation: PrismAnimationPreset
+      @Composable
+      @ReadOnlyComposable
+      get() = Prism.anim.navigationSelection
 
     @Composable
     @ReadOnlyComposable
@@ -132,7 +138,6 @@ public sealed interface PrismBottomNavBarStyle {
 }
 
 private object PrismBottomNavBarDefaults {
-  const val selectionAnimationDurationMillis: Int = 800
   const val unselectedItemWeight: Float = 1f
   const val selectedItemWeight: Float = 1.1f
   const val unselectedItemZIndex: Float = 0f

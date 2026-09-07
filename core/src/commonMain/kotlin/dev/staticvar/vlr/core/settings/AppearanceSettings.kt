@@ -6,11 +6,11 @@ package dev.staticvar.vlr.core.settings
 
 public enum class AppearanceMode { Light, Dark }
 
-public enum class ThemeFamily { Brutalist, Catppuccin }
+public enum class ThemeFamily { Brutalist, Catppuccin, Console }
 
 public enum class CatppuccinFlavour { Latte, Frappe, Macchiato, Mocha }
 
-/** A null mode follows the device for Brutalist until the user makes an explicit choice. */
+/** A null mode follows the device for Brutalist and Console until the user makes an explicit choice. */
 public data class AppearanceSettings(
   public val mode: AppearanceMode? = null,
   public val family: ThemeFamily = ThemeFamily.Brutalist,
@@ -18,7 +18,7 @@ public data class AppearanceSettings(
 ) {
   public fun isDark(systemIsDark: Boolean): Boolean = when (family) {
     ThemeFamily.Catppuccin -> catppuccinFlavour != CatppuccinFlavour.Latte
-    ThemeFamily.Brutalist -> when (mode) {
+    ThemeFamily.Brutalist, ThemeFamily.Console -> when (mode) {
       AppearanceMode.Light -> false
       AppearanceMode.Dark -> true
       null -> systemIsDark

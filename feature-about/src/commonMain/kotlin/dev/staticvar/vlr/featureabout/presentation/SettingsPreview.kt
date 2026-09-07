@@ -49,3 +49,19 @@ internal fun CatppuccinSettingsPreview() {
     )
   }
 }
+
+@PrismPreview
+@Composable
+internal fun ConsoleSettingsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+  PrismTheme(variant = variant, family = PrismThemeFamily.Console) {
+    SettingsRoute(
+      isDark = variant == PrismVariant.Dark,
+      family = ThemeFamily.Console,
+      catppuccinFlavour = CatppuccinFlavour.Frappe,
+      onModeSelected = {},
+      onFamilySelected = {},
+      onFlavourSelected = {},
+      onBack = {},
+    )
+  }
+}

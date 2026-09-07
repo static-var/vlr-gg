@@ -67,4 +67,8 @@ public data class PrismColorPalette(
 
   // Overlay color stays dark in both appearances.
   val scrim: Color,
+
+  // Filled primary actions can differ from the accent used for text and selection.
+  val primaryAction: Color = accent,
+  val onPrimaryAction: Color = onAccent,
 )

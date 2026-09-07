@@ -10,12 +10,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import dev.staticvar.designsystem.prism.animation.DefaultPrismAnimations
+import dev.staticvar.designsystem.prism.animation.LocalPrismAnimations
 import dev.staticvar.designsystem.prism.animation.PrismAnimationTokens
 import dev.staticvar.designsystem.prism.color.PrismColorPalette
 import dev.staticvar.designsystem.prism.color.prismColors
 import dev.staticvar.designsystem.prism.dimens.PrismDimens
 import dev.staticvar.designsystem.prism.dimens.prismDimens
+import dev.staticvar.designsystem.prism.frame.LocalPrismFrames
+import dev.staticvar.designsystem.prism.frame.PrismFrames
 import dev.staticvar.designsystem.prism.typography.PrismTypography
 import dev.staticvar.designsystem.prism.typography.prismTypography
 
@@ -56,5 +58,12 @@ public object Prism {
     get() = MaterialTheme.shapes
 
   public val anim: PrismAnimationTokens
-    get() = DefaultPrismAnimations
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalPrismAnimations.current
+
+  public val frames: PrismFrames
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalPrismFrames.current
 }

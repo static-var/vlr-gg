@@ -10,6 +10,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
 /**
  * Visual treatment for a [PrismIconButton].
@@ -19,6 +20,12 @@ import dev.staticvar.designsystem.prism.Prism
  */
 @Immutable
 public sealed interface PrismIconButtonStyle {
+  /** Theme frame applied outside the component face. */
+  public val frame: PrismFrameTokens
+    @Composable
+    @ReadOnlyComposable
+    get() = Prism.frames.compact
+
   /** Container color used for the current enabled and selected state. */
   @Composable
   @ReadOnlyComposable

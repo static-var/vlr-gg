@@ -10,7 +10,9 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import dev.staticvar.designsystem.prism.PrismCatppuccinFlavour
+import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.designsystem.theme.catppuccin.CatppuccinThemeDefinition
+import dev.staticvar.designsystem.theme.console.ConsoleThemeDefinition
 import dev.staticvar.designsystem.theme.dark.DarkThemeDefinition
 import dev.staticvar.designsystem.theme.light.LightThemeDefinition
 import kotlin.test.Test
@@ -39,6 +41,15 @@ internal class PrismThemeShapeTest {
     listOf(LightThemeDefinition.shapes, DarkThemeDefinition.shapes).forEach { shapes ->
       outlines(shapes).forEach { outline ->
         assertIs<Outline.Rectangle>(outline, "Brutalist containers must keep square corners")
+      }
+    }
+  }
+
+  @Test
+  fun consoleKeepsSquareCornersInBothAppearances() {
+    PrismVariant.entries.forEach { variant ->
+      outlines(ConsoleThemeDefinition(variant).shapes).forEach { outline ->
+        assertIs<Outline.Rectangle>(outline)
       }
     }
   }

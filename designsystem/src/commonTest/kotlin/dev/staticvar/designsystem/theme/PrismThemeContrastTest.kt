@@ -12,6 +12,7 @@ import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.designsystem.prism.color.PrismColorPalette
 import dev.staticvar.designsystem.prism.color.contentColorFor
 import dev.staticvar.designsystem.theme.catppuccin.CatppuccinThemeDefinition
+import dev.staticvar.designsystem.theme.console.ConsolePalette
 import dev.staticvar.designsystem.theme.dark.DarkPalette
 import dev.staticvar.designsystem.theme.light.LightPalette
 import kotlin.test.Test
@@ -47,7 +48,7 @@ internal class PrismThemeContrastTest {
   @Test
   fun actionsAndStatusTagsHaveReadableContent() = forEachTheme { name, palette, _ ->
     val pairs = mapOf(
-      "primary button" to (palette.onAccent to palette.accent),
+      "primary button" to (palette.onPrimaryAction to palette.primaryAction),
       "secondary action" to (palette.onAccentVariant to palette.accentVariant),
       "selected chip" to (palette.accent to palette.accentSubtle),
       "success tag" to (palette.success to palette.successContainer),
@@ -88,12 +89,16 @@ internal class PrismThemeContrastTest {
     assertContrast("$name inverse text", scheme.inverseOnSurface, scheme.inverseSurface)
     assertContrast("$name inverse action", scheme.inversePrimary, scheme.inverseSurface)
     assertContrast("$name tertiary", scheme.onTertiary, scheme.tertiary)
-    assertEquals(palette.accent, scheme.primary)
+    assertEquals(palette.primaryAction, scheme.primary)
     assertEquals(palette.danger, scheme.onErrorContainer)
   }
 
   @Test
-  fun darkSurfacesSeparateElevationAndScrimsDarkenBothModes() = forEachTheme { name, palette, isDark ->
+  fun darkSurfacesSeparateElevationAndScrimsDarkenBothModes() = forEachTheme(includeConsole = false) {
+      name,
+      palette,
+      isDark,
+    ->
     if (isDark) {
       assertNotEquals(palette.surface, palette.surfaceVariant, "$name needs a distinct raised surface")
     }
@@ -113,13 +118,18 @@ internal class PrismThemeContrastTest {
     }
   }
 
-  private fun forEachTheme(block: (String, PrismColorPalette, Boolean) -> Unit) {
+  private fun forEachTheme(includeConsole: Boolean = true, block: (String, PrismColorPalette, Boolean) -> Unit) {
     PrismVariant.entries.forEach { variant ->
       val palette = when (variant) {
         PrismVariant.Dark -> DarkPalette.create()
         PrismVariant.Light -> LightPalette.create()
       }
       block("Brutalist/$variant", palette, variant == PrismVariant.Dark)
+    }
+    if (includeConsole) {
+      PrismVariant.entries.forEach { variant ->
+        block("Console/$variant", ConsolePalette.create(variant), variant == PrismVariant.Dark)
+      }
     }
     PrismCatppuccinFlavour.entries.forEach { flavour ->
       val definition = CatppuccinThemeDefinition(flavour)

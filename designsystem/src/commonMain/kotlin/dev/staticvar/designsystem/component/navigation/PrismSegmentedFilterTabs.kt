@@ -49,6 +49,7 @@ public fun PrismSegmentedFilterTabs(
     color = style.groupContainerColor,
     shape = Prism.shapes.small,
     border = style.groupBorder,
+    frame = style.groupFrame,
   ) {
     Row(
       modifier =
@@ -121,7 +122,7 @@ private fun rememberSegmentedFilterTabVisualState(
   enabled: Boolean,
   style: PrismSegmentedFilterTabStyle,
 ): PrismSegmentedFilterTabVisualState {
-  val animation = Prism.anim.standard
+  val animation = Prism.anim.selection
   val containerColor by
     animateColorAsState(
       targetValue = style.containerColor(selected = selected, enabled = enabled),

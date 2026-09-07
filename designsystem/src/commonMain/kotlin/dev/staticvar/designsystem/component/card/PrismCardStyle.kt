@@ -11,6 +11,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
 /**
  * Visual treatment for a [PrismCard].
@@ -20,6 +21,12 @@ import dev.staticvar.designsystem.prism.Prism
  */
 @Immutable
 public sealed interface PrismCardStyle {
+  /** Theme frame applied outside the component face. */
+  public val frame: PrismFrameTokens
+    @Composable
+    @ReadOnlyComposable
+    get() = Prism.frames.panel
+
   /**
    * Solid fallback color for the card surface.
    *

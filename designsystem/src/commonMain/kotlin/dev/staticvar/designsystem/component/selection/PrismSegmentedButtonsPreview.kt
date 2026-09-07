@@ -20,12 +20,24 @@ import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
+import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
 @Composable
 internal fun PrismSegmentedButtonsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
-  PrismTheme(variant = variant) {
+  PrismSegmentedButtonsExamples(variant, PrismThemeFamily.Brutalist)
+}
+
+@PrismPreview
+@Composable
+internal fun PrismConsoleSegmentedButtonsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+  PrismSegmentedButtonsExamples(variant, PrismThemeFamily.Console)
+}
+
+@Composable
+private fun PrismSegmentedButtonsExamples(variant: PrismVariant, family: PrismThemeFamily) {
+  PrismTheme(variant = variant, family = family) {
     var selectedId by remember { mutableStateOf("catppuccin") }
     val options = remember {
       listOf(

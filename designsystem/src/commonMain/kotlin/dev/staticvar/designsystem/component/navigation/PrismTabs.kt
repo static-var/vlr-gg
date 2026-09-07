@@ -8,6 +8,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,8 +21,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,7 +37,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import dev.staticvar.designsystem.component.frame.prismFrame
+import dev.staticvar.designsystem.component.frame.rememberPrismPressProgress
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
@@ -93,11 +99,22 @@ private fun PrismTabItem(
       style = style,
     )
   val shape = Prism.shapes.small
+  val frame = style.frame
+  val interactions = remember { MutableInteractionSource() }
+  val pressProgress by rememberPrismPressProgress(interactions, enabled && frame.shadowOffset != DpOffset.Zero)
   Column(
     modifier =
     Modifier.widthIn(min = visualState.minWidth)
       .heightIn(min = Prism.dimens.touchTargetMin)
-      .selectable(selected = selected, enabled = enabled, role = Role.Tab, onClick = onClick)
+      .prismFrame(frame = frame, shape = shape, pressProgress = pressProgress)
+      .selectable(
+        selected = selected,
+        enabled = enabled,
+        role = Role.Tab,
+        interactionSource = interactions,
+        indication = if (frame.shadowOffset == DpOffset.Zero) ripple() else null,
+        onClick = onClick,
+      )
       .alpha(if (enabled) 1f else 0.72f)
       .drawWithContent {
         drawContent()
@@ -154,7 +171,7 @@ private fun rememberPrismTabVisualState(
   enabled: Boolean,
   style: PrismTabStyle,
 ): PrismTabVisualState {
-  val animation = Prism.anim.standard
+  val animation = Prism.anim.selection
   val containerColor by
     animateColorAsState(
       targetValue = style.containerColor(selected = selected, enabled = enabled),

@@ -11,7 +11,6 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -25,11 +24,11 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -47,7 +46,6 @@ import dev.staticvar.designsystem.prism.color.contentColorFor
 
 private object PrismModalSheetConstants {
   const val ScrimAlpha: Float = 0.64f
-  const val DurationMillis: Int = 280
 }
 
 /**
@@ -127,8 +125,8 @@ private fun AnimatedVisibilityScope.PrismModalSheetContent(
     Box(
       Modifier.fillMaxSize()
         .animateEnterExit(
-          enter = fadeIn(tween(PrismModalSheetConstants.DurationMillis)),
-          exit = fadeOut(tween(PrismModalSheetConstants.DurationMillis)),
+          enter = fadeIn(Prism.anim.scrimEnter.floatSpec()),
+          exit = fadeOut(Prism.anim.scrimExit.floatSpec()),
         )
         .background(scrimColor)
         .clickable(
@@ -137,22 +135,22 @@ private fun AnimatedVisibilityScope.PrismModalSheetContent(
           onClick = onDismissRequest,
         ),
     )
-    Box(Modifier.fillMaxSize().safeDrawingPadding().padding(Prism.dimens.spacingM)) {
+    Box(Modifier.fillMaxSize().safeDrawingPadding().imePadding().padding(Prism.dimens.spacingM)) {
       PrismSheet(
         modifier =
         modifier.align(Alignment.BottomCenter)
           .animateEnterExit(
-            enter = slideInVertically(tween(PrismModalSheetConstants.DurationMillis)) { it + bottomSpacing },
-            exit = slideOutVertically(tween(PrismModalSheetConstants.DurationMillis)) { it + bottomSpacing },
+            enter = slideInVertically(Prism.anim.sheetEnter.intOffsetSpec()) { it + bottomSpacing },
+            exit = slideOutVertically(Prism.anim.sheetExit.intOffsetSpec()) { it + bottomSpacing },
           )
           .fillMaxWidth()
-          .verticalScroll(rememberScrollState())
           .semantics { if (title != null) paneTitle = title },
         header = { PrismModalSheetHeader(dragHandle, header) },
         footer = footer,
         shape = shape,
         color = color,
         contentColor = contentColor,
+        scrollState = rememberScrollState(),
         content = content,
       )
     }

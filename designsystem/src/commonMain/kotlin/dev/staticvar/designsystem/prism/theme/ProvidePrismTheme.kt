@@ -9,9 +9,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import dev.staticvar.designsystem.prism.animation.LocalPrismAnimations
 import dev.staticvar.designsystem.prism.color.LocalPrismColors
 import dev.staticvar.designsystem.prism.dimens.LocalPrismDimens
 import dev.staticvar.designsystem.prism.dimens.PrismDimens
+import dev.staticvar.designsystem.prism.frame.LocalPrismFrames
 import dev.staticvar.designsystem.prism.typography.LocalPrismTypography
 import dev.staticvar.designsystem.prism.typography.rememberPrismFontFamilies
 
@@ -32,10 +34,13 @@ internal fun <ColorTokens : Any> ProvidePrismTheme(
   val materialTypography =
     remember(definition, typographyTokens) { definition.createMaterialTypography(typographyTokens) }
 
+  val frames = remember(definition, palette) { definition.createFrames(palette) }
   val dimens = remember { PrismDimens() }
 
   CompositionLocalProvider(
     LocalPrismColors provides palette,
+    LocalPrismAnimations provides definition.animations,
+    LocalPrismFrames provides frames,
     LocalPrismTypography provides typographyTokens,
     LocalPrismDimens provides dimens,
     LocalContentColor provides palette.contentPrimary,

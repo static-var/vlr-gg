@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
 /**
  * Visual treatment for [PrismSegmentedFilterTabs].
@@ -24,6 +25,11 @@ import dev.staticvar.designsystem.prism.Prism
  */
 @Immutable
 public sealed interface PrismSegmentedFilterTabStyle {
+  @get:Composable
+  @get:ReadOnlyComposable
+  public val groupFrame: PrismFrameTokens
+    get() = Prism.frames.control
+
   @get:Composable
   @get:ReadOnlyComposable
   public val groupContainerColor: Color

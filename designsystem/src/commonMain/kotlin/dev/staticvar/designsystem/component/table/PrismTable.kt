@@ -41,7 +41,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import dev.staticvar.designsystem.component.frame.prismFrame
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
 @Immutable
 public data class PrismTableColumn(
@@ -118,6 +120,7 @@ public data class PrismTableViewState(
   val borderThickness: Dp,
   val borderColor: Color,
   val cellStyleResolver: PrismTableCellStyleResolver? = null,
+  val frame: PrismFrameTokens = PrismFrameTokens(),
 )
 
 public object PrismTableDefaults {
@@ -156,11 +159,13 @@ public object PrismTableDefaults {
     borderThickness: Dp = Prism.dimens.strokeDefault,
     borderColor: Color = Prism.color.stroke,
     cellStyleResolver: PrismTableCellStyleResolver? = null,
+    frame: PrismFrameTokens = Prism.frames.panel,
   ): PrismTableViewState = PrismTableViewState(
     palette = palette,
     borderThickness = borderThickness,
     borderColor = borderColor,
     cellStyleResolver = cellStyleResolver,
+    frame = frame,
   )
 }
 
@@ -178,13 +183,14 @@ public fun PrismTable(
   val horizontalScroll = rememberScrollState()
   val verticalScroll = rememberScrollState()
   val firstColumn = columns.first()
-  val border = BorderStroke(width = viewState.borderThickness, color = viewState.borderColor)
+  val border = viewState.frame.border ?: BorderStroke(width = viewState.borderThickness, color = viewState.borderColor)
   val indicatorColor = Prism.color.accent
   val indicatorTrackColor = Prism.color.stroke
 
   Box(
     modifier =
     modifier
+      .prismFrame(viewState.frame, Prism.shapes.medium)
       .border(border, Prism.shapes.medium)
       .clip(Prism.shapes.medium)
       .tableScrollIndicator(

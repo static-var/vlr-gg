@@ -8,4 +8,5 @@ package dev.staticvar.designsystem.prism
 public enum class PrismThemeFamily {
   Brutalist,
   Catppuccin,
+  Console,
 }

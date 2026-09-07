@@ -11,10 +11,16 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
 /** Token-backed action surface treatment for [PrismFabSheet]. */
 @Immutable
 public sealed interface PrismFabSheetStyle {
+  @get:Composable
+  @get:ReadOnlyComposable
+  public val frame: PrismFrameTokens
+    get() = Prism.frames.control
+
   @get:Composable
   @get:ReadOnlyComposable
   public val actionSize: Dp

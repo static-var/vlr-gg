@@ -18,8 +18,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import dev.staticvar.designsystem.component.frame.prismFrame
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.color.contentColorFor
+import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
 /**
  * Prism surface component that automatically manages content color.
@@ -49,6 +51,8 @@ import dev.staticvar.designsystem.prism.color.contentColorFor
  * @param contentColor Content color for children (auto-calculated if not provided)
  * @param shape Shape of the surface
  * @param border Optional border
+ * @param frame Optional theme frame; surfaces are flat by default.
+ * @param pressProgress Foreground displacement toward the shadow, between zero and one.
  * @param content Surface content
  */
 @Composable
@@ -59,6 +63,8 @@ public fun PrismSurface(
   contentColor: Color = contentColorFor(color),
   shape: Shape = Prism.shapes.small,
   border: BorderStroke? = null,
+  frame: PrismFrameTokens = PrismFrameTokens(),
+  pressProgress: Float = 0f,
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(LocalContentColor provides contentColor) {
@@ -68,10 +74,13 @@ public fun PrismSurface(
       Modifier.background(color = color, shape = shape)
     }
 
+    val resolvedBorder = frame.border ?: border
+
     Box(
       modifier =
       modifier
-        .then(if (border != null) Modifier.border(border, shape) else Modifier)
+        .prismFrame(frame, shape, pressProgress)
+        .then(if (resolvedBorder != null) Modifier.border(resolvedBorder, shape) else Modifier)
         .then(backgroundModifier)
         .clip(shape),
     ) {

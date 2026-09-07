@@ -10,7 +10,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.designsystem.prism.color.contentColorFor
+import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
 /**
  * Visual treatment for a [PrismButton].
@@ -20,6 +20,12 @@ import dev.staticvar.designsystem.prism.color.contentColorFor
  */
 @Immutable
 public sealed interface PrismButtonStyle {
+  /** Theme frame applied outside the component face. */
+  public val frame: PrismFrameTokens
+    @Composable
+    @ReadOnlyComposable
+    get() = Prism.frames.control
+
   /** Container color used for the current enabled state. */
   @Composable
   @ReadOnlyComposable
@@ -39,18 +45,19 @@ public sealed interface PrismButtonStyle {
   public data object Primary : PrismButtonStyle {
     @Composable
     @ReadOnlyComposable
-    override fun containerColor(enabled: Boolean): Color = if (enabled) Prism.color.accent else Prism.color.surfaceDim
+    override fun containerColor(enabled: Boolean): Color =
+      if (enabled) Prism.color.primaryAction else Prism.color.surfaceDim
 
     @Composable
     @ReadOnlyComposable
     override fun contentColor(enabled: Boolean): Color =
-      if (enabled) contentColorFor(Prism.color.accent) else Prism.color.labelColor
+      if (enabled) Prism.color.onPrimaryAction else Prism.color.labelColor
 
     @Composable
     @ReadOnlyComposable
     override fun border(enabled: Boolean): BorderStroke = BorderStroke(
       width = Prism.dimens.strokeThick,
-      color = if (enabled) Prism.color.accent else Prism.color.stroke,
+      color = if (enabled) Prism.color.primaryAction else Prism.color.stroke,
     )
   }
 

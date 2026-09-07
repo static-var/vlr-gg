@@ -13,10 +13,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
 /** Visual tokens for [PrismSegmentedButtons], including selected and disabled treatments. */
 @Immutable
 public sealed interface PrismSegmentedButtonStyle {
+  @get:Composable
+  @get:ReadOnlyComposable
+  public val frame: PrismFrameTokens
+    get() = Prism.frames.control
+
   @get:Composable
   @get:ReadOnlyComposable
   public val colors: SegmentedButtonColors
@@ -69,7 +75,7 @@ public sealed interface PrismSegmentedButtonStyle {
     override val borderWidth: Dp
       @Composable
       @ReadOnlyComposable
-      get() = Prism.dimens.strokeDefault
+      get() = frame.border?.width ?: Prism.dimens.strokeDefault
 
     override val minHeight: Dp
       @Composable
@@ -83,7 +89,6 @@ public sealed interface PrismSegmentedButtonStyle {
 
     @Composable
     @ReadOnlyComposable
-    override fun borderColor(enabled: Boolean): Color =
-      if (enabled) Prism.color.stroke else Prism.color.strokeVariant
+    override fun borderColor(enabled: Boolean): Color = if (enabled) Prism.color.stroke else Prism.color.strokeVariant
   }
 }

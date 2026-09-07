@@ -15,11 +15,14 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.DpOffset
+import dev.staticvar.designsystem.component.frame.rememberPrismPressProgress
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
@@ -31,7 +34,7 @@ public enum class PrismIconButtonSize {
 }
 
 /**
- * Flat brutalist icon button with a square bordered container.
+ * Icon button with a theme-provided frame and a stable minimum touch target.
  */
 @Composable
 public fun PrismIconButton(
@@ -45,6 +48,11 @@ public fun PrismIconButton(
   selected: Boolean = false,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
+  val frame = style.frame
+  val pressProgress by rememberPrismPressProgress(
+    interactionSource,
+    enabled = enabled && frame.shadowOffset != DpOffset.Zero,
+  )
   val (containerSize, iconSize) =
     when (size) {
       PrismIconButtonSize.Small -> Prism.dimens.iconM + Prism.dimens.spacingXs to Prism.dimens.iconS
@@ -65,15 +73,20 @@ public fun PrismIconButton(
         enabled = enabled,
         role = Role.Button,
         interactionSource = interactionSource,
-        indication = ripple(),
+        indication = if (frame.shadowOffset == DpOffset.Zero) ripple() else null,
       ),
     contentAlignment = Alignment.Center,
   ) {
     PrismSurface(
-      modifier = Modifier.size(containerSize),
+      modifier = Modifier.size(
+        width = containerSize + frame.shadowOffset.x,
+        height = containerSize + frame.shadowOffset.y,
+      ),
       color = style.containerColor(enabled = enabled, selected = selected),
       shape = Prism.shapes.small,
       border = style.border(enabled = enabled, selected = selected),
+      frame = frame,
+      pressProgress = pressProgress,
     ) {
       Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Icon(

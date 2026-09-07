@@ -10,3 +10,6 @@ License: space_grotesk_OFL.txt
 
 Only the unmodified static Regular TTF for each family is bundled.
 Font licenses apply to the fonts independently of the app license.
+
+VT323 Regular: https://github.com/google/fonts/tree/main/ofl/vt323
+License: vt323_OFL.txt

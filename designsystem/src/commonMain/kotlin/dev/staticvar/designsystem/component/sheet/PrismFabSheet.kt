@@ -25,9 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.DpOffset
+import dev.staticvar.designsystem.component.frame.rememberPrismPressProgress
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
@@ -89,23 +90,27 @@ private fun PrismFabSheetAction(
   style: PrismFabSheetStyle,
   modifier: Modifier = Modifier,
 ) {
+  val interactionSource = remember { MutableInteractionSource() }
+  val frame = style.frame
+  val pressProgress by rememberPrismPressProgress(interactionSource, frame.shadowOffset != DpOffset.Zero)
   PrismSurface(
-    modifier =
-    modifier
-      .size(style.actionSize)
-      .clip(Prism.shapes.large)
-      .clickable(
-        role = Role.Button,
-        interactionSource = remember { MutableInteractionSource() },
-        indication = ripple(),
-        onClick = onClick,
-      ),
+    modifier = modifier.size(style.actionSize),
     color = style.containerColor,
     contentColor = style.contentColor,
     border = style.border,
+    frame = style.frame,
+    pressProgress = pressProgress,
     shape = Prism.shapes.large,
   ) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(
+      Modifier.fillMaxSize().clickable(
+        role = Role.Button,
+        interactionSource = interactionSource,
+        indication = if (frame.shadowOffset == DpOffset.Zero) ripple() else null,
+        onClick = onClick,
+      ),
+      contentAlignment = Alignment.Center,
+    ) {
       Icon(icon, contentDescription, Modifier.size(Prism.dimens.iconL))
     }
   }

@@ -9,11 +9,12 @@ import androidx.compose.runtime.remember
 import dev.staticvar.designsystem.prism.theme.PrismThemeDefinition
 import dev.staticvar.designsystem.prism.theme.ProvidePrismTheme
 import dev.staticvar.designsystem.theme.catppuccin.CatppuccinThemeDefinition
+import dev.staticvar.designsystem.theme.console.ConsoleThemeDefinition
 import dev.staticvar.designsystem.theme.dark.DarkThemeDefinition
 import dev.staticvar.designsystem.theme.light.LightThemeDefinition
 
 /**
- * Applies a theme [family]. Brutalist uses [variant]; Catppuccin uses [catppuccinFlavour].
+ * Applies a theme [family]. Brutalist and Console use [variant]; Catppuccin uses [catppuccinFlavour].
  * When omitted, the Catppuccin flavour follows [variant] with Latte or Frappé.
  */
 @Composable
@@ -33,6 +34,8 @@ public fun PrismTheme(
         PrismVariant.Light -> LightThemeDefinition
         PrismVariant.Dark -> DarkThemeDefinition
       }
+
+      PrismThemeFamily.Console -> ConsoleThemeDefinition(variant)
 
       PrismThemeFamily.Catppuccin -> CatppuccinThemeDefinition(catppuccinFlavour)
     }

@@ -55,7 +55,7 @@ public fun PrismCheckbox(
 
 @Composable
 private fun rememberPrismCheckboxVisualState(checked: Boolean, enabled: Boolean): PrismCheckboxVisualState {
-  val animation = Prism.anim.standard
+  val animation = Prism.anim.selection
   val animatedContainerColor by
     animateColorAsState(
       targetValue = checkboxContainerColor(checked = checked, enabled = enabled),

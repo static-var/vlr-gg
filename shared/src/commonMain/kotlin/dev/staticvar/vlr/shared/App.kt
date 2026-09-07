@@ -41,6 +41,7 @@ public fun App() {
   val family = when (appearance.family) {
     ThemeFamily.Brutalist -> PrismThemeFamily.Brutalist
     ThemeFamily.Catppuccin -> PrismThemeFamily.Catppuccin
+    ThemeFamily.Console -> PrismThemeFamily.Console
   }
   val flavour = when (appearance.catppuccinFlavour) {
     CatppuccinFlavour.Latte -> PrismCatppuccinFlavour.Latte
@@ -51,7 +52,7 @@ public fun App() {
   PrismTheme(variant = variant, family = family, catppuccinFlavour = flavour) {
     ApplyPlatformAppearance(
       isDark = isDark,
-      followSystem = appearance.family == ThemeFamily.Brutalist && appearance.mode == null,
+      followSystem = appearance.family != ThemeFamily.Catppuccin && appearance.mode == null,
     )
     Surface(
       modifier = Modifier.fillMaxSize(),

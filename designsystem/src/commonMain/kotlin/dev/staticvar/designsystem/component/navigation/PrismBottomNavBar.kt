@@ -7,7 +7,6 @@ package dev.staticvar.designsystem.component.navigation
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -119,30 +118,31 @@ private fun rememberPrismBottomNavItemVisualState(
   selected: Boolean,
   style: PrismBottomNavBarStyle,
 ): PrismBottomNavItemVisualState {
+  val animation = style.selectionAnimation
   val transition = updateTransition(
     targetState = selected,
     label = "BottomNavItemSelection",
   )
   val offsetY by transition.animateDp(
-    transitionSpec = { tween(style.selectionAnimationDurationMillis) },
+    transitionSpec = { animation.dpSpec() },
     label = "BottomNavItemOffset",
   ) { isSelected ->
     style.itemOffsetY(selected = isSelected)
   }
   val weight by transition.animateFloat(
-    transitionSpec = { tween(style.selectionAnimationDurationMillis) },
+    transitionSpec = { animation.floatSpec() },
     label = "BottomNavItemWeight",
   ) { isSelected ->
     style.itemWeight(selected = isSelected)
   }
   val contentColor by transition.animateColor(
-    transitionSpec = { tween(style.selectionAnimationDurationMillis) },
+    transitionSpec = { animation.colorSpec() },
     label = "BottomNavItemContentColor",
   ) { isSelected ->
     style.contentColor(selected = isSelected)
   }
   val backgroundColor by transition.animateColor(
-    transitionSpec = { tween(style.selectionAnimationDurationMillis) },
+    transitionSpec = { animation.colorSpec() },
     label = "BottomNavItemBackgroundColor",
   ) { isSelected ->
     style.itemContainerColor(selected = isSelected)

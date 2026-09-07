@@ -30,7 +30,7 @@ import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 
 /**
- * Flat brutalist chip group with single-select behavior.
+ * Theme-aware chip group with single-select behavior.
  */
 @Composable
 public fun PrismChipGroup(
@@ -39,11 +39,13 @@ public fun PrismChipGroup(
   onChipSelected: (PrismChip) -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  style: PrismChipStyle = PrismChipStyle.Default,
 ) {
   PrismChipGroupInternal(
     chips = chips,
     modifier = modifier,
     enabled = enabled,
+    style = style,
     role = Role.RadioButton,
     isChipSelected = { chip -> chip.id == selectedChipId },
     onChipClick = onChipSelected,
@@ -51,7 +53,7 @@ public fun PrismChipGroup(
 }
 
 /**
- * Flat brutalist chip group with multi-select behavior.
+ * Theme-aware chip group with multi-select behavior.
  */
 @Composable
 public fun PrismChipGroup(
@@ -60,11 +62,13 @@ public fun PrismChipGroup(
   onSelectionChange: (Set<String>) -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  style: PrismChipStyle = PrismChipStyle.Default,
 ) {
   PrismChipGroupInternal(
     chips = chips,
     modifier = modifier,
     enabled = enabled,
+    style = style,
     role = Role.Checkbox,
     isChipSelected = { chip -> chip.id in selectedChipIds },
     onChipClick = { chip ->
@@ -79,12 +83,14 @@ public fun PrismChipGroup(
   )
 }
 
+@Suppress("LongParameterList")
 @Composable
 private fun PrismChipGroupInternal(
   chips: List<PrismChip>,
   modifier: Modifier,
   enabled: Boolean,
   role: Role,
+  style: PrismChipStyle,
   isChipSelected: (PrismChip) -> Boolean,
   onChipClick: (PrismChip) -> Unit,
 ) {
@@ -102,6 +108,7 @@ private fun PrismChipGroupInternal(
         selected = isChipSelected(chip),
         enabled = enabled && chip.enabled,
         role = role,
+        style = style,
         onClick = { onChipClick(chip) },
       )
     }
@@ -109,8 +116,16 @@ private fun PrismChipGroupInternal(
 }
 
 @Composable
-private fun PrismChipItem(chip: PrismChip, selected: Boolean, enabled: Boolean, role: Role, onClick: () -> Unit) {
-  val visualState = rememberPrismChipVisualState(chipId = chip.id, selected = selected, enabled = enabled)
+private fun PrismChipItem(
+  chip: PrismChip,
+  selected: Boolean,
+  enabled: Boolean,
+  role: Role,
+  style: PrismChipStyle,
+  onClick: () -> Unit,
+) {
+  val visualState =
+    rememberPrismChipVisualState(chipId = chip.id, selected = selected, enabled = enabled, style = style)
   val chipIcon = if (selected) chip.selectedIcon ?: chip.icon else chip.icon
 
   PrismSurface(
@@ -120,7 +135,9 @@ private fun PrismChipItem(chip: PrismChip, selected: Boolean, enabled: Boolean, 
       .selectable(selected = selected, onClick = onClick, enabled = enabled, role = role),
     color = visualState.containerColor,
     shape = Prism.shapes.small,
-    border = BorderStroke(width = Prism.dimens.strokeDefault, color = visualState.borderColor),
+    frame = style.frame.copy(
+      border = BorderStroke(width = style.borderWidth, color = visualState.borderColor),
+    ),
   ) {
     Row(
       modifier = Modifier.heightIn(min = Prism.dimens.controlHeight).padding(horizontal = Prism.dimens.spacingM),
@@ -147,49 +164,33 @@ private fun PrismChipItem(chip: PrismChip, selected: Boolean, enabled: Boolean, 
 }
 
 @Composable
-private fun rememberPrismChipVisualState(chipId: String, selected: Boolean, enabled: Boolean): PrismChipVisualState {
-  val animation = Prism.anim.standard
+private fun rememberPrismChipVisualState(
+  chipId: String,
+  selected: Boolean,
+  enabled: Boolean,
+  style: PrismChipStyle,
+): PrismChipVisualState {
+  val animation = Prism.anim.selection
   val containerColor by
     animateColorAsState(
-      targetValue = chipContainerColor(selected = selected, enabled = enabled),
+      targetValue = style.containerColor(selected = selected, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "chip_container_$chipId",
     )
   val contentColor by
     animateColorAsState(
-      targetValue = chipContentColor(selected = selected, enabled = enabled),
+      targetValue = style.contentColor(selected = selected, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "chip_content_$chipId",
     )
   val borderColor by
     animateColorAsState(
-      targetValue = chipBorderColor(selected = selected, enabled = enabled),
+      targetValue = style.borderColor(selected = selected, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "chip_border_$chipId",
     )
 
   return PrismChipVisualState(containerColor, contentColor, borderColor)
-}
-
-@Composable
-private fun chipContainerColor(selected: Boolean, enabled: Boolean): Color = when {
-  !enabled -> Prism.color.surfaceDim
-  selected -> Prism.color.accentSubtle
-  else -> Prism.color.background
-}
-
-@Composable
-private fun chipContentColor(selected: Boolean, enabled: Boolean): Color = when {
-  !enabled -> Prism.color.captionColor
-  selected -> Prism.color.accent
-  else -> Prism.color.bodyColor
-}
-
-@Composable
-private fun chipBorderColor(selected: Boolean, enabled: Boolean): Color = when {
-  !enabled -> Prism.color.stroke
-  selected -> Prism.color.accent
-  else -> Prism.color.stroke
 }
 
 private data class PrismChipVisualState(val containerColor: Color, val contentColor: Color, val borderColor: Color)

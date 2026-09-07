@@ -93,7 +93,7 @@ private fun rememberPrismSwitchVisualState(
       checked -> Prism.color.accent
       else -> Prism.color.titleColor
     }
-  val standardAnimation = Prism.anim.standard
+  val standardAnimation = Prism.anim.selection
   val slowAnimation = Prism.anim.slowFade
   val animatedTrackColor by
     animateColorAsState(

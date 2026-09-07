@@ -10,6 +10,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
 /**
  * Visual treatment for a [PrismTag].
@@ -19,6 +20,11 @@ import dev.staticvar.designsystem.prism.Prism
  */
 @Immutable
 public sealed interface PrismTagStyle {
+  @get:Composable
+  @get:ReadOnlyComposable
+  public val frame: PrismFrameTokens
+    get() = Prism.frames.compact
+
   /** Container color for the enabled tag surface. */
   @get:Composable
   @get:ReadOnlyComposable
@@ -33,7 +39,7 @@ public sealed interface PrismTagStyle {
   @get:Composable
   @get:ReadOnlyComposable
   public val border: BorderStroke
-    get() = BorderStroke(width = Prism.dimens.strokeDefault, color = borderColor)
+    get() = BorderStroke(width = frame.border?.width ?: Prism.dimens.strokeDefault, color = borderColor)
 
   /** Border color for the enabled tag surface. */
   @get:Composable
@@ -56,7 +62,7 @@ public sealed interface PrismTagStyle {
   @get:Composable
   @get:ReadOnlyComposable
   public val disabledBorder: BorderStroke
-    get() = BorderStroke(width = Prism.dimens.strokeDefault, color = disabledBorderColor)
+    get() = BorderStroke(width = frame.border?.width ?: Prism.dimens.strokeDefault, color = disabledBorderColor)
 
   /** Border color used when the tag is disabled. */
   @get:Composable

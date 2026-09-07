@@ -54,7 +54,7 @@ public fun PrismRadioButton(
 
 @Composable
 private fun rememberPrismRadioVisualState(selected: Boolean, enabled: Boolean): PrismRadioVisualState {
-  val animation = Prism.anim.standard
+  val animation = Prism.anim.selection
   val animatedContainerColor by
     animateColorAsState(
       targetValue = radioContainerColor(selected = selected, enabled = enabled),

@@ -36,6 +36,7 @@ internal class PrismThemeLifetimeTest {
     lateinit var screenState: MutableState<Int>
     lateinit var screenScope: CoroutineScope
     var background = Color.Unspecified
+    var pressDuration = -1
     var effectStarts = 0
     var effectDisposals = 0
 
@@ -44,6 +45,7 @@ internal class PrismThemeLifetimeTest {
         val state = remember { mutableStateOf(0) }
         val scope = rememberCoroutineScope()
         val color = Prism.color.background
+        val motion = Prism.anim.press
         DisposableEffect(Unit) {
           effectStarts++
           onDispose { effectDisposals++ }
@@ -52,6 +54,7 @@ internal class PrismThemeLifetimeTest {
           screenState = state
           screenScope = scope
           background = color
+          pressDuration = motion.durationMillis
         }
       }
     }
@@ -63,12 +66,17 @@ internal class PrismThemeLifetimeTest {
     val appearances = listOf(Appearance(variant = PrismVariant.Dark)) +
       PrismCatppuccinFlavour.entries.map { flavour ->
         Appearance(family = PrismThemeFamily.Catppuccin, flavour = flavour)
-      } + Appearance()
+      } + listOf(
+        Appearance(family = PrismThemeFamily.Console, variant = PrismVariant.Dark),
+        Appearance(family = PrismThemeFamily.Console, variant = PrismVariant.Light),
+        Appearance(variant = PrismVariant.Dark),
+      ) + Appearance()
     appearances.forEach { next ->
       val previousBackground = background
       runOnIdle { appearance = next }
       waitForIdle()
       runOnIdle {
+        assertEquals(if (next.family == PrismThemeFamily.Console) 60 else 100, pressDuration)
         assertSame(originalState, screenState, "$next replaced remembered screen state")
         assertEquals(42, screenState.value)
         assertSame(originalScope, screenScope, "$next replaced the screen coroutine scope")

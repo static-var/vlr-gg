@@ -34,6 +34,7 @@ public fun contentColorFor(backgroundColor: Color): Color = Prism.color.contentC
 
 /** Resolves semantic container/content pairs without requiring a composition. */
 public fun PrismColorPalette.contentColorFor(backgroundColor: Color): Color = when (backgroundColor) {
+  primaryAction -> onPrimaryAction
   accent -> onAccent
   accentVariant -> onAccentVariant
   accentSubtle -> accent

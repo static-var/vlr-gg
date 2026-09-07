@@ -13,8 +13,8 @@ import dev.staticvar.designsystem.prism.color.PrismColorPalette
 internal fun createPrismColorScheme(palette: PrismColorPalette, isDark: Boolean): ColorScheme {
   val scheme = if (isDark) darkColorScheme() else lightColorScheme()
   return scheme.copy(
-    primary = palette.accent,
-    onPrimary = palette.onAccent,
+    primary = palette.primaryAction,
+    onPrimary = palette.onPrimaryAction,
     primaryContainer = palette.accentSubtle,
     onPrimaryContainer = palette.accent,
     secondary = palette.accentVariant,
