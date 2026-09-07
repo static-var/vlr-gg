@@ -4,6 +4,13 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,17 +18,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
+import dev.staticvar.designsystem.component.selection.PrismCheckbox
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
-import dev.staticvar.vlr.sharedui.component.match.overview.MatchPreviewItem
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+import dev.staticvar.vlr.sharedui.component.match.overview.MatchPreviewItem
+import dev.staticvar.vlr.sharedui.share.LocalImageSharer
 
 @Composable
 public fun MatchesOverviewRoute(
@@ -48,15 +68,60 @@ internal fun MatchesOverviewScreen(
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
 ) {
+  var selection by remember { mutableStateOf(MatchShareSelection()) }
+  var previewMatches by remember { mutableStateOf<List<MatchPreview>?>(null) }
+  val imageSharer = LocalImageSharer.current
+  val selectionAnimation = Prism.anim.selection
+
+  previewMatches?.let { matches ->
+    if (imageSharer != null) {
+      MatchSharePreviewSheet(matches = matches, imageSharer = imageSharer, onDismiss = { previewMatches = null })
+    }
+  }
+
   Column(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     Column {
-      PrismScreenTitleBar(
-        title = "Match overview",
-        subtitle = "Results, schedules and live scores",
-      )
+      Crossfade(
+        targetState = selection.isActive,
+        animationSpec = Prism.anim.standard.floatSpec(),
+        label = "match_share_app_bar",
+      ) { selecting ->
+        if (selecting) {
+          PrismScreenTitleBar(modifier = Modifier.fillMaxWidth()) {
+            PrismButton(
+              onClick = { selection = MatchShareSelection() },
+              style = PrismButtonStyle.Tertiary,
+            ) { Text("Cancel") }
+            Text(
+              text = "${selection.matches.size}/$MaxSharedMatches selected",
+              modifier = Modifier.weight(1f).padding(horizontal = Prism.dimens.spacingS),
+              style = Prism.typography.bodySmall,
+              textAlign = TextAlign.Center,
+            )
+            PrismButton(
+              onClick = { previewMatches = selection.resolve(uiState.matches) },
+              enabled = selection.matches.isNotEmpty(),
+            ) { Text("Preview") }
+          }
+        } else {
+          PrismScreenTitleBar(
+            title = "Match overview",
+            subtitle = "Results, schedules and live scores",
+            actions = {
+              if (imageSharer != null) {
+                PrismButton(
+                  onClick = { selection = selection.copy(isActive = true) },
+                  style = PrismButtonStyle.Tertiary,
+                  enabled = uiState.matches.isNotEmpty(),
+                ) { Text("Share") }
+              }
+            },
+          )
+        }
+      }
       SharedRefreshStatus(
         isRefreshing = uiState.isRefreshing,
         errorMessage = uiState.errorMessage.takeIf { uiState.matches.isNotEmpty() },
@@ -98,7 +163,32 @@ internal fun MatchesOverviewScreen(
             MatchPreviewItem(
               matchPreview = match,
               modifier = Modifier.fillMaxWidth(),
-              onClick = { onMatchSelected(match.id) },
+              onClick = {
+                if (selection.isActive) selection = selection.toggle(match) else onMatchSelected(match.id)
+              },
+              onLongClick = imageSharer?.let { { selection = selection.toggle(match) } },
+              footerAction = {
+                AnimatedVisibility(
+                  visible = selection.isActive,
+                  enter = fadeIn(selectionAnimation.floatSpec()) + expandIn(
+                    animationSpec = tween(selectionAnimation.durationMillis, easing = selectionAnimation.easing),
+                    expandFrom = Alignment.BottomEnd,
+                  ),
+                  exit = fadeOut(selectionAnimation.floatSpec()) + shrinkOut(
+                    animationSpec = tween(selectionAnimation.durationMillis, easing = selectionAnimation.easing),
+                    shrinkTowards = Alignment.BottomEnd,
+                  ),
+                ) {
+                  PrismCheckbox(
+                    checked = selection.contains(match.id),
+                    onCheckedChange = { selection = selection.toggle(match) },
+                    enabled = selection.contains(match.id) || selection.matches.size < MaxSharedMatches,
+                    modifier = Modifier.semantics {
+                      contentDescription = "Select ${match.team1.name} vs ${match.team2.name}"
+                    },
+                  )
+                }
+              },
             )
           }
         }

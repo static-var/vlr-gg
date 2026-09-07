@@ -44,18 +44,9 @@ public fun PrismScreenTitleBar(
   actions: (@Composable RowScope.() -> Unit)? = null,
   style: PrismScreenTitleBarStyle = PrismScreenTitleBarStyle.Default,
 ) {
-  val systemBarHeight = with(LocalDensity.current) {
-    WindowInsets.statusBars.getTop(this).toDp()
-  }
   val hasNavigation = onBackPress != null
 
-  Row(
-    modifier = modifier
-      .heightIn(min = style.containerHeight + systemBarHeight)
-      .padding(horizontal = 0.dp, vertical = style.verticalPadding)
-      .windowInsetsPadding(WindowInsets.statusBars),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
+  PrismScreenTitleBar(modifier = modifier, style = style) {
     PrismScreenTitleNavigationSlot(
       onBackPress = onBackPress,
     )
@@ -82,6 +73,26 @@ public fun PrismScreenTitleBar(
       PrismScreenTitleActions(content = actions)
     }
   }
+}
+
+/** App-bar container for contextual controls, with the standard height and status-bar inset. */
+@Composable
+public fun PrismScreenTitleBar(
+  modifier: Modifier = Modifier,
+  style: PrismScreenTitleBarStyle = PrismScreenTitleBarStyle.Default,
+  content: @Composable RowScope.() -> Unit,
+) {
+  val systemBarHeight = with(LocalDensity.current) {
+    WindowInsets.statusBars.getTop(this).toDp()
+  }
+  Row(
+    modifier = modifier
+      .heightIn(min = style.containerHeight + systemBarHeight)
+      .padding(horizontal = 0.dp, vertical = style.verticalPadding)
+      .windowInsetsPadding(WindowInsets.statusBars),
+    verticalAlignment = Alignment.CenterVertically,
+    content = content,
+  )
 }
 
 @Composable

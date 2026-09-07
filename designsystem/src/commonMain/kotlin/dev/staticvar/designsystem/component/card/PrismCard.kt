@@ -6,7 +6,7 @@
 
 package dev.staticvar.designsystem.component.card
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -53,6 +53,7 @@ import dev.staticvar.designsystem.prism.Prism
  * @param enabled Whether the clickable card can receive input.
  * @param shape Shape used for the card surface and ripple clipping.
  * @param interactionSource Interaction source used by the clickable state.
+ * @param onLongClick Optional long-press action on an interactive card.
  * @param content Content placed inside the card with Prism spacing.
  */
 @Composable
@@ -63,6 +64,7 @@ public fun PrismCard(
   enabled: Boolean = true,
   shape: Shape = Prism.shapes.medium,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  onLongClick: (() -> Unit)? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val frame = style.frame
@@ -72,8 +74,9 @@ public fun PrismCard(
   )
   val finalModifier =
     if (onClick != null) {
-      modifier.clickable(
+      modifier.combinedClickable(
         onClick = onClick,
+        onLongClick = onLongClick,
         enabled = enabled,
         role = Role.Button,
         interactionSource = interactionSource,

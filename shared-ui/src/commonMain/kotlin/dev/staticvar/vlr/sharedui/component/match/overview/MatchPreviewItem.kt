@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
@@ -30,12 +31,19 @@ import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 
 @Composable
-public fun MatchPreviewItem(modifier: Modifier = Modifier, matchPreview: MatchPreview, onClick: (() -> Unit)? = null) {
+public fun MatchPreviewItem(
+  modifier: Modifier = Modifier,
+  matchPreview: MatchPreview,
+  footerAction: (@Composable () -> Unit)? = null,
+  onLongClick: (() -> Unit)? = null,
+  onClick: (() -> Unit)? = null,
+) {
   FavoriteTicketCardBox(selected = matchPreview.isFavorite, modifier = modifier) {
     PrismCard(
       modifier = Modifier.fillMaxWidth(),
       style = if (matchPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
       onClick = onClick,
+      onLongClick = onLongClick,
     ) {
       Row(
         modifier = Modifier
@@ -68,9 +76,12 @@ public fun MatchPreviewItem(modifier: Modifier = Modifier, matchPreview: MatchPr
       ) {
         Text(
           text = matchPreview.series,
+          modifier = if (footerAction != null) Modifier.weight(1f) else Modifier,
           style = Prism.typography.label,
           color = Prism.color.labelColor,
+          textAlign = TextAlign.Center,
         )
+        footerAction?.invoke()
       }
     }
   }
