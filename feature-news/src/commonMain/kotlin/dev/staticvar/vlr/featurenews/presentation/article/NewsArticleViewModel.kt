@@ -31,9 +31,10 @@ public class NewsArticleViewModel(
     combine(observeNewsArticleUseCase(articleId), refresher.state) { article, refresh ->
       NewsArticleUiState(
         article = article,
-        isLoading = false,
+        isLoading = refresh.isLoading(hasContent = article != null),
         isRefreshing = refresh.isRefreshing,
         errorMessage = refresh.errorMessage,
+        errorDetails = refresh.errorDetails,
       )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, NewsArticleUiState())
 

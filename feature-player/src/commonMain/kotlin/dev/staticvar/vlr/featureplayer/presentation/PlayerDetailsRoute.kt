@@ -23,6 +23,7 @@ import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 
 @Composable
@@ -65,15 +66,25 @@ internal fun PlayerDetailsScreen(
 
       SharedRefreshStatus(
         isRefreshing = uiState.isRefreshing,
-        errorMessage = uiState.errorMessage,
+        errorMessage = uiState.errorMessage.takeIf { player != null },
+        errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
       )
     }
 
     when {
-      uiState.isLoading -> PrismStateMessage(text = "Loading player details…")
+      uiState.isLoading && player == null -> PrismStateMessage(text = "Loading player details…")
 
-      player == null -> PrismStateMessage(text = "Player detail is unavailable.")
+      uiState.errorMessage != null && player == null ->
+        SharedLoadError(
+          errorMessage = uiState.errorMessage,
+          errorDetails = uiState.errorDetails,
+          onRefresh = onRefresh,
+          centered = true,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
+
+      player == null -> PrismStateMessage(text = "No player details published yet.")
 
       else -> {
         PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {

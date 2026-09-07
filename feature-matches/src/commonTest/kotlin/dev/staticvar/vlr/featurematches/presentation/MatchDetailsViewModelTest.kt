@@ -58,7 +58,7 @@ class MatchDetailsViewModelTest {
       val viewModel = createViewModel(repository)
 
       advanceUntilIdle()
-      assertEquals(false, viewModel.uiState.value.isLoading)
+      assertEquals(true, viewModel.uiState.value.isLoading)
       assertEquals(null, viewModel.uiState.value.match)
 
       val shell = matchDetails("match-1")

@@ -44,7 +44,7 @@ class PlayerDetailsViewModelTest {
   }
 
   @Test
-  fun initFinishesLoadingWithoutNetworkWhenDetailsAreMissing() {
+  fun initKeepsLoadingUntilInitialRefreshCompletes() {
     runTest(dispatcher) {
       val repository = FakePlayerRepository()
       val viewModel = createViewModel(repository)
@@ -52,7 +52,7 @@ class PlayerDetailsViewModelTest {
       advanceUntilIdle()
 
       assertEquals(emptyList(), repository.refreshDetailRequests)
-      assertEquals(false, viewModel.uiState.value.isLoading)
+      assertEquals(true, viewModel.uiState.value.isLoading)
     }
   }
 

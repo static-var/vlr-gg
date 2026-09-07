@@ -11,6 +11,7 @@ public data class TeamDetailsUiState(
   val isLoading: Boolean = true,
   val isRefreshing: Boolean = false,
   val errorMessage: String? = null,
+  val errorDetails: String? = null,
 )
 
 public enum class TeamMatchesSection {

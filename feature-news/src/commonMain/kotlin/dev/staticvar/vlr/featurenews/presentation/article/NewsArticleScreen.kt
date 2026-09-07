@@ -24,10 +24,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
-import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardStyle
+import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
-import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsArticle
@@ -99,13 +98,14 @@ internal fun NewsArticleScreen(
 
       SharedRefreshStatus(
         isRefreshing = uiState.isRefreshing,
-        errorMessage = uiState.errorMessage,
+        errorMessage = uiState.errorMessage.takeIf { article != null },
+        errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
       )
     }
 
     when {
-      uiState.isLoading && article?.contentHtml.isNullOrBlank() -> {
+      uiState.isLoading && article == null -> {
         PrismFullscreenLoader(
           modifier = Modifier.fillMaxSize(),
           label = "Loading article",
@@ -113,25 +113,18 @@ internal fun NewsArticleScreen(
         )
       }
 
-      article == null || article.contentHtml.isBlank() -> {
-        PrismCard(
-          style = PrismCardStyle.Outlined,
-        ) {
-          Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-            PrismSectionTitle(
-              title = "Article unavailable",
-              preLabel = "news",
-              showDivider = false,
-            )
-            if (!uiState.errorMessage.isNullOrBlank()) {
-              Text(
-                text = uiState.errorMessage,
-                style = Prism.typography.bodySmall,
-                color = Prism.color.labelColor,
-              )
-            }
-          }
-        }
+      article == null && uiState.errorMessage != null -> {
+        SharedLoadError(
+          errorMessage = uiState.errorMessage,
+          errorDetails = uiState.errorDetails,
+          onRefresh = onRefresh,
+          centered = true,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
+      }
+
+      article == null -> {
+        PrismStateMessage(text = "No article content published yet.")
       }
 
       else -> {
@@ -143,7 +136,15 @@ internal fun NewsArticleScreen(
           item(key = "header") {
             NewsDetailHeaderItem(article = article)
           }
-          newsDetailStoryItems(article = article, playback = videoPlayback)
+          if (article.contentHtml.isBlank()) {
+            item(key = "article-body-state") {
+              PrismStateMessage(
+                text = if (uiState.isLoading || uiState.isRefreshing) "Loading the full story…" else "No article text published yet.",
+              )
+            }
+          } else {
+            newsDetailStoryItems(article = article, playback = videoPlayback)
+          }
           item(key = "source") {
             PrismButton(
               onClick = { uriHandler.openUri(article.url) },

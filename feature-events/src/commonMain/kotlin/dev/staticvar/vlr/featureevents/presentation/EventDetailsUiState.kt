@@ -10,7 +10,9 @@ public data class EventDetailsUiState(
   val event: EventDetails? = null,
   val isLoading: Boolean = true,
   val isRefreshing: Boolean = false,
+  val isDetailLoadPending: Boolean = true,
   val errorMessage: String? = null,
+  val errorDetails: String? = null,
 )
 
 public enum class EventDetailSection {

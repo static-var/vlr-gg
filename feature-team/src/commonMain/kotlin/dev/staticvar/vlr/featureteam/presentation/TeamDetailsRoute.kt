@@ -25,6 +25,7 @@ import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 
 @Composable
@@ -79,15 +80,25 @@ internal fun TeamDetailsScreen(
 
       SharedRefreshStatus(
         isRefreshing = uiState.isRefreshing,
-        errorMessage = uiState.errorMessage,
+        errorMessage = uiState.errorMessage.takeIf { team != null },
+        errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
       )
     }
 
     when {
-      uiState.isLoading -> PrismStateMessage(text = "Loading team details…")
+      uiState.isLoading && team == null -> PrismStateMessage(text = "Loading team details…")
 
-      team == null -> PrismStateMessage(text = "Team detail is unavailable.")
+      uiState.errorMessage != null && team == null ->
+        SharedLoadError(
+          errorMessage = uiState.errorMessage,
+          errorDetails = uiState.errorDetails,
+          onRefresh = onRefresh,
+          centered = true,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
+
+      team == null -> PrismStateMessage(text = "No team details published yet.")
 
       else -> {
         LazyColumn(
@@ -137,6 +148,7 @@ internal fun TeamDetailsScreen(
           }
           item(key = "match-tabs") {
             PrismTabs(
+              modifier = Modifier.padding(bottom = Prism.dimens.spacingS),
               tabs = TeamMatchesSection.entries.map { PrismTab(id = it.name, label = it.name) },
               selectedTabId = section.name,
               onTabSelected = { onSectionSelected(TeamMatchesSection.valueOf(it.id)) },

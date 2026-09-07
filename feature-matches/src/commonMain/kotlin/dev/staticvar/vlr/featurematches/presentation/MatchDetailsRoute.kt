@@ -38,6 +38,7 @@ import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadIt
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
+import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 
 @Composable
@@ -88,28 +89,35 @@ internal fun MatchDetailsScreen(
     ) {
       Column {
         PrismScreenTitleBar(
-          title = if (uiState.isLoading) "Match details" else match?.event?.name ?: "Match details",
+          title = match?.event?.name ?: "Match details",
           subtitle = "Maps, scores and player stats",
           onBackPress = onBack,
         )
 
         SharedRefreshStatus(
           isRefreshing = uiState.isRefreshing,
-          errorMessage = uiState.errorMessage,
+          errorMessage = uiState.errorMessage.takeIf { match != null },
+          errorDetails = uiState.errorDetails,
           onRefresh = onRefresh,
         )
       }
       when {
-        uiState.isLoading -> PrismFullscreenLoader(
+        uiState.isLoading && match == null -> PrismFullscreenLoader(
           modifier = Modifier.fillMaxSize(),
           label = "MATCH",
           supportingText = "Loading match details",
         )
 
         uiState.errorMessage != null && match == null ->
-          PrismStateMessage(text = uiState.errorMessage ?: "Unable to load match details.")
+          SharedLoadError(
+            errorMessage = uiState.errorMessage,
+            errorDetails = uiState.errorDetails,
+            onRefresh = onRefresh,
+            centered = true,
+            modifier = Modifier.fillMaxWidth().weight(1f),
+          )
 
-        match == null -> PrismStateMessage(text = "Match detail is unavailable.")
+        match == null -> PrismStateMessage(text = "No match details published yet.")
 
         else -> {
           val hasDetailedContent =
@@ -137,7 +145,6 @@ internal fun MatchDetailsScreen(
               item {
                 when {
                   uiState.isRefreshing -> MatchDetailInlineLoader()
-                  !uiState.errorMessage.isNullOrBlank() -> PrismStateMessage(text = uiState.errorMessage)
                   else -> PrismStateMessage(text = "Detailed breakdown is not available for this match yet.")
                 }
               }
@@ -175,7 +182,7 @@ internal fun MatchDetailsScreen(
         }
       }
     }
-    if (match != null && !uiState.isLoading && (
+    if (match != null && (
         match.matchData.isNotEmpty() || match.head2head.isNotEmpty() ||
           match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()
         )

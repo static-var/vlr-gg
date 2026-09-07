@@ -48,17 +48,17 @@ class EventDetailsViewModelTest {
   }
 
   @Test
-  fun emptyOfflineCacheStopsLoadingWithoutNetwork() = runTest(dispatcher) {
+  fun emptyOfflineCacheKeepsLoadingWithoutNetwork() = runTest(dispatcher) {
     val repository = FakeEventRepository()
     val viewModel = createViewModel(repository)
 
     advanceUntilIdle()
     assertEquals(emptyList(), repository.refreshDetailRequests)
-    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(true, viewModel.uiState.value.isLoading)
   }
 
   @Test
-  fun refreshShowsCachedShellAndThenNewDatabaseDetails() = runTest(dispatcher) {
+  fun cachedPreviewKeepsDetailSectionsPendingUntilRefreshCompletes() = runTest(dispatcher) {
     val cached = eventDetailsWithoutSlices()
     val repository = FakeEventRepository(details = cached)
     repository.blockDetailRefresh = true
@@ -67,12 +67,14 @@ class EventDetailsViewModelTest {
     advanceUntilIdle()
     assertEquals(cached, viewModel.uiState.value.event)
     assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(true, viewModel.uiState.value.isDetailLoadPending)
     assertEquals(emptyList(), repository.refreshDetailRequests)
 
     viewModel.refresh()
     advanceUntilIdle()
     assertEquals(listOf("event-1"), repository.refreshDetailRequests)
     assertEquals(true, viewModel.uiState.value.isRefreshing)
+    assertEquals(true, viewModel.uiState.value.isDetailLoadPending)
     assertEquals(cached, viewModel.uiState.value.event)
 
     repository.publishDetails(eventDetailsWithSlices())
@@ -80,6 +82,24 @@ class EventDetailsViewModelTest {
     advanceUntilIdle()
     assertEquals(false, viewModel.uiState.value.isRefreshing)
     assertEquals(eventDetailsWithSlices(), viewModel.uiState.value.event)
+    assertEquals(false, viewModel.uiState.value.isDetailLoadPending)
+  }
+
+  @Test
+  fun failedPreviewRefreshStopsSectionLoadingAndExposesError() = runTest(dispatcher) {
+    val cached = eventDetailsWithoutSlices()
+    val repository = FakeEventRepository(details = cached)
+    repository.refreshResult = Result.failure(IllegalStateException("Detail API failed"))
+    val viewModel = createViewModel(repository)
+
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.isDetailLoadPending)
+    viewModel.refresh()
+    advanceUntilIdle()
+
+    assertEquals(cached, viewModel.uiState.value.event)
+    assertEquals(false, viewModel.uiState.value.isDetailLoadPending)
+    assertEquals("Detail API failed", viewModel.uiState.value.errorMessage)
   }
 
   @Test

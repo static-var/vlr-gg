@@ -31,9 +31,10 @@ public class TeamDetailsViewModel(
     combine(observeTeamDetailsUseCase(teamId), refresher.state) { team, refresh ->
       TeamDetailsUiState(
         team = team,
-        isLoading = false,
+        isLoading = refresh.isLoading(hasContent = team != null),
         isRefreshing = refresh.isRefreshing,
         errorMessage = refresh.errorMessage,
+        errorDetails = refresh.errorDetails,
       )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, TeamDetailsUiState())
 

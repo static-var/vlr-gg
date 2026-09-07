@@ -36,9 +36,10 @@ public class MatchDetailsViewModel(
     MatchDetailsUiState(
       match = match,
       preferences = preferences,
-      isLoading = false,
+      isLoading = refresh.isLoading(hasContent = match != null),
       isRefreshing = refresh.isRefreshing,
       errorMessage = refresh.errorMessage,
+      errorDetails = refresh.errorDetails,
     )
   }.stateIn(
     viewModelScope,

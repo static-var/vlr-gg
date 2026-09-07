@@ -26,6 +26,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TeamDetailsViewModelTest {
@@ -44,7 +45,7 @@ class TeamDetailsViewModelTest {
   }
 
   @Test
-  fun initFinishesLoadingWithoutNetworkWhenDetailsAreMissing() {
+  fun initKeepsLoadingUntilInitialRefreshCompletes() {
     runTest(dispatcher) {
       val repository = FakeTeamRepository()
       val viewModel = createViewModel(repository)
@@ -52,8 +53,46 @@ class TeamDetailsViewModelTest {
       advanceUntilIdle()
 
       assertEquals(emptyList(), repository.refreshDetailRequests)
-      assertEquals(false, viewModel.uiState.value.isLoading)
+      assertEquals(true, viewModel.uiState.value.isLoading)
     }
+  }
+
+  @Test
+  fun missingDetailsStayLoadingUntilRequestFailsThenRetryCanFinishEmpty() = runTest(dispatcher) {
+    val repository = FakeTeamRepository()
+    val gate = CompletableDeferred<Unit>()
+    val failure = IllegalStateException("Team request failed", IllegalArgumentException("Invalid response"))
+    repository.refreshGate = gate
+    repository.refreshResult = Result.failure(failure)
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.isLoading)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.isLoading)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+
+    gate.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(null, viewModel.uiState.value.team)
+    assertEquals("Team request failed", viewModel.uiState.value.errorMessage)
+    assertEquals(failure.stackTraceToString(), viewModel.uiState.value.errorDetails)
+
+    repository.refreshGate = CompletableDeferred()
+    repository.refreshResult = Result.success(Unit)
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.isLoading)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+    assertEquals(null, viewModel.uiState.value.errorDetails)
+    repository.refreshGate?.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(null, viewModel.uiState.value.team)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
   }
 
   @Test
@@ -91,6 +130,8 @@ class TeamDetailsViewModelTest {
     advanceUntilIdle()
     assertEquals(false, viewModel.uiState.value.isRefreshing)
     assertEquals("offline", viewModel.uiState.value.errorMessage)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertTrue(viewModel.uiState.value.errorDetails.orEmpty().contains("IllegalStateException: offline"))
     assertEquals(cached, viewModel.uiState.value.team)
   }
 

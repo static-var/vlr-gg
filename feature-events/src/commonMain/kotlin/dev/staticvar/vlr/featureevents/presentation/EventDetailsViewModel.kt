@@ -31,9 +31,11 @@ public class EventDetailsViewModel(
   ) { event, refresh ->
     EventDetailsUiState(
       event = event,
-      isLoading = false,
+      isLoading = refresh.isLoading(hasContent = event != null),
       isRefreshing = refresh.isRefreshing,
+      isDetailLoadPending = !refresh.hasCompleted || refresh.isRefreshing,
       errorMessage = refresh.errorMessage,
+      errorDetails = refresh.errorDetails,
     )
   }.stateIn(
     viewModelScope,

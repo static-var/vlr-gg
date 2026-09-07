@@ -65,17 +65,17 @@ class NewsArticleViewModelTest {
   }
 
   @Test
-  fun missingArticleFinishesLoadingWithoutAutomaticNetworkRequest() {
+  fun missingArticleKeepsLoadingUntilInitialRefreshCompletes() {
     runTest(dispatcher) {
       val repository = FakeNewsRepository(article = null)
       val viewModel = createViewModel(repository, "article-9")
 
       runCurrent()
-      assertEquals(false, viewModel.uiState.value.isLoading)
+      assertEquals(true, viewModel.uiState.value.isLoading)
       advanceUntilIdle()
 
       assertEquals(emptyList(), repository.refreshArticleRequests)
-      assertEquals(false, viewModel.uiState.value.isLoading)
+      assertEquals(true, viewModel.uiState.value.isLoading)
     }
   }
 

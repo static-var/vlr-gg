@@ -31,9 +31,10 @@ public class PlayerDetailsViewModel(
     combine(observePlayerDetailsUseCase(playerId), refresher.state) { player, refresh ->
       PlayerDetailsUiState(
         player = player,
-        isLoading = false,
+        isLoading = refresh.isLoading(hasContent = player != null),
         isRefreshing = refresh.isRefreshing,
         errorMessage = refresh.errorMessage,
+        errorDetails = refresh.errorDetails,
       )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, PlayerDetailsUiState())
 

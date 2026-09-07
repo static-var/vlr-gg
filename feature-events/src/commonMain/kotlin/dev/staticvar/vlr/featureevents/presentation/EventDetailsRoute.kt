@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
+import dev.staticvar.designsystem.component.loader.PrismLoader
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
@@ -30,6 +31,7 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.domain.model.EventStanding
 import dev.staticvar.vlr.domain.model.EventTeam
+import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailMatchItem
@@ -93,25 +95,36 @@ internal fun EventDetailsScreen(
   ) {
     Column {
       PrismScreenTitleBar(
-        title = if (uiState.isLoading) "Tournament details" else event?.title ?: "Tournament details",
+        title = event?.title ?: "Tournament details",
         subtitle = "Teams, matches and standings",
         onBackPress = onBack,
       )
 
-      SharedRefreshStatus(uiState.isRefreshing, uiState.errorMessage, onRefresh)
+      SharedRefreshStatus(
+        isRefreshing = uiState.isRefreshing,
+        errorMessage = uiState.errorMessage.takeIf { event != null },
+        errorDetails = uiState.errorDetails,
+        onRefresh = onRefresh,
+      )
     }
 
     when {
-      uiState.isLoading -> PrismFullscreenLoader(
+      uiState.isLoading && event == null -> PrismFullscreenLoader(
         modifier = Modifier.fillMaxSize(),
         label = "EVENT",
         supportingText = "Loading tournament details",
       )
 
       uiState.errorMessage != null && event == null ->
-        PrismStateMessage(text = uiState.errorMessage ?: "Unable to load event details.")
+        SharedLoadError(
+          errorMessage = uiState.errorMessage,
+          errorDetails = uiState.errorDetails,
+          onRefresh = onRefresh,
+          centered = true,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
 
-      event == null -> PrismStateMessage(text = "Tournament detail is unavailable.")
+      event == null -> PrismStateMessage(text = "No event details published yet.")
 
       else -> {
         val groupedMatches = remember(event.matches, matchGrouping) { event.matches.groupEventMatches(matchGrouping) }
@@ -142,7 +155,11 @@ internal fun EventDetailsScreen(
             EventDetailSection.Matches -> {
               if (event.matches.isEmpty()) {
                 item {
-                  PrismStateMessage(text = "No matches published yet.")
+                  EventEmptySection(
+                    uiState = uiState,
+                    loadingLabel = "Loading matches",
+                    emptyText = "No matches published yet.",
+                  )
                 }
               } else {
                 item {
@@ -163,7 +180,11 @@ internal fun EventDetailsScreen(
             EventDetailSection.Standings -> {
               if (event.standings.isEmpty()) {
                 item {
-                  PrismStateMessage(text = "No standings available yet.")
+                  EventEmptySection(
+                    uiState = uiState,
+                    loadingLabel = "Loading standings",
+                    emptyText = "No standings available yet.",
+                  )
                 }
               } else {
                 item { PrismSectionTitle(title = "Standings", preLabel = "table") }
@@ -176,7 +197,11 @@ internal fun EventDetailsScreen(
             EventDetailSection.Prizes -> {
               if (event.prizes.isEmpty()) {
                 item {
-                  PrismStateMessage(text = "Prize breakdown unavailable.")
+                  EventEmptySection(
+                    uiState = uiState,
+                    loadingLabel = "Loading prizes",
+                    emptyText = "No prize breakdown published yet.",
+                  )
                 }
               } else {
                 item { PrismSectionTitle(title = "Prizes", preLabel = "placements") }
@@ -200,6 +225,18 @@ internal fun EventDetailsScreen(
         }
       }
     }
+  }
+}
+
+@Composable
+private fun EventEmptySection(
+  uiState: EventDetailsUiState,
+  loadingLabel: String,
+  emptyText: String,
+) {
+  when {
+    uiState.isDetailLoadPending -> PrismLoader(label = loadingLabel)
+    uiState.errorMessage == null -> PrismStateMessage(text = emptyText)
   }
 }
 
