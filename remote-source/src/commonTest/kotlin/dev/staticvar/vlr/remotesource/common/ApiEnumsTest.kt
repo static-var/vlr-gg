@@ -14,6 +14,7 @@ class ApiEnumsTest {
     mapOf(
       "live" to MatchStatus.LIVE,
       "completed" to MatchStatus.COMPLETED,
+      "final" to MatchStatus.COMPLETED,
       "upcoming" to MatchStatus.UPCOMING,
       "ongoing" to MatchStatus.ONGOING,
       "tbd" to MatchStatus.TBD,

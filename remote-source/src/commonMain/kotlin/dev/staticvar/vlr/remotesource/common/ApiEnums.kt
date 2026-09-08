@@ -24,7 +24,10 @@ enum class MatchStatus(val wireName: String) {
 
   companion object {
     private val byWire = entries.associateBy(MatchStatus::wireName)
-    fun fromWire(value: String?): MatchStatus? = value?.let { byWire[it] }
+    fun fromWire(value: String?): MatchStatus? = when (value) {
+      "final" -> COMPLETED
+      else -> value?.let { byWire[it] }
+    }
   }
 }
 

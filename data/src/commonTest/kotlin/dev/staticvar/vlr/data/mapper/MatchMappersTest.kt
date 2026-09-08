@@ -31,6 +31,24 @@ import dev.staticvar.vlr.remotesource.match.TeamDto as DetailTeamDto
 class MatchMappersTest {
 
   @Test
+  fun `details without status preserve the cached match status`() {
+    val details = sampleDetailsDto()
+
+    assertEquals("completed", details.toMatchEntity(cachedStatus = "completed").status)
+    assertEquals("UNKNOWN", details.toMatchEntity().status)
+    assertEquals("UNKNOWN", details.toMatchEntity(cachedStatus = "").status)
+  }
+
+  @Test
+  fun `explicit detail status replaces the cached match status`() {
+    val details = sampleDetailsDto().let {
+      it.copy(event = it.event.copy(status = dev.staticvar.vlr.remotesource.common.MatchStatus.COMPLETED))
+    }
+
+    assertEquals("COMPLETED", details.toMatchEntity(cachedStatus = "live").status)
+  }
+
+  @Test
   fun `preview dto maps to Matches with flattened teams`() {
     val dto = MatchPreviewDto(
       id = "m1",

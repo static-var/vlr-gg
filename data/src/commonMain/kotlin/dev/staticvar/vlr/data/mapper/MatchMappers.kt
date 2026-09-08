@@ -76,7 +76,7 @@ internal fun MatchPreviewDto.toEntity(): Matches = Matches(
 // ---------------- Match Details ----------------
 
 /** Core match row from details (updates existing or insert). */
-internal fun MatchDetailsDto.toMatchEntity(): Matches {
+internal fun MatchDetailsDto.toMatchEntity(cachedStatus: String? = null): Matches {
   val team1 = teams.getOrNull(0)
   val team2 = teams.getOrNull(1)
   val parsedScore = parseMatchScore(score)
@@ -87,7 +87,7 @@ internal fun MatchDetailsDto.toMatchEntity(): Matches {
     event_logo_url = event.img,
     series = event.series,
     stage = event.stage,
-    status = event.status?.name ?: "UNKNOWN",
+    status = event.status?.name ?: cachedStatus?.takeIf { it.isNotBlank() } ?: "UNKNOWN",
     time = event.date ?: "",
     eta = null,
     note = note,

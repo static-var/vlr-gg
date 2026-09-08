@@ -174,7 +174,8 @@ internal class MatchRepositoryImpl(
         matchesQueries.deletePreviousEncounters(matchId)
 
         // Insert updated match
-        val matchEntity = dto.toMatchEntity().copy(id = matchId)
+        val cachedMatch = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
+        val matchEntity = dto.toMatchEntity(cachedStatus = cachedMatch?.status).copy(id = matchId)
         upsertMatch(matchEntity)
 
         // Insert related data
