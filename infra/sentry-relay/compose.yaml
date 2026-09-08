@@ -1,0 +1,64 @@
+name: vlr-sentry-relay
+
+services:
+  relay:
+    image: ghcr.io/getsentry/relay:26.8.0
+    command: [run]
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 2g
+    cpus: 2
+    pids_limit: 128
+    stop_grace_period: 45s
+    dns: [1.1.1.1, 1.0.0.1]
+    volumes:
+      - ./.generated/relay:/work/.relay:ro
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    networks: [backend]
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  ingress:
+    image: nginx:1.30.4-alpine
+    entrypoint: [nginx, -g, "daemon off;"]
+    user: "101:101"
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 32
+    depends_on: [relay]
+    volumes:
+      - ./.generated/nginx.conf:/etc/nginx/nginx.conf:ro
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    networks:
+      backend:
+      ingress:
+        aliases: [vlr-sentry-ingress]
+    healthcheck:
+      test: [CMD-SHELL, "wget -q -O /dev/null http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  backend:
+  ingress:
+    external: true
+    name: ${INGRESS_NETWORK:?Set INGRESS_NETWORK in .env}
