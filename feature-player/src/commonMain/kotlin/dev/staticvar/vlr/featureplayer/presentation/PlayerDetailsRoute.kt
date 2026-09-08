@@ -148,7 +148,7 @@ internal fun PlayerDetailsScreen(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
           ) {
-            items(player.pastTeams, key = { (it.id ?: it.name) + it.isCurrent }) { team ->
+            items(player.pastTeams) { team ->
               PrismCard(
                 modifier = Modifier.fillMaxWidth(),
                 style = PrismCardStyle.Outlined,
