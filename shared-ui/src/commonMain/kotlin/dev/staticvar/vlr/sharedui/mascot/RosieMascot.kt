@@ -52,9 +52,8 @@ public fun RosieMascot(modifier: Modifier = Modifier, animated: Boolean = true):
     }
   val fur = lerp(colors.accent, colors.surface, 0.28f)
   val outline = lerp(colors.accent, colors.contentPrimary, 0.55f)
-  val faceFur = lerp(colors.accent, Color.White, 0.88f)
-  val expressionInk = Color(0xFF302936)
   val lightFur = lerp(colors.surface, colors.onAccent, 0.2f)
+  val expressionInk = Color(0xFF302936)
   val stroke = remember { Stroke(width = 2.4f, cap = StrokeCap.Round, join = StrokeJoin.Round) }
 
   Canvas(modifier.size(160.dp).semantics { contentDescription = "Rosie dog mascot" }) {
@@ -83,7 +82,7 @@ public fun RosieMascot(modifier: Modifier = Modifier, animated: Boolean = true):
             drawPath(paths.innerEars, colors.accentSubtle)
             drawPath(paths.head, fur)
             drawPath(paths.head, outline, style = stroke)
-            drawPath(paths.face, faceFur)
+            drawPath(paths.face, fur)
             drawPath(paths.brows, expressionInk.copy(alpha = 0.25f), style = stroke)
             scale(1f, 1f - blink * 0.93f, pivot = Offset(77f, 69f)) {
               drawPath(paths.eyes, expressionInk)
@@ -95,7 +94,7 @@ public fun RosieMascot(modifier: Modifier = Modifier, animated: Boolean = true):
             drawPath(paths.tongue, Color(0xFFE9A3AD))
             drawPath(paths.tongue, expressionInk, style = stroke)
             drawLine(outline.copy(alpha = 0.5f), Offset(77f, 93f), Offset(77f, 97f), 1.4f, StrokeCap.Round)
-            drawPath(paths.muzzle, faceFur)
+            drawPath(paths.muzzle, fur)
             drawPath(paths.smile, expressionInk, style = stroke)
             drawPath(paths.nose, expressionInk)
             drawOval(Color.White.copy(alpha = 0.65f), Offset(72f, 75f), Size(6f, 2.5f))
