@@ -25,6 +25,7 @@ import dev.staticvar.designsystem.component.divider.PrismDividerStyle
 import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.match.MatchFavoriteReasons
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.TeamDetails
 import dev.staticvar.vlr.sharedui.component.common.DetailStatItem
@@ -85,6 +86,10 @@ public fun MatchDetailHeaderItem(
         }
       }
 
+      MatchFavoriteReasons(
+        reasons = match.favoriteReasons,
+        modifier = Modifier.padding(top = Prism.dimens.spacingS),
+      )
       DetailStatStrip(
         items = listOf(
           DetailStatItem(value = match.matchDetailMapCountStat(), label = "Maps"),

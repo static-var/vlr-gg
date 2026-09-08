@@ -24,6 +24,7 @@ import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.match.MatchFavoriteReasons
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
@@ -66,6 +67,10 @@ public fun MatchPreviewItem(
           MatchStatus.UNKNOWN -> Unit
         }
       }
+      MatchFavoriteReasons(
+        reasons = matchPreview.favoriteReasons,
+        modifier = Modifier.align(Alignment.End).padding(top = Prism.dimens.spacingXs),
+      )
       ScoreBox(team1 = matchPreview.team1, team2 = matchPreview.team2, state = matchPreview.status)
       Row(
         modifier = Modifier
