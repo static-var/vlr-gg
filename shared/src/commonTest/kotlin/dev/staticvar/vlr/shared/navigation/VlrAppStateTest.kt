@@ -12,19 +12,19 @@ import kotlin.test.assertTrue
 
 class VlrAppStateTest {
   @Test
-  fun settingsOpensOnceUnderAboutAndBackRestoresRoot() {
+  fun aboutOpensOnceUnderSettingsAndBackRestoresRoot() {
     val appState = VlrAppState(
-      backStack = mutableListOf<NavKey>(AppRoute.About),
+      backStack = mutableListOf<NavKey>(AppRoute.Settings),
       navigationItems = emptyList(),
     )
-    appState.showSettings()
-    appState.showSettings()
-    assertEquals(listOf<NavKey>(AppRoute.About, AppRoute.Settings), appState.backStack)
-    assertEquals(AppRoute.About, AppRoute.Settings.rootDestination)
-    assertEquals("about", appState.selectedNavigationItemId)
+    appState.showAbout()
+    appState.showAbout()
+    assertEquals(listOf<NavKey>(AppRoute.Settings, AppRoute.About), appState.backStack)
+    assertEquals(AppRoute.Settings, AppRoute.About.rootDestination)
+    assertEquals("settings", appState.selectedNavigationItemId)
     assertFalse(appState.shouldShowBottomNavigation)
     appState.navigateUp()
-    assertEquals(listOf<NavKey>(AppRoute.About), appState.backStack)
+    assertEquals(listOf<NavKey>(AppRoute.Settings), appState.backStack)
     assertTrue(appState.shouldShowBottomNavigation)
   }
 

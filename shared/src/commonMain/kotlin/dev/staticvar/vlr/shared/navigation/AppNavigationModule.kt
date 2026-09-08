@@ -207,7 +207,7 @@ internal fun appNavigationModule(): Module = module {
   }
   navigation<AppRoute.About> {
     AboutRoute(
-      onSettings = LocalVlrAppState.current::showSettings,
+      onBack = LocalVlrAppState.current::navigateUp,
       modifier = Modifier.fillMaxSize(),
     )
   }
@@ -221,7 +221,9 @@ internal fun appNavigationModule(): Module = module {
       onModeSelected = viewModel::setMode,
       onFamilySelected = viewModel::setFamily,
       onFlavourSelected = viewModel::setCatppuccinFlavour,
-      onBack = LocalVlrAppState.current::navigateUp,
+      mascot = appearance.mascot,
+      onMascotSelected = viewModel::setMascot,
+      onAbout = LocalVlrAppState.current::showAbout,
       modifier = Modifier.fillMaxSize(),
     )
   }

@@ -13,8 +13,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.savedstate.serialization.SavedStateConfiguration
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavItem
-import dev.staticvar.designsystem.prism.icon.about.StairStepAbout
-import dev.staticvar.designsystem.prism.icon.about.StairStepAboutFilled
+import dev.staticvar.designsystem.prism.icon.settings.StairStepSettings
 import dev.staticvar.designsystem.prism.icon.events.StairStepEvents
 import dev.staticvar.designsystem.prism.icon.events.StairStepEventsFilled
 import dev.staticvar.designsystem.prism.icon.matches.StairStepMatches
@@ -31,7 +30,7 @@ private const val NEWS_ID: String = "news"
 private const val MATCHES_ID: String = "matches"
 private const val EVENTS_ID: String = "events"
 private const val RANKINGS_ID: String = "rankings"
-private const val ABOUT_ID: String = "about"
+private const val SETTINGS_ID: String = "settings"
 
 internal val sceneBreakpoint: Dp = 920.dp
 internal val railBreakpoint: Dp = 1120.dp
@@ -62,7 +61,7 @@ private val rootNavigationItems: List<PrismBottomNavItem> =
     PrismBottomNavItem(id = MATCHES_ID, label = "Matches", icon = StairStepMatches, selectedIcon = StairStepMatchesFilled),
     PrismBottomNavItem(id = EVENTS_ID, label = "Events", icon = StairStepEvents, selectedIcon = StairStepEventsFilled),
     PrismBottomNavItem(id = RANKINGS_ID, label = "Rankings", icon = StairStepRankings, selectedIcon = StairStepRankingsFilled),
-    PrismBottomNavItem(id = ABOUT_ID, label = "About", icon = StairStepAbout, selectedIcon = StairStepAboutFilled),
+    PrismBottomNavItem(id = SETTINGS_ID, label = "Settings", icon = StairStepSettings, selectedIcon = StairStepSettings),
   )
 
 /**
@@ -116,8 +115,8 @@ public class VlrAppState internal constructor(
     replaceWithDetail(route = AppRoute.TeamDetails(teamId = teamId))
   }
 
-  public fun showSettings() {
-    pushRoute(route = AppRoute.Settings)
+  public fun showAbout() {
+    pushRoute(route = AppRoute.About)
   }
 
   public fun showMatchDetails(matchId: String) {
@@ -182,7 +181,7 @@ private val AppRoute.rootNavigationId: String
     AppRoute.Matches -> MATCHES_ID
     AppRoute.Events -> EVENTS_ID
     AppRoute.Rankings -> RANKINGS_ID
-    AppRoute.About -> ABOUT_ID
+    AppRoute.Settings -> SETTINGS_ID
     else -> NEWS_ID
   }
 
@@ -191,6 +190,6 @@ private fun toRootRoute(itemId: String): AppRoute = when (itemId) {
   MATCHES_ID -> AppRoute.Matches
   EVENTS_ID -> AppRoute.Events
   RANKINGS_ID -> AppRoute.Rankings
-  ABOUT_ID -> AppRoute.About
+  SETTINGS_ID -> AppRoute.Settings
   else -> AppRoute.News
 }

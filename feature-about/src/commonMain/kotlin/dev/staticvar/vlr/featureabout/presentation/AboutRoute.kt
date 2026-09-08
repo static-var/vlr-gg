@@ -15,20 +15,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.prism.Prism
 
 @Composable
-public fun AboutRoute(onSettings: () -> Unit, modifier: Modifier = Modifier) {
-  AboutScreen(onSettings = onSettings, modifier = modifier)
+public fun AboutRoute(onBack: () -> Unit, modifier: Modifier = Modifier) {
+  AboutScreen(onBack = onBack, modifier = modifier)
 }
 
 @Composable
-internal fun AboutScreen(modifier: Modifier = Modifier, onSettings: () -> Unit = {}) {
+internal fun AboutScreen(modifier: Modifier = Modifier, onBack: () -> Unit = {}) {
   Column(
     modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
@@ -36,11 +34,7 @@ internal fun AboutScreen(modifier: Modifier = Modifier, onSettings: () -> Unit =
     PrismScreenTitleBar(
       title = "About VLR",
       subtitle = "The app and the people behind it",
-      actions = {
-        PrismButton(onClick = onSettings, style = PrismButtonStyle.Secondary) {
-          Text("Settings")
-        }
-      },
+      onBackPress = onBack,
     )
 
     AboutSection(

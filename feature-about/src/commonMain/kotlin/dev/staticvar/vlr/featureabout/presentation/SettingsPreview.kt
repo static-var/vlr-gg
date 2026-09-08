@@ -13,6 +13,7 @@ import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.vlr.core.settings.CatppuccinFlavour
+import dev.staticvar.vlr.core.settings.MascotPreference
 import dev.staticvar.vlr.core.settings.ThemeFamily
 
 @PrismPreview
@@ -26,7 +27,9 @@ internal fun SettingsPreview(@PreviewParameter(PrismPreviewProvider::class) vari
       onModeSelected = {},
       onFamilySelected = {},
       onFlavourSelected = {},
-      onBack = {},
+      mascot = MascotPreference.Lynx,
+      onMascotSelected = {},
+      onAbout = {},
     )
   }
 }
@@ -45,7 +48,9 @@ internal fun CatppuccinSettingsPreview() {
       onModeSelected = {},
       onFamilySelected = {},
       onFlavourSelected = {},
-      onBack = {},
+      mascot = MascotPreference.Lynx,
+      onMascotSelected = {},
+      onAbout = {},
     )
   }
 }
@@ -61,7 +66,9 @@ internal fun ConsoleSettingsPreview(@PreviewParameter(PrismPreviewProvider::clas
       onModeSelected = {},
       onFamilySelected = {},
       onFlavourSelected = {},
-      onBack = {},
+      mascot = MascotPreference.Lynx,
+      onMascotSelected = {},
+      onAbout = {},
     )
   }
 }
