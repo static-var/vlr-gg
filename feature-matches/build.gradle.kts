@@ -50,6 +50,7 @@ kotlin {
         implementation(libs.koin.core)
         implementation(libs.koin.core.viewmodel)
         api(libs.lifecycle.viewmodel.core)
+        implementation(libs.lifecycle.runtime)
         implementation(projects.core)
         implementation(projects.designsystem)
         implementation(projects.domain)

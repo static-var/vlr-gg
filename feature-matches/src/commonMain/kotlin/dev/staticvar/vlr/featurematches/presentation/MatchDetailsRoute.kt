@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,8 +28,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.currentStateAsState
+import dev.staticvar.vlr.featurematches.presentation.mascot.matchMascotCues
+import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
+import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
+import dev.staticvar.vlr.sharedui.mascot.rememberMascot
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.loader.PrismLoader
@@ -88,8 +97,36 @@ internal fun MatchDetailsScreen(
   val match = uiState.match
   val uriHandler = LocalUriHandler.current
   var selectedMapIndex: Int? by remember(match?.id) { mutableStateOf<Int?>(null) }
+  val listState = rememberLazyListState()
+  var optionsExpanded by remember(match?.id) { mutableStateOf(false) }
+  var mapMenuExpanded by remember(match?.id) { mutableStateOf(false) }
+  var isLeaving by remember(match?.id) { mutableStateOf(false) }
+  val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+  val mascotCharacter = LocalMascotCharacter.current
+  val candidates = remember(match, uiState.favoriteTeamIds, uiState.favoritePlayerIds, selectedMapIndex) {
+    match?.let {
+      matchMascotCues(
+        it,
+        uiState.favoriteTeamIds,
+        uiState.favoritePlayerIds,
+        selectedMapIndex = if (it.matchData.size == 1) 0 else selectedMapIndex,
+      )
+    }.orEmpty()
+  }
+  val mascot = rememberMascot(
+    screenKey = match?.id.orEmpty(),
+    candidates = candidates,
+    isScreenActive = mascotCharacter != null && lifecycleState == Lifecycle.State.RESUMED && !isLeaving,
+    isContentReady = match != null && !uiState.isLoading && !uiState.isRefreshing && uiState.errorMessage == null,
+    isInteracting = listState.isScrollInProgress || optionsExpanded || mapMenuExpanded,
+  )
+  fun leaveScreen(action: () -> Unit) {
+    isLeaving = true
+    mascot.onFinished()
+    action()
+  }
 
-  Box(modifier = modifier.fillMaxSize()) {
+  Box(modifier = modifier.fillMaxSize().clipToBounds()) {
     Column(
       modifier = Modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
@@ -98,7 +135,7 @@ internal fun MatchDetailsScreen(
         PrismScreenTitleBar(
           title = match?.event?.name ?: "Match details",
           subtitle = "Maps, scores and player stats",
-          onBackPress = onBack,
+          onBackPress = { leaveScreen(onBack) },
           actions = {
             if (match != null) {
               PrismFavoriteIcon(
@@ -153,14 +190,15 @@ internal fun MatchDetailsScreen(
               match.videos.streams.isNotEmpty() ||
               match.videos.vods.isNotEmpty()
           LazyColumn(
+            state = listState,
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
           ) {
             item {
               MatchDetailHeaderItem(
                 match = match,
-                onEventSelected = onEventSelected,
-                onTeamSelected = onTeamSelected,
+                onEventSelected = { id -> leaveScreen { onEventSelected(id) } },
+                onTeamSelected = { id -> leaveScreen { onTeamSelected(id) } },
                 actions = if (match.shouldShowCalendarAction()) {
                   { MatchCalendarAction(match) }
                 } else {
@@ -182,13 +220,14 @@ internal fun MatchDetailsScreen(
                   maps = match.matchData,
                   selectedMapIndex = selectedMapIndex,
                   onMapSelected = { selectedMapIndex = it },
-                  onPlayerSelected = onPlayerSelected,
+                  onMenuExpandedChange = { mapMenuExpanded = it },
+                  onPlayerSelected = { id -> leaveScreen { onPlayerSelected(id) } },
                 )
               }
             }
             if (uiState.preferences.showHeadToHead && match.head2head.isNotEmpty()) {
               item {
-                MatchDetailHeadToHeadItem(encounters = match.head2head, onEncounterSelected = onMatchSelected)
+                MatchDetailHeadToHeadItem(encounters = match.head2head, onEncounterSelected = { id -> leaveScreen { onMatchSelected(id) } })
               }
             }
             if (uiState.preferences.showMedia && (match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty())) {
@@ -209,6 +248,18 @@ internal fun MatchDetailsScreen(
         }
       }
     }
+    if (mascotCharacter != null) {
+      mascot.cue?.let { cue ->
+        MascotCelebration(
+          visible = true,
+          character = mascotCharacter,
+          message = cue.message,
+          secondaryMessage = cue.secondaryMessage,
+          onFinished = mascot::onFinished,
+          modifier = Modifier.align(Alignment.BottomEnd).navigationBarsPadding().padding(bottom = 88.dp),
+        )
+      }
+    }
     if (match != null && (
         match.matchData.isNotEmpty() || match.head2head.isNotEmpty() ||
           match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()
@@ -217,6 +268,8 @@ internal fun MatchDetailsScreen(
       MatchDetailOptionsSheet(
         match = match,
         preferences = uiState.preferences,
+        expanded = optionsExpanded,
+        onExpandedChange = { optionsExpanded = it },
         onPreferencesChange = onPreferencesChange,
       )
     }

@@ -11,10 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,13 +33,13 @@ import dev.staticvar.vlr.domain.model.MatchDetails
 internal fun MatchDetailOptionsSheet(
   match: MatchDetails,
   preferences: MatchDetailsPreferences,
+  expanded: Boolean,
+  onExpandedChange: (Boolean) -> Unit,
   onPreferencesChange: (MatchDetailsPreferences) -> Unit,
 ) {
-  var expanded by remember(match.id) { mutableStateOf(false) }
-
   PrismFabSheet(
     expanded = expanded,
-    onExpandedChange = { expanded = it },
+    onExpandedChange = onExpandedChange,
     icon = MatchOptionsIcon,
     contentDescription = "Match options",
     sheetTitle = "Match options",
@@ -52,7 +48,7 @@ internal fun MatchDetailOptionsSheet(
       Text("Choose what you see in match details.", style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
     },
     footer = {
-      PrismButton(onClick = { expanded = false }, style = PrismButtonStyle.Secondary) {
+      PrismButton(onClick = { onExpandedChange(false) }, style = PrismButtonStyle.Secondary) {
         Text("Done")
       }
     },
