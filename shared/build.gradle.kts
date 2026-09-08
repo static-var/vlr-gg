@@ -8,6 +8,11 @@ plugins {
   alias(libs.plugins.compose.multiplatform)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.sentry.kmp)
+}
+
+sentryKmp {
+  linker.xcodeprojPath.set(rootProject.file("iosApp/iosApp.xcodeproj").absolutePath)
 }
 
 dependencies {
@@ -80,6 +85,7 @@ kotlin {
     val androidMain by getting {
       dependencies {
         implementation(libs.activity.compose)
+        implementation(libs.sentry.android)
       }
     }
 

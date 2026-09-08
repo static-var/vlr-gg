@@ -22,6 +22,7 @@ import platform.posix.stderr
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.processUnhandledException
 import kotlin.native.setUnhandledExceptionHook
+import io.sentry.kotlin.multiplatform.Sentry
 
 private const val GeneratedPlaceholderToken: String = "replace-with-your-token"
 private const val UnknownThrowableDescription: String = "<unable to render throwable>"
@@ -52,7 +53,7 @@ fun MainViewController(authToken: String? = null): UIViewController {
 }
 
 private fun ensureUnhandledExceptionLoggingInstalled() {
-  if (hasInstalledUnhandledExceptionHook) {
+  if (hasInstalledUnhandledExceptionHook || Sentry.isEnabled()) {
     return
   }
 

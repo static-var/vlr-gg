@@ -2,6 +2,7 @@
  * Copyright (c) 2022-2026 Shreyansh Lodha
  * SPDX-License-Identifier: MIT
  */
+import io.sentry.android.gradle.extensions.InstrumentationFeature
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
@@ -10,6 +11,7 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.compose.multiplatform)
   alias(libs.plugins.compose.compiler)
+  alias(libs.plugins.sentry.android)
 }
 
 val localProperties = Properties()
@@ -37,6 +39,31 @@ val authToken =
     .removeSurrounding("'")
 val escapedAuthToken = authToken.replace("\\", "\\\\").replace("\"", "\\\"")
 
+fun sentrySetting(name: String, fallback: String = ""): String =
+  sequenceOf(System.getenv(name), localProperties.getProperty(name), envProperties.getProperty(name), fallback)
+    .filterNotNull().map { it.trim().removeSurrounding("\"").removeSurrounding("'") }
+    .firstOrNull { it.isNotBlank() }.orEmpty()
+
+fun String.buildConfigLiteral(): String = "\"" + replace("\\", "\\\\")
+  .replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r") + "\""
+
+val sentryUploadEnabled = providers.gradleProperty("sentryUpload").map(String::toBoolean).getOrElse(false)
+
+sentry {
+  org.set(sentrySetting("SENTRY_ORG"))
+  projectName.set(sentrySetting("SENTRY_PROJECT", "vlr-mobile"))
+  // The CLI reads SENTRY_AUTH_TOKEN or ignored sentry.properties at upload time.
+  autoUploadProguardMapping.set(sentryUploadEnabled)
+  uploadNativeSymbols.set(sentryUploadEnabled)
+  autoUploadNativeSymbols.set(sentryUploadEnabled)
+  includeNativeSources.set(false)
+  includeSourceContext.set(false)
+  autoInstallation.enabled.set(false)
+  tracingInstrumentation.enabled.set(true)
+  tracingInstrumentation.features.set(setOf(InstrumentationFeature.DATABASE, InstrumentationFeature.FILE_IO))
+  ignoredBuildTypes.set(setOf("debug"))
+}
+
 android {
   namespace = "dev.staticvar.vlr.android"
   compileSdk = 36
@@ -48,6 +75,10 @@ android {
     versionCode = 1
     versionName = "1.0.0"
     buildConfigField("String", "TOKEN", "\"$escapedAuthToken\"")
+    buildConfigField("String", "SENTRY_DSN", sentrySetting("SENTRY_DSN_ANDROID", sentrySetting("SENTRY_DSN")).buildConfigLiteral())
+    buildConfigField("String", "SENTRY_ENVIRONMENT", sentrySetting("SENTRY_ENVIRONMENT").buildConfigLiteral())
+    buildConfigField("boolean", "SENTRY_ENABLED", sentrySetting("SENTRY_ENABLED", "true").toBoolean().toString())
+
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

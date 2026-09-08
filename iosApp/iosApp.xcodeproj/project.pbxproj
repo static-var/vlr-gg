@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C81D6F669B7BB6D2FFCCEB3 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = BD22E08C2C1AA8ABB84B57D2 /* Sentry */; };
 		22EA1CB33A17DCC6FC82406D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F543015C899423D4B01CEB2E /* Assets.xcassets */; };
 		307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CECA83ACC03A83C85A623 /* iOSApp.swift */; };
 		56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */; };
@@ -21,6 +22,17 @@
 		CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F543015C899423D4B01CEB2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EF8A6E9BFD470986D9D5C9B5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C81D6F669B7BB6D2FFCCEB3 /* Sentry in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
@@ -61,6 +73,7 @@
 				85CDA39C4A1A852B3E0E898C /* Build shared framework */,
 				297B59D9CE634556D6007C40 /* Sources */,
 				1623B02D10928C8101C1F806 /* Resources */,
+				EF8A6E9BFD470986D9D5C9B5 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -68,6 +81,7 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				BD22E08C2C1AA8ABB84B57D2 /* Sentry */,
 			);
 			productName = iosApp;
 			productReference = 86038AE1032E284E79B32AD6 /* iosApp.app */;
@@ -97,6 +111,9 @@
 			);
 			mainGroup = 38B69C3F79CD97858CF7B609;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				650D681DB2ABE801F72B8886 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 94C98B8B3A2BFC1966447269 /* Products */;
 			projectDirPath = "";
@@ -136,7 +153,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euo pipefail\nUSER_HOME=\"${HOME:-$(eval echo \"~${USER:-}\")}\"\n\nexport REPO_ROOT=\"$SRCROOT/..\"\nexport GENERATED_SWIFT_PATH=\"$SRCROOT/iosApp/GeneratedBuildConfig.swift\"\n\nif ! java -version >/dev/null 2>&1; then\n  if [ -n \"$USER_HOME\" ] && [ -x \"$USER_HOME/.sdkman/candidates/java/current/bin/java\" ]; then\n    export JAVA_HOME=\"$USER_HOME/.sdkman/candidates/java/current\"\n    export PATH=\"$JAVA_HOME/bin:$PATH\"\n  elif [ -x /usr/libexec/java_home ]; then\n    JAVA_HOME=\"$(/usr/libexec/java_home 2>/dev/null || true)\"\n    if [ -n \"$JAVA_HOME\" ] && [ -x \"$JAVA_HOME/bin/java\" ]; then\n      export JAVA_HOME\n      export PATH=\"$JAVA_HOME/bin:$PATH\"\n    fi\n  fi\nfi\n\nif ! java -version >/dev/null 2>&1; then\n  echo \"error: Java runtime not found. Install a JDK or set JAVA_HOME before building iOS.\" >&2\n  exit 1\nfi\n\npython3 <<'PY'\nimport os\nfrom pathlib import Path\n\nrepo_root = Path(os.environ[\"REPO_ROOT\"])\ngenerated_swift_path = Path(os.environ[\"GENERATED_SWIFT_PATH\"])\n\ndef read_property(path: Path, key: str) -> str:\n    if not path.exists():\n        return \"\"\n    for raw_line in path.read_text().splitlines():\n        line = raw_line.strip()\n        if not line or line.startswith(\"#\") or \"=\" not in line:\n            continue\n        current_key, value = line.split(\"=\", 1)\n        if current_key.strip() == key:\n            return value.strip().strip('\"').strip(\"'\")\n    return \"\"\n\ndef normalize_token(value):\n    token = (value or \"\").strip().strip('\"').strip(\"'\")\n    if token == \"replace-with-your-token\":\n        return \"\"\n    return token\n\ntoken = next(\n    (\n        candidate\n        for candidate in (\n            normalize_token(os.environ.get(\"VLR_AUTH_TOKEN\")),\n            normalize_token(read_property(repo_root / \"local.properties\", \"TOKEN\")),\n            normalize_token(read_property(repo_root / \"local.properties\", \"VLR_AUTH_TOKEN\")),\n            normalize_token(read_property(repo_root / \".env\", \"VLR_AUTH_TOKEN\")),\n        )\n        if candidate\n    ),\n    \"\",\n)\n\nescaped_token = token.replace(\"\\\\\", \"\\\\\\\\\").replace('\"', '\\\\\"')\nauth_token_literal = f'\"{escaped_token}\"' if escaped_token else \"nil\"\n\ngenerated_swift_path.parent.mkdir(parents=True, exist_ok=True)\ngenerated_swift_path.write_text(\n    \"enum GeneratedBuildConfig {\\n\"\n    f\"    static let authToken: String? = {auth_token_literal}\\n\"\n    \"}\\n\"\n)\nPY\n\ncd \"$SRCROOT/..\"\nif command -v build-brief >/dev/null 2>&1; then\n  build-brief ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nelse\n  ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nfi\n";
+			shellScript = "set -euo pipefail\nUSER_HOME=\"${HOME:-$(eval echo \"~${USER:-}\")}\"\n\nexport REPO_ROOT=\"$SRCROOT/..\"\nexport GENERATED_SWIFT_PATH=\"$SRCROOT/iosApp/GeneratedBuildConfig.swift\"\n\nif ! java -version >/dev/null 2>&1; then\n  if [ -n \"$USER_HOME\" ] && [ -x \"$USER_HOME/.sdkman/candidates/java/current/bin/java\" ]; then\n    export JAVA_HOME=\"$USER_HOME/.sdkman/candidates/java/current\"\n    export PATH=\"$JAVA_HOME/bin:$PATH\"\n  elif [ -x /usr/libexec/java_home ]; then\n    JAVA_HOME=\"$(/usr/libexec/java_home 2>/dev/null || true)\"\n    if [ -n \"$JAVA_HOME\" ] && [ -x \"$JAVA_HOME/bin/java\" ]; then\n      export JAVA_HOME\n      export PATH=\"$JAVA_HOME/bin:$PATH\"\n    fi\n  fi\nfi\n\nif ! java -version >/dev/null 2>&1; then\n  echo \"error: Java runtime not found. Install a JDK or set JAVA_HOME before building iOS.\" >&2\n  exit 1\nfi\n\npython3 \"$REPO_ROOT/scripts/generate-ios-build-config.py\"\n\ncd \"$SRCROOT/..\"\nif command -v build-brief >/dev/null 2>&1; then\n  build-brief ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nelse\n  ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -373,6 +390,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		650D681DB2ABE801F72B8886 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
+			requirement = {
+				kind = exactVersion;
+				version = 8.58.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BD22E08C2C1AA8ABB84B57D2 /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 650D681DB2ABE801F72B8886 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 242FB5348943441C388468CE /* Project object */;
 }
