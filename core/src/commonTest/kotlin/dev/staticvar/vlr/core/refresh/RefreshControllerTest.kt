@@ -5,11 +5,15 @@
 package dev.staticvar.vlr.core.refresh
 
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.telemetry.NoOpTelemetryReporter
+import dev.staticvar.vlr.core.telemetry.TelemetryLevel
+import dev.staticvar.vlr.core.telemetry.TelemetryReporter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
@@ -91,9 +95,16 @@ class RefreshControllerTest {
   @Test
   fun failedRefreshStopsProgressAndCanBeRetried() = runTest {
     var calls = 0
-    val controller = RefreshController(backgroundScope, TestNetworkMonitor()) {
+    val telemetry = RecordingTelemetry()
+    val failure = IllegalStateException("Unavailable")
+    val controller = RefreshController(
+      backgroundScope,
+      TestNetworkMonitor(),
+      telemetry = telemetry,
+      operation = "matches.refresh",
+    ) {
       calls++
-      if (calls == 1) Result.failure(IllegalStateException("Unavailable")) else Result.success(Unit)
+      if (calls == 1) Result.failure(failure) else Result.success(Unit)
     }
 
     controller.refresh()
@@ -102,18 +113,23 @@ class RefreshControllerTest {
     assertFalse(controller.state.value.isLoading(hasContent = false))
     assertEquals("Unavailable", controller.state.value.errorMessage)
     assertTrue(controller.state.value.errorDetails.orEmpty().contains("IllegalStateException: Unavailable"))
+    assertEquals(listOf<Pair<Throwable, String>>(failure to "matches.refresh"), telemetry.failures)
+    assertEquals(listOf(TelemetryLevel.Warning to "matches.refresh failed"), telemetry.logs)
 
     controller.refresh()
     runCurrent()
     assertEquals(2, calls)
     assertEquals(RefreshState(hasCompleted = true), controller.state.value)
+    assertEquals(1, telemetry.failures.size)
+    assertEquals(1, telemetry.logs.size)
   }
 
   @Test
   fun cancellingTheOwnerStopsActiveAndQueuedWorkWithoutAnError() = runTest {
     var calls = 0
     var cancelled = false
-    val controller = RefreshController(backgroundScope, TestNetworkMonitor()) {
+    val telemetry = RecordingTelemetry()
+    val controller = RefreshController(backgroundScope, TestNetworkMonitor(), telemetry = telemetry) {
       calls++
       try {
         awaitCancellation()
@@ -134,6 +150,64 @@ class RefreshControllerTest {
     controller.refresh()
     runCurrent()
     assertEquals(1, calls)
+    assertTrue(telemetry.failures.isEmpty())
+    assertTrue(telemetry.logs.isEmpty())
+  }
+
+  @Test
+  fun cancellationReturnedAsFailureIsNotReported() = runTest {
+    val telemetry = RecordingTelemetry()
+    val controller = RefreshController(backgroundScope, TestNetworkMonitor(), telemetry = telemetry) {
+      Result.failure(CancellationException("Owner left the screen"))
+    }
+
+    controller.refresh()
+    runCurrent()
+
+    assertTrue(telemetry.failures.isEmpty())
+    assertTrue(telemetry.logs.isEmpty())
+    assertEquals(RefreshState(), controller.state.value)
+  }
+
+  @Test
+  fun reportingFailureDoesNotInterruptRefreshRecovery() = runTest {
+    val telemetry = object : TelemetryReporter by NoOpTelemetryReporter {
+      override fun captureException(error: Throwable, operation: String) {
+        throw IllegalStateException("Telemetry unavailable")
+      }
+
+      override fun log(level: TelemetryLevel, message: String) {
+        throw IllegalStateException("Logging unavailable")
+      }
+    }
+    var calls = 0
+    val controller = RefreshController(backgroundScope, TestNetworkMonitor(), telemetry = telemetry) {
+      calls++
+      if (calls == 1) Result.failure(IllegalStateException("Refresh unavailable")) else Result.success(Unit)
+    }
+
+    controller.refresh()
+    runCurrent()
+    assertEquals("Refresh unavailable", controller.state.value.errorMessage)
+    assertFalse(controller.state.value.isRefreshing)
+
+    controller.refresh()
+    runCurrent()
+    assertEquals(2, calls)
+    assertEquals(RefreshState(hasCompleted = true), controller.state.value)
+  }
+
+  private class RecordingTelemetry : TelemetryReporter by NoOpTelemetryReporter {
+    val failures = mutableListOf<Pair<Throwable, String>>()
+    val logs = mutableListOf<Pair<TelemetryLevel, String>>()
+
+    override fun captureException(error: Throwable, operation: String) {
+      failures += error to operation
+    }
+
+    override fun log(level: TelemetryLevel, message: String) {
+      logs += level to message
+    }
   }
 
   private class TestNetworkMonitor(online: Boolean = true) : NetworkMonitor {

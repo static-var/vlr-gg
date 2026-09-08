@@ -5,6 +5,11 @@
 package dev.staticvar.vlr.core.refresh
 
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.telemetry.AppTelemetry
+import dev.staticvar.vlr.core.telemetry.TelemetryLevel
+import dev.staticvar.vlr.core.telemetry.TelemetryReporter
+import dev.staticvar.vlr.core.telemetry.captureExceptionSafely
+import dev.staticvar.vlr.core.telemetry.logSafely
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -20,6 +25,8 @@ import kotlinx.coroutines.launch
 class RefreshController(
   scope: CoroutineScope,
   networkMonitor: NetworkMonitor,
+  telemetry: TelemetryReporter = AppTelemetry,
+  operation: String = "refresh",
   action: suspend () -> Result<Unit>,
 ) {
   private val requests = Channel<Unit>(Channel.CONFLATED)
@@ -39,6 +46,8 @@ class RefreshController(
           throw cancellation
         } catch (error: Exception) {
           currentCoroutineContext().ensureActive()
+          telemetry.captureExceptionSafely(error, operation)
+          telemetry.logSafely(TelemetryLevel.Warning, "$operation failed")
           mutableState.update {
             it.copy(
               hasCompleted = true,
