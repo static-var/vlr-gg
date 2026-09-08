@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -40,6 +41,9 @@ import org.koin.core.annotation.KoinExperimentalAPI
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
+  val navigationTelemetry = remember(appState) { NavigationTelemetry() }
+  val activeRoute = appState.backStack.lastOrNull() as? AppRoute
+  SideEffect { navigationTelemetry.show(activeRoute) }
   val navItems = remember(appState.navigationItems) { appState.navigationItems }
   val entryProvider = koinEntryProvider<NavKey>()
   val entryDecorators = listOf(

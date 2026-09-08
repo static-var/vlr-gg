@@ -32,6 +32,7 @@ actual class HttpClientFactory {
     }
 
     install(ContentNegotiation) { json(json) }
+    install(NetworkTelemetry)
 
     install(HttpTimeout) {
       requestTimeoutMillis = configuration.timeoutMillis
