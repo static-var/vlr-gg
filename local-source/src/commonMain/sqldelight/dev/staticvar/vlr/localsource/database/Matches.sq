@@ -308,3 +308,29 @@ SELECT
 FROM matches AS m
 INNER JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id
 ORDER BY m.time DESC;
+
+
+-- Match-only inheritance: these reasons never change explicit team favorites.
+getMatchFavoriteReasons:
+SELECT m.id AS match_id, 'MATCH' AS source, m.id AS entity_id,
+       m.team1_name || ' vs ' || m.team2_name AS entity_name
+FROM matches AS m
+INNER JOIN favorite_matches AS f ON f.match_id = m.id
+UNION
+SELECT m.id AS match_id, 'TEAM' AS source, f.team_id AS entity_id,
+       CASE WHEN f.team_id = m.team1_id THEN m.team1_name ELSE m.team2_name END AS entity_name
+FROM matches AS m
+INNER JOIN favorite_teams AS f ON f.team_id = m.team1_id OR f.team_id = m.team2_id
+WHERE f.team_id != ''
+UNION
+SELECT m.id AS match_id, 'PLAYER' AS source, p.id AS entity_id,
+       COALESCE(NULLIF(TRIM(p.alias), ''), p.name) AS entity_name
+FROM matches AS m
+INNER JOIN players AS p ON p.current_team_id = m.team1_id OR p.current_team_id = m.team2_id
+INNER JOIN favorite_players AS f ON f.player_id = p.id
+WHERE p.current_team_id != ''
+UNION
+SELECT m.id AS match_id, 'EVENT' AS source, f.event_id AS entity_id, m.event_name AS entity_name
+FROM matches AS m
+INNER JOIN favorite_events AS f ON f.event_id = m.event_id
+WHERE f.event_id != '';

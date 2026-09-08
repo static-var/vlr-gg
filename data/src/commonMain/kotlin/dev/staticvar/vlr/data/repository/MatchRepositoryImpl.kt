@@ -26,6 +26,8 @@ import dev.staticvar.vlr.data.mapper.toPreviousEncounterEntities
 import dev.staticvar.vlr.data.mapper.toRoundEntities
 import dev.staticvar.vlr.data.mapper.toVideoEntities
 import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.domain.model.MatchFavoriteReason
+import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamPreview
@@ -55,7 +57,16 @@ internal class MatchRepositoryImpl(
     .getMatchesWithFavoriteStatus()
     .asFlow()
     .mapToList(dispatchers.io)
-    .map { matches -> matches.map { it.toDomain() } }
+    .combine(observeFavoriteReasons()) { matches, reasonsByMatch ->
+      matches.map { match ->
+        val reasons = reasonsByMatch[match.id].orEmpty()
+        match.toDomain().copy(
+          isFavorite = reasons.isNotEmpty(),
+          isDirectFavorite = reasons.any { it.source == MatchFavoriteSource.MATCH },
+          favoriteReasons = reasons,
+        )
+      }
+    }
 
   override fun getMatchDetails(matchId: String): Flow<MatchDetails?> {
     val matchFlow = matchesQueries
@@ -119,8 +130,33 @@ internal class MatchRepositoryImpl(
           previousEncounters = previousEncounters,
         )
       }
+    }.combine(observeFavoriteReasons()) { match, reasonsByMatch ->
+      match?.let {
+        val reasons = reasonsByMatch[it.id].orEmpty()
+        it.copy(
+          isFavorite = reasons.isNotEmpty(),
+          isDirectFavorite = reasons.any { reason -> reason.source == MatchFavoriteSource.MATCH },
+          favoriteReasons = reasons,
+        )
+      }
     }
   }
+
+  private fun observeFavoriteReasons(): Flow<Map<String, List<MatchFavoriteReason>>> = matchesQueries
+    .getMatchFavoriteReasons()
+    .asFlow()
+    .mapToList(dispatchers.io)
+    .map { rows ->
+      rows.groupBy { it.match_id }.mapValues { (_, reasons) ->
+        reasons.map { reason ->
+          MatchFavoriteReason(
+            source = MatchFavoriteSource.valueOf(reason.source),
+            id = reason.entity_id,
+            name = reason.entity_name,
+          )
+        }.sortedWith(compareBy({ it.source.ordinal }, { it.name }, { it.id }))
+      }
+    }
 
   override suspend fun addToFavorites(matchId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {
@@ -175,7 +211,12 @@ internal class MatchRepositoryImpl(
 
         // Insert updated match
         val cachedMatch = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
-        val matchEntity = dto.toMatchEntity(cachedStatus = cachedMatch?.status).copy(id = matchId)
+        val remoteMatch = dto.toMatchEntity(cachedStatus = cachedMatch?.status).copy(id = matchId)
+        val matchEntity = remoteMatch.copy(
+          event_id = remoteMatch.event_id ?: cachedMatch?.event_id,
+          team1_id = remoteMatch.team1_id.ifBlank { cachedMatch?.team1_id.orEmpty() },
+          team2_id = remoteMatch.team2_id.ifBlank { cachedMatch?.team2_id.orEmpty() },
+        )
         upsertMatch(matchEntity)
 
         // Insert related data

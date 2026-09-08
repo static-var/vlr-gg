@@ -18,6 +18,8 @@ data class MatchPreview(
   val time: String?,
   val eventId: String,
   val isFavorite: Boolean = false,
+  val favoriteReasons: List<MatchFavoriteReason> = emptyList(),
+  val isDirectFavorite: Boolean = isFavorite,
 )
 
 data class TeamPreview(

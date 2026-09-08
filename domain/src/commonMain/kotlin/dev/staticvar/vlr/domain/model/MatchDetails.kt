@@ -19,6 +19,8 @@ data class MatchDetails(
   val matchData: List<MapData>,
   val mapCount: Int,
   val isFavorite: Boolean = false,
+  val favoriteReasons: List<MatchFavoriteReason> = emptyList(),
+  val isDirectFavorite: Boolean = isFavorite,
 )
 
 data class EventInfo(
