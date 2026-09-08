@@ -17,9 +17,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
@@ -33,6 +36,7 @@ public fun PlayerDetailsRoute(
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
+  onToggleFavorite: () -> Unit = {},
 ) {
   PlayerDetailsScreen(
     uiState = uiState,
@@ -40,6 +44,7 @@ public fun PlayerDetailsRoute(
     onTeamSelected = onTeamSelected,
     modifier = modifier,
     onRefresh = onRefresh,
+    onToggleFavorite = onToggleFavorite,
   )
 }
 
@@ -50,6 +55,7 @@ internal fun PlayerDetailsScreen(
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
+  onToggleFavorite: () -> Unit = {},
 ) {
   val player = uiState.player
 
@@ -62,6 +68,26 @@ internal fun PlayerDetailsScreen(
         title = player?.alias?.ifBlank { player.name } ?: "Player details",
         subtitle = "Stats, agents and team history",
         onBackPress = onBack,
+        actions = {
+          if (player != null) {
+            PrismFavoriteIcon(
+              selected = player.isFavorite,
+              size = PrismFavoriteIconSize.Large,
+              contentDescription = if (uiState.isUpdatingFavorite) {
+                "Updating favorite"
+              } else if (player.isFavorite) {
+                "Remove player from favorites"
+              } else {
+                "Add player to favorites"
+              },
+              modifier = Modifier.clickable(
+                enabled = !uiState.isUpdatingFavorite,
+                role = Role.Button,
+                onClick = onToggleFavorite,
+              ),
+            )
+          }
+        },
       )
 
       SharedRefreshStatus(
@@ -70,6 +96,10 @@ internal fun PlayerDetailsScreen(
         errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
       )
+    }
+
+    uiState.favoriteErrorMessage?.let { message ->
+      PrismStateMessage(text = message)
     }
 
     when {

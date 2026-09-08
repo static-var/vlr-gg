@@ -12,4 +12,6 @@ public data class PlayerDetailsUiState(
   val isRefreshing: Boolean = false,
   val errorMessage: String? = null,
   val errorDetails: String? = null,
+  val isUpdatingFavorite: Boolean = false,
+  val favoriteErrorMessage: String? = null,
 )

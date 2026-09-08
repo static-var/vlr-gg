@@ -195,6 +195,7 @@ internal fun appNavigationModule(): Module = module {
     RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
 
     PlayerDetailsRoute(
+      onToggleFavorite = viewModel::toggleFavorite,
       uiState = uiState,
       onRefresh = viewModel::refresh,
       onBack = LocalVlrAppState.current::navigateUp,

@@ -109,8 +109,61 @@ class PlayerDetailsViewModelTest {
     assertEquals(listOf("player-1"), repository.refreshDetailRequests)
   }
 
+  @Test
+  fun favoriteSaveCoalescesAndCanBeRemovedAfterPersistence() = runTest(dispatcher) {
+    val repository = FakePlayerRepository(player = playerInfo("player-1"))
+    repository.favoriteGate = CompletableDeferred()
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.toggleFavorite()
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true), repository.favoriteRequests)
+    assertEquals(true, viewModel.uiState.value.isUpdatingFavorite)
+    assertEquals(false, viewModel.uiState.value.player?.isFavorite)
+
+    repository.favoriteGate?.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.player?.isFavorite)
+    assertEquals(false, viewModel.uiState.value.isUpdatingFavorite)
+
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true, false), repository.favoriteRequests)
+    assertEquals(false, viewModel.uiState.value.player?.isFavorite)
+  }
+
+  @Test
+  fun failedFavoriteSaveAndRemovalPreservePersistedSelectionAndAllowRetry() = runTest(dispatcher) {
+    val repository = FakePlayerRepository(player = playerInfo("player-1"))
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+    repository.favoriteResult = Result.failure(IllegalStateException("storage unavailable"))
+
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.player?.isFavorite)
+    assertEquals(false, viewModel.uiState.value.isUpdatingFavorite)
+    assertEquals("Couldn't update favorite. Try again.", viewModel.uiState.value.favoriteErrorMessage)
+
+    repository.favoriteResult = Result.success(Unit)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.player?.isFavorite)
+    assertEquals(null, viewModel.uiState.value.favoriteErrorMessage)
+
+    repository.favoriteResult = Result.failure(IllegalStateException("storage unavailable"))
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.player?.isFavorite)
+    assertEquals(false, viewModel.uiState.value.isUpdatingFavorite)
+    assertEquals("Couldn't update favorite. Try again.", viewModel.uiState.value.favoriteErrorMessage)
+  }
+
   private fun createViewModel(repository: FakePlayerRepository): PlayerDetailsViewModel = PlayerDetailsViewModel(
     playerId = "player-1",
+    playerRepository = repository,
     observePlayerDetailsUseCase = ObservePlayerDetailsUseCase(repository),
     refreshPlayerDetailsUseCase = RefreshPlayerDetailsUseCase(repository),
     networkMonitor = object : NetworkMonitor {
@@ -134,6 +187,9 @@ class PlayerDetailsViewModelTest {
   )
 
   private class FakePlayerRepository(player: PlayerInfo? = null) : PlayerRepository {
+    var favoriteGate: CompletableDeferred<Unit>? = null
+    var favoriteResult: Result<Unit> = Result.success(Unit)
+    val favoriteRequests: MutableList<Boolean> = mutableListOf()
     var refreshCancelled: Boolean = false
     var refreshGate: CompletableDeferred<Unit>? = null
     var refreshResult: Result<Unit> = Result.success(Unit)
@@ -152,9 +208,19 @@ class PlayerDetailsViewModelTest {
       return detailsByPlayerId.getOrPut(playerId) { MutableStateFlow(null) }
     }
 
-    override suspend fun addToFavorites(playerId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun addToFavorites(playerId: String): Result<Unit> = updateFavorite(playerId, true)
 
-    override suspend fun removeFromFavorites(playerId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun removeFromFavorites(playerId: String): Result<Unit> = updateFavorite(playerId, false)
+
+    private suspend fun updateFavorite(playerId: String, selected: Boolean): Result<Unit> {
+      favoriteRequests += selected
+      favoriteGate?.await()
+      if (favoriteResult.isSuccess) {
+        val state = detailsByPlayerId.getValue(playerId)
+        state.value = state.value?.copy(isFavorite = selected)
+      }
+      return favoriteResult
+    }
 
     override suspend fun refreshPlayerDetails(playerId: String): Result<Unit> {
       refreshDetailRequests += playerId

@@ -20,6 +20,7 @@ public fun playerFeatureModule(): Module = module {
       observePlayerDetailsUseCase = get(),
       refreshPlayerDetailsUseCase = get(),
       networkMonitor = get(),
+      playerRepository = get(),
     )
   }
 }
