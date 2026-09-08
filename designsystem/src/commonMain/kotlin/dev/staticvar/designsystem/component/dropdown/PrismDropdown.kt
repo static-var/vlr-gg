@@ -20,10 +20,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +43,7 @@ import dev.staticvar.designsystem.prism.Prism
 
 /**
  * Compact Prism dropdown using the active theme's surfaces and shapes.
+ * [onExpandedChange] reports menu visibility, including closure when removed from composition.
  */
 @Composable
 public fun PrismDropdown(
@@ -51,8 +54,20 @@ public fun PrismDropdown(
   label: String? = null,
   enabled: Boolean = true,
   style: PrismDropdownStyle = PrismDropdownStyle.Brutalist,
+  onExpandedChange: (Boolean) -> Unit = {},
 ) {
   var expanded by remember { mutableStateOf(false) }
+  val currentOnExpandedChange by rememberUpdatedState(onExpandedChange)
+  fun updateExpanded(value: Boolean) {
+    if (expanded == value) return
+    expanded = value
+    currentOnExpandedChange(value)
+  }
+  DisposableEffect(Unit) {
+    onDispose {
+      if (expanded) currentOnExpandedChange(false)
+    }
+  }
   var anchorWidth by remember { mutableIntStateOf(0) }
   val menuWidth = with(LocalDensity.current) { anchorWidth.toDp() }.coerceAtLeast(style.menuWidth)
   val selectedOption = options.firstOrNull { option -> option.id == selectedOptionId } ?: options.firstOrNull()
@@ -64,11 +79,11 @@ public fun PrismDropdown(
       expanded = expanded,
       enabled = enabled && options.isNotEmpty(),
       style = style,
-      onClick = { expanded = true },
+      onClick = { updateExpanded(true) },
     )
     DropdownMenu(
       expanded = expanded,
-      onDismissRequest = { expanded = false },
+      onDismissRequest = { updateExpanded(false) },
       modifier = Modifier.width(menuWidth)
         .prismFrame(style.menuFrame, Prism.shapes.small)
         .background(Prism.color.surface, Prism.shapes.small)
@@ -85,7 +100,7 @@ public fun PrismDropdown(
           selected = option.id == selectedOption?.id,
           style = style,
           onClick = {
-            expanded = false
+            updateExpanded(false)
             onOptionSelected(option)
           },
         )

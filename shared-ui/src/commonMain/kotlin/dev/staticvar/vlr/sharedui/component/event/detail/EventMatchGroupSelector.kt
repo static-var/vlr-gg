@@ -28,6 +28,7 @@ public fun EventMatchGroupSelector(
   onGroupingSelected: (EventMatchGrouping) -> Unit,
   onGroupSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onMenuExpandedChange: (Boolean) -> Unit = {},
 ) {
   val groupingOptions =
     remember {
@@ -48,6 +49,7 @@ public fun EventMatchGroupSelector(
       selectedOptionId = grouping.name,
       onOptionSelected = { option -> onGroupingSelected(EventMatchGrouping.valueOf(option.id)) },
       label = "GROUP MATCHES BY",
+      onExpandedChange = onMenuExpandedChange,
     )
     if (groupTabs.isNotEmpty()) {
       PrismTabs(

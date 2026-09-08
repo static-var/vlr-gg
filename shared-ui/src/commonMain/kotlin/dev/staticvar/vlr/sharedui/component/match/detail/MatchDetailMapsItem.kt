@@ -28,6 +28,7 @@ public fun MatchDetailMapsItem(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   onPlayerSelected: ((String) -> Unit)? = null,
+  onMenuExpandedChange: (Boolean) -> Unit = {},
 ) {
   Column(
     modifier = modifier.fillMaxWidth(),
@@ -42,6 +43,7 @@ public fun MatchDetailMapsItem(
           selectedMapIndex = selectedMapIndex,
           onMapSelected = onMapSelected,
           enabled = enabled,
+          onMenuExpandedChange = onMenuExpandedChange,
         )
       },
     )
@@ -59,11 +61,13 @@ private fun RowScope.MatchDetailMapsSelectorTrailing(
   selectedMapIndex: Int?,
   onMapSelected: (Int?) -> Unit,
   enabled: Boolean,
+  onMenuExpandedChange: (Boolean) -> Unit,
 ) {
   MatchDetailMapSelector(
     maps = maps,
     selectedMapIndex = selectedMapIndex,
     onMapSelected = onMapSelected,
     enabled = enabled,
+    onMenuExpandedChange = onMenuExpandedChange,
   )
 }

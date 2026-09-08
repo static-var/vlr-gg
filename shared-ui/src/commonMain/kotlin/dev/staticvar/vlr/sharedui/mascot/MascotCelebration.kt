@@ -10,10 +10,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -24,19 +27,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import dev.staticvar.designsystem.prism.Prism
 import kotlinx.coroutines.delay
 
-/** Place over content in a Box; [animated] controls the character's idle motion. */
+/** Place over content in a viewport-clipped Box; [animated] controls the character's idle motion. */
 @Composable
 public fun MascotCelebration(
   visible: Boolean,
@@ -45,6 +49,7 @@ public fun MascotCelebration(
   onFinished: () -> Unit,
   modifier: Modifier = Modifier,
   animated: Boolean = true,
+  secondaryMessage: String? = null,
 ): Unit {
   val entrance = remember { Animatable(0f) }
   val banner = remember { Animatable(0f) }
@@ -65,7 +70,9 @@ public fun MascotCelebration(
   val colors = Prism.color
   val fur = lerp(colors.accent, colors.surface, 0.28f)
   val outline = lerp(colors.accent, colors.contentPrimary, 0.55f)
-  Box(modifier.fillMaxWidth().height(160.dp).zIndex(1f).clipToBounds()) {
+  val bannerHeight = if (secondaryMessage != null) 80.dp else 54.dp
+  val bannerWidth = if (secondaryMessage != null) 260.dp else 190.dp
+  Box(modifier.fillMaxWidth().height(160.dp).zIndex(1f)) {
     if (visible) {
       CharacterMascot(
         Modifier.align(Alignment.CenterEnd).offset(x = 50.dp, y = (-20).dp).size(160.dp)
@@ -78,7 +85,7 @@ public fun MascotCelebration(
       )
       Box(
         Modifier.align(Alignment.BottomEnd).offset(x = (-30).dp, y = (-8).dp)
-          .width(190.dp).height(54.dp)
+          .width(bannerWidth).height(bannerHeight)
           .graphicsLayer {
             transformOrigin = TransformOrigin(1f, 0f)
             scaleX = banner.value
@@ -89,16 +96,37 @@ public fun MascotCelebration(
           .border(2.dp, colors.accent, Prism.shapes.small),
         contentAlignment = Alignment.Center,
       ) {
-        Text(message, style = Prism.typography.sectionTitle, color = colors.contentPrimary)
+        Column(
+          modifier = Modifier.padding(horizontal = 12.dp).semantics(mergeDescendants = true) {},
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+          Text(
+            message,
+            style = Prism.typography.sectionTitle,
+            color = colors.contentPrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+          )
+          if (secondaryMessage != null) {
+            Text(
+              secondaryMessage,
+              style = Prism.typography.sectionTitle,
+              color = colors.contentPrimary,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
+            )
+          }
+        }
       }
       if (character == MascotCharacter.Rosie) {
         RosiePaws(
-          Modifier.align(Alignment.BottomEnd).offset(x = (-30).dp, y = (-49).dp).size(52.dp, 27.dp)
+          Modifier.align(Alignment.BottomEnd).offset(x = (-30).dp, y = 5.dp - bannerHeight).size(52.dp, 27.dp)
             .graphicsLayer { alpha = banner.value },
         )
       } else {
         Canvas(
-          Modifier.align(Alignment.BottomEnd).offset(x = (-32).dp, y = (-53).dp).size(48.dp, 18.dp)
+          Modifier.align(Alignment.BottomEnd).offset(x = (-32).dp, y = 1.dp - bannerHeight).size(48.dp, 18.dp)
             .graphicsLayer { alpha = banner.value },
         ) {
           val pawWidth = size.width * 0.38f

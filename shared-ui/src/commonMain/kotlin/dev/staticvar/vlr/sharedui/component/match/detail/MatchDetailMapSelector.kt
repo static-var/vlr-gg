@@ -24,6 +24,7 @@ public fun MatchDetailMapSelector(
   onMapSelected: (Int?) -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  onMenuExpandedChange: (Boolean) -> Unit = {},
 ) {
   val mapOptions = remember(maps) { maps.matchDetailMapOptions() }
   val dropdownOptions = remember(mapOptions) {
@@ -43,6 +44,7 @@ public fun MatchDetailMapSelector(
     modifier = modifier,
     label = label,
     enabled = enabled && dropdownOptions.isNotEmpty(),
+    onExpandedChange = onMenuExpandedChange,
   )
 }
 
