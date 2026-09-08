@@ -21,6 +21,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -34,6 +38,7 @@ import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.divider.PrismDivider
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.core.telemetry.AppTelemetry
 import dev.staticvar.vlr.sharedui.mascot.LynxMascot
 import dev.staticvar.vlr.sharedui.mascot.RosieMascot
 
@@ -44,6 +49,13 @@ public fun AboutRoute(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 internal fun AboutScreen(modifier: Modifier = Modifier, onBack: () -> Unit = {}) {
+  var showFeedback by rememberSaveable { mutableStateOf(false) }
+  if (showFeedback) {
+    AboutFeedbackDialog(
+      onDismiss = { showFeedback = false },
+      onSubmit = AppTelemetry::submitFeedback,
+    )
+  }
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     Column(modifier = Modifier.widthIn(max = 720.dp).fillMaxWidth()) {
       PrismScreenTitleBar(
@@ -61,7 +73,7 @@ internal fun AboutScreen(modifier: Modifier = Modifier, onBack: () -> Unit = {})
       ) {
         AboutIdentity()
         AboutIntroduction()
-        AboutProjectLinks()
+        AboutProjectLinks(onFeedback = { showFeedback = true })
         AboutContributors()
         AboutDonations()
         AboutSource()
@@ -125,9 +137,25 @@ private fun AboutIntroduction() {
 }
 
 @Composable
-private fun AboutProjectLinks() {
+private fun AboutProjectLinks(onFeedback: () -> Unit) {
   Column {
     AboutSectionHeading("Make it better")
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .clickable(role = Role.Button, onClickLabel = "Write feedback", onClick = onFeedback)
+        .heightIn(min = Prism.dimens.touchTargetMin)
+        .padding(vertical = Prism.dimens.spacingM),
+      verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+    ) {
+      Text(text = "Send feedback", style = Prism.typography.cardTitle, color = Prism.color.accent)
+      Text(
+        text = "Share a problem or an idea with the developer.",
+        style = Prism.typography.bodySmall,
+        color = Prism.color.bodyColor,
+      )
+    }
+    PrismDivider()
     AboutLink(
       title = "Report an issue",
       description = "Something off? Help us get it right.",

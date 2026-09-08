@@ -24,3 +24,11 @@ internal fun AboutPreview(@PreviewParameter(PrismPreviewProvider::class) variant
     )
   }
 }
+
+@PrismPreview
+@Composable
+internal fun AboutFeedbackPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+  PrismTheme(variant = variant) {
+    AboutFeedbackDialog(onDismiss = {}, onSubmit = { false })
+  }
+}
