@@ -6,6 +6,7 @@ package dev.staticvar.vlr.data.di
 
 import dev.staticvar.vlr.data.repository.CircuitStandingsRepositoryImpl
 import dev.staticvar.vlr.data.repository.EventRepositoryImpl
+import dev.staticvar.vlr.data.repository.FavoritesRepositoryImpl
 import dev.staticvar.vlr.data.repository.MatchRepositoryImpl
 import dev.staticvar.vlr.data.repository.NewsRepositoryImpl
 import dev.staticvar.vlr.data.repository.PlayerRepositoryImpl
@@ -13,6 +14,7 @@ import dev.staticvar.vlr.data.repository.RankingsRepositoryImpl
 import dev.staticvar.vlr.data.repository.TeamRepositoryImpl
 import dev.staticvar.vlr.domain.repository.CircuitStandingsRepository
 import dev.staticvar.vlr.domain.repository.EventRepository
+import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.domain.repository.NewsRepository
 import dev.staticvar.vlr.domain.repository.PlayerRepository
@@ -26,6 +28,7 @@ import org.koin.dsl.module
  * Provides repositories and mappers.
  */
 fun dataModule(): Module = module {
+  single<FavoritesRepository> { FavoritesRepositoryImpl(database = get(), dispatchers = get()) }
   single<MatchRepository> {
     MatchRepositoryImpl(
       matchDataSource = get(),

@@ -193,3 +193,6 @@ SELECT t.*, 1 AS is_favorite
 FROM teams AS t
 INNER JOIN favorite_teams AS fav ON t.id = fav.team_id
 ORDER BY t.rank ASC, t.name ASC;
+
+getFavoriteTeamIds:
+SELECT team_id FROM favorite_teams;

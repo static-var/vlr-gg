@@ -156,3 +156,6 @@ SELECT
 FROM players AS p
 INNER JOIN favorite_players AS fav_p ON p.id = fav_p.player_id
 ORDER BY p.name ASC;
+
+getFavoritePlayerIds:
+SELECT player_id FROM favorite_players;
