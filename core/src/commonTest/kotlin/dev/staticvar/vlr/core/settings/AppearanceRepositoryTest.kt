@@ -69,7 +69,29 @@ class AppearanceRepositoryTest {
     storage.putString("appearance.mode", "unknown")
     storage.putString("appearance.family", "unknown")
     storage.putString("appearance.catppuccin_flavour", "unknown")
+    storage.putString("appearance.mascot", "unknown")
     assertEquals(AppearanceSettings(), AppearanceRepository(storage).settings.value)
+  }
+
+  @Test
+  fun mascotChoicePersistsIndependentlyOfAppearanceAndCanBeDisabled() {
+    val storage = MapSettings()
+    val repository = AppearanceRepository(storage)
+    assertEquals(MascotPreference.Lynx, repository.settings.value.mascot)
+    repository.setFamily(ThemeFamily.Catppuccin)
+    repository.setMode(AppearanceMode.Dark)
+    repository.setCatppuccinFlavour(CatppuccinFlavour.Latte)
+
+    MascotPreference.entries.forEach { mascot ->
+      repository.setMascot(mascot)
+      val restored = AppearanceRepository(storage)
+      assertEquals(mascot, restored.settings.value.mascot)
+      assertEquals(repository.settings.value, restored.settings.value)
+      repository.setFamily(ThemeFamily.Console)
+      repository.setMode(AppearanceMode.Light)
+      repository.setCatppuccinFlavour(CatppuccinFlavour.Mocha)
+      assertEquals(mascot, AppearanceRepository(storage).settings.value.mascot)
+    }
   }
 
   @Test

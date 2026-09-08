@@ -8,6 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -17,12 +18,15 @@ import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.vlr.core.settings.CatppuccinFlavour
+import dev.staticvar.vlr.core.settings.MascotPreference
 import dev.staticvar.vlr.core.settings.ThemeFamily
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
 import dev.staticvar.vlr.shared.appearance.ApplyPlatformAppearance
 import dev.staticvar.vlr.shared.navigation.AppNavHost
 import dev.staticvar.vlr.shared.navigation.rememberVlrAppState
 import dev.staticvar.vlr.sharedui.image.ProvideSharedImageLoader
+import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
+import dev.staticvar.vlr.sharedui.mascot.MascotCharacter
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -49,6 +53,11 @@ public fun App() {
     CatppuccinFlavour.Macchiato -> PrismCatppuccinFlavour.Macchiato
     CatppuccinFlavour.Mocha -> PrismCatppuccinFlavour.Mocha
   }
+  val mascotCharacter = when (appearance.mascot) {
+    MascotPreference.Lynx -> MascotCharacter.Lynx
+    MascotPreference.Rosie -> MascotCharacter.Rosie
+    MascotPreference.Off -> null
+  }
   PrismTheme(variant = variant, family = family, catppuccinFlavour = flavour) {
     ApplyPlatformAppearance(
       isDark = isDark,
@@ -59,7 +68,9 @@ public fun App() {
       color = Prism.color.background,
       contentColor = Prism.color.contentPrimary,
     ) {
-      AppNavHost(appState = appState)
+      CompositionLocalProvider(LocalMascotCharacter provides mascotCharacter) {
+        AppNavHost(appState = appState)
+      }
     }
   }
 }

@@ -20,6 +20,9 @@ public class AppearanceRepository(private val storage: Settings) {
       catppuccinFlavour = CatppuccinFlavour.entries.firstOrNull {
         it.name == storage.getStringOrNull(FlavourKey)
       } ?: CatppuccinFlavour.Frappe,
+      mascot = MascotPreference.entries.firstOrNull {
+        it.name == storage.getStringOrNull(MascotKey)
+      } ?: MascotPreference.Lynx,
     ),
   )
   public val settings: StateFlow<AppearanceSettings> = mutableSettings.asStateFlow()
@@ -39,9 +42,15 @@ public class AppearanceRepository(private val storage: Settings) {
     mutableSettings.update { it.copy(catppuccinFlavour = flavour) }
   }
 
+  public fun setMascot(mascot: MascotPreference) {
+    storage.putString(MascotKey, mascot.name)
+    mutableSettings.update { it.copy(mascot = mascot) }
+  }
+
   private companion object {
     const val ModeKey: String = "appearance.mode"
     const val FamilyKey: String = "appearance.family"
     const val FlavourKey: String = "appearance.catppuccin_flavour"
+    const val MascotKey: String = "appearance.mascot"
   }
 }
