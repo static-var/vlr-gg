@@ -12,8 +12,12 @@ import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
 import dev.staticvar.vlr.domain.model.EventInfo
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.domain.model.MatchFavoriteReason
+import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchVideos
+import dev.staticvar.vlr.domain.repository.FavoritesRepository
+import dev.staticvar.vlr.featurematches.usecase.SetMatchFavoriteUseCase
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchDetailsUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchDetailsUseCase
@@ -184,17 +188,111 @@ class MatchDetailsViewModelTest {
     assertEquals(listOf("match-1"), repository.refreshDetailRequests)
   }
 
+  @Test
+  fun favoriteChangesUpdateAllIdsWithoutRefetchingMatch() = runTest(dispatcher) {
+    val repository = FakeMatchRepository(details = matchDetails("match-1"))
+    val favorites = FakeFavoritesRepository()
+    favorites.teamIds.value = setOf("team-1", "team-2")
+    favorites.playerIds.value = setOf("player-1", "player-2")
+    val viewModel = createViewModel(repository, favoritesRepository = favorites)
+    advanceUntilIdle()
+
+    assertEquals(favorites.teamIds.value, viewModel.uiState.value.favoriteTeamIds)
+    assertEquals(favorites.playerIds.value, viewModel.uiState.value.favoritePlayerIds)
+
+    favorites.teamIds.value = setOf("team-2")
+    favorites.playerIds.value = emptySet()
+    advanceUntilIdle()
+
+    assertEquals(setOf("team-2"), viewModel.uiState.value.favoriteTeamIds)
+    assertEquals(emptySet(), viewModel.uiState.value.favoritePlayerIds)
+    assertEquals(emptyList(), repository.refreshDetailRequests)
+
+    viewModelStore.clear()
+    favorites.teamIds.value = emptySet()
+    advanceUntilIdle()
+    assertEquals(setOf("team-2"), viewModel.uiState.value.favoriteTeamIds)
+  }
+
+  @Test
+  fun inheritedFavoritesAreAlreadySelectedAndDoNotCreateSeparateMatchFavorites() = runTest(dispatcher) {
+    for (source in listOf(MatchFavoriteSource.TEAM, MatchFavoriteSource.EVENT, MatchFavoriteSource.PLAYER)) {
+      val inherited = matchDetails("match-1").copy(
+        isFavorite = true,
+        isDirectFavorite = false,
+        favoriteReasons = listOf(MatchFavoriteReason(source, "source-1", "Favorite source")),
+      )
+      val repository = FakeMatchRepository(details = inherited)
+      val viewModel = createViewModel(repository)
+      advanceUntilIdle()
+
+      viewModel.toggleFavorite()
+      advanceUntilIdle()
+
+      assertEquals(emptyList(), repository.favoriteRequests)
+      assertEquals(false, viewModel.uiState.value.canToggleFavorite)
+      assertEquals(true, viewModel.uiState.value.match?.isFavorite)
+      assertEquals(false, viewModel.uiState.value.match?.isDirectFavorite)
+    }
+  }
+
+  @Test
+  fun directMatchFavoriteCanBeAddedAndRemoved() = runTest(dispatcher) {
+    val repository = FakeMatchRepository(details = matchDetails("match-1"))
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.canToggleFavorite)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.match?.isFavorite)
+    assertEquals(true, viewModel.uiState.value.canToggleFavorite)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.match?.isFavorite)
+    assertEquals(listOf(true, false), repository.favoriteRequests)
+  }
+
+  @Test
+  fun favoriteMutationBlocksRepeatedTapsAndExposesFailureForRetry() = runTest(dispatcher) {
+    val repository = FakeMatchRepository(details = matchDetails("match-1"))
+    repository.blockFavorite = true
+    repository.favoriteResult = Result.failure(IllegalStateException("Disk full"))
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.toggleFavorite()
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.isFavoritePending)
+    assertEquals(listOf(true), repository.favoriteRequests)
+
+    repository.allowFavorite.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.isFavoritePending)
+    assertEquals(false, viewModel.uiState.value.match?.isDirectFavorite)
+    assertEquals("Could not update favorite. Try again.", viewModel.uiState.value.favoriteErrorMessage)
+
+    repository.favoriteResult = Result.success(Unit)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.match?.isDirectFavorite)
+    assertEquals(null, viewModel.uiState.value.favoriteErrorMessage)
+  }
+
   private fun createViewModel(
     repository: FakeMatchRepository,
     preferencesRepository: MatchDetailsPreferencesRepository = MatchDetailsPreferencesRepository(MapSettings()),
+    favoritesRepository: FakeFavoritesRepository = FakeFavoritesRepository(),
   ): MatchDetailsViewModel = MatchDetailsViewModel(
     matchId = "match-1",
     observeMatchDetailsUseCase = ObserveMatchDetailsUseCase(repository),
     refreshMatchDetailsUseCase = RefreshMatchDetailsUseCase(repository),
+    setMatchFavoriteUseCase = SetMatchFavoriteUseCase(repository),
     networkMonitor = object : NetworkMonitor {
       override val isOnline = MutableStateFlow(true)
     },
     preferencesRepository = preferencesRepository,
+    favoritesRepository = favoritesRepository,
   ).also { viewModelStore.put("viewModel-${nextViewModelKey++}", it) }
 
   private fun matchDetails(matchId: String, hasDetails: Boolean = false): MatchDetails = MatchDetails(
@@ -226,7 +324,20 @@ class MatchDetailsViewModelTest {
     rounds = emptyList(),
   )
 
+  private class FakeFavoritesRepository : FavoritesRepository {
+    val teamIds = MutableStateFlow(emptySet<String>())
+    val playerIds = MutableStateFlow(emptySet<String>())
+
+    override fun observeTeamIds(): Flow<Set<String>> = teamIds
+
+    override fun observePlayerIds(): Flow<Set<String>> = playerIds
+  }
+
   private class FakeMatchRepository(details: MatchDetails? = null) : MatchRepository {
+    val favoriteRequests = mutableListOf<Boolean>()
+    var favoriteResult: Result<Unit> = Result.success(Unit)
+    var blockFavorite = false
+    val allowFavorite = CompletableDeferred<Unit>()
     val observedMatchIds: MutableList<String> = mutableListOf()
     val refreshDetailRequests: MutableList<String> = mutableListOf()
     var refreshCancelled: Boolean = false
@@ -250,9 +361,21 @@ class MatchDetailsViewModelTest {
       detailsByMatchId.getOrPut("match-1") { MutableStateFlow(null) }.value = details
     }
 
-    override suspend fun addToFavorites(matchId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun addToFavorites(matchId: String): Result<Unit> = setFavorite(true)
 
-    override suspend fun removeFromFavorites(matchId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun removeFromFavorites(matchId: String): Result<Unit> = setFavorite(false)
+
+    private suspend fun setFavorite(value: Boolean): Result<Unit> {
+      favoriteRequests += value
+      if (blockFavorite) allowFavorite.await()
+      if (favoriteResult.isSuccess) {
+        val current = detailsByMatchId["match-1"]?.value
+        val inherited = current?.favoriteReasons.orEmpty().filter { it.source != MatchFavoriteSource.MATCH }
+        val reasons = inherited + if (value) listOf(MatchFavoriteReason(MatchFavoriteSource.MATCH, "match-1", "")) else emptyList()
+        publishDetails(current?.copy(isDirectFavorite = value, isFavorite = reasons.isNotEmpty(), favoriteReasons = reasons))
+      }
+      return favoriteResult
+    }
 
     override suspend fun refreshMatches(): Result<Unit> = Result.success(Unit)
 

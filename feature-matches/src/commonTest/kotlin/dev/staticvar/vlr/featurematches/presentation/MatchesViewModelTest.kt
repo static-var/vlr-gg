@@ -6,6 +6,8 @@ package dev.staticvar.vlr.featurematches.presentation
 
 import androidx.lifecycle.ViewModelStore
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.domain.model.MatchFavoriteReason
+import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
@@ -164,6 +166,32 @@ class MatchesViewModelTest {
     }
   }
 
+  @Test
+  fun observedFavoriteChangesReachVisibleMatchesAndKeepEverySource() = runTest(dispatcher) {
+    val match = matchPreview(id = "live-1", status = MatchStatus.LIVE)
+    val repository = FakeMatchRepository(matches = listOf(match))
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.filteredMatches.single().isFavorite)
+
+    val reasons = listOf(
+      MatchFavoriteReason(MatchFavoriteSource.TEAM, "100t", "100 Thieves"),
+      MatchFavoriteReason(MatchFavoriteSource.PLAYER, "asuna", "Asuna"),
+      MatchFavoriteReason(MatchFavoriteSource.EVENT, "masters", "Masters"),
+    )
+    repository.matchesFlow.value = listOf(match.copy(isFavorite = true, favoriteReasons = reasons))
+    advanceUntilIdle()
+
+    assertEquals(true, viewModel.uiState.value.filteredMatches.single().isFavorite)
+    assertEquals(false, viewModel.uiState.value.filteredMatches.single().isDirectFavorite)
+    assertEquals(reasons, viewModel.uiState.value.filteredMatches.single().favoriteReasons)
+
+    repository.matchesFlow.value = listOf(match)
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.filteredMatches.single().isFavorite)
+    assertEquals(emptyList(), viewModel.uiState.value.filteredMatches.single().favoriteReasons)
+  }
+
   private fun createViewModel(repository: FakeMatchRepository): MatchesViewModel = MatchesViewModel(
     observeMatchListUseCase = ObserveMatchListUseCase(repository),
     refreshMatchesUseCase = RefreshMatchesUseCase(repository),
@@ -200,7 +228,7 @@ class MatchesViewModelTest {
     matches: List<MatchPreview>,
     private val refreshedMatches: List<MatchPreview> = matches,
   ) : MatchRepository {
-    private val matchesFlow = MutableStateFlow(matches)
+    val matchesFlow = MutableStateFlow(matches)
     var refreshMatchesCallCount: Int = 0
       private set
 

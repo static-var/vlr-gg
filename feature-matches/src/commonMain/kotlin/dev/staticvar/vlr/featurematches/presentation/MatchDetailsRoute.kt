@@ -4,6 +4,10 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.semantics.Role
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +56,7 @@ public fun MatchDetailsRoute(
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
   onPreferencesChange: (MatchDetailsPreferences) -> Unit = {},
+  onFavoriteClick: () -> Unit = {},
 ) {
   MatchDetailsScreen(
     uiState = uiState,
@@ -63,6 +68,7 @@ public fun MatchDetailsRoute(
     modifier = modifier,
     onRefresh = onRefresh,
     onPreferencesChange = onPreferencesChange,
+    onFavoriteClick = onFavoriteClick,
   )
 }
 
@@ -77,6 +83,7 @@ internal fun MatchDetailsScreen(
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
   onPreferencesChange: (MatchDetailsPreferences) -> Unit = {},
+  onFavoriteClick: () -> Unit = {},
 ) {
   val match = uiState.match
   val uriHandler = LocalUriHandler.current
@@ -92,8 +99,28 @@ internal fun MatchDetailsScreen(
           title = match?.event?.name ?: "Match details",
           subtitle = "Maps, scores and player stats",
           onBackPress = onBack,
+          actions = {
+            if (match != null) {
+              PrismFavoriteIcon(
+                selected = match.isFavorite,
+                size = PrismFavoriteIconSize.Large,
+                contentDescription = when {
+                  uiState.isFavoritePending -> "Updating favorite"
+                  uiState.isFavoriteInherited -> "Favorite match"
+                  match.isFavorite -> "Remove match from favorites"
+                  else -> "Add match to favorites"
+                },
+                modifier = Modifier.clickable(
+                  enabled = uiState.canToggleFavorite,
+                  role = Role.Button,
+                  onClick = onFavoriteClick,
+                ),
+              )
+            }
+          },
         )
 
+        uiState.favoriteErrorMessage?.let { PrismStateMessage(text = it) }
         SharedRefreshStatus(
           isRefreshing = uiState.isRefreshing,
           errorMessage = uiState.errorMessage.takeIf { match != null },

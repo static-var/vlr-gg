@@ -9,12 +9,14 @@ import dev.staticvar.vlr.featurematches.presentation.MatchesViewModel
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchDetailsUseCase
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchListUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchDetailsUseCase
+import dev.staticvar.vlr.featurematches.usecase.SetMatchFavoriteUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchesUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 public fun matchesFeatureModule(): Module = module {
+  factory { SetMatchFavoriteUseCase(matchRepository = get()) }
   factory { ObserveMatchListUseCase(matchRepository = get()) }
   factory { RefreshMatchesUseCase(matchRepository = get()) }
   factory { ObserveMatchDetailsUseCase(matchRepository = get()) }
@@ -31,8 +33,10 @@ public fun matchesFeatureModule(): Module = module {
       matchId = parameters.get(),
       observeMatchDetailsUseCase = get(),
       refreshMatchDetailsUseCase = get(),
+      favoritesRepository = get(),
       preferencesRepository = get(),
       networkMonitor = get(),
+      setMatchFavoriteUseCase = get(),
     )
   }
 }
