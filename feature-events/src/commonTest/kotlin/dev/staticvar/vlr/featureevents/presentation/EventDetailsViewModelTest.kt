@@ -12,6 +12,7 @@ import dev.staticvar.vlr.domain.model.EventMatchTeam
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.repository.EventRepository
+import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.featureevents.usecase.ObserveEventDetailsUseCase
 import dev.staticvar.vlr.featureevents.usecase.RefreshEventDetailsUseCase
 import kotlinx.coroutines.CompletableDeferred
@@ -117,20 +118,92 @@ class EventDetailsViewModelTest {
     assertEquals("Offline", viewModel.uiState.value.errorMessage)
   }
 
-  private fun createViewModel(repository: FakeEventRepository): EventDetailsViewModel = EventDetailsViewModel(
+  @Test
+  fun favoriteChangesUpdateAllTeamIdsWithoutRefetchingEvent() = runTest(dispatcher) {
+    val repository = FakeEventRepository(details = eventDetailsWithoutSlices())
+    val favorites = FakeFavoritesRepository()
+    favorites.teamIds.value = setOf("team-1", "team-2")
+    val viewModel = createViewModel(repository, favorites)
+    advanceUntilIdle()
+
+    assertEquals(setOf("team-1", "team-2"), viewModel.uiState.value.favoriteTeamIds)
+
+    favorites.teamIds.value = setOf("team-2")
+    advanceUntilIdle()
+    assertEquals(setOf("team-2"), viewModel.uiState.value.favoriteTeamIds)
+    assertEquals(emptyList(), repository.refreshDetailRequests)
+
+    viewModelStore.clear()
+    favorites.teamIds.value = emptySet()
+    advanceUntilIdle()
+    assertEquals(setOf("team-2"), viewModel.uiState.value.favoriteTeamIds)
+  }
+
+  @Test
+  fun favoriteSaveCoalescesTapsAndCanBeRemoved() = runTest(dispatcher) {
+    val repository = FakeEventRepository(eventDetailsWithoutSlices())
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+    viewModel.toggleFavorite()
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true), repository.favoriteWrites)
+    assertEquals(true, viewModel.uiState.value.event?.isFavorite)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true, false), repository.favoriteWrites)
+    assertEquals(false, viewModel.uiState.value.event?.isFavorite)
+    assertEquals(emptyList(), repository.refreshDetailRequests)
+  }
+
+  @Test
+  fun failedFavoriteSavePreservesSelectionAndCanRetry() = runTest(dispatcher) {
+    val repository = FakeEventRepository(eventDetailsWithoutSlices())
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+    repository.favoriteResult = Result.failure(IllegalStateException("Database unavailable"))
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.event?.isFavorite)
+    assertEquals(false, viewModel.uiState.value.isSavingFavorite)
+    kotlin.test.assertNotNull(viewModel.uiState.value.favoriteErrorMessage)
+    repository.favoriteResult = Result.success(Unit)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.event?.isFavorite)
+    assertEquals(null, viewModel.uiState.value.favoriteErrorMessage)
+  }
+
+  private fun createViewModel(
+    repository: FakeEventRepository,
+    favoritesRepository: FakeFavoritesRepository = FakeFavoritesRepository(),
+  ): EventDetailsViewModel = EventDetailsViewModel(
     eventId = "event-1",
     observeEventDetailsUseCase = ObserveEventDetailsUseCase(repository),
     refreshEventDetailsUseCase = RefreshEventDetailsUseCase(repository),
+    favoritesRepository = favoritesRepository,
+    eventRepository = repository,
     networkMonitor = object : NetworkMonitor {
       override val isOnline = MutableStateFlow(true)
     },
   ).also { viewModelStore.put("viewModel-${nextViewModelKey++}", it) }
+
+  private class FakeFavoritesRepository : FavoritesRepository {
+    val teamIds = MutableStateFlow(emptySet<String>())
+    val playerIds = MutableStateFlow(emptySet<String>())
+
+    override fun observeTeamIds(): Flow<Set<String>> = teamIds
+
+    override fun observePlayerIds(): Flow<Set<String>> = playerIds
+  }
 
   private class FakeEventRepository(details: EventDetails? = null) : EventRepository {
     val refreshDetailRequests: MutableList<String> = mutableListOf()
     var blockDetailRefresh: Boolean = false
     val allowRefresh: CompletableDeferred<Unit> = CompletableDeferred()
     var refreshResult: Result<Unit> = Result.success(Unit)
+    var favoriteResult: Result<Unit> = Result.success(Unit)
+    val favoriteWrites = mutableListOf<Boolean>()
     private val detailsByEventId: MutableMap<String, MutableStateFlow<EventDetails?>> = mutableMapOf()
 
     init {
@@ -147,9 +220,18 @@ class EventDetailsViewModelTest {
       detailsByEventId.getOrPut("event-1") { MutableStateFlow(null) }.value = details
     }
 
-    override suspend fun addToFavorites(eventId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun addToFavorites(eventId: String): Result<Unit> = updateFavorite(eventId, true)
 
-    override suspend fun removeFromFavorites(eventId: String): Result<Unit> = Result.success(Unit)
+    override suspend fun removeFromFavorites(eventId: String): Result<Unit> = updateFavorite(eventId, false)
+
+    private fun updateFavorite(eventId: String, selected: Boolean): Result<Unit> {
+      favoriteWrites += selected
+      if (favoriteResult.isSuccess) {
+        val flow = detailsByEventId.getValue(eventId)
+        flow.value = flow.value?.copy(isFavorite = selected)
+      }
+      return favoriteResult
+    }
 
     override suspend fun refreshEvents(): Result<Unit> = Result.success(Unit)
 

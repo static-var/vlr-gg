@@ -31,6 +31,8 @@ public fun eventsFeatureModule(): Module = module {
       eventId = parameters.get(),
       observeEventDetailsUseCase = get(),
       refreshEventDetailsUseCase = get(),
+      favoritesRepository = get(),
+      eventRepository = get(),
       networkMonitor = get(),
     )
   }

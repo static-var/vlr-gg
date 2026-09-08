@@ -138,6 +138,7 @@ internal fun appNavigationModule(): Module = module {
     RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
 
     EventDetailsRoute(
+      onToggleFavorite = viewModel::toggleFavorite,
       uiState = uiState,
       onRefresh = viewModel::refresh,
       section = section,

@@ -8,6 +8,9 @@ import dev.staticvar.vlr.domain.model.EventDetails
 
 public data class EventDetailsUiState(
   val event: EventDetails? = null,
+  val isSavingFavorite: Boolean = false,
+  val favoriteErrorMessage: String? = null,
+  val favoriteTeamIds: Set<String> = emptySet(),
   val isLoading: Boolean = true,
   val isRefreshing: Boolean = false,
   val isDetailLoadPending: Boolean = true,

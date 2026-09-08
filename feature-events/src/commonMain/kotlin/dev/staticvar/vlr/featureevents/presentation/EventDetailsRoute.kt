@@ -4,6 +4,10 @@
  */
 package dev.staticvar.vlr.featureevents.presentation
 
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.semantics.Role
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +35,8 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.domain.model.EventStanding
 import dev.staticvar.vlr.domain.model.EventTeam
+import dev.staticvar.vlr.domain.model.MatchFavoriteReason
+import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailHeaderItem
@@ -55,6 +61,7 @@ public fun EventDetailsRoute(
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
+  onToggleFavorite: () -> Unit = {},
 ) {
   EventDetailsScreen(
     uiState = uiState,
@@ -69,6 +76,7 @@ public fun EventDetailsRoute(
     onTeamSelected = onTeamSelected,
     modifier = modifier,
     onRefresh = onRefresh,
+    onToggleFavorite = onToggleFavorite,
   )
 }
 
@@ -86,6 +94,7 @@ internal fun EventDetailsScreen(
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
+  onToggleFavorite: () -> Unit = {},
 ) {
   val event = uiState.event
 
@@ -98,8 +107,27 @@ internal fun EventDetailsScreen(
         title = event?.title ?: "Tournament details",
         subtitle = "Teams, matches and standings",
         onBackPress = onBack,
+        actions = {
+          if (event != null) {
+            PrismFavoriteIcon(
+              selected = event.isFavorite,
+              size = PrismFavoriteIconSize.Large,
+              contentDescription = when {
+                uiState.isSavingFavorite -> "Updating favorite"
+                event.isFavorite -> "Remove event from favorites"
+                else -> "Add event to favorites"
+              },
+              modifier = Modifier.clickable(
+                enabled = !uiState.isSavingFavorite,
+                role = Role.Button,
+                onClick = onToggleFavorite,
+              ),
+            )
+          }
+        },
       )
 
+      uiState.favoriteErrorMessage?.let { PrismStateMessage(text = it) }
       SharedRefreshStatus(
         isRefreshing = uiState.isRefreshing,
         errorMessage = uiState.errorMessage.takeIf { event != null },
@@ -172,7 +200,13 @@ internal fun EventDetailsScreen(
                   )
                 }
                 items(visibleMatches, key = EventMatch::matchId) { match ->
-                  EventDetailMatchItem(match = match, onClick = { onMatchSelected(match.matchId) })
+                  EventDetailMatchItem(
+                    match = match,
+                    favoriteReasons = if (event.isFavorite) {
+                      listOf(MatchFavoriteReason(MatchFavoriteSource.EVENT, event.id, event.title))
+                    } else emptyList(),
+                    onClick = { onMatchSelected(match.matchId) },
+                  )
                 }
               }
             }
