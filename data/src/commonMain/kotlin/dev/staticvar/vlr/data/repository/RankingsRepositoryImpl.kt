@@ -26,13 +26,13 @@ internal class RankingsRepositoryImpl(
   private val rankingsQueries = database.rankingsQueries
 
   override fun getAllRankings(): Flow<List<RegionalRanking>> = rankingsQueries
-    .getAllRankings()
+    .getRankingsWithFavoriteStatus(region = null)
     .asFlow()
     .mapToList(dispatchers.io)
     .map { rankings -> rankings.toRegionalRankings() }
 
   override fun getRankingsByRegion(region: String): Flow<RegionalRanking?> = rankingsQueries
-    .getRankingsByRegion(region)
+    .getRankingsWithFavoriteStatus(region)
     .asFlow()
     .mapToList(dispatchers.io)
     .map { rankings -> rankings.toRegionalRankings().firstOrNull() }

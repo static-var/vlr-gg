@@ -19,4 +19,5 @@ data class TeamRanking(
   val country: String,
   val rank: Int,
   val points: String,
+  val isFavorite: Boolean = false,
 )

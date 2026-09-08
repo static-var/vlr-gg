@@ -37,6 +37,7 @@ internal fun RankingsPreview(@PreviewParameter(PrismPreviewProvider::class) vari
                 country = "EU",
                 rank = 1,
                 points = "100",
+                isFavorite = true,
               ),
               TeamRanking(
                 teamId = "vit",

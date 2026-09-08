@@ -50,6 +50,13 @@ SELECT * FROM rankings WHERE region = :region ORDER BY rank ASC;
 getAllRankings:
 SELECT * FROM rankings ORDER BY region ASC, rank ASC;
 
+getRankingsWithFavoriteStatus:
+SELECT r.*, CAST((fav.team_id IS NOT NULL) AS INTEGER) AS is_favorite
+FROM rankings AS r
+LEFT JOIN favorite_teams AS fav ON r.team_id = fav.team_id
+WHERE :region IS NULL OR r.region = :region
+ORDER BY r.region ASC, r.rank ASC;
+
 deleteRankingsByRegion:
 DELETE FROM rankings WHERE region = :region;
 

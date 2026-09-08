@@ -6,21 +6,23 @@ package dev.staticvar.vlr.featurerankings.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.state.PrismStateMessage
@@ -121,11 +123,26 @@ internal fun RankingsScreen(
               style = PrismCardStyle.Outlined,
               onClick = { onTeamSelected(team.teamId) },
             ) {
-              Text(
-                text = "#${team.rank} ${team.teamName}",
-                style = Prism.typography.cardTitle,
-                color = Prism.color.titleColor,
-              )
+              Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Text(
+                  text = "#${team.rank} ${team.teamName}",
+                  modifier = Modifier.weight(1f),
+                  style = Prism.typography.cardTitle,
+                  color = if (team.isFavorite) Prism.color.accent else Prism.color.titleColor,
+                )
+                if (team.isFavorite) {
+                  PrismFavoriteIcon(
+                    selected = true,
+                    size = PrismFavoriteIconSize.Small,
+                    style = PrismFavoriteIconStyle.Bare,
+                    contentDescription = "Favorite team",
+                  )
+                }
+              }
               Text(
                 text = "${team.country} • ${team.points} pts",
                 modifier = Modifier.padding(top = Prism.dimens.spacingXs),

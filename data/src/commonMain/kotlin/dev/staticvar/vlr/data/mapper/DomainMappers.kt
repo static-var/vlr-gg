@@ -18,7 +18,6 @@ import dev.staticvar.vlr.data.NewsMedia
 import dev.staticvar.vlr.data.PlayerAgentStats
 import dev.staticvar.vlr.data.PlayerTeamHistory
 import dev.staticvar.vlr.data.Players
-import dev.staticvar.vlr.data.Rankings
 import dev.staticvar.vlr.data.Standings
 import dev.staticvar.vlr.data.Teams
 import dev.staticvar.vlr.domain.model.AgentInfo
@@ -68,6 +67,7 @@ import dev.staticvar.vlr.localsource.database.GetMatchWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetMatchesWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetPlayerWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetPlayersByTeam
+import dev.staticvar.vlr.localsource.database.GetRankingsWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetTeamWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetTeamsByRegion
 import dev.staticvar.vlr.localsource.database.GetTeamsWithFavoriteStatus
@@ -540,7 +540,7 @@ internal fun GetPlayersByTeam.toPlayerInfo(
 /**
  * Groups rankings by region to create domain RegionalRanking model.
  */
-internal fun List<Rankings>.toRegionalRankings(): List<RegionalRanking> = groupBy { it.region }
+internal fun List<GetRankingsWithFavoriteStatus>.toRegionalRankings(): List<RegionalRanking> = groupBy { it.region }
   .map { (region, rankings) ->
     RegionalRanking(
       region = region,
@@ -548,13 +548,14 @@ internal fun List<Rankings>.toRegionalRankings(): List<RegionalRanking> = groupB
     )
   }
 
-private fun Rankings.toTeamRanking(): TeamRanking = TeamRanking(
+private fun GetRankingsWithFavoriteStatus.toTeamRanking(): TeamRanking = TeamRanking(
   teamId = team_id,
   teamName = team_name,
   teamLogo = team_logo,
   country = country,
   rank = rank.toInt(),
   points = points,
+  isFavorite = is_favorite == 1L,
 )
 
 // ============================================================================
