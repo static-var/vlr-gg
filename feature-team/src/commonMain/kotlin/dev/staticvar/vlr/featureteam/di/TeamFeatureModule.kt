@@ -20,6 +20,7 @@ public fun teamFeatureModule(): Module = module {
       observeTeamDetailsUseCase = get(),
       refreshTeamDetailsUseCase = get(),
       networkMonitor = get(),
+      teamRepository = get(),
     )
   }
 }

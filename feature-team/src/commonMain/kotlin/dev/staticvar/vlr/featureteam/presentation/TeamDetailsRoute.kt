@@ -17,9 +17,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
@@ -39,6 +42,7 @@ public fun TeamDetailsRoute(
   onEventSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
+  onToggleFavorite: () -> Unit = {},
 ) {
   TeamDetailsScreen(
     uiState = uiState,
@@ -50,6 +54,7 @@ public fun TeamDetailsRoute(
     onEventSelected = onEventSelected,
     modifier = modifier,
     onRefresh = onRefresh,
+    onToggleFavorite = onToggleFavorite,
   )
 }
 
@@ -64,6 +69,7 @@ internal fun TeamDetailsScreen(
   onEventSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
+  onToggleFavorite: () -> Unit = {},
 ) {
   val team = uiState.team
 
@@ -76,6 +82,26 @@ internal fun TeamDetailsScreen(
         title = team?.name ?: "Team details",
         subtitle = "Roster, results and recent form",
         onBackPress = onBack,
+        actions = {
+          if (team != null) {
+            PrismFavoriteIcon(
+              selected = team.isFavorite,
+              size = PrismFavoriteIconSize.Large,
+              contentDescription = if (uiState.isUpdatingFavorite) {
+                "Updating favorite"
+              } else if (team.isFavorite) {
+                "Remove team from favorites"
+              } else {
+                "Add team to favorites"
+              },
+              modifier = Modifier.clickable(
+                enabled = !uiState.isUpdatingFavorite,
+                role = Role.Button,
+                onClick = onToggleFavorite,
+              ),
+            )
+          }
+        },
       )
 
       SharedRefreshStatus(
@@ -84,6 +110,10 @@ internal fun TeamDetailsScreen(
         errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
       )
+    }
+
+    uiState.favoriteErrorMessage?.let { message ->
+      PrismStateMessage(text = message)
     }
 
     when {
