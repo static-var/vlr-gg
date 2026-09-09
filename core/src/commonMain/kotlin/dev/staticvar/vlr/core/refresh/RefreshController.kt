@@ -17,7 +17,6 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,25 +29,25 @@ class RefreshController(
   action: suspend () -> Result<Unit>,
 ) {
   private val requests = Channel<Unit>(Channel.CONFLATED)
-  private val mutableState = MutableStateFlow(RefreshState())
-  val state: StateFlow<RefreshState> = mutableState.asStateFlow()
+  val state: StateFlow<RefreshState>
+    field = MutableStateFlow(RefreshState())
 
   init {
     scope.launch {
       for (request in requests) {
         networkMonitor.isOnline.first { it }
-        mutableState.update { it.copy(isRefreshing = true, errorMessage = null, errorDetails = null) }
+        state.update { it.copy(isRefreshing = true, errorMessage = null, errorDetails = null) }
         try {
           action().getOrThrow()
           currentCoroutineContext().ensureActive()
-          mutableState.update { it.copy(hasCompleted = true) }
+          state.update { it.copy(hasCompleted = true) }
         } catch (cancellation: CancellationException) {
           throw cancellation
         } catch (error: Exception) {
           currentCoroutineContext().ensureActive()
           telemetry.captureExceptionSafely(error, operation)
           telemetry.logSafely(TelemetryLevel.Warning, "$operation failed")
-          mutableState.update {
+          state.update {
             it.copy(
               hasCompleted = true,
               errorMessage = error.message ?: "Could not refresh data",
@@ -56,7 +55,7 @@ class RefreshController(
             )
           }
         } finally {
-          mutableState.update { it.copy(isRefreshing = false) }
+          state.update { it.copy(isRefreshing = false) }
         }
       }
     }.invokeOnCompletion { requests.close() }

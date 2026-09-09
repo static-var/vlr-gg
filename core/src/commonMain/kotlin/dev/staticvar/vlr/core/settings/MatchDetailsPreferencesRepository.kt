@@ -7,23 +7,22 @@ package dev.staticvar.vlr.core.settings
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 public class MatchDetailsPreferencesRepository(private val storage: Settings) {
-  private val mutablePreferences = MutableStateFlow(
-    MatchDetailsPreferences(
-      showBreakdown = storage.getBoolean(BreakdownKey, true),
-      showMedia = storage.getBoolean(MediaKey, true),
-      showHeadToHead = storage.getBoolean(HeadToHeadKey, true),
-    ),
-  )
-  public val preferences: StateFlow<MatchDetailsPreferences> = mutablePreferences.asStateFlow()
+  public val preferences: StateFlow<MatchDetailsPreferences>
+    field = MutableStateFlow(
+      MatchDetailsPreferences(
+        showBreakdown = storage.getBoolean(BreakdownKey, true),
+        showMedia = storage.getBoolean(MediaKey, true),
+        showHeadToHead = storage.getBoolean(HeadToHeadKey, true),
+      ),
+    )
 
   public fun setPreferences(preferences: MatchDetailsPreferences) {
     storage.putBoolean(BreakdownKey, preferences.showBreakdown)
     storage.putBoolean(MediaKey, preferences.showMedia)
     storage.putBoolean(HeadToHeadKey, preferences.showHeadToHead)
-    mutablePreferences.value = preferences
+    this.preferences.value = preferences
   }
 
   private companion object {
