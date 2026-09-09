@@ -10,6 +10,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.currentStateAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
@@ -27,6 +30,7 @@ import dev.staticvar.vlr.shared.navigation.rememberVlrAppState
 import dev.staticvar.vlr.sharedui.image.ProvideSharedImageLoader
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.MascotCharacter
+import dev.staticvar.vlr.sharedui.mascot.ProvideCardMascots
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -38,6 +42,7 @@ public fun App() {
   ProvideSharedImageLoader()
 
   val appState = rememberVlrAppState()
+  val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val viewModel = koinViewModel<AppearanceViewModel>()
   val appearance by viewModel.appearance.collectAsStateWithLifecycle()
   val isDark = appearance.isDark(isSystemInDarkTheme())
@@ -68,8 +73,16 @@ public fun App() {
       color = Prism.color.background,
       contentColor = Prism.color.contentPrimary,
     ) {
-      CompositionLocalProvider(LocalMascotCharacter provides mascotCharacter) {
-        AppNavHost(appState = appState)
+      CompositionLocalProvider(
+        LocalMascotCharacter provides mascotCharacter,
+      ) {
+        ProvideCardMascots(
+          screenKey = appState.backStack.lastOrNull().toString(),
+          isActive = lifecycleState == Lifecycle.State.RESUMED,
+          probabilityPercent = appearance.mascotVisitFrequency.probabilityPercent,
+        ) {
+          AppNavHost(appState = appState)
+        }
       }
     }
   }

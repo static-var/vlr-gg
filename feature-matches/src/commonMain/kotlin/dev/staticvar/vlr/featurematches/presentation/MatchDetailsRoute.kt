@@ -42,6 +42,7 @@ import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.loader.PrismLoader
 import dev.staticvar.designsystem.component.loader.PrismLoaderSize
+import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
@@ -191,7 +192,7 @@ internal fun MatchDetailsScreen(
               match.videos.vods.isNotEmpty()
           LazyColumn(
             state = listState,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().cardMascotViewport(),
             verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
           ) {
             item {

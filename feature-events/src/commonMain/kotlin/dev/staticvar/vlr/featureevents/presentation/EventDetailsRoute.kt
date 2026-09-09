@@ -42,6 +42,8 @@ import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
+import dev.staticvar.designsystem.component.card.cardMascotViewport
+import dev.staticvar.designsystem.component.card.cardMascotEligible
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.domain.model.EventStanding
@@ -201,7 +203,7 @@ internal fun EventDetailsScreen(
 
           LazyColumn(
             state = listState,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().cardMascotViewport(),
             verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
           ) {
             item {
@@ -250,6 +252,9 @@ internal fun EventDetailsScreen(
                   }
                   items(visibleMatches, key = EventMatch::matchId) { match ->
                     EventDetailMatchItem(
+                      modifier = Modifier.cardMascotEligible(
+                        topClearance = Prism.dimens.spacingM + Prism.dimens.spacingS + Prism.dimens.spacingXs,
+                      ),
                       match = match,
                       favoriteReasons = if (event.isFavorite) {
                         listOf(MatchFavoriteReason(MatchFavoriteSource.EVENT, event.id, event.title))
@@ -276,7 +281,10 @@ internal fun EventDetailsScreen(
                 } else {
                   item { PrismSectionTitle(title = "Standings", preLabel = "table") }
                   items(event.standings, key = EventStanding::teamName) { standing ->
-                    EventDetailStandingItem(standing = standing)
+                    EventDetailStandingItem(
+                      standing = standing,
+                      modifier = Modifier.cardMascotEligible(topClearance = Prism.dimens.spacingM),
+                    )
                   }
                 }
               }
@@ -300,6 +308,7 @@ internal fun EventDetailsScreen(
                     val prizeTeamId = prizeTeam?.id
                     EventDetailPrizeItem(
                       prize = prize,
+                      modifier = Modifier.cardMascotEligible(topClearance = Prism.dimens.spacingM),
                       onTeamClick = prizeTeamId?.let { teamId ->
                         {
                           isNavigatingAway = true

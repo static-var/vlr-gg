@@ -25,6 +25,8 @@ import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
+import dev.staticvar.designsystem.component.card.cardMascotViewport
+import dev.staticvar.designsystem.component.card.cardMascotEligible
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
@@ -117,7 +119,10 @@ internal fun PlayerDetailsScreen(
       player == null -> PrismStateMessage(text = "No player details published yet.")
 
       else -> {
-        PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
+        PrismCard(
+          modifier = Modifier.fillMaxWidth().cardMascotEligible(topClearance = Prism.dimens.spacingM),
+          style = PrismCardStyle.Outlined,
+        ) {
           Text(
             text = player.alias.ifBlank { player.name },
             style = Prism.typography.sectionTitle,
@@ -150,7 +155,7 @@ internal fun PlayerDetailsScreen(
         if (player.agentStats.isNotEmpty()) {
           PrismSectionTitle(title = "Agent stats", preLabel = "pool")
           LazyColumn(
-            modifier = Modifier.fillMaxWidth().weight(1f, fill = false),
+            modifier = Modifier.fillMaxWidth().weight(1f, fill = false).cardMascotViewport(),
             verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
           ) {
             items(player.agentStats, key = { it.agentName }) { stat ->
@@ -175,7 +180,7 @@ internal fun PlayerDetailsScreen(
         if (player.pastTeams.isNotEmpty()) {
           PrismSectionTitle(title = "Team history", preLabel = "history")
           LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().cardMascotViewport(),
             verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
           ) {
             items(player.pastTeams) { team ->

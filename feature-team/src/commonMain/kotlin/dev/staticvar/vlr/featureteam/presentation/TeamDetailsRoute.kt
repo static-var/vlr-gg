@@ -27,6 +27,7 @@ import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
+import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
@@ -132,7 +133,7 @@ internal fun TeamDetailsScreen(
 
       else -> {
         LazyColumn(
-          modifier = Modifier.fillMaxWidth().weight(1f),
+          modifier = Modifier.fillMaxWidth().weight(1f).cardMascotViewport(),
           verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
         ) {
           item(key = "summary") {

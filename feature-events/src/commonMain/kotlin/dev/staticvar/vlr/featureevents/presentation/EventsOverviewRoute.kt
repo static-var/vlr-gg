@@ -17,6 +17,8 @@ import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.state.PrismStateMessage
+import dev.staticvar.designsystem.component.card.cardMascotViewport
+import dev.staticvar.designsystem.component.card.cardMascotEligible
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
@@ -85,13 +87,14 @@ internal fun EventsOverviewScreen(
 
       else -> {
         LazyColumn(
-          modifier = Modifier.fillMaxSize(),
+          modifier = Modifier.fillMaxSize().cardMascotViewport(),
           verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
         ) {
           items(uiState.filteredEvents, key = EventPreview::id) { event ->
             EventPreviewItem(
               eventPreview = event,
-              modifier = Modifier.fillMaxWidth(),
+              modifier = Modifier.fillMaxWidth()
+                .cardMascotEligible(topClearance = Prism.dimens.spacingS * 2 + Prism.dimens.spacingXs),
               onClick = { onEventSelected(event.id) },
             )
           }

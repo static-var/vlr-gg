@@ -10,6 +10,7 @@ import dev.staticvar.vlr.core.settings.AppearanceRepository
 import dev.staticvar.vlr.core.settings.AppearanceSettings
 import dev.staticvar.vlr.core.settings.CatppuccinFlavour
 import dev.staticvar.vlr.core.settings.MascotPreference
+import dev.staticvar.vlr.core.settings.MascotVisitFrequency
 import dev.staticvar.vlr.core.settings.ThemeFamily
 import kotlinx.coroutines.flow.StateFlow
 
@@ -30,5 +31,9 @@ internal class AppearanceViewModel(private val repository: AppearanceRepository)
 
   fun setMascot(mascot: MascotPreference) {
     repository.setMascot(mascot)
+  }
+
+  fun setMascotVisitFrequency(frequency: MascotVisitFrequency) {
+    repository.setMascotVisitFrequency(frequency)
   }
 }

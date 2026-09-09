@@ -30,6 +30,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
+import dev.staticvar.designsystem.component.card.cardMascotEligible
+import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
@@ -42,6 +44,7 @@ import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.match.overview.MatchPreviewItem
 import dev.staticvar.vlr.sharedui.share.LocalImageSharer
+import dev.staticvar.vlr.sharedui.mascot.PauseCardMascots
 
 @Composable
 public fun MatchesOverviewRoute(
@@ -72,6 +75,7 @@ internal fun MatchesOverviewScreen(
   var previewMatches by remember { mutableStateOf<List<MatchPreview>?>(null) }
   val imageSharer = LocalImageSharer.current
   val selectionAnimation = Prism.anim.selection
+  PauseCardMascots(selection.isActive || previewMatches != null)
 
   previewMatches?.let { matches ->
     if (imageSharer != null) {
@@ -156,13 +160,15 @@ internal fun MatchesOverviewScreen(
 
       else -> {
         LazyColumn(
-          modifier = Modifier.fillMaxSize(),
+          modifier = Modifier.fillMaxSize().cardMascotViewport(),
           verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
         ) {
           items(uiState.filteredMatches, key = MatchPreview::id) { match ->
             MatchPreviewItem(
               matchPreview = match,
-              modifier = Modifier.fillMaxWidth(),
+              modifier = Modifier.fillMaxWidth().cardMascotEligible(
+                topClearance = Prism.dimens.spacingS * 2 + Prism.dimens.spacingXs,
+              ),
               onClick = {
                 if (selection.isActive) selection = selection.toggle(match) else onMatchSelected(match.id)
               },

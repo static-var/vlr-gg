@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
+import dev.staticvar.designsystem.component.card.PrismCardHost
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
@@ -41,18 +42,20 @@ internal fun FavoriteTicketCardBox(
 ) {
   val ticketGutter = Prism.dimens.spacingS + Prism.dimens.spacingXs
 
-  Box(modifier = modifier.padding(top = ticketGutter)) {
-    content()
-    if (selected) {
-      PrismFavoriteIcon(
-        selected = true,
-        size = PrismFavoriteIconSize.Medium,
-        style = PrismFavoriteIconStyle.Bare,
-        modifier = Modifier
-          .align(Alignment.TopStart)
-          .offset(x = Prism.dimens.spacingS, y = -ticketGutter)
-          .zIndex(1f),
-      )
+  PrismCardHost(modifier = modifier.padding(top = ticketGutter)) {
+    Box {
+      content()
+      if (selected) {
+        PrismFavoriteIcon(
+          selected = true,
+          size = PrismFavoriteIconSize.Medium,
+          style = PrismFavoriteIconStyle.Bare,
+          modifier = Modifier
+            .align(Alignment.TopStart)
+            .offset(x = Prism.dimens.spacingS, y = -ticketGutter)
+            .zIndex(1f),
+        )
+      }
     }
   }
 }

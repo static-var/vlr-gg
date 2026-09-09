@@ -23,6 +23,9 @@ public class AppearanceRepository(private val storage: Settings) {
       mascot = MascotPreference.entries.firstOrNull {
         it.name == storage.getStringOrNull(MascotKey)
       } ?: MascotPreference.Lynx,
+      mascotVisitFrequency = MascotVisitFrequency.entries.firstOrNull {
+        it.storageValue == storage.getStringOrNull(MascotVisitFrequencyKey)
+      } ?: MascotVisitFrequency.Sometimes,
     ),
   )
   public val settings: StateFlow<AppearanceSettings> = mutableSettings.asStateFlow()
@@ -47,10 +50,16 @@ public class AppearanceRepository(private val storage: Settings) {
     mutableSettings.update { it.copy(mascot = mascot) }
   }
 
+  public fun setMascotVisitFrequency(frequency: MascotVisitFrequency) {
+    storage.putString(MascotVisitFrequencyKey, frequency.storageValue)
+    mutableSettings.update { it.copy(mascotVisitFrequency = frequency) }
+  }
+
   private companion object {
     const val ModeKey: String = "appearance.mode"
     const val FamilyKey: String = "appearance.family"
     const val FlavourKey: String = "appearance.catppuccin_flavour"
     const val MascotKey: String = "appearance.mascot"
+    const val MascotVisitFrequencyKey: String = "appearance.mascot_visit_frequency"
   }
 }

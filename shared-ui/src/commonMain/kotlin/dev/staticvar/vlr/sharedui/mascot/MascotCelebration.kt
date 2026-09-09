@@ -51,6 +51,7 @@ public fun MascotCelebration(
   animated: Boolean = true,
   secondaryMessage: String? = null,
 ): Unit {
+  PauseCardMascots(visible)
   val entrance = remember { Animatable(0f) }
   val banner = remember { Animatable(0f) }
   val currentOnFinished by rememberUpdatedState(onFinished)

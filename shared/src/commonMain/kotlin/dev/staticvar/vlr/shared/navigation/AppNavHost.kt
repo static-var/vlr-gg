@@ -33,6 +33,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavBar
+import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavBarLarge
 import dev.staticvar.designsystem.prism.Prism
 import org.koin.compose.navigation3.koinEntryProvider
@@ -53,7 +54,7 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
 
   ProvideVlrAppState(appState = appState) {
     androidx.compose.foundation.layout.BoxWithConstraints(
-      modifier = modifier.fillMaxSize(),
+      modifier = modifier.fillMaxSize().cardMascotViewport(),
     ) {
       val showSceneLayout: Boolean = maxWidth >= sceneBreakpoint
       val showRail: Boolean = maxWidth >= railBreakpoint

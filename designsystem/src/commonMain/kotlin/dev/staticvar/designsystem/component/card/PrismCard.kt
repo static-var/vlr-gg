@@ -86,16 +86,17 @@ public fun PrismCard(
       modifier
     }
 
-  PrismSurface(
-    modifier = finalModifier,
-    color = style.containerColor,
-    brush = style.brush,
-    contentColor = style.contentColor,
-    shape = shape,
-    border = style.border,
-    frame = frame,
-    pressProgress = pressProgress,
-  ) {
-    Column(modifier = Modifier.padding(Prism.dimens.spacingM)) { content() }
+  PrismCardHost(modifier = finalModifier) {
+    PrismSurface(
+      color = style.containerColor,
+      brush = style.brush,
+      contentColor = style.contentColor,
+      shape = shape,
+      border = style.border,
+      frame = frame,
+      pressProgress = pressProgress,
+    ) {
+      Column(modifier = Modifier.padding(Prism.dimens.spacingM)) { content() }
+    }
   }
 }

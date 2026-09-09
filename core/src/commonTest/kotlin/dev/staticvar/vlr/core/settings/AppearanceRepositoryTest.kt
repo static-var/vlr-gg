@@ -70,6 +70,7 @@ class AppearanceRepositoryTest {
     storage.putString("appearance.family", "unknown")
     storage.putString("appearance.catppuccin_flavour", "unknown")
     storage.putString("appearance.mascot", "unknown")
+    storage.putString("appearance.mascot_visit_frequency", "unknown")
     assertEquals(AppearanceSettings(), AppearanceRepository(storage).settings.value)
   }
 
@@ -91,6 +92,34 @@ class AppearanceRepositoryTest {
       repository.setMode(AppearanceMode.Light)
       repository.setCatppuccinFlavour(CatppuccinFlavour.Mocha)
       assertEquals(mascot, AppearanceRepository(storage).settings.value.mascot)
+    }
+  }
+
+  @Test
+  fun mascotVisitFrequencyDefaultsToSometimesAndPersistsWhileMascotIsOff() {
+    val storage = MapSettings()
+    val repository = AppearanceRepository(storage)
+    assertEquals(MascotVisitFrequency.Sometimes, repository.settings.value.mascotVisitFrequency)
+    assertEquals(listOf(0, 10, 20, 40), MascotVisitFrequency.entries.map { it.probabilityPercent })
+
+    MascotVisitFrequency.entries.forEach { frequency ->
+      repository.setMascotVisitFrequency(frequency)
+      assertEquals(frequency, repository.settings.value.mascotVisitFrequency)
+      repository.setMascot(MascotPreference.Off)
+      val restored = AppearanceRepository(storage)
+      assertEquals(frequency, restored.settings.value.mascotVisitFrequency)
+      restored.setMascot(MascotPreference.Rosie)
+      assertEquals(frequency, AppearanceRepository(storage).settings.value.mascotVisitFrequency)
+      ThemeFamily.entries.forEach { family ->
+        restored.setFamily(family)
+        AppearanceMode.entries.forEach { mode ->
+          restored.setMode(mode)
+          CatppuccinFlavour.entries.forEach { flavour ->
+            restored.setCatppuccinFlavour(flavour)
+            assertEquals(frequency, restored.settings.value.mascotVisitFrequency)
+          }
+        }
+      }
     }
   }
 

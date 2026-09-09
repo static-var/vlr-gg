@@ -35,6 +35,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
+import dev.staticvar.designsystem.component.card.PrismCardHost
+import dev.staticvar.designsystem.component.card.cardMascotEligible
+import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.divider.PrismDivider
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
@@ -66,6 +69,7 @@ internal fun AboutScreen(modifier: Modifier = Modifier, onBack: () -> Unit = {})
       Column(
         modifier = Modifier
           .weight(1f)
+          .cardMascotViewport()
           .verticalScroll(rememberScrollState())
           .padding(horizontal = Prism.dimens.spacingM)
           .padding(bottom = Prism.dimens.spacingXl),
@@ -208,25 +212,27 @@ private fun AboutDonations() {
 
 @Composable
 private fun AboutSource() {
-  PrismSurface(
-    modifier = Modifier.fillMaxWidth(),
-    color = Prism.color.surfaceVariant,
-    shape = Prism.shapes.medium,
-  ) {
-    Column(modifier = Modifier.padding(Prism.dimens.spacingM)) {
-      Text(
-        text = "From the scene, for the scene.",
-        style = Prism.typography.cardTitle,
-        color = Prism.color.titleColor,
-        modifier = Modifier.semantics { heading() },
-      )
-      Text(
-        text = "Match coverage, statistics, and news come from VLR.gg. This is an unofficial fan project, unaffiliated with VLR.gg or Riot Games.",
-        modifier = Modifier.padding(top = Prism.dimens.spacingS),
-        style = Prism.typography.bodySmall,
-        color = Prism.color.bodyColor,
-      )
-      AboutLink(title = "Visit VLR.gg", url = "https://www.vlr.gg")
+  PrismCardHost(modifier = Modifier.fillMaxWidth().cardMascotEligible(topClearance = Prism.dimens.spacingXl)) {
+    PrismSurface(
+      modifier = Modifier,
+      color = Prism.color.surfaceVariant,
+      shape = Prism.shapes.medium,
+    ) {
+      Column(modifier = Modifier.padding(Prism.dimens.spacingM)) {
+        Text(
+          text = "From the scene, for the scene.",
+          style = Prism.typography.cardTitle,
+          color = Prism.color.titleColor,
+          modifier = Modifier.semantics { heading() },
+        )
+        Text(
+          text = "Match coverage, statistics, and news come from VLR.gg. This is an unofficial fan project, unaffiliated with VLR.gg or Riot Games.",
+          modifier = Modifier.padding(top = Prism.dimens.spacingS),
+          style = Prism.typography.bodySmall,
+          color = Prism.color.bodyColor,
+        )
+        AboutLink(title = "Visit VLR.gg", url = "https://www.vlr.gg")
+      }
     }
   }
 }

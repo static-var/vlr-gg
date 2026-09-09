@@ -28,6 +28,7 @@ import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsArticle
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailHeaderItem
@@ -129,7 +130,7 @@ internal fun NewsArticleScreen(
 
       else -> {
         LazyColumn(
-          modifier = Modifier.fillMaxSize(),
+          modifier = Modifier.fillMaxSize().cardMascotViewport(),
           state = scrollState,
           verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
         ) {

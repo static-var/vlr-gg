@@ -222,7 +222,9 @@ internal fun appNavigationModule(): Module = module {
       onFamilySelected = viewModel::setFamily,
       onFlavourSelected = viewModel::setCatppuccinFlavour,
       mascot = appearance.mascot,
+      mascotVisitFrequency = appearance.mascotVisitFrequency,
       onMascotSelected = viewModel::setMascot,
+      onMascotVisitFrequencySelected = viewModel::setMascotVisitFrequency,
       onAbout = LocalVlrAppState.current::showAbout,
       modifier = Modifier.fillMaxSize(),
     )
