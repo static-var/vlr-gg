@@ -4,6 +4,10 @@
  */
 package dev.staticvar.vlr.sharedui.component.match.overview
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,10 +39,12 @@ import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 public fun MatchPreviewItem(
   modifier: Modifier = Modifier,
   matchPreview: MatchPreview,
+  isSharing: Boolean = false,
   footerAction: (@Composable () -> Unit)? = null,
   onLongClick: (() -> Unit)? = null,
   onClick: (() -> Unit)? = null,
 ) {
+  val selectionAnimation = Prism.anim.selection
   FavoriteTicketCardBox(selected = matchPreview.isFavorite, modifier = modifier) {
     PrismCard(
       modifier = Modifier.fillMaxWidth(),
@@ -50,7 +56,7 @@ public fun MatchPreviewItem(
         modifier = Modifier
           .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       ) {
         PrismHeader(text = matchPreview.event, modifier = Modifier.weight(1f))
         val time = formatMatchPreviewTime(isoUtcTime = matchPreview.time)
@@ -67,26 +73,37 @@ public fun MatchPreviewItem(
           MatchStatus.UNKNOWN -> Unit
         }
       }
-      MatchFavoriteReasons(
-        reasons = matchPreview.favoriteReasons,
-        modifier = Modifier.align(Alignment.End).padding(top = Prism.dimens.spacingXs),
-      )
       ScoreBox(team1 = matchPreview.team1, team2 = matchPreview.team2, state = matchPreview.status)
       Row(
         modifier = Modifier
           .fillMaxWidth()
-          .padding(top = Prism.dimens.spacingS, start = Prism.dimens.spacingS, end = Prism.dimens.spacingS),
+          .padding(top = Prism.dimens.spacingS),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       ) {
         Text(
           text = matchPreview.series,
-          modifier = if (footerAction != null) Modifier.weight(1f) else Modifier,
+          modifier = Modifier.weight(1f),
           style = Prism.typography.label,
           color = Prism.color.labelColor,
-          textAlign = TextAlign.Center,
+          textAlign = TextAlign.Start,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
         )
-        footerAction?.invoke()
+        AnimatedContent(
+          targetState = isSharing,
+          transitionSpec = {
+            fadeIn(selectionAnimation.floatSpec()) togetherWith fadeOut(selectionAnimation.floatSpec())
+          },
+          contentAlignment = Alignment.CenterEnd,
+          label = "match_footer_share_transition",
+        ) { sharing ->
+          if (sharing) {
+            footerAction?.invoke()
+          } else {
+            MatchFavoriteReasons(reasons = matchPreview.favoriteReasons)
+          }
+        }
       }
     }
   }

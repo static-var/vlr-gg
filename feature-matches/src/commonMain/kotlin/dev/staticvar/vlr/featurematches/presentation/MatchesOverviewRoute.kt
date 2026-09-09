@@ -4,13 +4,7 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -74,7 +67,6 @@ internal fun MatchesOverviewScreen(
   var selection by remember { mutableStateOf(MatchShareSelection()) }
   var previewMatches by remember { mutableStateOf<List<MatchPreview>?>(null) }
   val imageSharer = LocalImageSharer.current
-  val selectionAnimation = Prism.anim.selection
   PauseCardMascots(selection.isActive || previewMatches != null)
 
   previewMatches?.let { matches ->
@@ -166,6 +158,7 @@ internal fun MatchesOverviewScreen(
           items(uiState.filteredMatches, key = MatchPreview::id) { match ->
             MatchPreviewItem(
               matchPreview = match,
+              isSharing = selection.isActive,
               modifier = Modifier.fillMaxWidth().cardMascotEligible(
                 topClearance = Prism.dimens.spacingS * 2 + Prism.dimens.spacingXs,
               ),
@@ -174,26 +167,14 @@ internal fun MatchesOverviewScreen(
               },
               onLongClick = imageSharer?.let { { selection = selection.toggle(match) } },
               footerAction = {
-                AnimatedVisibility(
-                  visible = selection.isActive,
-                  enter = fadeIn(selectionAnimation.floatSpec()) + expandIn(
-                    animationSpec = tween(selectionAnimation.durationMillis, easing = selectionAnimation.easing),
-                    expandFrom = Alignment.BottomEnd,
-                  ),
-                  exit = fadeOut(selectionAnimation.floatSpec()) + shrinkOut(
-                    animationSpec = tween(selectionAnimation.durationMillis, easing = selectionAnimation.easing),
-                    shrinkTowards = Alignment.BottomEnd,
-                  ),
-                ) {
-                  PrismCheckbox(
-                    checked = selection.contains(match.id),
-                    onCheckedChange = { selection = selection.toggle(match) },
-                    enabled = selection.contains(match.id) || selection.matches.size < MaxSharedMatches,
-                    modifier = Modifier.semantics {
-                      contentDescription = "Select ${match.team1.name} vs ${match.team2.name}"
-                    },
-                  )
-                }
+                PrismCheckbox(
+                  checked = selection.contains(match.id),
+                  onCheckedChange = { selection = selection.toggle(match) },
+                  enabled = selection.contains(match.id) || selection.matches.size < MaxSharedMatches,
+                  modifier = Modifier.semantics {
+                    contentDescription = "Select ${match.team1.name} vs ${match.team2.name}"
+                  },
+                )
               },
             )
           }
