@@ -23,8 +23,6 @@ kotlin {
     androidResources.enable = true
   }
 
-  jvm("desktop")
-
   val fastIos = project.findProperty("fastIos") == "true"
   val iosTargets =
     if (fastIos) {
@@ -67,13 +65,6 @@ kotlin {
         implementation(libs.customview.poolingcontainer)
         implementation(libs.lifecycle.runtime)
         implementation(libs.lifecycle.viewmodel)
-      }
-    }
-
-    val desktopMain by getting { dependencies { implementation(compose.desktop.currentOs) } }
-    val desktopTest by getting {
-      dependencies {
-        implementation(compose.desktop.uiTestJUnit4)
       }
     }
   }

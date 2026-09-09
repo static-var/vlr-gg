@@ -29,8 +29,6 @@ kotlin {
     minSdk = 24
   }
 
-  jvm("desktop")
-
   val fastIos = project.findProperty("fastIos") == "true"
   val iosTargets = if (fastIos) {
     listOf(iosSimulatorArm64())
@@ -96,13 +94,5 @@ kotlin {
         implementation(kotlin("test"))
       }
     }
-
-    val desktopMain by getting {
-      dependencies {
-        implementation(compose.desktop.currentOs)
-      }
-    }
-
-    val desktopTest by getting
   }
 }

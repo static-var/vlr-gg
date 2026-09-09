@@ -33,8 +33,6 @@ kotlin {
     iosSimulatorArm64(),
   )
 
-  jvm("desktop")
-
   sourceSets {
     val commonMain by getting {
       dependencies {
@@ -77,15 +75,6 @@ kotlin {
 
     val iosTest by getting {
       resources.srcDir("src/commonTest/resources")
-    }
-
-    val desktopMain by getting {
-      dependencies { implementation(libs.ktor.java) }
-    }
-
-    val desktopTest by getting {
-      resources.srcDir("src/commonTest/resources")
-      dependencies { implementation(kotlin("test-junit")) }
     }
   }
 }

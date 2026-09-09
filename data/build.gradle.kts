@@ -25,8 +25,6 @@ kotlin {
     }
   }
 
-  jvm("desktop")
-
   val fastIos = project.findProperty("fastIos") == "true"
   val iosTargets = if (fastIos) {
     listOf(iosSimulatorArm64())
@@ -34,6 +32,9 @@ kotlin {
     listOf(iosX64(), iosArm64(), iosSimulatorArm64())
   }
   iosTargets.forEach { iosTarget ->
+    iosTarget.binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable>().configureEach {
+      linkerOpts("-lsqlite3")
+    }
     iosTarget.binaries.framework {
       baseName = "data"
       isStatic = true
@@ -64,19 +65,18 @@ kotlin {
       }
     }
 
+    val iosTest by getting {
+      dependencies {
+        implementation(libs.sqldelight.native.driver)
+      }
+    }
+
     val commonTest by getting {
       dependencies {
         implementation(libs.kotlin.test)
         implementation(libs.koin.test)
         implementation(libs.coroutine.test)
         implementation(libs.turbine)
-      }
-    }
-
-    val desktopTest by getting {
-      dependencies {
-        implementation(kotlin("test-junit"))
-        implementation(libs.sqldelight.sqlite.driver)
       }
     }
   }
@@ -91,19 +91,6 @@ dependencies {
   add("kspAndroid", libs.konvert.processor)
 }
 
-listOf("iosX64", "iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
-  tasks.matching { it.name.startsWith(targetPrefix) && it.name.endsWith("Test") }.configureEach {
-    enabled = false
-  }
-}
-
 tasks.register("test") {
-  dependsOn("desktopTest")
+  dependsOn("iosSimulatorArm64Test")
 }
-
-// iOS test disabling - not needed when iOS targets are commented out
-// listOf("iosX64", "iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
-//   tasks.matching { it.name.startsWith(targetPrefix) && it.name.endsWith("Test") }.configureEach {
-//     enabled = false
-//   }
-// }

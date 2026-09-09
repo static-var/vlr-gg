@@ -20,8 +20,6 @@ kotlin {
     androidResources.enable = true
   }
 
-  jvm("desktop")
-
   val fastIos = project.findProperty("fastIos") == "true"
   val iosTargets =
     if (fastIos) {

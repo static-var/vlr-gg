@@ -9,6 +9,10 @@ An unofficial android app for vlr.gg, written in Jetpack compose, which uses RES
 
 The application is not listed on Play Store, but you will receive in app updates for every release (you can choose to install the update or ignore it)
 
+## Supported platforms
+
+Active development targets iOS and Android only, with shared Kotlin Multiplatform code. See [AGENTS.md](AGENTS.md) for platform scope.
+
 ## 📸 Preview 📸
 There were no designs / mock ups during the development of this app, this was developed as a side project / hobby.
 

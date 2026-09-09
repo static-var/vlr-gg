@@ -8,7 +8,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 
 /**
  * Platform-specific dispatcher provider.
- * Android/Desktop use Dispatchers.IO for IO operations.
+ * Android uses Dispatchers.IO for IO operations.
  * iOS uses Dispatchers.Default (no IO dispatcher available).
  */
 internal expect class StandardDispatcherProvider() : DispatcherProvider {

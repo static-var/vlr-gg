@@ -54,7 +54,6 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
-sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 
 compose-bom-alpha = { module = "androidx.compose:compose-bom-alpha", version.ref = "compose" }
 compose-ui = { module = "androidx.compose.ui:ui" }
@@ -118,7 +117,6 @@ kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-
 ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
-ktor-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
 ktor-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
 ktor-encoding = { module = "io.ktor:ktor-client-encoding", version.ref = "ktor" }
 ktor-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }

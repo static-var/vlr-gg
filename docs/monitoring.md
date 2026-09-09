@@ -1,6 +1,6 @@
 # VLR mobile monitoring
 
-VLR uses Sentry Kotlin Multiplatform **0.27.0**, which pairs Android/Java **8.41.0** with Cocoa **8.58.2**. Monitoring starts from the Android and iOS entry points. Desktop targets remain useful for host tests but do not initialize telemetry. The old `app/` module and its historical Android Sentry project are separate from the current mobile app. See the [SDK release notes](https://github.com/getsentry/sentry-kotlin-multiplatform/blob/0.27.0/CHANGELOG.md).
+VLR uses Sentry Kotlin Multiplatform **0.27.0**, which pairs Android/Java **8.41.0** with Cocoa **8.58.2**. Monitoring starts from the Android and iOS entry points. Supported application targets are iOS and Android only. The old `app/` module and its historical Android Sentry project are separate from the current mobile app. See the [SDK release notes](https://github.com/getsentry/sentry-kotlin-multiplatform/blob/0.27.0/CHANGELOG.md).
 
 ## Supported features
 
@@ -93,7 +93,7 @@ The `vlr-mobile` project received the following through the Nexus bridge from an
 - Release/session health, navigation/network breadcrumbs and a view-hierarchy attachment.
 - Native user feedback from About (`VLR-MOBILE-8`). Sentry classified the synthetic verification text as spam; it is visible in the feedback Spam mailbox. The app correctly reports queueing rather than guaranteed delivery or classification.
 
-Android Debug and Release builds passed, including Release bytecode instrumentation. The final feedback adapter compiled for Android and iOS, and the final iOS simulator app built and ran. The earlier shared test run passed 60 tests, and five Swift configuration-generator tests passed. A final repeat of desktop-hosted shared tests was blocked by automatic approval review because the shipping scope excludes desktop; it was not bypassed. Android emulator delivery was subsequently verified as described below. Physical-device Replay masking, ANRs/app hangs and production archive symbols still require release-device verification.
+Android Debug and Release builds passed, including Release bytecode instrumentation. The final feedback adapter compiled for Android and iOS, and the final iOS simulator app built and ran. The earlier shared test run passed 60 tests, and five Swift configuration-generator tests passed. Android emulator delivery was subsequently verified as described below. Physical-device Replay masking, ANRs/app hangs and production archive symbols still require release-device verification.
 
 Local `.env`, `local.properties`, `sentry.properties` and generated Swift configuration are ignored, untracked and owner-only. A credential-value scan found no matches in tracked or nonignored source files. Matching simulator dSYMs were uploaded without source files; production archives need their own matching upload.
 

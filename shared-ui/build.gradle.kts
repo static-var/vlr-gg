@@ -26,8 +26,6 @@ kotlin {
     androidResources.enable = true
   }
 
-  jvm("desktop")
-
   val fastIos = project.findProperty("fastIos") == "true"
   val iosTargets =
     if (fastIos) {
@@ -70,13 +68,6 @@ kotlin {
       dependencies {
         implementation(libs.activity.compose)
         implementation(libs.ktor.okhttp)
-      }
-    }
-
-    val desktopMain by getting {
-      dependencies {
-        implementation(compose.desktop.currentOs)
-        implementation(libs.ktor.java)
       }
     }
 

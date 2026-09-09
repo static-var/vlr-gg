@@ -17,8 +17,6 @@ kotlin {
     minSdk = 24
   }
 
-  jvm("desktop")
-
   listOf(
     iosX64(),
     iosArm64(),
@@ -60,12 +58,6 @@ kotlin {
     val iosMain by getting {
       dependencies {
         implementation(libs.sqldelight.native.driver)
-      }
-    }
-
-    val desktopMain by getting {
-      dependencies {
-        implementation(libs.sqldelight.sqlite.driver)
       }
     }
   }

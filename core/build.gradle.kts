@@ -16,8 +16,6 @@ kotlin {
     minSdk = 24
   }
 
-  jvm("desktop")
-
   listOf(
     iosX64(),
     iosArm64(),

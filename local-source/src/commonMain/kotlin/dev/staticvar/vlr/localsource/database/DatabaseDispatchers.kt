@@ -14,7 +14,6 @@ import kotlinx.coroutines.IO
  * Note: Dispatchers.IO is available on:
  * - Android: Yes (native support)
  * - iOS: No (uses Dispatchers.Default)
- * - Desktop (JVM): Yes (native support)
  *
  * This object provides a unified API that works across all platforms.
  */

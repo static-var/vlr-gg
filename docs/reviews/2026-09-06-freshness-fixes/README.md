@@ -134,7 +134,7 @@ Koin `viewModel` definitions construct the instances; `koinViewModel` resolves t
 
 Connectivity is an injected `StateFlow<Boolean>`. [AndroidNetworkMonitor.kt](/Users/staticvar/Projects/vlr-gg/shared/src/androidMain/kotlin/dev/staticvar/vlr/shared/network/AndroidNetworkMonitor.kt:37) uses a default-network callback and the application context. [IosNetworkMonitor.kt](/Users/staticvar/Projects/vlr-gg/shared/src/iosMain/kotlin/dev/staticvar/vlr/shared/network/IosNetworkMonitor.kt:39) uses `NWPathMonitor`. `callbackFlow` unregisters/cancels platform listeners in `awaitClose`; `WhileSubscribed` shares one listener and releases it when unused. Koin closure cancels the monitor's scope. Android uses callback-supplied capabilities, following the [Android callback contract](https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback).
 
-The desktop monitor/polling implementation was removed. No desktop fallback or compatibility implementation was added.
+The monitor implementations are limited to iOS and Android.
 
 ## 4. News order follows the API
 
@@ -184,7 +184,7 @@ internal fun MatchDetails.matchDetailMapCountStat(): String = when {
 - The preceding refresh refactor passed 74 tests across core and the six feature modules. These cover cached/empty content, failed refresh/retry, queue coalescing, offline waiting, scope cancellation, filters and preferences.
 - After the AndroidX migration, the iOS app built, installed and launched on the existing fresh QA simulator. Native navigation opened the correct article from News and returned to the populated list.
 - Native smoke check opened the article through its constructor-supplied ID. Background/foreground kept PID 56479 and advanced its saved news timestamp from 1788721380192 to 1788721398854 while retaining all 30 rows. See [refactor resume evidence](refactor-resume-verification.json).
-- No desktop targets were built for this refactor. No migrations or diagnostic instrumentation were added.
+- No migrations or diagnostic instrumentation were added.
 - Earlier native checks verified API news order, five head-to-head encounters for match 734308, and Paused labeling for event 2634. Screenshots: [news order](news-order.jpg), [match details](match-details.jpg), [head-to-head](match-history.jpg), [paused event](paused-event.jpg).
 
 The previously reported intermittent Compose iOS accessibility crash during rapid automated Rankings → Global Esports → Back navigation remains unresolved. This refactor does not claim to fix it. Device connectivity toggling and VoiceOver behavior have not been verified.

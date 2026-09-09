@@ -29,7 +29,6 @@ kotlin {
     iosArm64(),
     iosSimulatorArm64(),
   )
-  jvm("desktop")
 
   sourceSets {
     val commonMain by getting {
@@ -50,24 +49,9 @@ kotlin {
     val androidMain by getting
 
     val iosMain by getting
-
-    val desktopMain by getting
-
-    val desktopTest by getting {
-      dependencies {
-        implementation(kotlin("test-junit"))
-      }
-    }
   }
 }
 
-// iOS test disabling - not needed when iOS targets are commented out
-// listOf("iosX64", "iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
-//   tasks.matching { it.name.startsWith(targetPrefix) && it.name.endsWith("Test") }.configureEach {
-//     enabled = false
-//   }
-// }
-
 tasks.register("test") {
-  dependsOn("desktopTest")
+  dependsOn("iosSimulatorArm64Test")
 }

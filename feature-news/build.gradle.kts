@@ -23,8 +23,6 @@ kotlin {
     minSdk = 24
   }
 
-  jvm("desktop")
-
   val fastIos = project.findProperty("fastIos") == "true"
   val iosTargets =
     if (fastIos) {
