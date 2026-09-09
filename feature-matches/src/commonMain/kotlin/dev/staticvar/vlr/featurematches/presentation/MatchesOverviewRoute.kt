@@ -30,11 +30,16 @@ import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.selection.PrismCheckbox
-import dev.staticvar.designsystem.component.state.PrismStateMessage
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
+import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.match.overview.MatchPreviewItem
 import dev.staticvar.vlr.sharedui.share.LocalImageSharer
 import dev.staticvar.vlr.sharedui.mascot.PauseCardMascots
@@ -101,6 +106,12 @@ internal fun MatchesOverviewScreen(
               onClick = { previewMatches = selection.resolve(uiState.matches) },
               enabled = selection.matches.isNotEmpty(),
             ) { Text("Preview") }
+            SharedRefreshButton(
+              isLoading = uiState.isLoading,
+              isRefreshing = uiState.isRefreshing,
+              hasContent = uiState.matches.isNotEmpty(),
+              onRefresh = onRefresh,
+            )
           }
         } else {
           PrismScreenTitleBar(
@@ -114,12 +125,19 @@ internal fun MatchesOverviewScreen(
                   enabled = uiState.matches.isNotEmpty(),
                 ) { Text("Share") }
               }
+              SharedRefreshButton(
+                isLoading = uiState.isLoading,
+                isRefreshing = uiState.isRefreshing,
+                hasContent = uiState.matches.isNotEmpty(),
+                onRefresh = onRefresh,
+              )
             },
           )
         }
       }
       SharedRefreshStatus(
-        isRefreshing = uiState.isRefreshing,
+        hasContent = uiState.matches.isNotEmpty(),
+        isRefreshing = false,
         errorMessage = uiState.errorMessage.takeIf { uiState.matches.isNotEmpty() },
         errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
@@ -137,7 +155,10 @@ internal fun MatchesOverviewScreen(
     )
 
     when {
-      uiState.isLoading && uiState.matches.isEmpty() -> PrismStateMessage(text = "Loading matches…")
+      (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && uiState.matches.isEmpty() -> SharedScreenLoading(
+        label = "Loading matches",
+        modifier = Modifier.fillMaxSize(),
+      )
 
       uiState.errorMessage != null && uiState.matches.isEmpty() ->
         SharedLoadError(
@@ -148,7 +169,22 @@ internal fun MatchesOverviewScreen(
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
 
-      uiState.filteredMatches.isEmpty() -> PrismStateMessage(text = "No matches in this bucket yet.")
+      uiState.filteredMatches.isEmpty() && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null && LocalIsOnline.current -> {
+        val (title, message) = when (uiState.selectedStatus) {
+          MatchStatusFilter.Live -> "No live matches" to "The next round is still ahead. Check the schedule for upcoming matches."
+          MatchStatusFilter.Upcoming -> "No upcoming matches" to "The next fixtures have not been announced yet. Check back soon."
+          MatchStatusFilter.Completed -> "No results yet" to "Finished matches will appear here once scores are available."
+        }
+        val hasUpcoming = uiState.selectedStatus == MatchStatusFilter.Live && uiState.matches.any { it.status == MatchStatus.UPCOMING }
+        SharedEmptyState(
+          artwork = EmptyStateArtwork.NoLiveMatches,
+          title = title,
+          message = message,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+          actionLabel = if (hasUpcoming) "View upcoming" else "Refresh",
+          onAction = { if (hasUpcoming) onFilterSelected(MatchStatusFilter.Upcoming) else onRefresh() },
+        )
+      }
 
       else -> {
         LazyColumn(

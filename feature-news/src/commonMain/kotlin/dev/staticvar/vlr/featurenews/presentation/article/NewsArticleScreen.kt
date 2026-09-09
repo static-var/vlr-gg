@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -24,9 +27,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
-import dev.staticvar.designsystem.component.state.PrismStateMessage
-import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.prism.Prism
@@ -60,6 +63,7 @@ internal fun NewsArticleScreen(
   showBackAction: Boolean,
   modifier: Modifier = Modifier,
 ) {
+  val isOnline = LocalIsOnline.current
   val article: NewsArticle? = uiState.article
   val videoPlayback = rememberArticleVideoPlaybackState(article?.id.orEmpty())
   val uriHandler = LocalUriHandler.current
@@ -87,18 +91,18 @@ internal fun NewsArticleScreen(
               Text("Top")
             }
           }
-          PrismButton(
-            onClick = onRefresh,
-            enabled = !uiState.isRefreshing,
-            style = PrismButtonStyle.Tertiary,
-          ) {
-            Text(if (uiState.isRefreshing) "Refreshing" else "Refresh")
-          }
+          SharedRefreshButton(
+            isLoading = uiState.isLoading,
+            isRefreshing = uiState.isRefreshing,
+            hasContent = article != null,
+            onRefresh = onRefresh,
+          )
         },
       )
 
       SharedRefreshStatus(
-        isRefreshing = uiState.isRefreshing,
+        hasContent = article != null,
+        isRefreshing = false,
         errorMessage = uiState.errorMessage.takeIf { article != null },
         errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
@@ -106,11 +110,10 @@ internal fun NewsArticleScreen(
     }
 
     when {
-      uiState.isLoading && article == null -> {
-        PrismFullscreenLoader(
+      (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && article == null -> {
+        SharedScreenLoading(
           modifier = Modifier.fillMaxSize(),
           label = "Loading article",
-          supportingText = "Loading the full story",
         )
       }
 
@@ -125,7 +128,12 @@ internal fun NewsArticleScreen(
       }
 
       article == null -> {
-        PrismStateMessage(text = "No article content published yet.")
+        SharedEmptyState(
+          artwork = EmptyStateArtwork.NoLiveEvents,
+          title = "No article yet",
+          message = "This story has not been published.",
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
       }
 
       else -> {
@@ -137,11 +145,16 @@ internal fun NewsArticleScreen(
           item(key = "header") {
             NewsDetailHeaderItem(article = article)
           }
-          if (article.contentHtml.isBlank()) {
-            item(key = "article-body-state") {
-              PrismStateMessage(
-                text = if (uiState.isLoading || uiState.isRefreshing) "Loading the full story…" else "No article text published yet.",
-              )
+          if (article.contentHtml.isBlank() && article.blocks.isEmpty()) {
+            if (isOnline && !uiState.isLoading && !uiState.isRefreshing && uiState.errorMessage == null) {
+              item(key = "article-body-state") {
+                SharedEmptyState(
+                  artwork = EmptyStateArtwork.NoLiveEvents,
+                  title = "No article text yet",
+                  message = "The story text has not been published.",
+                  compact = true,
+                )
+              }
             }
           } else {
             newsDetailStoryItems(article = article, playback = videoPlayback)

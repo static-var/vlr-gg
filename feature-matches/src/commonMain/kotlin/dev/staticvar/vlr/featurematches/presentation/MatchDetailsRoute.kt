@@ -21,6 +21,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,10 +42,8 @@ import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.rememberMascot
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
-import dev.staticvar.designsystem.component.loader.PrismLoader
-import dev.staticvar.designsystem.component.loader.PrismLoaderSize
 import dev.staticvar.designsystem.component.card.cardMascotViewport
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
@@ -53,6 +54,7 @@ import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 
 @Composable
@@ -95,6 +97,7 @@ internal fun MatchDetailsScreen(
   onPreferencesChange: (MatchDetailsPreferences) -> Unit = {},
   onFavoriteClick: () -> Unit = {},
 ) {
+  val isOnline = LocalIsOnline.current
   val match = uiState.match
   val uriHandler = LocalUriHandler.current
   var selectedMapIndex: Int? by remember(match?.id) { mutableStateOf<Int?>(null) }
@@ -155,22 +158,28 @@ internal fun MatchDetailsScreen(
                 ),
               )
             }
+            SharedRefreshButton(
+              isLoading = uiState.isLoading,
+              isRefreshing = uiState.isRefreshing,
+              hasContent = match != null,
+              onRefresh = onRefresh,
+            )
           },
         )
 
         uiState.favoriteErrorMessage?.let { PrismStateMessage(text = it) }
         SharedRefreshStatus(
-          isRefreshing = uiState.isRefreshing,
+          hasContent = match != null,
+          isRefreshing = false,
           errorMessage = uiState.errorMessage.takeIf { match != null },
           errorDetails = uiState.errorDetails,
           onRefresh = onRefresh,
         )
       }
       when {
-        uiState.isLoading && match == null -> PrismFullscreenLoader(
+        (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && match == null -> SharedScreenLoading(
           modifier = Modifier.fillMaxSize(),
-          label = "MATCH",
-          supportingText = "Loading match details",
+          label = "Loading match",
         )
 
         uiState.errorMessage != null && match == null ->
@@ -182,7 +191,12 @@ internal fun MatchDetailsScreen(
             modifier = Modifier.fillMaxWidth().weight(1f),
           )
 
-        match == null -> PrismStateMessage(text = "No match details published yet.")
+        match == null -> SharedEmptyState(
+          artwork = EmptyStateArtwork.NoLiveMatches,
+          title = "No match details yet",
+          message = "Details will appear when this match is published.",
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
 
         else -> {
           val hasDetailedContent =
@@ -207,12 +221,16 @@ internal fun MatchDetailsScreen(
                 },
               )
             }
-            if (!hasDetailedContent && uiState.preferences.showBreakdown) {
+            if (!hasDetailedContent && uiState.preferences.showBreakdown &&
+              isOnline && !uiState.isLoading && !uiState.isRefreshing && uiState.errorMessage == null
+            ) {
               item {
-                when {
-                  uiState.isRefreshing -> MatchDetailInlineLoader()
-                  else -> PrismStateMessage(text = "Detailed breakdown is not available for this match yet.")
-                }
+                SharedEmptyState(
+                  artwork = EmptyStateArtwork.NoLiveMatches,
+                  title = "No match breakdown yet",
+                  message = "Map statistics have not been published for this match.",
+                  compact = true,
+                )
               }
             }
             if (uiState.preferences.showBreakdown && match.matchData.isNotEmpty()) {
@@ -303,19 +321,6 @@ private fun MatchDetailMediaRow(match: MatchDetails, onVideoSelected: (String) -
         },
       )
     }
-  }
-}
-
-@Composable
-private fun MatchDetailInlineLoader() {
-  Box(
-    modifier = Modifier.fillMaxWidth().height(180.dp),
-    contentAlignment = Alignment.Center,
-  ) {
-    PrismLoader(
-      size = PrismLoaderSize.Medium,
-      label = "BREAKDOWN",
-    )
   }
 }
 

@@ -31,6 +31,7 @@ public enum class PrismIconButtonSize {
   Medium,
   Large,
   XL,
+  Toolbar,
 }
 
 /**
@@ -47,6 +48,7 @@ public fun PrismIconButton(
   enabled: Boolean = true,
   selected: Boolean = false,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  iconModifier: Modifier = Modifier,
 ) {
   val frame = style.frame
   val pressProgress by rememberPrismPressProgress(
@@ -59,6 +61,7 @@ public fun PrismIconButton(
       PrismIconButtonSize.Medium -> Prism.dimens.iconM + Prism.dimens.spacingS to Prism.dimens.iconM
       PrismIconButtonSize.Large -> Prism.dimens.iconM + Prism.dimens.spacingM to Prism.dimens.iconL
       PrismIconButtonSize.XL -> Prism.dimens.iconL + Prism.dimens.spacingL to Prism.dimens.iconL
+      PrismIconButtonSize.Toolbar -> Prism.dimens.controlHeight to Prism.dimens.iconM
     }
 
   Box(
@@ -92,7 +95,7 @@ public fun PrismIconButton(
         Icon(
           imageVector = icon,
           contentDescription = contentDescription,
-          modifier = Modifier.size(iconSize),
+          modifier = iconModifier.size(iconSize),
           tint = style.iconColor(enabled = enabled, selected = selected),
         )
       }

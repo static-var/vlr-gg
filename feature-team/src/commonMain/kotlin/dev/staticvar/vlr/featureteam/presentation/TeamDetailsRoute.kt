@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -31,6 +34,7 @@ import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 
 @Composable
 public fun TeamDetailsRoute(
@@ -72,6 +76,7 @@ internal fun TeamDetailsScreen(
   onRefresh: () -> Unit = {},
   onToggleFavorite: () -> Unit = {},
 ) {
+  val isOnline = LocalIsOnline.current
   val team = uiState.team
 
   Column(
@@ -106,7 +111,8 @@ internal fun TeamDetailsScreen(
       )
 
       SharedRefreshStatus(
-        isRefreshing = uiState.isRefreshing,
+        hasContent = team != null,
+        isRefreshing = team != null && (uiState.isRefreshing || uiState.isLoading),
         errorMessage = uiState.errorMessage.takeIf { team != null },
         errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
@@ -118,7 +124,10 @@ internal fun TeamDetailsScreen(
     }
 
     when {
-      uiState.isLoading && team == null -> PrismStateMessage(text = "Loading team details…")
+      (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && team == null -> SharedScreenLoading(
+        label = "Loading team",
+        modifier = Modifier.fillMaxSize(),
+      )
 
       uiState.errorMessage != null && team == null ->
         SharedLoadError(
@@ -129,7 +138,12 @@ internal fun TeamDetailsScreen(
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
 
-      team == null -> PrismStateMessage(text = "No team details published yet.")
+      team == null -> SharedEmptyState(
+        artwork = EmptyStateArtwork.NoLiveMatches,
+        title = "No team details yet",
+        message = "This team profile has not been published.",
+        modifier = Modifier.fillMaxWidth().weight(1f),
+      )
 
       else -> {
         LazyColumn(
@@ -188,7 +202,16 @@ internal fun TeamDetailsScreen(
           when (section) {
             TeamMatchesSection.Upcoming -> {
               if (team.upcomingMatches.isEmpty()) {
-                item { PrismStateMessage(text = "No upcoming matches published yet.") }
+                if (isOnline && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null) {
+                  item {
+                    SharedEmptyState(
+                      artwork = EmptyStateArtwork.NoLiveMatches,
+                      title = "No upcoming matches",
+                      message = "No upcoming fixtures have been published for this team.",
+                      compact = true,
+                    )
+                  }
+                }
               } else {
                 items(team.upcomingMatches, key = { "upcoming:${it.matchId}" }) { match ->
                   val eventId = match.eventId
@@ -219,7 +242,16 @@ internal fun TeamDetailsScreen(
 
             TeamMatchesSection.Completed -> {
               if (team.completedMatches.isEmpty()) {
-                item { PrismStateMessage(text = "No completed matches published yet.") }
+                if (isOnline && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null) {
+                  item {
+                    SharedEmptyState(
+                      artwork = EmptyStateArtwork.NoLiveMatches,
+                      title = "No completed matches",
+                      message = "No match results have been published for this team.",
+                      compact = true,
+                    )
+                  }
+                }
               } else {
                 items(team.completedMatches, key = { "completed:${it.matchId}" }) { match ->
                   val eventId = match.eventId

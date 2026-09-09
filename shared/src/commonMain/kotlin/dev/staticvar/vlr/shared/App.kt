@@ -32,6 +32,9 @@ import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.MascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.ProvideCardMascots
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
+import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 
 /**
  * Main entry point for the shared Compose UI.
@@ -42,6 +45,8 @@ public fun App() {
   ProvideSharedImageLoader()
 
   val appState = rememberVlrAppState()
+  val networkMonitor = koinInject<NetworkMonitor>()
+  val isOnline by networkMonitor.isOnline.collectAsStateWithLifecycle()
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val viewModel = koinViewModel<AppearanceViewModel>()
   val appearance by viewModel.appearance.collectAsStateWithLifecycle()
@@ -75,6 +80,7 @@ public fun App() {
     ) {
       CompositionLocalProvider(
         LocalMascotCharacter provides mascotCharacter,
+        LocalIsOnline provides isOnline,
       ) {
         ProvideCardMascots(
           screenKey = appState.backStack.lastOrNull().toString(),

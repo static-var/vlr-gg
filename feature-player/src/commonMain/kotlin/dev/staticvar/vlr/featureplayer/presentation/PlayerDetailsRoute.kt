@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -30,6 +32,8 @@ import dev.staticvar.designsystem.component.card.cardMascotEligible
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 
 @Composable
 public fun PlayerDetailsRoute(
@@ -93,7 +97,8 @@ internal fun PlayerDetailsScreen(
       )
 
       SharedRefreshStatus(
-        isRefreshing = uiState.isRefreshing,
+        hasContent = player != null,
+        isRefreshing = player != null && (uiState.isRefreshing || uiState.isLoading),
         errorMessage = uiState.errorMessage.takeIf { player != null },
         errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
@@ -105,7 +110,10 @@ internal fun PlayerDetailsScreen(
     }
 
     when {
-      uiState.isLoading && player == null -> PrismStateMessage(text = "Loading player details…")
+      (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && player == null -> SharedScreenLoading(
+        label = "Loading player",
+        modifier = Modifier.fillMaxSize(),
+      )
 
       uiState.errorMessage != null && player == null ->
         SharedLoadError(
@@ -116,7 +124,12 @@ internal fun PlayerDetailsScreen(
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
 
-      player == null -> PrismStateMessage(text = "No player details published yet.")
+      player == null -> SharedEmptyState(
+        artwork = EmptyStateArtwork.NoLiveMatches,
+        title = "No player details yet",
+        message = "This player profile has not been published.",
+        modifier = Modifier.fillMaxWidth().weight(1f),
+      )
 
       else -> {
         PrismCard(

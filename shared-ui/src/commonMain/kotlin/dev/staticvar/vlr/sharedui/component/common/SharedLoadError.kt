@@ -5,7 +5,9 @@
 package dev.staticvar.vlr.sharedui.component.common
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,13 +27,17 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.sheet.PrismModalSheet
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateIllustration
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 public fun SharedLoadError(
   errorMessage: String,
@@ -40,25 +46,50 @@ public fun SharedLoadError(
   modifier: Modifier = Modifier,
   centered: Boolean = false,
 ) {
+  val isOnline = LocalIsOnline.current
+  val artwork = if (isOnline) EmptyStateArtwork.UnknownError else EmptyStateArtwork.NoInternet
+  val title = if (!isOnline) "You’re offline" else if (centered) "Could not load data" else "Could not refresh data"
+  val message = if (!isOnline) {
+    if (centered) "Reconnect to the internet. This screen will update automatically." else "Showing saved content. Reconnect to get updates."
+  } else {
+    if (centered) "Something went wrong. Try loading this screen again." else "Your saved content is still available. Try again."
+  }
   var showDetails by remember(errorMessage, errorDetails) { mutableStateOf(false) }
-  Box(modifier = modifier, contentAlignment = Alignment.Center) {
+  val actions: @Composable () -> Unit = {
+    if (isOnline) {
+      FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs, Alignment.CenterHorizontally),
+      ) {
+        PrismButton(onClick = onRefresh, style = PrismButtonStyle.Tertiary) { Text("Retry") }
+        PrismButton(onClick = { showDetails = true }, style = PrismButtonStyle.Tertiary) { Text("Show details") }
+      }
+    }
+  }
+  if (centered) {
+    SharedIllustratedState(
+      artwork = artwork,
+      title = title,
+      message = message,
+      modifier = modifier.semantics { liveRegion = LiveRegionMode.Polite },
+      actions = actions,
+    )
+  } else {
     PrismCard(
-      modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
+      modifier = modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
       style = PrismCardStyle.Outlined,
     ) {
-      Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-        Text(
-          text = if (centered) "Could not load data" else "Could not refresh data",
-          color = Prism.color.danger,
-          style = Prism.typography.cardTitle,
-        )
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.End,
-          verticalAlignment = Alignment.CenterVertically,
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        EmptyStateIllustration(artwork = artwork, modifier = Modifier.size(width = 64.dp, height = 80.dp))
+        Column(
+          modifier = Modifier.weight(1f),
+          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
         ) {
-          PrismButton(onClick = onRefresh, style = PrismButtonStyle.Tertiary) { Text("Retry") }
-          PrismButton(onClick = { showDetails = true }, style = PrismButtonStyle.Tertiary) { Text("Show details") }
+          Text(text = title, color = Prism.color.titleColor, style = Prism.typography.cardTitle)
+          Text(text = message, color = Prism.color.bodyColor, style = Prism.typography.bodySmall)
+          actions()
         }
       }
     }

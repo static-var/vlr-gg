@@ -193,9 +193,6 @@ private fun ArticleImage(url: String, alt: String?) {
         modifier = Modifier.fillMaxSize(),
         contentScale = ContentScale.Fit,
       )
-      if (state !is AsyncImagePainter.State.Success) {
-        Text("Loading image", style = Prism.typography.caption, color = Prism.color.labelColor)
-      }
     }
   }
 }

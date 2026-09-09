@@ -23,6 +23,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,8 +39,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
-import dev.staticvar.designsystem.component.loader.PrismLoader
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
@@ -52,6 +54,7 @@ import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.featureevents.presentation.mascot.eventMascotCues
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailMatchItem
@@ -160,6 +163,12 @@ internal fun EventDetailsScreen(
                 ),
               )
             }
+            SharedRefreshButton(
+              isLoading = uiState.isLoading || uiState.isDetailLoadPending,
+              isRefreshing = uiState.isRefreshing,
+              hasContent = event != null,
+              onRefresh = onRefresh,
+            )
           },
           onBackPress = {
             isNavigatingAway = true
@@ -170,7 +179,8 @@ internal fun EventDetailsScreen(
 
         uiState.favoriteErrorMessage?.let { PrismStateMessage(text = it) }
         SharedRefreshStatus(
-          isRefreshing = uiState.isRefreshing,
+          hasContent = event != null,
+          isRefreshing = false,
           errorMessage = uiState.errorMessage.takeIf { event != null },
           errorDetails = uiState.errorDetails,
           onRefresh = onRefresh,
@@ -178,10 +188,9 @@ internal fun EventDetailsScreen(
       }
 
       when {
-        uiState.isLoading && event == null -> PrismFullscreenLoader(
+        (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && event == null -> SharedScreenLoading(
           modifier = Modifier.fillMaxSize(),
-          label = "EVENT",
-          supportingText = "Loading tournament details",
+          label = "Loading event",
         )
 
         uiState.errorMessage != null && event == null ->
@@ -193,7 +202,12 @@ internal fun EventDetailsScreen(
             modifier = Modifier.fillMaxWidth().weight(1f),
           )
 
-        event == null -> PrismStateMessage(text = "No event details published yet.")
+        event == null -> SharedEmptyState(
+          artwork = EmptyStateArtwork.NoLiveEvents,
+          title = "No event details yet",
+          message = "Details will appear when this tournament is published.",
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
 
         else -> {
           val groupedMatches = remember(event.matches, matchGrouping) { event.matches.groupEventMatches(matchGrouping) }
@@ -235,8 +249,8 @@ internal fun EventDetailsScreen(
                   item {
                     EventEmptySection(
                       uiState = uiState,
-                      loadingLabel = "Loading matches",
-                      emptyText = "No matches published yet.",
+                      title = "No matches yet",
+                      message = "Match fixtures have not been published for this event.",
                     )
                   }
                 } else {
@@ -274,8 +288,8 @@ internal fun EventDetailsScreen(
                   item {
                     EventEmptySection(
                       uiState = uiState,
-                      loadingLabel = "Loading standings",
-                      emptyText = "No standings available yet.",
+                      title = "No standings yet",
+                      message = "Team standings have not been published for this event.",
                     )
                   }
                 } else {
@@ -294,8 +308,8 @@ internal fun EventDetailsScreen(
                   item {
                     EventEmptySection(
                       uiState = uiState,
-                      loadingLabel = "Loading prizes",
-                      emptyText = "No prize breakdown published yet.",
+                      title = "No prize breakdown yet",
+                      message = "Prize placements have not been published for this event.",
                     )
                   }
                 } else {
@@ -346,12 +360,11 @@ internal fun EventDetailsScreen(
 @Composable
 private fun EventEmptySection(
   uiState: EventDetailsUiState,
-  loadingLabel: String,
-  emptyText: String,
+  title: String,
+  message: String,
 ) {
-  when {
-    uiState.isDetailLoadPending -> PrismLoader(label = loadingLabel)
-    uiState.errorMessage == null -> PrismStateMessage(text = emptyText)
+  if (LocalIsOnline.current && !uiState.isLoading && !uiState.isDetailLoadPending && !uiState.isRefreshing && uiState.errorMessage == null) {
+    SharedEmptyState(artwork = EmptyStateArtwork.NoLiveEvents, title = title, message = message, compact = true)
   }
 }
 

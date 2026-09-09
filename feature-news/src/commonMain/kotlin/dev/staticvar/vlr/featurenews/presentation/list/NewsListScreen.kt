@@ -5,25 +5,21 @@
 package dev.staticvar.vlr.featurenews.presentation.list
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonStyle
-import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardStyle
-import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
-import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.prism.Prism
@@ -49,18 +45,18 @@ internal fun NewsListScreen(
         title = "NEWS",
         subtitle = "Stories from competitive VALORANT",
         actions = {
-          PrismButton(
-            onClick = onRefresh,
-            enabled = !uiState.isRefreshing,
-            style = PrismButtonStyle.Secondary,
-          ) {
-            Text("REFRESH")
-          }
+          SharedRefreshButton(
+            isLoading = uiState.isLoading,
+            isRefreshing = uiState.isRefreshing,
+            hasContent = uiState.items.isNotEmpty(),
+            onRefresh = onRefresh,
+          )
         },
       )
 
       SharedRefreshStatus(
-        isRefreshing = uiState.isRefreshing,
+        hasContent = uiState.items.isNotEmpty(),
+        isRefreshing = false,
         errorMessage = uiState.errorMessage.takeIf { uiState.items.isNotEmpty() },
         errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
@@ -68,11 +64,10 @@ internal fun NewsListScreen(
     }
 
     when {
-      uiState.isLoading && uiState.items.isEmpty() -> {
-        PrismFullscreenLoader(
+      (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && uiState.items.isEmpty() -> {
+        SharedScreenLoading(
           modifier = Modifier.fillMaxSize(),
-          label = "SYNCING NEWS",
-          supportingText = "Loading local cache and remote updates",
+          label = "Loading news",
         )
       }
 
@@ -117,24 +112,12 @@ internal fun NewsListScreen(
 
 @Composable
 private fun EmptyNewsList(onRefresh: () -> Unit, modifier: Modifier = Modifier) {
-  Box(modifier = modifier, contentAlignment = Alignment.Center) {
-    PrismCard(
-      modifier = Modifier.fillMaxWidth(),
-      style = PrismCardStyle.Outlined,
-    ) {
-      Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-        PrismSectionTitle(
-          title = "No stories published yet",
-          preLabel = "news",
-          showDivider = false,
-        )
-        PrismButton(
-          onClick = onRefresh,
-          style = PrismButtonStyle.Primary,
-        ) {
-          Text("REFRESH")
-        }
-      }
-    }
-  }
+  SharedEmptyState(
+    artwork = EmptyStateArtwork.NoLiveEvents,
+    title = "No stories yet",
+    message = "Competitive VALORANT news will appear here when published.",
+    modifier = modifier,
+    actionLabel = "Refresh",
+    onAction = onRefresh,
+  )
 }

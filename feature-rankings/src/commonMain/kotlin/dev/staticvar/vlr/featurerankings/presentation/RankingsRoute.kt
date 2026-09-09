@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,10 +28,10 @@ import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
-import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 
 @Composable
 public fun RankingsRoute(
@@ -55,6 +58,7 @@ internal fun RankingsScreen(
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
 ) {
+  val isOnline = LocalIsOnline.current
   val selectedRegion = uiState.selectedRegion
   val selectedRanking = remember(uiState.regions, selectedRegion) {
     uiState.regions.firstOrNull { it.region == selectedRegion }
@@ -71,7 +75,8 @@ internal fun RankingsScreen(
       )
 
       SharedRefreshStatus(
-        isRefreshing = uiState.isRefreshing,
+        hasContent = uiState.regions.isNotEmpty(),
+        isRefreshing = uiState.regions.isNotEmpty() && (uiState.isRefreshing || uiState.isLoading),
         errorMessage = uiState.errorMessage.takeIf { uiState.regions.isNotEmpty() },
         errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
@@ -87,8 +92,8 @@ internal fun RankingsScreen(
     }
 
     when {
-      uiState.isLoading && uiState.regions.isEmpty() -> {
-        PrismStateMessage(text = "Loading rankings…")
+      (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && uiState.regions.isEmpty() -> {
+        SharedScreenLoading(label = "Loading rankings", modifier = Modifier.fillMaxSize())
       }
 
       uiState.errorMessage != null && uiState.regions.isEmpty() -> {
@@ -101,8 +106,16 @@ internal fun RankingsScreen(
         )
       }
 
-      selectedRanking == null -> {
-        PrismStateMessage(text = "No rankings available yet.")
+      selectedRanking == null || selectedRanking.teams.isEmpty() -> {
+        if ((isOnline || uiState.regions.isEmpty()) && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null) {
+          SharedEmptyState(
+            artwork = EmptyStateArtwork.NoLiveMatches,
+            title = "No rankings yet",
+            message = selectedRanking?.let { "Team rankings for ${it.region} have not been published." }
+              ?: "Regional team rankings have not been published.",
+            modifier = Modifier.fillMaxWidth().weight(1f),
+          )
+        }
       }
 
       else -> {
@@ -110,12 +123,14 @@ internal fun RankingsScreen(
           modifier = Modifier.fillMaxSize(),
           verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
         ) {
-          item {
-            Text(
-              text = "Top ${selectedRanking.teams.size} • ${selectedRanking.region}",
-              style = Prism.typography.label,
-              color = Prism.color.labelColor,
-            )
+          if (selectedRanking.teams.isNotEmpty()) {
+            item {
+              Text(
+                text = "Top ${selectedRanking.teams.size} • ${selectedRanking.region}",
+                style = Prism.typography.label,
+                color = Prism.color.labelColor,
+              )
+            }
           }
           items(selectedRanking.teams, key = { it.teamId }) { team ->
             PrismCard(

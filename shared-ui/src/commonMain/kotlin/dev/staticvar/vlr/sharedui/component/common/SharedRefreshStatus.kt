@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,8 +26,11 @@ public fun SharedRefreshStatus(
   onRefresh: () -> Unit,
   modifier: Modifier = Modifier,
   errorDetails: String? = null,
+  hasContent: Boolean = true,
 ) {
   val status = when {
+    !LocalIsOnline.current && hasContent -> RefreshStatus.Failed("No internet connection", null)
+    !LocalIsOnline.current -> RefreshStatus.Idle
     isRefreshing -> RefreshStatus.Refreshing
     errorMessage != null -> RefreshStatus.Failed(errorMessage, errorDetails)
     else -> RefreshStatus.Idle
@@ -50,11 +52,7 @@ public fun SharedRefreshStatus(
       RefreshStatus.Refreshing -> Column(
         modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
       ) {
-        LinearProgressIndicator(
-          modifier = Modifier.fillMaxWidth(),
-          color = Prism.color.accent,
-          trackColor = Prism.color.accentSubtle,
-        )
+        SharedLoadingIndicator()
       }
       is RefreshStatus.Failed -> SharedLoadError(
         errorMessage = currentStatus.message,
