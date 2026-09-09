@@ -13,6 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import dev.staticvar.designsystem.component.dropdown.PrismDropdown
+import dev.staticvar.designsystem.component.dropdown.PrismDropdownOption
+import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
@@ -30,6 +33,28 @@ internal fun PrismSectionTitlePreview(@PreviewParameter(PrismPreviewProvider::cl
         .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingL),
     ) {
+      PrismSectionTitle(
+        title = "Maps",
+        preLabel = "Breakdown",
+        trailing = {
+          PrismDropdown(
+            options = listOf(PrismDropdownOption(id = "all", label = "All maps")),
+            selectedOptionId = "all",
+            onOptionSelected = {},
+            label = "Group",
+          )
+        },
+      )
+      PrismSectionTitle(
+        title = "Head to head",
+        preLabel = "History",
+        trailing = { PrismTag(text = "Team +5") },
+      )
+      PrismSectionTitle(
+        title = "Streams & VODs",
+        preLabel = "Media",
+      )
+
       PrismSectionTitle(
         title = "Upcoming Matches",
         preLabel = "Today",

@@ -32,29 +32,32 @@ public fun PrismSectionTitle(
     modifier = modifier.fillMaxWidth(),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
   ) {
-    if (preLabel != null) {
-      Text(
-        text = preLabel.uppercase(),
-        style = Prism.typography.caption,
-        color = Prism.color.labelColor,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
-    }
-
     Row(
       modifier = Modifier.fillMaxWidth(),
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = Alignment.Bottom,
       horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     ) {
-      Text(
-        text = title,
+      Column(
         modifier = Modifier.weight(1f),
-        style = Prism.typography.sectionTitle,
-        color = Prism.color.titleColor,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
+        verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+      ) {
+        if (preLabel != null) {
+          Text(
+            text = preLabel.uppercase(),
+            style = Prism.typography.caption,
+            color = Prism.color.labelColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+          )
+        }
+        Text(
+          text = title,
+          style = Prism.typography.sectionTitle,
+          color = Prism.color.titleColor,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+        )
+      }
 
       if (trailing != null) {
         trailing()

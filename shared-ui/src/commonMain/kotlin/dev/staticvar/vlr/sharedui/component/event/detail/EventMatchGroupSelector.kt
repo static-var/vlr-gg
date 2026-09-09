@@ -43,13 +43,18 @@ public fun EventMatchGroupSelector(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
-    PrismSectionTitle(title = "Matches", preLabel = "schedule")
-    PrismDropdown(
-      options = groupingOptions,
-      selectedOptionId = grouping.name,
-      onOptionSelected = { option -> onGroupingSelected(EventMatchGrouping.valueOf(option.id)) },
-      label = "GROUP MATCHES BY",
-      onExpandedChange = onMenuExpandedChange,
+    PrismSectionTitle(
+      title = "Matches",
+      preLabel = "schedule",
+      trailing = {
+        PrismDropdown(
+          options = groupingOptions,
+          selectedOptionId = grouping.name,
+          onOptionSelected = { option -> onGroupingSelected(EventMatchGrouping.valueOf(option.id)) },
+          label = "GROUP MATCHES BY",
+          onExpandedChange = onMenuExpandedChange,
+        )
+      },
     )
     if (groupTabs.isNotEmpty()) {
       PrismTabs(
