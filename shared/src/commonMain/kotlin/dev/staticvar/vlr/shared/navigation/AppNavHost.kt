@@ -76,7 +76,7 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
           NavDisplay(
             backStack = appState.backStack,
             onBack = appState::navigateUp,
-            sceneStrategy = sceneStrategy,
+            sceneStrategies = listOf(sceneStrategy),
             entryProvider = entryProvider,
             entryDecorators = entryDecorators,
             transitionSpec = { navigationForwardTransition() },
@@ -92,7 +92,7 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
           NavDisplay(
             backStack = appState.backStack,
             onBack = appState::navigateUp,
-            sceneStrategy = sceneStrategy,
+            sceneStrategies = listOf(sceneStrategy),
             entryProvider = entryProvider,
             entryDecorators = entryDecorators,
             transitionSpec = { navigationForwardTransition() },

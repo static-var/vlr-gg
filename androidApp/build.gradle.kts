@@ -66,7 +66,7 @@ sentry {
 
 android {
   namespace = "dev.staticvar.vlr.android"
-  compileSdk = 36
+  compileSdk = 37
 
   defaultConfig {
     applicationId = "dev.staticvar.vlr"

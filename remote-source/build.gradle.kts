@@ -15,7 +15,7 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.remotesource"
-    compileSdk = 36
+    compileSdk = 37
     minSdk = 24
 
     withHostTestBuilder {}
@@ -28,7 +28,6 @@ kotlin {
   }
 
   listOf(
-    iosX64(),
     iosArm64(),
     iosSimulatorArm64(),
   )
@@ -79,7 +78,7 @@ kotlin {
   }
 }
 
-listOf("iosX64", "iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
+listOf("iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
   tasks.matching { it.name.startsWith(targetPrefix) && it.name.endsWith("Test") }.configureEach {
     enabled = false
   }

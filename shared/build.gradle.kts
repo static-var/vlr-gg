@@ -25,7 +25,7 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.shared"
-    compileSdk = 36
+    compileSdk = 37
     minSdk = 24
   }
 
@@ -33,7 +33,7 @@ kotlin {
   val iosTargets = if (fastIos) {
     listOf(iosSimulatorArm64())
   } else {
-    listOf(iosX64(), iosArm64(), iosSimulatorArm64())
+    listOf(iosArm64(), iosSimulatorArm64())
   }
   iosTargets.forEach { target ->
     target.binaries.framework {

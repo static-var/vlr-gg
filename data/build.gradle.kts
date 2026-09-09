@@ -13,7 +13,7 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.data"
-    compileSdk = 36
+    compileSdk = 37
     minSdk = 24
 
     withHostTestBuilder {}
@@ -29,7 +29,7 @@ kotlin {
   val iosTargets = if (fastIos) {
     listOf(iosSimulatorArm64())
   } else {
-    listOf(iosX64(), iosArm64(), iosSimulatorArm64())
+    listOf(iosArm64(), iosSimulatorArm64())
   }
   iosTargets.forEach { iosTarget ->
     iosTarget.binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable>().configureEach {

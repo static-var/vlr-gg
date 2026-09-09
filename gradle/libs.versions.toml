@@ -1,26 +1,26 @@
 [versions]
 sentry-kmp = "0.27.0"
-sentry-android = "8.41.0"
-sentry-gradle = "6.19.0"
-kotlin = '2.3.21'
-compose-multiplatform = "1.10.3"
-detektCompose = "0.5.8"
+sentry-android = "8.55.0"
+sentry-gradle = "6.21.0"
+kotlin = "2.4.20"
+compose-multiplatform = "1.12.0"
+detektCompose = "0.6.6"
 composeIcons = "1.1.1"
-coil = "3.4.0"
+coil = "3.6.2"
 detekt = "1.23.8"
 ktlint = "1.8.0"
-agp = "9.2.1"
-coroutines = "1.10.2"
-ktor = "3.4.3"
-ksp = "2.3.7"
-spotless = "8.4.0"
-koin = "4.2.1"
+agp = "9.4.0"
+coroutines = "1.11.0"
+ktor = "3.5.2"
+ksp = "2.3.11"
+spotless = "8.10.2"
+koin = "4.2.2"
 ksoup = "0.2.6"
-konvert = "4.5.0"
-datetime = "0.7.1"
-kotlinx-io = "0.9.0"
+konvert = "4.5.1"
+datetime = "0.8.0"
+kotlinx-io = "0.9.1"
 sqldelight = "2.3.2"
-multiplatform-nav3-ui = "1.0.0-alpha05"
+multiplatform-nav3-ui = "1.1.1"
 agentPreview = "0.3.1"
 
 [libraries]
@@ -46,17 +46,17 @@ compose-icons-lineawesome = { module = "br.com.devsrsouza.compose.icons:line-awe
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
-core = { module = "androidx.core:core-ktx", version = "1.18.0" }
-app-compat = { module = "androidx.appcompat:appcompat", version = "1.7.1" }
+core = { module = "androidx.core:core-ktx", version = "1.19.0" }
+app-compat = { module = "androidx.appcompat:appcompat", version = "1.8.0" }
 activity-compose = { module = "androidx.activity:activity-compose", version = "1.13.0" }
 core-viewtree = { module = "androidx.core:core-viewtree", version = "1.0.0" }
 emoji2 = { module = "androidx.emoji2:emoji2", version = "1.6.0" }
 
-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.10.0" }
-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.10.0" }
-lifecycle-viewmodel-core = { module = "androidx.lifecycle:lifecycle-viewmodel", version = "2.10.0" }
-lifecycle-viewmodel-compose-cmp = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.10.0" }
-lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0" }
+lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.11.0" }
+lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.11.0" }
+lifecycle-viewmodel-core = { module = "androidx.lifecycle:lifecycle-viewmodel", version = "2.11.0" }
+lifecycle-viewmodel-compose-cmp = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.11.0" }
+lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.11.0" }
 
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 
@@ -71,7 +71,7 @@ ktor-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", versio
 ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-http = { module = "io.ktor:ktor-http", version.ref = "ktor" }
 
-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version = "5.3.2" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version = "5.5.0" }
 
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
 
@@ -91,9 +91,9 @@ customview-poolingcontainer = { module = "androidx.customview:customview-pooling
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 
-jvm-lint-api = { module = "com.android.tools.lint:lint-api", version = "32.2.1" }
-jvm-lint-checks = { module = "com.android.tools.lint:lint-checks", version = "32.2.1" }
-jvm-lint-tests = { module = "com.android.tools.lint:lint-tests", version = "32.2.1" }
+jvm-lint-api = { module = "com.android.tools.lint:lint-api", version = "32.4.0" }
+jvm-lint-checks = { module = "com.android.tools.lint:lint-checks", version = "32.4.0" }
+jvm-lint-tests = { module = "com.android.tools.lint:lint-tests", version = "32.4.0" }
 
 turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 

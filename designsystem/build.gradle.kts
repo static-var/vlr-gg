@@ -18,7 +18,7 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.designsystem"
-    compileSdk = 36
+    compileSdk = 37
     minSdk = 24
     androidResources.enable = true
   }
@@ -28,7 +28,7 @@ kotlin {
     if (fastIos) {
       listOf(iosSimulatorArm64())
     } else {
-      listOf(iosX64(), iosArm64(), iosSimulatorArm64())
+      listOf(iosArm64(), iosSimulatorArm64())
     }
   iosTargets.forEach { target ->
     target.binaries.framework {
@@ -82,7 +82,7 @@ agentPreview {
   }
 }
 
-listOf("iosX64", "iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
+listOf("iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
   tasks
     .matching { it.name.startsWith(targetPrefix) && it.name.endsWith("Test") }
     .configureEach { enabled = false }

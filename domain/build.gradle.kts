@@ -12,7 +12,7 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.domain"
-    compileSdk = 36
+    compileSdk = 37
     minSdk = 24
 
     withHostTestBuilder {}
@@ -25,7 +25,6 @@ kotlin {
   }
 
   listOf(
-    iosX64(),
     iosArm64(),
     iosSimulatorArm64(),
   )

@@ -13,12 +13,11 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.localsource"
-    compileSdk = 36
+    compileSdk = 37
     minSdk = 24
   }
 
   listOf(
-    iosX64(),
     iosArm64(),
     iosSimulatorArm64(),
   ).forEach { iosTarget ->

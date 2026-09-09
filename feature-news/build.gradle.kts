@@ -19,7 +19,7 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.featurenews"
-    compileSdk = 36
+    compileSdk = 37
     minSdk = 24
   }
 
@@ -28,7 +28,7 @@ kotlin {
     if (fastIos) {
       listOf(iosSimulatorArm64())
     } else {
-      listOf(iosX64(), iosArm64(), iosSimulatorArm64())
+      listOf(iosArm64(), iosSimulatorArm64())
     }
   iosTargets.forEach { target ->
     target.binaries.framework {
