@@ -23,7 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
-import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
@@ -38,6 +38,9 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 
 @Composable
 public fun TeamDetailsRoute(
@@ -81,13 +84,14 @@ internal fun TeamDetailsScreen(
 ) {
   val isOnline = LocalIsOnline.current
   val team = uiState.team
+  val spoilersHidden = LocalSpoilerMode.current.enabled
 
   Column(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     Column {
-      PrismScreenTitleBar(
+      SharedScreenTitleBar(
         title = team?.name ?: "Team details",
         subtitle = "Roster, results and recent form",
         onBackPress = onBack,
@@ -162,7 +166,7 @@ internal fun TeamDetailsScreen(
                 style = Prism.typography.bodySmall,
                 color = Prism.color.labelColor,
               )
-              Text(
+              SpoilerScore(
                 text = if (team.rank > 0) "#${team.rank}" else "Unranked",
                 modifier = Modifier.padding(top = Prism.dimens.spacingXs),
                 style = Prism.typography.label,
@@ -275,6 +279,11 @@ internal fun TeamDetailsScreen(
                   }
                 }
               } else {
+                if (spoilersHidden) {
+                  item(key = "completed-spoiler-notice") {
+                    SpoilerHiddenNotice()
+                  }
+                }
                 items(team.completedMatches, key = { "completed:${it.matchId}" }) { match ->
                   val eventId = match.eventId
                   PrismCard(
@@ -291,12 +300,25 @@ internal fun TeamDetailsScreen(
                       style = Prism.typography.bodySmall,
                       color = if (eventId != null) Prism.color.accent else Prism.color.labelColor,
                     )
-                    Text(
-                      text = "${match.result} • ${match.date}",
+                    Row(
                       modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                      style = Prism.typography.label,
-                      color = Prism.color.bodyColor,
-                    )
+                      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+                      verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                      if (spoilersHidden || match.result.isNotBlank()) {
+                        SpoilerScore(
+                          text = match.result,
+                          style = Prism.typography.label,
+                          color = Prism.color.bodyColor,
+                        )
+                      }
+                      if (match.date.isNotBlank()) {
+                        if (spoilersHidden || match.result.isNotBlank()) {
+                          Text(text = "•", style = Prism.typography.label, color = Prism.color.bodyColor)
+                        }
+                        Text(text = match.date, style = Prism.typography.label, color = Prism.color.bodyColor)
+                      }
+                    }
                   }
                 }
               }

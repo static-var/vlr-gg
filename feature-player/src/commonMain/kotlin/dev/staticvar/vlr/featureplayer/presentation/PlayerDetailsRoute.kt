@@ -34,6 +34,10 @@ import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerContent
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 
 @Composable
 public fun PlayerDetailsRoute(
@@ -64,6 +68,7 @@ internal fun PlayerDetailsScreen(
   onToggleFavorite: () -> Unit = {},
 ) {
   val player = uiState.player
+  val spoilersHidden = LocalSpoilerMode.current.enabled
 
   Column(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
@@ -152,7 +157,7 @@ internal fun PlayerDetailsScreen(
                 style = Prism.typography.bodySmall,
                 color = Prism.color.labelColor,
               )
-              Text(
+              SpoilerScore(
                 text = "$${player.totalWinnings}",
                 modifier = Modifier.padding(top = Prism.dimens.spacingXs),
                 style = Prism.typography.label,
@@ -175,21 +180,30 @@ internal fun PlayerDetailsScreen(
             item {
               PrismSectionTitle(title = "Agent stats", preLabel = "pool")
             }
-            items(player.agentStats, key = { it.agentName }) { stat ->
+            if (spoilersHidden) {
+              item {
+                SpoilerHiddenNotice()
+              }
+            }
+            val agentStats = if (spoilersHidden) player.agentStats.sortedBy { it.agentName } else player.agentStats
+            items(agentStats, key = { it.agentName }) { stat ->
               PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
                 Text(text = stat.agentName, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
-                Text(
-                  text = "${stat.usagePercent}% usage • ${stat.matchesLabel()}",
-                  modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                  style = Prism.typography.bodySmall,
-                  color = Prism.color.labelColor,
-                )
-                Text(
-                  text = "ACS ${stat.acs} • ADR ${stat.adr} • K/D ${stat.kdRatio}",
-                  modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                  style = Prism.typography.label,
-                  color = Prism.color.bodyColor,
-                )
+                SpoilerContent(modifier = Modifier.padding(top = Prism.dimens.spacingXs)) {
+                  Column {
+                    Text(
+                      text = "${stat.usagePercent}% usage • ${stat.matchesLabel()}",
+                      style = Prism.typography.bodySmall,
+                      color = Prism.color.labelColor,
+                    )
+                    Text(
+                      text = "ACS ${stat.acs} • ADR ${stat.adr} • K/D ${stat.kdRatio}",
+                      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+                      style = Prism.typography.label,
+                      color = Prism.color.bodyColor,
+                    )
+                  }
+                }
               }
             }
           }

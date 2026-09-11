@@ -33,6 +33,9 @@ import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 
 @Composable
 public fun RankingsRoute(
@@ -60,9 +63,14 @@ internal fun RankingsScreen(
   onRefresh: () -> Unit = {},
 ) {
   val isOnline = LocalIsOnline.current
+  val spoilersHidden = LocalSpoilerMode.current.enabled
   val selectedRegion = uiState.selectedRegion
   val selectedRanking = remember(uiState.regions, selectedRegion) {
     uiState.regions.firstOrNull { it.region == selectedRegion }
+  }
+  val displayedTeams = remember(selectedRanking?.teams, spoilersHidden) {
+    val teams = selectedRanking?.teams.orEmpty()
+    if (spoilersHidden) teams.sortedBy { it.teamName.lowercase() } else teams
   }
 
   Column(
@@ -135,13 +143,22 @@ internal fun RankingsScreen(
           if (selectedRanking.teams.isNotEmpty()) {
             item {
               Text(
-                text = "Top ${selectedRanking.teams.size} • ${selectedRanking.region}",
+                text = if (spoilersHidden) {
+                  "${selectedRanking.teams.size} teams • ${selectedRanking.region}"
+                } else {
+                  "Top ${selectedRanking.teams.size} • ${selectedRanking.region}"
+                },
                 style = Prism.typography.label,
                 color = Prism.color.labelColor,
               )
             }
           }
-          items(selectedRanking.teams, key = { it.teamId }) { team ->
+          if (spoilersHidden) {
+            item {
+              SpoilerHiddenNotice()
+            }
+          }
+          items(displayedTeams, key = { it.teamId }) { team ->
             PrismCard(
               modifier = Modifier.fillMaxWidth(),
               style = PrismCardStyle.Outlined,
@@ -153,7 +170,7 @@ internal fun RankingsScreen(
                 verticalAlignment = Alignment.CenterVertically,
               ) {
                 Text(
-                  text = "#${team.rank} ${team.teamName}",
+                  text = if (spoilersHidden) team.teamName else "#${team.rank} ${team.teamName}",
                   modifier = Modifier.weight(1f),
                   style = Prism.typography.cardTitle,
                   color = if (team.isFavorite) Prism.color.accent else Prism.color.titleColor,
@@ -167,12 +184,18 @@ internal fun RankingsScreen(
                   )
                 }
               }
-              Text(
-                text = "${team.country} • ${team.points} pts",
+              Row(
                 modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                style = Prism.typography.bodySmall,
-                color = Prism.color.labelColor,
-              )
+                horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Text(text = "${team.country} •", style = Prism.typography.bodySmall, color = Prism.color.labelColor)
+                SpoilerScore(
+                  text = "${team.points} pts",
+                  style = Prism.typography.bodySmall,
+                  color = Prism.color.labelColor,
+                )
+              }
             }
           }
         }

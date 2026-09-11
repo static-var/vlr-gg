@@ -14,7 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.vlr.sharedui.component.common.SharedStatusPager
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
@@ -60,7 +60,7 @@ internal fun EventsOverviewScreen(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     Column {
-      PrismScreenTitleBar(
+      SharedScreenTitleBar(
         title = "Tournament overview",
         subtitle = "Tournaments around the world",
         actions = {

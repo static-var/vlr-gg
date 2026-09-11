@@ -23,6 +23,7 @@ import dev.staticvar.vlr.domain.model.EventMatchTeam
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.match.MatchFavoriteReasons
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 
 /**
  * Event match row with two score lines and schedule metadata.
@@ -96,7 +97,7 @@ private fun EventMatchTeamScoreRow(team: EventMatchTeam, modifier: Modifier = Mo
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
     )
-    Text(
+    SpoilerScore(
       text = team.score?.toString() ?: "-",
       style = Prism.typography.bodyLarge,
       color = Prism.color.accent,

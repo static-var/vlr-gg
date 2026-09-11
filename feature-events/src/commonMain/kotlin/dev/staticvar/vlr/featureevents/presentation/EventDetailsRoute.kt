@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
-import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
@@ -68,6 +68,8 @@ import dev.staticvar.vlr.sharedui.component.event.detail.groupEventMatches
 import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.rememberMascot
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 
 @Composable
 public fun EventDetailsRoute(
@@ -119,6 +121,7 @@ internal fun EventDetailsScreen(
   onToggleFavorite: () -> Unit = {},
 ) {
   val event = uiState.event
+  val spoilersHidden = LocalSpoilerMode.current.enabled
 
   var isGroupingMenuExpanded by remember(event?.id) { mutableStateOf(false) }
   var isNavigatingAway by remember(event?.id) { mutableStateOf(false) }
@@ -126,8 +129,8 @@ internal fun EventDetailsScreen(
   val participantsState = rememberLazyListState()
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val mascotCharacter = LocalMascotCharacter.current
-  val candidates = remember(event, uiState.favoriteTeamIds) {
-    event?.let { eventMascotCues(it, uiState.favoriteTeamIds) }.orEmpty()
+  val candidates = remember(event, uiState.favoriteTeamIds, spoilersHidden) {
+    if (spoilersHidden) emptyList() else event?.let { eventMascotCues(it, uiState.favoriteTeamIds) }.orEmpty()
   }
   val mascotState = rememberMascot(
     screenKey = event?.id ?: "event-details",
@@ -144,7 +147,7 @@ internal fun EventDetailsScreen(
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       Column(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) {
-        PrismScreenTitleBar(
+        SharedScreenTitleBar(
           title = event?.title ?: "Tournament details",
           subtitle = "Teams, matches and standings",
           actions = {
@@ -295,6 +298,9 @@ internal fun EventDetailsScreen(
                       message = "Team standings have not been published for this event.",
                     )
                   }
+                } else if (spoilersHidden) {
+                  item { PrismSectionTitle(title = "Standings", preLabel = "table", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
+                  item { SpoilerHiddenNotice(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
                 } else {
                   item { PrismSectionTitle(title = "Standings", preLabel = "table", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
                   items(event.standings, key = EventStanding::teamName) { standing ->
@@ -315,6 +321,9 @@ internal fun EventDetailsScreen(
                       message = "Prize placements have not been published for this event.",
                     )
                   }
+                } else if (spoilersHidden) {
+                  item { PrismSectionTitle(title = "Prizes", preLabel = "placements", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
+                  item { SpoilerHiddenNotice(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
                 } else {
                   item { PrismSectionTitle(title = "Prizes", preLabel = "placements", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
                   itemsIndexed(
@@ -346,7 +355,7 @@ internal fun EventDetailsScreen(
       }
     }
 
-    if (mascotCharacter != null) {
+    if (!spoilersHidden && mascotCharacter != null) {
       mascotState.cue?.let { cue ->
         MascotCelebration(
           visible = true,
