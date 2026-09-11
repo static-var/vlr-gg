@@ -8,6 +8,7 @@ import dev.staticvar.vlr.core.di.appearanceModule
 import dev.staticvar.vlr.core.di.dispatcherModule
 import dev.staticvar.vlr.core.di.platformAppearanceModule
 import dev.staticvar.vlr.data.di.dataModule
+import dev.staticvar.vlr.featurehome.di.homeFeatureModule
 import dev.staticvar.vlr.featureevents.di.eventsFeatureModule
 import dev.staticvar.vlr.featurematches.di.matchesFeatureModule
 import dev.staticvar.vlr.featurenews.di.newsFeatureModule
@@ -65,6 +66,7 @@ public fun initializeAppKoin(
       platformLocalSourceModule,
       localSourceModule,
       dataModule(),
+      homeFeatureModule(),
       matchesFeatureModule(),
       eventsFeatureModule(),
       newsFeatureModule(),

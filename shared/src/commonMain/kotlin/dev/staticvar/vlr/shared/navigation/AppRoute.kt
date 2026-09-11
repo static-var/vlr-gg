@@ -12,6 +12,9 @@ public sealed interface AppRoute : NavKey {
   public sealed interface Root : AppRoute
 
   @Serializable
+  public data object Home : Root
+
+  @Serializable
   public data object News : Root
 
   @Serializable
@@ -48,6 +51,7 @@ public sealed interface AppRoute : NavKey {
 public val AppRoute.rootDestination: AppRoute
   get() =
     when (this) {
+      AppRoute.Home,
       AppRoute.News,
       AppRoute.Matches,
       AppRoute.Events,

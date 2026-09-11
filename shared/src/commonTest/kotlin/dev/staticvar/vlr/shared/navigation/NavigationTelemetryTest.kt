@@ -36,13 +36,13 @@ class NavigationTelemetryTest {
   @Test
   fun everyRouteHasAStableScreenName() {
     val routes = listOf(
-      AppRoute.News, AppRoute.Matches, AppRoute.Events, AppRoute.Rankings, AppRoute.About, AppRoute.Settings,
+      AppRoute.Home, AppRoute.News, AppRoute.Matches, AppRoute.Events, AppRoute.Rankings, AppRoute.About, AppRoute.Settings,
       AppRoute.MatchDetails("secret"), AppRoute.EventDetails("secret"), AppRoute.NewsArticle("secret"),
       AppRoute.TeamDetails("secret"), AppRoute.PlayerDetails("secret"),
     )
     assertEquals(
       listOf(
-        "News", "Matches", "Events", "Rankings", "About", "Settings", "MatchDetails", "EventDetails",
+        "Home", "News", "Matches", "Events", "Rankings", "About", "Settings", "MatchDetails", "EventDetails",
         "NewsArticle", "TeamDetails", "PlayerDetails",
       ),
       routes.map { it.telemetryScreenName },

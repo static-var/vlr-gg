@@ -54,10 +54,15 @@ public fun SettingsRoute(
   onMascotSelected: (MascotPreference) -> Unit,
   onMascotVisitFrequencySelected: (MascotVisitFrequency) -> Unit,
   onAbout: () -> Unit,
+  onBack: (() -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM)) {
-    PrismScreenTitleBar(title = "Settings", subtitle = "Your look. Your companion.")
+    PrismScreenTitleBar(
+      title = "Settings",
+      subtitle = "Your look. Your companion.",
+      onBackPress = onBack,
+    )
     Column(
       modifier = Modifier.weight(1f).cardMascotViewport().verticalScroll(rememberScrollState())
         .padding(bottom = Prism.dimens.spacingL),

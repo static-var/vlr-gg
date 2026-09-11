@@ -32,9 +32,10 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import dev.staticvar.designsystem.component.navigation.PrismBottomNavBar
 import dev.staticvar.designsystem.component.card.cardMascotViewport
+import dev.staticvar.designsystem.component.navigation.PrismBottomNavBar
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavBarLarge
+import dev.staticvar.designsystem.component.navigation.PrismBottomNavItem
 import dev.staticvar.designsystem.prism.Prism
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -45,7 +46,32 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
   val navigationTelemetry = remember(appState) { NavigationTelemetry() }
   val activeRoute = appState.backStack.lastOrNull() as? AppRoute
   SideEffect { navigationTelemetry.show(activeRoute) }
-  val navItems = remember(appState.navigationItems) { appState.navigationItems }
+  val icons = Prism.icons
+  val navItems = remember(icons, appState.homeEnabled) {
+    val sharedItems = listOf(
+      PrismBottomNavItem(id = MATCHES_ID, label = "Matches", icon = icons.matches.unselected, selectedIcon = icons.matches.selected),
+      PrismBottomNavItem(id = EVENTS_ID, label = "Events", icon = icons.events.unselected, selectedIcon = icons.events.selected),
+      PrismBottomNavItem(id = RANKINGS_ID, label = "Rankings", icon = icons.rankings.unselected, selectedIcon = icons.rankings.selected),
+    )
+    val primaryItems = if (appState.homeEnabled) {
+      listOf(
+        PrismBottomNavItem(id = HOME_ID, label = "Home", icon = icons.home.unselected, selectedIcon = icons.home.selected),
+      ) + sharedItems
+    } else {
+      sharedItems + PrismBottomNavItem(
+        id = SETTINGS_ID,
+        label = "Settings",
+        icon = icons.settings.unselected,
+        selectedIcon = icons.settings.selected,
+      )
+    }
+    primaryItems + PrismBottomNavItem(
+      id = NEWS_ID,
+      label = "News",
+      icon = icons.news.unselected,
+      selectedIcon = icons.news.selected,
+    )
+  }
   val entryProvider = koinEntryProvider<NavKey>()
   val entryDecorators = listOf(
     rememberSaveableStateHolderNavEntryDecorator<NavKey>(),
@@ -71,7 +97,7 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
           PrismBottomNavBarLarge(
             items = navItems,
             selectedItemId = appState.selectedNavigationItemId,
-            onItemSelected = appState::selectRoot,
+            onItemSelected = { appState.selectRoot(it.id) },
           )
           NavDisplay(
             backStack = appState.backStack,
@@ -114,7 +140,7 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
             PrismBottomNavBar(
               items = navItems,
               selectedItemId = appState.selectedNavigationItemId,
-              onItemSelected = appState::selectRoot,
+              onItemSelected = { appState.selectRoot(it.id) },
               modifier = Modifier.fillMaxWidth(),
             )
           }

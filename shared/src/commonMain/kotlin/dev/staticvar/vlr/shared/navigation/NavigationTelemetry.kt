@@ -19,6 +19,7 @@ internal class NavigationTelemetry(private val reporter: TelemetryReporter = App
 
 internal val AppRoute.telemetryScreenName: String
   get() = when (this) {
+    AppRoute.Home -> "Home"
     AppRoute.News -> "News"
     AppRoute.Matches -> "Matches"
     AppRoute.Events -> "Events"

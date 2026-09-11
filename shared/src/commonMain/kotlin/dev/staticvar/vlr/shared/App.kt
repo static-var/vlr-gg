@@ -9,35 +9,41 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.currentStateAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismCatppuccinFlavour
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
+import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.settings.CatppuccinFlavour
-import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
-import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
-import dev.staticvar.vlr.sharedui.spoilers.SpoilerMode
 import dev.staticvar.vlr.core.settings.MascotPreference
+import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import dev.staticvar.vlr.core.settings.ThemeFamily
+import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
 import dev.staticvar.vlr.shared.appearance.ApplyPlatformAppearance
 import dev.staticvar.vlr.shared.navigation.AppNavHost
 import dev.staticvar.vlr.shared.navigation.rememberVlrAppState
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.image.ProvideSharedImageLoader
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.MascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.ProvideCardMascots
-import org.koin.compose.viewmodel.koinViewModel
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerMode
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import org.koin.compose.koinInject
-import dev.staticvar.vlr.core.network.NetworkMonitor
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * Main entry point for the shared Compose UI.
@@ -47,10 +53,14 @@ import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 public fun App() {
   ProvideSharedImageLoader()
 
-  val appState = rememberVlrAppState()
   val networkMonitor = koinInject<NetworkMonitor>()
   val spoilerPreferences = koinInject<SpoilerPreferencesRepository>()
   val spoilersHidden by spoilerPreferences.enabled.collectAsStateWithLifecycle()
+  val favoritesRepository = koinInject<FavoritesRepository>()
+  val homeEnabledFlow: Flow<Boolean?> = remember(favoritesRepository) {
+    favoritesRepository.observeDirectFavorites().map { it.hasAny }.distinctUntilChanged()
+  }
+  val homeEnabled by homeEnabledFlow.collectAsStateWithLifecycle(initialValue = null)
   val isOnline by networkMonitor.isOnline.collectAsStateWithLifecycle()
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val viewModel = koinViewModel<AppearanceViewModel>()
@@ -88,12 +98,18 @@ public fun App() {
         LocalIsOnline provides isOnline,
         LocalSpoilerMode provides SpoilerMode(enabled = spoilersHidden, onToggle = spoilerPreferences::toggle),
       ) {
-        ProvideCardMascots(
-          screenKey = appState.backStack.lastOrNull().toString(),
-          isActive = lifecycleState == Lifecycle.State.RESUMED,
-          probabilityPercent = appearance.mascotVisitFrequency.probabilityPercent,
-        ) {
-          AppNavHost(appState = appState)
+        homeEnabled?.let { initialHomeEnabled ->
+          val appState = rememberVlrAppState(initialHomeEnabled = initialHomeEnabled)
+          LaunchedEffect(initialHomeEnabled) {
+            appState.updateHomeEnabled(enabled = initialHomeEnabled)
+          }
+          ProvideCardMascots(
+            screenKey = appState.backStack.lastOrNull().toString(),
+            isActive = lifecycleState == Lifecycle.State.RESUMED,
+            probabilityPercent = appearance.mascotVisitFrequency.probabilityPercent,
+          ) {
+            AppNavHost(appState = appState)
+          }
         }
       }
     }

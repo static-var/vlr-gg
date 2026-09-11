@@ -8,14 +8,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.staticvar.vlr.featureabout.presentation.AboutRoute
 import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailSection
@@ -23,6 +22,8 @@ import dev.staticvar.vlr.featureevents.presentation.EventDetailsRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailsViewModel
 import dev.staticvar.vlr.featureevents.presentation.EventsOverviewRoute
 import dev.staticvar.vlr.featureevents.presentation.EventsViewModel
+import dev.staticvar.vlr.featurehome.presentation.HomeRoute
+import dev.staticvar.vlr.featurehome.presentation.HomeViewModel
 import dev.staticvar.vlr.featurematches.presentation.MatchDetailsRoute
 import dev.staticvar.vlr.featurematches.presentation.MatchDetailsViewModel
 import dev.staticvar.vlr.featurematches.presentation.MatchesOverviewRoute
@@ -38,6 +39,7 @@ import dev.staticvar.vlr.featurerankings.presentation.RankingsViewModel
 import dev.staticvar.vlr.featureteam.presentation.TeamDetailsRoute
 import dev.staticvar.vlr.featureteam.presentation.TeamDetailsViewModel
 import dev.staticvar.vlr.featureteam.presentation.TeamMatchesSection
+import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -53,6 +55,23 @@ private val LocalVlrAppState = compositionLocalOf<VlrAppState> { error("No VlrAp
 internal fun appNavigationModule(): Module = module {
   viewModel { AppearanceViewModel(repository = get()) }
 
+  navigation<AppRoute.Home> {
+    val appState = LocalVlrAppState.current
+    val viewModel = koinViewModel<HomeViewModel>()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
+
+    HomeRoute(
+      uiState = uiState,
+      onRefresh = viewModel::refresh,
+      onSettings = appState::showSettings,
+      onMatchSelected = appState::showRootMatchDetails,
+      onEventSelected = appState::showRootEventDetails,
+      onTeamSelected = appState::showRootTeamDetails,
+      onPlayerSelected = appState::showRootPlayerDetails,
+      modifier = Modifier.fillMaxSize(),
+    )
+  }
   navigation<AppRoute.News>(metadata = listPane(group = "news")) {
     val appState = LocalVlrAppState.current
     val viewModel = koinViewModel<NewsListViewModel>()
@@ -212,6 +231,7 @@ internal fun appNavigationModule(): Module = module {
     )
   }
   navigation<AppRoute.Settings> {
+    val appState = LocalVlrAppState.current
     val viewModel = koinViewModel<AppearanceViewModel>()
     val appearance by viewModel.appearance.collectAsStateWithLifecycle()
     SettingsRoute(
@@ -225,7 +245,8 @@ internal fun appNavigationModule(): Module = module {
       mascotVisitFrequency = appearance.mascotVisitFrequency,
       onMascotSelected = viewModel::setMascot,
       onMascotVisitFrequencySelected = viewModel::setMascotVisitFrequency,
-      onAbout = LocalVlrAppState.current::showAbout,
+      onAbout = appState::showAbout,
+      onBack = if (appState.homeEnabled) appState::navigateUp else null,
       modifier = Modifier.fillMaxSize(),
     )
   }
