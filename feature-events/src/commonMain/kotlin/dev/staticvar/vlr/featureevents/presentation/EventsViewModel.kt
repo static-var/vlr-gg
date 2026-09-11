@@ -67,7 +67,7 @@ private fun eventStatusToFilter(status: EventStatus): EventStatusFilter = when (
   EventStatus.UNKNOWN -> EventStatusFilter.Unknown
 }
 
-private fun List<EventPreview>.filterByStatus(filter: EventStatusFilter): List<EventPreview> {
+internal fun List<EventPreview>.filterByStatus(filter: EventStatusFilter): List<EventPreview> {
   val filtered = filter { event ->
     when (filter) {
       EventStatusFilter.Ongoing -> event.status == EventStatus.ONGOING

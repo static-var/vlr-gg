@@ -68,7 +68,7 @@ private fun matchStatusToFilter(status: MatchStatus): MatchStatusFilter = when (
   MatchStatus.UNKNOWN -> MatchStatusFilter.Live
 }
 
-private fun List<MatchPreview>.filterByStatus(filter: MatchStatusFilter): List<MatchPreview> {
+internal fun List<MatchPreview>.filterByStatus(filter: MatchStatusFilter): List<MatchPreview> {
   val filtered = filter { match ->
     when (filter) {
       MatchStatusFilter.Live -> match.status == MatchStatus.LIVE

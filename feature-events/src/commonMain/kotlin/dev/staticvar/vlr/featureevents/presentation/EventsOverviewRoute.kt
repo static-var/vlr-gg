@@ -12,10 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.navigation.PrismTab
-import dev.staticvar.designsystem.component.navigation.PrismTabs
+import dev.staticvar.vlr.sharedui.component.common.SharedStatusPager
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
@@ -79,58 +80,61 @@ internal fun EventsOverviewScreen(
         onRefresh = onRefresh,
       )
     }
-    PrismTabs(
+    SharedStatusPager(
       tabs = uiState.visibleStatusFilters.map { filter -> PrismTab(id = filter.name, label = filter.name) },
       selectedTabId = uiState.selectedStatus.name,
-      onTabSelected = { onFilterSelected(EventStatusFilter.valueOf(it.id)) },
-    )
-
-    when {
-      (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && uiState.events.isEmpty() -> SharedScreenLoading(
-        label = "Loading events",
-        modifier = Modifier.fillMaxSize(),
-      )
-
-      uiState.errorMessage != null && uiState.events.isEmpty() ->
-        SharedLoadError(
-          errorMessage = uiState.errorMessage,
-          errorDetails = uiState.errorDetails,
-          onRefresh = onRefresh,
-          centered = true,
-          modifier = Modifier.fillMaxWidth().weight(1f),
+      onTabSelected = { onFilterSelected(EventStatusFilter.valueOf(it)) },
+      modifier = Modifier.weight(1f),
+    ) { tabId, selectTab ->
+      val status = EventStatusFilter.valueOf(tabId)
+      val events = remember(uiState.events, status) { uiState.events.filterByStatus(status) }
+      when {
+        (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && uiState.events.isEmpty() -> SharedScreenLoading(
+          label = "Loading events",
+          modifier = Modifier.fillMaxSize(),
         )
 
-      uiState.filteredEvents.isEmpty() && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null && LocalIsOnline.current -> {
-        val (title, message) = when (uiState.selectedStatus) {
-          EventStatusFilter.Ongoing -> "No live events" to "No tournaments are in progress right now. Check upcoming events for what’s next."
-          EventStatusFilter.Upcoming -> "No upcoming events" to "New tournaments will appear here when their schedules are announced."
-          EventStatusFilter.Completed -> "No completed events" to "Tournament results will appear here after events finish."
-          EventStatusFilter.Paused -> "No paused events" to "There are no tournaments on hold right now."
-          EventStatusFilter.Unknown -> "No other events" to "There are no events awaiting a status update."
+        uiState.errorMessage != null && uiState.events.isEmpty() ->
+          SharedLoadError(
+            errorMessage = uiState.errorMessage,
+            errorDetails = uiState.errorDetails,
+            onRefresh = onRefresh,
+            centered = true,
+            modifier = Modifier.fillMaxSize(),
+          )
+
+        events.isEmpty() && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null && LocalIsOnline.current -> {
+          val (title, message) = when (status) {
+            EventStatusFilter.Ongoing -> "No live events" to "No tournaments are in progress right now. Check upcoming events for what’s next."
+            EventStatusFilter.Upcoming -> "No upcoming events" to "New tournaments will appear here when their schedules are announced."
+            EventStatusFilter.Completed -> "No completed events" to "Tournament results will appear here after events finish."
+            EventStatusFilter.Paused -> "No paused events" to "There are no tournaments on hold right now."
+            EventStatusFilter.Unknown -> "No other events" to "There are no events awaiting a status update."
+          }
+          val hasUpcoming = status == EventStatusFilter.Ongoing && uiState.events.any { it.status == EventStatus.UPCOMING }
+          SharedEmptyState(
+            artwork = EmptyStateArtwork.NoLiveEvents,
+            title = title,
+            message = message,
+            modifier = Modifier.fillMaxSize(),
+            actionLabel = if (hasUpcoming) "View upcoming" else "Refresh",
+            onAction = { if (hasUpcoming) selectTab(EventStatusFilter.Upcoming.name) else onRefresh() },
+          )
         }
-        val hasUpcoming = uiState.selectedStatus == EventStatusFilter.Ongoing && uiState.events.any { it.status == EventStatus.UPCOMING }
-        SharedEmptyState(
-          artwork = EmptyStateArtwork.NoLiveEvents,
-          title = title,
-          message = message,
-          modifier = Modifier.fillMaxWidth().weight(1f),
-          actionLabel = if (hasUpcoming) "View upcoming" else "Refresh",
-          onAction = { if (hasUpcoming) onFilterSelected(EventStatusFilter.Upcoming) else onRefresh() },
-        )
-      }
 
-      else -> {
-        LazyColumn(
-          modifier = Modifier.fillMaxSize().cardMascotViewport(),
-          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-        ) {
-          items(uiState.filteredEvents, key = EventPreview::id) { event ->
-            EventPreviewItem(
-              eventPreview = event,
-              modifier = Modifier.fillMaxWidth()
-                .cardMascotEligible(topClearance = Prism.dimens.spacingS * 2 + Prism.dimens.spacingXs),
-              onClick = { onEventSelected(event.id) },
-            )
+        else -> {
+          LazyColumn(
+            modifier = Modifier.fillMaxSize().cardMascotViewport(),
+            verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+          ) {
+            items(events, key = EventPreview::id) { event ->
+              EventPreviewItem(
+                eventPreview = event,
+                modifier = Modifier.fillMaxWidth()
+                  .cardMascotEligible(topClearance = Prism.dimens.spacingS * 2 + Prism.dimens.spacingXs),
+                onClick = { onEventSelected(event.id) },
+              )
+            }
           }
         }
       }
