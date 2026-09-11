@@ -4,6 +4,14 @@
  */
 package dev.staticvar.vlr.sharedui.spoilers
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -45,7 +53,22 @@ public fun SpoilerScore(
 
 @Composable
 public fun SpoilerContent(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-  if (LocalSpoilerMode.current.enabled) SpoilerHiddenIcon(modifier) else Box(modifier) { content() }
+  val animation = Prism.anim.standard
+  AnimatedContent(
+    targetState = LocalSpoilerMode.current.enabled,
+    modifier = modifier,
+    contentAlignment = Alignment.Center,
+    transitionSpec = {
+      val enter = fadeIn(animation.floatSpec()) + scaleIn(animation.floatSpec(), initialScale = 0.85f)
+      val exit = fadeOut(animation.floatSpec()) + scaleOut(animation.floatSpec(), targetScale = 0.85f)
+      (enter togetherWith exit).using(
+        SizeTransform { _, _ -> tween(durationMillis = animation.durationMillis, easing = animation.easing) },
+      )
+    },
+    label = "spoiler_score",
+  ) { hidden ->
+    if (hidden) SpoilerHiddenIcon() else content()
+  }
 }
 
 @Composable
