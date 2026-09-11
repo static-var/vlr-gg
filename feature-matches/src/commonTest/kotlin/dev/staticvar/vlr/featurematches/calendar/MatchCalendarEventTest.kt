@@ -18,16 +18,23 @@ class MatchCalendarEventTest {
   private val generatedAt = Instant.parse("2026-09-05T12:00:00Z")
 
   @Test
-  fun exportNormalizesOffsetAndDoesNotInventAnEndTime() {
+  fun exportNormalizesOffsetAndEndsOneHourLater() {
     val event = MatchCalendarEvent("42", "NRG vs LOUD", "Final", Instant.parse("2026-09-05T22:30:00+05:30"))
     val content = event.toICalendar(generatedAt)
     assertTrue(content.contains("DTSTART:20260905T170000Z\r\n"))
     assertTrue(content.contains("DTSTAMP:20260905T120000Z\r\n"))
-    assertFalse(content.contains("DTEND"))
+    assertTrue(content.contains("DTEND:20260905T180000Z\r\n"))
     assertFalse(content.contains("DURATION"))
     assertTrue(content.endsWith("END:VCALENDAR\r\n"))
     val updated = event.copy(title = "Renamed team", start = generatedAt).toICalendar(generatedAt)
     assertEquals(content.lines().first { it.startsWith("UID:") }, updated.lines().first { it.startsWith("UID:") })
+  }
+
+  @Test
+  fun oneHourDurationCrossesMidnight() {
+    val event = MatchCalendarEvent("42", "Final", "", Instant.parse("2026-12-31T23:30:00Z"))
+    assertEquals(Instant.parse("2027-01-01T00:30:00Z"), event.end)
+    assertTrue(event.toICalendar(generatedAt).contains("DTEND:20270101T003000Z\r\n"))
   }
 
   @Test

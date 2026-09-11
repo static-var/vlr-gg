@@ -9,6 +9,7 @@ import dev.staticvar.vlr.domain.model.MatchDetails
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
 public data class MatchCalendarEvent(
@@ -17,6 +18,9 @@ public data class MatchCalendarEvent(
   val description: String,
   val start: Instant,
 )
+
+internal val MatchCalendarEvent.end: Instant
+  get() = start + 1.hours
 
 public fun MatchDetails.toCalendarEvent(): MatchCalendarEvent? {
   val start = event.date?.let { runCatching { Instant.parse(it) }.getOrNull() } ?: return null
@@ -29,9 +33,14 @@ public fun MatchDetails.toCalendarEvent(): MatchCalendarEvent? {
   )
 }
 
-/** Opens a system export surface. Success means handoff, not that the user saved an event. */
+/** Opens the calendar editor or shares ICS on failure. Success means handoff, not a saved event. */
 @Composable
 public expect fun rememberMatchCalendarExporter(): (MatchCalendarEvent) -> Result<Unit>
+
+internal fun openCalendarWithIcsFallback(
+  openCalendar: () -> Unit,
+  shareIcs: () -> Unit,
+): Result<Unit> = runCatching(openCalendar).recoverCatching { shareIcs() }
 
 internal val MatchCalendarEvent.fileName: String
   get() = "match-${matchId.encodeToByteArray().joinToString("") { it.toUByte().toString(16).padStart(2, '0') }}.ics"
@@ -50,6 +59,7 @@ internal fun MatchCalendarEvent.toICalendar(generatedAt: Instant = Clock.System.
         "UID:match-$uid@vlr.gg",
         "DTSTAMP:${generatedAt.calendarTimestamp()}",
         "DTSTART:${start.calendarTimestamp()}",
+        "DTEND:${end.calendarTimestamp()}",
         "SUMMARY:${title.calendarText()}",
         "DESCRIPTION:${description.calendarText()}",
       ),
