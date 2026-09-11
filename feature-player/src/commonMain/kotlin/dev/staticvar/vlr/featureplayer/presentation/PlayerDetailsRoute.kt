@@ -132,45 +132,49 @@ internal fun PlayerDetailsScreen(
       )
 
       else -> {
-        PrismCard(
-          modifier = Modifier.fillMaxWidth().cardMascotEligible(topClearance = Prism.dimens.spacingM),
-          style = PrismCardStyle.Outlined,
+        LazyColumn(
+          modifier = Modifier.fillMaxWidth().weight(1f).cardMascotViewport(),
+          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
         ) {
-          Text(
-            text = player.alias.ifBlank { player.name },
-            style = Prism.typography.sectionTitle,
-            color = Prism.color.titleColor,
-          )
-          Text(
-            text = listOfNotNull(player.realName, player.country).joinToString(" • "),
-            modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-            style = Prism.typography.bodySmall,
-            color = Prism.color.labelColor,
-          )
-          Text(
-            text = "$${player.totalWinnings}",
-            modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-            style = Prism.typography.label,
-            color = Prism.color.bodyColor,
-          )
-          player.currentTeam?.let { team ->
-            val teamId = team.id
-            Text(
-              text = team.name,
-              modifier = Modifier
-                .padding(top = Prism.dimens.spacingM)
-                .let { base -> if (teamId != null) base.clickable { onTeamSelected(teamId) } else base },
-              style = Prism.typography.cardTitle,
-              color = if (teamId != null) Prism.color.accent else Prism.color.titleColor,
-            )
+          item {
+            PrismCard(
+              modifier = Modifier.fillMaxWidth().cardMascotEligible(topClearance = Prism.dimens.spacingM),
+              style = PrismCardStyle.Outlined,
+            ) {
+              Text(
+                text = player.alias.ifBlank { player.name },
+                style = Prism.typography.sectionTitle,
+                color = Prism.color.titleColor,
+              )
+              Text(
+                text = listOfNotNull(player.realName, player.country).joinToString(" • "),
+                modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+                style = Prism.typography.bodySmall,
+                color = Prism.color.labelColor,
+              )
+              Text(
+                text = "$${player.totalWinnings}",
+                modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+                style = Prism.typography.label,
+                color = Prism.color.bodyColor,
+              )
+              player.currentTeam?.let { team ->
+                val teamId = team.id
+                Text(
+                  text = team.name,
+                  modifier = Modifier
+                    .padding(top = Prism.dimens.spacingM)
+                    .let { base -> if (teamId != null) base.clickable { onTeamSelected(teamId) } else base },
+                  style = Prism.typography.cardTitle,
+                  color = if (teamId != null) Prism.color.accent else Prism.color.titleColor,
+                )
+              }
+            }
           }
-        }
-        if (player.agentStats.isNotEmpty()) {
-          PrismSectionTitle(title = "Agent stats", preLabel = "pool")
-          LazyColumn(
-            modifier = Modifier.fillMaxWidth().weight(1f, fill = false).cardMascotViewport(),
-            verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-          ) {
+          if (player.agentStats.isNotEmpty()) {
+            item {
+              PrismSectionTitle(title = "Agent stats", preLabel = "pool")
+            }
             items(player.agentStats, key = { it.agentName }) { stat ->
               PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
                 Text(text = stat.agentName, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
@@ -189,13 +193,10 @@ internal fun PlayerDetailsScreen(
               }
             }
           }
-        }
-        if (player.pastTeams.isNotEmpty()) {
-          PrismSectionTitle(title = "Team history", preLabel = "history")
-          LazyColumn(
-            modifier = Modifier.fillMaxSize().cardMascotViewport(),
-            verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-          ) {
+          if (player.pastTeams.isNotEmpty()) {
+            item {
+              PrismSectionTitle(title = "Team history", preLabel = "history")
+            }
             items(player.pastTeams) { team ->
               PrismCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -214,9 +215,9 @@ internal fun PlayerDetailsScreen(
                 )
               }
             }
-            item {
-              Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
-            }
+          }
+          item {
+            Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
           }
         }
       }
