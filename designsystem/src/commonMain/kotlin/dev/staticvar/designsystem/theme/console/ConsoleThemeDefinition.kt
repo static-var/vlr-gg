@@ -20,6 +20,7 @@ import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.designsystem.prism.animation.PrismAnimationPreset
 import dev.staticvar.designsystem.prism.animation.PrismAnimationTokens
 import dev.staticvar.designsystem.prism.color.PrismColorPalette
+import dev.staticvar.designsystem.prism.icon.ConsoleIcons
 import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 import dev.staticvar.designsystem.prism.frame.PrismFrames
 import dev.staticvar.designsystem.prism.theme.PrismThemeDefinition
@@ -29,6 +30,8 @@ import dev.staticvar.designsystem.theme.PrismTypographyTokens
 import dev.staticvar.designsystem.theme.createPrismColorScheme
 
 internal data class ConsoleThemeDefinition(val variant: PrismVariant) : PrismThemeDefinition<PrismVariant> {
+  override val icons = ConsoleIcons
+
   override fun createColorTokens(): PrismVariant = variant
 
   override fun createPalette(tokens: PrismVariant): PrismColorPalette = ConsolePalette.create(tokens)

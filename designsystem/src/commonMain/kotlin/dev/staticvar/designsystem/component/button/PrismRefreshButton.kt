@@ -15,7 +15,7 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import dev.staticvar.designsystem.prism.icon.refresh.RefreshArrows
+import dev.staticvar.designsystem.prism.Prism
 
 /** Refresh action whose vector rotates while busy. The button frame stays still and repeat taps are disabled. */
 @Composable
@@ -37,7 +37,7 @@ public fun PrismRefreshButton(
     null
   }
   PrismIconButton(
-    icon = RefreshArrows,
+    icon = Prism.icons.refresh,
     contentDescription = "Refresh",
     onClick = onClick,
     modifier = modifier,

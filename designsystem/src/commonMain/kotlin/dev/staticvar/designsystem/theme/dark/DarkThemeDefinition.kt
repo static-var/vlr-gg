@@ -8,12 +8,15 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import dev.staticvar.designsystem.prism.color.PrismColorPalette
+import dev.staticvar.designsystem.prism.icon.BrutalistIcons
 import dev.staticvar.designsystem.prism.theme.PrismThemeDefinition
 import dev.staticvar.designsystem.prism.typography.PrismFontFamilies
 import dev.staticvar.designsystem.prism.typography.PrismTypography
 import dev.staticvar.designsystem.theme.PrismTypographyTokens
 
 internal object DarkThemeDefinition : PrismThemeDefinition<DarkColorTokens> {
+  override val icons = BrutalistIcons
+
   override fun createColorTokens(): DarkColorTokens = DarkColorTokens()
 
   override fun createPalette(tokens: DarkColorTokens): PrismColorPalette = DarkPalette.create(tokens)

@@ -18,6 +18,8 @@ import dev.staticvar.designsystem.prism.dimens.PrismDimens
 import dev.staticvar.designsystem.prism.dimens.prismDimens
 import dev.staticvar.designsystem.prism.frame.LocalPrismFrames
 import dev.staticvar.designsystem.prism.frame.PrismFrames
+import dev.staticvar.designsystem.prism.icon.LocalPrismIcons
+import dev.staticvar.designsystem.prism.icon.PrismIcons
 import dev.staticvar.designsystem.prism.typography.PrismTypography
 import dev.staticvar.designsystem.prism.typography.prismTypography
 
@@ -37,6 +39,11 @@ import dev.staticvar.designsystem.prism.typography.prismTypography
  * ```
  */
 public object Prism {
+  public val icons: PrismIcons
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalPrismIcons.current
+
   public val typography: PrismTypography
     @Composable
     @ReadOnlyComposable

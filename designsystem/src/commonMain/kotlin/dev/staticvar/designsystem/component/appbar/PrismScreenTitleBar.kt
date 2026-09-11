@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.button.PrismIconButton
 import dev.staticvar.designsystem.component.button.PrismIconButtonSize
-import dev.staticvar.designsystem.prism.icon.back.StairStepBack
+import dev.staticvar.designsystem.prism.Prism
 
 /**
  * Compact screen title bar with optional navigation, subtitle, and trailing content.
@@ -96,7 +96,7 @@ public fun PrismScreenTitleBar(
 private fun PrismScreenTitleNavigationSlot(onBackPress: (() -> Unit)?) {
   if (onBackPress != null) {
     PrismIconButton(
-      icon = StairStepBack,
+      icon = Prism.icons.back,
       contentDescription = "Back",
       onClick = onBackPress,
       size = PrismIconButtonSize.Toolbar,

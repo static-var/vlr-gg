@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import dev.staticvar.designsystem.prism.PrismCatppuccinFlavour
 import dev.staticvar.designsystem.prism.color.PrismColorPalette
+import dev.staticvar.designsystem.prism.icon.CatppuccinIcons
 import dev.staticvar.designsystem.prism.theme.PrismThemeDefinition
 import dev.staticvar.designsystem.prism.theme.ProvidePrismTheme
 import dev.staticvar.designsystem.prism.typography.PrismFontFamilies
@@ -26,6 +27,7 @@ internal fun CatppuccinTheme(flavour: PrismCatppuccinFlavour, content: @Composab
 
 internal data class CatppuccinThemeDefinition(val flavour: PrismCatppuccinFlavour) :
   PrismThemeDefinition<CatppuccinColorTokens> {
+  override val icons = CatppuccinIcons
 
   override fun createColorTokens(): CatppuccinColorTokens = when (flavour) {
     PrismCatppuccinFlavour.Latte -> CatppuccinColorTokens.Latte

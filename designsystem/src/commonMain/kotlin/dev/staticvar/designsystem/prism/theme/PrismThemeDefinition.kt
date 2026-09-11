@@ -11,6 +11,7 @@ import dev.staticvar.designsystem.prism.animation.DefaultPrismAnimations
 import dev.staticvar.designsystem.prism.animation.PrismAnimationTokens
 import dev.staticvar.designsystem.prism.color.PrismColorPalette
 import dev.staticvar.designsystem.prism.frame.PrismFrames
+import dev.staticvar.designsystem.prism.icon.PrismIcons
 import dev.staticvar.designsystem.prism.typography.PrismFontFamilies
 import dev.staticvar.designsystem.prism.typography.PrismTypography
 
@@ -18,6 +19,8 @@ import dev.staticvar.designsystem.prism.typography.PrismTypography
  * Theme contract describing how a concrete Prism variant supplies its styling pieces.
  */
 internal interface PrismThemeDefinition<ColorTokens : Any> {
+  val icons: PrismIcons
+
   fun createColorTokens(): ColorTokens
 
   fun createPalette(tokens: ColorTokens): PrismColorPalette

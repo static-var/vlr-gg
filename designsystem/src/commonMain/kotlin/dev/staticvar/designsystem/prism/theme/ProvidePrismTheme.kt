@@ -14,6 +14,7 @@ import dev.staticvar.designsystem.prism.color.LocalPrismColors
 import dev.staticvar.designsystem.prism.dimens.LocalPrismDimens
 import dev.staticvar.designsystem.prism.dimens.PrismDimens
 import dev.staticvar.designsystem.prism.frame.LocalPrismFrames
+import dev.staticvar.designsystem.prism.icon.LocalPrismIcons
 import dev.staticvar.designsystem.prism.typography.LocalPrismTypography
 import dev.staticvar.designsystem.prism.typography.rememberPrismFontFamilies
 
@@ -38,6 +39,7 @@ internal fun <ColorTokens : Any> ProvidePrismTheme(
   val dimens = remember { PrismDimens() }
 
   CompositionLocalProvider(
+    LocalPrismIcons provides definition.icons,
     LocalPrismColors provides palette,
     LocalPrismAnimations provides definition.animations,
     LocalPrismFrames provides frames,
