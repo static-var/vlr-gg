@@ -21,6 +21,9 @@ import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.vlr.core.settings.CatppuccinFlavour
+import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerMode
 import dev.staticvar.vlr.core.settings.MascotPreference
 import dev.staticvar.vlr.core.settings.ThemeFamily
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
@@ -46,6 +49,8 @@ public fun App() {
 
   val appState = rememberVlrAppState()
   val networkMonitor = koinInject<NetworkMonitor>()
+  val spoilerPreferences = koinInject<SpoilerPreferencesRepository>()
+  val spoilersHidden by spoilerPreferences.enabled.collectAsStateWithLifecycle()
   val isOnline by networkMonitor.isOnline.collectAsStateWithLifecycle()
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val viewModel = koinViewModel<AppearanceViewModel>()
@@ -81,6 +86,7 @@ public fun App() {
       CompositionLocalProvider(
         LocalMascotCharacter provides mascotCharacter,
         LocalIsOnline provides isOnline,
+        LocalSpoilerMode provides SpoilerMode(enabled = spoilersHidden, onToggle = spoilerPreferences::toggle),
       ) {
         ProvideCardMascots(
           screenKey = appState.backStack.lastOrNull().toString(),
