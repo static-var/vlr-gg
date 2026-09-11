@@ -30,6 +30,7 @@ import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 
@@ -72,11 +73,19 @@ internal fun RankingsScreen(
       PrismScreenTitleBar(
         title = "Ranking",
         subtitle = "The top teams in every region",
+        actions = {
+          SharedRefreshButton(
+            isLoading = uiState.isLoading,
+            isRefreshing = uiState.isRefreshing,
+            hasContent = uiState.regions.isNotEmpty(),
+            onRefresh = onRefresh,
+          )
+        },
       )
 
       SharedRefreshStatus(
         hasContent = uiState.regions.isNotEmpty(),
-        isRefreshing = uiState.regions.isNotEmpty() && (uiState.isRefreshing || uiState.isLoading),
+        isRefreshing = false,
         errorMessage = uiState.errorMessage.takeIf { uiState.regions.isNotEmpty() },
         errorDetails = uiState.errorDetails,
         onRefresh = onRefresh,
