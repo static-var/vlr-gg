@@ -10,6 +10,7 @@ import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -139,10 +140,10 @@ internal fun EventDetailsScreen(
 
   Box(modifier = modifier.fillMaxSize().clipToBounds()) {
     Column(
-      modifier = Modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
+      modifier = Modifier.fillMaxSize(),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
-      Column {
+      Column(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) {
         PrismScreenTitleBar(
           title = event?.title ?: "Tournament details",
           subtitle = "Teams, matches and standings",
@@ -189,7 +190,7 @@ internal fun EventDetailsScreen(
 
       when {
         (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && event == null -> SharedScreenLoading(
-          modifier = Modifier.fillMaxSize(),
+          modifier = Modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
           label = "Loading event",
         )
 
@@ -199,14 +200,14 @@ internal fun EventDetailsScreen(
             errorDetails = uiState.errorDetails,
             onRefresh = onRefresh,
             centered = true,
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
           )
 
         event == null -> SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveEvents,
           title = "No event details yet",
           message = "Details will appear when this tournament is published.",
-          modifier = Modifier.fillMaxWidth().weight(1f),
+          modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
         )
 
         else -> {
@@ -221,7 +222,7 @@ internal fun EventDetailsScreen(
             verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
           ) {
             item {
-              EventDetailHeaderItem(event = event)
+              EventDetailHeaderItem(event = event, modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
             }
             if (event.teams.isNotEmpty()) {
               item {
@@ -238,6 +239,7 @@ internal fun EventDetailsScreen(
             }
             item {
               PrismTabs(
+                modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
                 tabs = EventDetailSection.entries.map { PrismTab(id = it.name, label = it.name) },
                 selectedTabId = section.name,
                 onTabSelected = { onSectionSelected(EventDetailSection.valueOf(it.id)) },
@@ -256,6 +258,7 @@ internal fun EventDetailsScreen(
                 } else {
                   item {
                     EventMatchGroupSelector(
+                      modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
                       grouping = matchGrouping,
                       groupNames = groupNames,
                       selectedGroupName = resolvedMatchGroupName,
@@ -266,7 +269,7 @@ internal fun EventDetailsScreen(
                   }
                   items(visibleMatches, key = EventMatch::matchId) { match ->
                     EventDetailMatchItem(
-                      modifier = Modifier.cardMascotEligible(
+                      modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(
                         topClearance = Prism.dimens.spacingM + Prism.dimens.spacingS + Prism.dimens.spacingXs,
                       ),
                       match = match,
@@ -293,11 +296,11 @@ internal fun EventDetailsScreen(
                     )
                   }
                 } else {
-                  item { PrismSectionTitle(title = "Standings", preLabel = "table") }
+                  item { PrismSectionTitle(title = "Standings", preLabel = "table", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
                   items(event.standings, key = EventStanding::teamName) { standing ->
                     EventDetailStandingItem(
                       standing = standing,
-                      modifier = Modifier.cardMascotEligible(topClearance = Prism.dimens.spacingM),
+                      modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(topClearance = Prism.dimens.spacingM),
                     )
                   }
                 }
@@ -313,7 +316,7 @@ internal fun EventDetailsScreen(
                     )
                   }
                 } else {
-                  item { PrismSectionTitle(title = "Prizes", preLabel = "placements") }
+                  item { PrismSectionTitle(title = "Prizes", preLabel = "placements", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
                   itemsIndexed(
                     items = event.prizes,
                     key = { index, prize -> "${prize.position}-${prize.prize}-${prize.team?.id}-$index" },
@@ -322,7 +325,7 @@ internal fun EventDetailsScreen(
                     val prizeTeamId = prizeTeam?.id
                     EventDetailPrizeItem(
                       prize = prize,
-                      modifier = Modifier.cardMascotEligible(topClearance = Prism.dimens.spacingM),
+                      modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(topClearance = Prism.dimens.spacingM),
                       onTeamClick = prizeTeamId?.let { teamId ->
                         {
                           isNavigatingAway = true
@@ -364,7 +367,7 @@ private fun EventEmptySection(
   message: String,
 ) {
   if (LocalIsOnline.current && !uiState.isLoading && !uiState.isDetailLoadPending && !uiState.isRefreshing && uiState.errorMessage == null) {
-    SharedEmptyState(artwork = EmptyStateArtwork.NoLiveEvents, title = title, message = message, compact = true)
+    SharedEmptyState(artwork = EmptyStateArtwork.NoLiveEvents, title = title, message = message, compact = true, modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
   }
 }
 
@@ -377,10 +380,11 @@ private fun EventParticipantsRail(
 ) {
   if (teams.isNotEmpty()) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-      PrismSectionTitle(title = "Participants", preLabel = "teams")
+      PrismSectionTitle(title = "Participants", preLabel = "teams", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
       LazyRow(
         state = listState,
         modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = Prism.dimens.spacingM),
         horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       ) {
         items(teams) { team ->
