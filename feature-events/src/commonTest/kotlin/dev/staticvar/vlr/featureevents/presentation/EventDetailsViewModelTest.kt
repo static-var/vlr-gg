@@ -12,12 +12,15 @@ import dev.staticvar.vlr.domain.model.EventMatchTeam
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.repository.EventRepository
+import dev.staticvar.vlr.domain.model.DirectFavorite
+import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.featureevents.usecase.ObserveEventDetailsUseCase
 import dev.staticvar.vlr.featureevents.usecase.RefreshEventDetailsUseCase
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -191,6 +194,13 @@ class EventDetailsViewModelTest {
   private class FakeFavoritesRepository : FavoritesRepository {
     val teamIds = MutableStateFlow(emptySet<String>())
     val playerIds = MutableStateFlow(emptySet<String>())
+
+    override fun observeDirectFavorites(): Flow<DirectFavoriteSnapshot> = combine(teamIds, playerIds) { teams, players ->
+      DirectFavoriteSnapshot(
+        teams = teams.map { DirectFavorite.Team(id = it, title = it, imageUrl = "") },
+        players = players.map { DirectFavorite.Player(id = it, title = it, imageUrl = "") },
+      )
+    }
 
     override fun observeTeamIds(): Flow<Set<String>> = teamIds
 

@@ -16,6 +16,8 @@ import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchVideos
+import dev.staticvar.vlr.domain.model.DirectFavorite
+import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.featurematches.usecase.SetMatchFavoriteUseCase
 import dev.staticvar.vlr.domain.repository.MatchRepository
@@ -25,6 +27,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -327,6 +330,13 @@ class MatchDetailsViewModelTest {
   private class FakeFavoritesRepository : FavoritesRepository {
     val teamIds = MutableStateFlow(emptySet<String>())
     val playerIds = MutableStateFlow(emptySet<String>())
+
+    override fun observeDirectFavorites(): Flow<DirectFavoriteSnapshot> = combine(teamIds, playerIds) { teams, players ->
+      DirectFavoriteSnapshot(
+        teams = teams.map { DirectFavorite.Team(id = it, title = it, imageUrl = "") },
+        players = players.map { DirectFavorite.Player(id = it, title = it, imageUrl = "") },
+      )
+    }
 
     override fun observeTeamIds(): Flow<Set<String>> = teamIds
 

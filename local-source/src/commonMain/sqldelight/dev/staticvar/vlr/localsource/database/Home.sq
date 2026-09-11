@@ -1,0 +1,56 @@
+getDirectFavorites:
+SELECT entity_type, id, title, image_url
+FROM (
+    SELECT
+        0 AS entity_order,
+        'TEAM' AS entity_type,
+        favorite.team_id AS id,
+        COALESCE(NULLIF(TRIM(team.name), ''), favorite.team_id) AS title,
+        COALESCE(team.logo_url, '') AS image_url
+    FROM favorite_teams AS favorite
+    LEFT JOIN teams AS team ON team.id = favorite.team_id
+
+    UNION ALL
+
+    SELECT
+        1 AS entity_order,
+        'EVENT' AS entity_type,
+        favorite.event_id AS id,
+        COALESCE(NULLIF(TRIM(event.name), ''), favorite.event_id) AS title,
+        COALESCE(event.logo_url, '') AS image_url
+    FROM favorite_events AS favorite
+    LEFT JOIN events AS event ON event.id = favorite.event_id
+
+    UNION ALL
+
+    SELECT
+        2 AS entity_order,
+        'MATCH' AS entity_type,
+        favorite.match_id AS id,
+        CASE
+            WHEN cached_match.id IS NULL
+                OR NULLIF(TRIM(cached_match.team1_name), '') IS NULL
+                OR NULLIF(TRIM(cached_match.team2_name), '') IS NULL
+                THEN favorite.match_id
+            ELSE TRIM(cached_match.team1_name) || ' vs ' || TRIM(cached_match.team2_name)
+        END AS title,
+        COALESCE(cached_match.event_logo_url, '') AS image_url
+    FROM favorite_matches AS favorite
+    LEFT JOIN matches AS cached_match ON cached_match.id = favorite.match_id
+
+    UNION ALL
+
+    SELECT
+        3 AS entity_order,
+        'PLAYER' AS entity_type,
+        favorite.player_id AS id,
+        COALESCE(
+            NULLIF(TRIM(player.alias), ''),
+            NULLIF(TRIM(player.name), ''),
+            favorite.player_id
+        ) AS title,
+        COALESCE(player.image_url, '') AS image_url
+    FROM favorite_players AS favorite
+    LEFT JOIN players AS player ON player.id = favorite.player_id
+) AS direct_favorites
+ORDER BY entity_order, title COLLATE NOCASE, id;
