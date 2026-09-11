@@ -16,9 +16,9 @@ import dev.staticvar.vlr.data.mapper.toTeamPreview
 import dev.staticvar.vlr.data.mapper.toUpcomingMatchEntities
 import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.domain.repository.TeamRepository
+import dev.staticvar.vlr.localsource.database.GetTeamRoster
 import dev.staticvar.vlr.localsource.database.GetTeamWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.Team_completed_matches
-import dev.staticvar.vlr.localsource.database.Team_roster
 import dev.staticvar.vlr.localsource.database.Team_upcoming_matches
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.team.TeamDataSource
@@ -176,7 +176,7 @@ internal class TeamRepositoryImpl(
 
   private data class TeamDetailSlices(
     val team: GetTeamWithFavoriteStatus?,
-    val roster: List<Team_roster> = emptyList(),
+    val roster: List<GetTeamRoster> = emptyList(),
     val upcoming: List<Team_upcoming_matches> = emptyList(),
     val completed: List<Team_completed_matches> = emptyList(),
   )

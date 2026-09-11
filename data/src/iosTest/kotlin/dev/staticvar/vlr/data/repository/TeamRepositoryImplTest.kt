@@ -17,6 +17,9 @@ import dev.staticvar.vlr.remotesource.team.TeamDetailsDto
 import dev.staticvar.vlr.remotesource.team.TeamPlayerDto
 import dev.staticvar.vlr.remotesource.team.UpcomingMatchDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -179,6 +182,39 @@ class TeamRepositoryImplTest {
       assertEquals(1, details.completedMatches.size)
       assertEquals("Final", details.completedMatches.first().stage)
     }
+  }
+
+  @Test
+  fun teamRoster_observesPlayerFavoritesAndPreservesThemAfterRefresh() = runTest(dispatcher) {
+    dataSource.detailResults["team1"] = Result.success(
+      TeamDetailsDto(
+        name = "Team One",
+        roster = listOf(
+          TeamPlayerDto(id = "player1", alias = "First"),
+          TeamPlayerDto(id = "player2", alias = "Second"),
+        ),
+      ),
+    )
+    assertTrue(repository.refreshTeamDetails("team1").isSuccess)
+
+    repository.getTeamDetails("team1")
+      .filterNotNull()
+      .map { team -> team.roster.associate { it.id to it.isFavorite } }
+      .distinctUntilChanged()
+      .test {
+        assertEquals(mapOf("player1" to false, "player2" to false), awaitItem())
+
+        database.playersQueries.addFavoritePlayer("player1")
+        assertEquals(mapOf("player1" to true, "player2" to false), awaitItem())
+
+        assertTrue(repository.refreshTeamDetails("team1").isSuccess)
+        advanceUntilIdle()
+        expectNoEvents()
+
+        database.playersQueries.removeFavoritePlayer("player1")
+        assertEquals(mapOf("player1" to false, "player2" to false), awaitItem())
+        cancelAndIgnoreRemainingEvents()
+      }
   }
 
   @Test

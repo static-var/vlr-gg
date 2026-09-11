@@ -7,6 +7,7 @@ package dev.staticvar.vlr.featureteam.presentation
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,7 @@ import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
@@ -26,6 +28,7 @@ import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
@@ -177,7 +180,26 @@ internal fun TeamDetailsScreen(
                 style = PrismCardStyle.Outlined,
                 onClick = { onPlayerSelected(player.id) },
               ) {
-                Text(text = player.alias, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
+                Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+                  verticalAlignment = Alignment.CenterVertically,
+                ) {
+                  Text(
+                    text = player.alias,
+                    modifier = Modifier.weight(1f),
+                    style = Prism.typography.cardTitle,
+                    color = if (player.isFavorite) Prism.color.accent else Prism.color.titleColor,
+                  )
+                  if (player.isFavorite) {
+                    PrismFavoriteIcon(
+                      selected = true,
+                      size = PrismFavoriteIconSize.Small,
+                      style = PrismFavoriteIconStyle.Bare,
+                      contentDescription = "Favorite player",
+                    )
+                  }
+                }
                 Text(
                   text = listOfNotNull(
                     player.name,

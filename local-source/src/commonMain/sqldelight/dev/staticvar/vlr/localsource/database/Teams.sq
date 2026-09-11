@@ -137,7 +137,11 @@ INSERT OR REPLACE INTO team_roster(
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 getTeamRoster:
-SELECT * FROM team_roster WHERE team_id = :teamId ORDER BY is_current DESC, player_name ASC;
+SELECT roster.*, CAST((fav.player_id IS NOT NULL) AS INTEGER) AS is_favorite
+FROM team_roster AS roster
+LEFT JOIN favorite_players AS fav ON roster.player_id = fav.player_id
+WHERE roster.team_id = :teamId
+ORDER BY roster.is_current DESC, roster.player_name ASC;
 
 deleteTeamRoster:
 DELETE FROM team_roster WHERE team_id = :teamId;

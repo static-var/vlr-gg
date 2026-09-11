@@ -58,6 +58,7 @@ private fun sampleTeamInfo(): TeamInfo = TeamInfo(
       isStandIn = false,
       isCoach = false,
       isCurrent = true,
+      isFavorite = true,
     ),
   ),
   upcomingMatches =

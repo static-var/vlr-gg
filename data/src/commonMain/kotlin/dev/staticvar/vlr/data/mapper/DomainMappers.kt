@@ -68,11 +68,11 @@ import dev.staticvar.vlr.localsource.database.GetMatchesWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetPlayerWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetPlayersByTeam
 import dev.staticvar.vlr.localsource.database.GetRankingsWithFavoriteStatus
+import dev.staticvar.vlr.localsource.database.GetTeamRoster
 import dev.staticvar.vlr.localsource.database.GetTeamWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetTeamsByRegion
 import dev.staticvar.vlr.localsource.database.GetTeamsWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.Team_completed_matches
-import dev.staticvar.vlr.localsource.database.Team_roster
 import dev.staticvar.vlr.localsource.database.Team_upcoming_matches
 import dev.staticvar.vlr.domain.model.MatchVideos as DomainMatchVideos
 
@@ -345,7 +345,7 @@ internal fun aggregateNewsArticle(news: News, media: List<NewsMedia>): NewsArtic
  */
 internal fun aggregateTeamInfo(
   team: GetTeamWithFavoriteStatus,
-  roster: List<Team_roster>,
+  roster: List<GetTeamRoster>,
   upcomingMatches: List<Team_upcoming_matches>,
   completedMatches: List<Team_completed_matches>,
 ): TeamInfo = TeamInfo(
@@ -365,7 +365,7 @@ internal fun aggregateTeamInfo(
 )
 
 internal fun GetTeamsWithFavoriteStatus.toTeamPreview(
-  roster: List<Team_roster>,
+  roster: List<GetTeamRoster>,
   upcomingMatches: List<Team_upcoming_matches>,
   completedMatches: List<Team_completed_matches>,
 ): TeamInfo = aggregateTeamInfo(
@@ -390,7 +390,7 @@ internal fun GetTeamsWithFavoriteStatus.toTeamPreview(
 )
 
 internal fun GetTeamsByRegion.toTeamPreview(
-  roster: List<Team_roster>,
+  roster: List<GetTeamRoster>,
   upcomingMatches: List<Team_upcoming_matches>,
   completedMatches: List<Team_completed_matches>,
 ): TeamInfo = aggregateTeamInfo(
@@ -414,7 +414,7 @@ internal fun GetTeamsByRegion.toTeamPreview(
   completedMatches = completedMatches,
 )
 
-private fun Team_roster.toTeamPlayer(): TeamPlayer = TeamPlayer(
+private fun GetTeamRoster.toTeamPlayer(): TeamPlayer = TeamPlayer(
   id = player_id,
   name = player_name,
   alias = player_alias.ifBlank { player_name },
@@ -424,6 +424,7 @@ private fun Team_roster.toTeamPlayer(): TeamPlayer = TeamPlayer(
   isStandIn = is_stand_in == 1L,
   isCoach = is_coach == 1L,
   isCurrent = is_current == 1L,
+  isFavorite = is_favorite == 1L,
 )
 
 private fun Team_upcoming_matches.toDomain(): TeamUpcomingMatch = TeamUpcomingMatch(

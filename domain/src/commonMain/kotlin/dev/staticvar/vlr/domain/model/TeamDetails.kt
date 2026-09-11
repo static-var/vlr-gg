@@ -49,6 +49,7 @@ data class TeamPlayer(
   val isStandIn: Boolean,
   val isCoach: Boolean,
   val isCurrent: Boolean,
+  val isFavorite: Boolean = false,
 )
 
 /**
