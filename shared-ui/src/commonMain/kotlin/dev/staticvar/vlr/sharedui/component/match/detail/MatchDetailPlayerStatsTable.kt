@@ -33,6 +33,8 @@ import dev.staticvar.designsystem.component.table.PrismTableRow
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 
 private object MatchDetailStatsTableColumns {
   const val Map = "map"
@@ -56,7 +58,7 @@ private object MatchDetailStatsTableDimensions {
  * Dense player stat table for one selected map.
  *
  * Uses [PrismTable] so sticky first-column behavior, scrolling, and table colors remain owned by
- * the design system.
+ * the design system. Spoiler mode replaces the table with a hidden-results notice.
  */
 @Composable
 public fun MatchDetailPlayerStatsTable(
@@ -64,6 +66,10 @@ public fun MatchDetailPlayerStatsTable(
   modifier: Modifier = Modifier,
   onPlayerSelected: ((String) -> Unit)? = null,
 ) {
+  if (LocalSpoilerMode.current.enabled) {
+    SpoilerHiddenNotice(modifier = modifier)
+    return
+  }
   MatchDetailPlayerStatsTable(
     rows = remember(map) { map.toPlayerStatsRows() },
     includeMapName = false,
@@ -73,7 +79,8 @@ public fun MatchDetailPlayerStatsTable(
 }
 
 /**
- * Dense player stat table for aggregate all-map breakdowns.
+ * Dense player stat table for aggregate all-map breakdowns. Spoiler mode replaces the table with
+ * a hidden-results notice.
  */
 @Composable
 public fun MatchDetailAllMapPlayerStatsTable(
@@ -81,6 +88,10 @@ public fun MatchDetailAllMapPlayerStatsTable(
   modifier: Modifier = Modifier,
   onPlayerSelected: ((String) -> Unit)? = null,
 ) {
+  if (LocalSpoilerMode.current.enabled) {
+    SpoilerHiddenNotice(modifier = modifier)
+    return
+  }
   MatchDetailPlayerStatsTable(
     rows = remember(maps) { maps.toAllMapPlayerStatsRows() },
     includeMapName = false,

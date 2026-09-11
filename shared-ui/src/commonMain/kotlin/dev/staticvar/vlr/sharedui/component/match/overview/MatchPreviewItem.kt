@@ -28,12 +28,14 @@ import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.vlr.sharedui.component.match.MatchFavoriteReasons
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
+import dev.staticvar.vlr.sharedui.component.match.MatchFavoriteReasons
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 
 @Composable
 public fun MatchPreviewItem(
@@ -111,11 +113,12 @@ public fun MatchPreviewItem(
 
 @Composable
 private fun ScoreBox(modifier: Modifier = Modifier, team1: TeamPreview, team2: TeamPreview, state: MatchStatus) {
-  val (actualTeam1, actualTeam2) = rememberTeamPreview(team1, team2, state)
+  val spoilersHidden = LocalSpoilerMode.current.enabled
+  val (actualTeam1, actualTeam2) = rememberTeamPreview(team1, team2, state, spoilersHidden)
   Column(modifier = modifier.fillMaxWidth()) {
-    TeamScoreRow(actualTeam1, useAltColor = state != MatchStatus.UPCOMING)
+    TeamScoreRow(actualTeam1, useAltColor = !spoilersHidden && state != MatchStatus.UPCOMING)
     PrismDivider(style = PrismDividerStyle.Hairline)
-    TeamScoreRow(actualTeam2, useAltColor = state == MatchStatus.LIVE)
+    TeamScoreRow(actualTeam2, useAltColor = !spoilersHidden && state == MatchStatus.LIVE)
   }
 }
 
@@ -124,15 +127,12 @@ private fun rememberTeamPreview(
   team1: TeamPreview,
   team2: TeamPreview,
   state: MatchStatus,
-): Pair<TeamPreview, TeamPreview> = remember(team1, team2, state) {
-  when (state) {
-    MatchStatus.UPCOMING,
-    MatchStatus.LIVE,
-    -> team1 to team2
-
-    MatchStatus.COMPLETED,
-    MatchStatus.UNKNOWN,
-    -> teamsByScore(team1 = team1, team2 = team2)
+  spoilersHidden: Boolean,
+): Pair<TeamPreview, TeamPreview> = remember(team1, team2, state, spoilersHidden) {
+  when {
+    spoilersHidden -> team1 to team2
+    state == MatchStatus.UPCOMING || state == MatchStatus.LIVE -> team1 to team2
+    else -> teamsByScore(team1 = team1, team2 = team2)
   }
 }
 
@@ -159,7 +159,7 @@ private fun TeamScoreRow(team: TeamPreview, useAltColor: Boolean, modifier: Modi
       overflow = TextOverflow.Ellipsis,
       modifier = Modifier.weight(1f),
     )
-    Text(
+    SpoilerScore(
       text = team.score?.toString() ?: "-",
       style = Prism.typography.headline,
       color = if (useAltColor) Prism.color.accent else Prism.color.labelColor,

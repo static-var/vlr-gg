@@ -21,12 +21,15 @@ import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 
 /**
  * Compact team score row used by match detail hero, map scores, and history rows.
  *
  * Winner rows use accent color for the team name and score. Logo rendering is optional so the same
- * row can serve dense history sections without spending image space.
+ * row can serve dense history sections without spending image space. Spoiler mode replaces the
+ * score and removes winner emphasis.
  */
 @Composable
 public fun MatchDetailTeamScoreRow(
@@ -39,6 +42,8 @@ public fun MatchDetailTeamScoreRow(
   showLogo: Boolean = true,
   onClick: (() -> Unit)? = null,
 ) {
+  val spoilersHidden = LocalSpoilerMode.current.enabled
+  val resolvedWinner = isWinner && !spoilersHidden
   val clickModifier = onClick?.let { clickAction ->
     Modifier.clickable(role = Role.Button, onClick = clickAction)
   } ?: Modifier
@@ -64,7 +69,7 @@ public fun MatchDetailTeamScoreRow(
       text = teamName.ifBlank { "TBD" },
       modifier = Modifier.weight(1f),
       style = Prism.typography.headline,
-      color = if (isWinner) Prism.color.accent else Prism.color.labelColor,
+      color = if (resolvedWinner) Prism.color.accent else Prism.color.labelColor,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
     )
@@ -78,10 +83,10 @@ public fun MatchDetailTeamScoreRow(
       )
     }
     Spacer(modifier = Modifier.weight(0.05f))
-    Text(
+    SpoilerScore(
       text = score,
       style = Prism.typography.headline,
-      color = if (isWinner) Prism.color.accent else Prism.color.labelColor,
+      color = if (resolvedWinner) Prism.color.accent else Prism.color.labelColor,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
     )

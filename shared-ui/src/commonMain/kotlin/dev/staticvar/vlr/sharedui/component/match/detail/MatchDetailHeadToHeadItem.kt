@@ -28,9 +28,12 @@ import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamPreview
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 
 /**
  * Compact head-to-head section with centered summary stats and dense previous encounter rows.
+ * Spoiler mode removes the win summary, score text, and winner emphasis.
  */
 @Composable
 public fun MatchDetailHeadToHeadItem(
@@ -40,7 +43,8 @@ public fun MatchDetailHeadToHeadItem(
 ) {
   if (encounters.isEmpty()) return
 
-  val summary = encounters.matchDetailHeadToHeadSummary()
+  val spoilersHidden = LocalSpoilerMode.current.enabled
+  val summary = if (spoilersHidden) null else encounters.matchDetailHeadToHeadSummary()
 
   Column(
     modifier = modifier.fillMaxWidth(),
@@ -50,13 +54,24 @@ public fun MatchDetailHeadToHeadItem(
       title = "Head to head",
       preLabel = "history",
       trailing = {
-        PrismTag(text = summary?.matchDetailTagLabel() ?: "${encounters.size} matches", style = PrismTagStyle.Neutral)
+        PrismTag(
+          text = if (spoilersHidden) {
+            "Scores hidden"
+          } else {
+            summary?.matchDetailTagLabel() ?: "${encounters.size} matches"
+          },
+          style = PrismTagStyle.Neutral,
+        )
       },
     )
     summary?.let { headToHeadSummary ->
       MatchDetailHeadToHeadSummaryStrip(summary = headToHeadSummary)
     }
-    MatchDetailHeadToHeadRows(encounters = encounters, onEncounterSelected = onEncounterSelected)
+    MatchDetailHeadToHeadRows(
+      encounters = encounters,
+      onEncounterSelected = onEncounterSelected,
+      spoilersHidden = spoilersHidden,
+    )
   }
 }
 
@@ -116,7 +131,11 @@ private fun MatchDetailHeadToHeadSummaryCell(value: String, label: String, modif
 }
 
 @Composable
-private fun MatchDetailHeadToHeadRows(encounters: List<PreviousEncounter>, onEncounterSelected: ((String) -> Unit)?) {
+private fun MatchDetailHeadToHeadRows(
+  encounters: List<PreviousEncounter>,
+  onEncounterSelected: ((String) -> Unit)?,
+  spoilersHidden: Boolean,
+) {
   PrismSurface(
     modifier = Modifier.fillMaxWidth(),
     color = Prism.color.surfaceVariant,
@@ -127,14 +146,22 @@ private fun MatchDetailHeadToHeadRows(encounters: List<PreviousEncounter>, onEnc
         if (index > 0) {
           PrismDivider(style = PrismDividerStyle.Hairline)
         }
-        MatchDetailHeadToHeadRow(encounter = encounter, onEncounterSelected = onEncounterSelected)
+        MatchDetailHeadToHeadRow(
+          encounter = encounter,
+          onEncounterSelected = onEncounterSelected,
+          spoilersHidden = spoilersHidden,
+        )
       }
     }
   }
 }
 
 @Composable
-private fun MatchDetailHeadToHeadRow(encounter: PreviousEncounter, onEncounterSelected: ((String) -> Unit)?) {
+private fun MatchDetailHeadToHeadRow(
+  encounter: PreviousEncounter,
+  onEncounterSelected: ((String) -> Unit)?,
+  spoilersHidden: Boolean,
+) {
   val encounterSelected = onEncounterSelected
   val enabled = encounterSelected != null && encounter.id.isNotBlank()
   val clickModifier = if (enabled && encounterSelected != null) {
@@ -154,20 +181,26 @@ private fun MatchDetailHeadToHeadRow(encounter: PreviousEncounter, onEncounterSe
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
-    HeadToHeadTeamText(team = firstTeam, modifier = Modifier.weight(1f))
-    Text(
+    HeadToHeadTeamText(team = firstTeam, spoilersHidden = spoilersHidden, modifier = Modifier.weight(1f))
+    SpoilerScore(
       text = "${firstTeam?.matchDetailScoreText() ?: "-"} : ${secondTeam?.matchDetailScoreText() ?: "-"}",
       style = Prism.typography.cardTitle,
       color = Prism.color.titleColor,
       maxLines = 1,
     )
-    HeadToHeadTeamText(team = secondTeam, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
+    HeadToHeadTeamText(
+      team = secondTeam,
+      spoilersHidden = spoilersHidden,
+      modifier = Modifier.weight(1f),
+      textAlign = TextAlign.End,
+    )
   }
 }
 
 @Composable
 private fun HeadToHeadTeamText(
   team: TeamPreview?,
+  spoilersHidden: Boolean,
   modifier: Modifier = Modifier,
   textAlign: TextAlign = TextAlign.Start,
 ) {
@@ -175,7 +208,7 @@ private fun HeadToHeadTeamText(
     text = team?.name?.ifBlank { "TBD" } ?: "TBD",
     modifier = modifier,
     style = Prism.typography.cardTitle,
-    color = if (team?.isWinner == true) Prism.color.accent else Prism.color.labelColor,
+    color = if (!spoilersHidden && team?.isWinner == true) Prism.color.accent else Prism.color.labelColor,
     textAlign = textAlign,
     maxLines = 1,
     overflow = TextOverflow.Ellipsis,

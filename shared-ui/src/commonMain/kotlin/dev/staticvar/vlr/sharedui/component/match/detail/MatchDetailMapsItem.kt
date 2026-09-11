@@ -13,12 +13,15 @@ import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MapData
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 
 /**
  * Reusable match-detail maps section.
  *
  * Keeps the section title and map dropdown in one left/right header row, while
- * [MatchDetailMapBreakdown] swaps the content for the selected dropdown value.
+ * [MatchDetailMapBreakdown] swaps the content for the selected dropdown value. Spoiler mode
+ * replaces both the selector and breakdown with a hidden-results notice.
  */
 @Composable
 public fun MatchDetailMapsItem(
@@ -30,6 +33,7 @@ public fun MatchDetailMapsItem(
   onPlayerSelected: ((String) -> Unit)? = null,
   onMenuExpandedChange: (Boolean) -> Unit = {},
 ) {
+  val spoilersHidden = LocalSpoilerMode.current.enabled
   Column(
     modifier = modifier.fillMaxWidth(),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
@@ -38,20 +42,26 @@ public fun MatchDetailMapsItem(
       title = "Maps",
       preLabel = "breakdown",
       trailing = {
-        MatchDetailMapsSelectorTrailing(
-          maps = maps,
-          selectedMapIndex = selectedMapIndex,
-          onMapSelected = onMapSelected,
-          enabled = enabled,
-          onMenuExpandedChange = onMenuExpandedChange,
-        )
+        if (!spoilersHidden) {
+          MatchDetailMapsSelectorTrailing(
+            maps = maps,
+            selectedMapIndex = selectedMapIndex,
+            onMapSelected = onMapSelected,
+            enabled = enabled,
+            onMenuExpandedChange = onMenuExpandedChange,
+          )
+        }
       },
     )
-    MatchDetailMapBreakdown(
-      maps = maps,
-      selectedMapIndex = selectedMapIndex,
-      onPlayerSelected = onPlayerSelected,
-    )
+    if (spoilersHidden) {
+      SpoilerHiddenNotice()
+    } else {
+      MatchDetailMapBreakdown(
+        maps = maps,
+        selectedMapIndex = selectedMapIndex,
+        onPlayerSelected = onPlayerSelected,
+      )
+    }
   }
 }
 

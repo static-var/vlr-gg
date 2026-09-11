@@ -24,12 +24,15 @@ import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.TeamDetails
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 
 /**
  * Compact map breakdown content controlled by [MatchDetailMapSelector].
  *
  * A `null` selected index renders the aggregate all-maps state when multiple maps exist. Otherwise
- * the selected map renders score metadata and the full player stat table.
+ * the selected map renders score metadata and the full player stat table. Spoiler mode replaces
+ * the breakdown with a hidden-results notice.
  */
 @Composable
 public fun MatchDetailMapBreakdown(
@@ -38,6 +41,10 @@ public fun MatchDetailMapBreakdown(
   modifier: Modifier = Modifier,
   onPlayerSelected: ((String) -> Unit)? = null,
 ) {
+  if (LocalSpoilerMode.current.enabled) {
+    SpoilerHiddenNotice(modifier = modifier)
+    return
+  }
   val selectedMap = maps.resolveSelectedMap(selectedMapIndex)
 
   PrismSurface(
@@ -53,7 +60,9 @@ public fun MatchDetailMapBreakdown(
     ) {
       when {
         maps.isEmpty() -> EmptyMapBreakdown()
+
         selectedMap == null -> AllMapsBreakdown(maps = maps, onPlayerSelected = onPlayerSelected)
+
         else -> SingleMapBreakdown(
           map = selectedMap,
           mapIndex = maps.indexOf(selectedMap),

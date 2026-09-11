@@ -24,7 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBarStyle
 import dev.staticvar.designsystem.component.button.PrismIconButton
 import dev.staticvar.designsystem.component.button.PrismIconButtonSize
@@ -96,7 +96,7 @@ internal fun MatchesOverviewScreen(
         label = "match_share_app_bar",
       ) { selecting ->
         if (selecting) {
-          PrismScreenTitleBar(modifier = Modifier.fillMaxWidth()) {
+          SharedScreenTitleBar(modifier = Modifier.fillMaxWidth()) {
             PrismButton(
               onClick = { selection = MatchShareSelection() },
               style = PrismButtonStyle.Tertiary,
@@ -127,7 +127,7 @@ internal fun MatchesOverviewScreen(
             }
           }
         } else {
-          PrismScreenTitleBar(
+          SharedScreenTitleBar(
             title = "Match overview",
             subtitle = "Results, schedules and live scores",
             actions = {

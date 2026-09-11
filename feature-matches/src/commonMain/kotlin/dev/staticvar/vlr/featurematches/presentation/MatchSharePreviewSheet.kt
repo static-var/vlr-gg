@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,13 +37,16 @@ import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.sharedui.share.ImageSharer
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun MatchSharePreviewSheet(matches: List<MatchPreview>, imageSharer: ImageSharer, onDismiss: () -> Unit) {
-  val imageLayer = rememberGraphicsLayer()
-  var previewDrawn by remember(matches) { mutableStateOf(false) }
+  val spoilersHidden = LocalSpoilerMode.current.enabled
+  val imageLayer = key(matches, spoilersHidden) { rememberGraphicsLayer() }
+  var previewDrawn by remember(matches, spoilersHidden) { mutableStateOf(false) }
   var sharing by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf<String?>(null) }
   var visible by remember { mutableStateOf(true) }
@@ -108,7 +112,7 @@ internal fun MatchSharePreviewSheet(matches: List<MatchPreview>, imageSharer: Im
     ) {
       matches.forEachIndexed { index, match ->
         if (index > 0) PrismDivider(style = PrismDividerStyle.Hairline)
-        MatchSharePreviewItem(match)
+        MatchSharePreviewItem(match = match)
       }
     }
   }
@@ -129,8 +133,8 @@ private fun MatchSharePreviewItem(match: MatchPreview) {
       style = Prism.typography.label,
       color = if (match.status == MatchStatus.LIVE) Prism.color.accent else Prism.color.labelColor,
     )
-    MatchShareTeamRow(match.team1)
-    MatchShareTeamRow(match.team2)
+    MatchShareTeamRow(team = match.team1)
+    MatchShareTeamRow(team = match.team2)
     if (match.series.isNotBlank()) {
       Text(match.series, style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
     }
@@ -150,7 +154,7 @@ private fun MatchShareTeamRow(team: TeamPreview) {
       style = Prism.typography.headline,
       color = Prism.color.titleColor,
     )
-    Text(
+    SpoilerScore(
       text = team.score?.toString() ?: "-",
       style = Prism.typography.headline,
       color = Prism.color.titleColor,

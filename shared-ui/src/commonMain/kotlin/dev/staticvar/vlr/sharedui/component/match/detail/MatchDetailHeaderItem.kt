@@ -25,12 +25,13 @@ import dev.staticvar.designsystem.component.divider.PrismDividerStyle
 import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.vlr.sharedui.component.match.MatchFavoriteReasons
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.TeamDetails
 import dev.staticvar.vlr.sharedui.component.common.DetailStatItem
 import dev.staticvar.vlr.sharedui.component.common.DetailStatStrip
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
+import dev.staticvar.vlr.sharedui.component.match.MatchFavoriteReasons
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 
 /**
  * Match detail summary card for event metadata, current score, participating teams, and optional
@@ -44,6 +45,7 @@ public fun MatchDetailHeaderItem(
   onTeamSelected: ((String) -> Unit)? = null,
   actions: (@Composable () -> Unit)? = null,
 ) {
+  val spoilersHidden = LocalSpoilerMode.current.enabled
   FavoriteTicketCardBox(selected = match.isFavorite, modifier = modifier.fillMaxWidth()) {
     PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
       val eventClickModifier = match.event.id.takeIf(String::isNotBlank)
@@ -92,7 +94,7 @@ public fun MatchDetailHeaderItem(
       )
       DetailStatStrip(
         items = listOf(
-          DetailStatItem(value = match.matchDetailMapCountStat(), label = "Maps"),
+          DetailStatItem(value = if (spoilersHidden) "Hidden" else match.matchDetailMapCountStat(), label = "Maps"),
           DetailStatItem(value = match.matchDetailPatchStat(), label = "Patch"),
           DetailStatItem(value = match.matchDetailBanStat(), label = "Bans"),
         ),

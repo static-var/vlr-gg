@@ -41,7 +41,7 @@ import dev.staticvar.vlr.featurematches.presentation.mascot.matchMascotCues
 import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.rememberMascot
-import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
@@ -56,6 +56,7 @@ import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 
 @Composable
 public fun MatchDetailsRoute(
@@ -107,8 +108,9 @@ internal fun MatchDetailsScreen(
   var isLeaving by remember(match?.id) { mutableStateOf(false) }
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val mascotCharacter = LocalMascotCharacter.current
-  val candidates = remember(match, uiState.favoriteTeamIds, uiState.favoritePlayerIds, selectedMapIndex) {
-    match?.let {
+  val spoilersHidden = LocalSpoilerMode.current.enabled
+  val candidates = remember(match, uiState.favoriteTeamIds, uiState.favoritePlayerIds, selectedMapIndex, spoilersHidden) {
+    match?.takeUnless { spoilersHidden }?.let {
       matchMascotCues(
         it,
         uiState.favoriteTeamIds,
@@ -120,7 +122,7 @@ internal fun MatchDetailsScreen(
   val mascot = rememberMascot(
     screenKey = match?.id.orEmpty(),
     candidates = candidates,
-    isScreenActive = mascotCharacter != null && lifecycleState == Lifecycle.State.RESUMED && !isLeaving,
+    isScreenActive = !spoilersHidden && mascotCharacter != null && lifecycleState == Lifecycle.State.RESUMED && !isLeaving,
     isContentReady = match != null && !uiState.isLoading && !uiState.isRefreshing && uiState.errorMessage == null,
     isInteracting = listState.isScrollInProgress || optionsExpanded || mapMenuExpanded,
   )
@@ -136,7 +138,7 @@ internal fun MatchDetailsScreen(
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       Column {
-        PrismScreenTitleBar(
+        SharedScreenTitleBar(
           title = match?.event?.name ?: "Match details",
           subtitle = "Maps, scores and player stats",
           onBackPress = { leaveScreen(onBack) },
@@ -267,7 +269,7 @@ internal fun MatchDetailsScreen(
         }
       }
     }
-    if (mascotCharacter != null) {
+    if (!spoilersHidden && mascotCharacter != null) {
       mascot.cue?.let { cue ->
         MascotCelebration(
           visible = true,
