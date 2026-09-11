@@ -169,6 +169,7 @@ public fun PrismCarousel(
   showIndicators: Boolean = true,
   indicatorColor: Color = Prism.color.stroke,
   activeIndicatorColor: Color = Prism.color.accent,
+  key: ((page: Int) -> Any)? = null,
   pageContent: @Composable (page: Int) -> Unit,
 ) {
   val tokens = rememberCarouselTokens()
@@ -190,6 +191,7 @@ public fun PrismCarousel(
         )
       HorizontalPager(
         state = pagerState,
+        key = key,
         pageSize = config.pageSize,
         pageSpacing = pageSpacing,
         contentPadding = config.contentPadding,
