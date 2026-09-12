@@ -116,6 +116,31 @@ class RankingsViewModelTest {
     assertEquals(listOf(americas, emea), viewModel.uiState.value.regions)
   }
 
+  @Test
+  fun missingSelectedRegionFallsBackToAvailableRankings() = runTest(dispatcher) {
+    val emea = ranking("EMEA", "FNATIC", 1)
+    val americas = ranking("Americas", "G2", 1)
+    val repository = FakeRankingsRepository(listOf(emea, americas))
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+    viewModel.selectRegion("Americas")
+    advanceUntilIdle()
+    assertEquals("Americas", viewModel.uiState.value.selectedRegion)
+
+    repository.rankingsFlow.value = listOf(emea)
+    advanceUntilIdle()
+    assertEquals("EMEA", viewModel.uiState.value.selectedRegion)
+    assertEquals(listOf(emea), viewModel.uiState.value.regions)
+
+    repository.rankingsFlow.value = emptyList()
+    advanceUntilIdle()
+    assertEquals(null, viewModel.uiState.value.selectedRegion)
+
+    repository.rankingsFlow.value = listOf(emea)
+    advanceUntilIdle()
+    assertEquals("EMEA", viewModel.uiState.value.selectedRegion)
+  }
+
   private fun createViewModel(repository: FakeRankingsRepository): RankingsViewModel = RankingsViewModel(
     observeRankingsUseCase = ObserveRankingsUseCase(repository),
     refreshRankingsUseCase = RefreshRankingsUseCase(repository),

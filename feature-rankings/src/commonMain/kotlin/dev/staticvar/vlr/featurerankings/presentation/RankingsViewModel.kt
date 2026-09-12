@@ -32,7 +32,8 @@ public class RankingsViewModel(
     combine(observeRankingsUseCase(), selectedRegion, refresher.state) { rankings, region, refresh ->
       RankingsUiState(
         regions = rankings,
-        selectedRegion = region ?: rankings.firstOrNull()?.region,
+        selectedRegion = region?.takeIf { selected -> rankings.any { it.region == selected } }
+          ?: rankings.firstOrNull()?.region,
         isLoading = refresh.isLoading(hasContent = rankings.isNotEmpty()),
         isRefreshing = refresh.isRefreshing,
         errorMessage = refresh.errorMessage,
