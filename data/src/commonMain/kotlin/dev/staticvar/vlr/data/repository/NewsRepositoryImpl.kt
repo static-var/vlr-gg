@@ -55,7 +55,7 @@ internal class NewsRepositoryImpl(
       .mapToList(dispatchers.io)
 
     return combine(newsFlow, mediaFlow) { news, media ->
-      news?.let { aggregateNewsArticle(it, media) }
+      news?.takeIf { it.content_html != null }?.let { aggregateNewsArticle(it, media) }
     }
   }
 

@@ -65,6 +65,42 @@ class NewsArticleViewModelTest {
   }
 
   @Test
+  fun absentDetailNeedsSuccessfulRefreshAndStaysLoadedAcrossLaterFailures() = runTest(dispatcher) {
+    val loadedEmptyArticle = newsArticle("article-9", "").copy(title = "Loaded article")
+    val repository = FakeNewsRepository(null)
+    val viewModel = createViewModel(repository, "article-9")
+    advanceUntilIdle()
+
+    assertEquals(null, viewModel.uiState.value.article)
+    assertEquals(true, viewModel.uiState.value.isLoading)
+
+    repository.refreshResult = Result.failure(IllegalStateException("First fetch failed"))
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(null, viewModel.uiState.value.article)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals("First fetch failed", viewModel.uiState.value.errorMessage)
+
+    repository.refreshResult = Result.success(Unit)
+    repository.articleAfterRefresh = loadedEmptyArticle
+    viewModel.refresh()
+    runCurrent()
+    assertEquals(null, viewModel.uiState.value.article)
+    assertEquals(true, viewModel.uiState.value.isLoading)
+    assertEquals(true, viewModel.uiState.value.isRefreshing)
+
+    advanceUntilIdle()
+    assertEquals(loadedEmptyArticle, viewModel.uiState.value.article)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+
+    repository.refreshResult = Result.failure(IllegalStateException("Refresh failed"))
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(loadedEmptyArticle, viewModel.uiState.value.article)
+    assertEquals("Refresh failed", viewModel.uiState.value.errorMessage)
+  }
+
+  @Test
   fun missingArticleKeepsLoadingUntilInitialRefreshCompletes() {
     runTest(dispatcher) {
       val repository = FakeNewsRepository(article = null)
@@ -141,6 +177,7 @@ class NewsArticleViewModelTest {
 
   private class FakeNewsRepository(article: NewsArticle?) : NewsRepository {
     var refreshResult: Result<Unit> = Result.success(Unit)
+    var articleAfterRefresh: NewsArticle? = null
     val articleFlow = MutableStateFlow(article)
     val refreshArticleRequests: MutableList<String> = mutableListOf()
 
@@ -153,6 +190,9 @@ class NewsArticleViewModelTest {
     override suspend fun refreshNewsArticle(articleId: String): Result<Unit> {
       refreshArticleRequests += articleId
       delay(100)
+      if (refreshResult.isSuccess) {
+        articleAfterRefresh?.let { articleFlow.value = it }
+      }
       return refreshResult
     }
   }

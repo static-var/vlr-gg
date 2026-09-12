@@ -218,7 +218,7 @@ class NewsRepositoryImplTest {
 
     repository.getNewsArticle("story").test {
       val first = awaitItem()
-      assertTrue(first?.contentHtml.isNullOrEmpty())
+      assertEquals(null, first)
       cancelAndIgnoreRemainingEvents()
     }
     assertTrue(dataSource.articleRequests.isEmpty())
@@ -243,6 +243,39 @@ class NewsRepositoryImplTest {
     }
 
     assertEquals(listOf("story"), dataSource.articleRequests)
+  }
+
+  @Test
+  fun getNewsArticle_distinguishesListShellFromPersistedEmptyDetail() = runTest(dispatcher) {
+    insertNews(
+      id = "empty-story",
+      title = "List title",
+      description = "Summary",
+      contentHtml = null,
+    )
+
+    repository.getNewsArticle("empty-story").test {
+      assertEquals(null, awaitItem())
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    dataSource.articleResults["empty-story"] = Result.success(
+      NewsArticleDto(id = "empty-story", title = "Loaded title", content = ""),
+    )
+    assertTrue(repository.refreshNewsArticle("empty-story").isSuccess)
+    advanceUntilIdle()
+
+    val recreatedRepository = NewsRepositoryImpl(
+      newsDataSource = dataSource,
+      database = database,
+      dispatchers = dispatcherProvider,
+    )
+    recreatedRepository.getNewsArticle("empty-story").test {
+      val article = requireNotNull(awaitItem())
+      assertEquals("Loaded title", article.title)
+      assertEquals("", article.contentHtml)
+      cancelAndIgnoreRemainingEvents()
+    }
   }
 
   private fun insertNews(

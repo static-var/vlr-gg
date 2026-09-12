@@ -27,6 +27,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
+import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
+import dev.staticvar.designsystem.component.loader.PrismLoaderSize
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
@@ -111,8 +113,8 @@ internal fun NewsArticleScreen(
 
     when {
       (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && article == null -> {
-        SharedScreenLoading(
-          modifier = Modifier.fillMaxSize(),
+        NewsArticleLoading(
+          modifier = Modifier.fillMaxWidth().weight(1f),
           label = "Loading article",
         )
       }
@@ -173,5 +175,14 @@ internal fun NewsArticleScreen(
         }
       }
     }
+  }
+}
+
+@Composable
+private fun NewsArticleLoading(label: String, modifier: Modifier = Modifier) {
+  if (LocalIsOnline.current) {
+    PrismFullscreenLoader(modifier = modifier, size = PrismLoaderSize.Large, label = label)
+  } else {
+    SharedScreenLoading(label = label, modifier = modifier)
   }
 }
