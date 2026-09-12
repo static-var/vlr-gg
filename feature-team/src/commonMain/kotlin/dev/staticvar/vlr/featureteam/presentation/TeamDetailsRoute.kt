@@ -23,7 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
+import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
@@ -91,7 +91,7 @@ internal fun TeamDetailsScreen(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     Column {
-      SharedScreenTitleBar(
+      PrismScreenTitleBar(
         title = team?.name ?: "Team details",
         subtitle = "Roster, results and recent form",
         onBackPress = onBack,
