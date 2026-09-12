@@ -22,12 +22,13 @@ internal class MatchFavoriteController(
 ) {
   val state = MutableStateFlow(MatchFavoriteMutationState())
 
-  fun toggle(matchId: String, isDirectFavorite: Boolean) {
+  fun toggle(matchId: String, isDirectFavorite: Boolean, awaitSelection: suspend (Boolean) -> Unit) {
     if (matchId in state.value.pendingIds) return
     state.update { it.copy(pendingIds = it.pendingIds + matchId, errorMessage = null) }
     scope.launch {
       try {
         setFavorite(matchId, !isDirectFavorite).getOrThrow()
+        awaitSelection(!isDirectFavorite)
       } catch (exception: CancellationException) {
         throw exception
       } catch (exception: Exception) {

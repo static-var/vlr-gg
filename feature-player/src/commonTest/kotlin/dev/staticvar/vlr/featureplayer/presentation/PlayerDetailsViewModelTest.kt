@@ -161,6 +161,35 @@ class PlayerDetailsViewModelTest {
     assertEquals("Couldn't update favorite. Try again.", viewModel.uiState.value.favoriteErrorMessage)
   }
 
+  @Test
+  fun favoriteStaysPendingUntilObservedStateAcknowledgesWrite() = runTest(dispatcher) {
+    val repository = FakePlayerRepository(playerInfo("player-1"))
+    repository.publishFavoriteImmediately = false
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true), repository.favoriteRequests)
+    assertEquals(true, viewModel.uiState.value.isUpdatingFavorite)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true), repository.favoriteRequests)
+
+    repository.publishFavorite("player-1", true)
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.player?.isFavorite)
+    assertEquals(false, viewModel.uiState.value.isUpdatingFavorite)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true, false), repository.favoriteRequests)
+    assertEquals(true, viewModel.uiState.value.isUpdatingFavorite)
+    repository.publishFavorite("player-1", false)
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.player?.isFavorite)
+    assertEquals(false, viewModel.uiState.value.isUpdatingFavorite)
+  }
+
   private fun createViewModel(repository: FakePlayerRepository): PlayerDetailsViewModel = PlayerDetailsViewModel(
     playerId = "player-1",
     playerRepository = repository,
@@ -187,6 +216,7 @@ class PlayerDetailsViewModelTest {
   )
 
   private class FakePlayerRepository(player: PlayerInfo? = null) : PlayerRepository {
+    var publishFavoriteImmediately = true
     var favoriteGate: CompletableDeferred<Unit>? = null
     var favoriteResult: Result<Unit> = Result.success(Unit)
     val favoriteRequests: MutableList<Boolean> = mutableListOf()
@@ -215,11 +245,13 @@ class PlayerDetailsViewModelTest {
     private suspend fun updateFavorite(playerId: String, selected: Boolean): Result<Unit> {
       favoriteRequests += selected
       favoriteGate?.await()
-      if (favoriteResult.isSuccess) {
-        val state = detailsByPlayerId.getValue(playerId)
-        state.value = state.value?.copy(isFavorite = selected)
-      }
+      if (favoriteResult.isSuccess && publishFavoriteImmediately) publishFavorite(playerId, selected)
       return favoriteResult
+    }
+
+    fun publishFavorite(playerId: String, selected: Boolean) {
+      val state = detailsByPlayerId.getValue(playerId)
+      state.value = state.value?.copy(isFavorite = selected)
     }
 
     override suspend fun refreshPlayerDetails(playerId: String): Result<Unit> {

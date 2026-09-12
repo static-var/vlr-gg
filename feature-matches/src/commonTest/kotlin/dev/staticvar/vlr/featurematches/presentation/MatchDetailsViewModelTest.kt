@@ -282,6 +282,37 @@ class MatchDetailsViewModelTest {
     assertEquals(null, viewModel.uiState.value.favoriteErrorMessage)
   }
 
+  @Test
+  fun favoriteRemainsPendingUntilPresentedSelectionAcknowledgesWrite() = runTest(dispatcher) {
+    val initial = matchDetails("match-1")
+    val repository = FakeMatchRepository(initial)
+    repository.publishFavoriteImmediately = false
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true), repository.favoriteRequests)
+    assertEquals(true, viewModel.uiState.value.isFavoritePending)
+    assertEquals(false, viewModel.uiState.value.match?.isDirectFavorite)
+
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true), repository.favoriteRequests)
+
+    repository.publishDetails(initial.copy(isDirectFavorite = true, isFavorite = true))
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.isFavoritePending)
+    assertEquals(true, viewModel.uiState.value.match?.isDirectFavorite)
+
+    repository.publishFavoriteImmediately = true
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true, false), repository.favoriteRequests)
+    assertEquals(false, viewModel.uiState.value.match?.isDirectFavorite)
+    assertEquals(false, viewModel.uiState.value.isFavoritePending)
+  }
+
   private fun createViewModel(
     repository: FakeMatchRepository,
     preferencesRepository: MatchDetailsPreferencesRepository = MatchDetailsPreferencesRepository(MapSettings()),
@@ -346,6 +377,7 @@ class MatchDetailsViewModelTest {
   private class FakeMatchRepository(details: MatchDetails? = null) : MatchRepository {
     val favoriteRequests = mutableListOf<Boolean>()
     var favoriteResult: Result<Unit> = Result.success(Unit)
+    var publishFavoriteImmediately = true
     var blockFavorite = false
     val allowFavorite = CompletableDeferred<Unit>()
     val observedMatchIds: MutableList<String> = mutableListOf()
@@ -378,7 +410,7 @@ class MatchDetailsViewModelTest {
     private suspend fun setFavorite(value: Boolean): Result<Unit> {
       favoriteRequests += value
       if (blockFavorite) allowFavorite.await()
-      if (favoriteResult.isSuccess) {
+      if (favoriteResult.isSuccess && publishFavoriteImmediately) {
         val current = detailsByMatchId["match-1"]?.value
         val inherited = current?.favoriteReasons.orEmpty().filter { it.source != MatchFavoriteSource.MATCH }
         val reasons = inherited + if (value) listOf(MatchFavoriteReason(MatchFavoriteSource.MATCH, "match-1", "")) else emptyList()

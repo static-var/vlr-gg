@@ -177,6 +177,37 @@ class EventDetailsViewModelTest {
     assertEquals(null, viewModel.uiState.value.favoriteErrorMessage)
   }
 
+  @Test
+  fun favoriteRemainsPendingUntilPresentedSelectionAcknowledgesWrite() = runTest(dispatcher) {
+    val initial = eventDetailsWithoutSlices()
+    val repository = FakeEventRepository(initial)
+    repository.publishFavoriteImmediately = false
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true), repository.favoriteWrites)
+    assertEquals(true, viewModel.uiState.value.isSavingFavorite)
+    assertEquals(false, viewModel.uiState.value.event?.isFavorite)
+
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true), repository.favoriteWrites)
+
+    repository.publishDetails(initial.copy(isFavorite = true))
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.isSavingFavorite)
+    assertEquals(true, viewModel.uiState.value.event?.isFavorite)
+
+    repository.publishFavoriteImmediately = true
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true, false), repository.favoriteWrites)
+    assertEquals(false, viewModel.uiState.value.event?.isFavorite)
+    assertEquals(false, viewModel.uiState.value.isSavingFavorite)
+  }
+
   private fun createViewModel(
     repository: FakeEventRepository,
     favoritesRepository: FakeFavoritesRepository = FakeFavoritesRepository(),
@@ -213,6 +244,7 @@ class EventDetailsViewModelTest {
     val allowRefresh: CompletableDeferred<Unit> = CompletableDeferred()
     var refreshResult: Result<Unit> = Result.success(Unit)
     var favoriteResult: Result<Unit> = Result.success(Unit)
+    var publishFavoriteImmediately = true
     val favoriteWrites = mutableListOf<Boolean>()
     private val detailsByEventId: MutableMap<String, MutableStateFlow<EventDetails?>> = mutableMapOf()
 
@@ -236,7 +268,7 @@ class EventDetailsViewModelTest {
 
     private fun updateFavorite(eventId: String, selected: Boolean): Result<Unit> {
       favoriteWrites += selected
-      if (favoriteResult.isSuccess) {
+      if (favoriteResult.isSuccess && publishFavoriteImmediately) {
         val flow = detailsByEventId.getValue(eventId)
         flow.value = flow.value?.copy(isFavorite = selected)
       }

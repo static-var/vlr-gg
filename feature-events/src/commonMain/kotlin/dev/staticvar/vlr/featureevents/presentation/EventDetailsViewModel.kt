@@ -17,6 +17,7 @@ import dev.staticvar.vlr.featureevents.usecase.ObserveEventDetailsUseCase
 import dev.staticvar.vlr.featureevents.usecase.RefreshEventDetailsUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
@@ -69,6 +70,7 @@ public class EventDetailsViewModel(
         val result = if (event.isFavorite) eventRepository.removeFromFavorites(event.id)
           else eventRepository.addToFavorites(event.id)
         result.getOrThrow()
+        uiState.first { it.event?.isFavorite == !event.isFavorite }
       } catch (cancelled: CancellationException) {
         throw cancelled
       } catch (error: Exception) {

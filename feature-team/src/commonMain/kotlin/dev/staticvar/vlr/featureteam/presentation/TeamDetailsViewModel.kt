@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -59,12 +60,8 @@ public class TeamDetailsViewModel(
         } else {
           teamRepository.addToFavorites(teamId)
         }
-        result.exceptionOrNull()?.let { failure ->
-          if (failure is CancellationException) throw failure
-        }
-        favoriteMutation.value = FavoriteMutation(
-          errorMessage = if (result.isFailure) "Couldn't update favorite. Try again." else null,
-        )
+        result.getOrThrow()
+        uiState.first { it.team?.isFavorite == !team.isFavorite }
       } catch (cancelled: CancellationException) {
         throw cancelled
       } catch (_: Exception) {

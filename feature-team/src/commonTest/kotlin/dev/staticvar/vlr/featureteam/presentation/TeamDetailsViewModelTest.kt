@@ -151,6 +151,35 @@ class TeamDetailsViewModelTest {
   }
 
   @Test
+  fun favoriteStaysPendingUntilObservedStateAcknowledgesWrite() = runTest(dispatcher) {
+    val repository = FakeTeamRepository(teamInfo("team-1"))
+    repository.publishFavoriteImmediately = false
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true), repository.favoriteRequests)
+    assertEquals(true, viewModel.uiState.value.isUpdatingFavorite)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true), repository.favoriteRequests)
+
+    repository.publishFavorite("team-1", true)
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.team?.isFavorite)
+    assertEquals(false, viewModel.uiState.value.isUpdatingFavorite)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+    assertEquals(listOf(true, false), repository.favoriteRequests)
+    assertEquals(true, viewModel.uiState.value.isUpdatingFavorite)
+    repository.publishFavorite("team-1", false)
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.team?.isFavorite)
+    assertEquals(false, viewModel.uiState.value.isUpdatingFavorite)
+  }
+
+  @Test
   fun favoriteSaveCoalescesAndCanBeRemovedAfterPersistence() = runTest(dispatcher) {
     val repository = FakeTeamRepository(team = teamInfo("team-1"))
     repository.favoriteGate = CompletableDeferred()
@@ -228,6 +257,7 @@ class TeamDetailsViewModelTest {
   )
 
   private class FakeTeamRepository(team: TeamInfo? = null) : TeamRepository {
+    var publishFavoriteImmediately = true
     var favoriteGate: CompletableDeferred<Unit>? = null
     var favoriteResult: Result<Unit> = Result.success(Unit)
     val favoriteRequests: MutableList<Boolean> = mutableListOf()
@@ -258,11 +288,13 @@ class TeamDetailsViewModelTest {
     private suspend fun updateFavorite(teamId: String, selected: Boolean): Result<Unit> {
       favoriteRequests += selected
       favoriteGate?.await()
-      if (favoriteResult.isSuccess) {
-        val state = detailsByTeamId.getValue(teamId)
-        state.value = state.value?.copy(isFavorite = selected)
-      }
+      if (favoriteResult.isSuccess && publishFavoriteImmediately) publishFavorite(teamId, selected)
       return favoriteResult
+    }
+
+    fun publishFavorite(teamId: String, selected: Boolean) {
+      val state = detailsByTeamId.getValue(teamId)
+      state.value = state.value?.copy(isFavorite = selected)
     }
 
     override suspend fun refreshTeamDetails(teamId: String): Result<Unit> {

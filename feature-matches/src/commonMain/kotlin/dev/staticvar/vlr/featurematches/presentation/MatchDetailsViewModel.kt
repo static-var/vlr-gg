@@ -16,6 +16,7 @@ import dev.staticvar.vlr.featurematches.usecase.SetMatchFavoriteUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchDetailsUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
@@ -72,7 +73,9 @@ public class MatchDetailsViewModel(
   public fun toggleFavorite() {
     if (!uiState.value.canToggleFavorite) return
     val match = uiState.value.match ?: return
-    favorites.toggle(matchId, match.isDirectFavorite)
+    favorites.toggle(matchId, match.isDirectFavorite) { selected ->
+      uiState.first { it.match?.isDirectFavorite == selected }
+    }
   }
 
   public fun refresh(): Unit = refresher.refresh()
