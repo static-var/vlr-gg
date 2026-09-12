@@ -95,7 +95,7 @@ private fun EventDetailHeaderContent(
         ) {
           Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
             Text(
-              event.region.ifBlank { "Event" },
+              event.region.ifBlank { "Event" }.uppercase(),
               style = Prism.typography.bodySmall,
               color = Prism.color.contentSecondary,
               maxLines = 2,
