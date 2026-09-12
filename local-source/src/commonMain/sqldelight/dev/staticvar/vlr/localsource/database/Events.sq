@@ -99,9 +99,20 @@ CREATE TABLE favorite_events (
 -- QUERIES
 -- ============================================================================
 
--- Insert / Upsert event
 insertEvent:
-INSERT OR REPLACE INTO events VALUES ?;
+INSERT INTO events VALUES ?;
+
+updateEvent:
+UPDATE events SET
+    name = :name,
+    subtitle = :subtitle,
+    status = :status,
+    prizes = :prizes,
+    dates = :dates,
+    region = :region,
+    logo_url = :logo_url,
+    last_updated = :last_updated
+WHERE id = :id;
 
 -- Get all events with favorite status
 getEventsWithFavoriteStatus:

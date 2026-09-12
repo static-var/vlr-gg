@@ -123,7 +123,7 @@ internal class EventRepositoryImpl(
           remoteIds += entity.id
           eventOverviewQueries.insertEventOverview(dto.toOverviewEntity())
           val merged = mergeEventListEntity(entity, existing[entity.id])
-          eventsQueries.insertEvent(merged)
+          persistEvent(merged)
         }
 
         val staleIds = existing.keys - remoteIds
@@ -138,7 +138,7 @@ internal class EventRepositoryImpl(
       val normalizedDto = dto.copy(id = dto.id.ifBlank { eventId })
       database.transaction {
         val eventEntity = normalizedDto.toEventEntity().copy(id = eventId)
-        eventsQueries.insertEvent(eventEntity)
+        persistEvent(eventEntity)
 
         eventsQueries.deleteEventPrizes(eventId)
         eventsQueries.deleteEventTeams(eventId)
@@ -202,6 +202,24 @@ internal class EventRepositoryImpl(
           )
         }
       }
+    }
+  }
+
+  private fun persistEvent(entity: Events) {
+    if (eventsQueries.getEventWithFavoriteStatus(entity.id).executeAsOneOrNull() == null) {
+      eventsQueries.insertEvent(entity)
+    } else {
+      eventsQueries.updateEvent(
+        name = entity.name,
+        subtitle = entity.subtitle,
+        status = entity.status,
+        prizes = entity.prizes,
+        dates = entity.dates,
+        region = entity.region,
+        logo_url = entity.logo_url,
+        last_updated = entity.last_updated,
+        id = entity.id,
+      )
     }
   }
 

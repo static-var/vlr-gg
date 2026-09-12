@@ -62,11 +62,21 @@ class EventQueriesTest {
   }
 
   @Test
-  fun `upsert event updates`() {
+  fun `update event changes stored fields`() {
     val event = createTestEvent("event1", name = "Alpha")
     database.eventsQueries.insertEvent(event)
     val updated = event.copy(name = "Alpha Updated")
-    database.eventsQueries.insertEvent(updated)
+    database.eventsQueries.updateEvent(
+      name = updated.name,
+      subtitle = updated.subtitle,
+      status = updated.status,
+      prizes = updated.prizes,
+      dates = updated.dates,
+      region = updated.region,
+      logo_url = updated.logo_url,
+      last_updated = updated.last_updated,
+      id = updated.id,
+    )
     val result = database.eventsQueries.getEventWithFavoriteStatus("event1").executeAsOne()
     assertEquals("Alpha Updated", result.name)
   }

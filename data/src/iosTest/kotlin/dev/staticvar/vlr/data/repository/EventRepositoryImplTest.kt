@@ -95,6 +95,49 @@ class EventRepositoryImplTest {
   }
 
   @Test
+  fun listRefreshPreservesCachedDetailChildren() = runTest(dispatcher) {
+    val eventId = "event1"
+    dataSource.detailResults[eventId] = Result.success(
+      EventDetailsDto(
+        id = eventId, title = "Champions", subtitle = "Playoffs",
+        teams = listOf(EventTeamDto(id = "team1", name = "Team One")),
+        prizes = listOf(EventPrizeDto(position = "1st", prize = "$100")),
+        standings = listOf(EventStandingsEntryDto(team = "Team One", wins = 2)),
+        matches = listOf(EventMatchDto(id = "match1", round = "Final")),
+      ),
+    )
+    assertTrue(repository.refreshEventDetails(eventId).isSuccess)
+    assertTrue(repository.addToFavorites(eventId).isSuccess)
+    val before = requireNotNull(repository.getEventDetails(eventId).first())
+    assertEquals(listOf(1, 1, 1, 1), listOf(
+      before.teams.size, before.prizes.size, before.standings.size, before.matches.size,
+    ))
+
+    dataSource.listResult = Result.success(
+      listOf(EventListDto(id = eventId, title = "Champions Updated", status = EventStatus.COMPLETED)),
+    )
+    repeat(2) {
+      assertTrue(repository.refreshEvents().isSuccess)
+      val after = requireNotNull(repository.getEventDetails(eventId).first())
+      assertEquals("Champions Updated", database.eventsQueries.getEventWithFavoriteStatus(eventId).executeAsOne().name)
+      assertEquals(before.subtitle, after.subtitle)
+      assertEquals(before.teams, after.teams)
+      assertEquals(before.prizes, after.prizes)
+      assertEquals(before.standings, after.standings)
+      assertEquals(before.matches, after.matches)
+      assertTrue(after.isFavorite)
+    }
+
+    dataSource.detailResults[eventId] = Result.success(EventDetailsDto(id = eventId, title = "Champions Updated"))
+    assertTrue(repository.refreshEventDetails(eventId).isSuccess)
+    val cleared = requireNotNull(repository.getEventDetails(eventId).first())
+    assertTrue(cleared.teams.isEmpty())
+    assertTrue(cleared.prizes.isEmpty())
+    assertTrue(cleared.standings.isEmpty())
+    assertTrue(cleared.matches.isEmpty())
+  }
+
+  @Test
   fun refreshEvents_upsertsAndPrunes() = runTest(dispatcher) {
     insertEvent(
       id = "keep",
