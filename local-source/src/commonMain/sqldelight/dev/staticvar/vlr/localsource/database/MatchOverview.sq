@@ -1,0 +1,27 @@
+CREATE TABLE match_overview (
+    id TEXT NOT NULL PRIMARY KEY,
+    event_id TEXT,
+    event_name TEXT NOT NULL,
+    series TEXT NOT NULL,
+    status TEXT NOT NULL,
+    time TEXT NOT NULL,
+    team1_id TEXT NOT NULL,
+    team1_name TEXT NOT NULL,
+    team1_logo_url TEXT NOT NULL,
+    team1_score INTEGER,
+    team2_id TEXT NOT NULL,
+    team2_name TEXT NOT NULL,
+    team2_logo_url TEXT NOT NULL,
+    team2_score INTEGER
+);
+
+CREATE INDEX idx_match_overview_status_time ON match_overview(status, time);
+
+getMatchOverview:
+SELECT * FROM match_overview ORDER BY time DESC;
+
+upsertMatchOverview:
+INSERT OR REPLACE INTO match_overview VALUES ?;
+
+deleteMatchOverviewById:
+DELETE FROM match_overview WHERE id = :matchId;

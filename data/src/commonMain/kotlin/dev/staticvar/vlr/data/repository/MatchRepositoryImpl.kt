@@ -21,6 +21,7 @@ import dev.staticvar.vlr.data.mapper.toDomain
 import dev.staticvar.vlr.data.mapper.toEntity
 import dev.staticvar.vlr.data.mapper.toMapEntities
 import dev.staticvar.vlr.data.mapper.toMatchEntity
+import dev.staticvar.vlr.data.mapper.toOverviewEntity
 import dev.staticvar.vlr.data.mapper.toPlayerStatEntities
 import dev.staticvar.vlr.data.mapper.toPreviousEncounterEntities
 import dev.staticvar.vlr.data.mapper.toRoundEntities
@@ -53,8 +54,10 @@ internal class MatchRepositoryImpl(
 
   private val matchesQueries = database.matchesQueries
 
-  override fun getMatches(): Flow<List<MatchPreview>> = matchesQueries
-    .getMatchesWithFavoriteStatus()
+  private val overviewQueries = database.matchOverviewQueries
+
+  override fun getMatches(): Flow<List<MatchPreview>> = overviewQueries
+    .getMatchOverview()
     .asFlow()
     .mapToList(dispatchers.io)
     .combine(observeFavoriteReasons()) { matches, reasonsByMatch ->
@@ -179,17 +182,19 @@ internal class MatchRepositoryImpl(
           .getMatchesWithFavoriteStatus()
           .executeAsList()
           .associateBy { it.id }
+        val existingOverviewIds = overviewQueries.getMatchOverview().executeAsList().map { it.id }.toSet()
         val remoteIds = mutableSetOf<String>()
 
         dtos.forEach { dto ->
           val entity = dto.toEntity()
           if (entity.id.isBlank()) return@forEach
           remoteIds += entity.id
+          overviewQueries.upsertMatchOverview(dto.toOverviewEntity())
           upsertMatch(mergeMatchListEntity(entity, existing[entity.id]))
         }
 
-        val staleIds = existing.keys - remoteIds
-        staleIds.forEach { id -> matchesQueries.deleteMatchById(id) }
+        val staleIds = existingOverviewIds - remoteIds
+        staleIds.forEach { id -> overviewQueries.deleteMatchOverviewById(id) }
       }
     }
   }

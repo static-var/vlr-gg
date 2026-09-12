@@ -18,6 +18,7 @@ import dev.staticvar.vlr.data.mapper.toEntity
 import dev.staticvar.vlr.data.mapper.toEventEntity
 import dev.staticvar.vlr.data.mapper.toEventMatchLinkEntities
 import dev.staticvar.vlr.data.mapper.toEventPreview
+import dev.staticvar.vlr.data.mapper.toOverviewEntity
 import dev.staticvar.vlr.data.mapper.toPrizeEntities
 import dev.staticvar.vlr.data.mapper.toStandingEntities
 import dev.staticvar.vlr.data.mapper.toTeamEntities
@@ -40,9 +41,10 @@ internal class EventRepositoryImpl(
 ) : EventRepository {
 
   private val eventsQueries = database.eventsQueries
+  private val eventOverviewQueries = database.eventOverviewQueries
 
-  override fun getEvents(): Flow<List<EventPreview>> = eventsQueries
-    .getEventsWithFavoriteStatus()
+  override fun getEvents(): Flow<List<EventPreview>> = eventOverviewQueries
+    .getEventOverviewWithFavoriteStatus()
     .asFlow()
     .mapToList(dispatchers.io)
     .map { events -> events.map { it.toEventPreview() } }
@@ -113,17 +115,20 @@ internal class EventRepositoryImpl(
           .executeAsList()
           .associateBy { it.id }
         val remoteIds = mutableSetOf<String>()
+        val overviewIds = eventOverviewQueries.getEventOverviewWithFavoriteStatus().executeAsList().map { it.id }.toSet()
 
         dtos.forEach { dto ->
           val entity = dto.toEntity()
           if (entity.id.isBlank()) return@forEach
           remoteIds += entity.id
+          eventOverviewQueries.insertEventOverview(dto.toOverviewEntity())
           val merged = mergeEventListEntity(entity, existing[entity.id])
           eventsQueries.insertEvent(merged)
         }
 
         val staleIds = existing.keys - remoteIds
         staleIds.forEach { id -> eventsQueries.deleteEventById(id) }
+        (overviewIds - remoteIds).forEach { id -> eventOverviewQueries.deleteEventOverviewById(id) }
       }
     }
   }

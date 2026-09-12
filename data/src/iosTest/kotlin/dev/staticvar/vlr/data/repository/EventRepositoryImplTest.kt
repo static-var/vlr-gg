@@ -9,6 +9,7 @@ import app.cash.sqldelight.driver.native.inMemoryDriver
 import app.cash.turbine.test
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.data.Events
+import dev.staticvar.vlr.localsource.database.Event_overview
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.common.EventStatus
@@ -22,6 +23,9 @@ import dev.staticvar.vlr.remotesource.events.EventPrizeDto
 import dev.staticvar.vlr.remotesource.events.EventStandingsEntryDto
 import dev.staticvar.vlr.remotesource.events.EventTeamDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -59,6 +63,35 @@ class EventRepositoryImplTest {
   @AfterTest
   fun teardown() {
     driver.close()
+  }
+
+  @Test
+  fun detailRefreshDoesNotChangeOverviewSnapshot() = runTest(dispatcher) {
+    val listed = EventListDto(
+      id = "3084", title = "EZmode", status = EventStatus.ONGOING,
+      prize = "$1", dates = "Aug 18 — TBD", location = "au", img = "event.png",
+    )
+    dataSource.listResult = Result.success(listOf(listed))
+    assertTrue(repository.refreshEvents().isSuccess)
+    val overview = repository.getEvents().first()
+    val detail = EventDetailsDto(
+      id = listed.id, title = listed.title, subtitle = "Season 2",
+      status = EventStatus.COMPLETED, dates = "Aug 18 – TBD", location = "Online",
+      teams = listOf(EventTeamDto(id = "team1", name = "Team One")),
+    )
+    dataSource.detailResults[listed.id] = Result.success(detail)
+    assertTrue(repository.refreshEventDetails(listed.id).isSuccess)
+    assertEquals(overview, repository.getEvents().first())
+    val loadedDetail = requireNotNull(repository.getEventDetails(listed.id).first())
+    assertEquals("Season 2", loadedDetail.subtitle)
+    assertEquals(1, loadedDetail.teams.size)
+    assertEquals("COMPLETED", database.eventsQueries.getEventWithFavoriteStatus(listed.id).executeAsOne().status)
+
+    dataSource.detailResults["detail-only"] = Result.success(detail.copy(id = "detail-only"))
+    assertTrue(repository.refreshEventDetails("detail-only").isSuccess)
+    assertEquals(overview, repository.getEvents().first())
+    assertTrue(repository.refreshEvents().isSuccess)
+    assertEquals(overview, repository.getEvents().first())
   }
 
   @Test
@@ -110,6 +143,7 @@ class EventRepositoryImplTest {
 
     val stored = database.eventsQueries.getEventsWithFavoriteStatus().executeAsList()
     assertEquals(setOf("keep", "fresh"), stored.map { it.id }.toSet())
+    assertEquals(setOf("keep", "fresh"), repository.getEvents().first().map { it.id }.toSet())
     val keep = stored.first { it.id == "keep" }
     assertEquals("Existing subtitle", keep.subtitle)
     assertEquals("$10", keep.prizes)
@@ -153,6 +187,38 @@ class EventRepositoryImplTest {
       val emission = awaitItem()
       val second = emission.first { it.id == "event2" }
       assertTrue(!second.isFavorite)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun favoriteUpdatesOverviewAndDetailsAndSurvivesBothRefreshes() = runTest(dispatcher) {
+    dataSource.listResult = Result.success(
+      listOf(EventListDto(id = "event1", title = "Champions", status = EventStatus.UPCOMING)),
+    )
+    dataSource.detailResults["event1"] = Result.success(
+      EventDetailsDto(id = "event1", title = "Champions", subtitle = "Playoffs", status = EventStatus.ONGOING),
+    )
+    assertTrue(repository.refreshEvents().isSuccess)
+    assertTrue(repository.refreshEventDetails("event1").isSuccess)
+
+    repository.getEvents().map { it.single().isFavorite }.distinctUntilChanged().test {
+      assertEquals(false, awaitItem())
+      assertTrue(repository.addToFavorites("event1").isSuccess)
+      assertEquals(true, awaitItem())
+      assertEquals(true, repository.getEventDetails("event1").first()?.isFavorite)
+      assertTrue(repository.refreshEventDetails("event1").isSuccess)
+      assertTrue(repository.refreshEvents().isSuccess)
+      assertEquals(true, repository.getEvents().first().single().isFavorite)
+      assertEquals(true, repository.getEventDetails("event1").first()?.isFavorite)
+
+      assertTrue(repository.removeFromFavorites("event1").isSuccess)
+      assertEquals(false, awaitItem())
+      assertEquals(false, repository.getEventDetails("event1").first()?.isFavorite)
+      assertTrue(repository.refreshEventDetails("event1").isSuccess)
+      assertTrue(repository.refreshEvents().isSuccess)
+      assertEquals(false, repository.getEvents().first().single().isFavorite)
+      assertEquals(false, repository.getEventDetails("event1").first()?.isFavorite)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -278,6 +344,9 @@ class EventRepositoryImplTest {
     dates: String,
     region: String?,
   ) {
+    database.eventOverviewQueries.insertEventOverview(
+      Event_overview(id, name, status, prizes, dates, region, "$id.png"),
+    )
     eventsQueries().insertEvent(
       Events(
         id = id,

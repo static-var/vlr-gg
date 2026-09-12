@@ -8,6 +8,7 @@ import app.cash.sqldelight.driver.native.NativeSqliteDriver
 import app.cash.sqldelight.driver.native.inMemoryDriver
 import app.cash.turbine.test
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.common.MatchStatus
@@ -23,6 +24,9 @@ import dev.staticvar.vlr.remotesource.match.PreviousEncounterDto
 import dev.staticvar.vlr.remotesource.match.RoundInfoDto
 import dev.staticvar.vlr.remotesource.match.TeamDto
 import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
@@ -298,32 +302,145 @@ class MatchRepositoryImplTest {
   }
 
   @Test
-  fun refreshMatches_preservesFavoriteFlag() = runTest(dispatcher) {
+  fun refreshingDetailsDoesNotChangeOverviewOrAddHistoricalMatches() = runTest(dispatcher) {
     dataSource.listResult = Result.success(
       listOf(
         MatchPreviewDto(
           id = "match1",
           event = "Champions",
-          series = "Stage 1",
+          series = "Playoffs: Grand Final",
           status = MatchStatus.UPCOMING,
           team1 = TeamDto(id = "t1", name = "Alpha", img = "alpha.png"),
           team2 = TeamDto(id = "t2", name = "Beta", img = "beta.png"),
-          time = "2025-01-01",
+          time = "2025-01-01T12:00:00Z",
           eventId = "event1",
         ),
       ),
     )
-
     assertTrue(repository.refreshMatches().isSuccess)
     assertTrue(repository.addToFavorites("match1").isSuccess)
-    assertTrue(repository.refreshMatches().isSuccess)
+    val overview = repository.getMatches().first()
+    dataSource.detailResults["match1"] = Result.success(
+      MatchDetailsDto(
+        event = EventDto(
+          id = "event1",
+          name = "Champions",
+          series = "Grand Final",
+          stage = "Playoffs",
+          status = MatchStatus.COMPLETED,
+        ),
+        teams = listOf(
+          TeamDto(id = "t1", name = "Alpha", img = "alpha-detail.png", score = 2),
+          TeamDto(id = "t2", name = "Beta", img = "beta-detail.png", score = 1),
+        ),
+        head2head = listOf(
+          PreviousEncounterDto(
+            id = "historical",
+            teams = listOf(TeamDto(name = "Alpha", score = 1), TeamDto(name = "Beta", score = 2)),
+          ),
+        ),
+      ),
+    )
 
-    repository.getMatches().test {
-      val emission = awaitItem()
-      val match = emission.first { it.id == "match1" }
-      assertTrue(match.isFavorite)
+    assertTrue(repository.refreshMatchDetails("match1").isSuccess)
+    assertEquals(overview, repository.getMatches().first())
+    assertTrue(repository.refreshMatches().isSuccess)
+    assertEquals(overview, repository.getMatches().first())
+    assertEquals(1, database.matchesQueries.getPreviousEncounters("match1").executeAsList().size)
+    assertEquals("historical", database.matchesQueries.getMatchWithFavoriteStatus("historical").executeAsOne().id)
+  }
+
+  @Test
+  fun directFavoriteUpdatesOverviewAndDetailsAndSurvivesRefreshes() = runTest(dispatcher) {
+    prepareFavoriteMatch()
+    repository.getMatches().map { it.single().isDirectFavorite }.distinctUntilChanged().test {
+      assertEquals(false, awaitItem())
+      assertTrue(repository.addToFavorites("match1").isSuccess)
+      assertEquals(true, awaitItem())
+      assertFavoriteSources(MatchFavoriteSource.MATCH)
+
+      assertTrue(repository.refreshMatchDetails("match1").isSuccess)
+      assertTrue(repository.refreshMatches().isSuccess)
+      assertFavoriteSources(MatchFavoriteSource.MATCH)
+      assertTrue(repository.removeFromFavorites("match1").isSuccess)
+      assertEquals(false, awaitItem())
+      assertFavoriteSources()
+      assertTrue(repository.refreshMatchDetails("match1").isSuccess)
+      assertTrue(repository.refreshMatches().isSuccess)
+      assertFavoriteSources()
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun inheritedFavoritesCombineAndRemovingDirectFavoriteKeepsOtherSources() = runTest(dispatcher) {
+    prepareFavoriteMatch()
+    database.playersQueries.insertPlayer(
+      dev.staticvar.vlr.localsource.database.Players(
+        id = "p1", name = "Player One", alias = "Ace", real_name = null,
+        country = "US", current_team_id = "t2", image_url = null,
+        twitter_url = null, twitch_url = null, total_winnings = 0.0, last_updated = 0,
+      ),
+    )
+    database.teamsQueries.addFavoriteTeam("t1")
+    assertFavoriteSources(MatchFavoriteSource.TEAM)
+    database.teamsQueries.removeFavoriteTeam("t1")
+    database.playersQueries.addFavoritePlayer("p1")
+    assertFavoriteSources(MatchFavoriteSource.PLAYER)
+    database.playersQueries.removeFavoritePlayer("p1")
+    database.eventsQueries.addFavoriteEvent("event1")
+    assertFavoriteSources(MatchFavoriteSource.EVENT)
+
+    database.teamsQueries.addFavoriteTeam("t1")
+    database.playersQueries.addFavoritePlayer("p1")
+    assertTrue(repository.addToFavorites("match1").isSuccess)
+    assertFavoriteSources(*MatchFavoriteSource.entries.toTypedArray())
+    assertTrue(repository.removeFromFavorites("match1").isSuccess)
+    assertFavoriteSources(MatchFavoriteSource.TEAM, MatchFavoriteSource.PLAYER, MatchFavoriteSource.EVENT)
+    assertTrue(repository.refreshMatchDetails("match1").isSuccess)
+    assertTrue(repository.refreshMatches().isSuccess)
+    assertFavoriteSources(MatchFavoriteSource.TEAM, MatchFavoriteSource.PLAYER, MatchFavoriteSource.EVENT)
+
+    database.teamsQueries.removeFavoriteTeam("t1")
+    database.playersQueries.removeFavoritePlayer("p1")
+    database.eventsQueries.removeFavoriteEvent("event1")
+    assertFavoriteSources()
+  }
+
+  private suspend fun prepareFavoriteMatch() {
+    dataSource.listResult = Result.success(
+      listOf(
+        MatchPreviewDto(
+          id = "match1", event = "Champions", series = "Stage 1", status = MatchStatus.UPCOMING,
+          team1 = TeamDto(id = "t1", name = "Alpha", img = "alpha.png"),
+          team2 = TeamDto(id = "t2", name = "Beta", img = "beta.png"),
+          time = "2025-01-01", eventId = "event1",
+        ),
+      ),
+    )
+    dataSource.detailResults["match1"] = Result.success(
+      MatchDetailsDto(
+        event = EventDto(id = "event1", name = "Champions", status = MatchStatus.COMPLETED),
+        teams = listOf(
+          TeamDto(id = "t1", name = "Alpha", score = 2),
+          TeamDto(id = "t2", name = "Beta", score = 1),
+        ),
+      ),
+    )
+    assertTrue(repository.refreshMatches().isSuccess)
+    assertTrue(repository.refreshMatchDetails("match1").isSuccess)
+  }
+
+  private suspend fun assertFavoriteSources(vararg expected: MatchFavoriteSource) {
+    val overview = repository.getMatches().first().single()
+    val detail = requireNotNull(repository.getMatchDetails("match1").first())
+    assertEquals(expected.toSet(), overview.favoriteReasons.map { it.source }.toSet())
+    assertEquals(expected.toSet(), detail.favoriteReasons.map { it.source }.toSet())
+    assertEquals(expected.isNotEmpty(), overview.isFavorite)
+    assertEquals(expected.isNotEmpty(), detail.isFavorite)
+    assertEquals(MatchFavoriteSource.MATCH in expected, overview.isDirectFavorite)
+    assertEquals(MatchFavoriteSource.MATCH in expected, detail.isDirectFavorite)
+    assertEquals(overview.favoriteReasons, detail.favoriteReasons)
   }
 
   private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {

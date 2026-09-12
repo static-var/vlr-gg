@@ -1,0 +1,21 @@
+CREATE TABLE event_overview (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    status TEXT,
+    prizes TEXT NOT NULL,
+    dates TEXT NOT NULL,
+    region TEXT,
+    logo_url TEXT NOT NULL
+);
+
+insertEventOverview:
+INSERT OR REPLACE INTO event_overview VALUES ?;
+
+getEventOverviewWithFavoriteStatus:
+SELECT e.*, CAST((f.event_id IS NOT NULL) AS INTEGER) AS is_favorite
+FROM event_overview AS e
+LEFT JOIN favorite_events AS f ON e.id = f.event_id
+ORDER BY e.dates DESC;
+
+deleteEventOverviewById:
+DELETE FROM event_overview WHERE id = :eventId;
