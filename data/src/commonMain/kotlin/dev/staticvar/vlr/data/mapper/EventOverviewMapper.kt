@@ -10,7 +10,7 @@ import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.localsource.database.GetEventOverviewWithFavoriteStatus
 import dev.staticvar.vlr.remotesource.events.EventListDto
 
-internal fun EventListDto.toOverviewEntity(): Event_overview = Event_overview(
+internal fun EventListDto.toOverviewEntity(listPosition: Long): Event_overview = Event_overview(
   id = id,
   name = title,
   status = status?.name ?: "UNKNOWN",
@@ -18,6 +18,7 @@ internal fun EventListDto.toOverviewEntity(): Event_overview = Event_overview(
   dates = dates,
   region = location.ifBlank { null },
   logo_url = img,
+  list_position = listPosition,
 )
 
 internal fun GetEventOverviewWithFavoriteStatus.toEventPreview(): EventPreview = EventPreview(

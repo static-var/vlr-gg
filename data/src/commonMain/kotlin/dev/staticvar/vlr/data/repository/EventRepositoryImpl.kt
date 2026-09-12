@@ -117,11 +117,11 @@ internal class EventRepositoryImpl(
         val remoteIds = mutableSetOf<String>()
         val overviewIds = eventOverviewQueries.getEventOverviewWithFavoriteStatus().executeAsList().map { it.id }.toSet()
 
-        dtos.forEach { dto ->
+        dtos.forEachIndexed { index, dto ->
           val entity = dto.toEntity()
-          if (entity.id.isBlank()) return@forEach
+          if (entity.id.isBlank()) return@forEachIndexed
           remoteIds += entity.id
-          eventOverviewQueries.insertEventOverview(dto.toOverviewEntity())
+          eventOverviewQueries.insertEventOverview(dto.toOverviewEntity(index.toLong()))
           val merged = mergeEventListEntity(entity, existing[entity.id])
           persistEvent(merged)
         }

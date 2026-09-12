@@ -66,6 +66,26 @@ class EventRepositoryImplTest {
   }
 
   @Test
+  fun overviewPreservesSourceOrderAcrossReadsAndRefreshes() = runTest(dispatcher) {
+    val newest = EventListDto(
+      id = "2023", title = "Champions 2023", status = EventStatus.COMPLETED, dates = "Aug 6 — Aug 27",
+    )
+    val older = EventListDto(
+      id = "2022", title = "Champions 2022", status = EventStatus.COMPLETED, dates = "Aug 31 — Sep 18",
+    )
+    dataSource.listResult = Result.success(listOf(newest, older))
+    assertTrue(repository.refreshEvents().isSuccess)
+    assertEquals(listOf("2023", "2022"), repository.getEvents().first().map { it.id })
+
+    val recreatedRepository = EventRepositoryImpl(dataSource, VlrDatabase(driver), dispatcherProvider)
+    assertEquals(listOf("2023", "2022"), recreatedRepository.getEvents().first().map { it.id })
+
+    dataSource.listResult = Result.success(listOf(older, newest))
+    assertTrue(repository.refreshEvents().isSuccess)
+    assertEquals(listOf("2022", "2023"), recreatedRepository.getEvents().first().map { it.id })
+  }
+
+  @Test
   fun detailRefreshDoesNotChangeOverviewSnapshot() = runTest(dispatcher) {
     val listed = EventListDto(
       id = "3084", title = "EZmode", status = EventStatus.ONGOING,
@@ -446,7 +466,7 @@ class EventRepositoryImplTest {
     region: String?,
   ) {
     database.eventOverviewQueries.insertEventOverview(
-      Event_overview(id, name, status, prizes, dates, region, "$id.png"),
+      Event_overview(id, name, status, prizes, dates, region, "$id.png", 0L),
     )
     eventsQueries().insertEvent(
       Events(

@@ -324,7 +324,7 @@ class CacheCleanupRepositoryImplTest {
       ),
     )
     database.eventOverviewQueries.insertEventOverview(
-      Event_overview(id, "Event $id", "completed", "", "2026", null, ""),
+      Event_overview(id, "Event $id", "completed", "", "2026", null, "", 0L),
     )
   }
 

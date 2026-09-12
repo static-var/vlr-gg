@@ -120,7 +120,20 @@ class EventsViewModelTest {
   }
 
   @Test
-  fun ordersEventsByStatusTiming() {
+  fun completedEventsKeepSourceOrderAcrossYears() = runTest(dispatcher) {
+    val sourceOrder = listOf(
+      eventPreview(id = "1657", status = EventStatus.COMPLETED, dates = "Aug 6—27")
+        .copy(title = "Valorant Champions 2023"),
+      eventPreview(id = "1015", status = EventStatus.COMPLETED, dates = "Aug 31—Sep 19")
+        .copy(title = "Valorant Champions 2022"),
+    )
+    val viewModel = createViewModel(FakeEventRepository(sourceOrder))
+    advanceUntilIdle()
+    assertEquals(listOf("1657", "1015"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+  }
+
+  @Test
+  fun statusFiltersPreserveSourceOrder() {
     runTest(dispatcher) {
       val repository = FakeEventRepository(
         events = listOf(
@@ -135,15 +148,15 @@ class EventsViewModelTest {
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
 
-      assertEquals(listOf("ongoing-earlier", "ongoing-later"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+      assertEquals(listOf("ongoing-later", "ongoing-earlier"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
 
       viewModel.selectFilter(EventStatusFilter.Upcoming)
       advanceUntilIdle()
-      assertEquals(listOf("upcoming-earlier", "upcoming-later"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+      assertEquals(listOf("upcoming-later", "upcoming-earlier"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
 
       viewModel.selectFilter(EventStatusFilter.Completed)
       advanceUntilIdle()
-      assertEquals(listOf("completed-newer", "completed-older"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+      assertEquals(listOf("completed-older", "completed-newer"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
     }
   }
 
