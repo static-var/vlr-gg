@@ -160,7 +160,43 @@ class EventRepositoryImplTest {
   }
 
   @Test
-  fun refreshEvents_upsertsAndPrunes() = runTest(dispatcher) {
+  fun missingOverviewEventsRetainCachedDetailsAndFavorites() = runTest(dispatcher) {
+    val cachedIds = listOf("favorite", "ordinary", "detail-only")
+    dataSource.listResult = Result.success(
+      cachedIds.take(2).map { EventListDto(id = it, title = it) },
+    )
+    assertTrue(repository.refreshEvents().isSuccess)
+    for (id in cachedIds) {
+      dataSource.detailResults[id] = Result.success(
+        EventDetailsDto(
+          id = id, title = id, subtitle = "Playoffs",
+          teams = listOf(EventTeamDto(id = "team1", name = "Team One")),
+          prizes = listOf(EventPrizeDto(position = "1st", prize = "$100")),
+          standings = listOf(EventStandingsEntryDto(team = "Team One", wins = 2)),
+          matches = listOf(EventMatchDto(id = "match1", round = "Final")),
+        ),
+      )
+      assertTrue(repository.refreshEventDetails(id).isSuccess)
+    }
+    assertTrue(repository.addToFavorites("favorite").isSuccess)
+    val cached = cachedIds.associateWith { requireNotNull(repository.getEventDetails(it).first()) }
+    val timestamps = database.eventsQueries.getEventsWithFavoriteStatus().executeAsList()
+      .associate { it.id to it.last_updated }
+
+    for (overview in listOf(listOf(EventListDto(id = "new", title = "New Event")), emptyList())) {
+      dataSource.listResult = Result.success(overview)
+      assertTrue(repository.refreshEvents().isSuccess)
+      assertEquals(overview.map { it.id }, repository.getEvents().first().map { it.id })
+      for (id in cachedIds) {
+        assertEquals(cached[id], repository.getEventDetails(id).first())
+        assertEquals(timestamps[id], database.eventsQueries.getEventWithFavoriteStatus(id).executeAsOne().last_updated)
+      }
+      assertEquals(listOf("favorite"), database.eventsQueries.getAllFavoriteEvents().executeAsList().map { it.id })
+    }
+  }
+
+  @Test
+  fun refreshEvents_updatesOverviewAndRetainsUnlistedCache() = runTest(dispatcher) {
     insertEvent(
       id = "keep",
       name = "Existing Event",
@@ -207,7 +243,7 @@ class EventRepositoryImplTest {
     assertTrue(result.isSuccess)
 
     val stored = database.eventsQueries.getEventsWithFavoriteStatus().executeAsList()
-    assertEquals(setOf("keep", "fresh"), stored.map { it.id }.toSet())
+    assertEquals(setOf("keep", "fresh", "stale"), stored.map { it.id }.toSet())
     assertEquals(setOf("keep", "fresh"), repository.getEvents().first().map { it.id }.toSet())
     val keep = stored.first { it.id == "keep" }
     assertEquals("Existing subtitle", keep.subtitle)

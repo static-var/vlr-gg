@@ -126,8 +126,6 @@ internal class EventRepositoryImpl(
           persistEvent(merged)
         }
 
-        val staleIds = existing.keys - remoteIds
-        staleIds.forEach { id -> eventsQueries.deleteEventById(id) }
         (overviewIds - remoteIds).forEach { id -> eventOverviewQueries.deleteEventOverviewById(id) }
       }
     }
