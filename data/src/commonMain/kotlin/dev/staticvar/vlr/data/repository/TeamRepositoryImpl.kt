@@ -8,6 +8,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.data.refresh.KeyedRefreshLock
 import dev.staticvar.vlr.data.mapper.aggregateTeamInfo
 import dev.staticvar.vlr.data.mapper.toCompletedMatchEntities
 import dev.staticvar.vlr.data.mapper.toRosterEntities
@@ -25,6 +26,8 @@ import dev.staticvar.vlr.remotesource.team.TeamDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 internal class TeamRepositoryImpl(
@@ -34,6 +37,7 @@ internal class TeamRepositoryImpl(
 ) : TeamRepository {
 
   private val teamsQueries = database.teamsQueries
+  private val detailRefreshes = KeyedRefreshLock()
 
   override fun getTeams(): Flow<List<TeamInfo>> = teamsQueries
     .getTeamsWithFavoriteStatus()
@@ -115,60 +119,63 @@ internal class TeamRepositoryImpl(
   }
 
   override suspend fun refreshTeamDetails(teamId: String): Result<Unit> = withContext(dispatchers.io) {
-    teamDataSource.details(teamId).mapCatching { dto ->
-      database.transaction {
-        val teamEntity = dto.toTeamEntity(id = teamId)
-        teamsQueries.insertTeam(teamEntity)
+    detailRefreshes.withLock(teamId) {
+      teamDataSource.details(teamId).mapCatching { dto ->
+        currentCoroutineContext().ensureActive()
+        database.transaction {
+          val teamEntity = dto.toTeamEntity(id = teamId)
+          teamsQueries.insertTeam(teamEntity)
 
-        teamsQueries.deleteTeamRoster(teamId)
-        teamsQueries.deleteUpcomingMatches(teamId)
-        teamsQueries.deleteCompletedMatches(teamId)
+          teamsQueries.deleteTeamRoster(teamId)
+          teamsQueries.deleteUpcomingMatches(teamId)
+          teamsQueries.deleteCompletedMatches(teamId)
 
-        dto.toRosterEntities(teamId).forEach { member ->
-          teamsQueries.insertTeamRosterMemberDetails(
-            team_id = member.team_id,
-            player_id = member.player_id,
-            player_name = member.player_name,
-            player_alias = member.player_alias,
-            player_image_url = member.player_image_url,
-            player_country = member.player_country,
-            is_stand_in = member.is_stand_in,
-            is_coach = member.is_coach,
-            is_current = member.is_current,
-            role = member.role,
-          )
-        }
+          dto.toRosterEntities(teamId).forEach { member ->
+            teamsQueries.insertTeamRosterMemberDetails(
+              team_id = member.team_id,
+              player_id = member.player_id,
+              player_name = member.player_name,
+              player_alias = member.player_alias,
+              player_image_url = member.player_image_url,
+              player_country = member.player_country,
+              is_stand_in = member.is_stand_in,
+              is_coach = member.is_coach,
+              is_current = member.is_current,
+              role = member.role,
+            )
+          }
 
-        dto.toUpcomingMatchEntities(teamId).forEach { match ->
-          teamsQueries.insertUpcomingMatchDetails(
-            team_id = match.team_id,
-            match_id = match.match_id,
-            opponent_team_id = match.opponent_team_id,
-            opponent_team_name = match.opponent_team_name,
-            opponent_team_logo_url = match.opponent_team_logo_url,
-            date = match.date,
-            eta = match.eta,
-            event_name = match.event_name,
-            event_logo_url = match.event_logo_url,
-            event_id = match.event_id,
-            stage = match.stage,
-          )
-        }
+          dto.toUpcomingMatchEntities(teamId).forEach { match ->
+            teamsQueries.insertUpcomingMatchDetails(
+              team_id = match.team_id,
+              match_id = match.match_id,
+              opponent_team_id = match.opponent_team_id,
+              opponent_team_name = match.opponent_team_name,
+              opponent_team_logo_url = match.opponent_team_logo_url,
+              date = match.date,
+              eta = match.eta,
+              event_name = match.event_name,
+              event_logo_url = match.event_logo_url,
+              event_id = match.event_id,
+              stage = match.stage,
+            )
+          }
 
-        dto.toCompletedMatchEntities(teamId).forEach { match ->
-          teamsQueries.insertCompletedMatchDetails(
-            team_id = match.team_id,
-            match_id = match.match_id,
-            opponent_team_id = match.opponent_team_id,
-            opponent_team_name = match.opponent_team_name,
-            opponent_team_logo_url = match.opponent_team_logo_url,
-            date = match.date,
-            event_name = match.event_name,
-            event_logo_url = match.event_logo_url,
-            event_id = match.event_id,
-            stage = match.stage,
-            result = match.result,
-          )
+          dto.toCompletedMatchEntities(teamId).forEach { match ->
+            teamsQueries.insertCompletedMatchDetails(
+              team_id = match.team_id,
+              match_id = match.match_id,
+              opponent_team_id = match.opponent_team_id,
+              opponent_team_name = match.opponent_team_name,
+              opponent_team_logo_url = match.opponent_team_logo_url,
+              date = match.date,
+              event_name = match.event_name,
+              event_logo_url = match.event_logo_url,
+              event_id = match.event_id,
+              stage = match.stage,
+              result = match.result,
+            )
+          }
         }
       }
     }

@@ -16,9 +16,15 @@ import dev.staticvar.vlr.remotesource.team.TeamDataSource
 import dev.staticvar.vlr.remotesource.team.TeamDetailsDto
 import dev.staticvar.vlr.remotesource.team.TeamPlayerDto
 import dev.staticvar.vlr.remotesource.team.UpcomingMatchDto
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
@@ -57,6 +63,47 @@ class TeamRepositoryImplTest {
   @AfterTest
   fun teardown() {
     driver.close()
+  }
+
+  @Test
+  fun overlappingRefreshesCannotRestoreAnOlderSnapshot() = runTest(dispatcher) {
+    val releaseOlder = CompletableDeferred<Unit>()
+    var requests = 0
+    val source = object : TeamDataSource {
+      override suspend fun details(id: String): Result<TeamDetailsDto> {
+        requests++
+        val request = requests
+        if (request == 1) releaseOlder.await()
+        return Result.success(TeamDetailsDto(name = if (request == 1) "Older snapshot" else "Newer snapshot"))
+      }
+    }
+    val repo = TeamRepositoryImpl(source, database, dispatcherProvider)
+    val older = async { repo.refreshTeamDetails("team1") }
+    advanceUntilIdle()
+    val newer = async { repo.refreshTeamDetails("team1") }
+    advanceUntilIdle()
+    assertEquals(1, requests)
+    releaseOlder.complete(Unit)
+    assertTrue(older.await().isSuccess)
+    assertTrue(newer.await().isSuccess)
+    assertEquals(2, requests)
+    assertEquals("Newer snapshot", repo.getTeamDetails("team1").first()?.name)
+  }
+
+  @Test
+  fun cancelledRefreshCannotPersistALateSuccessfulResponse() = runTest(dispatcher) {
+    val source = object : TeamDataSource {
+      override suspend fun details(id: String): Result<TeamDetailsDto> = try {
+        awaitCancellation()
+      } catch (_: CancellationException) {
+        Result.success(TeamDetailsDto(name = "Cancelled response"))
+      }
+    }
+    val repo = TeamRepositoryImpl(source, database, dispatcherProvider)
+    val refresh = async { repo.refreshTeamDetails("team1") }
+    advanceUntilIdle()
+    refresh.cancelAndJoin()
+    assertEquals(null, repo.getTeamDetails("team1").first())
   }
 
   @Test

@@ -8,6 +8,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.data.refresh.KeyedRefreshLock
 import dev.staticvar.vlr.data.PlayerAgentStats
 import dev.staticvar.vlr.data.PlayerTeamHistory
 import dev.staticvar.vlr.data.mapper.aggregatePlayerInfo
@@ -22,6 +23,8 @@ import dev.staticvar.vlr.remotesource.player.PlayerDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 internal class PlayerRepositoryImpl(
@@ -31,6 +34,7 @@ internal class PlayerRepositoryImpl(
 ) : PlayerRepository {
 
   private val playersQueries = database.playersQueries
+  private val detailRefreshes = KeyedRefreshLock()
 
   override fun getPlayerInTeam(teamId: String): Flow<List<PlayerInfo?>> = playersQueries
     .getPlayersByTeam(teamId)
@@ -97,65 +101,68 @@ internal class PlayerRepositoryImpl(
   }
 
   override suspend fun refreshPlayerDetails(playerId: String): Result<Unit> = withContext(dispatchers.io) {
-    playerDataSource.details(playerId).mapCatching { dto ->
-      database.transaction {
-        val playerEntity = dto.toPlayerEntity(id = playerId)
-        playersQueries.insertPlayer(playerEntity)
+    detailRefreshes.withLock(playerId) {
+      playerDataSource.details(playerId).mapCatching { dto ->
+        currentCoroutineContext().ensureActive()
+        database.transaction {
+          val playerEntity = dto.toPlayerEntity(id = playerId)
+          playersQueries.insertPlayer(playerEntity)
 
-        playersQueries.deletePlayerAgentStats(playerId)
-        playersQueries.deletePlayerTeamHistory(playerId)
+          playersQueries.deletePlayerAgentStats(playerId)
+          playersQueries.deletePlayerTeamHistory(playerId)
 
-        dto.agents.forEach { agent ->
-          val entity = agent.toEntity(playerId)
-          playersQueries.insertPlayerAgentStat(
-            player_id = entity.player_id,
-            agent_name = entity.agent_name,
-            agent_image_url = entity.agent_image_url,
-            usage_count = entity.usage_count,
-            usage_percent = entity.usage_percent,
-            rounds_played = entity.rounds_played,
-            rating = entity.rating,
-            acs = entity.acs,
-            kd_ratio = entity.kd_ratio,
-            adr = entity.adr,
-            kast = entity.kast,
-            kpr = entity.kpr,
-            apr = entity.apr,
-            fkpr = entity.fkpr,
-            fdpr = entity.fdpr,
-            kills = entity.kills,
-            deaths = entity.deaths,
-            assists = entity.assists,
-            first_kills = entity.first_kills,
-            first_deaths = entity.first_deaths,
-          )
+          dto.agents.forEach { agent ->
+            val entity = agent.toEntity(playerId)
+            playersQueries.insertPlayerAgentStat(
+              player_id = entity.player_id,
+              agent_name = entity.agent_name,
+              agent_image_url = entity.agent_image_url,
+              usage_count = entity.usage_count,
+              usage_percent = entity.usage_percent,
+              rounds_played = entity.rounds_played,
+              rating = entity.rating,
+              acs = entity.acs,
+              kd_ratio = entity.kd_ratio,
+              adr = entity.adr,
+              kast = entity.kast,
+              kpr = entity.kpr,
+              apr = entity.apr,
+              fkpr = entity.fkpr,
+              fdpr = entity.fdpr,
+              kills = entity.kills,
+              deaths = entity.deaths,
+              assists = entity.assists,
+              first_kills = entity.first_kills,
+              first_deaths = entity.first_deaths,
+            )
+          }
+
+          dto.currentTeam
+            ?.toEntity(playerId, true)
+            ?.let { entity ->
+              playersQueries.insertPlayerTeamHistory(
+                player_id = entity.player_id,
+                team_id = entity.team_id,
+                team_name = entity.team_name,
+                team_logo_url = entity.team_logo_url,
+                is_current = entity.is_current,
+              )
+            }
+
+          dto.pastTeams
+            .map { it.toEntity(playerId, false) }
+            .forEach { entity ->
+              playersQueries.insertPlayerTeamHistory(
+                player_id = entity.player_id,
+                team_id = entity.team_id,
+                team_name = entity.team_name,
+                team_logo_url = entity.team_logo_url,
+                is_current = entity.is_current,
+              )
+            }
         }
-
-        dto.currentTeam
-          ?.toEntity(playerId, true)
-          ?.let { entity ->
-            playersQueries.insertPlayerTeamHistory(
-              player_id = entity.player_id,
-              team_id = entity.team_id,
-              team_name = entity.team_name,
-              team_logo_url = entity.team_logo_url,
-              is_current = entity.is_current,
-            )
-          }
-
-        dto.pastTeams
-          .map { it.toEntity(playerId, false) }
-          .forEach { entity ->
-            playersQueries.insertPlayerTeamHistory(
-              player_id = entity.player_id,
-              team_id = entity.team_id,
-              team_name = entity.team_name,
-              team_logo_url = entity.team_logo_url,
-              is_current = entity.is_current,
-            )
-          }
+        Unit
       }
-      Unit
     }
   }
 

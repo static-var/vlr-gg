@@ -14,6 +14,9 @@ import dev.staticvar.vlr.remotesource.player.PlayerAgentStatsDto
 import dev.staticvar.vlr.remotesource.player.PlayerDataSource
 import dev.staticvar.vlr.remotesource.player.PlayerDetailsDto
 import dev.staticvar.vlr.remotesource.player.PlayerTeamRefDto
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
@@ -53,6 +56,31 @@ class PlayerRepositoryImplTest {
   @AfterTest
   fun teardown() {
     driver.close()
+  }
+
+  @Test
+  fun overlappingRefreshesCannotRestoreAnOlderSnapshot() = runTest(dispatcher) {
+    val releaseOlder = CompletableDeferred<Unit>()
+    var requests = 0
+    val source = object : PlayerDataSource {
+      override suspend fun details(id: String): Result<PlayerDetailsDto> {
+        requests++
+        val request = requests
+        if (request == 1) releaseOlder.await()
+        return Result.success(PlayerDetailsDto(name = if (request == 1) "Older snapshot" else "Newer snapshot"))
+      }
+    }
+    val repo = PlayerRepositoryImpl(source, database, dispatcherProvider)
+    val older = async { repo.refreshPlayerDetails("player1") }
+    advanceUntilIdle()
+    val newer = async { repo.refreshPlayerDetails("player1") }
+    advanceUntilIdle()
+    assertEquals(1, requests)
+    releaseOlder.complete(Unit)
+    assertTrue(older.await().isSuccess)
+    assertTrue(newer.await().isSuccess)
+    assertEquals(2, requests)
+    assertEquals("Newer snapshot", repo.getPlayerDetails("player1").first()?.name)
   }
 
   @Test
