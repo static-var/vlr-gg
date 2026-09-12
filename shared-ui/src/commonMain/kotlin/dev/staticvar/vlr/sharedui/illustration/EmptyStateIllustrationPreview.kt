@@ -43,6 +43,12 @@ internal fun NoLiveEventsIllustrationPreview(@PreviewParameter(PrismPreviewProvi
   IllustrationPreview(EmptyStateArtwork.NoLiveEvents, variant)
 }
 
+@PrismPreview
+@Composable
+internal fun NoFavoritesIllustrationPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+  IllustrationPreview(EmptyStateArtwork.NoFavorites, variant)
+}
+
 @Composable
 private fun IllustrationPreview(artwork: EmptyStateArtwork, variant: PrismVariant) {
   PrismTheme(variant = variant) {

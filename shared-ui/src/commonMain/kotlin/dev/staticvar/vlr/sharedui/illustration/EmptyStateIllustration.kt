@@ -19,6 +19,7 @@ public enum class EmptyStateArtwork {
   NoInternet,
   UnknownError,
   NoLiveEvents,
+  NoFavorites,
 }
 
 /**
@@ -45,6 +46,7 @@ public fun EmptyStateIllustration(
       EmptyStateArtwork.NoInternet -> noInternetVector(colors)
       EmptyStateArtwork.UnknownError -> unknownErrorVector(colors)
       EmptyStateArtwork.NoLiveEvents -> noLiveEventsVector(colors)
+      EmptyStateArtwork.NoFavorites -> noFavoritesVector(colors)
     }
   }
   Image(

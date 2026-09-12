@@ -34,6 +34,7 @@ public class HomeViewModel(
   ) { feed, refresh ->
     HomeUiState(
       feed = feed,
+      hasLoadedFeed = true,
       isLoading = refresh.isLoading(hasContent = feed.hasDirectFavorites),
       isRefreshing = refresh.isRefreshing,
       errorMessage = refresh.errorMessage,

@@ -52,29 +52,13 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
   val activeRoute = appState.backStack.lastOrNull() as? AppRoute
   SideEffect { navigationTelemetry.show(activeRoute) }
   val icons = Prism.icons
-  val navItems = remember(icons, appState.homeEnabled) {
-    val sharedItems = listOf(
+  val navItems = remember(icons) {
+    listOf(
+      PrismBottomNavItem(id = HOME_ID, label = "Home", icon = icons.home.unselected, selectedIcon = icons.home.selected),
       PrismBottomNavItem(id = MATCHES_ID, label = "Matches", icon = icons.matches.unselected, selectedIcon = icons.matches.selected),
       PrismBottomNavItem(id = EVENTS_ID, label = "Events", icon = icons.events.unselected, selectedIcon = icons.events.selected),
-      PrismBottomNavItem(id = RANKINGS_ID, label = "Rankings", icon = icons.rankings.unselected, selectedIcon = icons.rankings.selected),
-    )
-    val primaryItems = if (appState.homeEnabled) {
-      listOf(
-        PrismBottomNavItem(id = HOME_ID, label = "Home", icon = icons.home.unselected, selectedIcon = icons.home.selected),
-      ) + sharedItems
-    } else {
-      sharedItems + PrismBottomNavItem(
-        id = SETTINGS_ID,
-        label = "Settings",
-        icon = icons.settings.unselected,
-        selectedIcon = icons.settings.selected,
-      )
-    }
-    primaryItems + PrismBottomNavItem(
-      id = NEWS_ID,
-      label = "News",
-      icon = icons.news.unselected,
-      selectedIcon = icons.news.selected,
+      PrismBottomNavItem(id = RANKINGS_ID, label = "Ranking", icon = icons.rankings.unselected, selectedIcon = icons.rankings.selected),
+      PrismBottomNavItem(id = NEWS_ID, label = "News", icon = icons.news.unselected, selectedIcon = icons.news.selected),
     )
   }
   val entryProvider = koinEntryProvider<NavKey>()
@@ -224,15 +208,13 @@ private fun AnimatedContentTransitionScope<Scene<NavKey>>.navigationDurationMill
 ): Int {
   if (!eventLogoTransitionEnabled) return NavigationTransitionDurationMillis
 
-  val initialRole = initialState.entries.lastOrNull()?.metadata?.get(EventTransitionRoleKey)
-  val targetRole = targetState.entries.lastOrNull()?.metadata?.get(EventTransitionRoleKey)
-  val isEventListToDetail = initialRole == EventTransitionRole.List && targetRole == EventTransitionRole.Detail
-  val isEventDetailToList = initialRole == EventTransitionRole.Detail && targetRole == EventTransitionRole.List
-  return if (isEventListToDetail || isEventDetailToList) {
-    eventTransitionDurationMillis
-  } else {
-    NavigationTransitionDurationMillis
+  val sharesCard = listOf(EventTransitionRoleKey, MatchTransitionRoleKey).any { key ->
+    val initialRole = initialState.entries.lastOrNull()?.metadata?.get(key)
+    val targetRole = targetState.entries.lastOrNull()?.metadata?.get(key)
+    (initialRole == EventTransitionRole.List && targetRole == EventTransitionRole.Detail) ||
+      (initialRole == EventTransitionRole.Detail && targetRole == EventTransitionRole.List)
   }
+  return if (sharesCard) eventTransitionDurationMillis else NavigationTransitionDurationMillis
 }
 
 internal enum class EventTransitionRole {
@@ -241,6 +223,7 @@ internal enum class EventTransitionRole {
 }
 
 internal const val EventTransitionRoleKey: String = "VlrEventTransitionRole"
+internal const val MatchTransitionRoleKey: String = "VlrMatchTransitionRole"
 
 private const val NavigationTransitionDurationMillis: Int = 180
 private const val NavigationSlideOffsetDivisor: Int = 8

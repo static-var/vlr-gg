@@ -35,7 +35,6 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.MatchPreview
-import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
@@ -50,12 +49,15 @@ public fun HomeRoute(
   uiState: HomeUiState,
   onRefresh: () -> Unit,
   onSettings: () -> Unit,
+  onBrowseMatches: () -> Unit,
+  onBrowseEvents: () -> Unit,
   onMatchSelected: (String) -> Unit,
   onEventSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   onPlayerSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
   onEventPreviewSelected: (EventPreview) -> Unit = { onEventSelected(it.id) },
+  onMatchPreviewSelected: (MatchPreview) -> Unit = { onMatchSelected(it.id) },
 ) {
   val feed = uiState.feed
   val hasContent = feed.hasDirectFavorites
@@ -83,7 +85,8 @@ public fun HomeRoute(
       },
     )
     SharedRefreshStatus(
-      modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),      hasContent = hasContent,
+      modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
+      hasContent = hasContent,
       isRefreshing = false,
       errorMessage = uiState.errorMessage.takeIf { hasContent },
       errorDetails = uiState.errorDetails,
@@ -91,16 +94,14 @@ public fun HomeRoute(
     )
 
     when {
-      uiState.isLoading && !hasContent -> SharedScreenLoading(
+      !uiState.hasLoadedFeed && !hasContent -> SharedScreenLoading(
         label = "Loading your favorites",
         modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
       )
 
-      uiState.errorMessage != null && !hasContent -> SharedLoadError(
-        errorMessage = uiState.errorMessage,
-        errorDetails = uiState.errorDetails,
-        onRefresh = onRefresh,
-        centered = true,
+      !hasContent -> HomeEmptyFavorites(
+        onBrowseMatches = onBrowseMatches,
+        onBrowseEvents = onBrowseEvents,
         modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
       )
 
@@ -109,6 +110,7 @@ public fun HomeRoute(
         onMatchSelected = onMatchSelected,
         onEventSelected = onEventSelected,
         onEventPreviewSelected = onEventPreviewSelected,
+        onMatchPreviewSelected = onMatchPreviewSelected,
         onTeamSelected = onTeamSelected,
         onPlayerSelected = onPlayerSelected,
         modifier = Modifier.fillMaxWidth().weight(1f),
@@ -121,6 +123,7 @@ public fun HomeRoute(
 private fun HomeFeedContent(
   feed: HomeFeed,
   onEventPreviewSelected: (EventPreview) -> Unit,
+  onMatchPreviewSelected: (MatchPreview) -> Unit,
   onMatchSelected: (String) -> Unit,
   onEventSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
@@ -135,7 +138,7 @@ private fun HomeFeedContent(
     item(key = "personalized-matches") {
       PersonalizedMatches(
         matches = feed.personalizedMatches,
-        onMatchSelected = onMatchSelected,
+        onMatchSelected = onMatchPreviewSelected,
       )
     }
     item(key = "personalized-events") {
@@ -181,7 +184,7 @@ private fun HomeFeedContent(
 @Composable
 private fun PersonalizedMatches(
   matches: List<MatchPreview>,
-  onMatchSelected: (String) -> Unit,
+  onMatchSelected: (MatchPreview) -> Unit,
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
     PrismSectionTitle(
@@ -202,7 +205,7 @@ private fun PersonalizedMatches(
         MatchPreviewItem(
           matchPreview = match,
           modifier = Modifier.fillMaxWidth(),
-          onClick = { onMatchSelected(match.id) },
+          onClick = { onMatchSelected(match) },
         )
       }
     }

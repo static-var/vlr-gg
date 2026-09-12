@@ -6,6 +6,7 @@ package dev.staticvar.vlr.featurehome.presentation
 
 public data class HomeUiState(
   public val feed: HomeFeed = HomeFeed(),
+  public val hasLoadedFeed: Boolean = false,
   public val isLoading: Boolean = true,
   public val isRefreshing: Boolean = false,
   public val errorMessage: String? = null,

@@ -45,6 +45,7 @@ import dev.staticvar.vlr.featureteam.presentation.TeamMatchesSection
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.event.ProvideEventTransitionScope
+import dev.staticvar.vlr.sharedui.component.match.ProvideMatchTransitionScope
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
@@ -62,7 +63,7 @@ internal val LocalAppEventSharedTransitionScope = compositionLocalOf<SharedTrans
 internal fun appNavigationModule(): Module = module {
   viewModel { AppearanceViewModel(repository = get()) }
 
-  navigation<AppRoute.Home>(metadata = mapOf(EventTransitionRoleKey to EventTransitionRole.List)) {
+  navigation<AppRoute.Home>(metadata = mapOf(EventTransitionRoleKey to EventTransitionRole.List, MatchTransitionRoleKey to EventTransitionRole.List)) {
     val appState = LocalVlrAppState.current
     val viewModel = koinViewModel<HomeViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -70,23 +71,31 @@ internal fun appNavigationModule(): Module = module {
 
     val eventTransitionEnabled = LocalAppEventSharedTransitionScope.current != null
     EventLogoTransitionHost {
-      HomeRoute(
-        uiState = uiState,
-        onRefresh = viewModel::refresh,
-        onSettings = appState::showSettings,
-        onMatchSelected = appState::showRootMatchDetails,
-        onEventSelected = appState::showRootEventDetails,
-        onEventPreviewSelected = { eventPreview ->
-          if (eventTransitionEnabled) {
-            appState.showEventDetailsFromPreview(eventPreview)
-          } else {
-            appState.showRootEventDetails(eventPreview.id)
-          }
-        },
-        onTeamSelected = appState::showRootTeamDetails,
-        onPlayerSelected = appState::showRootPlayerDetails,
-        modifier = Modifier.fillMaxSize(),
-      )
+      MatchTransitionHost {
+        HomeRoute(
+          uiState = uiState,
+          onRefresh = viewModel::refresh,
+          onSettings = appState::showSettings,
+          onBrowseMatches = { appState.selectRoot(MATCHES_ID) },
+          onBrowseEvents = { appState.selectRoot(EVENTS_ID) },
+          onMatchSelected = appState::showRootMatchDetails,
+          onMatchPreviewSelected = { preview ->
+            if (eventTransitionEnabled) appState.showMatchDetailsFromPreview(preview)
+            else appState.showRootMatchDetails(preview.id)
+          },
+          onEventSelected = appState::showRootEventDetails,
+          onEventPreviewSelected = { eventPreview ->
+            if (eventTransitionEnabled) {
+              appState.showEventDetailsFromPreview(eventPreview)
+            } else {
+              appState.showRootEventDetails(eventPreview.id)
+            }
+          },
+          onTeamSelected = appState::showRootTeamDetails,
+          onPlayerSelected = appState::showRootPlayerDetails,
+          modifier = Modifier.fillMaxSize(),
+        )
+      }
     }
   }
   navigation<AppRoute.News>(metadata = listPane(group = "news")) {
@@ -116,38 +125,49 @@ internal fun appNavigationModule(): Module = module {
       modifier = Modifier.fillMaxSize(),
     )
   }
-  navigation<AppRoute.Matches>(metadata = listPane(group = "matches")) {
+  navigation<AppRoute.Matches>(metadata = listPane(group = "matches") + (MatchTransitionRoleKey to EventTransitionRole.List)) {
     val viewModel = koinViewModel<MatchesViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
 
-    MatchesOverviewRoute(
-      uiState = uiState,
-      onRefresh = viewModel::refresh,
-      onFilterSelected = viewModel::selectFilter,
-      onMatchSelected = LocalVlrAppState.current::showRootMatchDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
+    val appState = LocalVlrAppState.current
+    val transitionEnabled = LocalAppEventSharedTransitionScope.current != null
+    MatchTransitionHost {
+      MatchesOverviewRoute(
+        uiState = uiState,
+        onRefresh = viewModel::refresh,
+        onFilterSelected = viewModel::selectFilter,
+        onMatchSelected = { preview ->
+          if (transitionEnabled) appState.showMatchDetailsFromPreview(preview)
+          else appState.showRootMatchDetails(preview.id)
+        },
+        modifier = Modifier.fillMaxSize(),
+      )
+    }
   }
-  navigation<AppRoute.MatchDetails>(metadata = detailPane(group = "matches")) { route ->
+  navigation<AppRoute.MatchDetails>(metadata = detailPane(group = "matches") + (MatchTransitionRoleKey to EventTransitionRole.Detail)) { route ->
     val appState = LocalVlrAppState.current
     val viewModel = koinViewModel<MatchDetailsViewModel> { parametersOf(route.matchId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
 
-    MatchDetailsRoute(
-      onFavoriteClick = viewModel::toggleFavorite,
-      uiState = uiState,
-      onRefresh = viewModel::refresh,
-      onPreferencesChange = viewModel::setPreferences,
-      onBack = appState::navigateUp,
-      onEventSelected = appState::showEventDetails,
-      onTeamSelected = appState::showTeamDetails,
-      onPlayerSelected = appState::showPlayerDetails,
-      onMatchSelected = appState::showMatchDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
+    val matchPreview = appState.matchTransitionPreview?.takeIf { it.id == route.matchId }
+    MatchTransitionHost(enabled = matchPreview != null) {
+      MatchDetailsRoute(
+        onFavoriteClick = viewModel::toggleFavorite,
+        uiState = uiState,
+        matchPreview = matchPreview,
+        onRefresh = viewModel::refresh,
+        onPreferencesChange = viewModel::setPreferences,
+        onBack = appState::navigateUp,
+        onEventSelected = appState::showEventDetails,
+        onTeamSelected = appState::showTeamDetails,
+        onPlayerSelected = appState::showPlayerDetails,
+        onMatchSelected = appState::showMatchDetails,
+        modifier = Modifier.fillMaxSize(),
+      )
+    }
   }
   navigation<AppRoute.Events>(
     metadata = listPane(group = "events") + (EventTransitionRoleKey to EventTransitionRole.List),
@@ -280,7 +300,7 @@ internal fun appNavigationModule(): Module = module {
       onMascotSelected = viewModel::setMascot,
       onMascotVisitFrequencySelected = viewModel::setMascotVisitFrequency,
       onAbout = appState::showAbout,
-      onBack = if (appState.homeEnabled) appState::navigateUp else null,
+      onBack = appState::navigateUp,
       modifier = Modifier.fillMaxSize(),
     )
   }
@@ -308,4 +328,19 @@ private fun EventLogoTransitionHost(
     animatedVisibilityScope = LocalNavAnimatedContentScope.current,
     content = content,
   )
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun MatchTransitionHost(enabled: Boolean = true, content: @Composable () -> Unit) {
+  val scope = LocalAppEventSharedTransitionScope.current
+  if (!enabled || scope == null) {
+    content()
+  } else {
+    ProvideMatchTransitionScope(
+      sharedTransitionScope = scope,
+      animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+      content = content,
+    )
+  }
 }

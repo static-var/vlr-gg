@@ -7,6 +7,9 @@ package dev.staticvar.vlr.shared.navigation
 import androidx.navigation3.runtime.NavKey
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
+import dev.staticvar.vlr.domain.model.MatchPreview
+import dev.staticvar.vlr.domain.model.MatchStatus
+import dev.staticvar.vlr.domain.model.TeamPreview
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -15,8 +18,101 @@ import kotlin.test.assertTrue
 
 class VlrAppStateTest {
   @Test
+  fun matchListPreviewSurvivesBackUntilLeavingTheList() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home, AppRoute.Matches))
+    val preview = matchTransitionPreview()
+
+    appState.showMatchDetailsFromPreview(preview)
+
+    assertEquals(AppRoute.MatchDetails(preview.id), appState.backStack.last())
+    assertEquals(preview, appState.matchTransitionPreview)
+
+    appState.navigateUp()
+
+    assertEquals(AppRoute.Matches, appState.backStack.last())
+    assertEquals(preview, appState.matchTransitionPreview)
+
+    appState.navigateUp()
+
+    assertEquals(listOf<NavKey>(AppRoute.Home), appState.backStack)
+    assertNull(appState.matchTransitionPreview)
+  }
+
+  @Test
+  fun homeMatchPreviewSurvivesBackUntilLeavingHome() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
+    val preview = matchTransitionPreview()
+
+    appState.showMatchDetailsFromPreview(preview)
+
+    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.MatchDetails(preview.id)), appState.backStack)
+    assertEquals(preview, appState.matchTransitionPreview)
+
+    appState.navigateUp()
+
+    assertEquals(listOf<NavKey>(AppRoute.Home), appState.backStack)
+    assertEquals(preview, appState.matchTransitionPreview)
+
+    appState.selectRoot(AppRoute.Matches)
+
+    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.Matches), appState.backStack)
+    assertNull(appState.matchTransitionPreview)
+  }
+
+  @Test
+  fun directMatchNavigationDoesNotReuseAMatchListPreview() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home, AppRoute.Matches))
+    val preview = matchTransitionPreview()
+    appState.showMatchDetailsFromPreview(preview)
+    appState.navigateUp()
+
+    appState.showRootMatchDetails(preview.id)
+
+    assertEquals(AppRoute.MatchDetails(preview.id), appState.backStack.last())
+    assertNull(appState.matchTransitionPreview)
+
+    val newsState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home, AppRoute.News))
+    newsState.showMatchDetailsFromPreview(preview)
+
+    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.News, AppRoute.MatchDetails(preview.id)), newsState.backStack)
+    assertNull(newsState.matchTransitionPreview)
+  }
+
+  @Test
+  fun openingAnotherDetailClearsTheMatchTransitionPreview() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home, AppRoute.Matches))
+    appState.showMatchDetailsFromPreview(matchTransitionPreview())
+
+    appState.showTeamDetails("team-1")
+
+    assertEquals(AppRoute.TeamDetails("team-1"), appState.backStack.last())
+    assertNull(appState.matchTransitionPreview)
+  }
+
+  @Test
+  fun homeEventAndMatchTransitionsReplaceEachOthersPreview() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
+    val eventPreview = eventTransitionPreview()
+    val matchPreview = matchTransitionPreview()
+    appState.showEventDetailsFromPreview(eventPreview)
+    appState.navigateUp()
+    assertEquals(eventPreview, appState.eventTransitionPreview)
+
+    appState.showMatchDetailsFromPreview(matchPreview)
+
+    assertNull(appState.eventTransitionPreview)
+    assertEquals(matchPreview, appState.matchTransitionPreview)
+
+    appState.navigateUp()
+    appState.showEventDetailsFromPreview(eventPreview)
+
+    assertNull(appState.matchTransitionPreview)
+    assertEquals(eventPreview, appState.eventTransitionPreview)
+  }
+
+  @Test
   fun eventListPreviewSurvivesBackUntilLeavingTheList() {
-    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.News, AppRoute.Events))
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home, AppRoute.Events))
     val preview = eventTransitionPreview()
 
     appState.showEventDetailsFromPreview(preview)
@@ -31,13 +127,13 @@ class VlrAppStateTest {
 
     appState.navigateUp()
 
-    assertEquals(AppRoute.News, appState.backStack.last())
+    assertEquals(AppRoute.Home, appState.backStack.last())
     assertNull(appState.eventTransitionPreview)
   }
 
   @Test
   fun homeEventPreviewSurvivesBackUntilLeavingHome() {
-    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home), initialHomeEnabled = true)
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
     val preview = eventTransitionPreview()
 
     appState.showEventDetailsFromPreview(preview)
@@ -58,7 +154,7 @@ class VlrAppStateTest {
 
   @Test
   fun directEventNavigationDoesNotReuseAnEventListPreview() {
-    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.News, AppRoute.Events))
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home, AppRoute.Events))
     val preview = eventTransitionPreview()
     appState.showEventDetailsFromPreview(preview)
     appState.navigateUp()
@@ -68,179 +164,148 @@ class VlrAppStateTest {
     assertEquals(AppRoute.EventDetails(preview.id), appState.backStack.last())
     assertNull(appState.eventTransitionPreview)
 
-    val newsState = VlrAppState(mutableListOf<NavKey>(AppRoute.News))
+    val newsState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home, AppRoute.News))
     newsState.showEventDetailsFromPreview(preview)
 
-    assertEquals(listOf<NavKey>(AppRoute.News, AppRoute.EventDetails(preview.id)), newsState.backStack)
+    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.News, AppRoute.EventDetails(preview.id)), newsState.backStack)
     assertNull(newsState.eventTransitionPreview)
   }
 
   @Test
-  fun aboutOpensOnceUnderSettingsAndBackRestoresRoot() {
-    val appState = VlrAppState(
-      backStack = mutableListOf<NavKey>(AppRoute.Settings),
-    )
+  fun settingsAndAboutReturnToHomeWithNoSettingsTab() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
+    appState.showSettings()
     appState.showAbout()
     appState.showAbout()
-    assertEquals(listOf<NavKey>(AppRoute.News, AppRoute.Settings, AppRoute.About), appState.backStack)
-    assertEquals(AppRoute.Settings, AppRoute.About.rootDestination)
-    assertEquals("settings", appState.selectedNavigationItemId)
+
+    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.Settings, AppRoute.About), appState.backStack)
+    assertEquals("home", appState.selectedNavigationItemId)
     assertFalse(appState.shouldShowBottomNavigation)
+
     appState.navigateUp()
-    assertEquals(listOf<NavKey>(AppRoute.News, AppRoute.Settings), appState.backStack)
+    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.Settings), appState.backStack)
+    assertFalse(appState.shouldShowBottomNavigation)
+
+    appState.navigateUp()
+    assertEquals(listOf<NavKey>(AppRoute.Home), appState.backStack)
     assertTrue(appState.shouldShowBottomNavigation)
+    assertFalse(appState.canNavigateBack)
   }
 
   @Test
   fun selectRootClearsSecondaryRoutes() {
     val appState =
       VlrAppState(
-        backStack = mutableListOf<NavKey>(AppRoute.News, AppRoute.MatchDetails(matchId = "match-1")),
+        backStack = mutableListOf<NavKey>(AppRoute.Home, AppRoute.MatchDetails(matchId = "match-1")),
       )
 
     appState.selectRoot(AppRoute.Events)
 
-    assertEquals(listOf<NavKey>(AppRoute.News, AppRoute.Events), appState.backStack)
+    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.Events), appState.backStack)
     assertEquals(AppRoute.Events, appState.selectedRootRoute)
     assertTrue(appState.canNavigateBack)
   }
 
   @Test
-  fun initialHomeModeReconcilesAStackRestoredFromNewsMode() {
-    val appState = VlrAppState(
-      backStack = mutableListOf<NavKey>(
-        AppRoute.News,
-        AppRoute.Events,
-        AppRoute.EventDetails("event-1"),
-      ),
-      initialHomeEnabled = true,
-    )
+  fun emptyStackStartsAtHome() {
+    val appState = VlrAppState(mutableListOf())
 
-    assertEquals(
-      listOf<NavKey>(AppRoute.Home, AppRoute.Events, AppRoute.EventDetails("event-1")),
-      appState.backStack,
+    assertEquals(listOf<NavKey>(AppRoute.Home), appState.backStack)
+    assertEquals("home", appState.selectedNavigationItemId)
+    assertTrue(appState.shouldShowBottomNavigation)
+    assertFalse(appState.canNavigateBack)
+  }
+
+  @Test
+  fun restoredDetailStackKeepsItsSelectedRootAndTail() {
+    val restoredStack = mutableListOf<NavKey>(
+      AppRoute.Home,
+      AppRoute.Events,
+      AppRoute.EventDetails("event-1"),
     )
+    val appState = VlrAppState(restoredStack.toMutableList())
+
+    assertEquals(restoredStack, appState.backStack)
     assertEquals(AppRoute.Events, appState.selectedRootRoute)
     assertFalse(appState.shouldShowBottomNavigation)
   }
 
   @Test
-  fun initialNewsModeReconcilesAStackRestoredFromHomeMode() {
-    val appState = VlrAppState(
-      backStack = mutableListOf<NavKey>(AppRoute.Home, AppRoute.MatchDetails("match-1")),
-      initialHomeEnabled = false,
+  fun allFiveNavigationItemsSelectTheirRoot() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
+    val roots = listOf(
+      "home" to AppRoute.Home,
+      "matches" to AppRoute.Matches,
+      "events" to AppRoute.Events,
+      "rankings" to AppRoute.Rankings,
+      "news" to AppRoute.News,
     )
 
-    assertEquals(
-      listOf<NavKey>(AppRoute.News, AppRoute.MatchDetails("match-1")),
-      appState.backStack,
-    )
-    assertEquals(AppRoute.News, appState.selectedRootRoute)
+    for ((id, route) in roots) {
+      appState.selectRoot(id)
+      assertEquals(route, appState.selectedRootRoute)
+      assertEquals(id, appState.selectedNavigationItemId)
+      assertTrue(appState.shouldShowBottomNavigation)
+    }
   }
 
   @Test
-  fun liveFavoriteChangesReplaceOnlyTheBaseAndPreserveTheActiveTail() {
-    val appState = VlrAppState(
-      mutableListOf<NavKey>(AppRoute.News, AppRoute.Events, AppRoute.EventDetails("event-1")),
-    )
+  fun settingsIsNeverSelectableAsARoot() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
 
-    appState.updateHomeEnabled(enabled = true)
-    assertEquals(
-      listOf<NavKey>(AppRoute.Home, AppRoute.Events, AppRoute.EventDetails("event-1")),
-      appState.backStack,
-    )
+    appState.selectRoot(AppRoute.Settings)
 
-    appState.updateHomeEnabled(enabled = false)
-    assertEquals(
-      listOf<NavKey>(AppRoute.News, AppRoute.Events, AppRoute.EventDetails("event-1")),
-      appState.backStack,
-    )
+    assertEquals(listOf<NavKey>(AppRoute.Home), appState.backStack)
   }
 
   @Test
-  fun selectedNewsSurvivesIdempotentHomeUpdates() {
-    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.News))
-    appState.updateHomeEnabled(enabled = true)
-    appState.selectRoot(AppRoute.News)
-    appState.showRootNewsArticle("article-1")
-
-    appState.updateHomeEnabled(enabled = true)
-    appState.updateHomeEnabled(enabled = true)
-
-    assertEquals(
-      listOf<NavKey>(AppRoute.Home, AppRoute.News, AppRoute.NewsArticle("article-1")),
-      appState.backStack,
-    )
-    assertEquals(AppRoute.News, appState.selectedRootRoute)
-  }
-
-  @Test
-  fun homeSettingsAndAboutHaveBackNavigationWithoutSelectingSettings() {
-    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home), initialHomeEnabled = true)
-
-    appState.showSettings()
-    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.Settings), appState.backStack)
-    assertEquals(AppRoute.Home, appState.selectedRootRoute)
-    assertFalse(appState.shouldShowBottomNavigation)
-
-    appState.showAbout()
-    appState.navigateUp()
-    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.Settings), appState.backStack)
-
-    appState.updateHomeEnabled(enabled = false)
-    assertEquals(listOf<NavKey>(AppRoute.News, AppRoute.Settings), appState.backStack)
-    assertEquals(AppRoute.Settings, appState.selectedRootRoute)
-    assertTrue(appState.shouldShowBottomNavigation)
-  }
-
-  @Test
-  fun backFromEverySecondaryRootReturnsToNews() {
-    for (root in listOf(AppRoute.Matches, AppRoute.Events, AppRoute.Rankings, AppRoute.Settings)) {
-      val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.News))
+  fun backFromEverySecondaryRootReturnsToHome() {
+    for (root in listOf(AppRoute.Matches, AppRoute.Events, AppRoute.Rankings, AppRoute.News)) {
+      val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
       appState.selectRoot(root)
       assertEquals(root, appState.selectedRootRoute)
       assertTrue(appState.canNavigateBack)
 
       appState.navigateUp()
 
-      assertEquals(listOf<NavKey>(AppRoute.News), appState.backStack)
-      assertEquals("news", appState.selectedNavigationItemId)
+      assertEquals(listOf<NavKey>(AppRoute.Home), appState.backStack)
+      assertEquals("home", appState.selectedNavigationItemId)
       assertFalse(appState.canNavigateBack)
       appState.navigateUp()
-      assertEquals(listOf<NavKey>(AppRoute.News), appState.backStack)
+      assertEquals(listOf<NavKey>(AppRoute.Home), appState.backStack)
     }
   }
 
   @Test
-  fun switchingTabsKeepsOnlyNewsAndSelectedRoot() {
-    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.News))
+  fun switchingTabsKeepsOnlyHomeAndSelectedRoot() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
     appState.selectRoot(AppRoute.Matches)
     appState.showMatchDetails("match-1")
     appState.selectRoot(AppRoute.Events)
     appState.selectRoot(AppRoute.Events)
-    assertEquals(listOf<NavKey>(AppRoute.News, AppRoute.Events), appState.backStack)
+    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.Events), appState.backStack)
     assertEquals("events", appState.selectedNavigationItemId)
-    appState.selectRoot(AppRoute.News)
-    assertEquals(listOf<NavKey>(AppRoute.News), appState.backStack)
+    appState.selectRoot(AppRoute.Home)
+    assertEquals(listOf<NavKey>(AppRoute.Home), appState.backStack)
     assertFalse(appState.canNavigateBack)
   }
 
   @Test
-  fun replacingDetailPreservesSelectedRootBeforeReturningToNews() {
-    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.News))
+  fun replacingDetailPreservesSelectedRootBeforeReturningToHome() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
     appState.selectRoot(AppRoute.Events)
     appState.showEventDetails("event-1")
     appState.showMatchDetails("match-1")
     appState.showRootEventDetails("event-2")
     assertEquals(
-      listOf<NavKey>(AppRoute.News, AppRoute.Events, AppRoute.EventDetails("event-2")),
+      listOf<NavKey>(AppRoute.Home, AppRoute.Events, AppRoute.EventDetails("event-2")),
       appState.backStack,
     )
     assertEquals("events", appState.selectedNavigationItemId)
     appState.navigateUp()
     assertEquals(AppRoute.Events, appState.backStack.last())
     appState.navigateUp()
-    assertEquals(listOf<NavKey>(AppRoute.News), appState.backStack)
+    assertEquals(listOf<NavKey>(AppRoute.Home), appState.backStack)
   }
 
   @Test
@@ -258,7 +323,7 @@ class VlrAppStateTest {
     appState.showRootEventDetails(eventId = "event-9")
 
     assertEquals(
-      listOf<NavKey>(AppRoute.News, AppRoute.Events, AppRoute.EventDetails(eventId = "event-9")),
+      listOf<NavKey>(AppRoute.Home, AppRoute.Events, AppRoute.EventDetails(eventId = "event-9")),
       appState.backStack,
     )
     assertTrue(appState.canNavigateBack)
@@ -266,7 +331,7 @@ class VlrAppStateTest {
 
   @Test
   fun rootPlayerDetailsReturnToHome() {
-    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home), initialHomeEnabled = true)
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
 
     appState.showRootPlayerDetails(playerId = "player-1")
     assertEquals(
@@ -279,8 +344,8 @@ class VlrAppStateTest {
   }
 
   @Test
-  fun rootDetailsDiscardPushedSettingsInHomeMode() {
-    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home), initialHomeEnabled = true)
+  fun rootDetailsDiscardPushedSettings() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
     appState.showSettings()
 
     appState.showRootMatchDetails(matchId = "match-1")
@@ -297,6 +362,7 @@ class VlrAppStateTest {
       VlrAppState(
         backStack =
         mutableListOf<NavKey>(
+          AppRoute.Home,
           AppRoute.News,
           AppRoute.MatchDetails(matchId = "match-1"),
           AppRoute.PlayerDetails(playerId = "player-1"),
@@ -306,7 +372,7 @@ class VlrAppStateTest {
     appState.showRootNewsArticle(articleId = "article-9")
 
     assertEquals(
-      listOf<NavKey>(AppRoute.News, AppRoute.NewsArticle(articleId = "article-9")),
+      listOf<NavKey>(AppRoute.Home, AppRoute.News, AppRoute.NewsArticle(articleId = "article-9")),
       appState.backStack,
     )
     assertEquals(AppRoute.News, AppRoute.NewsArticle(articleId = "article-9").rootDestination)
@@ -317,7 +383,7 @@ class VlrAppStateTest {
   fun bottomNavigationVisibleOnlyOnRootRoutes() {
     val appState =
       VlrAppState(
-        backStack = mutableListOf<NavKey>(AppRoute.News),
+        backStack = mutableListOf<NavKey>(AppRoute.Home),
       )
 
     assertTrue(appState.shouldShowBottomNavigation)
@@ -346,7 +412,7 @@ class VlrAppStateTest {
     appState.replaceTeamDetails(teamId = "team-new")
 
     assertEquals(
-      listOf<NavKey>(AppRoute.News, AppRoute.Rankings, AppRoute.TeamDetails(teamId = "team-new")),
+      listOf<NavKey>(AppRoute.Home, AppRoute.Rankings, AppRoute.TeamDetails(teamId = "team-new")),
       appState.backStack,
     )
   }
@@ -361,4 +427,29 @@ private fun eventTransitionPreview(): EventPreview = EventPreview(
   region = "North America",
   logoUrl = "https://example.com/event.png",
   isFavorite = true,
+)
+
+private fun matchTransitionPreview(): MatchPreview = MatchPreview(
+  id = "match-transition",
+  event = "Game Changers",
+  series = "Grand Final",
+  status = MatchStatus.COMPLETED,
+  team1 = TeamPreview(
+    id = "team-1",
+    name = "Team One",
+    region = "North America",
+    img = "https://example.com/team-1.png",
+    score = 3,
+    isWinner = true,
+  ),
+  team2 = TeamPreview(
+    id = "team-2",
+    name = "Team Two",
+    region = "Europe",
+    img = "https://example.com/team-2.png",
+    score = 1,
+    isWinner = false,
+  ),
+  time = "2026-09-12T12:00:00Z",
+  eventId = "event-transition",
 )

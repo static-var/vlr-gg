@@ -10,13 +10,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.savedstate.serialization.SavedStateConfiguration
 import dev.staticvar.vlr.domain.model.EventPreview
+import dev.staticvar.vlr.domain.model.MatchPreview
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -26,7 +26,6 @@ internal const val HOME_ID: String = "home"
 internal const val MATCHES_ID: String = "matches"
 internal const val EVENTS_ID: String = "events"
 internal const val RANKINGS_ID: String = "rankings"
-internal const val SETTINGS_ID: String = "settings"
 
 internal val sceneBreakpoint: Dp = 920.dp
 internal val railBreakpoint: Dp = 1120.dp
@@ -58,21 +57,21 @@ private val appRouteSavedStateConfiguration: SavedStateConfiguration =
 @Stable
 public class VlrAppState internal constructor(
   internal val backStack: MutableList<NavKey>,
-  initialHomeEnabled: Boolean = false,
 ) {
-  public var homeEnabled: Boolean by mutableStateOf(initialHomeEnabled)
-    private set
-
   internal var eventTransitionPreview: EventPreview? by mutableStateOf(null)
     private set
 
+  internal var matchTransitionPreview: MatchPreview? by mutableStateOf(null)
+    private set
+
   init {
-    val restoredBase = backStack.firstOrNull().takeIf { it == AppRoute.Home || it == AppRoute.News } as? AppRoute
-    normalizeBackStack(oldBase = restoredBase ?: baseRoute, newBase = baseRoute)
+    if (backStack.firstOrNull() != AppRoute.Home) {
+      backStack.add(0, AppRoute.Home)
+    }
   }
 
   public val selectedRootRoute: AppRoute
-    get() = backStack.lastOrNull { route -> isCurrentTabRoute(route) } as? AppRoute ?: baseRoute
+    get() = backStack.lastOrNull { route -> isCurrentTabRoute(route) } as? AppRoute ?: AppRoute.Home
 
   public val selectedNavigationItemId: String
     get() = selectedRootRoute.rootNavigationId
@@ -83,42 +82,26 @@ public class VlrAppState internal constructor(
   public val shouldShowBottomNavigation: Boolean
     get() = isCurrentTabRoute(backStack.lastOrNull())
 
-  private val baseRoute: AppRoute
-    get() = if (homeEnabled) AppRoute.Home else AppRoute.News
-
-  private val currentTabRoutes: Set<AppRoute>
-    get() = if (homeEnabled) homeTabRoutes else newsTabRoutes
-
-  private fun isCurrentTabRoute(route: NavKey?): Boolean = route is AppRoute && route in currentTabRoutes
-
-  public fun updateHomeEnabled(enabled: Boolean) {
-    Snapshot.withMutableSnapshot {
-      eventTransitionPreview = null
-      val oldBase = baseRoute
-      homeEnabled = enabled
-      normalizeBackStack(oldBase = oldBase, newBase = baseRoute)
-    }
-  }
+  private fun isCurrentTabRoute(route: NavKey?): Boolean = route is AppRoute && route in tabRoutes
 
   public fun selectRoot(itemId: String) {
     selectRoot(route = toRootRoute(itemId))
   }
 
   public fun selectRoot(route: AppRoute) {
-    if (route !in currentTabRoutes) return
-    eventTransitionPreview = null
+    if (route !in tabRoutes) return
+    clearTransitionPreviews()
     backStack.clear()
-    backStack.add(baseRoute)
-    if (route != baseRoute) {
+    backStack.add(AppRoute.Home)
+    if (route != AppRoute.Home) {
       backStack.add(route)
     }
   }
 
   public fun navigateUp() {
     if (canNavigateBack) {
-      if (backStack.lastOrNull() !is AppRoute.EventDetails) {
-        eventTransitionPreview = null
-      }
+      if (backStack.lastOrNull() !is AppRoute.EventDetails) eventTransitionPreview = null
+      if (backStack.lastOrNull() !is AppRoute.MatchDetails) matchTransitionPreview = null
       backStack.removeLastOrNull()
     }
   }
@@ -137,11 +120,28 @@ public class VlrAppState internal constructor(
       showRootEventDetails(eventId = eventPreview.id)
       return
     }
+    matchTransitionPreview = null
     eventTransitionPreview = eventPreview
     replaceWithDetail(
       route = AppRoute.EventDetails(eventId = eventPreview.id),
-      preserveEventTransitionPreview = true,
+      preserveTransitionPreview = true,
     )
+  }
+
+  internal fun showMatchDetailsFromPreview(matchPreview: MatchPreview) {
+    val origin = backStack.lastOrNull()
+    if (origin != AppRoute.Home && origin != AppRoute.Matches) {
+      showRootMatchDetails(matchPreview.id)
+      return
+    }
+    eventTransitionPreview = null
+    matchTransitionPreview = matchPreview
+    replaceWithDetail(AppRoute.MatchDetails(matchPreview.id), preserveTransitionPreview = true)
+  }
+
+  private fun clearTransitionPreviews() {
+    eventTransitionPreview = null
+    matchTransitionPreview = null
   }
 
   public fun showRootNewsArticle(articleId: String) {
@@ -185,70 +185,42 @@ public class VlrAppState internal constructor(
   }
 
   public fun replaceTeamDetails(teamId: String) {
-    eventTransitionPreview = null
+    clearTransitionPreviews()
     backStack.removeAll { navKey -> navKey is AppRoute.TeamDetails || navKey is AppRoute.PlayerDetails }
     backStack.add(AppRoute.TeamDetails(teamId = teamId))
   }
 
   public fun replacePlayerDetails(playerId: String) {
-    eventTransitionPreview = null
+    clearTransitionPreviews()
     backStack.removeAll { navKey -> navKey is AppRoute.PlayerDetails }
     backStack.add(AppRoute.PlayerDetails(playerId = playerId))
   }
 
-  private fun replaceWithDetail(route: AppRoute, preserveEventTransitionPreview: Boolean = false) {
-    if (!preserveEventTransitionPreview) {
-      eventTransitionPreview = null
+  private fun replaceWithDetail(route: AppRoute, preserveTransitionPreview: Boolean = false) {
+    if (!preserveTransitionPreview) {
+      clearTransitionPreviews()
     }
     while (backStack.size > 1 && !isCurrentTabRoute(backStack.last())) {
       backStack.removeLastOrNull()
     }
-    pushRoute(route = route, preserveEventTransitionPreview = preserveEventTransitionPreview)
+    pushRoute(route = route, preserveTransitionPreview = preserveTransitionPreview)
   }
 
-  private fun pushRoute(route: AppRoute, preserveEventTransitionPreview: Boolean = false) {
-    if (!preserveEventTransitionPreview) {
-      eventTransitionPreview = null
+  private fun pushRoute(route: AppRoute, preserveTransitionPreview: Boolean = false) {
+    if (!preserveTransitionPreview) {
+      clearTransitionPreviews()
     }
     if (backStack.lastOrNull() == route) {
       return
     }
     backStack.add(route)
   }
-
-  private fun normalizeBackStack(oldBase: AppRoute, newBase: AppRoute) {
-    var removedOldBase = false
-    val tail = buildList<NavKey> {
-      backStack.forEach { route ->
-        when {
-          !removedOldBase && route == oldBase -> removedOldBase = true
-          route == newBase -> Unit
-          !homeEnabled && route == AppRoute.Home -> Unit
-          else -> add(route)
-        }
-      }
-    }
-    val normalized = buildList<NavKey> {
-      add(newBase)
-      addAll(tail)
-    }
-    if (backStack != normalized) {
-      backStack.clear()
-      backStack.addAll(normalized)
-    }
-  }
 }
 
 @Composable
-public fun rememberVlrAppState(initialHomeEnabled: Boolean): VlrAppState {
-  val initialBase = if (initialHomeEnabled) AppRoute.Home else AppRoute.News
-  val backStack = rememberNavBackStack(appRouteSavedStateConfiguration, initialBase)
-  return remember(backStack) {
-    VlrAppState(
-      backStack = backStack,
-      initialHomeEnabled = initialHomeEnabled,
-    )
-  }
+public fun rememberVlrAppState(): VlrAppState {
+  val backStack = rememberNavBackStack(appRouteSavedStateConfiguration, AppRoute.Home)
+  return remember(backStack) { VlrAppState(backStack = backStack) }
 }
 
 private val AppRoute.rootNavigationId: String
@@ -258,8 +230,7 @@ private val AppRoute.rootNavigationId: String
     AppRoute.Matches -> MATCHES_ID
     AppRoute.Events -> EVENTS_ID
     AppRoute.Rankings -> RANKINGS_ID
-    AppRoute.Settings -> SETTINGS_ID
-    else -> NEWS_ID
+    else -> HOME_ID
   }
 
 private fun toRootRoute(itemId: String): AppRoute = when (itemId) {
@@ -268,12 +239,8 @@ private fun toRootRoute(itemId: String): AppRoute = when (itemId) {
   MATCHES_ID -> AppRoute.Matches
   EVENTS_ID -> AppRoute.Events
   RANKINGS_ID -> AppRoute.Rankings
-  SETTINGS_ID -> AppRoute.Settings
-  else -> AppRoute.News
+  else -> AppRoute.Home
 }
 
-private val homeTabRoutes: Set<AppRoute> =
-  setOf(AppRoute.Home, AppRoute.News, AppRoute.Matches, AppRoute.Events, AppRoute.Rankings)
-
-private val newsTabRoutes: Set<AppRoute> =
-  setOf(AppRoute.News, AppRoute.Matches, AppRoute.Events, AppRoute.Rankings, AppRoute.Settings)
+private val tabRoutes: Set<AppRoute> =
+  setOf(AppRoute.Home, AppRoute.Matches, AppRoute.Events, AppRoute.Rankings, AppRoute.News)
