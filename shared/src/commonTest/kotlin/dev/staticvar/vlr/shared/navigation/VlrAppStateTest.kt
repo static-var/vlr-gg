@@ -5,12 +5,76 @@
 package dev.staticvar.vlr.shared.navigation
 
 import androidx.navigation3.runtime.NavKey
+import dev.staticvar.vlr.domain.model.EventPreview
+import dev.staticvar.vlr.domain.model.EventStatus
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class VlrAppStateTest {
+  @Test
+  fun eventListPreviewSurvivesBackUntilLeavingTheList() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.News, AppRoute.Events))
+    val preview = eventTransitionPreview()
+
+    appState.showEventDetailsFromPreview(preview)
+
+    assertEquals(AppRoute.EventDetails(preview.id), appState.backStack.last())
+    assertEquals(preview, appState.eventTransitionPreview)
+
+    appState.navigateUp()
+
+    assertEquals(AppRoute.Events, appState.backStack.last())
+    assertEquals(preview, appState.eventTransitionPreview)
+
+    appState.navigateUp()
+
+    assertEquals(AppRoute.News, appState.backStack.last())
+    assertNull(appState.eventTransitionPreview)
+  }
+
+  @Test
+  fun homeEventPreviewSurvivesBackUntilLeavingHome() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home), initialHomeEnabled = true)
+    val preview = eventTransitionPreview()
+
+    appState.showEventDetailsFromPreview(preview)
+
+    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.EventDetails(preview.id)), appState.backStack)
+    assertEquals(preview, appState.eventTransitionPreview)
+
+    appState.navigateUp()
+
+    assertEquals(listOf<NavKey>(AppRoute.Home), appState.backStack)
+    assertEquals(preview, appState.eventTransitionPreview)
+
+    appState.selectRoot(AppRoute.Events)
+
+    assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.Events), appState.backStack)
+    assertNull(appState.eventTransitionPreview)
+  }
+
+  @Test
+  fun directEventNavigationDoesNotReuseAnEventListPreview() {
+    val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.News, AppRoute.Events))
+    val preview = eventTransitionPreview()
+    appState.showEventDetailsFromPreview(preview)
+    appState.navigateUp()
+
+    appState.showRootEventDetails(preview.id)
+
+    assertEquals(AppRoute.EventDetails(preview.id), appState.backStack.last())
+    assertNull(appState.eventTransitionPreview)
+
+    val newsState = VlrAppState(mutableListOf<NavKey>(AppRoute.News))
+    newsState.showEventDetailsFromPreview(preview)
+
+    assertEquals(listOf<NavKey>(AppRoute.News, AppRoute.EventDetails(preview.id)), newsState.backStack)
+    assertNull(newsState.eventTransitionPreview)
+  }
+
   @Test
   fun aboutOpensOnceUnderSettingsAndBackRestoresRoot() {
     val appState = VlrAppState(
@@ -287,3 +351,14 @@ class VlrAppStateTest {
     )
   }
 }
+
+private fun eventTransitionPreview(): EventPreview = EventPreview(
+  id = "event-transition",
+  title = "Game Changers",
+  status = EventStatus.ONGOING,
+  prize = "$60,000",
+  dates = "Sep 1–18",
+  region = "North America",
+  logoUrl = "https://example.com/event.png",
+  isFavorite = true,
+)

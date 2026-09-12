@@ -34,7 +34,7 @@ import dev.staticvar.vlr.sharedui.component.event.overview.EventPreviewItem
 public fun EventsOverviewRoute(
   uiState: EventsUiState,
   onFilterSelected: (EventStatusFilter) -> Unit,
-  onEventSelected: (String) -> Unit,
+  onEventSelected: (EventPreview) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
 ) {
@@ -51,7 +51,7 @@ public fun EventsOverviewRoute(
 internal fun EventsOverviewScreen(
   uiState: EventsUiState,
   onFilterSelected: (EventStatusFilter) -> Unit,
-  onEventSelected: (String) -> Unit,
+  onEventSelected: (EventPreview) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
 ) {
@@ -131,8 +131,9 @@ internal fun EventsOverviewScreen(
               EventPreviewItem(
                 eventPreview = event,
                 modifier = Modifier.fillMaxWidth()
+                  .animateItem()
                   .cardMascotEligible(topClearance = Prism.dimens.spacingS * 2 + Prism.dimens.spacingXs),
-                onClick = { onEventSelected(event.id) },
+                onClick = { onEventSelected(event) },
               )
             }
           }

@@ -38,6 +38,7 @@ public fun PrismIcon(
   size: PrismIconSize = PrismIconSize.Medium,
   style: PrismIconStyle = PrismIconStyle.Bordered,
   tint: PrismIconTint = PrismIconTint.Primary,
+  imageModifier: Modifier = Modifier,
 ) {
   PrismIcon(
     painter = rememberVectorPainter(image = imageVector),
@@ -46,6 +47,7 @@ public fun PrismIcon(
     size = size,
     style = style,
     tint = tint,
+    imageModifier = imageModifier,
   )
 }
 
@@ -58,6 +60,7 @@ public fun PrismIcon(
   style: PrismIconStyle = PrismIconStyle.Bordered,
   contentScale: ContentScale = ContentScale.Fit,
   tint: PrismIconTint = PrismIconTint.None,
+  imageModifier: Modifier = Modifier,
 ) {
   PrismSurface(
     modifier = modifier.size(size.containerSize),
@@ -75,7 +78,7 @@ public fun PrismIcon(
       Image(
         painter = painter,
         contentDescription = contentDescription,
-        modifier = Modifier.size(size.contentSize),
+        modifier = imageModifier.size(size.contentSize),
         contentScale = contentScale,
         colorFilter = tint.contentColorFilter(style = style),
       )

@@ -10,7 +10,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import dev.staticvar.designsystem.component.button.PrismRefreshButton
 
-/** Cached refreshes animate here; initial loads keep the screen's centered loading indicator. */
+/** Refresh control with an optional initial-loading animation. */
 @Composable
 public fun SharedRefreshButton(
   isLoading: Boolean,
@@ -18,11 +18,12 @@ public fun SharedRefreshButton(
   hasContent: Boolean,
   onRefresh: () -> Unit,
   modifier: Modifier = Modifier,
+  animateWhileLoading: Boolean = false,
 ) {
   val isOnline = LocalIsOnline.current
   val busy = isLoading || isRefreshing
   PrismRefreshButton(
-    isRefreshing = isOnline && hasContent && isRefreshing,
+    isRefreshing = isOnline && ((hasContent && isRefreshing) || (animateWhileLoading && busy)),
     enabled = isOnline && !busy,
     onClick = onRefresh,
     modifier = modifier.semantics {

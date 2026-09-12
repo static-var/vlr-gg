@@ -55,6 +55,7 @@ public fun HomeRoute(
   onTeamSelected: (String) -> Unit,
   onPlayerSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onEventPreviewSelected: (EventPreview) -> Unit = { onEventSelected(it.id) },
 ) {
   val feed = uiState.feed
   val hasContent = feed.hasDirectFavorites
@@ -107,6 +108,7 @@ public fun HomeRoute(
         feed = feed,
         onMatchSelected = onMatchSelected,
         onEventSelected = onEventSelected,
+        onEventPreviewSelected = onEventPreviewSelected,
         onTeamSelected = onTeamSelected,
         onPlayerSelected = onPlayerSelected,
         modifier = Modifier.fillMaxWidth().weight(1f),
@@ -118,6 +120,7 @@ public fun HomeRoute(
 @Composable
 private fun HomeFeedContent(
   feed: HomeFeed,
+  onEventPreviewSelected: (EventPreview) -> Unit,
   onMatchSelected: (String) -> Unit,
   onEventSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
@@ -138,7 +141,7 @@ private fun HomeFeedContent(
     item(key = "personalized-events") {
       PersonalizedEvents(
         events = feed.personalizedEvents,
-        onEventSelected = onEventSelected,
+        onEventSelected = onEventPreviewSelected,
       )
     }
     item(key = "favorites-title") {
@@ -209,7 +212,7 @@ private fun PersonalizedMatches(
 @Composable
 private fun PersonalizedEvents(
   events: List<EventPreview>,
-  onEventSelected: (String) -> Unit,
+  onEventSelected: (EventPreview) -> Unit,
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
     PrismSectionTitle(
@@ -232,7 +235,7 @@ private fun PersonalizedEvents(
         EventPreviewItem(
           eventPreview = event,
           modifier = Modifier.fillMaxWidth(),
-          onClick = { onEventSelected(event.id) },
+          onClick = { onEventSelected(event) },
         )
       }
     }

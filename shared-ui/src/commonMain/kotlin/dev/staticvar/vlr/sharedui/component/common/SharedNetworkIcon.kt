@@ -39,6 +39,7 @@ public fun SharedNetworkIcon(
   style: PrismIconStyle = PrismIconStyle.Bordered,
   contentScale: ContentScale = ContentScale.Fit,
   tint: PrismIconTint = PrismIconTint.None,
+  imageModifier: Modifier = Modifier,
 ) {
   if (imageUrl.isNullOrBlank()) {
     SharedNetworkIconFallback(
@@ -72,6 +73,7 @@ public fun SharedNetworkIcon(
     style = style,
     contentScale = contentScale,
     tint = tint,
+    imageModifier = imageModifier,
   )
 }
 

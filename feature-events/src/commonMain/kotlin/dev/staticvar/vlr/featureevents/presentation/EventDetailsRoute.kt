@@ -4,6 +4,11 @@
  */
 package dev.staticvar.vlr.featureevents.presentation
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.semantics.Role
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
@@ -47,8 +52,11 @@ import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.card.cardMascotEligible
+import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
+import dev.staticvar.designsystem.component.loader.PrismLoaderSize
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventMatch
+import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStanding
 import dev.staticvar.vlr.domain.model.EventTeam
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
@@ -58,6 +66,7 @@ import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailHeaderItem
+import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPreviewHeaderItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailMatchItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPrizeItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailStandingItem
@@ -74,6 +83,7 @@ import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 @Composable
 public fun EventDetailsRoute(
   uiState: EventDetailsUiState,
+  eventPreview: EventPreview? = null,
   section: EventDetailSection,
   matchGrouping: EventMatchGrouping,
   selectedMatchGroupName: String?,
@@ -89,6 +99,7 @@ public fun EventDetailsRoute(
 ) {
   EventDetailsScreen(
     uiState = uiState,
+    eventPreview = eventPreview,
     section = section,
     matchGrouping = matchGrouping,
     selectedMatchGroupName = selectedMatchGroupName,
@@ -107,6 +118,7 @@ public fun EventDetailsRoute(
 @Composable
 internal fun EventDetailsScreen(
   uiState: EventDetailsUiState,
+  eventPreview: EventPreview? = null,
   section: EventDetailSection,
   matchGrouping: EventMatchGrouping,
   selectedMatchGroupName: String?,
@@ -122,6 +134,12 @@ internal fun EventDetailsScreen(
 ) {
   val event = uiState.event
   val spoilersHidden = LocalSpoilerMode.current.enabled
+  val bodyReady = event != null && (
+      event.teams.isNotEmpty() || event.matches.isNotEmpty() ||
+        event.standings.isNotEmpty() || event.prizes.isNotEmpty() ||
+        (!uiState.isLoading && !uiState.isDetailLoadPending)
+      )
+  val bodyFade = rememberEventContentFade(bodyReady)
 
   var isGroupingMenuExpanded by remember(event?.id) { mutableStateOf(false) }
   var isNavigatingAway by remember(event?.id) { mutableStateOf(false) }
@@ -148,7 +166,7 @@ internal fun EventDetailsScreen(
     ) {
       Column(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) {
         SharedScreenTitleBar(
-          title = event?.title ?: "Tournament details",
+          title = event?.title ?: eventPreview?.title ?: "Tournament details",
           subtitle = "Teams, matches and standings",
           actions = {
             if (event != null) {
@@ -169,6 +187,7 @@ internal fun EventDetailsScreen(
             }
             SharedRefreshButton(
               isLoading = uiState.isLoading || uiState.isDetailLoadPending,
+              animateWhileLoading = true,
               isRefreshing = uiState.isRefreshing,
               hasContent = event != null,
               onRefresh = onRefresh,
@@ -191,9 +210,16 @@ internal fun EventDetailsScreen(
         )
       }
 
+      if (event == null && eventPreview != null) {
+        EventDetailPreviewHeaderItem(
+          event = eventPreview,
+          modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
+        )
+      }
+
       when {
-        (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && event == null -> SharedScreenLoading(
-          modifier = Modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
+        (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && event == null -> EventDetailsLoading(
+          modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
           label = "Loading event",
         )
 
@@ -219,136 +245,147 @@ internal fun EventDetailsScreen(
           val resolvedMatchGroupName = selectedMatchGroupName.takeIf { it in groupedMatches } ?: groupNames.firstOrNull()
           val visibleMatches = resolvedMatchGroupName?.let { groupName -> groupedMatches[groupName] }.orEmpty()
 
-          LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxSize().cardMascotViewport(),
-            verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
-          ) {
-            item {
-              EventDetailHeaderItem(event = event, modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
-            }
-            if (event.teams.isNotEmpty()) {
-              item {
-                EventParticipantsRail(
-                  teams = event.teams.take(8),
-                  listState = participantsState,
-                  onTeamSelected = { teamId ->
-                    isNavigatingAway = true
-                    mascotState.onFinished()
-                    onTeamSelected(teamId)
-                  },
-                )
-              }
-            }
-            item {
-              PrismTabs(
-                modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-                tabs = EventDetailSection.entries.map { PrismTab(id = it.name, label = it.name) },
-                selectedTabId = section.name,
-                onTabSelected = { onSectionSelected(EventDetailSection.valueOf(it.id)) },
-              )
-            }
-            when (section) {
-              EventDetailSection.Matches -> {
-                if (event.matches.isEmpty()) {
+          EventDetailHeaderItem(event = event, modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
+          Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            if (bodyReady || bodyFade.value > 0f) {
+              LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize()
+                  .graphicsLayer { alpha = bodyFade.value }
+                  .cardMascotViewport(),
+                verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+              ) {
+                if (event.teams.isNotEmpty()) {
                   item {
-                    EventEmptySection(
-                      uiState = uiState,
-                      title = "No matches yet",
-                      message = "Match fixtures have not been published for this event.",
-                    )
-                  }
-                } else {
-                  item {
-                    EventMatchGroupSelector(
-                      modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-                      grouping = matchGrouping,
-                      groupNames = groupNames,
-                      selectedGroupName = resolvedMatchGroupName,
-                      onGroupingSelected = onMatchGroupingSelected,
-                      onGroupSelected = onMatchGroupSelected,
-                      onMenuExpandedChange = { isGroupingMenuExpanded = it },
-                    )
-                  }
-                  items(visibleMatches, key = EventMatch::matchId) { match ->
-                    EventDetailMatchItem(
-                      modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(
-                        topClearance = Prism.dimens.spacingM + Prism.dimens.spacingS + Prism.dimens.spacingXs,
-                      ),
-                      match = match,
-                      favoriteReasons = if (event.isFavorite) {
-                        listOf(MatchFavoriteReason(MatchFavoriteSource.EVENT, event.id, event.title))
-                      } else emptyList(),
-                      onClick = {
+                    EventParticipantsRail(
+                      teams = event.teams.take(8),
+                      listState = participantsState,
+                      onTeamSelected = { teamId ->
                         isNavigatingAway = true
                         mascotState.onFinished()
-                        onMatchSelected(match.matchId)
+                        onTeamSelected(teamId)
                       },
                     )
                   }
                 }
-              }
-
-              EventDetailSection.Standings -> {
-                if (event.standings.isEmpty()) {
-                  item {
-                    EventEmptySection(
-                      uiState = uiState,
-                      title = "No standings yet",
-                      message = "Team standings have not been published for this event.",
-                    )
+                item {
+                  PrismTabs(
+                    modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
+                    tabs = EventDetailSection.entries.map { PrismTab(id = it.name, label = it.name) },
+                    selectedTabId = section.name,
+                    onTabSelected = { onSectionSelected(EventDetailSection.valueOf(it.id)) },
+                  )
+                }
+                when (section) {
+                  EventDetailSection.Matches -> {
+                    if (event.matches.isEmpty()) {
+                      item {
+                        EventEmptySection(
+                          uiState = uiState,
+                          title = "No matches yet",
+                          message = "Match fixtures have not been published for this event.",
+                        )
+                      }
+                    } else {
+                      item {
+                        EventMatchGroupSelector(
+                          modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
+                          grouping = matchGrouping,
+                          groupNames = groupNames,
+                          selectedGroupName = resolvedMatchGroupName,
+                          onGroupingSelected = onMatchGroupingSelected,
+                          onGroupSelected = onMatchGroupSelected,
+                          onMenuExpandedChange = { isGroupingMenuExpanded = it },
+                        )
+                      }
+                      items(visibleMatches, key = EventMatch::matchId) { match ->
+                        EventDetailMatchItem(
+                          modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(
+                            topClearance = Prism.dimens.spacingM + Prism.dimens.spacingS + Prism.dimens.spacingXs,
+                          ),
+                          match = match,
+                          favoriteReasons = if (event.isFavorite) {
+                            listOf(MatchFavoriteReason(MatchFavoriteSource.EVENT, event.id, event.title))
+                          } else emptyList(),
+                          onClick = {
+                            isNavigatingAway = true
+                            mascotState.onFinished()
+                            onMatchSelected(match.matchId)
+                          },
+                        )
+                      }
+                    }
                   }
-                } else if (spoilersHidden) {
-                  item { PrismSectionTitle(title = "Standings", preLabel = "table", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
-                  item { SpoilerHiddenNotice(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
-                } else {
-                  item { PrismSectionTitle(title = "Standings", preLabel = "table", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
-                  items(event.standings, key = EventStanding::teamName) { standing ->
-                    EventDetailStandingItem(
-                      standing = standing,
-                      modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(topClearance = Prism.dimens.spacingM),
-                    )
+
+                  EventDetailSection.Standings -> {
+                    if (event.standings.isEmpty()) {
+                      item {
+                        EventEmptySection(
+                          uiState = uiState,
+                          title = "No standings yet",
+                          message = "Team standings have not been published for this event.",
+                        )
+                      }
+                    } else if (spoilersHidden) {
+                      item { PrismSectionTitle(title = "Standings", preLabel = "table", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
+                      item { SpoilerHiddenNotice(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
+                    } else {
+                      item { PrismSectionTitle(title = "Standings", preLabel = "table", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
+                      items(event.standings, key = EventStanding::teamName) { standing ->
+                        EventDetailStandingItem(
+                          standing = standing,
+                          modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(topClearance = Prism.dimens.spacingM),
+                        )
+                      }
+                    }
+                  }
+
+                  EventDetailSection.Prizes -> {
+                    if (event.prizes.isEmpty()) {
+                      item {
+                        EventEmptySection(
+                          uiState = uiState,
+                          title = "No prize breakdown yet",
+                          message = "Prize placements have not been published for this event.",
+                        )
+                      }
+                    } else if (spoilersHidden) {
+                      item { PrismSectionTitle(title = "Prizes", preLabel = "placements", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
+                      item { SpoilerHiddenNotice(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
+                    } else {
+                      item { PrismSectionTitle(title = "Prizes", preLabel = "placements", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
+                      itemsIndexed(
+                        items = event.prizes,
+                        key = { index, prize -> "${prize.position}-${prize.prize}-${prize.team?.id}-$index" },
+                      ) { _, prize ->
+                        val prizeTeam = prize.team
+                        val prizeTeamId = prizeTeam?.id
+                        EventDetailPrizeItem(
+                          prize = prize,
+                          modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(topClearance = Prism.dimens.spacingM),
+                          onTeamClick = prizeTeamId?.let { teamId ->
+                            {
+                              isNavigatingAway = true
+                              mascotState.onFinished()
+                              onTeamSelected(teamId)
+                            }
+                          },
+                        )
+                      }
+                    }
                   }
                 }
-              }
-
-              EventDetailSection.Prizes -> {
-                if (event.prizes.isEmpty()) {
-                  item {
-                    EventEmptySection(
-                      uiState = uiState,
-                      title = "No prize breakdown yet",
-                      message = "Prize placements have not been published for this event.",
-                    )
-                  }
-                } else if (spoilersHidden) {
-                  item { PrismSectionTitle(title = "Prizes", preLabel = "placements", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
-                  item { SpoilerHiddenNotice(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
-                } else {
-                  item { PrismSectionTitle(title = "Prizes", preLabel = "placements", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
-                  itemsIndexed(
-                    items = event.prizes,
-                    key = { index, prize -> "${prize.position}-${prize.prize}-${prize.team?.id}-$index" },
-                  ) { _, prize ->
-                    val prizeTeam = prize.team
-                    val prizeTeamId = prizeTeam?.id
-                    EventDetailPrizeItem(
-                      prize = prize,
-                      modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(topClearance = Prism.dimens.spacingM),
-                      onTeamClick = prizeTeamId?.let { teamId ->
-                        {
-                          isNavigatingAway = true
-                          mascotState.onFinished()
-                          onTeamSelected(teamId)
-                        }
-                      },
-                    )
-                  }
+                item {
+                  Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
                 }
               }
             }
-            item {
-              Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
+            if (bodyFade.value < 1f) {
+              EventDetailsLoading(
+                label = "Loading event details",
+                modifier = Modifier.fillMaxSize()
+                  .graphicsLayer { alpha = 1f - bodyFade.value },
+              )
             }
           }
         }
@@ -374,9 +411,10 @@ private fun EventEmptySection(
   uiState: EventDetailsUiState,
   title: String,
   message: String,
+  modifier: Modifier = Modifier,
 ) {
   if (LocalIsOnline.current && !uiState.isLoading && !uiState.isDetailLoadPending && !uiState.isRefreshing && uiState.errorMessage == null) {
-    SharedEmptyState(artwork = EmptyStateArtwork.NoLiveEvents, title = title, message = message, compact = true, modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
+    SharedEmptyState(artwork = EmptyStateArtwork.NoLiveEvents, title = title, message = message, compact = true, modifier = modifier.padding(horizontal = Prism.dimens.spacingM))
   }
 }
 
@@ -406,5 +444,26 @@ private fun EventParticipantsRail(
         }
       }
     }
+  }
+}
+
+@Composable
+private fun rememberEventContentFade(ready: Boolean): State<Float> {
+  val alpha = remember { Animatable(0f) }
+  val animation = Prism.anim.standard
+  LaunchedEffect(ready, alpha) {
+    if (ready) {
+      alpha.animateTo(1f, tween(durationMillis = animation.durationMillis, easing = animation.easing))
+    }
+  }
+  return alpha.asState()
+}
+
+@Composable
+private fun EventDetailsLoading(label: String, modifier: Modifier = Modifier) {
+  if (LocalIsOnline.current) {
+    PrismFullscreenLoader(modifier = modifier, size = PrismLoaderSize.Large, label = label)
+  } else {
+    SharedScreenLoading(label = label, modifier = modifier)
   }
 }

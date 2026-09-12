@@ -27,6 +27,9 @@ import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import dev.staticvar.vlr.sharedui.component.event.EventSharedContent
+import dev.staticvar.vlr.sharedui.component.event.eventSharedBounds
+import dev.staticvar.vlr.sharedui.component.event.eventLogoSharedElement
 
 @Composable
 public fun EventPreviewItem(
@@ -34,9 +37,13 @@ public fun EventPreviewItem(
   eventPreview: EventPreview,
   onClick: (() -> Unit)? = null,
 ) {
-  FavoriteTicketCardBox(selected = eventPreview.isFavorite, modifier = modifier) {
+  FavoriteTicketCardBox(
+    selected = eventPreview.isFavorite,
+    modifier = modifier,
+    favoriteModifier = Modifier.eventSharedBounds(eventPreview.id, EventSharedContent.Favorite),
+  ) {
     PrismCard(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().eventSharedBounds(eventPreview.id, EventSharedContent.Card),
       style = if (eventPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
       onClick = onClick,
     ) {
@@ -46,7 +53,7 @@ public fun EventPreviewItem(
         horizontalArrangement = Arrangement.SpaceBetween,
       ) {
         PrismHeader(text = eventPreview.region)
-        PrismTag(text = eventPreview.status.label, style = eventPreview.status.tagStyle)
+        PrismTag(text = eventPreview.status.label, style = eventPreview.status.tagStyle, modifier = Modifier.eventSharedBounds(eventPreview.id, EventSharedContent.Status))
       }
       Row(
         modifier = Modifier
@@ -57,6 +64,7 @@ public fun EventPreviewItem(
         SharedNetworkIcon(
           imageUrl = eventPreview.logoUrl,
           contentDescription = eventPreview.title,
+          imageModifier = Modifier.eventLogoSharedElement(eventId = eventPreview.id),
           size = PrismIconSize.Large,
           style = PrismIconStyle.Plain,
           tint = PrismIconTint.None,
@@ -64,12 +72,13 @@ public fun EventPreviewItem(
         Column(modifier = Modifier.padding(start = Prism.dimens.spacingS)) {
           Text(
             text = eventPreview.title,
+            modifier = Modifier.eventSharedBounds(eventPreview.id, EventSharedContent.Title),
             style = Prism.typography.cardTitle,
             color = Prism.color.titleColor,
           )
           Text(
             text = eventPreview.dates,
-            modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+            modifier = Modifier.padding(top = Prism.dimens.spacingXs).eventSharedBounds(eventPreview.id, EventSharedContent.Dates),
             style = Prism.typography.label,
             color = Prism.color.bodyColor,
           )
@@ -78,7 +87,7 @@ public fun EventPreviewItem(
       }
       Text(
         text = eventPreview.prize,
-        modifier = Modifier.padding(top = Prism.dimens.spacingS),
+        modifier = Modifier.padding(top = Prism.dimens.spacingS).eventSharedBounds(eventPreview.id, EventSharedContent.Prize),
         style = Prism.typography.bodySmall,
         color = Prism.color.labelColor,
       )

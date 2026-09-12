@@ -4,6 +4,8 @@
  */
 package dev.staticvar.vlr.shared.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -15,6 +17,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import dev.staticvar.vlr.featureabout.presentation.AboutRoute
 import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailSection
@@ -41,6 +44,7 @@ import dev.staticvar.vlr.featureteam.presentation.TeamDetailsViewModel
 import dev.staticvar.vlr.featureteam.presentation.TeamMatchesSection
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
+import dev.staticvar.vlr.sharedui.component.event.ProvideEventTransitionScope
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
@@ -51,26 +55,39 @@ import org.koin.dsl.navigation3.navigation
 
 private val LocalVlrAppState = compositionLocalOf<VlrAppState> { error("No VlrAppState provided") }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
+internal val LocalAppEventSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }
+
 @OptIn(KoinExperimentalAPI::class)
 internal fun appNavigationModule(): Module = module {
   viewModel { AppearanceViewModel(repository = get()) }
 
-  navigation<AppRoute.Home> {
+  navigation<AppRoute.Home>(metadata = mapOf(EventTransitionRoleKey to EventTransitionRole.List)) {
     val appState = LocalVlrAppState.current
     val viewModel = koinViewModel<HomeViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
 
-    HomeRoute(
-      uiState = uiState,
-      onRefresh = viewModel::refresh,
-      onSettings = appState::showSettings,
-      onMatchSelected = appState::showRootMatchDetails,
-      onEventSelected = appState::showRootEventDetails,
-      onTeamSelected = appState::showRootTeamDetails,
-      onPlayerSelected = appState::showRootPlayerDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
+    val eventTransitionEnabled = LocalAppEventSharedTransitionScope.current != null
+    EventLogoTransitionHost {
+      HomeRoute(
+        uiState = uiState,
+        onRefresh = viewModel::refresh,
+        onSettings = appState::showSettings,
+        onMatchSelected = appState::showRootMatchDetails,
+        onEventSelected = appState::showRootEventDetails,
+        onEventPreviewSelected = { eventPreview ->
+          if (eventTransitionEnabled) {
+            appState.showEventDetailsFromPreview(eventPreview)
+          } else {
+            appState.showRootEventDetails(eventPreview.id)
+          }
+        },
+        onTeamSelected = appState::showRootTeamDetails,
+        onPlayerSelected = appState::showRootPlayerDetails,
+        modifier = Modifier.fillMaxSize(),
+      )
+    }
   }
   navigation<AppRoute.News>(metadata = listPane(group = "news")) {
     val appState = LocalVlrAppState.current
@@ -132,21 +149,34 @@ internal fun appNavigationModule(): Module = module {
       modifier = Modifier.fillMaxSize(),
     )
   }
-  navigation<AppRoute.Events>(metadata = listPane(group = "events")) {
+  navigation<AppRoute.Events>(
+    metadata = listPane(group = "events") + (EventTransitionRoleKey to EventTransitionRole.List),
+  ) {
     val appState = LocalVlrAppState.current
+    val eventLogoTransitionEnabled = LocalAppEventSharedTransitionScope.current != null
     val viewModel = koinViewModel<EventsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
 
-    EventsOverviewRoute(
-      uiState = uiState,
-      onRefresh = viewModel::refresh,
-      onFilterSelected = viewModel::selectFilter,
-      onEventSelected = appState::showRootEventDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
+    EventLogoTransitionHost {
+      EventsOverviewRoute(
+        uiState = uiState,
+        onRefresh = viewModel::refresh,
+        onFilterSelected = viewModel::selectFilter,
+        onEventSelected = { eventPreview ->
+          if (eventLogoTransitionEnabled) {
+            appState.showEventDetailsFromPreview(eventPreview)
+          } else {
+            appState.showRootEventDetails(eventPreview.id)
+          }
+        },
+        modifier = Modifier.fillMaxSize(),
+      )
+    }
   }
-  navigation<AppRoute.EventDetails>(metadata = detailPane(group = "events")) { route ->
+  navigation<AppRoute.EventDetails>(
+    metadata = detailPane(group = "events") + (EventTransitionRoleKey to EventTransitionRole.Detail),
+  ) { route ->
     val appState = LocalVlrAppState.current
     val viewModel = koinViewModel<EventDetailsViewModel> { parametersOf(route.eventId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -156,24 +186,28 @@ internal fun appNavigationModule(): Module = module {
 
     RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
 
-    EventDetailsRoute(
-      onToggleFavorite = viewModel::toggleFavorite,
-      uiState = uiState,
-      onRefresh = viewModel::refresh,
-      section = section,
-      matchGrouping = matchGrouping,
-      selectedMatchGroupName = selectedMatchGroupName,
-      onSectionSelected = { section = it },
-      onMatchGroupingSelected = { grouping ->
-        matchGrouping = grouping
-        selectedMatchGroupName = null
-      },
-      onMatchGroupSelected = { selectedMatchGroupName = it },
-      onBack = appState::navigateUp,
-      onMatchSelected = appState::showMatchDetails,
-      onTeamSelected = appState::showTeamDetails,
-      modifier = Modifier.fillMaxSize(),
-    )
+    val eventPreview = appState.eventTransitionPreview?.takeIf { preview -> preview.id == route.eventId }
+    EventLogoTransitionHost(enabled = eventPreview != null) {
+      EventDetailsRoute(
+        onToggleFavorite = viewModel::toggleFavorite,
+        uiState = uiState,
+        eventPreview = eventPreview,
+        onRefresh = viewModel::refresh,
+        section = section,
+        matchGrouping = matchGrouping,
+        selectedMatchGroupName = selectedMatchGroupName,
+        onSectionSelected = { section = it },
+        onMatchGroupingSelected = { grouping ->
+          matchGrouping = grouping
+          selectedMatchGroupName = null
+        },
+        onMatchGroupSelected = { selectedMatchGroupName = it },
+        onBack = appState::navigateUp,
+        onMatchSelected = appState::showMatchDetails,
+        onTeamSelected = appState::showTeamDetails,
+        modifier = Modifier.fillMaxSize(),
+      )
+    }
   }
   navigation<AppRoute.Rankings>(metadata = listPane(group = "rankings")) {
     val viewModel = koinViewModel<RankingsViewModel>()
@@ -255,4 +289,23 @@ internal fun appNavigationModule(): Module = module {
 @Composable
 internal fun ProvideVlrAppState(appState: VlrAppState, content: @Composable () -> Unit) {
   CompositionLocalProvider(LocalVlrAppState provides appState, content = content)
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun EventLogoTransitionHost(
+  enabled: Boolean = true,
+  content: @Composable () -> Unit,
+) {
+  val sharedTransitionScope = LocalAppEventSharedTransitionScope.current
+  if (!enabled || sharedTransitionScope == null) {
+    content()
+    return
+  }
+
+  ProvideEventTransitionScope(
+    sharedTransitionScope = sharedTransitionScope,
+    animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+    content = content,
+  )
 }

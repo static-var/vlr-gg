@@ -33,7 +33,11 @@ public data class DetailStatItem(
 )
 
 @Composable
-public fun DetailStatStrip(items: List<DetailStatItem>, modifier: Modifier = Modifier) {
+public fun DetailStatStrip(
+  items: List<DetailStatItem>,
+  modifier: Modifier = Modifier,
+  valueModifier: @Composable (Int) -> Modifier = { Modifier },
+) {
   if (items.isEmpty()) return
   PrismSurface(
     modifier = modifier.fillMaxWidth(),
@@ -50,14 +54,14 @@ public fun DetailStatStrip(items: List<DetailStatItem>, modifier: Modifier = Mod
             color = Prism.color.stroke,
           )
         }
-        DetailStatCell(value = item.value, label = item.label, modifier = Modifier.weight(1f))
+        DetailStatCell(value = item.value, label = item.label, modifier = Modifier.weight(1f), valueModifier = valueModifier(index))
       }
     }
   }
 }
 
 @Composable
-private fun DetailStatCell(value: String, label: String, modifier: Modifier = Modifier) {
+private fun DetailStatCell(value: String, label: String, modifier: Modifier = Modifier, valueModifier: Modifier = Modifier) {
   Box(
     modifier = modifier
       .fillMaxWidth()
@@ -72,7 +76,7 @@ private fun DetailStatCell(value: String, label: String, modifier: Modifier = Mo
     ) {
       Text(
         text = value,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = valueModifier,
         style = Prism.typography.bodySmall,
         color = Prism.color.titleColor,
         textAlign = TextAlign.Center,

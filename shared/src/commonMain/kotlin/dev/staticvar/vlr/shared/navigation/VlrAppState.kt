@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.savedstate.serialization.SavedStateConfiguration
+import dev.staticvar.vlr.domain.model.EventPreview
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -62,6 +63,9 @@ public class VlrAppState internal constructor(
   public var homeEnabled: Boolean by mutableStateOf(initialHomeEnabled)
     private set
 
+  internal var eventTransitionPreview: EventPreview? by mutableStateOf(null)
+    private set
+
   init {
     val restoredBase = backStack.firstOrNull().takeIf { it == AppRoute.Home || it == AppRoute.News } as? AppRoute
     normalizeBackStack(oldBase = restoredBase ?: baseRoute, newBase = baseRoute)
@@ -89,6 +93,7 @@ public class VlrAppState internal constructor(
 
   public fun updateHomeEnabled(enabled: Boolean) {
     Snapshot.withMutableSnapshot {
+      eventTransitionPreview = null
       val oldBase = baseRoute
       homeEnabled = enabled
       normalizeBackStack(oldBase = oldBase, newBase = baseRoute)
@@ -101,6 +106,7 @@ public class VlrAppState internal constructor(
 
   public fun selectRoot(route: AppRoute) {
     if (route !in currentTabRoutes) return
+    eventTransitionPreview = null
     backStack.clear()
     backStack.add(baseRoute)
     if (route != baseRoute) {
@@ -110,6 +116,9 @@ public class VlrAppState internal constructor(
 
   public fun navigateUp() {
     if (canNavigateBack) {
+      if (backStack.lastOrNull() !is AppRoute.EventDetails) {
+        eventTransitionPreview = null
+      }
       backStack.removeLastOrNull()
     }
   }
@@ -120,6 +129,19 @@ public class VlrAppState internal constructor(
 
   public fun showRootEventDetails(eventId: String) {
     replaceWithDetail(route = AppRoute.EventDetails(eventId = eventId))
+  }
+
+  internal fun showEventDetailsFromPreview(eventPreview: EventPreview) {
+    val origin = backStack.lastOrNull()
+    if (origin != AppRoute.Home && origin != AppRoute.Events) {
+      showRootEventDetails(eventId = eventPreview.id)
+      return
+    }
+    eventTransitionPreview = eventPreview
+    replaceWithDetail(
+      route = AppRoute.EventDetails(eventId = eventPreview.id),
+      preserveEventTransitionPreview = true,
+    )
   }
 
   public fun showRootNewsArticle(articleId: String) {
@@ -163,23 +185,31 @@ public class VlrAppState internal constructor(
   }
 
   public fun replaceTeamDetails(teamId: String) {
+    eventTransitionPreview = null
     backStack.removeAll { navKey -> navKey is AppRoute.TeamDetails || navKey is AppRoute.PlayerDetails }
     backStack.add(AppRoute.TeamDetails(teamId = teamId))
   }
 
   public fun replacePlayerDetails(playerId: String) {
+    eventTransitionPreview = null
     backStack.removeAll { navKey -> navKey is AppRoute.PlayerDetails }
     backStack.add(AppRoute.PlayerDetails(playerId = playerId))
   }
 
-  private fun replaceWithDetail(route: AppRoute) {
+  private fun replaceWithDetail(route: AppRoute, preserveEventTransitionPreview: Boolean = false) {
+    if (!preserveEventTransitionPreview) {
+      eventTransitionPreview = null
+    }
     while (backStack.size > 1 && !isCurrentTabRoute(backStack.last())) {
       backStack.removeLastOrNull()
     }
-    pushRoute(route = route)
+    pushRoute(route = route, preserveEventTransitionPreview = preserveEventTransitionPreview)
   }
 
-  private fun pushRoute(route: AppRoute) {
+  private fun pushRoute(route: AppRoute, preserveEventTransitionPreview: Boolean = false) {
+    if (!preserveEventTransitionPreview) {
+      eventTransitionPreview = null
+    }
     if (backStack.lastOrNull() == route) {
       return
     }

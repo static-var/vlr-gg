@@ -38,6 +38,7 @@ import dev.staticvar.designsystem.prism.PrismVariant
 internal fun FavoriteTicketCardBox(
   selected: Boolean,
   modifier: Modifier = Modifier,
+  favoriteModifier: Modifier = Modifier,
   content: @Composable BoxScope.() -> Unit,
 ) {
   val ticketGutter = Prism.dimens.spacingS + Prism.dimens.spacingXs
@@ -53,7 +54,8 @@ internal fun FavoriteTicketCardBox(
           modifier = Modifier
             .align(Alignment.TopStart)
             .offset(x = Prism.dimens.spacingS, y = -ticketGutter)
-            .zIndex(1f),
+            .zIndex(1f)
+            .then(favoriteModifier),
         )
       }
     }
