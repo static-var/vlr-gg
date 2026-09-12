@@ -11,6 +11,7 @@ import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.MatchVideos
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.MatchRepository
+import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertSame
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MatchesUseCasesTest {
@@ -34,13 +36,23 @@ class MatchesUseCasesTest {
   }
 
   @Test
-  fun refreshMatchesDelegatesToRepository() {
+  fun refreshMatchesWaitsForProfilesAndStillFetchesAfterProfileFailure() {
     runTest {
-      val repository = FakeMatchRepository(matches = emptyList())
+      val calls = mutableListOf<String>()
+      val expected = IllegalStateException("profile refresh failed")
+      val repository = FakeMatchRepository(matches = emptyList()) {
+        calls += "matches"
+        Result.success(Unit)
+      }
+      val profiles = InitialFavoriteProfilesRefresh {
+        calls += "profiles"
+        Result.failure(expected)
+      }
 
-      val result = RefreshMatchesUseCase(repository)()
+      val result = RefreshMatchesUseCase(repository, profiles)()
 
-      assertEquals(true, result.isSuccess)
+      assertSame(expected, result.exceptionOrNull())
+      assertEquals(listOf("profiles", "matches"), calls)
       assertEquals(1, repository.refreshMatchesCalls)
     }
   }
@@ -73,6 +85,7 @@ class MatchesUseCasesTest {
   private class FakeMatchRepository(
     private val matches: List<MatchPreview> = emptyList(),
     private val details: MatchDetails? = null,
+    private val onRefreshMatches: suspend () -> Result<Unit> = { Result.success(Unit) },
   ) : MatchRepository {
     var refreshMatchesCalls: Int = 0
       private set
@@ -94,7 +107,7 @@ class MatchesUseCasesTest {
 
     override suspend fun refreshMatches(): Result<Unit> {
       refreshMatchesCalls += 1
-      return Result.success(Unit)
+      return onRefreshMatches()
     }
 
     override suspend fun refreshMatchDetails(matchId: String): Result<Unit> {

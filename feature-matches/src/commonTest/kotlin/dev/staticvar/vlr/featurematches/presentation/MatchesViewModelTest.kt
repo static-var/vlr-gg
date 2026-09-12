@@ -13,6 +13,7 @@ import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.MatchRepository
+import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchListUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchesUseCase
 import kotlinx.coroutines.Dispatchers
@@ -194,7 +195,10 @@ class MatchesViewModelTest {
 
   private fun createViewModel(repository: FakeMatchRepository): MatchesViewModel = MatchesViewModel(
     observeMatchListUseCase = ObserveMatchListUseCase(repository),
-    refreshMatchesUseCase = RefreshMatchesUseCase(repository),
+    refreshMatchesUseCase = RefreshMatchesUseCase(
+      matchRepository = repository,
+      initialFavoriteProfilesRefresh = InitialFavoriteProfilesRefresh { Result.success(Unit) },
+    ),
     networkMonitor = object : NetworkMonitor {
       override val isOnline = MutableStateFlow(true)
     },

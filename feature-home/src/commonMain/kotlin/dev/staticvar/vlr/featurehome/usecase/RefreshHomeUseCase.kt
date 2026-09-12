@@ -6,6 +6,7 @@ package dev.staticvar.vlr.featurehome.usecase
 
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
+import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -14,11 +15,13 @@ import kotlinx.coroutines.coroutineScope
 public class RefreshHomeUseCase(
   private val matchRepository: MatchRepository,
   private val eventRepository: EventRepository,
+  private val initialFavoriteProfilesRefresh: InitialFavoriteProfilesRefresh,
 ) {
   public suspend operator fun invoke(): Result<Unit> = coroutineScope {
+    val profiles = refreshResult { initialFavoriteProfilesRefresh.awaitInitialRefresh() }
     val matches = async { refreshResult { matchRepository.refreshMatches() } }
     val events = async { refreshResult { eventRepository.refreshEvents() } }
-    val results = awaitAll(matches, events)
+    val results = listOf(profiles) + awaitAll(matches, events)
     results.firstOrNull { result -> result.isFailure } ?: Result.success(Unit)
   }
 }

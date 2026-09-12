@@ -8,6 +8,7 @@ import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.repository.EventRepository
+import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertSame
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EventsUseCasesTest {
@@ -31,13 +33,23 @@ class EventsUseCasesTest {
   }
 
   @Test
-  fun refreshEventsDelegatesToRepository() {
+  fun refreshEventsWaitsForProfilesAndStillFetchesAfterProfileFailure() {
     runTest {
-      val repository = FakeEventRepository(events = emptyList())
+      val calls = mutableListOf<String>()
+      val expected = IllegalStateException("profile refresh failed")
+      val repository = FakeEventRepository(events = emptyList()) {
+        calls += "events"
+        Result.success(Unit)
+      }
+      val profiles = InitialFavoriteProfilesRefresh {
+        calls += "profiles"
+        Result.failure(expected)
+      }
 
-      val result = RefreshEventsUseCase(repository)()
+      val result = RefreshEventsUseCase(repository, profiles)()
 
-      assertEquals(true, result.isSuccess)
+      assertSame(expected, result.exceptionOrNull())
+      assertEquals(listOf("profiles", "events"), calls)
       assertEquals(1, repository.refreshEventsCalls)
     }
   }
@@ -70,6 +82,7 @@ class EventsUseCasesTest {
   private class FakeEventRepository(
     private val events: List<EventPreview> = emptyList(),
     private val details: EventDetails? = null,
+    private val onRefreshEvents: suspend () -> Result<Unit> = { Result.success(Unit) },
   ) : EventRepository {
     var refreshEventsCalls: Int = 0
       private set
@@ -91,7 +104,7 @@ class EventsUseCasesTest {
 
     override suspend fun refreshEvents(): Result<Unit> {
       refreshEventsCalls += 1
-      return Result.success(Unit)
+      return onRefreshEvents()
     }
 
     override suspend fun refreshEventDetails(eventId: String): Result<Unit> {

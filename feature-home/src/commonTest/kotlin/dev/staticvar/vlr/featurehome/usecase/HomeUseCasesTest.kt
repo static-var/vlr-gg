@@ -18,15 +18,18 @@ import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
+import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -136,27 +139,67 @@ class HomeUseCasesTest {
 
   @Test
   fun refreshKeepsSuccessfulCacheUpdateWhenSiblingThrows() = runTest {
+    val profileStarted = CompletableDeferred<Unit>()
+    val allowProfiles = CompletableDeferred<Unit>()
     val matchStarted = CompletableDeferred<Unit>()
     val eventStarted = CompletableDeferred<Unit>()
+    var profilesCompleted = false
     var matchCompleted = false
     val expected = IllegalStateException("event refresh failed")
     val useCase = RefreshHomeUseCase(
       matchRepository = FakeMatchRepository(emptyList()) {
+        assertTrue(profilesCompleted)
         matchStarted.complete(Unit)
         eventStarted.await()
         matchCompleted = true
         Result.success(Unit)
       },
       eventRepository = FakeEventRepository(emptyList()) {
+        assertTrue(profilesCompleted)
         eventStarted.complete(Unit)
         matchStarted.await()
         throw expected
       },
+      initialFavoriteProfilesRefresh = InitialFavoriteProfilesRefresh {
+        profileStarted.complete(Unit)
+        allowProfiles.await()
+        profilesCompleted = true
+        Result.success(Unit)
+      },
+    )
+
+    val result = async { useCase() }
+    profileStarted.await()
+    assertFalse(matchStarted.isCompleted)
+    assertFalse(eventStarted.isCompleted)
+    allowProfiles.complete(Unit)
+    val completed = result.await()
+
+    assertTrue(matchCompleted)
+    assertSame(expected, completed.exceptionOrNull())
+  }
+
+  @Test
+  fun refreshFetchesBothListsAfterProfileFailure() = runTest {
+    val expected = IllegalStateException("profile refresh failed")
+    var matchesRefreshed = false
+    var eventsRefreshed = false
+    val useCase = RefreshHomeUseCase(
+      matchRepository = FakeMatchRepository(emptyList()) {
+        matchesRefreshed = true
+        Result.success(Unit)
+      },
+      eventRepository = FakeEventRepository(emptyList()) {
+        eventsRefreshed = true
+        Result.success(Unit)
+      },
+      initialFavoriteProfilesRefresh = InitialFavoriteProfilesRefresh { Result.failure(expected) },
     )
 
     val result = useCase()
 
-    assertTrue(matchCompleted)
+    assertTrue(matchesRefreshed)
+    assertTrue(eventsRefreshed)
     assertSame(expected, result.exceptionOrNull())
   }
 
@@ -177,6 +220,7 @@ class HomeUseCasesTest {
         matchStarted.await()
         Result.failure(CancellationException("cancel home refresh"))
       },
+      initialFavoriteProfilesRefresh = InitialFavoriteProfilesRefresh { Result.success(Unit) },
     )
 
     assertFailsWith<CancellationException> { useCase() }

@@ -10,6 +10,7 @@ import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.repository.EventRepository
+import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.featureevents.usecase.ObserveEventListUseCase
 import dev.staticvar.vlr.featureevents.usecase.RefreshEventsUseCase
 import kotlinx.coroutines.CompletableDeferred
@@ -214,7 +215,10 @@ class EventsViewModelTest {
 
   private fun createViewModel(repository: FakeEventRepository): EventsViewModel = EventsViewModel(
     observeEventListUseCase = ObserveEventListUseCase(repository),
-    refreshEventsUseCase = RefreshEventsUseCase(repository),
+    refreshEventsUseCase = RefreshEventsUseCase(
+      eventRepository = repository,
+      initialFavoriteProfilesRefresh = InitialFavoriteProfilesRefresh { Result.success(Unit) },
+    ),
     networkMonitor = object : NetworkMonitor {
       override val isOnline = MutableStateFlow(true)
     },

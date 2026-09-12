@@ -16,7 +16,7 @@ import org.koin.dsl.module
 
 public fun eventsFeatureModule(): Module = module {
   factory { ObserveEventListUseCase(eventRepository = get()) }
-  factory { RefreshEventsUseCase(eventRepository = get()) }
+  factory { RefreshEventsUseCase(eventRepository = get(), initialFavoriteProfilesRefresh = get()) }
   factory { ObserveEventDetailsUseCase(eventRepository = get()) }
   factory { RefreshEventDetailsUseCase(eventRepository = get()) }
   viewModel {

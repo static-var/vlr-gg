@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
@@ -25,6 +26,7 @@ import dev.staticvar.vlr.core.settings.CatppuccinFlavour
 import dev.staticvar.vlr.core.settings.MascotPreference
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import dev.staticvar.vlr.core.settings.ThemeFamily
+import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
 import dev.staticvar.vlr.shared.appearance.ApplyPlatformAppearance
 import dev.staticvar.vlr.shared.navigation.AppNavHost
@@ -38,6 +40,7 @@ import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerMode
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import kotlinx.coroutines.flow.first
 
 /**
  * Main entry point for the shared Compose UI.
@@ -51,6 +54,11 @@ public fun App() {
   val spoilerPreferences = koinInject<SpoilerPreferencesRepository>()
   val spoilersHidden by spoilerPreferences.enabled.collectAsStateWithLifecycle()
   val isOnline by networkMonitor.isOnline.collectAsStateWithLifecycle()
+  val initialFavoriteProfilesRefresh = koinInject<InitialFavoriteProfilesRefresh>()
+  LaunchedEffect(initialFavoriteProfilesRefresh) {
+    networkMonitor.isOnline.first { it }
+    initialFavoriteProfilesRefresh.awaitInitialRefresh()
+  }
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val viewModel = koinViewModel<AppearanceViewModel>()
   val appearance by viewModel.appearance.collectAsStateWithLifecycle()

@@ -18,7 +18,7 @@ import org.koin.dsl.module
 public fun matchesFeatureModule(): Module = module {
   factory { SetMatchFavoriteUseCase(matchRepository = get()) }
   factory { ObserveMatchListUseCase(matchRepository = get()) }
-  factory { RefreshMatchesUseCase(matchRepository = get()) }
+  factory { RefreshMatchesUseCase(matchRepository = get(), initialFavoriteProfilesRefresh = get()) }
   factory { ObserveMatchDetailsUseCase(matchRepository = get()) }
   factory { RefreshMatchDetailsUseCase(matchRepository = get()) }
   viewModel {
