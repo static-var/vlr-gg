@@ -31,6 +31,7 @@ dependencyResolutionManagement {
 rootProject.name = "VLR"
 
 include(":androidApp")
+include(":baselineProfile")
 
 include(":iosApp")
 

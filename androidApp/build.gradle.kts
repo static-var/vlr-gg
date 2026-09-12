@@ -12,6 +12,7 @@ plugins {
   alias(libs.plugins.compose.multiplatform)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.sentry.android)
+  alias(libs.plugins.baselineprofile)
 }
 
 val localProperties = Properties()
@@ -120,7 +121,14 @@ kotlin {
   }
 }
 
+baselineProfile {
+  saveInSrc = true
+  automaticGenerationDuringBuild = false
+}
+
 dependencies {
+  baselineProfile(projects.baselineProfile)
+  implementation(libs.profileinstaller)
   // Compose Multiplatform
   implementation(compose.runtime)
   implementation(compose.foundation)
