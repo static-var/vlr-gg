@@ -5,6 +5,8 @@
 package dev.staticvar.vlr.sharedui.component.common
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +32,8 @@ import dev.staticvar.designsystem.prism.Prism
 public data class DetailStatItem(
   val value: String,
   val label: String,
+  val onClick: (() -> Unit)? = null,
+  val valueMaxLines: Int = 1,
 )
 
 @Composable
@@ -54,14 +58,16 @@ public fun DetailStatStrip(
             color = Prism.color.stroke,
           )
         }
-        DetailStatCell(value = item.value, label = item.label, modifier = Modifier.weight(1f), valueModifier = valueModifier(index))
+        DetailStatCell(value = item.value, label = item.label, modifier = Modifier.weight(1f).then(
+          item.onClick?.let { Modifier.clickable(role = Role.Button, onClickLabel = "View ${item.label}", onClick = it) } ?: Modifier,
+        ), valueModifier = valueModifier(index), valueMaxLines = item.valueMaxLines)
       }
     }
   }
 }
 
 @Composable
-private fun DetailStatCell(value: String, label: String, modifier: Modifier = Modifier, valueModifier: Modifier = Modifier) {
+private fun DetailStatCell(value: String, label: String, modifier: Modifier = Modifier, valueModifier: Modifier = Modifier, valueMaxLines: Int = 1) {
   Box(
     modifier = modifier
       .fillMaxWidth()
@@ -80,7 +86,7 @@ private fun DetailStatCell(value: String, label: String, modifier: Modifier = Mo
         style = Prism.typography.bodySmall,
         color = Prism.color.titleColor,
         textAlign = TextAlign.Center,
-        maxLines = 1,
+        maxLines = valueMaxLines,
         overflow = TextOverflow.Ellipsis,
       )
       Text(

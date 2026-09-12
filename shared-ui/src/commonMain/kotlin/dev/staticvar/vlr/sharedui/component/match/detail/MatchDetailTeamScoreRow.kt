@@ -41,6 +41,9 @@ public fun MatchDetailTeamScoreRow(
   isWinner: Boolean = false,
   showLogo: Boolean = true,
   onClick: (() -> Unit)? = null,
+  nameModifier: Modifier = Modifier,
+  scoreModifier: Modifier = Modifier,
+  logoSize: PrismIconSize = PrismIconSize.Large,
 ) {
   val spoilersHidden = LocalSpoilerMode.current.enabled
   val resolvedWinner = isWinner && !spoilersHidden
@@ -60,14 +63,14 @@ public fun MatchDetailTeamScoreRow(
       SharedNetworkIcon(
         imageUrl = imageUrl,
         contentDescription = teamName,
-        size = PrismIconSize.Large,
+        size = logoSize,
         style = PrismIconStyle.Bordered,
         tint = PrismIconTint.None,
       )
     }
     Text(
       text = teamName.ifBlank { "TBD" },
-      modifier = Modifier.weight(1f),
+      modifier = Modifier.weight(1f).then(nameModifier),
       style = Prism.typography.headline,
       color = if (resolvedWinner) Prism.color.accent else Prism.color.labelColor,
       maxLines = 1,
@@ -85,6 +88,7 @@ public fun MatchDetailTeamScoreRow(
     Spacer(modifier = Modifier.weight(0.05f))
     SpoilerScore(
       text = score,
+      modifier = scoreModifier,
       style = Prism.typography.headline,
       color = if (resolvedWinner) Prism.color.accent else Prism.color.labelColor,
       maxLines = 1,

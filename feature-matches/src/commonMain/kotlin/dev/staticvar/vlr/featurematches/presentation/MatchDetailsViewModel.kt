@@ -48,6 +48,7 @@ public class MatchDetailsViewModel(
       preferences = preferences,
       isLoading = refresh.isLoading(hasContent = match != null),
       isRefreshing = refresh.isRefreshing,
+      isDetailLoadPending = !refresh.hasCompleted || refresh.isRefreshing,
       errorMessage = refresh.errorMessage,
       errorDetails = refresh.errorDetails,
     )

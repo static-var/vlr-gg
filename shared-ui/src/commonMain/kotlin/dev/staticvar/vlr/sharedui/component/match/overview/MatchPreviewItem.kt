@@ -34,6 +34,8 @@ import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 import dev.staticvar.vlr.sharedui.component.match.MatchFavoriteReasons
+import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
+import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 
@@ -47,9 +49,13 @@ public fun MatchPreviewItem(
   onClick: (() -> Unit)? = null,
 ) {
   val selectionAnimation = Prism.anim.selection
-  FavoriteTicketCardBox(selected = matchPreview.isFavorite, modifier = modifier) {
+  FavoriteTicketCardBox(
+    selected = matchPreview.isFavorite,
+    modifier = modifier,
+    favoriteModifier = Modifier.matchSharedBounds(matchPreview.id, MatchSharedContent.Favorite),
+  ) {
     PrismCard(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().matchSharedBounds(matchPreview.id, MatchSharedContent.Card),
       style = if (matchPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
       onClick = onClick,
       onLongClick = onLongClick,
@@ -60,22 +66,31 @@ public fun MatchPreviewItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       ) {
-        PrismHeader(text = matchPreview.event, modifier = Modifier.weight(1f))
+        PrismHeader(
+          text = matchPreview.event,
+          modifier = Modifier.weight(1f).matchSharedBounds(matchPreview.id, MatchSharedContent.Event),
+        )
         val time = formatMatchPreviewTime(isoUtcTime = matchPreview.time)
         when (matchPreview.status) {
           MatchStatus.LIVE -> PrismTag(
             text = "LIVE",
+            modifier = Modifier.matchSharedBounds(matchPreview.id, MatchSharedContent.Status),
             style = PrismTagStyle.Accent,
           )
 
           MatchStatus.UPCOMING,
           MatchStatus.COMPLETED,
-          -> time?.let { formattedTime -> PrismTag(text = formattedTime) }
+          -> time?.let { formattedTime ->
+            PrismTag(
+              text = formattedTime,
+              modifier = Modifier.matchSharedBounds(matchPreview.id, MatchSharedContent.Time),
+            )
+          }
 
           MatchStatus.UNKNOWN -> Unit
         }
       }
-      ScoreBox(team1 = matchPreview.team1, team2 = matchPreview.team2, state = matchPreview.status)
+      ScoreBox(matchId = matchPreview.id, team1 = matchPreview.team1, team2 = matchPreview.team2, state = matchPreview.status)
       Row(
         modifier = Modifier
           .fillMaxWidth()
@@ -85,7 +100,7 @@ public fun MatchPreviewItem(
       ) {
         Text(
           text = matchPreview.series,
-          modifier = Modifier.weight(1f),
+          modifier = Modifier.weight(1f).matchSharedBounds(matchPreview.id, MatchSharedContent.Series),
           style = Prism.typography.label,
           color = Prism.color.labelColor,
           textAlign = TextAlign.Start,
@@ -103,7 +118,10 @@ public fun MatchPreviewItem(
           if (sharing) {
             footerAction?.invoke()
           } else {
-            MatchFavoriteReasons(reasons = matchPreview.favoriteReasons)
+            MatchFavoriteReasons(
+              reasons = matchPreview.favoriteReasons,
+              modifier = Modifier.matchSharedBounds(matchPreview.id, MatchSharedContent.Reasons),
+            )
           }
         }
       }
@@ -112,13 +130,19 @@ public fun MatchPreviewItem(
 }
 
 @Composable
-private fun ScoreBox(modifier: Modifier = Modifier, team1: TeamPreview, team2: TeamPreview, state: MatchStatus) {
+private fun ScoreBox(
+  matchId: String,
+  modifier: Modifier = Modifier,
+  team1: TeamPreview,
+  team2: TeamPreview,
+  state: MatchStatus,
+) {
   val spoilersHidden = LocalSpoilerMode.current.enabled
   val (actualTeam1, actualTeam2) = rememberTeamPreview(team1, team2, state, spoilersHidden)
   Column(modifier = modifier.fillMaxWidth()) {
-    TeamScoreRow(actualTeam1, useAltColor = !spoilersHidden && state != MatchStatus.UPCOMING)
+    TeamScoreRow(actualTeam1, matchId = matchId, useAltColor = !spoilersHidden && state != MatchStatus.UPCOMING)
     PrismDivider(style = PrismDividerStyle.Hairline)
-    TeamScoreRow(actualTeam2, useAltColor = !spoilersHidden && state == MatchStatus.LIVE)
+    TeamScoreRow(actualTeam2, matchId = matchId, useAltColor = !spoilersHidden && state == MatchStatus.LIVE)
   }
 }
 
@@ -146,7 +170,7 @@ private fun teamsByScore(team1: TeamPreview, team2: TeamPreview): Pair<TeamPrevi
 private fun TeamPreview.scoreForOrdering(): Int = score ?: Int.MIN_VALUE
 
 @Composable
-private fun TeamScoreRow(team: TeamPreview, useAltColor: Boolean, modifier: Modifier = Modifier) {
+private fun TeamScoreRow(team: TeamPreview, matchId: String, useAltColor: Boolean, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier.fillMaxWidth().padding(vertical = Prism.dimens.spacingXs),
     verticalAlignment = Alignment.CenterVertically,
@@ -157,13 +181,14 @@ private fun TeamScoreRow(team: TeamPreview, useAltColor: Boolean, modifier: Modi
       color = if (useAltColor) Prism.color.accent else Prism.color.labelColor,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
-      modifier = Modifier.weight(1f),
+      modifier = Modifier.weight(1f).matchSharedBounds(matchId, MatchSharedContent.TeamName, team.id),
     )
     SpoilerScore(
       text = team.score?.toString() ?: "-",
       style = Prism.typography.headline,
       color = if (useAltColor) Prism.color.accent else Prism.color.labelColor,
-      modifier = Modifier.padding(start = Prism.dimens.spacingXs),
+      modifier = Modifier.padding(start = Prism.dimens.spacingXs)
+        .matchSharedBounds(matchId, MatchSharedContent.TeamScore, team.id),
     )
   }
 }

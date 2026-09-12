@@ -65,10 +65,7 @@ private data class PlayerStatsAggregate(
   val recordedStatsCount: Int,
 )
 
-internal fun MatchDetails.matchDetailMeta(): String = listOfNotNull(
-  event.stage.takeIf(String::isNotBlank),
-  event.series.takeIf(String::isNotBlank),
-).joinToString(separator = " • ")
+internal fun MatchDetails.matchDetailMeta(): String = event.stage.ifBlank { event.series }
 
 internal fun MatchDetails.matchDetailDateStat(): String = event.date?.takeIf(String::isNotBlank) ?: "Pending"
 
@@ -80,17 +77,11 @@ internal fun MatchDetails.matchDetailMapCountStat(): String = when {
 
 internal fun MatchDetails.matchDetailStageStat(): String = event.stage.takeIf(String::isNotBlank) ?: "Stage"
 
-internal fun MatchDetails.matchDetailPatchStat(): String = event.patch?.takeIf(String::isNotBlank) ?: "-"
-
-internal fun MatchDetails.matchDetailBanStat(): String = when {
-  !hasMatchDetailStats() -> "-"
-  bans.size == 1 -> "1 ban"
-  bans.size > 1 -> "${bans.size} bans"
-  else -> "-"
+internal fun MatchDetails.matchDetailVetoStat(): String = when (val steps = bans.count(String::isNotBlank)) {
+  0 -> "-"
+  1 -> "1 step"
+  else -> "$steps steps"
 }
-
-private fun MatchDetails.hasMatchDetailStats(): Boolean =
-  !event.status.equals("upcoming", ignoreCase = true) && (matchData.isNotEmpty() || bans.isNotEmpty())
 
 internal fun List<MapData>.matchDetailMapOptions(): List<MatchDetailMapOption> {
   val mapOptions = mapIndexed { index, map ->

@@ -5,18 +5,24 @@
 package dev.staticvar.vlr.sharedui.component.match.detail
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.divider.PrismDivider
@@ -32,7 +38,7 @@ import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 
 /**
- * Compact head-to-head section with centered summary stats and dense previous encounter rows.
+ * Head-to-head win distribution and previous encounter rows.
  * Spoiler mode removes the win summary, score text, and winner emphasis.
  */
 @Composable
@@ -77,54 +83,80 @@ public fun MatchDetailHeadToHeadItem(
 
 @Composable
 private fun MatchDetailHeadToHeadSummaryStrip(summary: MatchDetailHeadToHeadSummary) {
+  val firstColor = Prism.color.accent
+  val secondColor = Prism.color.labelColor
   PrismSurface(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = Modifier.fillMaxWidth().clearAndSetSemantics {
+      contentDescription = "${summary.firstTeamName}: ${summary.firstTeamWins} wins. " +
+        "${summary.secondTeamName}: ${summary.secondTeamWins} wins. ${summary.totalPlayed} played."
+    },
     color = Prism.color.surfaceVariant,
     border = BorderStroke(width = Prism.dimens.strokeDefault, color = Prism.color.stroke),
   ) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-      MatchDetailHeadToHeadSummaryCell(
-        value = summary.firstTeamWins.toString(),
-        label = "${summary.firstTeamName} wins",
-        modifier = Modifier.weight(1f),
-      )
-      MatchDetailHeadToHeadSummaryCell(
-        value = summary.secondTeamWins.toString(),
-        label = "${summary.secondTeamName} wins",
-        modifier = Modifier.weight(1f),
-      )
-      MatchDetailHeadToHeadSummaryCell(
-        value = summary.totalPlayed.toString(),
-        label = "Played",
-        modifier = Modifier.weight(1f),
+    Column(
+      modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingS),
+      verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+    ) {
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+      ) {
+        HeadToHeadWinLabel(
+          name = summary.firstTeamName,
+          wins = summary.firstTeamWins,
+          color = firstColor,
+          modifier = Modifier.weight(1f),
+        )
+        HeadToHeadWinLabel(
+          name = summary.secondTeamName,
+          wins = summary.secondTeamWins,
+          color = secondColor,
+          modifier = Modifier.weight(1f),
+          textAlign = TextAlign.End,
+        )
+      }
+      Row(modifier = Modifier.fillMaxWidth().height(Prism.dimens.spacingS)) {
+        if (summary.firstTeamWins > 0) {
+          Box(Modifier.weight(summary.firstTeamWins.toFloat()).height(Prism.dimens.spacingS).background(firstColor))
+        }
+        if (summary.secondTeamWins > 0) {
+          Box(Modifier.weight(summary.secondTeamWins.toFloat()).height(Prism.dimens.spacingS).background(secondColor))
+        }
+      }
+      Text(
+        text = "${summary.totalPlayed} played",
+        modifier = Modifier.fillMaxWidth(),
+        style = Prism.typography.caption,
+        color = Prism.color.labelColor,
+        textAlign = TextAlign.Center,
       )
     }
   }
 }
 
 @Composable
-private fun MatchDetailHeadToHeadSummaryCell(value: String, label: String, modifier: Modifier = Modifier) {
-  Column(
-    modifier = modifier
-      .heightIn(min = Prism.dimens.controlHeight)
-      .padding(Prism.dimens.spacingS),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center,
-  ) {
+private fun HeadToHeadWinLabel(
+  name: String,
+  wins: Int,
+  color: Color,
+  modifier: Modifier = Modifier,
+  textAlign: TextAlign = TextAlign.Start,
+) {
+  Column(modifier = modifier) {
     Text(
-      text = value,
+      text = wins.toString(),
+      modifier = Modifier.fillMaxWidth(),
       style = Prism.typography.cardTitle,
-      color = Prism.color.titleColor,
-      maxLines = 1,
-      overflow = TextOverflow.Ellipsis,
+      color = color,
+      textAlign = textAlign,
     )
     Text(
-      text = label,
-      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+      text = name,
+      modifier = Modifier.fillMaxWidth(),
       style = Prism.typography.caption,
-      color = Prism.color.labelColor,
-      textAlign = TextAlign.Center,
-      maxLines = 1,
+      color = color,
+      textAlign = textAlign,
+      maxLines = 2,
       overflow = TextOverflow.Ellipsis,
     )
   }

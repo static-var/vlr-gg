@@ -4,6 +4,10 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.semantics.Role
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
@@ -19,7 +23,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
@@ -43,14 +46,19 @@ import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.rememberMascot
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.designsystem.component.card.cardMascotViewport
+import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
+import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
+import dev.staticvar.designsystem.component.loader.PrismLoaderSize
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
+import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailPreviewHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
@@ -61,6 +69,7 @@ import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 @Composable
 public fun MatchDetailsRoute(
   uiState: MatchDetailsUiState,
+  matchPreview: MatchPreview? = null,
   onBack: () -> Unit,
   onEventSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
@@ -73,6 +82,7 @@ public fun MatchDetailsRoute(
 ) {
   MatchDetailsScreen(
     uiState = uiState,
+    matchPreview = matchPreview,
     onBack = onBack,
     onEventSelected = onEventSelected,
     onTeamSelected = onTeamSelected,
@@ -88,6 +98,7 @@ public fun MatchDetailsRoute(
 @Composable
 internal fun MatchDetailsScreen(
   uiState: MatchDetailsUiState,
+  matchPreview: MatchPreview? = null,
   onBack: () -> Unit,
   onEventSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
@@ -100,6 +111,12 @@ internal fun MatchDetailsScreen(
 ) {
   val isOnline = LocalIsOnline.current
   val match = uiState.match
+  val hasDetailedContent = match != null && (
+      match.matchData.isNotEmpty() || match.head2head.isNotEmpty() ||
+        match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()
+      )
+  val bodyReady = match != null && (hasDetailedContent || (!uiState.isLoading && !uiState.isDetailLoadPending))
+  val bodyFade = rememberMatchContentFade(bodyReady)
   val uriHandler = LocalUriHandler.current
   var selectedMapIndex: Int? by remember(match?.id) { mutableStateOf<Int?>(null) }
   val listState = rememberLazyListState()
@@ -123,7 +140,8 @@ internal fun MatchDetailsScreen(
     screenKey = match?.id.orEmpty(),
     candidates = candidates,
     isScreenActive = !spoilersHidden && mascotCharacter != null && lifecycleState == Lifecycle.State.RESUMED && !isLeaving,
-    isContentReady = match != null && !uiState.isLoading && !uiState.isRefreshing && uiState.errorMessage == null,
+    isContentReady = match != null && !uiState.isLoading && !uiState.isRefreshing &&
+      !uiState.isDetailLoadPending && uiState.errorMessage == null,
     isInteracting = listState.isScrollInProgress || optionsExpanded || mapMenuExpanded,
   )
   fun leaveScreen(action: () -> Unit) {
@@ -139,7 +157,7 @@ internal fun MatchDetailsScreen(
     ) {
       Column {
         SharedScreenTitleBar(
-          title = match?.event?.name ?: "Match details",
+          title = match?.event?.name ?: matchPreview?.event ?: "Match details",
           subtitle = "Maps, scores and player stats",
           onBackPress = { leaveScreen(onBack) },
           actions = {
@@ -161,7 +179,8 @@ internal fun MatchDetailsScreen(
               )
             }
             SharedRefreshButton(
-              isLoading = uiState.isLoading,
+              isLoading = uiState.isLoading || uiState.isDetailLoadPending,
+              animateWhileLoading = true,
               isRefreshing = uiState.isRefreshing,
               hasContent = match != null,
               onRefresh = onRefresh,
@@ -178,8 +197,11 @@ internal fun MatchDetailsScreen(
           onRefresh = onRefresh,
         )
       }
+      if (match == null && matchPreview != null) {
+        MatchDetailPreviewHeaderItem(match = matchPreview)
+      }
       when {
-        (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && match == null -> SharedScreenLoading(
+        (!isOnline || uiState.isLoading || uiState.isDetailLoadPending || uiState.isRefreshing) && match == null -> MatchDetailsLoading(
           modifier = Modifier.fillMaxSize(),
           label = "Loading match",
         )
@@ -201,17 +223,12 @@ internal fun MatchDetailsScreen(
         )
 
         else -> {
-          val hasDetailedContent =
-            match.matchData.isNotEmpty() ||
-              match.head2head.isNotEmpty() ||
-              match.videos.streams.isNotEmpty() ||
-              match.videos.vods.isNotEmpty()
-          LazyColumn(
+          SharedScrollingDetails(
             state = listState,
-            modifier = Modifier.fillMaxSize().cardMascotViewport(),
-            verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
-          ) {
-            item {
+            contentAlpha = bodyFade,
+            showContent = bodyReady || bodyFade.value > 0f,
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            hero = {
               MatchDetailHeaderItem(
                 match = match,
                 onEventSelected = { id -> leaveScreen { onEventSelected(id) } },
@@ -222,9 +239,13 @@ internal fun MatchDetailsScreen(
                   null
                 },
               )
-            }
+            },
+            loading = { loadingModifier ->
+              MatchDetailsLoading(label = "Loading match details", modifier = loadingModifier)
+            },
+          ) {
             if (!hasDetailedContent && uiState.preferences.showBreakdown &&
-              isOnline && !uiState.isLoading && !uiState.isRefreshing && uiState.errorMessage == null
+              isOnline && !uiState.isLoading && !uiState.isDetailLoadPending && !uiState.isRefreshing && uiState.errorMessage == null
             ) {
               item {
                 SharedEmptyState(
@@ -328,3 +349,24 @@ private fun MatchDetailMediaRow(match: MatchDetails, onVideoSelected: (String) -
 
 private fun String.asExternalUrl(): String =
   if (startsWith("http://") || startsWith("https://")) this else "https://$this"
+
+@Composable
+private fun rememberMatchContentFade(ready: Boolean): State<Float> {
+  val alpha = remember { Animatable(0f) }
+  val animation = Prism.anim.standard
+  LaunchedEffect(ready, alpha) {
+    if (ready) {
+      alpha.animateTo(1f, tween(durationMillis = animation.durationMillis, easing = animation.easing))
+    }
+  }
+  return alpha.asState()
+}
+
+@Composable
+private fun MatchDetailsLoading(label: String, modifier: Modifier = Modifier) {
+  if (LocalIsOnline.current) {
+    PrismFullscreenLoader(modifier = modifier, size = PrismLoaderSize.Large, label = label)
+  } else {
+    SharedScreenLoading(label = label, modifier = modifier)
+  }
+}

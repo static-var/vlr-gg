@@ -53,7 +53,7 @@ import dev.staticvar.vlr.sharedui.mascot.PauseCardMascots
 public fun MatchesOverviewRoute(
   uiState: MatchesUiState,
   onFilterSelected: (MatchStatusFilter) -> Unit,
-  onMatchSelected: (String) -> Unit,
+  onMatchSelected: (MatchPreview) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
 ) {
@@ -70,7 +70,7 @@ public fun MatchesOverviewRoute(
 internal fun MatchesOverviewScreen(
   uiState: MatchesUiState,
   onFilterSelected: (MatchStatusFilter) -> Unit,
-  onMatchSelected: (String) -> Unit,
+  onMatchSelected: (MatchPreview) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
 ) {
@@ -213,11 +213,11 @@ internal fun MatchesOverviewScreen(
               MatchPreviewItem(
                 matchPreview = match,
                 isSharing = selection.isActive,
-                modifier = Modifier.fillMaxWidth().cardMascotEligible(
+                modifier = Modifier.fillMaxWidth().animateItem().cardMascotEligible(
                   topClearance = Prism.dimens.spacingS * 2 + Prism.dimens.spacingXs,
                 ),
                 onClick = {
-                  if (selection.isActive) selection = selection.toggle(match) else onMatchSelected(match.id)
+                  if (selection.isActive) selection = selection.toggle(match) else onMatchSelected(match)
                 },
                 onLongClick = imageSharer?.let { { selection = selection.toggle(match) } },
                 footerAction = {

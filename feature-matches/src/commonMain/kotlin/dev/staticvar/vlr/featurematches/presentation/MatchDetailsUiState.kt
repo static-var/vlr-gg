@@ -15,6 +15,7 @@ public data class MatchDetailsUiState(
   val preferences: MatchDetailsPreferences = MatchDetailsPreferences(),
   val isLoading: Boolean = true,
   val isRefreshing: Boolean = false,
+  val isDetailLoadPending: Boolean = true,
   val isFavoritePending: Boolean = false,
   val favoriteErrorMessage: String? = null,
   val errorMessage: String? = null,

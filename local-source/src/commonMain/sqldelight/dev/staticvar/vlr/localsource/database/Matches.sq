@@ -262,7 +262,7 @@ INSERT INTO match_bans(match_id, ban_type, ban_value)
 VALUES (?, ?, ?);
 
 getMatchBans:
-SELECT * FROM match_bans WHERE match_id = :matchId;
+SELECT * FROM match_bans WHERE match_id = :matchId ORDER BY id;
 
 deleteMatchBans:
 DELETE FROM match_bans WHERE match_id = :matchId;

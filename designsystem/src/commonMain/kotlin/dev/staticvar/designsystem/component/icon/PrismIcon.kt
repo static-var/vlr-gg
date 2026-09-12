@@ -126,6 +126,7 @@ private fun PrismIconTint.contentColorFilter(style: PrismIconStyle): ColorFilter
 public enum class PrismIconSize(internal val containerSize: Dp, internal val contentPadding: Dp) {
   Size16(containerSize = 16.dp, contentPadding = 2.dp),
   Size32(containerSize = 32.dp, contentPadding = 6.dp),
+  Size40(containerSize = 40.dp, contentPadding = 7.dp),
   Size48(containerSize = 48.dp, contentPadding = 8.dp),
   Size64(containerSize = 64.dp, contentPadding = 10.dp),
   Size80(containerSize = 80.dp, contentPadding = 12.dp),

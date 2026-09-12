@@ -22,6 +22,21 @@ import kotlin.test.assertNull
 
 class MatchDetailFormattingTest {
   @Test
+  fun mapVetoCountsBansPicksAndDeciderAsSteps() {
+    val match = matchDetails().copy(
+      bans = listOf(
+        "FNC ban Corrode", "NRG ban Haven", "FNC pick Ascent", "NRG pick Abyss",
+        "FNC ban Sunset", "NRG ban Bind", "Lotus remains",
+      ),
+    )
+
+    assertEquals("7 steps", match.matchDetailVetoStat())
+    assertEquals("7 steps", match.copy(event = match.event.copy(status = "upcoming")).matchDetailVetoStat())
+    assertEquals("1 step", match.copy(bans = listOf("", "Lotus remains", "  ")).matchDetailVetoStat())
+    assertEquals("-", match.copy(bans = listOf(" ")).matchDetailVetoStat())
+  }
+
+  @Test
   fun knownMapCountIsShownWithoutPlayerStats() {
     val match = matchDetails().copy(id = "734308", mapCount = 5)
     assertEquals("5 maps", match.matchDetailMapCountStat())
@@ -340,7 +355,8 @@ class MatchDetailFormattingTest {
   fun matchMetaSkipsBlankValues() {
     val match = matchDetails(stage = "Upper Final", series = "Bo3", patch = "10.04")
 
-    assertEquals("Upper Final • Bo3", match.matchDetailMeta())
+    assertEquals("Upper Final", match.matchDetailMeta())
+    assertEquals("Bo3", match.copy(event = match.event.copy(stage = "")).matchDetailMeta())
   }
 
   private fun matchDetails(

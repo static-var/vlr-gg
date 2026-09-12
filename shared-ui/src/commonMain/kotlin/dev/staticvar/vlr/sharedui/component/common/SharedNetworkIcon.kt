@@ -120,6 +120,7 @@ private val PrismIconSize.fallbackContainerSize: Dp
   get() = when (this) {
     PrismIconSize.Size16 -> 16.dp
     PrismIconSize.Size32 -> 32.dp
+    PrismIconSize.Size40 -> 40.dp
     PrismIconSize.Size48 -> 48.dp
     PrismIconSize.Size64 -> 64.dp
     PrismIconSize.Size80 -> 80.dp
