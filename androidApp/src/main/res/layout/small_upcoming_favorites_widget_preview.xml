@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="150dp" android:layout_height="150dp"
+    android:background="@color/widget_preview_background"
+    android:orientation="vertical" android:padding="12dp" android:gravity="center">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center" android:maxLines="2" android:text="@string/widget_preview_team_one"
+        android:textColor="@color/widget_preview_content" android:textSize="14sp" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center" android:text="@string/widget_versus"
+        android:textColor="@color/widget_preview_secondary" android:textSize="12sp" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center" android:maxLines="2" android:text="@string/widget_preview_team_two"
+        android:textColor="@color/widget_preview_content" android:textSize="14sp" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center" android:layout_marginTop="12dp" android:text="@string/widget_preview_time_one"
+        android:textColor="@color/widget_preview_secondary" android:textSize="12sp" />
+</LinearLayout>

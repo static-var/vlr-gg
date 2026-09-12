@@ -1,4 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">VLR.gg</string>
+    <string name="legacy_matches_widget_name">All matches</string>
+    <string name="legacy_matches_widget_description">Live and upcoming matches</string>
+    <string name="legacy_matches_widget_loading">Updating matches…</string>
+    <string name="upcoming_favorites_widget_name">Match scoreboard (4×2)</string>
+    <string name="small_upcoming_favorites_widget_name">Compact match (2×2)</string>
+    <string name="upcoming_favorites_widget_description">Upcoming matches across your favorites</string>
+    <string name="widget_preview_event_one">Valorant Champions Tour</string>
+    <string name="widget_preview_time_one">Sun\n7:30 PM</string>
+    <string name="widget_preview_team_one">Sentinels</string>
+    <string name="widget_preview_team_two">FNATIC</string>
+    <string name="widget_preview_score">-</string>
+    <string name="widget_preview_format">BO3 · Upper Final</string>
+    <string name="widget_versus">vs</string>
+    <string name="widget_title">UPCOMING FAVORITES</string>
+    <string name="widget_not_initialized_title">Open VLR.gg to get started</string>
+    <string name="widget_not_initialized_body">The widget will show matches after the app saves your favorites.</string>
+    <string name="widget_no_favorites_title">No favorites yet</string>
+    <string name="widget_no_favorites_body">Favorite a team, player, event, or match in VLR.</string>
+    <string name="widget_no_upcoming_title">No upcoming matches</string>
+    <string name="widget_no_upcoming_body">New matches will appear after the next background refresh.</string>
+    <string name="widget_time_tbd">TBD</string>
+    <string name="widget_match_teams">%1$s vs %2$s</string>
+    <string name="widget_time_today">Today %1$s</string>
+    <string name="widget_time_tomorrow">Tomorrow %1$s</string>
+    <string name="widget_last_saved">Updated %1$s</string>
+    <string name="widget_live">LIVE</string>
+    <string name="widget_live_score">%1$s : %2$s</string>
+    <string name="widget_scores_hidden">Live scores hidden</string>
 </resources>

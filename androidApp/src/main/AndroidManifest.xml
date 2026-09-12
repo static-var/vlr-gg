@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".VlrApplication"
         android:allowBackup="true"
@@ -24,12 +26,74 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.VLR.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="home"
+                    android:scheme="vlr" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="match"
+                    android:pathPrefix="/"
+                    android:scheme="vlr" />
+            </intent-filter>
         </activity>
+
+        <receiver
+            android:name="dev.staticvar.vlr.widget.ScoreWidgetReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:label="@string/legacy_matches_widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_provider" />
+        </receiver>
+        <receiver
+            android:name="dev.staticvar.vlr.android.widget.WidgetUpgradeReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".widget.UpcomingFavoritesWidgetReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:label="@string/upcoming_favorites_widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/upcoming_favorites_widget_info" />
+        </receiver>
+        <receiver
+            android:name=".widget.SmallUpcomingFavoritesWidgetReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:label="@string/small_upcoming_favorites_widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/small_upcoming_favorites_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

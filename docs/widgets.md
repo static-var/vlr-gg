@@ -16,6 +16,16 @@ The favorite schedule query combines the canonical match cache, overview fallbac
 
 The app and worker write `upcoming_matches_widget.json` atomically. The worker replaces it only if the input snapshot has not changed during its request, so a foreground favorite, spoiler, or theme change wins over an older background response.
 
+Android exposes two fixed widget picker entries: a centered 2×2 matchup and a 4×2 scoreboard, each with one match, match navigation, and spoiler masking. Android resize ranges cannot exclude intermediate grid sizes such as 3×2, so users choose a size in the picker instead of dragging resize handles. Grid cell dimensions remain launcher-controlled. Both providers share snapshot updates and background refresh; removing one size must not cancel refresh while the other remains installed. GlanceTheme supplies Material 3 system colors, including wallpaper-derived dynamic colors on Android 12+ and the Material baseline on older devices. Background, primary, on-surface, secondary text, and outline roles come from that theme rather than the saved Prism palette. Text uses native sans-serif because the Glance font API accepts system families rather than bundled Space Grotesk font resources.
+
+## Android legacy widget updates
+
+The original `app` module registered `dev.staticvar.vlr.widget.ScoreWidgetReceiver` under application ID `dev.staticvar.vlr`. The rewrite declares that exact receiver explicitly, because its new Android namespace differs. Android owns numeric app-widget IDs; retaining the package and receiver component allows existing launcher bindings to survive an in-place app update. The debug application ID remains `dev.staticvar.vlr.debug` in both versions. Release updates must use the existing signing identity and a higher version code.
+
+This legacy widget keeps its original all-live/upcoming-matches feed and scrollable, resizable layout. It does not depend on favorites or a foreground-generated snapshot. Its own atomic snapshot comes from `MatchRepository.refreshMatches()` in a native Android worker. It uses system Material 3 colors and opens current match details. The new fixed 2×2 and 4×2 favorite widgets remain separate.
+
+The original worker class `dev.staticvar.vlr.workers.WidgetUpdateWorker` and unique periodic work name `widget_update` are retained, with a 15-minute requested interval. WorkManager is aligned to the old catalog's 2.11.2 version to avoid downgrading its persisted database. A package-replaced receiver and app launch restore refresh scheduling for installed legacy widgets. Transient refresh failures retry without clearing the last successful data; score rendering also checks the current spoiler preference.
+
 ## iOS refresh and layouts
 
 The WidgetKit timeline provider fetches data with native `URLSession` while the main app is closed. The extension does not link Compose or open the app's database. It uses its own generated build configuration for the same API authentication as the app.

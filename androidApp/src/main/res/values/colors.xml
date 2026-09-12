@@ -2,4 +2,9 @@
 <resources>
     <color name="ic_launcher_background">#CBA6F7</color>
     <color name="splash_background">#1E1E2E</color>
+    <color name="widget_preview_background">@color/glance_colorWidgetBackground</color>
+    <color name="widget_preview_border">@color/glance_colorOutline</color>
+    <color name="widget_preview_accent">@color/glance_colorPrimary</color>
+    <color name="widget_preview_content">@color/glance_colorOnSurface</color>
+    <color name="widget_preview_secondary">@color/glance_colorOnSurfaceVariant</color>
 </resources>

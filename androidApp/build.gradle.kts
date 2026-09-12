@@ -165,11 +165,15 @@ dependencies {
 
   // Activity Compose
   implementation(libs.activity.compose)
+  implementation(libs.glance.appwidget)
+  implementation(libs.work.runtime)
   implementation(libs.splashscreen)
   implementation(libs.koin.android)
 
   // Project modules
   implementation(projects.shared)
+  implementation(projects.domain)
+  implementation(projects.core)
   implementation(projects.sharedUi)
   implementation(projects.designsystem)
   lintChecks(project(":lint"))

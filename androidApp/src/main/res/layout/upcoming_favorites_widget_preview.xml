@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp" android:layout_height="180dp"
+    android:background="@color/widget_preview_background"
+    android:orientation="vertical" android:padding="16dp">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:maxLines="1" android:text="@string/widget_preview_event_one"
+        android:textColor="@color/widget_preview_accent" android:textSize="12sp" />
+    <ImageView android:layout_width="match_parent" android:layout_height="1dp"
+        android:layout_marginTop="6dp" android:background="@color/widget_preview_border"
+        android:contentDescription="@null" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/widget_preview_score" android:textColor="@color/widget_preview_content" android:textSize="32sp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:gravity="center" android:maxLines="2" android:text="@string/widget_preview_team_one"
+                android:textColor="@color/widget_preview_content" android:textSize="14sp" />
+        </LinearLayout>
+        <TextView android:layout_width="76dp" android:layout_height="wrap_content"
+            android:gravity="center" android:text="@string/widget_preview_time_one"
+            android:textColor="@color/widget_preview_secondary" android:textSize="12sp" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/widget_preview_score" android:textColor="@color/widget_preview_content" android:textSize="32sp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:gravity="center" android:maxLines="2" android:text="@string/widget_preview_team_two"
+                android:textColor="@color/widget_preview_content" android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center" android:text="@string/widget_preview_format"
+        android:textColor="@color/widget_preview_secondary" android:textSize="11sp" />
+</LinearLayout>
