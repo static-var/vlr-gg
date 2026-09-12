@@ -23,19 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardStyle
-import dev.staticvar.designsystem.component.divider.PrismDivider
-import dev.staticvar.designsystem.component.divider.PrismDividerStyle
-import dev.staticvar.designsystem.component.header.PrismHeader
-import dev.staticvar.designsystem.component.icon.PrismIconSize
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.tag.PrismTag
+import dev.staticvar.designsystem.component.ticket.PrismTicket
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.TeamPreview
-import dev.staticvar.vlr.sharedui.component.common.DetailStatItem
-import dev.staticvar.vlr.sharedui.component.common.DetailStatStrip
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
@@ -43,10 +38,7 @@ import dev.staticvar.vlr.sharedui.component.match.matchFavoriteReasonLabels
 import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 
-/**
- * Match detail summary card for event metadata, current score, participating teams, and optional
- * caller-provided actions.
- */
+/** Match ticket with event identity, opposing teams, and a schedule/action stub. */
 @Composable
 public fun MatchDetailHeaderItem(
   match: MatchDetails,
@@ -54,9 +46,9 @@ public fun MatchDetailHeaderItem(
   onEventSelected: ((String) -> Unit)? = null,
   onTeamSelected: ((String) -> Unit)? = null,
   actions: (@Composable () -> Unit)? = null,
+  favoriteAction: (@Composable () -> Unit)? = null,
 ) {
   val spoilersHidden = LocalSpoilerMode.current.enabled
-  val favoriteLabels = matchFavoriteReasonLabels(match.favoriteReasons)
   val canShowVeto = !spoilersHidden && match.bans.any(String::isNotBlank)
   var showVeto by remember(match.id, spoilersHidden) { mutableStateOf(false) }
   MatchDetailHeaderContent(
@@ -65,35 +57,25 @@ public fun MatchDetailHeaderItem(
     eventName = match.event.name,
     series = match.matchDetailMeta(),
     time = formatMatchPreviewTime(match.event.date),
+    format = match.matchDetailFormatLabel(),
     status = match.event.status,
     teams = match.teams.take(2).map { team ->
       TeamPreview(team.id, team.name, team.region, team.img, team.score, team.isWinner, team.isFavorite)
     },
     isFavorite = match.isFavorite,
+    favoriteLabels = matchFavoriteReasonLabels(match.favoriteReasons),
     modifier = modifier,
     onEventSelected = onEventSelected,
     onTeamSelected = onTeamSelected,
-    stats = {
-      DetailStatStrip(
-        items = buildList {
-          add(DetailStatItem(value = if (spoilersHidden) "Hidden" else match.matchDetailMapCountStat(), label = "Maps"))
-          if (favoriteLabels.isNotEmpty()) {
-            add(DetailStatItem(value = favoriteLabels.joinToString(" · "), label = "Favorite via", valueMaxLines = 4))
-          }
-          add(
-            DetailStatItem(
-              value = if (spoilersHidden) "Hidden" else match.matchDetailVetoStat(),
-              label = if (canShowVeto) "Map veto ↗" else "Map veto",
-              onClick = if (canShowVeto) { { showVeto = true } } else null,
-            ),
-          )
-        },
-        modifier = Modifier.padding(top = Prism.dimens.spacingS),
-      )
-    },
+    onVetoSelected = if (canShowVeto) { { showVeto = true } } else null,
     actions = actions,
+    favoriteAction = favoriteAction,
   )
-  MatchDetailVetoSheet(entries = match.bans.filter(String::isNotBlank), visible = showVeto && canShowVeto, onDismissRequest = { showVeto = false })
+  MatchDetailVetoSheet(
+    entries = match.bans.filter(String::isNotBlank),
+    visible = showVeto && canShowVeto,
+    onDismissRequest = { showVeto = false },
+  )
 }
 
 @Composable
@@ -104,9 +86,11 @@ public fun MatchDetailPreviewHeaderItem(match: MatchPreview, modifier: Modifier 
     eventName = match.event,
     series = match.series,
     time = formatMatchPreviewTime(match.time),
+    format = "TBD",
     status = match.status.name.lowercase(),
     teams = listOf(match.team1, match.team2),
     isFavorite = match.isFavorite,
+    favoriteLabels = matchFavoriteReasonLabels(match.favoriteReasons),
     modifier = modifier,
   )
 }
@@ -118,101 +102,137 @@ private fun MatchDetailHeaderContent(
   eventName: String,
   series: String,
   time: String?,
+  format: String,
   status: String?,
   teams: List<TeamPreview>,
   isFavorite: Boolean,
+  favoriteLabels: List<String>,
   modifier: Modifier = Modifier,
   onEventSelected: ((String) -> Unit)? = null,
   onTeamSelected: ((String) -> Unit)? = null,
-  stats: (@Composable () -> Unit)? = null,
+  onVetoSelected: (() -> Unit)? = null,
   actions: (@Composable () -> Unit)? = null,
+  favoriteAction: (@Composable () -> Unit)? = null,
 ) {
   FavoriteTicketCardBox(
     selected = isFavorite,
     modifier = modifier.fillMaxWidth(),
     favoriteModifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.Favorite),
   ) {
-    PrismCard(
+    PrismTicket(
       modifier = Modifier.fillMaxWidth().matchSharedBounds(matchId, MatchSharedContent.Card),
-      style = PrismCardStyle.Outlined,
+      header = {
+        MatchTicketStatus(matchId, series, status, favoriteAction)
+      },
+      stub = {
+        MatchTicketStub(matchId, time, format, onVetoSelected, actions)
+      },
     ) {
-      val eventClickModifier = eventId.takeIf(String::isNotBlank)
-        ?.let { eventId ->
-          onEventSelected?.let { eventSelected ->
-            Modifier.clickable(role = Role.Button) { eventSelected(eventId) }
-          }
-        }
-        ?: Modifier
-
-      PrismHeader(
-        text = eventName.ifBlank { "match" },
-        modifier = eventClickModifier.fillMaxWidth().matchSharedBounds(matchId, MatchSharedContent.Event),
-      )
-      if (series.isNotBlank()) {
+      MatchTicketEvent(matchId, eventId, eventName, onEventSelected)
+      MatchTicketTeams(matchId = matchId, teams = teams, onTeamSelected = onTeamSelected)
+      if (favoriteLabels.isNotEmpty()) {
         Text(
-          text = series,
-          modifier = Modifier.padding(top = Prism.dimens.spacingXs).matchSharedBounds(matchId, MatchSharedContent.Series),
-          style = Prism.typography.bodySmall,
-          color = Prism.color.labelColor,
-          maxLines = 2,
-          overflow = TextOverflow.Ellipsis,
+          text = "Favorite via ${favoriteLabels.joinToString(" · ")}",
+          modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
+          style = Prism.typography.caption,
+          color = Prism.color.contentSecondary,
+          textAlign = TextAlign.Center,
         )
-      }
-      Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = Prism.dimens.spacingS),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-      ) {
-        PrismTag(
-          text = status.matchDetailStatusLabel,
-          style = status.matchDetailStatusTagStyle,
-          modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.Status),
-        )
-        if (time != null) {
-          Text(
-            text = time,
-            modifier = Modifier.weight(1f).matchSharedBounds(matchId, MatchSharedContent.Time),
-            style = Prism.typography.label,
-            color = Prism.color.labelColor,
-            textAlign = TextAlign.End,
-          )
-        }
-      }
-      Column(modifier = Modifier.padding(vertical = Prism.dimens.spacingS)) {
-        teams.forEachIndexed { index, team ->
-          if (index > 0) PrismDivider(style = PrismDividerStyle.Hairline)
-          MatchDetailTeamScoreRow(matchId = matchId, team = team, onTeamSelected = onTeamSelected)
-        }
-      }
-      stats?.invoke()
-      if (actions != null) {
-        Column(modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)) {
-          actions()
-        }
       }
     }
   }
 }
 
 @Composable
-private fun MatchDetailTeamScoreRow(
+private fun MatchTicketEvent(
   matchId: String,
-  team: TeamPreview,
-  modifier: Modifier = Modifier,
-  onTeamSelected: ((String) -> Unit)? = null,
+  eventId: String,
+  eventName: String,
+  onEventSelected: ((String) -> Unit)?,
 ) {
-  MatchDetailTeamScoreRow(
-    teamName = team.name,
-    score = team.score?.toString() ?: "-",
-    modifier = modifier,
-    logoSize = PrismIconSize.Size40,
-    nameModifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.TeamName, team.id),
-    scoreModifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.TeamScore, team.id),
-    region = team.region,
-    imageUrl = team.img,
-    isWinner = team.isWinner == true,
-    onClick = team.id?.takeIf(String::isNotBlank)?.let { teamId ->
-      onTeamSelected?.let { onClick -> { onClick(teamId) } }
-    },
+  val eventModifier = if (eventId.isNotBlank() && onEventSelected != null) {
+    Modifier.clickable(role = Role.Button) { onEventSelected(eventId) }
+  } else {
+    Modifier
+  }
+  Text(
+    text = eventName.ifBlank { "Match" },
+    modifier = Modifier.fillMaxWidth().padding(bottom = Prism.dimens.spacingM)
+      .then(eventModifier).matchSharedBounds(matchId, MatchSharedContent.Event),
+    style = Prism.typography.cardTitle,
+    textAlign = TextAlign.Center,
+    maxLines = 3,
+    overflow = TextOverflow.Ellipsis,
   )
+}
+
+@Composable
+private fun MatchTicketStatus(
+  matchId: String,
+  series: String,
+  status: String?,
+  favoriteAction: (@Composable () -> Unit)?,
+) {
+  Row(
+    Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+      Text(
+        text = series,
+        modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.Series),
+        style = Prism.typography.bodySmall,
+        color = Prism.color.contentSecondary,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+      )
+      PrismTag(
+        text = status.matchDetailStatusLabel,
+        style = status.matchDetailStatusTagStyle,
+        modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.Status),
+      )
+    }
+    favoriteAction?.invoke()
+  }
+}
+
+@Composable
+private fun MatchTicketStub(
+  matchId: String,
+  time: String?,
+  format: String,
+  onVetoSelected: (() -> Unit)?,
+  actions: (@Composable () -> Unit)?,
+) {
+  Row(
+    Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+      Text("MATCH DAY", style = Prism.typography.overline, color = Prism.color.contentSecondary)
+      Text(
+        text = time ?: "Time to be announced",
+        modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.Time),
+        style = Prism.typography.bodySmall,
+      )
+    }
+    Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+      Text("FORMAT", style = Prism.typography.overline, color = Prism.color.contentSecondary)
+      Text(format, style = Prism.typography.bodySmall)
+    }
+  }
+  if (actions != null) {
+    Column(Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)) { actions() }
+  }
+  if (onVetoSelected != null) {
+    PrismButton(
+      modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
+      onClick = onVetoSelected,
+      style = PrismButtonStyle.Alternate,
+    ) {
+      Text("Map veto")
+    }
+  }
 }

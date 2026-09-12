@@ -161,23 +161,6 @@ internal fun MatchDetailsScreen(
           subtitle = "Maps, scores and player stats",
           onBackPress = { leaveScreen(onBack) },
           actions = {
-            if (match != null) {
-              PrismFavoriteIcon(
-                selected = match.isFavorite,
-                size = PrismFavoriteIconSize.Large,
-                contentDescription = when {
-                  uiState.isFavoritePending -> "Updating favorite"
-                  uiState.isFavoriteInherited -> "Favorite match"
-                  match.isFavorite -> "Remove match from favorites"
-                  else -> "Add match to favorites"
-                },
-                modifier = Modifier.clickable(
-                  enabled = uiState.canToggleFavorite,
-                  role = Role.Button,
-                  onClick = onFavoriteClick,
-                ),
-              )
-            }
             SharedRefreshButton(
               isLoading = uiState.isLoading || uiState.isDetailLoadPending,
               animateWhileLoading = true,
@@ -231,6 +214,23 @@ internal fun MatchDetailsScreen(
             hero = {
               MatchDetailHeaderItem(
                 match = match,
+                favoriteAction = {
+                  PrismFavoriteIcon(
+                    selected = match.isFavorite,
+                    size = PrismFavoriteIconSize.Large,
+                    contentDescription = when {
+                      uiState.isFavoritePending -> "Updating favorite"
+                      uiState.isFavoriteInherited -> "Favorite match"
+                      match.isFavorite -> "Remove match from favorites"
+                      else -> "Add match to favorites"
+                    },
+                    modifier = Modifier.clickable(
+                      enabled = uiState.canToggleFavorite,
+                      role = Role.Button,
+                      onClick = onFavoriteClick,
+                    ),
+                  )
+                },
                 onEventSelected = { id -> leaveScreen { onEventSelected(id) } },
                 onTeamSelected = { id -> leaveScreen { onTeamSelected(id) } },
                 actions = if (match.shouldShowCalendarAction()) {

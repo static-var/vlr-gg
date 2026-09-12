@@ -36,7 +36,7 @@ internal fun MatchCalendarAction(match: MatchDetails) {
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
     PrismButton(
       modifier = Modifier.fillMaxWidth(),
-      style = PrismButtonStyle.Secondary,
+      style = PrismButtonStyle.Primary,
       enabled = event != null,
       onClick = { event?.let { error = export(it).isFailure } },
     ) {
