@@ -61,6 +61,26 @@ public sealed interface PrismButtonStyle {
     )
   }
 
+  /** Soft alternate-filled call-to-action style. */
+  public data object Alternate : PrismButtonStyle {
+    @Composable
+    @ReadOnlyComposable
+    override fun containerColor(enabled: Boolean): Color =
+      if (enabled) Prism.color.accentSubtle else Prism.color.surfaceDim
+
+    @Composable
+    @ReadOnlyComposable
+    override fun contentColor(enabled: Boolean): Color =
+      if (enabled) Prism.color.contentPrimary else Prism.color.labelColor
+
+    @Composable
+    @ReadOnlyComposable
+    override fun border(enabled: Boolean): BorderStroke = BorderStroke(
+      width = Prism.dimens.strokeThick,
+      color = if (enabled) Prism.color.accentSubtle else Prism.color.stroke,
+    )
+  }
+
   /** Flat surface action with a standard outline. */
   public data object Secondary : PrismButtonStyle {
     @Composable

@@ -45,6 +45,9 @@ private fun PrismButtonPreviewContent(variant: PrismVariant, family: PrismThemeF
       Text("Primary", style = Prism.typography.label, color = Prism.color.labelColor)
       PrismButton(onClick = {}, style = PrismButtonStyle.Primary) { Text("Primary Button") }
 
+      Text("Alternate", style = Prism.typography.label, color = Prism.color.labelColor)
+      PrismButton(onClick = {}, style = PrismButtonStyle.Alternate) { Text("Alternate Button") }
+
       Text("Secondary", style = Prism.typography.label, color = Prism.color.labelColor)
       PrismButton(onClick = {}, style = PrismButtonStyle.Secondary) {
         Text("Secondary Button")
@@ -56,6 +59,9 @@ private fun PrismButtonPreviewContent(variant: PrismVariant, family: PrismThemeF
       Text("Disabled States", style = Prism.typography.label, color = Prism.color.labelColor)
       PrismButton(onClick = {}, style = PrismButtonStyle.Primary, enabled = false) {
         Text("Disabled Primary")
+      }
+      PrismButton(onClick = {}, style = PrismButtonStyle.Alternate, enabled = false) {
+        Text("Disabled Alternate")
       }
       PrismButton(onClick = {}, style = PrismButtonStyle.Secondary, enabled = false) {
         Text("Disabled Secondary")
