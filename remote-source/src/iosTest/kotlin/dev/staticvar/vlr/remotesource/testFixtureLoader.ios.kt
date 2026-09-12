@@ -8,21 +8,15 @@ import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import kotlinx.io.readString
-import platform.Foundation.NSBundle
+import platform.Foundation.NSProcessInfo
 
 internal actual fun readFixture(fileName: String): String {
-  val separatorIndex = fileName.lastIndexOf('.')
-  require(separatorIndex in 1 until fileName.lastIndex) {
-    "Fixture $fileName must include an extension."
-  }
-  val resourceName = fileName.substring(0, separatorIndex)
-  val resourceExtension = fileName.substring(separatorIndex + 1)
-  val resourcePath = requireNotNull(
-    NSBundle.mainBundle.pathForResource(resourceName, resourceExtension),
+  val fixturesDirectory = requireNotNull(
+    NSProcessInfo.processInfo.environment["VLR_TEST_FIXTURES"] as? String,
   ) {
-    "Fixture $fileName was not bundled with the iOS test target."
+    "VLR_TEST_FIXTURES must point to the fixture directory; run iOS tests through Gradle."
   }
-  val path = Path(resourcePath)
+  val path = Path(fixturesDirectory, fileName)
   val source = SystemFileSystem.source(path).buffered()
   return try {
     source.readString()

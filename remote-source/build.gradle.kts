@@ -2,6 +2,8 @@
  * Copyright (c) 2022-2026 Shreyansh Lodha
  * SPDX-License-Identifier: MIT
  */
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
+
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.android.kotlin.multiplatform.library)
@@ -72,14 +74,11 @@ kotlin {
       dependencies { implementation(libs.ktor.darwin) }
     }
 
-    val iosTest by getting {
-      resources.srcDir("src/commonTest/resources")
-    }
   }
 }
 
-listOf("iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
-  tasks.matching { it.name.startsWith(targetPrefix) && it.name.endsWith("Test") }.configureEach {
-    enabled = false
-  }
+tasks.withType<KotlinNativeSimulatorTest>().configureEach {
+  val fixtures = layout.projectDirectory.dir("src/commonTest/resources")
+  inputs.dir(fixtures).withPathSensitivity(PathSensitivity.RELATIVE)
+  environment("SIMCTL_CHILD_VLR_TEST_FIXTURES", fixtures.asFile.absolutePath)
 }

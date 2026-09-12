@@ -82,12 +82,6 @@ agentPreview {
   }
 }
 
-listOf("iosArm64", "iosSimulatorArm64").forEach { targetPrefix ->
-  tasks
-    .matching { it.name.startsWith(targetPrefix) && it.name.endsWith("Test") }
-    .configureEach { enabled = false }
-}
-
 dependencies {
   lintChecks(project(":lint"))
   androidRuntimeClasspath(libs.compose.ui.tooling.cmp)
