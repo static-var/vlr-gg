@@ -99,12 +99,17 @@ internal fun List<MapData>.matchDetailMapOptions(): List<MatchDetailMapOption> {
   }
 }
 
-internal fun List<MapData>.resolveSelectedMap(selectedMapIndex: Int?): MapData? = when {
-  isEmpty() -> null
-  selectedMapIndex == null && size == 1 -> first()
-  selectedMapIndex == null -> null
-  else -> getOrNull(selectedMapIndex)
+public fun List<MapData>.resolveSelectedMapIndex(selectedMapIndex: Int?): Int? = when {
+  size == 1 -> 0
+  selectedMapIndex != null && selectedMapIndex in indices -> selectedMapIndex
+  else -> null
 }
+
+internal fun List<MapData>.resolveSelectedMap(selectedMapIndex: Int?): MapData? =
+  resolveSelectedMapIndex(selectedMapIndex)?.let(::get)
+
+internal fun List<MapData>.resolveSelectedMapOptionId(selectedMapIndex: Int?): String =
+  resolveSelectedMapIndex(selectedMapIndex)?.toString() ?: if (size >= 2) AllMapsOptionId else ""
 
 internal fun MapData.matchDetailMapOptionLabel(): String = "${matchDetailMapName()} - ${matchDetailMapScoreLabel()}"
 

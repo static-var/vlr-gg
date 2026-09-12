@@ -70,6 +70,34 @@ class MatchDetailFormattingTest {
   }
 
   @Test
+  fun removedMapSelectionFallsBackToRemainingMap() {
+    val maps = listOf(mapData(name = "Lotus"), mapData(name = "Haven"))
+    assertEquals("Haven", maps.resolveSelectedMap(1)?.map)
+    assertEquals("Lotus", maps.take(1).resolveSelectedMap(1)?.map)
+    assertEquals(0, maps.take(1).resolveSelectedMapIndex(1))
+    assertEquals("0", maps.take(1).resolveSelectedMapOptionId(1))
+  }
+
+  @Test
+  fun mapSelectionUsesOneFallbackAcrossSelectorAndContent() {
+    val maps = listOf(mapData(name = "Lotus"), mapData(name = "Haven"))
+    for (selection in listOf(null, -1, 2)) {
+      assertNull(maps.resolveSelectedMapIndex(selection))
+      assertNull(maps.resolveSelectedMap(selection))
+      assertEquals(AllMapsOptionId, maps.resolveSelectedMapOptionId(selection))
+    }
+    assertNull(emptyList<MapData>().resolveSelectedMapIndex(1))
+    assertEquals("", emptyList<MapData>().resolveSelectedMapOptionId(1))
+
+    val refreshed = listOf(mapData(name = "Lotus"), mapData(name = "Haven", firstScore = 14))
+    for (updated in listOf(refreshed, refreshed + mapData(name = "Bind"))) {
+      assertEquals(1, updated.resolveSelectedMapIndex(1))
+      assertEquals("Haven", updated.resolveSelectedMap(1)?.map)
+      assertEquals("1", updated.resolveSelectedMapOptionId(1))
+    }
+  }
+
+  @Test
   fun selectedMapPlayerRowsUseTeamColorRoleForMatchingTeam() {
     val rows = mapData(
       name = "Lotus",

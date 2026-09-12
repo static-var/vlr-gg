@@ -30,11 +30,7 @@ public fun MatchDetailMapSelector(
   val dropdownOptions = remember(mapOptions) {
     mapOptions.map { option -> PrismDropdownOption(id = option.id, label = option.label) }
   }
-  val selectedOptionId = when {
-    maps.size >= 2 && selectedMapIndex == null -> AllMapsOptionId
-    selectedMapIndex != null -> selectedMapIndex.toString()
-    else -> dropdownOptions.firstOrNull()?.id.orEmpty()
-  }
+  val selectedOptionId = maps.resolveSelectedMapOptionId(selectedMapIndex)
   val label = if (selectedOptionId == AllMapsOptionId) "GROUP" else "MAP"
 
   PrismDropdown(

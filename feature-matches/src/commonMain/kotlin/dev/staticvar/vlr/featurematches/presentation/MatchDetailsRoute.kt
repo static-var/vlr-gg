@@ -59,6 +59,7 @@ import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailPreviewHeaderItem
+import dev.staticvar.vlr.sharedui.component.match.detail.resolveSelectedMapIndex
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
@@ -119,6 +120,13 @@ internal fun MatchDetailsScreen(
   val bodyFade = rememberMatchContentFade(bodyReady)
   val uriHandler = LocalUriHandler.current
   var selectedMapIndex: Int? by remember(match?.id) { mutableStateOf<Int?>(null) }
+  val maps = match?.matchData.orEmpty()
+  val resolvedMapIndex = maps.resolveSelectedMapIndex(selectedMapIndex)
+  LaunchedEffect(match?.id, maps.size) {
+    if (selectedMapIndex != null && selectedMapIndex !in maps.indices) {
+      selectedMapIndex = null
+    }
+  }
   val listState = rememberLazyListState()
   var optionsExpanded by remember(match?.id) { mutableStateOf(false) }
   var mapMenuExpanded by remember(match?.id) { mutableStateOf(false) }
@@ -126,13 +134,13 @@ internal fun MatchDetailsScreen(
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val mascotCharacter = LocalMascotCharacter.current
   val spoilersHidden = LocalSpoilerMode.current.enabled
-  val candidates = remember(match, uiState.favoriteTeamIds, uiState.favoritePlayerIds, selectedMapIndex, spoilersHidden) {
+  val candidates = remember(match, uiState.favoriteTeamIds, uiState.favoritePlayerIds, resolvedMapIndex, spoilersHidden) {
     match?.takeUnless { spoilersHidden }?.let {
       matchMascotCues(
         it,
         uiState.favoriteTeamIds,
         uiState.favoritePlayerIds,
-        selectedMapIndex = if (it.matchData.size == 1) 0 else selectedMapIndex,
+        selectedMapIndex = resolvedMapIndex,
       )
     }.orEmpty()
   }
@@ -260,7 +268,7 @@ internal fun MatchDetailsScreen(
               item {
                 MatchDetailMapsItem(
                   maps = match.matchData,
-                  selectedMapIndex = selectedMapIndex,
+                  selectedMapIndex = resolvedMapIndex,
                   onMapSelected = { selectedMapIndex = it },
                   onMenuExpandedChange = { mapMenuExpanded = it },
                   onPlayerSelected = { id -> leaveScreen { onPlayerSelected(id) } },
