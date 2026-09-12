@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.IntSize
 import dev.staticvar.designsystem.prism.Prism
 import kotlin.math.roundToInt
 
@@ -51,14 +52,18 @@ public fun PrismTicket(
   val seam = remember { mutableFloatStateOf(0f) }
   val frame = style.frame
   val animation = Prism.anim.standard
+  val sizeAnimation = tween<IntSize>(durationMillis = animation.durationMillis, easing = animation.easing)
   CompositionLocalProvider(LocalContentColor provides style.contentColor) {
     Column(
       modifier = modifier
         .absolutePadding(right = frame.shadowOffset.x, bottom = frame.shadowOffset.y)
-        .ticketSurface(style, seam)
-        .animateContentSize(animationSpec = tween(durationMillis = animation.durationMillis, easing = animation.easing)),
+        .ticketSurface(style, seam),
     ) {
-      Column(Modifier.fillMaxWidth().onSizeChanged { seam.floatValue = it.height.toFloat() }) {
+      Column(
+        Modifier.fillMaxWidth()
+          .onSizeChanged { seam.floatValue = it.height.toFloat() }
+          .animateContentSize(animationSpec = sizeAnimation),
+      ) {
         if (header != null) {
           CompositionLocalProvider(LocalContentColor provides style.headerContentColor) {
             Column(
@@ -70,7 +75,11 @@ public fun PrismTicket(
         }
         Column(Modifier.fillMaxWidth().padding(style.padding), content = content)
       }
-      Column(Modifier.fillMaxWidth().background(style.stubColor).padding(style.padding), content = stub)
+      Column(
+        Modifier.fillMaxWidth().background(style.stubColor)
+          .animateContentSize(animationSpec = sizeAnimation).padding(style.padding),
+        content = stub,
+      )
     }
   }
 }
