@@ -31,6 +31,7 @@ import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.dropdown.PrismDropdown
 import dev.staticvar.designsystem.component.dropdown.PrismDropdownOption
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.designsystem.component.selection.PrismSwitch
 import dev.staticvar.designsystem.component.slider.PrismSlider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.settings.AppearanceMode
@@ -53,6 +54,9 @@ public fun SettingsRoute(
   onFlavourSelected: (CatppuccinFlavour) -> Unit,
   onMascotSelected: (MascotPreference) -> Unit,
   onMascotVisitFrequencySelected: (MascotVisitFrequency) -> Unit,
+  autoCleanupEnabled: Boolean,
+  deletedCacheRecords: Long,
+  onAutoCleanupChanged: (Boolean) -> Unit,
   onAbout: () -> Unit,
   onBack: (() -> Unit)? = null,
   modifier: Modifier = Modifier,
@@ -60,7 +64,7 @@ public fun SettingsRoute(
   Column(modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM)) {
     PrismScreenTitleBar(
       title = "Settings",
-      subtitle = "Your look. Your companion.",
+      subtitle = "Make VLR yours.",
       onBackPress = onBack,
     )
     Column(
@@ -94,6 +98,40 @@ public fun SettingsRoute(
               onOptionSelected = { onFlavourSelected(CatppuccinFlavour.valueOf(it.id)) },
             )
           }
+        }
+      }
+      PrismCard(
+        modifier = Modifier.fillMaxWidth(),
+        style = PrismCardStyle.Outlined,
+      ) {
+        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
+          PrismSectionTitle(title = "Experimental")
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+          ) {
+            Text(
+              text = "Auto cleanup",
+              modifier = Modifier.weight(1f),
+              style = Prism.typography.bodyLarge,
+              color = Prism.color.contentPrimary,
+            )
+            PrismSwitch(
+              checked = autoCleanupEnabled,
+              onCheckedChange = onAutoCleanupChanged,
+              modifier = Modifier.semantics { contentDescription = "Auto cleanup" },
+            )
+          }
+          Text(
+            text = "Remove cached items that haven't been refreshed in 30 days.",
+            style = Prism.typography.bodySmall,
+            color = Prism.color.bodyColor,
+          )
+          Text(
+            text = "$deletedCacheRecords cached items deleted so far",
+            style = Prism.typography.caption,
+            color = Prism.color.captionColor,
+          )
         }
       }
       PrismCard(

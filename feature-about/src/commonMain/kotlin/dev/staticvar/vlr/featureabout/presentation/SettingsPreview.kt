@@ -32,6 +32,9 @@ internal fun SettingsPreview(@PreviewParameter(PrismPreviewProvider::class) vari
       onMascotSelected = {},
       mascotVisitFrequency = MascotVisitFrequency.Sometimes,
       onMascotVisitFrequencySelected = {},
+      autoCleanupEnabled = false,
+      deletedCacheRecords = 0L,
+      onAutoCleanupChanged = {},
       onAbout = {},
     )
   }
@@ -55,6 +58,9 @@ internal fun CatppuccinSettingsPreview() {
       onMascotSelected = {},
       mascotVisitFrequency = MascotVisitFrequency.Sometimes,
       onMascotVisitFrequencySelected = {},
+      autoCleanupEnabled = false,
+      deletedCacheRecords = 0L,
+      onAutoCleanupChanged = {},
       onAbout = {},
     )
   }
@@ -75,6 +81,9 @@ internal fun ConsoleSettingsPreview(@PreviewParameter(PrismPreviewProvider::clas
       onMascotSelected = {},
       mascotVisitFrequency = MascotVisitFrequency.Sometimes,
       onMascotVisitFrequencySelected = {},
+      autoCleanupEnabled = false,
+      deletedCacheRecords = 0L,
+      onAutoCleanupChanged = {},
       onAbout = {},
     )
   }

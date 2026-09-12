@@ -23,9 +23,11 @@ import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.settings.CatppuccinFlavour
+import dev.staticvar.vlr.core.settings.CacheCleanupPreferencesRepository
 import dev.staticvar.vlr.core.settings.MascotPreference
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import dev.staticvar.vlr.core.settings.ThemeFamily
+import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
 import dev.staticvar.vlr.shared.appearance.ApplyPlatformAppearance
@@ -41,6 +43,7 @@ import dev.staticvar.vlr.sharedui.spoilers.SpoilerMode
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import kotlinx.coroutines.flow.first
+import kotlin.time.Clock
 
 /**
  * Main entry point for the shared Compose UI.
@@ -60,6 +63,16 @@ public fun App() {
     initialFavoriteProfilesRefresh.awaitInitialRefresh()
   }
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+  val cleanupPreferences = koinInject<CacheCleanupPreferencesRepository>()
+  val cleanupRepository = koinInject<CacheCleanupRepository>()
+  val autoCleanupEnabled by cleanupPreferences.enabled.collectAsStateWithLifecycle()
+  LaunchedEffect(lifecycleState, autoCleanupEnabled, isOnline) {
+    if (lifecycleState == Lifecycle.State.RESUMED && autoCleanupEnabled && isOnline) {
+      if (initialFavoriteProfilesRefresh.awaitInitialRefresh().isSuccess) {
+        cleanupRepository.cleanupIfDue(Clock.System.now().toEpochMilliseconds())
+      }
+    }
+  }
   val viewModel = koinViewModel<AppearanceViewModel>()
   val appearance by viewModel.appearance.collectAsStateWithLifecycle()
   val isDark = appearance.isDark(isSystemInDarkTheme())

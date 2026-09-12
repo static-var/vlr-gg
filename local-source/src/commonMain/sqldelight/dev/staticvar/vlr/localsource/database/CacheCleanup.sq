@@ -1,0 +1,240 @@
+-- Cache-cleanup bookkeeping is part of the initial schema. The single row records
+-- the last completed transaction and the lifetime number of logical cache records removed.
+CREATE TABLE cache_cleanup_state (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+    deleted_records INTEGER NOT NULL DEFAULT 0,
+    last_run_epoch_millis INTEGER
+);
+
+-- A match is retained when it is a direct favorite or inherits favorite status from
+-- its event, either team, or a favorite player's current team.
+CREATE VIEW cache_favorite_matches AS
+SELECT m.id AS match_id
+FROM matches AS m
+WHERE EXISTS (
+    SELECT 1 FROM favorite_matches AS favorite WHERE favorite.match_id = m.id
+)
+OR EXISTS (
+    SELECT 1 FROM favorite_events AS favorite WHERE favorite.event_id = m.event_id
+)
+OR EXISTS (
+    SELECT 1
+    FROM event_matches AS event_match
+    INNER JOIN favorite_events AS favorite ON favorite.event_id = event_match.event_id
+    WHERE event_match.match_id = m.id
+)
+OR EXISTS (
+    SELECT 1
+    FROM favorite_teams AS favorite
+    WHERE favorite.team_id != ''
+      AND (favorite.team_id = m.team1_id OR favorite.team_id = m.team2_id)
+)
+OR EXISTS (
+    SELECT 1
+    FROM favorite_players AS favorite
+    INNER JOIN players AS player ON player.id = favorite.player_id
+    WHERE player.current_team_id IS NOT NULL
+      AND player.current_team_id != ''
+      AND (player.current_team_id = m.team1_id OR player.current_team_id = m.team2_id)
+);
+
+-- Previous-match placeholders are retained when deleting them would cascade away
+-- head-to-head rows belonging to a favorite match.
+CREATE VIEW cache_protected_matches AS
+SELECT match_id FROM cache_favorite_matches
+UNION
+SELECT encounter.previous_match_id AS match_id
+FROM match_previous_encounters AS encounter
+INNER JOIN cache_favorite_matches AS favorite ON favorite.match_id = encounter.match_id;
+
+CREATE VIEW cache_protected_events AS
+SELECT event_id
+FROM favorite_events
+UNION
+SELECT cached_match.event_id
+FROM matches AS cached_match
+INNER JOIN cache_protected_matches AS protected ON protected.match_id = cached_match.id
+WHERE cached_match.event_id IS NOT NULL AND cached_match.event_id != ''
+UNION
+SELECT event_match.event_id
+FROM event_matches AS event_match
+INNER JOIN cache_protected_matches AS protected ON protected.match_id = event_match.match_id;
+
+CREATE VIEW cache_protected_teams AS
+SELECT team_id
+FROM favorite_teams
+UNION
+SELECT player.current_team_id AS team_id
+FROM players AS player
+INNER JOIN favorite_players AS favorite ON favorite.player_id = player.id
+WHERE player.current_team_id IS NOT NULL AND player.current_team_id != ''
+UNION
+SELECT cached_match.team1_id AS team_id
+FROM matches AS cached_match
+INNER JOIN cache_protected_matches AS protected ON protected.match_id = cached_match.id
+WHERE cached_match.team1_id != ''
+UNION
+SELECT cached_match.team2_id AS team_id
+FROM matches AS cached_match
+INNER JOIN cache_protected_matches AS protected ON protected.match_id = cached_match.id
+WHERE cached_match.team2_id != ''
+UNION
+SELECT event_team.team_id
+FROM event_teams AS event_team
+INNER JOIN cache_protected_events AS protected ON protected.event_id = event_team.event_id
+WHERE event_team.team_id IS NOT NULL AND event_team.team_id != '';
+
+CREATE VIEW cache_protected_players AS
+SELECT player_id
+FROM favorite_players
+UNION
+SELECT stats.player_id
+FROM match_map_player_stats AS stats
+INNER JOIN cache_protected_matches AS protected ON protected.match_id = stats.match_id
+WHERE stats.player_id != ''
+UNION
+SELECT roster.player_id
+FROM team_roster AS roster
+INNER JOIN cache_protected_teams AS protected ON protected.team_id = roster.team_id
+WHERE roster.player_id != '';
+
+getCacheCleanupState:
+SELECT deleted_records, last_run_epoch_millis
+FROM cache_cleanup_state
+WHERE id = 1;
+
+countCacheCleanupCandidates:
+SELECT COUNT(*)
+FROM (
+    SELECT 'MATCH' AS entity_type, id AS entity_id
+    FROM matches
+    WHERE last_updated > 0
+      AND last_updated < :cutoffEpochMillis
+      AND id NOT IN (SELECT match_id FROM cache_protected_matches)
+
+    UNION ALL
+
+    SELECT 'EVENT', id
+    FROM events
+    WHERE last_updated > 0
+      AND last_updated < :cutoffEpochMillis
+      AND id NOT IN (SELECT event_id FROM cache_protected_events)
+
+    UNION ALL
+
+    SELECT 'TEAM', id
+    FROM teams
+    WHERE last_updated > 0
+      AND last_updated < :cutoffEpochMillis
+      AND id NOT IN (SELECT team_id FROM cache_protected_teams)
+
+    UNION ALL
+
+    SELECT 'PLAYER', id
+    FROM players
+    WHERE last_updated > 0
+      AND last_updated < :cutoffEpochMillis
+      AND id NOT IN (SELECT player_id FROM cache_protected_players)
+
+    UNION ALL
+
+    SELECT 'NEWS', id
+    FROM news
+    WHERE last_updated > 0 AND last_updated < :cutoffEpochMillis
+
+    UNION ALL
+
+    SELECT 'RANKING', team_id || ':' || region
+    FROM rankings
+    WHERE last_updated > 0
+      AND last_updated < :cutoffEpochMillis
+      AND team_id NOT IN (SELECT team_id FROM cache_protected_teams)
+
+    UNION ALL
+
+    SELECT 'STANDING', team_id || ':' || year || ':' || circuit
+    FROM standings
+    WHERE last_updated > 0
+      AND last_updated < :cutoffEpochMillis
+      AND team_id NOT IN (SELECT team_id FROM cache_protected_teams)
+);
+
+deleteStaleMatchOverviews:
+DELETE FROM match_overview
+WHERE id IN (
+    SELECT id
+    FROM matches
+    WHERE last_updated > 0
+      AND last_updated < :cutoffEpochMillis
+      AND id NOT IN (SELECT match_id FROM cache_protected_matches)
+);
+
+deleteStaleMatches:
+DELETE FROM matches
+WHERE last_updated > 0
+  AND last_updated < :cutoffEpochMillis
+  AND id NOT IN (SELECT match_id FROM cache_protected_matches);
+
+deleteStaleEventOverviews:
+DELETE FROM event_overview
+WHERE id IN (
+    SELECT id
+    FROM events
+    WHERE last_updated > 0
+      AND last_updated < :cutoffEpochMillis
+      AND id NOT IN (SELECT event_id FROM cache_protected_events)
+);
+
+deleteStaleEvents:
+DELETE FROM events
+WHERE last_updated > 0
+  AND last_updated < :cutoffEpochMillis
+  AND id NOT IN (SELECT event_id FROM cache_protected_events);
+
+deleteStaleRankings:
+DELETE FROM rankings
+WHERE last_updated > 0
+  AND last_updated < :cutoffEpochMillis
+  AND team_id NOT IN (SELECT team_id FROM cache_protected_teams);
+
+deleteStaleStandings:
+DELETE FROM standings
+WHERE last_updated > 0
+  AND last_updated < :cutoffEpochMillis
+  AND team_id NOT IN (SELECT team_id FROM cache_protected_teams);
+
+deleteStaleTeams:
+DELETE FROM teams
+WHERE last_updated > 0
+  AND last_updated < :cutoffEpochMillis
+  AND id NOT IN (SELECT team_id FROM cache_protected_teams);
+
+deleteStalePlayers:
+DELETE FROM players
+WHERE last_updated > 0
+  AND last_updated < :cutoffEpochMillis
+  AND id NOT IN (SELECT player_id FROM cache_protected_players);
+
+deleteStaleNews:
+DELETE FROM news
+WHERE last_updated > 0 AND last_updated < :cutoffEpochMillis;
+
+deleteOrphanedSearchEntries:
+DELETE FROM search_index
+WHERE (
+        UPPER(entity_type) = 'MATCH'
+        AND entity_id NOT IN (SELECT id FROM matches)
+        AND entity_id NOT IN (SELECT id FROM match_overview)
+      )
+   OR (
+        UPPER(entity_type) = 'EVENT'
+        AND entity_id NOT IN (SELECT id FROM events)
+        AND entity_id NOT IN (SELECT id FROM event_overview)
+      )
+   OR (UPPER(entity_type) = 'TEAM' AND entity_id NOT IN (SELECT id FROM teams))
+   OR (UPPER(entity_type) = 'PLAYER' AND entity_id NOT IN (SELECT id FROM players))
+   OR (UPPER(entity_type) = 'NEWS' AND entity_id NOT IN (SELECT id FROM news));
+
+saveCacheCleanupState:
+INSERT OR REPLACE INTO cache_cleanup_state(id, deleted_records, last_run_epoch_millis)
+VALUES (1, :deletedRecords, :lastRunEpochMillis);
