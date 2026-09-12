@@ -86,6 +86,38 @@ class HomeUseCasesTest {
   }
 
   @Test
+  fun playerTransferMovesPersonalizedMatchesAndEventsWhileKeepingPlayerFavorite() {
+    val favorites = DirectFavoriteSnapshot(
+      players = listOf(DirectFavorite.Player("player-1", "Player", "")),
+    )
+    val oldMatch = match("old-team", MatchStatus.UPCOMING, null, "old-event", personalized = false)
+    val newMatch = match("new-team", MatchStatus.UPCOMING, null, "new-event", personalized = false)
+    val playerReason = MatchFavoriteReason(MatchFavoriteSource.PLAYER, "player-1", "Player")
+    val events = listOf(
+      event("old-event", EventStatus.UPCOMING, "Sep 14—15"),
+      event("new-event", EventStatus.UPCOMING, "Sep 16—17"),
+    )
+
+    val before = buildHomeFeed(
+      favorites,
+      listOf(oldMatch.copy(isFavorite = true, favoriteReasons = listOf(playerReason)), newMatch),
+      events,
+    )
+    val after = buildHomeFeed(
+      favorites,
+      listOf(oldMatch, newMatch.copy(isFavorite = true, favoriteReasons = listOf(playerReason))),
+      events,
+    )
+
+    assertEquals(listOf("old-team"), before.personalizedMatches.map { it.id })
+    assertEquals(listOf("old-event"), before.personalizedEvents.map { it.id })
+    assertEquals(listOf("new-team"), after.personalizedMatches.map { it.id })
+    assertEquals(listOf("new-event"), after.personalizedEvents.map { it.id })
+    assertEquals(favorites.players, after.directFavorites.players)
+    assertTrue(after.directFavorites.teams.isEmpty())
+  }
+
+  @Test
   fun completedFavoritesKeepHomeAvailableWithoutDisplayingFinishedItems() {
     val feed = buildHomeFeed(
       DirectFavoriteSnapshot(
