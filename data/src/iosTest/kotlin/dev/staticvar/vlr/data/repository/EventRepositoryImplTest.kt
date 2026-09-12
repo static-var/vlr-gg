@@ -95,6 +95,28 @@ class EventRepositoryImplTest {
   }
 
   @Test
+  fun failedDetailRefreshPreservesCachedEvent() = runTest(dispatcher) {
+    val eventId = "event1"
+    dataSource.detailResults[eventId] = Result.success(
+      EventDetailsDto(
+        id = eventId, title = "Champions", subtitle = "Playoffs",
+        teams = listOf(EventTeamDto(id = "team1", name = "Team One")),
+        prizes = listOf(EventPrizeDto(position = "1st", prize = "$100")),
+        standings = listOf(EventStandingsEntryDto(team = "Team One", wins = 2)),
+        matches = listOf(EventMatchDto(id = "match1", round = "Final")),
+      ),
+    )
+    assertTrue(repository.refreshEventDetails(eventId).isSuccess)
+    assertTrue(repository.addToFavorites(eventId).isSuccess)
+    val cached = requireNotNull(repository.getEventDetails(eventId).first())
+    val failure = IllegalStateException("HTTP request rejected")
+    dataSource.detailResults[eventId] = Result.failure(failure)
+
+    assertEquals(failure, repository.refreshEventDetails(eventId).exceptionOrNull())
+    assertEquals(cached, repository.getEventDetails(eventId).first())
+  }
+
+  @Test
   fun listRefreshPreservesCachedDetailChildren() = runTest(dispatcher) {
     val eventId = "event1"
     dataSource.detailResults[eventId] = Result.success(
