@@ -65,6 +65,15 @@ sentry {
   ignoredBuildTypes.set(setOf("debug"))
 }
 
+val releaseVersionCode = providers.gradleProperty("releaseVersionCode").map { value ->
+  requireNotNull(value.toIntOrNull()?.takeIf { it > 0 }) { "releaseVersionCode must be a positive integer" }
+}.getOrElse(1)
+val releaseVersionName = providers.gradleProperty("releaseVersionName").map { value ->
+  require(value.isNotBlank()) { "releaseVersionName must not be blank" }
+  value
+}.getOrElse("1.0.0")
+val releaseSigningStore = providers.environmentVariable("VLR_SIGNING_STORE_FILE").orNull
+
 android {
   namespace = "dev.staticvar.vlr.android"
   compileSdk = 37
@@ -73,8 +82,8 @@ android {
     applicationId = "dev.staticvar.vlr"
     minSdk = 24
     targetSdk = 35
-    versionCode = 1
-    versionName = "1.0.0"
+    versionCode = releaseVersionCode
+    versionName = releaseVersionName
     buildConfigField("String", "TOKEN", "\"$escapedAuthToken\"")
     buildConfigField("String", "SENTRY_DSN", sentrySetting("SENTRY_DSN_ANDROID", sentrySetting("SENTRY_DSN")).buildConfigLiteral())
     buildConfigField("String", "SENTRY_ENVIRONMENT", sentrySetting("SENTRY_ENVIRONMENT").buildConfigLiteral())
@@ -84,12 +93,26 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
+  signingConfigs {
+    if (releaseSigningStore != null) {
+      create("release") {
+        storeFile = file(releaseSigningStore)
+        keyAlias = providers.environmentVariable("SIGNING_KEY_ALIAS").get()
+        keyPassword = providers.environmentVariable("SIGNING_KEY_PASSWORD").get()
+        storePassword = providers.environmentVariable("SIGNING_STORE_PASSWORD").get()
+      }
+    }
+  }
+
   buildTypes {
     debug {
       applicationIdSuffix = ".debug"
       versionNameSuffix = "-debug"
     }
     release {
+      if (releaseSigningStore != null) {
+        signingConfig = signingConfigs.getByName("release")
+      }
       isMinifyEnabled = false
       proguardFiles(
         getDefaultProguardFile("proguard-android-optimize.txt"),

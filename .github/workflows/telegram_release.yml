@@ -1,80 +1,71 @@
 name: Telegram Release
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: Release version name
+        required: true
+        type: string
+      version_code:
+        description: Android version code (must exceed the last published version)
+        required: true
+        type: string
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      VERSION_NAME: ${{ inputs.version_name }}
+      VERSION_CODE: ${{ inputs.version_code }}
+      VLR_AUTH_TOKEN: ${{ secrets.API_TOKEN }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
-      - name: set up Java 17
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
+          distribution: temurin
           java-version: '17'
-          cache: 'gradle'
+          cache: gradle
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Decode Keystore
+      - name: Install compile SDK
+        run: sdkmanager 'platforms;android-37'
+
+      - name: Decode keystore
         env:
           ENCODED_STRING: ${{ secrets.SIGNING_KEY }}
         run: |
-          TMP_KEYSTORE_FILE_PATH="${GITHUB_WORKSPACE}"/app/keystore
-          mkdir "${TMP_KEYSTORE_FILE_PATH}"
-          echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/vlr-gg.jks
+          umask 077
+          signing_store="$RUNNER_TEMP/vlr-release.jks"
+          echo "VLR_SIGNING_STORE_FILE=$signing_store" >> "$GITHUB_ENV"
+          printf '%s' "$ENCODED_STRING" | base64 --decode > "$signing_store"
 
-      - name: Decode sentry.properties
-        env:
-          ENCODED_STRING: ${{ secrets.SENTRY_PROPERTIES }}
+      - name: Build release
         run: |
-          echo $ENCODED_STRING | base64 -di > "${GITHUB_WORKSPACE}"/sentry.properties
-
-      - name: Make gradlew executable and setup properties
-        env:
-          API_TOKEN: ${{ secrets.API_TOKEN }}
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-        run: |
-          touch local.properties
-          echo 'TOKEN="${{ env.API_TOKEN }}"' > local.properties
-          echo 'APPLICATION_ID="dev.staticvar.vlr"' >> local.properties
-          echo 'SENTRY_DSN=${{ env.SENTRY_DSN }}' >> local.properties
-          echo 'key.alias=${{ env.SIGNING_KEY_ALIAS }}' >> local.properties
-          echo 'key.password=${{ env.SIGNING_KEY_PASSWORD }}' >> local.properties
-          echo 'store.password=${{ env.SIGNING_STORE_PASSWORD }}' >> local.properties
           chmod +x ./gradlew
+          ./gradlew :androidApp:assembleRelease \
+            -Dorg.gradle.java.home="$JAVA_HOME" \
+            -PreleaseVersionName="$VERSION_NAME" \
+            -PreleaseVersionCode="$VERSION_CODE" \
+            --stacktrace
 
-      - name: build prod
-        env:
-          FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG }}
+      - name: Locate release artifact
         run: |
-          touch app/google-services.json
-          echo $FIREBASE_CONFIG_DEV >> app/google-services.json
-          ./gradlew app:assembleRelease -PsentryUploadMappings --stacktrace
-      - name: APK name and path
-        id: apk_details
-        run: |
-          echo "VERSION_NAME=$(echo $(find app/build/outputs/apk/release/  "*.apk" -type f -size +1M -print -quit | head -n1) | awk -F\( '{print $NF}' | awk -F\) '{print $1}')" >> $GITHUB_ENV
-          echo "APK=$(find app/build/outputs/apk/release/  "*.apk" -type f -size +1M -print -quit | head -n1)" >> $GITHUB_ENV
+          artifact="androidApp/build/outputs/apk/release/androidApp-release.apk"
+          test -s "$artifact"
+          echo "APK=$artifact" >> "$GITHUB_ENV"
 
-      - name: Print Build details
-        run: |
-          echo "${{ env.APK }}"
-          echo "${{ env.VERSION_NAME }}"
-          echo "${{ github.workspace }}/${{ env.APK }}"
-
-      - name: send telegram message on push
+      - name: Send Telegram release
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.CHAT_ID }}
@@ -82,3 +73,7 @@ jobs:
           document: ${{ env.APK }}
           message: |
             This is a test build, please ignore or install at your own risk.
+
+      - name: Remove signing file
+        if: always()
+        run: rm -f "$VLR_SIGNING_STORE_FILE"

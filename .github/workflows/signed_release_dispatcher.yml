@@ -1,72 +1,84 @@
 name: Build Signed APK and create a release
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: Release version name
+        required: true
+        type: string
+      version_code:
+        description: Android version code (must exceed the last published version)
+        required: true
+        type: string
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      VERSION_NAME: ${{ inputs.version_name }}
+      VERSION_CODE: ${{ inputs.version_code }}
+      VLR_AUTH_TOKEN: ${{ secrets.API_TOKEN }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
-      - name: set up Java 17
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
+          distribution: temurin
           java-version: '17'
-          cache: 'gradle'
+          cache: gradle
 
-      - name: Decode Keystore
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install compile SDK
+        run: sdkmanager 'platforms;android-37'
+
+      - name: Decode keystore
         env:
           ENCODED_STRING: ${{ secrets.SIGNING_KEY }}
         run: |
-          TMP_KEYSTORE_FILE_PATH="${GITHUB_WORKSPACE}"/app/keystore
-          mkdir "${TMP_KEYSTORE_FILE_PATH}"
-          echo $ENCODED_STRING | base64 -di > "${TMP_KEYSTORE_FILE_PATH}"/vlr-gg.jks
+          umask 077
+          signing_store="$RUNNER_TEMP/vlr-release.jks"
+          echo "VLR_SIGNING_STORE_FILE=$signing_store" >> "$GITHUB_ENV"
+          printf '%s' "$ENCODED_STRING" | base64 --decode > "$signing_store"
 
-
-      - name: Make gradlew executable
-        env:
-          API_TOKEN: ${{ secrets.API_TOKEN }}
+      - name: Build release
         run: |
-          touch local.properties
-          echo "API_KEY=${{ env.API_TOKEN }}" > local.properties
           chmod +x ./gradlew
+          ./gradlew :androidApp:assembleRelease \
+            -Dorg.gradle.java.home="$JAVA_HOME" \
+            -PreleaseVersionName="$VERSION_NAME" \
+            -PreleaseVersionCode="$VERSION_CODE" \
+            --stacktrace
 
-      - name: build prod
-        env:
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          API_TOKEN: ${{ secrets.API_TOKEN }}
-          FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG }}
+      - name: Locate release artifact
         run: |
-          touch app/google-services.json
-          echo $FIREBASE_CONFIG_DEV >> app/google-services.json
-          ./gradlew app:assembleRelease --stacktrace
+          artifact="androidApp/build/outputs/apk/release/androidApp-release.apk"
+          test -s "$artifact"
+          echo "APK=$artifact" >> "$GITHUB_ENV"
 
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Build Artifacts
-          path: app/build/outputs/
-
-      - name: APK name and path
-        id: apk_details
-        run: |
-          echo "VERSION_NAME=$(echo $(find app/build/outputs/apk/release/  "*.apk" -type f -size +1M -print -quit | head -n1) | awk -F\( '{print $NF}' | awk -F\) '{print $1}')" >> $GITHUB_ENV
-          echo "APK=$(find app/build/outputs/apk/release/  "*.apk" -type f -size +1M -print -quit | head -n1)" >> $GITHUB_ENV
-
-      - name: Print Build details
-        run: |
-          echo "${{ env.APK }}"
-          echo "${{ env.VERSION_NAME }}"
+          path: ${{ env.APK }}
+          if-no-files-found: error
 
       - name: Push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          custom_tag: "${{ env.VERSION_NAME }}"
-          tag_prefix: ""
+          custom_tag: ${{ env.VERSION_NAME }}
+          tag_prefix: ''
           default_prerelease_bump: false
 
       - name: Create a GitHub release
@@ -76,16 +88,18 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           artifacts: ${{ env.APK }}
 
-      - uses: actions/checkout@v4
-      - run: |
-          echo ${{ env.VERSION_NAME }} > version
+      - name: Record released version
+        run: |
+          printf '%s\n' "$VERSION_NAME" > version
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add .
-          git commit -m "Update version"
-          git push
+          git add version
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update version'
+            git push
+          fi
 
-      - name: send telegram message on push
+      - name: Send Telegram release
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.CHAT_ID }}
@@ -93,4 +107,8 @@ jobs:
           document: ${{ env.APK }}
           message: |
             Published ${{ env.VERSION_NAME }}
-            Release available at https://github.com/${{ github.repository }}/releases/tag/${{steps.tag_version.outputs.new_tag}}
+            Release available at https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag_version.outputs.new_tag }}
+
+      - name: Remove signing file
+        if: always()
+        run: rm -f "$VLR_SIGNING_STORE_FILE"
