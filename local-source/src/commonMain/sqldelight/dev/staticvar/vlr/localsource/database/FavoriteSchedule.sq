@@ -1,0 +1,271 @@
+getFavoriteSchedule:
+WITH favorite_team_ids(team_id) AS (
+    SELECT team_id
+    FROM favorite_teams
+    WHERE team_id != ''
+    UNION
+    SELECT players.current_team_id
+    FROM players
+    INNER JOIN favorite_players ON favorite_players.player_id = players.id
+    WHERE players.current_team_id IS NOT NULL AND players.current_team_id != ''
+),
+favorite_match_ids(match_id) AS (
+    SELECT match_id
+    FROM favorite_matches
+    UNION
+    SELECT matches.id
+    FROM matches
+    WHERE EXISTS (
+        SELECT 1
+        FROM favorite_team_ids
+        WHERE favorite_team_ids.team_id = matches.team1_id
+           OR favorite_team_ids.team_id = matches.team2_id
+    ) OR EXISTS (
+        SELECT 1
+        FROM favorite_events
+        WHERE favorite_events.event_id = matches.event_id
+    )
+    UNION
+    SELECT match_overview.id
+    FROM match_overview
+    WHERE EXISTS (
+        SELECT 1
+        FROM favorite_team_ids
+        WHERE favorite_team_ids.team_id = match_overview.team1_id
+           OR favorite_team_ids.team_id = match_overview.team2_id
+    ) OR EXISTS (
+        SELECT 1
+        FROM favorite_events
+        WHERE favorite_events.event_id = match_overview.event_id
+    )
+    UNION
+    SELECT team_upcoming_matches.match_id
+    FROM team_upcoming_matches
+    WHERE EXISTS (
+        SELECT 1
+        FROM favorite_team_ids
+        WHERE favorite_team_ids.team_id = team_upcoming_matches.team_id
+           OR favorite_team_ids.team_id = team_upcoming_matches.opponent_team_id
+    )
+    UNION
+    SELECT event_matches.match_id
+    FROM event_matches
+    INNER JOIN favorite_events ON favorite_events.event_id = event_matches.event_id
+),
+raw_candidates(
+    id, event, team1, team2, time_value, source_status, score1, score2,
+    format_source, planned_map_count, stage, display_rank, status_rank, tie_break
+) AS (
+    SELECT id, event_name, team1_name, team2_name, time, status, team1_score, team2_score,
+           note, map_count, COALESCE(NULLIF(stage, ''), series), 4, 4, ''
+    FROM matches
+    UNION ALL
+    SELECT id, event_name, team1_name, team2_name, time, status, team1_score, team2_score,
+           '', NULL, series, 3, 3, ''
+    FROM match_overview
+    UNION ALL
+    SELECT event_matches.match_id,
+           COALESCE(NULLIF(events.name, ''), event_matches.event_id),
+           event_matches.team1_name,
+           event_matches.team2_name,
+           CASE
+               WHEN INSTR(event_matches.time, 'T') > 0 THEN event_matches.time
+               WHEN event_matches.date != '' THEN event_matches.date
+               ELSE event_matches.time
+           END,
+           event_matches.status,
+           event_matches.team1_score,
+           event_matches.team2_score,
+           '',
+           NULL,
+           event_matches.stage,
+           2,
+           2,
+           event_matches.event_id
+    FROM event_matches
+    LEFT JOIN events ON events.id = event_matches.event_id
+    UNION ALL
+    SELECT team_upcoming_matches.match_id,
+           team_upcoming_matches.event_name,
+           COALESCE(NULLIF(teams.name, ''), team_upcoming_matches.team_id),
+           team_upcoming_matches.opponent_team_name,
+           team_upcoming_matches.date,
+           'UPCOMING',
+           NULL,
+           NULL,
+           '',
+           NULL,
+           team_upcoming_matches.stage,
+           1,
+           1,
+           team_upcoming_matches.team_id
+    FROM team_upcoming_matches
+    LEFT JOIN teams ON teams.id = team_upcoming_matches.team_id
+),
+status_candidates(id, status, team1, team2, score1, score2, status_rank, tie_break) AS (
+    SELECT id,
+           CASE
+               WHEN UPPER(TRIM(source_status)) IN ('LIVE', 'ONGOING') THEN 'LIVE'
+               WHEN UPPER(TRIM(source_status)) IN ('COMPLETED', 'FINAL') THEN 'COMPLETED'
+               WHEN UPPER(TRIM(source_status)) = 'UPCOMING' THEN 'UPCOMING'
+               ELSE 'UNKNOWN'
+           END,
+           team1,
+           team2,
+           score1,
+           score2,
+           status_rank,
+           tie_break
+    FROM raw_candidates
+),
+known_statuses AS (
+    SELECT *
+    FROM status_candidates
+    WHERE status != 'UNKNOWN'
+),
+effective_statuses AS (
+    SELECT status_candidates.*
+    FROM known_statuses AS status_candidates
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM known_statuses AS better_status
+        WHERE better_status.id = status_candidates.id
+          AND (
+              better_status.status_rank > status_candidates.status_rank
+              OR (
+                  better_status.status_rank = status_candidates.status_rank
+                  AND better_status.tie_break < status_candidates.tie_break
+              )
+          )
+    )
+),
+candidates AS (
+    SELECT raw_candidates.*,
+           CASE WHEN TRIM(event) != '' THEN 1 ELSE 0 END
+             + CASE WHEN TRIM(team1) != '' THEN 1 ELSE 0 END
+             + CASE WHEN TRIM(team2) != '' THEN 1 ELSE 0 END
+             + CASE WHEN TRIM(time_value) != '' THEN 1 ELSE 0 END
+             + CASE WHEN score1 IS NOT NULL THEN 1 ELSE 0 END
+             + CASE WHEN score2 IS NOT NULL THEN 1 ELSE 0 END
+             + CASE WHEN TRIM(format_source) != '' THEN 1 ELSE 0 END
+             + CASE WHEN TRIM(stage) != '' THEN 1 ELSE 0 END AS display_score,
+           CASE
+               WHEN display_rank >= 3 AND TRIM(team1) != '' AND TRIM(team2) != '' THEN display_rank + 10
+               WHEN display_rank = 2 AND TRIM(team1) != '' AND TRIM(team2) != '' THEN display_rank + 5
+               WHEN display_rank = 1 AND TRIM(team1) != '' AND TRIM(team2) != '' THEN display_rank + 5
+               ELSE 0
+           END AS identity_rank
+    FROM raw_candidates
+),
+selected_candidates AS (
+    SELECT candidates.*
+    FROM candidates
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM candidates AS better
+        WHERE better.id = candidates.id
+          AND (
+              better.identity_rank > candidates.identity_rank
+              OR (
+                  better.identity_rank = candidates.identity_rank
+                  AND better.display_score > candidates.display_score
+              )
+              OR (
+                  better.identity_rank = candidates.identity_rank
+                  AND better.display_score = candidates.display_score
+                  AND better.display_rank = candidates.display_rank
+                  AND better.tie_break < candidates.tie_break
+              )
+          )
+    )
+)
+SELECT selected_candidates.id AS id,
+       COALESCE(
+           NULLIF(selected_candidates.event, ''),
+           (
+               SELECT fallback.event
+               FROM candidates AS fallback
+               WHERE fallback.id = selected_candidates.id
+                 AND TRIM(fallback.event) != ''
+               ORDER BY fallback.display_rank DESC, fallback.display_score DESC, fallback.tie_break
+               LIMIT 1
+           ),
+           ''
+       ) AS event,
+       selected_candidates.team1 AS team1,
+       selected_candidates.team2 AS team2,
+       NULLIF(
+           COALESCE(
+               NULLIF(selected_candidates.time_value, ''),
+               (
+                   SELECT fallback.time_value
+                   FROM candidates AS fallback
+                   WHERE fallback.id = selected_candidates.id
+                     AND TRIM(fallback.time_value) != ''
+                   ORDER BY fallback.display_rank DESC, fallback.display_score DESC, fallback.tie_break
+                   LIMIT 1
+               ),
+               ''
+           ),
+           ''
+       ) AS time,
+       effective_statuses.status AS status,
+       CASE
+           WHEN effective_statuses.score1 IS NULL THEN selected_candidates.score1
+           WHEN selected_candidates.team1 = effective_statuses.team1
+            AND selected_candidates.team2 = effective_statuses.team2 THEN effective_statuses.score1
+           WHEN selected_candidates.team1 = effective_statuses.team2
+            AND selected_candidates.team2 = effective_statuses.team1 THEN effective_statuses.score2
+           ELSE NULL
+       END AS score1,
+       CASE
+           WHEN effective_statuses.score2 IS NULL THEN selected_candidates.score2
+           WHEN selected_candidates.team1 = effective_statuses.team1
+            AND selected_candidates.team2 = effective_statuses.team2 THEN effective_statuses.score2
+           WHEN selected_candidates.team1 = effective_statuses.team2
+            AND selected_candidates.team2 = effective_statuses.team1 THEN effective_statuses.score1
+           ELSE NULL
+       END AS score2,
+       COALESCE(
+           NULLIF(selected_candidates.format_source, ''),
+           (
+               SELECT fallback.format_source
+               FROM candidates AS fallback
+               WHERE fallback.id = selected_candidates.id
+                 AND TRIM(fallback.format_source) != ''
+               ORDER BY fallback.display_rank DESC, fallback.display_score DESC, fallback.tie_break
+               LIMIT 1
+           ),
+           ''
+       ) AS format_source,
+       COALESCE(
+           (
+               SELECT fallback.planned_map_count
+               FROM candidates AS fallback
+               WHERE fallback.id = selected_candidates.id
+                 AND fallback.planned_map_count IS NOT NULL
+               ORDER BY fallback.display_rank DESC, fallback.tie_break
+               LIMIT 1
+           ),
+           0
+       ) AS planned_map_count,
+       COALESCE(
+           NULLIF(selected_candidates.stage, ''),
+           (
+               SELECT fallback.stage
+               FROM candidates AS fallback
+               WHERE fallback.id = selected_candidates.id
+                 AND TRIM(fallback.stage) != ''
+               ORDER BY fallback.display_rank DESC, fallback.display_score DESC, fallback.tie_break
+               LIMIT 1
+           ),
+           ''
+       ) AS stage
+FROM selected_candidates
+INNER JOIN favorite_match_ids ON favorite_match_ids.match_id = selected_candidates.id
+INNER JOIN effective_statuses ON effective_statuses.id = selected_candidates.id
+WHERE effective_statuses.status IN ('UPCOMING', 'LIVE')
+ORDER BY CASE effective_statuses.status WHEN 'LIVE' THEN 0 ELSE 1 END,
+         CASE WHEN selected_candidates.time_value = '' THEN 1 ELSE 0 END,
+         selected_candidates.time_value,
+         selected_candidates.id;

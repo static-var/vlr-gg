@@ -15,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "78B53CC79860CBFC2F5543C6"
-               BuildableName = "iosApp.app"
-               BlueprintName = "iosApp"
+               BlueprintIdentifier = "72D085823FC784EAB71445FB"
+               BuildableName = "VLRWidgetTests.xctest"
+               BlueprintName = "VLRWidgetTests"
                ReferencedContainer = "container:iosApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "78B53CC79860CBFC2F5543C6"
-            BuildableName = "iosApp.app"
-            BlueprintName = "iosApp"
+            BlueprintIdentifier = "72D085823FC784EAB71445FB"
+            BuildableName = "VLRWidgetTests.xctest"
+            BlueprintName = "VLRWidgetTests"
             ReferencedContainer = "container:iosApp.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -64,18 +64,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "78B53CC79860CBFC2F5543C6"
-            BuildableName = "iosApp.app"
-            BlueprintName = "iosApp"
+            BlueprintIdentifier = "72D085823FC784EAB71445FB"
+            BuildableName = "VLRWidgetTests.xctest"
+            BlueprintName = "VLRWidgetTests"
             ReferencedContainer = "container:iosApp.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
-      <CommandLineArguments>
-      </CommandLineArguments>
+      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -83,16 +80,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "78B53CC79860CBFC2F5543C6"
-            BuildableName = "iosApp.app"
-            BlueprintName = "iosApp"
+            BlueprintIdentifier = "72D085823FC784EAB71445FB"
+            BuildableName = "VLRWidgetTests.xctest"
+            BlueprintName = "VLRWidgetTests"
             ReferencedContainer = "container:iosApp.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

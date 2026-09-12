@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -31,8 +32,10 @@ import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
 import dev.staticvar.vlr.shared.appearance.ApplyPlatformAppearance
+import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
 import dev.staticvar.vlr.shared.navigation.AppNavHost
 import dev.staticvar.vlr.shared.navigation.rememberVlrAppState
+import dev.staticvar.vlr.shared.widget.PublishUpcomingMatchesWidget
 import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.image.ProvideSharedImageLoader
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
@@ -50,7 +53,10 @@ import kotlin.time.Clock
  * This will be used by both Android and iOS platforms.
  */
 @Composable
-public fun App() {
+public fun App(
+  deepLinkHandler: AppDeepLinkHandler? = null,
+  onWidgetSnapshotChanged: suspend (String) -> Unit = {},
+) {
   ProvideSharedImageLoader()
 
   val networkMonitor = koinInject<NetworkMonitor>()
@@ -94,6 +100,10 @@ public fun App() {
     MascotPreference.Off -> null
   }
   PrismTheme(variant = variant, family = family, catppuccinFlavour = flavour) {
+    PublishUpcomingMatchesWidget(
+      monospace = appearance.family == ThemeFamily.Console,
+      onSnapshotChanged = onWidgetSnapshotChanged,
+    )
     ApplyPlatformAppearance(
       isDark = isDark,
       followSystem = appearance.family != ThemeFamily.Catppuccin && appearance.mode == null,
@@ -109,6 +119,15 @@ public fun App() {
         LocalSpoilerMode provides SpoilerMode(enabled = spoilersHidden, onToggle = spoilerPreferences::toggle),
       ) {
         val appState = rememberVlrAppState()
+        val activeDeepLinkHandler = remember(deepLinkHandler) { deepLinkHandler ?: AppDeepLinkHandler() }
+        val deepLinkState by activeDeepLinkHandler.state.collectAsStateWithLifecycle()
+        val deepLinkRequest = deepLinkState.pendingRequest
+        LaunchedEffect(deepLinkRequest?.id) {
+          deepLinkRequest?.let { request ->
+            request.navigate(appState)
+            activeDeepLinkHandler.consume(request.id)
+          }
+        }
         ProvideCardMascots(
           screenKey = appState.backStack.lastOrNull().toString(),
           isActive = lifecycleState == Lifecycle.State.RESUMED,

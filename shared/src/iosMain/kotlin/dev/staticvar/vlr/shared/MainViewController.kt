@@ -10,6 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.window.ComposeUIViewController
 import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.iosNetworkModule
+import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
 import dev.staticvar.vlr.sharedui.share.LocalImageSharer
 import dev.staticvar.vlr.sharedui.share.rememberIosImageSharer
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -32,7 +33,11 @@ private var hasInstalledUnhandledExceptionHook: Boolean = false
 /**
  * Creates the main UIViewController for iOS that hosts the Compose UI.
  */
-fun MainViewController(authToken: String? = null): UIViewController {
+fun MainViewController(
+  authToken: String? = null,
+  deepLinkHandler: AppDeepLinkHandler = AppDeepLinkHandler(),
+  onWidgetSnapshotChanged: (String) -> Unit = {},
+): UIViewController {
   ensureUnhandledExceptionLoggingInstalled()
 
   return try {
@@ -42,7 +47,10 @@ fun MainViewController(authToken: String? = null): UIViewController {
     )
     ComposeUIViewController {
       CompositionLocalProvider(LocalImageSharer provides rememberIosImageSharer()) {
-        App()
+        App(
+          deepLinkHandler = deepLinkHandler,
+          onWidgetSnapshotChanged = { onWidgetSnapshotChanged(it) },
+        )
       }
     }
   } catch (throwable: Throwable) {

@@ -40,9 +40,15 @@ targets:
     platform: iOS
     sources:
       - path: iosApp
+      - path: WidgetShared
     dependencies:
       - package: Sentry
         product: Sentry
+      - target: VLRWidgetExtension
+        embed: true
+    settings:
+      base:
+        CODE_SIGN_ENTITLEMENTS: iosApp/iosApp.entitlements
     preBuildScripts:
       - name: Build shared framework
         basedOnDependencyAnalysis: false
@@ -80,6 +86,54 @@ targets:
             ./gradlew :shared:embedAndSignAppleFrameworkForXcode
           fi
 
+  VLRWidgetExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: VLRWidget
+      - path: WidgetShared
+      - path: ../designsystem/src/commonMain/composeResources/font/space_grotesk_regular.ttf
+        buildPhase: resources
+      - path: ../designsystem/src/commonMain/composeResources/files/font_licenses/space_grotesk_OFL.txt
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.staticvar.vlr.ios.widget
+        PRODUCT_NAME: VLRWidget
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: VLRWidget/Info.plist
+        CODE_SIGN_ENTITLEMENTS: VLRWidget/VLRWidget.entitlements
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+        OTHER_LDFLAGS: ""
+    preBuildScripts:
+      - name: Generate widget build config
+        basedOnDependencyAnalysis: false
+        script: |
+          set -euo pipefail
+          export REPO_ROOT="$SRCROOT/.."
+          export GENERATED_SWIFT_PATH="$SRCROOT/VLRWidget/GeneratedBuildConfig.swift"
+          python3 "$REPO_ROOT/scripts/generate-ios-build-config.py"
+
+  VLRWidgetTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: VLRWidgetTests
+      - path: VLRWidget/VLRWidgetModels.swift
+      - path: VLRWidget/VLRWidgetRefresh.swift
+      - path: VLRWidget/UpcomingMatchesWidget.swift
+      - path: WidgetShared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.staticvar.vlr.ios.widget-tests
+        PRODUCT_NAME: VLRWidgetTests
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: ""
+        OTHER_LDFLAGS: ""
+        FRAMEWORK_SEARCH_PATHS: ""
+        TEST_HOST: ""
+        BUNDLE_LOADER: ""
 schemes:
   iosApp:
     build:
@@ -89,3 +143,15 @@ schemes:
       config: Debug
     archive:
       config: Release
+    test:
+      config: Debug
+      targets:
+        - VLRWidgetTests
+  WidgetRefreshTests:
+    build:
+      targets:
+        VLRWidgetTests: test
+    test:
+      config: Debug
+      targets:
+        - VLRWidgetTests

@@ -7,20 +7,77 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		099124514C9782698F2C797B /* VLRWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */; };
+		15D0070A8332C69488B9E71D /* VLRWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */; };
+		1613C021234E871D6799F0C5 /* VLRWidgetContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */; };
 		1C81D6F669B7BB6D2FFCCEB3 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = BD22E08C2C1AA8ABB84B57D2 /* Sentry */; };
 		22EA1CB33A17DCC6FC82406D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F543015C899423D4B01CEB2E /* Assets.xcassets */; };
 		307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CECA83ACC03A83C85A623 /* iOSApp.swift */; };
+		36317EF4FEADC72B01C12E91 /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6EDCAF155347F5E7F4CE33 /* WidgetSnapshotStore.swift */; };
+		44E37D45D9CD7737C66D6C33 /* TestGeneratedBuildConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E64F35EE4AE373F79416126 /* TestGeneratedBuildConfig.swift */; };
 		56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */; };
+		6542E1733BC9E555E81E3BE4 /* space_grotesk_regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 957FAA0B433E8180DF7E3F12 /* space_grotesk_regular.ttf */; };
+		88FAF2F8FE95B1B3827271DA /* VLRWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6062090215F075FB02BCE24E /* VLRWidgetBundle.swift */; };
 		8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */; };
+		8F1820454E033F4F9F6CC873 /* space_grotesk_OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8BA2322F344FD239F08D9EF9 /* space_grotesk_OFL.txt */; };
+		9CA5ABA0963409B585F45203 /* VLRWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */; };
+		9DD4C32FDB291AC803C0907D /* UpcomingMatchesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */; };
+		A367A9E9FDA8B51BEB578CA9 /* WidgetRefreshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BF1F4E25E5E55367392BE6A /* WidgetRefreshTests.swift */; };
+		A549AA5B4708B66DBB9797F1 /* GeneratedBuildConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95B8B8B53351C500C2EACA2 /* GeneratedBuildConfig.swift */; };
+		B31C480DFB8D81AA0EB42F35 /* VLRWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */; };
+		B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */; };
+		BC44AC391E69BD6D0F675BE0 /* UpcomingMatchesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */; };
+		BD5E492DF0CC95877D4531D5 /* VLRWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 197F5175E495A017DFACA2B8 /* VLRWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E723B4A1BB6FF42A310E01F1 /* VLRWidgetContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		B94B7DD7D8637B628FFC5470 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 242FB5348943441C388468CE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 106CBD00D724990D2B88E84C;
+			remoteInfo = VLRWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E99160E501832DB2CECE6CFF /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				BD5E492DF0CC95877D4531D5 /* VLRWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		07ED39F464598B211EB46A3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMatchesWidget.swift; sourceTree = "<group>"; };
+		0D08A94B4CBAF132F954CD64 /* VLRWidgetTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = VLRWidgetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E64F35EE4AE373F79416126 /* TestGeneratedBuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestGeneratedBuildConfig.swift; sourceTree = "<group>"; };
+		197F5175E495A017DFACA2B8 /* VLRWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = VLRWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetModels.swift; sourceTree = "<group>"; };
+		2BF1F4E25E5E55367392BE6A /* WidgetRefreshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetRefreshTests.swift; sourceTree = "<group>"; };
+		4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetRefresh.swift; sourceTree = "<group>"; };
+		48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetContract.swift; sourceTree = "<group>"; };
+		4C823E9D6BCD587C88AD7701 /* VLRWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VLRWidget.entitlements; sourceTree = "<group>"; };
+		6062090215F075FB02BCE24E /* VLRWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetBundle.swift; sourceTree = "<group>"; };
 		668CECA83ACC03A83C85A623 /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		86038AE1032E284E79B32AD6 /* iosApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedBuildConfig.swift; sourceTree = "<group>"; };
+		8BA2322F344FD239F08D9EF9 /* space_grotesk_OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = space_grotesk_OFL.txt; sourceTree = "<group>"; };
+		957FAA0B433E8180DF7E3F12 /* space_grotesk_regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = space_grotesk_regular.ttf; sourceTree = "<group>"; };
+		BA6EDCAF155347F5E7F4CE33 /* WidgetSnapshotStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotStore.swift; sourceTree = "<group>"; };
 		C117AD187833E2513BD2F553 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
 		CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F543015C899423D4B01CEB2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F95B8B8B53351C500C2EACA2 /* GeneratedBuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedBuildConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +92,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		17F4E4F5C1AC8335711C2171 /* font_licenses */ = {
+			isa = PBXGroup;
+			children = (
+				8BA2322F344FD239F08D9EF9 /* space_grotesk_OFL.txt */,
+			);
+			name = font_licenses;
+			path = ../designsystem/src/commonMain/composeResources/files/font_licenses;
+			sourceTree = "<group>";
+		};
 		1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -42,7 +108,9 @@
 				CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
 				86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */,
 				C117AD187833E2513BD2F553 /* Info.plist */,
+				C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */,
 				668CECA83ACC03A83C85A623 /* iOSApp.swift */,
+				BA6EDCAF155347F5E7F4CE33 /* WidgetSnapshotStore.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -50,22 +118,105 @@
 		38B69C3F79CD97858CF7B609 = {
 			isa = PBXGroup;
 			children = (
+				81C6C4D1DEB743C04FE907E7 /* font */,
+				17F4E4F5C1AC8335711C2171 /* font_licenses */,
 				1DB4B685CAEE8BEFEBBAEF94 /* iosApp */,
+				B792E9D2D932475168B27185 /* VLRWidget */,
+				87A46388EB4C69847A9B7748 /* VLRWidgetTests */,
+				BE812D4F3BD7A6E3E029D946 /* WidgetShared */,
 				94C98B8B3A2BFC1966447269 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		81C6C4D1DEB743C04FE907E7 /* font */ = {
+			isa = PBXGroup;
+			children = (
+				957FAA0B433E8180DF7E3F12 /* space_grotesk_regular.ttf */,
+			);
+			name = font;
+			path = ../designsystem/src/commonMain/composeResources/font;
+			sourceTree = "<group>";
+		};
+		87A46388EB4C69847A9B7748 /* VLRWidgetTests */ = {
+			isa = PBXGroup;
+			children = (
+				0E64F35EE4AE373F79416126 /* TestGeneratedBuildConfig.swift */,
+				2BF1F4E25E5E55367392BE6A /* WidgetRefreshTests.swift */,
+			);
+			path = VLRWidgetTests;
 			sourceTree = "<group>";
 		};
 		94C98B8B3A2BFC1966447269 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				86038AE1032E284E79B32AD6 /* iosApp.app */,
+				197F5175E495A017DFACA2B8 /* VLRWidgetExtension.appex */,
+				0D08A94B4CBAF132F954CD64 /* VLRWidgetTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B792E9D2D932475168B27185 /* VLRWidget */ = {
+			isa = PBXGroup;
+			children = (
+				F95B8B8B53351C500C2EACA2 /* GeneratedBuildConfig.swift */,
+				07ED39F464598B211EB46A3B /* Info.plist */,
+				09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */,
+				4C823E9D6BCD587C88AD7701 /* VLRWidget.entitlements */,
+				6062090215F075FB02BCE24E /* VLRWidgetBundle.swift */,
+				1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */,
+				4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */,
+			);
+			path = VLRWidget;
+			sourceTree = "<group>";
+		};
+		BE812D4F3BD7A6E3E029D946 /* WidgetShared */ = {
+			isa = PBXGroup;
+			children = (
+				48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */,
+			);
+			path = WidgetShared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		106CBD00D724990D2B88E84C /* VLRWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F652EAB4863FDD40CE93B78E /* Build configuration list for PBXNativeTarget "VLRWidgetExtension" */;
+			buildPhases = (
+				D50BE0B098CD44B785DE478F /* Generate widget build config */,
+				AF326E9B4C0DC780DE91C362 /* Sources */,
+				B154C23E595063CE7C5D0674 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VLRWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = VLRWidgetExtension;
+			productReference = 197F5175E495A017DFACA2B8 /* VLRWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		72D085823FC784EAB71445FB /* VLRWidgetTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B3E6CEAA557F3C536DA9A179 /* Build configuration list for PBXNativeTarget "VLRWidgetTests" */;
+			buildPhases = (
+				4D2F38B72CB047278D5CB709 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VLRWidgetTests;
+			packageProductDependencies = (
+			);
+			productName = VLRWidgetTests;
+			productReference = 0D08A94B4CBAF132F954CD64 /* VLRWidgetTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		78B53CC79860CBFC2F5543C6 /* iosApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 29DCA9F0B3A40325067EB163 /* Build configuration list for PBXNativeTarget "iosApp" */;
@@ -74,10 +225,12 @@
 				297B59D9CE634556D6007C40 /* Sources */,
 				1623B02D10928C8101C1F806 /* Resources */,
 				EF8A6E9BFD470986D9D5C9B5 /* Frameworks */,
+				E99160E501832DB2CECE6CFF /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				917B6FA61AFEF667796B107F /* PBXTargetDependency */,
 			);
 			name = iosApp;
 			packageProductDependencies = (
@@ -96,6 +249,14 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					106CBD00D724990D2B88E84C = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					72D085823FC784EAB71445FB = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
 					78B53CC79860CBFC2F5543C6 = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
@@ -120,6 +281,8 @@
 			projectRoot = "";
 			targets = (
 				78B53CC79860CBFC2F5543C6 /* iosApp */,
+				106CBD00D724990D2B88E84C /* VLRWidgetExtension */,
+				72D085823FC784EAB71445FB /* VLRWidgetTests */,
 			);
 		};
 /* End PBXProject section */
@@ -130,6 +293,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				22EA1CB33A17DCC6FC82406D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B154C23E595063CE7C5D0674 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F1820454E033F4F9F6CC873 /* space_grotesk_OFL.txt in Resources */,
+				6542E1733BC9E555E81E3BE4 /* space_grotesk_regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,6 +327,25 @@
 			shellPath = /bin/sh;
 			shellScript = "set -euo pipefail\nUSER_HOME=\"${HOME:-$(eval echo \"~${USER:-}\")}\"\n\nexport REPO_ROOT=\"$SRCROOT/..\"\nexport GENERATED_SWIFT_PATH=\"$SRCROOT/iosApp/GeneratedBuildConfig.swift\"\n\nif ! java -version >/dev/null 2>&1; then\n  if [ -n \"$USER_HOME\" ] && [ -x \"$USER_HOME/.sdkman/candidates/java/current/bin/java\" ]; then\n    export JAVA_HOME=\"$USER_HOME/.sdkman/candidates/java/current\"\n    export PATH=\"$JAVA_HOME/bin:$PATH\"\n  elif [ -x /usr/libexec/java_home ]; then\n    JAVA_HOME=\"$(/usr/libexec/java_home 2>/dev/null || true)\"\n    if [ -n \"$JAVA_HOME\" ] && [ -x \"$JAVA_HOME/bin/java\" ]; then\n      export JAVA_HOME\n      export PATH=\"$JAVA_HOME/bin:$PATH\"\n    fi\n  fi\nfi\n\nif ! java -version >/dev/null 2>&1; then\n  echo \"error: Java runtime not found. Install a JDK or set JAVA_HOME before building iOS.\" >&2\n  exit 1\nfi\n\npython3 \"$REPO_ROOT/scripts/generate-ios-build-config.py\"\n\ncd \"$SRCROOT/..\"\nif command -v build-brief >/dev/null 2>&1; then\n  build-brief ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nelse\n  ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nfi\n";
 		};
+		D50BE0B098CD44B785DE478F /* Generate widget build config */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate widget build config";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\nexport REPO_ROOT=\"$SRCROOT/..\"\nexport GENERATED_SWIFT_PATH=\"$SRCROOT/VLRWidget/GeneratedBuildConfig.swift\"\npython3 \"$REPO_ROOT/scripts/generate-ios-build-config.py\"\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -164,11 +355,47 @@
 			files = (
 				56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
 				8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */,
+				B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */,
+				36317EF4FEADC72B01C12E91 /* WidgetSnapshotStore.swift in Sources */,
 				307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4D2F38B72CB047278D5CB709 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				44E37D45D9CD7737C66D6C33 /* TestGeneratedBuildConfig.swift in Sources */,
+				BC44AC391E69BD6D0F675BE0 /* UpcomingMatchesWidget.swift in Sources */,
+				1613C021234E871D6799F0C5 /* VLRWidgetContract.swift in Sources */,
+				9CA5ABA0963409B585F45203 /* VLRWidgetModels.swift in Sources */,
+				15D0070A8332C69488B9E71D /* VLRWidgetRefresh.swift in Sources */,
+				A367A9E9FDA8B51BEB578CA9 /* WidgetRefreshTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AF326E9B4C0DC780DE91C362 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A549AA5B4708B66DBB9797F1 /* GeneratedBuildConfig.swift in Sources */,
+				9DD4C32FDB291AC803C0907D /* UpcomingMatchesWidget.swift in Sources */,
+				88FAF2F8FE95B1B3827271DA /* VLRWidgetBundle.swift in Sources */,
+				E723B4A1BB6FF42A310E01F1 /* VLRWidgetContract.swift in Sources */,
+				B31C480DFB8D81AA0EB42F35 /* VLRWidgetModels.swift in Sources */,
+				099124514C9782698F2C797B /* VLRWidgetRefresh.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		917B6FA61AFEF667796B107F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 106CBD00D724990D2B88E84C /* VLRWidgetExtension */;
+			targetProxy = B94B7DD7D8637B628FFC5470 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		11814011E7D6EC822BFBC66D /* Release */ = {
@@ -250,6 +477,48 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
+		};
+		15EEDB96BBC64DF75EB7DA08 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				FRAMEWORK_SEARCH_PATHS = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.staticvar.vlr.ios.widget-tests";
+				PRODUCT_NAME = VLRWidgetTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "";
+			};
+			name = Release;
+		};
+		31278C4692B7D2007CF0590F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				FRAMEWORK_SEARCH_PATHS = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.staticvar.vlr.ios.widget-tests";
+				PRODUCT_NAME = VLRWidgetTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "";
+			};
+			name = Debug;
 		};
 		6C824A6EB4BAD43AE2A4BB29 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -338,10 +607,53 @@
 			};
 			name = Debug;
 		};
+		70C10F24878E375DFDAC61DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = VLRWidget/VLRWidget.entitlements;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VLRWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				OTHER_LDFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = dev.staticvar.vlr.ios.widget;
+				PRODUCT_NAME = VLRWidget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7AF8204A4D2EDD7449A05054 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = VLRWidget/VLRWidget.entitlements;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VLRWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				OTHER_LDFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = dev.staticvar.vlr.ios.widget;
+				PRODUCT_NAME = VLRWidget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		9221A1FDC06803E8A2FC6E61 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = iosApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -357,6 +669,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = iosApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -376,6 +689,24 @@
 			buildConfigurations = (
 				9221A1FDC06803E8A2FC6E61 /* Debug */,
 				AF835BFF1220CA5AB5B867E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B3E6CEAA557F3C536DA9A179 /* Build configuration list for PBXNativeTarget "VLRWidgetTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				31278C4692B7D2007CF0590F /* Debug */,
+				15EEDB96BBC64DF75EB7DA08 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F652EAB4863FDD40CE93B78E /* Build configuration list for PBXNativeTarget "VLRWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7AF8204A4D2EDD7449A05054 /* Debug */,
+				70C10F24878E375DFDAC61DE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

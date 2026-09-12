@@ -7,6 +7,7 @@ package dev.staticvar.vlr.data.di
 import dev.staticvar.vlr.data.repository.CircuitStandingsRepositoryImpl
 import dev.staticvar.vlr.data.repository.CacheCleanupRepositoryImpl
 import dev.staticvar.vlr.data.repository.EventRepositoryImpl
+import dev.staticvar.vlr.data.repository.FavoriteScheduleRepositoryImpl
 import dev.staticvar.vlr.data.repository.FavoritesRepositoryImpl
 import dev.staticvar.vlr.data.repository.MatchRepositoryImpl
 import dev.staticvar.vlr.data.repository.NewsRepositoryImpl
@@ -17,6 +18,7 @@ import dev.staticvar.vlr.data.refresh.InitialFavoriteProfilesRefreshImpl
 import dev.staticvar.vlr.domain.repository.CircuitStandingsRepository
 import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.domain.repository.EventRepository
+import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.domain.repository.NewsRepository
@@ -24,6 +26,7 @@ import dev.staticvar.vlr.domain.repository.PlayerRepository
 import dev.staticvar.vlr.domain.repository.RankingsRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
+import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -33,6 +36,7 @@ import org.koin.dsl.module
  */
 fun dataModule(): Module = module {
   single<CacheCleanupRepository> { CacheCleanupRepositoryImpl(database = get(), dispatchers = get()) }
+  single<FavoriteScheduleRepository> { FavoriteScheduleRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoritesRepository> { FavoritesRepositoryImpl(database = get(), dispatchers = get()) }
   single<MatchRepository> {
     MatchRepositoryImpl(
@@ -76,6 +80,7 @@ fun dataModule(): Module = module {
       dispatchers = get(),
     )
   }
+  single { RefreshFavoriteMatches(get(), get(), get(), get(), get(), get()) }
   single<InitialFavoriteProfilesRefresh> {
     InitialFavoriteProfilesRefreshImpl(
       favoritesRepository = get(),
