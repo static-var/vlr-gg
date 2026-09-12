@@ -8,8 +8,10 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.foundation.clickable
-import androidx.compose.ui.semantics.Role
+import androidx.compose.material3.Text
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import androidx.compose.foundation.layout.Arrangement
@@ -168,22 +170,6 @@ internal fun EventDetailsScreen(
           title = event?.title ?: eventPreview?.title ?: "Tournament details",
           subtitle = "Teams, matches and standings",
           actions = {
-            if (event != null) {
-              PrismFavoriteIcon(
-                selected = event.isFavorite,
-                size = PrismFavoriteIconSize.Large,
-                contentDescription = when {
-                  uiState.isSavingFavorite -> "Updating favorite"
-                  event.isFavorite -> "Remove event from favorites"
-                  else -> "Add event to favorites"
-                },
-                modifier = Modifier.clickable(
-                  enabled = !uiState.isSavingFavorite,
-                  role = Role.Button,
-                  onClick = onToggleFavorite,
-                ),
-              )
-            }
             SharedRefreshButton(
               isLoading = uiState.isLoading || uiState.isDetailLoadPending,
               animateWhileLoading = true,
@@ -250,7 +236,32 @@ internal fun EventDetailsScreen(
             showContent = bodyReady || bodyFade.value > 0f,
             modifier = Modifier.fillMaxWidth().weight(1f),
             hero = {
-              EventDetailHeaderItem(event = event, modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
+              EventDetailHeaderItem(
+                event = event,
+                modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
+                favoriteAction = {
+                  PrismButton(
+                    onClick = onToggleFavorite,
+                    enabled = !uiState.isSavingFavorite,
+                    modifier = Modifier.fillMaxWidth(),
+                    style = PrismButtonStyle.Primary,
+                  ) {
+                    PrismFavoriteIcon(
+                      selected = event.isFavorite,
+                      size = PrismFavoriteIconSize.Medium,
+                      style = PrismFavoriteIconStyle.Inline,
+                      contentDescription = null,
+                    )
+                    Text(
+                      when {
+                        uiState.isSavingFavorite -> "Updating favorite"
+                        event.isFavorite -> "Remove from favorites"
+                        else -> "Favorite event"
+                      },
+                    )
+                  }
+                },
+              )
             },
             loading = { loadingModifier ->
               EventDetailsLoading(label = "Loading event details", modifier = loadingModifier)

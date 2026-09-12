@@ -5,6 +5,7 @@
 package dev.staticvar.designsystem.component.favorite
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -16,6 +17,9 @@ import dev.staticvar.designsystem.prism.Prism
  */
 @Immutable
 public sealed interface PrismFavoriteIconStyle {
+  @Composable
+  public fun contentColor(selected: Boolean): Color = if (selected) Prism.color.accent else Prism.color.labelColor
+
   @Composable
   @ReadOnlyComposable
   public fun containerColor(selected: Boolean): Color
@@ -47,4 +51,17 @@ public sealed interface PrismFavoriteIconStyle {
     @ReadOnlyComposable
     override fun border(selected: Boolean): BorderStroke? = null
   }
+
+  /** Bookmark that inherits its host action's foreground color. */
+  public data object Inline : PrismFavoriteIconStyle {
+    @Composable
+    override fun contentColor(selected: Boolean): Color = LocalContentColor.current
+
+    @Composable
+    override fun containerColor(selected: Boolean): Color = Color.Transparent
+
+    @Composable
+    override fun border(selected: Boolean): BorderStroke? = null
+  }
+
 }

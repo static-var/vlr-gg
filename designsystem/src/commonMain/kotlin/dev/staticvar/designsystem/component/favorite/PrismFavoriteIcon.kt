@@ -39,7 +39,7 @@ public fun PrismFavoriteIcon(
   style: PrismFavoriteIconStyle = PrismFavoriteIconStyle.Boxed,
   contentDescription: String? = if (selected) "Favorite" else "Not favorite",
 ) {
-  val markColor = if (selected) Prism.color.accent else Prism.color.labelColor
+  val markColor = style.contentColor(selected)
   val borderColor = Prism.color.stroke
 
   PrismSurface(

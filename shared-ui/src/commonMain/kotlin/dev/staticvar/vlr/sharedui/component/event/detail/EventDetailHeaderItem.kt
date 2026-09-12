@@ -13,21 +13,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
-import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardStyle
-import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.component.tag.PrismTag
+import dev.staticvar.designsystem.component.ticket.PrismTicket
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventPreview
-import dev.staticvar.vlr.sharedui.component.common.DetailStatItem
-import dev.staticvar.vlr.sharedui.component.common.DetailStatStrip
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.event.EventSharedContent
@@ -35,14 +32,14 @@ import dev.staticvar.vlr.sharedui.component.event.eventLogoSharedElement
 import dev.staticvar.vlr.sharedui.component.event.eventSharedBounds
 
 /**
- * Event detail summary card for title, status, logo, core metadata, and optional actions.
+ * Event detail ticket for title, status, logo, core metadata, and optional actions.
  */
 @Composable
 public fun EventDetailHeaderItem(
   event: EventDetails,
   modifier: Modifier = Modifier,
   onOpenEvent: (() -> Unit)? = null,
-  onFavoriteClick: (() -> Unit)? = null,
+  favoriteAction: (@Composable () -> Unit)? = null,
 ) {
   EventDetailHeaderContent(
     event = EventPreview(
@@ -56,10 +53,10 @@ public fun EventDetailHeaderItem(
       isFavorite = event.isFavorite,
     ),
     subtitle = event.subtitle,
-    teams = event.eventHeroTeamsStat(),
+    teams = event.teams.size.takeIf { it > 0 }?.toString() ?: "TBD",
     modifier = modifier,
     onOpenEvent = onOpenEvent,
-    onFavoriteClick = onFavoriteClick,
+    favoriteAction = favoriteAction,
   )
 }
 
@@ -81,70 +78,77 @@ private fun EventDetailHeaderContent(
   subtitle: String = "",
   teams: String = "TBD",
   onOpenEvent: (() -> Unit)? = null,
-  onFavoriteClick: (() -> Unit)? = null,
+  favoriteAction: (@Composable () -> Unit)? = null,
 ) {
   FavoriteTicketCardBox(
     selected = event.isFavorite,
     modifier = modifier.fillMaxWidth(),
     favoriteModifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Favorite),
   ) {
-    PrismCard(
+    PrismTicket(
       modifier = Modifier.fillMaxWidth().eventSharedBounds(event.id, EventSharedContent.Card),
-      style = PrismCardStyle.Outlined,
-    ) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-      ) {
-        PrismHeader(
-          text = event.region.ifBlank { "event" },
-        )
-        PrismTag(
-          text = event.status.eventDetailLabel,
-          modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Status),
-          style = event.status.eventDetailTagStyle,
-        )
-      }
-
-      Row(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = Prism.dimens.spacingM),
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
-      ) {
-        Column(modifier = Modifier.weight(1f)) {
-          Text(
-            text = event.title,
-            modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Title),
-            style = Prism.typography.sectionTitle,
-            color = Prism.color.titleColor,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-          )
-          if (event.dates.isNotBlank()) {
+      header = {
+        Row(
+          Modifier.fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+        ) {
+          Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
             Text(
-              text = event.dates,
-              modifier = Modifier.padding(top = Prism.dimens.spacingXs)
-                .eventSharedBounds(event.id, EventSharedContent.Dates),
+              event.region.ifBlank { "Event" },
               style = Prism.typography.bodySmall,
-              color = Prism.color.labelColor,
+              color = Prism.color.contentSecondary,
               maxLines = 2,
               overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+              text = event.prize.eventHeroPrizeStat().ifBlank { "TBD" },
+              modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Prize),
+              style = Prism.typography.bodySmall,
+              color = Prism.color.contentPrimary,
             )
           }
-          if (subtitle.isNotBlank()) {
+          PrismTag(
+            text = event.status.eventDetailLabel,
+            modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Status),
+            style = event.status.eventDetailTagStyle,
+          )
+        }
+      },
+      stub = {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
+          Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+            Text("DATES", style = Prism.typography.overline, color = Prism.color.contentSecondary)
             Text(
-              text = subtitle,
-              modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+              text = event.dates.ifBlank { "Dates to be announced" },
+              modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Dates),
               style = Prism.typography.bodySmall,
-              color = Prism.color.labelColor,
-              maxLines = 2,
-              overflow = TextOverflow.Ellipsis,
             )
+          }
+          Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+            Text("TEAMS", style = Prism.typography.overline, color = Prism.color.contentSecondary)
+            Text(teams, style = Prism.typography.bodySmall)
           }
         }
+        if (favoriteAction != null) {
+          Column(Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)) { favoriteAction() }
+        }
+        if (onOpenEvent != null) {
+          PrismButton(
+            onClick = onOpenEvent,
+            modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
+            style = PrismButtonStyle.Primary,
+          ) {
+            Text("View at VLR")
+          }
+        }
+      },
+    ) {
+      Column(
+        Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+      ) {
         SharedNetworkIcon(
           imageUrl = event.logoUrl,
           contentDescription = event.title,
@@ -153,37 +157,24 @@ private fun EventDetailHeaderContent(
           style = PrismIconStyle.Plain,
           tint = PrismIconTint.None,
         )
-      }
-
-      DetailStatStrip(
-        items = listOf(
-          DetailStatItem(value = teams, label = "Teams"),
-          DetailStatItem(value = event.prize.eventHeroPrizeStat().ifBlank { "TBD" }, label = "Prize"),
-          DetailStatItem(value = event.region.eventHeroRegionStat(), label = "Region"),
-        ),
-        modifier = Modifier.padding(top = Prism.dimens.spacingS),
-        valueModifier = { index ->
-          if (index == 1) Modifier.eventSharedBounds(event.id, EventSharedContent.Prize) else Modifier
-        },
-      )
-
-      if (onOpenEvent != null || onFavoriteClick != null) {
-        Row(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = Prism.dimens.spacingS),
-          horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
-        ) {
-          if (onOpenEvent != null) {
-            PrismButton(onClick = onOpenEvent, modifier = Modifier.weight(1f), style = PrismButtonStyle.Primary) {
-              Text(text = "View at VLR")
-            }
-          }
-          if (onFavoriteClick != null) {
-            PrismButton(onClick = onFavoriteClick, modifier = Modifier.weight(1f), style = PrismButtonStyle.Secondary) {
-              Text(text = if (event.isFavorite) "Following" else "Follow")
-            }
-          }
+        Text(
+          text = event.title,
+          modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Title),
+          style = Prism.typography.sectionTitle,
+          color = Prism.color.titleColor,
+          textAlign = TextAlign.Center,
+          maxLines = 3,
+          overflow = TextOverflow.Ellipsis,
+        )
+        if (subtitle.isNotBlank()) {
+          Text(
+            text = subtitle,
+            style = Prism.typography.bodySmall,
+            color = Prism.color.labelColor,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+          )
         }
       }
     }

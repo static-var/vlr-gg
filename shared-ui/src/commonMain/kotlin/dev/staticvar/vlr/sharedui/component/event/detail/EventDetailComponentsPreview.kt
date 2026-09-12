@@ -21,6 +21,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
+import androidx.compose.material3.Text
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
@@ -50,7 +54,16 @@ internal fun EventDetailComponentsPreview(@PreviewParameter(PrismPreviewProvider
         .padding(16.dp),
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-      EventDetailHeaderItem(event = event, onOpenEvent = {}, onFavoriteClick = {})
+      EventDetailHeaderItem(
+        event = event,
+        onOpenEvent = {},
+        favoriteAction = {
+          PrismButton(onClick = {}, modifier = Modifier.fillMaxWidth()) {
+            PrismFavoriteIcon(selected = event.isFavorite, style = PrismFavoriteIconStyle.Inline, contentDescription = null)
+            Text("Favorite event")
+          }
+        },
+      )
       Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
