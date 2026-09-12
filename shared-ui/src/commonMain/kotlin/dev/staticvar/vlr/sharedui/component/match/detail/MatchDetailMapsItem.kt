@@ -4,6 +4,15 @@
  */
 package dev.staticvar.vlr.sharedui.component.match.detail
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
@@ -34,6 +43,7 @@ public fun MatchDetailMapsItem(
   onMenuExpandedChange: (Boolean) -> Unit = {},
 ) {
   val spoilersHidden = LocalSpoilerMode.current.enabled
+  val animation = Prism.anim.standard
   Column(
     modifier = modifier.fillMaxWidth(),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
@@ -42,7 +52,11 @@ public fun MatchDetailMapsItem(
       title = "Maps",
       preLabel = "breakdown",
       trailing = {
-        if (!spoilersHidden) {
+        AnimatedVisibility(
+          visible = !spoilersHidden,
+          enter = fadeIn(animation.floatSpec()) + expandHorizontally(animationSpec = tween(animation.durationMillis, easing = animation.easing)),
+          exit = fadeOut(animation.floatSpec()) + shrinkHorizontally(animationSpec = tween(animation.durationMillis, easing = animation.easing)),
+        ) {
           MatchDetailMapsSelectorTrailing(
             maps = maps,
             selectedMapIndex = selectedMapIndex,
@@ -53,14 +67,25 @@ public fun MatchDetailMapsItem(
         }
       },
     )
-    if (spoilersHidden) {
-      SpoilerHiddenNotice()
-    } else {
-      MatchDetailMapBreakdown(
-        maps = maps,
-        selectedMapIndex = selectedMapIndex,
-        onPlayerSelected = onPlayerSelected,
-      )
+    AnimatedContent(
+      targetState = spoilersHidden,
+      modifier = Modifier.fillMaxWidth(),
+      transitionSpec = {
+        (fadeIn(animation.floatSpec()) togetherWith fadeOut(animation.floatSpec())).using(
+          SizeTransform { _, _ -> tween(durationMillis = animation.durationMillis, easing = animation.easing) },
+        )
+      },
+      label = "match_maps_visibility",
+    ) { hidden ->
+      if (hidden) {
+        SpoilerHiddenNotice()
+      } else {
+        MatchDetailMapBreakdown(
+          maps = maps,
+          selectedMapIndex = selectedMapIndex,
+          onPlayerSelected = onPlayerSelected,
+        )
+      }
     }
   }
 }
