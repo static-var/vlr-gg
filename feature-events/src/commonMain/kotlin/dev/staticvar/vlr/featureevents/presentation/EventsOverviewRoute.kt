@@ -94,8 +94,8 @@ private fun EventsOverviewChrome(
 ) {
   Column {
     PrismScreenTitleBar(
-      title = "Tournament overview",
-      subtitle = "Tournaments around the world",
+      title = "Event overview",
+      subtitle = "Events around the world",
       actions = {
         SharedRefreshButton(
           isLoading = isLoading,
@@ -179,10 +179,10 @@ private fun EventOverviewPage(
 
     events.isEmpty() && !isRefreshing && !isLoading && errorMessage == null && isOnline -> {
       val (title, message) = when (status) {
-        EventStatusFilter.Ongoing -> "No live events" to "No tournaments are in progress right now. Check upcoming events for what’s next."
-        EventStatusFilter.Upcoming -> "No upcoming events" to "New tournaments will appear here when their schedules are announced."
-        EventStatusFilter.Completed -> "No completed events" to "Tournament results will appear here after events finish."
-        EventStatusFilter.Paused -> "No paused events" to "There are no tournaments on hold right now."
+        EventStatusFilter.Ongoing -> "No live events" to "No events are in progress right now. Check upcoming events for what’s next."
+        EventStatusFilter.Upcoming -> "No upcoming events" to "New events will appear here when their schedules are announced."
+        EventStatusFilter.Completed -> "No completed events" to "Event results will appear here after events finish."
+        EventStatusFilter.Paused -> "No paused events" to "There are no events on hold right now."
         EventStatusFilter.Unknown -> "No other events" to "There are no events awaiting a status update."
       }
       val hasUpcoming = status == EventStatusFilter.Ongoing && allEvents.any { it.status == EventStatus.UPCOMING }

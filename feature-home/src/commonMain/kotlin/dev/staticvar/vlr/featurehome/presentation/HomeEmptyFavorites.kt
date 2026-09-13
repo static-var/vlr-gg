@@ -51,7 +51,7 @@ internal fun HomeEmptyFavorites(
         textAlign = TextAlign.Center,
       )
       Text(
-        text = "Favorite teams, players, matches, or events to see the matches and tournaments you care about here.",
+        text = "Favorite teams, players, matches, or events to see the matches and events you care about here.",
         style = Prism.typography.bodySmall,
         color = Prism.color.bodyColor,
         textAlign = TextAlign.Center,

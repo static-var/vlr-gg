@@ -174,7 +174,7 @@ internal fun EventDetailsScreen(
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       EventDetailsChrome(
-        title = event?.title ?: eventPreview?.title ?: "Tournament details",
+        title = event?.title ?: eventPreview?.title ?: "Event details",
         isLoading = uiState.isLoading || uiState.isDetailLoadPending,
         isRefreshing = uiState.isRefreshing,
         hasContent = event != null,
@@ -211,7 +211,7 @@ internal fun EventDetailsScreen(
         event == null -> SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveEvents,
           title = "No event details yet",
-          message = "Details will appear when this tournament is published.",
+          message = "Details will appear when this event is published.",
           modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
         )
 

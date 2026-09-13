@@ -254,7 +254,7 @@ private fun PersonalizedEvents(
     )
     if (events.isEmpty()) {
       EmptyRailMessage(
-        "No current events are linked to your favorites. Related tournaments will appear as schedules update.",
+        "No current events are linked to your favorites. Related events will appear as schedules update.",
       )
     } else {
       PrismCarousel(
