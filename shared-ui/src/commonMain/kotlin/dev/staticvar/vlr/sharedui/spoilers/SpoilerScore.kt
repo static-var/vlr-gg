@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import dev.staticvar.designsystem.prism.Prism
 
 /** A score value or a non-interactive, accessible hidden-result icon. */
@@ -38,8 +39,9 @@ public fun SpoilerScore(
   textAlign: TextAlign? = null,
   maxLines: Int = Int.MAX_VALUE,
   overflow: TextOverflow = TextOverflow.Clip,
+  hiddenIconSize: Dp = Prism.dimens.iconM,
 ) {
-  SpoilerContent(modifier = modifier) {
+  SpoilerContent(modifier = modifier, hiddenIconSize = hiddenIconSize) {
     Text(
       text = text,
       color = color,
@@ -52,7 +54,11 @@ public fun SpoilerScore(
 }
 
 @Composable
-public fun SpoilerContent(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+public fun SpoilerContent(
+  modifier: Modifier = Modifier,
+  hiddenIconSize: Dp = Prism.dimens.iconM,
+  content: @Composable () -> Unit,
+) {
   val animation = Prism.anim.standard
   AnimatedContent(
     targetState = LocalSpoilerMode.current.enabled,
@@ -67,7 +73,7 @@ public fun SpoilerContent(modifier: Modifier = Modifier, content: @Composable ()
     },
     label = "spoiler_score",
   ) { hidden ->
-    if (hidden) SpoilerHiddenIcon() else content()
+    if (hidden) SpoilerHiddenIcon(modifier = Modifier.size(hiddenIconSize)) else content()
   }
 }
 

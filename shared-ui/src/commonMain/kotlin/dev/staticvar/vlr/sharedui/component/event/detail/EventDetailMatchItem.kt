@@ -101,6 +101,7 @@ private fun EventMatchTeamScoreRow(team: EventMatchTeam, modifier: Modifier = Mo
       text = team.score?.toString() ?: "-",
       style = Prism.typography.bodyLarge,
       color = Prism.color.accent,
+      hiddenIconSize = Prism.dimens.iconS,
     )
   }
 }
