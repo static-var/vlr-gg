@@ -36,6 +36,7 @@ internal fun SettingsPreview(@PreviewParameter(PrismPreviewProvider::class) vari
       deletedCacheRecords = 0L,
       onAutoCleanupChanged = {},
       onAbout = {},
+      onWhatsNew = {},
     )
   }
 }
@@ -62,6 +63,7 @@ internal fun CatppuccinSettingsPreview() {
       deletedCacheRecords = 0L,
       onAutoCleanupChanged = {},
       onAbout = {},
+      onWhatsNew = {},
     )
   }
 }
@@ -85,6 +87,7 @@ internal fun ConsoleSettingsPreview(@PreviewParameter(PrismPreviewProvider::clas
       deletedCacheRecords = 0L,
       onAutoCleanupChanged = {},
       onAbout = {},
+      onWhatsNew = {},
     )
   }
 }

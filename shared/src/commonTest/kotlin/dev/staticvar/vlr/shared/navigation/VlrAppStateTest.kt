@@ -18,6 +18,20 @@ import kotlin.test.assertTrue
 
 class VlrAppStateTest {
   @Test
+  fun whatsNewReturnsToItsEntryPointAndDoesNotDuplicateOnRepeatedTaps() {
+    for (origin in listOf(listOf<NavKey>(AppRoute.Home), listOf<NavKey>(AppRoute.Home, AppRoute.Settings))) {
+      val appState = VlrAppState(origin.toMutableList())
+      appState.showWhatsNew()
+      appState.showWhatsNew()
+      assertEquals(origin + AppRoute.WhatsNew, appState.backStack)
+      assertFalse(appState.shouldShowBottomNavigation)
+
+      appState.navigateUp()
+      assertEquals(origin, appState.backStack)
+    }
+  }
+
+  @Test
   fun matchListPreviewSurvivesBackUntilLeavingTheList() {
     val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home, AppRoute.Matches))
     val preview = matchTransitionPreview()

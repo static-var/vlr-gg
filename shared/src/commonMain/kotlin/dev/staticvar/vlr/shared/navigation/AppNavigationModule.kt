@@ -4,10 +4,12 @@
  */
 package dev.staticvar.vlr.shared.navigation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -19,11 +21,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.settings.CacheCleanupPreferencesRepository
+import dev.staticvar.vlr.core.settings.ReleaseNotesPreferencesRepository
 import dev.staticvar.vlr.domain.model.CacheCleanupStats
 import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.featureabout.presentation.AboutRoute
+import dev.staticvar.vlr.featureabout.presentation.BundledRelease
 import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
+import dev.staticvar.vlr.featureabout.presentation.WhatsNewBanner
+import dev.staticvar.vlr.featureabout.presentation.WhatsNewRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailSection
 import dev.staticvar.vlr.featureevents.presentation.EventDetailsRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailsViewModel
@@ -47,11 +54,11 @@ import dev.staticvar.vlr.featureteam.presentation.TeamDetailsRoute
 import dev.staticvar.vlr.featureteam.presentation.TeamDetailsViewModel
 import dev.staticvar.vlr.featureteam.presentation.TeamMatchesSection
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
-import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.event.ProvideEventTransitionScope
+import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.match.ProvideMatchTransitionScope
-import org.koin.compose.viewmodel.koinViewModel
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -81,6 +88,7 @@ internal fun appNavigationModule(): Module = module {
           uiState = uiState,
           onRefresh = viewModel::refresh,
           onSettings = appState::showSettings,
+          announcement = { WhatsNewAnnouncement(onOpen = appState::showWhatsNew) },
           onBrowseMatches = { appState.selectRoot(MATCHES_ID) },
           onBrowseEvents = { appState.selectRoot(EVENTS_ID) },
           onMatchSelected = appState::showRootMatchDetails,
@@ -283,6 +291,18 @@ internal fun appNavigationModule(): Module = module {
       modifier = Modifier.fillMaxSize(),
     )
   }
+  navigation<AppRoute.WhatsNew> {
+    val appState = LocalVlrAppState.current
+    val preferences = koinInject<ReleaseNotesPreferencesRepository>()
+    WhatsNewRoute(
+      onBack = appState::navigateUp,
+      onDone = {
+        preferences.acknowledge(BundledRelease.id)
+        appState.navigateUp()
+      },
+      modifier = Modifier.fillMaxSize(),
+    )
+  }
   navigation<AppRoute.About> {
     AboutRoute(
       onBack = LocalVlrAppState.current::navigateUp,
@@ -315,6 +335,7 @@ internal fun appNavigationModule(): Module = module {
       deletedCacheRecords = cleanupStats.deletedRecords,
       onAutoCleanupChanged = cleanupPreferences::setEnabled,
       onAbout = appState::showAbout,
+      onWhatsNew = appState::showWhatsNew,
       onBack = appState::navigateUp,
       modifier = Modifier.fillMaxSize(),
     )
@@ -358,6 +379,19 @@ private fun MatchTransitionHost(enabled: Boolean = true, content: @Composable ()
       animatedVisibilityScope = LocalNavAnimatedContentScope.current,
       enabled = enabled,
       content = content,
+    )
+  }
+}
+
+@Composable
+private fun WhatsNewAnnouncement(onOpen: () -> Unit) {
+  val preferences = koinInject<ReleaseNotesPreferencesRepository>()
+  val acknowledgedReleaseId by preferences.acknowledgedReleaseId.collectAsStateWithLifecycle()
+  AnimatedVisibility(visible = acknowledgedReleaseId != BundledRelease.id) {
+    WhatsNewBanner(
+      onOpen = onOpen,
+      onDismiss = { preferences.acknowledge(BundledRelease.id) },
+      modifier = Modifier.padding(horizontal = Prism.dimens.spacingM, vertical = Prism.dimens.spacingS),
     )
   }
 }

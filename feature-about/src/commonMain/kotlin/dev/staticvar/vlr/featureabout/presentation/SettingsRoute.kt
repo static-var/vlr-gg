@@ -58,6 +58,7 @@ public fun SettingsRoute(
   deletedCacheRecords: Long,
   onAutoCleanupChanged: (Boolean) -> Unit,
   onAbout: () -> Unit,
+  onWhatsNew: () -> Unit,
   onBack: (() -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
@@ -91,7 +92,16 @@ public fun SettingsRoute(
         onMascotSelected = onMascotSelected,
         onMascotVisitFrequencySelected = onMascotVisitFrequencySelected,
       )
-      AboutSettingsCard(onAbout = onAbout)
+      SettingsLinkCard(
+        title = "What's new?",
+        description = "The latest features and improvements.",
+        onClick = onWhatsNew,
+      )
+      SettingsLinkCard(
+        title = "About Valorant Esports",
+        description = "The project, the people, and the data.",
+        onClick = onAbout,
+      )
       SettingsVersionFooter()
     }
   }
@@ -211,16 +221,16 @@ private fun MascotSettingsCard(
 }
 
 @Composable
-private fun AboutSettingsCard(onAbout: () -> Unit) {
+private fun SettingsLinkCard(title: String, description: String, onClick: () -> Unit) {
   PrismCard(
     modifier = Modifier.fillMaxWidth().cardMascotEligible(topClearance = Prism.dimens.spacingM),
     style = PrismCardStyle.Outlined,
-    onClick = onAbout,
+    onClick = onClick,
   ) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
       Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
-        Text("About Valorant Esports", style = Prism.typography.sectionTitle, color = Prism.color.contentPrimary)
-        Text("The project, the people, and the data.", style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
+        Text(title, style = Prism.typography.sectionTitle, color = Prism.color.contentPrimary)
+        Text(description, style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
       }
       Text("→", style = Prism.typography.sectionTitle, color = Prism.color.accent)
     }

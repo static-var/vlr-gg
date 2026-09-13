@@ -56,6 +56,7 @@ public fun HomeRoute(
   onTeamSelected: (String) -> Unit,
   onPlayerSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  announcement: @Composable () -> Unit = {},
   onEventPreviewSelected: (EventPreview) -> Unit = { onEventSelected(it.id) },
   onMatchPreviewSelected: (MatchPreview) -> Unit = { onMatchSelected(it.id) },
 ) {
@@ -92,6 +93,8 @@ public fun HomeRoute(
       errorDetails = uiState.errorDetails,
       onRefresh = onRefresh,
     )
+
+    announcement()
 
     HomeBody(
       feed = feed,
