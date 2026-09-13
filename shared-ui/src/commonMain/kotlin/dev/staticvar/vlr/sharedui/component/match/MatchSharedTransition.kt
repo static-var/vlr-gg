@@ -29,13 +29,18 @@ private val LocalMatchTransitionScope = compositionLocalOf<MatchTransitionScope?
 public fun ProvideMatchTransitionScope(
   sharedTransitionScope: SharedTransitionScope,
   animatedVisibilityScope: AnimatedVisibilityScope,
+  enabled: Boolean = true,
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(
-    LocalMatchTransitionScope provides MatchTransitionScope(
-      sharedTransitionScope = sharedTransitionScope,
-      animatedVisibilityScope = animatedVisibilityScope,
-    ),
+    LocalMatchTransitionScope provides if (enabled) {
+      MatchTransitionScope(
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope,
+      )
+    } else {
+      null
+    },
     content = content,
   )
 }

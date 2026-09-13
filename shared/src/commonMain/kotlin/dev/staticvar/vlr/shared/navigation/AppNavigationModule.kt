@@ -75,8 +75,8 @@ internal fun appNavigationModule(): Module = module {
     RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
 
     val eventTransitionEnabled = LocalAppEventSharedTransitionScope.current != null
-    EventLogoTransitionHost {
-      MatchTransitionHost {
+    EventLogoTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Home) {
+      MatchTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Home) {
         HomeRoute(
           uiState = uiState,
           onRefresh = viewModel::refresh,
@@ -137,7 +137,7 @@ internal fun appNavigationModule(): Module = module {
 
     val appState = LocalVlrAppState.current
     val transitionEnabled = LocalAppEventSharedTransitionScope.current != null
-    MatchTransitionHost {
+    MatchTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Matches) {
       MatchesOverviewRoute(
         uiState = uiState,
         onRefresh = viewModel::refresh,
@@ -183,7 +183,7 @@ internal fun appNavigationModule(): Module = module {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
 
-    EventLogoTransitionHost {
+    EventLogoTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Events) {
       EventsOverviewRoute(
         uiState = uiState,
         onRefresh = viewModel::refresh,
@@ -333,7 +333,7 @@ private fun EventLogoTransitionHost(
   content: @Composable () -> Unit,
 ) {
   val sharedTransitionScope = LocalAppEventSharedTransitionScope.current
-  if (!enabled || sharedTransitionScope == null) {
+  if (sharedTransitionScope == null) {
     content()
     return
   }
@@ -341,6 +341,7 @@ private fun EventLogoTransitionHost(
   ProvideEventTransitionScope(
     sharedTransitionScope = sharedTransitionScope,
     animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+    enabled = enabled,
     content = content,
   )
 }
@@ -349,12 +350,13 @@ private fun EventLogoTransitionHost(
 @Composable
 private fun MatchTransitionHost(enabled: Boolean = true, content: @Composable () -> Unit) {
   val scope = LocalAppEventSharedTransitionScope.current
-  if (!enabled || scope == null) {
+  if (scope == null) {
     content()
   } else {
     ProvideMatchTransitionScope(
       sharedTransitionScope = scope,
       animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+      enabled = enabled,
       content = content,
     )
   }

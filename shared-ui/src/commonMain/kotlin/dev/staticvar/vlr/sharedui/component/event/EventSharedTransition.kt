@@ -29,13 +29,18 @@ private val LocalEventTransitionScope = compositionLocalOf<EventTransitionScope?
 public fun ProvideEventTransitionScope(
   sharedTransitionScope: SharedTransitionScope,
   animatedVisibilityScope: AnimatedVisibilityScope,
+  enabled: Boolean = true,
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(
-    LocalEventTransitionScope provides EventTransitionScope(
-      sharedTransitionScope = sharedTransitionScope,
-      animatedVisibilityScope = animatedVisibilityScope,
-    ),
+    LocalEventTransitionScope provides if (enabled) {
+      EventTransitionScope(
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope,
+      )
+    } else {
+      null
+    },
     content = content,
   )
 }
