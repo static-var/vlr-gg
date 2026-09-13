@@ -72,114 +72,171 @@ public fun SettingsRoute(
         .padding(bottom = Prism.dimens.spacingL),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
-      PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
-        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-          PrismSectionTitle(title = "Appearance")
-          PrismDropdown(
-            label = "Theme",
-            modifier = Modifier.fillMaxWidth(),
-            options = familyOptions,
-            selectedOptionId = family.name,
-            onOptionSelected = { onFamilySelected(ThemeFamily.valueOf(it.id)) },
-          )
-          when (family) {
-            ThemeFamily.Brutalist, ThemeFamily.Console -> PrismDropdown(
-              label = "Mode",
-              modifier = Modifier.fillMaxWidth(),
-              options = modeOptions,
-              selectedOptionId = if (isDark) AppearanceMode.Dark.name else AppearanceMode.Light.name,
-              onOptionSelected = { onModeSelected(AppearanceMode.valueOf(it.id)) },
-            )
-            ThemeFamily.Catppuccin -> PrismDropdown(
-              label = "Flavour",
-              modifier = Modifier.fillMaxWidth(),
-              options = flavourOptions,
-              selectedOptionId = catppuccinFlavour.name,
-              onOptionSelected = { onFlavourSelected(CatppuccinFlavour.valueOf(it.id)) },
-            )
-          }
-        }
-      }
-      PrismCard(
+      AppearanceSettingsCard(
+        isDark = isDark,
+        family = family,
+        catppuccinFlavour = catppuccinFlavour,
+        onModeSelected = onModeSelected,
+        onFamilySelected = onFamilySelected,
+        onFlavourSelected = onFlavourSelected,
+      )
+      CleanupSettingsCard(
+        autoCleanupEnabled = autoCleanupEnabled,
+        deletedCacheRecords = deletedCacheRecords,
+        onAutoCleanupChanged = onAutoCleanupChanged,
+      )
+      MascotSettingsCard(
+        mascot = mascot,
+        mascotVisitFrequency = mascotVisitFrequency,
+        onMascotSelected = onMascotSelected,
+        onMascotVisitFrequencySelected = onMascotVisitFrequencySelected,
+      )
+      AboutSettingsCard(onAbout = onAbout)
+      SettingsVersionFooter()
+    }
+  }
+}
+
+@Composable
+private fun AppearanceSettingsCard(
+  isDark: Boolean,
+  family: ThemeFamily,
+  catppuccinFlavour: CatppuccinFlavour,
+  onModeSelected: (AppearanceMode) -> Unit,
+  onFamilySelected: (ThemeFamily) -> Unit,
+  onFlavourSelected: (CatppuccinFlavour) -> Unit,
+) {
+  PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
+    Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
+      PrismSectionTitle(title = "Appearance")
+      PrismDropdown(
+        label = "Theme",
         modifier = Modifier.fillMaxWidth(),
-        style = PrismCardStyle.Outlined,
-      ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-          PrismSectionTitle(title = "Experimental")
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
-          ) {
-            Text(
-              text = "Auto cleanup",
-              modifier = Modifier.weight(1f),
-              style = Prism.typography.bodyLarge,
-              color = Prism.color.contentPrimary,
-            )
-            PrismSwitch(
-              checked = autoCleanupEnabled,
-              onCheckedChange = onAutoCleanupChanged,
-              modifier = Modifier.semantics { contentDescription = "Auto cleanup" },
-            )
-          }
-          Text(
-            text = "Remove cached items that haven't been refreshed in 30 days.",
-            style = Prism.typography.bodySmall,
-            color = Prism.color.bodyColor,
-          )
-          Text(
-            text = "$deletedCacheRecords cached items deleted so far",
-            style = Prism.typography.caption,
-            color = Prism.color.captionColor,
-          )
-        }
+        options = familyOptions,
+        selectedOptionId = family.name,
+        onOptionSelected = { onFamilySelected(ThemeFamily.valueOf(it.id)) },
+      )
+      when (family) {
+        ThemeFamily.Brutalist, ThemeFamily.Console -> PrismDropdown(
+          label = "Mode",
+          modifier = Modifier.fillMaxWidth(),
+          options = modeOptions,
+          selectedOptionId = if (isDark) AppearanceMode.Dark.name else AppearanceMode.Light.name,
+          onOptionSelected = { onModeSelected(AppearanceMode.valueOf(it.id)) },
+        )
+        ThemeFamily.Catppuccin -> PrismDropdown(
+          label = "Flavour",
+          modifier = Modifier.fillMaxWidth(),
+          options = flavourOptions,
+          selectedOptionId = catppuccinFlavour.name,
+          onOptionSelected = { onFlavourSelected(CatppuccinFlavour.valueOf(it.id)) },
+        )
       }
-      PrismCard(
-        modifier = Modifier.fillMaxWidth().cardMascotEligible(topClearance = Prism.dimens.spacingM),
-        style = PrismCardStyle.Outlined,
+    }
+  }
+}
+
+@Composable
+private fun CleanupSettingsCard(
+  autoCleanupEnabled: Boolean,
+  deletedCacheRecords: Long,
+  onAutoCleanupChanged: (Boolean) -> Unit,
+) {
+  PrismCard(
+    modifier = Modifier.fillMaxWidth(),
+    style = PrismCardStyle.Outlined,
+  ) {
+    Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
+      PrismSectionTitle(title = "Experimental")
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
       ) {
-        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-          PrismSectionTitle(title = "Mascot")
-          Text(
-            "A little company while you browse, with a celebration for big wins. Pick a companion or turn mascots off.",
-            style = Prism.typography.bodySmall,
-            color = Prism.color.bodyColor,
-          )
-          PrismDropdown(
-            label = "Companion",
-            modifier = Modifier.fillMaxWidth(),
-            options = mascotOptions,
-            selectedOptionId = mascot.name,
-            onOptionSelected = { onMascotSelected(MascotPreference.valueOf(it.id)) },
-          )
-          if (mascot != MascotPreference.Off) {
-            MascotVisitFrequencySlider(mascotVisitFrequency, onMascotVisitFrequencySelected)
-          }
-        }
+        Text(
+          text = "Auto cleanup",
+          modifier = Modifier.weight(1f),
+          style = Prism.typography.bodyLarge,
+          color = Prism.color.contentPrimary,
+        )
+        PrismSwitch(
+          checked = autoCleanupEnabled,
+          onCheckedChange = onAutoCleanupChanged,
+          modifier = Modifier.semantics { contentDescription = "Auto cleanup" },
+        )
       }
-      PrismCard(
-        modifier = Modifier.fillMaxWidth().cardMascotEligible(topClearance = Prism.dimens.spacingM),
-        style = PrismCardStyle.Outlined,
-        onClick = onAbout,
-      ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-          Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
-            Text("About VLR", style = Prism.typography.sectionTitle, color = Prism.color.contentPrimary)
-            Text("The project, the people, and the data.", style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
-          }
-          Text("→", style = Prism.typography.sectionTitle, color = Prism.color.accent)
-        }
-      }
-      Spacer(Modifier.height(80.dp))
       Text(
-        text = "VLR\n${appVersionText()}",
-        modifier = Modifier.fillMaxWidth(),
+        text = "Remove cached items that haven't been refreshed in 30 days.",
+        style = Prism.typography.bodySmall,
+        color = Prism.color.bodyColor,
+      )
+      Text(
+        text = "$deletedCacheRecords cached items deleted so far",
         style = Prism.typography.caption,
         color = Prism.color.captionColor,
-        textAlign = TextAlign.Center,
       )
     }
   }
+}
+
+@Composable
+private fun MascotSettingsCard(
+  mascot: MascotPreference,
+  mascotVisitFrequency: MascotVisitFrequency,
+  onMascotSelected: (MascotPreference) -> Unit,
+  onMascotVisitFrequencySelected: (MascotVisitFrequency) -> Unit,
+) {
+  PrismCard(
+    modifier = Modifier.fillMaxWidth().cardMascotEligible(topClearance = Prism.dimens.spacingM),
+    style = PrismCardStyle.Outlined,
+  ) {
+    Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
+      PrismSectionTitle(title = "Mascot")
+      Text(
+        "A little company while you browse, with a celebration for big wins. Pick a companion or turn mascots off.",
+        style = Prism.typography.bodySmall,
+        color = Prism.color.bodyColor,
+      )
+      PrismDropdown(
+        label = "Companion",
+        modifier = Modifier.fillMaxWidth(),
+        options = mascotOptions,
+        selectedOptionId = mascot.name,
+        onOptionSelected = { onMascotSelected(MascotPreference.valueOf(it.id)) },
+      )
+      if (mascot != MascotPreference.Off) {
+        MascotVisitFrequencySlider(mascotVisitFrequency, onMascotVisitFrequencySelected)
+      }
+    }
+  }
+}
+
+@Composable
+private fun AboutSettingsCard(onAbout: () -> Unit) {
+  PrismCard(
+    modifier = Modifier.fillMaxWidth().cardMascotEligible(topClearance = Prism.dimens.spacingM),
+    style = PrismCardStyle.Outlined,
+    onClick = onAbout,
+  ) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
+      Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+        Text("About VLR", style = Prism.typography.sectionTitle, color = Prism.color.contentPrimary)
+        Text("The project, the people, and the data.", style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
+      }
+      Text("→", style = Prism.typography.sectionTitle, color = Prism.color.accent)
+    }
+  }
+}
+
+@Composable
+private fun SettingsVersionFooter() {
+  Spacer(Modifier.height(80.dp))
+  Text(
+    text = "VLR\n${appVersionText()}",
+    modifier = Modifier.fillMaxWidth(),
+    style = Prism.typography.caption,
+    color = Prism.color.captionColor,
+    textAlign = TextAlign.Center,
+  )
 }
 
 @Composable
