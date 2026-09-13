@@ -1,12 +1,8 @@
-v0.6.3
- • ⚠️ In reworking the entire favourites system, we've had to reset all favourites. We're sorry for the inconvenience. Please re-favourite your teams, matches and events.
- • ✨ "Get Notified" is now "Favourite"
- • ✨ Matches, events and teams marked as favourite will now be easy to identify
- • ⚒️ Visual improvements and under the hood updates
+VLR is now Valorant Esports!
 
-v0.5.5
- • ✨ Improved bottom navigation bar UI
- • ⚒️ Better logging to help diagnose crashes
-
-v0.5.4
- • ⚒️ Under the hood improvements
+- Redesigned match and event details.
+- Keep favorite teams, players, matches and events together on Home.
+- Follow live and upcoming matches with home screen widgets.
+- Improved tablet and foldable layouts.
+- Existing Android team, match and event favorites are preserved when upgrading from the old app.
+- Find release highlights in Settings > What's new?
