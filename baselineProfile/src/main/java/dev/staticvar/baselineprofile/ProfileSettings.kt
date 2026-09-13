@@ -41,7 +41,7 @@ private fun UiDevice.launchProfileApp() {
 
 private fun UiDevice.openMascotSettings() {
   settingsObject(By.desc("Settings")).click(100)
-  settingsObject(By.text("// MAKE VLR YOURS."))
+  settingsObject(By.text("// MAKE IT YOURS."))
   scrollSettingsTo("Companion")
 }
 

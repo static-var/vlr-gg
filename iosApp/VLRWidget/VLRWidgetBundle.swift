@@ -14,7 +14,7 @@ private struct UpcomingMatchesWidget: Widget {
             UpcomingMatchesWidgetView(entry: entry)
         }
         .configurationDisplayName("Favorite matches")
-        .description("Live and upcoming matches connected to your VLR favorites.")
+        .description("Live and upcoming matches connected to your Valorant Esports favorites.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }

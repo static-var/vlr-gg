@@ -115,14 +115,14 @@ struct UpcomingMatchesWidgetView: View {
         Group {
             if let snapshot = entry.snapshot {
                 if !snapshot.hasFavorites {
-                    status(title: "No favorites", message: "Favorite a team, player, event, or match in VLR.")
+                    status(title: "No favorites", message: "Favorite a team, player, event, or match in Valorant Esports.")
                 } else if visibleMatches.isEmpty {
                     status(title: "No matches", message: "There are no live or upcoming matches for your favorites.")
                 } else {
                     content(snapshot: snapshot)
                 }
             } else {
-                status(title: "Open VLR", message: "Open the app once to connect your favorites.")
+                status(title: "Open the app", message: "Open the app once to connect your favorites.")
             }
         }
         .padding(outerPadding)
@@ -270,7 +270,7 @@ struct UpcomingMatchesWidgetView: View {
     private func status(title: String, message: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             if family != .systemSmall {
-                Text("VLR")
+                Text("Valorant Esports")
                     .font(textFont(.caption).weight(.black))
                     .tracking(1.1)
                     .foregroundStyle(theme.accentColor)

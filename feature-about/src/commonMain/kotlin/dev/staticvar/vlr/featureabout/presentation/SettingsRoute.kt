@@ -64,7 +64,7 @@ public fun SettingsRoute(
   Column(modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM)) {
     PrismScreenTitleBar(
       title = "Settings",
-      subtitle = "Make VLR yours.",
+      subtitle = "Make it yours.",
       onBackPress = onBack,
     )
     Column(
@@ -219,7 +219,7 @@ private fun AboutSettingsCard(onAbout: () -> Unit) {
   ) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
       Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
-        Text("About VLR", style = Prism.typography.sectionTitle, color = Prism.color.contentPrimary)
+        Text("About Valorant Esports", style = Prism.typography.sectionTitle, color = Prism.color.contentPrimary)
         Text("The project, the people, and the data.", style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
       }
       Text("→", style = Prism.typography.sectionTitle, color = Prism.color.accent)
@@ -231,7 +231,7 @@ private fun AboutSettingsCard(onAbout: () -> Unit) {
 private fun SettingsVersionFooter() {
   Spacer(Modifier.height(80.dp))
   Text(
-    text = "VLR\n${appVersionText()}",
+    text = "Valorant Esports\n${appVersionText()}",
     modifier = Modifier.fillMaxWidth(),
     style = Prism.typography.caption,
     color = Prism.color.captionColor,

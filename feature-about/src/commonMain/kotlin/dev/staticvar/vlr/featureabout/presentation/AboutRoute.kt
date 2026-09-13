@@ -105,8 +105,8 @@ private fun AboutIdentity() {
         itemVerticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
-          text = "VLR",
-          style = Prism.typography.display.copy(fontSize = 72.sp, lineHeight = 76.sp, letterSpacing = (-3).sp),
+          text = "Valorant Esports",
+          style = Prism.typography.display.copy(fontSize = 40.sp, lineHeight = 44.sp, letterSpacing = (-1).sp),
           color = Prism.color.accent,
         )
         Row {

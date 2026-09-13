@@ -30,5 +30,5 @@ internal fun matchShareText(matches: List<MatchPreview>, timeZone: TimeZone = Ti
       )
       appendLine()
     }
-    append("Shared via VLR app")
+    append("Shared via Valorant Esports")
   }
