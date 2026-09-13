@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
@@ -45,7 +47,6 @@ import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.rememberMascot
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
-import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
@@ -56,6 +57,7 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
+import dev.staticvar.vlr.domain.model.MatchVideos
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailPreviewHeaderItem
@@ -163,31 +165,17 @@ internal fun MatchDetailsScreen(
       modifier = Modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
-      Column {
-        SharedScreenTitleBar(
-          title = match?.event?.name ?: matchPreview?.event ?: "Match details",
-          subtitle = "Maps, scores and player stats",
-          onBackPress = { leaveScreen(onBack) },
-          actions = {
-            SharedRefreshButton(
-              isLoading = uiState.isLoading || uiState.isDetailLoadPending,
-              animateWhileLoading = true,
-              isRefreshing = uiState.isRefreshing,
-              hasContent = match != null,
-              onRefresh = onRefresh,
-            )
-          },
-        )
-
-        uiState.favoriteErrorMessage?.let { PrismStateMessage(text = it) }
-        SharedRefreshStatus(
-          hasContent = match != null,
-          isRefreshing = false,
-          errorMessage = uiState.errorMessage.takeIf { match != null },
-          errorDetails = uiState.errorDetails,
-          onRefresh = onRefresh,
-        )
-      }
+      MatchDetailsChrome(
+        title = match?.event?.name ?: matchPreview?.event ?: "Match details",
+        isLoading = uiState.isLoading || uiState.isDetailLoadPending,
+        isRefreshing = uiState.isRefreshing,
+        hasContent = match != null,
+        favoriteErrorMessage = uiState.favoriteErrorMessage,
+        errorMessage = uiState.errorMessage.takeIf { match != null },
+        errorDetails = uiState.errorDetails,
+        onBack = { leaveScreen(onBack) },
+        onRefresh = onRefresh,
+      )
       if (match == null && matchPreview != null) {
         MatchDetailPreviewHeaderItem(match = matchPreview)
       }
@@ -213,89 +201,28 @@ internal fun MatchDetailsScreen(
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
 
-        else -> {
-          SharedScrollingDetails(
-            state = listState,
-            contentAlpha = bodyFade,
-            showContent = bodyReady,
-            modifier = Modifier.fillMaxWidth().weight(1f),
-            hero = {
-              MatchDetailHeaderItem(
-                match = match,
-                favoriteAction = {
-                  PrismFavoriteIcon(
-                    selected = match.isFavorite,
-                    size = PrismFavoriteIconSize.Large,
-                    contentDescription = when {
-                      uiState.isFavoritePending -> "Updating favorite"
-                      uiState.isFavoriteInherited -> "Favorite match"
-                      match.isFavorite -> "Remove match from favorites"
-                      else -> "Add match to favorites"
-                    },
-                    modifier = Modifier.clickable(
-                      enabled = uiState.canToggleFavorite,
-                      role = Role.Button,
-                      onClick = onFavoriteClick,
-                    ),
-                  )
-                },
-                onEventSelected = { id -> leaveScreen { onEventSelected(id) } },
-                onTeamSelected = { id -> leaveScreen { onTeamSelected(id) } },
-                actions = if (match.shouldShowCalendarAction()) {
-                  { MatchCalendarAction(match) }
-                } else {
-                  null
-                },
-              )
-            },
-            loading = { loadingModifier ->
-              MatchDetailsLoading(label = "Loading match details", modifier = loadingModifier)
-            },
-          ) {
-            if (!hasDetailedContent && uiState.preferences.showBreakdown &&
-              isOnline && !uiState.isLoading && !uiState.isDetailLoadPending && !uiState.isRefreshing && uiState.errorMessage == null
-            ) {
-              item {
-                SharedEmptyState(
-                  artwork = EmptyStateArtwork.NoLiveMatches,
-                  title = "No match breakdown yet",
-                  message = "Map statistics have not been published for this match.",
-                  compact = true,
-                )
-              }
-            }
-            if (uiState.preferences.showBreakdown && match.matchData.isNotEmpty()) {
-              item {
-                MatchDetailMapsItem(
-                  maps = match.matchData,
-                  selectedMapIndex = resolvedMapIndex,
-                  onMapSelected = { selectedMapIndex = it },
-                  onMenuExpandedChange = { mapMenuExpanded = it },
-                  onPlayerSelected = { id -> leaveScreen { onPlayerSelected(id) } },
-                )
-              }
-            }
-            if (uiState.preferences.showHeadToHead && match.head2head.isNotEmpty()) {
-              item {
-                MatchDetailHeadToHeadItem(encounters = match.head2head, onEncounterSelected = { id -> leaveScreen { onMatchSelected(id) } })
-              }
-            }
-            if (uiState.preferences.showMedia && (match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty())) {
-              item {
-                PrismSectionTitle(title = "Streams & VODs", preLabel = "media")
-              }
-              item {
-                MatchDetailMediaRow(
-                  match = match,
-                  onVideoSelected = { url -> uriHandler.openUri(url.asExternalUrl()) },
-                )
-              }
-            }
-            item {
-              Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth().height(88.dp))
-            }
-          }
-        }
+        else -> MatchDetailsContent(
+          match = match,
+          preferences = uiState.preferences,
+          showBreakdownEmpty = !hasDetailedContent && uiState.preferences.showBreakdown &&
+            isOnline && !uiState.isLoading && !uiState.isDetailLoadPending && !uiState.isRefreshing && uiState.errorMessage == null,
+          selectedMapIndex = resolvedMapIndex,
+          isFavoritePending = uiState.isFavoritePending,
+          isFavoriteInherited = uiState.isFavoriteInherited,
+          canToggleFavorite = uiState.canToggleFavorite,
+          listState = listState,
+          contentAlpha = bodyFade,
+          showContent = bodyReady,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+          onFavoriteClick = onFavoriteClick,
+          onEventSelected = { id -> leaveScreen { onEventSelected(id) } },
+          onTeamSelected = { id -> leaveScreen { onTeamSelected(id) } },
+          onMapSelected = { selectedMapIndex = it },
+          onMapMenuExpandedChange = { mapMenuExpanded = it },
+          onPlayerSelected = { id -> leaveScreen { onPlayerSelected(id) } },
+          onMatchSelected = { id -> leaveScreen { onMatchSelected(id) } },
+          onVideoSelected = { url -> uriHandler.openUri(url.asExternalUrl()) },
+        )
       }
     }
     if (!spoilersHidden && mascotCharacter != null) {
@@ -327,14 +254,196 @@ internal fun MatchDetailsScreen(
 }
 
 @Composable
+private fun MatchDetailsChrome(
+  title: String,
+  isLoading: Boolean,
+  isRefreshing: Boolean,
+  hasContent: Boolean,
+  favoriteErrorMessage: String?,
+  errorMessage: String?,
+  errorDetails: String?,
+  onBack: () -> Unit,
+  onRefresh: () -> Unit,
+) {
+  Column {
+    SharedScreenTitleBar(
+      title = title,
+      subtitle = "Maps, scores and player stats",
+      onBackPress = onBack,
+      actions = {
+        SharedRefreshButton(
+          isLoading = isLoading,
+          animateWhileLoading = true,
+          isRefreshing = isRefreshing,
+          hasContent = hasContent,
+          onRefresh = onRefresh,
+        )
+      },
+    )
+    favoriteErrorMessage?.let { PrismStateMessage(text = it) }
+    SharedRefreshStatus(
+      hasContent = hasContent,
+      isRefreshing = false,
+      errorMessage = errorMessage,
+      errorDetails = errorDetails,
+      onRefresh = onRefresh,
+    )
+  }
+}
+
+@Composable
+private fun MatchDetailsContent(
+  match: MatchDetails,
+  preferences: MatchDetailsPreferences,
+  showBreakdownEmpty: Boolean,
+  selectedMapIndex: Int?,
+  isFavoritePending: Boolean,
+  isFavoriteInherited: Boolean,
+  canToggleFavorite: Boolean,
+  listState: LazyListState,
+  contentAlpha: State<Float>,
+  showContent: Boolean,
+  modifier: Modifier = Modifier,
+  onFavoriteClick: () -> Unit,
+  onEventSelected: (String) -> Unit,
+  onTeamSelected: (String) -> Unit,
+  onMapSelected: (Int?) -> Unit,
+  onMapMenuExpandedChange: (Boolean) -> Unit,
+  onPlayerSelected: (String) -> Unit,
+  onMatchSelected: (String) -> Unit,
+  onVideoSelected: (String) -> Unit,
+) {
+  SharedScrollingDetails(
+    state = listState,
+    contentAlpha = contentAlpha,
+    showContent = showContent,
+    modifier = modifier,
+    hero = {
+      MatchDetailsHero(
+        match = match,
+        isFavoritePending = isFavoritePending,
+        isFavoriteInherited = isFavoriteInherited,
+        canToggleFavorite = canToggleFavorite,
+        onFavoriteClick = onFavoriteClick,
+        onEventSelected = onEventSelected,
+        onTeamSelected = onTeamSelected,
+      )
+    },
+    loading = { loadingModifier ->
+      MatchDetailsLoading(label = "Loading match details", modifier = loadingModifier)
+    },
+  ) {
+    matchDetailItems(
+      match = match,
+      preferences = preferences,
+      showBreakdownEmpty = showBreakdownEmpty,
+      selectedMapIndex = selectedMapIndex,
+      onMapSelected = onMapSelected,
+      onMapMenuExpandedChange = onMapMenuExpandedChange,
+      onPlayerSelected = onPlayerSelected,
+      onMatchSelected = onMatchSelected,
+      onVideoSelected = onVideoSelected,
+    )
+  }
+}
+
+@Composable
+private fun MatchDetailsHero(
+  match: MatchDetails,
+  isFavoritePending: Boolean,
+  isFavoriteInherited: Boolean,
+  canToggleFavorite: Boolean,
+  onFavoriteClick: () -> Unit,
+  onEventSelected: (String) -> Unit,
+  onTeamSelected: (String) -> Unit,
+) {
+  MatchDetailHeaderItem(
+    match = match,
+    favoriteAction = {
+      PrismFavoriteIcon(
+        selected = match.isFavorite,
+        size = PrismFavoriteIconSize.Large,
+        contentDescription = when {
+          isFavoritePending -> "Updating favorite"
+          isFavoriteInherited -> "Favorite match"
+          match.isFavorite -> "Remove match from favorites"
+          else -> "Add match to favorites"
+        },
+        modifier = Modifier.clickable(
+          enabled = canToggleFavorite,
+          role = Role.Button,
+          onClick = onFavoriteClick,
+        ),
+      )
+    },
+    onEventSelected = onEventSelected,
+    onTeamSelected = onTeamSelected,
+    actions = if (match.shouldShowCalendarAction()) {
+      { MatchCalendarAction(match) }
+    } else {
+      null
+    },
+  )
+}
+
+private fun LazyListScope.matchDetailItems(
+  match: MatchDetails,
+  preferences: MatchDetailsPreferences,
+  showBreakdownEmpty: Boolean,
+  selectedMapIndex: Int?,
+  onMapSelected: (Int?) -> Unit,
+  onMapMenuExpandedChange: (Boolean) -> Unit,
+  onPlayerSelected: (String) -> Unit,
+  onMatchSelected: (String) -> Unit,
+  onVideoSelected: (String) -> Unit,
+) {
+  if (showBreakdownEmpty) {
+    item {
+      SharedEmptyState(
+        artwork = EmptyStateArtwork.NoLiveMatches,
+        title = "No match breakdown yet",
+        message = "Map statistics have not been published for this match.",
+        compact = true,
+      )
+    }
+  }
+  if (preferences.showBreakdown && match.matchData.isNotEmpty()) {
+    item {
+      MatchDetailMapsItem(
+        maps = match.matchData,
+        selectedMapIndex = selectedMapIndex,
+        onMapSelected = onMapSelected,
+        onPlayerSelected = onPlayerSelected,
+        onMenuExpandedChange = onMapMenuExpandedChange,
+      )
+    }
+  }
+  if (preferences.showHeadToHead && match.head2head.isNotEmpty()) {
+    item {
+      MatchDetailHeadToHeadItem(
+        encounters = match.head2head,
+        onEncounterSelected = onMatchSelected,
+      )
+    }
+  }
+  if (preferences.showMedia && (match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty())) {
+    item { PrismSectionTitle(title = "Streams & VODs", preLabel = "media") }
+    item { MatchDetailMediaRow(videos = match.videos, onVideoSelected = onVideoSelected) }
+  }
+  item {
+    Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth().height(88.dp))
+  }
+}
+
+@Composable
 @OptIn(ExperimentalLayoutApi::class)
-private fun MatchDetailMediaRow(match: MatchDetails, onVideoSelected: (String) -> Unit) {
+private fun MatchDetailMediaRow(videos: MatchVideos, onVideoSelected: (String) -> Unit) {
   FlowRow(
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
-    match.videos.streams.forEach { video ->
+    videos.streams.forEach { video ->
       MatchDetailVideoItem(
         video = video,
         typeLabel = "stream",
@@ -343,7 +452,7 @@ private fun MatchDetailMediaRow(match: MatchDetails, onVideoSelected: (String) -
         },
       )
     }
-    match.videos.vods.forEach { video ->
+    videos.vods.forEach { video ->
       MatchDetailVideoItem(
         video = video,
         typeLabel = "VOD",
