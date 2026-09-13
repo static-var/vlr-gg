@@ -93,29 +93,58 @@ public fun HomeRoute(
       onRefresh = onRefresh,
     )
 
-    when {
-      !uiState.hasLoadedFeed && !hasContent -> SharedScreenLoading(
-        label = "Loading your favorites",
-        modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
-      )
+    HomeBody(
+      feed = feed,
+      hasLoadedFeed = uiState.hasLoadedFeed,
+      onBrowseMatches = onBrowseMatches,
+      onBrowseEvents = onBrowseEvents,
+      onMatchSelected = onMatchSelected,
+      onEventSelected = onEventSelected,
+      onEventPreviewSelected = onEventPreviewSelected,
+      onMatchPreviewSelected = onMatchPreviewSelected,
+      onTeamSelected = onTeamSelected,
+      onPlayerSelected = onPlayerSelected,
+      modifier = Modifier.fillMaxWidth().weight(1f),
+    )
+  }
+}
 
-      !hasContent -> HomeEmptyFavorites(
-        onBrowseMatches = onBrowseMatches,
-        onBrowseEvents = onBrowseEvents,
-        modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
-      )
+@Composable
+private fun HomeBody(
+  feed: HomeFeed,
+  hasLoadedFeed: Boolean,
+  onBrowseMatches: () -> Unit,
+  onBrowseEvents: () -> Unit,
+  onEventPreviewSelected: (EventPreview) -> Unit,
+  onMatchPreviewSelected: (MatchPreview) -> Unit,
+  onMatchSelected: (String) -> Unit,
+  onEventSelected: (String) -> Unit,
+  onTeamSelected: (String) -> Unit,
+  onPlayerSelected: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  when {
+    !hasLoadedFeed && !feed.hasDirectFavorites -> SharedScreenLoading(
+      label = "Loading your favorites",
+      modifier = modifier.padding(horizontal = Prism.dimens.spacingM),
+    )
 
-      else -> HomeFeedContent(
-        feed = feed,
-        onMatchSelected = onMatchSelected,
-        onEventSelected = onEventSelected,
-        onEventPreviewSelected = onEventPreviewSelected,
-        onMatchPreviewSelected = onMatchPreviewSelected,
-        onTeamSelected = onTeamSelected,
-        onPlayerSelected = onPlayerSelected,
-        modifier = Modifier.fillMaxWidth().weight(1f),
-      )
-    }
+    !feed.hasDirectFavorites -> HomeEmptyFavorites(
+      onBrowseMatches = onBrowseMatches,
+      onBrowseEvents = onBrowseEvents,
+      modifier = modifier.padding(horizontal = Prism.dimens.spacingM),
+    )
+
+    else -> HomeFeedContent(
+      feed = feed,
+      onMatchSelected = onMatchSelected,
+      onEventSelected = onEventSelected,
+      onEventPreviewSelected = onEventPreviewSelected,
+      onMatchPreviewSelected = onMatchPreviewSelected,
+      onTeamSelected = onTeamSelected,
+      onPlayerSelected = onPlayerSelected,
+      modifier = modifier,
+    )
   }
 }
 
