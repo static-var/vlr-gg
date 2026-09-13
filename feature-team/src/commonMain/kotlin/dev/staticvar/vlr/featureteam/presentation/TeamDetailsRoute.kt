@@ -14,11 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
-import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
-import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +24,7 @@ import androidx.compose.ui.semantics.Role
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
+import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
@@ -33,11 +32,16 @@ import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
-import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.domain.model.TeamCompletedMatch
+import dev.staticvar.vlr.domain.model.TeamPlayer
+import dev.staticvar.vlr.domain.model.TeamUpcomingMatch
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
@@ -90,51 +94,29 @@ internal fun TeamDetailsScreen(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
-    Column {
-      PrismScreenTitleBar(
-        title = team?.name ?: "Team details",
-        subtitle = "Roster, results and recent form",
-        onBackPress = onBack,
-        actions = {
-          if (team != null) {
-            PrismFavoriteIcon(
-              selected = team.isFavorite,
-              size = PrismFavoriteIconSize.Large,
-              contentDescription = if (uiState.isUpdatingFavorite) {
-                "Updating favorite"
-              } else if (team.isFavorite) {
-                "Remove team from favorites"
-              } else {
-                "Add team to favorites"
-              },
-              modifier = Modifier.clickable(
-                enabled = !uiState.isUpdatingFavorite,
-                role = Role.Button,
-                onClick = onToggleFavorite,
-              ),
-            )
-          }
-        },
-      )
-
-      SharedRefreshStatus(
-        hasContent = team != null,
-        isRefreshing = team != null && (uiState.isRefreshing || uiState.isLoading),
-        errorMessage = uiState.errorMessage.takeIf { team != null },
-        errorDetails = uiState.errorDetails,
-        onRefresh = onRefresh,
-      )
-    }
+    TeamDetailsChrome(
+      title = team?.name ?: "Team details",
+      isFavorite = team?.isFavorite,
+      isUpdatingFavorite = uiState.isUpdatingFavorite,
+      hasContent = team != null,
+      isRefreshing = team != null && (uiState.isRefreshing || uiState.isLoading),
+      errorMessage = uiState.errorMessage.takeIf { team != null },
+      errorDetails = uiState.errorDetails,
+      onBack = onBack,
+      onRefresh = onRefresh,
+      onToggleFavorite = onToggleFavorite,
+    )
 
     uiState.favoriteErrorMessage?.let { message ->
       PrismStateMessage(text = message)
     }
 
     when {
-      (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && team == null -> SharedScreenLoading(
-        label = "Loading team",
-        modifier = Modifier.fillMaxSize(),
-      )
+      (!isOnline || uiState.isLoading || uiState.isRefreshing) && team == null ->
+        SharedScreenLoading(
+          label = "Loading team",
+          modifier = Modifier.fillMaxSize(),
+        )
 
       uiState.errorMessage != null && team == null ->
         SharedLoadError(
@@ -145,189 +127,359 @@ internal fun TeamDetailsScreen(
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
 
-      team == null -> SharedEmptyState(
-        artwork = EmptyStateArtwork.NoLiveMatches,
-        title = "No team details yet",
-        message = "This team profile has not been published.",
-        modifier = Modifier.fillMaxWidth().weight(1f),
-      )
+      team == null ->
+        SharedEmptyState(
+          artwork = EmptyStateArtwork.NoLiveMatches,
+          title = "No team details yet",
+          message = "This team profile has not been published.",
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
 
-      else -> {
-        LazyColumn(
-          modifier = Modifier.fillMaxWidth().weight(1f).cardMascotViewport(),
-          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-        ) {
-          item(key = "summary") {
-            PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
-              Text(text = team.name, style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
-              Text(
-                text = listOfNotNull(team.tag.takeIf(String::isNotBlank), team.region, team.country).joinToString(" • "),
-                modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                style = Prism.typography.bodySmall,
-                color = Prism.color.labelColor,
+      else ->
+        TeamDetailsLoadedContent(
+          name = team.name,
+          metadata =
+            listOfNotNull(
+                team.tag.takeIf(String::isNotBlank),
+                team.region,
+                team.country,
               )
-              SpoilerScore(
-                text = if (team.rank > 0) "#${team.rank}" else "Unranked",
-                modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                style = Prism.typography.label,
-                color = Prism.color.bodyColor,
-              )
-            }
-          }
-          if (team.roster.isNotEmpty()) {
-            item(key = "roster-title") {
-              PrismSectionTitle(title = "Roster", preLabel = "players")
-            }
-            items(team.roster, key = { "player:${it.id}" }) { player ->
-              PrismCard(
-                modifier = Modifier.fillMaxWidth(),
-                style = PrismCardStyle.Outlined,
-                onClick = { onPlayerSelected(player.id) },
-              ) {
-                Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-                  verticalAlignment = Alignment.CenterVertically,
-                ) {
-                  Text(
-                    text = player.alias,
-                    modifier = Modifier.weight(1f),
-                    style = Prism.typography.cardTitle,
-                    color = if (player.isFavorite) Prism.color.accent else Prism.color.titleColor,
-                  )
-                  if (player.isFavorite) {
-                    PrismFavoriteIcon(
-                      selected = true,
-                      size = PrismFavoriteIconSize.Small,
-                      style = PrismFavoriteIconStyle.Bare,
-                      contentDescription = "Favorite player",
-                    )
-                  }
-                }
-                Text(
-                  text = listOfNotNull(
-                    player.name,
-                    player.role,
-                    player.country,
-                  ).filter(String::isNotBlank).joinToString(" • "),
-                  modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                  style = Prism.typography.bodySmall,
-                  color = Prism.color.labelColor,
-                )
-              }
-            }
-          }
-          item(key = "match-tabs") {
-            PrismTabs(
-              modifier = Modifier.padding(bottom = Prism.dimens.spacingS),
-              tabs = TeamMatchesSection.entries.map { PrismTab(id = it.name, label = it.name) },
-              selectedTabId = section.name,
-              onTabSelected = { onSectionSelected(TeamMatchesSection.valueOf(it.id)) },
-            )
-          }
-          when (section) {
-            TeamMatchesSection.Upcoming -> {
-              if (team.upcomingMatches.isEmpty()) {
-                if (isOnline && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null) {
-                  item {
-                    SharedEmptyState(
-                      artwork = EmptyStateArtwork.NoLiveMatches,
-                      title = "No upcoming matches",
-                      message = "No upcoming fixtures have been published for this team.",
-                      compact = true,
-                    )
-                  }
-                }
-              } else {
-                items(team.upcomingMatches, key = { "upcoming:${it.matchId}" }) { match ->
-                  val eventId = match.eventId
-                  PrismCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    style = PrismCardStyle.Outlined,
-                    onClick = { onMatchSelected(match.matchId) },
-                  ) {
-                    Text(text = match.opponent, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
-                    Text(
-                      text = "${match.eventName} • ${match.stage}",
-                      modifier = Modifier
-                        .padding(top = Prism.dimens.spacingXs)
-                        .let { base -> if (eventId != null) base.clickable { onEventSelected(eventId) } else base },
-                      style = Prism.typography.bodySmall,
-                      color = if (eventId != null) Prism.color.accent else Prism.color.labelColor,
-                    )
-                    Text(
-                      text = listOfNotNull(match.eta, match.date).joinToString(" • "),
-                      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                      style = Prism.typography.label,
-                      color = Prism.color.bodyColor,
-                    )
-                  }
-                }
-              }
-            }
+              .joinToString(" • "),
+          rank = team.rank,
+          roster = team.roster,
+          upcomingMatches = team.upcomingMatches,
+          completedMatches = team.completedMatches,
+          section = section,
+          spoilersHidden = spoilersHidden,
+          canShowEmpty =
+            isOnline && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null,
+          onSectionSelected = onSectionSelected,
+          onMatchSelected = onMatchSelected,
+          onPlayerSelected = onPlayerSelected,
+          onEventSelected = onEventSelected,
+          modifier = Modifier.fillMaxWidth().weight(1f),
+        )
+    }
+  }
+}
 
-            TeamMatchesSection.Completed -> {
-              if (team.completedMatches.isEmpty()) {
-                if (isOnline && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null) {
-                  item {
-                    SharedEmptyState(
-                      artwork = EmptyStateArtwork.NoLiveMatches,
-                      title = "No completed matches",
-                      message = "No match results have been published for this team.",
-                      compact = true,
-                    )
-                  }
-                }
+@Composable
+private fun TeamDetailsChrome(
+  title: String,
+  isFavorite: Boolean?,
+  isUpdatingFavorite: Boolean,
+  hasContent: Boolean,
+  isRefreshing: Boolean,
+  errorMessage: String?,
+  errorDetails: String?,
+  onBack: () -> Unit,
+  onRefresh: () -> Unit,
+  onToggleFavorite: () -> Unit,
+) {
+  Column {
+    PrismScreenTitleBar(
+      title = title,
+      subtitle = "Roster, results and recent form",
+      onBackPress = onBack,
+      actions = {
+        if (isFavorite != null) {
+          PrismFavoriteIcon(
+            selected = isFavorite,
+            size = PrismFavoriteIconSize.Large,
+            contentDescription =
+              if (isUpdatingFavorite) {
+                "Updating favorite"
+              } else if (isFavorite) {
+                "Remove team from favorites"
               } else {
-                if (spoilersHidden) {
-                  item(key = "completed-spoiler-notice") {
-                    SpoilerHiddenNotice()
-                  }
-                }
-                items(team.completedMatches, key = { "completed:${it.matchId}" }) { match ->
-                  val eventId = match.eventId
-                  PrismCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    style = PrismCardStyle.Outlined,
-                    onClick = { onMatchSelected(match.matchId) },
-                  ) {
-                    Text(text = match.opponent, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
-                    Text(
-                      text = "${match.eventName} • ${match.stage}",
-                      modifier = Modifier
-                        .padding(top = Prism.dimens.spacingXs)
-                        .let { base -> if (eventId != null) base.clickable { onEventSelected(eventId) } else base },
-                      style = Prism.typography.bodySmall,
-                      color = if (eventId != null) Prism.color.accent else Prism.color.labelColor,
-                    )
-                    Row(
-                      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
-                      verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                      if (spoilersHidden || match.result.isNotBlank()) {
-                        SpoilerScore(
-                          text = match.result,
-                          style = Prism.typography.label,
-                          color = Prism.color.bodyColor,
-                        )
-                      }
-                      if (match.date.isNotBlank()) {
-                        if (spoilersHidden || match.result.isNotBlank()) {
-                          Text(text = "•", style = Prism.typography.label, color = Prism.color.bodyColor)
-                        }
-                        Text(text = match.date, style = Prism.typography.label, color = Prism.color.bodyColor)
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-          item {
-            Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
-          }
+                "Add team to favorites"
+              },
+            modifier =
+              Modifier.clickable(
+                enabled = !isUpdatingFavorite,
+                role = Role.Button,
+                onClick = onToggleFavorite,
+              ),
+          )
         }
+      },
+    )
+
+    SharedRefreshStatus(
+      hasContent = hasContent,
+      isRefreshing = isRefreshing,
+      errorMessage = errorMessage,
+      errorDetails = errorDetails,
+      onRefresh = onRefresh,
+    )
+  }
+}
+
+@Composable
+private fun TeamDetailsLoadedContent(
+  name: String,
+  metadata: String,
+  rank: Int,
+  roster: List<TeamPlayer>,
+  upcomingMatches: List<TeamUpcomingMatch>,
+  completedMatches: List<TeamCompletedMatch>,
+  section: TeamMatchesSection,
+  spoilersHidden: Boolean,
+  canShowEmpty: Boolean,
+  onSectionSelected: (TeamMatchesSection) -> Unit,
+  onMatchSelected: (String) -> Unit,
+  onPlayerSelected: (String) -> Unit,
+  onEventSelected: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  LazyColumn(
+    modifier = modifier.cardMascotViewport(),
+    verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+  ) {
+    item(key = "summary") {
+      TeamSummaryCard(name = name, metadata = metadata, rank = rank)
+    }
+    teamRosterItems(roster = roster, onPlayerSelected = onPlayerSelected)
+    item(key = "match-tabs") {
+      PrismTabs(
+        modifier = Modifier.padding(bottom = Prism.dimens.spacingS),
+        tabs = TeamMatchesSection.entries.map { PrismTab(id = it.name, label = it.name) },
+        selectedTabId = section.name,
+        onTabSelected = { onSectionSelected(TeamMatchesSection.valueOf(it.id)) },
+      )
+    }
+    when (section) {
+      TeamMatchesSection.Upcoming ->
+        teamUpcomingMatchItems(
+          matches = upcomingMatches,
+          canShowEmpty = canShowEmpty,
+          onMatchSelected = onMatchSelected,
+          onEventSelected = onEventSelected,
+        )
+
+      TeamMatchesSection.Completed ->
+        teamCompletedMatchItems(
+          matches = completedMatches,
+          spoilersHidden = spoilersHidden,
+          canShowEmpty = canShowEmpty,
+          onMatchSelected = onMatchSelected,
+          onEventSelected = onEventSelected,
+        )
+    }
+    item {
+      Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
+    }
+  }
+}
+
+@Composable
+private fun TeamSummaryCard(name: String, metadata: String, rank: Int) {
+  PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
+    Text(text = name, style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
+    Text(
+      text = metadata,
+      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+      style = Prism.typography.bodySmall,
+      color = Prism.color.labelColor,
+    )
+    SpoilerScore(
+      text = if (rank > 0) "#$rank" else "Unranked",
+      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+      style = Prism.typography.label,
+      color = Prism.color.bodyColor,
+    )
+  }
+}
+
+private fun LazyListScope.teamRosterItems(
+  roster: List<TeamPlayer>,
+  onPlayerSelected: (String) -> Unit,
+) {
+  if (roster.isEmpty()) return
+
+  item(key = "roster-title") {
+    PrismSectionTitle(title = "Roster", preLabel = "players")
+  }
+  items(roster, key = { "player:${it.id}" }) { player ->
+    TeamRosterItem(player = player, onPlayerSelected = onPlayerSelected)
+  }
+}
+
+@Composable
+private fun TeamRosterItem(player: TeamPlayer, onPlayerSelected: (String) -> Unit) {
+  PrismCard(
+    modifier = Modifier.fillMaxWidth(),
+    style = PrismCardStyle.Outlined,
+    onClick = { onPlayerSelected(player.id) },
+  ) {
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        text = player.alias,
+        modifier = Modifier.weight(1f),
+        style = Prism.typography.cardTitle,
+        color = if (player.isFavorite) Prism.color.accent else Prism.color.titleColor,
+      )
+      if (player.isFavorite) {
+        PrismFavoriteIcon(
+          selected = true,
+          size = PrismFavoriteIconSize.Small,
+          style = PrismFavoriteIconStyle.Bare,
+          contentDescription = "Favorite player",
+        )
+      }
+    }
+    Text(
+      text =
+        listOfNotNull(player.name, player.role, player.country)
+          .filter(String::isNotBlank)
+          .joinToString(" • "),
+      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+      style = Prism.typography.bodySmall,
+      color = Prism.color.labelColor,
+    )
+  }
+}
+
+private fun LazyListScope.teamUpcomingMatchItems(
+  matches: List<TeamUpcomingMatch>,
+  canShowEmpty: Boolean,
+  onMatchSelected: (String) -> Unit,
+  onEventSelected: (String) -> Unit,
+) {
+  if (matches.isEmpty()) {
+    if (canShowEmpty) {
+      item {
+        SharedEmptyState(
+          artwork = EmptyStateArtwork.NoLiveMatches,
+          title = "No upcoming matches",
+          message = "No upcoming fixtures have been published for this team.",
+          compact = true,
+        )
+      }
+    }
+    return
+  }
+
+  items(matches, key = { "upcoming:${it.matchId}" }) { match ->
+    TeamUpcomingMatchItem(
+      match = match,
+      onMatchSelected = onMatchSelected,
+      onEventSelected = onEventSelected,
+    )
+  }
+}
+
+@Composable
+private fun TeamUpcomingMatchItem(
+  match: TeamUpcomingMatch,
+  onMatchSelected: (String) -> Unit,
+  onEventSelected: (String) -> Unit,
+) {
+  val eventId = match.eventId
+  PrismCard(
+    modifier = Modifier.fillMaxWidth(),
+    style = PrismCardStyle.Outlined,
+    onClick = { onMatchSelected(match.matchId) },
+  ) {
+    Text(text = match.opponent, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
+    Text(
+      text = "${match.eventName} • ${match.stage}",
+      modifier =
+        Modifier.padding(top = Prism.dimens.spacingXs).let { base ->
+          if (eventId != null) base.clickable { onEventSelected(eventId) } else base
+        },
+      style = Prism.typography.bodySmall,
+      color = if (eventId != null) Prism.color.accent else Prism.color.labelColor,
+    )
+    Text(
+      text = listOfNotNull(match.eta, match.date).joinToString(" • "),
+      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+      style = Prism.typography.label,
+      color = Prism.color.bodyColor,
+    )
+  }
+}
+
+private fun LazyListScope.teamCompletedMatchItems(
+  matches: List<TeamCompletedMatch>,
+  spoilersHidden: Boolean,
+  canShowEmpty: Boolean,
+  onMatchSelected: (String) -> Unit,
+  onEventSelected: (String) -> Unit,
+) {
+  if (matches.isEmpty()) {
+    if (canShowEmpty) {
+      item {
+        SharedEmptyState(
+          artwork = EmptyStateArtwork.NoLiveMatches,
+          title = "No completed matches",
+          message = "No match results have been published for this team.",
+          compact = true,
+        )
+      }
+    }
+    return
+  }
+
+  if (spoilersHidden) {
+    item(key = "completed-spoiler-notice") {
+      SpoilerHiddenNotice()
+    }
+  }
+  items(matches, key = { "completed:${it.matchId}" }) { match ->
+    TeamCompletedMatchItem(
+      match = match,
+      spoilersHidden = spoilersHidden,
+      onMatchSelected = onMatchSelected,
+      onEventSelected = onEventSelected,
+    )
+  }
+}
+
+@Composable
+private fun TeamCompletedMatchItem(
+  match: TeamCompletedMatch,
+  spoilersHidden: Boolean,
+  onMatchSelected: (String) -> Unit,
+  onEventSelected: (String) -> Unit,
+) {
+  val eventId = match.eventId
+  PrismCard(
+    modifier = Modifier.fillMaxWidth(),
+    style = PrismCardStyle.Outlined,
+    onClick = { onMatchSelected(match.matchId) },
+  ) {
+    Text(text = match.opponent, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
+    Text(
+      text = "${match.eventName} • ${match.stage}",
+      modifier =
+        Modifier.padding(top = Prism.dimens.spacingXs).let { base ->
+          if (eventId != null) base.clickable { onEventSelected(eventId) } else base
+        },
+      style = Prism.typography.bodySmall,
+      color = if (eventId != null) Prism.color.accent else Prism.color.labelColor,
+    )
+    Row(
+      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      if (spoilersHidden || match.result.isNotBlank()) {
+        SpoilerScore(
+          text = match.result,
+          style = Prism.typography.label,
+          color = Prism.color.bodyColor,
+        )
+      }
+      if (match.date.isNotBlank()) {
+        if (spoilersHidden || match.result.isNotBlank()) {
+          Text(text = "•", style = Prism.typography.label, color = Prism.color.bodyColor)
+        }
+        Text(text = match.date, style = Prism.typography.label, color = Prism.color.bodyColor)
       }
     }
   }
