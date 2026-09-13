@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
@@ -36,6 +37,7 @@ import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsArticle
+import dev.staticvar.vlr.sharedui.component.news.detail.ArticleVideoPlaybackState
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.news.detail.newsDetailStoryItems
 import dev.staticvar.vlr.sharedui.component.news.detail.rememberArticleVideoPlaybackState
@@ -68,7 +70,6 @@ internal fun NewsArticleScreen(
   val isOnline = LocalIsOnline.current
   val article: NewsArticle? = uiState.article
   val videoPlayback = rememberArticleVideoPlaybackState(article?.id.orEmpty())
-  val uriHandler = LocalUriHandler.current
   val scrollState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
   val showScrollToTop by remember { derivedStateOf { scrollState.firstVisibleItemIndex > 0 } }
@@ -139,41 +140,58 @@ internal fun NewsArticleScreen(
       }
 
       else -> {
-        LazyColumn(
+        LoadedNewsArticle(
+          article = article,
+          showBlankBodyState = article.contentHtml.isBlank() && article.blocks.isEmpty() &&
+            isOnline && !uiState.isLoading && !uiState.isRefreshing && uiState.errorMessage == null,
+          playback = videoPlayback,
+          scrollState = scrollState,
           modifier = Modifier.fillMaxSize().cardMascotViewport(),
-          state = scrollState,
-          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
-        ) {
-          item(key = "header") {
-            NewsDetailHeaderItem(article = article)
-          }
-          if (article.contentHtml.isBlank() && article.blocks.isEmpty()) {
-            if (isOnline && !uiState.isLoading && !uiState.isRefreshing && uiState.errorMessage == null) {
-              item(key = "article-body-state") {
-                SharedEmptyState(
-                  artwork = EmptyStateArtwork.NoLiveEvents,
-                  title = "No article text yet",
-                  message = "The story text has not been published.",
-                  compact = true,
-                )
-              }
-            }
-          } else {
-            newsDetailStoryItems(article = article, playback = videoPlayback)
-          }
-          item(key = "source") {
-            PrismButton(
-              onClick = { uriHandler.openUri(article.url) },
-              style = PrismButtonStyle.Tertiary,
-            ) {
-              Text("Read on VLR.gg")
-            }
-          }
-          item(key = "navigation-bar-spacer") {
-            Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
-          }
-        }
+        )
       }
+    }
+  }
+}
+
+@Composable
+private fun LoadedNewsArticle(
+  article: NewsArticle,
+  showBlankBodyState: Boolean,
+  playback: ArticleVideoPlaybackState,
+  scrollState: LazyListState,
+  modifier: Modifier = Modifier,
+) {
+  val uriHandler = LocalUriHandler.current
+  LazyColumn(
+    modifier = modifier,
+    state = scrollState,
+    verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+  ) {
+    item(key = "header") {
+      NewsDetailHeaderItem(article = article)
+    }
+    if (showBlankBodyState) {
+      item(key = "article-body-state") {
+        SharedEmptyState(
+          artwork = EmptyStateArtwork.NoLiveEvents,
+          title = "No article text yet",
+          message = "The story text has not been published.",
+          compact = true,
+        )
+      }
+    } else if (article.contentHtml.isNotBlank() || article.blocks.isNotEmpty()) {
+      newsDetailStoryItems(article = article, playback = playback)
+    }
+    item(key = "source") {
+      PrismButton(
+        onClick = { uriHandler.openUri(article.url) },
+        style = PrismButtonStyle.Tertiary,
+      ) {
+        Text("Read on VLR.gg")
+      }
+    }
+    item(key = "navigation-bar-spacer") {
+      Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
     }
   }
 }
