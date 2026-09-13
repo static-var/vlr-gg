@@ -58,10 +58,6 @@ public fun PrismSlider(
 ) {
   require(stopLabels.isEmpty() || stopLabels.size == steps + 2) { "Provide one label for every selectable stop" }
   val interactionSource = remember { MutableInteractionSource() }
-  val pressed by interactionSource.collectIsPressedAsState()
-  val dragged by interactionSource.collectIsDraggedAsState()
-  val focused by interactionSource.collectIsFocusedAsState()
-  val thumbColor = style.thumbColor(enabled, pressed || dragged || focused)
   val trackColor = style.trackColor(enabled)
   val activeColor = style.activeColor(enabled)
   val trackThickness = style.inactiveThickness
@@ -95,7 +91,7 @@ public fun PrismSlider(
         steps = steps,
         onValueChangeFinished = onValueChangeFinished,
         interactionSource = interactionSource,
-        thumb = { Box(Modifier.size(style.thumbSize).background(thumbColor)) },
+        thumb = { PrismSliderThumb(interactionSource = interactionSource, enabled = enabled, style = style) },
         track = { state ->
           Canvas(Modifier.fillMaxWidth().height(style.trackHeight)) {
             val rangeLength = state.valueRange.endInclusive - state.valueRange.start
@@ -129,6 +125,20 @@ public fun PrismSlider(
       )
     }
   }
+}
+
+@Composable
+private fun PrismSliderThumb(
+  interactionSource: MutableInteractionSource,
+  enabled: Boolean,
+  style: PrismSliderStyle,
+) {
+  val pressed by interactionSource.collectIsPressedAsState()
+  val dragged by interactionSource.collectIsDraggedAsState()
+  val focused by interactionSource.collectIsFocusedAsState()
+  val thumbColor = style.thumbColor(enabled, pressed || dragged || focused)
+
+  Box(Modifier.size(style.thumbSize).background(thumbColor))
 }
 
 @Composable

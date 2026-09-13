@@ -34,8 +34,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import compose.icons.LineAwesomeIcons
@@ -141,7 +141,7 @@ private fun RowScope.AccordionHeaderContent(
   showIndicator: Boolean,
   indicatorColor: Color,
 ) {
-  val rotationAngle by
+  val rotationAngle =
     animateFloatAsState(
       targetValue = if (isExpanded) 180f else 0f,
       label = "accordion_icon_rotation",
@@ -153,7 +153,7 @@ private fun RowScope.AccordionHeaderContent(
     Icon(
       imageVector = LineAwesomeIcons.AngleDownSolid,
       contentDescription = if (isExpanded) "Collapse section" else "Expand section",
-      modifier = Modifier.rotate(rotationAngle).size(Prism.dimens.iconM),
+      modifier = Modifier.graphicsLayer { rotationZ = rotationAngle.value }.size(Prism.dimens.iconM),
       tint = indicatorColor,
     )
   }
