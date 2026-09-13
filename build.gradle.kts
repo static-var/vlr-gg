@@ -18,6 +18,40 @@ plugins {
   id("vlr.ktlint")
 }
 
+val composeMetricsEnabled =
+  providers.gradleProperty("composeMetrics").map(String::toBoolean).orElse(false)
+val composeMetricsOutput =
+  providers.gradleProperty("composeMetricsOutput").orElse("build/compose-metrics")
+val composeReportModules =
+  setOf(
+    "feature-about",
+    "feature-events",
+    "feature-home",
+    "feature-matches",
+    "feature-news",
+    "feature-player",
+    "feature-rankings",
+    "feature-team",
+    "shared-ui",
+  )
+
+subprojects {
+  if (name !in composeReportModules) return@subprojects
+
+  pluginManager.withPlugin("org.jetbrains.kotlin.plugin.compose") {
+    extensions.configure<org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension> {
+      if (composeMetricsEnabled.get()) {
+        val moduleOutput =
+          rootProject.layout.projectDirectory
+            .dir(composeMetricsOutput.get())
+            .dir(project.name)
+        metricsDestination = moduleOutput.dir("metrics")
+        reportsDestination = moduleOutput.dir("reports")
+      }
+    }
+  }
+}
+
 buildscript {
   repositories {
     google()
