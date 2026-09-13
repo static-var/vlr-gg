@@ -4,6 +4,8 @@ import shared
 @main
 struct iOSApp: App {
     init() {
+        VlrAppShortcuts.updateAppShortcutParameters()
+
         #if DEBUG
         let defaultEnvironment = "development"
         #else

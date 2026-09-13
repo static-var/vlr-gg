@@ -28,6 +28,7 @@
 		B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */; };
 		BC44AC391E69BD6D0F675BE0 /* UpcomingMatchesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */; };
 		BD5E492DF0CC95877D4531D5 /* VLRWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 197F5175E495A017DFACA2B8 /* VLRWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E533BD85594DF2FC0118721D /* VlrSearchShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653806FD344BFF107FB555E8 /* VlrSearchShortcut.swift */; };
 		E723B4A1BB6FF42A310E01F1 /* VLRWidgetContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */; };
 /* End PBXBuildFile section */
 
@@ -67,6 +68,7 @@
 		48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetContract.swift; sourceTree = "<group>"; };
 		4C823E9D6BCD587C88AD7701 /* VLRWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VLRWidget.entitlements; sourceTree = "<group>"; };
 		6062090215F075FB02BCE24E /* VLRWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetBundle.swift; sourceTree = "<group>"; };
+		653806FD344BFF107FB555E8 /* VlrSearchShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VlrSearchShortcut.swift; sourceTree = "<group>"; };
 		668CECA83ACC03A83C85A623 /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		86038AE1032E284E79B32AD6 /* iosApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedBuildConfig.swift; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 				C117AD187833E2513BD2F553 /* Info.plist */,
 				C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */,
 				668CECA83ACC03A83C85A623 /* iOSApp.swift */,
+				653806FD344BFF107FB555E8 /* VlrSearchShortcut.swift */,
 				BA6EDCAF155347F5E7F4CE33 /* WidgetSnapshotStore.swift */,
 			);
 			path = iosApp;
@@ -356,6 +359,7 @@
 				56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
 				8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */,
 				B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */,
+				E533BD85594DF2FC0118721D /* VlrSearchShortcut.swift in Sources */,
 				36317EF4FEADC72B01C12E91 /* WidgetSnapshotStore.swift in Sources */,
 				307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */,
 			);
