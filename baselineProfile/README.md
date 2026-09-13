@@ -58,11 +58,12 @@ and frame-time improvements separately with Macrobenchmark on a physical device.
 
 ## Validation
 
-The profiles were regenerated on the API 36 emulator on September 12, 2026. All five
-generator tests passed. The baseline contains 39,179 rules, including 8,255 app rules
-and entries for CardMascot, Lynx, and Rosie rendering. `assembleRelease` and
-`bundleRelease` passed, and both artifacts contained a 27,358-byte `baseline.prof`
-and a 1,100-byte `baseline.profm`.
+The profiles were regenerated on a dedicated API 33 emulator on September 13, 2026.
+All five generator tests passed. The baseline contains 41,413 rules, including 8,685
+app rules and entries for CardMascot, Lynx, and Rosie rendering. The Startup Profile
+contains 27,622 rules, including 2,912 app rules. `assembleRelease` and `bundleRelease`
+passed, and both artifacts contained a 42,566-byte `baseline.prof` and a 1,124-byte
+`baseline.profm`.
 D8 reported two unmatched synthetic startup methods in `ComponentActivity` and
 `DataModuleKt`; those entries were not applied. No performance delta was measured.
 

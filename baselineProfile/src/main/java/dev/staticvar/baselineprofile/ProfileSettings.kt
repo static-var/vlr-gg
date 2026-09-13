@@ -7,6 +7,7 @@ package dev.staticvar.baselineprofile
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
+import androidx.test.uiautomator.StaleObjectException
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiScrollable
@@ -16,13 +17,13 @@ import androidx.test.uiautomator.Until
 internal fun configureProfileSettings() {
   val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
   device.launchProfileApp()
-  device.findObject(By.desc("Show results and stats throughout app"))?.click(100)
+  device.tapSettingsIfPresent(By.desc("Show results and stats throughout app"))
   device.settingsObject(By.desc("Hide results and stats throughout app"))
   device.openMascotSettings()
-  device.settingsObject(By.text("Companion")).click(100)
-  device.settingsObject(By.text("Lynx · Cat")).click(100)
+  device.tapSettings(By.text("Companion"))
+  device.tapSettings(By.text("Lynx · Cat"))
   device.scrollSettingsTo("YES")
-  device.settingsObject(By.text("YES")).click(100)
+  device.tapSettings(By.text("YES"))
   device.verifyMascotSettings()
 
   device.executeShellCommand("am force-stop $TARGET_PACKAGE")
@@ -35,12 +36,13 @@ internal fun configureProfileSettings() {
 }
 
 private fun UiDevice.launchProfileApp() {
+  executeShellCommand("am force-stop $TARGET_PACKAGE")
   executeShellCommand("am start -W -n $TARGET_PACKAGE/dev.staticvar.vlr.android.MainActivity")
   settingsObject(By.desc("Settings"))
 }
 
 private fun UiDevice.openMascotSettings() {
-  settingsObject(By.desc("Settings")).click(100)
+  tapSettings(By.desc("Settings"))
   settingsObject(By.text("// MAKE IT YOURS."))
   scrollSettingsTo("Companion")
 }
@@ -68,4 +70,23 @@ private fun UiDevice.settingsObject(selector: BySelector): UiObject2 {
   return checkNotNull(wait(Until.findObject(selector), 10_000L)) {
     "Expected profile setting was not displayed: $selector"
   }
+}
+
+private fun UiDevice.tapSettingsIfPresent(selector: BySelector): Boolean {
+  if (!hasObject(selector)) return false
+  tapSettings(selector)
+  return true
+}
+
+private fun UiDevice.tapSettings(selector: BySelector) {
+  repeat(3) {
+    try {
+      settingsObject(selector).click(100)
+      waitForIdle()
+      return
+    } catch (_: StaleObjectException) {
+      // The dropdown or navigation transition replaced the node; tap its current replacement.
+    }
+  }
+  error("Profile setting did not remain stable long enough to tap: $selector")
 }

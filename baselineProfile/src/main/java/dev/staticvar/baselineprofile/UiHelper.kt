@@ -32,7 +32,9 @@ internal fun UiDevice.browseNewsAndSettings() {
   navigateTo("Home", "Your Favorites")
   requireObject(By.desc("Settings")).click(100)
   requireObject(By.text("// MAKE IT YOURS."))
-  scrollTo(By.text("About Valorant Esports")).click(100)
+  val aboutTitle = By.text("About Valorant Esports")
+  scrollTo(aboutTitle)
+  requireObject(By.clickable(true).hasDescendant(aboutTitle)).activate()
   requireObject(By.text("About"))
   pressBack()
   requireObject(By.text("// MAKE IT YOURS."))
@@ -65,7 +67,7 @@ internal fun UiDevice.browseMatches() {
 }
 
 internal fun UiDevice.browseEvents() {
-  navigateTo("Events", "Tournaments around the world")
+  navigateTo("Events", "Events around the world")
   selectTab("Ongoing")
   browseListOrEmpty("No live events")
   selectTab("Upcoming")
@@ -90,7 +92,7 @@ internal fun UiDevice.browseEvents() {
     requireObject(By.text("Favorite event"))
   }
   pressBack()
-  requireSubtitle("Tournaments around the world")
+  requireSubtitle("Events around the world")
 }
 
 internal fun UiDevice.browseTeamAndPlayer() {
@@ -242,11 +244,19 @@ private fun UiDevice.verticalList(): UiObject2 =
 private fun UiDevice.scrollTo(selector: BySelector, direction: Direction = Direction.DOWN): UiObject2 {
   awaitUi("scrollable content or $selector") { hasObject(selector) || verticalListOrNull() != null }
   repeat(12) {
-    findObject(selector)?.let { return it }
+    findVisibleObject(selector)?.let { return it }
     swipeList(direction)
   }
-  return requireObject(selector)
+  return checkNotNull(findVisibleObject(selector)) {
+    "Expected VLR UI element was not visible after scrolling: $selector"
+  }
 }
+
+private fun UiDevice.findVisibleObject(selector: BySelector): UiObject2? =
+  findObject(selector)?.takeIf {
+    val bounds = it.visibleBounds
+    !bounds.isEmpty && bounds.bottom > 0 && bounds.top < displayHeight
+  }
 
 private fun UiDevice.awaitUi(description: String, condition: UiDevice.() -> Boolean) {
   awaitUiValue(description) { true.takeIf { condition() } }
