@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -29,11 +31,14 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
+import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -46,7 +51,6 @@ import kotlinx.coroutines.launch
  *
  * @param shape shape applied to each card; clipping matches the incoming shadow.
  */
-@Suppress("CyclomaticComplexMethod", "LongMethod")
 @Composable
 public fun <T> PrismStack(
   modifier: Modifier = Modifier,
@@ -60,55 +64,25 @@ public fun <T> PrismStack(
   val visibleCards by remember(list) { derivedStateOf { list.take(4) } }
   val topItem = visibleCards.first()
 
-  val coroutineScope = rememberCoroutineScope()
-  val swipeCallback = rememberUpdatedState(onSwipe)
-
-  val layers = remember { StackLayers() }
-
-  val phase2Active = remember { mutableStateOf(false) }
-  val isAnimating = remember { mutableStateOf(false) }
-
-  val isAnimatingState = rememberUpdatedState(isAnimating.value)
-  val phase2State = rememberUpdatedState(phase2Active.value)
-
-  val resetTopCard: () -> Unit = {
-    isAnimating.value = true
-    coroutineScope.launch {
-      layers.top.animateToBaselineSpring()
-      isAnimating.value = false
-    }
-  }
+  val state = rememberPrismStackState(onSwipe)
+  val isAnimatingState = rememberUpdatedState(state.isAnimating.value)
+  val phase2State = rememberUpdatedState(state.phase2Active.value)
 
   LaunchedEffect(topItem) {
-    layers.top.snapToBaseline()
-    layers.middle.snapTo(StackPosition.Middle)
-    layers.bottom.snapTo(StackPosition.Bottom)
-    layers.hidden.snapTo(StackPosition.Hidden)
-
-    phase2Active.value = false
-    isAnimating.value = false
+    state.snapToBaseline()
   }
-
-  val density = LocalDensity.current
 
   Box(modifier = modifier.padding(vertical = PrismStackValues.STACK_VERTICAL_PADDING_DP.dp)) {
     if (visibleCards.size > 3 && phase2State.value) {
       val incomingItem = visibleCards[3]
       key(incomingItem) {
-        Box(
-          modifier = Modifier
-            .zIndex(StackPosition.Hidden.zIndex)
-            .offset(y = layers.hidden.offset.value)
-            .graphicsLayer {
-              scaleX = layers.hidden.scale.value
-              scaleY = layers.hidden.scale.value
-              shadowElevation = with(density) { layers.hidden.elevation.value.toPx() }
-              this.shape = shape
-              clip = true
-            },
-        ) {
-          content(incomingItem)
-        }
+        StackCard(
+          item = incomingItem,
+          position = StackPosition.Hidden,
+          layer = state.layers.hidden,
+          shape = shape,
+          content = content,
+        )
       }
     }
 
@@ -121,153 +95,102 @@ public fun <T> PrismStack(
 
       key(item) {
         val isTopCard = stackPosition == StackPosition.Top
-        var cardModifier =
-          Modifier
-            .zIndex(stackPosition.zIndex)
-            .run {
-              val state =
-                when (stackPosition) {
-                  StackPosition.Top ->
-                    CardVisualState(
-                      scale = layers.top.scale.value,
-                      offset =
-                      StackPosition.Top.baseOffset +
-                        with(density) { layers.top.dragOffset.value.y.toDp() },
-                      elevation = layers.top.elevation.value,
-                      alpha = layers.top.alpha.value,
-                    )
+        val gestureModifier =
+          if (isTopCard) {
+            Modifier.stackDragGesture(
+              topItem = topItem,
+              listSize = list.size,
+              visibleCardCount = visibleCards.size,
+              state = state,
+              isAnimatingState = isAnimatingState,
+            )
+          } else {
+            Modifier
+          }
 
-                  StackPosition.Middle ->
-                    CardVisualState(
-                      scale = layers.middle.scale.value,
-                      offset = layers.middle.offset.value,
-                      elevation = layers.middle.elevation.value,
-                      alpha = 1f,
-                    )
-
-                  StackPosition.Bottom ->
-                    CardVisualState(
-                      scale = layers.bottom.scale.value,
-                      offset = layers.bottom.offset.value,
-                      elevation = layers.bottom.elevation.value,
-                      alpha = 1f,
-                    )
-
-                  StackPosition.Hidden ->
-                    CardVisualState(
-                      scale = layers.hidden.scale.value,
-                      offset = layers.hidden.offset.value,
-                      elevation = layers.hidden.elevation.value,
-                      alpha = 1f,
-                    )
-                }
-
-              offset(y = state.offset).graphicsLayer {
-                scaleX = state.scale
-                scaleY = state.scale
-                alpha = state.alpha
-                shadowElevation = with(density) { state.elevation.toPx() }
-                this.shape = shape
-                clip = true
-              }
-            }
-
-        if (isTopCard) {
-          cardModifier =
-            cardModifier.pointerInput(topItem) {
-              val velocityTracker = VelocityTracker()
-              detectDragGestures(
-                onDragStart = {
-                  if (isAnimatingState.value) return@detectDragGestures
-                },
-                onDrag = { change, dragAmount ->
-                  if (isAnimatingState.value) return@detectDragGestures
-                  change.consume()
-                  velocityTracker.addPosition(change.uptimeMillis, change.position)
-
-                  val newY =
-                    (layers.top.dragOffset.value.y + dragAmount.y)
-                      .coerceIn(0f, PrismStackValues.MAX_DRAG_DISTANCE_DP)
-                  coroutineScope.launch {
-                    layers.top.dragOffset.animateTo(Offset(0f, newY))
-                    val progress = (newY / PrismStackValues.DRAG_THRESHOLD_DP).coerceIn(0f, 1f)
-                    layers.top.alpha.snapTo(lerp(1f, PrismStackValues.MIN_ALPHA, progress))
-                    layers.top.scale.snapTo(lerp(1f, PrismStackValues.MIN_SCALE, progress))
-                  }
-                },
-                onDragCancel = {
-                  if (isAnimatingState.value) return@detectDragGestures
-                  resetTopCard()
-                },
-                onDragEnd = {
-                  if (isAnimatingState.value) return@detectDragGestures
-
-                  val velocity = velocityTracker.calculateVelocity()
-                  val dragDistance = layers.top.dragOffset.value.y
-                  val shouldRemove =
-                    dragDistance > PrismStackValues.DRAG_THRESHOLD_DP ||
-                      (velocity.y > PrismStackValues.VELOCITY_THRESHOLD && dragDistance > 0f)
-
-                  if (shouldRemove && list.size > 1) {
-                    val currentTop = topItem
-                    isAnimating.value = true
-                    phase2Active.value = true
-
-                    coroutineScope.launch {
-                      launch {
-                        layers.top.dragOffset.animateTo(
-                          Offset(0f, dragDistance * 2),
-                          animationSpec = tween(PrismStackValues.PHASE_2_DURATION_MS),
-                        )
-                      }
-                      launch {
-                        layers.top.alpha.animateTo(0f, animationSpec = tween(PrismStackValues.PHASE_2_DURATION_MS))
-                      }
-                      launch {
-                        layers.top.elevation.animateTo(
-                          StackPosition.Hidden.baseElevation,
-                          animationSpec = tween(PrismStackValues.PHASE_2_DURATION_MS),
-                        )
-                      }
-                      if (visibleCards.size > 1) {
-                        launch { layers.middle.animateTo(StackPosition.Top, PrismStackValues.PHASE_2_DURATION_MS) }
-                      }
-                      if (visibleCards.size > 2) {
-                        launch { layers.bottom.animateTo(StackPosition.Middle, PrismStackValues.PHASE_2_DURATION_MS) }
-                      }
-                      if (visibleCards.size > 3) {
-                        launch { layers.hidden.animateTo(StackPosition.Bottom, PrismStackValues.PHASE_2_DURATION_MS) }
-                      }
-                    }
-
-                    coroutineScope.launch {
-                      delay(PrismStackValues.PHASE_2_DURATION_MS.toLong())
-                      swipeCallback.value(currentTop)
-
-                      if (phase2Active.value) {
-                        phase2Active.value = false
-                        layers.top.snapToBaseline()
-                        layers.middle.snapTo(StackPosition.Middle)
-                        layers.bottom.snapTo(StackPosition.Bottom)
-                        layers.hidden.snapTo(StackPosition.Hidden)
-
-                        isAnimating.value = false
-                      }
-                    }
-                  } else {
-                    resetTopCard()
-                  }
-                },
-              )
-            }
-        }
-
-        Box(modifier = cardModifier) {
-          content(item)
-        }
+        StackCard(
+          item = item,
+          position = stackPosition,
+          layer = state.layers[stackPosition],
+          shape = shape,
+          gestureModifier = gestureModifier,
+          content = content,
+        )
       }
     }
   }
+}
+
+@Composable
+private fun <T> rememberPrismStackState(onSwipe: (item: T) -> Unit): PrismStackState<T> {
+  val coroutineScope = rememberCoroutineScope()
+  val swipeCallback = rememberUpdatedState(onSwipe)
+  return remember(coroutineScope, swipeCallback) {
+    PrismStackState(coroutineScope = coroutineScope, swipeCallback = swipeCallback)
+  }
+}
+
+@Composable
+private fun <T> BoxScope.StackCard(
+  item: T,
+  position: StackPosition,
+  layer: CardVisualState,
+  shape: Shape,
+  gestureModifier: Modifier = Modifier,
+  content: @Composable BoxScope.(item: T) -> Unit,
+) {
+  Box(
+    modifier =
+    Modifier
+      .zIndex(position.zIndex)
+      .offset { IntOffset(x = 0, y = layer.offsetPx(this).roundToInt()) }
+      .graphicsLayer {
+        val scale = layer.scale()
+        scaleX = scale
+        scaleY = scale
+        alpha = layer.alpha()
+        shadowElevation = layer.elevation().toPx()
+        this.shape = shape
+        clip = true
+      }
+      .then(gestureModifier),
+  ) {
+    content(item)
+  }
+}
+
+private fun <T> Modifier.stackDragGesture(
+  topItem: T,
+  listSize: Int,
+  visibleCardCount: Int,
+  state: PrismStackState<T>,
+  isAnimatingState: State<Boolean>,
+): Modifier = pointerInput(topItem) {
+  val velocityTracker = VelocityTracker()
+  detectDragGestures(
+    onDragStart = {
+      if (isAnimatingState.value) return@detectDragGestures
+    },
+    onDrag = { change, dragAmount ->
+      if (isAnimatingState.value) return@detectDragGestures
+      change.consume()
+      velocityTracker.addPosition(change.uptimeMillis, change.position)
+      state.dragTopCard(dragAmount.y)
+    },
+    onDragCancel = {
+      if (isAnimatingState.value) return@detectDragGestures
+      state.resetTopCard()
+    },
+    onDragEnd = {
+      if (isAnimatingState.value) return@detectDragGestures
+      state.finishDrag(
+        topItem = topItem,
+        listSize = listSize,
+        visibleCardCount = visibleCardCount,
+        velocityY = velocityTracker.calculateVelocity().y,
+      )
+    },
+  )
 }
 
 /**
@@ -311,8 +234,116 @@ private sealed interface StackPosition {
   }
 }
 
-/** Snapshot of the drawing parameters used while composing a stack layer. */
-private data class CardVisualState(val scale: Float, val offset: Dp, val elevation: Dp, val alpha: Float)
+/** Supplies drawing parameters directly to layout and graphics phases. */
+private interface CardVisualState {
+  fun offsetPx(density: Density): Float
+
+  fun scale(): Float
+
+  fun alpha(): Float
+
+  fun elevation(): Dp
+}
+
+/** Owns stack animation state and preserves the two-phase gesture choreography. */
+private class PrismStackState<T>(
+  private val coroutineScope: CoroutineScope,
+  private val swipeCallback: State<(T) -> Unit>,
+) {
+  val layers = StackLayers()
+  val phase2Active: MutableState<Boolean> = mutableStateOf(false)
+  val isAnimating: MutableState<Boolean> = mutableStateOf(false)
+
+  suspend fun snapToBaseline() {
+    layers.top.snapToBaseline()
+    layers.middle.snapTo(StackPosition.Middle)
+    layers.bottom.snapTo(StackPosition.Bottom)
+    layers.hidden.snapTo(StackPosition.Hidden)
+
+    phase2Active.value = false
+    isAnimating.value = false
+  }
+
+  fun resetTopCard() {
+    isAnimating.value = true
+    coroutineScope.launch {
+      layers.top.animateToBaselineSpring()
+      isAnimating.value = false
+    }
+  }
+
+  fun dragTopCard(dragAmountY: Float) {
+    val newY =
+      (layers.top.dragOffset.value.y + dragAmountY)
+        .coerceIn(0f, PrismStackValues.MAX_DRAG_DISTANCE_DP)
+    coroutineScope.launch {
+      layers.top.dragOffset.animateTo(Offset(0f, newY))
+      val progress = (newY / PrismStackValues.DRAG_THRESHOLD_DP).coerceIn(0f, 1f)
+      layers.top.alpha.snapTo(lerp(1f, PrismStackValues.MIN_ALPHA, progress))
+      layers.top.scale.snapTo(lerp(1f, PrismStackValues.MIN_SCALE, progress))
+    }
+  }
+
+  fun finishDrag(topItem: T, listSize: Int, visibleCardCount: Int, velocityY: Float) {
+    val dragDistance = layers.top.dragOffset.value.y
+    val shouldRemove =
+      dragDistance > PrismStackValues.DRAG_THRESHOLD_DP ||
+        (velocityY > PrismStackValues.VELOCITY_THRESHOLD && dragDistance > 0f)
+
+    if (shouldRemove && listSize > 1) {
+      animateRemoval(topItem = topItem, dragDistance = dragDistance, visibleCardCount = visibleCardCount)
+    } else {
+      resetTopCard()
+    }
+  }
+
+  private fun animateRemoval(topItem: T, dragDistance: Float, visibleCardCount: Int) {
+    isAnimating.value = true
+    phase2Active.value = true
+
+    coroutineScope.launch {
+      launch {
+        layers.top.dragOffset.animateTo(
+          Offset(0f, dragDistance * 2),
+          animationSpec = tween(PrismStackValues.PHASE_2_DURATION_MS),
+        )
+      }
+      launch {
+        layers.top.alpha.animateTo(0f, animationSpec = tween(PrismStackValues.PHASE_2_DURATION_MS))
+      }
+      launch {
+        layers.top.elevation.animateTo(
+          StackPosition.Hidden.baseElevation,
+          animationSpec = tween(PrismStackValues.PHASE_2_DURATION_MS),
+        )
+      }
+      if (visibleCardCount > 1) {
+        launch { layers.middle.animateTo(StackPosition.Top, PrismStackValues.PHASE_2_DURATION_MS) }
+      }
+      if (visibleCardCount > 2) {
+        launch { layers.bottom.animateTo(StackPosition.Middle, PrismStackValues.PHASE_2_DURATION_MS) }
+      }
+      if (visibleCardCount > 3) {
+        launch { layers.hidden.animateTo(StackPosition.Bottom, PrismStackValues.PHASE_2_DURATION_MS) }
+      }
+    }
+
+    coroutineScope.launch {
+      delay(PrismStackValues.PHASE_2_DURATION_MS.toLong())
+      swipeCallback.value(topItem)
+
+      if (phase2Active.value) {
+        phase2Active.value = false
+        layers.top.snapToBaseline()
+        layers.middle.snapTo(StackPosition.Middle)
+        layers.bottom.snapTo(StackPosition.Bottom)
+        layers.hidden.snapTo(StackPosition.Hidden)
+
+        isAnimating.value = false
+      }
+    }
+  }
+}
 
 /**
  * Aggregates the composable animation state for each visible and incoming layer.
@@ -322,16 +353,32 @@ private class StackLayers {
   val middle = CardLayerState(StackPosition.Middle)
   val bottom = CardLayerState(StackPosition.Bottom)
   val hidden = CardLayerState(StackPosition.Hidden)
+
+  operator fun get(position: StackPosition): CardVisualState = when (position) {
+    StackPosition.Top -> top
+    StackPosition.Middle -> middle
+    StackPosition.Bottom -> bottom
+    StackPosition.Hidden -> hidden
+  }
 }
 
 /**
  * Animation channels dedicated to the interactive top card.
  */
-private class TopLayerState {
+private class TopLayerState : CardVisualState {
   val dragOffset = Animatable(Offset.Zero, Offset.VectorConverter)
   val scale = Animatable(StackPosition.Top.baseScale)
   val alpha = Animatable(1f)
   val elevation = Animatable(StackPosition.Top.baseElevation, Dp.VectorConverter)
+
+  override fun offsetPx(density: Density): Float =
+    with(density) { StackPosition.Top.baseOffset.toPx() } + dragOffset.value.y
+
+  override fun scale(): Float = scale.value
+
+  override fun alpha(): Float = alpha.value
+
+  override fun elevation(): Dp = elevation.value
 
   suspend fun animateToBaselineSpring() {
     coroutineScope {
@@ -353,10 +400,18 @@ private class TopLayerState {
 /**
  * Shared animation container for non-interactive stack layers.
  */
-private class CardLayerState(private val defaultPosition: StackPosition) {
+private class CardLayerState(private val defaultPosition: StackPosition) : CardVisualState {
   val scale = Animatable(defaultPosition.baseScale)
   val offset = Animatable(defaultPosition.baseOffset, Dp.VectorConverter)
   val elevation = Animatable(defaultPosition.baseElevation, Dp.VectorConverter)
+
+  override fun offsetPx(density: Density): Float = with(density) { offset.value.toPx() }
+
+  override fun scale(): Float = scale.value
+
+  override fun alpha(): Float = 1f
+
+  override fun elevation(): Dp = elevation.value
 
   suspend fun snapTo(position: StackPosition = defaultPosition) {
     scale.snapTo(position.baseScale)
