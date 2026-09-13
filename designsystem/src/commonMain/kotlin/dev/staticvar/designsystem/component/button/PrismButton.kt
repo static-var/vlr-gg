@@ -17,7 +17,6 @@ import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
@@ -68,10 +67,12 @@ public fun PrismButton(
   content: @Composable RowScope.() -> Unit,
 ) {
   val frame = style.frame
-  val pressProgress by rememberPrismPressProgress(
-    interactionSource,
-    enabled = enabled && frame.shadowOffset != DpOffset.Zero,
-  )
+  val pressProgress =
+    if (frame.shadowOffset != DpOffset.Zero) {
+      rememberPrismPressProgress(interactionSource, enabled = enabled)
+    } else {
+      null
+    }
   CompositionLocalProvider(
     LocalRippleConfiguration provides if (frame.shadowOffset == DpOffset.Zero) LocalRippleConfiguration.current else null,
   ) {

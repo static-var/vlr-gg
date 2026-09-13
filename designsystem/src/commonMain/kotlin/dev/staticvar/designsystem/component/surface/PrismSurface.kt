@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -65,6 +66,56 @@ public fun PrismSurface(
   border: BorderStroke? = null,
   frame: PrismFrameTokens = PrismFrameTokens(),
   pressProgress: Float = 0f,
+  content: @Composable () -> Unit,
+) {
+  PrismSurfaceContent(
+    modifier = modifier,
+    color = color,
+    brush = brush,
+    contentColor = contentColor,
+    shape = shape,
+    border = border,
+    frame = frame,
+    pressProgress = { pressProgress },
+    content = content,
+  )
+}
+
+@Composable
+internal fun PrismSurface(
+  modifier: Modifier = Modifier,
+  color: Color = Prism.color.surface,
+  brush: Brush? = null,
+  contentColor: Color = contentColorFor(color),
+  shape: Shape = Prism.shapes.small,
+  border: BorderStroke? = null,
+  frame: PrismFrameTokens = PrismFrameTokens(),
+  pressProgress: State<Float>?,
+  content: @Composable () -> Unit,
+) {
+  PrismSurfaceContent(
+    modifier = modifier,
+    color = color,
+    brush = brush,
+    contentColor = contentColor,
+    shape = shape,
+    border = border,
+    frame = frame,
+    pressProgress = { pressProgress?.value ?: 0f },
+    content = content,
+  )
+}
+
+@Composable
+private fun PrismSurfaceContent(
+  modifier: Modifier,
+  color: Color,
+  brush: Brush?,
+  contentColor: Color,
+  shape: Shape,
+  border: BorderStroke?,
+  frame: PrismFrameTokens,
+  pressProgress: () -> Float,
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(LocalContentColor provides contentColor) {

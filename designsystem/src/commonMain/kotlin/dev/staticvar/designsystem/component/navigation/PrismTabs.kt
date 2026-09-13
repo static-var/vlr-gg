@@ -101,7 +101,12 @@ private fun PrismTabItem(
   val shape = Prism.shapes.small
   val frame = style.frame
   val interactions = remember { MutableInteractionSource() }
-  val pressProgress by rememberPrismPressProgress(interactions, enabled && frame.shadowOffset != DpOffset.Zero)
+  val pressProgress =
+    if (frame.shadowOffset != DpOffset.Zero) {
+      rememberPrismPressProgress(interactions, enabled = enabled)
+    } else {
+      null
+    }
   Column(
     modifier =
     Modifier.widthIn(min = visualState.minWidth)

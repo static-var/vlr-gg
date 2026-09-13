@@ -4,6 +4,7 @@
  */
 package dev.staticvar.designsystem.component.frame
 
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Size
@@ -22,6 +23,19 @@ import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
  * Apply before foreground background, border, and clipping modifiers.
  */
 public fun Modifier.prismFrame(frame: PrismFrameTokens, shape: Shape, pressProgress: Float = 0f): Modifier =
+  prismFrame(frame = frame, shape = shape, pressProgress = { pressProgress })
+
+internal fun Modifier.prismFrame(
+  frame: PrismFrameTokens,
+  shape: Shape,
+  pressProgress: State<Float>?,
+): Modifier = prismFrame(frame = frame, shape = shape, pressProgress = { pressProgress?.value ?: 0f })
+
+internal fun Modifier.prismFrame(
+  frame: PrismFrameTokens,
+  shape: Shape,
+  pressProgress: () -> Float,
+): Modifier =
   if (frame.shadowOffset == DpOffset.Zero) {
     this
   } else {
@@ -35,7 +49,7 @@ public fun Modifier.prismFrame(frame: PrismFrameTokens, shape: Shape, pressProgr
       )
       onDrawWithContent {
         translate(dx.toFloat(), dy.toFloat()) { drawOutline(outline, frame.shadowColor) }
-        val progress = pressProgress.coerceIn(0f, 1f)
+        val progress = pressProgress().coerceIn(0f, 1f)
         translate(dx * progress, dy * progress) { this@onDrawWithContent.drawContent() }
       }
     }.layout { measurable, constraints ->
