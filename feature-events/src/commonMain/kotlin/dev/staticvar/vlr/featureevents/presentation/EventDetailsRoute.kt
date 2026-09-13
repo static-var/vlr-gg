@@ -174,7 +174,7 @@ internal fun EventDetailsScreen(
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       EventDetailsChrome(
-        title = event?.title ?: eventPreview?.title ?: "Event details",
+        title = "Event",
         isLoading = uiState.isLoading || uiState.isDetailLoadPending,
         isRefreshing = uiState.isRefreshing,
         hasContent = event != null,

@@ -166,7 +166,7 @@ internal fun MatchDetailsScreen(
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       MatchDetailsChrome(
-        title = match?.event?.name ?: matchPreview?.event ?: "Match details",
+        title = "Match",
         isLoading = uiState.isLoading || uiState.isDetailLoadPending,
         isRefreshing = uiState.isRefreshing,
         hasContent = match != null,
