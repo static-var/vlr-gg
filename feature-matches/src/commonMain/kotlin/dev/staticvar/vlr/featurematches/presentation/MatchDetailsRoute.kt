@@ -217,7 +217,7 @@ internal fun MatchDetailsScreen(
           SharedScrollingDetails(
             state = listState,
             contentAlpha = bodyFade,
-            showContent = bodyReady || bodyFade.value > 0f,
+            showContent = bodyReady,
             modifier = Modifier.fillMaxWidth().weight(1f),
             hero = {
               MatchDetailHeaderItem(

@@ -14,6 +14,9 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
@@ -32,6 +35,12 @@ public fun SharedScrollingDetails(
   loading: @Composable (Modifier) -> Unit,
   content: LazyListScope.() -> Unit,
 ) {
+  val contentVisible by remember(showContent, contentAlpha) {
+    derivedStateOf { showContent || contentAlpha.value > 0f }
+  }
+  val loadingVisible by remember(contentAlpha) {
+    derivedStateOf { contentAlpha.value < 1f }
+  }
   Box(modifier) {
     LazyColumn(
       state = state,
@@ -39,9 +48,9 @@ public fun SharedScrollingDetails(
       modifier = Modifier.fillMaxSize().cardMascotViewport(),
     ) {
       item(key = DetailHeroKey, contentType = DetailHeroKey) { hero() }
-      if (showContent) FadingDetailItems(this, contentAlpha).content()
+      if (contentVisible) FadingDetailItems(this, contentAlpha).content()
     }
-    if (!showContent || contentAlpha.value < 1f) {
+    if (!contentVisible || loadingVisible) {
       loading(
         Modifier.matchParentSize()
           .layout { measurable, constraints ->
