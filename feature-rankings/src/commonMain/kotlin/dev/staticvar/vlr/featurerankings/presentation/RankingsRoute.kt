@@ -35,9 +35,6 @@ import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
-import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
-import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
-import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 
 @Composable
 public fun RankingsRoute(
@@ -152,11 +149,6 @@ private fun RankingsContent(
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val spoilersHidden = LocalSpoilerMode.current.enabled
-  val displayedTeams = remember(selectedRanking.teams, spoilersHidden) {
-    if (spoilersHidden) selectedRanking.teams.sortedBy { it.teamName.lowercase() } else selectedRanking.teams
-  }
-
   LazyColumn(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
@@ -164,25 +156,15 @@ private fun RankingsContent(
     if (selectedRanking.teams.isNotEmpty()) {
       item {
         Text(
-          text = if (spoilersHidden) {
-            "${selectedRanking.teams.size} teams • ${selectedRanking.region}"
-          } else {
-            "Top ${selectedRanking.teams.size} • ${selectedRanking.region}"
-          },
+          text = "Top ${selectedRanking.teams.size} • ${selectedRanking.region}",
           style = Prism.typography.label,
           color = Prism.color.labelColor,
         )
       }
     }
-    if (spoilersHidden) {
-      item {
-        SpoilerHiddenNotice()
-      }
-    }
-    items(displayedTeams, key = { it.teamId }) { team ->
+    items(selectedRanking.teams, key = { it.teamId }) { team ->
       RankingTeamItem(
         team = team,
-        spoilersHidden = spoilersHidden,
         onTeamSelected = onTeamSelected,
         modifier = Modifier.fillMaxWidth(),
       )
@@ -193,7 +175,6 @@ private fun RankingsContent(
 @Composable
 private fun RankingTeamItem(
   team: TeamRanking,
-  spoilersHidden: Boolean,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -208,7 +189,7 @@ private fun RankingTeamItem(
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Text(
-        text = if (spoilersHidden) team.teamName else "#${team.rank} ${team.teamName}",
+        text = "#${team.rank} ${team.teamName}",
         modifier = Modifier.weight(1f),
         style = Prism.typography.cardTitle,
         color = if (team.isFavorite) Prism.color.accent else Prism.color.titleColor,
@@ -228,7 +209,7 @@ private fun RankingTeamItem(
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Text(text = "${team.country} •", style = Prism.typography.bodySmall, color = Prism.color.labelColor)
-      SpoilerScore(
+      Text(
         text = "${team.points} pts",
         style = Prism.typography.bodySmall,
         color = Prism.color.labelColor,
