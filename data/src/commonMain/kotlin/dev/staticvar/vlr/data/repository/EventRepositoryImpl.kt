@@ -23,6 +23,8 @@ import dev.staticvar.vlr.data.mapper.toPrizeEntities
 import dev.staticvar.vlr.data.mapper.toStandingEntities
 import dev.staticvar.vlr.data.mapper.toTeamEntities
 import dev.staticvar.vlr.domain.model.EventDetails
+import dev.staticvar.vlr.domain.model.EventFavoriteReason
+import dev.staticvar.vlr.domain.model.EventFavoriteSource
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.localsource.database.GetEventWithFavoriteStatus
@@ -47,7 +49,12 @@ internal class EventRepositoryImpl(
     .getEventOverviewWithFavoriteStatus()
     .asFlow()
     .mapToList(dispatchers.io)
-    .map { events -> events.map { it.toEventPreview() } }
+    .combine(observeRelatedFavoriteReasons()) { events, reasonsByEvent ->
+      events.map { row ->
+        val event = row.toEventPreview()
+        event.copy(favoriteReasons = favoriteReasons(event.id, event.title, event.isFavorite, reasonsByEvent))
+      }
+    }
 
   override fun getEventDetails(eventId: String): Flow<EventDetails?> {
     val eventFlow = eventsQueries
@@ -90,7 +97,42 @@ internal class EventRepositoryImpl(
             matches = slices.matches,
           )
         }
+      }.combine(observeRelatedFavoriteReasons()) { event, reasonsByEvent ->
+        event?.copy(favoriteReasons = favoriteReasons(event.id, event.title, event.isFavorite, reasonsByEvent))
       }
+  }
+
+  private fun observeRelatedFavoriteReasons(): Flow<Map<String, List<EventFavoriteReason>>> = database.matchesQueries
+    .getMatchFavoriteReasons()
+    .asFlow()
+    .mapToList(dispatchers.io)
+    .combine(database.matchOverviewQueries.getMatchOverview().asFlow().mapToList(dispatchers.io)) { reasons, matches ->
+      val eventIdsByMatch = matches.associate { it.id to it.event_id }
+      reasons.filter { it.source != "EVENT" }
+        .mapNotNull { reason ->
+          val eventId = eventIdsByMatch[reason.match_id]?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+          eventId to EventFavoriteReason(
+            source = EventFavoriteSource.valueOf(reason.source),
+            id = reason.entity_id,
+            name = reason.entity_name,
+          )
+        }
+        .groupBy({ it.first }, { it.second })
+        .mapValues { (_, eventReasons) ->
+          eventReasons.distinctBy { it.source to it.id }
+            .sortedWith(compareBy({ it.source.ordinal }, { it.name }, { it.id }))
+        }
+    }
+
+  private fun favoriteReasons(
+    eventId: String,
+    title: String,
+    isFavorite: Boolean,
+    reasonsByEvent: Map<String, List<EventFavoriteReason>>,
+  ): List<EventFavoriteReason> = reasonsByEvent[eventId].orEmpty() + if (isFavorite) {
+    listOf(EventFavoriteReason(EventFavoriteSource.EVENT, eventId, title))
+  } else {
+    emptyList()
   }
 
   override suspend fun addToFavorites(eventId: String): Result<Unit> = withContext(dispatchers.io) {

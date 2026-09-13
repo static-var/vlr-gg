@@ -27,6 +27,7 @@ import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import dev.staticvar.vlr.sharedui.component.event.EventFavoriteReasons
 import dev.staticvar.vlr.sharedui.component.event.EventSharedContent
 import dev.staticvar.vlr.sharedui.component.event.eventSharedBounds
 import dev.staticvar.vlr.sharedui.component.event.eventLogoSharedElement
@@ -85,12 +86,21 @@ public fun EventPreviewItem(
         }
         Spacer(modifier = Modifier.weight(1f))
       }
-      Text(
-        text = eventPreview.prize,
-        modifier = Modifier.padding(top = Prism.dimens.spacingS).eventSharedBounds(eventPreview.id, EventSharedContent.Prize),
-        style = Prism.typography.bodySmall,
-        color = Prism.color.labelColor,
-      )
+      Row(
+        modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingS),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+      ) {
+        Text(
+          text = eventPreview.prize,
+          modifier = Modifier.weight(1f).eventSharedBounds(eventPreview.id, EventSharedContent.Prize),
+          style = Prism.typography.bodySmall,
+          color = Prism.color.labelColor,
+        )
+        if (eventPreview.favoriteReasons.isNotEmpty()) {
+          EventFavoriteReasons(eventPreview.favoriteReasons, modifier = Modifier.weight(1f))
+        }
+      }
     }
   }
 }

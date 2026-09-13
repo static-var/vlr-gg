@@ -21,6 +21,7 @@ data class EventDetails(
   val matches: List<EventMatch>,
   val standings: List<EventStanding>,
   val isFavorite: Boolean = false,
+  val favoriteReasons: List<EventFavoriteReason> = emptyList(),
 )
 
 /**

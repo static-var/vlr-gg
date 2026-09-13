@@ -27,6 +27,7 @@ import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import dev.staticvar.vlr.sharedui.component.event.EventFavoriteReasons
 import dev.staticvar.vlr.sharedui.component.event.EventSharedContent
 import dev.staticvar.vlr.sharedui.component.event.eventLogoSharedElement
 import dev.staticvar.vlr.sharedui.component.event.eventSharedBounds
@@ -51,6 +52,7 @@ public fun EventDetailHeaderItem(
       region = event.region,
       logoUrl = event.logoUrl,
       isFavorite = event.isFavorite,
+      favoriteReasons = event.favoriteReasons,
     ),
     subtitle = event.subtitle,
     teams = event.teams.size.takeIf { it > 0 }?.toString() ?: "TBD",
@@ -88,31 +90,41 @@ private fun EventDetailHeaderContent(
     PrismTicket(
       modifier = Modifier.fillMaxWidth().eventSharedBounds(event.id, EventSharedContent.Card),
       header = {
-        Row(
-          Modifier.fillMaxWidth(),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-        ) {
-          Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+          Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+          ) {
             Text(
               event.region.ifBlank { "Event" }.uppercase(),
+              modifier = Modifier.weight(1f),
               style = Prism.typography.bodySmall,
               color = Prism.color.contentSecondary,
               maxLines = 2,
               overflow = TextOverflow.Ellipsis,
             )
+            PrismTag(
+              text = event.status.eventDetailLabel,
+              modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Status),
+              style = event.status.eventDetailTagStyle,
+            )
+          }
+          Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+          ) {
             Text(
               text = event.prize.eventHeroPrizeStat().ifBlank { "TBD" },
-              modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Prize),
+              modifier = Modifier.weight(1f).eventSharedBounds(event.id, EventSharedContent.Prize),
               style = Prism.typography.bodySmall,
               color = Prism.color.contentPrimary,
             )
+            if (event.favoriteReasons.isNotEmpty()) {
+              EventFavoriteReasons(event.favoriteReasons, modifier = Modifier.weight(1f))
+            }
           }
-          PrismTag(
-            text = event.status.eventDetailLabel,
-            modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Status),
-            style = event.status.eventDetailTagStyle,
-          )
         }
       },
       stub = {

@@ -9,8 +9,12 @@ import app.cash.sqldelight.driver.native.inMemoryDriver
 import app.cash.turbine.test
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.data.Events
+import dev.staticvar.vlr.data.mapper.toEntity
+import dev.staticvar.vlr.data.mapper.toOverviewEntity
 import dev.staticvar.vlr.localsource.database.Event_overview
 import dev.staticvar.vlr.domain.model.EventDetails
+import dev.staticvar.vlr.domain.model.EventFavoriteReason
+import dev.staticvar.vlr.domain.model.EventFavoriteSource
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.common.EventStatus
 import dev.staticvar.vlr.remotesource.common.MatchStatus
@@ -22,6 +26,8 @@ import dev.staticvar.vlr.remotesource.events.EventMatchTeamDto
 import dev.staticvar.vlr.remotesource.events.EventPrizeDto
 import dev.staticvar.vlr.remotesource.events.EventStandingsEntryDto
 import dev.staticvar.vlr.remotesource.events.EventTeamDto
+import dev.staticvar.vlr.remotesource.match.MatchPreviewDto
+import dev.staticvar.vlr.remotesource.match.TeamDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -63,6 +69,43 @@ class EventRepositoryImplTest {
   @AfterTest
   fun teardown() {
     driver.close()
+  }
+
+  @Test
+  fun savedCompletedMatchUpdatesEventReasonsWithoutSavingEvent() = runTest(dispatcher) {
+    insertEvent("event1", "Champions", "", "COMPLETED", "$1", "2025-01-01", "NA")
+    val match = MatchPreviewDto(
+      id = "match1", eventId = "event1", event = "Champions", series = "Final",
+      status = MatchStatus.COMPLETED, time = "2025-01-01",
+      team1 = TeamDto(id = "t1", name = "Alpha"),
+      team2 = TeamDto(id = "t2", name = "Beta"),
+    )
+    database.matchesQueries.insertMatch(match.toEntity())
+    database.matchOverviewQueries.upsertMatchOverview(match.toOverviewEntity())
+    val expected = listOf(EventFavoriteReason(EventFavoriteSource.MATCH, "match1", "Alpha vs Beta"))
+
+    repository.getEvents().map { it.single() }.distinctUntilChanged().test {
+      assertEquals(emptyList(), awaitItem().favoriteReasons)
+      database.matchesQueries.addFavoriteMatch("match1")
+      val related = awaitItem()
+      assertEquals(expected, related.favoriteReasons)
+      assertEquals(false, related.isFavorite)
+      val details = requireNotNull(repository.getEventDetails("event1").first())
+      assertEquals(expected, details.favoriteReasons)
+      assertEquals(false, details.isFavorite)
+
+      database.matchesQueries.removeFavoriteMatch("match1")
+      assertEquals(emptyList(), awaitItem().favoriteReasons)
+      assertEquals(emptyList(), repository.getEventDetails("event1").first()?.favoriteReasons)
+
+      assertTrue(repository.addToFavorites("event1").isSuccess)
+      val saved = awaitItem()
+      val directReason = listOf(EventFavoriteReason(EventFavoriteSource.EVENT, "event1", "Champions"))
+      assertEquals(directReason, saved.favoriteReasons)
+      assertTrue(saved.isFavorite)
+      assertEquals(directReason, repository.getEventDetails("event1").first()?.favoriteReasons)
+      cancelAndIgnoreRemainingEvents()
+    }
   }
 
   @Test

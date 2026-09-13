@@ -16,4 +16,5 @@ data class EventPreview(
   val region: String,
   val logoUrl: String,
   val isFavorite: Boolean = false,
+  val favoriteReasons: List<EventFavoriteReason> = emptyList(),
 )
