@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Summarize and compare Compose compiler reports for VLR feature modules."""
+"""Summarize and compare Compose compiler reports for VLR Compose modules."""
 
 from __future__ import annotations
 
@@ -67,6 +67,7 @@ def parse_args() -> argparse.Namespace:
     commands = parser.add_subparsers(dest="command", required=True)
 
     snapshot = commands.add_parser("snapshot", help="Create one deterministic metrics snapshot")
+    snapshot.add_argument("--modules", nargs="+", default=FEATURE_MODULES, help="Modules to measure")
     snapshot.add_argument("--raw", type=Path, required=True, help="Compiler report root")
     snapshot.add_argument("--source-root", type=Path, required=True, help="Repository or extracted source root")
     snapshot.add_argument("--source-label", help="Stable provenance label for the source input")
@@ -157,12 +158,15 @@ def parse_composables_csv(path: Path) -> dict[str, Any]:
     with path.open(newline="", encoding="utf-8") as stream:
         rows = list(csv.DictReader(stream))
     by_qualified_name: dict[str, dict[str, Any]] = {}
+    name_counts = Counter(row["package"] for row in rows if row.get("composable") == "1")
+    overload_counts: Counter[str] = Counter()
     for row in rows:
         if row.get("composable") != "1":
             continue
         qualified_name = row["package"]
-        if qualified_name in by_qualified_name:
-            raise ValueError(f"duplicate named composable {qualified_name} in {path}")
+        if name_counts[qualified_name] > 1:
+            overload_counts[qualified_name] += 1
+            qualified_name += f"#overload-{overload_counts[qualified_name]}"
         by_qualified_name[qualified_name] = {
             "name": row["name"],
             "eligibleForSkipping": row.get("skippable") == "1",
@@ -303,7 +307,7 @@ def aggregate(modules: dict[str, dict[str, Any]]) -> dict[str, Any]:
 def snapshot(args: argparse.Namespace) -> dict[str, Any]:
     modules: dict[str, dict[str, Any]] = {}
     feature_flags: dict[str, bool] | None = None
-    for module in FEATURE_MODULES:
+    for module in args.modules:
         module_root = args.raw / module
         compiler = read_json(one_file(module_root, "metrics/*/main/*-module.json"))
         flags = compiler.get("featureFlags", {})
@@ -354,6 +358,14 @@ def diff_numbers(before: dict[str, Any], after: dict[str, Any], keys: tuple[str,
 def compare_named_composables(before: dict[str, Any], after: dict[str, Any]) -> dict[str, Any]:
     before_names = before["byQualifiedName"]
     after_names = after["byQualifiedName"]
+    # CSV has no parameter signatures, so overload ordinals cannot identify functions across builds.
+    ambiguous = {
+        name.split("#overload-", 1)[0]
+        for name in set(before_names) | set(after_names)
+        if "#overload-" in name
+    }
+    before_names = {name: value for name, value in before_names.items() if name.split("#overload-", 1)[0] not in ambiguous}
+    after_names = {name: value for name, value in after_names.items() if name.split("#overload-", 1)[0] not in ambiguous}
     matched = sorted(set(before_names) & set(after_names))
     transitions = [
         {
@@ -375,6 +387,7 @@ def compare_named_composables(before: dict[str, Any], after: dict[str, Any]) -> 
             after,
             ("namedComposableCount", "eligibleForSkippingCount", "notEligibleForSkippingCount"),
         ),
+        "overloadGroupsExcludedFromIdentityComparison": sorted(ambiguous),
         "matchedCount": len(matched),
         "added": sorted(set(after_names) - set(before_names)),
         "removed": sorted(set(before_names) - set(after_names)),
@@ -398,7 +411,9 @@ def compare(args: argparse.Namespace) -> dict[str, Any]:
         "maxComplexityEstimate",
     )
     modules: dict[str, Any] = {}
-    for module in FEATURE_MODULES:
+    if set(baseline["modules"]) != set(current["modules"]):
+        raise ValueError("baseline and current must contain the same modules")
+    for module in baseline["modules"]:
         before = baseline["modules"][module]
         after = current["modules"][module]
         modules[module] = {

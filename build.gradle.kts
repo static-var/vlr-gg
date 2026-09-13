@@ -24,6 +24,7 @@ val composeMetricsOutput =
   providers.gradleProperty("composeMetricsOutput").orElse("build/compose-metrics")
 val composeReportModules =
   setOf(
+    "designsystem",
     "feature-about",
     "feature-events",
     "feature-home",
