@@ -82,7 +82,7 @@ android {
   defaultConfig {
     applicationId = "dev.staticvar.vlr"
     minSdk = 24
-    targetSdk = 35
+    targetSdk = 36
     versionCode = releaseVersionCode
     versionName = releaseVersionName
     buildConfigField("String", "TOKEN", "\"$escapedAuthToken\"")
