@@ -29,6 +29,8 @@ import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.domain.model.RegionalRanking
+import dev.staticvar.vlr.domain.model.TeamRanking
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
@@ -63,14 +65,12 @@ internal fun RankingsScreen(
   onRefresh: () -> Unit = {},
 ) {
   val isOnline = LocalIsOnline.current
-  val spoilersHidden = LocalSpoilerMode.current.enabled
   val selectedRegion = uiState.selectedRegion
   val selectedRanking = remember(uiState.regions, selectedRegion) {
     uiState.regions.firstOrNull { it.region == selectedRegion }
   }
-  val displayedTeams = remember(selectedRanking?.teams, spoilersHidden) {
-    val teams = selectedRanking?.teams.orEmpty()
-    if (spoilersHidden) teams.sortedBy { it.teamName.lowercase() } else teams
+  val tabs = remember(uiState.regions) {
+    uiState.regions.map { PrismTab(id = it.region, label = it.region) }
   }
 
   Column(
@@ -102,14 +102,14 @@ internal fun RankingsScreen(
 
     if (uiState.regions.isNotEmpty()) {
       PrismTabs(
-        tabs = uiState.regions.map { PrismTab(id = it.region, label = it.region) },
+        tabs = tabs,
         selectedTabId = selectedRegion ?: uiState.regions.first().region,
         onTabSelected = { onRegionSelected(it.id) },
       )
     }
 
     when {
-      (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && uiState.regions.isEmpty() -> {
+      (!isOnline || uiState.isLoading || uiState.isRefreshing) && uiState.regions.isEmpty() -> {
         SharedScreenLoading(label = "Loading rankings", modifier = Modifier.fillMaxSize())
       }
 
@@ -136,70 +136,103 @@ internal fun RankingsScreen(
       }
 
       else -> {
-        LazyColumn(
+        RankingsContent(
+          selectedRanking = selectedRanking,
+          onTeamSelected = onTeamSelected,
           modifier = Modifier.fillMaxSize(),
-          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-        ) {
-          if (selectedRanking.teams.isNotEmpty()) {
-            item {
-              Text(
-                text = if (spoilersHidden) {
-                  "${selectedRanking.teams.size} teams • ${selectedRanking.region}"
-                } else {
-                  "Top ${selectedRanking.teams.size} • ${selectedRanking.region}"
-                },
-                style = Prism.typography.label,
-                color = Prism.color.labelColor,
-              )
-            }
-          }
-          if (spoilersHidden) {
-            item {
-              SpoilerHiddenNotice()
-            }
-          }
-          items(displayedTeams, key = { it.teamId }) { team ->
-            PrismCard(
-              modifier = Modifier.fillMaxWidth(),
-              style = PrismCardStyle.Outlined,
-              onClick = { onTeamSelected(team.teamId) },
-            ) {
-              Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-                verticalAlignment = Alignment.CenterVertically,
-              ) {
-                Text(
-                  text = if (spoilersHidden) team.teamName else "#${team.rank} ${team.teamName}",
-                  modifier = Modifier.weight(1f),
-                  style = Prism.typography.cardTitle,
-                  color = if (team.isFavorite) Prism.color.accent else Prism.color.titleColor,
-                )
-                if (team.isFavorite) {
-                  PrismFavoriteIcon(
-                    selected = true,
-                    size = PrismFavoriteIconSize.Small,
-                    style = PrismFavoriteIconStyle.Bare,
-                    contentDescription = "Favorite team",
-                  )
-                }
-              }
-              Row(
-                modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-                horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
-                verticalAlignment = Alignment.CenterVertically,
-              ) {
-                Text(text = "${team.country} •", style = Prism.typography.bodySmall, color = Prism.color.labelColor)
-                SpoilerScore(
-                  text = "${team.points} pts",
-                  style = Prism.typography.bodySmall,
-                  color = Prism.color.labelColor,
-                )
-              }
-            }
-          }
-        }
+        )
       }
+    }
+  }
+}
+
+@Composable
+private fun RankingsContent(
+  selectedRanking: RegionalRanking,
+  onTeamSelected: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val spoilersHidden = LocalSpoilerMode.current.enabled
+  val displayedTeams = remember(selectedRanking.teams, spoilersHidden) {
+    if (spoilersHidden) selectedRanking.teams.sortedBy { it.teamName.lowercase() } else selectedRanking.teams
+  }
+
+  LazyColumn(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+  ) {
+    if (selectedRanking.teams.isNotEmpty()) {
+      item {
+        Text(
+          text = if (spoilersHidden) {
+            "${selectedRanking.teams.size} teams • ${selectedRanking.region}"
+          } else {
+            "Top ${selectedRanking.teams.size} • ${selectedRanking.region}"
+          },
+          style = Prism.typography.label,
+          color = Prism.color.labelColor,
+        )
+      }
+    }
+    if (spoilersHidden) {
+      item {
+        SpoilerHiddenNotice()
+      }
+    }
+    items(displayedTeams, key = { it.teamId }) { team ->
+      RankingTeamItem(
+        team = team,
+        spoilersHidden = spoilersHidden,
+        onTeamSelected = onTeamSelected,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
+  }
+}
+
+@Composable
+private fun RankingTeamItem(
+  team: TeamRanking,
+  spoilersHidden: Boolean,
+  onTeamSelected: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  PrismCard(
+    modifier = modifier,
+    style = PrismCardStyle.Outlined,
+    onClick = { onTeamSelected(team.teamId) },
+  ) {
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        text = if (spoilersHidden) team.teamName else "#${team.rank} ${team.teamName}",
+        modifier = Modifier.weight(1f),
+        style = Prism.typography.cardTitle,
+        color = if (team.isFavorite) Prism.color.accent else Prism.color.titleColor,
+      )
+      if (team.isFavorite) {
+        PrismFavoriteIcon(
+          selected = true,
+          size = PrismFavoriteIconSize.Small,
+          style = PrismFavoriteIconStyle.Bare,
+          contentDescription = "Favorite team",
+        )
+      }
+    }
+    Row(
+      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(text = "${team.country} •", style = Prism.typography.bodySmall, color = Prism.color.labelColor)
+      SpoilerScore(
+        text = "${team.points} pts",
+        style = Prism.typography.bodySmall,
+        color = Prism.color.labelColor,
+      )
     }
   }
 }
