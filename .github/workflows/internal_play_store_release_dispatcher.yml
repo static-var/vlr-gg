@@ -23,6 +23,8 @@ jobs:
       VERSION_CODE: ${{ inputs.version_code }}
       VLR_AUTH_TOKEN: ${{ secrets.API_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
       SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
       SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
@@ -51,12 +53,15 @@ jobs:
           printf '%s' "$ENCODED_STRING" | base64 --decode > "$signing_store"
 
       - name: Build release
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
           chmod +x ./gradlew
           ./gradlew :androidApp:bundleRelease \
             -Dorg.gradle.java.home="$JAVA_HOME" \
             -PreleaseVersionName="$VERSION_NAME" \
             -PreleaseVersionCode="$VERSION_CODE" \
+            -PsentryUpload=true \
             --stacktrace
 
       - name: Locate release artifact
