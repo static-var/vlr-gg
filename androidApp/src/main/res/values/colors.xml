@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#CBA6F7</color>
-    <color name="splash_background">#1E1E2E</color>
+    <color name="splash_background">#EFF1F5</color>
     <color name="widget_preview_background">@color/glance_colorWidgetBackground</color>
     <color name="widget_preview_border">@color/glance_colorOutline</color>
     <color name="widget_preview_accent">@color/glance_colorPrimary</color>
