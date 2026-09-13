@@ -75,6 +75,7 @@ val releaseVersionName = providers.gradleProperty("releaseVersionName").map { va
 val releaseSigningStore = providers.environmentVariable("VLR_SIGNING_STORE_FILE").orNull
 
 android {
+  sourceSets.getByName("androidTest").assets.srcDir(rootProject.file("app/schemas"))
   namespace = "dev.staticvar.vlr.android"
   compileSdk = 37
 
@@ -150,6 +151,10 @@ baselineProfile {
 }
 
 dependencies {
+  androidTestImplementation(libs.android.junit)
+  androidTestImplementation(libs.android.test.runner)
+  androidTestImplementation(projects.localSource)
+  androidTestImplementation(libs.sqldelight.android.driver)
   baselineProfile(projects.baselineProfile)
   implementation(libs.profileinstaller)
   // Compose Multiplatform
