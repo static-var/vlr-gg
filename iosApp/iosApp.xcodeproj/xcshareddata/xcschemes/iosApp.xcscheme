@@ -50,6 +50,17 @@
                ReferencedContainer = "container:iosApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8947B1549A27B788497DBABC"
+               BuildableName = "VLRAppIntentsTests.xctest"
+               BlueprintName = "VLRAppIntentsTests"
+               ReferencedContainer = "container:iosApp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

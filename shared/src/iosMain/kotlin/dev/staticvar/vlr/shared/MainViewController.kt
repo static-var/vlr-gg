@@ -94,7 +94,7 @@ private fun logDiagnosticLine(message: String) {
   fflush(stderr)
 }
 
-private fun resolveAuthToken(providedAuthToken: String?): String? = normalizeAuthToken(providedAuthToken)
+internal fun resolveAuthToken(providedAuthToken: String?): String? = normalizeAuthToken(providedAuthToken)
   ?: normalizeAuthToken(NSProcessInfo.processInfo.environment["VLR_AUTH_TOKEN"] as? String)
   ?: normalizeAuthToken(NSBundle.mainBundle.objectForInfoDictionaryKey("VLR_AUTH_TOKEN") as? String)
 

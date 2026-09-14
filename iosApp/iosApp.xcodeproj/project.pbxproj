@@ -15,6 +15,8 @@
 		307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CECA83ACC03A83C85A623 /* iOSApp.swift */; };
 		36317EF4FEADC72B01C12E91 /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6EDCAF155347F5E7F4CE33 /* WidgetSnapshotStore.swift */; };
 		44E37D45D9CD7737C66D6C33 /* TestGeneratedBuildConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E64F35EE4AE373F79416126 /* TestGeneratedBuildConfig.swift */; };
+		46EC9AF029F1281A4995F80D /* VLRWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */; };
+		561A93F4EB86F4A8116CB8DA /* SiriActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */; };
 		56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */; };
 		6542E1733BC9E555E81E3BE4 /* space_grotesk_regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 957FAA0B433E8180DF7E3F12 /* space_grotesk_regular.ttf */; };
 		88FAF2F8FE95B1B3827271DA /* VLRWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6062090215F075FB02BCE24E /* VLRWidgetBundle.swift */; };
@@ -40,6 +42,13 @@
 			remoteGlobalIDString = 106CBD00D724990D2B88E84C;
 			remoteInfo = VLRWidgetExtension;
 		};
+		EE78B7902CF0CC0E7D35FD2E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 242FB5348943441C388468CE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 78B53CC79860CBFC2F5543C6;
+			remoteInfo = iosApp;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,6 +70,7 @@
 		09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMatchesWidget.swift; sourceTree = "<group>"; };
 		0D08A94B4CBAF132F954CD64 /* VLRWidgetTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = VLRWidgetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E64F35EE4AE373F79416126 /* TestGeneratedBuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestGeneratedBuildConfig.swift; sourceTree = "<group>"; };
+		106A058A09FDAB4DB0A650AC /* VLRAppIntentsTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = VLRAppIntentsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		197F5175E495A017DFACA2B8 /* VLRWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = VLRWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetModels.swift; sourceTree = "<group>"; };
 		2BF1F4E25E5E55367392BE6A /* WidgetRefreshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetRefreshTests.swift; sourceTree = "<group>"; };
@@ -78,6 +88,7 @@
 		C117AD187833E2513BD2F553 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
 		CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriActionsTests.swift; sourceTree = "<group>"; };
 		F543015C899423D4B01CEB2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F95B8B8B53351C500C2EACA2 /* GeneratedBuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedBuildConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -124,11 +135,20 @@
 				81C6C4D1DEB743C04FE907E7 /* font */,
 				17F4E4F5C1AC8335711C2171 /* font_licenses */,
 				1DB4B685CAEE8BEFEBBAEF94 /* iosApp */,
+				5890E6EFCDBBF39DF066E59C /* VLRAppIntentsTests */,
 				B792E9D2D932475168B27185 /* VLRWidget */,
 				87A46388EB4C69847A9B7748 /* VLRWidgetTests */,
 				BE812D4F3BD7A6E3E029D946 /* WidgetShared */,
 				94C98B8B3A2BFC1966447269 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		5890E6EFCDBBF39DF066E59C /* VLRAppIntentsTests */ = {
+			isa = PBXGroup;
+			children = (
+				E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */,
+			);
+			path = VLRAppIntentsTests;
 			sourceTree = "<group>";
 		};
 		81C6C4D1DEB743C04FE907E7 /* font */ = {
@@ -153,6 +173,7 @@
 			isa = PBXGroup;
 			children = (
 				86038AE1032E284E79B32AD6 /* iosApp.app */,
+				106A058A09FDAB4DB0A650AC /* VLRAppIntentsTests.xctest */,
 				197F5175E495A017DFACA2B8 /* VLRWidgetExtension.appex */,
 				0D08A94B4CBAF132F954CD64 /* VLRWidgetTests.xctest */,
 			);
@@ -243,6 +264,24 @@
 			productReference = 86038AE1032E284E79B32AD6 /* iosApp.app */;
 			productType = "com.apple.product-type.application";
 		};
+		8947B1549A27B788497DBABC /* VLRAppIntentsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CA144281445684C9F70E818A /* Build configuration list for PBXNativeTarget "VLRAppIntentsTests" */;
+			buildPhases = (
+				380E179012C75972114525D2 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2BF7B58523E2469529FAEFAC /* PBXTargetDependency */,
+			);
+			name = VLRAppIntentsTests;
+			packageProductDependencies = (
+			);
+			productName = VLRAppIntentsTests;
+			productReference = 106A058A09FDAB4DB0A650AC /* VLRAppIntentsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -261,6 +300,10 @@
 						ProvisioningStyle = Automatic;
 					};
 					78B53CC79860CBFC2F5543C6 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					8947B1549A27B788497DBABC = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
@@ -285,6 +328,7 @@
 			targets = (
 				78B53CC79860CBFC2F5543C6 /* iosApp */,
 				106CBD00D724990D2B88E84C /* VLRWidgetExtension */,
+				8947B1549A27B788497DBABC /* VLRAppIntentsTests */,
 				72D085823FC784EAB71445FB /* VLRWidgetTests */,
 			);
 		};
@@ -359,9 +403,18 @@
 				56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
 				8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */,
 				B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */,
+				46EC9AF029F1281A4995F80D /* VLRWidgetModels.swift in Sources */,
 				E533BD85594DF2FC0118721D /* VlrSearchShortcut.swift in Sources */,
 				36317EF4FEADC72B01C12E91 /* WidgetSnapshotStore.swift in Sources */,
 				307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		380E179012C75972114525D2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				561A93F4EB86F4A8116CB8DA /* SiriActionsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -394,6 +447,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		2BF7B58523E2469529FAEFAC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 78B53CC79860CBFC2F5543C6 /* iosApp */;
+			targetProxy = EE78B7902CF0CC0E7D35FD2E /* PBXContainerItemProxy */;
+		};
 		917B6FA61AFEF667796B107F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 106CBD00D724990D2B88E84C /* VLRWidgetExtension */;
@@ -523,6 +581,44 @@
 				TEST_HOST = "";
 			};
 			name = Debug;
+		};
+		516D4AA438F4A59846652DC1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.staticvar.vlr.ios.app-intents-tests";
+				PRODUCT_NAME = VLRAppIntentsTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VLR.app/VLR";
+			};
+			name = Debug;
+		};
+		6734495FD4F1BD3A9FCD2E46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.staticvar.vlr.ios.app-intents-tests";
+				PRODUCT_NAME = VLRAppIntentsTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VLR.app/VLR";
+			};
+			name = Release;
 		};
 		6C824A6EB4BAD43AE2A4BB29 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -702,6 +798,15 @@
 			buildConfigurations = (
 				31278C4692B7D2007CF0590F /* Debug */,
 				15EEDB96BBC64DF75EB7DA08 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CA144281445684C9F70E818A /* Build configuration list for PBXNativeTarget "VLRAppIntentsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				516D4AA438F4A59846652DC1 /* Debug */,
+				6734495FD4F1BD3A9FCD2E46 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
