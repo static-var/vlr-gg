@@ -94,6 +94,7 @@ jobs:
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
+          bodyFile: distribution/whatsnew/whatsnew-en-US
           artifacts: ${{ env.APK }}
 
       - name: Send Telegram release
