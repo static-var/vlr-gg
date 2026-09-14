@@ -33,7 +33,7 @@ internal fun CardMascot(
   enabled: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val id = remember(state) { Any() }
+  val id = remember(state) { MascotOwnerToken() }
   val lifecycle = LocalLifecycleOwner.current.lifecycle
   val lifecycleState by lifecycle.currentStateAsState()
   val active = enabled && lifecycleState == Lifecycle.State.RESUMED

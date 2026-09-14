@@ -13,15 +13,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import kotlin.random.Random
 
+public class MascotOwnerToken
+
 @Stable
 public class CardMascotState internal constructor(private val allowed: Boolean) {
-  public var ownerId: Any? by mutableStateOf(null)
+  public var ownerId: MascotOwnerToken? by mutableStateOf(null)
     private set
 
   private var hasAppeared: Boolean = false
 
-  public fun tryAcquire(id: Any): Boolean {
-    if (ownerId == id) return true
+  public fun tryAcquire(id: MascotOwnerToken): Boolean {
+    if (ownerId === id) return true
     if (!allowed || hasAppeared) return false
     if (ownerId != null) return false
 
@@ -30,8 +32,8 @@ public class CardMascotState internal constructor(private val allowed: Boolean) 
     return true
   }
 
-  public fun release(id: Any) {
-    if (ownerId == id) ownerId = null
+  public fun release(id: MascotOwnerToken) {
+    if (ownerId === id) ownerId = null
   }
 
   internal fun dispose() {
