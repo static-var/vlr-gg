@@ -1,101 +1,88 @@
-![GitHub Release](https://img.shields.io/github/v/release/static-var/vlr-gg) ![GitHub Repo stars](https://img.shields.io/github/stars/static-var/vlr-gg) [![Beta Play store release](https://github.com/static-var/vlr-gg/actions/workflows/internal_play_store_release_dispatcher.yml/badge.svg?branch=trunk)](https://github.com/static-var/vlr-gg/actions/workflows/internal_play_store_release_dispatcher.yml)
+# Valorant Esports
 
-# 🚧 VLR-GG (Unofficial application) 🚧
+An independent, unofficial companion for competitive Valorant. Follow matches, scores, events, rankings and news, and keep your favorites together.
 
-<a href='https://play.google.com/store/apps/details?id=dev.staticvar.vlr&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
+Formerly **VLR.gg (Unofficial)**. The Android package remains `dev.staticvar.vlr`, so existing users can upgrade without installing a separate app.
 
+[Website](https://valorantesports.staticvar.dev/) · [Google Play](https://play.google.com/store/apps/details?id=dev.staticvar.vlr) · [Open beta](https://play.google.com/apps/testing/dev.staticvar.vlr) · [GitHub releases](https://github.com/static-var/vlr-gg/releases) · [Privacy policy](https://valorantesports.staticvar.dev/privacy/) · [Terms](https://valorantesports.staticvar.dev/terms/)
 
-An unofficial android app for vlr.gg, written in Jetpack compose, which uses REST API that parses vlr.gg (Code for the scrapper can be found [here](https://github.com/akhilnarang/vlrgg-scraper), thanks to [@akhilnarang](https://github.com/akhilnarang) for hosting and maintaining the scrapping code.)
+[![Beta release workflow](https://github.com/static-var/vlr-gg/actions/workflows/internal_play_store_release_dispatcher.yml/badge.svg?branch=kmp)](https://github.com/static-var/vlr-gg/actions/workflows/internal_play_store_release_dispatcher.yml)
 
-The application is not listed on Play Store, but you will receive in app updates for every release (you can choose to install the update or ignore it)
+## Features
 
-## Supported platforms
+- Browse live, upcoming and completed matches, with scores, maps and match details.
+- Explore events, brackets, standings, teams and players.
+- Follow regional rankings and esports news.
+- Favorite teams, players, matches and events to personalize Home.
+- Hide scores when you want to watch without spoilers.
+- Follow favorite matches from Android and iOS home screen widgets.
+- Use layouts adapted for Android tablets and foldables.
+- Read release highlights in Settings > What's new?
 
-Active development targets iOS and Android only, with shared Kotlin Multiplatform code. See [AGENTS.md](AGENTS.md) for platform scope.
+Favorites and settings are stored locally. The Android rewrite migrates supported favorites from the older app. No app account is required.
 
-## 📸 Preview 📸
-There were no designs / mock ups during the development of this app, this was developed as a side project / hobby.
+## Platforms and implementation
 
-| Light                                                                                 | Dark                                                                                 |
-|---------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/NEWS_LIGHT_VLR.jpg)           | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/NEWS_DARK_VLR.jpg)           |
-| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/BLOG_LIGHT_VLR.jpg)           | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/BLOG_DARK_VLR.jpg)           |
-| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_OVERVIEW_LIGHT_VLR.jpg) | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_OVERVIEW_DARK_VLR.jpg) |
-| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_DETAILS_LIGHT_VLR.jpg)  | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/MATCH_DETAILS_DARK_VLR.jpg)  |
-| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_LIGHT_VLR.jpg) | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_OVERVIEW_DARK_VLR.jpg) |
-| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_LIGHT_VLR.jpg)          | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/EVENT_DARK_VLR.jpg)          |
-| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/SQUAD_LIGHT_VLR.jpg)          | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/SQUAD_DARK_VLR.jpg)          |
-| ![](https://github.com/static-var/vlr-gg/blob/trunk/art/ABOUT_LIGHT_VLR.jpg)          | ![](https://github.com/static-var/vlr-gg/blob/trunk/art/ABOUT_DARK_VLR.jpg)          |
+The active `kmp` branch targets **Android and iOS**. Android is available through Google Play; iOS is in development and is not yet publicly released.
 
+The app uses Kotlin Multiplatform and Compose Multiplatform for shared application code and UI, with the Prism design system. Platform integrations include Glance widgets on Android and SwiftUI/WidgetKit widgets on iOS.
 
-## ✨ App Overview ✨
+The current stack includes Koin, Ktor, Kotlin coroutines and serialization, SQLDelight, Navigation 3, and Sentry diagnostics. Older Android versions used Firebase; see the privacy policy for the differences in data handling.
 
-The app currently shows the following information
-- News and news articles
-- (Ongoing, upcoming and completed) matches and matche details
-- (Ongoing, upcoming and completed) events and events details
-- Team details
-- Team ranks per region
+## Project layout
 
-#### Additional features
-- Users can opt in to get notified for their choice of matches a few minutes before it starts.
-- Users can opt in to get notified for their favorite teams' match a few minutes before it starts.
-- Widget to see scores and updates on your home screen.
-- App uses Material 3 theming.
+| Module | Responsibility |
+| --- | --- |
+| `androidApp` | Android application and platform integration |
+| `iosApp` | Xcode application and iOS widget extension |
+| `shared` | Application composition, navigation and dependency wiring |
+| `feature-*` | Home, matches, events, rankings, news, teams, players and settings |
+| `designsystem` | Prism components, themes, typography and icons |
+| `shared-ui` | UI shared across features |
+| `domain` | Domain models and repository contracts |
+| `data` | Repository implementations and refresh coordination |
+| `remote-source` | Network clients and remote data sources |
+| `local-source` | SQLDelight database and local persistence |
+| `core` | Common utilities and telemetry contracts |
+| `baselineProfile` | Android profile generation and user journeys |
+| `build-logic`, `lint` | Build conventions and code checks |
 
-## 🧑‍💻 Dev Overview 🧑‍💻
+The older `app/` module is retained as legacy source and is excluded from the active Gradle build.
 
-The application has been written completely in [Kotlin](https://kotlinlang.org/) and [Jetpack Compose](https://developer.android.com/jetpack/compose)
+## Local development
 
-#### Libraries used:
-- [Material3](https://developer.android.com/jetpack/androidx/releases/compose-material3) - M3 opens up new possibilities for both brand colors and individual color preferences to converge in one-of-a-kind experiences. The color system embraces the need for color to reflect an app’s design sensibility, while also honoring the settings that individuals choose for themselves. 
-- [Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) - Kotlin solves Asynchronous or non-blocking programming problem in a flexible way by providing coroutine support at the language level and delegating most of the functionality to libraries.
-- [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) - Hilt is a dependency injection library for Android that reduces the boilerplate of doing manual dependency injection in your project.
-- [Room](https://developer.android.com/jetpack/androidx/releases/room) - The Room persistence library provides an abstraction layer over SQLite to allow for more robust database access while harnessing the full power of SQLite.
-- [Firebase Analytics](https://firebase.google.com/docs/analytics) - Analytics is an app measurement solution, available at no charge, that provides insight on app usage and user engagement.
-- [Firebase Messaging](https://firebase.google.com/docs/cloud-messaging) - Firebase Cloud Messaging (FCM) is a cross-platform messaging solution that lets you reliably send messages at no cost.
-- [Ktor-client](https://ktor.io/docs/create-client.html) - Ktor is a framework to easily build connected applications
-- [Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization) - Kotlin serialization consists of a compiler plugin, that generates visitor code for serializable classes, runtime library with core serialization API and support libraries with various serialization formats.
-- [Navigation Compose](https://developer.android.com/jetpack/compose/navigation) - Navigation Compose enables you to navigate between composables while taking advantage of the Navigation component’s infrastructure and features.
-- [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - The ViewModel class is designed to store and manage UI-related data in a lifecycle conscious way. The ViewModel class allows data to survive configuration changes such as screen rotations.
-- [Glance](https://developer.android.com/reference/kotlin/androidx/glance/package-summary) - Build layouts for remote surfaces using a Jetpack Compose-style API.
-- [SplashScreen](https://developer.android.com/guide/topics/ui/splash-screen) - The SplashScreen API enables a new app launch animation for all apps when running on a device with Android 12 or higher. This includes an into-app motion at launch, a splash screen showing your app icon, and a transition to your app itself.
-- [Material Icons](https://developer.android.com/reference/kotlin/androidx/compose/material/icons/Icons) - Material Design system icons as seen on Google Fonts.
-- [Webkit](https://developer.android.com/reference/android/webkit/package-summary) - Provides tools for browsing the web.
-- [Accompanist](https://google.github.io/accompanist/) - Accompanist is a group of libraries that aim to supplement Jetpack Compose with features that are commonly required by developers but not yet available.
-  - System Ui Controller
-  - Navigation Animation
-  - Pager & Pager Indicators
-  - Webview
-- [Jsoup](https://jsoup.org/) - jsoup is a Java library for working with real-world HTML. It provides a very convenient API for fetching URLs and extracting and manipulating data, using the best of HTML5 DOM methods and CSS selectors.
-- [Landscapist-glide](https://github.com/skydoves/landscapist) - Jetpack Compose image loading library which fetches and displays network images.
+Use JDK 17 and an Android SDK matching the project's Gradle configuration. iOS development also requires macOS and Xcode. Follow [AGENTS.md](AGENTS.md) for repository-specific tooling and platform guidance.
 
-## License
+Configure the Android SDK through `local.properties` or your environment. Backend access uses `VLR_AUTH_TOKEN`; Android also accepts `TOKEN` in `local.properties`. Keep credentials in local configuration or environment variables and out of version control.
 
+Build the Android debug app from the repository root:
+
+```sh
+build-brief ./gradlew :androidApp:assembleDebug
 ```
-Copyright (c) 2022-2026 Shreyansh Lodha
 
-Permission is hereby granted, free of charge, to any
-person obtaining a copy of this software and associated
-documentation files (the "Software"), to deal in the
-Software without restriction, including without
-limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software
-is furnished to do so, subject to the following
-conditions:
+If the machine-specific Java path in `gradle.properties` does not exist on your system, supply your JDK explicitly:
 
-The above copyright notice and this permission notice
-shall be included in all copies or substantial portions
-of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
-ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
-SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
-IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+```sh
+build-brief ./gradlew :androidApp:assembleDebug -Dorg.gradle.java.home="$JAVA_HOME"
 ```
+
+For iOS, open `iosApp/iosApp.xcodeproj`, select the `iosApp` scheme and an iPhone or iPad destination, and configure signing for physical devices. The Xcode build integrates the shared Kotlin framework.
+
+## Android releases and profiles
+
+Release builds enable R8 code shrinking, obfuscation and resource shrinking. Saved Baseline and Startup Profiles are consumed during the build; R8 rewrites profile rules to match the optimized release code.
+
+See [baselineProfile/README.md](baselineProfile/README.md) for generation commands, device requirements and covered journeys. Profile generation is separate from release builds.
+
+The [beta workflow](.github/workflows/internal_play_store_release_dispatcher.yml) accepts a version name and an increasing Android version code. It builds a signed AAB, uploads it to the open-testing track, creates a GitHub release and sends the configured Telegram announcement. Changes must then be submitted for review in Play Console; an upload does not mean the update is available to users.
+
+Play Store release notes live in [distribution/whatsnew/whatsnew-en-US](distribution/whatsnew/whatsnew-en-US) and must stay below 500 characters. In-app highlights live in [BundledRelease.kt](feature-about/src/commonMain/kotlin/dev/staticvar/vlr/featureabout/presentation/BundledRelease.kt). Keep both focused on changes users can understand. Change the bundled release identifier only when users should see a new announcement.
+
+## Attribution and license
+
+This project is not affiliated with or endorsed by Riot Games or VLR.gg. Valorant and related marks belong to their respective owners. Esports content and images remain subject to their owners' rights.
+
+Thanks to [akhilnarang](https://github.com/akhilnarang) for the [VLR.gg scraper](https://github.com/akhilnarang/vlrgg-scraper) used by the original app.
+
+Source code is available under the [MIT license](LICENSE). Third-party fonts and other assets retain their respective licenses.
