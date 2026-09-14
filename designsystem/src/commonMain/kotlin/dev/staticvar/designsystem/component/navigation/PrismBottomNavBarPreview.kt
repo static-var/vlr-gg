@@ -22,14 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import compose.icons.LineAwesomeIcons
-import compose.icons.lineawesomeicons.CalendarAlt
-import compose.icons.lineawesomeicons.CalendarAltSolid
-import compose.icons.lineawesomeicons.Compass
-import compose.icons.lineawesomeicons.CompassSolid
-import compose.icons.lineawesomeicons.HomeSolid
-import compose.icons.lineawesomeicons.Newspaper
-import compose.icons.lineawesomeicons.NewspaperSolid
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
@@ -71,13 +63,16 @@ internal fun PrismBottomNavBarPreview(@PreviewParameter(PrismPreviewProvider::cl
 }
 
 @Composable
-private fun rememberBottomNavPreviewItems(): List<PrismBottomNavItem> = remember {
-  listOf(
-    navPreviewItem("matches", "Matches", LineAwesomeIcons.HomeSolid),
-    navPreviewItem("events", "Events", LineAwesomeIcons.Compass, LineAwesomeIcons.CompassSolid),
-    navPreviewItem("schedule", "Schedule", LineAwesomeIcons.CalendarAlt, LineAwesomeIcons.CalendarAltSolid),
-    navPreviewItem("news", "News", LineAwesomeIcons.Newspaper, LineAwesomeIcons.NewspaperSolid),
-  )
+private fun rememberBottomNavPreviewItems(): List<PrismBottomNavItem> {
+  val icons = Prism.icons
+  return remember(icons) {
+    listOf(
+      navPreviewItem("matches", "Matches", icons.matches.unselected, icons.matches.selected),
+      navPreviewItem("events", "Events", icons.events.unselected, icons.events.selected),
+      navPreviewItem("rankings", "Rankings", icons.rankings.unselected, icons.rankings.selected),
+      navPreviewItem("news", "News", icons.news.unselected, icons.news.selected),
+    )
+  }
 }
 
 private fun navPreviewItem(

@@ -15,8 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import compose.icons.LineAwesomeIcons
-import compose.icons.lineawesomeicons.CogSolid
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
@@ -33,7 +31,7 @@ internal fun PrismFabSheetPreview(@PreviewParameter(PrismPreviewProvider::class)
       PrismFabSheet(
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        icon = LineAwesomeIcons.CogSolid,
+        icon = Prism.icons.settings.selected,
         contentDescription = "Customize match details",
         sheetTitle = "Match details",
         header = { Text("Match details", style = Prism.typography.cardTitle) },

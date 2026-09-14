@@ -5,7 +5,6 @@
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.android.kotlin.multiplatform.library)
-  alias(libs.plugins.ksp.plugin)
 }
 
 kotlin {
@@ -59,12 +58,6 @@ kotlin {
       }
     }
 
-    val androidMain by getting {
-      dependencies {
-        implementation(libs.konvert.annotations)
-      }
-    }
-
     val iosTest by getting {
       dependencies {
         implementation(libs.sqldelight.native.driver)
@@ -80,15 +73,6 @@ kotlin {
       }
     }
   }
-}
-
-ksp {
-  arg("konvert.non-constructor-properties-mapping", "explicit")
-  arg("konvert.invalid-mapping-strategy", "fail")
-}
-
-dependencies {
-  add("kspAndroid", libs.konvert.processor)
 }
 
 tasks.register("test") {

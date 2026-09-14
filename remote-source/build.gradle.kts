@@ -48,7 +48,6 @@ kotlin {
         implementation(libs.ktor.logging)
         implementation(libs.ktor.encoding)
         implementation(libs.koin.core)
-        implementation(libs.ksoup)
       }
     }
 
@@ -66,7 +65,6 @@ kotlin {
       dependencies {
         implementation(libs.koin.android)
         implementation(libs.ktor.okhttp)
-        implementation(libs.logging.interceptor)
       }
     }
 

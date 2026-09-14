@@ -45,7 +45,6 @@ kotlin {
         implementation(compose.material3)
         implementation(compose.ui)
         implementation(compose.animation)
-        implementation(libs.compose.icons.lineawesome)
         @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
         implementation(compose.components.resources)
         // Keep for future Fleet/Canary support

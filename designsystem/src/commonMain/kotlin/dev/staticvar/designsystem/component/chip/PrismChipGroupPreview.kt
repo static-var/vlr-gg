@@ -17,12 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import compose.icons.LineAwesomeIcons
-import compose.icons.lineawesomeicons.CalendarAlt
-import compose.icons.lineawesomeicons.CalendarAltSolid
-import compose.icons.lineawesomeicons.Compass
-import compose.icons.lineawesomeicons.CompassSolid
-import compose.icons.lineawesomeicons.Newspaper
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
@@ -35,26 +29,27 @@ internal fun PrismChipGroupPreview(@PreviewParameter(PrismPreviewProvider::class
   PrismTheme(variant = variant) {
     var selectedChipId by remember { mutableStateOf("completed") }
     var selectedChipIds by remember { mutableStateOf(setOf("completed", "live")) }
+    val icons = Prism.icons
     val chips =
-      remember {
+      remember(icons) {
         listOf(
           PrismChip(id = "all", label = "All"),
           PrismChip(
             id = "live",
             label = "Live",
-            icon = LineAwesomeIcons.CalendarAlt,
-            selectedIcon = LineAwesomeIcons.CalendarAltSolid,
+            icon = icons.events.unselected,
+            selectedIcon = icons.events.selected,
           ),
           PrismChip(
             id = "completed",
             label = "Completed",
-            icon = LineAwesomeIcons.Compass,
-            selectedIcon = LineAwesomeIcons.CompassSolid,
+            icon = icons.matches.unselected,
+            selectedIcon = icons.matches.selected,
           ),
           PrismChip(
             id = "upcoming",
             label = "Upcoming",
-            icon = LineAwesomeIcons.Newspaper,
+            icon = icons.news.unselected,
             enabled = false,
           ),
         )

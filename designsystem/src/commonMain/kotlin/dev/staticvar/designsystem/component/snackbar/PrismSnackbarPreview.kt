@@ -14,8 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import compose.icons.LineAwesomeIcons
-import compose.icons.lineawesomeicons.CalendarAltSolid
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
@@ -39,7 +37,7 @@ internal fun PrismSnackbarPreview(@PreviewParameter(PrismPreviewProvider::class)
         message = "Roster update saved",
         leadingIcon = {
           Icon(
-            imageVector = LineAwesomeIcons.CalendarAltSolid,
+            imageVector = Prism.icons.matches.selected,
             contentDescription = null,
           )
         },

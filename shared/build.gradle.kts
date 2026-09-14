@@ -53,7 +53,6 @@ kotlin {
         implementation(compose.ui)
         implementation(compose.components.resources)
         implementation(libs.compose.ui.tooling.preview)
-        implementation(compose.materialIconsExtended)
         implementation(libs.coroutines.core)
         implementation(libs.lifecycle.runtime)
         implementation(libs.lifecycle.viewmodel.compose.cmp)

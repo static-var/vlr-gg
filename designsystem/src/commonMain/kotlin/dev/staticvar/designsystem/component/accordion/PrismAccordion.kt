@@ -38,10 +38,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
-import compose.icons.LineAwesomeIcons
-import compose.icons.lineawesomeicons.AngleDownSolid
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.painterResource
+import vlr.designsystem.generated.resources.Res
+import vlr.designsystem.generated.resources.ic_chevron_down
 
 /**
  * Prism design system accordion component.
@@ -151,7 +152,7 @@ private fun RowScope.AccordionHeaderContent(
 
   if (showIndicator) {
     Icon(
-      imageVector = LineAwesomeIcons.AngleDownSolid,
+      painter = painterResource(Res.drawable.ic_chevron_down),
       contentDescription = if (isExpanded) "Collapse section" else "Expand section",
       modifier = Modifier.graphicsLayer { rotationZ = rotationAngle.value }.size(Prism.dimens.iconM),
       tint = indicatorColor,

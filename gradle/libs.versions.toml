@@ -6,7 +6,6 @@ sentry-gradle = "6.21.0"
 kotlin = "2.4.20"
 compose-multiplatform = "1.12.0"
 detektCompose = "0.6.6"
-composeIcons = "1.1.1"
 coil = "3.6.2"
 detekt = "1.23.8"
 ktlint = "1.8.0"
@@ -16,8 +15,6 @@ ktor = "3.5.2"
 ksp = "2.3.11"
 spotless = "8.10.2"
 koin = "4.2.2"
-ksoup = "0.2.6"
-konvert = "4.5.1"
 datetime = "0.8.0"
 kotlinx-io = "0.9.1"
 sqldelight = "2.3.2"
@@ -50,7 +47,6 @@ compose-ui-tooling-cmp = { module = "org.jetbrains.compose.ui:ui-tooling", versi
 compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
 navigation3-ui-cmp = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "multiplatform-nav3-ui" }
 
-compose-icons-lineawesome = { module = "br.com.devsrsouza.compose.icons:line-awesome", version.ref = "composeIcons" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
@@ -85,7 +81,6 @@ logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", ver
 
 splashscreen = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
 
-ksoup = { module = "com.fleeksoft.ksoup:ksoup", version.ref = "ksoup" }
 
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
@@ -94,8 +89,6 @@ koin-core-viewmodel = { module = "io.insert-koin:koin-core-viewmodel", version.r
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 koin-compose-navigation3 = { module = "io.insert-koin:koin-compose-navigation3", version.ref = "koin" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
-konvert-annotations = { module = "io.mcarle:konvert-annotations", version.ref = "konvert" }
-konvert-processor = { module = "io.mcarle:konvert-processor", version.ref = "konvert" }
 customview-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }

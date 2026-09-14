@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import compose.icons.LineAwesomeIcons
-import compose.icons.lineawesomeicons.ShieldAltSolid
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
@@ -32,33 +30,33 @@ internal fun PrismIconPreview(@PreviewParameter(PrismPreviewProvider::class) var
       horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     ) {
       PrismIcon(
-        imageVector = LineAwesomeIcons.ShieldAltSolid,
+        imageVector = Prism.icons.preview,
         contentDescription = "Bordered icon",
         size = PrismIconSize.Small,
         tint = PrismIconTint.Primary,
       )
       PrismIcon(
-        imageVector = LineAwesomeIcons.ShieldAltSolid,
+        imageVector = Prism.icons.preview,
         contentDescription = "Medium icon",
         size = PrismIconSize.Medium,
         tint = PrismIconTint.Alt,
       )
       PrismIcon(
-        imageVector = LineAwesomeIcons.ShieldAltSolid,
+        imageVector = Prism.icons.preview,
         contentDescription = "Large icon",
         size = PrismIconSize.Large,
         style = PrismIconStyle.Muted,
         tint = PrismIconTint.Primary,
       )
       PrismIcon(
-        imageVector = LineAwesomeIcons.ShieldAltSolid,
+        imageVector = Prism.icons.preview,
         contentDescription = "Extra large icon",
         size = PrismIconSize.ExtraLarge,
         style = PrismIconStyle.Plain,
         tint = PrismIconTint.Alt,
       )
       PrismIcon(
-        imageVector = LineAwesomeIcons.ShieldAltSolid,
+        imageVector = Prism.icons.preview,
         contentDescription = "Hero icon",
         size = PrismIconSize.Hero,
         tint = PrismIconTint.Primary,
