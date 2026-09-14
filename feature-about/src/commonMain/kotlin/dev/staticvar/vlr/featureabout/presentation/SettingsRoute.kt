@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -62,6 +63,7 @@ public fun SettingsRoute(
   onBack: (() -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
+  val uriHandler = LocalUriHandler.current
   Column(modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM)) {
     PrismScreenTitleBar(
       title = "Settings",
@@ -101,6 +103,16 @@ public fun SettingsRoute(
         title = "About Valorant Esports",
         description = "The project, the people, and the data.",
         onClick = onAbout,
+      )
+      SettingsLinkCard(
+        title = "Privacy policy",
+        description = "How Valorant Esports handles your data.",
+        onClick = { uriHandler.openUri(AppWebsite.Privacy) },
+      )
+      SettingsLinkCard(
+        title = "Terms of service",
+        description = "Using the app and its content.",
+        onClick = { uriHandler.openUri(AppWebsite.Terms) },
       )
       SettingsVersionFooter()
     }

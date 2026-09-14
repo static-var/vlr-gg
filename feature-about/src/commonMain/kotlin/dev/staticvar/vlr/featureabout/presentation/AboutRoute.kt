@@ -77,6 +77,7 @@ internal fun AboutScreen(modifier: Modifier = Modifier, onBack: () -> Unit = {})
       ) {
         AboutIdentity()
         AboutIntroduction()
+        AboutWebsiteLinks()
         AboutProjectLinks(onFeedback = { showFeedback = true })
         AboutContributors()
         AboutDonations()
@@ -138,6 +139,18 @@ private fun AboutIntroduction() {
     style = Prism.typography.bodyLarge,
     color = Prism.color.bodyColor,
   )
+}
+
+@Composable
+private fun AboutWebsiteLinks() {
+  Column {
+    AboutSectionHeading("Website & policies")
+    AboutLink(title = "Visit Valorant Esports", url = AppWebsite.Home)
+    PrismDivider()
+    AboutLink(title = "Privacy policy", url = AppWebsite.Privacy)
+    PrismDivider()
+    AboutLink(title = "Terms of service", url = AppWebsite.Terms)
+  }
 }
 
 @Composable
