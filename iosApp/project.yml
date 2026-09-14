@@ -40,6 +40,7 @@ targets:
     platform: iOS
     sources:
       - path: iosApp
+      - path: VLRWidget/VLRWidgetModels.swift
       - path: WidgetShared
     dependencies:
       - package: Sentry
@@ -115,6 +116,21 @@ targets:
           export GENERATED_SWIFT_PATH="$SRCROOT/VLRWidget/GeneratedBuildConfig.swift"
           python3 "$REPO_ROOT/scripts/generate-ios-build-config.py"
 
+  VLRAppIntentsTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: VLRAppIntentsTests
+    dependencies:
+      - target: iosApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.staticvar.vlr.ios.app-intents-tests
+        PRODUCT_NAME: VLRAppIntentsTests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/VLR.app/VLR"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: ""
+
   VLRWidgetTests:
     type: bundle.unit-test
     platform: iOS
@@ -147,6 +163,7 @@ schemes:
       config: Debug
       targets:
         - VLRWidgetTests
+        - VLRAppIntentsTests
   WidgetRefreshTests:
     build:
       targets:

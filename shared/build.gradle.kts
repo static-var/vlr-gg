@@ -37,6 +37,9 @@ kotlin {
     listOf(iosArm64(), iosSimulatorArm64())
   }
   iosTargets.forEach { target ->
+    target.binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable>().configureEach {
+      linkerOpts("-lsqlite3")
+    }
     target.binaries.framework {
       baseName = "shared"
       isStatic = true
@@ -90,6 +93,12 @@ kotlin {
     }
 
     val iosMain by getting
+
+    val iosTest by getting {
+      dependencies {
+        implementation(libs.multiplatform.settings.test)
+      }
+    }
 
     val commonTest by getting {
       dependencies {
