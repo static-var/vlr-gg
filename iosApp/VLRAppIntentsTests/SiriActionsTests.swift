@@ -56,7 +56,7 @@ final class SiriActionsTests: XCTestCase {
         XCTAssertTrue(["match", "home"].contains(url.host ?? ""))
     }
 
-    func testSpoilerUpdateScrubsWidgetScoresWithoutChangingScheduleFreshness() async throws {
+    func testSpoilerCycleRestoresWidgetScoresWithoutChangingScheduleFreshness() async throws {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: url) }
         let data = Data("""
@@ -66,18 +66,23 @@ final class SiriActionsTests: XCTestCase {
          "startTimeEpochMillis":null,"status":"LIVE","score1":13,"score2":7,"format":"BO3","stage":""}],
          "theme":{"background":0,"surface":0,"accent":0,"content":0,"secondary":0,"border":0,"monospace":false}}
         """.utf8)
+        let source = try JSONDecoder().decode(VLR.UpcomingMatchesSnapshot.self, from: data)
+        let matchesJSON = String(decoding: try JSONEncoder().encode(source.matches), as: UTF8.self)
         try data.write(to: url)
-        try await WidgetSnapshotStore.setSpoilersHidden(true, snapshotURL: url)
+        try await WidgetSnapshotStore.setSpoilersHidden(true, matchesJSON: matchesJSON, snapshotURL: url)
         let hidden = try JSONDecoder().decode(VLR.UpcomingMatchesSnapshot.self, from: Data(contentsOf: url))
         XCTAssertTrue(hidden.spoilersHidden)
         XCTAssertNil(hidden.matches.first?.score1)
         XCTAssertNil(hidden.matches.first?.score2)
         XCTAssertEqual(hidden.savedAtEpochMillis, 123)
         XCTAssertEqual(hidden.favorites.matchIds, ["42"])
-        try await WidgetSnapshotStore.setSpoilersHidden(false, snapshotURL: url)
+        try await WidgetSnapshotStore.setSpoilersHidden(false, matchesJSON: matchesJSON, snapshotURL: url)
         let visible = try JSONDecoder().decode(VLR.UpcomingMatchesSnapshot.self, from: Data(contentsOf: url))
         XCTAssertFalse(visible.spoilersHidden)
         XCTAssertEqual(visible.matches.first?.id, "42")
+        XCTAssertEqual(visible.matches.first?.score1, 13)
+        XCTAssertEqual(visible.matches.first?.score2, 7)
+        XCTAssertEqual(visible.savedAtEpochMillis, 123)
     }
 
     private func summary(_ match: UpcomingWidgetMatch?, refreshed: Bool = true) -> String {

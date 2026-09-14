@@ -81,8 +81,8 @@ struct SetSpoilerProtectionIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        try SiriMatchResponse.actions().setSpoilersHidden(enabled: enabled)
-        try await WidgetSnapshotStore.setSpoilersHidden(enabled)
+        let matchesJSON = try await SiriMatchResponse.actions().setSpoilersHidden(enabled: enabled)
+        try await WidgetSnapshotStore.setSpoilersHidden(enabled, matchesJSON: matchesJSON)
         return .result(dialog: enabled
             ? "Spoiler protection is on. Match scores are hidden."
             : "Spoiler protection is off. Match scores are visible.")

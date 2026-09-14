@@ -6,7 +6,8 @@ enum WidgetSnapshotStore {
     private static let writeQueue = DispatchQueue(label: "dev.staticvar.vlr.widget-snapshot")
     private static let logger = Logger(subsystem: "dev.staticvar.vlr.ios", category: "WidgetSnapshot")
 
-    static func setSpoilersHidden(_ enabled: Bool, snapshotURL: URL? = VLRWidgetContract.snapshotURL) async throws {
+    static func setSpoilersHidden(_ enabled: Bool, matchesJSON: String, snapshotURL: URL? = VLRWidgetContract.snapshotURL) async throws {
+        let matches = try JSONDecoder().decode([UpcomingMatch].self, from: Data(matchesJSON.utf8))
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             writeQueue.async {
                 do {
@@ -19,7 +20,7 @@ enum WidgetSnapshotStore {
                             hasFavorites: snapshot.hasFavorites,
                             favorites: snapshot.favorites,
                             spoilersHidden: enabled,
-                            matches: enabled ? snapshot.matches.map { $0.withoutScores() } : snapshot.matches,
+                            matches: enabled ? matches.map { $0.withoutScores() } : matches,
                             theme: snapshot.theme
                         )
                         try JSONEncoder().encode(updated).write(to: url, options: .atomic)

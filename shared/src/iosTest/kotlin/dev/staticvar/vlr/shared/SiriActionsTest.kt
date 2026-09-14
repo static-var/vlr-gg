@@ -23,6 +23,8 @@ import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.domain.repository.PlayerRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
+import dev.staticvar.vlr.shared.widget.UpcomingWidgetMatch
+import dev.staticvar.vlr.shared.widget.widgetJson
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -84,16 +86,21 @@ class SiriActionsTest {
   }
 
   @Test
-  fun spoilerSettingIsIdempotentObservableAndPersisted() {
+  fun spoilerSettingIsIdempotentObservableAndPersisted() = runBlocking {
     val fixture = Fixture()
     val observed = fixture.preferences.enabled
 
-    fixture.actions.setSpoilersHidden(true)
+    val hidden = widgetJson.decodeFromString<List<UpcomingWidgetMatch>>(fixture.actions.setSpoilersHidden(true))
+    assertNull(hidden.first().score1)
+    assertNull(hidden.first().score2)
     fixture.actions.setSpoilersHidden(true)
     assertTrue(observed.value)
     assertTrue(SpoilerPreferencesRepository(fixture.storage).enabled.value)
 
-    fixture.actions.setSpoilersHidden(false)
+    val visible = widgetJson.decodeFromString<List<UpcomingWidgetMatch>>(fixture.actions.setSpoilersHidden(false))
+    assertEquals(2, visible.first().score1)
+    assertEquals(1, visible.first().score2)
+    assertEquals(0, fixture.remote.refreshes)
     fixture.actions.setSpoilersHidden(false)
     assertFalse(observed.value)
     assertFalse(SpoilerPreferencesRepository(fixture.storage).enabled.value)

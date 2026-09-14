@@ -12,6 +12,8 @@ import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.iosNetworkModule
 import dev.staticvar.vlr.shared.widget.UpcomingWidgetMatch
 import dev.staticvar.vlr.shared.widget.favoriteWidgetMatches
+import dev.staticvar.vlr.shared.widget.widgetJson
+import kotlinx.serialization.encodeToString
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
@@ -55,8 +57,14 @@ public class SiriActions(authToken: String?) {
   }
 
   @Throws(Exception::class)
-  public fun setSpoilersHidden(enabled: Boolean) {
-    val preferences = KoinPlatform.getKoin().get<SpoilerPreferencesRepository>()
+  public suspend fun setSpoilersHidden(enabled: Boolean): String {
+    val koin = KoinPlatform.getKoin()
+    val hasFavorites = koin.get<FavoritesRepository>().observeDirectFavorites().first().hasAny
+    val schedule = koin.get<FavoriteScheduleRepository>().observeMatches().first()
+    val matches = favoriteWidgetMatches(schedule, Clock.System.now().toEpochMilliseconds(), enabled)
+      .takeIf { hasFavorites }.orEmpty()
+    val preferences = koin.get<SpoilerPreferencesRepository>()
     if (preferences.enabled.value != enabled) preferences.toggle()
+    return widgetJson.encodeToString(matches)
   }
 }
