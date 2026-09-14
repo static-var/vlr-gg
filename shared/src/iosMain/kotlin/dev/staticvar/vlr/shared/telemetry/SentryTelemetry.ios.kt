@@ -6,6 +6,9 @@
 
 package dev.staticvar.vlr.shared.telemetry
 
+import cocoapods.Sentry.SentrySpanProtocol
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import cocoapods.Sentry.SentrySDK
 import cocoapods.Sentry.SentryFeedback
 import cocoapods.Sentry.SentryFeedbackSourceCustom
@@ -23,16 +26,25 @@ internal actual fun initializePlatformSentry(configuration: SentryConfiguration)
 
 internal actual fun startPlatformSpan(operation: String, description: String): TelemetrySpan {
   val transaction = SentrySDK.startTransactionWithName(description, operation)
-  return object : TelemetrySpan {
-    override fun finish(status: TelemetrySpanStatus) {
-      transaction.finishWithStatus(
-        when (status) {
-          TelemetrySpanStatus.Ok -> kSentrySpanStatusOk
-          TelemetrySpanStatus.Error -> kSentrySpanStatusInternalError
-          TelemetrySpanStatus.Cancelled -> kSentrySpanStatusCancelled
-        },
-      )
-    }
+  return IosTelemetrySpan(transaction)
+}
+
+@OptIn(ExperimentalAtomicApi::class)
+private class IosTelemetrySpan(private val span: SentrySpanProtocol) : TelemetrySpan {
+  private val finished = AtomicBoolean(false)
+
+  override fun startChild(operation: String, description: String): TelemetrySpan =
+    IosTelemetrySpan(span.startChildWithOperation(operation, sanitizeTelemetryText(description)))
+
+  override fun finish(status: TelemetrySpanStatus) {
+    if (!finished.compareAndSet(false, true)) return
+    span.finishWithStatus(
+      when (status) {
+        TelemetrySpanStatus.Ok -> kSentrySpanStatusOk
+        TelemetrySpanStatus.Error -> kSentrySpanStatusInternalError
+        TelemetrySpanStatus.Cancelled -> kSentrySpanStatusCancelled
+      },
+    )
   }
 }
 

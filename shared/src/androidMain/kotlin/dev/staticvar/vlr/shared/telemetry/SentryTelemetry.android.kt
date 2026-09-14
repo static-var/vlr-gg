@@ -6,6 +6,7 @@ package dev.staticvar.vlr.shared.telemetry
 
 import dev.staticvar.vlr.core.telemetry.TelemetrySpan
 import dev.staticvar.vlr.core.telemetry.TelemetrySpanStatus
+import io.sentry.ISpan
 import io.sentry.SpanStatus
 import io.sentry.SentryLogEventAttributeValue
 import io.sentry.android.replay.maskAllImages
@@ -82,6 +83,9 @@ internal actual fun startPlatformSpan(operation: String, description: String): T
   val finished = AtomicBoolean(false)
   val transaction = NativeSentry.startTransaction(description, operation)
   return object : TelemetrySpan {
+    override fun startChild(operation: String, description: String): TelemetrySpan =
+      AndroidTelemetrySpan(transaction.startChild(operation, sanitizeTelemetryText(description)))
+
     override fun finish(status: TelemetrySpanStatus) {
       if (!finished.compareAndSet(false, true)) return
       transaction.finish(
@@ -107,3 +111,19 @@ internal actual fun startPlatformSpan(operation: String, description: String): T
 
 internal actual fun submitPlatformFeedback(message: String): Boolean =
   NativeSentry.captureFeedback(Feedback(message)) != SentryId.EMPTY_ID
+
+private class AndroidTelemetrySpan(private val span: ISpan) : TelemetrySpan {
+  private val finished = AtomicBoolean(false)
+
+  override fun startChild(operation: String, description: String): TelemetrySpan =
+    AndroidTelemetrySpan(span.startChild(operation, sanitizeTelemetryText(description)))
+
+  override fun finish(status: TelemetrySpanStatus) {
+    if (!finished.compareAndSet(false, true)) return
+    span.finish(when (status) {
+      TelemetrySpanStatus.Ok -> SpanStatus.OK
+      TelemetrySpanStatus.Error -> SpanStatus.INTERNAL_ERROR
+      TelemetrySpanStatus.Cancelled -> SpanStatus.CANCELLED
+    })
+  }
+}

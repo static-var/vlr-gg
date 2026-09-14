@@ -8,6 +8,8 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.core.telemetry.RefreshTrace
+import dev.staticvar.vlr.core.telemetry.traceRefresh
 import dev.staticvar.vlr.data.News
 import dev.staticvar.vlr.data.NewsMedia
 import dev.staticvar.vlr.data.mapper.aggregateNewsArticle
@@ -23,7 +25,6 @@ import dev.staticvar.vlr.remotesource.news.NewsDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 /**
  * Concrete implementation of [NewsRepository].
@@ -59,57 +60,61 @@ internal class NewsRepositoryImpl(
     }
   }
 
-  override suspend fun refreshNews(): Result<Unit> = withContext(dispatchers.io) {
+  override suspend fun refreshNews(): Result<Unit> = traceRefresh(dispatchers.io, "refreshNews") {
     newsDataSource.list().mapCatching { dtos ->
-      database.transaction {
-        val existing = queries.getAllNews().executeAsList().associateBy { it.id }
-        val remoteIds = mutableSetOf<String>()
+      traceDatabase {
+        database.transaction {
+          val existing = queries.getAllNews().executeAsList().associateBy { it.id }
+          val remoteIds = mutableSetOf<String>()
 
-        dtos.forEachIndexed { index, dto ->
-          val entity = dto.toEntity(listPosition = index.toLong())
-          if (entity.id.isBlank()) return@forEachIndexed
-          remoteIds += entity.id
-          val current = existing[entity.id]
-          val merged = mergeListEntity(entity, current)
-          if (current == null) {
-            queries.insertNews(merged)
-          } else {
-            queries.updateNews(
-              url = merged.url,
-              title = merged.title,
-              author = merged.author,
-              date = merged.date,
-              cover_url = merged.cover_url,
-              description = merged.description,
-              content_html = merged.content_html,
-              list_position = merged.list_position,
-              last_updated = merged.last_updated,
-              id = merged.id,
-            )
+          dtos.forEachIndexed { index, dto ->
+            val entity = dto.toEntity(listPosition = index.toLong())
+            if (entity.id.isBlank()) return@forEachIndexed
+            remoteIds += entity.id
+            val current = existing[entity.id]
+            val merged = mergeListEntity(entity, current)
+            if (current == null) {
+              queries.insertNews(merged)
+            } else {
+              queries.updateNews(
+                url = merged.url,
+                title = merged.title,
+                author = merged.author,
+                date = merged.date,
+                cover_url = merged.cover_url,
+                description = merged.description,
+                content_html = merged.content_html,
+                list_position = merged.list_position,
+                last_updated = merged.last_updated,
+                id = merged.id,
+              )
+            }
           }
-        }
 
-        val staleIds = existing.keys - remoteIds
-        staleIds.forEach { id -> queries.deleteNewsById(id) }
+          val staleIds = existing.keys - remoteIds
+          staleIds.forEach { id -> queries.deleteNewsById(id) }
+        }
       }
     }
   }
 
-  override suspend fun refreshNewsArticle(articleId: String): Result<Unit> = withContext(dispatchers.io) {
+  override suspend fun refreshNewsArticle(articleId: String): Result<Unit> = traceRefresh(dispatchers.io, "refreshNewsArticle") {
     newsDataSource.article(articleId).mapCatching { dto ->
       persistArticle(dto, articleId)
     }
   }
 
-  private fun persistArticle(dto: NewsArticleDto, requestedId: String) {
-    database.transaction {
-      val current = queries.getNewsById(requestedId).executeAsOneOrNull()
-      val articleEntity = mergeArticleEntity(dto, requestedId, current)
-      queries.insertNews(articleEntity)
-      queries.deleteNewsMedia(articleEntity.id)
-      dto
-        .toMediaEntities(articleEntity.id)
-        .forEach { media -> insertMedia(media, articleEntity.id) }
+  private fun RefreshTrace.persistArticle(dto: NewsArticleDto, requestedId: String) {
+    traceDatabase {
+      database.transaction {
+        val current = queries.getNewsById(requestedId).executeAsOneOrNull()
+        val articleEntity = mergeArticleEntity(dto, requestedId, current)
+        queries.insertNews(articleEntity)
+        queries.deleteNewsMedia(articleEntity.id)
+        dto
+          .toMediaEntities(articleEntity.id)
+          .forEach { media -> insertMedia(media, articleEntity.id) }
+      }
     }
   }
 

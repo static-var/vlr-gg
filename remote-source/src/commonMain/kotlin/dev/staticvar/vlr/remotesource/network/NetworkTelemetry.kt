@@ -4,6 +4,8 @@
  */
 package dev.staticvar.vlr.remotesource.network
 
+import dev.staticvar.vlr.core.telemetry.RefreshTrace
+import kotlinx.coroutines.currentCoroutineContext
 import dev.staticvar.vlr.core.telemetry.AppTelemetry
 import dev.staticvar.vlr.core.telemetry.TelemetryReporter
 import dev.staticvar.vlr.core.telemetry.TelemetrySpanStatus
@@ -21,7 +23,8 @@ internal val NetworkTelemetry = createClientPlugin("NetworkTelemetry", ::Network
   val reporter = pluginConfig.reporter
   on(Send) { request ->
     val description = "${telemetryMethod(request.method)} ${telemetryEndpoint(request.url.encodedPath)}"
-    val span = reporter.startSpan(operation = "http.client", description = description)
+    val span = currentCoroutineContext()[RefreshTrace]?.startChild("http.client", description)
+      ?: reporter.startSpan(operation = "http.client", description = description)
     var status = TelemetrySpanStatus.Error
     try {
       val call = proceed(request)

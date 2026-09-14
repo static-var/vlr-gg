@@ -61,7 +61,7 @@ sentry {
   includeSourceContext.set(false)
   autoInstallation.enabled.set(false)
   tracingInstrumentation.enabled.set(true)
-  tracingInstrumentation.features.set(setOf(InstrumentationFeature.DATABASE, InstrumentationFeature.FILE_IO))
+  tracingInstrumentation.features.set(setOf(InstrumentationFeature.FILE_IO))
   ignoredBuildTypes.set(setOf("debug"))
 }
 

@@ -4,6 +4,8 @@
  */
 package dev.staticvar.vlr.remotesource.network
 
+import dev.staticvar.vlr.core.telemetry.traceRefresh
+import kotlinx.coroutines.test.StandardTestDispatcher
 import dev.staticvar.vlr.core.telemetry.NoOpTelemetryReporter
 import dev.staticvar.vlr.core.telemetry.TelemetryReporter
 import dev.staticvar.vlr.core.telemetry.TelemetrySpan
@@ -24,6 +26,47 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 
 class NetworkTelemetryTest {
+  @Test
+  fun requestIsAChildOfRefreshAndFinishesBeforePersistence() = runTest {
+    val events = mutableListOf<String>()
+    val root = object : TelemetrySpan {
+      override fun startChild(operation: String, description: String): TelemetrySpan {
+        events += "$operation $description"
+        return object : TelemetrySpan {
+          override fun finish(status: TelemetrySpanStatus) { events += "$operation finished" }
+        }
+      }
+      override fun finish(status: TelemetrySpanStatus) { events += "refresh finished" }
+    }
+    val reporter = object : TelemetryReporter by NoOpTelemetryReporter {
+      override fun startSpan(operation: String, description: String): TelemetrySpan {
+        assertEquals("data.refresh", operation)
+        return root
+      }
+    }
+    val client = HttpClient(MockEngine) {
+      install(NetworkTelemetry) { this.reporter = reporter }
+      engine { addHandler { respond("[]") } }
+    }
+    try {
+      traceRefresh(StandardTestDispatcher(testScheduler), "matches", reporter) {
+        client.get("https://api.example/api/v1/matches/private-id?token=secret")
+        traceDatabase { events += "persisted" }
+        Result.success(Unit)
+      }
+      assertEquals(listOf(
+        "http.client GET /api/v1/matches/{id}",
+        "http.client finished",
+        "db.transaction Persist refreshed data",
+        "persisted",
+        "db.transaction finished",
+        "refresh finished",
+      ), events)
+    } finally {
+      client.close()
+    }
+  }
+
   @Test
   fun requestPreservesAuthenticationButTelemetryOmitsItsCredentialsAndSearchText() = runTest {
     val recorder = RecordingTelemetry()

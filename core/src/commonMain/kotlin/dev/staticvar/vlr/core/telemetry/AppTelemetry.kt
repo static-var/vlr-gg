@@ -12,6 +12,7 @@ public enum class TelemetryLevel { Debug, Info, Warning, Error }
 public enum class TelemetrySpanStatus { Ok, Error, Cancelled }
 
 public interface TelemetrySpan {
+  public fun startChild(operation: String, description: String): TelemetrySpan = NoOpTelemetrySpan
   public fun finish(status: TelemetrySpanStatus)
 }
 
@@ -61,11 +62,16 @@ public object AppTelemetry : TelemetryReporter {
 
   override fun startSpan(operation: String, description: String): TelemetrySpan {
     val span = telemetryOrNull { reporter.startSpan(operation, description) } ?: return NoOpTelemetrySpan
-    return object : TelemetrySpan {
-      override fun finish(status: TelemetrySpanStatus) {
-        telemetryOrNull { span.finish(status) }
-      }
-    }
+    return safeSpan(span)
+  }
+}
+
+private fun safeSpan(span: TelemetrySpan): TelemetrySpan = object : TelemetrySpan {
+  override fun startChild(operation: String, description: String): TelemetrySpan =
+    telemetryOrNull { safeSpan(span.startChild(operation, description)) } ?: NoOpTelemetrySpan
+
+  override fun finish(status: TelemetrySpanStatus) {
+    telemetryOrNull { span.finish(status) }
   }
 }
 

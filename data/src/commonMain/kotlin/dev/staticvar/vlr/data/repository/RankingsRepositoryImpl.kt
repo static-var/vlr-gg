@@ -7,6 +7,7 @@ package dev.staticvar.vlr.data.repository
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.core.telemetry.traceRefresh
 import dev.staticvar.vlr.data.mapper.toEntity
 import dev.staticvar.vlr.data.mapper.toRegionalRankings
 import dev.staticvar.vlr.domain.model.RegionalRanking
@@ -15,7 +16,6 @@ import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.rankings.RankingsDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 internal class RankingsRepositoryImpl(
   private val rankingsDataSource: RankingsDataSource,
@@ -37,24 +37,26 @@ internal class RankingsRepositoryImpl(
     .mapToList(dispatchers.io)
     .map { rankings -> rankings.toRegionalRankings().firstOrNull() }
 
-  override suspend fun refreshRankings(): Result<Unit> = withContext(dispatchers.io) {
+  override suspend fun refreshRankings(): Result<Unit> = traceRefresh(dispatchers.io, "refreshRankings") {
     rankingsDataSource.list().mapCatching { rankingDtos ->
-      database.transaction {
-        rankingsQueries.deleteAllRankings()
+      traceDatabase {
+        database.transaction {
+          rankingsQueries.deleteAllRankings()
 
-        rankingDtos.forEach { ranking ->
-          ranking.teams.forEach { team ->
-            val entity = team.toEntity(ranking.region)
-            rankingsQueries.insertRankingDetails(
-              team_id = entity.team_id,
-              region = entity.region,
-              team_name = entity.team_name,
-              team_logo = entity.team_logo,
-              country = entity.country,
-              rank = entity.rank,
-              points = entity.points,
-              last_updated = entity.last_updated,
-            )
+          rankingDtos.forEach { ranking ->
+            ranking.teams.forEach { team ->
+              val entity = team.toEntity(ranking.region)
+              rankingsQueries.insertRankingDetails(
+                team_id = entity.team_id,
+                region = entity.region,
+                team_name = entity.team_name,
+                team_logo = entity.team_logo,
+                country = entity.country,
+                rank = entity.rank,
+                points = entity.points,
+                last_updated = entity.last_updated,
+              )
+            }
           }
         }
       }

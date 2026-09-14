@@ -15,6 +15,7 @@ kotlin {
     namespace = "dev.staticvar.vlr.localsource"
     compileSdk = 37
     minSdk = 24
+    withHostTestBuilder {}
   }
 
   listOf(
@@ -30,6 +31,7 @@ kotlin {
   sourceSets {
     val commonMain by getting {
       dependencies {
+        implementation(projects.core)
         implementation(libs.kotlin.stdlib)
         implementation(libs.coroutines.core)
         implementation(libs.koin.core)

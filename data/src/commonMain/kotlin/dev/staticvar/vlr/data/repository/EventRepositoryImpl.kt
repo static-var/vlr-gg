@@ -8,6 +8,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.core.telemetry.traceRefresh
 import dev.staticvar.vlr.data.EventMatches
 import dev.staticvar.vlr.data.EventPrizes
 import dev.staticvar.vlr.data.EventStandings
@@ -149,97 +150,101 @@ internal class EventRepositoryImpl(
     }
   }
 
-  override suspend fun refreshEvents(): Result<Unit> = withContext(dispatchers.io) {
+  override suspend fun refreshEvents(): Result<Unit> = traceRefresh(dispatchers.io, "refreshEvents") {
     eventDataSource.list().mapCatching { dtos ->
-      database.transaction {
-        val existing = eventsQueries
-          .getEventsWithFavoriteStatus()
-          .executeAsList()
-          .associateBy { it.id }
-        val remoteIds = mutableSetOf<String>()
-        val overviewIds = eventOverviewQueries.getEventOverviewWithFavoriteStatus().executeAsList().map { it.id }.toSet()
+      traceDatabase {
+        database.transaction {
+          val existing = eventsQueries
+            .getEventsWithFavoriteStatus()
+            .executeAsList()
+            .associateBy { it.id }
+          val remoteIds = mutableSetOf<String>()
+          val overviewIds = eventOverviewQueries.getEventOverviewWithFavoriteStatus().executeAsList().map { it.id }.toSet()
 
-        dtos.forEachIndexed { index, dto ->
-          val entity = dto.toEntity()
-          if (entity.id.isBlank()) return@forEachIndexed
-          remoteIds += entity.id
-          eventOverviewQueries.insertEventOverview(dto.toOverviewEntity(index.toLong()))
-          val merged = mergeEventListEntity(entity, existing[entity.id])
-          persistEvent(merged)
+          dtos.forEachIndexed { index, dto ->
+            val entity = dto.toEntity()
+            if (entity.id.isBlank()) return@forEachIndexed
+            remoteIds += entity.id
+            eventOverviewQueries.insertEventOverview(dto.toOverviewEntity(index.toLong()))
+            val merged = mergeEventListEntity(entity, existing[entity.id])
+            persistEvent(merged)
+          }
+
+          (overviewIds - remoteIds).forEach { id -> eventOverviewQueries.deleteEventOverviewById(id) }
         }
-
-        (overviewIds - remoteIds).forEach { id -> eventOverviewQueries.deleteEventOverviewById(id) }
       }
     }
   }
 
-  override suspend fun refreshEventDetails(eventId: String): Result<Unit> = withContext(dispatchers.io) {
+  override suspend fun refreshEventDetails(eventId: String): Result<Unit> = traceRefresh(dispatchers.io, "refreshEventDetails") {
     eventDataSource.details(eventId).mapCatching { dto ->
       val normalizedDto = dto.copy(id = dto.id.ifBlank { eventId })
-      database.transaction {
-        val eventEntity = normalizedDto.toEventEntity().copy(id = eventId)
-        persistEvent(eventEntity)
+      traceDatabase {
+        database.transaction {
+          val eventEntity = normalizedDto.toEventEntity().copy(id = eventId)
+          persistEvent(eventEntity)
 
-        eventsQueries.deleteEventPrizes(eventId)
-        eventsQueries.deleteEventTeams(eventId)
-        eventsQueries.deleteEventStandings(eventId)
-        eventsQueries.deleteEventMatches(eventId)
+          eventsQueries.deleteEventPrizes(eventId)
+          eventsQueries.deleteEventTeams(eventId)
+          eventsQueries.deleteEventStandings(eventId)
+          eventsQueries.deleteEventMatches(eventId)
 
-        normalizedDto.toPrizeEntities().forEach { prize ->
-          eventsQueries.insertEventPrize(
-            event_id = prize.event_id,
-            position = prize.position,
-            prize = prize.prize,
-            team_id = prize.team_id,
-            team_name = prize.team_name,
-            team_logo_url = prize.team_logo_url,
-            team_country = prize.team_country,
-          )
-        }
+          normalizedDto.toPrizeEntities().forEach { prize ->
+            eventsQueries.insertEventPrize(
+              event_id = prize.event_id,
+              position = prize.position,
+              prize = prize.prize,
+              team_id = prize.team_id,
+              team_name = prize.team_name,
+              team_logo_url = prize.team_logo_url,
+              team_country = prize.team_country,
+            )
+          }
 
-        normalizedDto.toTeamEntities().forEach { team ->
-          eventsQueries.insertEventTeam(
-            event_id = team.event_id,
-            team_id = team.team_id,
-            team_name = team.team_name,
-            team_logo_url = team.team_logo_url,
-            seed = team.seed,
-          )
-        }
+          normalizedDto.toTeamEntities().forEach { team ->
+            eventsQueries.insertEventTeam(
+              event_id = team.event_id,
+              team_id = team.team_id,
+              team_name = team.team_name,
+              team_logo_url = team.team_logo_url,
+              seed = team.seed,
+            )
+          }
 
-        normalizedDto.toStandingEntities().forEach { standing ->
-          eventsQueries.insertEventStanding(
-            event_id = standing.event_id,
-            team_name = standing.team_name,
-            team_logo_url = standing.team_logo_url,
-            team_country = standing.team_country,
-            group_name = standing.group_name,
-            wins = standing.wins,
-            losses = standing.losses,
-            ties = standing.ties,
-            map_difference = standing.map_difference,
-            round_difference = standing.round_difference,
-            round_delta = standing.round_delta,
-          )
-        }
+          normalizedDto.toStandingEntities().forEach { standing ->
+            eventsQueries.insertEventStanding(
+              event_id = standing.event_id,
+              team_name = standing.team_name,
+              team_logo_url = standing.team_logo_url,
+              team_country = standing.team_country,
+              group_name = standing.group_name,
+              wins = standing.wins,
+              losses = standing.losses,
+              ties = standing.ties,
+              map_difference = standing.map_difference,
+              round_difference = standing.round_difference,
+              round_delta = standing.round_delta,
+            )
+          }
 
-        normalizedDto.toEventMatchLinkEntities().forEach { match ->
-          eventsQueries.insertEventMatchDetails(
-            event_id = match.event_id,
-            match_id = match.match_id,
-            time = match.time,
-            date = match.date,
-            eta = match.eta,
-            status = match.status,
-            team1_name = match.team1_name,
-            team1_region = match.team1_region,
-            team1_score = match.team1_score,
-            team2_name = match.team2_name,
-            team2_region = match.team2_region,
-            team2_score = match.team2_score,
-            round = match.round,
-            stage = match.stage,
-          )
+          normalizedDto.toEventMatchLinkEntities().forEach { match ->
+            eventsQueries.insertEventMatchDetails(
+              event_id = match.event_id,
+              match_id = match.match_id,
+              time = match.time,
+              date = match.date,
+              eta = match.eta,
+              status = match.status,
+              team1_name = match.team1_name,
+              team1_region = match.team1_region,
+              team1_score = match.team1_score,
+              team2_name = match.team2_name,
+              team2_region = match.team2_region,
+              team2_score = match.team2_score,
+              round = match.round,
+              stage = match.stage,
+            )
+          }
         }
       }
     }

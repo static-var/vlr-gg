@@ -26,5 +26,5 @@ actual class DatabaseDriverFactory(private val context: Context) {
         RoomToKmpMigration.migrate(AndroidSqliteDriver(db))
       }
     },
-  )
+  ).let(::TracingSqlDriver)
 }

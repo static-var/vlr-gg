@@ -8,6 +8,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.core.telemetry.traceRefresh
 import dev.staticvar.vlr.data.MatchBans
 import dev.staticvar.vlr.data.MatchMapPlayerStats
 import dev.staticvar.vlr.data.MatchMapRounds
@@ -175,26 +176,28 @@ internal class MatchRepositoryImpl(
     }
   }
 
-  override suspend fun refreshMatches(): Result<Unit> = withContext(dispatchers.io) {
+  override suspend fun refreshMatches(): Result<Unit> = traceRefresh(dispatchers.io, "refreshMatches") {
     matchDataSource.list().mapCatching { dtos ->
-      database.transaction {
-        val existing = matchesQueries
-          .getMatchesWithFavoriteStatus()
-          .executeAsList()
-          .associateBy { it.id }
-        val existingOverviewIds = overviewQueries.getMatchOverview().executeAsList().map { it.id }.toSet()
-        val remoteIds = mutableSetOf<String>()
+      traceDatabase {
+        database.transaction {
+          val existing = matchesQueries
+            .getMatchesWithFavoriteStatus()
+            .executeAsList()
+            .associateBy { it.id }
+          val existingOverviewIds = overviewQueries.getMatchOverview().executeAsList().map { it.id }.toSet()
+          val remoteIds = mutableSetOf<String>()
 
-        dtos.forEach { dto ->
-          val entity = dto.toEntity()
-          if (entity.id.isBlank()) return@forEach
-          remoteIds += entity.id
-          overviewQueries.upsertMatchOverview(dto.toOverviewEntity())
-          upsertMatch(mergeMatchListEntity(entity, existing[entity.id]))
+          dtos.forEach { dto ->
+            val entity = dto.toEntity()
+            if (entity.id.isBlank()) return@forEach
+            remoteIds += entity.id
+            overviewQueries.upsertMatchOverview(dto.toOverviewEntity())
+            upsertMatch(mergeMatchListEntity(entity, existing[entity.id]))
+          }
+
+          val staleIds = existingOverviewIds - remoteIds
+          staleIds.forEach { id -> overviewQueries.deleteMatchOverviewById(id) }
         }
-
-        val staleIds = existingOverviewIds - remoteIds
-        staleIds.forEach { id -> overviewQueries.deleteMatchOverviewById(id) }
       }
     }
   }
@@ -203,101 +206,103 @@ internal class MatchRepositoryImpl(
    * Refreshes detailed match data from remote and stores in database.
    * Called when user views match details.
    */
-  override suspend fun refreshMatchDetails(matchId: String): Result<Unit> = withContext(dispatchers.io) {
+  override suspend fun refreshMatchDetails(matchId: String): Result<Unit> = traceRefresh(dispatchers.io, "refreshMatchDetails") {
     matchDataSource.details(matchId).mapCatching { dto ->
-      database.transaction {
-        // Delete existing related data
-        matchesQueries.deleteMatchMaps(matchId)
-        matchesQueries.deleteMatchRounds(matchId)
-        matchesQueries.deleteMatchPlayerStats(matchId)
-        matchesQueries.deleteMatchBans(matchId)
-        matchesQueries.deleteMatchVideos(matchId)
-        matchesQueries.deletePreviousEncounters(matchId)
+      traceDatabase {
+        database.transaction {
+          // Delete existing related data
+          matchesQueries.deleteMatchMaps(matchId)
+          matchesQueries.deleteMatchRounds(matchId)
+          matchesQueries.deleteMatchPlayerStats(matchId)
+          matchesQueries.deleteMatchBans(matchId)
+          matchesQueries.deleteMatchVideos(matchId)
+          matchesQueries.deletePreviousEncounters(matchId)
 
-        // Insert updated match
-        val cachedMatch = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
-        val remoteMatch = dto.toMatchEntity(cachedStatus = cachedMatch?.status).copy(id = matchId)
-        val matchEntity = remoteMatch.copy(
-          event_id = remoteMatch.event_id ?: cachedMatch?.event_id,
-          team1_id = remoteMatch.team1_id.ifBlank { cachedMatch?.team1_id.orEmpty() },
-          team2_id = remoteMatch.team2_id.ifBlank { cachedMatch?.team2_id.orEmpty() },
-        )
-        upsertMatch(matchEntity)
-
-        // Insert related data
-        dto.toMapEntities(matchId).forEach { map ->
-          matchesQueries.insertMatchMap(
-            match_id = map.match_id,
-            map_name = map.map_name,
-            team1_score = map.team1_score,
-            team2_score = map.team2_score,
-            duration = map.duration,
-            stats_url = map.stats_url,
+          // Insert updated match
+          val cachedMatch = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
+          val remoteMatch = dto.toMatchEntity(cachedStatus = cachedMatch?.status).copy(id = matchId)
+          val matchEntity = remoteMatch.copy(
+            event_id = remoteMatch.event_id ?: cachedMatch?.event_id,
+            team1_id = remoteMatch.team1_id.ifBlank { cachedMatch?.team1_id.orEmpty() },
+            team2_id = remoteMatch.team2_id.ifBlank { cachedMatch?.team2_id.orEmpty() },
           )
-        }
+          upsertMatch(matchEntity)
 
-        dto.toRoundEntities(matchId).forEach { round ->
-          matchesQueries.insertMatchRound(
-            match_id = round.match_id,
-            map_name = round.map_name,
-            round_number = round.round_number,
-            round_score = round.round_score,
-            winner = round.winner,
-            side = round.side,
-            win_type = round.win_type,
-          )
-        }
+          // Insert related data
+          dto.toMapEntities(matchId).forEach { map ->
+            matchesQueries.insertMatchMap(
+              match_id = map.match_id,
+              map_name = map.map_name,
+              team1_score = map.team1_score,
+              team2_score = map.team2_score,
+              duration = map.duration,
+              stats_url = map.stats_url,
+            )
+          }
 
-        dto.toPlayerStatEntities(matchId).forEach { stats ->
-          matchesQueries.insertPlayerStats(
-            match_id = stats.match_id,
-            map_name = stats.map_name,
-            player_id = stats.player_id,
-            player_name = stats.player_name,
-            team_id = stats.team_id,
-            agent_name = stats.agent_name,
-            agent_image_url = stats.agent_image_url,
-            rating = stats.rating,
-            acs = stats.acs,
-            kills = stats.kills,
-            deaths = stats.deaths,
-            assists = stats.assists,
-            kast_percent = stats.kast_percent,
-            adr = stats.adr,
-            hs_percent = stats.hs_percent,
-            first_kills = stats.first_kills,
-            first_deaths = stats.first_deaths,
-            first_kills_diff = stats.first_kills_diff,
-          )
-        }
+          dto.toRoundEntities(matchId).forEach { round ->
+            matchesQueries.insertMatchRound(
+              match_id = round.match_id,
+              map_name = round.map_name,
+              round_number = round.round_number,
+              round_score = round.round_score,
+              winner = round.winner,
+              side = round.side,
+              win_type = round.win_type,
+            )
+          }
 
-        dto.toBanEntities(matchId).forEach { ban ->
-          matchesQueries.insertMatchBan(
-            match_id = ban.match_id,
-            ban_type = ban.ban_type,
-            ban_value = ban.ban_value,
-          )
-        }
+          dto.toPlayerStatEntities(matchId).forEach { stats ->
+            matchesQueries.insertPlayerStats(
+              match_id = stats.match_id,
+              map_name = stats.map_name,
+              player_id = stats.player_id,
+              player_name = stats.player_name,
+              team_id = stats.team_id,
+              agent_name = stats.agent_name,
+              agent_image_url = stats.agent_image_url,
+              rating = stats.rating,
+              acs = stats.acs,
+              kills = stats.kills,
+              deaths = stats.deaths,
+              assists = stats.assists,
+              kast_percent = stats.kast_percent,
+              adr = stats.adr,
+              hs_percent = stats.hs_percent,
+              first_kills = stats.first_kills,
+              first_deaths = stats.first_deaths,
+              first_kills_diff = stats.first_kills_diff,
+            )
+          }
 
-        dto.toVideoEntities(matchId).forEach { video ->
-          matchesQueries.insertMatchVideo(
-            match_id = video.match_id,
-            video_type = video.video_type,
-            name = video.name,
-            url = video.url,
-          )
-        }
+          dto.toBanEntities(matchId).forEach { ban ->
+            matchesQueries.insertMatchBan(
+              match_id = ban.match_id,
+              ban_type = ban.ban_type,
+              ban_value = ban.ban_value,
+            )
+          }
 
-        dto.toPreviousEncounterEntities(matchId).forEach { encounter ->
-          ensurePreviousEncounterMatchExists(matchEntity, encounter)
-          matchesQueries.insertPreviousEncounter(
-            match_id = encounter.match_id,
-            previous_match_id = encounter.previous_match_id,
-            team1_name = encounter.team1_name,
-            team1_score = encounter.team1_score,
-            team2_name = encounter.team2_name,
-            team2_score = encounter.team2_score,
-          )
+          dto.toVideoEntities(matchId).forEach { video ->
+            matchesQueries.insertMatchVideo(
+              match_id = video.match_id,
+              video_type = video.video_type,
+              name = video.name,
+              url = video.url,
+            )
+          }
+
+          dto.toPreviousEncounterEntities(matchId).forEach { encounter ->
+            ensurePreviousEncounterMatchExists(matchEntity, encounter)
+            matchesQueries.insertPreviousEncounter(
+              match_id = encounter.match_id,
+              previous_match_id = encounter.previous_match_id,
+              team1_name = encounter.team1_name,
+              team1_score = encounter.team1_score,
+              team2_name = encounter.team2_name,
+              team2_score = encounter.team2_score,
+            )
+          }
         }
       }
     }

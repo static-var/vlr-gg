@@ -17,5 +17,5 @@ actual class DatabaseDriverFactory {
   ).also { driver ->
     // Enable foreign key constraints
     driver.execute(null, "PRAGMA foreign_keys = ON", 0)
-  }
+  }.let(::TracingSqlDriver)
 }
