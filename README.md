@@ -2,6 +2,8 @@
 
 An independent, unofficial companion for competitive Valorant. Follow matches, scores, events, rankings and news, and keep your favorites together.
 
+![Valorant Esports previews showing match schedules, match details, favorites, events and rankings](art/valorant-esports-preview.png)
+
 Formerly **VLR.gg (Unofficial)**. The Android package remains `dev.staticvar.vlr`, so existing users can upgrade without installing a separate app.
 
 [Website](https://valorantesports.staticvar.dev/) · [Google Play](https://play.google.com/store/apps/details?id=dev.staticvar.vlr) · [Open beta](https://play.google.com/apps/testing/dev.staticvar.vlr) · [GitHub releases](https://github.com/static-var/vlr-gg/releases) · [Privacy policy](https://valorantesports.staticvar.dev/privacy/) · [Terms](https://valorantesports.staticvar.dev/terms/)
