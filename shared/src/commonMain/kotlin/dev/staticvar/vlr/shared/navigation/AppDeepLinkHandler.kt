@@ -52,6 +52,9 @@ internal data class AppDeepLinkRequest(
     when (val target = destination) {
       AppDeepLinkDestination.Home -> appState.selectRoot(AppRoute.Home)
       is AppDeepLinkDestination.Match -> appState.showRootMatchDetails(target.matchId)
+      is AppDeepLinkDestination.Event -> appState.showRootEventDetails(target.eventId)
+      is AppDeepLinkDestination.Team -> appState.showRootTeamDetails(target.teamId)
+      is AppDeepLinkDestination.Player -> appState.showRootPlayerDetails(target.playerId)
     }
   }
 }
@@ -60,9 +63,15 @@ internal sealed interface AppDeepLinkDestination {
   data object Home : AppDeepLinkDestination
 
   data class Match(val matchId: String) : AppDeepLinkDestination
+
+  data class Event(val eventId: String) : AppDeepLinkDestination
+
+  data class Team(val teamId: String) : AppDeepLinkDestination
+
+  data class Player(val playerId: String) : AppDeepLinkDestination
 }
 
-private val matchDeepLink = Regex("^vlr://match/([0-9]+)(?:[?#].*)?$")
+private val detailsDeepLink = Regex("^vlr://(match|event|team|player)/([0-9]+)(?:[?#].*)?$")
 private val homeDeepLink = Regex("^vlr://home/?(?:[?#].*)?$")
 
 internal fun parseAppDeepLink(url: String): AppDeepLinkDestination? {
@@ -70,6 +79,13 @@ internal fun parseAppDeepLink(url: String): AppDeepLinkDestination? {
   if (homeDeepLink.matches(normalizedUrl)) {
     return AppDeepLinkDestination.Home
   }
-  val match = matchDeepLink.matchEntire(normalizedUrl) ?: return null
-  return AppDeepLinkDestination.Match(matchId = match.groupValues[1])
+  val match = detailsDeepLink.matchEntire(normalizedUrl) ?: return null
+  val sourceId = match.groupValues[2]
+  return when (match.groupValues[1]) {
+    "match" -> AppDeepLinkDestination.Match(sourceId)
+    "event" -> AppDeepLinkDestination.Event(sourceId)
+    "team" -> AppDeepLinkDestination.Team(sourceId)
+    "player" -> AppDeepLinkDestination.Player(sourceId)
+    else -> null
+  }
 }
