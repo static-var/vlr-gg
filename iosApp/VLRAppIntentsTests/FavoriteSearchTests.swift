@@ -67,9 +67,127 @@ final class FavoriteSearchTests: XCTestCase {
         XCTAssertEqual(try SearchFavorite.decode(Data(contentsOf: file)), [])
     }
 
+    func testFailedRemovalSurvivesRestartWithoutNewPublication() async throws {
+        let file = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".json")
+        defer { removeSnapshot(file) }
+        let index = FailingSearchIndex()
+        let store = FavoriteSearchStore(file: file, index: index)
+        let team = SearchFavorite(id: "team:1", kind: .team, sourceId: "1", title: "Team")
+        try await store.sync([team])
+        index.failNextDeletion = true
+        do {
+            try await store.sync([])
+            XCTFail("Expected deletion failure")
+        } catch { XCTAssertEqual((error as NSError).domain, "SpotlightTestFailure") }
+        let restarted = FavoriteSearchStore(file: file, index: index)
+        XCTAssertEqual(try restarted.records(), [])
+        XCTAssertNil(restarted.url(for: team.id))
+        try await restarted.sync()
+        XCTAssertTrue(index.items.isEmpty)
+        XCTAssertEqual(try SearchFavorite.decode(Data(contentsOf: file)), [])
+    }
+
+    func testReindexAcknowledgesDurableStateBeforeFailedIndexing() async throws {
+        let file = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".json")
+        defer { removeSnapshot(file) }
+        let team = SearchFavorite(id: "team:1", kind: .team, sourceId: "1", title: "Team")
+        try JSONEncoder().encode([team]).write(to: file)
+        let index = FailingSearchIndex()
+        index.failNextAddition = true
+        let store = FavoriteSearchStore(file: file, index: index)
+        let acknowledged = expectation(description: "Request saved before acknowledgement")
+        let failed = expectation(description: "Indexing fails after acknowledgement")
+        index.onAdditionFailure = { failed.fulfill() }
+        store.searchableIndex(index, reindexAllSearchableItemsWithAcknowledgementHandler: {
+            XCTAssertEqual(try? SearchFavorite.decode(Data(contentsOf: file.appendingPathExtension("desired"))), [team])
+            XCTAssertTrue(index.failNextAddition)
+            acknowledged.fulfill()
+        })
+        await fulfillment(of: [acknowledged, failed], timeout: 2)
+        XCTAssertTrue(index.items.isEmpty)
+        let restarted = FavoriteSearchStore(file: file, index: index)
+        try await restarted.sync()
+        XCTAssertEqual(Set(index.items.keys), [team.id])
+    }
+
+    func testReindexDoesNotAcknowledgeWhenStateCannotBeSaved() async throws {
+        let parent = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try Data().write(to: parent)
+        defer { try? FileManager.default.removeItem(at: parent) }
+        let store = FavoriteSearchStore(file: parent.appendingPathComponent("snapshot.json"), index: FailingSearchIndex())
+        let acknowledged = expectation(description: "Unsaved request must not be acknowledged")
+        acknowledged.isInverted = true
+        store.searchableIndex(FailingSearchIndex(), reindexSearchableItemsWithIdentifiers: ["team:1"], acknowledgementHandler: {
+            acknowledged.fulfill()
+        })
+        await fulfillment(of: [acknowledged], timeout: 0.2)
+    }
+
+    func testMigrationRetainsLegacyUntilReplacementSucceedsAndRetriesCleanup() async throws {
+        let file = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".json")
+        defer { removeSnapshot(file) }
+        let named = FailingSearchIndex()
+        let legacy = FailingSearchIndex()
+        let team = SearchFavorite(id: "team:1", kind: .team, sourceId: "1", title: "Team")
+        let unrelated = SearchFavorite(id: "player:2", kind: .player, sourceId: "2", title: "Unrelated")
+        legacy.items = [team.id: team.searchableItem(domain: FavoriteSearchStore.legacyDomain),
+                        unrelated.id: unrelated.searchableItem(domain: "unrelated")]
+        let store = FavoriteSearchStore(file: file, index: named, legacyIndex: legacy)
+        named.failNextAddition = true
+        do {
+            try await store.sync([team])
+            XCTFail("Expected addition failure")
+        } catch { XCTAssertEqual((error as NSError).domain, "SpotlightTestFailure") }
+        XCTAssertEqual(Set(legacy.items.keys), [team.id, unrelated.id])
+        legacy.failNextDeletion = true
+        do {
+            try await store.sync()
+            XCTFail("Expected migration cleanup failure")
+        } catch { XCTAssertEqual((error as NSError).domain, "SpotlightTestFailure") }
+        let restarted = FavoriteSearchStore(file: file, index: named, legacyIndex: legacy)
+        try await restarted.sync()
+        XCTAssertEqual(Set(named.items.keys), [team.id])
+        XCTAssertEqual(Set(legacy.items.keys), [unrelated.id])
+        legacy.failNextDeletion = true
+        try await restarted.sync()
+        XCTAssertTrue(legacy.failNextDeletion)
+    }
+
+    func testRealIndexMigrationPreservesSameIdentifierInNamedIndex() async throws {
+        guard CSSearchableIndex.isIndexingAvailable() else { throw XCTSkip("CoreSpotlight unavailable") }
+        let identifier = UUID().uuidString
+        let domain = "dev.staticvar.vlr.migration-test." + identifier
+        let legacyDomain = domain + ".legacy"
+        let named = CSSearchableIndex(name: domain)
+        let legacy = CSSearchableIndex.default()
+        let file = FileManager.default.temporaryDirectory.appendingPathComponent(identifier + ".json")
+        defer { removeSnapshot(file) }
+        let teamId = identifier.utf8.map { String($0) }.joined()
+        let team = SearchFavorite(id: "team:" + teamId, kind: .team, sourceId: teamId, title: "Migrated favorite")
+        do {
+            let old = SearchFavorite(id: team.id, kind: team.kind, sourceId: team.sourceId, title: "Legacy favorite")
+            try await legacy.indexSearchableItems([old.searchableItem(domain: legacyDomain)])
+            try await assertIndexed(domain: legacyDomain, titles: [old.title])
+            let store = FavoriteSearchStore(file: file, index: named, domain: domain, legacyIndex: legacy, legacyDomain: legacyDomain)
+            try await store.sync([team])
+            try await assertIndexed(domain: legacyDomain, titles: [])
+            try await assertIndexed(domain: domain, titles: [team.title])
+            try await store.sync([])
+            try await assertIndexed(domain: domain, titles: [])
+        } catch {
+            try? await legacy.deleteSearchableItems(withDomainIdentifiers: [legacyDomain])
+            try? await named.deleteSearchableItems(withDomainIdentifiers: [domain])
+            throw error
+        }
+        try await legacy.deleteSearchableItems(withDomainIdentifiers: [legacyDomain])
+        try await named.deleteSearchableItems(withDomainIdentifiers: [domain])
+    }
+
     private func removeSnapshot(_ file: URL) {
         try? FileManager.default.removeItem(at: file)
-        try? FileManager.default.removeItem(at: file.appendingPathExtension("tracked-ids"))
+        for suffix in ["tracked-ids", "desired", "named-index"] {
+            try? FileManager.default.removeItem(at: file.appendingPathExtension(suffix))
+        }
     }
 
     func testDecodeRejectsMismatchedDuplicateAndUnsafeIdentifiers() throws {
@@ -176,6 +294,7 @@ private final class SearchQueryResults: @unchecked Sendable {
 private final class FailingSearchIndex: CSSearchableIndex, @unchecked Sendable {
     var items: [String: CSSearchableItem] = [:]
     var failNextAddition = false
+    var onAdditionFailure: (() -> Void)?
     var insertBeforeFailing = false
     var failNextDeletion = false
     private let failure = NSError(domain: "SpotlightTestFailure", code: 1)
@@ -185,6 +304,7 @@ private final class FailingSearchIndex: CSSearchableIndex, @unchecked Sendable {
             failNextAddition = false
             if insertBeforeFailing, let item = items.first { self.items[item.uniqueIdentifier] = item }
             completionHandler?(failure)
+            onAdditionFailure?()
             return
         }
         for item in items { self.items[item.uniqueIdentifier] = item }

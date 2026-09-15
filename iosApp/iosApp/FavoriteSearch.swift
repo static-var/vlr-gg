@@ -55,27 +55,41 @@ enum SearchError: Error {
 
 @MainActor
 final class FavoriteSearchStore: NSObject, CSSearchableIndexDelegate {
-    static let shared = FavoriteSearchStore()
-    nonisolated static let domain = "dev.staticvar.vlr.favorites"
+    static let shared = FavoriteSearchStore(legacyIndex: .default())
+    nonisolated static let domain = "dev.staticvar.vlr.search-favorites"
+    nonisolated static let legacyDomain = "dev.staticvar.vlr.favorites"
     private static let logger = Logger(subsystem: "dev.staticvar.vlr.ios", category: "FavoriteSearch")
     private let file: URL
     private let index: CSSearchableIndex
     private let domain: String
+    private let legacyIndex: CSSearchableIndex?
+    private let legacyDomain: String
     private var tail: Task<Void, Error>?
     private var latestDesired: [SearchFavorite]?
     private var trackedIdsFile: URL { file.appendingPathExtension("tracked-ids") }
 
-    init(file: URL? = nil, index: CSSearchableIndex = .default(), domain: String = FavoriteSearchStore.domain) {
+    private var desiredFile: URL { file.appendingPathExtension("desired") }
+    private var migrationFile: URL { file.appendingPathExtension("named-index") }
+
+    init(file: URL? = nil, index: CSSearchableIndex = CSSearchableIndex(name: "dev.staticvar.vlr.favorites"),
+         domain: String = FavoriteSearchStore.domain, legacyIndex: CSSearchableIndex? = nil,
+         legacyDomain: String = FavoriteSearchStore.legacyDomain) {
         self.file = file ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("search-favorites.json")
         self.index = index
         self.domain = domain
+        self.legacyIndex = legacyIndex
+        self.legacyDomain = legacyDomain
         super.init()
         index.indexDelegate = self
     }
 
     func records() throws -> [SearchFavorite] {
-        try latestDesired ?? committedRecords()
+        if let latestDesired { return latestDesired }
+        if FileManager.default.fileExists(atPath: desiredFile.path) {
+            return try SearchFavorite.decode(Data(contentsOf: desiredFile))
+        }
+        return try committedRecords()
     }
 
     private func committedRecords() throws -> [SearchFavorite] {
@@ -102,8 +116,15 @@ final class FavoriteSearchStore: NSObject, CSSearchableIndexDelegate {
         try await enqueue(records).value
     }
 
+    private func saveDesired(_ records: [SearchFavorite]) throws {
+        try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try JSONEncoder().encode(records).write(to: desiredFile, options: .atomic)
+    }
+
     private func enqueue(_ records: [SearchFavorite]?) -> Task<Void, Error> {
         if let records { latestDesired = records }
+        do { try saveDesired(try self.records()) }
+        catch { return Task { throw error } }
         let previous = tail
         let task = Task { @MainActor in
             _ = await previous?.result
@@ -121,6 +142,10 @@ final class FavoriteSearchStore: NSObject, CSSearchableIndexDelegate {
             let staleIds = knownIds.subtracting(desiredIds)
             if !staleIds.isEmpty {
                 try await index.deleteSearchableItems(withIdentifiers: staleIds.sorted())
+            }
+            if let legacyIndex, !FileManager.default.fileExists(atPath: migrationFile.path) {
+                try await legacyIndex.deleteSearchableItems(withDomainIdentifiers: [legacyDomain])
+                try Data().write(to: migrationFile, options: .atomic)
             }
             try JSONEncoder().encode(desired).write(to: file, options: .atomic)
             do {
@@ -140,8 +165,14 @@ final class FavoriteSearchStore: NSObject, CSSearchableIndexDelegate {
 
     nonisolated func searchableIndex(_ searchableIndex: CSSearchableIndex, reindexAllSearchableItemsWithAcknowledgementHandler acknowledgementHandler: @escaping () -> Void) {
         Task { @MainActor in
-            await report(enqueue(nil))
+            do {
+                try saveDesired(try records())
+            } catch {
+                Self.logger.error("Could not save Spotlight reindex request: \(error.localizedDescription, privacy: .public)")
+                return
+            }
             acknowledgementHandler()
+            await report(enqueue(nil))
         }
     }
 
