@@ -45,7 +45,7 @@ internal fun AboutFeedbackDialog(onDismiss: () -> Unit, onSubmit: (String) -> Bo
       Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
         if (queued) {
           Text(
-            text = "Thanks for helping improve Valorant Esports. Your message will be sent when a connection is available.",
+            text = "Thanks for helping improve Val Esports. Your message will be sent when a connection is available.",
             style = Prism.typography.bodyLarge,
             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
           )

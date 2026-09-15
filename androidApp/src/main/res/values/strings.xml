@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Valorant Esports</string>
+    <string name="app_name">Val Esports</string>
     <string name="legacy_matches_widget_name">All matches</string>
     <string name="legacy_matches_widget_description">Live and upcoming matches</string>
     <string name="legacy_matches_widget_loading">Updating matches…</string>
@@ -15,10 +15,10 @@
     <string name="widget_preview_format">BO3 · Upper Final</string>
     <string name="widget_versus">vs</string>
     <string name="widget_title">UPCOMING FAVORITES</string>
-    <string name="widget_not_initialized_title">Open Valorant Esports to get started</string>
+    <string name="widget_not_initialized_title">Open Val Esports to get started</string>
     <string name="widget_not_initialized_body">The widget will show matches after the app saves your favorites.</string>
     <string name="widget_no_favorites_title">No favorites yet</string>
-    <string name="widget_no_favorites_body">Favorite a team, player, event, or match in Valorant Esports.</string>
+    <string name="widget_no_favorites_body">Favorite a team, player, event, or match in Val Esports.</string>
     <string name="widget_no_upcoming_title">No upcoming matches</string>
     <string name="widget_no_upcoming_body">New matches will appear after the next background refresh.</string>
     <string name="widget_time_tbd">TBD</string>

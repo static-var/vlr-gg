@@ -11,14 +11,14 @@ public object BundledRelease {
   public const val id: String = "valorant-esports-launch"
   public const val title: String = "What's new?"
   public const val introduction: String =
-    "Your esports companion has a new name. Explore the latest improvements in Valorant Esports."
-  public const val bannerTitle: String = "New in Valorant Esports"
+    "Your esports companion has a new name. Explore the latest improvements in Val Esports."
+  public const val bannerTitle: String = "New in Val Esports"
   public const val bannerAction: String = "See what's new"
 
   public val highlights: List<Highlight> = listOf(
     Highlight(
-      title = "Meet Valorant Esports",
-      description = "The app you knew as VLR is now Valorant Esports, with a refreshed look built around your matches and events.",
+      title = "Meet Val Esports",
+      description = "The app you knew as VLR is now Val Esports, with a refreshed look built around your matches and events.",
     ),
     Highlight(
       title = "Match and event details, redesigned",

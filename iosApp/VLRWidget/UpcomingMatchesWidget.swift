@@ -115,7 +115,7 @@ struct UpcomingMatchesWidgetView: View {
         Group {
             if let snapshot = entry.snapshot {
                 if !snapshot.hasFavorites {
-                    status(title: "No favorites", message: "Favorite a team, player, event, or match in Valorant Esports.")
+                    status(title: "No favorites", message: "Favorite a team, player, event, or match in Val Esports.")
                 } else if visibleMatches.isEmpty {
                     status(title: "No matches", message: "There are no live or upcoming matches for your favorites.")
                 } else {
@@ -270,7 +270,7 @@ struct UpcomingMatchesWidgetView: View {
     private func status(title: String, message: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             if family != .systemSmall {
-                Text("Valorant Esports")
+                Text("Val Esports")
                     .font(textFont(.caption).weight(.black))
                     .tracking(1.1)
                     .foregroundStyle(theme.accentColor)

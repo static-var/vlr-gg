@@ -53,7 +53,7 @@ internal fun MatchCalendarEvent.toICalendar(generatedAt: Instant = Clock.System.
       listOf(
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//Valorant Esports//Match Calendar//EN",
+        "PRODID:-//Val Esports//Match Calendar//EN",
         "CALSCALE:GREGORIAN",
         "BEGIN:VEVENT",
         "UID:match-$uid@vlr.gg",

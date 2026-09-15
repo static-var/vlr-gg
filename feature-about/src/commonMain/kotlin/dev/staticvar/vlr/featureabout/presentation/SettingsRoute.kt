@@ -100,13 +100,13 @@ public fun SettingsRoute(
         onClick = onWhatsNew,
       )
       SettingsLinkCard(
-        title = "About Valorant Esports",
+        title = "About Val Esports",
         description = "The project, the people, and the data.",
         onClick = onAbout,
       )
       SettingsLinkCard(
         title = "Privacy policy",
-        description = "How Valorant Esports handles your data.",
+        description = "How Val Esports handles your data.",
         onClick = { uriHandler.openUri(AppWebsite.Privacy) },
       )
       SettingsLinkCard(
@@ -253,7 +253,7 @@ private fun SettingsLinkCard(title: String, description: String, onClick: () -> 
 private fun SettingsVersionFooter() {
   Spacer(Modifier.height(80.dp))
   Text(
-    text = "Valorant Esports\n${appVersionText()}",
+    text = "Val Esports\n${appVersionText()}",
     modifier = Modifier.fillMaxWidth(),
     style = Prism.typography.caption,
     color = Prism.color.captionColor,
