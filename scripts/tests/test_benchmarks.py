@@ -1,5 +1,8 @@
 """Tests for AndroidX benchmark archive and comparison reports."""
 
+import csv
+import hashlib
+import tracemalloc
 import importlib.util
 import json
 import tempfile
@@ -234,6 +237,65 @@ class ComparisonTest(unittest.TestCase):
         markdown = benchmarks.comparison_markdown(report)
         self.assertIn("Current archive: This archive came from an emulator", markdown)
         self.assertIn("does not test or claim statistical significance", markdown)
+
+
+
+
+class ReportSafetyTest(unittest.TestCase):
+    def test_portable_filenames_across_platforms(self):
+        for source in (
+            "/Users/alice/run.trace",
+            r"C:\Users\alice\run.trace",
+            r"\\server\share\run.trace",
+            r"..\private\run.trace",
+            "../private/run.trace",
+        ):
+            with self.subTest(source=source):
+                self.assertEqual("run.trace", benchmarks.portable_filename(source))
+        self.assertEqual("device/run.trace", benchmarks.portable_filename("device/run.trace"))
+
+    def test_archive_and_comparison_csv_escape_formulas_preserving_numbers(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for prefix in ("=", "+", "-", "@", "\t", "\r", "\n"):
+                source = androidx_result()
+                item = source["benchmarks"][0]
+                item["className"] = prefix + "Class"
+                item["metrics"] = {prefix + "metric": {"median": -2.0, "runs": [-2.0]}}
+                item["sampledMetrics"] = {}
+                summary = {"benchmarks": [benchmarks.normalize_benchmark(item, "result.json", 0)]}
+                for name, rows in (
+                    ("summary", list(benchmarks.archive_rows(summary))),
+                    ("comparison", benchmarks.compare_values(summary, summary)),
+                ):
+                    with self.subTest(prefix=prefix, report=name):
+                        path = root / (name + ".csv")
+                        benchmarks.write_csv(path, rows, list(rows[0]))
+                        with path.open(newline="") as stream:
+                            row = next(csv.DictReader(stream))
+                        self.assertTrue(row["benchmarkId"].startswith("'" + prefix))
+                        self.assertEqual("'" + prefix + "metric", row["metric"])
+                        self.assertEqual("-2.0", row["value" if name == "summary" else "baseline"])
+
+    def test_trace_hash_is_correct_with_bounded_memory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "input"
+            source.mkdir()
+            chunk = b"trace" * 200_000
+            digest = hashlib.sha256()
+            with (source / "large.trace").open("wb") as stream:
+                for _ in range(16):
+                    stream.write(chunk)
+                    digest.update(chunk)
+            tracemalloc.start()
+            try:
+                result = benchmarks.copy_trace_artifacts(source, root / "archive", 20_000_000)
+                _, peak = tracemalloc.get_traced_memory()
+            finally:
+                tracemalloc.stop()
+            self.assertEqual(digest.hexdigest(), result["copied"][0]["sha256"])
+            self.assertLess(peak, 5_000_000)
 
 
 if __name__ == "__main__":

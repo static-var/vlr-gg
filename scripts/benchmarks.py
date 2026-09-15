@@ -12,7 +12,7 @@ import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Iterable
 
 
@@ -98,9 +98,10 @@ def portable_relative(path: Path, root: Path) -> str:
 def portable_filename(value: Any) -> str | None:
     if not isinstance(value, str) or not value:
         return None
-    candidate = Path(value)
-    if candidate.is_absolute() or ".." in candidate.parts:
-        return candidate.name
+    candidate = PurePosixPath(value)
+    windows = PureWindowsPath(value)
+    if candidate.is_absolute() or windows.is_absolute() or ".." in candidate.parts or ".." in windows.parts:
+        return windows.name
     return candidate.as_posix()
 
 
@@ -405,7 +406,11 @@ def copy_trace_artifacts(source: Path, archive: Path, byte_limit: int) -> dict[s
         destination = archive / "artifacts" / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, destination)
-        record["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+        digest = hashlib.sha256()
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+        record["sha256"] = digest.hexdigest()
         copied.append(record)
         used += size
     return {"byteLimit": byte_limit, "copiedBytes": used, "copied": copied, "omitted": omitted}
@@ -434,7 +439,15 @@ def write_csv(path: Path, rows: Iterable[dict[str, Any]], fieldnames: list[str])
     with path.open("w", encoding="utf-8", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(
+            {
+                key: "'" + value
+                if isinstance(value, str) and value.startswith(("=", "+", "-", "@", "\t", "\r", "\n"))
+                else value
+                for key, value in row.items()
+            }
+            for row in rows
+        )
 
 
 def format_number(value: Any, signed: bool = False) -> str:
