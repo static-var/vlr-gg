@@ -28,6 +28,31 @@ class AppDeepLinkHandlerTest {
   }
 
   @Test
+  fun favoriteDetailLinksNavigateFromColdAndWarmState() {
+    val destinations = listOf(
+      "vlr://team/12" to AppRoute.TeamDetails("12"),
+      "vlr://event/34?source=spotlight" to AppRoute.EventDetails("34"),
+      "vlr://player/56#details" to AppRoute.PlayerDetails("56"),
+      "vlr://match/78" to AppRoute.MatchDetails("78"),
+    )
+    for ((url, destination) in destinations) {
+      val handler = AppDeepLinkHandler()
+      assertTrue(handler.openUrl(url))
+      val coldApp = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
+      val coldRequest = handler.state.value.pendingRequest!!
+      coldRequest.navigate(coldApp)
+      handler.consume(coldRequest.id)
+      assertEquals(listOf<NavKey>(AppRoute.Home, destination), coldApp.backStack)
+      assertNull(handler.state.value.pendingRequest)
+
+      val warmApp = VlrAppState(mutableListOf<NavKey>(AppRoute.Home, AppRoute.Events))
+      assertTrue(handler.openUrl(url))
+      handler.state.value.pendingRequest!!.navigate(warmApp)
+      assertEquals(listOf<NavKey>(AppRoute.Home, AppRoute.Events, destination), warmApp.backStack)
+    }
+  }
+
+  @Test
   fun homeUrlCreatesHomeRequest() {
     val handler = AppDeepLinkHandler()
 
@@ -49,7 +74,10 @@ class AppDeepLinkHandlerTest {
       "vlr://match/not-a-number",
       "vlr://match/",
       "vlr://match/11757778/more",
-      "vlr://event/11757778",
+      "vlr://news/11757778",
+      "vlr://team/not-a-number",
+      "vlr://event/",
+      "vlr://player/123/more",
       "https://vlr.gg/11757778",
     )
 

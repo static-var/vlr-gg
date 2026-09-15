@@ -16,6 +16,7 @@
 		36317EF4FEADC72B01C12E91 /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6EDCAF155347F5E7F4CE33 /* WidgetSnapshotStore.swift */; };
 		44E37D45D9CD7737C66D6C33 /* TestGeneratedBuildConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E64F35EE4AE373F79416126 /* TestGeneratedBuildConfig.swift */; };
 		46EC9AF029F1281A4995F80D /* VLRWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */; };
+		4C32F668A1F6E32D83DC9E3F /* FavoriteSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973F66BBC21F094338D4832F /* FavoriteSearchTests.swift */; };
 		561A93F4EB86F4A8116CB8DA /* SiriActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */; };
 		56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */; };
 		6542E1733BC9E555E81E3BE4 /* space_grotesk_regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 957FAA0B433E8180DF7E3F12 /* space_grotesk_regular.ttf */; };
@@ -28,6 +29,7 @@
 		A549AA5B4708B66DBB9797F1 /* GeneratedBuildConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95B8B8B53351C500C2EACA2 /* GeneratedBuildConfig.swift */; };
 		B31C480DFB8D81AA0EB42F35 /* VLRWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */; };
 		B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */; };
+		B5774EBA09C9BF2544502554 /* FavoriteSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFB84F263D52FFC7C65EE64 /* FavoriteSearch.swift */; };
 		BC44AC391E69BD6D0F675BE0 /* UpcomingMatchesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */; };
 		BD5E492DF0CC95877D4531D5 /* VLRWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 197F5175E495A017DFACA2B8 /* VLRWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E533BD85594DF2FC0118721D /* VlrSearchShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653806FD344BFF107FB555E8 /* VlrSearchShortcut.swift */; };
@@ -78,6 +80,7 @@
 		4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetRefresh.swift; sourceTree = "<group>"; };
 		48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetContract.swift; sourceTree = "<group>"; };
 		4C823E9D6BCD587C88AD7701 /* VLRWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VLRWidget.entitlements; sourceTree = "<group>"; };
+		5FFB84F263D52FFC7C65EE64 /* FavoriteSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteSearch.swift; sourceTree = "<group>"; };
 		6062090215F075FB02BCE24E /* VLRWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetBundle.swift; sourceTree = "<group>"; };
 		653806FD344BFF107FB555E8 /* VlrSearchShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VlrSearchShortcut.swift; sourceTree = "<group>"; };
 		668CECA83ACC03A83C85A623 /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
@@ -85,6 +88,7 @@
 		86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedBuildConfig.swift; sourceTree = "<group>"; };
 		8BA2322F344FD239F08D9EF9 /* space_grotesk_OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = space_grotesk_OFL.txt; sourceTree = "<group>"; };
 		957FAA0B433E8180DF7E3F12 /* space_grotesk_regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = space_grotesk_regular.ttf; sourceTree = "<group>"; };
+		973F66BBC21F094338D4832F /* FavoriteSearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteSearchTests.swift; sourceTree = "<group>"; };
 		BA6EDCAF155347F5E7F4CE33 /* WidgetSnapshotStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotStore.swift; sourceTree = "<group>"; };
 		C117AD187833E2513BD2F553 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
@@ -120,6 +124,7 @@
 			children = (
 				F543015C899423D4B01CEB2E /* Assets.xcassets */,
 				CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
+				5FFB84F263D52FFC7C65EE64 /* FavoriteSearch.swift */,
 				86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */,
 				C117AD187833E2513BD2F553 /* Info.plist */,
 				C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */,
@@ -147,6 +152,7 @@
 		5890E6EFCDBBF39DF066E59C /* VLRAppIntentsTests */ = {
 			isa = PBXGroup;
 			children = (
+				973F66BBC21F094338D4832F /* FavoriteSearchTests.swift */,
 				E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */,
 			);
 			path = VLRAppIntentsTests;
@@ -402,6 +408,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
+				B5774EBA09C9BF2544502554 /* FavoriteSearch.swift in Sources */,
 				8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */,
 				B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */,
 				46EC9AF029F1281A4995F80D /* VLRWidgetModels.swift in Sources */,
@@ -415,6 +422,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C32F668A1F6E32D83DC9E3F /* FavoriteSearchTests.swift in Sources */,
 				561A93F4EB86F4A8116CB8DA /* SiriActionsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

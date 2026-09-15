@@ -37,6 +37,7 @@ fun MainViewController(
   authToken: String? = null,
   deepLinkHandler: AppDeepLinkHandler = AppDeepLinkHandler(),
   onWidgetSnapshotChanged: (String) -> Unit = {},
+  onSearchFavoritesChanged: (String) -> Unit = {},
 ): UIViewController {
   ensureUnhandledExceptionLoggingInstalled()
 
@@ -50,6 +51,7 @@ fun MainViewController(
         App(
           deepLinkHandler = deepLinkHandler,
           onWidgetSnapshotChanged = { onWidgetSnapshotChanged(it) },
+          onSearchFavoritesChanged = { onSearchFavoritesChanged(it) },
         )
       }
     }
