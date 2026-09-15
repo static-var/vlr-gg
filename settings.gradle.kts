@@ -32,6 +32,7 @@ rootProject.name = "VLR"
 
 include(":androidApp")
 include(":baselineProfile")
+include(":benchmark")
 
 include(":iosApp")
 

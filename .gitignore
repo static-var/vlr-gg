@@ -242,3 +242,6 @@ fabric.properties
 
 iosApp/VLRWidget/GeneratedBuildConfig.swift
 /docs/
+
+# Local benchmark archives and traces
+/benchmark-results/
