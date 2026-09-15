@@ -3,13 +3,14 @@ options:
   minimumXcodeGenVersion: 2.45.0
   deploymentTarget:
     iOS: "16.0"
+configFiles:
+  Debug: ../version.xcconfig
+  Release: ../version.xcconfig
 settings:
   base:
     SWIFT_VERSION: 5.0
     PRODUCT_BUNDLE_IDENTIFIER: dev.staticvar.vlr.ios
     PRODUCT_NAME: VLR
-    MARKETING_VERSION: 1.0.0
-    CURRENT_PROJECT_VERSION: 1
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
     GENERATE_INFOPLIST_FILE: NO

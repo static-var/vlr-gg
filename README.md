@@ -77,7 +77,9 @@ Release builds enable R8 code shrinking, obfuscation and resource shrinking. Sav
 
 See [baselineProfile/README.md](baselineProfile/README.md) for generation commands, device requirements and covered journeys. Profile generation is separate from release builds.
 
-The [beta workflow](.github/workflows/internal_play_store_release_dispatcher.yml) accepts a version name and an increasing Android version code. It builds a signed AAB, uploads it to the open-testing track, creates a GitHub release and sends the configured Telegram announcement. Changes must then be submitted for review in Play Console; an upload does not mean the update is available to users.
+Edit [version.xcconfig](version.xcconfig) to set the shared version: `MARKETING_VERSION` is the version name and `CURRENT_PROJECT_VERSION` is the build number. Android, the iOS app, the iOS widget, and release workflows all read this file. Increase the build number before each new store upload. Debug and release builds use the same version values.
+
+The [beta workflow](.github/workflows/internal_play_store_release_dispatcher.yml) uses the checked-in shared version. It builds a signed AAB, uploads it to the open-testing track, creates a GitHub release and sends the configured Telegram announcement. Changes must then be submitted for review in Play Console; an upload does not mean the update is available to users.
 
 Play Store release notes live in [distribution/whatsnew/whatsnew-en-US](distribution/whatsnew/whatsnew-en-US) and must stay below 500 characters. In-app highlights live in [BundledRelease.kt](feature-about/src/commonMain/kotlin/dev/staticvar/vlr/featureabout/presentation/BundledRelease.kt). Keep both focused on changes users can understand. Change the bundled release identifier only when users should see a new announcement.
 
