@@ -18,7 +18,7 @@ jobs:
       SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Read release version
         run: python3 scripts/read-release-version.py >> "$GITHUB_ENV"
 
