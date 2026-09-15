@@ -1,7 +1,7 @@
 [versions]
 benchmark = "1.5.0"
 sentry-kmp = "0.27.0"
-sentry-android = "8.55.0"
+sentry-android = "8.56.0"
 sentry-gradle = "6.21.0"
 kotlin = "2.4.20"
 compose-multiplatform = "1.12.0"
