@@ -11,6 +11,7 @@ import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.getString
 import vlr.feature_matches.generated.resources.Res
 import vlr.feature_matches.generated.resources.share_attribution
+import vlr.feature_matches.generated.resources.share_live
 import vlr.feature_matches.generated.resources.share_match
 import vlr.feature_matches.generated.resources.share_time_tba
 
@@ -29,10 +30,11 @@ private fun matchScheduledShareTime(scheduledTime: String?, timeZone: TimeZone, 
 internal suspend fun matchShareText(matches: List<MatchPreview>, timeZone: TimeZone = TimeZone.currentSystemDefault()): String =
   buildString {
     val timeTba = getString(Res.string.share_time_tba)
+    val liveLabel = getString(Res.string.share_live)
     matches.forEach { match ->
       appendLine(
         getString(Res.string.share_match, match.team1.name, match.team2.name,
-          matchScheduledShareTime(getMatchPreviewTime(match.time, timeZone), timeZone, timeTba), "https://www.vlr.gg/${match.id}"),
+          matchShareTime(match, liveLabel, timeTba, getMatchPreviewTime(match.time, timeZone), timeZone), "https://www.vlr.gg/${match.id}"),
       )
       appendLine()
     }

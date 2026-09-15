@@ -52,8 +52,15 @@ class MatchSharingTest {
       text,
     )
     assertEquals("LIVE", matchShareTime(match("789", MatchStatus.LIVE), "LIVE", "Time TBA", null, TimeZone.UTC))
-    val liveText = matchShareText(listOf(scheduled.copy(status = MatchStatus.LIVE)), TimeZone.UTC)
-    assertTrue(liveText.contains("Sep 7, 20:00 UTC"))
+    val liveText = matchShareText(
+      listOf(scheduled.copy(status = MatchStatus.LIVE), unscheduled.copy(status = MatchStatus.LIVE)),
+      TimeZone.UTC,
+    )
+    assertEquals(
+      "Alpha vs Beta | LIVE | https://www.vlr.gg/123\n\n" +
+        "Alpha vs Beta | LIVE | https://www.vlr.gg/456\n\nShared via Val Esports",
+      liveText,
+    )
     assertEquals("Time TBA", matchShareTime(scheduled.copy(time = "invalid"), "LIVE", "Time TBA", null, TimeZone.UTC))
   }
 
