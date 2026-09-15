@@ -9,14 +9,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.glance.ColorFilter
 import androidx.glance.GlanceTheme
-import androidx.glance.color.ColorProviders
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
-import androidx.glance.Image
-import androidx.glance.ImageProvider
 import androidx.glance.action.Action
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
@@ -35,13 +30,6 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.width
-import androidx.glance.layout.size
-import androidx.glance.text.FontFamily
-import androidx.glance.text.FontWeight
-import androidx.glance.text.Text
-import androidx.glance.text.TextAlign
-import androidx.glance.text.TextStyle
-import androidx.glance.unit.ColorProvider
 import dev.staticvar.vlr.android.MainActivity
 import dev.staticvar.vlr.android.R
 import kotlinx.coroutines.Dispatchers
@@ -120,26 +108,23 @@ private fun WidgetContent(
       snapshot == null -> EmptyState(
         title = strings.notInitializedTitle,
         body = strings.notInitializedBody,
-        theme = theme,
       )
       !snapshot.hasFavorites -> EmptyState(
         title = strings.noFavoritesTitle,
         body = strings.noFavoritesBody,
-        theme = theme,
       )
       currentMatches.isEmpty() -> EmptyState(
         title = strings.noUpcomingTitle,
         body = strings.noUpcomingBody,
-        theme = theme,
       )
       else -> {
         val match = currentMatches.first()
         val modifier = GlanceModifier.fillMaxWidth().defaultWeight()
           .clickable(matchActions.getValue(match.id))
         if (small) {
-          SmallMatch(match, strings, theme, snapshot.spoilersHidden, modifier)
+          PrismMatchCard(match, strings, snapshot.spoilersHidden, small = true, modifier = modifier)
         } else {
-          Scoreboard(match, strings, theme, snapshot.spoilersHidden, modifier)
+          PrismMatchCard(match, strings, snapshot.spoilersHidden, small = false, modifier = modifier)
         }
       }
     }
@@ -147,142 +132,91 @@ private fun WidgetContent(
 }
 
 @Composable
-private fun SmallMatch(
+internal fun PrismMatchCard(
   match: WidgetMatch,
   strings: WidgetStrings,
-  theme: ColorProviders,
   spoilersHidden: Boolean,
-  modifier: GlanceModifier,
+  small: Boolean,
+  modifier: GlanceModifier = GlanceModifier,
+  compact: Boolean = false,
 ) {
-  Column(
-    modifier = modifier,
-    horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-    verticalAlignment = Alignment.Vertical.CenterVertically,
-  ) {
-    if (match.status == WidgetMatchStatus.LIVE) {
-      WidgetText(strings.live, theme.primary, 11, bold = true)
-    }
-    Spacer(GlanceModifier.defaultWeight())
-    WidgetText(match.team1, theme.onSurface, 14, maxLines = 2)
-    if (match.status == WidgetMatchStatus.LIVE && spoilersHidden) {
-      HiddenScores(strings, theme)
-    } else {
-      WidgetText(
-        if (match.status == WidgetMatchStatus.LIVE) strings.score(match.score1, match.score2) else strings.versus,
-        theme.onSurfaceVariant,
-        12,
+  Column(modifier) {
+    Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
+      PrismWidgetText(
+        if (match.status == WidgetMatchStatus.LIVE) strings.live else strings.upcoming,
+        11, PrismTextTone.Accent, modifier = GlanceModifier.defaultWeight(),
+      )
+      PrismWidgetText(
+        when {
+          match.status == WidgetMatchStatus.LIVE -> match.format
+          small -> strings.weekday(match.startTimeEpochMillis)
+          else -> strings.startTime(match.startTimeEpochMillis)
+        },
+        11, PrismTextTone.Secondary, align = androidx.glance.text.TextAlign.End,
+        modifier = GlanceModifier.width(if (small) 48.dp else 130.dp),
       )
     }
-    WidgetText(match.team2, theme.onSurface, 14, maxLines = 2)
-    Spacer(GlanceModifier.defaultWeight())
-    if (match.status != WidgetMatchStatus.LIVE) {
-      WidgetText(strings.startTime(match.startTimeEpochMillis, multiline = false), theme.onSurfaceVariant, 12)
-    }
-  }
-}
-
-@Composable
-private fun Scoreboard(
-  match: WidgetMatch,
-  strings: WidgetStrings,
-  theme: ColorProviders,
-  spoilersHidden: Boolean,
-  modifier: GlanceModifier,
-) {
-  Column(modifier = modifier) {
-    WidgetText(match.event.ifBlank { strings.title }, theme.primary, 12, align = TextAlign.Start)
-    Spacer(GlanceModifier.height(6.dp))
-    Separator(theme)
-    Row(
-      modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
+    Column(
+      GlanceModifier.fillMaxWidth().defaultWeight(),
       verticalAlignment = Alignment.Vertical.CenterVertically,
     ) {
-      ScoreboardTeam(match.team1, match.score1, match.status, spoilersHidden, theme, GlanceModifier.defaultWeight())
-      Column(
-        modifier = GlanceModifier.width(76.dp).padding(horizontal = 6.dp),
-        horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-      ) {
-        WidgetText(
-          if (match.status == WidgetMatchStatus.LIVE) strings.live else strings.startTime(match.startTimeEpochMillis),
-          if (match.status == WidgetMatchStatus.LIVE) theme.primary else theme.onSurfaceVariant,
-          12,
-          maxLines = 2,
-        )
-        if (match.status == WidgetMatchStatus.LIVE && spoilersHidden) HiddenScores(strings, theme)
-      }
-      ScoreboardTeam(match.team2, match.score2, match.status, spoilersHidden, theme, GlanceModifier.defaultWeight())
+      PrismTeamRow(match.team1, match.score1, match.status, spoilersHidden, strings, small, compact)
+      Spacer(GlanceModifier.height(5.dp))
+      PrismTeamRow(match.team2, match.score2, match.status, spoilersHidden, strings, small, compact)
     }
-    WidgetText(listOf(match.format, match.stage).filter(String::isNotBlank).joinToString(" · "), theme.onSurfaceVariant, 11)
+    if (compact) return@Column
+    if (small) {
+      if (match.status != WidgetMatchStatus.LIVE) {
+        PrismWidgetText(strings.clockTime(match.startTimeEpochMillis), 12, PrismTextTone.Secondary)
+      } else if (spoilersHidden) {
+        PrismWidgetText(strings.scoresHidden, 10, PrismTextTone.Secondary)
+      }
+    } else {
+      PrismWidgetText(
+        listOf(match.event, match.format, match.stage).filter(String::isNotBlank).joinToString(" · "),
+        11, PrismTextTone.Secondary, modifier = GlanceModifier.fillMaxWidth(),
+      )
+    }
   }
 }
 
 @Composable
-private fun ScoreboardTeam(
+private fun PrismTeamRow(
   name: String,
   score: Int?,
   status: WidgetMatchStatus,
   spoilersHidden: Boolean,
-  theme: ColorProviders,
-  modifier: GlanceModifier,
+  strings: WidgetStrings,
+  small: Boolean,
+  compact: Boolean,
 ) {
-  Column(modifier = modifier, horizontalAlignment = Alignment.Horizontal.CenterHorizontally) {
-    WidgetText(if (status == WidgetMatchStatus.LIVE && !spoilersHidden) score?.toString() ?: "-" else "-", theme.onSurface, 32)
-    WidgetText(name, theme.onSurface, 14, maxLines = 2)
+  Row(GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Vertical.CenterVertically) {
+    PrismWidgetText(name, if (compact) 14 else if (small) 16 else 20, maxLines = 2, modifier = GlanceModifier.defaultWeight())
+    Spacer(GlanceModifier.width(8.dp))
+    val visible = status == WidgetMatchStatus.LIVE && !spoilersHidden
+    PrismWidgetText(
+      if (visible) score?.toString() ?: "—" else "—",
+      if (compact) 20 else 28, PrismTextTone.Accent, align = androidx.glance.text.TextAlign.End,
+      description = if (status == WidgetMatchStatus.LIVE && spoilersHidden) strings.scoresHidden else null,
+      modifier = GlanceModifier.width(32.dp),
+    )
   }
 }
 
 @Composable
-private fun HiddenScores(strings: WidgetStrings, theme: ColorProviders) {
-  Image(
-    provider = ImageProvider(R.drawable.ic_widget_visibility_off),
-    contentDescription = strings.scoresHidden,
-    modifier = GlanceModifier.size(18.dp),
-    colorFilter = ColorFilter.tint(theme.onSurfaceVariant),
-  )
-}
-
-@Composable
-private fun Separator(theme: ColorProviders) {
-  Spacer(GlanceModifier.fillMaxWidth().height(1.dp).background(theme.outline))
-}
-
-@Composable
-private fun WidgetText(
-  text: String,
-  color: ColorProvider,
-  size: Int,
-  maxLines: Int = 1,
-  bold: Boolean = false,
-  align: TextAlign = TextAlign.Center,
-) {
-  Text(
-    text = text,
-    modifier = GlanceModifier.fillMaxWidth(),
-    maxLines = maxLines,
-    style = TextStyle(
-      color = color,
-      fontFamily = FontFamily.SansSerif,
-      fontSize = size.sp,
-      fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal,
-      textAlign = align,
-    ),
-  )
-}
-
-@Composable
-private fun EmptyState(title: String, body: String, theme: ColorProviders) {
+private fun EmptyState(title: String, body: String) {
   Column(
     modifier = GlanceModifier.fillMaxSize(),
     verticalAlignment = Alignment.Vertical.CenterVertically,
     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
   ) {
-    WidgetText(title, theme.onSurface, 16, maxLines = 2, bold = true)
+    PrismWidgetText(title, 16, maxLines = 2, modifier = GlanceModifier.fillMaxWidth())
     Spacer(GlanceModifier.height(6.dp))
-    WidgetText(body, theme.onSurfaceVariant, 12, maxLines = 3)
+    PrismWidgetText(body, 12, PrismTextTone.Secondary, maxLines = 3, modifier = GlanceModifier.fillMaxWidth())
   }
 }
 
-private class WidgetStrings(private val context: Context) {
+internal class WidgetStrings(private val context: Context) {
   val title: String = context.getString(R.string.widget_title)
   val notInitializedTitle: String = context.getString(R.string.widget_not_initialized_title)
   val notInitializedBody: String = context.getString(R.string.widget_not_initialized_body)
@@ -290,18 +224,19 @@ private class WidgetStrings(private val context: Context) {
   val noFavoritesBody: String = context.getString(R.string.widget_no_favorites_body)
   val noUpcomingTitle: String = context.getString(R.string.widget_no_upcoming_title)
   val noUpcomingBody: String = context.getString(R.string.widget_no_upcoming_body)
-  val versus: String = context.getString(R.string.widget_versus)
+  val upcoming: String = context.getString(R.string.widget_upcoming)
   val live: String = context.getString(R.string.widget_live)
   val scoresHidden: String = context.getString(R.string.widget_scores_hidden)
 
-  fun score(score1: Int?, score2: Int?): String =
-    context.getString(R.string.widget_live_score, score1?.toString() ?: "-", score2?.toString() ?: "-")
+  fun weekday(epochMillis: Long?): String = epochMillis?.let {
+    SimpleDateFormat("EEE", Locale.getDefault()).format(Date(it))
+  } ?: context.getString(R.string.widget_time_tbd)
 
-  fun startTime(epochMillis: Long?, multiline: Boolean = true): String {
-    if (epochMillis == null) return context.getString(R.string.widget_time_tbd)
-    val date = Date(epochMillis)
-    val day = SimpleDateFormat("EEE", Locale.getDefault()).format(date)
-    val time = android.text.format.DateFormat.getTimeFormat(context).format(date)
-    return day + (if (multiline) "\n" else ", ") + time
-  }
+  fun clockTime(epochMillis: Long?): String = epochMillis?.let {
+    android.text.format.DateFormat.getTimeFormat(context).format(Date(it))
+  } ?: context.getString(R.string.widget_time_tbd)
+
+  fun startTime(epochMillis: Long?): String =
+    if (epochMillis == null) context.getString(R.string.widget_time_tbd)
+    else "${weekday(epochMillis)} · ${clockTime(epochMillis)}"
 }
