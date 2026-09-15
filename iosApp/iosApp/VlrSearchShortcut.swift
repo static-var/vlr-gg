@@ -5,7 +5,7 @@ import shared
 
 struct OpenVlrIntent: AppIntent {
     static let title: LocalizedStringResource = "Open VLR"
-    static let description = IntentDescription("Open Valorant Esports, also known as VLR.")
+    static let description = IntentDescription("Open Val Esports, also known as VLR.")
     static let openAppWhenRun = true
 
     func perform() async throws -> some IntentResult {
@@ -53,15 +53,15 @@ struct OpenNextFavoriteMatchIntent: AppIntent {
                     : "From saved matches, opening \(match.team1) versus \(match.team2). The schedule may have changed."
             } else {
                 destination = VLRWidgetContract.appURL
-                response = "\(SiriMatchResponse.summary(result)) Opening Valorant Esports."
+                response = "\(SiriMatchResponse.summary(result)) Opening Val Esports."
             }
         } catch {
             try Task.checkCancellation()
             destination = VLRWidgetContract.appURL
-            response = "\(SiriMatchResponse.unavailable) Opening Valorant Esports."
+            response = "\(SiriMatchResponse.unavailable) Opening Val Esports."
         }
         guard await UIApplication.shared.open(destination) else {
-            throw NSError(domain: "ValorantEsports.Siri", code: 1, userInfo: [NSLocalizedDescriptionKey: "I couldn't open that match. Please open Valorant Esports and try again."])
+            throw NSError(domain: "ValorantEsports.Siri", code: 1, userInfo: [NSLocalizedDescriptionKey: "I couldn't open that match. Please open Val Esports and try again."])
         }
         return .result(value: destination, dialog: "\(response)")
     }
@@ -69,7 +69,7 @@ struct OpenNextFavoriteMatchIntent: AppIntent {
 
 struct SetSpoilerProtectionIntent: AppIntent {
     static let title: LocalizedStringResource = "Set Spoiler Protection"
-    static let description = IntentDescription("Choose whether Valorant Esports hides match scores.")
+    static let description = IntentDescription("Choose whether Val Esports hides match scores.")
     static let openAppWhenRun = false
 
     @Parameter(title: "Hide scores", default: true)
@@ -99,7 +99,7 @@ enum SiriMatchResponse {
 
     static func summary(_ result: SiriMatchResult) -> String {
         guard result.hasFavorites else {
-            return "Add favorite teams, players, matches, or events in Valorant Esports first."
+            return "Add favorite teams, players, matches, or events in Val Esports first."
         }
         guard let match = result.match else {
             return result.refreshed

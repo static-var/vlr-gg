@@ -33,7 +33,7 @@ final class SiriActionsTests: XCTestCase {
 
     func testNoFavoritesExplainsHowToStart() {
         let result = SiriMatchResult(match: nil, hasFavorites: false, refreshed: true)
-        XCTAssertEqual(SiriMatchResponse.summary(result), "Add favorite teams, players, matches, or events in Valorant Esports first.")
+        XCTAssertEqual(SiriMatchResponse.summary(result), "Add favorite teams, players, matches, or events in Val Esports first.")
     }
 
     func testSuccessfulEmptyScheduleSaysNoMatches() {

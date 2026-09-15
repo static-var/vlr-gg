@@ -47,7 +47,7 @@ class MatchSharingTest {
 
     assertEquals(
       "Alpha vs Beta | Sep 8, 01:30 Asia/Kolkata | https://www.vlr.gg/123\n\n" +
-        "Alpha vs Beta | Time TBA | https://www.vlr.gg/456\n\nShared via Valorant Esports",
+        "Alpha vs Beta | Time TBA | https://www.vlr.gg/456\n\nShared via Val Esports",
       text,
     )
     assertEquals("LIVE", matchShareTime(match("789", MatchStatus.LIVE), TimeZone.UTC))

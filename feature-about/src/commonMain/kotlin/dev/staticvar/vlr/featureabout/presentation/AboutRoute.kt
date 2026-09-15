@@ -106,7 +106,7 @@ private fun AboutIdentity() {
         itemVerticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
-          text = "Valorant Esports",
+          text = "Val Esports",
           style = Prism.typography.display.copy(fontSize = 40.sp, lineHeight = 44.sp, letterSpacing = (-1).sp),
           color = Prism.color.accent,
         )
@@ -145,7 +145,7 @@ private fun AboutIntroduction() {
 private fun AboutWebsiteLinks() {
   Column {
     AboutSectionHeading("Website & policies")
-    AboutLink(title = "Visit Valorant Esports", url = AppWebsite.Home)
+    AboutLink(title = "Visit Val Esports", url = AppWebsite.Home)
     PrismDivider()
     AboutLink(title = "Privacy policy", url = AppWebsite.Privacy)
     PrismDivider()

@@ -32,7 +32,7 @@ internal fun UiDevice.browseNewsAndSettings() {
   navigateTo("Home", "Your Favorites")
   requireObject(By.desc("Settings")).click(100)
   requireObject(By.text("// MAKE IT YOURS."))
-  val aboutTitle = By.text("About Valorant Esports")
+  val aboutTitle = By.text("About Val Esports")
   scrollTo(aboutTitle)
   requireObject(By.clickable(true).hasDescendant(aboutTitle)).activate()
   requireObject(By.text("About"))
