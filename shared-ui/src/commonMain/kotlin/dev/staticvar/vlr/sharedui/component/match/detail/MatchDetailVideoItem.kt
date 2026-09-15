@@ -11,6 +11,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.vlr.domain.model.VideoReference
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_video_label
 
 /**
  * Compact stream or VOD action for match detail media sections.
@@ -36,7 +39,8 @@ public fun MatchDetailVideoItem(
   }
 }
 
+@Composable
 private fun VideoReference.matchDetailVideoLabel(typeLabel: String): String {
   val title = name.ifBlank { url }.ifBlank { typeLabel }
-  return "${typeLabel.uppercase()}: $title"
+  return stringResource(Res.string.match_event_video_label, typeLabel.uppercase(), title)
 }

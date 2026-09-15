@@ -5,13 +5,13 @@
 package dev.staticvar.vlr.sharedui.component.common
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +36,21 @@ import dev.staticvar.designsystem.component.sheet.PrismModalSheet
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateIllustration
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.shared_close
+import vlr.shared_ui.generated.resources.shared_copied
+import vlr.shared_ui.generated.resources.shared_copy_stack_trace
+import vlr.shared_ui.generated.resources.shared_error_details
+import vlr.shared_ui.generated.resources.shared_load_error_message
+import vlr.shared_ui.generated.resources.shared_load_failed
+import vlr.shared_ui.generated.resources.shared_offline_empty
+import vlr.shared_ui.generated.resources.shared_offline_saved
+import vlr.shared_ui.generated.resources.shared_offline_title
+import vlr.shared_ui.generated.resources.shared_refresh_error_message
+import vlr.shared_ui.generated.resources.shared_refresh_failed
+import vlr.shared_ui.generated.resources.shared_retry
+import vlr.shared_ui.generated.resources.shared_show_details
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -48,11 +63,23 @@ public fun SharedLoadError(
 ) {
   val isOnline = LocalIsOnline.current
   val artwork = if (isOnline) EmptyStateArtwork.UnknownError else EmptyStateArtwork.NoInternet
-  val title = if (!isOnline) "You’re offline" else if (centered) "Could not load data" else "Could not refresh data"
-  val message = if (!isOnline) {
-    if (centered) "Reconnect to the internet. This screen will update automatically." else "Showing saved content. Reconnect to get updates."
+  val title = if (!isOnline) {
+    stringResource(Res.string.shared_offline_title)
+  } else if (centered) {
+    stringResource(Res.string.shared_load_failed)
   } else {
-    if (centered) "Something went wrong. Try loading this screen again." else "Your saved content is still available. Try again."
+    stringResource(Res.string.shared_refresh_failed)
+  }
+  val message = if (!isOnline) {
+    if (centered) stringResource(Res.string.shared_offline_empty) else stringResource(Res.string.shared_offline_saved)
+  } else {
+    if (centered) {
+      stringResource(
+        Res.string.shared_load_error_message,
+      )
+    } else {
+      stringResource(Res.string.shared_refresh_error_message)
+    }
   }
   var showDetails by remember(errorMessage, errorDetails) { mutableStateOf(false) }
   val actions: @Composable () -> Unit = {
@@ -60,8 +87,12 @@ public fun SharedLoadError(
       FlowRow(
         horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs, Alignment.CenterHorizontally),
       ) {
-        PrismButton(onClick = onRefresh, style = PrismButtonStyle.Tertiary) { Text("Retry") }
-        PrismButton(onClick = { showDetails = true }, style = PrismButtonStyle.Tertiary) { Text("Show details") }
+        PrismButton(onClick = onRefresh, style = PrismButtonStyle.Tertiary) {
+          Text(stringResource(Res.string.shared_retry))
+        }
+        PrismButton(onClick = {
+          showDetails = true
+        }, style = PrismButtonStyle.Tertiary) { Text(stringResource(Res.string.shared_show_details)) }
       }
     }
   }
@@ -104,31 +135,32 @@ public fun SharedLoadError(
 
 @Suppress("DEPRECATION")
 @Composable
-private fun ErrorDetailsSheet(
-  visible: Boolean,
-  errorMessage: String,
-  errorDetails: String?,
-  onDismiss: () -> Unit,
-) {
+private fun ErrorDetailsSheet(visible: Boolean, errorMessage: String, errorDetails: String?, onDismiss: () -> Unit) {
   val clipboard = LocalClipboardManager.current
   val details = errorDetails ?: errorMessage
   var copied by remember(details, visible) { mutableStateOf(false) }
   PrismModalSheet(
     visible = visible,
     onDismissRequest = onDismiss,
-    paneTitle = "Error details",
+    paneTitle = stringResource(Res.string.shared_error_details),
     header = {
-      Text("Error details", style = Prism.typography.sectionTitle)
+      Text(stringResource(Res.string.shared_error_details), style = Prism.typography.sectionTitle)
     },
     footer = {
-      PrismButton(onClick = onDismiss, style = PrismButtonStyle.Tertiary) { Text("Close") }
+      PrismButton(onClick = onDismiss, style = PrismButtonStyle.Tertiary) {
+        Text(stringResource(Res.string.shared_close))
+      }
       PrismButton(
         onClick = {
           clipboard.setText(AnnotatedString(details))
           copied = true
         },
         style = PrismButtonStyle.Secondary,
-      ) { Text(if (copied) "Copied" else "Copy stack trace") }
+      ) {
+        Text(
+          if (copied) stringResource(Res.string.shared_copied) else stringResource(Res.string.shared_copy_stack_trace),
+        )
+      }
     },
   ) {
     Text(errorMessage, style = Prism.typography.bodyLarge, color = Prism.color.danger)

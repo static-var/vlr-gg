@@ -6,12 +6,7 @@ package dev.staticvar.vlr.featurematches.presentation
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.foundation.clickable
-import androidx.compose.ui.semantics.Role
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,10 +21,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
-import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
-import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,36 +32,62 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
-import dev.staticvar.vlr.featurematches.presentation.mascot.matchMascotCues
-import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
-import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
-import dev.staticvar.vlr.sharedui.mascot.rememberMascot
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
-import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
-import dev.staticvar.designsystem.component.section.PrismSectionTitle
-import dev.staticvar.designsystem.component.state.PrismStateMessage
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.loader.PrismLoaderSize
+import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchVideos
-import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadItem
-import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
-import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailPreviewHeaderItem
-import dev.staticvar.vlr.sharedui.component.match.detail.resolveSelectedMapIndex
-import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
-import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
+import dev.staticvar.vlr.featurematches.presentation.mascot.matchMascotCues
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
+import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
+import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadItem
+import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
+import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
+import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailPreviewHeaderItem
+import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
+import dev.staticvar.vlr.sharedui.component.match.detail.resolveSelectedMapIndex
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
+import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
+import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
+import dev.staticvar.vlr.sharedui.mascot.rememberMascot
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.text.resolve
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_matches.generated.resources.Res
+import vlr.feature_matches.generated.resources.add_match_to_favorites
+import vlr.feature_matches.generated.resources.details_will_appear_when_this_match_is_published
+import vlr.feature_matches.generated.resources.favorite_match
+import vlr.feature_matches.generated.resources.loading_match
+import vlr.feature_matches.generated.resources.loading_match_details
+import vlr.feature_matches.generated.resources.map_statistics_have_not_been_published_for_this_match
+import vlr.feature_matches.generated.resources.maps_scores_and_player_stats
+import vlr.feature_matches.generated.resources.match
+import vlr.feature_matches.generated.resources.media
+import vlr.feature_matches.generated.resources.no_match_breakdown_yet
+import vlr.feature_matches.generated.resources.no_match_details_yet
+import vlr.feature_matches.generated.resources.remove_match_from_favorites
+import vlr.feature_matches.generated.resources.stream
+import vlr.feature_matches.generated.resources.streams_vods
+import vlr.feature_matches.generated.resources.updating_favorite
+import vlr.feature_matches.generated.resources.vod
 
 @Composable
 public fun MatchDetailsRoute(
@@ -166,7 +186,7 @@ internal fun MatchDetailsScreen(
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       MatchDetailsChrome(
-        title = "Match",
+        title = stringResource(Res.string.match),
         isLoading = uiState.isLoading || uiState.isDetailLoadPending,
         isRefreshing = uiState.isRefreshing,
         hasContent = match != null,
@@ -182,7 +202,7 @@ internal fun MatchDetailsScreen(
       when {
         (!isOnline || uiState.isLoading || uiState.isDetailLoadPending || uiState.isRefreshing) && match == null -> MatchDetailsLoading(
           modifier = Modifier.fillMaxSize(),
-          label = "Loading match",
+          label = stringResource(Res.string.loading_match),
         )
 
         uiState.errorMessage != null && match == null ->
@@ -196,8 +216,8 @@ internal fun MatchDetailsScreen(
 
         match == null -> SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveMatches,
-          title = "No match details yet",
-          message = "Details will appear when this match is published.",
+          title = stringResource(Res.string.no_match_details_yet),
+          message = stringResource(Res.string.details_will_appear_when_this_match_is_published),
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
 
@@ -230,8 +250,8 @@ internal fun MatchDetailsScreen(
         MascotCelebration(
           visible = true,
           character = mascotCharacter,
-          message = cue.message,
-          secondaryMessage = cue.secondaryMessage,
+          message = cue.message.resolve(),
+          secondaryMessage = cue.secondaryMessage?.resolve(),
           onFinished = mascot::onFinished,
           modifier = Modifier.align(Alignment.BottomEnd).navigationBarsPadding().padding(bottom = 88.dp),
         )
@@ -259,7 +279,7 @@ private fun MatchDetailsChrome(
   isLoading: Boolean,
   isRefreshing: Boolean,
   hasContent: Boolean,
-  favoriteErrorMessage: String?,
+  favoriteErrorMessage: StringResource?,
   errorMessage: String?,
   errorDetails: String?,
   onBack: () -> Unit,
@@ -268,7 +288,7 @@ private fun MatchDetailsChrome(
   Column {
     SharedScreenTitleBar(
       title = title,
-      subtitle = "Maps, scores and player stats",
+      subtitle = stringResource(Res.string.maps_scores_and_player_stats),
       onBackPress = onBack,
       actions = {
         SharedRefreshButton(
@@ -280,7 +300,7 @@ private fun MatchDetailsChrome(
         )
       },
     )
-    favoriteErrorMessage?.let { PrismStateMessage(text = it) }
+    favoriteErrorMessage?.let { PrismStateMessage(text = stringResource(it)) }
     SharedRefreshStatus(
       hasContent = hasContent,
       isRefreshing = false,
@@ -330,7 +350,7 @@ private fun MatchDetailsContent(
       )
     },
     loading = { loadingModifier ->
-      MatchDetailsLoading(label = "Loading match details", modifier = loadingModifier)
+      MatchDetailsLoading(label = stringResource(Res.string.loading_match_details), modifier = loadingModifier)
     },
   ) {
     matchDetailItems(
@@ -364,10 +384,10 @@ private fun MatchDetailsHero(
         selected = match.isFavorite,
         size = PrismFavoriteIconSize.Large,
         contentDescription = when {
-          isFavoritePending -> "Updating favorite"
-          isFavoriteInherited -> "Favorite match"
-          match.isFavorite -> "Remove match from favorites"
-          else -> "Add match to favorites"
+          isFavoritePending -> stringResource(Res.string.updating_favorite)
+          isFavoriteInherited -> stringResource(Res.string.favorite_match)
+          match.isFavorite -> stringResource(Res.string.remove_match_from_favorites)
+          else -> stringResource(Res.string.add_match_to_favorites)
         },
         modifier = Modifier.clickable(
           enabled = canToggleFavorite,
@@ -401,8 +421,8 @@ private fun LazyListScope.matchDetailItems(
     item {
       SharedEmptyState(
         artwork = EmptyStateArtwork.NoLiveMatches,
-        title = "No match breakdown yet",
-        message = "Map statistics have not been published for this match.",
+        title = stringResource(Res.string.no_match_breakdown_yet),
+        message = stringResource(Res.string.map_statistics_have_not_been_published_for_this_match),
         compact = true,
       )
     }
@@ -427,7 +447,7 @@ private fun LazyListScope.matchDetailItems(
     }
   }
   if (preferences.showMedia && (match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty())) {
-    item { PrismSectionTitle(title = "Streams & VODs", preLabel = "media") }
+    item { PrismSectionTitle(title = stringResource(Res.string.streams_vods), preLabel = stringResource(Res.string.media)) }
     item { MatchDetailMediaRow(videos = match.videos, onVideoSelected = onVideoSelected) }
   }
   item {
@@ -446,7 +466,7 @@ private fun MatchDetailMediaRow(videos: MatchVideos, onVideoSelected: (String) -
     videos.streams.forEach { video ->
       MatchDetailVideoItem(
         video = video,
-        typeLabel = "stream",
+        typeLabel = stringResource(Res.string.stream),
         onClick = video.url.takeIf(String::isNotBlank)?.let { url ->
           { onVideoSelected(url) }
         },
@@ -455,7 +475,7 @@ private fun MatchDetailMediaRow(videos: MatchVideos, onVideoSelected: (String) -
     videos.vods.forEach { video ->
       MatchDetailVideoItem(
         video = video,
-        typeLabel = "VOD",
+        typeLabel = stringResource(Res.string.vod),
         onClick = video.url.takeIf(String::isNotBlank)?.let { url ->
           { onVideoSelected(url) }
         },

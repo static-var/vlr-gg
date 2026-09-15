@@ -38,6 +38,9 @@ import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
 import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_live
 
 @Composable
 public fun MatchPreviewItem(
@@ -73,7 +76,7 @@ public fun MatchPreviewItem(
         val time = formatMatchPreviewTime(isoUtcTime = matchPreview.time)
         when (matchPreview.status) {
           MatchStatus.LIVE -> PrismTag(
-            text = "LIVE",
+            text = stringResource(Res.string.match_event_live),
             modifier = Modifier.matchSharedBounds(matchPreview.id, MatchSharedContent.Status),
             style = PrismTagStyle.Accent,
           )
@@ -90,7 +93,12 @@ public fun MatchPreviewItem(
           MatchStatus.UNKNOWN -> Unit
         }
       }
-      ScoreBox(matchId = matchPreview.id, team1 = matchPreview.team1, team2 = matchPreview.team2, state = matchPreview.status)
+      ScoreBox(
+        matchId = matchPreview.id,
+        team1 = matchPreview.team1,
+        team2 = matchPreview.team2,
+        state = matchPreview.status,
+      )
       Row(
         modifier = Modifier
           .fillMaxWidth()

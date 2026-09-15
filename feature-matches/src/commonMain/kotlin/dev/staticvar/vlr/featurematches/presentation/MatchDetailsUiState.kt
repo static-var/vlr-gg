@@ -7,6 +7,7 @@ package dev.staticvar.vlr.featurematches.presentation
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
+import org.jetbrains.compose.resources.StringResource
 
 public data class MatchDetailsUiState(
   val match: MatchDetails? = null,
@@ -17,7 +18,7 @@ public data class MatchDetailsUiState(
   val isRefreshing: Boolean = false,
   val isDetailLoadPending: Boolean = true,
   val isFavoritePending: Boolean = false,
-  val favoriteErrorMessage: String? = null,
+  val favoriteErrorMessage: StringResource? = null,
   val errorMessage: String? = null,
   val errorDetails: String? = null,
 ) {

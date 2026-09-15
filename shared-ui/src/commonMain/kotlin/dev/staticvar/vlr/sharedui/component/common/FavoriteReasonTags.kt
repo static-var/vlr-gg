@@ -14,6 +14,9 @@ import androidx.compose.ui.semantics.semantics
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.shared_favorite_source
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -29,10 +32,11 @@ internal fun FavoriteReasonTags(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
   ) {
     labels.forEach { label ->
+      val favoriteDescription = stringResource(Res.string.shared_favorite_source, label)
       PrismTag(
         text = label,
         style = PrismTagStyle.Accent,
-        modifier = Modifier.semantics { contentDescription = "Favorite source: $label" },
+        modifier = Modifier.semantics { contentDescription = favoriteDescription },
       )
     }
   }

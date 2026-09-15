@@ -70,7 +70,7 @@ class NewsDetailContentTest {
         ),
         NewsDetailContentBlock.Video("https://example.com/video"),
       ),
-      newsDetailContentBlocks(article),
+      newsDetailContentBlocks(labels = testFormattingLabels, article = article),
     )
   }
 
@@ -100,7 +100,7 @@ class NewsDetailContentTest {
           ),
         ),
       ),
-      newsDetailContentBlocks(article),
+      newsDetailContentBlocks(labels = testFormattingLabels, article = article),
     )
   }
 
@@ -109,13 +109,17 @@ class NewsDetailContentTest {
     val text = "- First\n- Second\n1. Third\nLiteral <em>text</em> & content."
     assertEquals(
       listOf(NewsDetailContentBlock.Text(listOf(NewsDetailTextRun(text)))),
-      newsDetailContentBlocks(article(text)),
+      newsDetailContentBlocks(labels = testFormattingLabels, article = article(text)),
     )
   }
 
   @Test
   fun invalid_reference_indices_do_not_crash_or_shift_other_references() {
-    val blocks = newsDetailContentBlocks(article("{{link_99}}\n\n{image_999999999999999}\n\n{{link_0}}"))
+    val blocks =
+      newsDetailContentBlocks(
+        labels = testFormattingLabels,
+        article = article("{{link_99}}\n\n{image_999999999999999}\n\n{{link_0}}"),
+      )
     assertEquals(
       listOf(
         NewsDetailContentBlock.Text(listOf(NewsDetailTextRun("Link unavailable"))),

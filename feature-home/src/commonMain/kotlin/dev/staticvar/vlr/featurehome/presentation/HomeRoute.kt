@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismIconButton
 import dev.staticvar.designsystem.component.button.PrismIconButtonSize
 import dev.staticvar.designsystem.component.card.PrismCard
@@ -39,8 +38,23 @@ import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.vlr.sharedui.component.event.overview.EventPreviewItem
 import dev.staticvar.vlr.sharedui.component.match.overview.MatchPreviewItem
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_home.generated.resources.Res
+import vlr.feature_home.generated.resources.empty_related_events
+import vlr.feature_home.generated.resources.empty_related_matches
+import vlr.feature_home.generated.resources.events
+import vlr.feature_home.generated.resources.favorites
+import vlr.feature_home.generated.resources.home
+import vlr.feature_home.generated.resources.loading_your_favorites
+import vlr.feature_home.generated.resources.matches
+import vlr.feature_home.generated.resources.players
+import vlr.feature_home.generated.resources.settings
+import vlr.feature_home.generated.resources.teams
+import vlr.feature_home.generated.resources.your_favorites
 
 private const val MaximumVisibleIndicators: Int = 5
 
@@ -67,13 +81,13 @@ public fun HomeRoute(
     modifier = modifier.fillMaxSize(),
   ) {
     SharedScreenTitleBar(
-      title = "Home",
-      subtitle = "Your Favorites",
+      title = stringResource(Res.string.home),
+      subtitle = stringResource(Res.string.your_favorites),
       modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       actions = {
         PrismIconButton(
           icon = Prism.icons.settings.unselected,
-          contentDescription = "Settings",
+          contentDescription = stringResource(Res.string.settings),
           size = PrismIconButtonSize.Toolbar,
           onClick = onSettings,
         )
@@ -128,7 +142,7 @@ private fun HomeBody(
 ) {
   when {
     !hasLoadedFeed && !feed.hasDirectFavorites -> SharedScreenLoading(
-      label = "Loading your favorites",
+      label = stringResource(Res.string.loading_your_favorites),
       modifier = modifier.padding(horizontal = Prism.dimens.spacingM),
     )
 
@@ -181,31 +195,31 @@ private fun HomeFeedContent(
     }
     item(key = "favorites-title") {
       PrismSectionTitle(
-        title = "Favorites",
+        title = stringResource(Res.string.favorites),
         modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       )
     }
 
     favoriteGroup(
-      title = "Teams",
+      title = Res.string.teams,
       kind = "team",
       favorites = feed.directFavorites.teams,
       onSelected = onTeamSelected,
     )
     favoriteGroup(
-      title = "Events",
+      title = Res.string.events,
       kind = "event",
       favorites = feed.directFavorites.events,
       onSelected = onEventSelected,
     )
     favoriteGroup(
-      title = "Matches",
+      title = Res.string.matches,
       kind = "match",
       favorites = feed.directFavorites.matches,
       onSelected = onMatchSelected,
     )
     favoriteGroup(
-      title = "Players",
+      title = Res.string.players,
       kind = "player",
       favorites = feed.directFavorites.players,
       onSelected = onPlayerSelected,
@@ -220,12 +234,12 @@ private fun PersonalizedMatches(
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
     PrismSectionTitle(
-      title = "Matches",
+      title = stringResource(Res.string.matches),
       modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       trailing = { RailCount(matches.size) },
     )
     if (matches.isEmpty()) {
-      EmptyRailMessage("No matches currently connect to your favorites. New matchups will appear here automatically.")
+      EmptyRailMessage(stringResource(Res.string.empty_related_matches))
     } else {
       PrismCarousel(
         itemCount = matches.size,
@@ -251,13 +265,13 @@ private fun PersonalizedEvents(
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
     PrismSectionTitle(
-      title = "Events",
+      title = stringResource(Res.string.events),
       modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       trailing = { RailCount(events.size) },
     )
     if (events.isEmpty()) {
       EmptyRailMessage(
-        "No current events are linked to your favorites. Related events will appear as schedules update.",
+        stringResource(Res.string.empty_related_events),
       )
     } else {
       PrismCarousel(
@@ -300,7 +314,7 @@ private fun EmptyRailMessage(message: String) {
 }
 
 private fun <T : DirectFavorite> androidx.compose.foundation.lazy.LazyListScope.favoriteGroup(
-  title: String,
+  title: StringResource,
   kind: String,
   favorites: List<T>,
   onSelected: (String) -> Unit,
@@ -309,7 +323,7 @@ private fun <T : DirectFavorite> androidx.compose.foundation.lazy.LazyListScope.
 
   item(key = "favorite-$kind-title") {
     PrismSectionTitle(
-      title = title,
+      title = stringResource(title),
       modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       showDivider = false,
     )

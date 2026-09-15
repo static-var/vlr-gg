@@ -4,6 +4,8 @@
  */
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.compose.multiplatform)
+  alias(libs.plugins.compose.compiler)
   alias(libs.plugins.android.kotlin.multiplatform.library)
 }
 
@@ -30,6 +32,7 @@ kotlin {
   sourceSets {
     val commonMain by getting {
       dependencies {
+        implementation(compose.components.resources)
         implementation(libs.kotlin.stdlib)
         implementation(libs.coroutines.core)
         implementation(libs.koin.core)

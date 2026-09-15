@@ -1,0 +1,7 @@
+<resources>
+  <string name="navigation_home">Home</string>
+  <string name="navigation_matches">Matches</string>
+  <string name="navigation_events">Events</string>
+  <string name="navigation_ranking">Ranking</string>
+  <string name="navigation_news">News</string>
+</resources>

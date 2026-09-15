@@ -44,6 +44,36 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.telemetry.AppTelemetry
 import dev.staticvar.vlr.sharedui.mascot.LynxMascot
 import dev.staticvar.vlr.sharedui.mascot.RosieMascot
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_about.generated.resources.Res
+import vlr.feature_about.generated.resources.about
+import vlr.feature_about.generated.resources.about_data_attribution
+import vlr.feature_about.generated.resources.about_description
+import vlr.feature_about.generated.resources.an_independent_valorant_esports_app
+import vlr.feature_about.generated.resources.app_design_development_staticvar
+import vlr.feature_about.generated.resources.app_source_code
+import vlr.feature_about.generated.resources.backend_developer
+import vlr.feature_about.generated.resources.backend_source_code
+import vlr.feature_about.generated.resources.donate_via_github_sponsors
+import vlr.feature_about.generated.resources.explore_the_service_that_powers_the_app
+import vlr.feature_about.generated.resources.for_the_matches_you_care_about
+import vlr.feature_about.generated.resources.from_the_scene_for_the_scene
+import vlr.feature_about.generated.resources.help_support_continued_development
+import vlr.feature_about.generated.resources.make_it_better
+import vlr.feature_about.generated.resources.open_link_in_browser
+import vlr.feature_about.generated.resources.privacy_policy
+import vlr.feature_about.generated.resources.read_the_code_or_contribute_on_github
+import vlr.feature_about.generated.resources.report_an_issue
+import vlr.feature_about.generated.resources.send_feedback
+import vlr.feature_about.generated.resources.share_a_problem_or_an_idea_with_the_developer
+import vlr.feature_about.generated.resources.something_off_help_us_get_it_right
+import vlr.feature_about.generated.resources.support_the_project
+import vlr.feature_about.generated.resources.terms_of_service
+import vlr.feature_about.generated.resources.the_people_behind_it
+import vlr.feature_about.generated.resources.visit_val_esports
+import vlr.feature_about.generated.resources.visit_vlr_gg
+import vlr.feature_about.generated.resources.website_policies
+import vlr.feature_about.generated.resources.write_feedback
 
 @Composable
 public fun AboutRoute(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -62,7 +92,7 @@ internal fun AboutScreen(modifier: Modifier = Modifier, onBack: () -> Unit = {})
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     Column(modifier = Modifier.widthIn(max = 720.dp).fillMaxWidth()) {
       PrismScreenTitleBar(
-        title = "About",
+        title = stringResource(Res.string.about),
         onBackPress = onBack,
         modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       )
@@ -117,13 +147,13 @@ private fun AboutIdentity() {
       }
       Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
         Text(
-          text = "For the matches you care about.",
+          text = stringResource(Res.string.for_the_matches_you_care_about),
           style = Prism.typography.headline,
           color = Prism.color.titleColor,
           modifier = Modifier.semantics { heading() },
         )
         Text(
-          text = "An independent VALORANT esports app",
+          text = stringResource(Res.string.an_independent_valorant_esports_app),
           style = Prism.typography.label,
           color = Prism.color.bodyColor,
         )
@@ -135,7 +165,7 @@ private fun AboutIdentity() {
 @Composable
 private fun AboutIntroduction() {
   Text(
-    text = "See who's playing next, catch up on results, and dig into the rounds that decided a match. Follow your favorite teams and players through the season.",
+    text = stringResource(Res.string.about_description),
     style = Prism.typography.bodyLarge,
     color = Prism.color.bodyColor,
   )
@@ -144,50 +174,50 @@ private fun AboutIntroduction() {
 @Composable
 private fun AboutWebsiteLinks() {
   Column {
-    AboutSectionHeading("Website & policies")
-    AboutLink(title = "Visit Val Esports", url = AppWebsite.Home)
+    AboutSectionHeading(stringResource(Res.string.website_policies))
+    AboutLink(title = stringResource(Res.string.visit_val_esports), url = AppWebsite.Home)
     PrismDivider()
-    AboutLink(title = "Privacy policy", url = AppWebsite.Privacy)
+    AboutLink(title = stringResource(Res.string.privacy_policy), url = AppWebsite.Privacy)
     PrismDivider()
-    AboutLink(title = "Terms of service", url = AppWebsite.Terms)
+    AboutLink(title = stringResource(Res.string.terms_of_service), url = AppWebsite.Terms)
   }
 }
 
 @Composable
 private fun AboutProjectLinks(onFeedback: () -> Unit) {
   Column {
-    AboutSectionHeading("Make it better")
+    AboutSectionHeading(stringResource(Res.string.make_it_better))
     Column(
       modifier = Modifier
         .fillMaxWidth()
-        .clickable(role = Role.Button, onClickLabel = "Write feedback", onClick = onFeedback)
+        .clickable(role = Role.Button, onClickLabel = stringResource(Res.string.write_feedback), onClick = onFeedback)
         .heightIn(min = Prism.dimens.touchTargetMin)
         .padding(vertical = Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
     ) {
-      Text(text = "Send feedback", style = Prism.typography.cardTitle, color = Prism.color.accent)
+      Text(text = stringResource(Res.string.send_feedback), style = Prism.typography.cardTitle, color = Prism.color.accent)
       Text(
-        text = "Share a problem or an idea with the developer.",
+        text = stringResource(Res.string.share_a_problem_or_an_idea_with_the_developer),
         style = Prism.typography.bodySmall,
         color = Prism.color.bodyColor,
       )
     }
     PrismDivider()
     AboutLink(
-      title = "Report an issue",
-      description = "Something off? Help us get it right.",
+      title = stringResource(Res.string.report_an_issue),
+      description = stringResource(Res.string.something_off_help_us_get_it_right),
       url = "https://github.com/static-var/vlr-gg/issues",
     )
     PrismDivider()
     AboutLink(
-      title = "App source code",
-      description = "Read the code or contribute on GitHub.",
+      title = stringResource(Res.string.app_source_code),
+      description = stringResource(Res.string.read_the_code_or_contribute_on_github),
       url = "https://github.com/static-var/vlr-gg",
     )
     PrismDivider()
     AboutLink(
-      title = "Backend source code",
-      description = "Explore the service that powers the app.",
+      title = stringResource(Res.string.backend_source_code),
+      description = stringResource(Res.string.explore_the_service_that_powers_the_app),
       url = "https://github.com/akhilnarang/vlrgg-scraper",
     )
   }
@@ -196,16 +226,16 @@ private fun AboutProjectLinks(onFeedback: () -> Unit) {
 @Composable
 private fun AboutContributors() {
   Column {
-    AboutSectionHeading("The people behind it")
+    AboutSectionHeading(stringResource(Res.string.the_people_behind_it))
     AboutLink(
       title = "Shreyansh Lodha",
-      description = "App design & development · staticvar",
+      description = stringResource(Res.string.app_design_development_staticvar),
       url = "https://staticvar.dev",
     )
     PrismDivider()
     AboutLink(
       title = "Akhil Narang",
-      description = "Backend developer",
+      description = stringResource(Res.string.backend_developer),
       url = "https://akhilnarang.dev",
     )
   }
@@ -214,10 +244,10 @@ private fun AboutContributors() {
 @Composable
 private fun AboutDonations() {
   Column {
-    AboutSectionHeading("Support the project")
+    AboutSectionHeading(stringResource(Res.string.support_the_project))
     AboutLink(
-      title = "Donate via GitHub Sponsors",
-      description = "Help support continued development.",
+      title = stringResource(Res.string.donate_via_github_sponsors),
+      description = stringResource(Res.string.help_support_continued_development),
       url = "https://github.com/sponsors/static-var",
     )
   }
@@ -233,18 +263,18 @@ private fun AboutSource() {
     ) {
       Column(modifier = Modifier.padding(Prism.dimens.spacingM)) {
         Text(
-          text = "From the scene, for the scene.",
+          text = stringResource(Res.string.from_the_scene_for_the_scene),
           style = Prism.typography.cardTitle,
           color = Prism.color.titleColor,
           modifier = Modifier.semantics { heading() },
         )
         Text(
-          text = "Match coverage, statistics, and news come from VLR.gg. This is an unofficial fan project, unaffiliated with VLR.gg or Riot Games.",
+          text = stringResource(Res.string.about_data_attribution),
           modifier = Modifier.padding(top = Prism.dimens.spacingS),
           style = Prism.typography.bodySmall,
           color = Prism.color.bodyColor,
         )
-        AboutLink(title = "Visit VLR.gg", url = "https://www.vlr.gg")
+        AboutLink(title = stringResource(Res.string.visit_vlr_gg), url = "https://www.vlr.gg")
       }
     }
   }
@@ -266,7 +296,7 @@ private fun AboutLink(title: String, url: String, description: String? = null) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
-      .clickable(role = Role.Button, onClickLabel = "Open $title in browser") { uriHandler.openUri(url) }
+      .clickable(role = Role.Button, onClickLabel = stringResource(Res.string.open_link_in_browser, title)) { uriHandler.openUri(url) }
       .heightIn(min = Prism.dimens.touchTargetMin)
       .padding(vertical = Prism.dimens.spacingM),
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),

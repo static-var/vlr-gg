@@ -5,11 +5,12 @@
 package dev.staticvar.vlr.featureevents.presentation
 
 import dev.staticvar.vlr.domain.model.EventDetails
+import org.jetbrains.compose.resources.StringResource
 
 public data class EventDetailsUiState(
   val event: EventDetails? = null,
   val isSavingFavorite: Boolean = false,
-  val favoriteErrorMessage: String? = null,
+  val favoriteErrorMessage: StringResource? = null,
   val favoriteTeamIds: Set<String> = emptySet(),
   val isLoading: Boolean = true,
   val isRefreshing: Boolean = false,

@@ -15,6 +15,11 @@ import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsArticle
 import dev.staticvar.vlr.sharedui.component.news.overview.formatNewsPreviewDate
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.format_recent_lower
+import vlr.shared_ui.generated.resources.news_by_author
+import vlr.shared_ui.generated.resources.news_untitled_article
 
 /** Title and byline at the beginning of the article's reading flow. */
 @Composable
@@ -28,12 +33,12 @@ public fun NewsDetailHeaderItem(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     Text(
-      text = article.title.ifBlank { "Untitled article" },
+      text = article.title.ifBlank { stringResource(Res.string.news_untitled_article) },
       style = Prism.typography.headline,
       color = Prism.color.titleColor,
     )
     Text(
-      text = "By ${article.newsDetailAuthorLabel()}",
+      text = stringResource(Res.string.news_by_author, article.newsDetailAuthorLabel(newsFormattingLabels())),
       style = Prism.typography.label,
       color = Prism.color.titleColor,
     )

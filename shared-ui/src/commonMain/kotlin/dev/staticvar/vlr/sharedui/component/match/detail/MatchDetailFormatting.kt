@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.sharedui.component.match.detail
 
+import androidx.compose.runtime.Composable
 import dev.staticvar.vlr.domain.model.AgentInfo
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.MatchDetails
@@ -13,6 +14,25 @@ import dev.staticvar.vlr.domain.model.TeamDetails
 import dev.staticvar.vlr.domain.model.TeamPreview
 import kotlin.math.round
 import kotlin.math.roundToInt
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.format_allMaps
+import vlr.shared_ui.generated.resources.format_final
+import vlr.shared_ui.generated.resources.format_map
+import vlr.shared_ui.generated.resources.format_mapNumber
+import vlr.shared_ui.generated.resources.format_maps
+import vlr.shared_ui.generated.resources.format_matches
+import vlr.shared_ui.generated.resources.format_pending
+import vlr.shared_ui.generated.resources.format_pendingLower
+import vlr.shared_ui.generated.resources.format_playedMaps
+import vlr.shared_ui.generated.resources.format_playerStats
+import vlr.shared_ui.generated.resources.format_sortedByMapOrder
+import vlr.shared_ui.generated.resources.format_stage
+import vlr.shared_ui.generated.resources.format_steps
+import vlr.shared_ui.generated.resources.format_teamOne
+import vlr.shared_ui.generated.resources.format_teamTwo
+import vlr.shared_ui.generated.resources.format_unknown
 
 internal const val AllMapsOptionId: String = "all"
 
@@ -67,33 +87,34 @@ private data class PlayerStatsAggregate(
 
 internal fun MatchDetails.matchDetailMeta(): String = event.stage.ifBlank { event.series }
 
-internal fun MatchDetails.matchDetailDateStat(): String = event.date?.takeIf(String::isNotBlank) ?: "Pending"
+internal fun MatchDetails.matchDetailDateStat(labels: MatchFormattingLabels): String =
+  event.date?.takeIf(String::isNotBlank) ?: labels.pending
 
-internal fun MatchDetails.matchDetailMapCountStat(): String = when {
-  mapCount == 1 -> "1 map"
-  mapCount > 1 -> "$mapCount maps"
+internal fun MatchDetails.matchDetailMapCountStat(labels: MatchFormattingLabels): String = when {
+  mapCount > 0 -> labels.maps
   else -> "-"
 }
 
-internal fun MatchDetails.matchDetailStageStat(): String = event.stage.takeIf(String::isNotBlank) ?: "Stage"
+internal fun MatchDetails.matchDetailStageStat(labels: MatchFormattingLabels): String =
+  event.stage.takeIf(String::isNotBlank) ?: labels.stage
 
-internal fun MatchDetails.matchDetailVetoStat(): String = when (val steps = bans.count(String::isNotBlank)) {
-  0 -> "-"
-  1 -> "1 step"
-  else -> "$steps steps"
-}
+internal fun MatchDetails.matchDetailVetoStat(labels: MatchFormattingLabels): String =
+  when (bans.count(String::isNotBlank)) {
+    0 -> "-"
+    else -> labels.steps
+  }
 
-internal fun List<MapData>.matchDetailMapOptions(): List<MatchDetailMapOption> {
+internal fun List<MapData>.matchDetailMapOptions(labels: MatchFormattingLabels): List<MatchDetailMapOption> {
   val mapOptions = mapIndexed { index, map ->
     MatchDetailMapOption(
       id = index.toString(),
-      label = map.matchDetailMapOptionLabel(),
+      label = map.matchDetailMapOptionLabel(labels),
       mapIndex = index,
     )
   }
 
   return if (size >= 2) {
-    listOf(MatchDetailMapOption(id = AllMapsOptionId, label = "All maps", mapIndex = null)) + mapOptions
+    listOf(MatchDetailMapOption(id = AllMapsOptionId, label = labels.allMaps, mapIndex = null)) + mapOptions
   } else {
     mapOptions
   }
@@ -111,43 +132,43 @@ internal fun List<MapData>.resolveSelectedMap(selectedMapIndex: Int?): MapData? 
 internal fun List<MapData>.resolveSelectedMapOptionId(selectedMapIndex: Int?): String =
   resolveSelectedMapIndex(selectedMapIndex)?.toString() ?: if (size >= 2) AllMapsOptionId else ""
 
-internal fun MapData.matchDetailMapOptionLabel(): String = "${matchDetailMapName()} - ${matchDetailMapScoreLabel()}"
+internal fun MapData.matchDetailMapOptionLabel(labels: MatchFormattingLabels): String =
+  "${matchDetailMapName(labels)} - ${matchDetailMapScoreLabel(labels)}"
 
-internal fun MapData.matchDetailMapName(): String = map.ifBlank { "Map" }
+internal fun MapData.matchDetailMapName(labels: MatchFormattingLabels): String = map.ifBlank { labels.map }
 
-internal fun MapData.matchDetailMapScoreLabel(): String {
+internal fun MapData.matchDetailMapScoreLabel(labels: MatchFormattingLabels): String {
   val scores = teams.take(2).mapNotNull(TeamDetails::score)
   return if (scores.size == 2) {
     "${scores[0]}-${scores[1]}"
   } else {
-    "Pending"
+    labels.pending
   }
 }
 
-internal fun MapData.matchDetailMapMeta(index: Int? = null): String = listOfNotNull(
-  index?.let { mapIndex -> "Map ${mapIndex + 1}" },
-  if (teams.any { team -> team.score != null }) "final" else "pending",
-  "player stats",
+internal fun MapData.matchDetailMapMeta(labels: MatchFormattingLabels, index: Int? = null): String = listOfNotNull(
+  index?.let { labels.mapNumber },
+  if (teams.any { team -> team.score != null }) labels.final else labels.pendingLower,
+  labels.playerStats,
 ).joinToString(separator = " • ")
 
-internal fun List<MapData>.matchDetailAllMapsMeta(): String {
-  val playedMaps = count(MapData::hasPlayedScore)
-  val playedLabel = if (playedMaps == 1) "1 played map" else "$playedMaps played maps"
-  return "$playedLabel • sorted by map order"
+internal fun List<MapData>.matchDetailAllMapsMeta(labels: MatchFormattingLabels): String = labels.sortedByMapOrder
+
+internal fun MapData.toPlayerStatsRows(
+  labels: MatchFormattingLabels,
+  mapName: String? = null,
+): List<MatchDetailPlayerStatsRow> = members.mapIndexed { index, player ->
+  player.toPlayerStatsRow(
+    labels = labels,
+    keyPrefix = matchDetailMapName(labels),
+    index = index,
+    mapName = mapName,
+    teamColorRole = resolvePlayerTeamColorRole(player.team),
+    team = resolvePlayerTeam(player.team),
+  )
 }
 
-internal fun MapData.toPlayerStatsRows(mapName: String? = null): List<MatchDetailPlayerStatsRow> =
-  members.mapIndexed { index, player ->
-    player.toPlayerStatsRow(
-      keyPrefix = matchDetailMapName(),
-      index = index,
-      mapName = mapName,
-      teamColorRole = resolvePlayerTeamColorRole(player.team),
-      team = resolvePlayerTeam(player.team),
-    )
-  }
-
-internal fun List<MapData>.toAllMapPlayerStatsRows(): List<MatchDetailPlayerStatsRow> {
+internal fun List<MapData>.toAllMapPlayerStatsRows(labels: MatchFormattingLabels): List<MatchDetailPlayerStatsRow> {
   val winnerTeamKey = toPlayerStatsWinnerTeamKey()
   return filter(MapData::hasPlayedScore)
     .fold(linkedMapOf<String, PlayerStatsAggregate>()) { aggregates, map ->
@@ -157,7 +178,7 @@ internal fun List<MapData>.toAllMapPlayerStatsRows(): List<MatchDetailPlayerStat
         val teamKey = team?.teamKey()
         val existing = aggregates[key]
         aggregates[key] = if (existing == null) {
-          player.toStatsAggregate(key = key, team = team)
+          player.toStatsAggregate(key = key, team = team, labels = labels)
         } else {
           existing.withPlayer(player = player, mapTeam = team)
         }
@@ -171,28 +192,28 @@ internal fun List<MapData>.toAllMapPlayerStatsRows(): List<MatchDetailPlayerStat
 }
 
 private fun PlayerStats.toPlayerStatsRow(
+  labels: MatchFormattingLabels,
   keyPrefix: String,
   index: Int,
   mapName: String?,
   teamColorRole: MatchDetailPlayerStatsTeamColorRole,
   team: TeamDetails?,
-): MatchDetailPlayerStatsRow =
-  MatchDetailPlayerStatsRow(
-    key = "$keyPrefix-$playerId-$index",
-    playerId = playerId.takeIf(String::isNotBlank),
-    mapName = mapName,
-    playerName = name.ifBlank { "Unknown" },
-    agentNames = agents.joinToString(separator = ", ") { agent -> agent.name }.ifBlank { "-" },
-    acs = recordedStatOrDash(acs.toString()),
-    kills = recordedStatOrDash(kills.toString()),
-    deaths = recordedStatOrDash(deaths.toString()),
-    assists = recordedStatOrDash(assists.toString()),
-    kast = recordedStatOrDash(kast.toString()),
-    rating = recordedStatOrDash(rating.toCompactRating()),
-    teamColorRole = teamColorRole,
-    teamName = team?.name.orEmpty(),
-    teamLogoUrl = team?.img.orEmpty(),
-  )
+): MatchDetailPlayerStatsRow = MatchDetailPlayerStatsRow(
+  key = "$keyPrefix-$playerId-$index",
+  playerId = playerId.takeIf(String::isNotBlank),
+  mapName = mapName,
+  playerName = name.ifBlank { labels.unknown },
+  agentNames = agents.joinToString(separator = ", ") { agent -> agent.name }.ifBlank { "-" },
+  acs = recordedStatOrDash(acs.toString()),
+  kills = recordedStatOrDash(kills.toString()),
+  deaths = recordedStatOrDash(deaths.toString()),
+  assists = recordedStatOrDash(assists.toString()),
+  kast = recordedStatOrDash(kast.toString()),
+  rating = recordedStatOrDash(rating.toCompactRating()),
+  teamColorRole = teamColorRole,
+  teamName = team?.name.orEmpty(),
+  teamLogoUrl = team?.img.orEmpty(),
+)
 
 private fun MapData.resolvePlayerTeamColorRole(playerTeam: String): MatchDetailPlayerStatsTeamColorRole {
   val winnerTeam = winningTeam() ?: return MatchDetailPlayerStatsTeamColorRole.Neutral
@@ -291,11 +312,15 @@ private fun PlayerStatsAggregate.toPlayerStatsRow(winnerTeamKey: String?): Match
   )
 }
 
-private fun PlayerStats.toStatsAggregate(key: String, team: TeamDetails?): PlayerStatsAggregate {
+private fun PlayerStats.toStatsAggregate(
+  key: String,
+  team: TeamDetails?,
+  labels: MatchFormattingLabels,
+): PlayerStatsAggregate {
   val hasRecordedStats = hasRecordedStats()
   return PlayerStatsAggregate(
     key = key,
-    playerName = name.ifBlank { "Unknown" },
+    playerName = name.ifBlank { labels.unknown },
     agentNames = agents.map(AgentInfo::name).filter(String::isNotBlank).distinct(),
     playerId = playerId.takeIf(String::isNotBlank),
     teamKey = team?.teamKey(),
@@ -331,28 +356,29 @@ private fun PlayerStatsAggregate.withPlayer(player: PlayerStats, mapTeam: TeamDe
 
 private fun PlayerStats.recordedStatOrDash(value: String): String = if (hasRecordedStats()) value else "-"
 
-private fun PlayerStats.hasRecordedStats(): Boolean =
-  agents.isNotEmpty() ||
-    acs != 0 ||
-    adr != 0 ||
-    kills != 0 ||
-    deaths != 0 ||
-    assists != 0 ||
-    kast != 0 ||
-    firstKills != 0 ||
-    firstDeaths != 0 ||
-    firstKillsDiff != 0 ||
-    hsPercent != 0 ||
-    rating != 0f
+private fun PlayerStats.hasRecordedStats(): Boolean = agents.isNotEmpty() ||
+  acs != 0 ||
+  adr != 0 ||
+  kills != 0 ||
+  deaths != 0 ||
+  assists != 0 ||
+  kast != 0 ||
+  firstKills != 0 ||
+  firstDeaths != 0 ||
+  firstKillsDiff != 0 ||
+  hsPercent != 0 ||
+  rating != 0f
 
 private fun Int?.orZero(): Int = this ?: 0
 
-internal fun List<PreviousEncounter>.matchDetailHeadToHeadSummary(): MatchDetailHeadToHeadSummary? {
+internal fun List<PreviousEncounter>.matchDetailHeadToHeadSummary(
+  labels: MatchFormattingLabels,
+): MatchDetailHeadToHeadSummary? {
   val firstEncounterTeams = firstOrNull()?.teams?.take(2) ?: return null
   if (firstEncounterTeams.size < 2) return null
 
-  val firstTeamName = firstEncounterTeams[0].name.ifBlank { "Team 1" }
-  val secondTeamName = firstEncounterTeams[1].name.ifBlank { "Team 2" }
+  val firstTeamName = firstEncounterTeams[0].name.ifBlank { labels.teamOne }
+  val secondTeamName = firstEncounterTeams[1].name.ifBlank { labels.teamTwo }
   var firstWins = 0
   var secondWins = 0
   var totalPlayed = 0
@@ -382,12 +408,12 @@ internal fun List<PreviousEncounter>.matchDetailHeadToHeadSummary(): MatchDetail
 
 internal fun TeamPreview.matchDetailScoreText(): String = score?.toString() ?: "-"
 
-internal fun MatchDetailHeadToHeadSummary.matchDetailTagLabel(): String {
+internal fun MatchDetailHeadToHeadSummary.matchDetailTagLabel(labels: MatchFormattingLabels): String {
   val difference = firstTeamWins - secondTeamWins
   return when {
     difference > 0 -> "$firstTeamName +$difference"
     difference < 0 -> "$secondTeamName +${-difference}"
-    else -> "$totalPlayed matches"
+    else -> labels.matches
   }
 }
 
@@ -401,3 +427,49 @@ private fun Float.toCompactRating(): String {
 }
 
 private fun Float.toRoundedIntString(): String = roundToInt().toString()
+
+internal data class MatchFormattingLabels(
+  val pending: String,
+  val map: String,
+  val stage: String,
+  val maps: String,
+  val steps: String,
+  val allMaps: String,
+  val mapNumber: String,
+  val final: String,
+  val pendingLower: String,
+  val playerStats: String,
+  val sortedByMapOrder: String,
+  val unknown: String,
+  val teamOne: String,
+  val teamTwo: String,
+  val matches: String,
+)
+
+@Composable
+internal fun matchFormattingLabels(
+  mapCount: Int = 0,
+  vetoStepCount: Int = 0,
+  playedMapCount: Int = 0,
+  matchCount: Int = 0,
+  mapNumber: Int = 0,
+): MatchFormattingLabels = MatchFormattingLabels(
+  pending = stringResource(Res.string.format_pending),
+  map = stringResource(Res.string.format_map),
+  stage = stringResource(Res.string.format_stage),
+  maps = pluralStringResource(Res.plurals.format_maps, mapCount, mapCount),
+  steps = pluralStringResource(Res.plurals.format_steps, vetoStepCount, vetoStepCount),
+  allMaps = stringResource(Res.string.format_allMaps),
+  mapNumber = stringResource(Res.string.format_mapNumber, mapNumber),
+  final = stringResource(Res.string.format_final),
+  pendingLower = stringResource(Res.string.format_pendingLower),
+  playerStats = stringResource(Res.string.format_playerStats),
+  sortedByMapOrder = stringResource(
+    Res.string.format_sortedByMapOrder,
+    pluralStringResource(Res.plurals.format_playedMaps, playedMapCount, playedMapCount),
+  ),
+  unknown = stringResource(Res.string.format_unknown),
+  teamOne = stringResource(Res.string.format_teamOne),
+  teamTwo = stringResource(Res.string.format_teamTwo),
+  matches = pluralStringResource(Res.plurals.format_matches, matchCount, matchCount),
+)

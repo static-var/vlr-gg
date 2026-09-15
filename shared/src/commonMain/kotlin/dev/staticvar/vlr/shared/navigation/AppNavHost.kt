@@ -4,8 +4,8 @@
  */
 package dev.staticvar.vlr.shared.navigation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
@@ -46,8 +46,15 @@ import dev.staticvar.designsystem.component.navigation.PrismBottomNavBar
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavBarLarge
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavItem
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
+import vlr.shared.generated.resources.Res
+import vlr.shared.generated.resources.navigation_events
+import vlr.shared.generated.resources.navigation_home
+import vlr.shared.generated.resources.navigation_matches
+import vlr.shared.generated.resources.navigation_news
+import vlr.shared.generated.resources.navigation_ranking
 
 @OptIn(KoinExperimentalAPI::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -56,15 +63,13 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
   val activeRoute = appState.backStack.lastOrNull() as? AppRoute
   SideEffect { navigationTelemetry.show(activeRoute) }
   val icons = Prism.icons
-  val navItems = remember(icons) {
-    listOf(
-      PrismBottomNavItem(id = HOME_ID, label = "Home", icon = icons.home.unselected, selectedIcon = icons.home.selected),
-      PrismBottomNavItem(id = MATCHES_ID, label = "Matches", icon = icons.matches.unselected, selectedIcon = icons.matches.selected),
-      PrismBottomNavItem(id = EVENTS_ID, label = "Events", icon = icons.events.unselected, selectedIcon = icons.events.selected),
-      PrismBottomNavItem(id = RANKINGS_ID, label = "Ranking", icon = icons.rankings.unselected, selectedIcon = icons.rankings.selected),
-      PrismBottomNavItem(id = NEWS_ID, label = "News", icon = icons.news.unselected, selectedIcon = icons.news.selected),
-    )
-  }
+  val navItems = listOf(
+    PrismBottomNavItem(id = HOME_ID, label = stringResource(Res.string.navigation_home), icon = icons.home.unselected, selectedIcon = icons.home.selected),
+    PrismBottomNavItem(id = MATCHES_ID, label = stringResource(Res.string.navigation_matches), icon = icons.matches.unselected, selectedIcon = icons.matches.selected),
+    PrismBottomNavItem(id = EVENTS_ID, label = stringResource(Res.string.navigation_events), icon = icons.events.unselected, selectedIcon = icons.events.selected),
+    PrismBottomNavItem(id = RANKINGS_ID, label = stringResource(Res.string.navigation_ranking), icon = icons.rankings.unselected, selectedIcon = icons.rankings.selected),
+    PrismBottomNavItem(id = NEWS_ID, label = stringResource(Res.string.navigation_news), icon = icons.news.unselected, selectedIcon = icons.news.selected),
+  )
   val entryProvider = koinEntryProvider<NavKey>()
   val entryDecorators = listOf(
     rememberSaveableStateHolderNavEntryDecorator<NavKey>(),

@@ -24,6 +24,10 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_breakdown
+import vlr.shared_ui.generated.resources.match_event_maps
 
 /**
  * Reusable match-detail maps section.
@@ -49,13 +53,17 @@ public fun MatchDetailMapsItem(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     PrismSectionTitle(
-      title = "Maps",
-      preLabel = "breakdown",
+      title = stringResource(Res.string.match_event_maps),
+      preLabel = stringResource(Res.string.match_event_breakdown),
       trailing = {
         AnimatedVisibility(
           visible = !spoilersHidden,
-          enter = fadeIn(animation.floatSpec()) + expandHorizontally(animationSpec = tween(animation.durationMillis, easing = animation.easing)),
-          exit = fadeOut(animation.floatSpec()) + shrinkHorizontally(animationSpec = tween(animation.durationMillis, easing = animation.easing)),
+          enter =
+          fadeIn(animation.floatSpec()) +
+            expandHorizontally(animationSpec = tween(animation.durationMillis, easing = animation.easing)),
+          exit =
+          fadeOut(animation.floatSpec()) +
+            shrinkHorizontally(animationSpec = tween(animation.durationMillis, easing = animation.easing)),
         ) {
           MatchDetailMapsSelectorTrailing(
             maps = maps,

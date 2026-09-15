@@ -23,6 +23,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.designsystem.generated.resources.Res
+import vlr.designsystem.generated.resources.prism_favorite
+import vlr.designsystem.generated.resources.prism_not_favorite
 
 @Immutable
 public enum class PrismFavoriteIconSize(internal val containerSize: Dp, internal val strokeWidth: Dp) {
@@ -37,7 +41,8 @@ public fun PrismFavoriteIcon(
   modifier: Modifier = Modifier,
   size: PrismFavoriteIconSize = PrismFavoriteIconSize.Medium,
   style: PrismFavoriteIconStyle = PrismFavoriteIconStyle.Boxed,
-  contentDescription: String? = if (selected) "Favorite" else "Not favorite",
+  contentDescription: String? =
+    stringResource(if (selected) Res.string.prism_favorite else Res.string.prism_not_favorite),
 ) {
   val markColor = style.contentColor(selected)
   val borderColor = Prism.color.stroke

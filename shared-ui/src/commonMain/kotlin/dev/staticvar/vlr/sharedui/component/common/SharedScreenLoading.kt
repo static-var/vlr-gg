@@ -20,14 +20,19 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.shared_loading
+import vlr.shared_ui.generated.resources.shared_offline_loading
+import vlr.shared_ui.generated.resources.shared_offline_title
 
 @Composable
 public fun SharedScreenLoading(label: String, modifier: Modifier = Modifier) {
   if (!LocalIsOnline.current) {
     SharedEmptyState(
       artwork = EmptyStateArtwork.NoInternet,
-      title = "You’re offline",
-      message = "Connect to the internet to load this screen. It will update when you’re back online.",
+      title = stringResource(Res.string.shared_offline_title),
+      message = stringResource(Res.string.shared_offline_loading),
       modifier = modifier,
     )
     return
@@ -45,8 +50,9 @@ public fun SharedScreenLoading(label: String, modifier: Modifier = Modifier) {
 
 @Composable
 internal fun SharedLoadingIndicator(modifier: Modifier = Modifier) {
+  val loadingDescription = stringResource(Res.string.shared_loading)
   LinearProgressIndicator(
-    modifier = modifier.fillMaxWidth().semantics { contentDescription = "Loading" },
+    modifier = modifier.fillMaxWidth().semantics { contentDescription = loadingDescription },
     color = Prism.color.accent,
     trackColor = Prism.color.accentSubtle,
   )

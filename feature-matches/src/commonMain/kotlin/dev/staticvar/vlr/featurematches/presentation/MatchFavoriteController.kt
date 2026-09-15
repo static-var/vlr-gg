@@ -10,10 +10,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
+import vlr.feature_matches.generated.resources.Res
+import vlr.feature_matches.generated.resources.favorite_update_failed
 
 internal data class MatchFavoriteMutationState(
   val pendingIds: Set<String> = emptySet(),
-  val errorMessage: String? = null,
+  val errorMessage: StringResource? = null,
 )
 
 internal class MatchFavoriteController(
@@ -32,7 +35,7 @@ internal class MatchFavoriteController(
       } catch (exception: CancellationException) {
         throw exception
       } catch (exception: Exception) {
-        state.update { it.copy(errorMessage = "Could not update favorite. Try again.") }
+        state.update { it.copy(errorMessage = Res.string.favorite_update_failed) }
       } finally {
         state.update { it.copy(pendingIds = it.pendingIds - matchId) }
       }

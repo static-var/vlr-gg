@@ -19,6 +19,10 @@ import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsItem
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.format_recent_lower
+import vlr.shared_ui.generated.resources.news_unknown_author
 
 /** Text-only news card with article metadata, title, and description. */
 @Composable
@@ -42,7 +46,7 @@ public fun NewsPreviewItem(
         horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
       ) {
         PrismTag(
-          text = newsItem.author.ifBlank { "unknown" },
+          text = newsItem.author.ifBlank { stringResource(Res.string.news_unknown_author) },
           style = PrismTagStyle.Accent,
         )
         PrismTag(

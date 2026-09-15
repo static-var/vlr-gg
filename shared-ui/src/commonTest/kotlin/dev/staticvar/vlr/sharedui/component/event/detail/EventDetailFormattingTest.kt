@@ -10,12 +10,15 @@ import dev.staticvar.vlr.domain.model.EventMatchTeam
 import dev.staticvar.vlr.domain.model.EventStatus
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.format_status_paused
+import vlr.shared_ui.generated.resources.format_status_unknown
 
 class EventDetailFormattingTest {
   @Test
   fun pausedAndUnknownStatusesKeepTheirOwnLabels() {
-    assertEquals("PAUSED", EventStatus.PAUSED.eventDetailLabel)
-    assertEquals("UNKNOWN", EventStatus.UNKNOWN.eventDetailLabel)
+    assertEquals(Res.string.format_status_paused, EventStatus.PAUSED.eventDetailLabelResource)
+    assertEquals(Res.string.format_status_unknown, EventStatus.UNKNOWN.eventDetailLabelResource)
   }
 
   @Test
@@ -29,7 +32,7 @@ class EventDetailFormattingTest {
   fun matchTitleUsesBothTeamsWhenAvailable() {
     val match = eventMatch(teamNames = listOf("FNATIC", "Gen.G"))
 
-    assertEquals("FNATIC vs Gen.G", match.eventMatchTitle())
+    assertEquals("FNATIC vs Gen.G", match.eventMatchTitle(testFormattingLabels))
   }
 
   @Test
@@ -47,7 +50,7 @@ class EventDetailFormattingTest {
       eventMatch(id = "3", status = "upcoming", round = "Opening", stage = "Group A"),
     )
 
-    val grouped = matches.groupEventMatches(EventMatchGrouping.Status)
+    val grouped = matches.groupEventMatches(EventMatchGrouping.Status, testFormattingLabels)
 
     assertEquals(listOf("Upcoming", "Completed"), grouped.keys.toList())
     assertEquals(listOf("1", "3"), grouped.getValue("Upcoming").map(EventMatch::matchId))

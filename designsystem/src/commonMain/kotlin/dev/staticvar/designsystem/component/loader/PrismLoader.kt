@@ -46,6 +46,15 @@ import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.color.contentColorFor
 import kotlin.math.absoluteValue
+import org.jetbrains.compose.resources.stringResource
+import vlr.designsystem.generated.resources.Res
+import vlr.designsystem.generated.resources.prism_loader_fetch
+import vlr.designsystem.generated.resources.prism_loader_label_phase
+import vlr.designsystem.generated.resources.prism_loader_merge
+import vlr.designsystem.generated.resources.prism_loader_parse
+import vlr.designsystem.generated.resources.prism_loader_render
+import vlr.designsystem.generated.resources.prism_loader_sync
+import vlr.designsystem.generated.resources.prism_loading
 
 private object PrismLoaderConstants {
   val smallWidth: Dp = 96.dp
@@ -60,7 +69,13 @@ private object PrismLoaderConstants {
   const val defaultSegmentCount: Int = 5
   const val phaseSweepMillis: Int = 2200
   const val pulseMillis: Int = 900
-  val phaseLabels: List<String> = listOf("SYNC", "FETCH", "PARSE", "MERGE", "RENDER")
+  val phaseLabels = listOf(
+    Res.string.prism_loader_sync,
+    Res.string.prism_loader_fetch,
+    Res.string.prism_loader_parse,
+    Res.string.prism_loader_merge,
+    Res.string.prism_loader_render,
+  )
 }
 
 public enum class PrismLoaderSize {
@@ -73,7 +88,7 @@ public enum class PrismLoaderSize {
 public fun PrismLoader(
   modifier: Modifier = Modifier,
   size: PrismLoaderSize = PrismLoaderSize.Medium,
-  label: String = "LOADING",
+  label: String = stringResource(Res.string.prism_loading),
   color: Color = Prism.color.accent,
   trackColor: Color = Prism.color.surface,
   containerColor: Color = Prism.color.background,
@@ -174,10 +189,24 @@ private fun rememberLoaderProgress(): LoaderProgress {
   return LoaderProgress(phase = phaseProgress.value, pulse = pulseProgress.value)
 }
 
+@Composable
 private fun loaderLabelText(label: String, phaseProgress: Float): String {
-  val phaseLabel = PrismLoaderConstants.phaseLabels[phaseProgress.toInt() % PrismLoaderConstants.phaseLabels.size]
+  val phaseLabel = stringResource(
+    PrismLoaderConstants.phaseLabels[
+      phaseProgress.toInt() %
+        PrismLoaderConstants.phaseLabels.size,
+    ],
+  )
   val resolvedLabel = label.trim()
-  return if (resolvedLabel.isEmpty()) phaseLabel else "$resolvedLabel · $phaseLabel"
+  return if (resolvedLabel.isEmpty()) {
+    phaseLabel
+  } else {
+    stringResource(
+      Res.string.prism_loader_label_phase,
+      resolvedLabel,
+      phaseLabel,
+    )
+  }
 }
 
 @Composable
@@ -272,7 +301,7 @@ private fun RowScope.LoaderSegment(
 public fun PrismFullscreenLoader(
   modifier: Modifier = Modifier,
   size: PrismLoaderSize = PrismLoaderSize.Large,
-  label: String = "LOADING",
+  label: String = stringResource(Res.string.prism_loading),
   supportingText: String? = null,
   color: Color = Prism.color.accent,
   trackColor: Color = Prism.color.surface,

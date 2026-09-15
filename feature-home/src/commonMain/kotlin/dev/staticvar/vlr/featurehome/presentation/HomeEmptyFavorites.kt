@@ -25,6 +25,12 @@ import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateIllustration
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_home.generated.resources.Res
+import vlr.feature_home.generated.resources.browse_events
+import vlr.feature_home.generated.resources.browse_matches
+import vlr.feature_home.generated.resources.empty_favorites_description
+import vlr.feature_home.generated.resources.make_home_yours
 
 @Composable
 internal fun HomeEmptyFavorites(
@@ -45,13 +51,13 @@ internal fun HomeEmptyFavorites(
         modifier = Modifier.size(width = artworkHeight * (360f / 460f), height = artworkHeight),
       )
       Text(
-        text = "Make Home yours",
+        text = stringResource(Res.string.make_home_yours),
         style = Prism.typography.sectionTitle,
         color = Prism.color.titleColor,
         textAlign = TextAlign.Center,
       )
       Text(
-        text = "Favorite teams, players, matches, or events to see the matches and events you care about here.",
+        text = stringResource(Res.string.empty_favorites_description),
         style = Prism.typography.bodySmall,
         color = Prism.color.bodyColor,
         textAlign = TextAlign.Center,
@@ -61,10 +67,10 @@ internal fun HomeEmptyFavorites(
         verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       ) {
         PrismButton(onClick = onBrowseMatches, modifier = Modifier.fillMaxWidth()) {
-          Text("Browse matches")
+          Text(stringResource(Res.string.browse_matches))
         }
         PrismButton(onClick = onBrowseEvents, modifier = Modifier.fillMaxWidth(), style = PrismButtonStyle.Secondary) {
-          Text("Browse events")
+          Text(stringResource(Res.string.browse_events))
         }
       }
     }

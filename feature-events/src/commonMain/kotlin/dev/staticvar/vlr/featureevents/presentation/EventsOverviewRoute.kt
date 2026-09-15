@@ -15,21 +15,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.designsystem.component.navigation.PrismTab
-import dev.staticvar.vlr.sharedui.component.common.SharedStatusPager
-import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
-import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
-import dev.staticvar.vlr.domain.model.EventStatus
-import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.card.cardMascotEligible
+import dev.staticvar.designsystem.component.card.cardMascotViewport
+import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventPreview
+import dev.staticvar.vlr.domain.model.EventStatus
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.vlr.sharedui.component.common.SharedStatusPager
 import dev.staticvar.vlr.sharedui.component.event.overview.EventPreviewItem
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_events.generated.resources.Res
+import vlr.feature_events.generated.resources.event_overview
+import vlr.feature_events.generated.resources.event_results_will_appear_here_after_events_finish
+import vlr.feature_events.generated.resources.events_around_the_world
+import vlr.feature_events.generated.resources.loading_events
+import vlr.feature_events.generated.resources.new_events_will_appear_here_when_their_schedules_are_announced
+import vlr.feature_events.generated.resources.no_completed_events
+import vlr.feature_events.generated.resources.no_events_are_in_progress_right_now_check_upcoming_events_for_what_s_next
+import vlr.feature_events.generated.resources.no_live_events
+import vlr.feature_events.generated.resources.no_other_events
+import vlr.feature_events.generated.resources.no_paused_events
+import vlr.feature_events.generated.resources.no_upcoming_events
+import vlr.feature_events.generated.resources.refresh
+import vlr.feature_events.generated.resources.tab_completed
+import vlr.feature_events.generated.resources.tab_ongoing
+import vlr.feature_events.generated.resources.tab_paused
+import vlr.feature_events.generated.resources.tab_unknown
+import vlr.feature_events.generated.resources.tab_upcoming
+import vlr.feature_events.generated.resources.there_are_no_events_awaiting_a_status_update
+import vlr.feature_events.generated.resources.there_are_no_events_on_hold_right_now
+import vlr.feature_events.generated.resources.view_upcoming
 @Composable
 public fun EventsOverviewRoute(
   uiState: EventsUiState,
@@ -94,8 +116,8 @@ private fun EventsOverviewChrome(
 ) {
   Column {
     PrismScreenTitleBar(
-      title = "Event overview",
-      subtitle = "Events around the world",
+      title = stringResource(Res.string.event_overview),
+      subtitle = stringResource(Res.string.events_around_the_world),
       actions = {
         SharedRefreshButton(
           isLoading = isLoading,
@@ -130,7 +152,20 @@ private fun EventsOverviewContent(
   modifier: Modifier = Modifier,
 ) {
   SharedStatusPager(
-    tabs = statusFilters.map { filter -> PrismTab(id = filter.name, label = filter.name) },
+    tabs = statusFilters.map { filter ->
+      PrismTab(
+        id = filter.name,
+        label = stringResource(
+          when (filter) {
+            EventStatusFilter.Ongoing -> Res.string.tab_ongoing
+            EventStatusFilter.Upcoming -> Res.string.tab_upcoming
+            EventStatusFilter.Completed -> Res.string.tab_completed
+            EventStatusFilter.Paused -> Res.string.tab_paused
+            EventStatusFilter.Unknown -> Res.string.tab_unknown
+          },
+        ),
+      )
+    },
     selectedTabId = selectedStatus.name,
     onTabSelected = { onFilterSelected(EventStatusFilter.valueOf(it)) },
     modifier = modifier,
@@ -165,7 +200,7 @@ private fun EventOverviewPage(
   val events = remember(allEvents, status) { allEvents.filterByStatus(status) }
   when {
     (!isOnline || isLoading || isRefreshing) && allEvents.isEmpty() -> SharedScreenLoading(
-      label = "Loading events",
+      label = stringResource(Res.string.loading_events),
       modifier = Modifier.fillMaxSize(),
     )
 
@@ -179,11 +214,11 @@ private fun EventOverviewPage(
 
     events.isEmpty() && !isRefreshing && !isLoading && errorMessage == null && isOnline -> {
       val (title, message) = when (status) {
-        EventStatusFilter.Ongoing -> "No live events" to "No events are in progress right now. Check upcoming events for what’s next."
-        EventStatusFilter.Upcoming -> "No upcoming events" to "New events will appear here when their schedules are announced."
-        EventStatusFilter.Completed -> "No completed events" to "Event results will appear here after events finish."
-        EventStatusFilter.Paused -> "No paused events" to "There are no events on hold right now."
-        EventStatusFilter.Unknown -> "No other events" to "There are no events awaiting a status update."
+        EventStatusFilter.Ongoing -> stringResource(Res.string.no_live_events) to stringResource(Res.string.no_events_are_in_progress_right_now_check_upcoming_events_for_what_s_next)
+        EventStatusFilter.Upcoming -> stringResource(Res.string.no_upcoming_events) to stringResource(Res.string.new_events_will_appear_here_when_their_schedules_are_announced)
+        EventStatusFilter.Completed -> stringResource(Res.string.no_completed_events) to stringResource(Res.string.event_results_will_appear_here_after_events_finish)
+        EventStatusFilter.Paused -> stringResource(Res.string.no_paused_events) to stringResource(Res.string.there_are_no_events_on_hold_right_now)
+        EventStatusFilter.Unknown -> stringResource(Res.string.no_other_events) to stringResource(Res.string.there_are_no_events_awaiting_a_status_update)
       }
       val hasUpcoming = status == EventStatusFilter.Ongoing && allEvents.any { it.status == EventStatus.UPCOMING }
       SharedEmptyState(
@@ -191,7 +226,7 @@ private fun EventOverviewPage(
         title = title,
         message = message,
         modifier = Modifier.fillMaxSize(),
-        actionLabel = if (hasUpcoming) "View upcoming" else "Refresh",
+        actionLabel = if (hasUpcoming) stringResource(Res.string.view_upcoming) else stringResource(Res.string.refresh),
         onAction = { if (hasUpcoming) onSelectTab(EventStatusFilter.Upcoming.name) else onRefresh() },
       )
     }

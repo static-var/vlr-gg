@@ -27,6 +27,14 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.shared_team_label
+import vlr.shared_ui.generated.resources.shared_team_players
+import vlr.shared_ui.generated.resources.shared_team_profile
+import vlr.shared_ui.generated.resources.shared_team_unranked
+import vlr.shared_ui.generated.resources.shared_team_upcoming
 
 /**
  * Compact team list item for team indexes, favorites, and ranking drill-downs.
@@ -46,11 +54,11 @@ public fun TeamPreviewItem(team: TeamInfo, modifier: Modifier = Modifier, onClic
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
       ) {
-        PrismHeader(text = team.region.ifBlank { "team" })
+        PrismHeader(text = team.region.ifBlank { stringResource(Res.string.shared_team_label) })
         if (team.rank > 0) {
           PrismTag(text = "#${team.rank}", style = PrismTagStyle.Accent)
         } else {
-          PrismTag(text = "unranked")
+          PrismTag(text = stringResource(Res.string.shared_team_unranked))
         }
       }
       Row(
@@ -92,8 +100,14 @@ public fun TeamPreviewItem(team: TeamInfo, modifier: Modifier = Modifier, onClic
             .padding(top = Prism.dimens.spacingS),
           horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
         ) {
-          PrismTag(text = "${team.roster.size} players", style = PrismTagStyle.Info)
-          PrismTag(text = "$upcomingSoonCount next 7d", style = PrismTagStyle.Info)
+          PrismTag(
+            text = pluralStringResource(Res.plurals.shared_team_players, team.roster.size, team.roster.size),
+            style = PrismTagStyle.Info,
+          )
+          PrismTag(
+            text = stringResource(Res.string.shared_team_upcoming, upcomingSoonCount),
+            style = PrismTagStyle.Info,
+          )
         }
       }
     }
@@ -101,8 +115,9 @@ public fun TeamPreviewItem(team: TeamInfo, modifier: Modifier = Modifier, onClic
 }
 
 private val TeamInfo.subtitle: String
+  @Composable
   get() =
     listOfNotNull(
       tag.takeIf(String::isNotBlank),
       country.takeIf(String::isNotBlank),
-    ).joinToString(" • ").ifBlank { "Team profile" }
+    ).joinToString(" • ").ifBlank { stringResource(Res.string.shared_team_profile) }

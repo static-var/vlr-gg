@@ -4,16 +4,28 @@
  */
 package dev.staticvar.vlr.sharedui.component.event.detail
 
+import androidx.compose.runtime.Composable
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.vlr.domain.model.EventStatus
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.format_status_completed
+import vlr.shared_ui.generated.resources.format_status_ongoing
+import vlr.shared_ui.generated.resources.format_status_paused
+import vlr.shared_ui.generated.resources.format_status_unknown
+import vlr.shared_ui.generated.resources.format_status_upcoming
 
 internal val EventStatus.eventDetailLabel: String
+  @Composable
+  get() = stringResource(eventDetailLabelResource)
+
+internal val EventStatus.eventDetailLabelResource: org.jetbrains.compose.resources.StringResource
   get() = when (this) {
-    EventStatus.ONGOING -> "ONGOING"
-    EventStatus.PAUSED -> "PAUSED"
-    EventStatus.UPCOMING -> "UPCOMING"
-    EventStatus.COMPLETED -> "COMPLETED"
-    EventStatus.UNKNOWN -> "UNKNOWN"
+    EventStatus.ONGOING -> Res.string.format_status_ongoing
+    EventStatus.PAUSED -> Res.string.format_status_paused
+    EventStatus.UPCOMING -> Res.string.format_status_upcoming
+    EventStatus.COMPLETED -> Res.string.format_status_completed
+    EventStatus.UNKNOWN -> Res.string.format_status_unknown
   }
 
 internal val EventStatus.eventDetailTagStyle: PrismTagStyle

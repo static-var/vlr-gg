@@ -24,6 +24,12 @@ import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventStanding
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_delta
+import vlr.shared_ui.generated.resources.match_event_maps_difference
+import vlr.shared_ui.generated.resources.match_event_open_bracket
+import vlr.shared_ui.generated.resources.match_event_rounds_difference
 
 /**
  * Standings row for event group tables.
@@ -54,7 +60,7 @@ public fun EventDetailStandingItem(standing: EventStanding, modifier: Modifier =
         Text(
           text = listOfNotNull(standing.teamCountry, standing.groupName).filter(String::isNotBlank)
             .joinToString(separator = " • ")
-            .ifBlank { "Open bracket" },
+            .ifBlank { stringResource(Res.string.match_event_open_bracket) },
           modifier = Modifier.padding(top = Prism.dimens.spacingXs),
           style = Prism.typography.bodySmall,
           color = Prism.color.labelColor,
@@ -71,9 +77,15 @@ public fun EventDetailStandingItem(standing: EventStanding, modifier: Modifier =
         .padding(top = Prism.dimens.spacingS),
       horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
     ) {
-      PrismTag(text = "Maps ${standing.mapDifference}", style = PrismTagStyle.Neutral)
-      PrismTag(text = "Rounds ${standing.roundDifference}", style = PrismTagStyle.Neutral)
-      PrismTag(text = "Delta ${standing.roundDelta}", style = PrismTagStyle.Neutral)
+      PrismTag(
+        text = stringResource(Res.string.match_event_maps_difference, standing.mapDifference),
+        style = PrismTagStyle.Neutral,
+      )
+      PrismTag(
+        text = stringResource(Res.string.match_event_rounds_difference, standing.roundDifference),
+        style = PrismTagStyle.Neutral,
+      )
+      PrismTag(text = stringResource(Res.string.match_event_delta, standing.roundDelta), style = PrismTagStyle.Neutral)
     }
   }
 }

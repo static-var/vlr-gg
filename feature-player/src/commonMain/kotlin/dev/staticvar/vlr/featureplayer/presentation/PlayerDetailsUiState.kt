@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.featureplayer.presentation
 
 import dev.staticvar.vlr.domain.model.PlayerInfo
+import org.jetbrains.compose.resources.StringResource
 
 public data class PlayerDetailsUiState(
   val player: PlayerInfo? = null,
@@ -13,5 +14,5 @@ public data class PlayerDetailsUiState(
   val errorMessage: String? = null,
   val errorDetails: String? = null,
   val isUpdatingFavorite: Boolean = false,
-  val favoriteErrorMessage: String? = null,
+  val favoriteErrorMessage: StringResource? = null,
 )

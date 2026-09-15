@@ -36,11 +36,24 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
+import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 import dev.staticvar.vlr.sharedui.share.ImageSharer
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_matches.generated.resources.Res
+import vlr.feature_matches.generated.resources.close
+import vlr.feature_matches.generated.resources.could_not_create_the_image_tap_share_to_try_again
+import vlr.feature_matches.generated.resources.could_not_open_the_share_menu_tap_share_to_try_again
+import vlr.feature_matches.generated.resources.match_share_preview
+import vlr.feature_matches.generated.resources.preview
+import vlr.feature_matches.generated.resources.share
+import vlr.feature_matches.generated.resources.share_live
+import vlr.feature_matches.generated.resources.share_time_tba
+import vlr.feature_matches.generated.resources.sharing
 
 @Composable
 internal fun MatchSharePreviewSheet(matches: List<MatchPreview>, imageSharer: ImageSharer, onDismiss: () -> Unit) {
@@ -55,13 +68,13 @@ internal fun MatchSharePreviewSheet(matches: List<MatchPreview>, imageSharer: Im
     visible = visible,
     onDismissRequest = { visible = false },
     onCollapsed = onDismiss,
-    paneTitle = "Match share preview",
+    paneTitle = stringResource(Res.string.match_share_preview),
     header = {
-      Text("Preview", style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
+      Text(stringResource(Res.string.preview), style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
     },
     footer = {
       val scope = rememberCoroutineScope()
-      PrismButton(onClick = { visible = false }, style = PrismButtonStyle.Tertiary) { Text("Close") }
+      PrismButton(onClick = { visible = false }, style = PrismButtonStyle.Tertiary) { Text(stringResource(Res.string.close)) }
       PrismButton(
         enabled = previewDrawn && !sharing && matches.isNotEmpty(),
         onClick = {
@@ -78,9 +91,9 @@ internal fun MatchSharePreviewSheet(matches: List<MatchPreview>, imageSharer: Im
                 throw cancelled
               } catch (_: Exception) {
                 errorMessage = if (imageReady) {
-                  "Could not open the share menu. Tap Share to try again."
+                  getString(Res.string.could_not_open_the_share_menu_tap_share_to_try_again)
                 } else {
-                  "Could not create the image. Tap Share to try again."
+                  getString(Res.string.could_not_create_the_image_tap_share_to_try_again)
                 }
               } finally {
                 sharing = false
@@ -88,7 +101,7 @@ internal fun MatchSharePreviewSheet(matches: List<MatchPreview>, imageSharer: Im
             }
           }
         },
-      ) { Text(if (sharing) "Sharing…" else "Share") }
+      ) { Text(if (sharing) stringResource(Res.string.sharing) else stringResource(Res.string.share)) }
     },
   ) {
     errorMessage?.let { message ->
@@ -129,7 +142,7 @@ private fun MatchSharePreviewItem(match: MatchPreview) {
       overflow = TextOverflow.Ellipsis,
     )
     Text(
-      text = matchShareTime(match),
+      text = matchShareTime(match, stringResource(Res.string.share_live), stringResource(Res.string.share_time_tba), formatMatchPreviewTime(match.time)),
       style = Prism.typography.label,
       color = if (match.status == MatchStatus.LIVE) Prism.color.accent else Prism.color.labelColor,
     )

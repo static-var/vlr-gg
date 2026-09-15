@@ -16,6 +16,11 @@ import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_group_matches_by
+import vlr.shared_ui.generated.resources.match_event_matches
+import vlr.shared_ui.generated.resources.match_event_schedule
 
 /**
  * Match grouping controls for event detail schedules.
@@ -30,10 +35,7 @@ public fun EventMatchGroupSelector(
   modifier: Modifier = Modifier,
   onMenuExpandedChange: (Boolean) -> Unit = {},
 ) {
-  val groupingOptions =
-    remember {
-      EventMatchGrouping.entries.map { groupingOption -> groupingOption.toDropdownOption() }
-    }
+  val groupingOptions = EventMatchGrouping.entries.map { groupingOption -> groupingOption.toDropdownOption() }
   val groupTabs =
     remember(groupNames) {
       groupNames.map { groupName -> PrismTab(id = groupName, label = groupName) }
@@ -44,14 +46,14 @@ public fun EventMatchGroupSelector(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     PrismSectionTitle(
-      title = "Matches",
-      preLabel = "schedule",
+      title = stringResource(Res.string.match_event_matches),
+      preLabel = stringResource(Res.string.match_event_schedule),
       trailing = {
         PrismDropdown(
           options = groupingOptions,
           selectedOptionId = grouping.name,
           onOptionSelected = { option -> onGroupingSelected(EventMatchGrouping.valueOf(option.id)) },
-          label = "GROUP MATCHES BY",
+          label = stringResource(Res.string.match_event_group_matches_by),
           onExpandedChange = onMenuExpandedChange,
         )
       },
@@ -67,4 +69,5 @@ public fun EventMatchGroupSelector(
   }
 }
 
+@Composable
 private fun EventMatchGrouping.toDropdownOption(): PrismDropdownOption = PrismDropdownOption(id = name, label = label)

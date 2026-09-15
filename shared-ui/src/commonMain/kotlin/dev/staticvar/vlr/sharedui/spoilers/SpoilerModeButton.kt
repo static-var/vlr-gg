@@ -12,23 +12,36 @@ import androidx.compose.ui.semantics.stateDescription
 import dev.staticvar.designsystem.component.button.PrismIconButton
 import dev.staticvar.designsystem.component.button.PrismIconButtonSize
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.shared_hide_spoilers
+import vlr.shared_ui.generated.resources.shared_show_spoilers
+import vlr.shared_ui.generated.resources.shared_spoilers_off
+import vlr.shared_ui.generated.resources.shared_spoilers_on
 
 @Composable
 public fun SpoilerModeButton(modifier: Modifier = Modifier) {
   val mode = LocalSpoilerMode.current
   val iconColor = Prism.color.titleColor
+  val spoilerState = if (mode.enabled) {
+    stringResource(
+      Res.string.shared_spoilers_on,
+    )
+  } else {
+    stringResource(Res.string.shared_spoilers_off)
+  }
   PrismIconButton(
     icon = Prism.icons.preview,
     contentDescription = if (mode.enabled) {
-      "Show results and stats throughout app"
+      stringResource(Res.string.shared_show_spoilers)
     } else {
-      "Hide results and stats throughout app"
+      stringResource(Res.string.shared_hide_spoilers)
     },
     onClick = mode.onToggle,
     selected = mode.enabled,
     size = PrismIconButtonSize.Toolbar,
     modifier = modifier.testTag("no_spoilers_toggle").semantics {
-      stateDescription = if (mode.enabled) "No spoilers on" else "No spoilers off"
+      stateDescription = spoilerState
     },
     iconModifier = if (mode.enabled) Modifier.closedEyeStroke(iconColor) else Modifier,
   )

@@ -4,22 +4,27 @@
  */
 package dev.staticvar.vlr.sharedui.component.match.detail
 
+import androidx.compose.runtime.Composable
 import dev.staticvar.vlr.domain.model.MatchDetails
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.format_bestOf
+import vlr.shared_ui.generated.resources.format_tbd
 
 /** Best-of label backed by explicit metadata or a complete schedule/veto signal. */
-internal fun MatchDetails.matchDetailFormatLabel(): String {
-  explicitBestOf(note)?.let { return it.toBestOfLabel() }
+internal fun MatchDetails.matchDetailBestOf(): Int? {
+  explicitBestOf(note)?.let { return it }
 
   val normalizedStatus = event.status.orEmpty().trim().lowercase()
   if (normalizedStatus == "completed") {
-    completedVetoMapCount()?.let { return it.toBestOfLabel() }
+    completedVetoMapCount()?.let { return it }
   }
 
   if (normalizedStatus in plannedStatuses && mapCount.isPlannedBestOfCount()) {
-    return mapCount.toBestOfLabel()
+    return mapCount
   }
 
-  return UnknownFormatLabel
+  return null
 }
 
 private fun explicitBestOf(value: String): Int? = ExplicitBestOfRegex
@@ -41,10 +46,13 @@ private fun Int.isExplicitBestOfCount(): Boolean = this > 0 && this % 2 == 1
 
 private fun Int.isPlannedBestOfCount(): Boolean = this == 1 || this == 3 || this == 5
 
-private fun Int.toBestOfLabel(): String = "BO$this"
-
 private val plannedStatuses = setOf("upcoming", "live", "ongoing")
 private val ExplicitBestOfRegex = Regex("""(?i)\b(?:bo|best(?:\s*-\s*|\s+)of)\s*[-:]?\s*(\d+)\b""")
 private val PickRegex = Regex("""(?i)\bpick(?:s|ed)?\b""")
 private val RemainsRegex = Regex("""(?i)\bremains\b""")
-private const val UnknownFormatLabel = "TBD"
+
+@Composable
+internal fun MatchDetails.matchDetailFormatLabel(): String {
+  val count = matchDetailBestOf()
+  return if (count == null) stringResource(Res.string.format_tbd) else stringResource(Res.string.format_bestOf, count)
+}

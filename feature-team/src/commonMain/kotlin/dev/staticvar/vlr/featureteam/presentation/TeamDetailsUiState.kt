@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.featureteam.presentation
 
 import dev.staticvar.vlr.domain.model.TeamInfo
+import org.jetbrains.compose.resources.StringResource
 
 public data class TeamDetailsUiState(
   val team: TeamInfo? = null,
@@ -13,7 +14,7 @@ public data class TeamDetailsUiState(
   val errorMessage: String? = null,
   val errorDetails: String? = null,
   val isUpdatingFavorite: Boolean = false,
-  val favoriteErrorMessage: String? = null,
+  val favoriteErrorMessage: StringResource? = null,
 )
 
 public enum class TeamMatchesSection {

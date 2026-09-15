@@ -1,0 +1,16 @@
+<resources>
+    <string name="news_title">News</string>
+    <string name="scroll_to_top">Top</string>
+    <string name="loading_article">Loading article</string>
+    <string name="no_article_yet">No article yet</string>
+    <string name="article_unpublished">This story has not been published.</string>
+    <string name="no_article_text_yet">No article text yet</string>
+    <string name="article_text_unpublished">The story text has not been published.</string>
+    <string name="read_on_vlr">Read on VLR.gg</string>
+    <string name="loading_news">Loading news</string>
+    <string name="news_heading">NEWS</string>
+    <string name="news_subtitle">Stories from competitive VALORANT</string>
+    <string name="no_stories_yet">No stories yet</string>
+    <string name="news_unpublished">Competitive VALORANT news will appear here when published.</string>
+    <string name="refresh">Refresh</string>
+</resources>

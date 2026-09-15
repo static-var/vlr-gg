@@ -26,6 +26,9 @@ import dev.staticvar.designsystem.component.button.PrismIconButtonSize
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_about.generated.resources.Res
+import vlr.feature_about.generated.resources.dismiss_what_s_new
 
 @Composable
 public fun WhatsNewBanner(
@@ -44,25 +47,25 @@ public fun WhatsNewBanner(
           .heightIn(min = Prism.dimens.touchTargetMin)
           .clickable(
             role = Role.Button,
-            onClickLabel = BundledRelease.bannerAction,
+            onClickLabel = stringResource(BundledRelease.bannerAction),
             onClick = onOpen,
           ),
         verticalArrangement = Arrangement.Center,
       ) {
         Text(
-          text = BundledRelease.bannerTitle,
+          text = stringResource(BundledRelease.bannerTitle),
           style = Prism.typography.cardTitle,
           color = Prism.color.titleColor,
         )
         Text(
-          text = BundledRelease.bannerAction,
+          text = stringResource(BundledRelease.bannerAction),
           style = Prism.typography.label,
           color = Prism.color.accent,
         )
       }
       PrismIconButton(
         icon = WhatsNewCloseIcon,
-        contentDescription = "Dismiss what's new",
+        contentDescription = stringResource(Res.string.dismiss_what_s_new),
         onClick = onDismiss,
         size = PrismIconButtonSize.Small,
       )

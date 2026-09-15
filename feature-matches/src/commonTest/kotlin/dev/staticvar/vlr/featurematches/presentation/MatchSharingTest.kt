@@ -7,13 +7,14 @@ package dev.staticvar.vlr.featurematches.presentation
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
-import kotlinx.datetime.TimeZone
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.datetime.TimeZone
 
 class MatchSharingTest {
+
   @Test
   fun selectionSpansStatusesAndCapsAtSixInSelectionOrder() {
     val matches = (1..7).map { match(it.toString(), if (it % 2 == 0) MatchStatus.LIVE else MatchStatus.UPCOMING) }
@@ -40,7 +41,7 @@ class MatchSharingTest {
   }
 
   @Test
-  fun shareTextContainsSelectedLinksLocalTimesAndNoNullDates() {
+  fun shareTextContainsSelectedLinksLocalTimesAndNoNullDates() = kotlinx.coroutines.test.runTest {
     val scheduled = match("123")
     val unscheduled = match("456").copy(time = null)
     val text = matchShareText(listOf(scheduled, unscheduled), TimeZone.of("Asia/Kolkata"))
@@ -50,10 +51,17 @@ class MatchSharingTest {
         "Alpha vs Beta | Time TBA | https://www.vlr.gg/456\n\nShared via Val Esports",
       text,
     )
-    assertEquals("LIVE", matchShareTime(match("789", MatchStatus.LIVE), TimeZone.UTC))
-    val liveText = matchShareText(listOf(scheduled.copy(status = MatchStatus.LIVE)), TimeZone.UTC)
-    assertTrue(liveText.contains("Sep 7, 20:00 UTC"))
-    assertEquals("Time TBA", matchShareTime(scheduled.copy(time = "invalid"), TimeZone.UTC))
+    assertEquals("LIVE", matchShareTime(match("789", MatchStatus.LIVE), "LIVE", "Time TBA", null, TimeZone.UTC))
+    val liveText = matchShareText(
+      listOf(scheduled.copy(status = MatchStatus.LIVE), unscheduled.copy(status = MatchStatus.LIVE)),
+      TimeZone.UTC,
+    )
+    assertEquals(
+      "Alpha vs Beta | LIVE | https://www.vlr.gg/123\n\n" +
+        "Alpha vs Beta | LIVE | https://www.vlr.gg/456\n\nShared via Val Esports",
+      liveText,
+    )
+    assertEquals("Time TBA", matchShareTime(scheduled.copy(time = "invalid"), "LIVE", "Time TBA", null, TimeZone.UTC))
   }
 
   private fun match(id: String, status: MatchStatus = MatchStatus.UPCOMING): MatchPreview = MatchPreview(

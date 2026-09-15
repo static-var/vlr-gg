@@ -9,6 +9,8 @@ import com.russhwolf.settings.MapSettings
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
+import dev.staticvar.vlr.domain.model.DirectFavorite
+import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.model.EventInfo
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.MatchDetails
@@ -16,30 +18,30 @@ import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchVideos
-import dev.staticvar.vlr.domain.model.DirectFavorite
-import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
-import dev.staticvar.vlr.featurematches.usecase.SetMatchFavoriteUseCase
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchDetailsUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchDetailsUseCase
+import dev.staticvar.vlr.featurematches.usecase.SetMatchFavoriteUseCase
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import vlr.feature_matches.generated.resources.Res
+import vlr.feature_matches.generated.resources.favorite_update_failed
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MatchDetailsViewModelTest {
@@ -273,7 +275,7 @@ class MatchDetailsViewModelTest {
     advanceUntilIdle()
     assertEquals(false, viewModel.uiState.value.isFavoritePending)
     assertEquals(false, viewModel.uiState.value.match?.isDirectFavorite)
-    assertEquals("Could not update favorite. Try again.", viewModel.uiState.value.favoriteErrorMessage)
+    assertEquals(Res.string.favorite_update_failed, viewModel.uiState.value.favoriteErrorMessage)
 
     repository.favoriteResult = Result.success(Unit)
     viewModel.toggleFavorite()

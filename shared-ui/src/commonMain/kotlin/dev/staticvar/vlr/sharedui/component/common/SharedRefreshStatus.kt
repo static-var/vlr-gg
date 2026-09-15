@@ -18,6 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.shared_no_internet
 
 @Composable
 public fun SharedRefreshStatus(
@@ -29,7 +32,7 @@ public fun SharedRefreshStatus(
   hasContent: Boolean = true,
 ) {
   val status = when {
-    !LocalIsOnline.current && hasContent -> RefreshStatus.Failed("No internet connection", null)
+    !LocalIsOnline.current && hasContent -> RefreshStatus.Failed(stringResource(Res.string.shared_no_internet), null)
     !LocalIsOnline.current -> RefreshStatus.Idle
     isRefreshing -> RefreshStatus.Refreshing
     errorMessage != null -> RefreshStatus.Failed(errorMessage, errorDetails)
@@ -49,11 +52,13 @@ public fun SharedRefreshStatus(
   ) { currentStatus ->
     when (currentStatus) {
       RefreshStatus.Idle -> Box(Modifier.fillMaxWidth())
+
       RefreshStatus.Refreshing -> Column(
         modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
       ) {
         SharedLoadingIndicator()
       }
+
       is RefreshStatus.Failed -> SharedLoadError(
         errorMessage = currentStatus.message,
         errorDetails = currentStatus.details,

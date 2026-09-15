@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -41,6 +41,43 @@ import dev.staticvar.vlr.core.settings.MascotPreference
 import dev.staticvar.vlr.core.settings.MascotVisitFrequency
 import dev.staticvar.vlr.core.settings.ThemeFamily
 import kotlin.math.roundToInt
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_about.generated.resources.Res
+import vlr.feature_about.generated.resources.about_val_esports
+import vlr.feature_about.generated.resources.appearance
+import vlr.feature_about.generated.resources.auto_cleanup
+import vlr.feature_about.generated.resources.card_visits_are_off_win_celebrations_stay_on
+import vlr.feature_about.generated.resources.chance_on_each_new_screen_with_room_for_a_mascot
+import vlr.feature_about.generated.resources.companion
+import vlr.feature_about.generated.resources.dark
+import vlr.feature_about.generated.resources.deleted_cached_items
+import vlr.feature_about.generated.resources.experimental
+import vlr.feature_about.generated.resources.flavour
+import vlr.feature_about.generated.resources.frequently
+import vlr.feature_about.generated.resources.how_val_esports_handles_your_data
+import vlr.feature_about.generated.resources.light
+import vlr.feature_about.generated.resources.lynx_cat
+import vlr.feature_about.generated.resources.make_it_yours
+import vlr.feature_about.generated.resources.mascot
+import vlr.feature_about.generated.resources.mascot_description
+import vlr.feature_about.generated.resources.mascot_frequency_accessibility
+import vlr.feature_about.generated.resources.mode
+import vlr.feature_about.generated.resources.none
+import vlr.feature_about.generated.resources.off
+import vlr.feature_about.generated.resources.privacy_policy
+import vlr.feature_about.generated.resources.remove_cached_items_that_haven_t_been_refreshed_in_30_days
+import vlr.feature_about.generated.resources.rosie_dog
+import vlr.feature_about.generated.resources.settings
+import vlr.feature_about.generated.resources.sometimes
+import vlr.feature_about.generated.resources.surprise_visits
+import vlr.feature_about.generated.resources.terms_of_service
+import vlr.feature_about.generated.resources.the_latest_features_and_improvements
+import vlr.feature_about.generated.resources.the_project_the_people_and_the_data
+import vlr.feature_about.generated.resources.theme
+import vlr.feature_about.generated.resources.using_the_app_and_its_content
+import vlr.feature_about.generated.resources.what_s_new
+import vlr.feature_about.generated.resources.yes
 
 /** Preferences shared by Android and iOS. Changes apply immediately. */
 @Composable
@@ -66,8 +103,8 @@ public fun SettingsRoute(
   val uriHandler = LocalUriHandler.current
   Column(modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM)) {
     PrismScreenTitleBar(
-      title = "Settings",
-      subtitle = "Make it yours.",
+      title = stringResource(Res.string.settings),
+      subtitle = stringResource(Res.string.make_it_yours),
       onBackPress = onBack,
     )
     Column(
@@ -95,23 +132,23 @@ public fun SettingsRoute(
         onMascotVisitFrequencySelected = onMascotVisitFrequencySelected,
       )
       SettingsLinkCard(
-        title = "What's new?",
-        description = "The latest features and improvements.",
+        title = stringResource(Res.string.what_s_new),
+        description = stringResource(Res.string.the_latest_features_and_improvements),
         onClick = onWhatsNew,
       )
       SettingsLinkCard(
-        title = "About Val Esports",
-        description = "The project, the people, and the data.",
+        title = stringResource(Res.string.about_val_esports),
+        description = stringResource(Res.string.the_project_the_people_and_the_data),
         onClick = onAbout,
       )
       SettingsLinkCard(
-        title = "Privacy policy",
-        description = "How Val Esports handles your data.",
+        title = stringResource(Res.string.privacy_policy),
+        description = stringResource(Res.string.how_val_esports_handles_your_data),
         onClick = { uriHandler.openUri(AppWebsite.Privacy) },
       )
       SettingsLinkCard(
-        title = "Terms of service",
-        description = "Using the app and its content.",
+        title = stringResource(Res.string.terms_of_service),
+        description = stringResource(Res.string.using_the_app_and_its_content),
         onClick = { uriHandler.openUri(AppWebsite.Terms) },
       )
       SettingsVersionFooter()
@@ -130,9 +167,9 @@ private fun AppearanceSettingsCard(
 ) {
   PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
     Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-      PrismSectionTitle(title = "Appearance")
+      PrismSectionTitle(title = stringResource(Res.string.appearance))
       PrismDropdown(
-        label = "Theme",
+        label = stringResource(Res.string.theme),
         modifier = Modifier.fillMaxWidth(),
         options = familyOptions,
         selectedOptionId = family.name,
@@ -140,14 +177,14 @@ private fun AppearanceSettingsCard(
       )
       when (family) {
         ThemeFamily.Brutalist, ThemeFamily.Console -> PrismDropdown(
-          label = "Mode",
+          label = stringResource(Res.string.mode),
           modifier = Modifier.fillMaxWidth(),
-          options = modeOptions,
+          options = modeOptions(),
           selectedOptionId = if (isDark) AppearanceMode.Dark.name else AppearanceMode.Light.name,
           onOptionSelected = { onModeSelected(AppearanceMode.valueOf(it.id)) },
         )
         ThemeFamily.Catppuccin -> PrismDropdown(
-          label = "Flavour",
+          label = stringResource(Res.string.flavour),
           modifier = Modifier.fillMaxWidth(),
           options = flavourOptions,
           selectedOptionId = catppuccinFlavour.name,
@@ -164,18 +201,19 @@ private fun CleanupSettingsCard(
   deletedCacheRecords: Long,
   onAutoCleanupChanged: (Boolean) -> Unit,
 ) {
+  val autoCleanupLabel = stringResource(Res.string.auto_cleanup)
   PrismCard(
     modifier = Modifier.fillMaxWidth(),
     style = PrismCardStyle.Outlined,
   ) {
     Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-      PrismSectionTitle(title = "Experimental")
+      PrismSectionTitle(title = stringResource(Res.string.experimental))
       Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
       ) {
         Text(
-          text = "Auto cleanup",
+          text = stringResource(Res.string.auto_cleanup),
           modifier = Modifier.weight(1f),
           style = Prism.typography.bodyLarge,
           color = Prism.color.contentPrimary,
@@ -183,16 +221,20 @@ private fun CleanupSettingsCard(
         PrismSwitch(
           checked = autoCleanupEnabled,
           onCheckedChange = onAutoCleanupChanged,
-          modifier = Modifier.semantics { contentDescription = "Auto cleanup" },
+          modifier = Modifier.semantics { contentDescription = autoCleanupLabel },
         )
       }
       Text(
-        text = "Remove cached items that haven't been refreshed in 30 days.",
+        text = stringResource(Res.string.remove_cached_items_that_haven_t_been_refreshed_in_30_days),
         style = Prism.typography.bodySmall,
         color = Prism.color.bodyColor,
       )
       Text(
-        text = "$deletedCacheRecords cached items deleted so far",
+        text = pluralStringResource(
+          Res.plurals.deleted_cached_items,
+          deletedCacheRecords.coerceIn(0L, Int.MAX_VALUE.toLong()).toInt(),
+          deletedCacheRecords.toString(),
+        ),
         style = Prism.typography.caption,
         color = Prism.color.captionColor,
       )
@@ -212,16 +254,16 @@ private fun MascotSettingsCard(
     style = PrismCardStyle.Outlined,
   ) {
     Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-      PrismSectionTitle(title = "Mascot")
+      PrismSectionTitle(title = stringResource(Res.string.mascot))
       Text(
-        "A little company while you browse, with a celebration for big wins. Pick a companion or turn mascots off.",
+        stringResource(Res.string.mascot_description),
         style = Prism.typography.bodySmall,
         color = Prism.color.bodyColor,
       )
       PrismDropdown(
-        label = "Companion",
+        label = stringResource(Res.string.companion),
         modifier = Modifier.fillMaxWidth(),
-        options = mascotOptions,
+        options = mascotOptions(),
         selectedOptionId = mascot.name,
         onOptionSelected = { onMascotSelected(MascotPreference.valueOf(it.id)) },
       )
@@ -270,8 +312,10 @@ private fun MascotVisitFrequencySlider(
   onSelected: (MascotVisitFrequency) -> Unit,
 ) {
   val options = MascotVisitFrequency.entries
+  val surpriseVisitsLabel = stringResource(Res.string.surprise_visits)
+  val frequencyDescription = frequency.accessibilityLabel
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
-    Text("Surprise visits", style = Prism.typography.bodyLarge, color = Prism.color.contentPrimary)
+    Text(stringResource(Res.string.surprise_visits), style = Prism.typography.bodyLarge, color = Prism.color.contentPrimary)
     PrismSlider(
       value = options.indexOf(frequency).toFloat(),
       onValueChange = { onSelected(options[it.roundToInt().coerceIn(options.indices)]) },
@@ -279,15 +323,15 @@ private fun MascotVisitFrequencySlider(
       steps = 2,
       stopLabels = options.map { it.label },
       modifier = Modifier.fillMaxWidth().semantics {
-        contentDescription = "Surprise visits"
-        stateDescription = frequency.accessibilityLabel
+        contentDescription = surpriseVisitsLabel
+        stateDescription = frequencyDescription
       },
     )
     Text(
       text = if (frequency == MascotVisitFrequency.None) {
-        "Card visits are off. Win celebrations stay on."
+        stringResource(Res.string.card_visits_are_off_win_celebrations_stay_on)
       } else {
-        "Chance on each new screen with room for a mascot."
+        stringResource(Res.string.chance_on_each_new_screen_with_room_for_a_mascot)
       },
       style = Prism.typography.bodySmall,
       color = Prism.color.bodyColor,
@@ -296,19 +340,20 @@ private fun MascotVisitFrequencySlider(
 }
 
 private val MascotVisitFrequency.label: String
-  get() = when (this) {
-    MascotVisitFrequency.None -> "None"
-    MascotVisitFrequency.Sometimes -> "Sometimes"
-    MascotVisitFrequency.Frequently -> "Frequently"
-    MascotVisitFrequency.Yes -> "YES"
+  @Composable get() = when (this) {
+    MascotVisitFrequency.None -> stringResource(Res.string.none)
+    MascotVisitFrequency.Sometimes -> stringResource(Res.string.sometimes)
+    MascotVisitFrequency.Frequently -> stringResource(Res.string.frequently)
+    MascotVisitFrequency.Yes -> stringResource(Res.string.yes)
   }
 
 private val MascotVisitFrequency.accessibilityLabel: String
-  get() = "$label, $probabilityPercent percent chance per screen"
+  @Composable get() = stringResource(Res.string.mascot_frequency_accessibility, label, probabilityPercent)
 
-private val modeOptions = listOf(
-  PrismDropdownOption(AppearanceMode.Light.name, "Light"),
-  PrismDropdownOption(AppearanceMode.Dark.name, "Dark"),
+@Composable
+private fun modeOptions(): List<PrismDropdownOption> = listOf(
+  PrismDropdownOption(AppearanceMode.Light.name, stringResource(Res.string.light)),
+  PrismDropdownOption(AppearanceMode.Dark.name, stringResource(Res.string.dark)),
 )
 
 private val familyOptions = listOf(
@@ -324,8 +369,9 @@ private val flavourOptions = listOf(
   PrismDropdownOption(CatppuccinFlavour.Mocha.name, "Mocha"),
 )
 
-private val mascotOptions = listOf(
-  PrismDropdownOption(MascotPreference.Lynx.name, "Lynx · Cat"),
-  PrismDropdownOption(MascotPreference.Rosie.name, "Rosie · Dog"),
-  PrismDropdownOption(MascotPreference.Off.name, "Off"),
+@Composable
+private fun mascotOptions(): List<PrismDropdownOption> = listOf(
+  PrismDropdownOption(MascotPreference.Lynx.name, stringResource(Res.string.lynx_cat)),
+  PrismDropdownOption(MascotPreference.Rosie.name, stringResource(Res.string.rosie_dog)),
+  PrismDropdownOption(MascotPreference.Off.name, stringResource(Res.string.off)),
 )

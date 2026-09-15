@@ -6,7 +6,6 @@ package dev.staticvar.vlr.sharedui.component.common
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,10 +22,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.shared_view_stat
 
 @Immutable
 public data class DetailStatItem(
@@ -58,16 +61,35 @@ public fun DetailStatStrip(
             color = Prism.color.stroke,
           )
         }
-        DetailStatCell(value = item.value, label = item.label, modifier = Modifier.weight(1f).then(
-          item.onClick?.let { Modifier.clickable(role = Role.Button, onClickLabel = "View ${item.label}", onClick = it) } ?: Modifier,
-        ), valueModifier = valueModifier(index), valueMaxLines = item.valueMaxLines)
+        DetailStatCell(
+          value = item.value,
+          label = item.label,
+          modifier = Modifier.weight(1f).then(
+            item.onClick?.let {
+              Modifier.clickable(
+                role = Role.Button,
+                onClickLabel = stringResource(Res.string.shared_view_stat, item.label),
+                onClick = it,
+              )
+            }
+              ?: Modifier,
+          ),
+          valueModifier = valueModifier(index),
+          valueMaxLines = item.valueMaxLines,
+        )
       }
     }
   }
 }
 
 @Composable
-private fun DetailStatCell(value: String, label: String, modifier: Modifier = Modifier, valueModifier: Modifier = Modifier, valueMaxLines: Int = 1) {
+private fun DetailStatCell(
+  value: String,
+  label: String,
+  modifier: Modifier = Modifier,
+  valueModifier: Modifier = Modifier,
+  valueMaxLines: Int = 1,
+) {
   Box(
     modifier = modifier
       .fillMaxWidth()

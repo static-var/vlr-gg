@@ -18,6 +18,11 @@ import dev.staticvar.designsystem.component.divider.PrismDivider
 import dev.staticvar.designsystem.component.divider.PrismDividerStyle
 import dev.staticvar.designsystem.component.sheet.PrismModalSheet
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_close
+import vlr.shared_ui.generated.resources.match_event_map_veto
+import vlr.shared_ui.generated.resources.match_event_map_veto_description
 
 /** Shows the map veto steps in the order supplied by the match source. */
 @Composable
@@ -25,11 +30,15 @@ public fun MatchDetailVetoSheet(entries: List<String>, visible: Boolean, onDismi
   PrismModalSheet(
     visible = visible && entries.isNotEmpty(),
     onDismissRequest = onDismissRequest,
-    paneTitle = "Map veto",
+    paneTitle = stringResource(Res.string.match_event_map_veto),
     header = {
-      Text(text = "Map veto", style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
       Text(
-        text = "Bans, picks, and remaining map in order.",
+        text = stringResource(Res.string.match_event_map_veto),
+        style = Prism.typography.sectionTitle,
+        color = Prism.color.titleColor,
+      )
+      Text(
+        text = stringResource(Res.string.match_event_map_veto_description),
         modifier = Modifier.padding(top = Prism.dimens.spacingXs),
         style = Prism.typography.bodySmall,
         color = Prism.color.labelColor,
@@ -37,7 +46,7 @@ public fun MatchDetailVetoSheet(entries: List<String>, visible: Boolean, onDismi
     },
     footer = {
       PrismButton(onClick = onDismissRequest, style = PrismButtonStyle.Tertiary) {
-        Text("Close")
+        Text(stringResource(Res.string.match_event_close))
       }
     },
   ) {

@@ -29,15 +29,18 @@ import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.event.EventFavoriteReasons
 import dev.staticvar.vlr.sharedui.component.event.EventSharedContent
-import dev.staticvar.vlr.sharedui.component.event.eventSharedBounds
 import dev.staticvar.vlr.sharedui.component.event.eventLogoSharedElement
+import dev.staticvar.vlr.sharedui.component.event.eventSharedBounds
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_completed
+import vlr.shared_ui.generated.resources.match_event_ongoing
+import vlr.shared_ui.generated.resources.match_event_paused
+import vlr.shared_ui.generated.resources.match_event_unknown_upper
+import vlr.shared_ui.generated.resources.match_event_upcoming
 
 @Composable
-public fun EventPreviewItem(
-  modifier: Modifier = Modifier,
-  eventPreview: EventPreview,
-  onClick: (() -> Unit)? = null,
-) {
+public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPreview, onClick: (() -> Unit)? = null) {
   FavoriteTicketCardBox(
     selected = eventPreview.isFavorite,
     modifier = modifier,
@@ -54,7 +57,11 @@ public fun EventPreviewItem(
         horizontalArrangement = Arrangement.SpaceBetween,
       ) {
         PrismHeader(text = eventPreview.region)
-        PrismTag(text = eventPreview.status.label, style = eventPreview.status.tagStyle, modifier = Modifier.eventSharedBounds(eventPreview.id, EventSharedContent.Status))
+        PrismTag(
+          text = eventPreview.status.label,
+          style = eventPreview.status.tagStyle,
+          modifier = Modifier.eventSharedBounds(eventPreview.id, EventSharedContent.Status),
+        )
       }
       Row(
         modifier = Modifier
@@ -79,7 +86,9 @@ public fun EventPreviewItem(
           )
           Text(
             text = eventPreview.dates,
-            modifier = Modifier.padding(top = Prism.dimens.spacingXs).eventSharedBounds(eventPreview.id, EventSharedContent.Dates),
+            modifier = Modifier.padding(
+              top = Prism.dimens.spacingXs,
+            ).eventSharedBounds(eventPreview.id, EventSharedContent.Dates),
             style = Prism.typography.label,
             color = Prism.color.bodyColor,
           )
@@ -106,12 +115,13 @@ public fun EventPreviewItem(
 }
 
 private val EventStatus.label: String
+  @Composable
   get() = when (this) {
-    EventStatus.ONGOING -> "ONGOING"
-    EventStatus.PAUSED -> "PAUSED"
-    EventStatus.UPCOMING -> "UPCOMING"
-    EventStatus.COMPLETED -> "COMPLETED"
-    EventStatus.UNKNOWN -> "UNKNOWN"
+    EventStatus.ONGOING -> stringResource(Res.string.match_event_ongoing)
+    EventStatus.PAUSED -> stringResource(Res.string.match_event_paused)
+    EventStatus.UPCOMING -> stringResource(Res.string.match_event_upcoming)
+    EventStatus.COMPLETED -> stringResource(Res.string.match_event_completed)
+    EventStatus.UNKNOWN -> stringResource(Res.string.match_event_unknown_upper)
   }
 
 private val EventStatus.tagStyle: PrismTagStyle

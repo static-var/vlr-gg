@@ -6,29 +6,37 @@ package dev.staticvar.vlr.featurematches.presentation
 
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
-import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
+import dev.staticvar.vlr.sharedui.component.common.getMatchPreviewTime
 import kotlinx.datetime.TimeZone
+import org.jetbrains.compose.resources.getString
+import vlr.feature_matches.generated.resources.Res
+import vlr.feature_matches.generated.resources.share_attribution
+import vlr.feature_matches.generated.resources.share_live
+import vlr.feature_matches.generated.resources.share_match
+import vlr.feature_matches.generated.resources.share_time_tba
 
-internal fun matchShareTime(match: MatchPreview, timeZone: TimeZone = TimeZone.currentSystemDefault()): String =
+internal fun matchShareTime(match: MatchPreview, liveLabel: String, timeTba: String, scheduledTime: String?, timeZone: TimeZone = TimeZone.currentSystemDefault()): String =
   if (match.status == MatchStatus.LIVE) {
-    "LIVE"
+    liveLabel
   } else {
-    matchScheduledShareTime(match, timeZone)
+    matchScheduledShareTime(scheduledTime, timeZone, timeTba)
   }
 
-private fun matchScheduledShareTime(match: MatchPreview, timeZone: TimeZone): String =
-  formatMatchPreviewTime(match.time, timeZone)?.let {
+private fun matchScheduledShareTime(scheduledTime: String?, timeZone: TimeZone, timeTba: String): String =
+  scheduledTime?.let {
     "$it ${if (timeZone == TimeZone.UTC) "UTC" else timeZone.id}"
-  } ?: "Time TBA"
+  } ?: timeTba
 
-internal fun matchShareText(matches: List<MatchPreview>, timeZone: TimeZone = TimeZone.currentSystemDefault()): String =
+internal suspend fun matchShareText(matches: List<MatchPreview>, timeZone: TimeZone = TimeZone.currentSystemDefault()): String =
   buildString {
+    val timeTba = getString(Res.string.share_time_tba)
+    val liveLabel = getString(Res.string.share_live)
     matches.forEach { match ->
       appendLine(
-        "${match.team1.name} vs ${match.team2.name} | " +
-          "${matchScheduledShareTime(match, timeZone)} | https://www.vlr.gg/${match.id}",
+        getString(Res.string.share_match, match.team1.name, match.team2.name,
+          matchShareTime(match, liveLabel, timeTba, getMatchPreviewTime(match.time, timeZone), timeZone), "https://www.vlr.gg/${match.id}"),
       )
       appendLine()
     }
-    append("Shared via Val Esports")
+    append(getString(Res.string.share_attribution))
   }

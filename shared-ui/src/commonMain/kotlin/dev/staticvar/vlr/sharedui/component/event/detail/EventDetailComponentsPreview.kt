@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,12 +20,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
-import androidx.compose.material3.Text
-import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
@@ -43,7 +43,8 @@ internal fun EventDetailComponentsPreview(@PreviewParameter(PrismPreviewProvider
   PrismTheme(variant = variant) {
     var grouping by remember { mutableStateOf(EventMatchGrouping.Status) }
     val event = sampleEventDetails()
-    val groupedMatches = remember(grouping) { event.matches.groupEventMatches(grouping) }
+    val labels = eventFormattingLabels()
+    val groupedMatches = remember(grouping, labels) { event.matches.groupEventMatches(grouping, labels) }
     var selectedGroup by remember(grouping) { mutableStateOf(groupedMatches.keys.firstOrNull()) }
     val visibleMatches = selectedGroup?.let { group -> groupedMatches[group] }.orEmpty()
 
@@ -59,7 +60,11 @@ internal fun EventDetailComponentsPreview(@PreviewParameter(PrismPreviewProvider
         onOpenEvent = {},
         favoriteAction = {
           PrismButton(onClick = {}, modifier = Modifier.fillMaxWidth()) {
-            PrismFavoriteIcon(selected = event.isFavorite, style = PrismFavoriteIconStyle.Inline, contentDescription = null)
+            PrismFavoriteIcon(
+              selected = event.isFavorite,
+              style = PrismFavoriteIconStyle.Inline,
+              contentDescription = null,
+            )
             Text("Favorite event")
           }
         },

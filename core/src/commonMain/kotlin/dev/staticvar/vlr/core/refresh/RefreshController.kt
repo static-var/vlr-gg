@@ -20,6 +20,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import vlr.core.generated.resources.Res
+import vlr.core.generated.resources.refresh_error
 
 class RefreshController(
   scope: CoroutineScope,
@@ -47,10 +50,11 @@ class RefreshController(
           currentCoroutineContext().ensureActive()
           telemetry.captureExceptionSafely(error, operation)
           telemetry.logSafely(TelemetryLevel.Warning, "$operation failed")
+          val message = error.message ?: getString(Res.string.refresh_error)
           state.update {
             it.copy(
               hasCompleted = true,
-              errorMessage = error.message ?: "Could not refresh data",
+              errorMessage = message,
               errorDetails = error.stackTraceToString(),
             )
           }

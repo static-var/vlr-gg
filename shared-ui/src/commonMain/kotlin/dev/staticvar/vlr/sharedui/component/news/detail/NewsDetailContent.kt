@@ -34,14 +34,15 @@ internal sealed interface NewsDetailContentBlock {
 // images and videos use single braces in the server's current response format.
 private val ArticleReference = Regex("\\{\\{link_(\\d+)\\}\\}|\\{image_(\\d+)\\}|\\{video_(\\d+)\\}")
 
-internal fun newsDetailContentBlocks(article: NewsArticle): List<NewsDetailContentBlock> = article.blocks
-  .flatMap(::structuredContentBlocks)
-  .takeIf { it.isNotEmpty() }
-  ?: legacyContentBlocks(article)
+internal fun newsDetailContentBlocks(article: NewsArticle, labels: NewsFormattingLabels): List<NewsDetailContentBlock> =
+  article.blocks
+    .flatMap { structuredContentBlocks(it, labels) }
+    .takeIf { it.isNotEmpty() }
+    ?: legacyContentBlocks(article, labels)
 
-private fun structuredContentBlocks(block: ArticleBlock): List<NewsDetailContentBlock> {
+private fun structuredContentBlocks(block: ArticleBlock, labels: NewsFormattingLabels): List<NewsDetailContentBlock> {
   val runs = block.runs.map { NewsDetailTextRun(it.text, it.url?.newsDetailWebUrl(), it.bold, it.italic) }
-  val children = block.children.flatMap(::structuredContentBlocks)
+  val children = block.children.flatMap { structuredContentBlocks(it, labels) }
   val content = if (runs.isEmpty()) children else listOf(NewsDetailContentBlock.Text(runs)) + children
   return when (block.type) {
     "paragraph" -> content
@@ -58,68 +59,69 @@ private fun structuredContentBlocks(block: ArticleBlock): List<NewsDetailContent
 
     "image" -> listOf(
       block.url?.newsDetailWebUrl()?.let { NewsDetailContentBlock.Image(it, block.alt) }
-        ?: NewsDetailContentBlock.Text(listOf(NewsDetailTextRun("Image unavailable"))),
+        ?: NewsDetailContentBlock.Text(listOf(NewsDetailTextRun(labels.imageUnavailable))),
     )
 
     "video" -> listOf(
       block.url?.newsDetailWebUrl()?.let { NewsDetailContentBlock.Video(it, block.player) }
-        ?: NewsDetailContentBlock.Text(listOf(NewsDetailTextRun("Video unavailable"))),
+        ?: NewsDetailContentBlock.Text(listOf(NewsDetailTextRun(labels.videoUnavailable))),
     )
 
     else -> content
   }
 }
 
-private fun legacyContentBlocks(article: NewsArticle): List<NewsDetailContentBlock> = buildList {
-  article.contentHtml.split("\n\n").forEach { paragraph ->
-    val runs = mutableListOf<NewsDetailTextRun>()
-    fun flushText() {
-      if (runs.any { it.text.isNotBlank() }) add(NewsDetailContentBlock.Text(runs.toList()))
-      runs.clear()
-    }
-    var cursor = 0
-    ArticleReference.findAll(paragraph).forEach { reference ->
-      if (reference.range.first > cursor) {
-        runs += NewsDetailTextRun(paragraph.substring(cursor, reference.range.first))
+private fun legacyContentBlocks(article: NewsArticle, labels: NewsFormattingLabels): List<NewsDetailContentBlock> =
+  buildList {
+    article.contentHtml.split("\n\n").forEach { paragraph ->
+      val runs = mutableListOf<NewsDetailTextRun>()
+      fun flushText() {
+        if (runs.any { it.text.isNotBlank() }) add(NewsDetailContentBlock.Text(runs.toList()))
+        runs.clear()
       }
-      val linkIndex = reference.groups[1]?.value?.toIntOrNull()
-      val imageIndex = reference.groups[2]?.value?.toIntOrNull()
-      val videoIndex = reference.groups[3]?.value?.toIntOrNull()
-      when {
-        reference.groups[1] != null -> {
-          val link = linkIndex?.let(article.media.links::getOrNull)
-          runs += NewsDetailTextRun(
-            text = link?.text?.ifBlank { link.url }?.ifBlank { "Link unavailable" } ?: "Link unavailable",
-            url = link?.url?.newsDetailWebUrl(),
-          )
+      var cursor = 0
+      ArticleReference.findAll(paragraph).forEach { reference ->
+        if (reference.range.first > cursor) {
+          runs += NewsDetailTextRun(paragraph.substring(cursor, reference.range.first))
         }
+        val linkIndex = reference.groups[1]?.value?.toIntOrNull()
+        val imageIndex = reference.groups[2]?.value?.toIntOrNull()
+        val videoIndex = reference.groups[3]?.value?.toIntOrNull()
+        when {
+          reference.groups[1] != null -> {
+            val link = linkIndex?.let(article.media.links::getOrNull)
+            runs += NewsDetailTextRun(
+              text = link?.text?.ifBlank { link.url }?.ifBlank { labels.linkUnavailable } ?: labels.linkUnavailable,
+              url = link?.url?.newsDetailWebUrl(),
+            )
+          }
 
-        reference.groups[2] != null -> {
-          flushText()
-          val url = imageIndex?.let(article.media.images::getOrNull)?.newsDetailWebUrl()
-          if (url != null) {
-            add(NewsDetailContentBlock.Image(url))
-          } else {
-            add(NewsDetailContentBlock.Text(listOf(NewsDetailTextRun("Image unavailable"))))
+          reference.groups[2] != null -> {
+            flushText()
+            val url = imageIndex?.let(article.media.images::getOrNull)?.newsDetailWebUrl()
+            if (url != null) {
+              add(NewsDetailContentBlock.Image(url))
+            } else {
+              add(NewsDetailContentBlock.Text(listOf(NewsDetailTextRun(labels.imageUnavailable))))
+            }
+          }
+
+          reference.groups[3] != null -> {
+            flushText()
+            val url = videoIndex?.let(article.media.videos::getOrNull)?.newsDetailWebUrl()
+            if (url != null) {
+              add(NewsDetailContentBlock.Video(url))
+            } else {
+              add(NewsDetailContentBlock.Text(listOf(NewsDetailTextRun(labels.videoUnavailable))))
+            }
           }
         }
-
-        reference.groups[3] != null -> {
-          flushText()
-          val url = videoIndex?.let(article.media.videos::getOrNull)?.newsDetailWebUrl()
-          if (url != null) {
-            add(NewsDetailContentBlock.Video(url))
-          } else {
-            add(NewsDetailContentBlock.Text(listOf(NewsDetailTextRun("Video unavailable"))))
-          }
-        }
+        cursor = reference.range.last + 1
       }
-      cursor = reference.range.last + 1
+      if (cursor < paragraph.length) runs += NewsDetailTextRun(paragraph.substring(cursor))
+      flushText()
     }
-    if (cursor < paragraph.length) runs += NewsDetailTextRun(paragraph.substring(cursor))
-    flushText()
   }
-}
 
 internal fun String.newsDetailWebUrl(): String? = when {
   startsWith("https://", ignoreCase = true) || startsWith("http://", ignoreCase = true) -> this
