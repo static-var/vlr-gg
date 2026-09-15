@@ -62,6 +62,8 @@ final class FavoriteSearchStore: NSObject, CSSearchableIndexDelegate {
     private let index: CSSearchableIndex
     private let domain: String
     private var tail: Task<Void, Error>?
+    private var latestDesired: [SearchFavorite]?
+    private var trackedIdsFile: URL { file.appendingPathExtension("tracked-ids") }
 
     init(file: URL? = nil, index: CSSearchableIndex = .default(), domain: String = FavoriteSearchStore.domain) {
         self.file = file ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -73,6 +75,10 @@ final class FavoriteSearchStore: NSObject, CSSearchableIndexDelegate {
     }
 
     func records() throws -> [SearchFavorite] {
+        try latestDesired ?? committedRecords()
+    }
+
+    private func committedRecords() throws -> [SearchFavorite] {
         guard FileManager.default.fileExists(atPath: file.path) else { return [] }
         return try SearchFavorite.decode(Data(contentsOf: file))
     }
@@ -92,22 +98,35 @@ final class FavoriteSearchStore: NSObject, CSSearchableIndexDelegate {
         Task { await report(work) }
     }
 
-    func sync(_ records: [SearchFavorite]) async throws {
+    func sync(_ records: [SearchFavorite]? = nil) async throws {
         try await enqueue(records).value
     }
 
     private func enqueue(_ records: [SearchFavorite]?) -> Task<Void, Error> {
+        if let records { latestDesired = records }
         let previous = tail
         let task = Task { @MainActor in
             _ = await previous?.result
             let desired = try records ?? self.records()
-            if records != nil {
-                try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
-                try JSONEncoder().encode(desired).write(to: file, options: .atomic)
-            }
-            try await index.deleteSearchableItems(withDomainIdentifiers: [domain])
+            let committed = try committedRecords()
+            let tracked = FileManager.default.fileExists(atPath: trackedIdsFile.path)
+                ? try JSONDecoder().decode([String].self, from: Data(contentsOf: trackedIdsFile)) : []
+            let desiredIds = Set(desired.map(\.id))
+            let knownIds = Set(tracked).union(committed.map(\.id)).union(desiredIds)
+            try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try JSONEncoder().encode(knownIds.sorted()).write(to: trackedIdsFile, options: .atomic)
             if !desired.isEmpty {
                 try await index.indexSearchableItems(desired.map { $0.searchableItem(domain: domain) })
+            }
+            let staleIds = knownIds.subtracting(desiredIds)
+            if !staleIds.isEmpty {
+                try await index.deleteSearchableItems(withIdentifiers: staleIds.sorted())
+            }
+            try JSONEncoder().encode(desired).write(to: file, options: .atomic)
+            do {
+                try JSONEncoder().encode(desiredIds.sorted()).write(to: trackedIdsFile, options: .atomic)
+            } catch {
+                Self.logger.error("Could not compact indexed favorite IDs; retained IDs remain safe to retry: \(error.localizedDescription, privacy: .public)")
             }
         }
         tail = task
