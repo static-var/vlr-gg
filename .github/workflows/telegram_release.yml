@@ -2,15 +2,6 @@ name: Telegram Release
 
 on:
   workflow_dispatch:
-    inputs:
-      version_name:
-        description: Release version name
-        required: true
-        type: string
-      version_code:
-        description: Android version code (must exceed the last published version)
-        required: true
-        type: string
 
 permissions:
   contents: read
@@ -19,8 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      VERSION_NAME: ${{ inputs.version_name }}
-      VERSION_CODE: ${{ inputs.version_code }}
       VLR_AUTH_TOKEN: ${{ secrets.API_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
@@ -30,6 +19,9 @@ jobs:
       SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
+      - name: Read release version
+        run: python3 scripts/read-release-version.py >> "$GITHUB_ENV"
+
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
@@ -59,8 +51,6 @@ jobs:
           chmod +x ./gradlew
           ./gradlew :androidApp:assembleRelease \
             -Dorg.gradle.java.home="$JAVA_HOME" \
-            -PreleaseVersionName="$VERSION_NAME" \
-            -PreleaseVersionCode="$VERSION_CODE" \
             -PsentryUpload=true \
             --stacktrace
 

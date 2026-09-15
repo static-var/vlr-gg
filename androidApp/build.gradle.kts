@@ -65,13 +65,21 @@ sentry {
   ignoredBuildTypes.set(setOf("debug"))
 }
 
-val releaseVersionCode = providers.gradleProperty("releaseVersionCode").map { value ->
-  requireNotNull(value.toIntOrNull()?.takeIf { it > 0 }) { "releaseVersionCode must be a positive integer" }
-}.getOrElse(1)
-val releaseVersionName = providers.gradleProperty("releaseVersionName").map { value ->
-  require(value.isNotBlank()) { "releaseVersionName must not be blank" }
-  value
-}.getOrElse("1.0.0")
+val appVersion = Properties().apply {
+  val contents = providers.fileContents(rootProject.layout.projectDirectory.file("version.xcconfig")).asText.get()
+  load(contents.lineSequence().map { it.substringBefore("//").trim() }.joinToString("\n").reader())
+}
+val releaseVersionName = requireNotNull(appVersion.getProperty("MARKETING_VERSION"))
+val releaseVersionCode = requireNotNull(appVersion.getProperty("CURRENT_PROJECT_VERSION")?.toIntOrNull())
+require(Regex("(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)").matches(releaseVersionName)) {
+  "MARKETING_VERSION in version.xcconfig must use major.minor.patch"
+}
+require(releaseVersionCode in 1..2_100_000_000) {
+  "CURRENT_PROJECT_VERSION in version.xcconfig must be between 1 and 2100000000"
+}
+require(!providers.gradleProperty("releaseVersionName").isPresent && !providers.gradleProperty("releaseVersionCode").isPresent) {
+  "Update version.xcconfig instead of overriding the Android version"
+}
 val releaseSigningStore = providers.environmentVariable("VLR_SIGNING_STORE_FILE").orNull
 
 android {
@@ -108,7 +116,6 @@ android {
   buildTypes {
     debug {
       applicationIdSuffix = ".debug"
-      versionNameSuffix = "-debug"
     }
     release {
       if (releaseSigningStore != null) {
