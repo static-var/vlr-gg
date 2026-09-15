@@ -22,7 +22,7 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>space_grotesk_regular.ttf</string>
+		<string>chakra_petch_regular.ttf</string>
 	</array>
 	<key>NSExtension</key>
 	<dict>

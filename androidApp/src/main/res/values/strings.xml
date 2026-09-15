@@ -11,7 +11,7 @@
     <string name="widget_preview_time_one">Sun\n7:30 PM</string>
     <string name="widget_preview_team_one">Sentinels</string>
     <string name="widget_preview_team_two">FNATIC</string>
-    <string name="widget_preview_score">-</string>
+    <string name="widget_preview_score">—</string>
     <string name="widget_preview_format">BO3 · Upper Final</string>
     <string name="widget_versus">vs</string>
     <string name="widget_title">UPCOMING FAVORITES</string>
@@ -29,4 +29,8 @@
     <string name="widget_live">LIVE</string>
     <string name="widget_live_score">%1$s : %2$s</string>
     <string name="widget_scores_hidden">Live scores hidden</string>
+    <string name="widget_upcoming">UPCOMING</string>
+    <string name="widget_preview_day">Sun</string>
+    <string name="widget_preview_clock">7:30 PM</string>
+    <string name="widget_preview_compact_time">Sun · 7:30 PM</string>
 </resources>

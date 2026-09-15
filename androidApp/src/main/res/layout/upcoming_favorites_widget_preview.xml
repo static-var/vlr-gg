@@ -1,37 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp" android:layout_height="180dp"
+    android:layout_width="300dp"
+    android:layout_height="180dp"
     android:background="@color/widget_preview_background"
-    android:orientation="vertical" android:padding="16dp">
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:maxLines="1" android:text="@string/widget_preview_event_one"
-        android:textColor="@color/widget_preview_accent" android:textSize="12sp" />
-    <ImageView android:layout_width="match_parent" android:layout_height="1dp"
-        android:layout_marginTop="6dp" android:background="@color/widget_preview_border"
-        android:contentDescription="@null" />
-    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
-        android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/widget_preview_score" android:textColor="@color/widget_preview_content" android:textSize="32sp" />
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:gravity="center" android:maxLines="2" android:text="@string/widget_preview_team_one"
-                android:textColor="@color/widget_preview_content" android:textSize="14sp" />
+    android:orientation="vertical"
+    android:paddingLeft="18dp"
+    android:paddingTop="16dp"
+    android:paddingRight="18dp"
+    android:paddingBottom="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-condensed"
+            android:maxLines="1"
+            android:text="@string/widget_upcoming"
+            android:textColor="@color/widget_preview_accent"
+            android:textSize="11sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:maxLines="1"
+            android:text="@string/widget_preview_compact_time"
+            android:textColor="@color/widget_preview_secondary"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="32dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-condensed"
+                android:maxLines="1"
+                android:text="@string/widget_preview_team_one"
+                android:textColor="@color/widget_preview_content"
+                android:textSize="21sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:gravity="end"
+                android:minWidth="24dp"
+                android:text="@string/widget_preview_score"
+                android:textColor="@color/widget_preview_accent"
+                android:textSize="28sp" />
         </LinearLayout>
-        <TextView android:layout_width="76dp" android:layout_height="wrap_content"
-            android:gravity="center" android:text="@string/widget_preview_time_one"
-            android:textColor="@color/widget_preview_secondary" android:textSize="12sp" />
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/widget_preview_score" android:textColor="@color/widget_preview_content" android:textSize="32sp" />
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:gravity="center" android:maxLines="2" android:text="@string/widget_preview_team_two"
-                android:textColor="@color/widget_preview_content" android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:minHeight="32dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-condensed"
+                android:maxLines="1"
+                android:text="@string/widget_preview_team_two"
+                android:textColor="@color/widget_preview_content"
+                android:textSize="21sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:gravity="end"
+                android:minWidth="24dp"
+                android:text="@string/widget_preview_score"
+                android:textColor="@color/widget_preview_accent"
+                android:textSize="28sp" />
         </LinearLayout>
     </LinearLayout>
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:gravity="center" android:text="@string/widget_preview_format"
-        android:textColor="@color/widget_preview_secondary" android:textSize="11sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-condensed"
+            android:maxLines="1"
+            android:text="@string/widget_preview_event_one"
+            android:textColor="@color/widget_preview_secondary"
+            android:textSize="11sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:fontFamily="sans-serif-condensed"
+            android:maxLines="1"
+            android:text="@string/widget_preview_format"
+            android:textColor="@color/widget_preview_secondary"
+            android:textSize="11sp" />
+    </LinearLayout>
 </LinearLayout>

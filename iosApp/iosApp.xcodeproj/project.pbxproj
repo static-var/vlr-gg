@@ -16,13 +16,13 @@
 		36317EF4FEADC72B01C12E91 /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6EDCAF155347F5E7F4CE33 /* WidgetSnapshotStore.swift */; };
 		44E37D45D9CD7737C66D6C33 /* TestGeneratedBuildConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E64F35EE4AE373F79416126 /* TestGeneratedBuildConfig.swift */; };
 		46EC9AF029F1281A4995F80D /* VLRWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */; };
+		472502DD862C1FFBBE2879ED /* chakra_petch_regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EEC913577C9501B660DECCCD /* chakra_petch_regular.ttf */; };
 		4C32F668A1F6E32D83DC9E3F /* FavoriteSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973F66BBC21F094338D4832F /* FavoriteSearchTests.swift */; };
 		561A93F4EB86F4A8116CB8DA /* SiriActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */; };
 		56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */; };
-		6542E1733BC9E555E81E3BE4 /* space_grotesk_regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 957FAA0B433E8180DF7E3F12 /* space_grotesk_regular.ttf */; };
+		81F0194729993D1D335F3D75 /* chakra_petch_OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 26CF5DFE79A8999E46F8AD25 /* chakra_petch_OFL.txt */; };
 		88FAF2F8FE95B1B3827271DA /* VLRWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6062090215F075FB02BCE24E /* VLRWidgetBundle.swift */; };
 		8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */; };
-		8F1820454E033F4F9F6CC873 /* space_grotesk_OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8BA2322F344FD239F08D9EF9 /* space_grotesk_OFL.txt */; };
 		9CA5ABA0963409B585F45203 /* VLRWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */; };
 		9DD4C32FDB291AC803C0907D /* UpcomingMatchesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */; };
 		A367A9E9FDA8B51BEB578CA9 /* WidgetRefreshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BF1F4E25E5E55367392BE6A /* WidgetRefreshTests.swift */; };
@@ -30,6 +30,7 @@
 		B31C480DFB8D81AA0EB42F35 /* VLRWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */; };
 		B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */; };
 		B5774EBA09C9BF2544502554 /* FavoriteSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFB84F263D52FFC7C65EE64 /* FavoriteSearch.swift */; };
+		BC1B377DD56AF31948E3B31E /* chakra_petch_regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EEC913577C9501B660DECCCD /* chakra_petch_regular.ttf */; };
 		BC44AC391E69BD6D0F675BE0 /* UpcomingMatchesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */; };
 		BD5E492DF0CC95877D4531D5 /* VLRWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 197F5175E495A017DFACA2B8 /* VLRWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E533BD85594DF2FC0118721D /* VlrSearchShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653806FD344BFF107FB555E8 /* VlrSearchShortcut.swift */; };
@@ -76,6 +77,7 @@
 		106A058A09FDAB4DB0A650AC /* VLRAppIntentsTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = VLRAppIntentsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		197F5175E495A017DFACA2B8 /* VLRWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = VLRWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetModels.swift; sourceTree = "<group>"; };
+		26CF5DFE79A8999E46F8AD25 /* chakra_petch_OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = chakra_petch_OFL.txt; sourceTree = "<group>"; };
 		2BF1F4E25E5E55367392BE6A /* WidgetRefreshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetRefreshTests.swift; sourceTree = "<group>"; };
 		4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetRefresh.swift; sourceTree = "<group>"; };
 		48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VLRWidgetContract.swift; sourceTree = "<group>"; };
@@ -86,14 +88,13 @@
 		668CECA83ACC03A83C85A623 /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		86038AE1032E284E79B32AD6 /* iosApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedBuildConfig.swift; sourceTree = "<group>"; };
-		8BA2322F344FD239F08D9EF9 /* space_grotesk_OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = space_grotesk_OFL.txt; sourceTree = "<group>"; };
-		957FAA0B433E8180DF7E3F12 /* space_grotesk_regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = space_grotesk_regular.ttf; sourceTree = "<group>"; };
 		973F66BBC21F094338D4832F /* FavoriteSearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteSearchTests.swift; sourceTree = "<group>"; };
 		BA6EDCAF155347F5E7F4CE33 /* WidgetSnapshotStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotStore.swift; sourceTree = "<group>"; };
 		C117AD187833E2513BD2F553 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
 		CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriActionsTests.swift; sourceTree = "<group>"; };
+		EEC913577C9501B660DECCCD /* chakra_petch_regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = chakra_petch_regular.ttf; sourceTree = "<group>"; };
 		F543015C899423D4B01CEB2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F95B8B8B53351C500C2EACA2 /* GeneratedBuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedBuildConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -113,7 +114,7 @@
 		17F4E4F5C1AC8335711C2171 /* font_licenses */ = {
 			isa = PBXGroup;
 			children = (
-				8BA2322F344FD239F08D9EF9 /* space_grotesk_OFL.txt */,
+				26CF5DFE79A8999E46F8AD25 /* chakra_petch_OFL.txt */,
 			);
 			name = font_licenses;
 			path = ../designsystem/src/commonMain/composeResources/files/font_licenses;
@@ -161,7 +162,7 @@
 		81C6C4D1DEB743C04FE907E7 /* font */ = {
 			isa = PBXGroup;
 			children = (
-				957FAA0B433E8180DF7E3F12 /* space_grotesk_regular.ttf */,
+				EEC913577C9501B660DECCCD /* chakra_petch_regular.ttf */,
 			);
 			name = font;
 			path = ../designsystem/src/commonMain/composeResources/font;
@@ -236,6 +237,7 @@
 			buildConfigurationList = B3E6CEAA557F3C536DA9A179 /* Build configuration list for PBXNativeTarget "VLRWidgetTests" */;
 			buildPhases = (
 				4D2F38B72CB047278D5CB709 /* Sources */,
+				0889B8802B63D8B763BE3FC1 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -342,6 +344,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0889B8802B63D8B763BE3FC1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BC1B377DD56AF31948E3B31E /* chakra_petch_regular.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1623B02D10928C8101C1F806 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -354,8 +364,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F1820454E033F4F9F6CC873 /* space_grotesk_OFL.txt in Resources */,
-				6542E1733BC9E555E81E3BE4 /* space_grotesk_regular.ttf in Resources */,
+				81F0194729993D1D335F3D75 /* chakra_petch_OFL.txt in Resources */,
+				472502DD862C1FFBBE2879ED /* chakra_petch_regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
