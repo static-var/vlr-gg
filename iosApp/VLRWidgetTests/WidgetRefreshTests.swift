@@ -1,46 +1,70 @@
 import XCTest
 import SwiftUI
 import WidgetKit
+import CoreText
 
 final class WidgetRefreshTests: XCTestCase {
     @MainActor
     func testWidgetLayoutsAttachSmallMediumAndLargeRenders() throws {
-        let renderSnapshot = snapshot(
-            savedAtEpochMillis: Int64(Date.now.timeIntervalSince1970 * 1_000),
-            favorites: WidgetFavoriteIDs(matchIds: ["748633"], teamIds: [], eventIds: [], playerIds: []),
-            matches: [
-                UpcomingMatch(
-                    id: "748633",
-                    event: "Valorant Champions Tour 2026",
-                    team1: "Paper Rex",
-                    team2: "FNATIC",
-                    startTimeEpochMillis: Int64(Date.now.addingTimeInterval(1_800).timeIntervalSince1970 * 1_000),
-                    status: .live,
-                    score1: 1,
-                    score2: 0,
-                    format: "BO3",
-                    stage: "Upper Final"
-                ),
-            ]
+        let fontURL = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "chakra_petch_regular", withExtension: "ttf"))
+        CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, nil)
+        XCTAssertNotNil(UIFont(name: "ChakraPetch-Regular", size: 16))
+        let date = Date(timeIntervalSince1970: 1_789_652_400)
+        let live = UpcomingMatch(
+            id: "748633", event: "VCT Pacific", team1: "Team Liquid", team2: "Paper Rex",
+            startTimeEpochMillis: Int64(date.timeIntervalSince1970 * 1_000), status: .live,
+            score1: 1, score2: 2, format: "BO3", stage: "Playoffs"
         )
-        let entry = UpcomingMatchesEntry(date: .now, snapshot: renderSnapshot)
+        let upcoming = UpcomingMatch(
+            id: "748634", event: "Champions", team1: "Fnatic", team2: "Sentinels",
+            startTimeEpochMillis: Int64(date.addingTimeInterval(86_400).timeIntervalSince1970 * 1_000), status: .upcoming,
+            score1: nil, score2: nil, format: "BO3", stage: "Group stage"
+        )
+        let longNames = UpcomingMatch(
+            id: "748635", event: "Game Changers North America", team1: "Shopify Rebellion Gold", team2: "Twisted Minds Esports",
+            startTimeEpochMillis: nil, status: .live, score1: 1, score2: 2, format: "BO5", stage: "Grand Final"
+        )
+        let scenarios: [(String, [UpcomingMatch], Bool)] = [
+            ("live", [live, upcoming], false),
+            ("hidden", [live, upcoming], true),
+            ("upcoming", [upcoming], false),
+            ("single", [live], false),
+            ("long-names", [longNames, upcoming], true),
+            ("empty", [], false),
+        ]
         let layouts: [(String, WidgetFamily, CGSize)] = [
             ("small", .systemSmall, CGSize(width: 158, height: 158)),
             ("medium", .systemMedium, CGSize(width: 338, height: 158)),
             ("large", .systemLarge, CGSize(width: 338, height: 354)),
         ]
-
-        for (name, family, size) in layouts {
-            let content = UpcomingMatchesWidgetView(entry: entry, familyOverride: family)
-                .frame(width: size.width, height: size.height)
-                .background(Color.white)
-            let renderer = ImageRenderer(content: content)
-            renderer.scale = 2
-            let image = try XCTUnwrap(renderer.uiImage)
-            let attachment = XCTAttachment(image: image)
-            attachment.name = "widget-\(name)"
-            attachment.lifetime = XCTAttachment.Lifetime.keepAlways
-            add(attachment)
+        let hostPadding: CGFloat
+        if #available(iOS 17.0, *) { hostPadding = 16 } else { hostPadding = 0 }
+        for (scenario, matches, hidden) in scenarios {
+            let entry = UpcomingMatchesEntry(date: date, snapshot: snapshot(
+                savedAtEpochMillis: Int64(date.timeIntervalSince1970 * 1_000),
+                favorites: WidgetFavoriteIDs(matchIds: ["748633"], teamIds: [], eventIds: [], playerIds: []),
+                spoilersHidden: hidden, matches: matches
+            ))
+            for colorScheme in [ColorScheme.light, .dark] {
+                for (name, family, size) in layouts {
+                    let content = UpcomingMatchesWidgetView(entry: entry, familyOverride: family)
+                        .padding(hostPadding)
+                        .frame(width: size.width, height: size.height)
+                        .background(PrismWidgetPalette.background(for: colorScheme))
+                        .clipShape(RoundedRectangle(cornerRadius: 24))
+                        .environment(\.colorScheme, colorScheme)
+                        .environment(\.locale, Locale(identifier: "en_US"))
+                        .environment(\.timeZone, TimeZone(secondsFromGMT: 0)!)
+                    let renderer = ImageRenderer(content: content)
+                    renderer.scale = 2
+                    let image = try XCTUnwrap(renderer.uiImage)
+                    XCTAssertEqual(image.size, size)
+                    let attachment = XCTAttachment(image: image)
+                    attachment.name = "prism-\(scenario)-\(colorScheme)-\(name)"
+                    attachment.lifetime = .keepAlways
+                    add(attachment)
+                }
+            }
         }
     }
 

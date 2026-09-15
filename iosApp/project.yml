@@ -94,9 +94,9 @@ targets:
     sources:
       - path: VLRWidget
       - path: WidgetShared
-      - path: ../designsystem/src/commonMain/composeResources/font/space_grotesk_regular.ttf
+      - path: ../designsystem/src/commonMain/composeResources/font/chakra_petch_regular.ttf
         buildPhase: resources
-      - path: ../designsystem/src/commonMain/composeResources/files/font_licenses/space_grotesk_OFL.txt
+      - path: ../designsystem/src/commonMain/composeResources/files/font_licenses/chakra_petch_OFL.txt
         buildPhase: resources
     settings:
       base:
@@ -137,6 +137,8 @@ targets:
     platform: iOS
     sources:
       - path: VLRWidgetTests
+      - path: ../designsystem/src/commonMain/composeResources/font/chakra_petch_regular.ttf
+        buildPhase: resources
       - path: VLRWidget/VLRWidgetModels.swift
       - path: VLRWidget/VLRWidgetRefresh.swift
       - path: VLRWidget/UpcomingMatchesWidget.swift
