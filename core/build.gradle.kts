@@ -51,6 +51,7 @@ kotlin {
     val androidMain by getting {
       dependencies {
         implementation(libs.koin.android)
+        implementation(compose.runtime)
       }
     }
   }

@@ -25,6 +25,7 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.shared"
+    androidResources.enable = true
     withHostTestBuilder {}
     compileSdk = 37
     minSdk = 24
