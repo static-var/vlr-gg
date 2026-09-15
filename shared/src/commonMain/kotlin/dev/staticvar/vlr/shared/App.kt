@@ -35,6 +35,7 @@ import dev.staticvar.vlr.shared.appearance.ApplyPlatformAppearance
 import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
 import dev.staticvar.vlr.shared.navigation.AppNavHost
 import dev.staticvar.vlr.shared.navigation.rememberVlrAppState
+import dev.staticvar.vlr.shared.search.PublishSearchFavorites
 import dev.staticvar.vlr.shared.widget.PublishUpcomingMatchesWidget
 import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.image.ProvideSharedImageLoader
@@ -56,8 +57,10 @@ import kotlin.time.Clock
 public fun App(
   deepLinkHandler: AppDeepLinkHandler? = null,
   onWidgetSnapshotChanged: suspend (String) -> Unit = {},
+  onSearchFavoritesChanged: suspend (String) -> Unit = {},
 ) {
   ProvideSharedImageLoader()
+  PublishSearchFavorites(onSearchFavoritesChanged)
 
   val networkMonitor = koinInject<NetworkMonitor>()
   val spoilerPreferences = koinInject<SpoilerPreferencesRepository>()
