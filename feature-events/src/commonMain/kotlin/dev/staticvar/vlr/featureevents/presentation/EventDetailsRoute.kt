@@ -6,34 +6,26 @@ package dev.staticvar.vlr.featureevents.presentation
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.material3.Text
-import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonStyle
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
-import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
-import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,19 +37,21 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
-import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
+import dev.staticvar.designsystem.component.card.cardMascotEligible
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
+import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
+import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
+import dev.staticvar.designsystem.component.loader.PrismLoaderSize
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
-import dev.staticvar.designsystem.component.card.cardMascotEligible
-import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
-import dev.staticvar.designsystem.component.loader.PrismLoaderSize
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.domain.model.EventDetails
+import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventPrize
 import dev.staticvar.vlr.domain.model.EventStanding
@@ -65,23 +59,58 @@ import dev.staticvar.vlr.domain.model.EventTeam
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.featureevents.presentation.mascot.eventMascotCues
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
+import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailHeaderItem
-import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPreviewHeaderItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailMatchItem
+import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPreviewHeaderItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPrizeItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailStandingItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailTeamItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGroupSelector
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
+import dev.staticvar.vlr.sharedui.component.event.detail.eventFormattingLabels
 import dev.staticvar.vlr.sharedui.component.event.detail.groupEventMatches
-import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
+import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
 import dev.staticvar.vlr.sharedui.mascot.rememberMascot
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
+import dev.staticvar.vlr.sharedui.text.resolve
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_events.generated.resources.Res
+import vlr.feature_events.generated.resources.details_will_appear_when_this_event_is_published
+import vlr.feature_events.generated.resources.event
+import vlr.feature_events.generated.resources.favorite_event
+import vlr.feature_events.generated.resources.loading_event
+import vlr.feature_events.generated.resources.loading_event_details
+import vlr.feature_events.generated.resources.match_fixtures_have_not_been_published_for_this_event
+import vlr.feature_events.generated.resources.no_event_details_yet
+import vlr.feature_events.generated.resources.no_matches_yet
+import vlr.feature_events.generated.resources.no_prize_breakdown_yet
+import vlr.feature_events.generated.resources.no_standings_yet
+import vlr.feature_events.generated.resources.participants
+import vlr.feature_events.generated.resources.placements
+import vlr.feature_events.generated.resources.prize_placements_have_not_been_published_for_this_event
+import vlr.feature_events.generated.resources.prizes
+import vlr.feature_events.generated.resources.remove_from_favorites
+import vlr.feature_events.generated.resources.standings
+import vlr.feature_events.generated.resources.tab_matches
+import vlr.feature_events.generated.resources.tab_prizes
+import vlr.feature_events.generated.resources.tab_standings
+import vlr.feature_events.generated.resources.table
+import vlr.feature_events.generated.resources.team_standings_have_not_been_published_for_this_event
+import vlr.feature_events.generated.resources.teams
+import vlr.feature_events.generated.resources.teams_matches_and_standings
+import vlr.feature_events.generated.resources.updating_favorite
 
 @Composable
 public fun EventDetailsRoute(
@@ -174,7 +203,7 @@ internal fun EventDetailsScreen(
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       EventDetailsChrome(
-        title = "Event",
+        title = stringResource(Res.string.event),
         isLoading = uiState.isLoading || uiState.isDetailLoadPending,
         isRefreshing = uiState.isRefreshing,
         hasContent = event != null,
@@ -196,7 +225,7 @@ internal fun EventDetailsScreen(
       when {
         (!isOnline || uiState.isLoading || uiState.isRefreshing) && event == null -> EventDetailsLoading(
           modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
-          label = "Loading event",
+          label = stringResource(Res.string.loading_event),
         )
 
         uiState.errorMessage != null && event == null ->
@@ -210,8 +239,8 @@ internal fun EventDetailsScreen(
 
         event == null -> SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveEvents,
-          title = "No event details yet",
-          message = "Details will appear when this event is published.",
+          title = stringResource(Res.string.no_event_details_yet),
+          message = stringResource(Res.string.details_will_appear_when_this_event_is_published),
           modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
         )
 
@@ -245,7 +274,7 @@ internal fun EventDetailsScreen(
         MascotCelebration(
           visible = true,
           character = mascotCharacter,
-          message = cue.message,
+          message = cue.message.resolve(),
           onFinished = mascotState::onFinished,
           modifier = Modifier.align(Alignment.BottomEnd).navigationBarsPadding(),
         )
@@ -260,7 +289,7 @@ private fun EventDetailsChrome(
   isLoading: Boolean,
   isRefreshing: Boolean,
   hasContent: Boolean,
-  favoriteErrorMessage: String?,
+  favoriteErrorMessage: StringResource?,
   errorMessage: String?,
   errorDetails: String?,
   onBack: () -> Unit,
@@ -270,7 +299,7 @@ private fun EventDetailsChrome(
   Column(modifier = modifier) {
     SharedScreenTitleBar(
       title = title,
-      subtitle = "Teams, matches and standings",
+      subtitle = stringResource(Res.string.teams_matches_and_standings),
       actions = {
         SharedRefreshButton(
           isLoading = isLoading,
@@ -282,7 +311,7 @@ private fun EventDetailsChrome(
       },
       onBackPress = onBack,
     )
-    favoriteErrorMessage?.let { PrismStateMessage(text = it) }
+    favoriteErrorMessage?.let { PrismStateMessage(text = stringResource(it)) }
     SharedRefreshStatus(
       hasContent = hasContent,
       isRefreshing = false,
@@ -315,7 +344,8 @@ private fun EventDetailsContent(
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val groupedMatches = remember(event.matches, matchGrouping) { event.matches.groupEventMatches(matchGrouping) }
+  val labels = eventFormattingLabels()
+  val groupedMatches = remember(event.matches, matchGrouping, labels) { event.matches.groupEventMatches(matchGrouping, labels) }
   val groupNames = groupedMatches.keys.toList()
   val resolvedMatchGroupName = selectedMatchGroupName.takeIf { it in groupedMatches } ?: groupNames.firstOrNull()
   val visibleMatches = resolvedMatchGroupName?.let { groupName -> groupedMatches[groupName] }.orEmpty()
@@ -338,7 +368,7 @@ private fun EventDetailsContent(
       )
     },
     loading = { loadingModifier ->
-      EventDetailsLoading(label = "Loading event details", modifier = loadingModifier)
+      EventDetailsLoading(label = stringResource(Res.string.loading_event_details), modifier = loadingModifier)
     },
   ) {
     if (event.teams.isNotEmpty()) {
@@ -411,9 +441,9 @@ private fun EventDetailsHero(
         )
         Text(
           when {
-            isSavingFavorite -> "Updating favorite"
-            event.isFavorite -> "Remove from favorites"
-            else -> "Favorite event"
+            isSavingFavorite -> stringResource(Res.string.updating_favorite)
+            event.isFavorite -> stringResource(Res.string.remove_from_favorites)
+            else -> stringResource(Res.string.favorite_event)
           },
         )
       }
@@ -428,7 +458,18 @@ private fun EventDetailsTabs(
 ) {
   PrismTabs(
     modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-    tabs = EventDetailSection.entries.map { PrismTab(id = it.name, label = it.name) },
+    tabs = EventDetailSection.entries.map { section ->
+      PrismTab(
+        id = section.name,
+        label = stringResource(
+          when (section) {
+            EventDetailSection.Matches -> Res.string.tab_matches
+            EventDetailSection.Standings -> Res.string.tab_standings
+            EventDetailSection.Prizes -> Res.string.tab_prizes
+          },
+        ),
+      )
+    },
     selectedTabId = section.name,
     onTabSelected = { onSectionSelected(EventDetailSection.valueOf(it.id)) },
   )
@@ -451,8 +492,8 @@ private fun LazyListScope.eventMatchItems(
     item {
       EventEmptySection(
         visible = canShowEmptySection,
-        title = "No matches yet",
-        message = "Match fixtures have not been published for this event.",
+        title = stringResource(Res.string.no_matches_yet),
+        message = stringResource(Res.string.match_fixtures_have_not_been_published_for_this_event),
       )
     }
   } else {
@@ -489,15 +530,15 @@ private fun LazyListScope.eventStandingItems(
     item {
       EventEmptySection(
         visible = canShowEmptySection,
-        title = "No standings yet",
-        message = "Team standings have not been published for this event.",
+        title = stringResource(Res.string.no_standings_yet),
+        message = stringResource(Res.string.team_standings_have_not_been_published_for_this_event),
       )
     }
   } else if (spoilersHidden) {
     item {
       PrismSectionTitle(
-        title = "Standings",
-        preLabel = "table",
+        title = stringResource(Res.string.standings),
+        preLabel = stringResource(Res.string.table),
         modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       )
     }
@@ -505,8 +546,8 @@ private fun LazyListScope.eventStandingItems(
   } else {
     item {
       PrismSectionTitle(
-        title = "Standings",
-        preLabel = "table",
+        title = stringResource(Res.string.standings),
+        preLabel = stringResource(Res.string.table),
         modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       )
     }
@@ -529,15 +570,15 @@ private fun LazyListScope.eventPrizeItems(
     item {
       EventEmptySection(
         visible = canShowEmptySection,
-        title = "No prize breakdown yet",
-        message = "Prize placements have not been published for this event.",
+        title = stringResource(Res.string.no_prize_breakdown_yet),
+        message = stringResource(Res.string.prize_placements_have_not_been_published_for_this_event),
       )
     }
   } else if (spoilersHidden) {
     item {
       PrismSectionTitle(
-        title = "Prizes",
-        preLabel = "placements",
+        title = stringResource(Res.string.prizes),
+        preLabel = stringResource(Res.string.placements),
         modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       )
     }
@@ -545,8 +586,8 @@ private fun LazyListScope.eventPrizeItems(
   } else {
     item {
       PrismSectionTitle(
-        title = "Prizes",
-        preLabel = "placements",
+        title = stringResource(Res.string.prizes),
+        preLabel = stringResource(Res.string.placements),
         modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       )
     }
@@ -585,7 +626,7 @@ private fun EventParticipantsRail(
 ) {
   if (teams.isNotEmpty()) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-      PrismSectionTitle(title = "Participants", preLabel = "teams", modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
+      PrismSectionTitle(title = stringResource(Res.string.participants), preLabel = stringResource(Res.string.teams), modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
       LazyRow(
         state = listState,
         modifier = Modifier.fillMaxWidth(),

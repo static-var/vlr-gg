@@ -7,6 +7,9 @@ package dev.staticvar.vlr.featureevents.presentation.mascot
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.sharedui.mascot.MascotCue
+import dev.staticvar.vlr.sharedui.text.UiText
+import vlr.feature_events.generated.resources.Res
+import vlr.feature_events.generated.resources.mascot_event_won
 
 /** Celebrates a favorite champion only after the event has a confirmed, unique first place. */
 public fun eventMascotCues(event: EventDetails, favoriteTeamIds: Set<String>): List<MascotCue> {
@@ -20,7 +23,7 @@ public fun eventMascotCues(event: EventDetails, favoriteTeamIds: Set<String>): L
   return listOf(
     MascotCue(
       id = "event:${event.id}:winner:${champion.id}",
-      message = "${champion.name} won the event!",
+      message = UiText.Resource(Res.string.mascot_event_won, listOf(champion.name)),
       priority = 50,
     ),
   )

@@ -19,35 +19,56 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBarStyle
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.button.PrismIconButton
 import dev.staticvar.designsystem.component.button.PrismIconButtonSize
 import dev.staticvar.designsystem.component.card.cardMascotEligible
 import dev.staticvar.designsystem.component.card.cardMascotViewport
-import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.navigation.PrismTab
-import dev.staticvar.vlr.sharedui.component.common.SharedStatusPager
 import dev.staticvar.designsystem.component.selection.PrismCheckbox
-import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
-import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
-import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
+import dev.staticvar.vlr.domain.model.MatchStatus
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
+import dev.staticvar.vlr.sharedui.component.common.SharedStatusPager
 import dev.staticvar.vlr.sharedui.component.match.overview.MatchPreviewItem
-import dev.staticvar.vlr.sharedui.share.LocalImageSharer
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import dev.staticvar.vlr.sharedui.mascot.PauseCardMascots
+import dev.staticvar.vlr.sharedui.share.LocalImageSharer
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_matches.generated.resources.Res
+import vlr.feature_matches.generated.resources.cancel
+import vlr.feature_matches.generated.resources.completed
+import vlr.feature_matches.generated.resources.finished_matches_will_appear_here_once_scores_are_available
+import vlr.feature_matches.generated.resources.live
+import vlr.feature_matches.generated.resources.loading_matches
+import vlr.feature_matches.generated.resources.match_overview
+import vlr.feature_matches.generated.resources.no_live_matches
+import vlr.feature_matches.generated.resources.no_results_yet
+import vlr.feature_matches.generated.resources.no_upcoming_matches
+import vlr.feature_matches.generated.resources.preview_selected_matches_for_sharing
+import vlr.feature_matches.generated.resources.refresh
+import vlr.feature_matches.generated.resources.results_schedules_and_live_scores
+import vlr.feature_matches.generated.resources.select_match
+import vlr.feature_matches.generated.resources.selected_count
+import vlr.feature_matches.generated.resources.share_matches
+import vlr.feature_matches.generated.resources.the_next_fixtures_have_not_been_announced_yet_check_back_soon
+import vlr.feature_matches.generated.resources.the_next_round_is_still_ahead_check_the_schedule_for_upcoming_matches
+import vlr.feature_matches.generated.resources.upcoming
+import vlr.feature_matches.generated.resources.view_upcoming
 
 @Composable
 public fun MatchesOverviewRoute(
@@ -149,9 +170,9 @@ private fun MatchesOverviewChrome(
           PrismButton(
             onClick = onCancelSelection,
             style = PrismButtonStyle.Tertiary,
-          ) { Text("Cancel") }
+          ) { Text(stringResource(Res.string.cancel)) }
           Text(
-            text = "$selectedCount/$MaxSharedMatches selected",
+            text = stringResource(Res.string.selected_count, selectedCount, MaxSharedMatches),
             modifier = Modifier.weight(1f).padding(horizontal = Prism.dimens.spacingS),
             style = Prism.typography.bodySmall,
             textAlign = TextAlign.Center,
@@ -162,7 +183,7 @@ private fun MatchesOverviewChrome(
           ) {
             PrismIconButton(
               icon = Prism.icons.share,
-              contentDescription = "Preview selected matches for sharing",
+              contentDescription = stringResource(Res.string.preview_selected_matches_for_sharing),
               size = PrismIconButtonSize.Toolbar,
               onClick = onPreviewSelection,
               enabled = selectedCount > 0,
@@ -177,13 +198,13 @@ private fun MatchesOverviewChrome(
         }
       } else {
         SharedScreenTitleBar(
-          title = "Match overview",
-          subtitle = "Results, schedules and live scores",
+          title = stringResource(Res.string.match_overview),
+          subtitle = stringResource(Res.string.results_schedules_and_live_scores),
           actions = {
             if (sharingAvailable) {
               PrismIconButton(
                 icon = Prism.icons.share,
-                contentDescription = "Share matches",
+                contentDescription = stringResource(Res.string.share_matches),
                 size = PrismIconButtonSize.Toolbar,
                 onClick = onStartSelection,
                 enabled = hasContent,
@@ -227,9 +248,9 @@ private fun MatchesOverviewContent(
 ) {
   SharedStatusPager(
     tabs = listOf(
-      PrismTab(id = MatchStatusFilter.Live.name, label = "Live"),
-      PrismTab(id = MatchStatusFilter.Upcoming.name, label = "Upcoming"),
-      PrismTab(id = MatchStatusFilter.Completed.name, label = "Completed"),
+      PrismTab(id = MatchStatusFilter.Live.name, label = stringResource(Res.string.live)),
+      PrismTab(id = MatchStatusFilter.Upcoming.name, label = stringResource(Res.string.upcoming)),
+      PrismTab(id = MatchStatusFilter.Completed.name, label = stringResource(Res.string.completed)),
     ),
     selectedTabId = selectedStatus.name,
     onTabSelected = { onFilterSelected(MatchStatusFilter.valueOf(it)) },
@@ -271,7 +292,7 @@ private fun MatchOverviewPage(
   val pageMatches = remember(matches, status) { matches.filterByStatus(status) }
   when {
     (!isOnline || isLoading || isRefreshing) && matches.isEmpty() -> SharedScreenLoading(
-      label = "Loading matches",
+      label = stringResource(Res.string.loading_matches),
       modifier = Modifier.fillMaxSize(),
     )
 
@@ -285,9 +306,9 @@ private fun MatchOverviewPage(
 
     pageMatches.isEmpty() && !isRefreshing && !isLoading && errorMessage == null && isOnline -> {
       val (title, message) = when (status) {
-        MatchStatusFilter.Live -> "No live matches" to "The next round is still ahead. Check the schedule for upcoming matches."
-        MatchStatusFilter.Upcoming -> "No upcoming matches" to "The next fixtures have not been announced yet. Check back soon."
-        MatchStatusFilter.Completed -> "No results yet" to "Finished matches will appear here once scores are available."
+        MatchStatusFilter.Live -> stringResource(Res.string.no_live_matches) to stringResource(Res.string.the_next_round_is_still_ahead_check_the_schedule_for_upcoming_matches)
+        MatchStatusFilter.Upcoming -> stringResource(Res.string.no_upcoming_matches) to stringResource(Res.string.the_next_fixtures_have_not_been_announced_yet_check_back_soon)
+        MatchStatusFilter.Completed -> stringResource(Res.string.no_results_yet) to stringResource(Res.string.finished_matches_will_appear_here_once_scores_are_available)
       }
       val hasUpcoming = status == MatchStatusFilter.Live && matches.any { it.status == MatchStatus.UPCOMING }
       SharedEmptyState(
@@ -295,7 +316,7 @@ private fun MatchOverviewPage(
         title = title,
         message = message,
         modifier = Modifier.fillMaxSize(),
-        actionLabel = if (hasUpcoming) "View upcoming" else "Refresh",
+        actionLabel = if (hasUpcoming) stringResource(Res.string.view_upcoming) else stringResource(Res.string.refresh),
         onAction = { if (hasUpcoming) onSelectTab(MatchStatusFilter.Upcoming.name) else onRefresh() },
       )
     }
@@ -337,12 +358,13 @@ private fun MatchOverviewList(
           null
         },
         footerAction = {
+          val selectionDescription = stringResource(Res.string.select_match, match.team1.name, match.team2.name)
           PrismCheckbox(
             checked = selected,
             onCheckedChange = { onToggleMatch(match) },
             enabled = selected || selection.matches.size < MaxSharedMatches,
             modifier = Modifier.semantics {
-              contentDescription = "Select ${match.team1.name} vs ${match.team2.name}"
+              contentDescription = selectionDescription
             },
           )
         },

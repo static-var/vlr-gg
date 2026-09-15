@@ -25,23 +25,36 @@ class MatchDetailFormattingTest {
   fun mapVetoCountsBansPicksAndDeciderAsSteps() {
     val match = matchDetails().copy(
       bans = listOf(
-        "FNC ban Corrode", "NRG ban Haven", "FNC pick Ascent", "NRG pick Abyss",
-        "FNC ban Sunset", "NRG ban Bind", "Lotus remains",
+        "FNC ban Corrode",
+        "NRG ban Haven",
+        "FNC pick Ascent",
+        "NRG pick Abyss",
+        "FNC ban Sunset",
+        "NRG ban Bind",
+        "Lotus remains",
       ),
     )
 
-    assertEquals("7 steps", match.matchDetailVetoStat())
-    assertEquals("7 steps", match.copy(event = match.event.copy(status = "upcoming")).matchDetailVetoStat())
-    assertEquals("1 step", match.copy(bans = listOf("", "Lotus remains", "  ")).matchDetailVetoStat())
-    assertEquals("-", match.copy(bans = listOf(" ")).matchDetailVetoStat())
+    assertEquals("7 steps", match.matchDetailVetoStat(testFormattingLabels))
+    assertEquals(
+      "7 steps",
+      match.copy(event = match.event.copy(status = "upcoming")).matchDetailVetoStat(testFormattingLabels),
+    )
+    assertEquals(
+      "1 step",
+      match.copy(
+        bans = listOf("", "Lotus remains", "  "),
+      ).matchDetailVetoStat(testFormattingLabels.copy(steps = "1 step")),
+    )
+    assertEquals("-", match.copy(bans = listOf(" ")).matchDetailVetoStat(testFormattingLabels))
   }
 
   @Test
   fun knownMapCountIsShownWithoutPlayerStats() {
     val match = matchDetails().copy(id = "734308", mapCount = 5)
-    assertEquals("5 maps", match.matchDetailMapCountStat())
-    assertEquals("1 map", match.copy(mapCount = 1).matchDetailMapCountStat())
-    assertEquals("-", match.copy(mapCount = 0).matchDetailMapCountStat())
+    assertEquals("5 maps", match.matchDetailMapCountStat(testFormattingLabels))
+    assertEquals("1 map", match.copy(mapCount = 1).matchDetailMapCountStat(testFormattingLabels.copy(maps = "1 map")))
+    assertEquals("-", match.copy(mapCount = 0).matchDetailMapCountStat(testFormattingLabels))
   }
 
   @Test
@@ -49,16 +62,19 @@ class MatchDetailFormattingTest {
     val oneMap = listOf(mapData(name = "Lotus"))
     val twoMaps = listOf(mapData(name = "Lotus"), mapData(name = "Haven"))
 
-    assertEquals(listOf("0"), oneMap.matchDetailMapOptions().map(MatchDetailMapOption::id))
-    assertEquals(listOf(AllMapsOptionId, "0", "1"), twoMaps.matchDetailMapOptions().map(MatchDetailMapOption::id))
+    assertEquals(listOf("0"), oneMap.matchDetailMapOptions(testFormattingLabels).map(MatchDetailMapOption::id))
+    assertEquals(
+      listOf(AllMapsOptionId, "0", "1"),
+      twoMaps.matchDetailMapOptions(testFormattingLabels).map(MatchDetailMapOption::id),
+    )
   }
 
   @Test
   fun mapOptionLabelIncludesScoreOrPendingState() {
-    assertEquals("Lotus - 13-9", mapData(name = "Lotus").matchDetailMapOptionLabel())
+    assertEquals("Lotus - 13-9", mapData(name = "Lotus").matchDetailMapOptionLabel(testFormattingLabels))
     assertEquals(
       "Haven - Pending",
-      mapData(name = "Haven", firstScore = null, secondScore = null).matchDetailMapOptionLabel(),
+      mapData(name = "Haven", firstScore = null, secondScore = null).matchDetailMapOptionLabel(testFormattingLabels),
     )
   }
 
@@ -105,7 +121,7 @@ class MatchDetailFormattingTest {
         playerStats(name = "Boaster", id = "boaster", team = "FNATIC"),
         playerStats(name = "P1", id = "p1", team = "sen"),
       ),
-    ).toPlayerStatsRows()
+    ).toPlayerStatsRows(testFormattingLabels)
 
     assertEquals(2, rows.size)
     assertEquals(MatchDetailPlayerStatsTeamColorRole.Accent, rows[0].teamColorRole)
@@ -137,7 +153,7 @@ class MatchDetailFormattingTest {
           playerStats(name = "Sentinel", id = "sen-player", team = "sen", agent = "Phoenix"),
         ),
       ),
-    ).toAllMapPlayerStatsRows()
+    ).toAllMapPlayerStatsRows(testFormattingLabels)
 
     assertEquals(2, rows.size)
     assertEquals(MatchDetailPlayerStatsTeamColorRole.Accent, rows.single { it.playerName == "Boaster" }.teamColorRole)
@@ -197,7 +213,7 @@ class MatchDetailFormattingTest {
           ),
         ),
       ),
-    ).toAllMapPlayerStatsRows()
+    ).toAllMapPlayerStatsRows(testFormattingLabels)
 
     assertEquals(1, rows.size)
     assertEquals(null, rows[0].mapName)
@@ -235,7 +251,7 @@ class MatchDetailFormattingTest {
           agents = emptyList(),
         ),
       ),
-    ).toPlayerStatsRows()
+    ).toPlayerStatsRows(testFormattingLabels)
 
     assertEquals("-", rows.single().acs)
     assertEquals("-", rows.single().kills)
@@ -286,7 +302,7 @@ class MatchDetailFormattingTest {
           ),
         ),
       ),
-    ).toAllMapPlayerStatsRows()
+    ).toAllMapPlayerStatsRows(testFormattingLabels)
 
     assertEquals(1, rows.size)
     assertEquals("200", rows[0].acs)
@@ -304,7 +320,7 @@ class MatchDetailFormattingTest {
       mapData(name = "Haven", firstScore = null, secondScore = null),
     )
 
-    assertEquals("1 played map • sorted by map order", maps.matchDetailAllMapsMeta())
+    assertEquals("1 played map • sorted by map order", maps.matchDetailAllMapsMeta(testFormattingLabels))
   }
 
   @Test
@@ -323,7 +339,7 @@ class MatchDetailFormattingTest {
       previousEncounter(firstWinner = true),
     )
 
-    val summary = encounters.matchDetailHeadToHeadSummary()
+    val summary = encounters.matchDetailHeadToHeadSummary(testFormattingLabels)
 
     assertEquals(2, summary?.firstTeamWins)
     assertEquals(1, summary?.secondTeamWins)
@@ -336,9 +352,9 @@ class MatchDetailFormattingTest {
       previousEncounter(firstWinner = true),
       previousEncounter(firstWinner = false),
       previousEncounter(firstWinner = true),
-    ).matchDetailHeadToHeadSummary()
+    ).matchDetailHeadToHeadSummary(testFormattingLabels)
 
-    assertEquals("FNATIC +1", summary?.matchDetailTagLabel())
+    assertEquals("FNATIC +1", summary?.matchDetailTagLabel(testFormattingLabels))
   }
 
   @Test
@@ -349,7 +365,7 @@ class MatchDetailFormattingTest {
       previousEncounterWithNullIds(firstWinner = true),
     )
 
-    val summary = encounters.matchDetailHeadToHeadSummary()
+    val summary = encounters.matchDetailHeadToHeadSummary(testFormattingLabels)
 
     assertEquals(1, summary?.firstTeamWins)
     assertEquals(2, summary?.secondTeamWins)
@@ -368,7 +384,7 @@ class MatchDetailFormattingTest {
       ),
     )
 
-    assertNull(encounters.matchDetailHeadToHeadSummary())
+    assertNull(encounters.matchDetailHeadToHeadSummary(testFormattingLabels))
   }
 
   @Test
@@ -425,7 +441,14 @@ class MatchDetailFormattingTest {
     map = name,
     members = members,
     teams = listOf(
-      TeamDetails(id = "fnc", name = "FNATIC", region = "EMEA", img = "fnatic.png", score = firstScore, isWinner = true),
+      TeamDetails(
+        id = "fnc",
+        name = "FNATIC",
+        region = "EMEA",
+        img = "fnatic.png",
+        score = firstScore,
+        isWinner = true,
+      ),
       TeamDetails(
         id = "sen",
         name = "Sentinels",

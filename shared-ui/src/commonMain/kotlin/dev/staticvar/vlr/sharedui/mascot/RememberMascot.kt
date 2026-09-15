@@ -12,14 +12,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import dev.staticvar.vlr.sharedui.text.UiText
 import kotlinx.coroutines.delay
 
 public data class MascotCue(
   val id: String,
-  val message: String,
+  val message: UiText,
   val priority: Int,
-  val secondaryMessage: String? = null,
-)
+  val secondaryMessage: UiText? = null,
+) {
+  public constructor(id: String, message: String, priority: Int, secondaryMessage: String? = null) : this(
+    id = id,
+    message = UiText.Literal(message),
+    priority = priority,
+    secondaryMessage = secondaryMessage?.let(UiText::Literal),
+  )
+}
 
 /** Shows once per screen visit. Finishing or dismissing does not allow another appearance. */
 @Stable

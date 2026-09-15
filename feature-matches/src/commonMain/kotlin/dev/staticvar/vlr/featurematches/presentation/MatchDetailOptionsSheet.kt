@@ -28,6 +28,17 @@ import dev.staticvar.designsystem.component.sheet.PrismFabSheet
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.domain.model.MatchDetails
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_matches.generated.resources.Res
+import vlr.feature_matches.generated.resources.breakdown
+import vlr.feature_matches.generated.resources.choose_what_you_see_in_match_details
+import vlr.feature_matches.generated.resources.done
+import vlr.feature_matches.generated.resources.head_to_head
+import vlr.feature_matches.generated.resources.match_options
+import vlr.feature_matches.generated.resources.match_stats_and_player_table
+import vlr.feature_matches.generated.resources.media
+import vlr.feature_matches.generated.resources.previous_meetings
+import vlr.feature_matches.generated.resources.streams_and_vods
 
 @Composable
 internal fun MatchDetailOptionsSheet(
@@ -41,15 +52,15 @@ internal fun MatchDetailOptionsSheet(
     expanded = expanded,
     onExpandedChange = onExpandedChange,
     icon = MatchOptionsIcon,
-    contentDescription = "Match options",
-    sheetTitle = "Match options",
+    contentDescription = stringResource(Res.string.match_options),
+    sheetTitle = stringResource(Res.string.match_options),
     header = {
-      Text("Match options", style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
-      Text("Choose what you see in match details.", style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
+      Text(stringResource(Res.string.match_options), style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
+      Text(stringResource(Res.string.choose_what_you_see_in_match_details), style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
     },
     footer = {
       PrismButton(onClick = { onExpandedChange(false) }, style = PrismButtonStyle.Secondary) {
-        Text("Done")
+        Text(stringResource(Res.string.done))
       }
     },
   ) {
@@ -59,24 +70,24 @@ internal fun MatchDetailOptionsSheet(
     ) {
       if (match.matchData.isNotEmpty()) {
         MatchSectionOption(
-          title = "Breakdown",
-          description = "Match stats and player table",
+          title = stringResource(Res.string.breakdown),
+          description = stringResource(Res.string.match_stats_and_player_table),
           checked = preferences.showBreakdown,
           onCheckedChange = { onPreferencesChange(preferences.copy(showBreakdown = it)) },
         )
       }
       if (match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()) {
         MatchSectionOption(
-          title = "Media",
-          description = "Streams and VODs",
+          title = stringResource(Res.string.media),
+          description = stringResource(Res.string.streams_and_vods),
           checked = preferences.showMedia,
           onCheckedChange = { onPreferencesChange(preferences.copy(showMedia = it)) },
         )
       }
       if (match.head2head.isNotEmpty()) {
         MatchSectionOption(
-          title = "Head to head",
-          description = "Previous meetings",
+          title = stringResource(Res.string.head_to_head),
+          description = stringResource(Res.string.previous_meetings),
           checked = preferences.showHeadToHead,
           onCheckedChange = { onPreferencesChange(preferences.copy(showHeadToHead = it)) },
         )

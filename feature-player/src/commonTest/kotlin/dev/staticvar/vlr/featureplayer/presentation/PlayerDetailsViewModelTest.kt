@@ -10,6 +10,10 @@ import dev.staticvar.vlr.domain.model.PlayerInfo
 import dev.staticvar.vlr.domain.repository.PlayerRepository
 import dev.staticvar.vlr.featureplayer.usecase.ObservePlayerDetailsUseCase
 import dev.staticvar.vlr.featureplayer.usecase.RefreshPlayerDetailsUseCase
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +26,8 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import vlr.feature_player.generated.resources.Res
+import vlr.feature_player.generated.resources.favorite_update_failed
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlayerDetailsViewModelTest {
@@ -145,7 +147,7 @@ class PlayerDetailsViewModelTest {
     advanceUntilIdle()
     assertEquals(false, viewModel.uiState.value.player?.isFavorite)
     assertEquals(false, viewModel.uiState.value.isUpdatingFavorite)
-    assertEquals("Couldn't update favorite. Try again.", viewModel.uiState.value.favoriteErrorMessage)
+    assertEquals(Res.string.favorite_update_failed, viewModel.uiState.value.favoriteErrorMessage)
 
     repository.favoriteResult = Result.success(Unit)
     viewModel.toggleFavorite()
@@ -158,7 +160,7 @@ class PlayerDetailsViewModelTest {
     advanceUntilIdle()
     assertEquals(true, viewModel.uiState.value.player?.isFavorite)
     assertEquals(false, viewModel.uiState.value.isUpdatingFavorite)
-    assertEquals("Couldn't update favorite. Try again.", viewModel.uiState.value.favoriteErrorMessage)
+    assertEquals(Res.string.favorite_update_failed, viewModel.uiState.value.favoriteErrorMessage)
   }
 
   @Test

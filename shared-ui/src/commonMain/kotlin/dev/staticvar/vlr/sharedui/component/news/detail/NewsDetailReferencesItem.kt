@@ -26,6 +26,14 @@ import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.ArticleLink
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.news_media_prelabel
+import vlr.shared_ui.generated.resources.news_open
+import vlr.shared_ui.generated.resources.news_reference
+import vlr.shared_ui.generated.resources.news_reference_count
+import vlr.shared_ui.generated.resources.news_references
 
 /**
  * Compact article reference list.
@@ -45,8 +53,8 @@ public fun NewsDetailReferencesItem(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     PrismSectionTitle(
-      title = "References",
-      preLabel = "media",
+      title = stringResource(Res.string.news_references),
+      preLabel = stringResource(Res.string.news_media_prelabel),
       trailing = {
         PrismTag(text = links.size.newsDetailReferenceCountLabel(), style = PrismTagStyle.Neutral)
       },
@@ -87,7 +95,7 @@ private fun NewsDetailReferenceRow(link: ArticleLink, onLinkSelected: ((ArticleL
   ) {
     Column(modifier = Modifier.weight(1f)) {
       Text(
-        text = link.text.ifBlank { link.url.ifBlank { "Reference" } },
+        text = link.text.ifBlank { link.url.ifBlank { stringResource(Res.string.news_reference) } },
         style = Prism.typography.cardTitle,
         color = Prism.color.titleColor,
         maxLines = 1,
@@ -104,11 +112,10 @@ private fun NewsDetailReferenceRow(link: ArticleLink, onLinkSelected: ((ArticleL
         )
       }
     }
-    PrismTag(text = "open", style = PrismTagStyle.Info, enabled = enabled)
+    PrismTag(text = stringResource(Res.string.news_open), style = PrismTagStyle.Info, enabled = enabled)
   }
 }
 
-private fun Int.newsDetailReferenceCountLabel(): String = when (this) {
-  1 -> "1 link"
-  else -> "$this links"
-}
+@Composable
+private fun Int.newsDetailReferenceCountLabel(): String =
+  pluralStringResource(Res.plurals.news_reference_count, this, this)

@@ -19,6 +19,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
+import vlr.feature_team.generated.resources.Res
+import vlr.feature_team.generated.resources.favorite_update_failed
 
 public class TeamDetailsViewModel(
   private val teamId: String,
@@ -65,14 +68,14 @@ public class TeamDetailsViewModel(
       } catch (cancelled: CancellationException) {
         throw cancelled
       } catch (_: Exception) {
-        favoriteMutation.value = FavoriteMutation(errorMessage = "Couldn't update favorite. Try again.")
+        favoriteMutation.value = FavoriteMutation(errorMessage = Res.string.favorite_update_failed)
       } finally {
         if (favoriteMutation.value.isPending) favoriteMutation.value = FavoriteMutation()
       }
     }
   }
 
-  private data class FavoriteMutation(val isPending: Boolean = false, val errorMessage: String? = null)
+  private data class FavoriteMutation(val isPending: Boolean = false, val errorMessage: StringResource? = null)
 
   public fun refresh() {
     refresher.refresh()

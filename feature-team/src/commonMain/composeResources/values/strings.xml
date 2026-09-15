@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="team_details">Team details</string>
+    <string name="loading_team">Loading team</string>
+    <string name="no_team_details">No team details yet</string>
+    <string name="team_not_published">This team profile has not been published.</string>
+    <string name="team_subtitle">Roster, results and recent form</string>
+    <string name="updating_favorite">Updating favorite</string>
+    <string name="remove_team_favorite">Remove team from favorites</string>
+    <string name="add_team_favorite">Add team to favorites</string>
+    <string name="unranked">Unranked</string>
+    <string name="roster">Roster</string>
+    <string name="players">players</string>
+    <string name="favorite_player">Favorite player</string>
+    <string name="no_upcoming_matches">No upcoming matches</string>
+    <string name="no_upcoming_team_fixtures">No upcoming fixtures have been published for this team.</string>
+    <string name="no_completed_matches">No completed matches</string>
+    <string name="no_team_results">No match results have been published for this team.</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="completed">Completed</string>
+    <string name="favorite_update_failed">Couldn't update favorite. Try again.</string>
+</resources>

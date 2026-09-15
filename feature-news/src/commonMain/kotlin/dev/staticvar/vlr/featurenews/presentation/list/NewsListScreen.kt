@@ -11,20 +11,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
-import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
-import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
-import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
-import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsItem
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
+import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.news.overview.NewsPreviewItem
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_news.generated.resources.Res
+import vlr.feature_news.generated.resources.loading_news
+import vlr.feature_news.generated.resources.news_heading
+import vlr.feature_news.generated.resources.news_subtitle
+import vlr.feature_news.generated.resources.news_unpublished
+import vlr.feature_news.generated.resources.no_stories_yet
+import vlr.feature_news.generated.resources.refresh
 
 @Composable
 internal fun NewsListScreen(
@@ -54,7 +62,7 @@ internal fun NewsListScreen(
       (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && uiState.items.isEmpty() -> {
         SharedScreenLoading(
           modifier = Modifier.fillMaxSize(),
-          label = "Loading news",
+          label = stringResource(Res.string.loading_news),
         )
       }
 
@@ -96,8 +104,8 @@ private fun NewsListHeader(
 ) {
   Column {
     PrismScreenTitleBar(
-      title = "NEWS",
-      subtitle = "Stories from competitive VALORANT",
+      title = stringResource(Res.string.news_heading),
+      subtitle = stringResource(Res.string.news_subtitle),
       actions = {
         SharedRefreshButton(
           isLoading = isLoading,
@@ -147,10 +155,10 @@ private fun NewsItems(
 private fun EmptyNewsList(onRefresh: () -> Unit, modifier: Modifier = Modifier) {
   SharedEmptyState(
     artwork = EmptyStateArtwork.NoLiveEvents,
-    title = "No stories yet",
-    message = "Competitive VALORANT news will appear here when published.",
+    title = stringResource(Res.string.no_stories_yet),
+    message = stringResource(Res.string.news_unpublished),
     modifier = modifier,
-    actionLabel = "Refresh",
+    actionLabel = stringResource(Res.string.refresh),
     onAction = onRefresh,
   )
 }

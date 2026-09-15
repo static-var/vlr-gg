@@ -1,0 +1,17 @@
+<resources>
+    <string name="browse_events">Browse events</string>
+    <string name="browse_matches">Browse matches</string>
+    <string name="events">Events</string>
+    <string name="empty_favorites_description">Favorite teams, players, matches, or events to see the matches and events you care about here.</string>
+    <string name="favorites">Favorites</string>
+    <string name="home">Home</string>
+    <string name="loading_your_favorites">Loading your favorites</string>
+    <string name="make_home_yours">Make Home yours</string>
+    <string name="matches">Matches</string>
+    <string name="empty_related_events">No current events are linked to your favorites. Related events will appear as schedules update.</string>
+    <string name="empty_related_matches">No matches currently connect to your favorites. New matchups will appear here automatically.</string>
+    <string name="players">Players</string>
+    <string name="settings">Settings</string>
+    <string name="teams">Teams</string>
+    <string name="your_favorites">Your Favorites</string>
+</resources>

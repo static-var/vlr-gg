@@ -4,8 +4,8 @@
  */
 package dev.staticvar.vlr.sharedui.component.match.detail
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -22,11 +22,11 @@ import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.component.table.PrismTable
-import dev.staticvar.designsystem.component.table.PrismTableColumn
 import dev.staticvar.designsystem.component.table.PrismTableCellContentResolver
 import dev.staticvar.designsystem.component.table.PrismTableCellStyle
 import dev.staticvar.designsystem.component.table.PrismTableCellStyleResolver
 import dev.staticvar.designsystem.component.table.PrismTableColorRole
+import dev.staticvar.designsystem.component.table.PrismTableColumn
 import dev.staticvar.designsystem.component.table.PrismTableDefaults
 import dev.staticvar.designsystem.component.table.PrismTableOptions
 import dev.staticvar.designsystem.component.table.PrismTableRow
@@ -35,6 +35,17 @@ import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_acs
+import vlr.shared_ui.generated.resources.match_event_agent
+import vlr.shared_ui.generated.resources.match_event_assists
+import vlr.shared_ui.generated.resources.match_event_deaths
+import vlr.shared_ui.generated.resources.match_event_kast
+import vlr.shared_ui.generated.resources.match_event_kills
+import vlr.shared_ui.generated.resources.match_event_map
+import vlr.shared_ui.generated.resources.match_event_player
+import vlr.shared_ui.generated.resources.match_event_rating
 
 private object MatchDetailStatsTableColumns {
   const val Map = "map"
@@ -70,8 +81,9 @@ public fun MatchDetailPlayerStatsTable(
     SpoilerHiddenNotice(modifier = modifier)
     return
   }
+  val labels = matchFormattingLabels()
   MatchDetailPlayerStatsTable(
-    rows = remember(map) { map.toPlayerStatsRows() },
+    rows = remember(map, labels) { map.toPlayerStatsRows(labels) },
     includeMapName = false,
     modifier = modifier,
     onPlayerSelected = onPlayerSelected,
@@ -92,8 +104,9 @@ public fun MatchDetailAllMapPlayerStatsTable(
     SpoilerHiddenNotice(modifier = modifier)
     return
   }
+  val labels = matchFormattingLabels()
   MatchDetailPlayerStatsTable(
-    rows = remember(maps) { maps.toAllMapPlayerStatsRows() },
+    rows = remember(maps, labels) { maps.toAllMapPlayerStatsRows(labels) },
     includeMapName = false,
     modifier = modifier,
     onPlayerSelected = onPlayerSelected,
@@ -109,7 +122,7 @@ private fun MatchDetailPlayerStatsTable(
 ) {
   val accentContentColor = Prism.color.accent
   PrismTable(
-    columns = remember(includeMapName) { playerStatsColumns(includeMapName = includeMapName) },
+    columns = playerStatsColumns(includeMapName = includeMapName),
     rows = remember(rows, includeMapName, onPlayerSelected) {
       rows.map { row ->
         row.toPrismTableRow(includeMapName = includeMapName, onPlayerSelected = onPlayerSelected)
@@ -133,7 +146,10 @@ private fun MatchDetailPlayerStatsTable(
         when (rowTeamColorRole) {
           MatchDetailPlayerStatsTeamColorRole.Accent ->
             PrismTableCellStyle(colorRole = PrismTableColorRole.Secondary, contentColor = accentContentColor)
-          MatchDetailPlayerStatsTeamColorRole.Neutral, null -> PrismTableCellStyle(colorRole = PrismTableColorRole.Secondary)
+
+          MatchDetailPlayerStatsTeamColorRole.Neutral, null -> PrismTableCellStyle(
+            colorRole = PrismTableColorRole.Secondary,
+          )
         }
       },
     ),
@@ -190,25 +206,66 @@ private fun MatchDetailPlayerCell(row: MatchDetailPlayerStatsRow, playerName: St
   }
 }
 
+@Composable
 private fun playerStatsColumns(includeMapName: Boolean): List<PrismTableColumn> {
   val baseColumns = listOf(
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Player, title = "Player", width = 144.dp),
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Agent, title = "Agent", width = 116.dp),
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Acs, title = "ACS", width = 64.dp, textAlign = TextAlign.Center),
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Kills, title = "K", width = 56.dp, textAlign = TextAlign.Center),
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Deaths, title = "D", width = 56.dp, textAlign = TextAlign.Center),
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Assists, title = "A", width = 56.dp, textAlign = TextAlign.Center),
-    PrismTableColumn(key = MatchDetailStatsTableColumns.Kast, title = "KAST", width = 72.dp, textAlign = TextAlign.Center),
+    PrismTableColumn(
+      key = MatchDetailStatsTableColumns.Player,
+      title = stringResource(Res.string.match_event_player),
+      width = 144.dp,
+    ),
+    PrismTableColumn(
+      key = MatchDetailStatsTableColumns.Agent,
+      title = stringResource(Res.string.match_event_agent),
+      width = 116.dp,
+    ),
+    PrismTableColumn(
+      key = MatchDetailStatsTableColumns.Acs,
+      title = stringResource(Res.string.match_event_acs),
+      width = 64.dp,
+      textAlign = TextAlign.Center,
+    ),
+    PrismTableColumn(
+      key = MatchDetailStatsTableColumns.Kills,
+      title = stringResource(Res.string.match_event_kills),
+      width = 56.dp,
+      textAlign = TextAlign.Center,
+    ),
+    PrismTableColumn(
+      key = MatchDetailStatsTableColumns.Deaths,
+      title = stringResource(Res.string.match_event_deaths),
+      width = 56.dp,
+      textAlign = TextAlign.Center,
+    ),
+    PrismTableColumn(
+      key = MatchDetailStatsTableColumns.Assists,
+      title = stringResource(Res.string.match_event_assists),
+      width = 56.dp,
+      textAlign = TextAlign.Center,
+    ),
+    PrismTableColumn(
+      key = MatchDetailStatsTableColumns.Kast,
+      title = stringResource(Res.string.match_event_kast),
+      width = 72.dp,
+      textAlign = TextAlign.Center,
+    ),
     PrismTableColumn(
       key = MatchDetailStatsTableColumns.Rating,
-      title = "Rating",
+      title = stringResource(Res.string.match_event_rating),
       width = 76.dp,
       textAlign = TextAlign.Center,
     ),
   )
 
   return if (includeMapName) {
-    listOf(PrismTableColumn(key = MatchDetailStatsTableColumns.Map, title = "Map", width = 96.dp)) + baseColumns
+    listOf(
+      PrismTableColumn(
+        key = MatchDetailStatsTableColumns.Map,
+        title = stringResource(Res.string.match_event_map),
+        width = 96.dp,
+      ),
+    ) +
+      baseColumns
   } else {
     baseColumns
   }

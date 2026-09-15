@@ -32,12 +32,12 @@ import dev.staticvar.designsystem.prism.Prism
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sin
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.shared_lynx_description
 
 @Composable
-public fun LynxMascot(
-  modifier: Modifier = Modifier,
-  animated: Boolean = true,
-): Unit {
+public fun LynxMascot(modifier: Modifier = Modifier, animated: Boolean = true) {
   val colors = Prism.color
   val paths = remember { LynxPaths() }
   val phase =
@@ -56,7 +56,8 @@ public fun LynxMascot(
   val lightFur = lerp(colors.surface, colors.onAccent, 0.2f)
   val stroke = remember { Stroke(width = 2.4f, cap = StrokeCap.Round, join = StrokeJoin.Round) }
 
-  Canvas(modifier.size(160.dp).semantics { contentDescription = "Lynx cat mascot" }) {
+  val mascotDescription = stringResource(Res.string.shared_lynx_description)
+  Canvas(modifier.size(160.dp).semantics { contentDescription = mascotDescription }) {
     val progress = phase?.value ?: 0f
     val wave = sin(progress * 2f * PI.toFloat())
     val blink = if (animated) (1f - abs(progress - 0.79f) / 0.025f).coerceIn(0f, 1f) else 0f

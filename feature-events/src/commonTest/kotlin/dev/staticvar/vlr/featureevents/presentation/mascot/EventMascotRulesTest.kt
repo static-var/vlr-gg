@@ -11,9 +11,12 @@ import dev.staticvar.vlr.domain.model.EventPrize
 import dev.staticvar.vlr.domain.model.EventPrizeTeam
 import dev.staticvar.vlr.domain.model.EventStanding
 import dev.staticvar.vlr.domain.model.EventStatus
+import dev.staticvar.vlr.sharedui.text.UiText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import vlr.feature_events.generated.resources.Res
+import vlr.feature_events.generated.resources.mascot_event_won
 
 class EventMascotRulesTest {
   @Test
@@ -21,7 +24,7 @@ class EventMascotRulesTest {
     for (position in listOf("1st", " 1ST ", "1", "1st place")) {
       val cue = eventMascotCues(event(listOf(prize(position))), setOf("a")).single()
       assertEquals("event:event:winner:a", cue.id)
-      assertEquals("Alpha won the event!", cue.message)
+      assertEquals(UiText.Resource(Res.string.mascot_event_won, listOf("Alpha")), cue.message)
       assertEquals(50, cue.priority)
     }
   }
@@ -55,7 +58,7 @@ class EventMascotRulesTest {
     for (favorites in listOf(linkedSetOf("b", "a", "c"), linkedSetOf("c", "a", "b"))) {
       val prizes = listOf(prize("2nd", "b", "Beta"), prize("1st"), prize("3rd", "c", "Gamma"))
       for (placements in listOf(prizes, prizes.reversed())) {
-        assertEquals("Alpha won the event!", eventMascotCues(event(placements), favorites).single().message)
+        assertEquals(UiText.Resource(Res.string.mascot_event_won, listOf("Alpha")), eventMascotCues(event(placements), favorites).single().message)
       }
     }
   }

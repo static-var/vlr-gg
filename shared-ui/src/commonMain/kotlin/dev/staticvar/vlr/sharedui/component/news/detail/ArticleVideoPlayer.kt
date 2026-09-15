@@ -31,6 +31,15 @@ import coil3.compose.rememberAsyncImagePainter
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.news_close_player
+import vlr.shared_ui.generated.resources.news_open_provider
+import vlr.shared_ui.generated.resources.news_play_clip
+import vlr.shared_ui.generated.resources.news_play_video
+import vlr.shared_ui.generated.resources.news_player_load_failed
+import vlr.shared_ui.generated.resources.news_retry_player
+import vlr.shared_ui.generated.resources.news_watch_video
 
 public class ArticleVideoPlaybackState internal constructor() {
   internal var activeKey: String? by mutableStateOf(null)
@@ -64,7 +73,12 @@ internal fun ArticleVideoPlayer(
       onClick = { uriHandler.openUri(externalUrl) },
       style = PrismButtonStyle.Secondary,
       modifier = Modifier.fillMaxWidth(),
-    ) { Text(provider?.let { "Open in $it" } ?: "Watch video") }
+    ) {
+      Text(
+        provider?.let { stringResource(Res.string.news_open_provider, it) }
+          ?: stringResource(Res.string.news_watch_video),
+      )
+    }
     return
   }
   requireNotNull(player)
@@ -112,24 +126,27 @@ internal fun ArticleVideoPlayer(
           ) {
             Text(
               if (failed) {
-                "Retry player"
+                stringResource(Res.string.news_retry_player)
               } else {
-                "▶  Play $provider ${if (player.provider == "twitch") "clip" else "video"}"
+                stringResource(
+                  if (player.provider == "twitch") Res.string.news_play_clip else Res.string.news_play_video,
+                  requireNotNull(provider),
+                )
               },
             )
           }
         }
       }
     }
-    if (failed) Text("Could not load the player. You can open it directly instead.", style = Prism.typography.caption)
+    if (failed) Text(stringResource(Res.string.news_player_load_failed), style = Prism.typography.caption)
     Row(horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
       PrismButton(onClick = { uriHandler.openUri(externalUrl) }, style = PrismButtonStyle.Tertiary) {
-        Text("Open in $provider")
+        Text(stringResource(Res.string.news_open_provider, requireNotNull(provider)))
       }
       if (active) {
         PrismButton(onClick = {
           playback.stop(itemKey)
-        }, style = PrismButtonStyle.Tertiary) { Text("Close player") }
+        }, style = PrismButtonStyle.Tertiary) { Text(stringResource(Res.string.news_close_player)) }
       }
     }
   }

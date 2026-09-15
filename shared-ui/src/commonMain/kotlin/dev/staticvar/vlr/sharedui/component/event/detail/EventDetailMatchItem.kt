@@ -24,6 +24,12 @@ import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.match.MatchFavoriteReasons
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_match
+import vlr.shared_ui.generated.resources.match_event_match_tbd
+import vlr.shared_ui.generated.resources.match_event_tbd
+import vlr.shared_ui.generated.resources.match_event_unknown
 
 /**
  * Event match row with two score lines and schedule metadata.
@@ -44,14 +50,19 @@ public fun EventDetailMatchItem(
       ) {
         Text(
           text = listOf(match.stage, match.round).filter(String::isNotBlank)
-            .joinToString(separator = " • ").ifBlank { "Match" },
+            .joinToString(separator = " • ").ifBlank { stringResource(Res.string.match_event_match) },
           modifier = Modifier.weight(1f),
           style = Prism.typography.caption,
           color = Prism.color.labelColor,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
         )
-        PrismTag(text = match.status.ifBlank { "Unknown" }, style = match.status.eventMatchStatusTagStyle)
+        PrismTag(
+          text = match.status.ifBlank {
+            stringResource(Res.string.match_event_unknown)
+          },
+          style = match.status.eventMatchStatusTagStyle,
+        )
       }
 
       Column(
@@ -59,7 +70,11 @@ public fun EventDetailMatchItem(
         verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
       ) {
         if (match.teams.isEmpty()) {
-          Text(text = "Match TBD", style = Prism.typography.bodyLarge, color = Prism.color.bodyColor)
+          Text(
+            text = stringResource(Res.string.match_event_match_tbd),
+            style = Prism.typography.bodyLarge,
+            color = Prism.color.bodyColor,
+          )
         }
         match.teams.take(2).forEach { team ->
           EventMatchTeamScoreRow(team = team)
@@ -90,7 +105,7 @@ private fun EventMatchTeamScoreRow(team: EventMatchTeam, modifier: Modifier = Mo
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     Text(
-      text = team.name.ifBlank { "TBD" },
+      text = team.name.ifBlank { stringResource(Res.string.match_event_tbd) },
       modifier = Modifier.weight(1f),
       style = Prism.typography.bodyLarge,
       color = Prism.color.titleColor,

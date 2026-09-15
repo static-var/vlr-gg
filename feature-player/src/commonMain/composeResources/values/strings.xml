@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_details">Player details</string>
+    <string name="loading_player">Loading player</string>
+    <string name="no_player_details">No player details yet</string>
+    <string name="player_not_published">This player profile has not been published.</string>
+    <string name="player_subtitle">Stats, agents and team history</string>
+    <string name="updating_favorite">Updating favorite</string>
+    <string name="remove_player_favorite">Remove player from favorites</string>
+    <string name="add_player_favorite">Add player to favorites</string>
+    <string name="agent_stats">Agent stats</string>
+    <string name="pool">pool</string>
+    <string name="team_history">Team history</string>
+    <string name="history">history</string>
+    <string name="current_team">Current team</string>
+    <string name="previous_team">Previous team</string>
+    <string name="agent_usage">%1$s% usage • %2$s • %3$s</string>
+    <string name="agent_performance">ACS %1$s • ADR %2$s • K/D %3$s</string>
+    <string name="favorite_update_failed">Couldn't update favorite. Try again.</string>
+    <plurals name="agent_picks">
+        <item quantity="one">%1$d pick</item>
+        <item quantity="other">%1$d picks</item>
+    </plurals>
+    <plurals name="agent_rounds">
+        <item quantity="one">%1$d round</item>
+        <item quantity="other">%1$d rounds</item>
+    </plurals>
+</resources>

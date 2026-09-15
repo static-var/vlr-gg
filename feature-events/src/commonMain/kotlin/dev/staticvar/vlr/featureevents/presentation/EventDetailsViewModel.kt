@@ -8,18 +8,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.refresh.RefreshController
-import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.EventRepository
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.MutableStateFlow
+import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.featureevents.usecase.ObserveEventDetailsUseCase
 import dev.staticvar.vlr.featureevents.usecase.RefreshEventDetailsUseCase
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
+import vlr.feature_events.generated.resources.Res
+import vlr.feature_events.generated.resources.favorite_update_failed
 
 public class EventDetailsViewModel(
   eventId: String,
@@ -34,7 +37,7 @@ public class EventDetailsViewModel(
   private val refresher = RefreshController(viewModelScope, networkMonitor) { refreshEventDetailsUseCase(eventId) }
 
   private val favoriteSaving = MutableStateFlow(false)
-  private val favoriteError = MutableStateFlow<String?>(null)
+  private val favoriteError = MutableStateFlow<StringResource?>(null)
 
   public val uiState: StateFlow<EventDetailsUiState> = combine(
     observeEventDetailsUseCase(eventId),
@@ -74,7 +77,7 @@ public class EventDetailsViewModel(
       } catch (cancelled: CancellationException) {
         throw cancelled
       } catch (error: Exception) {
-        favoriteError.value = "Couldn't update this event's favorite. Try again."
+        favoriteError.value = Res.string.favorite_update_failed
       } finally {
         favoriteSaving.value = false
       }

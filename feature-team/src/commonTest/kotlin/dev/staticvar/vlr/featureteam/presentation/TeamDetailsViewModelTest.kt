@@ -10,6 +10,11 @@ import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.featureteam.usecase.ObserveTeamDetailsUseCase
 import dev.staticvar.vlr.featureteam.usecase.RefreshTeamDetailsUseCase
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -22,11 +27,8 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import vlr.feature_team.generated.resources.Res
+import vlr.feature_team.generated.resources.favorite_update_failed
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TeamDetailsViewModelTest {
@@ -215,7 +217,7 @@ class TeamDetailsViewModelTest {
     advanceUntilIdle()
     assertEquals(false, viewModel.uiState.value.team?.isFavorite)
     assertEquals(false, viewModel.uiState.value.isUpdatingFavorite)
-    assertEquals("Couldn't update favorite. Try again.", viewModel.uiState.value.favoriteErrorMessage)
+    assertEquals(Res.string.favorite_update_failed, viewModel.uiState.value.favoriteErrorMessage)
 
     repository.favoriteResult = Result.success(Unit)
     viewModel.toggleFavorite()
@@ -228,7 +230,7 @@ class TeamDetailsViewModelTest {
     advanceUntilIdle()
     assertEquals(true, viewModel.uiState.value.team?.isFavorite)
     assertEquals(false, viewModel.uiState.value.isUpdatingFavorite)
-    assertEquals("Couldn't update favorite. Try again.", viewModel.uiState.value.favoriteErrorMessage)
+    assertEquals(Res.string.favorite_update_failed, viewModel.uiState.value.favoriteErrorMessage)
   }
 
   private fun createViewModel(repository: FakeTeamRepository): TeamDetailsViewModel = TeamDetailsViewModel(

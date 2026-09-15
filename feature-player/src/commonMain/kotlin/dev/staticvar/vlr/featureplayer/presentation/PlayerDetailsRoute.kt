@@ -42,6 +42,27 @@ import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerContent
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_player.generated.resources.Res
+import vlr.feature_player.generated.resources.add_player_favorite
+import vlr.feature_player.generated.resources.agent_performance
+import vlr.feature_player.generated.resources.agent_picks
+import vlr.feature_player.generated.resources.agent_rounds
+import vlr.feature_player.generated.resources.agent_stats
+import vlr.feature_player.generated.resources.agent_usage
+import vlr.feature_player.generated.resources.current_team
+import vlr.feature_player.generated.resources.history
+import vlr.feature_player.generated.resources.loading_player
+import vlr.feature_player.generated.resources.no_player_details
+import vlr.feature_player.generated.resources.player_details
+import vlr.feature_player.generated.resources.player_not_published
+import vlr.feature_player.generated.resources.player_subtitle
+import vlr.feature_player.generated.resources.pool
+import vlr.feature_player.generated.resources.previous_team
+import vlr.feature_player.generated.resources.remove_player_favorite
+import vlr.feature_player.generated.resources.team_history
+import vlr.feature_player.generated.resources.updating_favorite
 
 @Composable
 public fun PlayerDetailsRoute(
@@ -80,7 +101,7 @@ internal fun PlayerDetailsScreen(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     PlayerDetailsChrome(
-      title = player?.alias?.ifBlank { player.name } ?: "Player details",
+      title = player?.alias?.ifBlank { player.name } ?: stringResource(Res.string.player_details),
       isFavorite = player?.isFavorite,
       isUpdatingFavorite = uiState.isUpdatingFavorite,
       hasContent = player != null,
@@ -93,13 +114,13 @@ internal fun PlayerDetailsScreen(
     )
 
     uiState.favoriteErrorMessage?.let { message ->
-      PrismStateMessage(text = message)
+      PrismStateMessage(text = stringResource(message))
     }
 
     when {
       (!isOnline || uiState.isLoading || uiState.isRefreshing) && player == null ->
         SharedScreenLoading(
-          label = "Loading player",
+          label = stringResource(Res.string.loading_player),
           modifier = Modifier.fillMaxSize(),
         )
 
@@ -115,8 +136,8 @@ internal fun PlayerDetailsScreen(
       player == null ->
         SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveMatches,
-          title = "No player details yet",
-          message = "This player profile has not been published.",
+          title = stringResource(Res.string.no_player_details),
+          message = stringResource(Res.string.player_not_published),
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
 
@@ -152,7 +173,7 @@ private fun PlayerDetailsChrome(
   Column {
     PrismScreenTitleBar(
       title = title,
-      subtitle = "Stats, agents and team history",
+      subtitle = stringResource(Res.string.player_subtitle),
       onBackPress = onBack,
       actions = {
         if (isFavorite != null) {
@@ -161,11 +182,11 @@ private fun PlayerDetailsChrome(
             size = PrismFavoriteIconSize.Large,
             contentDescription =
               if (isUpdatingFavorite) {
-                "Updating favorite"
+                stringResource(Res.string.updating_favorite)
               } else if (isFavorite) {
-                "Remove player from favorites"
+                stringResource(Res.string.remove_player_favorite)
               } else {
-                "Add player to favorites"
+                stringResource(Res.string.add_player_favorite)
               },
             modifier =
               Modifier.clickable(
@@ -277,7 +298,7 @@ private fun LazyListScope.playerAgentStatItems(
   if (agentStats.isEmpty()) return
 
   item {
-    PrismSectionTitle(title = "Agent stats", preLabel = "pool")
+    PrismSectionTitle(title = stringResource(Res.string.agent_stats), preLabel = stringResource(Res.string.pool))
   }
   if (spoilersHidden) {
     item {
@@ -296,12 +317,17 @@ private fun PlayerAgentStatItem(stat: PlayerAgentStat) {
     SpoilerContent(modifier = Modifier.padding(top = Prism.dimens.spacingXs)) {
       Column {
         Text(
-          text = "${stat.usagePercent}% usage • ${stat.matchesLabel()}",
+          text = stringResource(
+            Res.string.agent_usage,
+            stat.usagePercent.toString(),
+            pluralStringResource(Res.plurals.agent_picks, stat.usageCount, stat.usageCount),
+            pluralStringResource(Res.plurals.agent_rounds, stat.roundsPlayed, stat.roundsPlayed),
+          ),
           style = Prism.typography.bodySmall,
           color = Prism.color.labelColor,
         )
         Text(
-          text = "ACS ${stat.acs} • ADR ${stat.adr} • K/D ${stat.kdRatio}",
+          text = stringResource(Res.string.agent_performance, stat.acs.toString(), stat.adr.toString(), stat.kdRatio.toString()),
           modifier = Modifier.padding(top = Prism.dimens.spacingXs),
           style = Prism.typography.label,
           color = Prism.color.bodyColor,
@@ -318,7 +344,7 @@ private fun LazyListScope.playerTeamHistoryItems(
   if (teams.isEmpty()) return
 
   item {
-    PrismSectionTitle(title = "Team history", preLabel = "history")
+    PrismSectionTitle(title = stringResource(Res.string.team_history), preLabel = stringResource(Res.string.history))
   }
   items(teams) { team ->
     PlayerTeamHistoryItem(team = team, onTeamSelected = onTeamSelected)
@@ -337,12 +363,10 @@ private fun PlayerTeamHistoryItem(team: PlayerTeam, onTeamSelected: (String) -> 
   ) {
     Text(text = team.name, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
     Text(
-      text = if (team.isCurrent) "Current team" else "Previous team",
+      text = if (team.isCurrent) stringResource(Res.string.current_team) else stringResource(Res.string.previous_team),
       modifier = Modifier.padding(top = Prism.dimens.spacingXs),
       style = Prism.typography.bodySmall,
       color = Prism.color.labelColor,
     )
   }
 }
-
-private fun PlayerAgentStat.matchesLabel(): String = "$usageCount picks • $roundsPlayed rounds"

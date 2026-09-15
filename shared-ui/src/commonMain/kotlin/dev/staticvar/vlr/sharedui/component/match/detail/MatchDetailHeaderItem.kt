@@ -37,6 +37,15 @@ import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
 import dev.staticvar.vlr.sharedui.component.match.matchFavoriteReasonLabels
 import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_favorite_via
+import vlr.shared_ui.generated.resources.match_event_format
+import vlr.shared_ui.generated.resources.match_event_map_veto
+import vlr.shared_ui.generated.resources.match_event_match
+import vlr.shared_ui.generated.resources.match_event_match_day
+import vlr.shared_ui.generated.resources.match_event_tbd
+import vlr.shared_ui.generated.resources.match_event_time_tba
 
 /** Match ticket with event identity, opposing teams, and a schedule/action stub. */
 @Composable
@@ -67,7 +76,11 @@ public fun MatchDetailHeaderItem(
     modifier = modifier,
     onEventSelected = onEventSelected,
     onTeamSelected = onTeamSelected,
-    onVetoSelected = if (canShowVeto) { { showVeto = true } } else null,
+    onVetoSelected = if (canShowVeto) {
+      { showVeto = true }
+    } else {
+      null
+    },
     actions = actions,
     favoriteAction = favoriteAction,
   )
@@ -86,7 +99,7 @@ public fun MatchDetailPreviewHeaderItem(match: MatchPreview, modifier: Modifier 
     eventName = match.event,
     series = match.series,
     time = formatMatchPreviewTime(match.time),
-    format = "TBD",
+    format = stringResource(Res.string.match_event_tbd),
     status = match.status.name.lowercase(),
     teams = listOf(match.team1, match.team2),
     isFavorite = match.isFavorite,
@@ -132,7 +145,7 @@ private fun MatchDetailHeaderContent(
       MatchTicketTeams(matchId = matchId, teams = teams, onTeamSelected = onTeamSelected)
       if (favoriteLabels.isNotEmpty()) {
         Text(
-          text = "Favorite via ${favoriteLabels.joinToString(" · ")}",
+          text = stringResource(Res.string.match_event_favorite_via, favoriteLabels.joinToString(" · ")),
           modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
           style = Prism.typography.caption,
           color = Prism.color.contentSecondary,
@@ -156,7 +169,7 @@ private fun MatchTicketEvent(
     Modifier
   }
   Text(
-    text = eventName.ifBlank { "Match" },
+    text = eventName.ifBlank { stringResource(Res.string.match_event_match) },
     modifier = Modifier.fillMaxWidth().padding(bottom = Prism.dimens.spacingM)
       .then(eventModifier).matchSharedBounds(matchId, MatchSharedContent.Event),
     style = Prism.typography.cardTitle,
@@ -211,15 +224,23 @@ private fun MatchTicketStub(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
-      Text("MATCH DAY", style = Prism.typography.overline, color = Prism.color.contentSecondary)
       Text(
-        text = time ?: "Time to be announced",
+        stringResource(Res.string.match_event_match_day),
+        style = Prism.typography.overline,
+        color = Prism.color.contentSecondary,
+      )
+      Text(
+        text = time ?: stringResource(Res.string.match_event_time_tba),
         modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.Time),
         style = Prism.typography.bodySmall,
       )
     }
     Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
-      Text("FORMAT", style = Prism.typography.overline, color = Prism.color.contentSecondary)
+      Text(
+        stringResource(Res.string.match_event_format),
+        style = Prism.typography.overline,
+        color = Prism.color.contentSecondary,
+      )
       Text(format, style = Prism.typography.bodySmall)
     }
   }
@@ -232,7 +253,7 @@ private fun MatchTicketStub(
       onClick = onVetoSelected,
       style = PrismButtonStyle.Alternate,
     ) {
-      Text("Map veto")
+      Text(stringResource(Res.string.match_event_map_veto))
     }
   }
 }

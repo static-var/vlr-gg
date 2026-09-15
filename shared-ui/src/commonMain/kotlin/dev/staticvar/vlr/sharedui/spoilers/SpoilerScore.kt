@@ -28,6 +28,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.shared_result_hidden
 
 /** A score value or a non-interactive, accessible hidden-result icon. */
 @Composable
@@ -83,7 +86,7 @@ public fun SpoilerHiddenIcon(modifier: Modifier = Modifier) {
   Box(modifier = modifier, contentAlignment = Alignment.Center) {
     Icon(
       imageVector = Prism.icons.preview,
-      contentDescription = "Result hidden",
+      contentDescription = stringResource(Res.string.shared_result_hidden),
       tint = color,
       modifier = Modifier.size(Prism.dimens.iconM).closedEyeStroke(color),
     )

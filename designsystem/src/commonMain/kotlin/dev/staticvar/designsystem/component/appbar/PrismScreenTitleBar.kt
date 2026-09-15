@@ -20,10 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.button.PrismIconButton
 import dev.staticvar.designsystem.component.button.PrismIconButtonSize
+import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.designsystem.generated.resources.Res
+import vlr.designsystem.generated.resources.prism_back
 
 /**
  * Compact screen title bar with optional navigation, subtitle, and trailing content.
@@ -97,7 +100,7 @@ private fun PrismScreenTitleNavigationSlot(onBackPress: (() -> Unit)?) {
   if (onBackPress != null) {
     PrismIconButton(
       icon = Prism.icons.back,
-      contentDescription = "Back",
+      contentDescription = stringResource(Res.string.prism_back),
       onClick = onBackPress,
       size = PrismIconButtonSize.Toolbar,
     )

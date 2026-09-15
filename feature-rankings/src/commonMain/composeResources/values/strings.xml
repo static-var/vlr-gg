@@ -1,0 +1,11 @@
+<resources>
+    <string name="rankings_title">Ranking</string>
+    <string name="rankings_subtitle">The top teams in every region</string>
+    <string name="loading_rankings">Loading rankings</string>
+    <string name="no_rankings_yet">No rankings yet</string>
+    <string name="regional_rankings_unpublished">Regional team rankings have not been published.</string>
+    <string name="favorite_team">Favorite team</string>
+    <string name="region_rankings_unpublished">Team rankings for %1$s have not been published.</string>
+    <string name="top_teams_in_region">Top %1$d • %2$s</string>
+    <string name="ranking_points">%1$s pts</string>
+</resources>

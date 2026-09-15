@@ -1,0 +1,39 @@
+<resources>
+  <string name="shared_offline_title">You’re offline</string>
+  <string name="shared_offline_loading">Connect to the internet to load this screen. It will update when you’re back online.</string>
+  <string name="shared_loading">Loading</string>
+  <string name="shared_offline">Offline</string>
+  <string name="shared_refreshing">Refreshing</string>
+  <string name="shared_ready_to_refresh">Ready to refresh</string>
+  <string name="shared_load_failed">Could not load data</string>
+  <string name="shared_refresh_failed">Could not refresh data</string>
+  <string name="shared_offline_empty">Reconnect to the internet. This screen will update automatically.</string>
+  <string name="shared_offline_saved">Showing saved content. Reconnect to get updates.</string>
+  <string name="shared_load_error_message">Something went wrong. Try loading this screen again.</string>
+  <string name="shared_refresh_error_message">Your saved content is still available. Try again.</string>
+  <string name="shared_retry">Retry</string>
+  <string name="shared_show_details">Show details</string>
+  <string name="shared_error_details">Error details</string>
+  <string name="shared_close">Close</string>
+  <string name="shared_copied">Copied</string>
+  <string name="shared_copy_stack_trace">Copy stack trace</string>
+  <string name="shared_no_internet">No internet connection</string>
+  <string name="shared_show_spoilers">Show results and stats throughout app</string>
+  <string name="shared_hide_spoilers">Hide results and stats throughout app</string>
+  <string name="shared_spoilers_on">No spoilers on</string>
+  <string name="shared_spoilers_off">No spoilers off</string>
+  <string name="shared_spoilers_notice">Results and stats hidden by No spoilers mode</string>
+  <string name="shared_result_hidden">Result hidden</string>
+  <string name="shared_rosie_description">Rosie dog mascot</string>
+  <string name="shared_lynx_description">Lynx cat mascot</string>
+  <string name="shared_favorite_source">Favorite source: %1$s</string>
+  <string name="shared_view_stat">View %1$s</string>
+  <string name="shared_team_label">team</string>
+  <string name="shared_team_unranked">unranked</string>
+  <string name="shared_team_profile">Team profile</string>
+  <plurals name="shared_team_players">
+    <item quantity="one">%1$d player</item>
+    <item quantity="other">%1$d players</item>
+  </plurals>
+  <string name="shared_team_upcoming">%1$d next 7d</string>
+</resources>

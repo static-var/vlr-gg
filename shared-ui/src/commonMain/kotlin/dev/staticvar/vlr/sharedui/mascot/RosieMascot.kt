@@ -34,9 +34,12 @@ import dev.staticvar.designsystem.prism.Prism
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sin
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.shared_rosie_description
 
 @Composable
-public fun RosieMascot(modifier: Modifier = Modifier, animated: Boolean = true): Unit {
+public fun RosieMascot(modifier: Modifier = Modifier, animated: Boolean = true) {
   val colors = Prism.color
   val paths = remember { RosiePaths() }
   val phase =
@@ -56,7 +59,8 @@ public fun RosieMascot(modifier: Modifier = Modifier, animated: Boolean = true):
   val expressionInk = Color(0xFF302936)
   val stroke = remember { Stroke(width = 2.4f, cap = StrokeCap.Round, join = StrokeJoin.Round) }
 
-  Canvas(modifier.size(160.dp).semantics { contentDescription = "Rosie dog mascot" }) {
+  val mascotDescription = stringResource(Res.string.shared_rosie_description)
+  Canvas(modifier.size(160.dp).semantics { contentDescription = mascotDescription }) {
     val progress = phase?.value ?: 0f
     val wave = sin(progress * 2f * PI.toFloat())
     val wag = sin(progress * 8f * PI.toFloat())

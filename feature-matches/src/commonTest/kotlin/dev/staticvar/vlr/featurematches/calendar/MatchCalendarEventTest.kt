@@ -52,9 +52,9 @@ class MatchCalendarEventTest {
   @Test
   fun unknownOrInvalidMatchTimeCannotBeExported() {
     for (date in listOf(null, "", "TBD", "2026-09-05", "2026-09-05T17:00:00")) {
-      assertNull(match(date).toCalendarEvent(), "Unexpected calendar event for $date")
+      assertNull(match(date).toCalendarEvent("vs"), "Unexpected calendar event for $date")
     }
-    assertEquals(generatedAt, match("2026-09-05T12:00:00Z").toCalendarEvent()?.start)
+    assertEquals(generatedAt, match("2026-09-05T12:00:00Z").toCalendarEvent("vs")?.start)
   }
 
   private fun match(date: String?): MatchDetails = MatchDetails(

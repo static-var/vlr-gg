@@ -4,7 +4,6 @@
  */
 package dev.staticvar.vlr.featurematches.presentation.mascot
 
-import dev.staticvar.vlr.sharedui.mascot.MascotCue
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
@@ -12,6 +11,15 @@ import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.PlayerStats
 import dev.staticvar.vlr.domain.model.RoundWinner
 import dev.staticvar.vlr.domain.model.TeamDetails
+import dev.staticvar.vlr.sharedui.mascot.MascotCue
+import dev.staticvar.vlr.sharedui.text.UiText
+import vlr.feature_matches.generated.resources.Res
+import vlr.feature_matches.generated.resources.mascot_player_cooked
+import vlr.feature_matches.generated.resources.mascot_player_cooked_combined
+import vlr.feature_matches.generated.resources.mascot_player_cooking
+import vlr.feature_matches.generated.resources.mascot_team_go
+import vlr.feature_matches.generated.resources.mascot_team_won
+import vlr.feature_matches.generated.resources.mascot_team_won_and
 
 /** Returns eligible celebrations, with the strongest cue first. */
 public fun matchMascotCues(
@@ -51,15 +59,15 @@ public fun matchMascotCues(
       val completed = status == MatchStatus.COMPLETED
       val playerCue = MascotCue(
         id = "${match.id}:${if (completed) "player-result" else "player-live"}:${player.playerId}:$scope",
-        message = "${player.name} ${if (completed) "cooked!" else "is cooking!"}",
+        message = UiText.Resource(if (completed) Res.string.mascot_player_cooked else Res.string.mascot_player_cooking, listOf(player.name)),
         priority = if (completed) 40 else 20,
       )
       if (completed && seriesTeamCue != null) {
         cues.remove(seriesTeamCue)
         cues += MascotCue(
           id = "${seriesTeamCue.id}:${playerCue.id}",
-          message = "${seriesTeamCue.message.removeSuffix("!")} &",
-          secondaryMessage = "${player.name} cooked!!!",
+          message = UiText.Resource(Res.string.mascot_team_won_and, listOf(match.teams.maxBy { it.score ?: -1 }.name)),
+          secondaryMessage = UiText.Resource(Res.string.mascot_player_cooked_combined, listOf(player.name)),
           priority = 50,
         )
       } else {
@@ -100,7 +108,7 @@ private fun teamCue(
   val completed = status == MatchStatus.COMPLETED
   return MascotCue(
     id = "$matchId:${if (completed) "team-win" else "team-lead"}:${leader.id}:$scope",
-    message = if (completed) "${leader.name} won!" else "Go ${leader.name}!",
+    message = UiText.Resource(if (completed) Res.string.mascot_team_won else Res.string.mascot_team_go, listOf(leader.name)),
     priority = if (completed) 30 else 10,
   )
 }

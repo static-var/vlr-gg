@@ -6,11 +6,11 @@ package dev.staticvar.vlr.featurematches.calendar
 
 import androidx.compose.runtime.Composable
 import dev.staticvar.vlr.domain.model.MatchDetails
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 public data class MatchCalendarEvent(
   val matchId: String,
@@ -22,12 +22,16 @@ public data class MatchCalendarEvent(
 internal val MatchCalendarEvent.end: Instant
   get() = start + 1.hours
 
-public fun MatchDetails.toCalendarEvent(): MatchCalendarEvent? {
+internal fun MatchDetails.calendarStart(): Instant? {
   val start = event.date?.let { runCatching { Instant.parse(it) }.getOrNull() } ?: return null
-  if (id.isBlank() || start.toLocalDateTime(TimeZone.UTC).year !in 1..9999) return null
+  return start.takeIf { id.isNotBlank() && it.toLocalDateTime(TimeZone.UTC).year in 1..9999 }
+}
+
+public fun MatchDetails.toCalendarEvent(versus: String): MatchCalendarEvent? {
+  val start = calendarStart() ?: return null
   return MatchCalendarEvent(
     matchId = id,
-    title = teams.joinToString(" vs ") { it.name }.ifBlank { event.name },
+    title = teams.joinToString(" $versus ") { it.name }.ifBlank { event.name },
     description = listOf(event.name, event.series, event.stage, note).filter(String::isNotBlank).joinToString("\n"),
     start = start,
   )

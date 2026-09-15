@@ -21,6 +21,9 @@ import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventPrize
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_tbd
 
 /**
  * Prize placement row with optional team winner information.
@@ -66,7 +69,7 @@ public fun EventDetailPrizeItem(prize: EventPrize, modifier: Modifier = Modifier
         )
       }
       Text(
-        text = team?.name ?: "TBD",
+        text = team?.name ?: stringResource(Res.string.match_event_tbd),
         modifier = Modifier.weight(1f),
         style = Prism.typography.bodySmall,
         color = if (onTeamClick != null) Prism.color.accent else Prism.color.bodyColor,

@@ -25,6 +25,9 @@ import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_about.generated.resources.Res
+import vlr.feature_about.generated.resources.done
 
 @Composable
 public fun WhatsNewRoute(
@@ -35,7 +38,7 @@ public fun WhatsNewRoute(
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     Column(modifier = Modifier.widthIn(max = 720.dp).fillMaxSize()) {
       PrismScreenTitleBar(
-        title = BundledRelease.title,
+        title = stringResource(BundledRelease.title),
         subtitle = appVersionText(),
         onBackPress = onBack,
         modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
@@ -49,7 +52,7 @@ public fun WhatsNewRoute(
         verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
       ) {
         Text(
-          text = BundledRelease.introduction,
+          text = stringResource(BundledRelease.introduction),
           style = Prism.typography.bodyLarge,
           color = Prism.color.bodyColor,
         )
@@ -60,7 +63,7 @@ public fun WhatsNewRoute(
           )
         }
         PrismButton(onClick = onDone, modifier = Modifier.fillMaxWidth()) {
-          Text("Done")
+          Text(stringResource(Res.string.done))
         }
       }
     }
@@ -78,13 +81,13 @@ private fun WhatsNewHighlightCard(
   ) {
     Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
       Text(
-        text = highlight.title,
+        text = stringResource(highlight.title),
         style = Prism.typography.sectionTitle,
         color = Prism.color.titleColor,
         modifier = Modifier.semantics { heading() },
       )
       Text(
-        text = highlight.description,
+        text = stringResource(highlight.description),
         style = Prism.typography.bodySmall,
         color = Prism.color.bodyColor,
       )

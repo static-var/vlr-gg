@@ -4,24 +4,22 @@
  */
 package dev.staticvar.vlr.sharedui.component.news.overview
 
-import kotlinx.datetime.TimeZone
+import dev.staticvar.vlr.sharedui.component.common.parseMatchPreviewTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlinx.datetime.TimeZone
 
 class NewsPreviewDateFormatterTest {
   @Test
-  fun formatsIsoDateInProvidedTimeZone() {
-    val formattedDate = formatNewsPreviewDate(
-      rawDate = "2026-06-13T18:30:00Z",
-      timeZone = TimeZone.of("Asia/Kolkata"),
-    )
-
-    assertEquals("Jun 14, 2026", formattedDate)
+  fun parsesIsoDateInProvidedTimeZone() {
+    val date = parseMatchPreviewTime("2026-06-13T18:30:00Z", TimeZone.of("Asia/Kolkata"))
+    assertEquals("2026-06-14", date?.date.toString())
   }
 
   @Test
-  fun preservesAlreadyReadableOrInvalidDates() {
-    assertEquals("2h ago", formatNewsPreviewDate(rawDate = "2h ago"))
-    assertEquals("recent", formatNewsPreviewDate(rawDate = ""))
+  fun leavesRelativeAndMissingDatesForDisplayFallback() {
+    assertNull(parseMatchPreviewTime("2h ago"))
+    assertNull(parseMatchPreviewTime(""))
   }
 }

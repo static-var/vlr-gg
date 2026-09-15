@@ -23,6 +23,9 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_tbd
 
 /**
  * Compact team score row used by match detail hero, map scores, and history rows.
@@ -69,7 +72,7 @@ public fun MatchDetailTeamScoreRow(
       )
     }
     Text(
-      text = teamName.ifBlank { "TBD" },
+      text = teamName.ifBlank { stringResource(Res.string.match_event_tbd) },
       modifier = Modifier.weight(1f).then(nameModifier),
       style = Prism.typography.headline,
       color = if (resolvedWinner) Prism.color.accent else Prism.color.labelColor,

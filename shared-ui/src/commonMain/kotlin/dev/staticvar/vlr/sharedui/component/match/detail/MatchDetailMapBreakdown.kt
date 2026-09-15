@@ -26,6 +26,12 @@ import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.TeamDetails
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_all_maps
+import vlr.shared_ui.generated.resources.match_event_combined_stats
+import vlr.shared_ui.generated.resources.match_event_map_breakdown_unavailable
+import vlr.shared_ui.generated.resources.match_event_tbd
 
 /**
  * Compact map breakdown content controlled by [MatchDetailMapSelector].
@@ -76,7 +82,7 @@ public fun MatchDetailMapBreakdown(
 @Composable
 private fun EmptyMapBreakdown() {
   Text(
-    text = "Map breakdown unavailable.",
+    text = stringResource(Res.string.match_event_map_breakdown_unavailable),
     style = Prism.typography.bodySmall,
     color = Prism.color.labelColor,
   )
@@ -85,9 +91,11 @@ private fun EmptyMapBreakdown() {
 @Composable
 private fun AllMapsBreakdown(maps: List<MapData>, onPlayerSelected: ((String) -> Unit)?) {
   MatchDetailMapBreakdownHeader(
-    title = "Combined stats",
-    subtitle = maps.matchDetailAllMapsMeta(),
-    tag = "All maps",
+    title = stringResource(Res.string.match_event_combined_stats),
+    subtitle = maps.matchDetailAllMapsMeta(
+      matchFormattingLabels(playedMapCount = maps.count { map -> map.teams.any { it.score != null } }),
+    ),
+    tag = stringResource(Res.string.match_event_all_maps),
     tagStyle = PrismTagStyle.Neutral,
   )
   MatchDetailAllMapPlayerStatsTable(maps = maps, onPlayerSelected = onPlayerSelected)
@@ -96,9 +104,12 @@ private fun AllMapsBreakdown(maps: List<MapData>, onPlayerSelected: ((String) ->
 @Composable
 private fun SingleMapBreakdown(map: MapData, mapIndex: Int, onPlayerSelected: ((String) -> Unit)?) {
   MatchDetailMapBreakdownHeader(
-    title = map.matchDetailMapName(),
-    subtitle = map.matchDetailMapMeta(index = mapIndex.takeIf { it >= 0 }),
-    tag = map.matchDetailMapScoreLabel(),
+    title = map.matchDetailMapName(matchFormattingLabels()),
+    subtitle = map.matchDetailMapMeta(
+      labels = matchFormattingLabels(mapNumber = mapIndex + 1),
+      index = mapIndex.takeIf { it >= 0 },
+    ),
+    tag = map.matchDetailMapScoreLabel(matchFormattingLabels()),
     tagStyle = PrismTagStyle.Accent,
   )
   MatchDetailMapScoreLine(map = map)
@@ -160,7 +171,7 @@ private fun MatchDetailMapScoreLine(map: MapData) {
 @Composable
 private fun TeamScoreText(team: TeamDetails, modifier: Modifier = Modifier, alignEnd: Boolean = false) {
   Text(
-    text = team.name.ifBlank { "TBD" },
+    text = team.name.ifBlank { stringResource(Res.string.match_event_tbd) },
     modifier = modifier,
     style = Prism.typography.cardTitle,
     color = if (team.isWinner == true) Prism.color.accent else Prism.color.labelColor,

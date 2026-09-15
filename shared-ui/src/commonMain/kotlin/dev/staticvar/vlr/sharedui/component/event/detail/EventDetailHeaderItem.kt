@@ -31,6 +31,14 @@ import dev.staticvar.vlr.sharedui.component.event.EventFavoriteReasons
 import dev.staticvar.vlr.sharedui.component.event.EventSharedContent
 import dev.staticvar.vlr.sharedui.component.event.eventLogoSharedElement
 import dev.staticvar.vlr.sharedui.component.event.eventSharedBounds
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_dates
+import vlr.shared_ui.generated.resources.match_event_dates_tba
+import vlr.shared_ui.generated.resources.match_event_event
+import vlr.shared_ui.generated.resources.match_event_tbd
+import vlr.shared_ui.generated.resources.match_event_teams
+import vlr.shared_ui.generated.resources.match_event_view_at_vlr
 
 /**
  * Event detail ticket for title, status, logo, core metadata, and optional actions.
@@ -55,7 +63,7 @@ public fun EventDetailHeaderItem(
       favoriteReasons = event.favoriteReasons,
     ),
     subtitle = event.subtitle,
-    teams = event.teams.size.takeIf { it > 0 }?.toString() ?: "TBD",
+    teams = event.teams.size.takeIf { it > 0 }?.toString() ?: stringResource(Res.string.match_event_tbd),
     modifier = modifier,
     onOpenEvent = onOpenEvent,
     favoriteAction = favoriteAction,
@@ -66,10 +74,7 @@ public fun EventDetailHeaderItem(
  * Immediate event identity shown while the full detail record is loading.
  */
 @Composable
-public fun EventDetailPreviewHeaderItem(
-  event: EventPreview,
-  modifier: Modifier = Modifier,
-) {
+public fun EventDetailPreviewHeaderItem(event: EventPreview, modifier: Modifier = Modifier) {
   EventDetailHeaderContent(event = event, modifier = modifier)
 }
 
@@ -78,7 +83,7 @@ private fun EventDetailHeaderContent(
   event: EventPreview,
   modifier: Modifier = Modifier,
   subtitle: String = "",
-  teams: String = "TBD",
+  teams: String = stringResource(Res.string.match_event_tbd),
   onOpenEvent: (() -> Unit)? = null,
   favoriteAction: (@Composable () -> Unit)? = null,
 ) {
@@ -97,7 +102,7 @@ private fun EventDetailHeaderContent(
             horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
           ) {
             Text(
-              event.region.ifBlank { "Event" }.uppercase(),
+              event.region.ifBlank { stringResource(Res.string.match_event_event) }.uppercase(),
               modifier = Modifier.weight(1f),
               style = Prism.typography.bodySmall,
               color = Prism.color.contentSecondary,
@@ -116,7 +121,7 @@ private fun EventDetailHeaderContent(
             horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
           ) {
             Text(
-              text = event.prize.eventHeroPrizeStat().ifBlank { "TBD" },
+              text = event.prize.eventHeroPrizeStat().ifBlank { stringResource(Res.string.match_event_tbd) },
               modifier = Modifier.weight(1f).eventSharedBounds(event.id, EventSharedContent.Prize),
               style = Prism.typography.bodySmall,
               color = Prism.color.contentPrimary,
@@ -130,15 +135,26 @@ private fun EventDetailHeaderContent(
       stub = {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
           Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
-            Text("DATES", style = Prism.typography.overline, color = Prism.color.contentSecondary)
             Text(
-              text = event.dates.ifBlank { "Dates to be announced" },
+              stringResource(Res.string.match_event_dates),
+              style = Prism.typography.overline,
+              color = Prism.color.contentSecondary,
+            )
+            Text(
+              text = event.dates.ifBlank { stringResource(Res.string.match_event_dates_tba) },
               modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Dates),
               style = Prism.typography.bodySmall,
             )
           }
-          Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
-            Text("TEAMS", style = Prism.typography.overline, color = Prism.color.contentSecondary)
+          Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+          ) {
+            Text(
+              stringResource(Res.string.match_event_teams),
+              style = Prism.typography.overline,
+              color = Prism.color.contentSecondary,
+            )
             Text(teams, style = Prism.typography.bodySmall)
           }
         }
@@ -151,7 +167,7 @@ private fun EventDetailHeaderContent(
             modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
             style = PrismButtonStyle.Primary,
           ) {
-            Text("View at VLR")
+            Text(stringResource(Res.string.match_event_view_at_vlr))
           }
         }
       },

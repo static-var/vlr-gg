@@ -23,6 +23,19 @@ import androidx.compose.ui.semantics.semantics
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.prism.Prism
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_about.generated.resources.Res
+import vlr.feature_about.generated.resources.cancel
+import vlr.feature_about.generated.resources.close
+import vlr.feature_about.generated.resources.done
+import vlr.feature_about.generated.resources.feedback_character_count
+import vlr.feature_about.generated.resources.feedback_queued
+import vlr.feature_about.generated.resources.feedback_queued_description
+import vlr.feature_about.generated.resources.feedback_unavailable
+import vlr.feature_about.generated.resources.send
+import vlr.feature_about.generated.resources.send_feedback
+import vlr.feature_about.generated.resources.tell_us_what_happened_or_what_you_d_change
+import vlr.feature_about.generated.resources.your_message
 
 private const val FeedbackMessageLimit: Int = 2_000
 
@@ -39,24 +52,24 @@ internal fun AboutFeedbackDialog(onDismiss: () -> Unit, onSubmit: (String) -> Bo
     textContentColor = Prism.color.bodyColor,
     shape = Prism.shapes.large,
     title = {
-      Text(text = if (queued) "Feedback queued" else "Send feedback", style = Prism.typography.sectionTitle)
+      Text(text = if (queued) stringResource(Res.string.feedback_queued) else stringResource(Res.string.send_feedback), style = Prism.typography.sectionTitle)
     },
     text = {
       Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
         if (queued) {
           Text(
-            text = "Thanks for helping improve Val Esports. Your message will be sent when a connection is available.",
+            text = stringResource(Res.string.feedback_queued_description),
             style = Prism.typography.bodyLarge,
             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
           )
         } else {
-          Text(text = "Tell us what happened or what you'd change.", style = Prism.typography.bodyLarge)
+          Text(text = stringResource(Res.string.tell_us_what_happened_or_what_you_d_change), style = Prism.typography.bodyLarge)
           OutlinedTextField(
             value = message,
             onValueChange = { message = it.take(FeedbackMessageLimit) },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Your message") },
-            supportingText = { Text("${message.length} / $FeedbackMessageLimit") },
+            label = { Text(stringResource(Res.string.your_message)) },
+            supportingText = { Text(stringResource(Res.string.feedback_character_count, message.length, FeedbackMessageLimit)) },
             textStyle = Prism.typography.bodyLarge,
             minLines = 3,
             maxLines = 6,
@@ -76,7 +89,7 @@ internal fun AboutFeedbackDialog(onDismiss: () -> Unit, onSubmit: (String) -> Bo
           )
           if (unavailable) {
             Text(
-              text = "Feedback is unavailable in this build. You can use Report an issue on the About page instead.",
+              text = stringResource(Res.string.feedback_unavailable),
               style = Prism.typography.bodySmall,
               modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
             )
@@ -86,7 +99,7 @@ internal fun AboutFeedbackDialog(onDismiss: () -> Unit, onSubmit: (String) -> Bo
     },
     confirmButton = {
       if (queued) {
-        PrismButton(onClick = onDismiss) { Text("Done") }
+        PrismButton(onClick = onDismiss) { Text(stringResource(Res.string.done)) }
       } else {
         PrismButton(
           onClick = {
@@ -94,13 +107,13 @@ internal fun AboutFeedbackDialog(onDismiss: () -> Unit, onSubmit: (String) -> Bo
             unavailable = !queued
           },
           enabled = message.isNotBlank() && !unavailable,
-        ) { Text("Send") }
+        ) { Text(stringResource(Res.string.send)) }
       }
     },
     dismissButton = {
       if (!queued) {
         PrismButton(onClick = onDismiss, style = PrismButtonStyle.Tertiary) {
-          Text(if (unavailable) "Close" else "Cancel")
+          Text(if (unavailable) stringResource(Res.string.close) else stringResource(Res.string.cancel))
         }
       }
     },

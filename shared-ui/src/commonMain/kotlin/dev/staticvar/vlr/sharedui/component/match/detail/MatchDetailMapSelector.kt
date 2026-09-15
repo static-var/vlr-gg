@@ -10,6 +10,10 @@ import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.component.dropdown.PrismDropdown
 import dev.staticvar.designsystem.component.dropdown.PrismDropdownOption
 import dev.staticvar.vlr.domain.model.MapData
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_group
+import vlr.shared_ui.generated.resources.match_event_map_upper
 
 /**
  * Dropdown selector for match detail map breakdowns.
@@ -26,12 +30,19 @@ public fun MatchDetailMapSelector(
   enabled: Boolean = true,
   onMenuExpandedChange: (Boolean) -> Unit = {},
 ) {
-  val mapOptions = remember(maps) { maps.matchDetailMapOptions() }
+  val labels = matchFormattingLabels()
+  val mapOptions = remember(maps, labels) { maps.matchDetailMapOptions(labels) }
   val dropdownOptions = remember(mapOptions) {
     mapOptions.map { option -> PrismDropdownOption(id = option.id, label = option.label) }
   }
   val selectedOptionId = maps.resolveSelectedMapOptionId(selectedMapIndex)
-  val label = if (selectedOptionId == AllMapsOptionId) "GROUP" else "MAP"
+  val label = if (selectedOptionId ==
+    AllMapsOptionId
+  ) {
+    stringResource(Res.string.match_event_group)
+  } else {
+    stringResource(Res.string.match_event_map_upper)
+  }
 
   PrismDropdown(
     options = dropdownOptions,

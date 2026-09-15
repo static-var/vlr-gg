@@ -45,6 +45,26 @@ import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_team.generated.resources.Res
+import vlr.feature_team.generated.resources.add_team_favorite
+import vlr.feature_team.generated.resources.completed
+import vlr.feature_team.generated.resources.favorite_player
+import vlr.feature_team.generated.resources.loading_team
+import vlr.feature_team.generated.resources.no_completed_matches
+import vlr.feature_team.generated.resources.no_team_details
+import vlr.feature_team.generated.resources.no_team_results
+import vlr.feature_team.generated.resources.no_upcoming_matches
+import vlr.feature_team.generated.resources.no_upcoming_team_fixtures
+import vlr.feature_team.generated.resources.players
+import vlr.feature_team.generated.resources.remove_team_favorite
+import vlr.feature_team.generated.resources.roster
+import vlr.feature_team.generated.resources.team_details
+import vlr.feature_team.generated.resources.team_not_published
+import vlr.feature_team.generated.resources.team_subtitle
+import vlr.feature_team.generated.resources.unranked
+import vlr.feature_team.generated.resources.upcoming
+import vlr.feature_team.generated.resources.updating_favorite
 
 @Composable
 public fun TeamDetailsRoute(
@@ -95,7 +115,7 @@ internal fun TeamDetailsScreen(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
     TeamDetailsChrome(
-      title = team?.name ?: "Team details",
+      title = team?.name ?: stringResource(Res.string.team_details),
       isFavorite = team?.isFavorite,
       isUpdatingFavorite = uiState.isUpdatingFavorite,
       hasContent = team != null,
@@ -108,13 +128,13 @@ internal fun TeamDetailsScreen(
     )
 
     uiState.favoriteErrorMessage?.let { message ->
-      PrismStateMessage(text = message)
+      PrismStateMessage(text = stringResource(message))
     }
 
     when {
       (!isOnline || uiState.isLoading || uiState.isRefreshing) && team == null ->
         SharedScreenLoading(
-          label = "Loading team",
+          label = stringResource(Res.string.loading_team),
           modifier = Modifier.fillMaxSize(),
         )
 
@@ -130,8 +150,8 @@ internal fun TeamDetailsScreen(
       team == null ->
         SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveMatches,
-          title = "No team details yet",
-          message = "This team profile has not been published.",
+          title = stringResource(Res.string.no_team_details),
+          message = stringResource(Res.string.team_not_published),
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
 
@@ -179,7 +199,7 @@ private fun TeamDetailsChrome(
   Column {
     PrismScreenTitleBar(
       title = title,
-      subtitle = "Roster, results and recent form",
+      subtitle = stringResource(Res.string.team_subtitle),
       onBackPress = onBack,
       actions = {
         if (isFavorite != null) {
@@ -188,11 +208,11 @@ private fun TeamDetailsChrome(
             size = PrismFavoriteIconSize.Large,
             contentDescription =
               if (isUpdatingFavorite) {
-                "Updating favorite"
+                stringResource(Res.string.updating_favorite)
               } else if (isFavorite) {
-                "Remove team from favorites"
+                stringResource(Res.string.remove_team_favorite)
               } else {
-                "Add team to favorites"
+                stringResource(Res.string.add_team_favorite)
               },
             modifier =
               Modifier.clickable(
@@ -243,7 +263,17 @@ private fun TeamDetailsLoadedContent(
     item(key = "match-tabs") {
       PrismTabs(
         modifier = Modifier.padding(bottom = Prism.dimens.spacingS),
-        tabs = TeamMatchesSection.entries.map { PrismTab(id = it.name, label = it.name) },
+        tabs = TeamMatchesSection.entries.map { tab ->
+          PrismTab(
+            id = tab.name,
+            label = stringResource(
+              when (tab) {
+                TeamMatchesSection.Upcoming -> Res.string.upcoming
+                TeamMatchesSection.Completed -> Res.string.completed
+              },
+            ),
+          )
+        },
         selectedTabId = section.name,
         onTabSelected = { onSectionSelected(TeamMatchesSection.valueOf(it.id)) },
       )
@@ -283,7 +313,7 @@ private fun TeamSummaryCard(name: String, metadata: String, rank: Int) {
       color = Prism.color.labelColor,
     )
     SpoilerScore(
-      text = if (rank > 0) "#$rank" else "Unranked",
+      text = if (rank > 0) "#$rank" else stringResource(Res.string.unranked),
       modifier = Modifier.padding(top = Prism.dimens.spacingXs),
       style = Prism.typography.label,
       color = Prism.color.bodyColor,
@@ -298,7 +328,7 @@ private fun LazyListScope.teamRosterItems(
   if (roster.isEmpty()) return
 
   item(key = "roster-title") {
-    PrismSectionTitle(title = "Roster", preLabel = "players")
+    PrismSectionTitle(title = stringResource(Res.string.roster), preLabel = stringResource(Res.string.players))
   }
   items(roster, key = { "player:${it.id}" }) { player ->
     TeamRosterItem(player = player, onPlayerSelected = onPlayerSelected)
@@ -328,7 +358,7 @@ private fun TeamRosterItem(player: TeamPlayer, onPlayerSelected: (String) -> Uni
           selected = true,
           size = PrismFavoriteIconSize.Small,
           style = PrismFavoriteIconStyle.Bare,
-          contentDescription = "Favorite player",
+          contentDescription = stringResource(Res.string.favorite_player),
         )
       }
     }
@@ -355,8 +385,8 @@ private fun LazyListScope.teamUpcomingMatchItems(
       item {
         SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveMatches,
-          title = "No upcoming matches",
-          message = "No upcoming fixtures have been published for this team.",
+          title = stringResource(Res.string.no_upcoming_matches),
+          message = stringResource(Res.string.no_upcoming_team_fixtures),
           compact = true,
         )
       }
@@ -416,8 +446,8 @@ private fun LazyListScope.teamCompletedMatchItems(
       item {
         SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveMatches,
-          title = "No completed matches",
-          message = "No match results have been published for this team.",
+          title = stringResource(Res.string.no_completed_matches),
+          message = stringResource(Res.string.no_team_results),
           compact = true,
         )
       }

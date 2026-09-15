@@ -15,9 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
-import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
-import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -28,20 +25,34 @@ import androidx.compose.ui.platform.LocalUriHandler
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
+import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.loader.PrismLoaderSize
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.domain.model.NewsArticle
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
-import dev.staticvar.designsystem.component.card.cardMascotViewport
-import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.vlr.domain.model.NewsArticle
+import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.news.detail.ArticleVideoPlaybackState
 import dev.staticvar.vlr.sharedui.component.news.detail.NewsDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.news.detail.newsDetailStoryItems
+import dev.staticvar.vlr.sharedui.component.news.detail.newsFormattingLabels
 import dev.staticvar.vlr.sharedui.component.news.detail.rememberArticleVideoPlaybackState
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_news.generated.resources.Res
+import vlr.feature_news.generated.resources.article_text_unpublished
+import vlr.feature_news.generated.resources.article_unpublished
+import vlr.feature_news.generated.resources.loading_article
+import vlr.feature_news.generated.resources.news_title
+import vlr.feature_news.generated.resources.no_article_text_yet
+import vlr.feature_news.generated.resources.no_article_yet
+import vlr.feature_news.generated.resources.read_on_vlr
+import vlr.feature_news.generated.resources.scroll_to_top
 
 @Composable
 public fun NewsArticleRoute(
@@ -83,7 +94,7 @@ internal fun NewsArticleScreen(
   ) {
     Column {
       PrismScreenTitleBar(
-        title = "News",
+        title = stringResource(Res.string.news_title),
         onBackPress = onBack.takeIf { showBackAction },
         actions = {
           if (showScrollToTop) {
@@ -91,7 +102,7 @@ internal fun NewsArticleScreen(
               onClick = { coroutineScope.launch { scrollState.animateScrollToItem(0) } },
               style = PrismButtonStyle.Tertiary,
             ) {
-              Text("Top")
+              Text(stringResource(Res.string.scroll_to_top))
             }
           }
           SharedRefreshButton(
@@ -116,7 +127,7 @@ internal fun NewsArticleScreen(
       (!LocalIsOnline.current || uiState.isLoading || uiState.isRefreshing) && article == null -> {
         NewsArticleLoading(
           modifier = Modifier.fillMaxWidth().weight(1f),
-          label = "Loading article",
+          label = stringResource(Res.string.loading_article),
         )
       }
 
@@ -133,8 +144,8 @@ internal fun NewsArticleScreen(
       article == null -> {
         SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveEvents,
-          title = "No article yet",
-          message = "This story has not been published.",
+          title = stringResource(Res.string.no_article_yet),
+          message = stringResource(Res.string.article_unpublished),
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
       }
@@ -162,6 +173,7 @@ private fun LoadedNewsArticle(
   modifier: Modifier = Modifier,
 ) {
   val uriHandler = LocalUriHandler.current
+  val labels = newsFormattingLabels()
   LazyColumn(
     modifier = modifier,
     state = scrollState,
@@ -174,20 +186,20 @@ private fun LoadedNewsArticle(
       item(key = "article-body-state") {
         SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveEvents,
-          title = "No article text yet",
-          message = "The story text has not been published.",
+          title = stringResource(Res.string.no_article_text_yet),
+          message = stringResource(Res.string.article_text_unpublished),
           compact = true,
         )
       }
     } else if (article.contentHtml.isNotBlank() || article.blocks.isNotEmpty()) {
-      newsDetailStoryItems(article = article, playback = playback)
+      newsDetailStoryItems(article = article, playback = playback, labels = labels)
     }
     item(key = "source") {
       PrismButton(
         onClick = { uriHandler.openUri(article.url) },
         style = PrismButtonStyle.Tertiary,
       ) {
-        Text("Read on VLR.gg")
+        Text(stringResource(Res.string.read_on_vlr))
       }
     }
     item(key = "navigation-bar-spacer") {

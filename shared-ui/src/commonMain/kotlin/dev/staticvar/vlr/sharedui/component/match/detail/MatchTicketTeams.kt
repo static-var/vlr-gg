@@ -30,6 +30,9 @@ import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
 import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerContent
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_tbd
 
 @Composable
 internal fun MatchTicketTeams(matchId: String, teams: List<TeamPreview>, onTeamSelected: ((String) -> Unit)?) {
@@ -83,16 +86,22 @@ private fun MatchTicketTeam(
   ) {
     SharedNetworkIcon(
       imageUrl = team?.img,
-      contentDescription = team?.name ?: "TBD",
+      contentDescription = team?.name ?: stringResource(Res.string.match_event_tbd),
       size = PrismIconSize.Size64,
       style = PrismIconStyle.Plain,
       tint = PrismIconTint.None,
     )
     Text(
-      text = team?.name?.takeIf(String::isNotBlank) ?: "TBD",
+      text = team?.name?.takeIf(String::isNotBlank) ?: stringResource(Res.string.match_event_tbd),
       modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.TeamName, team?.id),
       style = Prism.typography.bodyLarge,
-      color = if (team?.isWinner == true && !LocalSpoilerMode.current.enabled) Prism.color.accent else Prism.color.contentPrimary,
+      color = if (team?.isWinner == true &&
+        !LocalSpoilerMode.current.enabled
+      ) {
+        Prism.color.accent
+      } else {
+        Prism.color.contentPrimary
+      },
       textAlign = TextAlign.Center,
       maxLines = 2,
       overflow = TextOverflow.Ellipsis,

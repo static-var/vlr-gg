@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
-import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
-import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,10 +28,24 @@ import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.RegionalRanking
 import dev.staticvar.vlr.domain.model.TeamRanking
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
+import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
+import org.jetbrains.compose.resources.stringResource
+import vlr.feature_rankings.generated.resources.Res
+import vlr.feature_rankings.generated.resources.favorite_team
+import vlr.feature_rankings.generated.resources.loading_rankings
+import vlr.feature_rankings.generated.resources.no_rankings_yet
+import vlr.feature_rankings.generated.resources.ranking_points
+import vlr.feature_rankings.generated.resources.rankings_subtitle
+import vlr.feature_rankings.generated.resources.rankings_title
+import vlr.feature_rankings.generated.resources.region_rankings_unpublished
+import vlr.feature_rankings.generated.resources.regional_rankings_unpublished
+import vlr.feature_rankings.generated.resources.top_teams_in_region
 
 @Composable
 public fun RankingsRoute(
@@ -76,8 +87,8 @@ internal fun RankingsScreen(
   ) {
     Column {
       PrismScreenTitleBar(
-        title = "Ranking",
-        subtitle = "The top teams in every region",
+        title = stringResource(Res.string.rankings_title),
+        subtitle = stringResource(Res.string.rankings_subtitle),
         actions = {
           SharedRefreshButton(
             isLoading = uiState.isLoading,
@@ -107,7 +118,7 @@ internal fun RankingsScreen(
 
     when {
       (!isOnline || uiState.isLoading || uiState.isRefreshing) && uiState.regions.isEmpty() -> {
-        SharedScreenLoading(label = "Loading rankings", modifier = Modifier.fillMaxSize())
+        SharedScreenLoading(label = stringResource(Res.string.loading_rankings), modifier = Modifier.fillMaxSize())
       }
 
       uiState.errorMessage != null && uiState.regions.isEmpty() -> {
@@ -124,9 +135,9 @@ internal fun RankingsScreen(
         if ((isOnline || uiState.regions.isEmpty()) && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null) {
           SharedEmptyState(
             artwork = EmptyStateArtwork.NoLiveMatches,
-            title = "No rankings yet",
-            message = selectedRanking?.let { "Team rankings for ${it.region} have not been published." }
-              ?: "Regional team rankings have not been published.",
+            title = stringResource(Res.string.no_rankings_yet),
+            message = selectedRanking?.let { stringResource(Res.string.region_rankings_unpublished, it.region) }
+              ?: stringResource(Res.string.regional_rankings_unpublished),
             modifier = Modifier.fillMaxWidth().weight(1f),
           )
         }
@@ -156,7 +167,7 @@ private fun RankingsContent(
     if (selectedRanking.teams.isNotEmpty()) {
       item {
         Text(
-          text = "Top ${selectedRanking.teams.size} • ${selectedRanking.region}",
+          text = stringResource(Res.string.top_teams_in_region, selectedRanking.teams.size, selectedRanking.region),
           style = Prism.typography.label,
           color = Prism.color.labelColor,
         )
@@ -199,7 +210,7 @@ private fun RankingTeamItem(
           selected = true,
           size = PrismFavoriteIconSize.Small,
           style = PrismFavoriteIconStyle.Bare,
-          contentDescription = "Favorite team",
+          contentDescription = stringResource(Res.string.favorite_team),
         )
       }
     }
@@ -210,7 +221,7 @@ private fun RankingTeamItem(
     ) {
       Text(text = "${team.country} •", style = Prism.typography.bodySmall, color = Prism.color.labelColor)
       Text(
-        text = "${team.points} pts",
+        text = stringResource(Res.string.ranking_points, team.points),
         style = Prism.typography.bodySmall,
         color = Prism.color.labelColor,
       )

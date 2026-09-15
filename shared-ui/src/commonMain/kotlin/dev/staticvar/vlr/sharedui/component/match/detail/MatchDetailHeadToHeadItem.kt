@@ -36,6 +36,17 @@ import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_head_to_head
+import vlr.shared_ui.generated.resources.match_event_head_to_head_description
+import vlr.shared_ui.generated.resources.match_event_history
+import vlr.shared_ui.generated.resources.match_event_matches_count
+import vlr.shared_ui.generated.resources.match_event_played_count
+import vlr.shared_ui.generated.resources.match_event_scores_hidden
+import vlr.shared_ui.generated.resources.match_event_tbd
+import vlr.shared_ui.generated.resources.match_event_wins_count
 
 /**
  * Head-to-head win distribution and previous encounter rows.
@@ -50,21 +61,23 @@ public fun MatchDetailHeadToHeadItem(
   if (encounters.isEmpty()) return
 
   val spoilersHidden = LocalSpoilerMode.current.enabled
-  val summary = if (spoilersHidden) null else encounters.matchDetailHeadToHeadSummary()
+  val labels = matchFormattingLabels()
+  val summary = if (spoilersHidden) null else encounters.matchDetailHeadToHeadSummary(labels)
 
   Column(
     modifier = modifier.fillMaxWidth(),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     PrismSectionTitle(
-      title = "Head to head",
-      preLabel = "history",
+      title = stringResource(Res.string.match_event_head_to_head),
+      preLabel = stringResource(Res.string.match_event_history),
       trailing = {
         PrismTag(
           text = if (spoilersHidden) {
-            "Scores hidden"
+            stringResource(Res.string.match_event_scores_hidden)
           } else {
-            summary?.matchDetailTagLabel() ?: "${encounters.size} matches"
+            summary?.let { it.matchDetailTagLabel(matchFormattingLabels(matchCount = it.totalPlayed)) }
+              ?: pluralStringResource(Res.plurals.match_event_matches_count, encounters.size, encounters.size)
           },
           style = PrismTagStyle.Neutral,
         )
@@ -85,10 +98,17 @@ public fun MatchDetailHeadToHeadItem(
 private fun MatchDetailHeadToHeadSummaryStrip(summary: MatchDetailHeadToHeadSummary) {
   val firstColor = Prism.color.accent
   val secondColor = Prism.color.labelColor
+  val summaryDescription = stringResource(
+    Res.string.match_event_head_to_head_description,
+    summary.firstTeamName,
+    pluralStringResource(Res.plurals.match_event_wins_count, summary.firstTeamWins, summary.firstTeamWins),
+    summary.secondTeamName,
+    pluralStringResource(Res.plurals.match_event_wins_count, summary.secondTeamWins, summary.secondTeamWins),
+    summary.totalPlayed,
+  )
   PrismSurface(
     modifier = Modifier.fillMaxWidth().clearAndSetSemantics {
-      contentDescription = "${summary.firstTeamName}: ${summary.firstTeamWins} wins. " +
-        "${summary.secondTeamName}: ${summary.secondTeamWins} wins. ${summary.totalPlayed} played."
+      contentDescription = summaryDescription
     },
     color = Prism.color.surfaceVariant,
     border = BorderStroke(width = Prism.dimens.strokeDefault, color = Prism.color.stroke),
@@ -124,7 +144,7 @@ private fun MatchDetailHeadToHeadSummaryStrip(summary: MatchDetailHeadToHeadSumm
         }
       }
       Text(
-        text = "${summary.totalPlayed} played",
+        text = stringResource(Res.string.match_event_played_count, summary.totalPlayed),
         modifier = Modifier.fillMaxWidth(),
         style = Prism.typography.caption,
         color = Prism.color.labelColor,
@@ -237,7 +257,8 @@ private fun HeadToHeadTeamText(
   textAlign: TextAlign = TextAlign.Start,
 ) {
   Text(
-    text = team?.name?.ifBlank { "TBD" } ?: "TBD",
+    text =
+    team?.name?.ifBlank { stringResource(Res.string.match_event_tbd) } ?: stringResource(Res.string.match_event_tbd),
     modifier = modifier,
     style = Prism.typography.cardTitle,
     color = if (!spoilersHidden && team?.isWinner == true) Prism.color.accent else Prism.color.labelColor,

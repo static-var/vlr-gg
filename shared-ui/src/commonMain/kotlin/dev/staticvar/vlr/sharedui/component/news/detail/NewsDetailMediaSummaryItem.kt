@@ -21,20 +21,27 @@ import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsArticleMedia
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.news_article_assets
+import vlr.shared_ui.generated.resources.news_assets
+import vlr.shared_ui.generated.resources.news_assets_description
+import vlr.shared_ui.generated.resources.news_media
 
 /**
  * Compact media availability summary for article detail pages.
  */
 @Composable
 public fun NewsDetailMediaSummaryItem(media: NewsArticleMedia, modifier: Modifier = Modifier) {
-  val labels = remember(media) { media.newsDetailMediaSummaryLabels() }
+  val formattingLabels = newsMediaLabels(media)
+  val labels = remember(media, formattingLabels) { media.newsDetailMediaSummaryLabels(formattingLabels) }
   if (labels.isEmpty()) return
 
   Column(
     modifier = modifier.fillMaxWidth(),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
-    PrismSectionTitle(title = "Media", preLabel = "assets")
+    PrismSectionTitle(title = stringResource(Res.string.news_media), preLabel = stringResource(Res.string.news_assets))
     PrismSurface(
       modifier = Modifier.fillMaxWidth(),
       color = Prism.color.surfaceVariant,
@@ -49,12 +56,12 @@ public fun NewsDetailMediaSummaryItem(media: NewsArticleMedia, modifier: Modifie
       ) {
         Column(modifier = Modifier.weight(1f)) {
           Text(
-            text = "Article assets",
+            text = stringResource(Res.string.news_article_assets),
             style = Prism.typography.cardTitle,
             color = Prism.color.titleColor,
           )
           Text(
-            text = "Images, videos, and references detected in the article payload.",
+            text = stringResource(Res.string.news_assets_description),
             modifier = Modifier.padding(top = Prism.dimens.spacingXs),
             style = Prism.typography.caption,
             color = Prism.color.labelColor,

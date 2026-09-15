@@ -46,11 +46,20 @@ import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.NewsArticle
+import org.jetbrains.compose.resources.stringResource
+import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.news_article_image
+import vlr.shared_ui.generated.resources.news_open_article_image
+import vlr.shared_ui.generated.resources.news_open_full_image
 
 /** Adds individually laid out article blocks in document order. */
-public fun LazyListScope.newsDetailStoryItems(article: NewsArticle, playback: ArticleVideoPlaybackState) {
+public fun LazyListScope.newsDetailStoryItems(
+  article: NewsArticle,
+  playback: ArticleVideoPlaybackState,
+  labels: NewsFormattingLabels,
+) {
   itemsIndexed(
-    items = newsDetailContentBlocks(article),
+    items = newsDetailContentBlocks(article, labels),
     key = { index, _ -> "article-${article.id}-$index" },
     contentType = { _, block -> block::class.simpleName },
   ) { index, block ->
@@ -60,7 +69,8 @@ public fun LazyListScope.newsDetailStoryItems(article: NewsArticle, playback: Ar
 
 @Composable
 public fun NewsDetailStoryItem(article: NewsArticle, modifier: Modifier = Modifier) {
-  val blocks = remember(article) { newsDetailContentBlocks(article) }
+  val labels = newsFormattingLabels()
+  val blocks = remember(article, labels) { newsDetailContentBlocks(article, labels) }
   val playback = rememberArticleVideoPlaybackState(article.id)
   Column(
     modifier = modifier.fillMaxWidth(),
@@ -177,19 +187,21 @@ private fun ArticleImage(url: String, alt: String?) {
   val height = loadedImage?.height ?: 9
   val ratio = if (width > 0 && height > 0) width.toFloat() / height else 16f / 9f
   if (state is AsyncImagePainter.State.Error) {
-    ArticleMediaLink(url, "Open article image")
+    ArticleMediaLink(url, stringResource(Res.string.news_open_article_image))
   } else {
     Box(
       modifier = Modifier
         .fillMaxWidth()
         .aspectRatio(ratio)
         .background(Prism.color.surfaceVariant)
-        .clickable(role = Role.Button, onClickLabel = "Open full image") { uriHandler.openUri(url) },
+        .clickable(role = Role.Button, onClickLabel = stringResource(Res.string.news_open_full_image)) {
+          uriHandler.openUri(url)
+        },
       contentAlignment = Alignment.Center,
     ) {
       Image(
         painter = painter,
-        contentDescription = alt?.takeIf { it.isNotBlank() } ?: "Article image",
+        contentDescription = alt?.takeIf { it.isNotBlank() } ?: stringResource(Res.string.news_article_image),
         modifier = Modifier.fillMaxSize(),
         contentScale = ContentScale.Fit,
       )
