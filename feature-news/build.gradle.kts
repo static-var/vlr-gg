@@ -21,6 +21,7 @@ kotlin {
     namespace = "dev.staticvar.vlr.featurenews"
     compileSdk = 37
     minSdk = 24
+    androidResources.enable = true
   }
 
   val fastIos = project.findProperty("fastIos") == "true"

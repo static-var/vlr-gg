@@ -16,6 +16,7 @@ kotlin {
     namespace = "dev.staticvar.vlr.core"
     compileSdk = 37
     minSdk = 24
+    androidResources.enable = true
     withHostTestBuilder {}
   }
 

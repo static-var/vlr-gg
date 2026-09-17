@@ -2,6 +2,12 @@ name: Internal Play store release
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the signed bundle to Play beta
+        type: boolean
+        required: false
+        default: true
 
 permissions:
   contents: write
@@ -62,6 +68,9 @@ jobs:
           test -s "$artifact"
           echo "APK=$artifact" >> "$GITHUB_ENV"
 
+      - name: Verify packaged Compose resources
+        run: python3 scripts/check-compose-resources.py "$APK"
+
       - name: Preserve signed bundle
         uses: actions/upload-artifact@v7
         with:
@@ -70,6 +79,7 @@ jobs:
           if-no-files-found: error
 
       - name: Publish to Play Store
+        if: inputs.publish
         uses: r0adkll/upload-google-play@v1.1.5
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
@@ -80,6 +90,7 @@ jobs:
           whatsNewDirectory: distribution/whatsnew
 
       - name: Push tag
+        if: inputs.publish
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
         with:
@@ -89,6 +100,7 @@ jobs:
           default_prerelease_bump: false
 
       - name: Create a GitHub release
+        if: inputs.publish
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
@@ -97,6 +109,7 @@ jobs:
           artifacts: ${{ env.APK }}
 
       - name: Send Telegram release
+        if: inputs.publish
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.CHAT_ID }}
