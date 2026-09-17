@@ -75,10 +75,9 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: dev.staticvar.vlr
           releaseFiles: ${{ env.APK }}
-          track: beta
+          tracks: beta
           inAppUpdatePriority: 5
           whatsNewDirectory: distribution/whatsnew
-          changesNotSentForReview: true
 
       - name: Push tag
         id: tag_version
