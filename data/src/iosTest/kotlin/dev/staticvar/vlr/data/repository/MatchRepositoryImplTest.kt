@@ -7,6 +7,10 @@ package dev.staticvar.vlr.data.repository
 import app.cash.sqldelight.driver.native.NativeSqliteDriver
 import app.cash.sqldelight.driver.native.inMemoryDriver
 import app.cash.turbine.test
+import com.russhwolf.settings.MapSettings
+import dev.staticvar.vlr.data.cache.MatchVetoStore
+import dev.staticvar.vlr.domain.model.MatchVeto
+import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchDetails
@@ -24,6 +28,9 @@ import dev.staticvar.vlr.remotesource.match.PreviousEncounterDto
 import dev.staticvar.vlr.remotesource.match.RoundInfoDto
 import dev.staticvar.vlr.remotesource.match.TeamDto
 import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
+import dev.staticvar.vlr.remotesource.match.VetoDto
+import dev.staticvar.vlr.remotesource.common.VetoAction as RemoteVetoAction
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.first
@@ -47,6 +54,9 @@ class MatchRepositoryImplTest {
   private lateinit var database: VlrDatabase
   private lateinit var dataSource: FakeMatchDataSource
   private lateinit var repository: MatchRepositoryImpl
+  private lateinit var vetoSettings: MapSettings
+  private lateinit var vetoStore: MatchVetoStore
+  private val json = Json { ignoreUnknownKeys = true }
 
   @BeforeTest
   fun setup() {
@@ -55,10 +65,13 @@ class MatchRepositoryImplTest {
     driver.execute(null, "PRAGMA foreign_keys = ON", 0)
     database = VlrDatabase(driver)
     dataSource = FakeMatchDataSource()
+    vetoSettings = MapSettings()
+    vetoStore = MatchVetoStore(vetoSettings, json)
     repository = MatchRepositoryImpl(
       matchDataSource = dataSource,
       database = database,
       dispatchers = dispatcherProvider,
+      vetoStore = vetoStore,
     )
   }
 
@@ -405,6 +418,92 @@ class MatchRepositoryImplTest {
     database.playersQueries.removeFavoritePlayer("p1")
     database.eventsQueries.removeFavoriteEvent("event1")
     assertFavoriteSources()
+  }
+
+  @Test
+  fun refreshMatchDetailsPersistsStructuredVetoAcrossRepositoryRecreation() = runTest(dispatcher) {
+    val rawBans = listOf("Alpha ban Bind", "Beta pick Haven", "Ascent remains", "Map pool pending")
+    dataSource.detailResults["match1"] = Result.success(
+      MatchDetailsDto(
+        bans = rawBans,
+        veto = listOf(
+          VetoDto(team = "Alpha", action = RemoteVetoAction.BAN, map = "Bind"),
+          VetoDto(team = "Beta", action = RemoteVetoAction.PICK, map = "Haven"),
+          VetoDto(action = RemoteVetoAction.REMAINS, map = "Ascent"),
+          VetoDto(action = RemoteVetoAction.UNKNOWN, map = "Map pool pending"),
+        ),
+      ),
+    )
+    val expected = listOf(
+      MatchVeto(team = "Alpha", action = VetoAction.BAN, map = "Bind"),
+      MatchVeto(team = "Beta", action = VetoAction.PICK, map = "Haven"),
+      MatchVeto(team = null, action = VetoAction.REMAINS, map = "Ascent"),
+      MatchVeto(team = null, action = VetoAction.UNKNOWN, map = "Map pool pending"),
+    )
+
+    assertTrue(repository.refreshMatchDetails("match1").isSuccess)
+    assertEquals(expected, requireNotNull(repository.getMatchDetails("match1").first()).veto)
+
+    val restoredRepository = MatchRepositoryImpl(
+      matchDataSource = dataSource,
+      database = database,
+      dispatchers = dispatcherProvider,
+      vetoStore = MatchVetoStore(vetoSettings, json),
+    )
+    val restored = requireNotNull(restoredRepository.getMatchDetails("match1").first())
+    assertEquals(rawBans, restored.bans)
+    assertEquals(expected, restored.veto)
+
+    dataSource.detailResults["match1"] = Result.success(MatchDetailsDto(bans = listOf("New veto pending")))
+    assertTrue(restoredRepository.refreshMatchDetails("match1").isSuccess)
+    val refreshed = requireNotNull(restoredRepository.getMatchDetails("match1").first())
+    assertEquals(listOf("New veto pending"), refreshed.bans)
+    assertEquals(emptyList(), refreshed.veto)
+  }
+
+  @Test
+  fun changedRawBansDoNotExposeStaleStructuredVeto() = runTest(dispatcher) {
+    dataSource.detailResults["match1"] = Result.success(
+      MatchDetailsDto(
+        bans = listOf("Alpha ban Bind"),
+        veto = listOf(VetoDto(team = "Alpha", action = RemoteVetoAction.BAN, map = "Bind")),
+      ),
+    )
+    assertTrue(repository.refreshMatchDetails("match1").isSuccess)
+
+    repository.getMatchDetails("match1").map { details ->
+      requireNotNull(details).let { it.bans to it.veto }
+    }.distinctUntilChanged().test {
+      assertEquals(
+        listOf("Alpha ban Bind") to listOf(MatchVeto("Alpha", VetoAction.BAN, "Bind")),
+        awaitItem(),
+      )
+
+      database.transaction {
+        database.matchesQueries.deleteMatchBans("match1")
+        database.matchesQueries.insertMatchBan("match1", "map", "Beta pick Haven")
+      }
+
+      assertEquals(listOf("Beta pick Haven") to emptyList<MatchVeto>(), awaitItem())
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun matchDetailsEmitsVetoChangesWithoutDatabaseWrites() = runTest(dispatcher) {
+    val rawBans = listOf("Alpha ban Bind")
+    dataSource.detailResults["match1"] = Result.success(MatchDetailsDto(bans = rawBans))
+    assertTrue(repository.refreshMatchDetails("match1").isSuccess)
+
+    repository.getMatchDetails("match1").map { requireNotNull(it).veto }.distinctUntilChanged().test {
+      assertEquals(emptyList(), awaitItem())
+      val expected = listOf(MatchVeto("Alpha", VetoAction.BAN, "Bind"))
+
+      vetoStore.put("match1", rawBans, expected)
+
+      assertEquals(expected, awaitItem())
+      cancelAndIgnoreRemainingEvents()
+    }
   }
 
   private suspend fun prepareFavoriteMatch() {
