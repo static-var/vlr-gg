@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -52,6 +53,7 @@ public fun SharedNetworkIcon(
   tint: PrismIconTint = PrismIconTint.None,
   imageModifier: Modifier = Modifier,
   conditionalOutline: Boolean = true,
+  parentBackground: Color = Prism.color.background,
 ) {
   if (imageUrl.isNullOrBlank()) {
     SharedNetworkIconFallback(
@@ -88,7 +90,7 @@ public fun SharedNetworkIcon(
   val source = remember(image) { image?.takeIf { it.shareable }?.let(::LogoSource) }
   var pixelSize by remember { mutableStateOf(IntSize.Zero) }
   val radiusPx = with(LocalDensity.current) { 1.dp.toPx() }
-  val background = style.containerColor.compositeOver(Prism.color.background)
+  val background = style.containerColor.compositeOver(parentBackground)
   val treatmentRequest = remember(source, pixelSize, radiusPx, background, useConditionalOutline) {
     if (useConditionalOutline && source != null && pixelSize.width > 0 && pixelSize.height > 0) {
       LogoTreatmentRequest(source, pixelSize, radiusPx, background)

@@ -46,9 +46,10 @@ public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPr
     modifier = modifier,
     favoriteModifier = Modifier.eventSharedBounds(eventPreview.id, EventSharedContent.Favorite),
   ) {
+    val cardStyle = if (eventPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled
     PrismCard(
       modifier = Modifier.fillMaxWidth().eventSharedBounds(eventPreview.id, EventSharedContent.Card),
-      style = if (eventPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
+      style = cardStyle,
       onClick = onClick,
     ) {
       Row(
@@ -75,6 +76,7 @@ public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPr
           imageModifier = Modifier.eventLogoSharedElement(eventId = eventPreview.id),
           size = PrismIconSize.Large,
           style = PrismIconStyle.Plain,
+          parentBackground = cardStyle.containerColor,
           tint = PrismIconTint.None,
         )
         Column(modifier = Modifier.padding(start = Prism.dimens.spacingS)) {

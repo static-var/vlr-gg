@@ -96,6 +96,20 @@ class LogoBitmapRendererTest {
     assertFalse(analyzeLogoImage(tall).needsOutline(Color.Black))
   }
 
+  @Test fun evaluatesContrastAgainstTheArtworkBackground() {
+    val source = bitmapImage(64, 32) {
+      drawRect(
+        color = Color(0xFF4C4C4C),
+        topLeft = Offset(16f, 8f),
+        size = Size(32f, 16f),
+      )
+    }
+    val analysis = analyzeLogoImage(source)
+
+    assertFalse(analysis.needsOutline(Color(0xFF0A0A0A)))
+    assertTrue(analysis.needsOutline(Color(0xFF202020)))
+  }
+
   @Test fun rendersAspectFitArtworkInsideTheFullyPaddedBitmap() {
     val source = bitmapImage(40, 20) { drawRect(Color.Black) }
 
