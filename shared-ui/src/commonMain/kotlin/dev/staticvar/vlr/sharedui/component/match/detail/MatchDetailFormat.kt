@@ -6,6 +6,7 @@ package dev.staticvar.vlr.sharedui.component.match.detail
 
 import androidx.compose.runtime.Composable
 import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.domain.model.VetoAction
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.format_bestOf
@@ -35,6 +36,12 @@ private fun explicitBestOf(value: String): Int? = ExplicitBestOfRegex
   ?.takeIf(Int::isExplicitBestOfCount)
 
 private fun MatchDetails.completedVetoMapCount(): Int? {
+  if (veto.isNotEmpty()) {
+    if (veto.last().action != VetoAction.REMAINS) return null
+    return (veto.count { entry -> entry.action == VetoAction.PICK } + 1)
+      .takeIf(Int::isPlannedBestOfCount)
+  }
+
   val steps = bans.map(String::trim).filter(String::isNotEmpty)
   if (steps.lastOrNull()?.let(RemainsRegex::containsMatchIn) != true) return null
 

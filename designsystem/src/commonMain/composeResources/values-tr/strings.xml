@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="prism_refresh">Yenile</string>
+  <string name="prism_collapse_section">Bölümü daralt</string>
+  <string name="prism_expand_section">Bölümü genişlet</string>
+  <string name="prism_favorite">Favori</string>
+  <string name="prism_not_favorite">Favori değil</string>
+  <string name="prism_back">Geri</string>
+  <string name="prism_loading">YÜKLENİYOR</string>
+  <string name="prism_loader_sync">EŞİTLE</string>
+  <string name="prism_loader_fetch">GETİR</string>
+  <string name="prism_loader_parse">İŞLE</string>
+  <string name="prism_loader_merge">BİRLEŞTİR</string>
+  <string name="prism_loader_render">GÖSTER</string>
+  <string name="prism_loader_label_phase">%1$s · %2$s</string>
+</resources>

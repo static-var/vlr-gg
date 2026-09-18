@@ -6,8 +6,10 @@ package dev.staticvar.vlr.sharedui.component.match.detail
 
 import dev.staticvar.vlr.domain.model.EventInfo
 import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.MatchVideos
 import dev.staticvar.vlr.domain.model.TeamDetails
+import dev.staticvar.vlr.domain.model.VetoAction
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -35,6 +37,19 @@ class MatchDetailFormatTest {
     )
 
     assertEquals(3, match(status = "completed", mapCount = 2, bans = bans).matchDetailBestOf())
+  }
+
+  @Test
+  fun completedStructuredVetoDerivesFormatFromPicksAndRemainingMap() {
+    val veto = listOf(
+      MatchVeto(team = "FNC", action = VetoAction.BAN, map = "Corrode"),
+      MatchVeto(team = "NRG", action = VetoAction.BAN, map = "Haven"),
+      MatchVeto(team = "FNC", action = VetoAction.PICK, map = "Ascent"),
+      MatchVeto(team = "NRG", action = VetoAction.PICK, map = "Abyss"),
+      MatchVeto(team = null, action = VetoAction.REMAINS, map = "Lotus"),
+    )
+
+    assertEquals(3, match(status = "completed").copy(veto = veto).matchDetailBestOf())
   }
 
   @Test

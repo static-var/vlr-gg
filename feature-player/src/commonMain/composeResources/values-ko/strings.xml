@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_details">선수 상세 정보</string>
+    <string name="loading_player">선수 불러오는 중</string>
+    <string name="no_player_details">아직 선수 상세 정보가 없습니다</string>
+    <string name="player_not_published">이 선수의 프로필은 아직 공개되지 않았습니다.</string>
+    <string name="player_subtitle">통계, 요원 및 팀 이력</string>
+    <string name="updating_favorite">즐겨찾기 업데이트 중</string>
+    <string name="remove_player_favorite">선수를 즐겨찾기에서 삭제</string>
+    <string name="add_player_favorite">선수를 즐겨찾기에 추가</string>
+    <string name="agent_stats">요원 통계</string>
+    <string name="pool">풀</string>
+    <string name="team_history">팀 이력</string>
+    <string name="history">이력</string>
+    <string name="current_team">현재 팀</string>
+    <string name="previous_team">이전 팀</string>
+    <string name="player_winnings">$%1$s</string>
+    <string name="agent_usage">사용률 %1$s% • %2$s • %3$s</string>
+    <string name="agent_performance">ACS %1$s • ADR %2$s • K/D %3$s</string>
+    <string name="favorite_update_failed">즐겨찾기를 업데이트하지 못했습니다. 다시 시도해 주세요.</string>
+    <plurals name="agent_picks">
+        <item quantity="one">%1$d회 선택</item>
+        <item quantity="other">%1$d회 선택</item>
+    </plurals>
+    <plurals name="agent_rounds">
+        <item quantity="one">%1$d라운드</item>
+        <item quantity="other">%1$d라운드</item>
+    </plurals>
+</resources>

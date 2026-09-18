@@ -1,0 +1,17 @@
+<resources>
+    <string name="browse_events">이벤트 둘러보기</string>
+    <string name="browse_matches">경기 둘러보기</string>
+    <string name="events">이벤트</string>
+    <string name="empty_favorites_description">팀, 선수, 경기 또는 이벤트를 즐겨찾기에 추가하면 관심 있는 경기와 이벤트를 여기서 볼 수 있습니다.</string>
+    <string name="favorites">즐겨찾기</string>
+    <string name="home">홈</string>
+    <string name="loading_your_favorites">즐겨찾기 불러오는 중</string>
+    <string name="make_home_yours">홈을 나만의 공간으로</string>
+    <string name="matches">경기</string>
+    <string name="empty_related_events">즐겨찾기와 연결된 진행 중인 이벤트가 없습니다. 일정이 업데이트되면 관련 이벤트가 표시됩니다.</string>
+    <string name="empty_related_matches">현재 즐겨찾기와 관련된 경기가 없습니다. 새로운 대진이 자동으로 여기에 표시됩니다.</string>
+    <string name="players">선수</string>
+    <string name="settings">설정</string>
+    <string name="teams">팀</string>
+    <string name="your_favorites">내 즐겨찾기</string>
+</resources>

@@ -1,0 +1,82 @@
+<resources>
+  <string name="format_pending">Ожидается</string>
+  <string name="format_map">Карта</string>
+  <string name="format_stage">Этап</string>
+  <plurals name="format_maps">
+    <item quantity="one">%1$d карта</item>
+    <item quantity="few">%1$d карты</item>
+    <item quantity="many">%1$d карт</item>
+    <item quantity="other">%1$d карт</item>
+  </plurals>
+  <plurals name="format_steps">
+    <item quantity="one">%1$d шаг</item>
+    <item quantity="few">%1$d шага</item>
+    <item quantity="many">%1$d шагов</item>
+    <item quantity="other">%1$d шагов</item>
+  </plurals>
+  <string name="format_allMaps">Все карты</string>
+  <string name="format_mapNumber">Карта %1$d</string>
+  <string name="format_final">финал</string>
+  <string name="format_pendingLower">ожидается</string>
+  <string name="format_playerStats">статистика игроков</string>
+  <plurals name="format_playedMaps">
+    <item quantity="one">%1$d сыгранная карта</item>
+    <item quantity="few">%1$d сыгранные карты</item>
+    <item quantity="many">%1$d сыгранных карт</item>
+    <item quantity="other">%1$d сыгранных карт</item>
+  </plurals>
+  <string name="format_sortedByMapOrder">%1$s • по порядку карт</string>
+  <string name="format_unknown">Неизвестно</string>
+  <string name="format_teamOne">Команда 1</string>
+  <string name="format_teamTwo">Команда 2</string>
+  <plurals name="format_matches">
+    <item quantity="one">%1$d матч</item>
+    <item quantity="few">%1$d матча</item>
+    <item quantity="many">%1$d матчей</item>
+    <item quantity="other">%1$d матчей</item>
+  </plurals>
+  <string name="format_groupStatus">Статус</string>
+  <string name="format_groupRound">Раунд</string>
+  <string name="format_groupStage">Этап</string>
+  <string name="format_versus"> против </string>
+  <string name="format_matchTbd">Матч TBD</string>
+  <string name="format_tbd">TBD</string>
+  <plurals name="format_teams">
+    <item quantity="one">%1$d команда</item>
+    <item quantity="few">%1$d команды</item>
+    <item quantity="many">%1$d команд</item>
+    <item quantity="other">%1$d команд</item>
+  </plurals>
+  <string name="format_region">РЕГИОН</string>
+  <string name="format_recent">Недавние</string>
+  <string name="format_noAssets">Материалы отсутствуют</string>
+  <string name="format_imageUnavailable">Изображение недоступно</string>
+  <string name="format_videoUnavailable">Видео недоступно</string>
+  <string name="format_linkUnavailable">Ссылка недоступна</string>
+  <string name="format_recent_lower">недавно</string>
+  <string name="format_bestOf">BO%1$d</string>
+  <string name="format_status_live">В ЭФИРЕ</string>
+  <string name="format_status_ongoing">ИДЁТ</string>
+  <string name="format_status_paused">ПРИОСТАНОВЛЕН</string>
+  <string name="format_status_upcoming">ПРЕДСТОИТ</string>
+  <string name="format_status_completed">ЗАВЕРШЁН</string>
+  <string name="format_status_unknown">НЕИЗВЕСТНО</string>
+  <string name="format_reason_match">Матч</string>
+  <string name="format_reason_team">Команда</string>
+  <string name="format_reason_player">Игрок</string>
+  <string name="format_reason_event">Турнир</string>
+  <string name="format_month_jan">янв.</string>
+  <string name="format_month_feb">февр.</string>
+  <string name="format_month_mar">мар.</string>
+  <string name="format_month_apr">апр.</string>
+  <string name="format_month_may">мая</string>
+  <string name="format_month_jun">июня</string>
+  <string name="format_month_jul">июля</string>
+  <string name="format_month_aug">авг.</string>
+  <string name="format_month_sep">сент.</string>
+  <string name="format_month_oct">окт.</string>
+  <string name="format_month_nov">нояб.</string>
+  <string name="format_month_dec">дек.</string>
+  <string name="format_match_preview_date">%2$d %1$s, %3$s:%4$s</string>
+  <string name="format_news_preview_date">%2$d %1$s %3$d г.</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_details">खिलाड़ी की जानकारी</string>
+    <string name="loading_player">खिलाड़ी लोड हो रहा है</string>
+    <string name="no_player_details">खिलाड़ी की जानकारी अभी उपलब्ध नहीं है</string>
+    <string name="player_not_published">इस खिलाड़ी की प्रोफ़ाइल प्रकाशित नहीं हुई है।</string>
+    <string name="player_subtitle">आँकड़े, एजेंट और टीम का इतिहास</string>
+    <string name="updating_favorite">पसंदीदा अपडेट हो रहा है</string>
+    <string name="remove_player_favorite">खिलाड़ी को पसंदीदा से हटाएँ</string>
+    <string name="add_player_favorite">खिलाड़ी को पसंदीदा में जोड़ें</string>
+    <string name="agent_stats">एजेंट के आँकड़े</string>
+    <string name="pool">पूल</string>
+    <string name="team_history">टीम का इतिहास</string>
+    <string name="history">इतिहास</string>
+    <string name="current_team">मौजूदा टीम</string>
+    <string name="previous_team">पिछली टीम</string>
+    <string name="player_winnings">$%1$s</string>
+    <string name="agent_usage">%1$s% उपयोग • %2$s • %3$s</string>
+    <string name="agent_performance">ACS %1$s • ADR %2$s • K/D %3$s</string>
+    <string name="favorite_update_failed">पसंदीदा अपडेट नहीं हो सका। फिर से कोशिश करें।</string>
+    <plurals name="agent_picks">
+        <item quantity="one">%1$d पिक</item>
+        <item quantity="other">%1$d पिक</item>
+    </plurals>
+    <plurals name="agent_rounds">
+        <item quantity="one">%1$d राउंड</item>
+        <item quantity="other">%1$d राउंड</item>
+    </plurals>
+</resources>

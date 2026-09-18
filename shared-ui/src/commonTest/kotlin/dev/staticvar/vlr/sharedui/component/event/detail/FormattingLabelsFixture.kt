@@ -7,4 +7,9 @@ internal val testFormattingLabels = EventFormattingLabels(
   teams = "2 teams",
   region = "REGION",
   unknown = "Unknown",
+  live = "Live",
+  ongoing = "Ongoing",
+  paused = "Paused",
+  upcoming = "Upcoming",
+  completed = "Completed",
 )

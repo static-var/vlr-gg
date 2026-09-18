@@ -1,0 +1,39 @@
+<resources>
+  <string name="news_unknown_author">अज्ञात</string>
+  <string name="news_untitled_article">शीर्षक रहित लेख</string>
+  <string name="news_by_author">%1$s द्वारा</string>
+  <string name="news_open_article_image">लेख की छवि खोलें</string>
+  <string name="news_open_full_image">पूरी छवि खोलें</string>
+  <string name="news_article_image">लेख की छवि</string>
+  <string name="news_media">मीडिया</string>
+  <string name="news_assets">एसेट</string>
+  <string name="news_article_assets">लेख के एसेट</string>
+  <string name="news_assets_description">लेख के पेलोड में मिली छवियाँ, वीडियो और संदर्भ।</string>
+  <string name="news_references">संदर्भ</string>
+  <string name="news_media_prelabel">मीडिया</string>
+  <string name="news_reference">संदर्भ</string>
+  <string name="news_open">खोलें</string>
+  <string name="news_watch_video">वीडियो देखें</string>
+  <string name="news_retry_player">प्लेयर फिर से चलाएँ</string>
+  <string name="news_player_load_failed">प्लेयर लोड नहीं हो सका। इसके बजाय आप इसे सीधे खोल सकते हैं।</string>
+  <string name="news_close_player">प्लेयर बंद करें</string>
+  <string name="news_open_provider">%1$s में खोलें</string>
+  <string name="news_play_clip">▶  %1$s क्लिप चलाएँ</string>
+  <string name="news_play_video">▶  %1$s वीडियो चलाएँ</string>
+  <plurals name="news_reference_count">
+    <item quantity="one">%1$d लिंक</item>
+    <item quantity="other">%1$d लिंक</item>
+  </plurals>
+  <plurals name="news_image_count">
+    <item quantity="one">%1$d छवि</item>
+    <item quantity="other">%1$d छवियाँ</item>
+  </plurals>
+  <plurals name="news_video_count">
+    <item quantity="one">%1$d वीडियो</item>
+    <item quantity="other">%1$d वीडियो</item>
+  </plurals>
+  <plurals name="news_asset_count">
+    <item quantity="one">%1$d एसेट</item>
+    <item quantity="other">%1$d एसेट</item>
+  </plurals>
+</resources>

@@ -1,0 +1,72 @@
+<resources>
+  <string name="format_pending">लंबित</string>
+  <string name="format_map">मैप</string>
+  <string name="format_stage">चरण</string>
+  <plurals name="format_maps">
+    <item quantity="one">%1$d मैप</item>
+    <item quantity="other">%1$d मैप</item>
+  </plurals>
+  <plurals name="format_steps">
+    <item quantity="one">%1$d चरण</item>
+    <item quantity="other">%1$d चरण</item>
+  </plurals>
+  <string name="format_allMaps">सभी मैप</string>
+  <string name="format_mapNumber">मैप %1$d</string>
+  <string name="format_final">फ़ाइनल</string>
+  <string name="format_pendingLower">लंबित</string>
+  <string name="format_playerStats">खिलाड़ी के आँकड़े</string>
+  <plurals name="format_playedMaps">
+    <item quantity="one">%1$d खेला गया मैप</item>
+    <item quantity="other">%1$d खेले गए मैप</item>
+  </plurals>
+  <string name="format_sortedByMapOrder">%1$s • मैप क्रम के अनुसार क्रमबद्ध</string>
+  <string name="format_unknown">अज्ञात</string>
+  <string name="format_teamOne">टीम 1</string>
+  <string name="format_teamTwo">टीम 2</string>
+  <plurals name="format_matches">
+    <item quantity="one">%1$d मैच</item>
+    <item quantity="other">%1$d मैच</item>
+  </plurals>
+  <string name="format_groupStatus">स्थिति</string>
+  <string name="format_groupRound">राउंड</string>
+  <string name="format_groupStage">चरण</string>
+  <string name="format_versus"> बनाम </string>
+  <string name="format_matchTbd">मैच TBD</string>
+  <string name="format_tbd">TBD</string>
+  <plurals name="format_teams">
+    <item quantity="one">%1$d टीम</item>
+    <item quantity="other">%1$d टीमें</item>
+  </plurals>
+  <string name="format_region">क्षेत्र</string>
+  <string name="format_recent">हाल के</string>
+  <string name="format_noAssets">कोई एसेट नहीं</string>
+  <string name="format_imageUnavailable">छवि उपलब्ध नहीं है</string>
+  <string name="format_videoUnavailable">वीडियो उपलब्ध नहीं है</string>
+  <string name="format_linkUnavailable">लिंक उपलब्ध नहीं है</string>
+  <string name="format_recent_lower">हाल के</string>
+  <string name="format_bestOf">BO%1$d</string>
+  <string name="format_status_live">लाइव</string>
+  <string name="format_status_ongoing">जारी</string>
+  <string name="format_status_paused">रुका हुआ</string>
+  <string name="format_status_upcoming">आगामी</string>
+  <string name="format_status_completed">पूर्ण</string>
+  <string name="format_status_unknown">अज्ञात</string>
+  <string name="format_reason_match">मैच</string>
+  <string name="format_reason_team">टीम</string>
+  <string name="format_reason_player">खिलाड़ी</string>
+  <string name="format_reason_event">इवेंट</string>
+  <string name="format_month_jan">जन</string>
+  <string name="format_month_feb">फ़र</string>
+  <string name="format_month_mar">मार्च</string>
+  <string name="format_month_apr">अप्रै</string>
+  <string name="format_month_may">मई</string>
+  <string name="format_month_jun">जून</string>
+  <string name="format_month_jul">जुल</string>
+  <string name="format_month_aug">अग</string>
+  <string name="format_month_sep">सित</string>
+  <string name="format_month_oct">अक्तू</string>
+  <string name="format_month_nov">नव</string>
+  <string name="format_month_dec">दिस</string>
+  <string name="format_match_preview_date">%2$d %1$s, %3$s:%4$s</string>
+  <string name="format_news_preview_date">%2$d %1$s %3$d</string>
+</resources>

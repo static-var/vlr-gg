@@ -1,0 +1,39 @@
+<resources>
+  <string name="shared_offline_title">Sie sind offline</string>
+  <string name="shared_offline_loading">Stellen Sie eine Internetverbindung her, um diesen Bildschirm zu laden. Er wird aktualisiert, sobald Sie wieder online sind.</string>
+  <string name="shared_loading">Wird geladen</string>
+  <string name="shared_offline">Offline</string>
+  <string name="shared_refreshing">Wird aktualisiert</string>
+  <string name="shared_ready_to_refresh">Bereit zum Aktualisieren</string>
+  <string name="shared_load_failed">Daten konnten nicht geladen werden</string>
+  <string name="shared_refresh_failed">Daten konnten nicht aktualisiert werden</string>
+  <string name="shared_offline_empty">Stellen Sie die Internetverbindung wieder her. Dieser Bildschirm wird automatisch aktualisiert.</string>
+  <string name="shared_offline_saved">Gespeicherte Inhalte werden angezeigt. Stellen Sie die Internetverbindung wieder her, um Aktualisierungen zu erhalten.</string>
+  <string name="shared_load_error_message">Etwas ist schiefgelaufen. Versuchen Sie erneut, diesen Bildschirm zu laden.</string>
+  <string name="shared_refresh_error_message">Ihre gespeicherten Inhalte sind weiterhin verfügbar. Versuchen Sie es erneut.</string>
+  <string name="shared_retry">Erneut versuchen</string>
+  <string name="shared_show_details">Details anzeigen</string>
+  <string name="shared_error_details">Fehlerdetails</string>
+  <string name="shared_close">Schließen</string>
+  <string name="shared_copied">Kopiert</string>
+  <string name="shared_copy_stack_trace">Stacktrace kopieren</string>
+  <string name="shared_no_internet">Keine Internetverbindung</string>
+  <string name="shared_show_spoilers">Ergebnisse und Statistiken in der gesamten App anzeigen</string>
+  <string name="shared_hide_spoilers">Ergebnisse und Statistiken in der gesamten App ausblenden</string>
+  <string name="shared_spoilers_on">Spoilerfreier Modus aktiviert</string>
+  <string name="shared_spoilers_off">Spoilerfreier Modus deaktiviert</string>
+  <string name="shared_spoilers_notice">Ergebnisse und Statistiken werden durch den spoilerfreien Modus ausgeblendet</string>
+  <string name="shared_result_hidden">Ergebnis ausgeblendet</string>
+  <string name="shared_rosie_description">Hundemaskottchen Rosie</string>
+  <string name="shared_lynx_description">Katzenmaskottchen Lynx</string>
+  <string name="shared_favorite_source">Favoritenquelle: %1$s</string>
+  <string name="shared_view_stat">%1$s anzeigen</string>
+  <string name="shared_team_label">Team</string>
+  <string name="shared_team_unranked">ohne Rang</string>
+  <string name="shared_team_profile">Teamprofil</string>
+  <plurals name="shared_team_players">
+    <item quantity="one">%1$d Spieler</item>
+    <item quantity="other">%1$d Spieler</item>
+  </plurals>
+  <string name="shared_team_upcoming">%1$d in den nächsten 7 Tagen</string>
+</resources>

@@ -1,0 +1,17 @@
+<resources>
+    <string name="browse_events">Etkinliklere göz at</string>
+    <string name="browse_matches">Maçlara göz at</string>
+    <string name="events">Etkinlikler</string>
+    <string name="empty_favorites_description">Önemsediğiniz maçları ve etkinlikleri burada görmek için takımları, oyuncuları, maçları veya etkinlikleri favorilerinize ekleyin.</string>
+    <string name="favorites">Favoriler</string>
+    <string name="home">Ana Sayfa</string>
+    <string name="loading_your_favorites">Favorileriniz yükleniyor</string>
+    <string name="make_home_yours">Ana Sayfayı kendinize göre ayarlayın</string>
+    <string name="matches">Maçlar</string>
+    <string name="empty_related_events">Favorilerinizle bağlantılı güncel bir etkinlik yok. Programlar güncellendikçe ilgili etkinlikler burada görünecek.</string>
+    <string name="empty_related_matches">Şu anda favorilerinizle bağlantılı maç yok. Yeni eşleşmeler otomatik olarak burada görünecek.</string>
+    <string name="players">Oyuncular</string>
+    <string name="settings">Ayarlar</string>
+    <string name="teams">Takımlar</string>
+    <string name="your_favorites">Favorileriniz</string>
+</resources>

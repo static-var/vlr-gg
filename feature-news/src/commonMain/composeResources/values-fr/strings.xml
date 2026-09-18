@@ -1,0 +1,16 @@
+<resources>
+    <string name="news_title">Actualités</string>
+    <string name="scroll_to_top">Haut</string>
+    <string name="loading_article">Chargement de l’article</string>
+    <string name="no_article_yet">Aucun article pour le moment</string>
+    <string name="article_unpublished">Cet article n’a pas été publié.</string>
+    <string name="no_article_text_yet">Aucun texte pour le moment</string>
+    <string name="article_text_unpublished">Le texte de l’article n’a pas été publié.</string>
+    <string name="read_on_vlr">Lire sur VLR.gg</string>
+    <string name="loading_news">Chargement des actualités</string>
+    <string name="news_heading">ACTUALITÉS</string>
+    <string name="news_subtitle">L’actualité de la scène compétitive de VALORANT</string>
+    <string name="no_stories_yet">Aucune actualité pour le moment</string>
+    <string name="news_unpublished">Les actualités de la scène compétitive de VALORANT apparaîtront ici dès leur publication.</string>
+    <string name="refresh">Actualiser</string>
+</resources>

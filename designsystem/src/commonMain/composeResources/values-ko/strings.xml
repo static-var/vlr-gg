@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="prism_refresh">새로고침</string>
+  <string name="prism_collapse_section">섹션 접기</string>
+  <string name="prism_expand_section">섹션 펼치기</string>
+  <string name="prism_favorite">즐겨찾기</string>
+  <string name="prism_not_favorite">즐겨찾기 아님</string>
+  <string name="prism_back">뒤로</string>
+  <string name="prism_loading">불러오는 중</string>
+  <string name="prism_loader_sync">동기화</string>
+  <string name="prism_loader_fetch">가져오기</string>
+  <string name="prism_loader_parse">분석</string>
+  <string name="prism_loader_merge">병합</string>
+  <string name="prism_loader_render">표시</string>
+  <string name="prism_loader_label_phase">%1$s · %2$s</string>
+</resources>

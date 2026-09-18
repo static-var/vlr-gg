@@ -1,0 +1,16 @@
+<resources>
+    <string name="news_title">खबरें</string>
+    <string name="scroll_to_top">ऊपर जाएँ</string>
+    <string name="loading_article">लेख लोड हो रहा है</string>
+    <string name="no_article_yet">अभी कोई लेख नहीं है</string>
+    <string name="article_unpublished">यह खबर अभी प्रकाशित नहीं हुई है।</string>
+    <string name="no_article_text_yet">लेख का टेक्स्ट अभी उपलब्ध नहीं है</string>
+    <string name="article_text_unpublished">खबर का टेक्स्ट अभी प्रकाशित नहीं हुआ है।</string>
+    <string name="read_on_vlr">VLR.gg पर पढ़ें</string>
+    <string name="loading_news">खबरें लोड हो रही हैं</string>
+    <string name="news_heading">खबरें</string>
+    <string name="news_subtitle">प्रतिस्पर्धी VALORANT की खबरें</string>
+    <string name="no_stories_yet">अभी कोई खबर नहीं है</string>
+    <string name="news_unpublished">प्रतिस्पर्धी VALORANT की खबरें प्रकाशित होने पर यहाँ दिखाई देंगी।</string>
+    <string name="refresh">रीफ़्रेश करें</string>
+</resources>

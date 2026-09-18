@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="prism_refresh">Обновить</string>
+  <string name="prism_collapse_section">Свернуть раздел</string>
+  <string name="prism_expand_section">Развернуть раздел</string>
+  <string name="prism_favorite">В избранном</string>
+  <string name="prism_not_favorite">Не в избранном</string>
+  <string name="prism_back">Назад</string>
+  <string name="prism_loading">ЗАГРУЗКА</string>
+  <string name="prism_loader_sync">СИНХРОНИЗАЦИЯ</string>
+  <string name="prism_loader_fetch">ПОЛУЧЕНИЕ</string>
+  <string name="prism_loader_parse">ОБРАБОТКА</string>
+  <string name="prism_loader_merge">ОБЪЕДИНЕНИЕ</string>
+  <string name="prism_loader_render">ОТОБРАЖЕНИЕ</string>
+  <string name="prism_loader_label_phase">%1$s · %2$s</string>
+</resources>

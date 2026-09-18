@@ -54,6 +54,10 @@ import vlr.feature_about.generated.resources.dark
 import vlr.feature_about.generated.resources.deleted_cached_items
 import vlr.feature_about.generated.resources.experimental
 import vlr.feature_about.generated.resources.flavour
+import vlr.feature_about.generated.resources.flavour_frappe
+import vlr.feature_about.generated.resources.flavour_latte
+import vlr.feature_about.generated.resources.flavour_macchiato
+import vlr.feature_about.generated.resources.flavour_mocha
 import vlr.feature_about.generated.resources.frequently
 import vlr.feature_about.generated.resources.how_val_esports_handles_your_data
 import vlr.feature_about.generated.resources.light
@@ -75,7 +79,11 @@ import vlr.feature_about.generated.resources.terms_of_service
 import vlr.feature_about.generated.resources.the_latest_features_and_improvements
 import vlr.feature_about.generated.resources.the_project_the_people_and_the_data
 import vlr.feature_about.generated.resources.theme
+import vlr.feature_about.generated.resources.theme_brutalist
+import vlr.feature_about.generated.resources.theme_catppuccin
+import vlr.feature_about.generated.resources.theme_console
 import vlr.feature_about.generated.resources.using_the_app_and_its_content
+import vlr.feature_about.generated.resources.val_esports
 import vlr.feature_about.generated.resources.what_s_new
 import vlr.feature_about.generated.resources.yes
 
@@ -171,7 +179,7 @@ private fun AppearanceSettingsCard(
       PrismDropdown(
         label = stringResource(Res.string.theme),
         modifier = Modifier.fillMaxWidth(),
-        options = familyOptions,
+        options = familyOptions(),
         selectedOptionId = family.name,
         onOptionSelected = { onFamilySelected(ThemeFamily.valueOf(it.id)) },
       )
@@ -186,7 +194,7 @@ private fun AppearanceSettingsCard(
         ThemeFamily.Catppuccin -> PrismDropdown(
           label = stringResource(Res.string.flavour),
           modifier = Modifier.fillMaxWidth(),
-          options = flavourOptions,
+          options = flavourOptions(),
           selectedOptionId = catppuccinFlavour.name,
           onOptionSelected = { onFlavourSelected(CatppuccinFlavour.valueOf(it.id)) },
         )
@@ -295,7 +303,7 @@ private fun SettingsLinkCard(title: String, description: String, onClick: () -> 
 private fun SettingsVersionFooter() {
   Spacer(Modifier.height(80.dp))
   Text(
-    text = "Val Esports\n${appVersionText()}",
+    text = "${stringResource(Res.string.val_esports)}\n${appVersionText()}",
     modifier = Modifier.fillMaxWidth(),
     style = Prism.typography.caption,
     color = Prism.color.captionColor,
@@ -356,17 +364,19 @@ private fun modeOptions(): List<PrismDropdownOption> = listOf(
   PrismDropdownOption(AppearanceMode.Dark.name, stringResource(Res.string.dark)),
 )
 
-private val familyOptions = listOf(
-  PrismDropdownOption(ThemeFamily.Brutalist.name, "Brutalist"),
-  PrismDropdownOption(ThemeFamily.Catppuccin.name, "Catppuccin"),
-  PrismDropdownOption(ThemeFamily.Console.name, "Console"),
+@Composable
+private fun familyOptions(): List<PrismDropdownOption> = listOf(
+  PrismDropdownOption(ThemeFamily.Brutalist.name, stringResource(Res.string.theme_brutalist)),
+  PrismDropdownOption(ThemeFamily.Catppuccin.name, stringResource(Res.string.theme_catppuccin)),
+  PrismDropdownOption(ThemeFamily.Console.name, stringResource(Res.string.theme_console)),
 )
 
-private val flavourOptions = listOf(
-  PrismDropdownOption(CatppuccinFlavour.Latte.name, "Latte"),
-  PrismDropdownOption(CatppuccinFlavour.Frappe.name, "Frappé"),
-  PrismDropdownOption(CatppuccinFlavour.Macchiato.name, "Macchiato"),
-  PrismDropdownOption(CatppuccinFlavour.Mocha.name, "Mocha"),
+@Composable
+private fun flavourOptions(): List<PrismDropdownOption> = listOf(
+  PrismDropdownOption(CatppuccinFlavour.Latte.name, stringResource(Res.string.flavour_latte)),
+  PrismDropdownOption(CatppuccinFlavour.Frappe.name, stringResource(Res.string.flavour_frappe)),
+  PrismDropdownOption(CatppuccinFlavour.Macchiato.name, stringResource(Res.string.flavour_macchiato)),
+  PrismDropdownOption(CatppuccinFlavour.Mocha.name, stringResource(Res.string.flavour_mocha)),
 )
 
 @Composable

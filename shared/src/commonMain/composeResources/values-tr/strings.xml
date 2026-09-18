@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="navigation_home">Ana sayfa</string>
+  <string name="navigation_matches">Maçlar</string>
+  <string name="navigation_events">Etkinlikler</string>
+  <string name="navigation_ranking">Sıralama</string>
+  <string name="navigation_news">Haberler</string>
+</resources>

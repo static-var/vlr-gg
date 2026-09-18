@@ -29,7 +29,6 @@ import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.match_event_match
 import vlr.shared_ui.generated.resources.match_event_match_tbd
 import vlr.shared_ui.generated.resources.match_event_tbd
-import vlr.shared_ui.generated.resources.match_event_unknown
 
 /**
  * Event match row with two score lines and schedule metadata.
@@ -58,9 +57,7 @@ public fun EventDetailMatchItem(
           overflow = TextOverflow.Ellipsis,
         )
         PrismTag(
-          text = match.status.ifBlank {
-            stringResource(Res.string.match_event_unknown)
-          },
+          text = match.status.eventMatchStatusLabel,
           style = match.status.eventMatchStatusTagStyle,
         )
       }

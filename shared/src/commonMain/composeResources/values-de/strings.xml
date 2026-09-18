@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="navigation_home">Start</string>
+  <string name="navigation_matches">Spiele</string>
+  <string name="navigation_events">Events</string>
+  <string name="navigation_ranking">Rangliste</string>
+  <string name="navigation_news">Neuigkeiten</string>
+</resources>

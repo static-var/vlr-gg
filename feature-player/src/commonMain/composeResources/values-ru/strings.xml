@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_details">Информация об игроке</string>
+    <string name="loading_player">Загрузка игрока</string>
+    <string name="no_player_details">Информации об игроке пока нет</string>
+    <string name="player_not_published">Профиль этого игрока ещё не опубликован.</string>
+    <string name="player_subtitle">Статистика, агенты и история команд</string>
+    <string name="updating_favorite">Обновление избранного</string>
+    <string name="remove_player_favorite">Удалить игрока из избранного</string>
+    <string name="add_player_favorite">Добавить игрока в избранное</string>
+    <string name="agent_stats">Статистика агентов</string>
+    <string name="pool">пул</string>
+    <string name="team_history">История команд</string>
+    <string name="history">история</string>
+    <string name="current_team">Текущая команда</string>
+    <string name="previous_team">Предыдущая команда</string>
+    <string name="player_winnings">$%1$s</string>
+    <string name="agent_usage">Использование: %1$s% • %2$s • %3$s</string>
+    <string name="agent_performance">ACS %1$s • ADR %2$s • K/D %3$s</string>
+    <string name="favorite_update_failed">Не удалось обновить избранное. Попробуйте ещё раз.</string>
+    <plurals name="agent_picks">
+        <item quantity="one">%1$d выбор</item>
+        <item quantity="few">%1$d выбора</item>
+        <item quantity="many">%1$d выборов</item>
+        <item quantity="other">%1$d выбора</item>
+    </plurals>
+    <plurals name="agent_rounds">
+        <item quantity="one">%1$d раунд</item>
+        <item quantity="few">%1$d раунда</item>
+        <item quantity="many">%1$d раундов</item>
+        <item quantity="other">%1$d раунда</item>
+    </plurals>
+</resources>

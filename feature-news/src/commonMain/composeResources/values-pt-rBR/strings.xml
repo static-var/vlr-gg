@@ -1,0 +1,16 @@
+<resources>
+    <string name="news_title">Notícias</string>
+    <string name="scroll_to_top">Topo</string>
+    <string name="loading_article">Carregando artigo</string>
+    <string name="no_article_yet">Nenhum artigo ainda</string>
+    <string name="article_unpublished">Esta matéria ainda não foi publicada.</string>
+    <string name="no_article_text_yet">O artigo ainda não tem texto</string>
+    <string name="article_text_unpublished">O texto da matéria ainda não foi publicado.</string>
+    <string name="read_on_vlr">Ler no VLR.gg</string>
+    <string name="loading_news">Carregando notícias</string>
+    <string name="news_heading">NOTÍCIAS</string>
+    <string name="news_subtitle">Histórias do cenário competitivo de VALORANT</string>
+    <string name="no_stories_yet">Nenhuma matéria ainda</string>
+    <string name="news_unpublished">As notícias do cenário competitivo de VALORANT aparecerão aqui quando forem publicadas.</string>
+    <string name="refresh">Atualizar</string>
+</resources>

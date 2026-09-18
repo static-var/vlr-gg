@@ -1,0 +1,39 @@
+<resources>
+  <string name="shared_offline_title">Estás sin conexión</string>
+  <string name="shared_offline_loading">Conéctate a internet para cargar esta pantalla. Se actualizará cuando vuelvas a conectarte.</string>
+  <string name="shared_loading">Cargando</string>
+  <string name="shared_offline">Sin conexión</string>
+  <string name="shared_refreshing">Actualizando</string>
+  <string name="shared_ready_to_refresh">Listo para actualizar</string>
+  <string name="shared_load_failed">No se pudieron cargar los datos</string>
+  <string name="shared_refresh_failed">No se pudieron actualizar los datos</string>
+  <string name="shared_offline_empty">Vuelve a conectarte a internet. Esta pantalla se actualizará automáticamente.</string>
+  <string name="shared_offline_saved">Mostrando contenido guardado. Vuelve a conectarte para recibir actualizaciones.</string>
+  <string name="shared_load_error_message">Algo salió mal. Intenta cargar esta pantalla de nuevo.</string>
+  <string name="shared_refresh_error_message">Tu contenido guardado sigue disponible. Inténtalo de nuevo.</string>
+  <string name="shared_retry">Reintentar</string>
+  <string name="shared_show_details">Mostrar detalles</string>
+  <string name="shared_error_details">Detalles del error</string>
+  <string name="shared_close">Cerrar</string>
+  <string name="shared_copied">Copiado</string>
+  <string name="shared_copy_stack_trace">Copiar traza de pila</string>
+  <string name="shared_no_internet">Sin conexión a internet</string>
+  <string name="shared_show_spoilers">Mostrar resultados y estadísticas en toda la aplicación</string>
+  <string name="shared_hide_spoilers">Ocultar resultados y estadísticas en toda la aplicación</string>
+  <string name="shared_spoilers_on">Modo sin spoilers activado</string>
+  <string name="shared_spoilers_off">Modo sin spoilers desactivado</string>
+  <string name="shared_spoilers_notice">Resultados y estadísticas ocultos por el modo Sin spoilers</string>
+  <string name="shared_result_hidden">Resultado oculto</string>
+  <string name="shared_rosie_description">Rosie, la mascota canina</string>
+  <string name="shared_lynx_description">Lynx, la mascota felina</string>
+  <string name="shared_favorite_source">Fuente favorita: %1$s</string>
+  <string name="shared_view_stat">Ver %1$s</string>
+  <string name="shared_team_label">equipo</string>
+  <string name="shared_team_unranked">sin clasificar</string>
+  <string name="shared_team_profile">Perfil del equipo</string>
+  <plurals name="shared_team_players">
+    <item quantity="one">%1$d jugador</item>
+    <item quantity="other">%1$d jugadores</item>
+  </plurals>
+  <string name="shared_team_upcoming">%1$d en los próximos 7 días</string>
+</resources>

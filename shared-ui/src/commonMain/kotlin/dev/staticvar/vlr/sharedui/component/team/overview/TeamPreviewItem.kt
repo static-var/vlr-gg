@@ -54,7 +54,9 @@ public fun TeamPreviewItem(team: TeamInfo, modifier: Modifier = Modifier, onClic
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
       ) {
-        PrismHeader(text = team.region.ifBlank { stringResource(Res.string.shared_team_label) })
+        PrismHeader(
+          text = team.regionLabel.ifBlank { team.region }.ifBlank { stringResource(Res.string.shared_team_label) },
+        )
         if (team.rank > 0) {
           PrismTag(text = "#${team.rank}", style = PrismTagStyle.Accent)
         } else {

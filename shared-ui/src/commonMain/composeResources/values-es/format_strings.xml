@@ -1,0 +1,72 @@
+<resources>
+  <string name="format_pending">Pendiente</string>
+  <string name="format_map">Mapa</string>
+  <string name="format_stage">Fase</string>
+  <plurals name="format_maps">
+    <item quantity="one">%1$d mapa</item>
+    <item quantity="other">%1$d mapas</item>
+  </plurals>
+  <plurals name="format_steps">
+    <item quantity="one">%1$d paso</item>
+    <item quantity="other">%1$d pasos</item>
+  </plurals>
+  <string name="format_allMaps">Todos los mapas</string>
+  <string name="format_mapNumber">Mapa %1$d</string>
+  <string name="format_final">final</string>
+  <string name="format_pendingLower">pendiente</string>
+  <string name="format_playerStats">estadísticas del jugador</string>
+  <plurals name="format_playedMaps">
+    <item quantity="one">%1$d mapa jugado</item>
+    <item quantity="other">%1$d mapas jugados</item>
+  </plurals>
+  <string name="format_sortedByMapOrder">%1$s • ordenado según el orden de los mapas</string>
+  <string name="format_unknown">Desconocido</string>
+  <string name="format_teamOne">Equipo 1</string>
+  <string name="format_teamTwo">Equipo 2</string>
+  <plurals name="format_matches">
+    <item quantity="one">%1$d partido</item>
+    <item quantity="other">%1$d partidos</item>
+  </plurals>
+  <string name="format_groupStatus">Estado</string>
+  <string name="format_groupRound">Ronda</string>
+  <string name="format_groupStage">Fase</string>
+  <string name="format_versus"> vs </string>
+  <string name="format_matchTbd">Partido TBD</string>
+  <string name="format_tbd">TBD</string>
+  <plurals name="format_teams">
+    <item quantity="one">%1$d equipo</item>
+    <item quantity="other">%1$d equipos</item>
+  </plurals>
+  <string name="format_region">REGIÓN</string>
+  <string name="format_recent">Reciente</string>
+  <string name="format_noAssets">Sin recursos</string>
+  <string name="format_imageUnavailable">Imagen no disponible</string>
+  <string name="format_videoUnavailable">Vídeo no disponible</string>
+  <string name="format_linkUnavailable">Enlace no disponible</string>
+  <string name="format_recent_lower">reciente</string>
+  <string name="format_bestOf">BO%1$d</string>
+  <string name="format_status_live">EN VIVO</string>
+  <string name="format_status_ongoing">EN CURSO</string>
+  <string name="format_status_paused">PAUSADO</string>
+  <string name="format_status_upcoming">PRÓXIMO</string>
+  <string name="format_status_completed">FINALIZADO</string>
+  <string name="format_status_unknown">DESCONOCIDO</string>
+  <string name="format_reason_match">Partido</string>
+  <string name="format_reason_team">Equipo</string>
+  <string name="format_reason_player">Jugador</string>
+  <string name="format_reason_event">Evento</string>
+  <string name="format_month_jan">Ene</string>
+  <string name="format_month_feb">Feb</string>
+  <string name="format_month_mar">Mar</string>
+  <string name="format_month_apr">Abr</string>
+  <string name="format_month_may">May</string>
+  <string name="format_month_jun">Jun</string>
+  <string name="format_month_jul">Jul</string>
+  <string name="format_month_aug">Ago</string>
+  <string name="format_month_sep">Sep</string>
+  <string name="format_month_oct">Oct</string>
+  <string name="format_month_nov">Nov</string>
+  <string name="format_month_dec">Dic</string>
+  <string name="format_match_preview_date">%2$d de %1$s, %3$s:%4$s</string>
+  <string name="format_news_preview_date">%2$d de %1$s de %3$d</string>
+</resources>

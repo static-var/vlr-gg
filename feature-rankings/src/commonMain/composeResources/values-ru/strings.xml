@@ -1,0 +1,13 @@
+<resources>
+    <string name="rankings_title">Рейтинг</string>
+    <string name="rankings_subtitle">Лучшие команды каждого региона</string>
+    <string name="loading_rankings">Загрузка рейтинга</string>
+    <string name="no_rankings_yet">Рейтинга пока нет</string>
+    <string name="regional_rankings_unpublished">Региональные рейтинги команд ещё не опубликованы.</string>
+    <string name="favorite_team">Избранная команда</string>
+    <string name="region_rankings_unpublished">Рейтинг команд региона %1$s ещё не опубликован.</string>
+    <string name="top_teams_in_region">Топ-%1$d • %2$s</string>
+    <string name="ranking_points">%1$s очк.</string>
+    <string name="ranking_team_label">#%1$d %2$s</string>
+    <string name="country_with_separator">%1$s •</string>
+</resources>

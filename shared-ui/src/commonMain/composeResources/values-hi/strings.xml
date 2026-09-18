@@ -1,0 +1,39 @@
+<resources>
+  <string name="shared_offline_title">आप ऑफ़लाइन हैं</string>
+  <string name="shared_offline_loading">यह स्क्रीन लोड करने के लिए इंटरनेट से कनेक्ट करें। आपके दोबारा ऑनलाइन आने पर यह अपडेट हो जाएगी।</string>
+  <string name="shared_loading">लोड हो रहा है</string>
+  <string name="shared_offline">ऑफ़लाइन</string>
+  <string name="shared_refreshing">रीफ़्रेश हो रहा है</string>
+  <string name="shared_ready_to_refresh">रीफ़्रेश करने के लिए तैयार</string>
+  <string name="shared_load_failed">डेटा लोड नहीं हो सका</string>
+  <string name="shared_refresh_failed">डेटा रीफ़्रेश नहीं हो सका</string>
+  <string name="shared_offline_empty">इंटरनेट से दोबारा कनेक्ट करें। यह स्क्रीन अपने आप अपडेट हो जाएगी।</string>
+  <string name="shared_offline_saved">सहेजी गई सामग्री दिखाई जा रही है। अपडेट पाने के लिए दोबारा कनेक्ट करें।</string>
+  <string name="shared_load_error_message">कुछ गड़बड़ हुई। इस स्क्रीन को फिर से लोड करने की कोशिश करें।</string>
+  <string name="shared_refresh_error_message">आपकी सहेजी गई सामग्री अब भी उपलब्ध है। फिर से कोशिश करें।</string>
+  <string name="shared_retry">फिर से कोशिश करें</string>
+  <string name="shared_show_details">विवरण दिखाएँ</string>
+  <string name="shared_error_details">त्रुटि का विवरण</string>
+  <string name="shared_close">बंद करें</string>
+  <string name="shared_copied">कॉपी किया गया</string>
+  <string name="shared_copy_stack_trace">स्टैक ट्रेस कॉपी करें</string>
+  <string name="shared_no_internet">इंटरनेट कनेक्शन नहीं है</string>
+  <string name="shared_show_spoilers">पूरे ऐप में परिणाम और आँकड़े दिखाएँ</string>
+  <string name="shared_hide_spoilers">पूरे ऐप में परिणाम और आँकड़े छिपाएँ</string>
+  <string name="shared_spoilers_on">स्पॉइलर-रहित मोड चालू</string>
+  <string name="shared_spoilers_off">स्पॉइलर-रहित मोड बंद</string>
+  <string name="shared_spoilers_notice">स्पॉइलर-रहित मोड के कारण परिणाम और आँकड़े छिपे हैं</string>
+  <string name="shared_result_hidden">परिणाम छिपा हुआ है</string>
+  <string name="shared_rosie_description">Rosie कुत्ता मैस्कॉट</string>
+  <string name="shared_lynx_description">Lynx बिल्ली मैस्कॉट</string>
+  <string name="shared_favorite_source">पसंदीदा स्रोत: %1$s</string>
+  <string name="shared_view_stat">%1$s देखें</string>
+  <string name="shared_team_label">टीम</string>
+  <string name="shared_team_unranked">बिना रैंक</string>
+  <string name="shared_team_profile">टीम प्रोफ़ाइल</string>
+  <plurals name="shared_team_players">
+    <item quantity="one">%1$d खिलाड़ी</item>
+    <item quantity="other">%1$d खिलाड़ी</item>
+  </plurals>
+  <string name="shared_team_upcoming">%1$d अगले 7 दिनों में</string>
+</resources>

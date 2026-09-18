@@ -10,11 +10,13 @@ import dev.staticvar.vlr.domain.model.AgentInfo
 import dev.staticvar.vlr.domain.model.EventInfo
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.MatchVideos
 import dev.staticvar.vlr.domain.model.PlayerStats
 import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamDetails
 import dev.staticvar.vlr.domain.model.TeamPreview
+import dev.staticvar.vlr.domain.model.VetoAction
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -47,6 +49,13 @@ class MatchDetailFormattingTest {
       ).matchDetailVetoStat(testFormattingLabels.copy(steps = "1 step")),
     )
     assertEquals("-", match.copy(bans = listOf(" ")).matchDetailVetoStat(testFormattingLabels))
+    assertEquals(
+      "1 step",
+      match.copy(
+        bans = emptyList(),
+        veto = listOf(MatchVeto(team = null, action = VetoAction.REMAINS, map = "Lotus")),
+      ).matchDetailVetoStat(testFormattingLabels.copy(steps = "1 step")),
+    )
   }
 
   @Test

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_details">Oyuncu ayrıntıları</string>
+    <string name="loading_player">Oyuncu yükleniyor</string>
+    <string name="no_player_details">Henüz oyuncu ayrıntısı yok</string>
+    <string name="player_not_published">Bu oyuncunun profili henüz yayınlanmadı.</string>
+    <string name="player_subtitle">İstatistikler, ajanlar ve takım geçmişi</string>
+    <string name="updating_favorite">Favori güncelleniyor</string>
+    <string name="remove_player_favorite">Oyuncuyu favorilerden kaldır</string>
+    <string name="add_player_favorite">Oyuncuyu favorilere ekle</string>
+    <string name="agent_stats">Ajan istatistikleri</string>
+    <string name="pool">havuz</string>
+    <string name="team_history">Takım geçmişi</string>
+    <string name="history">geçmiş</string>
+    <string name="current_team">Mevcut takım</string>
+    <string name="previous_team">Önceki takım</string>
+    <string name="player_winnings">$%1$s</string>
+    <string name="agent_usage">%1$s% kullanım • %2$s • %3$s</string>
+    <string name="agent_performance">ACS %1$s • ADR %2$s • K/D %3$s</string>
+    <string name="favorite_update_failed">Favori güncellenemedi. Tekrar deneyin.</string>
+    <plurals name="agent_picks">
+        <item quantity="one">%1$d seçim</item>
+        <item quantity="other">%1$d seçim</item>
+    </plurals>
+    <plurals name="agent_rounds">
+        <item quantity="one">%1$d tur</item>
+        <item quantity="other">%1$d tur</item>
+    </plurals>
+</resources>

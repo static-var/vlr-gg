@@ -1,0 +1,41 @@
+<resources>
+  <string name="shared_offline_title">Нет подключения к интернету</string>
+  <string name="shared_offline_loading">Подключитесь к интернету, чтобы загрузить этот экран. Он обновится после восстановления соединения.</string>
+  <string name="shared_loading">Загрузка</string>
+  <string name="shared_offline">Не в сети</string>
+  <string name="shared_refreshing">Обновление</string>
+  <string name="shared_ready_to_refresh">Можно обновить</string>
+  <string name="shared_load_failed">Не удалось загрузить данные</string>
+  <string name="shared_refresh_failed">Не удалось обновить данные</string>
+  <string name="shared_offline_empty">Подключитесь к интернету. Экран обновится автоматически.</string>
+  <string name="shared_offline_saved">Показаны сохранённые данные. Подключитесь к интернету, чтобы получить обновления.</string>
+  <string name="shared_load_error_message">Произошла ошибка. Попробуйте снова загрузить этот экран.</string>
+  <string name="shared_refresh_error_message">Сохранённые данные по-прежнему доступны. Попробуйте ещё раз.</string>
+  <string name="shared_retry">Повторить</string>
+  <string name="shared_show_details">Подробнее</string>
+  <string name="shared_error_details">Сведения об ошибке</string>
+  <string name="shared_close">Закрыть</string>
+  <string name="shared_copied">Скопировано</string>
+  <string name="shared_copy_stack_trace">Копировать трассировку стека</string>
+  <string name="shared_no_internet">Нет подключения к интернету</string>
+  <string name="shared_show_spoilers">Показывать результаты и статистику во всём приложении</string>
+  <string name="shared_hide_spoilers">Скрывать результаты и статистику во всём приложении</string>
+  <string name="shared_spoilers_on">Режим «Без спойлеров» включён</string>
+  <string name="shared_spoilers_off">Режим «Без спойлеров» выключен</string>
+  <string name="shared_spoilers_notice">Режим «Без спойлеров» скрывает результаты и статистику</string>
+  <string name="shared_result_hidden">Результат скрыт</string>
+  <string name="shared_rosie_description">Собака-маскот Rosie</string>
+  <string name="shared_lynx_description">Кот-маскот Lynx</string>
+  <string name="shared_favorite_source">Источник выбора фаворита: %1$s</string>
+  <string name="shared_view_stat">Посмотреть %1$s</string>
+  <string name="shared_team_label">команда</string>
+  <string name="shared_team_unranked">без рейтинга</string>
+  <string name="shared_team_profile">Профиль команды</string>
+  <plurals name="shared_team_players">
+    <item quantity="one">%1$d игрок</item>
+    <item quantity="few">%1$d игрока</item>
+    <item quantity="many">%1$d игроков</item>
+    <item quantity="other">%1$d игроков</item>
+  </plurals>
+  <string name="shared_team_upcoming">За следующие 7 дней: %1$d</string>
+</resources>

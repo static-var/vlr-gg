@@ -1,0 +1,39 @@
+<resources>
+  <string name="shared_offline_title">오프라인 상태입니다</string>
+  <string name="shared_offline_loading">이 화면을 불러오려면 인터넷에 연결하세요. 다시 연결되면 화면이 업데이트됩니다.</string>
+  <string name="shared_loading">불러오는 중</string>
+  <string name="shared_offline">오프라인</string>
+  <string name="shared_refreshing">새로고침 중</string>
+  <string name="shared_ready_to_refresh">새로고침 준비 완료</string>
+  <string name="shared_load_failed">데이터를 불러올 수 없습니다</string>
+  <string name="shared_refresh_failed">데이터를 새로고칠 수 없습니다</string>
+  <string name="shared_offline_empty">인터넷에 다시 연결하세요. 이 화면은 자동으로 업데이트됩니다.</string>
+  <string name="shared_offline_saved">저장된 콘텐츠를 표시하고 있습니다. 업데이트를 받으려면 다시 연결하세요.</string>
+  <string name="shared_load_error_message">문제가 발생했습니다. 이 화면을 다시 불러오세요.</string>
+  <string name="shared_refresh_error_message">저장된 콘텐츠는 계속 이용할 수 있습니다. 다시 시도하세요.</string>
+  <string name="shared_retry">다시 시도</string>
+  <string name="shared_show_details">세부 정보 보기</string>
+  <string name="shared_error_details">오류 세부 정보</string>
+  <string name="shared_close">닫기</string>
+  <string name="shared_copied">복사됨</string>
+  <string name="shared_copy_stack_trace">스택 트레이스 복사</string>
+  <string name="shared_no_internet">인터넷에 연결되지 않음</string>
+  <string name="shared_show_spoilers">앱 전체에 결과 및 통계 표시</string>
+  <string name="shared_hide_spoilers">앱 전체에서 결과 및 통계 숨기기</string>
+  <string name="shared_spoilers_on">스포일러 방지 켜짐</string>
+  <string name="shared_spoilers_off">스포일러 방지 꺼짐</string>
+  <string name="shared_spoilers_notice">스포일러 방지 모드로 결과와 통계가 숨겨졌습니다</string>
+  <string name="shared_result_hidden">결과 숨김</string>
+  <string name="shared_rosie_description">Rosie 강아지 마스코트</string>
+  <string name="shared_lynx_description">Lynx 고양이 마스코트</string>
+  <string name="shared_favorite_source">우세 판단 기준: %1$s</string>
+  <string name="shared_view_stat">%1$s 보기</string>
+  <string name="shared_team_label">팀</string>
+  <string name="shared_team_unranked">순위 없음</string>
+  <string name="shared_team_profile">팀 프로필</string>
+  <plurals name="shared_team_players">
+    <item quantity="one">선수 %1$d명</item>
+    <item quantity="other">선수 %1$d명</item>
+  </plurals>
+  <string name="shared_team_upcoming">향후 7일: %1$d</string>
+</resources>
