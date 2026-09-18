@@ -27,6 +27,13 @@ struct WidgetFavoriteIDs: Codable, Equatable {
 enum WidgetMatchStatus: String, Codable {
     case upcoming = "UPCOMING"
     case live = "LIVE"
+
+    var localizedDisplayName: String {
+        switch self {
+        case .upcoming: String(localized: "UPCOMING")
+        case .live: String(localized: "LIVE")
+        }
+    }
 }
 
 struct UpcomingMatchesSnapshot: Codable, Equatable {

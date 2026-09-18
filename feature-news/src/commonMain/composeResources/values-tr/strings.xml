@@ -1,0 +1,16 @@
+<resources>
+    <string name="news_title">Haberler</string>
+    <string name="scroll_to_top">Başa dön</string>
+    <string name="loading_article">Makale yükleniyor</string>
+    <string name="no_article_yet">Henüz makale yok</string>
+    <string name="article_unpublished">Bu haber henüz yayımlanmadı.</string>
+    <string name="no_article_text_yet">Henüz makale metni yok</string>
+    <string name="article_text_unpublished">Haber metni henüz yayımlanmadı.</string>
+    <string name="read_on_vlr">VLR.gg'de oku</string>
+    <string name="loading_news">Haberler yükleniyor</string>
+    <string name="news_heading">HABERLER</string>
+    <string name="news_subtitle">Rekabetçi VALORANT dünyasından haberler</string>
+    <string name="no_stories_yet">Henüz haber yok</string>
+    <string name="news_unpublished">Rekabetçi VALORANT haberleri yayımlandığında burada görünecek.</string>
+    <string name="refresh">Yenile</string>
+</resources>

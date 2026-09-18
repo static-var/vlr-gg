@@ -37,10 +37,12 @@ import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import org.jetbrains.compose.resources.stringResource
 import vlr.feature_rankings.generated.resources.Res
+import vlr.feature_rankings.generated.resources.country_with_separator
 import vlr.feature_rankings.generated.resources.favorite_team
 import vlr.feature_rankings.generated.resources.loading_rankings
 import vlr.feature_rankings.generated.resources.no_rankings_yet
 import vlr.feature_rankings.generated.resources.ranking_points
+import vlr.feature_rankings.generated.resources.ranking_team_label
 import vlr.feature_rankings.generated.resources.rankings_subtitle
 import vlr.feature_rankings.generated.resources.rankings_title
 import vlr.feature_rankings.generated.resources.region_rankings_unpublished
@@ -78,7 +80,9 @@ internal fun RankingsScreen(
     uiState.regions.firstOrNull { it.region == selectedRegion }
   }
   val tabs = remember(uiState.regions) {
-    uiState.regions.map { PrismTab(id = it.region, label = it.region) }
+    uiState.regions.map { ranking ->
+      PrismTab(id = ranking.region, label = ranking.regionLabel.ifBlank { ranking.region })
+    }
   }
 
   Column(
@@ -136,7 +140,9 @@ internal fun RankingsScreen(
           SharedEmptyState(
             artwork = EmptyStateArtwork.NoLiveMatches,
             title = stringResource(Res.string.no_rankings_yet),
-            message = selectedRanking?.let { stringResource(Res.string.region_rankings_unpublished, it.region) }
+            message = selectedRanking?.let {
+              stringResource(Res.string.region_rankings_unpublished, it.regionLabel.ifBlank { it.region })
+            }
               ?: stringResource(Res.string.regional_rankings_unpublished),
             modifier = Modifier.fillMaxWidth().weight(1f),
           )
@@ -167,7 +173,11 @@ private fun RankingsContent(
     if (selectedRanking.teams.isNotEmpty()) {
       item {
         Text(
-          text = stringResource(Res.string.top_teams_in_region, selectedRanking.teams.size, selectedRanking.region),
+          text = stringResource(
+            Res.string.top_teams_in_region,
+            selectedRanking.teams.size,
+            selectedRanking.regionLabel.ifBlank { selectedRanking.region },
+          ),
           style = Prism.typography.label,
           color = Prism.color.labelColor,
         )
@@ -200,7 +210,7 @@ private fun RankingTeamItem(
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Text(
-        text = "#${team.rank} ${team.teamName}",
+        text = stringResource(Res.string.ranking_team_label, team.rank, team.teamName),
         modifier = Modifier.weight(1f),
         style = Prism.typography.cardTitle,
         color = if (team.isFavorite) Prism.color.accent else Prism.color.titleColor,
@@ -219,7 +229,11 @@ private fun RankingTeamItem(
       horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      Text(text = "${team.country} •", style = Prism.typography.bodySmall, color = Prism.color.labelColor)
+      Text(
+        text = stringResource(Res.string.country_with_separator, team.country),
+        style = Prism.typography.bodySmall,
+        color = Prism.color.labelColor,
+      )
       Text(
         text = stringResource(Res.string.ranking_points, team.points),
         style = Prism.typography.bodySmall,

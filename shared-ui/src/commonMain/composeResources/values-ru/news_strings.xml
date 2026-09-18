@@ -1,0 +1,47 @@
+<resources>
+  <string name="news_unknown_author">неизвестен</string>
+  <string name="news_untitled_article">Статья без названия</string>
+  <string name="news_by_author">Автор: %1$s</string>
+  <string name="news_open_article_image">Открыть изображение из статьи</string>
+  <string name="news_open_full_image">Открыть изображение целиком</string>
+  <string name="news_article_image">Изображение из статьи</string>
+  <string name="news_media">Медиа</string>
+  <string name="news_assets">материалы</string>
+  <string name="news_article_assets">Материалы статьи</string>
+  <string name="news_assets_description">Изображения, видео и ссылки, найденные в данных статьи.</string>
+  <string name="news_references">Ссылки</string>
+  <string name="news_media_prelabel">медиа</string>
+  <string name="news_reference">Ссылка</string>
+  <string name="news_open">открыть</string>
+  <string name="news_watch_video">Смотреть видео</string>
+  <string name="news_retry_player">Повторить загрузку плеера</string>
+  <string name="news_player_load_failed">Не удалось загрузить плеер. Его можно открыть напрямую.</string>
+  <string name="news_close_player">Закрыть плеер</string>
+  <string name="news_open_provider">Открыть в %1$s</string>
+  <string name="news_play_clip">▶  Воспроизвести клип %1$s</string>
+  <string name="news_play_video">▶  Воспроизвести видео %1$s</string>
+  <plurals name="news_reference_count">
+    <item quantity="one">%1$d ссылка</item>
+    <item quantity="few">%1$d ссылки</item>
+    <item quantity="many">%1$d ссылок</item>
+    <item quantity="other">%1$d ссылок</item>
+  </plurals>
+  <plurals name="news_image_count">
+    <item quantity="one">%1$d изображение</item>
+    <item quantity="few">%1$d изображения</item>
+    <item quantity="many">%1$d изображений</item>
+    <item quantity="other">%1$d изображений</item>
+  </plurals>
+  <plurals name="news_video_count">
+    <item quantity="one">%1$d видео</item>
+    <item quantity="few">%1$d видео</item>
+    <item quantity="many">%1$d видео</item>
+    <item quantity="other">%1$d видео</item>
+  </plurals>
+  <plurals name="news_asset_count">
+    <item quantity="one">%1$d материал</item>
+    <item quantity="few">%1$d материала</item>
+    <item quantity="many">%1$d материалов</item>
+    <item quantity="other">%1$d материалов</item>
+  </plurals>
+</resources>

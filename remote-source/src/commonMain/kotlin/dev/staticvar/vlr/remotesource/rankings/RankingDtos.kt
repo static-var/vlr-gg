@@ -20,5 +20,6 @@ data class TeamRankingDto(
 @Serializable
 data class RankingDto(
   @SerialName("region") val region: String = "",
+  @SerialName("region_label") val regionLabel: String? = null,
   @SerialName("teams") val teams: List<TeamRankingDto> = emptyList(),
 )

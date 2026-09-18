@@ -1,0 +1,16 @@
+<resources>
+    <string name="news_title">Новости</string>
+    <string name="scroll_to_top">Наверх</string>
+    <string name="loading_article">Загрузка статьи</string>
+    <string name="no_article_yet">Статьи пока нет</string>
+    <string name="article_unpublished">Эта статья ещё не опубликована.</string>
+    <string name="no_article_text_yet">Текста статьи пока нет</string>
+    <string name="article_text_unpublished">Текст статьи ещё не опубликован.</string>
+    <string name="read_on_vlr">Читать на VLR.gg</string>
+    <string name="loading_news">Загрузка новостей</string>
+    <string name="news_heading">НОВОСТИ</string>
+    <string name="news_subtitle">События киберспортивной сцены VALORANT</string>
+    <string name="no_stories_yet">Новостей пока нет</string>
+    <string name="news_unpublished">Новости киберспортивной сцены VALORANT появятся здесь после публикации.</string>
+    <string name="refresh">Обновить</string>
+</resources>

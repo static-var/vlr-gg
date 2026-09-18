@@ -9,7 +9,11 @@ import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.serialization.json.Json
 
 actual class HttpClientFactory {
-  actual fun create(json: Json, configuration: NetworkConfiguration): HttpClient = HttpClient(OkHttp) {
-    configureHttpClient(json, configuration)
+  actual fun create(
+    json: Json,
+    configuration: NetworkConfiguration,
+    acceptLanguageProvider: AcceptLanguageProvider,
+  ): HttpClient = HttpClient(OkHttp) {
+    configureHttpClient(json, configuration, acceptLanguageProvider)
   }
 }

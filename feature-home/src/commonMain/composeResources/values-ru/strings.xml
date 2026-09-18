@@ -1,0 +1,17 @@
+<resources>
+    <string name="browse_events">Смотреть турниры</string>
+    <string name="browse_matches">Смотреть матчи</string>
+    <string name="events">Турниры</string>
+    <string name="empty_favorites_description">Добавьте команды, игроков, матчи или турниры в избранное, чтобы видеть здесь то, что вам интересно.</string>
+    <string name="favorites">Избранное</string>
+    <string name="home">Главная</string>
+    <string name="loading_your_favorites">Загрузка избранного</string>
+    <string name="make_home_yours">Настройте главную страницу</string>
+    <string name="matches">Матчи</string>
+    <string name="empty_related_events">Сейчас нет турниров, связанных с избранным. Они появятся здесь после обновления расписания.</string>
+    <string name="empty_related_matches">Сейчас нет матчей, связанных с избранным. Новые встречи появятся здесь автоматически.</string>
+    <string name="players">Игроки</string>
+    <string name="settings">Настройки</string>
+    <string name="teams">Команды</string>
+    <string name="your_favorites">Ваше избранное</string>
+</resources>

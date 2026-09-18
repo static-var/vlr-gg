@@ -16,6 +16,12 @@ import vlr.shared_ui.generated.resources.format_groupStage
 import vlr.shared_ui.generated.resources.format_groupStatus
 import vlr.shared_ui.generated.resources.format_matchTbd
 import vlr.shared_ui.generated.resources.format_region
+import vlr.shared_ui.generated.resources.format_status_completed
+import vlr.shared_ui.generated.resources.format_status_live
+import vlr.shared_ui.generated.resources.format_status_ongoing
+import vlr.shared_ui.generated.resources.format_status_paused
+import vlr.shared_ui.generated.resources.format_status_unknown
+import vlr.shared_ui.generated.resources.format_status_upcoming
 import vlr.shared_ui.generated.resources.format_tbd
 import vlr.shared_ui.generated.resources.format_teams
 import vlr.shared_ui.generated.resources.format_unknown
@@ -56,10 +62,10 @@ public fun List<EventMatch>.groupEventMatches(
   labels: EventFormattingLabels,
 ): Map<String, List<EventMatch>> = groupBy { match ->
   when (grouping) {
-    EventMatchGrouping.Status -> match.status
-    EventMatchGrouping.Round -> match.round
-    EventMatchGrouping.Stage -> match.stage
-  }.eventGroupLabel(labels)
+    EventMatchGrouping.Status -> match.status.eventMatchStatusLabel(labels)
+    EventMatchGrouping.Round -> match.round.eventGroupLabel(labels)
+    EventMatchGrouping.Stage -> match.stage.eventGroupLabel(labels)
+  }
 }
 
 internal fun String.eventHeroDateStat(): String = substringBefore(delimiter = "-")
@@ -97,6 +103,15 @@ private fun String.eventGroupLabel(labels: EventFormattingLabels): String = trim
   .ifBlank { labels.unknown }
   .replaceFirstChar { char -> char.uppercase() }
 
+private fun String.eventMatchStatusLabel(labels: EventFormattingLabels): String = when (trim().lowercase()) {
+  "live" -> labels.live
+  "ongoing" -> labels.ongoing
+  "paused" -> labels.paused
+  "upcoming", "tbd" -> labels.upcoming
+  "completed", "final" -> labels.completed
+  else -> labels.unknown
+}
+
 private fun Double.toCompactDecimal(): String {
   val rounded = round(this * 100.0) / 100.0
   return rounded.toString().trimEnd('0').trimEnd('.')
@@ -109,6 +124,11 @@ public data class EventFormattingLabels(
   public val teams: String,
   public val region: String,
   public val unknown: String,
+  public val live: String,
+  public val ongoing: String,
+  public val paused: String,
+  public val upcoming: String,
+  public val completed: String,
 )
 
 @Composable
@@ -119,4 +139,9 @@ public fun eventFormattingLabels(teamCount: Int = 0): EventFormattingLabels = Ev
   teams = pluralStringResource(Res.plurals.format_teams, teamCount, teamCount),
   region = stringResource(Res.string.format_region),
   unknown = stringResource(Res.string.format_unknown),
+  live = stringResource(Res.string.format_status_live),
+  ongoing = stringResource(Res.string.format_status_ongoing),
+  paused = stringResource(Res.string.format_status_paused),
+  upcoming = stringResource(Res.string.format_status_upcoming),
+  completed = stringResource(Res.string.format_status_completed),
 )

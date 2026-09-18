@@ -1,0 +1,39 @@
+<resources>
+  <string name="shared_offline_title">Vous êtes hors ligne</string>
+  <string name="shared_offline_loading">Connectez-vous à Internet pour charger cet écran. Il se mettra à jour lorsque vous serez de nouveau en ligne.</string>
+  <string name="shared_loading">Chargement</string>
+  <string name="shared_offline">Hors ligne</string>
+  <string name="shared_refreshing">Actualisation</string>
+  <string name="shared_ready_to_refresh">Prêt à actualiser</string>
+  <string name="shared_load_failed">Impossible de charger les données</string>
+  <string name="shared_refresh_failed">Impossible d’actualiser les données</string>
+  <string name="shared_offline_empty">Reconnectez-vous à Internet. Cet écran se mettra à jour automatiquement.</string>
+  <string name="shared_offline_saved">Affichage du contenu enregistré. Reconnectez-vous pour obtenir les mises à jour.</string>
+  <string name="shared_load_error_message">Un problème est survenu. Essayez de charger à nouveau cet écran.</string>
+  <string name="shared_refresh_error_message">Votre contenu enregistré reste disponible. Réessayez.</string>
+  <string name="shared_retry">Réessayer</string>
+  <string name="shared_show_details">Afficher les détails</string>
+  <string name="shared_error_details">Détails de l’erreur</string>
+  <string name="shared_close">Fermer</string>
+  <string name="shared_copied">Copié</string>
+  <string name="shared_copy_stack_trace">Copier la trace d’appel</string>
+  <string name="shared_no_internet">Aucune connexion Internet</string>
+  <string name="shared_show_spoilers">Afficher les résultats et les statistiques dans toute l’application</string>
+  <string name="shared_hide_spoilers">Masquer les résultats et les statistiques dans toute l’application</string>
+  <string name="shared_spoilers_on">Mode sans spoilers activé</string>
+  <string name="shared_spoilers_off">Mode sans spoilers désactivé</string>
+  <string name="shared_spoilers_notice">Résultats et statistiques masqués par le mode sans spoilers</string>
+  <string name="shared_result_hidden">Résultat masqué</string>
+  <string name="shared_rosie_description">Rosie, mascotte chien</string>
+  <string name="shared_lynx_description">Lynx, mascotte chat</string>
+  <string name="shared_favorite_source">Source favorite : %1$s</string>
+  <string name="shared_view_stat">Afficher %1$s</string>
+  <string name="shared_team_label">équipe</string>
+  <string name="shared_team_unranked">non classée</string>
+  <string name="shared_team_profile">Profil de l’équipe</string>
+  <plurals name="shared_team_players">
+    <item quantity="one">%1$d joueur</item>
+    <item quantity="other">%1$d joueurs</item>
+  </plurals>
+  <string name="shared_team_upcoming">%1$d dans les 7 prochains jours</string>
+</resources>

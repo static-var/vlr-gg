@@ -14,6 +14,7 @@
     <string name="history">history</string>
     <string name="current_team">Current team</string>
     <string name="previous_team">Previous team</string>
+    <string name="player_winnings">$%1$s</string>
     <string name="agent_usage">%1$s% usage • %2$s • %3$s</string>
     <string name="agent_performance">ACS %1$s • ADR %2$s • K/D %3$s</string>
     <string name="favorite_update_failed">Couldn't update favorite. Try again.</string>

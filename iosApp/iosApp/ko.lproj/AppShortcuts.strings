@@ -1,0 +1,5 @@
+"Open VLR in ${applicationName}" = "${applicationName}에서 VLR 열기";
+"Open my next match in ${applicationName}" = "${applicationName}에서 내 다음 경기 열기";
+"Turn on spoiler protection in ${applicationName}" = "${applicationName}에서 스포일러 방지 켜기";
+"What's my next favorite match in ${applicationName}" = "${applicationName}에서 내 다음 즐겨찾기 경기는 무엇이야";
+"When is my next match in ${applicationName}" = "${applicationName}에서 내 다음 경기는 언제야";

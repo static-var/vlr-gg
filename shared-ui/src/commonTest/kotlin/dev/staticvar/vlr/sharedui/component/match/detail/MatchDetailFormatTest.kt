@@ -6,8 +6,10 @@ package dev.staticvar.vlr.sharedui.component.match.detail
 
 import dev.staticvar.vlr.domain.model.EventInfo
 import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.MatchVideos
 import dev.staticvar.vlr.domain.model.TeamDetails
+import dev.staticvar.vlr.domain.model.VetoAction
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -35,6 +37,20 @@ class MatchDetailFormatTest {
     )
 
     assertEquals(3, match(status = "completed", mapCount = 2, bans = bans).matchDetailBestOf())
+    assertEquals(3, match(status = " FINAL ", mapCount = 2, bans = bans).matchDetailBestOf())
+  }
+
+  @Test
+  fun completedStructuredVetoDerivesFormatFromPicksAndRemainingMap() {
+    val veto = listOf(
+      MatchVeto(team = "FNC", action = VetoAction.BAN, map = "Corrode"),
+      MatchVeto(team = "NRG", action = VetoAction.BAN, map = "Haven"),
+      MatchVeto(team = "FNC", action = VetoAction.PICK, map = "Ascent"),
+      MatchVeto(team = "NRG", action = VetoAction.PICK, map = "Abyss"),
+      MatchVeto(team = null, action = VetoAction.REMAINS, map = "Lotus"),
+    )
+
+    assertEquals(3, match(status = "completed").copy(veto = veto).matchDetailBestOf())
   }
 
   @Test
@@ -44,6 +60,7 @@ class MatchDetailFormatTest {
     )
 
     assertEquals(null, completedSweep.matchDetailBestOf())
+    assertEquals(null, match(status = "FINAL", mapCount = 3).matchDetailBestOf())
     assertEquals(
       null,
       completedSweep.copy(bans = listOf("FNC pick Ascent", "NRG pick Abyss")).matchDetailBestOf(),
@@ -53,6 +70,7 @@ class MatchDetailFormatTest {
   @Test
   fun upcomingAndLiveOddMapCountsRepresentPlannedFormat() {
     assertEquals(3, match(status = "UPCOMING", mapCount = 3).matchDetailBestOf())
+    assertEquals(3, match(status = " TbD ", mapCount = 3).matchDetailBestOf())
     assertEquals(5, match(status = "live", mapCount = 5).matchDetailBestOf())
     assertEquals(3, match(status = "ongoing", mapCount = 3).matchDetailBestOf())
     assertEquals(null, match(status = "live", mapCount = 2).matchDetailBestOf())

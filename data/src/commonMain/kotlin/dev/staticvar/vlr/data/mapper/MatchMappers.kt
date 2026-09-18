@@ -11,6 +11,8 @@ import dev.staticvar.vlr.data.MatchMaps
 import dev.staticvar.vlr.data.MatchPreviousEncounters
 import dev.staticvar.vlr.data.MatchVideos
 import dev.staticvar.vlr.data.Matches
+import dev.staticvar.vlr.domain.model.MatchVeto
+import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.remotesource.match.AgentInfoDto
 import dev.staticvar.vlr.remotesource.match.MapDataDto
 import dev.staticvar.vlr.remotesource.match.MatchDetailsDto
@@ -21,6 +23,7 @@ import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
 import kotlin.time.Clock
 import dev.staticvar.vlr.remotesource.api.MatchPreviewDto as ApiMatchPreviewDto
 import dev.staticvar.vlr.remotesource.api.TeamDto as PreviewTeamDto
+import dev.staticvar.vlr.remotesource.common.VetoAction as RemoteVetoAction
 import dev.staticvar.vlr.remotesource.match.TeamDto as DetailTeamDto
 
 /** Manual mapping for match preview from API package (complex flattening) */
@@ -192,6 +195,19 @@ internal fun MatchDetailsDto.toBanEntities(matchId: String): List<MatchBans> = b
     match_id = matchId,
     ban_type = "map",
     ban_value = value,
+  )
+}
+
+internal fun MatchDetailsDto.toVetoModels(): List<MatchVeto> = veto.map { step ->
+  MatchVeto(
+    team = step.team,
+    action = when (step.action) {
+      RemoteVetoAction.BAN -> VetoAction.BAN
+      RemoteVetoAction.PICK -> VetoAction.PICK
+      RemoteVetoAction.REMAINS -> VetoAction.REMAINS
+      RemoteVetoAction.UNKNOWN -> VetoAction.UNKNOWN
+    },
+    map = step.map,
   )
 }
 

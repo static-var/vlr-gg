@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="navigation_home">होम</string>
+  <string name="navigation_matches">मैच</string>
+  <string name="navigation_events">इवेंट</string>
+  <string name="navigation_ranking">रैंकिंग</string>
+  <string name="navigation_news">समाचार</string>
+</resources>

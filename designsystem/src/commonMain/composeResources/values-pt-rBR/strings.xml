@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="prism_refresh">Atualizar</string>
+  <string name="prism_collapse_section">Recolher seção</string>
+  <string name="prism_expand_section">Expandir seção</string>
+  <string name="prism_favorite">Favorito</string>
+  <string name="prism_not_favorite">Não favorito</string>
+  <string name="prism_back">Voltar</string>
+  <string name="prism_loading">CARREGANDO</string>
+  <string name="prism_loader_sync">SINCRONIZAR</string>
+  <string name="prism_loader_fetch">BUSCAR</string>
+  <string name="prism_loader_parse">PROCESSAR</string>
+  <string name="prism_loader_merge">COMBINAR</string>
+  <string name="prism_loader_render">EXIBIR</string>
+  <string name="prism_loader_label_phase">%1$s · %2$s</string>
+</resources>

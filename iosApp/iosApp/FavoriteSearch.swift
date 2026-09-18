@@ -8,6 +8,10 @@ import UniformTypeIdentifiers
 struct SearchFavorite: Codable, Equatable, Sendable {
     enum Kind: String, Codable, Sendable {
         case team, event, match, player
+
+        var localizedName: String {
+            NativeLocalization.string("favorite.kind.\(rawValue)")
+        }
     }
 
     let id: String
@@ -31,8 +35,16 @@ struct SearchFavorite: Codable, Equatable, Sendable {
     func attributes() -> CSSearchableItemAttributeSet {
         let attributes = CSSearchableItemAttributeSet(contentType: .content)
         attributes.title = title
-        attributes.contentDescription = "Favorite \(kind.rawValue) in Val Esports"
-        attributes.keywords = ["VLR", "Val Esports", kind.rawValue, "favorite"]
+        attributes.contentDescription = NativeLocalization.format(
+            "spotlight.favorite.description",
+            kind.localizedName
+        )
+        attributes.keywords = [
+            "VLR",
+            "Val Esports",
+            kind.localizedName,
+            NativeLocalization.string("spotlight.favorite.keyword"),
+        ]
         attributes.url = url
         return attributes
     }
@@ -195,7 +207,7 @@ struct FavoriteEntity: AppEntity {
     let record: SearchFavorite
     var id: String { record.id }
     var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(record.title)", subtitle: "\(record.kind.rawValue.capitalized)")
+        DisplayRepresentation(title: "\(record.title)", subtitle: "\(record.kind.localizedName)")
     }
 }
 

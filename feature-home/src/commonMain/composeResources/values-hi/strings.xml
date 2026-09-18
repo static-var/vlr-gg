@@ -1,0 +1,17 @@
+<resources>
+    <string name="browse_events">इवेंट देखें</string>
+    <string name="browse_matches">मैच देखें</string>
+    <string name="events">इवेंट</string>
+    <string name="empty_favorites_description">टीमों, खिलाड़ियों, मैचों या इवेंट को पसंदीदा बनाएँ, ताकि आपके लिए अहम मैच और इवेंट यहाँ दिखाई दें।</string>
+    <string name="favorites">पसंदीदा</string>
+    <string name="home">होम</string>
+    <string name="loading_your_favorites">आपके पसंदीदा लोड हो रहे हैं</string>
+    <string name="make_home_yours">होम को अपना बनाएँ</string>
+    <string name="matches">मैच</string>
+    <string name="empty_related_events">फ़िलहाल कोई इवेंट आपके पसंदीदा से जुड़ा नहीं है। शेड्यूल अपडेट होने पर संबंधित इवेंट यहाँ दिखाई देंगे।</string>
+    <string name="empty_related_matches">फ़िलहाल कोई मैच आपके पसंदीदा से जुड़ा नहीं है। नए मुकाबले यहाँ अपने-आप दिखाई देंगे।</string>
+    <string name="players">खिलाड़ी</string>
+    <string name="settings">सेटिंग</string>
+    <string name="teams">टीमें</string>
+    <string name="your_favorites">आपके पसंदीदा</string>
+</resources>

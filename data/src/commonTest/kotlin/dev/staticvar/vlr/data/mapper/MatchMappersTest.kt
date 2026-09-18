@@ -11,6 +11,9 @@ import dev.staticvar.vlr.data.MatchMaps
 import dev.staticvar.vlr.data.MatchPreviousEncounters
 import dev.staticvar.vlr.data.MatchVideos
 import dev.staticvar.vlr.data.Matches
+import dev.staticvar.vlr.domain.model.MatchStatus
+import dev.staticvar.vlr.domain.model.RoundWinType
+import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.remotesource.api.MatchPreviewDto
 import dev.staticvar.vlr.remotesource.match.AgentInfoDto
 import dev.staticvar.vlr.remotesource.match.EventDto
@@ -21,14 +24,51 @@ import dev.staticvar.vlr.remotesource.match.PlayerStatsDto
 import dev.staticvar.vlr.remotesource.match.PreviousEncounterDto
 import dev.staticvar.vlr.remotesource.match.RoundInfoDto
 import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
+import dev.staticvar.vlr.remotesource.match.VetoDto
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import dev.staticvar.vlr.remotesource.api.TeamDto as PreviewTeamDto
+import dev.staticvar.vlr.remotesource.common.VetoAction as RemoteVetoAction
 import dev.staticvar.vlr.remotesource.match.TeamDto as DetailTeamDto
 
 class MatchMappersTest {
+
+  @Test
+  fun `round win type accepts server values containing spaces`() {
+    assertEquals(RoundWinType.SPIKE_EXPLODED, "Spike exploded".toRoundWinType())
+    assertEquals(RoundWinType.TIME_OUT, "Time out".toRoundWinType())
+    assertEquals(RoundWinType.TIME_OUT, "  Time   out  ".toRoundWinType())
+  }
+
+  @Test
+  fun `all server match statuses map to app behavior`() {
+    assertEquals(MatchStatus.UPCOMING, "upcoming".toMatchStatus())
+    assertEquals(MatchStatus.UPCOMING, "tbd".toMatchStatus())
+    assertEquals(MatchStatus.LIVE, "live".toMatchStatus())
+    assertEquals(MatchStatus.LIVE, "ongoing".toMatchStatus())
+    assertEquals(MatchStatus.COMPLETED, "completed".toMatchStatus())
+    assertEquals(MatchStatus.COMPLETED, "final".toMatchStatus())
+    assertEquals(MatchStatus.UNKNOWN, "unexpected".toMatchStatus())
+  }
+
+  @Test
+  fun `structured veto maps canonical actions and retains unknown raw note`() {
+    val details = sampleDetailsDto().copy(
+      veto = listOf(
+        VetoDto(team = "FNC", action = RemoteVetoAction.BAN, map = "Bind", actionLabel = "ignored"),
+        VetoDto(team = null, action = RemoteVetoAction.UNKNOWN, map = "Map ban: Haven", actionLabel = "ignored"),
+      ),
+    )
+
+    val veto = details.toVetoModels()
+
+    assertEquals(VetoAction.BAN, veto[0].action)
+    assertEquals("FNC", veto[0].team)
+    assertEquals(VetoAction.UNKNOWN, veto[1].action)
+    assertEquals("Map ban: Haven", veto[1].map)
+  }
 
   @Test
   fun `details without status preserve the cached match status`() {

@@ -16,7 +16,7 @@ class TeamDataSourceTest {
   fun details_parses_real_fixture() = runTest {
     val json = readFixture("team_2593.json")
     val ds = TeamDataSourceImpl(singleResponseClient(json))
-    val details = ds.details("2593").getOrThrow()
+    val details = ds.details("2593").getOrThrow().value
     assertEquals("FNATIC", details.name)
     assertTrue(details.roster.isNotEmpty())
     assertTrue(details.completed.isNotEmpty())

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="team_details">팀 상세</string>
+    <string name="loading_team">팀 불러오는 중</string>
+    <string name="no_team_details">아직 팀 정보가 없습니다</string>
+    <string name="team_not_published">이 팀의 프로필은 아직 공개되지 않았습니다.</string>
+    <string name="team_subtitle">로스터, 경기 결과 및 최근 성적</string>
+    <string name="updating_favorite">즐겨찾기 업데이트 중</string>
+    <string name="remove_team_favorite">즐겨찾기에서 팀 삭제</string>
+    <string name="add_team_favorite">팀을 즐겨찾기에 추가</string>
+    <string name="unranked">순위 없음</string>
+    <string name="team_rank">%1$d위</string>
+    <string name="roster">로스터</string>
+    <string name="players">선수</string>
+    <string name="favorite_player">즐겨찾는 선수</string>
+    <string name="no_upcoming_matches">예정된 경기 없음</string>
+    <string name="no_upcoming_team_fixtures">이 팀의 예정된 경기가 아직 공개되지 않았습니다.</string>
+    <string name="no_completed_matches">완료된 경기 없음</string>
+    <string name="no_team_results">이 팀의 경기 결과가 아직 공개되지 않았습니다.</string>
+    <string name="upcoming">예정</string>
+    <string name="completed">완료</string>
+    <string name="event_stage">%1$s • %2$s</string>
+    <string name="middle_dot">•</string>
+    <string name="favorite_update_failed">즐겨찾기를 업데이트할 수 없습니다. 다시 시도해 주세요.</string>
+</resources>

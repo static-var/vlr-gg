@@ -1,0 +1,13 @@
+<resources>
+    <string name="rankings_title">रैंकिंग</string>
+    <string name="rankings_subtitle">हर क्षेत्र की शीर्ष टीमें</string>
+    <string name="loading_rankings">रैंकिंग लोड हो रही है</string>
+    <string name="no_rankings_yet">अभी कोई रैंकिंग नहीं है</string>
+    <string name="regional_rankings_unpublished">क्षेत्रीय टीम रैंकिंग अभी प्रकाशित नहीं हुई है।</string>
+    <string name="favorite_team">पसंदीदा टीम</string>
+    <string name="region_rankings_unpublished">%1$s की टीम रैंकिंग अभी प्रकाशित नहीं हुई है।</string>
+    <string name="top_teams_in_region">शीर्ष %1$d • %2$s</string>
+    <string name="ranking_points">%1$s अंक</string>
+    <string name="ranking_team_label">#%1$d %2$s</string>
+    <string name="country_with_separator">%1$s •</string>
+</resources>

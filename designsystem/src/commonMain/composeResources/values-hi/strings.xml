@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="prism_refresh">रीफ़्रेश करें</string>
+  <string name="prism_collapse_section">सेक्शन समेटें</string>
+  <string name="prism_expand_section">सेक्शन खोलें</string>
+  <string name="prism_favorite">पसंदीदा</string>
+  <string name="prism_not_favorite">पसंदीदा नहीं</string>
+  <string name="prism_back">वापस</string>
+  <string name="prism_loading">लोड हो रहा है</string>
+  <string name="prism_loader_sync">सिंक</string>
+  <string name="prism_loader_fetch">प्राप्त करें</string>
+  <string name="prism_loader_parse">प्रोसेस करें</string>
+  <string name="prism_loader_merge">मिलाएँ</string>
+  <string name="prism_loader_render">दिखाएँ</string>
+  <string name="prism_loader_label_phase">%1$s · %2$s</string>
+</resources>

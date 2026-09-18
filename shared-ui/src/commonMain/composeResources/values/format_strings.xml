@@ -45,6 +45,7 @@
   <string name="format_linkUnavailable">Link unavailable</string>
   <string name="format_recent_lower">recent</string>
   <string name="format_bestOf">BO%1$d</string>
+  <string name="format_status_live">LIVE</string>
   <string name="format_status_ongoing">ONGOING</string>
   <string name="format_status_paused">PAUSED</string>
   <string name="format_status_upcoming">UPCOMING</string>

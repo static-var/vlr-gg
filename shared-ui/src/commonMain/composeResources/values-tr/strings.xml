@@ -1,0 +1,39 @@
+<resources>
+  <string name="shared_offline_title">Çevrimdışısınız</string>
+  <string name="shared_offline_loading">Bu ekranı yüklemek için internete bağlanın. Yeniden çevrimiçi olduğunuzda ekran güncellenecek.</string>
+  <string name="shared_loading">Yükleniyor</string>
+  <string name="shared_offline">Çevrimdışı</string>
+  <string name="shared_refreshing">Yenileniyor</string>
+  <string name="shared_ready_to_refresh">Yenilemeye hazır</string>
+  <string name="shared_load_failed">Veriler yüklenemedi</string>
+  <string name="shared_refresh_failed">Veriler yenilenemedi</string>
+  <string name="shared_offline_empty">İnternete yeniden bağlanın. Bu ekran otomatik olarak güncellenecek.</string>
+  <string name="shared_offline_saved">Kaydedilen içerik gösteriliyor. Güncellemeleri almak için yeniden bağlanın.</string>
+  <string name="shared_load_error_message">Bir sorun oluştu. Bu ekranı yeniden yüklemeyi deneyin.</string>
+  <string name="shared_refresh_error_message">Kaydedilen içeriğiniz hâlâ kullanılabilir. Yeniden deneyin.</string>
+  <string name="shared_retry">Yeniden dene</string>
+  <string name="shared_show_details">Ayrıntıları göster</string>
+  <string name="shared_error_details">Hata ayrıntıları</string>
+  <string name="shared_close">Kapat</string>
+  <string name="shared_copied">Kopyalandı</string>
+  <string name="shared_copy_stack_trace">Yığın izini kopyala</string>
+  <string name="shared_no_internet">İnternet bağlantısı yok</string>
+  <string name="shared_show_spoilers">Sonuçları ve istatistikleri uygulamanın her yerinde göster</string>
+  <string name="shared_hide_spoilers">Sonuçları ve istatistikleri uygulamanın her yerinde gizle</string>
+  <string name="shared_spoilers_on">Spoilersız mod açık</string>
+  <string name="shared_spoilers_off">Spoilersız mod kapalı</string>
+  <string name="shared_spoilers_notice">Sonuçlar ve istatistikler Spoilersız mod nedeniyle gizlendi</string>
+  <string name="shared_result_hidden">Sonuç gizli</string>
+  <string name="shared_rosie_description">Köpek maskot Rosie</string>
+  <string name="shared_lynx_description">Kedi maskot Lynx</string>
+  <string name="shared_favorite_source">Favori kaynağı: %1$s</string>
+  <string name="shared_view_stat">%1$s görüntüle</string>
+  <string name="shared_team_label">takım</string>
+  <string name="shared_team_unranked">sıralamasız</string>
+  <string name="shared_team_profile">Takım profili</string>
+  <plurals name="shared_team_players">
+    <item quantity="one">%1$d oyuncu</item>
+    <item quantity="other">%1$d oyuncu</item>
+  </plurals>
+  <string name="shared_team_upcoming">%1$d önümüzdeki 7 günde</string>
+</resources>

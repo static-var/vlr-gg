@@ -9,7 +9,11 @@ import io.ktor.client.engine.darwin.Darwin
 import kotlinx.serialization.json.Json
 
 actual class HttpClientFactory {
-  actual fun create(json: Json, configuration: NetworkConfiguration): HttpClient = HttpClient(Darwin) {
-    configureHttpClient(json, configuration)
+  actual fun create(
+    json: Json,
+    configuration: NetworkConfiguration,
+    acceptLanguageProvider: AcceptLanguageProvider,
+  ): HttpClient = HttpClient(Darwin) {
+    configureHttpClient(json, configuration, acceptLanguageProvider)
   }
 }

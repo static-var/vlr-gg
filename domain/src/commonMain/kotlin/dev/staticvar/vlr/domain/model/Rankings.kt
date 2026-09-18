@@ -7,7 +7,11 @@ package dev.staticvar.vlr.domain.model
 /**
  * Domain model for regional team rankings.
  */
-data class RegionalRanking(val region: String, val teams: List<TeamRanking>)
+data class RegionalRanking(
+  val region: String,
+  val teams: List<TeamRanking>,
+  val regionLabel: String = "",
+)
 
 /**
  * Individual team ranking entry.

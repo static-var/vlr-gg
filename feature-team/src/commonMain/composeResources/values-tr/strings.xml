@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="team_details">Takım ayrıntıları</string>
+    <string name="loading_team">Takım yükleniyor</string>
+    <string name="no_team_details">Henüz takım ayrıntısı yok</string>
+    <string name="team_not_published">Bu takımın profili henüz yayınlanmadı.</string>
+    <string name="team_subtitle">Kadro, sonuçlar ve son form durumu</string>
+    <string name="updating_favorite">Favori güncelleniyor</string>
+    <string name="remove_team_favorite">Takımı favorilerden kaldır</string>
+    <string name="add_team_favorite">Takımı favorilere ekle</string>
+    <string name="unranked">Sıralamasız</string>
+    <string name="team_rank">#%1$d</string>
+    <string name="roster">Kadro</string>
+    <string name="players">oyuncular</string>
+    <string name="favorite_player">Favori oyuncu</string>
+    <string name="no_upcoming_matches">Yaklaşan maç yok</string>
+    <string name="no_upcoming_team_fixtures">Bu takım için henüz yaklaşan maç yayınlanmadı.</string>
+    <string name="no_completed_matches">Tamamlanan maç yok</string>
+    <string name="no_team_results">Bu takım için henüz maç sonucu yayınlanmadı.</string>
+    <string name="upcoming">Yaklaşan</string>
+    <string name="completed">Tamamlanan</string>
+    <string name="event_stage">%1$s • %2$s</string>
+    <string name="middle_dot">•</string>
+    <string name="favorite_update_failed">Favori güncellenemedi. Tekrar deneyin.</string>
+</resources>

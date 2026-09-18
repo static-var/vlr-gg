@@ -1,0 +1,17 @@
+<resources>
+    <string name="browse_events">Ver eventos</string>
+    <string name="browse_matches">Ver partidas</string>
+    <string name="events">Eventos</string>
+    <string name="empty_favorites_description">Adicione times, jogadores, partidas ou eventos aos favoritos para ver aqui o que importa para você.</string>
+    <string name="favorites">Favoritos</string>
+    <string name="home">Início</string>
+    <string name="loading_your_favorites">Carregando seus favoritos</string>
+    <string name="make_home_yours">Deixe a tela Início do seu jeito</string>
+    <string name="matches">Partidas</string>
+    <string name="empty_related_events">Nenhum evento atual está relacionado aos seus favoritos. Os eventos relacionados aparecerão conforme as programações forem atualizadas.</string>
+    <string name="empty_related_matches">Nenhuma partida está relacionada aos seus favoritos no momento. Novos confrontos aparecerão aqui automaticamente.</string>
+    <string name="players">Jogadores</string>
+    <string name="settings">Configurações</string>
+    <string name="teams">Times</string>
+    <string name="your_favorites">Seus favoritos</string>
+</resources>

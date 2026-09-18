@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Val Esports</string>
+    <string name="legacy_matches_widget_name">모든 경기</string>
+    <string name="legacy_matches_widget_description">진행 중 및 예정된 경기</string>
+    <string name="legacy_matches_widget_loading">경기 업데이트 중…</string>
+    <string name="upcoming_favorites_widget_name">경기 점수판 (4×2)</string>
+    <string name="small_upcoming_favorites_widget_name">간단한 경기 (2×2)</string>
+    <string name="upcoming_favorites_widget_description">즐겨찾기의 예정 경기</string>
+    <string name="widget_preview_event_one">Valorant Champions Tour</string>
+    <string name="widget_preview_time_one">일\n오후 7:30</string>
+    <string name="widget_preview_team_one">Sentinels</string>
+    <string name="widget_preview_team_two">FNATIC</string>
+    <string name="widget_preview_score">—</string>
+    <string name="widget_preview_format">BO3 · 승자조 결승</string>
+    <string name="widget_versus">대</string>
+    <string name="widget_title">예정된 경기</string>
+    <string name="widget_not_initialized_title">시작하려면 Val Esports를 여세요</string>
+    <string name="widget_not_initialized_body">앱에 즐겨찾기가 저장되면 위젯에 경기가 표시됩니다.</string>
+    <string name="widget_no_favorites_title">즐겨찾기 없음</string>
+    <string name="widget_no_favorites_body">Val Esports에서 팀, 선수, 이벤트 또는 경기를 즐겨찾기에 추가하세요.</string>
+    <string name="widget_no_upcoming_title">예정된 경기 없음</string>
+    <string name="widget_no_upcoming_body">다음 백그라운드 새로고침 후 새 경기가 표시됩니다.</string>
+    <string name="widget_time_tbd">미정</string>
+    <string name="widget_match_teams">%1$s 대 %2$s</string>
+    <string name="widget_time_today">오늘 %1$s</string>
+    <string name="widget_time_tomorrow">내일 %1$s</string>
+    <string name="widget_last_saved">%1$s 업데이트</string>
+    <string name="widget_live">라이브</string>
+    <string name="widget_live_score">%1$s : %2$s</string>
+    <string name="widget_scores_hidden">라이브 점수 숨김</string>
+    <string name="widget_score_unavailable">—</string>
+    <string name="widget_match_metadata_separator">" · "</string>
+    <string name="widget_day_time_format">%1$s · %2$s</string>
+    <string name="widget_upcoming">예정</string>
+    <string name="widget_preview_day">일</string>
+    <string name="widget_preview_clock">오후 7:30</string>
+    <string name="widget_preview_compact_time">일 · 오후 7:30</string>
+</resources>

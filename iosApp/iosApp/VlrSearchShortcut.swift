@@ -49,19 +49,26 @@ struct OpenNextFavoriteMatchIntent: AppIntent {
             if let match = result.match {
                 destination = VLRWidgetContract.matchURL(id: match.id)
                 response = result.refreshed
-                    ? "Opening \(match.team1) versus \(match.team2)."
-                    : "From saved matches, opening \(match.team1) versus \(match.team2). The schedule may have changed."
+                    ? NativeLocalization.format("siri.opening_match", match.team1, match.team2)
+                    : NativeLocalization.format("siri.opening_saved_match", match.team1, match.team2)
             } else {
                 destination = VLRWidgetContract.appURL
-                response = "\(SiriMatchResponse.summary(result)) Opening Val Esports."
+                response = NativeLocalization.format(
+                    "siri.summary_opening_app",
+                    SiriMatchResponse.summary(result)
+                )
             }
         } catch {
             try Task.checkCancellation()
             destination = VLRWidgetContract.appURL
-            response = "\(SiriMatchResponse.unavailable) Opening Val Esports."
+            response = NativeLocalization.format("siri.summary_opening_app", SiriMatchResponse.unavailable)
         }
         guard await UIApplication.shared.open(destination) else {
-            throw NSError(domain: "ValorantEsports.Siri", code: 1, userInfo: [NSLocalizedDescriptionKey: "I couldn't open that match. Please open Val Esports and try again."])
+            throw NSError(
+                domain: "ValorantEsports.Siri",
+                code: 1,
+                userInfo: [NSLocalizedDescriptionKey: NativeLocalization.string("siri.cannot_open_match")]
+            )
         }
         return .result(value: destination, dialog: "\(response)")
     }
@@ -84,13 +91,13 @@ struct SetSpoilerProtectionIntent: AppIntent {
         let matchesJSON = try await SiriMatchResponse.actions().setSpoilersHidden(enabled: enabled)
         try await WidgetSnapshotStore.setSpoilersHidden(enabled, matchesJSON: matchesJSON)
         return .result(dialog: enabled
-            ? "Spoiler protection is on. Match scores are hidden."
-            : "Spoiler protection is off. Match scores are visible.")
+            ? "\(NativeLocalization.string("siri.spoiler_protection_on"))"
+            : "\(NativeLocalization.string("siri.spoiler_protection_off"))")
     }
 }
 
 enum SiriMatchResponse {
-    static let unavailable = "I couldn't check your favorite matches right now. Please try again later."
+    static var unavailable: String { NativeLocalization.string("siri.unavailable") }
 
     @MainActor
     static func actions() -> SiriActions {
@@ -99,28 +106,39 @@ enum SiriMatchResponse {
 
     static func summary(_ result: SiriMatchResult) -> String {
         guard result.hasFavorites else {
-            return "Add favorite teams, players, matches, or events in Val Esports first."
+            return NativeLocalization.string("siri.no_favorites")
         }
         guard let match = result.match else {
             return result.refreshed
-                ? "There are no live or upcoming matches from your favorites right now."
+                ? NativeLocalization.string("siri.no_matches")
                 : unavailable
         }
-        let teams = "\(match.team1) versus \(match.team2)"
-        let event = match.event.isEmpty ? "" : " in \(match.event)"
         let detail: String
         if match.status == "LIVE" {
-            detail = "\(teams)\(event) is live."
+            detail = match.event.isEmpty
+                ? NativeLocalization.format("siri.match_live", match.team1, match.team2)
+                : NativeLocalization.format("siri.match_live_in_event", match.team1, match.team2, match.event)
         } else if let timestamp = match.startTimeEpochMillis {
             let formatter = DateFormatter()
             formatter.dateStyle = .full
             formatter.timeStyle = .short
             let date = Date(timeIntervalSince1970: timestamp.doubleValue / 1_000)
-            detail = "\(teams)\(event) starts \(formatter.string(from: date))."
+            let formattedDate = formatter.string(from: date)
+            detail = match.event.isEmpty
+                ? NativeLocalization.format("siri.match_starts", match.team1, match.team2, formattedDate)
+                : NativeLocalization.format(
+                    "siri.match_starts_in_event",
+                    match.team1,
+                    match.team2,
+                    match.event,
+                    formattedDate
+                )
         } else {
-            detail = "\(teams)\(event) is upcoming. The start time has not been announced."
+            detail = match.event.isEmpty
+                ? NativeLocalization.format("siri.match_upcoming", match.team1, match.team2)
+                : NativeLocalization.format("siri.match_upcoming_in_event", match.team1, match.team2, match.event)
         }
-        return result.refreshed ? detail : "From saved matches: \(detail) The schedule may have changed."
+        return result.refreshed ? detail : NativeLocalization.format("siri.saved_match_detail", detail)
     }
 }
 

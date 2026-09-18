@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="team_details">Сведения о команде</string>
+    <string name="loading_team">Загрузка команды</string>
+    <string name="no_team_details">Сведений о команде пока нет</string>
+    <string name="team_not_published">Профиль этой команды ещё не опубликован.</string>
+    <string name="team_subtitle">Состав, результаты и последние выступления</string>
+    <string name="updating_favorite">Обновление избранного</string>
+    <string name="remove_team_favorite">Удалить команду из избранного</string>
+    <string name="add_team_favorite">Добавить команду в избранное</string>
+    <string name="unranked">Без рейтинга</string>
+    <string name="team_rank">№ %1$d</string>
+    <string name="roster">Состав</string>
+    <string name="players">игроки</string>
+    <string name="favorite_player">Любимый игрок</string>
+    <string name="no_upcoming_matches">Нет предстоящих матчей</string>
+    <string name="no_upcoming_team_fixtures">Для этой команды ещё не опубликованы предстоящие матчи.</string>
+    <string name="no_completed_matches">Нет завершённых матчей</string>
+    <string name="no_team_results">Для этой команды ещё не опубликованы результаты матчей.</string>
+    <string name="upcoming">Предстоящие</string>
+    <string name="completed">Завершённые</string>
+    <string name="event_stage">%1$s • %2$s</string>
+    <string name="middle_dot">•</string>
+    <string name="favorite_update_failed">Не удалось обновить избранное. Повторите попытку.</string>
+</resources>

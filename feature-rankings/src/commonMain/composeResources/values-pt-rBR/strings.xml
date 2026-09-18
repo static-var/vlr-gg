@@ -1,0 +1,13 @@
+<resources>
+    <string name="rankings_title">Classificação</string>
+    <string name="rankings_subtitle">Os melhores times de cada região</string>
+    <string name="loading_rankings">Carregando classificação</string>
+    <string name="no_rankings_yet">Nenhuma classificação ainda</string>
+    <string name="regional_rankings_unpublished">As classificações regionais dos times ainda não foram publicadas.</string>
+    <string name="favorite_team">Time favorito</string>
+    <string name="region_rankings_unpublished">As classificações dos times de %1$s ainda não foram publicadas.</string>
+    <string name="top_teams_in_region">%1$d melhores • %2$s</string>
+    <string name="ranking_points">%1$s pts</string>
+    <string name="ranking_team_label">#%1$d %2$s</string>
+    <string name="country_with_separator">%1$s •</string>
+</resources>

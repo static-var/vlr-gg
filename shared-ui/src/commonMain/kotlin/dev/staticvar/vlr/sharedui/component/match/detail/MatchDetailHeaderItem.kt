@@ -26,11 +26,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.tag.PrismTag
+import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.component.ticket.PrismTicket
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.TeamPreview
+import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
@@ -58,7 +60,9 @@ public fun MatchDetailHeaderItem(
   favoriteAction: (@Composable () -> Unit)? = null,
 ) {
   val spoilersHidden = LocalSpoilerMode.current.enabled
-  val canShowVeto = !spoilersHidden && match.bans.any(String::isNotBlank)
+  val vetoEntries = match.veto.filter { entry -> entry.map.isNotBlank() || entry.action != VetoAction.UNKNOWN }
+  val fallbackVetoEntries = match.bans.filter(String::isNotBlank).takeIf { vetoEntries.isEmpty() }.orEmpty()
+  val canShowVeto = !spoilersHidden && (vetoEntries.isNotEmpty() || fallbackVetoEntries.isNotEmpty())
   var showVeto by remember(match.id, spoilersHidden) { mutableStateOf(false) }
   MatchDetailHeaderContent(
     matchId = match.id,
@@ -67,7 +71,8 @@ public fun MatchDetailHeaderItem(
     series = match.matchDetailMeta(),
     time = formatMatchPreviewTime(match.event.date),
     format = match.matchDetailFormatLabel(),
-    status = match.event.status,
+    statusLabel = match.event.status.matchDetailStatusLabel,
+    statusStyle = match.event.status.matchDetailStatusTagStyle,
     teams = match.teams.take(2).map { team ->
       TeamPreview(team.id, team.name, team.region, team.img, team.score, team.isWinner, team.isFavorite)
     },
@@ -85,7 +90,8 @@ public fun MatchDetailHeaderItem(
     favoriteAction = favoriteAction,
   )
   MatchDetailVetoSheet(
-    entries = match.bans.filter(String::isNotBlank),
+    entries = vetoEntries,
+    fallbackEntries = fallbackVetoEntries,
     visible = showVeto && canShowVeto,
     onDismissRequest = { showVeto = false },
   )
@@ -100,7 +106,8 @@ public fun MatchDetailPreviewHeaderItem(match: MatchPreview, modifier: Modifier 
     series = match.series,
     time = formatMatchPreviewTime(match.time),
     format = stringResource(Res.string.match_event_tbd),
-    status = match.status.name.lowercase(),
+    statusLabel = match.status.matchDetailStatusLabel,
+    statusStyle = match.status.matchDetailStatusTagStyle,
     teams = listOf(match.team1, match.team2),
     isFavorite = match.isFavorite,
     favoriteLabels = matchFavoriteReasonLabels(match.favoriteReasons),
@@ -116,7 +123,8 @@ private fun MatchDetailHeaderContent(
   series: String,
   time: String?,
   format: String,
-  status: String?,
+  statusLabel: String,
+  statusStyle: PrismTagStyle,
   teams: List<TeamPreview>,
   isFavorite: Boolean,
   favoriteLabels: List<String>,
@@ -135,7 +143,7 @@ private fun MatchDetailHeaderContent(
     PrismTicket(
       modifier = Modifier.fillMaxWidth().matchSharedBounds(matchId, MatchSharedContent.Card),
       header = {
-        MatchTicketStatus(matchId, series, status, favoriteAction)
+        MatchTicketStatus(matchId, series, statusLabel, statusStyle, favoriteAction)
       },
       stub = {
         MatchTicketStub(matchId, time, format, onVetoSelected, actions)
@@ -183,7 +191,8 @@ private fun MatchTicketEvent(
 private fun MatchTicketStatus(
   matchId: String,
   series: String,
-  status: String?,
+  statusLabel: String,
+  statusStyle: PrismTagStyle,
   favoriteAction: (@Composable () -> Unit)?,
 ) {
   Row(
@@ -201,8 +210,8 @@ private fun MatchTicketStatus(
         overflow = TextOverflow.Ellipsis,
       )
       PrismTag(
-        text = status.matchDetailStatusLabel,
-        style = status.matchDetailStatusTagStyle,
+        text = statusLabel,
+        style = statusStyle,
         modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.Status),
       )
     }

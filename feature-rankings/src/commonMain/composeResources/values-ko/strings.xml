@@ -1,0 +1,13 @@
+<resources>
+    <string name="rankings_title">랭킹</string>
+    <string name="rankings_subtitle">지역별 상위 팀</string>
+    <string name="loading_rankings">랭킹 불러오는 중</string>
+    <string name="no_rankings_yet">아직 랭킹이 없습니다</string>
+    <string name="regional_rankings_unpublished">지역별 팀 랭킹이 아직 게시되지 않았습니다.</string>
+    <string name="favorite_team">즐겨찾는 팀</string>
+    <string name="region_rankings_unpublished">%1$s 팀 랭킹이 아직 게시되지 않았습니다.</string>
+    <string name="top_teams_in_region">상위 %1$d개 팀 • %2$s</string>
+    <string name="ranking_points">%1$s점</string>
+    <string name="ranking_team_label">#%1$d %2$s</string>
+    <string name="country_with_separator">%1$s •</string>
+</resources>

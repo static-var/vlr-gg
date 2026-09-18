@@ -87,3 +87,25 @@ object SearchCategoryNullableSerializer : KSerializer<SearchCategory?> {
   override fun deserialize(decoder: Decoder): SearchCategory? =
     SearchCategory.fromWire(runCatching { decoder.decodeString() }.getOrNull())
 }
+
+@Serializable(with = VetoActionSerializer::class)
+enum class VetoAction(val wireName: String) {
+  BAN("ban"),
+  PICK("pick"),
+  REMAINS("remains"),
+  UNKNOWN("unknown"),
+  ;
+
+  companion object {
+    private val byWire = entries.associateBy(VetoAction::wireName)
+    fun fromWire(value: String?): VetoAction = value?.let { byWire[it] } ?: UNKNOWN
+  }
+}
+
+/** Non-null serializer that retains unsupported veto actions as [VetoAction.UNKNOWN]. */
+object VetoActionSerializer : KSerializer<VetoAction> {
+  override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("VetoAction", PrimitiveKind.STRING)
+  override fun serialize(encoder: Encoder, value: VetoAction) = encoder.encodeString(value.wireName)
+  override fun deserialize(decoder: Decoder): VetoAction =
+    VetoAction.fromWire(runCatching { decoder.decodeString() }.getOrNull())
+}

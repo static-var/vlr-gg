@@ -8,8 +8,10 @@ import dev.staticvar.vlr.remotesource.events.EventDataSource
 import dev.staticvar.vlr.remotesource.events.EventDataSourceImpl
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
 import dev.staticvar.vlr.remotesource.match.MatchDataSourceImpl
+import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
 import dev.staticvar.vlr.remotesource.network.HttpClientFactory
 import dev.staticvar.vlr.remotesource.network.NetworkConfiguration
+import dev.staticvar.vlr.remotesource.network.PlatformAcceptLanguageProvider
 import dev.staticvar.vlr.remotesource.news.NewsDataSource
 import dev.staticvar.vlr.remotesource.news.NewsDataSourceImpl
 import dev.staticvar.vlr.remotesource.player.PlayerDataSource
@@ -34,9 +36,13 @@ import org.koin.dsl.module
  * Koin module for remote-source layer.
  * Provides Ktor HttpClient, network configuration, and API services.
  */
-fun remoteSourceModule(configuration: NetworkConfiguration): Module = module {
+fun remoteSourceModule(
+  configuration: NetworkConfiguration,
+  acceptLanguageProvider: AcceptLanguageProvider = PlatformAcceptLanguageProvider(),
+): Module = module {
   // Network configuration
   single { configuration }
+  single { acceptLanguageProvider }
 
   // JSON serializer
   single {
@@ -53,7 +59,7 @@ fun remoteSourceModule(configuration: NetworkConfiguration): Module = module {
 
   // HttpClient instance
   single<HttpClient> {
-    get<HttpClientFactory>().create(get(), get())
+    get<HttpClientFactory>().create(get(), get(), get())
   }
 
   // DataSources

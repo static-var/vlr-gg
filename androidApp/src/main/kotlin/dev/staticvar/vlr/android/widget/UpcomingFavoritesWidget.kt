@@ -36,7 +36,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 internal class UpcomingFavoritesWidget : FavoriteMatchWidget(small = false)
 
@@ -173,7 +172,7 @@ internal fun PrismMatchCard(
       }
     } else {
       PrismWidgetText(
-        listOf(match.event, match.format, match.stage).filter(String::isNotBlank).joinToString(" · "),
+        strings.joinMatchMetadata(match.event, match.format, match.stage),
         11, PrismTextTone.Secondary, modifier = GlanceModifier.fillMaxWidth(),
       )
     }
@@ -195,7 +194,7 @@ private fun PrismTeamRow(
     Spacer(GlanceModifier.width(8.dp))
     val visible = status == WidgetMatchStatus.LIVE && !spoilersHidden
     PrismWidgetText(
-      if (visible) score?.toString() ?: "—" else "—",
+      if (visible) score?.toString() ?: strings.scoreUnavailable else strings.scoreUnavailable,
       if (compact) 20 else 28, PrismTextTone.Accent, align = androidx.glance.text.TextAlign.End,
       description = if (status == WidgetMatchStatus.LIVE && spoilersHidden) strings.scoresHidden else null,
       modifier = GlanceModifier.width(32.dp),
@@ -216,7 +215,7 @@ private fun EmptyState(title: String, body: String) {
   }
 }
 
-internal class WidgetStrings(private val context: Context) {
+internal class WidgetStrings(context: Context) {
   val title: String = context.getString(R.string.widget_title)
   val notInitializedTitle: String = context.getString(R.string.widget_not_initialized_title)
   val notInitializedBody: String = context.getString(R.string.widget_not_initialized_body)
@@ -227,16 +226,27 @@ internal class WidgetStrings(private val context: Context) {
   val upcoming: String = context.getString(R.string.widget_upcoming)
   val live: String = context.getString(R.string.widget_live)
   val scoresHidden: String = context.getString(R.string.widget_scores_hidden)
+  val scoreUnavailable: String = context.getString(R.string.widget_score_unavailable)
+
+  private val locale = context.resources.configuration.locales[0]
+  private val weekdayPattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "EEE")
+  private val timeFormat = android.text.format.DateFormat.getTimeFormat(context)
+  private val metadataSeparator = context.getString(R.string.widget_match_metadata_separator)
+  private val timeTbd = context.getString(R.string.widget_time_tbd)
+  private val dayTimeFormat = context.getString(R.string.widget_day_time_format)
+
+  fun joinMatchMetadata(vararg parts: String): String =
+    parts.filter(String::isNotBlank).joinToString(metadataSeparator)
 
   fun weekday(epochMillis: Long?): String = epochMillis?.let {
-    SimpleDateFormat("EEE", Locale.getDefault()).format(Date(it))
-  } ?: context.getString(R.string.widget_time_tbd)
+    SimpleDateFormat(weekdayPattern, locale).format(Date(it))
+  } ?: timeTbd
 
   fun clockTime(epochMillis: Long?): String = epochMillis?.let {
-    android.text.format.DateFormat.getTimeFormat(context).format(Date(it))
-  } ?: context.getString(R.string.widget_time_tbd)
+    (timeFormat.clone() as java.text.DateFormat).format(Date(it))
+  } ?: timeTbd
 
   fun startTime(epochMillis: Long?): String =
-    if (epochMillis == null) context.getString(R.string.widget_time_tbd)
-    else "${weekday(epochMillis)} · ${clockTime(epochMillis)}"
+    if (epochMillis == null) timeTbd
+    else String.format(locale, dayTimeFormat, weekday(epochMillis), clockTime(epochMillis))
 }

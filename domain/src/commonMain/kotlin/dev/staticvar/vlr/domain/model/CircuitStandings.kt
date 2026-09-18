@@ -13,7 +13,12 @@ data class CircuitStandings(val year: Int, val circuits: List<CircuitRegion>)
 /**
  * Regional circuit standings (e.g., "Americas Championship", "China Championship").
  */
-data class CircuitRegion(val circuitName: String, val region: String, val teams: List<CircuitTeam>)
+data class CircuitRegion(
+  val circuitName: String,
+  val region: String,
+  val teams: List<CircuitTeam>,
+  val regionLabel: String = "",
+)
 
 /**
  * Team entry in circuit standings.

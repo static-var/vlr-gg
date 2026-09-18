@@ -46,6 +46,7 @@ data class TeamDetailsDto(
   @SerialName("country") val country: String = "",
   @SerialName("rank") val rank: Int = 0,
   @SerialName("region") val region: String = "",
+  @SerialName("region_label") val regionLabel: String? = null,
   @SerialName("roster") val roster: List<TeamPlayerDto> = emptyList(),
   @SerialName("upcoming") val upcoming: List<UpcomingMatchDto> = emptyList(),
   @SerialName("completed") val completed: List<CompletedMatchDto> = emptyList(),

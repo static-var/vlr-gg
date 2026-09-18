@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="team_details">टीम का विवरण</string>
+    <string name="loading_team">टीम लोड हो रही है</string>
+    <string name="no_team_details">टीम का विवरण अभी उपलब्ध नहीं है</string>
+    <string name="team_not_published">इस टीम की प्रोफ़ाइल अभी प्रकाशित नहीं हुई है।</string>
+    <string name="team_subtitle">रोस्टर, नतीजे और हालिया फ़ॉर्म</string>
+    <string name="updating_favorite">पसंदीदा अपडेट हो रहा है</string>
+    <string name="remove_team_favorite">टीम को पसंदीदा सूची से हटाएँ</string>
+    <string name="add_team_favorite">टीम को पसंदीदा सूची में जोड़ें</string>
+    <string name="unranked">बिना रैंक</string>
+    <string name="team_rank">#%1$d</string>
+    <string name="roster">रोस्टर</string>
+    <string name="players">खिलाड़ी</string>
+    <string name="favorite_player">पसंदीदा खिलाड़ी</string>
+    <string name="no_upcoming_matches">कोई आगामी मैच नहीं</string>
+    <string name="no_upcoming_team_fixtures">इस टीम के लिए कोई आगामी मैच प्रकाशित नहीं हुआ है।</string>
+    <string name="no_completed_matches">कोई पूरा हुआ मैच नहीं</string>
+    <string name="no_team_results">इस टीम के लिए कोई मैच परिणाम प्रकाशित नहीं हुआ है।</string>
+    <string name="upcoming">आगामी</string>
+    <string name="completed">पूरे हुए</string>
+    <string name="event_stage">%1$s • %2$s</string>
+    <string name="middle_dot">•</string>
+    <string name="favorite_update_failed">पसंदीदा अपडेट नहीं हो सका। फिर से कोशिश करें।</string>
+</resources>

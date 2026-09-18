@@ -58,6 +58,7 @@ import vlr.feature_player.generated.resources.no_player_details
 import vlr.feature_player.generated.resources.player_details
 import vlr.feature_player.generated.resources.player_not_published
 import vlr.feature_player.generated.resources.player_subtitle
+import vlr.feature_player.generated.resources.player_winnings
 import vlr.feature_player.generated.resources.pool
 import vlr.feature_player.generated.resources.previous_team
 import vlr.feature_player.generated.resources.remove_player_favorite
@@ -271,7 +272,7 @@ private fun PlayerSummaryCard(
       color = Prism.color.labelColor,
     )
     SpoilerScore(
-      text = "$$totalWinnings",
+      text = stringResource(Res.string.player_winnings, totalWinnings.toString()),
       modifier = Modifier.padding(top = Prism.dimens.spacingXs),
       style = Prism.typography.label,
       color = Prism.color.bodyColor,

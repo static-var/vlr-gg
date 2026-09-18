@@ -1,0 +1,39 @@
+<resources>
+  <string name="news_unknown_author">bilinmiyor</string>
+  <string name="news_untitled_article">Başlıksız makale</string>
+  <string name="news_by_author">%1$s tarafından</string>
+  <string name="news_open_article_image">Makale görselini aç</string>
+  <string name="news_open_full_image">Tam boyutlu görseli aç</string>
+  <string name="news_article_image">Makale görseli</string>
+  <string name="news_media">Medya</string>
+  <string name="news_assets">varlıklar</string>
+  <string name="news_article_assets">Makale varlıkları</string>
+  <string name="news_assets_description">Makale verisinde algılanan görseller, videolar ve referanslar.</string>
+  <string name="news_references">Referanslar</string>
+  <string name="news_media_prelabel">medya</string>
+  <string name="news_reference">Referans</string>
+  <string name="news_open">aç</string>
+  <string name="news_watch_video">Videoyu izle</string>
+  <string name="news_retry_player">Oynatıcıyı yeniden dene</string>
+  <string name="news_player_load_failed">Oynatıcı yüklenemedi. Bunun yerine doğrudan açabilirsiniz.</string>
+  <string name="news_close_player">Oynatıcıyı kapat</string>
+  <string name="news_open_provider">%1$s içinde aç</string>
+  <string name="news_play_clip">▶  %1$s klibini oynat</string>
+  <string name="news_play_video">▶  %1$s videosunu oynat</string>
+  <plurals name="news_reference_count">
+    <item quantity="one">%1$d bağlantı</item>
+    <item quantity="other">%1$d bağlantı</item>
+  </plurals>
+  <plurals name="news_image_count">
+    <item quantity="one">%1$d görsel</item>
+    <item quantity="other">%1$d görsel</item>
+  </plurals>
+  <plurals name="news_video_count">
+    <item quantity="one">%1$d video</item>
+    <item quantity="other">%1$d video</item>
+  </plurals>
+  <plurals name="news_asset_count">
+    <item quantity="one">%1$d varlık</item>
+    <item quantity="other">%1$d varlık</item>
+  </plurals>
+</resources>

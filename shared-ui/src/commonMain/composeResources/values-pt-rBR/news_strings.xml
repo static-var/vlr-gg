@@ -1,0 +1,39 @@
+<resources>
+  <string name="news_unknown_author">desconhecido</string>
+  <string name="news_untitled_article">Artigo sem título</string>
+  <string name="news_by_author">Por %1$s</string>
+  <string name="news_open_article_image">Abrir imagem do artigo</string>
+  <string name="news_open_full_image">Abrir imagem completa</string>
+  <string name="news_article_image">Imagem do artigo</string>
+  <string name="news_media">Mídia</string>
+  <string name="news_assets">recursos</string>
+  <string name="news_article_assets">Recursos do artigo</string>
+  <string name="news_assets_description">Imagens, vídeos e referências encontrados no conteúdo do artigo.</string>
+  <string name="news_references">Referências</string>
+  <string name="news_media_prelabel">mídia</string>
+  <string name="news_reference">Referência</string>
+  <string name="news_open">abrir</string>
+  <string name="news_watch_video">Assistir ao vídeo</string>
+  <string name="news_retry_player">Tentar carregar o player novamente</string>
+  <string name="news_player_load_failed">Não foi possível carregar o player. Você pode abri-lo diretamente.</string>
+  <string name="news_close_player">Fechar player</string>
+  <string name="news_open_provider">Abrir em %1$s</string>
+  <string name="news_play_clip">▶  Reproduzir clipe de %1$s</string>
+  <string name="news_play_video">▶  Reproduzir vídeo de %1$s</string>
+  <plurals name="news_reference_count">
+    <item quantity="one">%1$d link</item>
+    <item quantity="other">%1$d links</item>
+  </plurals>
+  <plurals name="news_image_count">
+    <item quantity="one">%1$d imagem</item>
+    <item quantity="other">%1$d imagens</item>
+  </plurals>
+  <plurals name="news_video_count">
+    <item quantity="one">%1$d vídeo</item>
+    <item quantity="other">%1$d vídeos</item>
+  </plurals>
+  <plurals name="news_asset_count">
+    <item quantity="one">%1$d recurso</item>
+    <item quantity="other">%1$d recursos</item>
+  </plurals>
+</resources>

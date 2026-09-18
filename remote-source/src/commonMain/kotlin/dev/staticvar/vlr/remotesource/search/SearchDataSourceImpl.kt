@@ -14,7 +14,7 @@ import io.ktor.client.request.parameter
 internal class SearchDataSourceImpl(private val client: HttpClient) : SearchDataSource {
   override suspend fun search(category: SearchCategory, term: String): Result<List<SearchResultDto>> = runCatching {
     client.get(ApiPaths.SEARCH) {
-      parameter("search_category", category.name.lowercase())
+      parameter("search_category", category.wireName)
       parameter("search_term", term)
     }.body()
   }

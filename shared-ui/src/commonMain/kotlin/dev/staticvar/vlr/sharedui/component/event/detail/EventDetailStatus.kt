@@ -10,6 +10,7 @@ import dev.staticvar.vlr.domain.model.EventStatus
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.format_status_completed
+import vlr.shared_ui.generated.resources.format_status_live
 import vlr.shared_ui.generated.resources.format_status_ongoing
 import vlr.shared_ui.generated.resources.format_status_paused
 import vlr.shared_ui.generated.resources.format_status_unknown
@@ -38,9 +39,23 @@ internal val EventStatus.eventDetailTagStyle: PrismTagStyle
   }
 
 internal val String.eventMatchStatusTagStyle: PrismTagStyle
-  get() = when (lowercase()) {
+  get() = when (trim().lowercase()) {
     "live", "ongoing" -> PrismTagStyle.Danger
-    "upcoming" -> PrismTagStyle.Info
-    "completed" -> PrismTagStyle.Success
+    "upcoming", "tbd" -> PrismTagStyle.Info
+    "completed", "final" -> PrismTagStyle.Success
     else -> PrismTagStyle.Neutral
+  }
+
+internal val String.eventMatchStatusLabel: String
+  @Composable
+  get() = stringResource(eventMatchStatusLabelResource)
+
+internal val String.eventMatchStatusLabelResource: org.jetbrains.compose.resources.StringResource
+  get() = when (trim().lowercase()) {
+    "live" -> Res.string.format_status_live
+    "ongoing" -> Res.string.format_status_ongoing
+    "paused" -> Res.string.format_status_paused
+    "upcoming", "tbd" -> Res.string.format_status_upcoming
+    "completed", "final" -> Res.string.format_status_completed
+    else -> Res.string.format_status_unknown
   }

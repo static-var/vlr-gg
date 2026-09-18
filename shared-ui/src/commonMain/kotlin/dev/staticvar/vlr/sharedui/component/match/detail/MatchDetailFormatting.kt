@@ -12,6 +12,7 @@ import dev.staticvar.vlr.domain.model.PlayerStats
 import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamDetails
 import dev.staticvar.vlr.domain.model.TeamPreview
+import dev.staticvar.vlr.domain.model.VetoAction
 import kotlin.math.round
 import kotlin.math.roundToInt
 import org.jetbrains.compose.resources.pluralStringResource
@@ -98,11 +99,15 @@ internal fun MatchDetails.matchDetailMapCountStat(labels: MatchFormattingLabels)
 internal fun MatchDetails.matchDetailStageStat(labels: MatchFormattingLabels): String =
   event.stage.takeIf(String::isNotBlank) ?: labels.stage
 
-internal fun MatchDetails.matchDetailVetoStat(labels: MatchFormattingLabels): String =
-  when (bans.count(String::isNotBlank)) {
+internal fun MatchDetails.matchDetailVetoStat(labels: MatchFormattingLabels): String {
+  val stepCount = veto.count { entry -> entry.map.isNotBlank() || entry.action != VetoAction.UNKNOWN }
+    .takeIf { count -> count > 0 }
+    ?: bans.count(String::isNotBlank)
+  return when (stepCount) {
     0 -> "-"
     else -> labels.steps
   }
+}
 
 internal fun List<MapData>.matchDetailMapOptions(labels: MatchFormattingLabels): List<MatchDetailMapOption> {
   val mapOptions = mapIndexed { index, map ->

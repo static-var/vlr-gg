@@ -16,12 +16,14 @@ import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 import org.koin.compose.koinInject
 import kotlin.time.Clock
 
 @Composable
 internal fun PublishUpcomingMatchesWidget(monospace: Boolean, onSnapshotChanged: suspend (String) -> Unit) {
+  val widgetJson = koinInject<Json>(WidgetJson)
   val matches = koinInject<FavoriteScheduleRepository>()
   val favorites = koinInject<FavoritesRepository>()
   val spoilerPreferences = koinInject<SpoilerPreferencesRepository>()
@@ -36,7 +38,7 @@ internal fun PublishUpcomingMatchesWidget(monospace: Boolean, onSnapshotChanged:
     border = colors.stroke.argb(),
     monospace = monospace,
   )
-  LaunchedEffect(matches, favorites, theme, spoilerPreferences) {
+  LaunchedEffect(matches, favorites, theme, spoilerPreferences, widgetJson) {
     combine(matches.observeMatches(), favorites.observeDirectFavorites(), spoilerPreferences.enabled) { previews, directFavorites, hidden ->
       UpcomingMatchesSnapshot(
         savedAtEpochMillis = 0,

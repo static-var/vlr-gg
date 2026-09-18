@@ -49,8 +49,10 @@ import org.jetbrains.compose.resources.stringResource
 import vlr.feature_team.generated.resources.Res
 import vlr.feature_team.generated.resources.add_team_favorite
 import vlr.feature_team.generated.resources.completed
+import vlr.feature_team.generated.resources.event_stage
 import vlr.feature_team.generated.resources.favorite_player
 import vlr.feature_team.generated.resources.loading_team
+import vlr.feature_team.generated.resources.middle_dot
 import vlr.feature_team.generated.resources.no_completed_matches
 import vlr.feature_team.generated.resources.no_team_details
 import vlr.feature_team.generated.resources.no_team_results
@@ -61,6 +63,7 @@ import vlr.feature_team.generated.resources.remove_team_favorite
 import vlr.feature_team.generated.resources.roster
 import vlr.feature_team.generated.resources.team_details
 import vlr.feature_team.generated.resources.team_not_published
+import vlr.feature_team.generated.resources.team_rank
 import vlr.feature_team.generated.resources.team_subtitle
 import vlr.feature_team.generated.resources.unranked
 import vlr.feature_team.generated.resources.upcoming
@@ -109,6 +112,7 @@ internal fun TeamDetailsScreen(
   val isOnline = LocalIsOnline.current
   val team = uiState.team
   val spoilersHidden = LocalSpoilerMode.current.enabled
+  val itemSeparator = " ${stringResource(Res.string.middle_dot)} "
 
   Column(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
@@ -161,10 +165,10 @@ internal fun TeamDetailsScreen(
           metadata =
             listOfNotNull(
                 team.tag.takeIf(String::isNotBlank),
-                team.region,
+                team.regionLabel.ifBlank { team.region },
                 team.country,
               )
-              .joinToString(" • "),
+              .joinToString(itemSeparator),
           rank = team.rank,
           roster = team.roster,
           upcomingMatches = team.upcomingMatches,
@@ -313,7 +317,7 @@ private fun TeamSummaryCard(name: String, metadata: String, rank: Int) {
       color = Prism.color.labelColor,
     )
     SpoilerScore(
-      text = if (rank > 0) "#$rank" else stringResource(Res.string.unranked),
+      text = if (rank > 0) stringResource(Res.string.team_rank, rank) else stringResource(Res.string.unranked),
       modifier = Modifier.padding(top = Prism.dimens.spacingXs),
       style = Prism.typography.label,
       color = Prism.color.bodyColor,
@@ -337,6 +341,7 @@ private fun LazyListScope.teamRosterItems(
 
 @Composable
 private fun TeamRosterItem(player: TeamPlayer, onPlayerSelected: (String) -> Unit) {
+  val itemSeparator = " ${stringResource(Res.string.middle_dot)} "
   PrismCard(
     modifier = Modifier.fillMaxWidth(),
     style = PrismCardStyle.Outlined,
@@ -366,7 +371,7 @@ private fun TeamRosterItem(player: TeamPlayer, onPlayerSelected: (String) -> Uni
       text =
         listOfNotNull(player.name, player.role, player.country)
           .filter(String::isNotBlank)
-          .joinToString(" • "),
+          .joinToString(itemSeparator),
       modifier = Modifier.padding(top = Prism.dimens.spacingXs),
       style = Prism.typography.bodySmall,
       color = Prism.color.labelColor,
@@ -410,6 +415,7 @@ private fun TeamUpcomingMatchItem(
   onEventSelected: (String) -> Unit,
 ) {
   val eventId = match.eventId
+  val itemSeparator = " ${stringResource(Res.string.middle_dot)} "
   PrismCard(
     modifier = Modifier.fillMaxWidth(),
     style = PrismCardStyle.Outlined,
@@ -417,7 +423,7 @@ private fun TeamUpcomingMatchItem(
   ) {
     Text(text = match.opponent, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
     Text(
-      text = "${match.eventName} • ${match.stage}",
+      text = stringResource(Res.string.event_stage, match.eventName, match.stage),
       modifier =
         Modifier.padding(top = Prism.dimens.spacingXs).let { base ->
           if (eventId != null) base.clickable { onEventSelected(eventId) } else base
@@ -426,7 +432,7 @@ private fun TeamUpcomingMatchItem(
       color = if (eventId != null) Prism.color.accent else Prism.color.labelColor,
     )
     Text(
-      text = listOfNotNull(match.eta, match.date).joinToString(" • "),
+      text = listOfNotNull(match.eta, match.date).joinToString(itemSeparator),
       modifier = Modifier.padding(top = Prism.dimens.spacingXs),
       style = Prism.typography.label,
       color = Prism.color.bodyColor,
@@ -485,7 +491,7 @@ private fun TeamCompletedMatchItem(
   ) {
     Text(text = match.opponent, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
     Text(
-      text = "${match.eventName} • ${match.stage}",
+      text = stringResource(Res.string.event_stage, match.eventName, match.stage),
       modifier =
         Modifier.padding(top = Prism.dimens.spacingXs).let { base ->
           if (eventId != null) base.clickable { onEventSelected(eventId) } else base
@@ -507,7 +513,7 @@ private fun TeamCompletedMatchItem(
       }
       if (match.date.isNotBlank()) {
         if (spoilersHidden || match.result.isNotBlank()) {
-          Text(text = "•", style = Prism.typography.label, color = Prism.color.bodyColor)
+          Text(text = stringResource(Res.string.middle_dot), style = Prism.typography.label, color = Prism.color.bodyColor)
         }
         Text(text = match.date, style = Prism.typography.label, color = Prism.color.bodyColor)
       }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="team_details">Teamdetails</string>
+    <string name="loading_team">Team wird geladen</string>
+    <string name="no_team_details">Noch keine Teamdetails</string>
+    <string name="team_not_published">Das Profil dieses Teams wurde noch nicht veröffentlicht.</string>
+    <string name="team_subtitle">Kader, Ergebnisse und aktuelle Form</string>
+    <string name="updating_favorite">Favorit wird aktualisiert</string>
+    <string name="remove_team_favorite">Team aus Favoriten entfernen</string>
+    <string name="add_team_favorite">Team zu Favoriten hinzufügen</string>
+    <string name="unranked">Nicht platziert</string>
+    <string name="team_rank">#%1$d</string>
+    <string name="roster">Kader</string>
+    <string name="players">Spieler</string>
+    <string name="favorite_player">Lieblingsspieler</string>
+    <string name="no_upcoming_matches">Keine bevorstehenden Matches</string>
+    <string name="no_upcoming_team_fixtures">Für dieses Team wurden noch keine bevorstehenden Matches veröffentlicht.</string>
+    <string name="no_completed_matches">Keine abgeschlossenen Matches</string>
+    <string name="no_team_results">Für dieses Team wurden noch keine Matchergebnisse veröffentlicht.</string>
+    <string name="upcoming">Bevorstehend</string>
+    <string name="completed">Abgeschlossen</string>
+    <string name="event_stage">%1$s • %2$s</string>
+    <string name="middle_dot">•</string>
+    <string name="favorite_update_failed">Favorit konnte nicht aktualisiert werden. Versuche es erneut.</string>
+</resources>

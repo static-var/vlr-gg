@@ -10,6 +10,7 @@ import dev.staticvar.vlr.remotesource.news.ArticleBlockDto
 import dev.staticvar.vlr.remotesource.news.ArticleTextRunDto
 import dev.staticvar.vlr.remotesource.player.PlayerAgentStatsDto
 import dev.staticvar.vlr.remotesource.player.PlayerTeamRefDto
+import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -17,12 +18,14 @@ import kotlin.test.assertTrue
 
 class NewsArticleAndPlayerChildMappersTest {
 
+  private val json = Json { ignoreUnknownKeys = true }
+
   @Test
   fun `malformed cached block falls back to whole legacy article instead of dropping a paragraph`() {
     assertEquals(emptyList(), decodeArticleBlocks(listOf(
       """{"type":"paragraph","runs":[{"text":"First"}]}""",
       """{"type":"paragraph","runs":broken}""",
-    )))
+    ), json))
   }
 
   @Test
@@ -42,8 +45,8 @@ class NewsArticleAndPlayerChildMappersTest {
       )),
     )
     val dto = NewsArticleDto(id = "structured", content = "Fallback", blocks = blocks)
-    val rows = dto.toMediaEntities().mapIndexed { index, row -> row.copy(id = index.toLong()) }
-    val result = aggregateNewsArticle(dto.toEntity(), rows.reversed())
+    val rows = dto.toMediaEntities(json).mapIndexed { index, row -> row.copy(id = index.toLong()) }
+    val result = aggregateNewsArticle(dto.toEntity(), rows.reversed(), json)
     assertEquals(blocks.map { it.toDomain() }, result.blocks)
     assertEquals("Fallback", result.contentHtml)
   }
@@ -67,7 +70,7 @@ class NewsArticleAndPlayerChildMappersTest {
     assertEquals("<p>Content</p>", entity.content_html)
     assertTrue(entity.last_updated > 0)
 
-    val media = dto.toMediaEntities()
+    val media = dto.toMediaEntities(json)
     assertEquals(1, media.count { it.media_type == "link" })
     assertEquals(2, media.count { it.media_type == "image" })
     assertEquals(1, media.count { it.media_type == "video" })
@@ -89,7 +92,7 @@ class NewsArticleAndPlayerChildMappersTest {
     assertEquals("n2", entity.id)
     assertEquals("", entity.cover_url) // Schema has NOT NULL, so empty string
     assertEquals("", entity.date)
-    val media = dto.toMediaEntities()
+    val media = dto.toMediaEntities(json)
     assertEquals("", media.single().media_value)
     assertEquals("MissingUrl", media.single().media_text)
   }
@@ -109,10 +112,10 @@ class NewsArticleAndPlayerChildMappersTest {
       images = listOf("first.png", "", "third.png", "first.png"),
       videos = listOf("", "second.mp4"),
     )
-    val rows = dto.toMediaEntities().mapIndexed { index, row ->
+    val rows = dto.toMediaEntities(json).mapIndexed { index, row ->
       row.copy(id = index.toLong() + 1, media_text = row.media_text?.takeUnless { it.isEmpty() })
     }
-    val article = aggregateNewsArticle(dto.toEntity(), rows.reversed())
+    val article = aggregateNewsArticle(dto.toEntity(), rows.reversed(), json)
 
     assertEquals(content, article.contentHtml)
     assertEquals(dto.links.map { it["text"].orEmpty() }, article.media.links.map { it.text })

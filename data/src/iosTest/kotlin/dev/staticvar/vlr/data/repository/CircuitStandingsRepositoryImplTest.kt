@@ -9,6 +9,7 @@ import app.cash.sqldelight.driver.native.inMemoryDriver
 import app.cash.turbine.test
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.localsource.database.VlrDatabase
+import dev.staticvar.vlr.remotesource.network.RemotePayload
 import dev.staticvar.vlr.remotesource.standings.CircuitStandingDto
 import dev.staticvar.vlr.remotesource.standings.StandingsDataSource
 import dev.staticvar.vlr.remotesource.standings.StandingsDto
@@ -96,7 +97,9 @@ class CircuitStandingsRepositoryImplTest {
   private class FakeStandingsDataSource : StandingsDataSource {
     var result: Result<StandingsDto> = Result.success(StandingsDto())
 
-    override suspend fun byYear(year: Int): Result<StandingsDto> = result
+    override suspend fun byYear(year: Int): Result<RemotePayload<StandingsDto>> = result.map {
+      RemotePayload(value = it, requestedLanguage = null, contentLanguage = null)
+    }
   }
 
   private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {

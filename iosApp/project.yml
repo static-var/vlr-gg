@@ -1,6 +1,7 @@
 name: iosApp
 options:
   minimumXcodeGenVersion: 2.45.0
+  developmentLanguage: en
   deploymentTarget:
     iOS: "16.0"
 configFiles:
@@ -41,6 +42,10 @@ targets:
     platform: iOS
     sources:
       - path: iosApp
+        excludes:
+          - GeneratedBuildConfig.swift
+      - path: iosApp/GeneratedBuildConfig.swift
+        optional: true
       - path: VLRWidget/VLRWidgetModels.swift
       - path: WidgetShared
     dependencies:
@@ -93,6 +98,10 @@ targets:
     platform: iOS
     sources:
       - path: VLRWidget
+        excludes:
+          - GeneratedBuildConfig.swift
+      - path: VLRWidget/GeneratedBuildConfig.swift
+        optional: true
       - path: WidgetShared
       - path: ../designsystem/src/commonMain/composeResources/font/chakra_petch_regular.ttf
         buildPhase: resources
@@ -122,6 +131,8 @@ targets:
     platform: iOS
     sources:
       - path: VLRAppIntentsTests
+      - path: iosApp/Localizable.xcstrings
+        buildPhase: resources
     dependencies:
       - target: iosApp
     settings:
@@ -142,6 +153,8 @@ targets:
       - path: VLRWidget/VLRWidgetModels.swift
       - path: VLRWidget/VLRWidgetRefresh.swift
       - path: VLRWidget/UpcomingMatchesWidget.swift
+      - path: VLRWidget/Localizable.xcstrings
+        buildPhase: resources
       - path: WidgetShared
     settings:
       base:

@@ -14,10 +14,15 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.headers
 import io.ktor.client.request.url
+import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-internal fun HttpClientConfig<*>.configureHttpClient(json: Json, configuration: NetworkConfiguration) {
+internal fun HttpClientConfig<*>.configureHttpClient(
+  json: Json,
+  configuration: NetworkConfiguration,
+  acceptLanguageProvider: AcceptLanguageProvider,
+) {
   expectSuccess = true
 
   defaultRequest {
@@ -25,7 +30,12 @@ internal fun HttpClientConfig<*>.configureHttpClient(json: Json, configuration: 
       host = configuration.host
       protocol = configuration.defaultProtocol
     }
-    headers { configuration.defaultHeaders.forEach { append(it.key, it.value) } }
+    headers {
+      configuration.defaultHeaders.forEach { append(it.key, it.value) }
+      if (!contains(HttpHeaders.AcceptLanguage)) {
+        acceptLanguageProvider.acceptLanguage()?.let { append(HttpHeaders.AcceptLanguage, it) }
+      }
+    }
   }
 
   install(ContentNegotiation) { json(json) }

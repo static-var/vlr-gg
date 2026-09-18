@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_details">Détails du joueur</string>
+    <string name="loading_player">Chargement du joueur</string>
+    <string name="no_player_details">Aucun détail sur le joueur pour le moment</string>
+    <string name="player_not_published">Le profil de ce joueur n’a pas encore été publié.</string>
+    <string name="player_subtitle">Statistiques, agents et historique des équipes</string>
+    <string name="updating_favorite">Mise à jour du favori</string>
+    <string name="remove_player_favorite">Retirer le joueur des favoris</string>
+    <string name="add_player_favorite">Ajouter le joueur aux favoris</string>
+    <string name="agent_stats">Statistiques par agent</string>
+    <string name="pool">pool</string>
+    <string name="team_history">Historique des équipes</string>
+    <string name="history">historique</string>
+    <string name="current_team">Équipe actuelle</string>
+    <string name="previous_team">Équipe précédente</string>
+    <string name="player_winnings">$%1$s</string>
+    <string name="agent_usage">%1$s% d’utilisation • %2$s • %3$s</string>
+    <string name="agent_performance">ACS %1$s • ADR %2$s • K/D %3$s</string>
+    <string name="favorite_update_failed">Impossible de mettre à jour le favori. Réessayez.</string>
+    <plurals name="agent_picks">
+        <item quantity="one">%1$d sélection</item>
+        <item quantity="other">%1$d sélections</item>
+    </plurals>
+    <plurals name="agent_rounds">
+        <item quantity="one">%1$d manche</item>
+        <item quantity="other">%1$d manches</item>
+    </plurals>
+</resources>

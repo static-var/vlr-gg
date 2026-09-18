@@ -9,6 +9,7 @@
     <string name="remove_team_favorite">Remove team from favorites</string>
     <string name="add_team_favorite">Add team to favorites</string>
     <string name="unranked">Unranked</string>
+    <string name="team_rank">#%1$d</string>
     <string name="roster">Roster</string>
     <string name="players">players</string>
     <string name="favorite_player">Favorite player</string>
@@ -18,5 +19,7 @@
     <string name="no_team_results">No match results have been published for this team.</string>
     <string name="upcoming">Upcoming</string>
     <string name="completed">Completed</string>
+    <string name="event_stage">%1$s • %2$s</string>
+    <string name="middle_dot">•</string>
     <string name="favorite_update_failed">Couldn't update favorite. Try again.</string>
 </resources>

@@ -17,7 +17,7 @@ class StandingsDataSourceTest {
   fun byYear_parses_real_standings_fixture() = runTest {
     val json = readFixture("standings_2025.json")
     val ds = StandingsDataSourceImpl(singleResponseClient(json))
-    val standings = ds.byYear(2025).getOrThrow()
+    val standings = ds.byYear(2025).getOrThrow().value
     assertEquals(2025, standings.year)
     assertTrue(standings.circuits.isNotEmpty(), "Circuits should not be empty")
   }

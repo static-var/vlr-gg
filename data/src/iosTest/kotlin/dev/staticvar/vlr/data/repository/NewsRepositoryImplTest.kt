@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -47,6 +48,7 @@ class NewsRepositoryImplTest {
       newsDataSource = dataSource,
       database = database,
       dispatchers = dispatcherProvider,
+      json = Json { ignoreUnknownKeys = true },
     )
   }
 
@@ -269,6 +271,7 @@ class NewsRepositoryImplTest {
       newsDataSource = dataSource,
       database = database,
       dispatchers = dispatcherProvider,
+      json = Json { ignoreUnknownKeys = true },
     )
     recreatedRepository.getNewsArticle("empty-story").test {
       val article = requireNotNull(awaitItem())

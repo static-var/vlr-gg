@@ -1,0 +1,72 @@
+<resources>
+  <string name="format_pending">Beklemede</string>
+  <string name="format_map">Harita</string>
+  <string name="format_stage">Aşama</string>
+  <plurals name="format_maps">
+    <item quantity="one">%1$d harita</item>
+    <item quantity="other">%1$d harita</item>
+  </plurals>
+  <plurals name="format_steps">
+    <item quantity="one">%1$d adım</item>
+    <item quantity="other">%1$d adım</item>
+  </plurals>
+  <string name="format_allMaps">Tüm haritalar</string>
+  <string name="format_mapNumber">Harita %1$d</string>
+  <string name="format_final">final</string>
+  <string name="format_pendingLower">beklemede</string>
+  <string name="format_playerStats">oyuncu istatistikleri</string>
+  <plurals name="format_playedMaps">
+    <item quantity="one">%1$d oynanan harita</item>
+    <item quantity="other">%1$d oynanan harita</item>
+  </plurals>
+  <string name="format_sortedByMapOrder">%1$s • harita sırasına göre sıralandı</string>
+  <string name="format_unknown">Bilinmiyor</string>
+  <string name="format_teamOne">Takım 1</string>
+  <string name="format_teamTwo">Takım 2</string>
+  <plurals name="format_matches">
+    <item quantity="one">%1$d maç</item>
+    <item quantity="other">%1$d maç</item>
+  </plurals>
+  <string name="format_groupStatus">Durum</string>
+  <string name="format_groupRound">Tur</string>
+  <string name="format_groupStage">Aşama</string>
+  <string name="format_versus"> karşı </string>
+  <string name="format_matchTbd">Maç TBD</string>
+  <string name="format_tbd">TBD</string>
+  <plurals name="format_teams">
+    <item quantity="one">%1$d takım</item>
+    <item quantity="other">%1$d takım</item>
+  </plurals>
+  <string name="format_region">BÖLGE</string>
+  <string name="format_recent">Son</string>
+  <string name="format_noAssets">Varlık yok</string>
+  <string name="format_imageUnavailable">Görsel kullanılamıyor</string>
+  <string name="format_videoUnavailable">Video kullanılamıyor</string>
+  <string name="format_linkUnavailable">Bağlantı kullanılamıyor</string>
+  <string name="format_recent_lower">son</string>
+  <string name="format_bestOf">BO%1$d</string>
+  <string name="format_status_live">CANLI</string>
+  <string name="format_status_ongoing">DEVAM EDİYOR</string>
+  <string name="format_status_paused">DURAKLATILDI</string>
+  <string name="format_status_upcoming">YAKLAŞAN</string>
+  <string name="format_status_completed">TAMAMLANDI</string>
+  <string name="format_status_unknown">BİLİNMİYOR</string>
+  <string name="format_reason_match">Maç</string>
+  <string name="format_reason_team">Takım</string>
+  <string name="format_reason_player">Oyuncu</string>
+  <string name="format_reason_event">Etkinlik</string>
+  <string name="format_month_jan">Oca</string>
+  <string name="format_month_feb">Şub</string>
+  <string name="format_month_mar">Mar</string>
+  <string name="format_month_apr">Nis</string>
+  <string name="format_month_may">May</string>
+  <string name="format_month_jun">Haz</string>
+  <string name="format_month_jul">Tem</string>
+  <string name="format_month_aug">Ağu</string>
+  <string name="format_month_sep">Eyl</string>
+  <string name="format_month_oct">Eki</string>
+  <string name="format_month_nov">Kas</string>
+  <string name="format_month_dec">Ara</string>
+  <string name="format_match_preview_date">%2$d %1$s, %3$s:%4$s</string>
+  <string name="format_news_preview_date">%2$d %1$s %3$d</string>
+</resources>

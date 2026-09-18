@@ -28,6 +28,7 @@ data class TeamInfo(
   val upcomingMatches: List<TeamUpcomingMatch>,
   val completedMatches: List<TeamCompletedMatch>,
   val isFavorite: Boolean = false,
+  val regionLabel: String = "",
 ) {
   fun matchesInNext7Days(today: LocalDate = currentLocalDate()): List<TeamUpcomingMatch> =
     upcomingMatches.filter { match ->

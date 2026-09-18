@@ -49,6 +49,7 @@ import vlr.feature_about.generated.resources.Res
 import vlr.feature_about.generated.resources.about
 import vlr.feature_about.generated.resources.about_data_attribution
 import vlr.feature_about.generated.resources.about_description
+import vlr.feature_about.generated.resources.akhil_narang
 import vlr.feature_about.generated.resources.an_independent_valorant_esports_app
 import vlr.feature_about.generated.resources.app_design_development_staticvar
 import vlr.feature_about.generated.resources.app_source_code
@@ -65,11 +66,13 @@ import vlr.feature_about.generated.resources.privacy_policy
 import vlr.feature_about.generated.resources.read_the_code_or_contribute_on_github
 import vlr.feature_about.generated.resources.report_an_issue
 import vlr.feature_about.generated.resources.send_feedback
+import vlr.feature_about.generated.resources.shreyansh_lodha
 import vlr.feature_about.generated.resources.share_a_problem_or_an_idea_with_the_developer
 import vlr.feature_about.generated.resources.something_off_help_us_get_it_right
 import vlr.feature_about.generated.resources.support_the_project
 import vlr.feature_about.generated.resources.terms_of_service
 import vlr.feature_about.generated.resources.the_people_behind_it
+import vlr.feature_about.generated.resources.val_esports
 import vlr.feature_about.generated.resources.visit_val_esports
 import vlr.feature_about.generated.resources.visit_vlr_gg
 import vlr.feature_about.generated.resources.website_policies
@@ -136,7 +139,7 @@ private fun AboutIdentity() {
         itemVerticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
-          text = "Val Esports",
+          text = stringResource(Res.string.val_esports),
           style = Prism.typography.display.copy(fontSize = 40.sp, lineHeight = 44.sp, letterSpacing = (-1).sp),
           color = Prism.color.accent,
         )
@@ -228,13 +231,13 @@ private fun AboutContributors() {
   Column {
     AboutSectionHeading(stringResource(Res.string.the_people_behind_it))
     AboutLink(
-      title = "Shreyansh Lodha",
+      title = stringResource(Res.string.shreyansh_lodha),
       description = stringResource(Res.string.app_design_development_staticvar),
       url = "https://staticvar.dev",
     )
     PrismDivider()
     AboutLink(
-      title = "Akhil Narang",
+      title = stringResource(Res.string.akhil_narang),
       description = stringResource(Res.string.backend_developer),
       url = "https://akhilnarang.dev",
     )

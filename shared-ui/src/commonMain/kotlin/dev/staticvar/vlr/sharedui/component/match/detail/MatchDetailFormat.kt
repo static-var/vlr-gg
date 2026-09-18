@@ -6,6 +6,7 @@ package dev.staticvar.vlr.sharedui.component.match.detail
 
 import androidx.compose.runtime.Composable
 import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.domain.model.VetoAction
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.format_bestOf
@@ -16,7 +17,7 @@ internal fun MatchDetails.matchDetailBestOf(): Int? {
   explicitBestOf(note)?.let { return it }
 
   val normalizedStatus = event.status.orEmpty().trim().lowercase()
-  if (normalizedStatus == "completed") {
+  if (normalizedStatus == "completed" || normalizedStatus == "final") {
     completedVetoMapCount()?.let { return it }
   }
 
@@ -35,6 +36,12 @@ private fun explicitBestOf(value: String): Int? = ExplicitBestOfRegex
   ?.takeIf(Int::isExplicitBestOfCount)
 
 private fun MatchDetails.completedVetoMapCount(): Int? {
+  if (veto.isNotEmpty()) {
+    if (veto.last().action != VetoAction.REMAINS) return null
+    return (veto.count { entry -> entry.action == VetoAction.PICK } + 1)
+      .takeIf(Int::isPlannedBestOfCount)
+  }
+
   val steps = bans.map(String::trim).filter(String::isNotEmpty)
   if (steps.lastOrNull()?.let(RemainsRegex::containsMatchIn) != true) return null
 
@@ -46,7 +53,7 @@ private fun Int.isExplicitBestOfCount(): Boolean = this > 0 && this % 2 == 1
 
 private fun Int.isPlannedBestOfCount(): Boolean = this == 1 || this == 3 || this == 5
 
-private val plannedStatuses = setOf("upcoming", "live", "ongoing")
+private val plannedStatuses = setOf("upcoming", "tbd", "live", "ongoing")
 private val ExplicitBestOfRegex = Regex("""(?i)\b(?:bo|best(?:\s*-\s*|\s+)of)\s*[-:]?\s*(\d+)\b""")
 private val PickRegex = Regex("""(?i)\bpick(?:s|ed)?\b""")
 private val RemainsRegex = Regex("""(?i)\bremains\b""")

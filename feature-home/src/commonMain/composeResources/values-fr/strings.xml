@@ -1,0 +1,17 @@
+<resources>
+    <string name="browse_events">Parcourir les événements</string>
+    <string name="browse_matches">Parcourir les matchs</string>
+    <string name="events">Événements</string>
+    <string name="empty_favorites_description">Ajoutez des équipes, des joueurs, des matchs ou des événements à vos favoris pour retrouver ici les matchs et événements qui vous intéressent.</string>
+    <string name="favorites">Favoris</string>
+    <string name="home">Accueil</string>
+    <string name="loading_your_favorites">Chargement de vos favoris</string>
+    <string name="make_home_yours">Personnalisez votre accueil</string>
+    <string name="matches">Matchs</string>
+    <string name="empty_related_events">Aucun événement en cours n’est lié à vos favoris. Les événements associés apparaîtront à mesure que les calendriers seront mis à jour.</string>
+    <string name="empty_related_matches">Aucun match n’est actuellement lié à vos favoris. Les nouvelles rencontres apparaîtront ici automatiquement.</string>
+    <string name="players">Joueurs</string>
+    <string name="settings">Réglages</string>
+    <string name="teams">Équipes</string>
+    <string name="your_favorites">Vos favoris</string>
+</resources>

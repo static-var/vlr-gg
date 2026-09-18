@@ -9,14 +9,16 @@ import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 import org.koin.mp.KoinPlatform
 import kotlin.time.Clock
 
 /** Called by a native background worker after initializing the application's dependency graph. */
 public suspend fun refreshFavoriteWidgetSnapshot(snapshotJson: String): String {
-  val previous = widgetJson.decodeFromString<UpcomingMatchesSnapshot>(snapshotJson)
   val koin = KoinPlatform.getKoin()
+  val widgetJson = koin.get<Json>(WidgetJson)
+  val previous = widgetJson.decodeFromString<UpcomingMatchesSnapshot>(snapshotJson)
   koin.get<RefreshFavoriteMatches>()()
   val favorites = koin.get<FavoritesRepository>().observeDirectFavorites().first()
   val schedule = koin.get<FavoriteScheduleRepository>().observeMatches().first()

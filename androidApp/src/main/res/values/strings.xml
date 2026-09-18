@@ -29,6 +29,9 @@
     <string name="widget_live">LIVE</string>
     <string name="widget_live_score">%1$s : %2$s</string>
     <string name="widget_scores_hidden">Live scores hidden</string>
+    <string name="widget_score_unavailable">—</string>
+    <string name="widget_match_metadata_separator">" · "</string>
+    <string name="widget_day_time_format">%1$s · %2$s</string>
     <string name="widget_upcoming">UPCOMING</string>
     <string name="widget_preview_day">Sun</string>
     <string name="widget_preview_clock">7:30 PM</string>

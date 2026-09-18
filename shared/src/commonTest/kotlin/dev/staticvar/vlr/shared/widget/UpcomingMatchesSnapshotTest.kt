@@ -10,6 +10,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import org.koin.dsl.koinApplication
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -33,20 +34,27 @@ class UpcomingMatchesSnapshotTest {
 
   @Test
   fun `native payload exports favorite refresh configuration and explicit unknown time`() {
-    val snapshot = UpcomingMatchesSnapshot(
-      savedAtEpochMillis = now,
-      hasFavorites = true,
-      matches = favoriteWidgetMatches(listOf(match("unknown", null)), now, false),
-      theme = WidgetTheme(0xFFFFFFFF, 0xFFEEEEEE, 0xFF6633FF, 0xFF111111, 0xFF555555, 0xFFCCCCCC, false),
-    )
-    val encoded = widgetJson.encodeToString(snapshot)
-    val row = Json.parseToJsonElement(encoded).jsonObject.getValue("matches").jsonArray.single().jsonObject
-    assertEquals(setOf("id", "event", "team1", "team2", "startTimeEpochMillis", "status", "score1", "score2", "format", "stage"), row.keys)
-    assertEquals("null", row.getValue("startTimeEpochMillis").toString())
-    assertEquals("null", row.getValue("score1").toString())
-    assertEquals("null", row.getValue("score2").toString())
-    assertEquals("false", Json.parseToJsonElement(encoded).jsonObject.getValue("spoilersHidden").toString())
-    assertFalse(encoded.contains("winner", ignoreCase = true))
+    val app = koinApplication { modules(widgetModule()) }
+    try {
+      val widgetJson = app.koin.get<Json>(WidgetJson)
+      val snapshot = UpcomingMatchesSnapshot(
+        savedAtEpochMillis = now,
+        hasFavorites = true,
+        matches = favoriteWidgetMatches(listOf(match("unknown", null)), now, false),
+        theme = WidgetTheme(0xFFFFFFFF, 0xFFEEEEEE, 0xFF6633FF, 0xFF111111, 0xFF555555, 0xFFCCCCCC, false),
+      )
+      val encoded = widgetJson.encodeToString(snapshot)
+      val row = Json.parseToJsonElement(encoded).jsonObject.getValue("matches").jsonArray.single().jsonObject
+      assertEquals(setOf("id", "event", "team1", "team2", "startTimeEpochMillis", "status", "score1", "score2", "format", "stage"), row.keys)
+      assertEquals("null", row.getValue("startTimeEpochMillis").toString())
+      assertEquals("null", row.getValue("score1").toString())
+      assertEquals("null", row.getValue("score2").toString())
+      assertEquals("false", Json.parseToJsonElement(encoded).jsonObject.getValue("spoilersHidden").toString())
+      assertFalse(encoded.contains("winner", ignoreCase = true))
+      assertEquals(snapshot, widgetJson.decodeFromString<UpcomingMatchesSnapshot>(encoded.dropLast(1) + ",\"futureField\":true}"))
+    } finally {
+      app.close()
+    }
   }
 
   @Test
