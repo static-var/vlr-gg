@@ -1,0 +1,20 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bevorstehende Matches" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Upcoming matches" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Próximas partidas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Matchs à venir" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आने वाले मैच" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "예정 경기" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Próximas partidas" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Предстоящие матчи" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yaklaşan maçlar" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

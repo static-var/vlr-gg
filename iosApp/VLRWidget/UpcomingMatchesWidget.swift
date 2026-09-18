@@ -119,15 +119,15 @@ struct UpcomingMatchesWidgetView: View {
                 if !snapshot.hasFavorites {
                     EmptyWidgetState(
                         family: family,
-                        title: "No favorites.",
-                        message: "Favorite a team, player, event, or match in Val Esports.",
+                        title: String(localized: "No favorites."),
+                        message: String(localized: "Favorite a team, player, event, or match in Val Esports."),
                         palette: palette
                     )
                 } else if visibleMatches.isEmpty {
                     EmptyWidgetState(
                         family: family,
-                        title: "No matches scheduled.",
-                        message: "Your favorites return here when they play.",
+                        title: String(localized: "No matches scheduled."),
+                        message: String(localized: "Your favorites return here when they play."),
                         palette: palette
                     )
                 } else {
@@ -136,8 +136,8 @@ struct UpcomingMatchesWidgetView: View {
             } else {
                 EmptyWidgetState(
                     family: family,
-                    title: "Open the app.",
-                    message: "Open Val Esports once to connect your favorites.",
+                    title: String(localized: "Open the app."),
+                    message: String(localized: "Open Val Esports once to connect your favorites."),
                     palette: palette
                 )
             }
@@ -244,7 +244,7 @@ private struct SmallMatchWidget: View {
                     .minimumScaleFactor(0.75)
             } else if spoilersHidden {
                 Spacer(minLength: 6)
-                Text("Scores hidden")
+                Text(String(localized: "Scores hidden"))
                     .font(PrismWidgetFont.regular(10, relativeTo: .caption2))
                     .foregroundStyle(palette.secondary)
                     .lineLimit(1)
@@ -252,7 +252,7 @@ private struct SmallMatchWidget: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .accessibilityElement(children: .combine)
-        .accessibilityHint("Opens match details")
+        .accessibilityHint(String(localized: "Opens match details"))
     }
 }
 
@@ -286,7 +286,7 @@ private struct MediumMatchWidget: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .accessibilityElement(children: .combine)
-        .accessibilityHint("Opens match details")
+        .accessibilityHint(String(localized: "Opens match details"))
     }
 }
 
@@ -314,7 +314,7 @@ private struct LargeMatchesWidget: View {
             }
 
             if matches.count == 1 {
-                Text("You're caught up on your favorites.")
+                Text(String(localized: "You're caught up on your favorites."))
                     .font(PrismWidgetFont.regular(12, relativeTo: .caption))
                     .foregroundStyle(palette.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -368,7 +368,7 @@ private struct LargeMatchCard: View {
         .padding(.bottom, expanded ? 0 : 10)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
-        .accessibilityHint("Opens match details")
+        .accessibilityHint(String(localized: "Opens match details"))
     }
 }
 
@@ -378,16 +378,21 @@ private struct FavoritesHeader: View {
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text("FAVORITES")
+            Text(String(localized: "FAVORITES"))
                 .font(PrismWidgetFont.regular(15, relativeTo: .subheadline))
                 .tracking(0.8)
                 .foregroundStyle(palette.ink)
             Spacer(minLength: 4)
-            Text(count == 0 ? "NO MATCHES" : count == 1 ? "1 MATCH" : "\(count) MATCHES")
+            Text(matchCountText)
                 .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
                 .foregroundStyle(palette.secondary)
                 .lineLimit(1)
         }
+    }
+
+    private var matchCountText: String {
+        if count == 0 { return String(localized: "NO MATCHES") }
+        return String(localized: "\(count) MATCHES")
     }
 }
 
@@ -478,10 +483,14 @@ private struct MatchTeams: View {
     }
 
     private func scoreAccessibilityLabel(_ score: Int?) -> String {
-        guard match.status == .live else { return "Not started" }
-        guard !spoilersHidden else { return "Score hidden" }
-        guard let score else { return "Score unavailable" }
-        return "Score \(score)"
+        guard match.status == .live else { return String(localized: "Not started") }
+        guard !spoilersHidden else { return String(localized: "Score hidden") }
+        guard let score else { return String(localized: "Score unavailable") }
+        return String(
+            format: String(localized: "widget.score_format"),
+            locale: .current,
+            Int64(score)
+        )
     }
 }
 
@@ -505,7 +514,7 @@ private struct MatchStatusRow: View {
                         .frame(width: 5, height: 5)
                         .accessibilityHidden(true)
                 }
-                Text(match.status.rawValue)
+                Text(match.status.localizedDisplayName)
                     .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
                     .tracking(0.7)
                     .lineLimit(1)
@@ -582,19 +591,19 @@ private struct EmptyWidgetState: View {
 
 private extension UpcomingMatch {
     var displayFormat: String {
-        format.isEmpty ? "MATCH" : format.uppercased()
+        format.isEmpty ? String(localized: "MATCH") : format.uppercased()
     }
 
     var startWeekday: String {
-        startTime?.formatted(.dateTime.weekday(.abbreviated)) ?? "TBD"
+        startTime?.formatted(.dateTime.weekday(.abbreviated)) ?? String(localized: "TBD")
     }
 
     var startClockTime: String {
-        startTime?.formatted(date: .omitted, time: .shortened) ?? "TBD"
+        startTime?.formatted(date: .omitted, time: .shortened) ?? String(localized: "TBD")
     }
 
     var compactStartTime: String {
-        guard let startTime else { return "TBD" }
+        guard let startTime else { return String(localized: "TBD") }
         let weekday = startTime.formatted(.dateTime.weekday(.abbreviated))
         let time = startTime.formatted(date: .omitted, time: .shortened)
         return "\(weekday) · \(time)"
@@ -602,7 +611,7 @@ private extension UpcomingMatch {
 
     var details: String {
         let values = [event, format, stage].filter { !$0.isEmpty }
-        return values.isEmpty ? "Favorite match" : values.joined(separator: " · ")
+        return values.isEmpty ? String(localized: "Favorite match") : values.joined(separator: " · ")
     }
 }
 

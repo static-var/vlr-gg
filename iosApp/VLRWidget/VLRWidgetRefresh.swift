@@ -44,6 +44,12 @@ struct WidgetAPIClient {
         var request = URLRequest(url: url)
         request.timeoutInterval = 8
         request.setValue("dev.staticvar.vlr", forHTTPHeaderField: "app-name")
+        let preferredLanguages = Locale.preferredLanguages
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        if !preferredLanguages.isEmpty {
+            request.setValue(preferredLanguages.joined(separator: ","), forHTTPHeaderField: "Accept-Language")
+        }
         if let authorization, !authorization.isEmpty {
             request.setValue(authorization, forHTTPHeaderField: "Authorization")
         }

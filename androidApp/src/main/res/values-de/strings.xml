@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Val Esports</string>
+    <string name="legacy_matches_widget_name">Alle Matches</string>
+    <string name="legacy_matches_widget_description">Live- und bevorstehende Matches</string>
+    <string name="legacy_matches_widget_loading">Matches werden aktualisiert…</string>
+    <string name="upcoming_favorites_widget_name">Match-Anzeigetafel (4×2)</string>
+    <string name="small_upcoming_favorites_widget_name">Kompaktes Match (2×2)</string>
+    <string name="upcoming_favorites_widget_description">Bevorstehende Matches deiner Favoriten</string>
+    <string name="widget_preview_event_one">Valorant Champions Tour</string>
+    <string name="widget_preview_time_one">So.\n19:30 Uhr</string>
+    <string name="widget_preview_team_one">Sentinels</string>
+    <string name="widget_preview_team_two">FNATIC</string>
+    <string name="widget_preview_score">—</string>
+    <string name="widget_preview_format">BO3 · Oberes Finale</string>
+    <string name="widget_versus">gegen</string>
+    <string name="widget_title">BEVORSTEHENDE MATCHES</string>
+    <string name="widget_not_initialized_title">Öffne Val Esports, um zu starten</string>
+    <string name="widget_not_initialized_body">Das Widget zeigt Matches an, nachdem die App deine Favoriten gespeichert hat.</string>
+    <string name="widget_no_favorites_title">Noch keine Favoriten</string>
+    <string name="widget_no_favorites_body">Markiere in Val Esports ein Team, einen Spieler, ein Event oder ein Match als Favorit.</string>
+    <string name="widget_no_upcoming_title">Keine bevorstehenden Matches</string>
+    <string name="widget_no_upcoming_body">Neue Matches erscheinen nach der nächsten Aktualisierung im Hintergrund.</string>
+    <string name="widget_time_tbd">Noch offen</string>
+    <string name="widget_match_teams">%1$s gegen %2$s</string>
+    <string name="widget_time_today">Heute %1$s</string>
+    <string name="widget_time_tomorrow">Morgen %1$s</string>
+    <string name="widget_last_saved">Aktualisiert: %1$s</string>
+    <string name="widget_live">LIVE</string>
+    <string name="widget_live_score">%1$s : %2$s</string>
+    <string name="widget_scores_hidden">Live-Ergebnisse ausgeblendet</string>
+    <string name="widget_score_unavailable">—</string>
+    <string name="widget_match_metadata_separator">" · "</string>
+    <string name="widget_day_time_format">%1$s · %2$s</string>
+    <string name="widget_upcoming">BEVORSTEHEND</string>
+    <string name="widget_preview_day">So.</string>
+    <string name="widget_preview_clock">19:30 Uhr</string>
+    <string name="widget_preview_compact_time">So. · 19:30 Uhr</string>
+</resources>

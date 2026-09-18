@@ -36,7 +36,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 internal class UpcomingFavoritesWidget : FavoriteMatchWidget(small = false)
 
@@ -173,7 +172,7 @@ internal fun PrismMatchCard(
       }
     } else {
       PrismWidgetText(
-        listOf(match.event, match.format, match.stage).filter(String::isNotBlank).joinToString(" · "),
+        strings.joinMatchMetadata(match.event, match.format, match.stage),
         11, PrismTextTone.Secondary, modifier = GlanceModifier.fillMaxWidth(),
       )
     }
@@ -195,7 +194,7 @@ private fun PrismTeamRow(
     Spacer(GlanceModifier.width(8.dp))
     val visible = status == WidgetMatchStatus.LIVE && !spoilersHidden
     PrismWidgetText(
-      if (visible) score?.toString() ?: "—" else "—",
+      if (visible) score?.toString() ?: strings.scoreUnavailable else strings.scoreUnavailable,
       if (compact) 20 else 28, PrismTextTone.Accent, align = androidx.glance.text.TextAlign.End,
       description = if (status == WidgetMatchStatus.LIVE && spoilersHidden) strings.scoresHidden else null,
       modifier = GlanceModifier.width(32.dp),
@@ -227,9 +226,15 @@ internal class WidgetStrings(private val context: Context) {
   val upcoming: String = context.getString(R.string.widget_upcoming)
   val live: String = context.getString(R.string.widget_live)
   val scoresHidden: String = context.getString(R.string.widget_scores_hidden)
+  val scoreUnavailable: String = context.getString(R.string.widget_score_unavailable)
+
+  fun joinMatchMetadata(vararg parts: String): String =
+    parts.filter(String::isNotBlank).joinToString(context.getString(R.string.widget_match_metadata_separator))
 
   fun weekday(epochMillis: Long?): String = epochMillis?.let {
-    SimpleDateFormat("EEE", Locale.getDefault()).format(Date(it))
+    val locale = context.resources.configuration.locales[0]
+    val pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "EEE")
+    SimpleDateFormat(pattern, locale).format(Date(it))
   } ?: context.getString(R.string.widget_time_tbd)
 
   fun clockTime(epochMillis: Long?): String = epochMillis?.let {
@@ -238,5 +243,5 @@ internal class WidgetStrings(private val context: Context) {
 
   fun startTime(epochMillis: Long?): String =
     if (epochMillis == null) context.getString(R.string.widget_time_tbd)
-    else "${weekday(epochMillis)} · ${clockTime(epochMillis)}"
+    else context.getString(R.string.widget_day_time_format, weekday(epochMillis), clockTime(epochMillis))
 }

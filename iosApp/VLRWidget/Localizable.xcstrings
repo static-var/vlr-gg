@@ -1,0 +1,206 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%lld MATCHES" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : { "state" : "translated", "value" : "%#@arg1@" },
+          "substitutions" : { "arg1" : { "argNum" : 1, "formatSpecifier" : "lld", "variations" : { "plural" : {
+            "one" : { "stringUnit" : { "state" : "translated", "value" : "%arg PARTIE" } },
+            "other" : { "stringUnit" : { "state" : "translated", "value" : "%arg PARTIEN" } }
+          } } } }
+        },
+        "en" : {
+          "stringUnit" : { "state" : "translated", "value" : "%#@arg1@" },
+          "substitutions" : { "arg1" : { "argNum" : 1, "formatSpecifier" : "lld", "variations" : { "plural" : {
+            "one" : { "stringUnit" : { "state" : "translated", "value" : "%arg MATCH" } },
+            "other" : { "stringUnit" : { "state" : "translated", "value" : "%arg MATCHES" } }
+          } } } }
+        },
+        "es" : {
+          "stringUnit" : { "state" : "translated", "value" : "%#@arg1@" },
+          "substitutions" : { "arg1" : { "argNum" : 1, "formatSpecifier" : "lld", "variations" : { "plural" : {
+            "one" : { "stringUnit" : { "state" : "translated", "value" : "%arg PARTIDA" } },
+            "other" : { "stringUnit" : { "state" : "translated", "value" : "%arg PARTIDAS" } }
+          } } } }
+        },
+        "fr" : {
+          "stringUnit" : { "state" : "translated", "value" : "%#@arg1@" },
+          "substitutions" : { "arg1" : { "argNum" : 1, "formatSpecifier" : "lld", "variations" : { "plural" : {
+            "one" : { "stringUnit" : { "state" : "translated", "value" : "%arg RENCONTRE" } },
+            "other" : { "stringUnit" : { "state" : "translated", "value" : "%arg RENCONTRES" } }
+          } } } }
+        },
+        "hi" : {
+          "stringUnit" : { "state" : "translated", "value" : "%#@arg1@" },
+          "substitutions" : { "arg1" : { "argNum" : 1, "formatSpecifier" : "lld", "variations" : { "plural" : {
+            "one" : { "stringUnit" : { "state" : "translated", "value" : "%arg मैच" } },
+            "other" : { "stringUnit" : { "state" : "translated", "value" : "%arg मैच" } }
+          } } } }
+        },
+        "ko" : {
+          "stringUnit" : { "state" : "translated", "value" : "%#@arg1@" },
+          "substitutions" : { "arg1" : { "argNum" : 1, "formatSpecifier" : "lld", "variations" : { "plural" : {
+            "other" : { "stringUnit" : { "state" : "translated", "value" : "경기 %arg개" } }
+          } } } }
+        },
+        "pt-BR" : {
+          "stringUnit" : { "state" : "translated", "value" : "%#@arg1@" },
+          "substitutions" : { "arg1" : { "argNum" : 1, "formatSpecifier" : "lld", "variations" : { "plural" : {
+            "one" : { "stringUnit" : { "state" : "translated", "value" : "%arg PARTIDA" } },
+            "other" : { "stringUnit" : { "state" : "translated", "value" : "%arg PARTIDAS" } }
+          } } } }
+        },
+        "ru" : {
+          "stringUnit" : { "state" : "translated", "value" : "%#@arg1@" },
+          "substitutions" : { "arg1" : { "argNum" : 1, "formatSpecifier" : "lld", "variations" : { "plural" : {
+            "one" : { "stringUnit" : { "state" : "translated", "value" : "%arg МАТЧ" } },
+            "few" : { "stringUnit" : { "state" : "translated", "value" : "%arg МАТЧА" } },
+            "many" : { "stringUnit" : { "state" : "translated", "value" : "%arg МАТЧЕЙ" } },
+            "other" : { "stringUnit" : { "state" : "translated", "value" : "%arg МАТЧА" } }
+          } } } }
+        },
+        "tr" : {
+          "stringUnit" : { "state" : "translated", "value" : "%#@arg1@" },
+          "substitutions" : { "arg1" : { "argNum" : 1, "formatSpecifier" : "lld", "variations" : { "plural" : {
+            "other" : { "stringUnit" : { "state" : "translated", "value" : "%arg MAÇ" } }
+          } } } }
+        }
+      }
+    },
+    "FAVORITES" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "FAVORITEN" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "FAVORITES" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "FAVORITOS" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "FAVORIS" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "पसंदीदा" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "즐겨찾기" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "FAVORITOS" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "ИЗБРАННОЕ" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "FAVORİLER" } }
+      }
+    },
+    "Favorite a team, player, event, or match in Val Esports." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Füge in Val Esports ein Team, einen Spieler, ein Event oder ein Match zu deinen Favoriten hinzu." } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Favorite a team, player, event, or match in Val Esports." } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Añade un equipo, jugador, evento o partida a tus favoritos en Val Esports." } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ajoutez une équipe, un joueur, un événement ou un match à vos favoris dans Val Esports." } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports में किसी टीम, खिलाड़ी, इवेंट या मैच को पसंदीदा बनाएँ।" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports에서 팀, 선수, 이벤트 또는 경기를 즐겨찾기에 추가하세요." } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Adicione um time, jogador, evento ou partida aos favoritos no Val Esports." } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Добавьте команду, игрока, событие или матч в избранное в Val Esports." } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports'ta bir takımı, oyuncuyu, etkinliği veya maçı favorilerinize ekleyin." } }
+      }
+    },
+    "Favorite match" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Favoriten-Match" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Favorite match" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Partida favorita" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Match favori" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "पसंदीदा मैच" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "즐겨찾기 경기" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Partida favorita" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Избранный матч" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Favori maç" } }
+      }
+    },
+    "Favorite matches" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Favoriten-Matches" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Favorite matches" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Partidas favoritas" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Matchs favoris" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "पसंदीदा मैच" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "즐겨찾기 경기" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Partidas favoritas" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Избранные матчи" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Favori maçlar" } }
+      }
+    },
+    "LIVE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "JETZT LIVE" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "LIVE" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "EN DIRECTO" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "EN DIRECT" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "लाइव" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "라이브" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "AO VIVO" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "В ЭФИРЕ" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "CANLI" } }
+      }
+    },
+    "Live and upcoming matches connected to your Val Esports favorites." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Laufende und bevorstehende Matches deiner Val Esports-Favoriten." } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Live and upcoming matches connected to your Val Esports favorites." } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Partidas en directo y programadas de tus favoritos de Val Esports." } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Matchs en direct et à venir liés à vos favoris Val Esports." } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपके Val Esports पसंदीदा से जुड़े लाइव और आने वाले मैच।" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports 즐겨찾기와 관련된 라이브 및 예정 경기입니다." } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Partidas ao vivo e agendadas dos seus favoritos do Val Esports." } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Матчи в прямом эфире и по расписанию для избранного в Val Esports." } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports favorilerinizle ilgili canlı ve yaklaşan maçlar." } }
+      }
+    },
+    "MATCH" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "PARTIE" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "MATCH" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "PARTIDA" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "RENCONTRE" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "मैच" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "경기" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "PARTIDA" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "МАТЧ" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "MAÇ" } }
+      }
+    },
+    "NO MATCHES" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "KEINE MATCHES" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "NO MATCHES" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "SIN PARTIDAS" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "AUCUN MATCH" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "कोई मैच नहीं" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "경기 없음" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "SEM PARTIDAS" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "НЕТ МАТЧЕЙ" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "MAÇ YOK" } }
+      }
+    },
+    "No favorites." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine Favoriten." } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "No favorites." } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "No hay favoritos." } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aucun favori." } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "कोई पसंदीदा नहीं।" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "즐겨찾기가 없습니다." } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Nenhum favorito." } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Нет избранного." } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Favori yok." } }
+      }
+    },
+    "No matches scheduled." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine Matches geplant." } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "No matches scheduled." } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "No hay partidas programadas." } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aucun match programmé." } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "कोई मैच तय नहीं है।" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "예정된 경기가 없습니다." } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Nenhuma partida agendada." } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Нет запланированных матчей." } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Planlanmış maç yok." } }
+      }
+    },
+    "Not started" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Noch nicht gestartet" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Not started" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Sin comenzar" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Pas commencé" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "शुरू नहीं हुआ" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "시작 전" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não iniciada" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не начался" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Başlamadı" } }
+      }
+    },
+    "Open Val Esports once to connect your favorites." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffne Val Esports einmal, um deine Favoriten zu verbinden." } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Val Esports once to connect your favorites." } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Abre Val Esports una vez para conectar tus favoritos." } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouvrez Val Esports une fois pour connecter vos favoris." } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "अपने पसंदीदा जोड़ने के लिए Val Esports को एक बार खोलें।" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports를 한 번 열어 즐겨찾기를 연결하세요." } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abra o Val Esports uma vez para conectar seus favoritos." } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Откройте Val Esports один раз, чтобы подключить избранное." } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Favorilerinizi bağlamak için Val Esports'u bir kez açın." } }
+      }
+    },
+    "Open the app." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "App öffnen." } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Open the app." } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Abre la app." } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouvrez l’app." } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "ऐप खोलें।" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "앱을 여세요." } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abra o app." } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Откройте приложение." } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Uygulamayı açın." } }
+      }
+    },
+    "Opens match details" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffnet die Matchdetails" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Opens match details" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Abre los detalles de la partida" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouvre les détails du match" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "मैच का विवरण खोलता है" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "경기 세부사항 열기" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abre os detalhes da partida" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открывает сведения о матче" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Maç ayrıntılarını açar" } }
+      }
+    },
+    "Score hidden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ergebnis ausgeblendet" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Score hidden" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Resultado oculto" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Score masqué" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्कोर छिपा है" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "점수 숨김" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Placar oculto" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Счёт скрыт" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Skor gizli" } }
+      }
+    },
+    "Score unavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ergebnis nicht verfügbar" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Score unavailable" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Resultado no disponible" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Score indisponible" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्कोर उपलब्ध नहीं है" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "점수 정보 없음" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Placar indisponível" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Счёт недоступен" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Skor kullanılamıyor" } }
+      }
+    },
+    "Scores hidden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ergebnisse ausgeblendet" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Scores hidden" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Resultados ocultos" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Scores masqués" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्कोर छिपे हैं" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "점수 숨김" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Placares ocultos" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Счёт скрыт" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Skorlar gizli" } }
+      }
+    },
+    "TBD" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "NOCH OFFEN" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "TBD" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "POR DEFINIR" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "À DÉFINIR" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "तय होना बाकी" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "미정" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A DEFINIR" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "НЕ ОПР." } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "BELLİ DEĞİL" } }
+      }
+    },
+    "UPCOMING" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "BEVORSTEHEND" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "UPCOMING" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "PRÓXIMA" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "À VENIR" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "आगामी" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "예정" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "EM BREVE" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "СКОРО" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "YAKLAŞAN" } }
+      }
+    },
+    "Your favorites return here when they play." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Favoriten erscheinen hier, sobald sie spielen." } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Your favorites return here when they play." } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Tus favoritos aparecerán aquí cuando jueguen." } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vos favoris réapparaîtront ici lorsqu’ils joueront." } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपके पसंदीदा जब खेलेंगे, तो यहाँ दिखाई देंगे।" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "즐겨찾는 팀이나 선수가 경기할 때 여기에 표시됩니다." } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Seus favoritos aparecerão aqui quando jogarem." } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваше избранное появится здесь, когда начнутся матчи." } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Favorileriniz oynadığında burada görünür." } }
+      }
+    },
+    "You're caught up on your favorites." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du bist bei deinen Favoriten auf dem neuesten Stand." } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "You're caught up on your favorites." } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Estás al día con tus favoritos." } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vous êtes à jour sur vos favoris." } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "आप अपने पसंदीदा की सभी जानकारी देख चुके हैं।" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "즐겨찾기의 최신 일정을 모두 확인했습니다." } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Você está em dia com seus favoritos." } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вы в курсе всех событий в избранном." } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Favorilerinizdeki her şeyi gördünüz." } }
+      }
+    },
+    "widget.score_format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ergebnis %1$lld" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Score %1$lld" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Puntuación: %1$lld" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Score : %1$lld" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्कोर %1$lld" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "점수 %1$lld" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Placar: %1$lld" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Счёт: %1$lld" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Skor %1$lld" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
