@@ -41,18 +41,21 @@ internal val EventStatus.eventDetailTagStyle: PrismTagStyle
 internal val String.eventMatchStatusTagStyle: PrismTagStyle
   get() = when (trim().lowercase()) {
     "live", "ongoing" -> PrismTagStyle.Danger
-    "upcoming" -> PrismTagStyle.Info
-    "completed" -> PrismTagStyle.Success
+    "upcoming", "tbd" -> PrismTagStyle.Info
+    "completed", "final" -> PrismTagStyle.Success
     else -> PrismTagStyle.Neutral
   }
 
 internal val String.eventMatchStatusLabel: String
   @Composable
+  get() = stringResource(eventMatchStatusLabelResource)
+
+internal val String.eventMatchStatusLabelResource: org.jetbrains.compose.resources.StringResource
   get() = when (trim().lowercase()) {
-    "live" -> stringResource(Res.string.format_status_live)
-    "ongoing" -> stringResource(Res.string.format_status_ongoing)
-    "paused" -> stringResource(Res.string.format_status_paused)
-    "upcoming" -> stringResource(Res.string.format_status_upcoming)
-    "completed" -> stringResource(Res.string.format_status_completed)
-    else -> stringResource(Res.string.format_status_unknown)
+    "live" -> Res.string.format_status_live
+    "ongoing" -> Res.string.format_status_ongoing
+    "paused" -> Res.string.format_status_paused
+    "upcoming", "tbd" -> Res.string.format_status_upcoming
+    "completed", "final" -> Res.string.format_status_completed
+    else -> Res.string.format_status_unknown
   }

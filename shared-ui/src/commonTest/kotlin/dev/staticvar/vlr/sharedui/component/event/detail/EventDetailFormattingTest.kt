@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.sharedui.component.event.detail
 
+import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.domain.model.EventMatchTeam
@@ -11,10 +12,55 @@ import dev.staticvar.vlr.domain.model.EventStatus
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.format_status_completed
+import vlr.shared_ui.generated.resources.format_status_ongoing
 import vlr.shared_ui.generated.resources.format_status_paused
 import vlr.shared_ui.generated.resources.format_status_unknown
+import vlr.shared_ui.generated.resources.format_status_upcoming
 
 class EventDetailFormattingTest {
+  @Test
+  fun matchStatusAliasesSelectLocalizedLabelsAndStyles() {
+    assertEquals(Res.string.format_status_completed, " FINAL ".eventMatchStatusLabelResource)
+    assertEquals(PrismTagStyle.Success, " FINAL ".eventMatchStatusTagStyle)
+    assertEquals(Res.string.format_status_upcoming, " TbD ".eventMatchStatusLabelResource)
+    assertEquals(PrismTagStyle.Info, " TbD ".eventMatchStatusTagStyle)
+    assertEquals(Res.string.format_status_ongoing, "ongoing".eventMatchStatusLabelResource)
+    assertEquals(PrismTagStyle.Danger, "ongoing".eventMatchStatusTagStyle)
+    assertEquals(Res.string.format_status_paused, "paused".eventMatchStatusLabelResource)
+    assertEquals(PrismTagStyle.Neutral, "paused".eventMatchStatusTagStyle)
+  }
+
+  @Test
+  fun statusAliasesJoinLocalizedGroupsWithoutMergingOngoingAndPaused() {
+    val labels = testFormattingLabels.copy(
+      completed = "Terminé",
+      upcoming = "À venir",
+      ongoing = "En cours",
+      paused = "En pause",
+    )
+    val matches = listOf(
+      eventMatch(id = "1", status = " FINAL "),
+      eventMatch(id = "2", status = "completed"),
+      eventMatch(id = "3", status = " TbD "),
+      eventMatch(id = "4", status = "upcoming"),
+      eventMatch(id = "5", status = "ongoing"),
+      eventMatch(id = "6", status = "paused"),
+    )
+
+    val grouped = matches.groupEventMatches(EventMatchGrouping.Status, labels)
+
+    assertEquals(
+      mapOf(
+        "Terminé" to listOf("1", "2"),
+        "À venir" to listOf("3", "4"),
+        "En cours" to listOf("5"),
+        "En pause" to listOf("6"),
+      ),
+      grouped.mapValues { (_, group) -> group.map(EventMatch::matchId) },
+    )
+  }
+
   @Test
   fun pausedAndUnknownStatusesKeepTheirOwnLabels() {
     assertEquals(Res.string.format_status_paused, EventStatus.PAUSED.eventDetailLabelResource)

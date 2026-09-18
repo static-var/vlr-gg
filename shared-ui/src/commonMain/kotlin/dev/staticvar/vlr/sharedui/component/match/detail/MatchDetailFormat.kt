@@ -17,7 +17,7 @@ internal fun MatchDetails.matchDetailBestOf(): Int? {
   explicitBestOf(note)?.let { return it }
 
   val normalizedStatus = event.status.orEmpty().trim().lowercase()
-  if (normalizedStatus == "completed") {
+  if (normalizedStatus == "completed" || normalizedStatus == "final") {
     completedVetoMapCount()?.let { return it }
   }
 
@@ -53,7 +53,7 @@ private fun Int.isExplicitBestOfCount(): Boolean = this > 0 && this % 2 == 1
 
 private fun Int.isPlannedBestOfCount(): Boolean = this == 1 || this == 3 || this == 5
 
-private val plannedStatuses = setOf("upcoming", "live", "ongoing")
+private val plannedStatuses = setOf("upcoming", "tbd", "live", "ongoing")
 private val ExplicitBestOfRegex = Regex("""(?i)\b(?:bo|best(?:\s*-\s*|\s+)of)\s*[-:]?\s*(\d+)\b""")
 private val PickRegex = Regex("""(?i)\bpick(?:s|ed)?\b""")
 private val RemainsRegex = Regex("""(?i)\bremains\b""")

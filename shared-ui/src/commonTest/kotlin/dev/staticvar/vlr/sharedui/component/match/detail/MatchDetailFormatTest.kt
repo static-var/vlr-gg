@@ -37,6 +37,7 @@ class MatchDetailFormatTest {
     )
 
     assertEquals(3, match(status = "completed", mapCount = 2, bans = bans).matchDetailBestOf())
+    assertEquals(3, match(status = " FINAL ", mapCount = 2, bans = bans).matchDetailBestOf())
   }
 
   @Test
@@ -59,6 +60,7 @@ class MatchDetailFormatTest {
     )
 
     assertEquals(null, completedSweep.matchDetailBestOf())
+    assertEquals(null, match(status = "FINAL", mapCount = 3).matchDetailBestOf())
     assertEquals(
       null,
       completedSweep.copy(bans = listOf("FNC pick Ascent", "NRG pick Abyss")).matchDetailBestOf(),
@@ -68,6 +70,7 @@ class MatchDetailFormatTest {
   @Test
   fun upcomingAndLiveOddMapCountsRepresentPlannedFormat() {
     assertEquals(3, match(status = "UPCOMING", mapCount = 3).matchDetailBestOf())
+    assertEquals(3, match(status = " TbD ", mapCount = 3).matchDetailBestOf())
     assertEquals(5, match(status = "live", mapCount = 5).matchDetailBestOf())
     assertEquals(3, match(status = "ongoing", mapCount = 3).matchDetailBestOf())
     assertEquals(null, match(status = "live", mapCount = 2).matchDetailBestOf())

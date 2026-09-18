@@ -107,8 +107,8 @@ private fun String.eventMatchStatusLabel(labels: EventFormattingLabels): String 
   "live" -> labels.live
   "ongoing" -> labels.ongoing
   "paused" -> labels.paused
-  "upcoming" -> labels.upcoming
-  "completed" -> labels.completed
+  "upcoming", "tbd" -> labels.upcoming
+  "completed", "final" -> labels.completed
   else -> labels.unknown
 }
 

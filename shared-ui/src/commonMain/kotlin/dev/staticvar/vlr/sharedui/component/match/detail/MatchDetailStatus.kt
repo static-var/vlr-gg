@@ -7,6 +7,7 @@ package dev.staticvar.vlr.sharedui.component.match.detail
 import androidx.compose.runtime.Composable
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.vlr.domain.model.MatchStatus
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.format_status_completed
@@ -18,13 +19,16 @@ import vlr.shared_ui.generated.resources.format_status_upcoming
 
 internal val String?.matchDetailStatusLabel: String
   @Composable
+  get() = stringResource(matchDetailStatusLabelResource)
+
+internal val String?.matchDetailStatusLabelResource: StringResource
   get() = when (orEmpty().trim().lowercase()) {
-    "live" -> stringResource(Res.string.format_status_live)
-    "ongoing" -> stringResource(Res.string.format_status_ongoing)
-    "paused" -> stringResource(Res.string.format_status_paused)
-    "upcoming" -> stringResource(Res.string.format_status_upcoming)
-    "completed" -> stringResource(Res.string.format_status_completed)
-    else -> stringResource(Res.string.format_status_unknown)
+    "live" -> Res.string.format_status_live
+    "ongoing" -> Res.string.format_status_ongoing
+    "paused" -> Res.string.format_status_paused
+    "upcoming", "tbd" -> Res.string.format_status_upcoming
+    "completed", "final" -> Res.string.format_status_completed
+    else -> Res.string.format_status_unknown
   }
 
 internal val MatchStatus.matchDetailStatusLabel: String
@@ -42,9 +46,9 @@ internal val String?.matchDetailStatusTagStyle: PrismTagStyle
     "ongoing",
     -> PrismTagStyle.Danger
 
-    "upcoming" -> PrismTagStyle.Info
+    "upcoming", "tbd" -> PrismTagStyle.Info
 
-    "completed" -> PrismTagStyle.Success
+    "completed", "final" -> PrismTagStyle.Success
 
     else -> PrismTagStyle.Neutral
   }
