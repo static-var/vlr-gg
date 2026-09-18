@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.core.refresh
 
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.telemetry.AppTelemetry
 import dev.staticvar.vlr.core.telemetry.TelemetryLevel
 import dev.staticvar.vlr.core.telemetry.TelemetryReporter
@@ -38,7 +39,7 @@ class RefreshController(
   init {
     scope.launch {
       for (request in requests) {
-        networkMonitor.isOnline.first { it }
+        networkMonitor.status.first { it == NetworkStatus.Online }
         state.update { it.copy(isRefreshing = true, errorMessage = null, errorDetails = null) }
         try {
           action().getOrThrow()

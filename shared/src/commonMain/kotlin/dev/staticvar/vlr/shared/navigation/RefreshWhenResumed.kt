@@ -11,17 +11,18 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import dev.staticvar.vlr.core.network.NetworkStatus
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 
 @Composable
-internal fun RefreshWhenResumed(isOnline: StateFlow<Boolean>, onRefresh: () -> Unit) {
+internal fun RefreshWhenResumed(networkStatus: StateFlow<NetworkStatus>, onRefresh: () -> Unit) {
   val lifecycle = LocalLifecycleOwner.current.lifecycle
   val refresh by rememberUpdatedState(onRefresh)
 
-  LaunchedEffect(lifecycle, isOnline) {
+  LaunchedEffect(lifecycle, networkStatus) {
     lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-      isOnline.filter { it }.collect { refresh() }
+      networkStatus.filter { it == NetworkStatus.Online }.collect { refresh() }
     }
   }
 }

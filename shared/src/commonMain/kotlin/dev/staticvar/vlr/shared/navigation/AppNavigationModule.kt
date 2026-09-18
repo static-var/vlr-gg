@@ -79,7 +79,7 @@ internal fun appNavigationModule(): Module = module {
     val appState = LocalVlrAppState.current
     val viewModel = koinViewModel<HomeViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
+    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     val eventTransitionEnabled = LocalAppEventSharedTransitionScope.current != null
     EventLogoTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Home) {
@@ -115,7 +115,7 @@ internal fun appNavigationModule(): Module = module {
     val appState = LocalVlrAppState.current
     val viewModel = koinViewModel<NewsListViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
+    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     NewsRootScreen(
       uiState = uiState,
@@ -129,7 +129,7 @@ internal fun appNavigationModule(): Module = module {
     val viewModel = koinViewModel<NewsArticleViewModel> { parametersOf(route.articleId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
+    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     NewsArticleRoute(
       uiState = uiState,
@@ -141,7 +141,7 @@ internal fun appNavigationModule(): Module = module {
   navigation<AppRoute.Matches>(metadata = listPane(group = "matches") + (MatchTransitionRoleKey to EventTransitionRole.List)) {
     val viewModel = koinViewModel<MatchesViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
+    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     val appState = LocalVlrAppState.current
     val transitionEnabled = LocalAppEventSharedTransitionScope.current != null
@@ -163,7 +163,7 @@ internal fun appNavigationModule(): Module = module {
     val viewModel = koinViewModel<MatchDetailsViewModel> { parametersOf(route.matchId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
+    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     val matchPreview = appState.matchTransitionPreview?.takeIf { it.id == route.matchId }
     MatchTransitionHost(enabled = matchPreview != null) {
@@ -189,7 +189,7 @@ internal fun appNavigationModule(): Module = module {
     val eventLogoTransitionEnabled = LocalAppEventSharedTransitionScope.current != null
     val viewModel = koinViewModel<EventsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
+    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     EventLogoTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Events) {
       EventsOverviewRoute(
@@ -217,7 +217,7 @@ internal fun appNavigationModule(): Module = module {
     var matchGrouping by rememberSaveable(route.eventId) { mutableStateOf(EventMatchGrouping.Status) }
     var selectedMatchGroupName: String? by rememberSaveable(route.eventId, matchGrouping) { mutableStateOf(null) }
 
-    RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
+    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     val eventPreview = appState.eventTransitionPreview?.takeIf { preview -> preview.id == route.eventId }
     EventLogoTransitionHost(enabled = eventPreview != null) {
@@ -245,7 +245,7 @@ internal fun appNavigationModule(): Module = module {
   navigation<AppRoute.Rankings>(metadata = listPane(group = "rankings")) {
     val viewModel = koinViewModel<RankingsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
+    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     RankingsRoute(
       uiState = uiState,
@@ -261,7 +261,7 @@ internal fun appNavigationModule(): Module = module {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var section by rememberSaveable(route.teamId) { mutableStateOf(TeamMatchesSection.Upcoming) }
 
-    RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
+    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     TeamDetailsRoute(
       onToggleFavorite = viewModel::toggleFavorite,
@@ -280,7 +280,7 @@ internal fun appNavigationModule(): Module = module {
     val viewModel = koinViewModel<PlayerDetailsViewModel> { parametersOf(route.playerId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    RefreshWhenResumed(isOnline = viewModel.isOnline, onRefresh = viewModel::refresh)
+    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     PlayerDetailsRoute(
       onToggleFavorite = viewModel::toggleFavorite,

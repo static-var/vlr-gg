@@ -23,6 +23,7 @@ import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.settings.CatppuccinFlavour
 import dev.staticvar.vlr.core.settings.CacheCleanupPreferencesRepository
 import dev.staticvar.vlr.core.settings.MascotPreference
@@ -65,18 +66,18 @@ public fun App(
   val networkMonitor = koinInject<NetworkMonitor>()
   val spoilerPreferences = koinInject<SpoilerPreferencesRepository>()
   val spoilersHidden by spoilerPreferences.enabled.collectAsStateWithLifecycle()
-  val isOnline by networkMonitor.isOnline.collectAsStateWithLifecycle()
+  val networkStatus by networkMonitor.status.collectAsStateWithLifecycle()
   val initialFavoriteProfilesRefresh = koinInject<InitialFavoriteProfilesRefresh>()
   LaunchedEffect(initialFavoriteProfilesRefresh) {
-    networkMonitor.isOnline.first { it }
+    networkMonitor.status.first { it == NetworkStatus.Online }
     initialFavoriteProfilesRefresh.awaitInitialRefresh()
   }
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val cleanupPreferences = koinInject<CacheCleanupPreferencesRepository>()
   val cleanupRepository = koinInject<CacheCleanupRepository>()
   val autoCleanupEnabled by cleanupPreferences.enabled.collectAsStateWithLifecycle()
-  LaunchedEffect(lifecycleState, autoCleanupEnabled, isOnline) {
-    if (lifecycleState == Lifecycle.State.RESUMED && autoCleanupEnabled && isOnline) {
+  LaunchedEffect(lifecycleState, autoCleanupEnabled, networkStatus) {
+    if (lifecycleState == Lifecycle.State.RESUMED && autoCleanupEnabled && networkStatus == NetworkStatus.Online) {
       if (initialFavoriteProfilesRefresh.awaitInitialRefresh().isSuccess) {
         cleanupRepository.cleanupIfDue(Clock.System.now().toEpochMilliseconds())
       }
@@ -118,7 +119,7 @@ public fun App(
     ) {
       CompositionLocalProvider(
         LocalMascotCharacter provides mascotCharacter,
-        LocalIsOnline provides isOnline,
+        LocalIsOnline provides (networkStatus != NetworkStatus.Offline),
         LocalSpoilerMode provides SpoilerMode(enabled = spoilersHidden, onToggle = spoilerPreferences::toggle),
       ) {
         val appState = rememberVlrAppState()

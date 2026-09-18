@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.core.refresh
 
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.telemetry.NoOpTelemetryReporter
 import dev.staticvar.vlr.core.telemetry.TelemetryLevel
 import dev.staticvar.vlr.core.telemetry.TelemetryReporter
@@ -61,14 +62,14 @@ class RefreshControllerTest {
 
     controller.refresh()
     runCurrent()
-    network.isOnline.value = false
+    network.status.value = NetworkStatus.Offline
     controller.refresh()
     firstRequest.complete(Unit)
     runCurrent()
     assertEquals(1, calls)
     assertFalse(controller.state.value.isRefreshing)
 
-    network.isOnline.value = true
+    network.status.value = NetworkStatus.Online
     runCurrent()
     assertEquals(2, calls)
   }
@@ -87,7 +88,30 @@ class RefreshControllerTest {
     assertEquals(0, calls)
     assertEquals(RefreshState(), controller.state.value)
 
-    network.isOnline.value = true
+    network.status.value = NetworkStatus.Online
+    runCurrent()
+    assertEquals(1, calls)
+  }
+
+  @Test
+  fun unknownConnectivityWaitsForConfirmedOnline() = runTest {
+    val network = TestNetworkMonitor().apply { status.value = NetworkStatus.Unknown }
+    var calls = 0
+    val controller = RefreshController(backgroundScope, network) {
+      calls++
+      Result.success(Unit)
+    }
+
+    controller.refresh()
+    runCurrent()
+    assertEquals(0, calls)
+    assertEquals(RefreshState(), controller.state.value)
+
+    network.status.value = NetworkStatus.Offline
+    runCurrent()
+    assertEquals(0, calls)
+
+    network.status.value = NetworkStatus.Online
     runCurrent()
     assertEquals(1, calls)
   }
@@ -211,6 +235,6 @@ class RefreshControllerTest {
   }
 
   private class TestNetworkMonitor(online: Boolean = true) : NetworkMonitor {
-    override val isOnline = MutableStateFlow(online)
+    override val status = MutableStateFlow(if (online) NetworkStatus.Online else NetworkStatus.Offline)
   }
 }

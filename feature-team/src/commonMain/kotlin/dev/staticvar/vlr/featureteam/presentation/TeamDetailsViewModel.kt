@@ -7,6 +7,7 @@ package dev.staticvar.vlr.featureteam.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.featureteam.usecase.ObserveTeamDetailsUseCase
@@ -30,7 +31,7 @@ public class TeamDetailsViewModel(
   networkMonitor: NetworkMonitor,
   private val teamRepository: TeamRepository,
 ) : ViewModel() {
-  public val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
+  public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
   private val refresher: RefreshController = RefreshController(viewModelScope, networkMonitor) {
     refreshTeamDetailsUseCase(teamId)

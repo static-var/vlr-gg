@@ -7,5 +7,11 @@ package dev.staticvar.vlr.core.network
 import kotlinx.coroutines.flow.StateFlow
 
 interface NetworkMonitor {
-  val isOnline: StateFlow<Boolean>
+  val status: StateFlow<NetworkStatus>
+}
+
+enum class NetworkStatus {
+  Unknown,
+  Online,
+  Offline,
 }

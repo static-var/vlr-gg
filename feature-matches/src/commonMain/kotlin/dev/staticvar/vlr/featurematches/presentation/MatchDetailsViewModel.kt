@@ -7,6 +7,7 @@ package dev.staticvar.vlr.featurematches.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
@@ -29,7 +30,7 @@ public class MatchDetailsViewModel(
   favoritesRepository: FavoritesRepository,
   private val preferencesRepository: MatchDetailsPreferencesRepository,
 ) : ViewModel() {
-  public val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
+  public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
   private val refresher = RefreshController(viewModelScope, networkMonitor) { refreshMatchDetailsUseCase(matchId) }
 

@@ -7,6 +7,7 @@ package dev.staticvar.vlr.featurerankings.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
 import dev.staticvar.vlr.featurerankings.usecase.ObserveRankingsUseCase
 import dev.staticvar.vlr.featurerankings.usecase.RefreshRankingsUseCase
@@ -21,7 +22,7 @@ public class RankingsViewModel(
   refreshRankingsUseCase: RefreshRankingsUseCase,
   networkMonitor: NetworkMonitor,
 ) : ViewModel() {
-  public val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
+  public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
   private val selectedRegion: MutableStateFlow<String?> = MutableStateFlow(null)
   private val refresher: RefreshController = RefreshController(viewModelScope, networkMonitor) {

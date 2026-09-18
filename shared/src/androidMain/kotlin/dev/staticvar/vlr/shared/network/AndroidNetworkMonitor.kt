@@ -9,6 +9,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,19 +39,20 @@ internal class AndroidNetworkMonitor(context: Context) : NetworkMonitor {
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
   private val manager = context.getSystemService(ConnectivityManager::class.java)
 
-  override val isOnline: StateFlow<Boolean> = callbackFlow {
-    trySend(manager.getNetworkCapabilities(manager.activeNetwork)?.hasValidatedInternet() == true)
+  override val status: StateFlow<NetworkStatus> = callbackFlow {
+    val initiallyOnline = manager.getNetworkCapabilities(manager.activeNetwork)?.hasValidatedInternet() == true
+    trySend(if (initiallyOnline) NetworkStatus.Online else NetworkStatus.Offline)
     val callback = object : ConnectivityManager.NetworkCallback() {
       override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) {
-        trySend(capabilities.hasValidatedInternet())
+        trySend(if (capabilities.hasValidatedInternet()) NetworkStatus.Online else NetworkStatus.Offline)
       }
       override fun onLost(network: Network) {
-        trySend(false)
+        trySend(NetworkStatus.Offline)
       }
     }
     manager.registerDefaultNetworkCallback(callback)
     awaitClose { manager.unregisterNetworkCallback(callback) }
-  }.stateIn(scope, SharingStarted.WhileSubscribed(replayExpirationMillis = 0), false)
+  }.stateIn(scope, SharingStarted.WhileSubscribed(replayExpirationMillis = 0), NetworkStatus.Unknown)
 
   fun close() = scope.cancel()
 }

@@ -6,6 +6,7 @@ package dev.staticvar.vlr.featureplayer.presentation
 
 import androidx.lifecycle.ViewModelStore
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.domain.model.PlayerInfo
 import dev.staticvar.vlr.domain.repository.PlayerRepository
 import dev.staticvar.vlr.featureplayer.usecase.ObservePlayerDetailsUseCase
@@ -198,7 +199,7 @@ class PlayerDetailsViewModelTest {
     observePlayerDetailsUseCase = ObservePlayerDetailsUseCase(repository),
     refreshPlayerDetailsUseCase = RefreshPlayerDetailsUseCase(repository),
     networkMonitor = object : NetworkMonitor {
-      override val isOnline = MutableStateFlow(true)
+      override val status = MutableStateFlow(NetworkStatus.Online)
     },
   ).also { viewModelStore.put("viewModel", it) }
 

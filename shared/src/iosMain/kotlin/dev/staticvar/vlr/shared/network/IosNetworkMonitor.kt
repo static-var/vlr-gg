@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.shared.network
 
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,15 +40,18 @@ internal val iosNetworkModule = module {
 internal class IosNetworkMonitor : NetworkMonitor {
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-  override val isOnline: StateFlow<Boolean> = callbackFlow {
+  override val status: StateFlow<NetworkStatus> = callbackFlow {
     val monitor = nw_path_monitor_create()
     nw_path_monitor_set_update_handler(monitor) { path ->
-      trySend(path != null && nw_path_get_status(path) == nw_path_status_satisfied)
+      if (path != null) {
+        val online = nw_path_get_status(path) == nw_path_status_satisfied
+        trySend(if (online) NetworkStatus.Online else NetworkStatus.Offline)
+      }
     }
     nw_path_monitor_set_queue(monitor, dispatch_get_main_queue())
     nw_path_monitor_start(monitor)
     awaitClose { nw_path_monitor_cancel(monitor) }
-  }.stateIn(scope, SharingStarted.WhileSubscribed(replayExpirationMillis = 0), false)
+  }.stateIn(scope, SharingStarted.WhileSubscribed(replayExpirationMillis = 0), NetworkStatus.Unknown)
 
   fun close() = scope.cancel()
 }

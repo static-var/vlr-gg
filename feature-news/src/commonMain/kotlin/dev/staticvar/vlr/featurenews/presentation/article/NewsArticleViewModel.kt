@@ -7,6 +7,7 @@ package dev.staticvar.vlr.featurenews.presentation.article
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
 import dev.staticvar.vlr.featurenews.usecase.ObserveNewsArticleUseCase
 import dev.staticvar.vlr.featurenews.usecase.RefreshNewsArticleUseCase
@@ -21,7 +22,7 @@ public class NewsArticleViewModel(
   refreshNewsArticleUseCase: RefreshNewsArticleUseCase,
   networkMonitor: NetworkMonitor,
 ) : ViewModel() {
-  public val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
+  public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
   private val refresher: RefreshController = RefreshController(viewModelScope, networkMonitor) {
     refreshNewsArticleUseCase(articleId)
