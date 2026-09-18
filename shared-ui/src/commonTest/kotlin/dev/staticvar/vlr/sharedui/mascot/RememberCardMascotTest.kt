@@ -27,28 +27,31 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RememberCardMascotTest {
+  private val firstOwner = MascotOwnerToken()
+  private val secondOwner = MascotOwnerToken()
+
   @Test
   fun rejectedVisitNeverGrantsOwnership() {
     val state = CardMascotState(allowed = false)
-    assertFalse(state.tryAcquire("first"))
-    assertFalse(state.tryAcquire("second"))
+    assertFalse(state.tryAcquire(firstOwner))
+    assertFalse(state.tryAcquire(secondOwner))
     assertNull(state.ownerId)
   }
 
   @Test
   fun ownershipIsExclusiveAndRepeatedAcquisitionByTheOwnerIsStable() {
     val state = CardMascotState(allowed = true)
-    assertTrue(state.tryAcquire("first"))
-    assertTrue(state.tryAcquire("first"))
-    assertFalse(state.tryAcquire("second"))
+    assertTrue(state.tryAcquire(firstOwner))
+    assertTrue(state.tryAcquire(firstOwner))
+    assertFalse(state.tryAcquire(secondOwner))
 
-    state.release("second")
-    assertEquals("first", state.ownerId)
+    state.release(secondOwner)
+    assertSame(firstOwner, state.ownerId)
 
-    state.release("first")
+    state.release(firstOwner)
     assertNull(state.ownerId)
-    assertFalse(state.tryAcquire("first"))
-    assertFalse(state.tryAcquire("second"))
+    assertFalse(state.tryAcquire(firstOwner))
+    assertFalse(state.tryAcquire(secondOwner))
   }
 
   @Test
@@ -61,9 +64,9 @@ class RememberCardMascotTest {
       recompose()
       assertSame(initialState, state)
       assertEquals(1, random.rollCount)
-      assertTrue(state.tryAcquire("first"))
+      assertTrue(state.tryAcquire(firstOwner))
       recomposeUnrelatedContent()
-      assertEquals("first", state.ownerId)
+      assertSame(firstOwner, state.ownerId)
 
       probabilityPercent = 20
       recompose()
@@ -74,8 +77,8 @@ class RememberCardMascotTest {
       recompose()
       assertEquals(2, random.rollCount)
       assertNull(initialState.ownerId)
-      assertFalse(initialState.tryAcquire("second"))
-      assertTrue(state.tryAcquire("first"))
+      assertFalse(initialState.tryAcquire(secondOwner))
+      assertTrue(state.tryAcquire(firstOwner))
     }
   }
 
@@ -87,7 +90,7 @@ class RememberCardMascotTest {
           probabilityPercent = percentage
           screenKey = "visit-$index"
           recompose()
-          assertEquals(roll < percentage, state.tryAcquire("card"))
+          assertEquals(roll < percentage, state.tryAcquire(MascotOwnerToken()))
         }
     }
   }
@@ -95,18 +98,18 @@ class RememberCardMascotTest {
   @Test
   fun leavingCompositionReleasesOwnershipAndReentryStartsANewVisit() = runTest {
     withMascot(rolls = listOf(0, 0)) {
-      assertTrue(state.tryAcquire("first"))
+      assertTrue(state.tryAcquire(firstOwner))
       val previousVisit = state
       isPresent = false
       recompose()
       assertNull(previousVisit.ownerId)
-      assertFalse(previousVisit.tryAcquire("second"))
+      assertFalse(previousVisit.tryAcquire(secondOwner))
 
       isPresent = true
       recompose()
       assertEquals(2, random.rollCount)
-      assertTrue(state.tryAcquire("second"))
-      assertEquals("second", state.ownerId)
+      assertTrue(state.tryAcquire(secondOwner))
+      assertSame(secondOwner, state.ownerId)
     }
   }
 
@@ -116,7 +119,7 @@ class RememberCardMascotTest {
       val pendingVisit = state
       isPresent = false
       recompose()
-      assertFalse(pendingVisit.tryAcquire("first"))
+      assertFalse(pendingVisit.tryAcquire(firstOwner))
       assertNull(pendingVisit.ownerId)
     }
   }

@@ -6,6 +6,7 @@ package dev.staticvar.vlr.featurerankings.presentation
 
 import androidx.lifecycle.ViewModelStore
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.domain.model.RegionalRanking
 import dev.staticvar.vlr.domain.model.TeamRanking
 import dev.staticvar.vlr.domain.repository.RankingsRepository
@@ -145,7 +146,7 @@ class RankingsViewModelTest {
     observeRankingsUseCase = ObserveRankingsUseCase(repository),
     refreshRankingsUseCase = RefreshRankingsUseCase(repository),
     networkMonitor = object : NetworkMonitor {
-      override val isOnline = MutableStateFlow(true)
+      override val status = MutableStateFlow(NetworkStatus.Online)
     },
   ).also { viewModelStore.put("viewModel", it) }
 

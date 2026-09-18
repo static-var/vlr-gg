@@ -6,6 +6,7 @@ package dev.staticvar.vlr.featureteam.presentation
 
 import androidx.lifecycle.ViewModelStore
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.featureteam.usecase.ObserveTeamDetailsUseCase
@@ -239,7 +240,7 @@ class TeamDetailsViewModelTest {
     observeTeamDetailsUseCase = ObserveTeamDetailsUseCase(repository),
     refreshTeamDetailsUseCase = RefreshTeamDetailsUseCase(repository),
     networkMonitor = object : NetworkMonitor {
-      override val isOnline = MutableStateFlow(true)
+      override val status = MutableStateFlow(NetworkStatus.Online)
     },
   ).also { viewModelStore.put("viewModel", it) }
 

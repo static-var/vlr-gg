@@ -7,6 +7,7 @@ package dev.staticvar.vlr.featurematches.presentation
 import androidx.lifecycle.ViewModelStore
 import com.russhwolf.settings.MapSettings
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
 import dev.staticvar.vlr.domain.model.DirectFavorite
@@ -325,7 +326,7 @@ class MatchDetailsViewModelTest {
     refreshMatchDetailsUseCase = RefreshMatchDetailsUseCase(repository),
     setMatchFavoriteUseCase = SetMatchFavoriteUseCase(repository),
     networkMonitor = object : NetworkMonitor {
-      override val isOnline = MutableStateFlow(true)
+      override val status = MutableStateFlow(NetworkStatus.Online)
     },
     preferencesRepository = preferencesRepository,
     favoritesRepository = favoritesRepository,

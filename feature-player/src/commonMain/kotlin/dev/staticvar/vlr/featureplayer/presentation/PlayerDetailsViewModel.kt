@@ -7,6 +7,7 @@ package dev.staticvar.vlr.featureplayer.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
 import dev.staticvar.vlr.domain.repository.PlayerRepository
 import dev.staticvar.vlr.featureplayer.usecase.ObservePlayerDetailsUseCase
@@ -30,7 +31,7 @@ public class PlayerDetailsViewModel(
   networkMonitor: NetworkMonitor,
   private val playerRepository: PlayerRepository,
 ) : ViewModel() {
-  public val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
+  public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
   private val refresher: RefreshController = RefreshController(viewModelScope, networkMonitor) {
     refreshPlayerDetailsUseCase(playerId)

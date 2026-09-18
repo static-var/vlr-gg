@@ -7,6 +7,7 @@ package dev.staticvar.vlr.featurehome.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
 import dev.staticvar.vlr.featurehome.usecase.ObserveHomeFeedUseCase
 import dev.staticvar.vlr.featurehome.usecase.RefreshHomeUseCase
@@ -20,7 +21,7 @@ public class HomeViewModel(
   refreshHomeUseCase: RefreshHomeUseCase,
   networkMonitor: NetworkMonitor,
 ) : ViewModel() {
-  public val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
+  public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
   private val refresher = RefreshController(
     scope = viewModelScope,

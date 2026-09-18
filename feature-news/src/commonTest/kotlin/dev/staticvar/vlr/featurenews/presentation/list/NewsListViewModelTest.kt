@@ -6,6 +6,7 @@ package dev.staticvar.vlr.featurenews.presentation.list
 
 import androidx.lifecycle.ViewModelStore
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.domain.model.NewsArticle
 import dev.staticvar.vlr.domain.model.NewsItem
 import dev.staticvar.vlr.domain.repository.NewsRepository
@@ -130,7 +131,7 @@ class NewsListViewModelTest {
     observeNewsListUseCase = ObserveNewsListUseCase(repository),
     refreshNewsUseCase = RefreshNewsUseCase(repository),
     networkMonitor = object : NetworkMonitor {
-      override val isOnline = MutableStateFlow(true)
+      override val status = MutableStateFlow(NetworkStatus.Online)
     },
   ).also { viewModelStore.put("viewModel", it) }
 

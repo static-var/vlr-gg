@@ -6,6 +6,7 @@ package dev.staticvar.vlr.featurematches.presentation
 
 import androidx.lifecycle.ViewModelStore
 import dev.staticvar.vlr.core.network.NetworkMonitor
+import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchDetails
@@ -200,7 +201,7 @@ class MatchesViewModelTest {
       initialFavoriteProfilesRefresh = InitialFavoriteProfilesRefresh { Result.success(Unit) },
     ),
     networkMonitor = object : NetworkMonitor {
-      override val isOnline = MutableStateFlow(true)
+      override val status = MutableStateFlow(NetworkStatus.Online)
     },
   ).also { viewModelStore.put("viewModel-${nextViewModelKey++}", it) }
 
