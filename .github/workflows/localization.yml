@@ -1,0 +1,19 @@
+name: Check translations
+
+on:
+  pull_request:
+  push:
+    branches: [kmp]
+
+permissions:
+  contents: read
+
+jobs:
+  translations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate language coverage and format arguments
+        run: python3 scripts/check-localizations.py
+      - name: Test translation validation
+        run: python3 -m unittest discover -s scripts/tests -p test_check_localizations.py
