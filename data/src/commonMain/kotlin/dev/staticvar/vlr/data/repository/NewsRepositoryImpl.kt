@@ -25,6 +25,7 @@ import dev.staticvar.vlr.remotesource.news.NewsDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 
 /**
  * Concrete implementation of [NewsRepository].
@@ -34,6 +35,7 @@ internal class NewsRepositoryImpl(
   private val newsDataSource: NewsDataSource,
   private val database: VlrDatabase,
   private val dispatchers: DispatcherProvider,
+  private val json: Json,
 ) : NewsRepository {
 
   private val queries = database.newsQueries
@@ -56,7 +58,7 @@ internal class NewsRepositoryImpl(
       .mapToList(dispatchers.io)
 
     return combine(newsFlow, mediaFlow) { news, media ->
-      news?.takeIf { it.content_html != null }?.let { aggregateNewsArticle(it, media) }
+      news?.takeIf { it.content_html != null }?.let { aggregateNewsArticle(it, media, json) }
     }
   }
 
@@ -112,7 +114,7 @@ internal class NewsRepositoryImpl(
         queries.insertNews(articleEntity)
         queries.deleteNewsMedia(articleEntity.id)
         dto
-          .toMediaEntities(articleEntity.id)
+          .toMediaEntities(json, articleEntity.id)
           .forEach { media -> insertMedia(media, articleEntity.id) }
       }
     }

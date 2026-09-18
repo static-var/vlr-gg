@@ -8,7 +8,6 @@ import dev.staticvar.vlr.domain.model.FavoriteScheduledMatch
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.model.MatchStatus
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import kotlin.time.Instant
 
 /** Native widget content and favorite IDs. Credentials stay in each platform's network configuration. */
@@ -50,8 +49,6 @@ internal fun DirectFavoriteSnapshot.widgetFavorites(): WidgetFavorites = WidgetF
   eventIds = events.map { it.id }.sorted(),
   playerIds = players.map { it.id }.sorted(),
 )
-
-internal val widgetJson = Json { encodeDefaults = true; ignoreUnknownKeys = true }
 
 /** Colors are unsigned 32-bit ARGB values, usable without loading Compose in a widget. */
 @Serializable

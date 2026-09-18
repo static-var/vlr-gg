@@ -76,6 +76,7 @@ import dev.staticvar.vlr.localsource.database.GetTeamsWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.Team_completed_matches
 import dev.staticvar.vlr.localsource.database.Team_upcoming_matches
 import dev.staticvar.vlr.domain.model.MatchVideos as DomainMatchVideos
+import kotlinx.serialization.json.Json
 
 /**
  * Maps database query result to domain MatchPreview model.
@@ -305,7 +306,7 @@ internal fun News.toNewsItem(): NewsItem = NewsItem(
 /**
  * Aggregates News entity with its media to create domain NewsArticle model.
  */
-internal fun aggregateNewsArticle(news: News, media: List<NewsMedia>): NewsArticle {
+internal fun aggregateNewsArticle(news: News, media: List<NewsMedia>, json: Json): NewsArticle {
   // API placeholders address each media array by index, including empty entries.
   val orderedMedia = media.sortedBy { it.id }
   val links = orderedMedia
@@ -330,7 +331,7 @@ internal fun aggregateNewsArticle(news: News, media: List<NewsMedia>): NewsArtic
     date = news.date,
     coverUrl = news.cover_url,
     contentHtml = news.content_html ?: "",
-    blocks = decodeArticleBlocks(orderedMedia.filter { it.media_type == "block" }.map { it.media_value }),
+    blocks = decodeArticleBlocks(orderedMedia.filter { it.media_type == "block" }.map { it.media_value }, json),
     media = NewsArticleMedia(
       links = links,
       images = images,

@@ -24,7 +24,9 @@ import dev.staticvar.vlr.domain.repository.PlayerRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
 import dev.staticvar.vlr.shared.widget.UpcomingWidgetMatch
-import dev.staticvar.vlr.shared.widget.widgetJson
+import dev.staticvar.vlr.shared.widget.WidgetJson
+import dev.staticvar.vlr.shared.widget.widgetModule
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -90,14 +92,14 @@ class SiriActionsTest {
     val fixture = Fixture()
     val observed = fixture.preferences.enabled
 
-    val hidden = widgetJson.decodeFromString<List<UpcomingWidgetMatch>>(fixture.actions.setSpoilersHidden(true))
+    val hidden = fixture.widgetJson.decodeFromString<List<UpcomingWidgetMatch>>(fixture.actions.setSpoilersHidden(true))
     assertNull(hidden.first().score1)
     assertNull(hidden.first().score2)
     fixture.actions.setSpoilersHidden(true)
     assertTrue(observed.value)
     assertTrue(SpoilerPreferencesRepository(fixture.storage).enabled.value)
 
-    val visible = widgetJson.decodeFromString<List<UpcomingWidgetMatch>>(fixture.actions.setSpoilersHidden(false))
+    val visible = fixture.widgetJson.decodeFromString<List<UpcomingWidgetMatch>>(fixture.actions.setSpoilersHidden(false))
     assertEquals(2, visible.first().score1)
     assertEquals(1, visible.first().score2)
     assertEquals(0, fixture.remote.refreshes)
@@ -125,16 +127,18 @@ private class Fixture(hasFavorites: Boolean = true) {
     )
   }
   val actions: SiriActions
+  val widgetJson: Json
 
   init {
-    startKoin {
-      modules(module {
+    val app = startKoin {
+      modules(widgetModule(), module {
         single<FavoritesRepository> { favorites }
         single<FavoriteScheduleRepository> { schedule }
         single { preferences }
         single { RefreshFavoriteMatches(favorites, remote, UnusedTeamRepository, UnusedEventRepository, UnusedPlayerRepository, schedule) }
       })
     }
+    widgetJson = app.koin.get(WidgetJson)
     actions = SiriActions(authToken = "")
   }
 }

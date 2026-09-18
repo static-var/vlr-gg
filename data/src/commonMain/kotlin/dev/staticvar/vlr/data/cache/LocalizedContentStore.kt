@@ -24,9 +24,9 @@ internal interface RegionLabelStore {
 /** Schema-free storage for response-localized region labels. */
 internal class LocalizedRegionLabelStore(
   private val storage: Settings,
+  private val json: Json,
   private val currentLanguageTag: () -> String?,
 ) : RegionLabelStore {
-  private val json = Json { ignoreUnknownKeys = true }
   private val mutableVersion = MutableStateFlow(0L)
   private val writeMutex = Mutex()
 
@@ -94,8 +94,7 @@ internal interface VetoStore {
 }
 
 /** Stores server-parsed veto steps only while they still match the locally cached raw notes. */
-internal class MatchVetoStore(private val storage: Settings) : VetoStore {
-  private val json = Json { ignoreUnknownKeys = true }
+internal class MatchVetoStore(private val storage: Settings, private val json: Json) : VetoStore {
   private val mutableVersion = MutableStateFlow(0L)
   private val writeMutex = Mutex()
 

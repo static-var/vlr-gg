@@ -32,19 +32,24 @@ import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
 import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
+import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
+
+internal val StorageJson = named("storageJson")
 
 /**
  * Koin module for data layer.
  * Provides repositories and mappers.
  */
 fun dataModule(): Module = module {
+  single(StorageJson) { Json { ignoreUnknownKeys = true } }
   single<RegionLabelStore> {
     val languageProvider = get<AcceptLanguageProvider>()
-    LocalizedRegionLabelStore(storage = get(), currentLanguageTag = languageProvider::currentLanguageTag)
+    LocalizedRegionLabelStore(storage = get(), json = get(StorageJson), currentLanguageTag = languageProvider::currentLanguageTag)
   }
-  single<VetoStore> { MatchVetoStore(storage = get()) }
+  single<VetoStore> { MatchVetoStore(storage = get(), json = get(StorageJson)) }
   single<CacheCleanupRepository> { CacheCleanupRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoriteScheduleRepository> { FavoriteScheduleRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoritesRepository> { FavoritesRepositoryImpl(database = get(), dispatchers = get()) }
@@ -58,6 +63,7 @@ fun dataModule(): Module = module {
   }
   single<NewsRepository> {
     NewsRepositoryImpl(
+      json = get(StorageJson),
       newsDataSource = get(),
       database = get(),
       dispatchers = get(),

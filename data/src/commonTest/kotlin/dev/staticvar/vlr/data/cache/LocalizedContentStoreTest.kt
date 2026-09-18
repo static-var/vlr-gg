@@ -10,15 +10,17 @@ import dev.staticvar.vlr.domain.model.VetoAction
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LocalizedContentStoreTest {
+  private val json = Json { ignoreUnknownKeys = true }
 
   @Test
   fun `region label follows current locale and keeps canonical keys separate`() = runTest {
     var language = "hi-IN"
-    val store = LocalizedRegionLabelStore(MapSettings()) { language }
+    val store = LocalizedRegionLabelStore(MapSettings(), json) { language }
     store.put("hi", mapOf("North America" to "उत्तरी अमेरिका"))
     store.put("de", mapOf("North America" to "Nordamerika"))
 
@@ -31,7 +33,7 @@ class LocalizedContentStoreTest {
 
   @Test
   fun `region label is not stored without confirmed content language`() = runTest {
-    val store = LocalizedRegionLabelStore(MapSettings()) { "fr" }
+    val store = LocalizedRegionLabelStore(MapSettings(), json) { "fr" }
 
     store.put(null, mapOf("Europe" to "Europe"))
 
@@ -40,7 +42,7 @@ class LocalizedContentStoreTest {
 
   @Test
   fun `veto is returned only for the raw notes that produced it`() = runTest {
-    val store = MatchVetoStore(MapSettings())
+    val store = MatchVetoStore(MapSettings(), json)
     val veto = listOf(MatchVeto(team = "FNC", action = VetoAction.BAN, map = "Bind"))
     store.put("123", rawBans = listOf("FNC ban Bind"), veto = veto)
 
@@ -50,7 +52,7 @@ class LocalizedContentStoreTest {
 
   @Test
   fun `unknown veto keeps the complete raw note`() = runTest {
-    val store = MatchVetoStore(MapSettings())
+    val store = MatchVetoStore(MapSettings(), json)
     val veto = listOf(MatchVeto(team = null, action = VetoAction.UNKNOWN, map = "Map ban: Bind, Haven"))
     store.put("123", rawBans = listOf("Map ban: Bind, Haven"), veto = veto)
 
@@ -59,8 +61,8 @@ class LocalizedContentStoreTest {
 
   @Test
   fun `concurrent distinct writes are retained`() = runTest {
-    val regionStore = LocalizedRegionLabelStore(MapSettings()) { "en" }
-    val vetoStore = MatchVetoStore(MapSettings())
+    val regionStore = LocalizedRegionLabelStore(MapSettings(), json) { "en" }
+    val vetoStore = MatchVetoStore(MapSettings(), json)
 
     listOf("North America", "Europe", "Pacific").map { region ->
       async { regionStore.put("en", mapOf(region to "$region label")) }
@@ -81,7 +83,7 @@ class LocalizedContentStoreTest {
 
   @Test
   fun `veto cache evicts the oldest entry`() = runTest {
-    val store = MatchVetoStore(MapSettings())
+    val store = MatchVetoStore(MapSettings(), json)
     (1..101).forEach { id ->
       store.put(
         matchId = id.toString(),
@@ -101,7 +103,7 @@ class LocalizedContentStoreTest {
     settings.putString("localized_content.region_labels.en", "not json")
     settings.putString("localized_content.match_veto", "not json")
 
-    assertEquals("", LocalizedRegionLabelStore(settings) { "en" }.label("Europe"))
-    assertEquals(emptyList(), MatchVetoStore(settings).get("123", listOf("note")))
+    assertEquals("", LocalizedRegionLabelStore(settings, json) { "en" }.label("Europe"))
+    assertEquals(emptyList(), MatchVetoStore(settings, json).get("123", listOf("note")))
   }
 }

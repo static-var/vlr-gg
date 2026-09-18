@@ -12,7 +12,8 @@ import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.iosNetworkModule
 import dev.staticvar.vlr.shared.widget.UpcomingWidgetMatch
 import dev.staticvar.vlr.shared.widget.favoriteWidgetMatches
-import dev.staticvar.vlr.shared.widget.widgetJson
+import dev.staticvar.vlr.shared.widget.WidgetJson
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
@@ -65,6 +66,6 @@ public class SiriActions(authToken: String?) {
       .takeIf { hasFavorites }.orEmpty()
     val preferences = koin.get<SpoilerPreferencesRepository>()
     if (preferences.enabled.value != enabled) preferences.toggle()
-    return widgetJson.encodeToString(matches)
+    return koin.get<Json>(WidgetJson).encodeToString(matches)
   }
 }

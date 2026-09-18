@@ -16,6 +16,7 @@ import dev.staticvar.vlr.remotesource.player.PlayerAgentStatsDto
 import dev.staticvar.vlr.remotesource.player.PlayerTeamRefDto
 import dev.staticvar.vlr.remotesource.rankings.TeamRankingDto
 import dev.staticvar.vlr.remotesource.standings.TeamStandingDto
+import kotlinx.serialization.json.Json
 import kotlin.time.Clock
 
 /**
@@ -54,7 +55,7 @@ internal fun NewsArticleDto.toEntity(): News = News(
   last_updated = Clock.System.now().toEpochMilliseconds(),
 )
 
-internal fun NewsArticleDto.toMediaEntities(articleId: String = id): List<NewsMedia> {
+internal fun NewsArticleDto.toMediaEntities(json: Json, articleId: String = id): List<NewsMedia> {
   val linkMedia = links.map { map ->
     NewsMedia(
       id = 0,
@@ -72,7 +73,7 @@ internal fun NewsArticleDto.toMediaEntities(articleId: String = id): List<NewsMe
   }
   val blockMedia = blocks.map { block ->
     NewsMedia(id = 0, news_id = articleId, media_type = "block",
-      media_value = articleBlockJson.encodeToString(block), media_text = null)
+      media_value = json.encodeToString(block), media_text = null)
   }
   return linkMedia + imageMedia + videoMedia + blockMedia
 }

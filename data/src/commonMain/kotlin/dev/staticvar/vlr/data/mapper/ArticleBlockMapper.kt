@@ -6,8 +6,6 @@ import dev.staticvar.vlr.domain.model.ArticleTextRun
 import dev.staticvar.vlr.remotesource.news.ArticleBlockDto
 import kotlinx.serialization.json.Json
 
-internal val articleBlockJson = Json { ignoreUnknownKeys = true }
-
 internal fun ArticleBlockDto.toDomain(): ArticleBlock = ArticleBlock(
   type = type,
   runs = runs.map { ArticleTextRun(it.text, it.url, it.bold, it.italic) },
@@ -20,6 +18,6 @@ internal fun ArticleBlockDto.toDomain(): ArticleBlock = ArticleBlock(
   player = player?.let { ArticleVideoPlayer(it.provider, it.mediaId, it.playerUrl, it.externalUrl) },
 )
 
-internal fun decodeArticleBlocks(rows: List<String>): List<ArticleBlock> = runCatching {
-  rows.map { articleBlockJson.decodeFromString<ArticleBlockDto>(it).toDomain() }
+internal fun decodeArticleBlocks(rows: List<String>, json: Json): List<ArticleBlock> = runCatching {
+  rows.map { json.decodeFromString<ArticleBlockDto>(it).toDomain() }
 }.getOrDefault(emptyList())
