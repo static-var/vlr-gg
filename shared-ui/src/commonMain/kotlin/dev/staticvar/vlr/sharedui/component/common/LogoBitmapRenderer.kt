@@ -22,7 +22,9 @@ import coil3.Image
 import kotlin.math.PI
 import kotlin.math.ceil
 import kotlin.math.cos
+import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 private const val AnalysisSize = 32
@@ -30,16 +32,21 @@ private const val OutlineSamples = 16
 
 internal fun analyzeLogoImage(image: Image): LogoEdgeAnalysis {
   val source = image.logoImageBitmapOrNull() ?: return LogoEdgeAnalysis.Empty
-  val sample = ImageBitmap(AnalysisSize, AnalysisSize)
+  val scale = AnalysisSize.toFloat() / max(source.width, source.height)
+  val sampleSize = IntSize(
+    width = (source.width * scale).roundToInt().coerceAtLeast(1),
+    height = (source.height * scale).roundToInt().coerceAtLeast(1),
+  )
+  val sample = ImageBitmap(sampleSize.width, sampleSize.height)
   CanvasDrawScope().draw(
     density = Density(1f),
     layoutDirection = LayoutDirection.Ltr,
     canvas = Canvas(sample),
-    size = Size(AnalysisSize.toFloat(), AnalysisSize.toFloat()),
+    size = Size(sampleSize.width.toFloat(), sampleSize.height.toFloat()),
   ) {
     drawImage(
       image = source,
-      dstSize = IntSize(AnalysisSize, AnalysisSize),
+      dstSize = sampleSize,
     )
   }
   return analyzeLogoEdges(sample)

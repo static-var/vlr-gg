@@ -74,6 +74,28 @@ class LogoBitmapRendererTest {
     assertTrue(analyzeLogoImage(multicolor).needsOutline(Color.Black))
   }
 
+  @Test fun preservesTheRelativeLengthsOfLightAndDarkEdges() {
+    val source = bitmapImage(64, 32) {
+      drawRect(Color.White, topLeft = Offset(8f, 4f), size = Size(48f, 24f))
+      drawRect(Color.Black, topLeft = Offset(8f, 6f), size = Size(2f, 20f))
+      drawRect(Color.Black, topLeft = Offset(54f, 6f), size = Size(2f, 20f))
+    }
+    val stretched = bitmapImage(32, 32) {
+      drawImage(source.bitmap.toLogoImageBitmap(), dstSize = IntSize(32, 32))
+    }
+
+    assertTrue(analyzeLogoImage(stretched).needsOutline(Color.Black))
+    assertFalse(analyzeLogoImage(source).needsOutline(Color.Black))
+  }
+
+  @Test fun keepsWideAndTallOpaqueArtworkUntreated() {
+    val wide = bitmapImage(64, 32) { drawRect(Color.Black) }
+    val tall = bitmapImage(32, 64) { drawRect(Color.Black) }
+
+    assertFalse(analyzeLogoImage(wide).needsOutline(Color.Black))
+    assertFalse(analyzeLogoImage(tall).needsOutline(Color.Black))
+  }
+
   @Test fun rendersAspectFitArtworkInsideTheFullyPaddedBitmap() {
     val source = bitmapImage(40, 20) { drawRect(Color.Black) }
 
