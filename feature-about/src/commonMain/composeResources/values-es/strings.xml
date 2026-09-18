@@ -28,9 +28,6 @@
     <string name="done">Listo</string>
     <string name="experimental">Experimental</string>
     <string name="explore_the_service_that_powers_the_app">Descubre el servicio que hace funcionar la aplicación.</string>
-    <string name="favorite_match_widgets">Widgets de partidos rediseñados</string>
-    <string name="favorites_in_spotlight">Encuentra tus favoritos en Spotlight</string>
-    <string name="release_spotlight_description">Busca tus equipos, jugadores, eventos y partidos favoritos en Spotlight y abre sus detalles en la aplicación.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">Los comentarios no están disponibles en esta versión. Puedes usar Informar de un problema en la página Acerca de.</string>
     <string name="feedback_queued">Comentario en cola</string>
@@ -44,7 +41,6 @@
     <string name="from_the_scene_for_the_scene">Desde la escena, para la escena.</string>
     <string name="help_support_continued_development">Ayuda a que el desarrollo continúe.</string>
     <string name="how_val_esports_handles_your_data">Cómo gestiona Val Esports tus datos.</string>
-    <string name="release_widgets_description">Los widgets de tus partidos favoritos estrenan diseño, con nombres de equipos, marcadores y horarios más claros.</string>
     <string name="light">Claro</string>
     <string name="lynx_cat">Lynx · Gato</string>
     <string name="make_it_better">Ayúdanos a mejorar</string>
@@ -90,8 +86,14 @@
     <string name="what_s_new">¿Qué hay de nuevo?</string>
     <string name="write_feedback">Escribir un comentario</string>
     <string name="yes">SÍ</string>
-    <string name="release_introduction">Sigue tus partidos favoritos con los widgets rediseñados de la pantalla de inicio.</string>
     <string name="your_message">Tu mensaje</string>
     <string name="version_number">Versión %1$s</string>
     <string name="build_number">Compilación %1$s</string>
+    <string name="release_introduction">Sigue VALORANT en tu idioma, con logotipos más claros y una conexión más fiable al iniciar la aplicación.</string>
+    <string name="release_languages_title">Ahora en 9 idiomas</string>
+    <string name="release_languages_description">La aplicación usa el idioma de tu dispositivo y admite inglés, hindi, español, francés, alemán, portugués de Brasil, ruso, turco y coreano.</string>
+    <string name="release_logos_title">Logotipos de equipos y eventos más claros</string>
+    <string name="release_logos_description">Los logotipos de equipos y eventos conservan sus colores originales, también en las clasificaciones. Los fondos ajustan el contraste para que se vean bien en los temas claro y oscuro.</string>
+    <string name="release_connectivity_title">Un inicio más fiable</string>
+    <string name="release_connectivity_description">Las comprobaciones de conexión al iniciar la aplicación son más fiables y ayudan a detectar cuándo tienes conexión.</string>
 </resources>

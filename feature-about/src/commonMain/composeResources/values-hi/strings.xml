@@ -27,9 +27,6 @@
     <string name="done">हो गया</string>
     <string name="experimental">प्रयोगात्मक</string>
     <string name="explore_the_service_that_powers_the_app">ऐप को चलाने वाली सेवा के बारे में जानें।</string>
-    <string name="favorite_match_widgets">नए डिज़ाइन वाले पसंदीदा मैच विजेट</string>
-    <string name="favorites_in_spotlight">Spotlight में अपने पसंदीदा खोजें</string>
-    <string name="release_spotlight_description">Spotlight में अपनी पसंदीदा टीमों, खिलाड़ियों, इवेंट और मैच खोजें, फिर ऐप में उनकी जानकारी खोलें।</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">इस बिल्ड में फ़ीडबैक उपलब्ध नहीं है। इसके बजाय परिचय पेज पर समस्या की रिपोर्ट करें विकल्प का इस्तेमाल करें।</string>
     <string name="feedback_queued">फ़ीडबैक कतार में है</string>
@@ -43,7 +40,6 @@
     <string name="from_the_scene_for_the_scene">समुदाय से, समुदाय के लिए।</string>
     <string name="help_support_continued_development">डेवलपमेंट जारी रखने में मदद करें।</string>
     <string name="how_val_esports_handles_your_data">Val Esports आपके डेटा का इस्तेमाल कैसे करता है।</string>
-    <string name="release_widgets_description">पसंदीदा मैच के विजेट अब नए रूप में हैं, जिनमें टीम के नाम, स्कोर और मैच का समय अधिक साफ़ दिखता है।</string>
     <string name="light">हल्का</string>
     <string name="lynx_cat">Lynx · बिल्ली</string>
     <string name="make_it_better">इसे बेहतर बनाएँ</string>
@@ -89,8 +85,14 @@
     <string name="what_s_new">नया क्या है?</string>
     <string name="write_feedback">फ़ीडबैक लिखें</string>
     <string name="yes">हाँ</string>
-    <string name="release_introduction">होम स्क्रीन के नए डिज़ाइन वाले विजेट से अपने पसंदीदा मैच फ़ॉलो करें।</string>
     <string name="your_message">आपका संदेश</string>
     <string name="version_number">वर्ज़न %1$s</string>
     <string name="build_number">बिल्ड %1$s</string>
+    <string name="release_introduction">अपनी भाषा में VALORANT फ़ॉलो करें, अब अधिक साफ़ लोगो और ऐप शुरू होने पर अधिक भरोसेमंद कनेक्शन के साथ।</string>
+    <string name="release_languages_title">अब 9 भाषाओं में</string>
+    <string name="release_languages_description">ऐप अब आपके डिवाइस की भाषा का उपयोग करता है। अंग्रेज़ी, हिंदी, स्पेनिश, फ़्रेंच, जर्मन, ब्राज़ीलियाई पुर्तगाली, रूसी, तुर्की और कोरियाई भाषाएँ उपलब्ध हैं।</string>
+    <string name="release_logos_title">टीम और इवेंट के अधिक साफ़ लोगो</string>
+    <string name="release_logos_description">रैंकिंग सहित सभी जगह टीम और इवेंट के लोगो अपने मूल रंगों में दिखते हैं। हल्की और गहरी थीम में लोगो साफ़ दिखें, इसके लिए बैकग्राउंड का कंट्रास्ट बदलता है।</string>
+    <string name="release_connectivity_title">ऐप की अधिक भरोसेमंद शुरुआत</string>
+    <string name="release_connectivity_description">ऐप शुरू होने पर कनेक्शन की जाँच अब अधिक भरोसेमंद है, जिससे ऐप बेहतर पहचान पाता है कि आप ऑनलाइन हैं।</string>
 </resources>

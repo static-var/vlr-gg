@@ -26,9 +26,6 @@
     <string name="done">완료</string>
     <string name="experimental">실험적 기능</string>
     <string name="explore_the_service_that_powers_the_app">앱을 구동하는 서비스를 살펴보세요.</string>
-    <string name="favorite_match_widgets">새로워진 경기 위젯</string>
-    <string name="favorites_in_spotlight">Spotlight에서 즐겨찾기 찾기</string>
-    <string name="release_spotlight_description">Spotlight에서 좋아하는 팀, 선수, 이벤트, 경기를 검색한 뒤 앱에서 세부 정보를 열어 보세요.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">이 빌드에서는 의견을 보낼 수 없습니다. 대신 정보 페이지에서 문제 신고를 이용해 주세요.</string>
     <string name="feedback_queued">의견 전송 대기 중</string>
@@ -42,7 +39,6 @@
     <string name="from_the_scene_for_the_scene">현장에서, 현장을 위해.</string>
     <string name="help_support_continued_development">계속 개발할 수 있도록 후원해 주세요.</string>
     <string name="how_val_esports_handles_your_data">Val Esports가 데이터를 처리하는 방식입니다.</string>
-    <string name="release_widgets_description">즐겨찾는 경기 위젯이 새로운 모습으로 바뀌어 팀 이름, 점수, 경기 시간을 더 쉽게 확인할 수 있습니다.</string>
     <string name="light">라이트</string>
     <string name="lynx_cat">Lynx · 고양이</string>
     <string name="make_it_better">더 나은 앱 만들기</string>
@@ -88,8 +84,14 @@
     <string name="what_s_new">새로운 소식</string>
     <string name="write_feedback">의견 작성</string>
     <string name="yes">예</string>
-    <string name="release_introduction">새로워진 홈 화면 위젯으로 좋아하는 경기를 팔로우하세요.</string>
     <string name="your_message">메시지</string>
     <string name="version_number">버전 %1$s</string>
     <string name="build_number">빌드 %1$s</string>
+    <string name="release_introduction">이제 내 언어로 VALORANT를 팔로우하세요. 로고가 더 선명해지고 앱 시작 시 연결 확인이 더 안정적으로 바뀌었습니다.</string>
+    <string name="release_languages_title">이제 9개 언어 지원</string>
+    <string name="release_languages_description">앱이 기기의 언어를 자동으로 사용합니다. 영어, 힌디어, 스페인어, 프랑스어, 독일어, 브라질 포르투갈어, 러시아어, 튀르키예어, 한국어를 지원합니다.</string>
+    <string name="release_logos_title">더 선명한 팀 및 이벤트 로고</string>
+    <string name="release_logos_description">순위를 포함한 모든 화면에서 팀과 이벤트 로고가 원래 색상으로 표시됩니다. 밝은 테마와 어두운 테마 모두에서 로고가 잘 보이도록 배경 대비를 조정합니다.</string>
+    <string name="release_connectivity_title">더 안정적인 앱 시작</string>
+    <string name="release_connectivity_description">앱 시작 시 연결 확인이 더 안정적으로 바뀌어 온라인 상태를 더 정확하게 인식합니다.</string>
 </resources>

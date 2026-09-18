@@ -28,9 +28,6 @@
     <string name="done">Concluído</string>
     <string name="experimental">Experimental</string>
     <string name="explore_the_service_that_powers_the_app">Conheça o serviço que mantém o aplicativo em funcionamento.</string>
-    <string name="favorite_match_widgets">Widgets de partidas favoritas reformulados</string>
-    <string name="favorites_in_spotlight">Encontre seus favoritos no Spotlight</string>
-    <string name="release_spotlight_description">Pesquise seus times, jogadores, eventos e partidas favoritos no Spotlight e abra os detalhes no aplicativo.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">O feedback não está disponível nesta versão. Você pode usar Relatar um problema na página Sobre.</string>
     <string name="feedback_queued">Feedback na fila</string>
@@ -44,7 +41,6 @@
     <string name="from_the_scene_for_the_scene">Da comunidade, para a comunidade.</string>
     <string name="help_support_continued_development">Ajude a manter o desenvolvimento.</string>
     <string name="how_val_esports_handles_your_data">Como o Val Esports trata seus dados.</string>
-    <string name="release_widgets_description">Os widgets de partidas favoritas estão de cara nova, com nomes de times, placares e horários mais claros.</string>
     <string name="light">Claro</string>
     <string name="lynx_cat">Lynx · Gato</string>
     <string name="make_it_better">Ajude a melhorar</string>
@@ -90,8 +86,14 @@
     <string name="what_s_new">O que há de novo?</string>
     <string name="write_feedback">Escrever feedback</string>
     <string name="yes">SIM</string>
-    <string name="release_introduction">Acompanhe suas partidas favoritas com os widgets reformulados da tela inicial.</string>
     <string name="your_message">Sua mensagem</string>
     <string name="version_number">Versão %1$s</string>
     <string name="build_number">Build %1$s</string>
+    <string name="release_introduction">Acompanhe VALORANT no seu idioma, com logos mais nítidos e uma conexão mais confiável ao abrir o aplicativo.</string>
+    <string name="release_languages_title">Agora em 9 idiomas</string>
+    <string name="release_languages_description">O aplicativo usa o idioma do seu dispositivo e oferece suporte a inglês, hindi, espanhol, francês, alemão, português do Brasil, russo, turco e coreano.</string>
+    <string name="release_logos_title">Logos de times e eventos mais nítidos</string>
+    <string name="release_logos_description">Os logos de times e eventos mantêm suas cores originais, inclusive nos rankings. Os fundos ajustam o contraste para que os logos fiquem visíveis nos temas claro e escuro.</string>
+    <string name="release_connectivity_title">Inicialização mais confiável</string>
+    <string name="release_connectivity_description">As verificações de conexão ao abrir o aplicativo estão mais confiáveis, ajudando a identificar quando você está online.</string>
 </resources>

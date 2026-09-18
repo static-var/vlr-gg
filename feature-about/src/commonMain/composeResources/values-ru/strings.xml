@@ -29,9 +29,6 @@
     <string name="done">Готово</string>
     <string name="experimental">Экспериментальная функция</string>
     <string name="explore_the_service_that_powers_the_app">Познакомьтесь с сервисом, на котором работает приложение.</string>
-    <string name="favorite_match_widgets">Обновлённые виджеты матчей</string>
-    <string name="favorites_in_spotlight">Избранное в Spotlight</string>
-    <string name="release_spotlight_description">Ищите любимые команды, игроков, турниры и матчи в Spotlight, а затем открывайте подробности в приложении.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">В этой сборке нельзя отправить отзыв. Вместо этого сообщите о проблеме на странице «О приложении».</string>
     <string name="feedback_queued">Отзыв ожидает отправки</string>
@@ -45,7 +42,6 @@
     <string name="from_the_scene_for_the_scene">Из сообщества для сообщества.</string>
     <string name="help_support_continued_development">Помогите продолжить разработку.</string>
     <string name="how_val_esports_handles_your_data">Как Val Esports обрабатывает ваши данные.</string>
-    <string name="release_widgets_description">Виджеты избранных матчей получили новый вид: названия команд, счёт и время матчей теперь заметнее.</string>
     <string name="light">Светлая</string>
     <string name="lynx_cat">Lynx · Кошка</string>
     <string name="make_it_better">Помогите улучшить</string>
@@ -91,8 +87,14 @@
     <string name="what_s_new">Что нового?</string>
     <string name="write_feedback">Написать отзыв</string>
     <string name="yes">ДА</string>
-    <string name="release_introduction">Следите за любимыми матчами с обновлёнными виджетами на главном экране.</string>
     <string name="your_message">Ваше сообщение</string>
     <string name="version_number">Версия %1$s</string>
     <string name="build_number">Сборка %1$s</string>
+    <string name="release_introduction">Следите за VALORANT на своём языке: логотипы стали чётче, а проверка подключения при запуске надёжнее.</string>
+    <string name="release_languages_title">Теперь на 9 языках</string>
+    <string name="release_languages_description">Приложение использует язык устройства и поддерживает английский, хинди, испанский, французский, немецкий, бразильский португальский, русский, турецкий и корейский.</string>
+    <string name="release_logos_title">Более чёткие логотипы команд и турниров</string>
+    <string name="release_logos_description">Логотипы команд и турниров сохраняют исходные цвета, в том числе в рейтингах. Фон подстраивается для контраста, чтобы логотипы оставались хорошо видны в светлой и тёмной темах.</string>
+    <string name="release_connectivity_title">Более надёжный запуск</string>
+    <string name="release_connectivity_description">Проверка подключения при запуске стала надёжнее, чтобы приложение лучше определяло, когда вы в сети.</string>
 </resources>

@@ -27,9 +27,6 @@
     <string name="done">Fertig</string>
     <string name="experimental">Experimentell</string>
     <string name="explore_the_service_that_powers_the_app">Entdecke den Dienst, auf dem die App basiert.</string>
-    <string name="favorite_match_widgets">Neu gestaltete Widgets für Lieblingsmatches</string>
-    <string name="favorites_in_spotlight">Favoriten in Spotlight finden</string>
-    <string name="release_spotlight_description">Suche in Spotlight nach deinen Lieblingsteams, -spielern, -events und -matches und öffne ihre Details anschließend in der App.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">Feedback ist in dieser Version nicht verfügbar. Du kannst stattdessen auf der Seite „Über die App“ ein Problem melden.</string>
     <string name="feedback_queued">Feedback vorgemerkt</string>
@@ -43,7 +40,6 @@
     <string name="from_the_scene_for_the_scene">Aus der Szene, für die Szene.</string>
     <string name="help_support_continued_development">Hilf mit, die weitere Entwicklung zu unterstützen.</string>
     <string name="how_val_esports_handles_your_data">Wie Val Esports mit deinen Daten umgeht.</string>
-    <string name="release_widgets_description">Die Widgets für Lieblingsmatches haben ein neues Design mit klareren Teamnamen, Punkteständen und Spielzeiten.</string>
     <string name="light">Hell</string>
     <string name="lynx_cat">Lynx · Katze</string>
     <string name="make_it_better">Mach die App besser</string>
@@ -89,8 +85,14 @@
     <string name="what_s_new">Was ist neu?</string>
     <string name="write_feedback">Feedback schreiben</string>
     <string name="yes">JA</string>
-    <string name="release_introduction">Verfolge deine Lieblingsmatches mit den neu gestalteten Widgets auf dem Startbildschirm.</string>
     <string name="your_message">Deine Nachricht</string>
     <string name="version_number">Version %1$s</string>
     <string name="build_number">Build %1$s</string>
+    <string name="release_introduction">Verfolge VALORANT in deiner Sprache, mit klareren Logos und einer zuverlässigeren Verbindung beim Start.</string>
+    <string name="release_languages_title">Jetzt in 9 Sprachen</string>
+    <string name="release_languages_description">Die App übernimmt die Sprache deines Geräts und unterstützt Englisch, Hindi, Spanisch, Französisch, Deutsch, brasilianisches Portugiesisch, Russisch, Türkisch und Koreanisch.</string>
+    <string name="release_logos_title">Klarere Team- und Eventlogos</string>
+    <string name="release_logos_description">Team- und Eventlogos behalten ihre Originalfarben, auch in Ranglisten. Die Hintergründe passen den Kontrast an, damit Logos im hellen und dunklen Design gut sichtbar bleiben.</string>
+    <string name="release_connectivity_title">Zuverlässigerer App-Start</string>
+    <string name="release_connectivity_description">Die Verbindungsprüfung beim Start ist zuverlässiger, damit die App besser erkennt, wann du online bist.</string>
 </resources>

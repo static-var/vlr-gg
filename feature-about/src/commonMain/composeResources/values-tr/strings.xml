@@ -26,9 +26,6 @@
     <string name="done">Bitti</string>
     <string name="experimental">Deneysel</string>
     <string name="explore_the_service_that_powers_the_app">Uygulamaya güç veren hizmeti keşfedin.</string>
-    <string name="favorite_match_widgets">Yenilenen maç araç takımları</string>
-    <string name="favorites_in_spotlight">Favorileri Spotlight'ta bulun</string>
-    <string name="release_spotlight_description">Favori takımlarınızı, oyuncularınızı, etkinliklerinizi ve maçlarınızı Spotlight'ta arayın, ardından ayrıntılarını uygulamada açın.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">Bu derlemede geri bildirim kullanılamıyor. Bunun yerine Hakkında sayfasındaki Sorun bildir seçeneğini kullanabilirsiniz.</string>
     <string name="feedback_queued">Geri bildirim sıraya alındı</string>
@@ -42,7 +39,6 @@
     <string name="from_the_scene_for_the_scene">Sahnenin içinden, sahne için.</string>
     <string name="help_support_continued_development">Geliştirmenin sürmesine destek olun.</string>
     <string name="how_val_esports_handles_your_data">Val Esports'un verilerinizi nasıl işlediği.</string>
-    <string name="release_widgets_description">Favori maç araç takımları; daha net takım adları, skorlar ve maç saatleriyle yenilendi.</string>
     <string name="light">Açık</string>
     <string name="lynx_cat">Lynx · Kedi</string>
     <string name="make_it_better">Daha iyi hale getirin</string>
@@ -88,8 +84,14 @@
     <string name="what_s_new">Yenilikler neler?</string>
     <string name="write_feedback">Geri bildirim yaz</string>
     <string name="yes">EVET</string>
-    <string name="release_introduction">Yenilenen ana ekran araç takımlarıyla favori maçlarınızı takip edin.</string>
     <string name="your_message">Mesajınız</string>
     <string name="version_number">Sürüm %1$s</string>
     <string name="build_number">Derleme %1$s</string>
+    <string name="release_introduction">VALORANT'ı kendi dilinizde, daha net logolar ve açılışta daha güvenilir bir bağlantıyla takip edin.</string>
+    <string name="release_languages_title">Artık 9 dilde</string>
+    <string name="release_languages_description">Uygulama artık cihazınızın dilini kullanıyor; İngilizce, Hintçe, İspanyolca, Fransızca, Almanca, Brezilya Portekizcesi, Rusça, Türkçe ve Korece destekleniyor.</string>
+    <string name="release_logos_title">Daha net takım ve etkinlik logoları</string>
+    <string name="release_logos_description">Takım ve etkinlik logoları sıralamalar dahil her yerde özgün renklerini korur. Arka planlar kontrastı ayarlayarak logoların açık ve koyu temalarda kolayca görülmesini sağlar.</string>
+    <string name="release_connectivity_title">Daha güvenilir açılış</string>
+    <string name="release_connectivity_description">Açılıştaki bağlantı kontrolleri artık daha güvenilir ve uygulamanın çevrimiçi olduğunuzu algılamasına yardımcı oluyor.</string>
 </resources>

@@ -27,9 +27,6 @@
     <string name="done">Done</string>
     <string name="experimental">Experimental</string>
     <string name="explore_the_service_that_powers_the_app">Explore the service that powers the app.</string>
-    <string name="favorite_match_widgets">Redesigned match widgets</string>
-    <string name="favorites_in_spotlight">Find favorites in Spotlight</string>
-    <string name="release_spotlight_description">Search for your favorite teams, players, events, and matches in Spotlight, then open their details in the app.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">Feedback is unavailable in this build. You can use Report an issue on the About page instead.</string>
     <string name="feedback_queued">Feedback queued</string>
@@ -43,7 +40,6 @@
     <string name="from_the_scene_for_the_scene">From the scene, for the scene.</string>
     <string name="help_support_continued_development">Help support continued development.</string>
     <string name="how_val_esports_handles_your_data">How Val Esports handles your data.</string>
-    <string name="release_widgets_description">Favorite-match widgets have a fresh look, with clearer team names, scores, and match times.</string>
     <string name="light">Light</string>
     <string name="lynx_cat">Lynx · Cat</string>
     <string name="make_it_better">Make it better</string>
@@ -89,8 +85,14 @@
     <string name="what_s_new">What's new?</string>
     <string name="write_feedback">Write feedback</string>
     <string name="yes">YES</string>
-    <string name="release_introduction">Follow your favorite matches with redesigned home screen widgets.</string>
     <string name="your_message">Your message</string>
     <string name="version_number">Version %1$s</string>
     <string name="build_number">Build %1$s</string>
+    <string name="release_introduction">Follow VALORANT in your language, with clearer logos and a more reliable connection at startup.</string>
+    <string name="release_languages_title">Now in 9 languages</string>
+    <string name="release_languages_description">The app now follows your device language, with support for English, Hindi, Spanish, French, German, Brazilian Portuguese, Russian, Turkish, and Korean.</string>
+    <string name="release_logos_title">Clearer team and event logos</string>
+    <string name="release_logos_description">Team and event logos keep their original colors, including in rankings. Backgrounds adjust for contrast so logos stay easy to see in light and dark themes.</string>
+    <string name="release_connectivity_title">More reliable startup</string>
+    <string name="release_connectivity_description">Connection checks at startup are more reliable, helping the app recognize when you are online.</string>
 </resources>
