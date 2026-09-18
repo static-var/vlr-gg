@@ -17,6 +17,7 @@ data class EventListDto(
   @SerialName("title") val title: String = "",
   @SerialName("status")
   @Serializable(with = EventStatusNullableSerializer::class) val status: EventStatus? = null,
+  @SerialName("status_label") val statusLabel: String? = null,
   @SerialName("prize") val prize: String = "",
   @SerialName("dates") val dates: String = "",
   @SerialName("location") val location: String = "",
@@ -61,6 +62,7 @@ data class EventMatchDto(
   @SerialName("eta") val eta: String? = null,
   @SerialName("status")
   @Serializable(with = MatchStatusNullableSerializer::class) val status: MatchStatus? = null,
+  @SerialName("status_label") val statusLabel: String? = null,
   @SerialName("teams") val teams: List<EventMatchTeamDto> = emptyList(),
   @SerialName("round") val round: String = "",
   @SerialName("stage") val stage: String = "",
@@ -90,6 +92,7 @@ data class EventDetailsDto(
   @SerialName("location") val location: String = "",
   @SerialName("status")
   @Serializable(with = EventStatusNullableSerializer::class) val status: EventStatus? = null,
+  @SerialName("status_label") val statusLabel: String? = null,
   @SerialName("img") val img: String = "",
   @SerialName("prizes") val prizes: List<EventPrizeDto> = emptyList(),
   @SerialName("teams") val teams: List<EventTeamDto> = emptyList(),

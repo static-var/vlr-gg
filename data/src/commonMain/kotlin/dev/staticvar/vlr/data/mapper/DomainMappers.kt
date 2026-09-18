@@ -37,6 +37,7 @@ import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.model.EventTeam
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.NewsArticle
@@ -118,10 +119,10 @@ private fun determineWinner(team1Score: Long?, team2Score: Long?, isTeam1: Boole
 /**
  * Maps status string to MatchStatus enum.
  */
-private fun String.toMatchStatus(): MatchStatus = when (this.uppercase()) {
-  "UPCOMING" -> MatchStatus.UPCOMING
-  "LIVE" -> MatchStatus.LIVE
-  "COMPLETED" -> MatchStatus.COMPLETED
+internal fun String.toMatchStatus(): MatchStatus = when (uppercase()) {
+  "UPCOMING", "TBD" -> MatchStatus.UPCOMING
+  "LIVE", "ONGOING" -> MatchStatus.LIVE
+  "COMPLETED", "FINAL" -> MatchStatus.COMPLETED
   else -> MatchStatus.UNKNOWN
 }
 
@@ -136,6 +137,7 @@ internal fun aggregateMatchDetails(
   bans: List<MatchBans>,
   videos: List<MatchVideos>,
   previousEncounters: List<PreviousEncounter>,
+  veto: List<MatchVeto> = emptyList(),
 ): MatchDetails {
   val mapData = maps.map { map ->
     val mapRounds = rounds.filter { it.map_name == map.map_name }
@@ -214,6 +216,7 @@ internal fun aggregateMatchDetails(
       ),
     ),
     bans = bans.map { it.ban_value },
+    veto = veto,
     videos = DomainMatchVideos(
       streams = videos.filter { it.video_type == "stream" }.map { it.toVideoReference() },
       vods = videos.filter { it.video_type == "vod" }.map { it.toVideoReference() },
@@ -269,7 +272,7 @@ private fun String.toRoundSide(): RoundSide = when (this.uppercase()) {
   else -> RoundSide.NOT_PLAYED
 }
 
-private fun String.toRoundWinType(): RoundWinType = when (this.uppercase()) {
+internal fun String.toRoundWinType(): RoundWinType = when (trim().replace(Regex("\\s+"), "_").uppercase()) {
   "ELIMINATION" -> RoundWinType.ELIMINATION
   "SPIKE_EXPLODED" -> RoundWinType.SPIKE_EXPLODED
   "DEFUSED" -> RoundWinType.DEFUSED
@@ -348,6 +351,7 @@ internal fun aggregateTeamInfo(
   roster: List<GetTeamRoster>,
   upcomingMatches: List<Team_upcoming_matches>,
   completedMatches: List<Team_completed_matches>,
+  regionLabel: String = "",
 ): TeamInfo = TeamInfo(
   id = team.id,
   name = team.name,
@@ -362,12 +366,14 @@ internal fun aggregateTeamInfo(
   upcomingMatches = upcomingMatches.map { it.toDomain() },
   completedMatches = completedMatches.map { it.toDomain() },
   isFavorite = team.is_favorite == 1L,
+  regionLabel = regionLabel,
 )
 
 internal fun GetTeamsWithFavoriteStatus.toTeamPreview(
   roster: List<GetTeamRoster>,
   upcomingMatches: List<Team_upcoming_matches>,
   completedMatches: List<Team_completed_matches>,
+  regionLabel: String = "",
 ): TeamInfo = aggregateTeamInfo(
   team = GetTeamWithFavoriteStatus(
     id = id,
@@ -387,12 +393,14 @@ internal fun GetTeamsWithFavoriteStatus.toTeamPreview(
   roster = roster,
   upcomingMatches = upcomingMatches,
   completedMatches = completedMatches,
+  regionLabel = regionLabel,
 )
 
 internal fun GetTeamsByRegion.toTeamPreview(
   roster: List<GetTeamRoster>,
   upcomingMatches: List<Team_upcoming_matches>,
   completedMatches: List<Team_completed_matches>,
+  regionLabel: String = "",
 ): TeamInfo = aggregateTeamInfo(
   team = GetTeamWithFavoriteStatus(
     id = id,
@@ -412,6 +420,7 @@ internal fun GetTeamsByRegion.toTeamPreview(
   roster = roster,
   upcomingMatches = upcomingMatches,
   completedMatches = completedMatches,
+  regionLabel = regionLabel,
 )
 
 private fun GetTeamRoster.toTeamPlayer(): TeamPlayer = TeamPlayer(
@@ -541,11 +550,14 @@ internal fun GetPlayersByTeam.toPlayerInfo(
 /**
  * Groups rankings by region to create domain RegionalRanking model.
  */
-internal fun List<GetRankingsWithFavoriteStatus>.toRegionalRankings(): List<RegionalRanking> = groupBy { it.region }
+internal fun List<GetRankingsWithFavoriteStatus>.toRegionalRankings(
+  regionLabel: (String) -> String = { "" },
+): List<RegionalRanking> = groupBy { it.region }
   .map { (region, rankings) ->
     RegionalRanking(
       region = region,
       teams = rankings.map { it.toTeamRanking() },
+      regionLabel = regionLabel(region),
     )
   }
 
@@ -674,7 +686,11 @@ private fun String.toEventMatchTeam(region: String, score: Long?): EventMatchTea
 /**
  * Aggregates Standings entities by year to create CircuitStandings domain model.
  */
-internal fun aggregateCircuitStandings(year: Int, standings: List<Standings>): CircuitStandings {
+internal fun aggregateCircuitStandings(
+  year: Int,
+  standings: List<Standings>,
+  regionLabel: (String) -> String = { "" },
+): CircuitStandings {
   val circuits = standings
     .groupBy { it.circuit }
     .map { (circuitName, teams) ->
@@ -682,6 +698,7 @@ internal fun aggregateCircuitStandings(year: Int, standings: List<Standings>): C
         circuitName = circuitName,
         region = teams.firstOrNull()?.region ?: "",
         teams = teams.map { it.toCircuitTeam() },
+        regionLabel = regionLabel(teams.firstOrNull()?.region.orEmpty()),
       )
     }
 
@@ -694,13 +711,18 @@ internal fun aggregateCircuitStandings(year: Int, standings: List<Standings>): C
 /**
  * Maps Standings entity to CircuitRegion domain model for a specific circuit.
  */
-internal fun aggregateCircuitRegion(circuitName: String, standings: List<Standings>): CircuitRegion? {
+internal fun aggregateCircuitRegion(
+  circuitName: String,
+  standings: List<Standings>,
+  regionLabel: (String) -> String = { "" },
+): CircuitRegion? {
   if (standings.isEmpty()) return null
 
   return CircuitRegion(
     circuitName = circuitName,
     region = standings.firstOrNull()?.region ?: "",
     teams = standings.map { it.toCircuitTeam() },
+    regionLabel = regionLabel(standings.firstOrNull()?.region.orEmpty()),
   )
 }
 

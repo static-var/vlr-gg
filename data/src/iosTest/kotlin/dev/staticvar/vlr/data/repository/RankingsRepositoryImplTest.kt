@@ -9,6 +9,7 @@ import app.cash.sqldelight.driver.native.inMemoryDriver
 import app.cash.turbine.test
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.localsource.database.VlrDatabase
+import dev.staticvar.vlr.remotesource.network.RemotePayload
 import dev.staticvar.vlr.remotesource.rankings.RankingDto
 import dev.staticvar.vlr.remotesource.rankings.RankingsDataSource
 import dev.staticvar.vlr.remotesource.rankings.TeamRankingDto
@@ -143,7 +144,9 @@ class RankingsRepositoryImplTest {
 
   private class FakeRankingsDataSource : RankingsDataSource {
     var listResult: Result<List<RankingDto>> = Result.success(emptyList())
-    override suspend fun list(): Result<List<RankingDto>> = listResult
+    override suspend fun list(): Result<RemotePayload<List<RankingDto>>> = listResult.map {
+      RemotePayload(value = it, requestedLanguage = null, contentLanguage = null)
+    }
   }
 
   private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {

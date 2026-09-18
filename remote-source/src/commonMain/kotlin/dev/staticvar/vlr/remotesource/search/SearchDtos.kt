@@ -16,5 +16,6 @@ data class SearchResultDto(
   @SerialName("img") val img: String = "",
   @SerialName("category")
   @Serializable(with = SearchCategoryNullableSerializer::class) val category: SearchCategory? = null,
+  @SerialName("category_label") val categoryLabel: String? = null,
   @SerialName("description") val description: String? = null,
 )

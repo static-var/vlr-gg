@@ -21,7 +21,22 @@ data class MatchDetails(
   val isFavorite: Boolean = false,
   val favoriteReasons: List<MatchFavoriteReason> = emptyList(),
   val isDirectFavorite: Boolean = isFavorite,
+  val veto: List<MatchVeto> = emptyList(),
 )
+
+/** One structured map-veto step. Unknown actions keep the original note in [map]. */
+data class MatchVeto(
+  val team: String?,
+  val action: VetoAction,
+  val map: String,
+)
+
+enum class VetoAction {
+  BAN,
+  PICK,
+  REMAINS,
+  UNKNOWN,
+}
 
 data class EventInfo(
   val id: String,

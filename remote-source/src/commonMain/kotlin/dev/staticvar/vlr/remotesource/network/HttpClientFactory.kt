@@ -12,5 +12,9 @@ import kotlinx.serialization.json.Json
  * Each platform provides its own engine with shared request and response configuration.
  */
 expect class HttpClientFactory() {
-  fun create(json: Json, configuration: NetworkConfiguration): HttpClient
+  fun create(
+    json: Json,
+    configuration: NetworkConfiguration,
+    acceptLanguageProvider: AcceptLanguageProvider,
+  ): HttpClient
 }

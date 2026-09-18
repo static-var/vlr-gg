@@ -16,7 +16,7 @@ class RankingsDataSourceTest {
   fun list_parses_real_rankings_fixture() = runTest {
     val json = readFixture("rankings.json")
     val ds = RankingsDataSourceImpl(singleResponseClient(json))
-    val rankings = ds.list().getOrThrow()
+    val rankings = ds.list().getOrThrow().value
     assertTrue(rankings.isNotEmpty(), "Rankings list should not be empty")
     val firstRegion = rankings.first()
     assertTrue(firstRegion.teams.isNotEmpty(), "First region should contain teams")

@@ -11,6 +11,7 @@ import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.data.Teams
 import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.localsource.database.VlrDatabase
+import dev.staticvar.vlr.remotesource.network.RemotePayload
 import dev.staticvar.vlr.remotesource.team.CompletedMatchDto
 import dev.staticvar.vlr.remotesource.team.TeamDataSource
 import dev.staticvar.vlr.remotesource.team.TeamDetailsDto
@@ -70,11 +71,17 @@ class TeamRepositoryImplTest {
     val releaseOlder = CompletableDeferred<Unit>()
     var requests = 0
     val source = object : TeamDataSource {
-      override suspend fun details(id: String): Result<TeamDetailsDto> {
+      override suspend fun details(id: String): Result<RemotePayload<TeamDetailsDto>> {
         requests++
         val request = requests
         if (request == 1) releaseOlder.await()
-        return Result.success(TeamDetailsDto(name = if (request == 1) "Older snapshot" else "Newer snapshot"))
+        return Result.success(
+          RemotePayload(
+            value = TeamDetailsDto(name = if (request == 1) "Older snapshot" else "Newer snapshot"),
+            requestedLanguage = null,
+            contentLanguage = null,
+          ),
+        )
       }
     }
     val repo = TeamRepositoryImpl(source, database, dispatcherProvider)
@@ -93,10 +100,10 @@ class TeamRepositoryImplTest {
   @Test
   fun cancelledRefreshCannotPersistALateSuccessfulResponse() = runTest(dispatcher) {
     val source = object : TeamDataSource {
-      override suspend fun details(id: String): Result<TeamDetailsDto> = try {
+      override suspend fun details(id: String): Result<RemotePayload<TeamDetailsDto>> = try {
         awaitCancellation()
       } catch (_: CancellationException) {
-        Result.success(TeamDetailsDto(name = "Cancelled response"))
+        Result.success(RemotePayload(TeamDetailsDto(name = "Cancelled response"), null, null))
       }
     }
     val repo = TeamRepositoryImpl(source, database, dispatcherProvider)
@@ -322,7 +329,9 @@ class TeamRepositoryImplTest {
   private class FakeTeamDataSource : TeamDataSource {
     val detailResults: MutableMap<String, Result<TeamDetailsDto>> = mutableMapOf()
 
-    override suspend fun details(id: String): Result<TeamDetailsDto> =
-      detailResults[id] ?: Result.failure(IllegalStateException("No details for $id"))
+    override suspend fun details(id: String): Result<RemotePayload<TeamDetailsDto>> =
+      (detailResults[id] ?: Result.failure(IllegalStateException("No details for $id"))).map {
+        RemotePayload(value = it, requestedLanguage = null, contentLanguage = null)
+      }
   }
 }

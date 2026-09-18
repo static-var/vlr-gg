@@ -4,6 +4,10 @@
  */
 package dev.staticvar.vlr.data.di
 
+import dev.staticvar.vlr.data.cache.LocalizedRegionLabelStore
+import dev.staticvar.vlr.data.cache.MatchVetoStore
+import dev.staticvar.vlr.data.cache.RegionLabelStore
+import dev.staticvar.vlr.data.cache.VetoStore
 import dev.staticvar.vlr.data.repository.CircuitStandingsRepositoryImpl
 import dev.staticvar.vlr.data.repository.CacheCleanupRepositoryImpl
 import dev.staticvar.vlr.data.repository.EventRepositoryImpl
@@ -27,6 +31,7 @@ import dev.staticvar.vlr.domain.repository.RankingsRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
+import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -35,6 +40,11 @@ import org.koin.dsl.module
  * Provides repositories and mappers.
  */
 fun dataModule(): Module = module {
+  single<RegionLabelStore> {
+    val languageProvider = get<AcceptLanguageProvider>()
+    LocalizedRegionLabelStore(storage = get(), currentLanguageTag = languageProvider::currentLanguageTag)
+  }
+  single<VetoStore> { MatchVetoStore(storage = get()) }
   single<CacheCleanupRepository> { CacheCleanupRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoriteScheduleRepository> { FavoriteScheduleRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoritesRepository> { FavoritesRepositoryImpl(database = get(), dispatchers = get()) }
@@ -43,6 +53,7 @@ fun dataModule(): Module = module {
       matchDataSource = get(),
       database = get(),
       dispatchers = get(),
+      vetoStore = get(),
     )
   }
   single<NewsRepository> {
@@ -64,6 +75,7 @@ fun dataModule(): Module = module {
       teamDataSource = get(),
       database = get(),
       dispatchers = get(),
+      regionLabels = get(),
     )
   }
   single<RankingsRepository> {
@@ -71,6 +83,7 @@ fun dataModule(): Module = module {
       rankingsDataSource = get(),
       database = get(),
       dispatchers = get(),
+      regionLabels = get(),
     )
   }
   single<PlayerRepository> {
@@ -93,6 +106,7 @@ fun dataModule(): Module = module {
       standingsDataSource = get(),
       database = get(),
       dispatchers = get(),
+      regionLabels = get(),
     )
   }
 }

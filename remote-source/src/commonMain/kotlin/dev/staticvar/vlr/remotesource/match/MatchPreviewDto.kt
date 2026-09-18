@@ -16,6 +16,7 @@ data class MatchPreviewDto(
   @SerialName("series") val series: String = "",
   @SerialName("status")
   @Serializable(with = MatchStatusNullableSerializer::class) val status: MatchStatus? = null,
+  @SerialName("status_label") val statusLabel: String? = null,
   @SerialName("team1") val team1: TeamDto = TeamDto(name = ""),
   @SerialName("team2") val team2: TeamDto = TeamDto(name = ""),
   @SerialName("time") val time: String? = null,

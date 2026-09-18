@@ -5,6 +5,7 @@
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.android.kotlin.multiplatform.library)
+  alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -48,6 +49,7 @@ kotlin {
         implementation(libs.koin.core)
         implementation(libs.kotlinx.datetime)
         implementation(libs.kotlinx.serialization)
+        implementation(libs.multiplatform.settings)
 
         implementation(libs.sqldelight.coroutines)
 
@@ -70,6 +72,7 @@ kotlin {
         implementation(libs.koin.test)
         implementation(libs.coroutine.test)
         implementation(libs.turbine)
+        implementation(libs.multiplatform.settings.test)
       }
     }
   }

@@ -6,8 +6,11 @@ package dev.staticvar.vlr.remotesource.search
 
 import dev.staticvar.vlr.remotesource.common.SearchCategory
 import dev.staticvar.vlr.remotesource.common.SearchCategoryNullableSerializer
+import dev.staticvar.vlr.remotesource.jsonHeaders
+import dev.staticvar.vlr.remotesource.mockClient
 import dev.staticvar.vlr.remotesource.readFixture
 import dev.staticvar.vlr.remotesource.singleResponseClient
+import io.ktor.client.engine.mock.respond
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -50,5 +53,18 @@ class SearchDataSourceTest {
     if (categoryRaw == "esports_org") {
       assertEquals(null, decoded)
     }
+  }
+
+  @Test
+  fun search_sends_stable_category_wire_name() = runTest {
+    var category: String? = null
+    val client = mockClient { request ->
+      category = request.url.parameters["search_category"]
+      respond("[]", headers = jsonHeaders())
+    }
+
+    SearchDataSourceImpl(client).search(SearchCategory.TEAM, "fnatic").getOrThrow()
+
+    assertEquals("teams", category)
   }
 }

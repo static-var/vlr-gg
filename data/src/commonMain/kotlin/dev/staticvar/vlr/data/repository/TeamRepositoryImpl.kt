@@ -9,6 +9,8 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.core.telemetry.traceRefresh
+import dev.staticvar.vlr.data.cache.EmptyRegionLabelStore
+import dev.staticvar.vlr.data.cache.RegionLabelStore
 import dev.staticvar.vlr.data.refresh.KeyedRefreshLock
 import dev.staticvar.vlr.data.mapper.aggregateTeamInfo
 import dev.staticvar.vlr.data.mapper.toCompletedMatchEntities
@@ -35,6 +37,7 @@ internal class TeamRepositoryImpl(
   private val teamDataSource: TeamDataSource,
   private val database: VlrDatabase,
   private val dispatchers: DispatcherProvider,
+  private val regionLabels: RegionLabelStore = EmptyRegionLabelStore,
 ) : TeamRepository {
 
   private val teamsQueries = database.teamsQueries
@@ -44,12 +47,13 @@ internal class TeamRepositoryImpl(
     .getTeamsWithFavoriteStatus()
     .asFlow()
     .mapToList(dispatchers.io)
-    .map { teams ->
+    .combine(regionLabels.version) { teams, _ ->
       teams.map { team ->
         team.toTeamPreview(
           roster = teamsQueries.getTeamRoster(team.id).executeAsList(),
           upcomingMatches = teamsQueries.getUpcomingMatches(team.id).executeAsList(),
           completedMatches = teamsQueries.getCompletedMatches(team.id).executeAsList(),
+          regionLabel = regionLabels.label(team.region.orEmpty()),
         )
       }
     }
@@ -79,13 +83,14 @@ internal class TeamRepositoryImpl(
       .combine(rosterFlow) { team, roster -> TeamDetailSlices(team = team, roster = roster) }
       .combine(upcomingFlow) { slices, upcoming -> slices.copy(upcoming = upcoming) }
       .combine(completedFlow) { slices, completed -> slices.copy(completed = completed) }
-      .map { slices ->
+      .combine(regionLabels.version) { slices, _ ->
         slices.team?.let {
           aggregateTeamInfo(
             team = it,
             roster = slices.roster,
             upcomingMatches = slices.upcoming,
             completedMatches = slices.completed,
+            regionLabel = regionLabels.label(it.region.orEmpty()),
           )
         }
       }
@@ -95,12 +100,13 @@ internal class TeamRepositoryImpl(
     .getTeamsByRegion(region.ifBlank { null })
     .asFlow()
     .mapToList(dispatchers.io)
-    .map { teams ->
+    .combine(regionLabels.version) { teams, _ ->
       teams.map { team ->
         team.toTeamPreview(
           roster = teamsQueries.getTeamRoster(team.id).executeAsList(),
           upcomingMatches = teamsQueries.getUpcomingMatches(team.id).executeAsList(),
           completedMatches = teamsQueries.getCompletedMatches(team.id).executeAsList(),
+          regionLabel = regionLabels.label(team.region.orEmpty()),
         )
       }
     }
@@ -121,7 +127,8 @@ internal class TeamRepositoryImpl(
 
   override suspend fun refreshTeamDetails(teamId: String): Result<Unit> = traceRefresh(dispatchers.io, "refreshTeamDetails") {
     detailRefreshes.withLock(teamId) {
-      teamDataSource.details(teamId).mapCatching { dto ->
+      teamDataSource.details(teamId).mapCatching { payload ->
+        val dto = payload.value
         currentCoroutineContext().ensureActive()
         traceDatabase {
           database.transaction {
@@ -180,6 +187,10 @@ internal class TeamRepositoryImpl(
             }
           }
         }
+        regionLabels.put(
+          contentLanguage = payload.contentLanguage,
+          labels = mapOf(dto.region to dto.regionLabel.orEmpty()),
+        )
       }
     }
   }

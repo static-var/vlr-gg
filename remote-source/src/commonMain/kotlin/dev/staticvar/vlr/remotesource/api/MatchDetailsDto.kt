@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.remotesource.api
 
+import dev.staticvar.vlr.remotesource.common.VetoAction
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -19,6 +20,7 @@ class MatchDetailsDto(
   @SerialName("score") val score: String = "",
   @SerialName("teams") val teams: List<TeamDto> = emptyList(),
   @SerialName("bans") val bans: List<String> = emptyList(),
+  @SerialName("veto") val veto: List<VetoDto> = emptyList(),
   @SerialName("videos") val videos: MatchVideosDto = MatchVideosDto(),
   @SerialName("data") val matchData: List<MapDataDto> = emptyList(),
   @SerialName("map_count") val mapCount: Int = 0,
@@ -34,6 +36,15 @@ class EventDto(
   @SerialName("date") val date: String? = null,
   @SerialName("patch") val patch: String? = null,
   @SerialName("status") val status: String? = null,
+  @SerialName("status_label") val statusLabel: String? = null,
+)
+
+@Serializable
+class VetoDto(
+  @SerialName("team") val team: String? = null,
+  @SerialName("action") val action: VetoAction = VetoAction.UNKNOWN,
+  @SerialName("map") val map: String = "",
+  @SerialName("action_label") val actionLabel: String? = null,
 )
 
 @Serializable
@@ -91,5 +102,7 @@ class RoundInfoDto(
   @SerialName("round_score") val score: String = "",
   @SerialName("winner") val winner: String = "",
   @SerialName("side") val side: String = "",
+  @SerialName("side_label") val sideLabel: String? = null,
   @SerialName("win_type") val winType: String = "",
+  @SerialName("win_type_label") val winTypeLabel: String? = null,
 )

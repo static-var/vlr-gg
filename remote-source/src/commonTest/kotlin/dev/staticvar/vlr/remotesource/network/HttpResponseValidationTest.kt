@@ -45,7 +45,13 @@ class HttpResponseValidationTest {
   }
 
   private fun client(status: HttpStatusCode, body: String) = HttpClient(MockEngine) {
-    configureHttpClient(testJson(), NetworkConfiguration(host = "api.example"))
+    configureHttpClient(
+      testJson(),
+      NetworkConfiguration(host = "api.example"),
+      object : AcceptLanguageProvider {
+        override fun preferredLanguageTags(): List<String> = listOf("en-US")
+      },
+    )
     engine { addHandler { respond(body, status, jsonHeaders()) } }
   }
 }

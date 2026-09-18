@@ -46,4 +46,15 @@ class ApiEnumsTest {
       "esports_org" to null,
     ),
   )
+
+  @Test
+  fun vetoAction_unknown_decodes_to_unknown() = EnumFallbackAsserts.assertMappings(
+    VetoActionSerializer,
+    mapOf(
+      "ban" to VetoAction.BAN,
+      "pick" to VetoAction.PICK,
+      "remains" to VetoAction.REMAINS,
+      "brand_new" to VetoAction.UNKNOWN,
+    ),
+  )
 }

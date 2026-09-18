@@ -8,6 +8,8 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.core.telemetry.traceRefresh
+import dev.staticvar.vlr.data.cache.EmptyRegionLabelStore
+import dev.staticvar.vlr.data.cache.RegionLabelStore
 import dev.staticvar.vlr.data.mapper.aggregateCircuitRegion
 import dev.staticvar.vlr.data.mapper.aggregateCircuitStandings
 import dev.staticvar.vlr.data.mapper.toEntity
@@ -17,12 +19,13 @@ import dev.staticvar.vlr.domain.repository.CircuitStandingsRepository
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.standings.StandingsDataSource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 
 internal class CircuitStandingsRepositoryImpl(
   private val standingsDataSource: StandingsDataSource,
   private val database: VlrDatabase,
   private val dispatchers: DispatcherProvider,
+  private val regionLabels: RegionLabelStore = EmptyRegionLabelStore,
 ) : CircuitStandingsRepository {
 
   private val rankingsQueries = database.rankingsQueries
@@ -31,11 +34,11 @@ internal class CircuitStandingsRepositoryImpl(
     .getStandingsByYear(year.toLong())
     .asFlow()
     .mapToList(dispatchers.io)
-    .map { standings ->
+    .combine(regionLabels.version) { standings, _ ->
       if (standings.isEmpty()) {
         null
       } else {
-        aggregateCircuitStandings(year, standings)
+        aggregateCircuitStandings(year, standings, regionLabels::label)
       }
     }
 
@@ -43,10 +46,13 @@ internal class CircuitStandingsRepositoryImpl(
     .getStandingsByYearAndCircuit(year.toLong(), circuitName)
     .asFlow()
     .mapToList(dispatchers.io)
-    .map { standings -> aggregateCircuitRegion(circuitName, standings) }
+    .combine(regionLabels.version) { standings, _ ->
+      aggregateCircuitRegion(circuitName, standings, regionLabels::label)
+    }
 
   override suspend fun refreshStandings(year: Int): Result<Unit> = traceRefresh(dispatchers.io, "refreshStandings") {
-    standingsDataSource.byYear(year).mapCatching { dto ->
+    standingsDataSource.byYear(year).mapCatching { payload ->
+      val dto = payload.value
       val effectiveYear = dto.year.takeIf { it > 0 } ?: year
 
       traceDatabase {
@@ -76,6 +82,10 @@ internal class CircuitStandingsRepositoryImpl(
           }
         }
       }
+      regionLabels.put(
+        contentLanguage = payload.contentLanguage,
+        labels = dto.circuits.associate { it.region to it.regionLabel.orEmpty() },
+      )
 
       Unit
     }

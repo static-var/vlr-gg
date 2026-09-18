@@ -20,6 +20,7 @@ data class TeamStandingDto(
 @Serializable
 data class CircuitStandingDto(
   @SerialName("region") val region: String = "",
+  @SerialName("region_label") val regionLabel: String? = null,
   @SerialName("teams") val teams: List<TeamStandingDto> = emptyList(),
 )
 

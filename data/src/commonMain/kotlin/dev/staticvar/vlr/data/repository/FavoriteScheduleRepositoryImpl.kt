@@ -7,6 +7,7 @@ package dev.staticvar.vlr.data.repository
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.data.mapper.toMatchStatus
 import dev.staticvar.vlr.domain.model.FavoriteScheduledMatch
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
@@ -37,13 +38,6 @@ internal class FavoriteScheduleRepositoryImpl(
     .asFlow()
     .mapToList(dispatchers.io)
     .distinctUntilChanged()
-}
-
-private fun String.toMatchStatus(): MatchStatus = when (this) {
-  "UPCOMING" -> MatchStatus.UPCOMING
-  "LIVE" -> MatchStatus.LIVE
-  "COMPLETED" -> MatchStatus.COMPLETED
-  else -> MatchStatus.UNKNOWN
 }
 
 private val bestOfPattern = Regex("""(?i)\b(?:bo|best(?:\s*-\s*|\s+)of)\s*[-:]?\s*(\d+)\b""")

@@ -31,12 +31,7 @@ internal fun Match_overview.toDomain(): MatchPreview = MatchPreview(
   id = id,
   event = event_name,
   series = series,
-  status = when (status) {
-    "UPCOMING" -> MatchStatus.UPCOMING
-    "LIVE" -> MatchStatus.LIVE
-    "COMPLETED" -> MatchStatus.COMPLETED
-    else -> MatchStatus.UNKNOWN
-  },
+  status = status.toMatchStatus(),
   team1 = TeamPreview(
     id = team1_id.takeIf { it.isNotEmpty() },
     name = team1_name,

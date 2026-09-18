@@ -16,6 +16,8 @@ import dev.staticvar.vlr.data.MatchMaps
 import dev.staticvar.vlr.data.MatchPreviousEncounters
 import dev.staticvar.vlr.data.MatchVideos
 import dev.staticvar.vlr.data.Matches
+import dev.staticvar.vlr.data.cache.EmptyVetoStore
+import dev.staticvar.vlr.data.cache.VetoStore
 import dev.staticvar.vlr.data.mapper.aggregateMatchDetails
 import dev.staticvar.vlr.data.mapper.toBanEntities
 import dev.staticvar.vlr.data.mapper.toDomain
@@ -27,6 +29,7 @@ import dev.staticvar.vlr.data.mapper.toPlayerStatEntities
 import dev.staticvar.vlr.data.mapper.toPreviousEncounterEntities
 import dev.staticvar.vlr.data.mapper.toRoundEntities
 import dev.staticvar.vlr.data.mapper.toVideoEntities
+import dev.staticvar.vlr.data.mapper.toVetoModels
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
@@ -51,6 +54,7 @@ internal class MatchRepositoryImpl(
   private val matchDataSource: MatchDataSource,
   private val database: VlrDatabase,
   private val dispatchers: DispatcherProvider,
+  private val vetoStore: VetoStore = EmptyVetoStore,
 ) : MatchRepository {
 
   private val matchesQueries = database.matchesQueries
@@ -123,6 +127,8 @@ internal class MatchRepositoryImpl(
       }
 
     return coreFlow.combine(previousFlow) { slices, previousEncounters ->
+      slices to previousEncounters
+    }.combine(vetoStore.version) { (slices, previousEncounters), _ ->
       slices.match?.let { match ->
         aggregateMatchDetails(
           match = match,
@@ -132,6 +138,7 @@ internal class MatchRepositoryImpl(
           bans = slices.bans,
           videos = slices.videos,
           previousEncounters = previousEncounters,
+          veto = vetoStore.get(matchId, slices.bans.map { it.ban_value }),
         )
       }
     }.combine(observeFavoriteReasons()) { match, reasonsByMatch ->
@@ -305,6 +312,7 @@ internal class MatchRepositoryImpl(
           }
         }
       }
+      vetoStore.put(matchId, dto.bans, dto.toVetoModels())
     }
   }
 

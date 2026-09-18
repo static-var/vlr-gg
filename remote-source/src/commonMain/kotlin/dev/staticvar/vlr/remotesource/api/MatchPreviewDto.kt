@@ -16,6 +16,7 @@ class MatchPreviewDto(
   @SerialName("event") val event: String = "",
   @SerialName("series") val series: String = "",
   @SerialName("status") val status: String = "",
+  @SerialName("status_label") val statusLabel: String? = null,
   @SerialName("team1") val team1: TeamDto = TeamDto(name = ""),
   @SerialName("team2") val team2: TeamDto = TeamDto(name = ""),
   @SerialName("time") val time: String? = null,
