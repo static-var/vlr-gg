@@ -93,6 +93,12 @@ kotlin {
       }
     }
 
+    val androidHostTest by getting {
+      dependencies {
+        implementation(libs.coroutine.test)
+      }
+    }
+
     val iosMain by getting
 
     val iosTest by getting {

@@ -40,18 +40,33 @@ internal class AndroidNetworkMonitor(context: Context) : NetworkMonitor {
   private val manager = context.getSystemService(ConnectivityManager::class.java)
 
   override val status: StateFlow<NetworkStatus> = callbackFlow {
-    val initiallyOnline = manager.getNetworkCapabilities(manager.activeNetwork)?.hasValidatedInternet() == true
-    trySend(if (initiallyOnline) NetworkStatus.Online else NetworkStatus.Offline)
+    val state = AndroidNetworkState(this) { trySend(it) }
+    val callbackLock = Any()
+    fun probe() {
+      val network = manager.activeNetwork
+      state.update(network?.networkHandle, manager.getNetworkCapabilities(network)?.hasValidatedInternet() == true)
+    }
     val callback = object : ConnectivityManager.NetworkCallback() {
-      override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) {
-        trySend(if (capabilities.hasValidatedInternet()) NetworkStatus.Online else NetworkStatus.Offline)
+      override fun onAvailable(network: Network) = synchronized(callbackLock) {
+        state.update(network.networkHandle, false)
       }
-      override fun onLost(network: Network) {
-        trySend(NetworkStatus.Offline)
+      override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) = synchronized(callbackLock) {
+        if (network == manager.activeNetwork) {
+          state.update(network.networkHandle, capabilities.hasValidatedInternet())
+        }
+      }
+      override fun onLost(network: Network) = synchronized(callbackLock) {
+        state.lost(network.networkHandle)
       }
     }
-    manager.registerDefaultNetworkCallback(callback)
-    awaitClose { manager.unregisterNetworkCallback(callback) }
+    synchronized(callbackLock) {
+      manager.registerDefaultNetworkCallback(callback)
+      probe()
+    }
+    awaitClose {
+      state.close()
+      manager.unregisterNetworkCallback(callback)
+    }
   }.stateIn(scope, SharingStarted.WhileSubscribed(replayExpirationMillis = 0), NetworkStatus.Unknown)
 
   fun close() = scope.cancel()
