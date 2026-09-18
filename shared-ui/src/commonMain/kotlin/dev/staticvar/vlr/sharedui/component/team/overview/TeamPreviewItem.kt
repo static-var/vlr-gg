@@ -75,7 +75,7 @@ public fun TeamPreviewItem(team: TeamInfo, modifier: Modifier = Modifier, onClic
           contentDescription = team.name,
           size = PrismIconSize.Large,
           style = PrismIconStyle.Bordered,
-          tint = if (team.isFavorite) PrismIconTint.Alt else PrismIconTint.Primary,
+          tint = PrismIconTint.None,
         )
         Column(modifier = Modifier.weight(1f)) {
           Text(

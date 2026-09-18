@@ -22,6 +22,7 @@ import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.ticket.PrismTicket
+import dev.staticvar.designsystem.component.ticket.PrismTicketStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventPreview
@@ -183,6 +184,7 @@ private fun EventDetailHeaderContent(
           imageModifier = Modifier.eventLogoSharedElement(eventId = event.id),
           size = PrismIconSize.Hero,
           style = PrismIconStyle.Plain,
+          parentBackground = PrismTicketStyle.Standard.containerColor,
           tint = PrismIconTint.None,
         )
         Text(

@@ -247,6 +247,7 @@ private fun RankingTeamItem(
           contentDescription = team.teamName,
           size = PrismIconSize.Large,
           style = PrismIconStyle.Plain,
+          parentBackground = PrismCardStyle.Outlined.containerColor,
           tint = PrismIconTint.None,
         )
       }

@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
+import dev.staticvar.designsystem.component.ticket.PrismTicketStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
@@ -89,6 +90,7 @@ private fun MatchTicketTeam(
       contentDescription = team?.name ?: stringResource(Res.string.match_event_tbd),
       size = PrismIconSize.Size64,
       style = PrismIconStyle.Plain,
+      parentBackground = PrismTicketStyle.Standard.containerColor,
       tint = PrismIconTint.None,
     )
     Text(

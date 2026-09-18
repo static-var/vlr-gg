@@ -356,6 +356,7 @@ private fun DirectFavoriteItem(
     ) {
       SharedNetworkIcon(
         imageUrl = favorite.imageUrl,
+        conditionalOutline = favorite is DirectFavorite.Team || favorite is DirectFavorite.Event,
         contentDescription = favorite.title,
         size = PrismIconSize.Large,
         style = PrismIconStyle.Bordered,
