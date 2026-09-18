@@ -35,7 +35,7 @@ import dev.staticvar.designsystem.prism.PrismVariant
  * Host wrapper for cards that place the favorite marker as a ticket over the card edge.
  */
 @Composable
-internal fun FavoriteTicketCardBox(
+public fun FavoriteTicketCardBox(
   selected: Boolean,
   modifier: Modifier = Modifier,
   favoriteModifier: Modifier = Modifier,

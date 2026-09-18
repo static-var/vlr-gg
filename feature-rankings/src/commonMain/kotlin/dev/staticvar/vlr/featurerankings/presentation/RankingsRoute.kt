@@ -17,20 +17,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
-import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
+import dev.staticvar.designsystem.component.icon.PrismIconSize
+import dev.staticvar.designsystem.component.icon.PrismIconStyle
+import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.RegionalRanking
 import dev.staticvar.vlr.domain.model.TeamRanking
+import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
+import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
@@ -199,46 +203,53 @@ private fun RankingTeamItem(
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  PrismCard(
+  val favoriteDescription = stringResource(Res.string.favorite_team)
+  FavoriteTicketCardBox(
+    selected = team.isFavorite,
     modifier = modifier,
-    style = PrismCardStyle.Outlined,
-    onClick = { onTeamSelected(team.teamId) },
+    favoriteModifier = Modifier.clearAndSetSemantics { contentDescription = favoriteDescription },
   ) {
-    Row(
+    PrismCard(
       modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-      verticalAlignment = Alignment.CenterVertically,
+      style = PrismCardStyle.Outlined,
+      onClick = { onTeamSelected(team.teamId) },
     ) {
-      Text(
-        text = stringResource(Res.string.ranking_team_label, team.rank, team.teamName),
-        modifier = Modifier.weight(1f),
-        style = Prism.typography.cardTitle,
-        color = if (team.isFavorite) Prism.color.accent else Prism.color.titleColor,
-      )
-      if (team.isFavorite) {
-        PrismFavoriteIcon(
-          selected = true,
-          size = PrismFavoriteIconSize.Small,
-          style = PrismFavoriteIconStyle.Bare,
-          contentDescription = stringResource(Res.string.favorite_team),
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Column(modifier = Modifier.weight(1f)) {
+          Text(
+            text = stringResource(Res.string.ranking_team_label, team.rank, team.teamName),
+            style = Prism.typography.cardTitle,
+            color = if (team.isFavorite) Prism.color.accent else Prism.color.titleColor,
+          )
+          Row(
+            modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+            horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Text(
+              text = stringResource(Res.string.country_with_separator, team.country),
+              style = Prism.typography.bodySmall,
+              color = Prism.color.labelColor,
+            )
+            Text(
+              text = stringResource(Res.string.ranking_points, team.points),
+              style = Prism.typography.bodySmall,
+              color = Prism.color.labelColor,
+            )
+          }
+        }
+        SharedNetworkIcon(
+          imageUrl = team.teamLogo,
+          contentDescription = team.teamName,
+          size = PrismIconSize.Large,
+          style = PrismIconStyle.Plain,
+          tint = PrismIconTint.None,
         )
       }
-    }
-    Row(
-      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Text(
-        text = stringResource(Res.string.country_with_separator, team.country),
-        style = Prism.typography.bodySmall,
-        color = Prism.color.labelColor,
-      )
-      Text(
-        text = stringResource(Res.string.ranking_points, team.points),
-        style = Prism.typography.bodySmall,
-        color = Prism.color.labelColor,
-      )
     }
   }
 }
