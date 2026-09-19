@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" role="img" aria-labelledby="title description">
+  <title id="title">Val Esports — Amethyst</title>
+  <desc id="description">A sculpted violet crystal V with lavender and icy blue facets on an ink background.</desc>
+  <defs>
+    <radialGradient id="backdrop" cx="50%" cy="40%" r="70%">
+      <stop stop-color="#232037"/><stop offset="1" stop-color="#0C0D16"/>
+    </radialGradient>
+    <radialGradient id="ground">
+      <stop stop-color="#9A6CF4" stop-opacity=".28"/><stop offset="1" stop-color="#9A6CF4" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="crystal" x1="240" y1="220" x2="760" y2="800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7DBFF"/><stop offset=".25" stop-color="#7951D2"/>
+      <stop offset=".58" stop-color="#46248B"/><stop offset=".82" stop-color="#A28AFF"/><stop offset="1" stop-color="#DFD7FF"/>
+    </linearGradient>
+    <linearGradient id="leftFacet" x1="224" y1="266" x2="490" y2="758" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B38DFF"/><stop offset=".5" stop-color="#4F2694"/><stop offset="1" stop-color="#A28AF5"/>
+    </linearGradient>
+    <linearGradient id="rightFacet" x1="810" y1="245" x2="539" y2="756" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#CAB6FF"/><stop offset=".45" stop-color="#7762DE"/><stop offset="1" stop-color="#CAEBFF"/>
+    </linearGradient>
+    <linearGradient id="innerGlow" x1="432" y1="381" x2="581" y2="620" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EFFBFF"/><stop offset=".6" stop-color="#A691F4"/><stop offset="1" stop-color="#DBEAFF"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="279" y1="229" x2="695" y2="803" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F3EAFF"/><stop offset=".4" stop-color="#A38BD7"/><stop offset=".7" stop-color="#E1DCFF"/><stop offset="1" stop-color="#7C6CCA"/>
+    </linearGradient>
+    <linearGradient id="topLeft" x1="215" y1="222" x2="399" y2="294" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D7BFFF"/><stop offset="1" stop-color="#D5F6FF"/>
+    </linearGradient>
+    <linearGradient id="topRight" x1="646" y1="292" x2="813" y2="219" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B8B4FF"/><stop offset="1" stop-color="#FFE3D9"/>
+    </linearGradient>
+    <clipPath id="outline">
+      <path d="M224 222H370Q393 222 401 247L512 570L623 247Q631 222 654 222H800Q824 222 814 250L623 764Q614 790 586 790H438Q410 790 401 764L210 250Q200 222 224 222Z"/>
+    </clipPath>
+  </defs>
+  <g id="background"><path fill="url(#backdrop)" d="M0 0H1024V1024H0Z"/></g>
+  <g id="foreground">
+    <ellipse cx="512" cy="815" rx="255" ry="49" fill="url(#ground)"/>
+    <g clip-path="url(#outline)">
+      <path fill="url(#crystal)" d="M190 210H834V800H190Z"/>
+      <path fill="url(#topLeft)" d="M207 224H395L352 291L224 257Z"/>
+      <path fill="#8561CF" d="M224 257L352 291L304 430Z"/>
+      <path fill="url(#leftFacet)" d="M224 257L304 430L452 752L406 770Z"/>
+      <path fill="#452579" d="M352 291L304 430L443 574Z"/>
+      <path fill="#9472E7" d="M352 291L443 574L512 627L394 244Z"/>
+      <path fill="#D5C3FF" fill-opacity=".65" d="M352 291L402 414L443 574Z"/>
+      <path fill="#7652BE" d="M304 430L443 574L452 752Z"/>
+      <path fill="#BDA5FF" d="M443 574L512 627L452 752Z"/>
+      <path fill="#E9DDFF" d="M406 770L452 752L512 782L439 790Z"/>
+      <path fill="url(#topRight)" d="M629 223H821L800 258L672 291Z"/>
+      <path fill="#7053B3" d="M672 291L800 258L722 430Z"/>
+      <path fill="url(#rightFacet)" d="M800 258L814 246L620 779L572 752L722 430Z"/>
+      <path fill="#9B81E7" d="M672 291L722 430L581 574Z"/>
+      <path fill="#553798" d="M672 291L581 574L512 627L630 244Z"/>
+      <path fill="#D0C8FF" fill-opacity=".7" d="M672 291L622 414L581 574Z"/>
+      <path fill="#C9D5FF" d="M722 430L581 574L572 752Z"/>
+      <path fill="#8C76DB" d="M581 574L512 627L572 752Z"/>
+      <path fill="#BDB8F5" d="M452 752L512 627L572 752L512 782Z"/>
+      <path fill="#F0E5FF" d="M572 752L616 771L586 790L512 782Z"/>
+      <path d="M397 243L512 585L627 243" stroke="url(#innerGlow)" stroke-width="9" stroke-linejoin="round"/>
+      <path d="M224 257L352 291L443 574L512 627L581 574L672 291L800 258M304 430L452 752L512 782L572 752L722 430" stroke="#EEE8FF" stroke-opacity=".35" stroke-width="2" stroke-linejoin="round"/>
+    </g>
+    <path d="M224 222H370Q393 222 401 247L512 570L623 247Q631 222 654 222H800Q824 222 814 250L623 764Q614 790 586 790H438Q410 790 401 764L210 250Q200 222 224 222Z" stroke="url(#rim)" stroke-width="4"/>
+    <path d="M238 229H366M658 229H786" stroke="#FFFFFF" stroke-opacity=".72" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>
