@@ -7,6 +7,15 @@
     <string name="app_design_development_staticvar">App-Design und Entwicklung · staticvar</string>
     <string name="app_source_code">Quellcode der App</string>
     <string name="appearance">Darstellung</string>
+    <string name="app_icon">App-Symbol</string>
+    <string name="app_icon_choose_description">Wähle, wie Val Esports auf deinem Home-Bildschirm aussieht.</string>
+    <string name="app_icon_default">Standard</string>
+    <string name="app_icon_amethyst">Diamant-V</string>
+    <string name="app_icon_ticket">Blaues Ticket</string>
+    <string name="app_icon_applying">Wird angewendet…</string>
+    <string name="app_icon_selected">Ausgewählt</string>
+    <string name="app_icon_not_selected">Nicht ausgewählt</string>
+    <string name="app_icon_update_failed">Das App-Symbol konnte nicht geändert werden. Versuch es erneut.</string>
     <string name="auto_cleanup">Automatische Bereinigung</string>
     <string name="backend_developer">Backend-Entwickler</string>
     <string name="akhil_narang">Akhil Narang</string>

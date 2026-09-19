@@ -7,6 +7,15 @@
     <string name="app_design_development_staticvar">ऐप डिज़ाइन और डेवलपमेंट · staticvar</string>
     <string name="app_source_code">ऐप का सोर्स कोड</string>
     <string name="appearance">दिखावट</string>
+    <string name="app_icon">ऐप आइकन</string>
+    <string name="app_icon_choose_description">चुनें कि आपकी होम स्क्रीन पर Val Esports कैसा दिखे।</string>
+    <string name="app_icon_default">डिफ़ॉल्ट</string>
+    <string name="app_icon_amethyst">डायमंड V</string>
+    <string name="app_icon_ticket">नीला टिकट</string>
+    <string name="app_icon_applying">लागू किया जा रहा है…</string>
+    <string name="app_icon_selected">चुना गया</string>
+    <string name="app_icon_not_selected">नहीं चुना गया</string>
+    <string name="app_icon_update_failed">ऐप आइकन नहीं बदला जा सका। फिर से कोशिश करें।</string>
     <string name="auto_cleanup">अपने-आप सफ़ाई</string>
     <string name="backend_developer">बैकएंड डेवलपर</string>
     <string name="akhil_narang">Akhil Narang</string>

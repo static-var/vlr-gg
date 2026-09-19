@@ -43,6 +43,7 @@ kotlin {
         implementation(compose.ui)
         implementation(compose.components.resources)
         implementation(libs.compose.ui.tooling.preview)
+        implementation(libs.lifecycle.runtime)
         implementation(projects.designsystem)
         implementation(projects.core)
         implementation(projects.sharedUi)

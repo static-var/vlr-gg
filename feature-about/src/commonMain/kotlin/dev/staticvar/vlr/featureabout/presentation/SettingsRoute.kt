@@ -128,6 +128,7 @@ public fun SettingsRoute(
         onFamilySelected = onFamilySelected,
         onFlavourSelected = onFlavourSelected,
       )
+      AppIconSettingsCard()
       CleanupSettingsCard(
         autoCleanupEnabled = autoCleanupEnabled,
         deletedCacheRecords = deletedCacheRecords,

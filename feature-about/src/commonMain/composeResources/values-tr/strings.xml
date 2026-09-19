@@ -7,6 +7,15 @@
     <string name="app_design_development_staticvar">Uygulama tasarımı ve geliştirme · staticvar</string>
     <string name="app_source_code">Uygulama kaynak kodu</string>
     <string name="appearance">Görünüm</string>
+    <string name="app_icon">Uygulama simgesi</string>
+    <string name="app_icon_choose_description">Val Esports'un ana ekranınızda nasıl görüneceğini seçin.</string>
+    <string name="app_icon_default">Varsayılan</string>
+    <string name="app_icon_amethyst">Elmas V</string>
+    <string name="app_icon_ticket">Mavi bilet</string>
+    <string name="app_icon_applying">Uygulanıyor…</string>
+    <string name="app_icon_selected">Seçildi</string>
+    <string name="app_icon_not_selected">Seçilmedi</string>
+    <string name="app_icon_update_failed">Uygulama simgesi değiştirilemedi. Tekrar deneyin.</string>
     <string name="auto_cleanup">Otomatik temizleme</string>
     <string name="backend_developer">Arka uç geliştiricisi</string>
     <string name="akhil_narang">Akhil Narang</string>

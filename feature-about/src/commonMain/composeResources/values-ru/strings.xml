@@ -7,6 +7,15 @@
     <string name="app_design_development_staticvar">Дизайн и разработка приложения · staticvar</string>
     <string name="app_source_code">Исходный код приложения</string>
     <string name="appearance">Оформление</string>
+    <string name="app_icon">Значок приложения</string>
+    <string name="app_icon_choose_description">Выберите, как Val Esports будет выглядеть на главном экране.</string>
+    <string name="app_icon_default">По умолчанию</string>
+    <string name="app_icon_amethyst">Алмазная V</string>
+    <string name="app_icon_ticket">Синий билет</string>
+    <string name="app_icon_applying">Применение…</string>
+    <string name="app_icon_selected">Выбрано</string>
+    <string name="app_icon_not_selected">Не выбрано</string>
+    <string name="app_icon_update_failed">Не удалось изменить значок приложения. Попробуйте ещё раз.</string>
     <string name="auto_cleanup">Автоматическая очистка</string>
     <string name="backend_developer">Разработчик серверной части</string>
     <string name="akhil_narang">Akhil Narang</string>
