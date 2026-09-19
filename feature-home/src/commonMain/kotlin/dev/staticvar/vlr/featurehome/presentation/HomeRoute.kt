@@ -359,7 +359,7 @@ private fun DirectFavoriteItem(
         conditionalOutline = favorite is DirectFavorite.Team || favorite is DirectFavorite.Event,
         contentDescription = favorite.title,
         size = PrismIconSize.Large,
-        style = PrismIconStyle.Bordered,
+        style = PrismIconStyle.Borderless,
         tint = PrismIconTint.None,
       )
       Column(modifier = Modifier.weight(1f)) {
