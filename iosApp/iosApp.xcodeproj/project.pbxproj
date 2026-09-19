@@ -44,6 +44,8 @@
 		E6E22E7564576CD396443760 /* AppShortcuts.strings in Resources */ = {isa = PBXBuildFile; fileRef = DED174F20CCA6C76C0437524 /* AppShortcuts.strings */; };
 		E723B4A1BB6FF42A310E01F1 /* VLRWidgetContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */; };
 		FC50F0393FF11D14E14CB722 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 672A36C30B70C0E9C6B1F76E /* Localizable.xcstrings */; };
+		926672BC76D70AE494AB334F /* AppIconAmethyst.icon in Resources */ = {isa = PBXBuildFile; fileRef = 0BB1981F5112C6B7BAF59688 /* AppIconAmethyst.icon */; };
+		45499146A8CF227628BDFDA3 /* AppIconTicket.icon in Resources */ = {isa = PBXBuildFile; fileRef = BA4B618CEB799D4C32090E7B /* AppIconTicket.icon */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -121,6 +123,8 @@
 		F5866EB8C9496EA91398136E /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/AppShortcuts.strings"; sourceTree = "<group>"; };
 		F95B8B8B53351C500C2EACA2 /* GeneratedBuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedBuildConfig.swift; sourceTree = "<group>"; };
 		FE064572C370901341B90A81 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
+		0BB1981F5112C6B7BAF59688 /* AppIconAmethyst.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIconAmethyst.icon; sourceTree = "<group>"; };
+		BA4B618CEB799D4C32090E7B /* AppIconTicket.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIconTicket.icon; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +151,8 @@
 		1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				0BB1981F5112C6B7BAF59688 /* AppIconAmethyst.icon */,
+				BA4B618CEB799D4C32090E7B /* AppIconTicket.icon */,
 				F543015C899423D4B01CEB2E /* Assets.xcassets */,
 				CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
 				5FFB84F263D52FFC7C65EE64 /* FavoriteSearch.swift */,
@@ -408,6 +414,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E6E22E7564576CD396443760 /* AppShortcuts.strings in Resources */,
+				926672BC76D70AE494AB334F /* AppIconAmethyst.icon in Resources */,
+				45499146A8CF227628BDFDA3 /* AppIconTicket.icon in Resources */,
 				22EA1CB33A17DCC6FC82406D /* Assets.xcassets in Resources */,
 				4361743AA269158A01337511 /* Localizable.xcstrings in Resources */,
 			);

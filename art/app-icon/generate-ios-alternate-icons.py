@@ -1,67 +1,43 @@
 #!/usr/bin/env python3
-"""Render alternate iOS app icon sets with Python 3, Pillow, and rsvg-convert.
+"""Generate layered iOS icons from the alternate SVG masters."""
 
-Run from any directory: python3 art/app-icon/generate-ios-alternate-icons.py
-"""
-
-import io
 import json
 from pathlib import Path
-import subprocess
 import xml.etree.ElementTree as ET
-
-from PIL import Image
-
 
 ROOT = Path(__file__).resolve().parents[2]
 SVG = "{http://www.w3.org/2000/svg}"
+ET.register_namespace("", "http://www.w3.org/2000/svg")
 ALTERNATES = {
-    "AppIconAmethyst": "glass-v.svg",
-    "AppIconTicket": "match-ticket.svg",
+    "AppIconAmethyst": ("glass-v.svg", "0.90,0.86,0.96,1", "0.047,0.051,0.086,1"),
+    "AppIconTicket": ("match-ticket.svg", "0.02,0.22,0.80,1", "0.031,0.059,0.125,1"),
 }
 
 
-def generate_icon_set(name, source_name):
-    source = ROOT / "art/app-icon/alternates" / source_name
-    destination = ROOT / "iosApp/iosApp/Assets.xcassets" / f"{name}.appiconset"
-    destination.mkdir(parents=True, exist_ok=True)
-    images = []
-    for appearance in ("light", "dark"):
-        svg = ET.parse(source).getroot()
-        if name == "AppIconAmethyst" and appearance == "light":
-            stops = svg.findall(f"{SVG}defs/{SVG}radialGradient[@id='backdrop']/{SVG}stop")
-            for stop, color in zip(stops, ("#F7F3FF", "#DBD3EE"), strict=True):
-                stop.set("stop-color", color)
-        elif name == "AppIconTicket" and appearance == "dark":
-            stops = svg.findall(f"{SVG}defs/{SVG}linearGradient[@id='cobalt']/{SVG}stop")
-            for stop, color in zip(stops, ("#16233F", "#080F20"), strict=True):
-                stop.set("stop-color", color)
-        filename = f"icon-1024-{appearance}.png"
-        png = subprocess.run(
-            ["rsvg-convert", "--width", "1024", "--height", "1024"],
-            input=ET.tostring(svg), check=True, capture_output=True,
-        ).stdout
-        with Image.open(io.BytesIO(png)) as image:
-            assert image.size == (1024, 1024), filename
-            assert image.convert("RGBA").getchannel("A").getextrema() == (255, 255), filename
-            image.convert("RGB").save(destination / filename, optimize=True)
-        slot = {"filename": filename, "idiom": "universal", "platform": "ios", "size": "1024x1024"}
-        if appearance == "dark":
-            slot["appearances"] = [{"appearance": "luminosity", "value": "dark"}]
-        images.append(slot)
-    # Xcode generates device sizes from the universal masters.
-    for previous in destination.glob("icon-*.png"):
-        if previous.name not in {image["filename"] for image in images}:
-            previous.unlink()
-    contents = {"images": images, "info": {"author": "xcode", "version": 1}}
-    (destination / "Contents.json").write_text(json.dumps(contents, indent=2) + "\n")
-    print(f"Generated {name}: light and dark universal iOS icons.")
-
-
-def main():
-    for name, source_name in ALTERNATES.items():
-        generate_icon_set(name, source_name)
+def generate_icon(name, source_name, color, dark_color):
+    svg = ET.parse(ROOT / "art/app-icon/alternates" / source_name).getroot()
+    svg.remove(svg.find(f"{SVG}g[@id='background']"))
+    foreground = svg.find(f"{SVG}g[@id='foreground']")
+    for shadow in foreground.findall(f"{SVG}ellipse"):
+        foreground.remove(shadow)
+    destination = ROOT / "iosApp/iosApp" / f"{name}.icon"
+    assets = destination / "Assets"
+    assets.mkdir(parents=True, exist_ok=True)
+    ET.ElementTree(svg).write(assets / "foreground.svg", encoding="unicode")
+    contents = {
+        "fill-specializations": [
+            {"value": {"solid": f"extended-srgb:{color}"}},
+            {"appearance": "dark", "value": {"solid": f"extended-srgb:{dark_color}"}},
+        ],
+        "groups": [{"name": "Artwork", "layers": [
+            {"name": "Foreground", "image-name": "foreground.svg"},
+        ]}],
+        "supported-platforms": {"squares": ["iOS"]},
+    }
+    (destination / "icon.json").write_text(json.dumps(contents, indent=2) + "\n")
+    print(f"Generated {name}: layered iOS icon.")
 
 
 if __name__ == "__main__":
-    main()
+    for name, (source, color, dark_color) in ALTERNATES.items():
+        generate_icon(name, source, color, dark_color)
