@@ -76,6 +76,7 @@ public fun SharedStatusPager(
     )
     HorizontalPager(
       state = pagerState,
+      pageSpacing = Prism.dimens.spacingM,
       key = { tabIds[it] },
       modifier = Modifier.weight(1f).fillMaxSize(),
     ) { page ->
