@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.sharedui.component.match.detail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -123,9 +125,9 @@ private fun MatchDetailPlayerStatsTable(
   val accentContentColor = Prism.color.accent
   PrismTable(
     columns = playerStatsColumns(includeMapName = includeMapName),
-    rows = remember(rows, includeMapName, onPlayerSelected) {
+    rows = remember(rows, includeMapName) {
       rows.map { row ->
-        row.toPrismTableRow(includeMapName = includeMapName, onPlayerSelected = onPlayerSelected)
+        row.toPrismTableRow(includeMapName = includeMapName)
       }
     },
     modifier = modifier.heightIn(max = matchDetailStatsTableMaxHeight(rows.size)),
@@ -156,7 +158,7 @@ private fun MatchDetailPlayerStatsTable(
     cellContentResolver = PrismTableCellContentResolver { context, value ->
       val row = rows.getOrNull(context.rowIndex)
       if (!context.isHeader && context.columnKey == MatchDetailStatsTableColumns.Player && row != null) {
-        { MatchDetailPlayerCell(row = row, playerName = value) }
+        { MatchDetailPlayerCell(row = row, playerName = value, onPlayerSelected = onPlayerSelected) }
       } else {
         null
       }
@@ -174,7 +176,17 @@ internal fun matchDetailStatsTableMaxHeight(rowCount: Int): Dp {
 }
 
 @Composable
-private fun MatchDetailPlayerCell(row: MatchDetailPlayerStatsRow, playerName: String) {
+private fun MatchDetailPlayerCell(
+  row: MatchDetailPlayerStatsRow,
+  playerName: String,
+  onPlayerSelected: ((String) -> Unit)?,
+) {
+  val playerId = row.playerId
+  val nameModifier = if (playerId != null && onPlayerSelected != null) {
+    Modifier.clickable(role = Role.Button) { onPlayerSelected(playerId) }
+  } else {
+    Modifier
+  }
   Row(
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
@@ -189,7 +201,7 @@ private fun MatchDetailPlayerCell(row: MatchDetailPlayerStatsRow, playerName: St
     )
     Text(
       text = playerName,
-      modifier = Modifier.weight(1f),
+      modifier = Modifier.weight(1f).then(nameModifier),
       style = Prism.typography.bodySmall,
       color = if (row.teamColorRole == MatchDetailPlayerStatsTeamColorRole.Accent) {
         Prism.color.accent
@@ -267,10 +279,7 @@ private fun playerStatsColumns(includeMapName: Boolean): List<PrismTableColumn> 
   }
 }
 
-private fun MatchDetailPlayerStatsRow.toPrismTableRow(
-  includeMapName: Boolean,
-  onPlayerSelected: ((String) -> Unit)?,
-): PrismTableRow {
+private fun MatchDetailPlayerStatsRow.toPrismTableRow(includeMapName: Boolean): PrismTableRow {
   val cells = mutableMapOf(
     MatchDetailStatsTableColumns.Player to playerName,
     MatchDetailStatsTableColumns.Agent to agentNames,
@@ -288,7 +297,6 @@ private fun MatchDetailPlayerStatsRow.toPrismTableRow(
   return PrismTableRow(
     key = key,
     cells = cells,
-    onClick = playerId?.let { id -> onPlayerSelected?.let { onClick -> { onClick(id) } } },
     cellTextAlignments = mapOf(
       MatchDetailStatsTableColumns.Acs to TextAlign.Center,
       MatchDetailStatsTableColumns.Kills to TextAlign.Center,
