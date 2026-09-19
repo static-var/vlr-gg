@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="round_history">Raunt geçmişi</string>
+  <string name="round_result_description">Raunt %1$d: kazanan %2$s. Sonuç: %3$s. Skor: %4$s.</string>
+</resources>

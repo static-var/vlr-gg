@@ -113,6 +113,7 @@ private fun SingleMapBreakdown(map: MapData, mapIndex: Int, onPlayerSelected: ((
     tagStyle = PrismTagStyle.Accent,
   )
   MatchDetailMapScoreLine(map = map)
+  MatchDetailRoundHistory(map = map)
   PrismDivider(style = PrismDividerStyle.Hairline)
   MatchDetailPlayerStatsTable(map = map, onPlayerSelected = onPlayerSelected)
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="round_history">Historial de rondas</string>
+  <string name="round_result_description">Ronda %1$d: victoria de %2$s. Resultado: %3$s. Marcador: %4$s.</string>
+</resources>
