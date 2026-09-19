@@ -31,6 +31,8 @@ internal fun configureProfileSettings() {
   device.openMascotSettings()
   device.verifyMascotSettings()
   device.pressBack()
+  device.settingsObject(By.text("Appearance"))
+  device.pressBack()
   device.settingsObject(By.desc("Settings"))
   device.pressHome()
 }
@@ -44,6 +46,7 @@ private fun UiDevice.launchProfileApp() {
 private fun UiDevice.openMascotSettings() {
   tapSettings(By.desc("Settings"))
   settingsObject(By.text("// MAKE IT YOURS."))
+  tapSettings(By.clickable(true).hasDescendant(By.text("Appearance")))
   scrollSettingsTo("Companion")
 }
 

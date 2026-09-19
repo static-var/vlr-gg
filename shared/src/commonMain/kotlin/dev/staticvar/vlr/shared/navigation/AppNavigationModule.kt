@@ -27,6 +27,7 @@ import dev.staticvar.vlr.core.settings.ReleaseNotesPreferencesRepository
 import dev.staticvar.vlr.domain.model.CacheCleanupStats
 import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.featureabout.presentation.AboutRoute
+import dev.staticvar.vlr.featureabout.presentation.AppearanceRoute
 import dev.staticvar.vlr.featureabout.presentation.BundledRelease
 import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewBanner
@@ -311,8 +312,6 @@ internal fun appNavigationModule(): Module = module {
   }
   navigation<AppRoute.Settings> {
     val appState = LocalVlrAppState.current
-    val viewModel = koinViewModel<AppearanceViewModel>()
-    val appearance by viewModel.appearance.collectAsStateWithLifecycle()
     val cleanupPreferences = koinInject<CacheCleanupPreferencesRepository>()
     val cleanupRepository = koinInject<CacheCleanupRepository>()
     val autoCleanupEnabled by cleanupPreferences.enabled.collectAsStateWithLifecycle()
@@ -321,6 +320,20 @@ internal fun appNavigationModule(): Module = module {
       initialValue = CacheCleanupStats(deletedRecords = 0L, lastRunEpochMillis = null),
     )
     SettingsRoute(
+      autoCleanupEnabled = autoCleanupEnabled,
+      deletedCacheRecords = cleanupStats.deletedRecords,
+      onAutoCleanupChanged = cleanupPreferences::setEnabled,
+      onAppearance = appState::showAppearance,
+      onAbout = appState::showAbout,
+      onWhatsNew = appState::showWhatsNew,
+      onBack = appState::navigateUp,
+      modifier = Modifier.fillMaxSize(),
+    )
+  }
+  navigation<AppRoute.Appearance> {
+    val viewModel = koinViewModel<AppearanceViewModel>()
+    val appearance by viewModel.appearance.collectAsStateWithLifecycle()
+    AppearanceRoute(
       isDark = appearance.isDark(isSystemInDarkTheme()),
       family = appearance.family,
       catppuccinFlavour = appearance.catppuccinFlavour,
@@ -331,12 +344,7 @@ internal fun appNavigationModule(): Module = module {
       mascotVisitFrequency = appearance.mascotVisitFrequency,
       onMascotSelected = viewModel::setMascot,
       onMascotVisitFrequencySelected = viewModel::setMascotVisitFrequency,
-      autoCleanupEnabled = autoCleanupEnabled,
-      deletedCacheRecords = cleanupStats.deletedRecords,
-      onAutoCleanupChanged = cleanupPreferences::setEnabled,
-      onAbout = appState::showAbout,
-      onWhatsNew = appState::showWhatsNew,
-      onBack = appState::navigateUp,
+      onBack = LocalVlrAppState.current::navigateUp,
       modifier = Modifier.fillMaxSize(),
     )
   }

@@ -36,6 +36,9 @@ public sealed interface AppRoute : NavKey {
   public data object Settings : Root
 
   @Serializable
+  public data object Appearance : AppRoute
+
+  @Serializable
   public data class MatchDetails(val matchId: String) : AppRoute
 
   @Serializable
@@ -62,7 +65,7 @@ public val AppRoute.rootDestination: AppRoute
       AppRoute.Settings,
       -> this
 
-      AppRoute.About, AppRoute.WhatsNew -> AppRoute.Settings
+      AppRoute.About, AppRoute.WhatsNew, AppRoute.Appearance -> AppRoute.Settings
 
       is AppRoute.MatchDetails -> AppRoute.Matches
 

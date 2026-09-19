@@ -27,6 +27,7 @@ internal val AppRoute.telemetryScreenName: String
     AppRoute.About -> "About"
     AppRoute.WhatsNew -> "WhatsNew"
     AppRoute.Settings -> "Settings"
+    AppRoute.Appearance -> "Appearance"
     is AppRoute.MatchDetails -> "MatchDetails"
     is AppRoute.EventDetails -> "EventDetails"
     is AppRoute.NewsArticle -> "NewsArticle"
