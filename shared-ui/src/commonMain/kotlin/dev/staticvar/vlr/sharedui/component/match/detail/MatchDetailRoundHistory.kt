@@ -7,7 +7,6 @@ package dev.staticvar.vlr.sharedui.component.match.detail
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,7 +38,6 @@ import vlr.shared_ui.generated.resources.match_event_win_type_time_out
 import vlr.shared_ui.generated.resources.round_defuse
 import vlr.shared_ui.generated.resources.round_elimination
 import vlr.shared_ui.generated.resources.round_explosion
-import vlr.shared_ui.generated.resources.round_history
 import vlr.shared_ui.generated.resources.round_result_description
 import vlr.shared_ui.generated.resources.round_timeout
 
@@ -51,21 +49,11 @@ internal fun MatchDetailRoundHistory(map: MapData) {
   }
   if (rounds.isEmpty()) return
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-    Text(stringResource(Res.string.round_history), style = Prism.typography.cardTitle, color = Prism.color.titleColor)
-    Row(horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-      map.teams.take(2).forEachIndexed { index, team ->
-        Text(
-          team.name,
-          modifier = Modifier.weight(1f),
-          style = Prism.typography.caption,
-          color = if (index == 0) Prism.color.accent else Prism.color.labelColor,
-        )
-      }
-    }
     LazyRow(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
       items(rounds, key = { it.roundNo }) { round ->
         val firstTeam = round.winner == RoundWinner.TEAM1
-        val tint = if (firstTeam) Prism.color.accent else Prism.color.labelColor
+        val winningTeam = map.teams.getOrNull(if (firstTeam) 0 else 1)
+        val tint = if (winningTeam?.isWinner == true) Prism.color.accent else Prism.color.labelColor
         val outcome = stringResource(
           when (round.winType) {
             RoundWinType.ELIMINATION -> Res.string.match_event_win_type_elimination

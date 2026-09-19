@@ -28,6 +28,7 @@ import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.format_mapNumber
 import vlr.shared_ui.generated.resources.match_event_all_maps
 import vlr.shared_ui.generated.resources.match_event_combined_stats
 import vlr.shared_ui.generated.resources.match_event_map_breakdown_unavailable
@@ -105,11 +106,8 @@ private fun AllMapsBreakdown(maps: List<MapData>, onPlayerSelected: ((String) ->
 private fun SingleMapBreakdown(map: MapData, mapIndex: Int, onPlayerSelected: ((String) -> Unit)?) {
   MatchDetailMapBreakdownHeader(
     title = map.matchDetailMapName(matchFormattingLabels()),
-    subtitle = map.matchDetailMapMeta(
-      labels = matchFormattingLabels(mapNumber = mapIndex + 1),
-      index = mapIndex.takeIf { it >= 0 },
-    ),
-    tag = map.matchDetailMapScoreLabel(matchFormattingLabels()),
+    subtitle = null,
+    tag = stringResource(Res.string.format_mapNumber, mapIndex + 1),
     tagStyle = PrismTagStyle.Accent,
   )
   MatchDetailMapScoreLine(map = map)
@@ -119,7 +117,7 @@ private fun SingleMapBreakdown(map: MapData, mapIndex: Int, onPlayerSelected: ((
 }
 
 @Composable
-private fun MatchDetailMapBreakdownHeader(title: String, subtitle: String, tag: String, tagStyle: PrismTagStyle) {
+private fun MatchDetailMapBreakdownHeader(title: String, subtitle: String?, tag: String, tagStyle: PrismTagStyle) {
   Row(
     modifier = Modifier.fillMaxWidth(),
     verticalAlignment = Alignment.Top,
@@ -133,14 +131,16 @@ private fun MatchDetailMapBreakdownHeader(title: String, subtitle: String, tag: 
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
       )
-      Text(
-        text = subtitle,
-        modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-        style = Prism.typography.bodySmall,
-        color = Prism.color.labelColor,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
+      if (subtitle != null) {
+        Text(
+          text = subtitle,
+          modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+          style = Prism.typography.bodySmall,
+          color = Prism.color.labelColor,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+        )
+      }
     }
     PrismTag(text = tag, style = tagStyle)
   }
