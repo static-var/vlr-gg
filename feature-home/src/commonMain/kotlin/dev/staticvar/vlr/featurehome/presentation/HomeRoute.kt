@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,6 +35,7 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.MatchPreview
+import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
@@ -241,8 +243,13 @@ private fun PersonalizedMatches(
     if (matches.isEmpty()) {
       EmptyRailMessage(stringResource(Res.string.empty_related_matches))
     } else {
+      val pagerState = rememberPagerState(
+        initialPage = initialHomeMatchPage(matches),
+        pageCount = { matches.size },
+      )
       PrismCarousel(
         itemCount = matches.size,
+        pagerState = pagerState,
         variant = PrismCarouselVariant.Multibrowse,
         showIndicators = matches.size <= MaximumVisibleIndicators,
         key = { page -> matches[page].id },
@@ -257,6 +264,9 @@ private fun PersonalizedMatches(
     }
   }
 }
+
+internal fun initialHomeMatchPage(matches: List<MatchPreview>): Int =
+  matches.indexOfFirst { it.status == MatchStatus.LIVE }.coerceAtLeast(0)
 
 @Composable
 private fun PersonalizedEvents(
