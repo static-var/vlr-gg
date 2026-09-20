@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,7 +51,6 @@ import org.jetbrains.compose.resources.stringResource
 import vlr.feature_about.generated.resources.Res
 import vlr.feature_about.generated.resources.app_icon
 import vlr.feature_about.generated.resources.app_icon_amethyst
-import vlr.feature_about.generated.resources.app_icon_applying
 import vlr.feature_about.generated.resources.app_icon_choose_description
 import vlr.feature_about.generated.resources.app_icon_default
 import vlr.feature_about.generated.resources.app_icon_not_selected
@@ -102,16 +101,20 @@ internal fun AppIconSettingsCard() {
     onSelect = { icon ->
       if (pendingIcon != null || icon == selectedIcon) return@AppIconSettingsCardContent
 
+      val previousIcon = selectedIcon
       pendingIcon = icon
+      selectedIcon = icon
       selectionFailed = false
       coroutineScope.launch {
         try {
+          withFrameNanos { }
+          withFrameNanos { }
           controller.select(icon)
           selectedIcon = controller.current()
         } catch (error: CancellationException) {
           throw error
         } catch (_: Exception) {
-          selectedIcon = runCatching(controller::current).getOrDefault(selectedIcon)
+          selectedIcon = runCatching(controller::current).getOrDefault(previousIcon)
           selectionFailed = selectedIcon != icon
         } finally {
           pendingIcon = null
@@ -154,7 +157,6 @@ private fun AppIconSettingsCardContent(
               AppIconOption(
                 icon = icon,
                 selected = icon == selectedIcon,
-                pending = icon == pendingIcon,
                 enabled = pendingIcon == null,
                 onSelect = { onSelect(icon) },
                 modifier = Modifier.weight(1f),
@@ -178,13 +180,11 @@ private fun AppIconSettingsCardContent(
 private fun AppIconOption(
   icon: AppIcon,
   selected: Boolean,
-  pending: Boolean,
   enabled: Boolean,
   onSelect: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val status = when {
-    pending -> stringResource(Res.string.app_icon_applying)
     selected -> stringResource(Res.string.app_icon_selected)
     else -> stringResource(Res.string.app_icon_not_selected)
   }
@@ -223,11 +223,6 @@ private fun AppIconOption(
     )
     Box(modifier = Modifier.height(Prism.dimens.iconS), contentAlignment = Alignment.Center) {
       when {
-        pending -> CircularProgressIndicator(
-          modifier = Modifier.size(Prism.dimens.iconS),
-          color = Prism.color.accent,
-          strokeWidth = Prism.dimens.strokeThick,
-        )
         selected -> Text(
           text = stringResource(Res.string.app_icon_selected),
           style = Prism.typography.caption,
