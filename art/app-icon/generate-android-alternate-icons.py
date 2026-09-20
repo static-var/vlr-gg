@@ -9,6 +9,8 @@ import xml.etree.ElementTree as ET
 
 from PIL import Image
 
+from android_vector import foreground_vector
+
 ROOT = Path(__file__).resolve().parents[2]
 RES = ROOT / "androidApp/src/main/res"
 SVG = "{http://www.w3.org/2000/svg}"
@@ -76,21 +78,20 @@ def monochrome(source, name):
 def main():
     for name, master in ICONS.items():
         source = ET.parse(ROOT / f"art/app-icon/alternates/{master}.svg").getroot()
-        foreground = deepcopy(source)
-        foreground.remove(foreground.find(f"{SVG}g[@id='background']"))
-        # Map the square master into the central 72 dp of the 108 dp adaptive canvas.
-        foreground.set("viewBox", "-256 -256 1536 1536")
-        background = deepcopy(source)
-        background.remove(background.find(f"{SVG}g[@id='foreground']"))
+        write_xml(foreground_vector(source), RES / f"drawable/ic_launcher_{name}_foreground.xml")
+        background = source.find(f"{SVG}g[@id='background']/{SVG}path").get("fill")
+        background = {"amethyst": "#141320", "ticket": "#0A40D6"}.get(name, background)
+        colors = ET.Element("resources")
+        ET.SubElement(colors, "color", {"name": f"ic_launcher_{name}_background"}).text = background
+        write_xml(colors, RES / f"values/ic_launcher_{name}_colors.xml")
         monochrome(source, name)
         adaptive = ET.Element("adaptive-icon")
         for layer in ("background", "foreground", "monochrome"):
-            ET.SubElement(adaptive, layer, {f"{{{ANDROID}}}drawable": f"@drawable/ic_launcher_{name}_{layer}"})
+            resource = "color" if layer == "background" else "drawable"
+            ET.SubElement(adaptive, layer, {f"{{{ANDROID}}}drawable": f"@{resource}/ic_launcher_{name}_{layer}"})
         for suffix in ("", "_round"):
             write_xml(adaptive, RES / f"mipmap-anydpi-v26/ic_launcher_{name}{suffix}.xml")
         for density, scale in DENSITIES:
-            for layer, svg in (("background", background), ("foreground", foreground)):
-                render(svg, int(108 * scale), RES / f"drawable-{density}/ic_launcher_{name}_{layer}.webp")
             for suffix, mask in (("", {"width": "1024", "height": "1024", "rx": "236"}), ("_round", {"cx": "512", "cy": "512", "r": "512"})):
                 legacy = deepcopy(source)
                 definitions = legacy.find(f"{SVG}defs")
