@@ -106,4 +106,21 @@
     <string name="app_icon_arcade">Atari</string>
     <string name="app_icon_midnight">Gece yarısı</string>
     <string name="app_icon_mint">Nane</string>
+    <string name="notifications">Bildirimler</string>
+    <string name="notification_preferences_description">Favorilerin için canlı güncellemeler</string>
+    <string name="live_activities">Canlı Etkinlikler</string>
+    <string name="live_activities_description">Kilit Ekranında ve Dynamic Island'da canlı skorları takip et.</string>
+    <string name="live_activity_favorite_matches">Favori maçlar</string>
+    <string name="live_activity_favorite_matches_description">Favorilerine eklediğin maçları takip et.</string>
+    <string name="live_activity_favorite_events">Favori etkinlikler</string>
+    <string name="live_activity_favorite_events_description">Favorilerine eklediğin etkinliklerdeki maçları takip et.</string>
+    <string name="live_activities_disabled">Canlı Etkinlikler sistem ayarlarında kapalı.</string>
+    <string name="notification_access_denied">Bildirimler kapalı. Sistem ayarlarından izin verebilirsin. Canlı Etkinlikler ayrı bir ayara sahiptir.</string>
+    <string name="notification_access_error">Bildirim izni kontrol edilemedi veya istenemedi. Lütfen tekrar dene.</string>
+    <string name="open_system_settings">Sistem ayarlarını aç</string>
+    <string name="allow_notifications">Bildirimlere izin ver</string>
+    <string name="live_activity_permissions_description">Tercihlerin bu cihazda kaydedilir. Kullanılabilirlik, sistem ayarlarına da bağlıdır.</string>
+    <string name="live_match_updates">Canlı maç güncellemeleri</string>
+    <string name="live_match_updates_description">Canlı skorları bildirimlerden takip et.</string>
+    <string name="notifications_permission_description">Canlı maç güncellemelerini almak için bildirimlere izin ver.</string>
 </resources>

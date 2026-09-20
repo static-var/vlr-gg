@@ -43,6 +43,8 @@ import vlr.feature_about.generated.resources.how_val_esports_handles_your_data
 import vlr.feature_about.generated.resources.make_it_yours
 import vlr.feature_about.generated.resources.privacy_policy
 import vlr.feature_about.generated.resources.remove_cached_items_that_haven_t_been_refreshed_in_30_days
+import vlr.feature_about.generated.resources.notifications
+import vlr.feature_about.generated.resources.notification_preferences_description
 import vlr.feature_about.generated.resources.settings
 import vlr.feature_about.generated.resources.terms_of_service
 import vlr.feature_about.generated.resources.the_latest_features_and_improvements
@@ -60,6 +62,7 @@ public fun SettingsRoute(
   onAppearance: () -> Unit,
   onAbout: () -> Unit,
   onWhatsNew: () -> Unit,
+  onNotifications: (() -> Unit)? = null,
   onBack: (() -> Unit)? = null,
   modifier: Modifier = Modifier,
 ) {
@@ -80,6 +83,13 @@ public fun SettingsRoute(
         description = stringResource(Res.string.make_it_yours),
         onClick = onAppearance,
       )
+      if (onNotifications != null) {
+        SettingsLinkCard(
+          title = stringResource(Res.string.notifications),
+          description = stringResource(Res.string.notification_preferences_description),
+          onClick = onNotifications,
+        )
+      }
       CleanupSettingsCard(
         autoCleanupEnabled = autoCleanupEnabled,
         deletedCacheRecords = deletedCacheRecords,

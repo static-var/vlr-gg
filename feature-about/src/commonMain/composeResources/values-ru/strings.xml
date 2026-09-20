@@ -109,4 +109,21 @@
     <string name="app_icon_arcade">Аркада</string>
     <string name="app_icon_midnight">Полночь</string>
     <string name="app_icon_mint">Мята</string>
+    <string name="notifications">Уведомления</string>
+    <string name="notification_preferences_description">Обновления избранного в реальном времени</string>
+    <string name="live_activities">Эфир активности</string>
+    <string name="live_activities_description">Следите за счётом в реальном времени на экране блокировки и в Dynamic Island.</string>
+    <string name="live_activity_favorite_matches">Избранные матчи</string>
+    <string name="live_activity_favorite_matches_description">Следите за матчами, которые вы добавили в избранное.</string>
+    <string name="live_activity_favorite_events">Избранные турниры</string>
+    <string name="live_activity_favorite_events_description">Следите за матчами турниров, которые вы добавили в избранное.</string>
+    <string name="live_activities_disabled">Эфир активности отключён в системных настройках.</string>
+    <string name="notification_access_denied">Уведомления отключены. Вы можете разрешить их в системных настройках. У эфира активности есть отдельная настройка.</string>
+    <string name="notification_access_error">Не удалось проверить или запросить разрешение на уведомления. Попробуйте ещё раз.</string>
+    <string name="open_system_settings">Открыть системные настройки</string>
+    <string name="allow_notifications">Разрешить уведомления</string>
+    <string name="live_activity_permissions_description">Ваши предпочтения сохраняются на этом устройстве. Доступность также зависит от системных настроек.</string>
+    <string name="live_match_updates">Обновления матчей в реальном времени</string>
+    <string name="live_match_updates_description">Следите за счётом в реальном времени в уведомлениях.</string>
+    <string name="notifications_permission_description">Разрешите уведомления, чтобы получать обновления матчей в реальном времени.</string>
 </resources>

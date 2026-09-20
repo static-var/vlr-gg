@@ -107,4 +107,21 @@
     <string name="app_icon_arcade">आर्केड</string>
     <string name="app_icon_midnight">मध्यरात्रि</string>
     <string name="app_icon_mint">पुदीना</string>
+    <string name="notifications">सूचनाएँ</string>
+    <string name="notification_preferences_description">आपके पसंदीदा के लिए लाइव अपडेट</string>
+    <string name="live_activities">लाइव ऐक्टिविटीज़</string>
+    <string name="live_activities_description">लॉक स्क्रीन और Dynamic Island पर लाइव स्कोर देखें।</string>
+    <string name="live_activity_favorite_matches">पसंदीदा मैच</string>
+    <string name="live_activity_favorite_matches_description">उन मैचों के अपडेट पाएँ जिन्हें आपने पसंदीदा में जोड़ा है।</string>
+    <string name="live_activity_favorite_events">पसंदीदा इवेंट</string>
+    <string name="live_activity_favorite_events_description">उन इवेंट के मैचों के अपडेट पाएँ जिन्हें आपने पसंदीदा में जोड़ा है।</string>
+    <string name="live_activities_disabled">सिस्टम सेटिंग में लाइव ऐक्टिविटीज़ बंद हैं।</string>
+    <string name="notification_access_denied">सूचनाएँ बंद हैं। आप सिस्टम सेटिंग में उन्हें अनुमति दे सकते हैं। लाइव ऐक्टिविटीज़ की सेटिंग अलग है।</string>
+    <string name="notification_access_error">सूचनाओं की अनुमति की जाँच नहीं हो सकी या अनुमति नहीं माँगी जा सकी। फिर से कोशिश करें।</string>
+    <string name="open_system_settings">सिस्टम सेटिंग खोलें</string>
+    <string name="allow_notifications">सूचनाओं की अनुमति दें</string>
+    <string name="live_activity_permissions_description">आपकी प्राथमिकताएँ इस डिवाइस पर सहेजी जाती हैं। उपलब्धता आपकी सिस्टम सेटिंग पर भी निर्भर करती है।</string>
+    <string name="live_match_updates">मैच के लाइव अपडेट</string>
+    <string name="live_match_updates_description">सूचनाओं में लाइव स्कोर देखें।</string>
+    <string name="notifications_permission_description">मैच के लाइव अपडेट पाने के लिए सूचनाओं की अनुमति दें।</string>
 </resources>

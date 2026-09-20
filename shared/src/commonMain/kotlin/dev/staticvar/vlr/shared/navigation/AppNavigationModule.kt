@@ -30,6 +30,10 @@ import dev.staticvar.vlr.featureabout.presentation.AboutRoute
 import dev.staticvar.vlr.featureabout.presentation.AppearanceRoute
 import dev.staticvar.vlr.featureabout.presentation.BundledRelease
 import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
+import dev.staticvar.vlr.featureabout.presentation.NotificationsRoute
+import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
+import dev.staticvar.vlr.core.settings.LiveMatchNotificationSettingsController
+import dev.staticvar.vlr.sharedui.notifications.LocalNotificationPermissionProvider
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewBanner
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailSection
@@ -324,11 +328,20 @@ internal fun appNavigationModule(): Module = module {
       deletedCacheRecords = cleanupStats.deletedRecords,
       onAutoCleanupChanged = cleanupPreferences::setEnabled,
       onAppearance = appState::showAppearance,
+      onNotifications = if (LocalNotificationPermissionProvider.current != null) appState::showNotifications else null,
       onAbout = appState::showAbout,
       onWhatsNew = appState::showWhatsNew,
       onBack = appState::navigateUp,
       modifier = Modifier.fillMaxSize(),
     )
+  }
+  navigation<AppRoute.Notifications> {
+    val provider = LocalNotificationPermissionProvider.current
+    if (provider != null) {
+      val repository = koinInject<LiveMatchNotificationPreferencesRepository>()
+      val controller = remember(repository, provider) { LiveMatchNotificationSettingsController(repository, provider) }
+      NotificationsRoute(controller, onBack = LocalVlrAppState.current::navigateUp)
+    }
   }
   navigation<AppRoute.Appearance> {
     val viewModel = koinViewModel<AppearanceViewModel>()
