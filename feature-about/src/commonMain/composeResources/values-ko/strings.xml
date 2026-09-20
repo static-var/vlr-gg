@@ -103,4 +103,7 @@
     <string name="release_logos_description">순위를 포함한 모든 화면에서 팀과 이벤트 로고가 원래 색상으로 표시됩니다. 밝은 테마와 어두운 테마 모두에서 로고가 잘 보이도록 배경 대비를 조정합니다.</string>
     <string name="release_connectivity_title">더 안정적인 앱 시작</string>
     <string name="release_connectivity_description">앱 시작 시 연결 확인이 더 안정적으로 바뀌어 온라인 상태를 더 정확하게 인식합니다.</string>
+    <string name="app_icon_arcade">아케이드</string>
+    <string name="app_icon_midnight">미드나이트</string>
+    <string name="app_icon_mint">민트</string>
 </resources>

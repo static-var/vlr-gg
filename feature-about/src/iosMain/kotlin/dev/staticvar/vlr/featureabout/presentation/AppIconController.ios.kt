@@ -18,6 +18,9 @@ import platform.UIKit.supportsAlternateIcons
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+private const val ArcadeIconName = "AppIconArcade"
+private const val MidnightIconName = "AppIconMidnight"
+private const val MintIconName = "AppIconMint"
 private const val AmethystIconName = "AppIconAmethyst"
 private const val TicketIconName = "AppIconTicket"
 
@@ -33,6 +36,9 @@ private class IosAppIconController(
     get() = application.supportsAlternateIcons
 
   override fun current(): AppIcon = when (application.alternateIconName) {
+    ArcadeIconName -> AppIcon.Arcade
+    MidnightIconName -> AppIcon.Midnight
+    MintIconName -> AppIcon.Mint
     AmethystIconName -> AppIcon.Amethyst
     TicketIconName -> AppIcon.Ticket
     else -> AppIcon.Default
@@ -41,6 +47,9 @@ private class IosAppIconController(
   override suspend fun select(icon: AppIcon) {
     val alternateIconName = when (icon) {
       AppIcon.Default -> null
+      AppIcon.Arcade -> ArcadeIconName
+      AppIcon.Midnight -> MidnightIconName
+      AppIcon.Mint -> MintIconName
       AppIcon.Amethyst -> AmethystIconName
       AppIcon.Ticket -> TicketIconName
     }

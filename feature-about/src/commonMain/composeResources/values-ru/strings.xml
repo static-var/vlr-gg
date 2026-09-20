@@ -106,4 +106,7 @@
     <string name="release_logos_description">Логотипы команд и турниров сохраняют исходные цвета, в том числе в рейтингах. Фон подстраивается для контраста, чтобы логотипы оставались хорошо видны в светлой и тёмной темах.</string>
     <string name="release_connectivity_title">Более надёжный запуск</string>
     <string name="release_connectivity_description">Проверка подключения при запуске стала надёжнее, чтобы приложение лучше определяло, когда вы в сети.</string>
+    <string name="app_icon_arcade">Аркада</string>
+    <string name="app_icon_midnight">Полночь</string>
+    <string name="app_icon_mint">Мята</string>
 </resources>

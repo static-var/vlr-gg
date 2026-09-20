@@ -59,6 +59,12 @@ import vlr.feature_about.generated.resources.app_icon_preview_amethyst
 import vlr.feature_about.generated.resources.app_icon_preview_default
 import vlr.feature_about.generated.resources.app_icon_preview_ticket
 import vlr.feature_about.generated.resources.app_icon_selected
+import vlr.feature_about.generated.resources.app_icon_arcade
+import vlr.feature_about.generated.resources.app_icon_preview_arcade
+import vlr.feature_about.generated.resources.app_icon_midnight
+import vlr.feature_about.generated.resources.app_icon_preview_midnight
+import vlr.feature_about.generated.resources.app_icon_mint
+import vlr.feature_about.generated.resources.app_icon_preview_mint
 import vlr.feature_about.generated.resources.app_icon_ticket
 import vlr.feature_about.generated.resources.app_icon_update_failed
 
@@ -105,8 +111,8 @@ internal fun AppIconSettingsCard() {
         } catch (error: CancellationException) {
           throw error
         } catch (_: Exception) {
-          selectionFailed = true
           selectedIcon = runCatching(controller::current).getOrDefault(selectedIcon)
+          selectionFailed = selectedIcon != icon
         } finally {
           pendingIcon = null
         }
@@ -135,19 +141,26 @@ private fun AppIconSettingsCardContent(
           color = Prism.color.bodyColor,
         )
       }
-      Row(
+      Column(
         modifier = Modifier.fillMaxWidth().selectableGroup(),
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+        verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       ) {
-        AppIcon.entries.forEach { icon ->
-          AppIconOption(
-            icon = icon,
-            selected = icon == selectedIcon,
-            pending = icon == pendingIcon,
-            enabled = pendingIcon == null,
-            onSelect = { onSelect(icon) },
-            modifier = Modifier.weight(1f),
-          )
+        AppIcon.entries.chunked(3).forEach { icons ->
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+          ) {
+            icons.forEach { icon ->
+              AppIconOption(
+                icon = icon,
+                selected = icon == selectedIcon,
+                pending = icon == pendingIcon,
+                enabled = pendingIcon == null,
+                onSelect = { onSelect(icon) },
+                modifier = Modifier.weight(1f),
+              )
+            }
+          }
         }
       }
       if (selectionFailed) {
@@ -229,6 +242,9 @@ private val AppIcon.label: String
   @Composable get() = when (this) {
     AppIcon.Default -> stringResource(Res.string.app_icon_default)
     AppIcon.Amethyst -> stringResource(Res.string.app_icon_amethyst)
+    AppIcon.Arcade -> stringResource(Res.string.app_icon_arcade)
+    AppIcon.Midnight -> stringResource(Res.string.app_icon_midnight)
+    AppIcon.Mint -> stringResource(Res.string.app_icon_mint)
     AppIcon.Ticket -> stringResource(Res.string.app_icon_ticket)
   }
 
@@ -236,5 +252,8 @@ private val AppIcon.preview: DrawableResource
   get() = when (this) {
     AppIcon.Default -> Res.drawable.app_icon_preview_default
     AppIcon.Amethyst -> Res.drawable.app_icon_preview_amethyst
+    AppIcon.Arcade -> Res.drawable.app_icon_preview_arcade
+    AppIcon.Midnight -> Res.drawable.app_icon_preview_midnight
+    AppIcon.Mint -> Res.drawable.app_icon_preview_mint
     AppIcon.Ticket -> Res.drawable.app_icon_preview_ticket
   }

@@ -103,4 +103,7 @@
     <string name="release_logos_description">Takım ve etkinlik logoları sıralamalar dahil her yerde özgün renklerini korur. Arka planlar kontrastı ayarlayarak logoların açık ve koyu temalarda kolayca görülmesini sağlar.</string>
     <string name="release_connectivity_title">Daha güvenilir açılış</string>
     <string name="release_connectivity_description">Açılıştaki bağlantı kontrolleri artık daha güvenilir ve uygulamanın çevrimiçi olduğunuzu algılamasına yardımcı oluyor.</string>
+    <string name="app_icon_arcade">Atari</string>
+    <string name="app_icon_midnight">Gece yarısı</string>
+    <string name="app_icon_mint">Nane</string>
 </resources>

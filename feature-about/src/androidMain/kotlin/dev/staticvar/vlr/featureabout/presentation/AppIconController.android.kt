@@ -15,6 +15,9 @@ import androidx.compose.ui.platform.LocalContext
 private const val DefaultAlias = "dev.staticvar.vlr.android.MainActivityDefault"
 private const val AmethystAlias = "dev.staticvar.vlr.android.MainActivityAmethyst"
 private const val TicketAlias = "dev.staticvar.vlr.android.MainActivityTicket"
+private const val ArcadeAlias = "dev.staticvar.vlr.android.MainActivityArcade"
+private const val MidnightAlias = "dev.staticvar.vlr.android.MainActivityMidnight"
+private const val MintAlias = "dev.staticvar.vlr.android.MainActivityMint"
 
 @Composable
 internal actual fun rememberAppIconController(): AppIconController {
@@ -25,6 +28,9 @@ internal actual fun rememberAppIconController(): AppIconController {
 private class AndroidAppIconController(context: Context) : AppIconController {
   private val packageManager = context.packageManager
   private val aliases = mapOf(
+    AppIcon.Arcade to ComponentName(context.packageName, ArcadeAlias),
+    AppIcon.Midnight to ComponentName(context.packageName, MidnightAlias),
+    AppIcon.Mint to ComponentName(context.packageName, MintAlias),
     AppIcon.Default to ComponentName(context.packageName, DefaultAlias),
     AppIcon.Amethyst to ComponentName(context.packageName, AmethystAlias),
     AppIcon.Ticket to ComponentName(context.packageName, TicketAlias),

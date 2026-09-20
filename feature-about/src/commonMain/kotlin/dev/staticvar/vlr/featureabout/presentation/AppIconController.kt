@@ -10,6 +10,9 @@ internal enum class AppIcon {
   Default,
   Amethyst,
   Ticket,
+  Arcade,
+  Midnight,
+  Mint,
 }
 
 internal interface AppIconController {

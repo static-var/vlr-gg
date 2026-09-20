@@ -104,4 +104,7 @@
     <string name="release_logos_description">रैंकिंग सहित सभी जगह टीम और इवेंट के लोगो अपने मूल रंगों में दिखते हैं। हल्की और गहरी थीम में लोगो साफ़ दिखें, इसके लिए बैकग्राउंड का कंट्रास्ट बदलता है।</string>
     <string name="release_connectivity_title">ऐप की अधिक भरोसेमंद शुरुआत</string>
     <string name="release_connectivity_description">ऐप शुरू होने पर कनेक्शन की जाँच अब अधिक भरोसेमंद है, जिससे ऐप बेहतर पहचान पाता है कि आप ऑनलाइन हैं।</string>
+    <string name="app_icon_arcade">आर्केड</string>
+    <string name="app_icon_midnight">मध्यरात्रि</string>
+    <string name="app_icon_mint">पुदीना</string>
 </resources>
