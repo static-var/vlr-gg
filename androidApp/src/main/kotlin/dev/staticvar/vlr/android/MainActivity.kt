@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
     if (splashTheme != 0) setTheme(splashTheme)
     installSplashScreen()
     super.onCreate(savedInstanceState)
+    normalizeLauncherIntent(intent)
     enableEdgeToEdge()
     LegacyWidgetRefreshScheduler.restore(applicationContext)
     if (savedInstanceState == null) {
@@ -66,7 +67,20 @@ class MainActivity : ComponentActivity() {
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     setIntent(intent)
+    normalizeLauncherIntent(intent)
     openDeepLink(intent)
+  }
+
+  private fun normalizeLauncherIntent(intent: Intent) {
+    if (intent.action != Intent.ACTION_MAIN ||
+      !intent.hasCategory(Intent.CATEGORY_LAUNCHER) ||
+      intent.component?.className == MainActivity::class.java.name
+    ) return
+    startActivity(
+      Intent(intent).setClass(this, MainActivity::class.java).setFlags(
+        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP,
+      ),
+    )
   }
 
   private fun openDeepLink(intent: Intent) {
