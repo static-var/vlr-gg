@@ -35,11 +35,15 @@ struct SearchFavorite: Codable, Equatable, Sendable {
     func attributes() -> CSSearchableItemAttributeSet {
         let attributes = CSSearchableItemAttributeSet(contentType: .content)
         attributes.title = title
+        attributes.displayName = title
+        attributes.userCurated = true
         attributes.contentDescription = NativeLocalization.format(
             "spotlight.favorite.description",
             kind.localizedName
         )
+        attributes.textContent = "\(title). \(attributes.contentDescription ?? kind.localizedName)"
         attributes.keywords = [
+            title,
             "VLR",
             "Val Esports",
             kind.localizedName,
@@ -47,6 +51,13 @@ struct SearchFavorite: Codable, Equatable, Sendable {
         ]
         attributes.url = url
         return attributes
+    }
+
+    func matches(_ query: String) -> Bool {
+        let terms = query.split(whereSeparator: { $0.isWhitespace }).map(String.init)
+        guard !terms.isEmpty else { return false }
+        let searchableText = "\(title) \(kind.localizedName)"
+        return terms.allSatisfy { searchableText.localizedStandardContains($0) }
     }
 
     func searchableItem(domain: String) -> CSSearchableItem {
@@ -226,7 +237,7 @@ struct FavoriteEntityQuery: EntityStringQuery {
     @MainActor
     func entities(matching string: String) async throws -> [FavoriteEntity] {
         try FavoriteSearchStore.shared.records()
-            .filter { $0.title.localizedStandardContains(string) }
+            .filter { $0.matches(string) }
             .map(FavoriteEntity.init)
     }
 
