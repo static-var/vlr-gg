@@ -2,9 +2,12 @@
 """Export the alternate SVG masters as adaptive, themed and legacy Android icons."""
 
 from copy import deepcopy
+from io import BytesIO
 from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
+
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 RES = ROOT / "androidApp/src/main/res"
@@ -12,15 +15,17 @@ SVG = "{http://www.w3.org/2000/svg}"
 ANDROID = "http://schemas.android.com/apk/res/android"
 ET.register_namespace("android", ANDROID)
 DENSITIES = (("mdpi", 1), ("hdpi", 1.5), ("xhdpi", 2), ("xxhdpi", 3), ("xxxhdpi", 4))
-ICONS = {"amethyst": "glass-v", "ticket": "match-ticket"}
+ICONS = {"amethyst": "glass-v", "ticket": "match-ticket", "arcade": "arcade", "midnight": "midnight", "mint": "mint"}
 
 
 def render(svg, pixels, destination):
     destination.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        ["rsvg-convert", "-w", str(pixels), "-h", str(pixels), "-o", str(destination)],
-        input=ET.tostring(svg), check=True,
+    rendered = subprocess.run(
+        ["rsvg-convert", "-w", str(pixels), "-h", str(pixels)],
+        input=ET.tostring(svg), check=True, capture_output=True,
     )
+    with Image.open(BytesIO(rendered.stdout)) as image:
+        image.save(destination, "WEBP", lossless=True, method=6)
 
 
 def write_xml(root, destination):
@@ -40,7 +45,7 @@ def monochrome(source, name):
     })
     if name == "amethyst":
         silhouette = source.find(f"{SVG}defs/{SVG}clipPath[@id='outline']/{SVG}path").get("d")
-    else:
+    elif name == "ticket":
         group = ET.SubElement(group, "group", {
             f"{{{ANDROID}}}rotation": "-10", f"{{{ANDROID}}}pivotX": "512", f"{{{ANDROID}}}pivotY": "512",
         })
@@ -49,6 +54,18 @@ def monochrome(source, name):
         silhouette += " " + foreground.find(f"{SVG}path[@fill='url(#violet)']").get("d")
         # Cut the three stub marks out of the opaque paper silhouette.
         silhouette += " " + foreground.findall(f"{SVG}path[@fill='url(#violet)']")[1].get("d")
+    else:
+        source = ET.parse(ROOT / "art/app-icon/match-point-monochrome.svg").getroot()
+        group.set(f"{{{ANDROID}}}scaleX", "1.125")
+        group.set(f"{{{ANDROID}}}scaleY", "1.125")
+        for path in source.find(f"{SVG}g[@id='foreground']"):
+            ET.SubElement(group, "path", {
+                f"{{{ANDROID}}}fillColor": "#FFFFFFFF",
+                f"{{{ANDROID}}}fillType": "evenOdd" if path.get("fill-rule") == "evenodd" else "nonZero",
+                f"{{{ANDROID}}}pathData": path.get("d"),
+            })
+        write_xml(vector, RES / f"drawable/ic_launcher_{name}_monochrome.xml")
+        return
     ET.SubElement(group, "path", {
         f"{{{ANDROID}}}fillColor": "#FFFFFFFF", f"{{{ANDROID}}}fillType": "evenOdd",
         f"{{{ANDROID}}}pathData": silhouette,
@@ -73,10 +90,13 @@ def main():
             write_xml(adaptive, RES / f"mipmap-anydpi-v26/ic_launcher_{name}{suffix}.xml")
         for density, scale in DENSITIES:
             for layer, svg in (("background", background), ("foreground", foreground)):
-                render(svg, int(108 * scale), RES / f"drawable-{density}/ic_launcher_{name}_{layer}.png")
+                render(svg, int(108 * scale), RES / f"drawable-{density}/ic_launcher_{name}_{layer}.webp")
             for suffix, mask in (("", {"width": "1024", "height": "1024", "rx": "236"}), ("_round", {"cx": "512", "cy": "512", "r": "512"})):
                 legacy = deepcopy(source)
-                clip = ET.SubElement(legacy.find(f"{SVG}defs"), f"{SVG}clipPath", {"id": "legacy-mask"})
+                definitions = legacy.find(f"{SVG}defs")
+                if definitions is None:
+                    definitions = ET.SubElement(legacy, f"{SVG}defs")
+                clip = ET.SubElement(definitions, f"{SVG}clipPath", {"id": "legacy-mask"})
                 ET.SubElement(clip, f"{SVG}circle" if suffix else f"{SVG}rect", mask)
                 group = ET.Element(f"{SVG}g", {"clip-path": "url(#legacy-mask)"})
                 for layer in ("background", "foreground"):
@@ -84,7 +104,7 @@ def main():
                     legacy.remove(node)
                     group.append(node)
                 legacy.append(group)
-                render(legacy, int(48 * scale), RES / f"mipmap-{density}/ic_launcher_{name}{suffix}.png")
+                render(legacy, int(48 * scale), RES / f"mipmap-{density}/ic_launcher_{name}{suffix}.webp")
         print(f"Generated Android adaptive, monochrome and legacy assets: {name}")
 
 

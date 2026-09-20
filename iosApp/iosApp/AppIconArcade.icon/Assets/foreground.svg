@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" role="img" aria-labelledby="match-title match-desc">
+  <title id="match-title">Val Esports Arcade</title>
+  <desc id="match-desc">Pixel match display in the arcade palette.</desc>
+  <g id="foreground" shape-rendering="crispEdges" transform="scale(16)">
+    <path fill="#17122D" d="M14 14H50V18H54V50H50V54H18V50H14Z" />
+    <path fill="#6D395F" d="M14 12H48V16H52V48H48V52H16V48H12V16H14Z" />
+    <path fill="#FF9DAA" d="M14 12H48V16H50V44H46V48H14V44H10V16H14Z" />
+    <path fill="#E5729F" d="M46 16H50V44H46V48H14V44H46Z" />
+    <path fill="#14182F" d="M16 18H44V22H46V38H42V42H16V38H14V22H16Z" />
+    <path fill="#28233C" d="M16 18H44V20H18V22H16V38H14V22H16Z" />
+    <path fill="#67E8DC" d="M20 24H26V28H28V32H32V38H26V34H24V30H22V28H20Z" />
+    <path fill="#FFF2CC" d="M38 24H42V28H40V32H38V34H36V38H30V32H34V28H36V24Z" />
+    <path fill="#FFF2CC" d="M16 44H22V46H16Z" />
+    <path fill="#B879AE" d="M26 44H32V46H26ZM36 44H42V46H36Z" />
+    <path fill="#67E8DC" d="M40 14H44V16H40Z" />
+    <path fill="#BF719B" d="M16 14H24V16H16Z" />
+  </g>
+  <defs />
+</svg>

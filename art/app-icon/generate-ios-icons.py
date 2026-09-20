@@ -31,25 +31,18 @@ def generate_launch_logo():
     svg.remove(background)
     # The foreground spans x=10..54, y=12..54, centered at (32, 33).
     svg.set("viewBox", "0 1 64 64")
-    source = ET.tostring(svg)
+    svg.set("width", "192")
+    svg.set("height", "192")
+    ET.register_namespace("", "http://www.w3.org/2000/svg")
     LAUNCH_DESTINATION.mkdir(parents=True, exist_ok=True)
-    images = []
-    for scale in (1, 2, 3):
-        pixels = 192 * scale
-        filename = f"launch-logo@{scale}x.png"
-        png = subprocess.run(
-            ["rsvg-convert", "--width", str(pixels), "--height", str(pixels)],
-            input=source,
-            check=True,
-            capture_output=True,
-        ).stdout
-        with Image.open(io.BytesIO(png)) as image:
-            assert image.size == (pixels, pixels), filename
-            image.convert("RGBA").save(LAUNCH_DESTINATION / filename, optimize=True)
-        images.append({"filename": filename, "idiom": "universal", "scale": f"{scale}x"})
-    contents = {"images": images, "info": {"author": "xcode", "version": 1}}
+    (LAUNCH_DESTINATION / "launch-logo.svg").write_bytes(ET.tostring(svg))
+    contents = {
+        "images": [{"filename": "launch-logo.svg", "idiom": "universal"}],
+        "info": {"author": "xcode", "version": 1},
+        "properties": {"preserves-vector-representation": True},
+    }
     (LAUNCH_DESTINATION / "Contents.json").write_text(json.dumps(contents, indent=2) + "\n")
-    print("Generated centered, transparent launch logo at 1x, 2x, and 3x.")
+    print("Generated centered, transparent SVG launch logo.")
 
 
 def main():

@@ -9,6 +9,9 @@ ROOT = Path(__file__).resolve().parents[2]
 SVG = "{http://www.w3.org/2000/svg}"
 ET.register_namespace("", "http://www.w3.org/2000/svg")
 ALTERNATES = {
+    "AppIconArcade": ("arcade.svg", "0.22,0.14,0.40,1", "0.067,0.039,0.125,1"),
+    "AppIconMidnight": ("midnight.svg", "0.15,0.16,0.25,1", "0.031,0.035,0.063,1"),
+    "AppIconMint": ("mint.svg", "0.76,0.92,0.85,1", "0.039,0.118,0.094,1"),
     "AppIconAmethyst": ("glass-v.svg", "0.90,0.86,0.96,1", "0.047,0.051,0.086,1"),
     "AppIconTicket": ("match-ticket.svg", "0.02,0.22,0.80,1", "0.031,0.059,0.125,1"),
 }
