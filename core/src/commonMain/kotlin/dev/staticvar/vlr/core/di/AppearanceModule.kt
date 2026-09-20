@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.core.di
 
+import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
 import dev.staticvar.vlr.core.settings.AppearanceRepository
 import dev.staticvar.vlr.core.settings.CacheCleanupPreferencesRepository
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
@@ -16,6 +17,7 @@ public expect val platformAppearanceModule: Module
 
 public fun appearanceModule(): Module = module {
   single { AppearanceRepository(get()) }
+  single { LiveMatchNotificationPreferencesRepository(get()) }
   single { ReleaseNotesPreferencesRepository(get()) }
   single { MatchDetailsPreferencesRepository(get()) }
   single { SpoilerPreferencesRepository(get()) }
