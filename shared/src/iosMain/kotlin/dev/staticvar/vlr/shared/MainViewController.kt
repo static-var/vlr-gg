@@ -8,10 +8,12 @@ package dev.staticvar.vlr.shared
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.window.ComposeUIViewController
+import dev.staticvar.vlr.core.notifications.NotificationPermissionProvider
 import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.iosNetworkModule
 import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
 import dev.staticvar.vlr.sharedui.share.LocalImageSharer
+import dev.staticvar.vlr.sharedui.notifications.LocalNotificationPermissionProvider
 import dev.staticvar.vlr.sharedui.share.rememberIosImageSharer
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSBundle
@@ -38,6 +40,7 @@ fun MainViewController(
   deepLinkHandler: AppDeepLinkHandler = AppDeepLinkHandler(),
   onWidgetSnapshotChanged: (String) -> Unit = {},
   onSearchFavoritesChanged: (String) -> Unit = {},
+  notificationPermissionProvider: NotificationPermissionProvider? = null,
 ): UIViewController {
   ensureUnhandledExceptionLoggingInstalled()
 
@@ -47,7 +50,10 @@ fun MainViewController(
       authToken = resolveAuthToken(authToken),
     )
     ComposeUIViewController {
-      CompositionLocalProvider(LocalImageSharer provides rememberIosImageSharer()) {
+      CompositionLocalProvider(
+        LocalImageSharer provides rememberIosImageSharer(),
+        LocalNotificationPermissionProvider provides notificationPermissionProvider,
+      ) {
         App(
           deepLinkHandler = deepLinkHandler,
           onWidgetSnapshotChanged = { onWidgetSnapshotChanged(it) },

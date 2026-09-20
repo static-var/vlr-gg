@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD369A06E85A4B3F85B9452D /* LiveActivityPermissionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7B64D40E8F44E29B9D622C /* LiveActivityPermissionProvider.swift */; };
 		E8A5403574A3EA968A57C900 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0CF0BA8A92206DCBD9D678DD /* LaunchScreen.storyboard */; };
 		099124514C9782698F2C797B /* VLRWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */; };
 		15D0070A8332C69488B9E71D /* VLRWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */; };
@@ -84,6 +85,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5C7B64D40E8F44E29B9D622C /* LiveActivityPermissionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityPermissionProvider.swift; sourceTree = "<group>"; };
 		0CF0BA8A92206DCBD9D678DD /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		07ED39F464598B211EB46A3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMatchesWidget.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 				181EA7A14DE006DAFECA52A4 /* AppIconArcade.icon */,
 				F543015C899423D4B01CEB2E /* Assets.xcassets */,
 				CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
+				5C7B64D40E8F44E29B9D622C /* LiveActivityPermissionProvider.swift */,
 				5FFB84F263D52FFC7C65EE64 /* FavoriteSearch.swift */,
 				86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */,
 				C117AD187833E2513BD2F553 /* Info.plist */,
@@ -505,6 +508,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
+				CD369A06E85A4B3F85B9452D /* LiveActivityPermissionProvider.swift in Sources */,
 				B5774EBA09C9BF2544502554 /* FavoriteSearch.swift in Sources */,
 				8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */,
 				7D487293553B3F4031496A2A /* NativeLocalization.swift in Sources */,

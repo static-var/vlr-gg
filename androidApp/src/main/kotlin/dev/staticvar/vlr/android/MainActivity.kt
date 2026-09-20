@@ -20,6 +20,8 @@ import dev.staticvar.vlr.android.widget.FavoriteMatchWidgets
 import dev.staticvar.vlr.android.widget.WidgetSnapshotStore
 import dev.staticvar.vlr.shared.App
 import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
+import dev.staticvar.vlr.sharedui.notifications.LocalNotificationPermissionProvider
+import dev.staticvar.vlr.sharedui.notifications.rememberAndroidNotificationPermissionProvider
 import dev.staticvar.vlr.sharedui.share.LocalImageSharer
 import dev.staticvar.vlr.sharedui.share.rememberAndroidImageSharer
 import kotlin.coroutines.cancellation.CancellationException
@@ -44,7 +46,10 @@ class MainActivity : ComponentActivity() {
     }
 
     setContent {
-      CompositionLocalProvider(LocalImageSharer provides rememberAndroidImageSharer()) {
+      CompositionLocalProvider(
+        LocalImageSharer provides rememberAndroidImageSharer(),
+        LocalNotificationPermissionProvider provides rememberAndroidNotificationPermissionProvider(),
+      ) {
         App(
           deepLinkHandler = deepLinkHandler,
           onWidgetSnapshotChanged = { snapshotJson ->

@@ -44,6 +44,7 @@ kotlin {
     target.binaries.framework {
       baseName = "shared"
       isStatic = true
+      export(projects.core)
       // Explicit bundle ID to silence Kotlin/Native warning and stabilize metadata
       freeCompilerArgs += listOf("-Xbinary=bundleId=dev.staticvar.vlr.shared")
     }
@@ -69,7 +70,7 @@ kotlin {
         implementation(libs.koin.compose.navigation3)
         implementation(libs.navigation3.ui.cmp)
         implementation(projects.designsystem)
-        implementation(projects.core)
+        api(projects.core)
         implementation(projects.localSource)
         implementation(projects.remoteSource)
         implementation(projects.data)
