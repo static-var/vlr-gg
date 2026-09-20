@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="round_history">Historique des manches</string>
+  <string name="round_result_description">Manche %1$d : victoire de %2$s. Résultat : %3$s. Score : %4$s.</string>
+</resources>

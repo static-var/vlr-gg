@@ -44,6 +44,7 @@ kotlin {
         implementation(compose.components.resources)
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.coroutines.core)
+        implementation(libs.coil.compose)
         implementation(libs.koin.core)
         implementation(libs.koin.core.viewmodel)
         api(libs.lifecycle.viewmodel.core)

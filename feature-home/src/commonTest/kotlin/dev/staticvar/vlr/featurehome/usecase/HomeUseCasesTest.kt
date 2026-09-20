@@ -19,6 +19,7 @@ import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
+import dev.staticvar.vlr.featurehome.presentation.initialHomeMatchPage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
@@ -33,10 +34,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class HomeUseCasesTest {
   @Test
-  fun homeShowsOnlyCurrentMatchesAndEventsChronologicallyInBothSections() = runTest {
+  fun homeShowsRecentMatchesAndCurrentEventsChronologicallyInBothSections() = runTest {
     val directFavorites = DirectFavoriteSnapshot(
       teams = listOf(DirectFavorite.Team("team-1", "Alpha", "")),
       players = listOf(DirectFavorite.Player("player-1", "Player", "")),
@@ -72,6 +75,9 @@ class HomeUseCasesTest {
 
     val feed = ObserveHomeFeedUseCase(
       FakeFavoritesRepository(directFavorites), FakeMatchRepository(matches), FakeEventRepository(events),
+      clock = object : Clock {
+        override fun now(): Instant = Instant.parse("2026-09-12T12:00:00Z")
+      },
     )().first()
 
     assertTrue(feed.hasDirectFavorites)
@@ -86,6 +92,50 @@ class HomeUseCasesTest {
     assertEquals(directFavorites.players, feed.directFavorites.players)
     assertEquals(5, directFavorites.matches.size)
     assertEquals(6, directFavorites.events.size)
+  }
+
+  @Test
+  fun matchWindowIncludesBoundaryAndFutureWhileRetainingOlderLiveMatches() {
+    val matches = listOf(
+      match("future", MatchStatus.UPCOMING, "2026-09-21T12:00:00Z", "event"),
+      match("live", MatchStatus.LIVE, "2026-09-20T10:00:00Z", "event"),
+      match("before-window", MatchStatus.COMPLETED, "2026-09-19T11:59:59.999Z", "event"),
+      match("boundary", MatchStatus.COMPLETED, "2026-09-19T12:00:00Z", "event"),
+      match("old-live", MatchStatus.LIVE, "2026-09-18T12:00:00Z", "event"),
+      match("stale-upcoming", MatchStatus.UPCOMING, "2026-09-18T12:00:00Z", "event"),
+      match("undated-upcoming", MatchStatus.UPCOMING, "TBD", "event"),
+      match("undated-completed", MatchStatus.COMPLETED, null, "event"),
+    )
+    val feed = buildHomeFeed(
+      DirectFavoriteSnapshot(matches = matches.map { DirectFavorite.Match(it.id, it.id, "") }),
+      matches,
+      emptyList(),
+      now = Instant.parse("2026-09-20T12:00:00Z"),
+    )
+
+    val expected = listOf("old-live", "boundary", "live", "future", "undated-upcoming")
+    assertEquals(expected, feed.personalizedMatches.map { it.id })
+    assertEquals(expected, feed.directFavorites.matches.map { it.id })
+  }
+
+  @Test
+  fun liveSelectionKeepsCompletedMatchBeforeItAndSelectsFirstLiveMatch() {
+    val feed = buildHomeFeed(
+      DirectFavoriteSnapshot(teams = listOf(DirectFavorite.Team("team-1", "Alpha", ""))),
+      listOf(
+        match("later-live", MatchStatus.LIVE, "2026-09-20T11:00:00Z", "event"),
+        match("future", MatchStatus.UPCOMING, "2026-09-21T12:00:00Z", "event"),
+        match("live", MatchStatus.LIVE, "2026-09-20T10:00:00Z", "event"),
+        match("completed", MatchStatus.COMPLETED, "2026-09-19T14:00:00Z", "event"),
+      ),
+      emptyList(),
+      now = Instant.parse("2026-09-20T12:00:00Z"),
+    )
+
+    assertEquals(listOf("completed", "live", "later-live", "future"), feed.personalizedMatches.map { it.id })
+    assertEquals(1, initialHomeMatchPage(feed.personalizedMatches))
+    assertEquals(0, initialHomeMatchPage(feed.personalizedMatches.filter { it.status != MatchStatus.LIVE }))
+    assertEquals(0, initialHomeMatchPage(emptyList()))
   }
 
   @Test
@@ -129,6 +179,7 @@ class HomeUseCasesTest {
       ),
       listOf(match("done", MatchStatus.COMPLETED, "2026-09-01T12:00:00Z", "done-event")),
       listOf(event("done-event", EventStatus.COMPLETED, "Sep 1—2")),
+      now = Instant.parse("2026-09-20T12:00:00Z"),
     )
     assertTrue(feed.hasDirectFavorites)
     assertTrue(feed.personalizedMatches.isEmpty())

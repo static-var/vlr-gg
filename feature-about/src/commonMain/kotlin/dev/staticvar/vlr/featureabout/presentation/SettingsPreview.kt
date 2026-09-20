@@ -22,19 +22,10 @@ import dev.staticvar.vlr.core.settings.ThemeFamily
 internal fun SettingsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     SettingsRoute(
-      isDark = variant == PrismVariant.Dark,
-      family = ThemeFamily.Brutalist,
-      catppuccinFlavour = CatppuccinFlavour.Frappe,
-      onModeSelected = {},
-      onFamilySelected = {},
-      onFlavourSelected = {},
-      mascot = MascotPreference.Lynx,
-      onMascotSelected = {},
-      mascotVisitFrequency = MascotVisitFrequency.Sometimes,
-      onMascotVisitFrequencySelected = {},
       autoCleanupEnabled = false,
       deletedCacheRecords = 0L,
       onAutoCleanupChanged = {},
+      onAppearance = {},
       onAbout = {},
       onWhatsNew = {},
     )
@@ -43,12 +34,12 @@ internal fun SettingsPreview(@PreviewParameter(PrismPreviewProvider::class) vari
 
 @PrismPreview
 @Composable
-internal fun CatppuccinSettingsPreview() {
+internal fun CatppuccinAppearancePreview() {
   PrismTheme(
     family = PrismThemeFamily.Catppuccin,
     catppuccinFlavour = PrismCatppuccinFlavour.Macchiato,
   ) {
-    SettingsRoute(
+    AppearanceRoute(
       isDark = true,
       family = ThemeFamily.Catppuccin,
       catppuccinFlavour = CatppuccinFlavour.Macchiato,
@@ -59,20 +50,15 @@ internal fun CatppuccinSettingsPreview() {
       onMascotSelected = {},
       mascotVisitFrequency = MascotVisitFrequency.Sometimes,
       onMascotVisitFrequencySelected = {},
-      autoCleanupEnabled = false,
-      deletedCacheRecords = 0L,
-      onAutoCleanupChanged = {},
-      onAbout = {},
-      onWhatsNew = {},
     )
   }
 }
 
 @PrismPreview
 @Composable
-internal fun ConsoleSettingsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+internal fun ConsoleAppearancePreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant, family = PrismThemeFamily.Console) {
-    SettingsRoute(
+    AppearanceRoute(
       isDark = variant == PrismVariant.Dark,
       family = ThemeFamily.Console,
       catppuccinFlavour = CatppuccinFlavour.Frappe,
@@ -83,11 +69,25 @@ internal fun ConsoleSettingsPreview(@PreviewParameter(PrismPreviewProvider::clas
       onMascotSelected = {},
       mascotVisitFrequency = MascotVisitFrequency.Sometimes,
       onMascotVisitFrequencySelected = {},
-      autoCleanupEnabled = false,
-      deletedCacheRecords = 0L,
-      onAutoCleanupChanged = {},
-      onAbout = {},
-      onWhatsNew = {},
+    )
+  }
+}
+
+@PrismPreview
+@Composable
+internal fun AppearancePreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+  PrismTheme(variant = variant) {
+    AppearanceRoute(
+      isDark = variant == PrismVariant.Dark,
+      family = ThemeFamily.Brutalist,
+      catppuccinFlavour = CatppuccinFlavour.Frappe,
+      onModeSelected = {},
+      onFamilySelected = {},
+      onFlavourSelected = {},
+      mascot = MascotPreference.Lynx,
+      onMascotSelected = {},
+      mascotVisitFrequency = MascotVisitFrequency.Sometimes,
+      onMascotVisitFrequencySelected = {},
     )
   }
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="round_history">라운드 기록</string>
+  <string name="round_result_description">%1$d라운드: %2$s 승리. 결과: %3$s. 점수: %4$s.</string>
+</resources>

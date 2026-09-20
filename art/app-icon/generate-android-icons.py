@@ -2,9 +2,12 @@
 """Generate Android launcher resources from the selected Match point SVG."""
 
 from pathlib import Path
+from io import BytesIO
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
+
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "art/app-icon/match-point.svg"
@@ -75,7 +78,9 @@ def main() -> None:
             svg = Path(temporary) / f"{name}.svg"
             svg.write_text(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><defs><clipPath id="launcher-mask">{mask}</clipPath></defs><g clip-path="url(#launcher-mask)">{inner}</g></svg>')
             for density, size in (("mdpi", 48), ("hdpi", 72), ("xhdpi", 96), ("xxhdpi", 144), ("xxxhdpi", 192)):
-                subprocess.run(["rsvg-convert", "-w", str(size), "-h", str(size), str(svg), "-o", str(RES / f"mipmap-{density}/{name}.png")], check=True)
+                rendered = subprocess.run(["rsvg-convert", "-w", str(size), "-h", str(size), str(svg)], check=True, capture_output=True)
+                with Image.open(BytesIO(rendered.stdout)) as image:
+                    image.save(RES / f"mipmap-{density}/{name}.webp", "WEBP", lossless=True, method=6)
     print("Generated Android adaptive, themed, legacy, and splash Match point assets.")
 
 

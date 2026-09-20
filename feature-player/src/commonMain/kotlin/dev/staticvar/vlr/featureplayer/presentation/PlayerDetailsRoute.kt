@@ -6,8 +6,10 @@ package dev.staticvar.vlr.featureplayer.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -18,8 +20,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
@@ -145,6 +151,7 @@ internal fun PlayerDetailsScreen(
       else ->
         PlayerDetailsLoadedContent(
           displayName = player.alias.ifBlank { player.name },
+          imageUrl = player.imageUrl,
           metadata = listOfNotNull(player.realName, player.country).joinToString(" • "),
           totalWinnings = player.totalWinnings,
           currentTeam = player.currentTeam,
@@ -213,6 +220,7 @@ private fun PlayerDetailsChrome(
 @Composable
 private fun PlayerDetailsLoadedContent(
   displayName: String,
+  imageUrl: String?,
   metadata: String,
   totalWinnings: Double,
   currentTeam: PlayerTeam?,
@@ -234,6 +242,7 @@ private fun PlayerDetailsLoadedContent(
     item {
       PlayerSummaryCard(
         displayName = displayName,
+        imageUrl = imageUrl,
         metadata = metadata,
         totalWinnings = totalWinnings,
         currentTeam = currentTeam,
@@ -251,6 +260,7 @@ private fun PlayerDetailsLoadedContent(
 @Composable
 private fun PlayerSummaryCard(
   displayName: String,
+  imageUrl: String?,
   metadata: String,
   totalWinnings: Double,
   currentTeam: PlayerTeam?,
@@ -260,34 +270,54 @@ private fun PlayerSummaryCard(
     modifier = Modifier.fillMaxWidth().cardMascotEligible(topClearance = Prism.dimens.spacingM),
     style = PrismCardStyle.Outlined,
   ) {
-    Text(
-      text = displayName,
-      style = Prism.typography.sectionTitle,
-      color = Prism.color.titleColor,
-    )
-    Text(
-      text = metadata,
-      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-      style = Prism.typography.bodySmall,
-      color = Prism.color.labelColor,
-    )
-    SpoilerScore(
-      text = stringResource(Res.string.player_winnings, totalWinnings.toString()),
-      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-      style = Prism.typography.label,
-      color = Prism.color.bodyColor,
-    )
-    currentTeam?.let { team ->
-      val teamId = team.id
-      Text(
-        text = team.name,
+    val hasPortrait = !imageUrl.isNullOrBlank()
+    Box(modifier = Modifier.fillMaxWidth()) {
+      Column(
         modifier =
-          Modifier.padding(top = Prism.dimens.spacingM).let { base ->
-            if (teamId != null) base.clickable { onTeamSelected(teamId) } else base
-          },
-        style = Prism.typography.cardTitle,
-        color = if (teamId != null) Prism.color.accent else Prism.color.titleColor,
-      )
+          Modifier.fillMaxWidth(if (hasPortrait) 0.65f else 1f)
+            .padding(end = if (hasPortrait) Prism.dimens.spacingS else 0.dp),
+      ) {
+        Text(
+          text = displayName,
+          style = Prism.typography.sectionTitle,
+          color = Prism.color.titleColor,
+        )
+        Text(
+          text = metadata,
+          modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+          style = Prism.typography.bodySmall,
+          color = Prism.color.labelColor,
+        )
+        SpoilerScore(
+          text = stringResource(Res.string.player_winnings, totalWinnings.toString()),
+          modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+          style = Prism.typography.label,
+          color = Prism.color.bodyColor,
+        )
+        currentTeam?.let { team ->
+          val teamId = team.id
+          Text(
+            text = team.name,
+            modifier =
+              Modifier.padding(top = Prism.dimens.spacingM).let { base ->
+                if (teamId != null) base.clickable { onTeamSelected(teamId) } else base
+              },
+            style = Prism.typography.cardTitle,
+            color = if (teamId != null) Prism.color.accent else Prism.color.titleColor,
+          )
+        }
+      }
+      if (hasPortrait) {
+        Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.CenterEnd) {
+          AsyncImage(
+            model = imageUrl,
+            contentDescription = displayName,
+            modifier = Modifier.fillMaxHeight().fillMaxWidth(0.35f),
+            contentScale = ContentScale.Fit,
+            alignment = Alignment.CenterEnd,
+          )
+        }
+      }
     }
   }
 }

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Match ticket</title>
+  <desc id="desc">A cream admission ticket with an inset violet star, three violet stub marks, a perforated seam and a curled paper corner on cobalt blue.</desc>
+  <defs>
+    <linearGradient id="cobalt" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#124BE8" /><stop offset="1" stop-color="#0034C4" />
+    </linearGradient>
+    <linearGradient id="paper" x1="220" y1="300" x2="760" y2="740" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF9E9" /><stop offset=".58" stop-color="#F7EDD6" /><stop offset="1" stop-color="#EADCBA" />
+    </linearGradient>
+    <linearGradient id="violet" x1="430" y1="363" x2="540" y2="673" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4420A4" /><stop offset=".2" stop-color="#612CDA" /><stop offset="1" stop-color="#7841EB" />
+    </linearGradient>
+    <linearGradient id="curl" x1="200" y1="637" x2="306" y2="739" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFBEF" /><stop offset=".34" stop-color="#E8D8B7" /><stop offset=".77" stop-color="#B69B71" /><stop offset="1" stop-color="#D9C6A0" />
+    </linearGradient>
+    <linearGradient id="hole" x1="650" y1="0" x2="667" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7F6B4E" /><stop offset=".6" stop-color="#B19A74" /><stop offset="1" stop-color="#D7C5A4" />
+    </linearGradient>
+  </defs>
+  <g id="foreground" transform="rotate(-10 512 512)">
+    <path fill="#00166F" opacity=".09" transform="translate(0 27)" d="M202 295H642Q649 295 655 302Q661 295 668 295H822Q844 295 844 317V452C786 452 786 558 844 558V707Q844 729 822 729H668Q661 729 655 722Q649 729 642 729H348Q245 729 180 649V558C238 558 238 452 180 452V317Q180 295 202 295Z" />
+    <path fill="#001569" opacity=".13" transform="translate(0 17)" d="M202 295H642Q649 295 655 302Q661 295 668 295H822Q844 295 844 317V452C786 452 786 558 844 558V707Q844 729 822 729H668Q661 729 655 722Q649 729 642 729H348Q245 729 180 649V558C238 558 238 452 180 452V317Q180 295 202 295Z" />
+    <path fill="#BCA681" transform="translate(0 6)" d="M202 295H642Q649 295 655 302Q661 295 668 295H822Q844 295 844 317V452C786 452 786 558 844 558V707Q844 729 822 729H668Q661 729 655 722Q649 729 642 729H348Q245 729 180 649V558C238 558 238 452 180 452V317Q180 295 202 295Z" />
+    <path fill="url(#paper)" d="M202 295H642Q649 295 655 302Q661 295 668 295H822Q844 295 844 317V452C786 452 786 558 844 558V707Q844 729 822 729H668Q661 729 655 722Q649 729 642 729H348Q245 729 180 649V558C238 558 238 452 180 452V317Q180 295 202 295Z" />
+    <path fill="none" stroke="#FFFDF4" stroke-width="4" stroke-linecap="round" opacity=".85" d="M183 423V318Q183 298 203 298H641M669 298H821Q841 298 841 318V440" />
+    <path fill="url(#violet)" stroke="#CFBDA2" stroke-width="7" stroke-linejoin="round" paint-order="stroke" d="M445 370Q448 361 451 370L484 471Q486 477 492 477H599Q609 477 601 484L515 547Q510 551 512 557L545 658Q548 668 539 662L452 599Q448 596 444 599L357 662Q348 668 351 658L384 557Q386 551 381 547L295 484Q287 477 297 477H404Q410 477 412 471Z" />
+    <path fill="none" stroke="#361470" stroke-width="4" stroke-linecap="round" opacity=".65" d="M298 479H404Q412 479 414 472L448 371M492 479H599" />
+    <path fill="url(#violet)" stroke="#D0BE9E" stroke-width="6" paint-order="stroke" d="M704 426H780Q792 426 792 438V443Q792 455 780 455H704Q692 455 692 443V438Q692 426 704 426ZM704 490H780Q792 490 792 502V507Q792 519 780 519H704Q692 519 692 507V502Q692 490 704 490ZM704 554H780Q792 554 792 566V571Q792 583 780 583H704Q692 583 692 571V566Q692 554 704 554Z" />
+    <path fill="none" stroke="#3C1C82" stroke-width="3" stroke-linecap="round" opacity=".6" d="M703 428H780M703 492H780M703 556H780" />
+    <path fill="none" stroke="#E1D0AF" stroke-width="22" stroke-linecap="round" opacity=".6" d="M655 323V338M655 372V387M655 421V436M655 470V485M655 519V534M655 568V583M655 617V632M655 666V681" />
+    <path fill="none" stroke="url(#hole)" stroke-width="12" stroke-linecap="round" d="M655 323V338M655 372V387M655 421V436M655 470V485M655 519V534M655 568V583M655 617V632M655 666V681" />
+    <path fill="#A78C62" opacity=".18" d="M181 614C206 647 249 632 263 638C280 649 260 713 348 729C254 731 205 678 181 649Z" />
+    <path fill="url(#curl)" d="M180 605C180 637 220 640 256 634Q270 632 270 648C270 696 289 719 348 729C282 733 220 688 189 654Q180 644 180 628Z" />
+    <path fill="none" stroke="#FFFBEE" stroke-width="4" stroke-linecap="round" d="M182 612C187 641 229 637 255 636Q268 634 268 649C268 693 286 716 323 725" />
+  </g>
+</svg>

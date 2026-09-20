@@ -202,6 +202,31 @@ final class FavoriteSearchTests: XCTestCase {
         }
     }
 
+    func testFavoriteQueryMatchesReorderedWordsAndIgnoresBlankQueries() {
+        let team = SearchFavorite(id: "team:12", kind: .team, sourceId: "12", title: "Team Líquid")
+        XCTAssertTrue(team.matches("liquid TEAM"))
+        XCTAssertTrue(team.matches("  liquid\nteam  "))
+        XCTAssertTrue(team.matches("LÍQ"))
+        XCTAssertFalse(team.matches("liquid paper"))
+        XCTAssertFalse(team.matches("   "))
+        XCTAssertFalse(team.matches(""))
+        let event = SearchFavorite(id: "event:1", kind: .event, sourceId: "1", title: "Champions 2026")
+        XCTAssertTrue(event.matches("2026 \(SearchFavorite.Kind.event.localizedName)"))
+        XCTAssertFalse(event.matches(SearchFavorite.Kind.player.localizedName))
+    }
+
+    func testFavoriteMetadataContainsSearchableTextAndCuratedFlag() {
+        let favorite = SearchFavorite(id: "team:12", kind: .team, sourceId: "12", title: "Team Liquid")
+        let attributes = favorite.attributes()
+        XCTAssertEqual(attributes.title, favorite.title)
+        XCTAssertEqual(attributes.displayName, favorite.title)
+        XCTAssertEqual(attributes.userCurated, true)
+        XCTAssertTrue(attributes.textContent?.contains(favorite.title) == true)
+        XCTAssertTrue(attributes.textContent?.contains(SearchFavorite.Kind.team.localizedName) == true)
+        XCTAssertTrue(attributes.keywords?.contains(favorite.title) == true)
+        XCTAssertEqual(attributes.url, favorite.url)
+    }
+
     func testEveryKindHasDistinctIdentityAndDestination() {
         let records = [SearchFavorite.Kind.team, .event, .match, .player].map {
             SearchFavorite(id: "\($0.rawValue):12", kind: $0, sourceId: "12", title: "Favorite")

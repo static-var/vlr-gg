@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E8A5403574A3EA968A57C900 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0CF0BA8A92206DCBD9D678DD /* LaunchScreen.storyboard */; };
 		099124514C9782698F2C797B /* VLRWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */; };
 		15D0070A8332C69488B9E71D /* VLRWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */; };
 		1613C021234E871D6799F0C5 /* VLRWidgetContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */; };
@@ -44,6 +45,11 @@
 		E6E22E7564576CD396443760 /* AppShortcuts.strings in Resources */ = {isa = PBXBuildFile; fileRef = DED174F20CCA6C76C0437524 /* AppShortcuts.strings */; };
 		E723B4A1BB6FF42A310E01F1 /* VLRWidgetContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */; };
 		FC50F0393FF11D14E14CB722 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 672A36C30B70C0E9C6B1F76E /* Localizable.xcstrings */; };
+		926672BC76D70AE494AB334F /* AppIconAmethyst.icon in Resources */ = {isa = PBXBuildFile; fileRef = 0BB1981F5112C6B7BAF59688 /* AppIconAmethyst.icon */; };
+		45499146A8CF227628BDFDA3 /* AppIconTicket.icon in Resources */ = {isa = PBXBuildFile; fileRef = BA4B618CEB799D4C32090E7B /* AppIconTicket.icon */; };
+		F86CA3BDA821C7FF9917AD4E /* AppIconArcade.icon in Resources */ = {isa = PBXBuildFile; fileRef = 181EA7A14DE006DAFECA52A4 /* AppIconArcade.icon */; };
+		3CFDE1A084C11436F543C899 /* AppIconMidnight.icon in Resources */ = {isa = PBXBuildFile; fileRef = 080531FD906CA85C0F9C25B4 /* AppIconMidnight.icon */; };
+		194731908BE6C0C486E6F1AD /* AppIconMint.icon in Resources */ = {isa = PBXBuildFile; fileRef = 0760F40680698C4EE84BE177 /* AppIconMint.icon */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +84,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0CF0BA8A92206DCBD9D678DD /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		07ED39F464598B211EB46A3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingMatchesWidget.swift; sourceTree = "<group>"; };
 		0D08A94B4CBAF132F954CD64 /* VLRWidgetTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = VLRWidgetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -121,6 +128,11 @@
 		F5866EB8C9496EA91398136E /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/AppShortcuts.strings"; sourceTree = "<group>"; };
 		F95B8B8B53351C500C2EACA2 /* GeneratedBuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedBuildConfig.swift; sourceTree = "<group>"; };
 		FE064572C370901341B90A81 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
+		0BB1981F5112C6B7BAF59688 /* AppIconAmethyst.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIconAmethyst.icon; sourceTree = "<group>"; };
+		BA4B618CEB799D4C32090E7B /* AppIconTicket.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIconTicket.icon; sourceTree = "<group>"; };
+		181EA7A14DE006DAFECA52A4 /* AppIconArcade.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIconArcade.icon; sourceTree = "<group>"; };
+		080531FD906CA85C0F9C25B4 /* AppIconMidnight.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIconMidnight.icon; sourceTree = "<group>"; };
+		0760F40680698C4EE84BE177 /* AppIconMint.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIconMint.icon; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,11 +159,17 @@
 		1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				0BB1981F5112C6B7BAF59688 /* AppIconAmethyst.icon */,
+				BA4B618CEB799D4C32090E7B /* AppIconTicket.icon */,
+				0760F40680698C4EE84BE177 /* AppIconMint.icon */,
+				080531FD906CA85C0F9C25B4 /* AppIconMidnight.icon */,
+				181EA7A14DE006DAFECA52A4 /* AppIconArcade.icon */,
 				F543015C899423D4B01CEB2E /* Assets.xcassets */,
 				CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
 				5FFB84F263D52FFC7C65EE64 /* FavoriteSearch.swift */,
 				86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */,
 				C117AD187833E2513BD2F553 /* Info.plist */,
+				0CF0BA8A92206DCBD9D678DD /* LaunchScreen.storyboard */,
 				C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */,
 				668CECA83ACC03A83C85A623 /* iOSApp.swift */,
 				6A8D1EB5C724332B1C0F728D /* Localizable.xcstrings */,
@@ -408,7 +426,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				E6E22E7564576CD396443760 /* AppShortcuts.strings in Resources */,
+				926672BC76D70AE494AB334F /* AppIconAmethyst.icon in Resources */,
+				45499146A8CF227628BDFDA3 /* AppIconTicket.icon in Resources */,
+				194731908BE6C0C486E6F1AD /* AppIconMint.icon in Resources */,
+				3CFDE1A084C11436F543C899 /* AppIconMidnight.icon in Resources */,
+				F86CA3BDA821C7FF9917AD4E /* AppIconArcade.icon in Resources */,
 				22EA1CB33A17DCC6FC82406D /* Assets.xcassets in Resources */,
+				E8A5403574A3EA968A57C900 /* LaunchScreen.storyboard in Resources */,
 				4361743AA269158A01337511 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -854,6 +878,13 @@
 		9221A1FDC06803E8A2FC6E61 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
+					AppIconAmethyst,
+					AppIconTicket,
+					AppIconMint,
+					AppIconMidnight,
+					AppIconArcade,
+				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -870,6 +901,13 @@
 		AF835BFF1220CA5AB5B867E4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
+					AppIconAmethyst,
+					AppIconTicket,
+					AppIconMint,
+					AppIconMidnight,
+					AppIconArcade,
+				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

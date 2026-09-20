@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="round_history">История раундов</string>
+  <string name="round_result_description">Раунд %1$d: победа команды %2$s. Результат: %3$s. Счёт: %4$s.</string>
+</resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <group android:translateX="18" android:translateY="18">
+        <group android:scaleX="0.0703125" android:scaleY="0.0703125">
+            <group android:translateX="-0" android:translateY="-0">
+                <group android:scaleX="16" android:scaleY="16">
+                    <group>
+                        <path android:pathData="M14 14H50V18H54V50H50V54H18V50H14Z" android:fillColor="#17122D" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                        <path android:pathData="M14 12H48V16H52V48H48V52H16V48H12V16H14Z" android:fillColor="#6D395F" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                        <path android:pathData="M14 12H48V16H50V44H46V48H14V44H10V16H14Z" android:fillColor="#FF9DAA" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                        <path android:pathData="M46 16H50V44H46V48H14V44H46Z" android:fillColor="#E5729F" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                        <path android:pathData="M16 18H44V22H46V38H42V42H16V38H14V22H16Z" android:fillColor="#14182F" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                        <path android:pathData="M16 18H44V20H18V22H16V38H14V22H16Z" android:fillColor="#28233C" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                        <path android:pathData="M20 24H26V28H28V32H32V38H26V34H24V30H22V28H20Z" android:fillColor="#67E8DC" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                        <path android:pathData="M38 24H42V28H40V32H38V34H36V38H30V32H34V28H36V24Z" android:fillColor="#FFF2CC" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                        <path android:pathData="M16 44H22V46H16Z" android:fillColor="#FFF2CC" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                        <path android:pathData="M26 44H32V46H26ZM36 44H42V46H36Z" android:fillColor="#B879AE" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                        <path android:pathData="M40 14H44V16H40Z" android:fillColor="#67E8DC" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                        <path android:pathData="M16 14H24V16H16Z" android:fillColor="#BF719B" android:fillAlpha="1" android:strokeAlpha="1" android:fillType="nonZero" />
+                    </group>
+                </group>
+            </group>
+        </group>
+    </group>
+</vector>

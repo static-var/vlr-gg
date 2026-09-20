@@ -76,20 +76,20 @@ internal fun MatchDetailOptionsSheet(
           onCheckedChange = { onPreferencesChange(preferences.copy(showBreakdown = it)) },
         )
       }
-      if (match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()) {
-        MatchSectionOption(
-          title = stringResource(Res.string.media),
-          description = stringResource(Res.string.streams_and_vods),
-          checked = preferences.showMedia,
-          onCheckedChange = { onPreferencesChange(preferences.copy(showMedia = it)) },
-        )
-      }
       if (match.head2head.isNotEmpty()) {
         MatchSectionOption(
           title = stringResource(Res.string.head_to_head),
           description = stringResource(Res.string.previous_meetings),
           checked = preferences.showHeadToHead,
           onCheckedChange = { onPreferencesChange(preferences.copy(showHeadToHead = it)) },
+        )
+      }
+      if (match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()) {
+        MatchSectionOption(
+          title = stringResource(Res.string.media),
+          description = stringResource(Res.string.streams_and_vods),
+          checked = preferences.showMedia,
+          onCheckedChange = { onPreferencesChange(preferences.copy(showMedia = it)) },
         )
       }
     }

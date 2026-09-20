@@ -16,30 +16,35 @@ import dev.staticvar.vlr.featurehome.presentation.HomeFeed
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
 public class ObserveHomeFeedUseCase(
   private val favoritesRepository: FavoritesRepository,
   private val matchRepository: MatchRepository,
   private val eventRepository: EventRepository,
+  private val clock: Clock = Clock.System,
 ) {
   public operator fun invoke(): Flow<HomeFeed> = combine(
     favoritesRepository.observeDirectFavorites(),
     matchRepository.getMatches(),
     eventRepository.getEvents(),
-    ::buildHomeFeed,
-  )
+  ) { favorites, matches, events ->
+    buildHomeFeed(favorites, matches, events, clock.now())
+  }
 }
 
 internal fun buildHomeFeed(
   directFavorites: DirectFavoriteSnapshot,
   matches: List<MatchPreview>,
   events: List<EventPreview>,
+  now: Instant = Clock.System.now(),
 ): HomeFeed {
+  val earliestMatchTime = (now - 24.hours).toEpochMilliseconds()
   val relatedMatches = matches.filter { it.favoriteReasons.isNotEmpty() }
   val personalizedMatches = relatedMatches
     .asSequence()
-    .filter { it.isCurrent }
+    .filter { it.isVisibleSince(earliestMatchTime) }
     .distinctBy(MatchPreview::id)
     .sortedWith(homeMatchComparator)
     .toList()
@@ -63,7 +68,7 @@ internal fun buildHomeFeed(
   return HomeFeed(
     hasDirectFavorites = directFavorites.hasAny,
     directFavorites = directFavorites.copy(
-      matches = matches.filter { it.isCurrent }.distinctBy { it.id }
+      matches = matches.filter { it.isVisibleSince(earliestMatchTime) }.distinctBy { it.id }
         .sortedWith(homeMatchComparator).mapNotNull { savedMatches[it.id] },
       events = events.filter { it.isCurrent }.distinctBy { it.id }
         .sortedWith(homeEventComparator).mapNotNull { savedEvents[it.id] },
@@ -73,8 +78,11 @@ internal fun buildHomeFeed(
   )
 }
 
-private val MatchPreview.isCurrent: Boolean
-  get() = status == MatchStatus.LIVE || status == MatchStatus.UPCOMING
+private fun MatchPreview.isVisibleSince(earliestTime: Long): Boolean {
+  if (status == MatchStatus.LIVE) return true
+  val startTime = time.asEpochMillis() ?: return status == MatchStatus.UPCOMING
+  return startTime >= earliestTime
+}
 
 private val EventPreview.isCurrent: Boolean
   get() = status == EventStatus.ONGOING || status == EventStatus.UPCOMING

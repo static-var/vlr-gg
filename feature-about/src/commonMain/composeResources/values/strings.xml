@@ -7,6 +7,15 @@
     <string name="app_design_development_staticvar">App design &amp; development · staticvar</string>
     <string name="app_source_code">App source code</string>
     <string name="appearance">Appearance</string>
+    <string name="app_icon">App icon</string>
+    <string name="app_icon_choose_description">Choose how Val Esports looks on your Home Screen.</string>
+    <string name="app_icon_default">Default</string>
+    <string name="app_icon_amethyst">Diamond V</string>
+    <string name="app_icon_ticket">Blue ticket</string>
+    <string name="app_icon_applying">Applying…</string>
+    <string name="app_icon_selected">Selected</string>
+    <string name="app_icon_not_selected">Not selected</string>
+    <string name="app_icon_update_failed">Couldn't change the app icon. Try again.</string>
     <string name="auto_cleanup">Auto cleanup</string>
     <string name="backend_developer">Backend developer</string>
     <string name="akhil_narang">Akhil Narang</string>
@@ -95,4 +104,7 @@
     <string name="release_logos_description">Team and event logos keep their original colors, including in rankings. Backgrounds adjust for contrast so logos stay easy to see in light and dark themes.</string>
     <string name="release_connectivity_title">More reliable startup</string>
     <string name="release_connectivity_description">Connection checks at startup are more reliable, helping the app recognize when you are online.</string>
+    <string name="app_icon_arcade">Arcade</string>
+    <string name="app_icon_midnight">Midnight</string>
+    <string name="app_icon_mint">Mint</string>
 </resources>

@@ -6,9 +6,11 @@ package dev.staticvar.vlr.featureteam.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -20,7 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
@@ -162,6 +167,7 @@ internal fun TeamDetailsScreen(
       else ->
         TeamDetailsLoadedContent(
           name = team.name,
+          logoUrl = team.logoUrl,
           metadata =
             listOfNotNull(
                 team.tag.takeIf(String::isNotBlank),
@@ -242,6 +248,7 @@ private fun TeamDetailsChrome(
 @Composable
 private fun TeamDetailsLoadedContent(
   name: String,
+  logoUrl: String,
   metadata: String,
   rank: Int,
   roster: List<TeamPlayer>,
@@ -261,7 +268,7 @@ private fun TeamDetailsLoadedContent(
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     item(key = "summary") {
-      TeamSummaryCard(name = name, metadata = metadata, rank = rank)
+      TeamSummaryCard(name = name, logoUrl = logoUrl, metadata = metadata, rank = rank)
     }
     teamRosterItems(roster = roster, onPlayerSelected = onPlayerSelected)
     item(key = "match-tabs") {
@@ -307,21 +314,41 @@ private fun TeamDetailsLoadedContent(
 }
 
 @Composable
-private fun TeamSummaryCard(name: String, metadata: String, rank: Int) {
+private fun TeamSummaryCard(name: String, logoUrl: String, metadata: String, rank: Int) {
   PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
-    Text(text = name, style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
-    Text(
-      text = metadata,
-      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-      style = Prism.typography.bodySmall,
-      color = Prism.color.labelColor,
-    )
-    SpoilerScore(
-      text = if (rank > 0) stringResource(Res.string.team_rank, rank) else stringResource(Res.string.unranked),
-      modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-      style = Prism.typography.label,
-      color = Prism.color.bodyColor,
-    )
+    val hasLogo = logoUrl.isNotBlank()
+    Box(modifier = Modifier.fillMaxWidth()) {
+      Column(
+        modifier =
+          Modifier.fillMaxWidth(if (hasLogo) 0.65f else 1f)
+            .padding(end = if (hasLogo) Prism.dimens.spacingS else 0.dp),
+      ) {
+        Text(text = name, style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
+        Text(
+          text = metadata,
+          modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+          style = Prism.typography.bodySmall,
+          color = Prism.color.labelColor,
+        )
+        SpoilerScore(
+          text = if (rank > 0) stringResource(Res.string.team_rank, rank) else stringResource(Res.string.unranked),
+          modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+          style = Prism.typography.label,
+          color = Prism.color.bodyColor,
+        )
+      }
+      if (hasLogo) {
+        Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.CenterEnd) {
+          AsyncImage(
+            model = logoUrl,
+            contentDescription = name,
+            modifier = Modifier.fillMaxHeight().fillMaxWidth(0.35f),
+            contentScale = ContentScale.Fit,
+            alignment = Alignment.CenterEnd,
+          )
+        }
+      }
+    }
   }
 }
 

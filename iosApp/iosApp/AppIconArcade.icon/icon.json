@@ -1,0 +1,31 @@
+{
+  "fill-specializations": [
+    {
+      "value": {
+        "solid": "extended-srgb:0.22,0.14,0.40,1"
+      }
+    },
+    {
+      "appearance": "dark",
+      "value": {
+        "solid": "extended-srgb:0.067,0.039,0.125,1"
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "Artwork",
+      "layers": [
+        {
+          "name": "Foreground",
+          "image-name": "foreground.svg"
+        }
+      ]
+    }
+  ],
+  "supported-platforms": {
+    "squares": [
+      "iOS"
+    ]
+  }
+}
