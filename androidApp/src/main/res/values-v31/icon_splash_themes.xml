@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.VLR.Starting.Default" parent="Theme.VLR.Starting">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+    </style>
+    <style name="Theme.VLR.Starting.Amethyst" parent="Theme.VLR.Starting">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_amethyst_foreground</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_amethyst_foreground</item>
+    </style>
+    <style name="Theme.VLR.Starting.Ticket" parent="Theme.VLR.Starting">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_ticket_foreground</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_ticket_foreground</item>
+    </style>
+    <style name="Theme.VLR.Starting.Arcade" parent="Theme.VLR.Starting">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_arcade_foreground</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_arcade_foreground</item>
+    </style>
+    <style name="Theme.VLR.Starting.Midnight" parent="Theme.VLR.Starting">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_midnight_foreground</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_midnight_foreground</item>
+    </style>
+    <style name="Theme.VLR.Starting.Mint" parent="Theme.VLR.Starting">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_mint_foreground</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_mint_foreground</item>
+    </style>
+</resources>

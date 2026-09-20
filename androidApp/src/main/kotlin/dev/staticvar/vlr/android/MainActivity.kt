@@ -12,6 +12,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import dev.staticvar.vlr.sharedui.icon.syncLauncherSplashTheme
 import dev.staticvar.vlr.widget.ScoreWidget
 import androidx.glance.appwidget.updateAll
 import dev.staticvar.vlr.android.widget.LegacyWidgetRefreshScheduler
@@ -31,6 +32,8 @@ class MainActivity : ComponentActivity() {
   private val deepLinkHandler = AppDeepLinkHandler()
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    val splashTheme = syncLauncherSplashTheme()
+    if (splashTheme != 0) setTheme(splashTheme)
     installSplashScreen()
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()

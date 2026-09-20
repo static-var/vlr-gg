@@ -55,6 +55,7 @@
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:targetActivity=".MainActivity">
+            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Default" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -67,6 +68,7 @@
             android:icon="@mipmap/ic_launcher_amethyst"
             android:roundIcon="@mipmap/ic_launcher_amethyst_round"
             android:targetActivity=".MainActivity">
+            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Amethyst" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -79,6 +81,7 @@
             android:icon="@mipmap/ic_launcher_ticket"
             android:roundIcon="@mipmap/ic_launcher_ticket_round"
             android:targetActivity=".MainActivity">
+            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Ticket" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -92,6 +95,7 @@
             android:icon="@mipmap/ic_launcher_arcade"
             android:roundIcon="@mipmap/ic_launcher_arcade_round"
             android:targetActivity=".MainActivity">
+            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Arcade" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -104,6 +108,7 @@
             android:icon="@mipmap/ic_launcher_midnight"
             android:roundIcon="@mipmap/ic_launcher_midnight_round"
             android:targetActivity=".MainActivity">
+            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Midnight" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -116,6 +121,7 @@
             android:icon="@mipmap/ic_launcher_mint"
             android:roundIcon="@mipmap/ic_launcher_mint_round"
             android:targetActivity=".MainActivity">
+            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Mint" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
