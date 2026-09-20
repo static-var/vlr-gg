@@ -112,10 +112,8 @@
     <string name="notification_preferences_description">Actualités en direct de vos favoris</string>
     <string name="live_activities">Activités en direct</string>
     <string name="live_activities_description">Suivez les scores en direct sur votre écran verrouillé et dans la Dynamic Island.</string>
-    <string name="live_activity_favorite_matches">Matchs favoris</string>
-    <string name="live_activity_favorite_matches_description">Suivez les matchs que vous avez ajoutés à vos favoris.</string>
-    <string name="live_activity_favorite_events">Événements favoris</string>
-    <string name="live_activity_favorite_events_description">Suivez les matchs des événements que vous avez ajoutés à vos favoris.</string>
+    <string name="live_activity_favorites">Matchs et événements favoris</string>
+    <string name="live_activity_favorites_description">Suivez vos matchs favoris, y compris ceux de vos événements favoris.</string>
     <string name="live_activities_disabled">Les activités en direct sont désactivées dans les réglages du système.</string>
     <string name="notification_access_denied">Les notifications sont désactivées. Vous pouvez les autoriser dans les réglages du système. Les activités en direct ont un réglage distinct.</string>
     <string name="notification_access_error">Impossible de vérifier ou de demander l'autorisation d'envoyer des notifications. Réessayez.</string>

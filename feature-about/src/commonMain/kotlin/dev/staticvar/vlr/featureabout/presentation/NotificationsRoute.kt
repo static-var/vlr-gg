@@ -27,18 +27,15 @@ import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.selection.PrismSwitch
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.notifications.NotificationAuthorization
-import dev.staticvar.vlr.core.settings.FavoriteNotificationTarget
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationSettingsController
 import org.jetbrains.compose.resources.stringResource
 import vlr.feature_about.generated.resources.Res
 import vlr.feature_about.generated.resources.allow_notifications
 import vlr.feature_about.generated.resources.live_activities
+import vlr.feature_about.generated.resources.live_activity_favorites
+import vlr.feature_about.generated.resources.live_activity_favorites_description
 import vlr.feature_about.generated.resources.live_activities_description
 import vlr.feature_about.generated.resources.live_activities_disabled
-import vlr.feature_about.generated.resources.live_activity_favorite_events
-import vlr.feature_about.generated.resources.live_activity_favorite_events_description
-import vlr.feature_about.generated.resources.live_activity_favorite_matches
-import vlr.feature_about.generated.resources.live_activity_favorite_matches_description
 import vlr.feature_about.generated.resources.live_activity_permissions_description
 import vlr.feature_about.generated.resources.live_match_updates
 import vlr.feature_about.generated.resources.live_match_updates_description
@@ -62,7 +59,6 @@ public fun NotificationsRoute(
     onPauseOrDispose { }
   }
   val hasLiveActivities = access.activitiesEnabled != null
-  val hasSelection = preferences.favoriteMatches || preferences.favoriteEvents
   Column(modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM)) {
     PrismScreenTitleBar(
       title = stringResource(Res.string.notifications),
@@ -84,21 +80,14 @@ public fun NotificationsRoute(
         color = Prism.color.bodyColor,
       )
       NotificationPreferenceCard(
-        title = stringResource(Res.string.live_activity_favorite_matches),
-        description = stringResource(Res.string.live_activity_favorite_matches_description),
-        checked = preferences.favoriteMatches,
+        title = stringResource(Res.string.live_activity_favorites),
+        description = stringResource(Res.string.live_activity_favorites_description),
+        checked = preferences.enabled,
         enabled = !access.requesting,
-        onChange = { controller.setEnabled(FavoriteNotificationTarget.Matches, it) },
-      )
-      NotificationPreferenceCard(
-        title = stringResource(Res.string.live_activity_favorite_events),
-        description = stringResource(Res.string.live_activity_favorite_events_description),
-        checked = preferences.favoriteEvents,
-        enabled = !access.requesting,
-        onChange = { controller.setEnabled(FavoriteNotificationTarget.Events, it) },
+        onChange = controller::setEnabled,
       )
       Text(stringResource(Res.string.live_activity_permissions_description), style = Prism.typography.caption, color = Prism.color.captionColor)
-      if (hasSelection) {
+      if (preferences.enabled) {
         if (access.activitiesEnabled == false) {
           PermissionMessage(stringResource(Res.string.live_activities_disabled))
         }

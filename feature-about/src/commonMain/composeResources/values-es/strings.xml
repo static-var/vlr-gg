@@ -112,10 +112,8 @@
     <string name="notification_preferences_description">Actualizaciones en directo de tus favoritos</string>
     <string name="live_activities">Actividades en directo</string>
     <string name="live_activities_description">Sigue los resultados en directo en la pantalla de bloqueo y en la Dynamic Island.</string>
-    <string name="live_activity_favorite_matches">Partidas favoritas</string>
-    <string name="live_activity_favorite_matches_description">Sigue las partidas que has guardado como favoritas.</string>
-    <string name="live_activity_favorite_events">Eventos favoritos</string>
-    <string name="live_activity_favorite_events_description">Sigue las partidas de los eventos que has guardado como favoritos.</string>
+    <string name="live_activity_favorites">Partidas y eventos favoritos</string>
+    <string name="live_activity_favorites_description">Sigue tus partidas favoritas, incluidas las partidas de tus eventos favoritos.</string>
     <string name="live_activities_disabled">Las actividades en directo están desactivadas en los ajustes del sistema.</string>
     <string name="notification_access_denied">Las notificaciones están desactivadas. Puedes permitirlas en los ajustes del sistema. Las actividades en directo tienen un ajuste independiente.</string>
     <string name="notification_access_error">No se pudo comprobar ni solicitar el permiso para enviar notificaciones. Vuelve a intentarlo.</string>

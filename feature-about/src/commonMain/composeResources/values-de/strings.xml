@@ -111,10 +111,8 @@
     <string name="notification_preferences_description">Live-Updates für deine Favoriten</string>
     <string name="live_activities">Live-Aktivitäten</string>
     <string name="live_activities_description">Verfolge Live-Ergebnisse auf deinem Sperrbildschirm und in der Dynamic Island.</string>
-    <string name="live_activity_favorite_matches">Favorisierte Spiele</string>
-    <string name="live_activity_favorite_matches_description">Verfolge Spiele, die du als Favoriten gespeichert hast.</string>
-    <string name="live_activity_favorite_events">Favorisierte Events</string>
-    <string name="live_activity_favorite_events_description">Verfolge Spiele in Events, die du als Favoriten gespeichert hast.</string>
+    <string name="live_activity_favorites">Favorisierte Spiele und Events</string>
+    <string name="live_activity_favorites_description">Verfolge deine favorisierten Spiele, einschließlich der Spiele aus favorisierten Events.</string>
     <string name="live_activities_disabled">Live-Aktivitäten sind in den Systemeinstellungen deaktiviert.</string>
     <string name="notification_access_denied">Mitteilungen sind deaktiviert. Du kannst sie in den Systemeinstellungen erlauben. Live-Aktivitäten haben eine eigene Einstellung.</string>
     <string name="notification_access_error">Die Mitteilungsberechtigung konnte nicht geprüft oder angefordert werden. Versuche es erneut.</string>

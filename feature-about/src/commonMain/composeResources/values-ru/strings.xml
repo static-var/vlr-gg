@@ -113,10 +113,8 @@
     <string name="notification_preferences_description">Обновления избранного в реальном времени</string>
     <string name="live_activities">Эфир активности</string>
     <string name="live_activities_description">Следите за счётом в реальном времени на экране блокировки и в Dynamic Island.</string>
-    <string name="live_activity_favorite_matches">Избранные матчи</string>
-    <string name="live_activity_favorite_matches_description">Следите за матчами, которые вы добавили в избранное.</string>
-    <string name="live_activity_favorite_events">Избранные турниры</string>
-    <string name="live_activity_favorite_events_description">Следите за матчами турниров, которые вы добавили в избранное.</string>
+    <string name="live_activity_favorites">Избранные матчи и турниры</string>
+    <string name="live_activity_favorites_description">Следите за избранными матчами, включая матчи избранных турниров.</string>
     <string name="live_activities_disabled">Эфир активности отключён в системных настройках.</string>
     <string name="notification_access_denied">Уведомления отключены. Вы можете разрешить их в системных настройках. У эфира активности есть отдельная настройка.</string>
     <string name="notification_access_error">Не удалось проверить или запросить разрешение на уведомления. Попробуйте ещё раз.</string>

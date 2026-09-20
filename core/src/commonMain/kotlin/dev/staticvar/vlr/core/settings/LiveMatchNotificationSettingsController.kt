@@ -33,8 +33,8 @@ public class LiveMatchNotificationSettingsController(
     }
   }
 
-  public fun setEnabled(favorite: FavoriteNotificationTarget, enabled: Boolean) {
-    repository.setEnabled(favorite, enabled)
+  public fun setEnabled(enabled: Boolean) {
+    repository.setEnabled(enabled)
     if (enabled) {
       when (access.value.notifications) {
         null, NotificationAuthorization.NotDetermined, NotificationAuthorization.Error -> requestNotifications()

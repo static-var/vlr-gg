@@ -14,14 +14,14 @@ import kotlin.test.assertTrue
 
 class LiveMatchNotificationSettingsTest {
   @Test
-  fun preferencesDefaultOffAndRestoreIndependently() {
+  fun preferenceDefaultsOffAndRestoresEnabledAndDisabled() {
     val storage = MapSettings()
     val repository = LiveMatchNotificationPreferencesRepository(storage)
     assertEquals(LiveMatchNotificationPreferences(), repository.preferences.value)
-    repository.setEnabled(FavoriteNotificationTarget.Matches, true)
-    repository.setEnabled(FavoriteNotificationTarget.Events, true)
-    repository.setEnabled(FavoriteNotificationTarget.Matches, false)
-    assertEquals(LiveMatchNotificationPreferences(false, true), LiveMatchNotificationPreferencesRepository(storage).preferences.value)
+    repository.setEnabled(true)
+    assertTrue(LiveMatchNotificationPreferencesRepository(storage).preferences.value.enabled)
+    repository.setEnabled(false)
+    assertFalse(LiveMatchNotificationPreferencesRepository(storage).preferences.value.enabled)
   }
 
   @Test
@@ -30,15 +30,15 @@ class LiveMatchNotificationSettingsTest {
     val controller = LiveMatchNotificationSettingsController(LiveMatchNotificationPreferencesRepository(MapSettings()), provider)
     controller.refresh()
     provider.readResult!!(NotificationAuthorization.NotDetermined)
-    controller.setEnabled(FavoriteNotificationTarget.Matches, true)
-    controller.setEnabled(FavoriteNotificationTarget.Events, true)
+    controller.setEnabled(true)
+    controller.setEnabled(true)
     assertEquals(1, provider.requests)
     assertTrue(controller.access.value.requesting)
     provider.requestResult!!(NotificationAuthorization.Denied)
-    assertEquals(LiveMatchNotificationPreferences(true, true), controller.preferences.value)
+    assertEquals(LiveMatchNotificationPreferences(true), controller.preferences.value)
     assertFalse(controller.access.value.requesting)
-    controller.setEnabled(FavoriteNotificationTarget.Events, false)
-    controller.setEnabled(FavoriteNotificationTarget.Events, true)
+    controller.setEnabled(false)
+    controller.setEnabled(true)
     assertEquals(1, provider.requests)
   }
 
@@ -48,7 +48,7 @@ class LiveMatchNotificationSettingsTest {
     val controller = LiveMatchNotificationSettingsController(LiveMatchNotificationPreferencesRepository(MapSettings()), provider)
     controller.refresh()
     val staleRead = provider.readResult!!
-    controller.setEnabled(FavoriteNotificationTarget.Matches, true)
+    controller.setEnabled(true)
     provider.requestResult!!(NotificationAuthorization.Authorized)
     staleRead(NotificationAuthorization.NotDetermined)
     assertEquals(NotificationAuthorization.Authorized, controller.access.value.notifications)
@@ -57,14 +57,14 @@ class LiveMatchNotificationSettingsTest {
     provider.readResult!!(NotificationAuthorization.Denied)
     assertEquals(false, controller.access.value.activitiesEnabled)
     assertEquals(NotificationAuthorization.Denied, controller.access.value.notifications)
-    assertTrue(controller.preferences.value.favoriteMatches)
+    assertTrue(controller.preferences.value.enabled)
   }
 
   @Test
   fun androidNeedsNoLiveActivityCapabilityAndErrorsCanBeRetried() {
     val provider = FakeProvider().apply { activitiesEnabled = null }
     val controller = LiveMatchNotificationSettingsController(LiveMatchNotificationPreferencesRepository(MapSettings()), provider)
-    controller.setEnabled(FavoriteNotificationTarget.Events, true)
+    controller.setEnabled(true)
     provider.requestResult!!(NotificationAuthorization.Error)
     assertFalse(controller.access.value.requesting)
     controller.requestNotifications()

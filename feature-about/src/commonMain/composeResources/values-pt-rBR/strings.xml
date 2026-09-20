@@ -112,10 +112,8 @@
     <string name="notification_preferences_description">Atualizações ao vivo dos seus favoritos</string>
     <string name="live_activities">Atividades ao Vivo</string>
     <string name="live_activities_description">Acompanhe os placares ao vivo na Tela Bloqueada e na Dynamic Island.</string>
-    <string name="live_activity_favorite_matches">Partidas favoritas</string>
-    <string name="live_activity_favorite_matches_description">Acompanhe as partidas que você salvou como favoritas.</string>
-    <string name="live_activity_favorite_events">Eventos favoritos</string>
-    <string name="live_activity_favorite_events_description">Acompanhe as partidas dos eventos que você salvou como favoritos.</string>
+    <string name="live_activity_favorites">Partidas e eventos favoritos</string>
+    <string name="live_activity_favorites_description">Acompanhe suas partidas favoritas, incluindo as partidas dos seus eventos favoritos.</string>
     <string name="live_activities_disabled">As Atividades ao Vivo estão desativadas nos ajustes do sistema.</string>
     <string name="notification_access_denied">As notificações estão desativadas. Você pode permiti-las nos ajustes do sistema. As Atividades ao Vivo têm um ajuste separado.</string>
     <string name="notification_access_error">Não foi possível verificar ou solicitar a permissão para enviar notificações. Tente novamente.</string>

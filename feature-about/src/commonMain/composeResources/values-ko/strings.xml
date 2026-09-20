@@ -110,10 +110,8 @@
     <string name="notification_preferences_description">즐겨찾기의 실시간 소식</string>
     <string name="live_activities">실시간 현황</string>
     <string name="live_activities_description">잠금 화면과 Dynamic Island에서 실시간 점수를 확인하세요.</string>
-    <string name="live_activity_favorite_matches">즐겨찾는 경기</string>
-    <string name="live_activity_favorite_matches_description">즐겨찾기에 추가한 경기의 실시간 현황을 확인하세요.</string>
-    <string name="live_activity_favorite_events">즐겨찾는 대회</string>
-    <string name="live_activity_favorite_events_description">즐겨찾기에 추가한 대회의 경기 실시간 현황을 확인하세요.</string>
+    <string name="live_activity_favorites">즐겨찾는 경기 및 대회</string>
+    <string name="live_activity_favorites_description">즐겨찾는 대회의 경기를 포함하여 즐겨찾는 경기의 실시간 현황을 확인하세요.</string>
     <string name="live_activities_disabled">시스템 설정에서 실시간 현황이 꺼져 있습니다.</string>
     <string name="notification_access_denied">알림이 꺼져 있습니다. 시스템 설정에서 허용할 수 있습니다. 실시간 현황은 별도로 설정할 수 있습니다.</string>
     <string name="notification_access_error">알림 권한을 확인하거나 요청하지 못했습니다. 다시 시도해 주세요.</string>
