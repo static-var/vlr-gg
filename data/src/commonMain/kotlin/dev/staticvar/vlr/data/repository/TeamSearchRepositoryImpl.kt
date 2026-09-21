@@ -12,7 +12,7 @@ import dev.staticvar.vlr.remotesource.search.SearchDataSource
 internal class TeamSearchRepositoryImpl(private val searchDataSource: SearchDataSource) : TeamSearchRepository {
   override suspend fun searchTeams(query: String): Result<List<TeamSearchResult>> =
     searchDataSource.search(SearchCategory.TEAM, query).map { results ->
-      results.map { team ->
+      results.filter { it.category == SearchCategory.TEAM }.map { team ->
         TeamSearchResult(
           teamId = team.id,
           teamName = team.name,

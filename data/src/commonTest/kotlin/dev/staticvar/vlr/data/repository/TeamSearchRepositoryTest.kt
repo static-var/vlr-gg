@@ -19,7 +19,14 @@ class TeamSearchRepositoryTest {
       override suspend fun search(category: SearchCategory, term: String): Result<List<SearchResultDto>> {
         assertEquals(SearchCategory.TEAM, category)
         assertEquals("prx", term)
-        return Result.success(listOf(SearchResultDto(id = "624", name = "Paper Rex", img = "logo", shortName = "PRX")))
+        return Result.success(
+          listOf(
+            SearchResultDto(id = "624", name = "Paper Rex", img = "logo", shortName = "PRX", category = SearchCategory.TEAM),
+            SearchResultDto(id = "12", name = "PRX event", category = SearchCategory.EVENT),
+            SearchResultDto(id = "13", name = "PRX player", category = SearchCategory.PLAYER),
+            SearchResultDto(id = "14", name = "PRX unknown"),
+          ),
+        )
       }
     }
     assertEquals(
