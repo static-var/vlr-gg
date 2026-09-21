@@ -19,6 +19,7 @@ import dev.staticvar.vlr.android.widget.LegacyWidgetRefreshScheduler
 import dev.staticvar.vlr.android.widget.FavoriteMatchWidgets
 import dev.staticvar.vlr.android.widget.WidgetSnapshotStore
 import dev.staticvar.vlr.shared.App
+import dev.staticvar.vlr.shared.di.LocalViewModelObserver
 import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
 import dev.staticvar.vlr.sharedui.notifications.LocalNotificationPermissionProvider
 import dev.staticvar.vlr.sharedui.notifications.rememberAndroidNotificationPermissionProvider
@@ -47,6 +48,7 @@ class MainActivity : ComponentActivity() {
 
     setContent {
       CompositionLocalProvider(
+        LocalViewModelObserver provides viewModelLeakObserver,
         LocalImageSharer provides rememberAndroidImageSharer(),
         LocalNotificationPermissionProvider provides rememberAndroidNotificationPermissionProvider(),
       ) {

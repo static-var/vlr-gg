@@ -46,7 +46,7 @@ import dev.staticvar.vlr.sharedui.mascot.ProvideCardMascots
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerMode
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
+import dev.staticvar.vlr.shared.di.vlrViewModel
 import kotlinx.coroutines.flow.first
 import kotlin.time.Clock
 
@@ -83,7 +83,7 @@ public fun App(
       }
     }
   }
-  val viewModel = koinViewModel<AppearanceViewModel>()
+  val viewModel = vlrViewModel<AppearanceViewModel>()
   val appearance by viewModel.appearance.collectAsStateWithLifecycle()
   val isDark = appearance.isDark(isSystemInDarkTheme())
   val variant = if (isDark) PrismVariant.Dark else PrismVariant.Light
