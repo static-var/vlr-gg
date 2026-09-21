@@ -7,6 +7,7 @@ package dev.staticvar.vlr.shared.di
 import dev.staticvar.vlr.core.di.appearanceModule
 import dev.staticvar.vlr.core.di.dispatcherModule
 import dev.staticvar.vlr.core.di.platformAppearanceModule
+import dev.staticvar.vlr.core.di.platformIdentityModule
 import dev.staticvar.vlr.data.di.dataModule
 import dev.staticvar.vlr.featurehome.di.homeFeatureModule
 import dev.staticvar.vlr.featureevents.di.eventsFeatureModule
@@ -62,6 +63,7 @@ public fun initializeAppKoin(
     modules(
       dispatcherModule(),
       platformAppearanceModule,
+      platformIdentityModule,
       appearanceModule(),
       remoteSourceModule(configuration = networkConfiguration),
       platformLocalSourceModule,
