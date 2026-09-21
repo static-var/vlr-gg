@@ -175,6 +175,7 @@ dependencies {
 
   // Preview support
   debugImplementation(libs.compose.ui.tooling.cmp)
+  debugImplementation(libs.leakcanary.android)
 
   // Activity Compose
   implementation(libs.activity.compose)
