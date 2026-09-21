@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.featurerankings.presentation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
+import dev.staticvar.designsystem.component.button.PrismIconButton
+import dev.staticvar.designsystem.component.button.PrismIconButtonSize
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.icon.PrismIconSize
@@ -49,6 +52,7 @@ import vlr.feature_rankings.generated.resources.ranking_points
 import vlr.feature_rankings.generated.resources.ranking_team_label
 import vlr.feature_rankings.generated.resources.rankings_subtitle
 import vlr.feature_rankings.generated.resources.rankings_title
+import vlr.feature_rankings.generated.resources.search_teams
 import vlr.feature_rankings.generated.resources.region_rankings_unpublished
 import vlr.feature_rankings.generated.resources.regional_rankings_unpublished
 import vlr.feature_rankings.generated.resources.top_teams_in_region
@@ -60,6 +64,11 @@ public fun RankingsRoute(
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
+  searchState: TeamSearchUiState = TeamSearchUiState(),
+  onOpenSearch: () -> Unit = {},
+  onCloseSearch: () -> Unit = {},
+  onSearchQueryChanged: (String) -> Unit = {},
+  onRetrySearch: () -> Unit = {},
 ) {
   RankingsScreen(
     uiState = uiState,
@@ -67,6 +76,11 @@ public fun RankingsRoute(
     onTeamSelected = onTeamSelected,
     modifier = modifier,
     onRefresh = onRefresh,
+    searchState = searchState,
+    onOpenSearch = onOpenSearch,
+    onCloseSearch = onCloseSearch,
+    onSearchQueryChanged = onSearchQueryChanged,
+    onRetrySearch = onRetrySearch,
   )
 }
 
@@ -77,6 +91,11 @@ internal fun RankingsScreen(
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
+  searchState: TeamSearchUiState = TeamSearchUiState(),
+  onOpenSearch: () -> Unit = {},
+  onCloseSearch: () -> Unit = {},
+  onSearchQueryChanged: (String) -> Unit = {},
+  onRetrySearch: () -> Unit = {},
 ) {
   val isOnline = LocalIsOnline.current
   val selectedRegion = uiState.selectedRegion
@@ -89,78 +108,95 @@ internal fun RankingsScreen(
     }
   }
 
-  Column(
-    modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
-    verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
-  ) {
-    Column {
-      PrismScreenTitleBar(
-        title = stringResource(Res.string.rankings_title),
-        subtitle = stringResource(Res.string.rankings_subtitle),
-        actions = {
-          SharedRefreshButton(
-            isLoading = uiState.isLoading,
-            isRefreshing = uiState.isRefreshing,
-            hasContent = uiState.regions.isNotEmpty(),
-            onRefresh = onRefresh,
-          )
-        },
-      )
+  Box(modifier = modifier.fillMaxSize()) {
+    Column(
+      modifier = Modifier.fillMaxSize()
+        .then(if (searchState.isOpen) Modifier.clearAndSetSemantics {} else Modifier)
+        .padding(horizontal = Prism.dimens.spacingM),
+      verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+    ) {
+      Column {
+        PrismScreenTitleBar(
+          title = stringResource(Res.string.rankings_title),
+          subtitle = stringResource(Res.string.rankings_subtitle),
+          actions = {
+            SharedRefreshButton(
+              isLoading = uiState.isLoading,
+              isRefreshing = uiState.isRefreshing,
+              hasContent = uiState.regions.isNotEmpty(),
+              onRefresh = onRefresh,
+            )
+            PrismIconButton(
+              icon = TeamSearchIcon,
+              contentDescription = stringResource(Res.string.search_teams),
+              size = PrismIconButtonSize.Toolbar,
+              onClick = onOpenSearch,
+            )
+          },
+        )
 
-      SharedRefreshStatus(
-        hasContent = uiState.regions.isNotEmpty(),
-        isRefreshing = false,
-        errorMessage = uiState.errorMessage.takeIf { uiState.regions.isNotEmpty() },
-        errorDetails = uiState.errorDetails,
-        onRefresh = onRefresh,
-      )
-    }
-
-    if (uiState.regions.isNotEmpty()) {
-      PrismTabs(
-        tabs = tabs,
-        selectedTabId = selectedRegion ?: uiState.regions.first().region,
-        onTabSelected = { onRegionSelected(it.id) },
-      )
-    }
-
-    when {
-      (!isOnline || uiState.isLoading || uiState.isRefreshing) && uiState.regions.isEmpty() -> {
-        SharedScreenLoading(label = stringResource(Res.string.loading_rankings), modifier = Modifier.fillMaxSize())
-      }
-
-      uiState.errorMessage != null && uiState.regions.isEmpty() -> {
-        SharedLoadError(
-          errorMessage = uiState.errorMessage,
+        SharedRefreshStatus(
+          hasContent = uiState.regions.isNotEmpty(),
+          isRefreshing = false,
+          errorMessage = uiState.errorMessage.takeIf { uiState.regions.isNotEmpty() },
           errorDetails = uiState.errorDetails,
           onRefresh = onRefresh,
-          centered = true,
-          modifier = Modifier.fillMaxWidth().weight(1f),
         )
       }
 
-      selectedRanking == null || selectedRanking.teams.isEmpty() -> {
-        if ((isOnline || uiState.regions.isEmpty()) && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null) {
-          SharedEmptyState(
-            artwork = EmptyStateArtwork.NoLiveMatches,
-            title = stringResource(Res.string.no_rankings_yet),
-            message = selectedRanking?.let {
-              stringResource(Res.string.region_rankings_unpublished, it.regionLabel.ifBlank { it.region })
-            }
-              ?: stringResource(Res.string.regional_rankings_unpublished),
+      if (uiState.regions.isNotEmpty()) {
+        PrismTabs(
+          tabs = tabs,
+          selectedTabId = selectedRegion ?: uiState.regions.first().region,
+          onTabSelected = { onRegionSelected(it.id) },
+        )
+      }
+
+      when {
+        (!isOnline || uiState.isLoading || uiState.isRefreshing) && uiState.regions.isEmpty() -> {
+          SharedScreenLoading(label = stringResource(Res.string.loading_rankings), modifier = Modifier.fillMaxSize())
+        }
+
+        uiState.errorMessage != null && uiState.regions.isEmpty() -> {
+          SharedLoadError(
+            errorMessage = uiState.errorMessage,
+            errorDetails = uiState.errorDetails,
+            onRefresh = onRefresh,
+            centered = true,
             modifier = Modifier.fillMaxWidth().weight(1f),
           )
         }
-      }
 
-      else -> {
-        RankingsContent(
-          selectedRanking = selectedRanking,
-          onTeamSelected = onTeamSelected,
-          modifier = Modifier.fillMaxSize(),
-        )
+        selectedRanking == null || selectedRanking.teams.isEmpty() -> {
+          if ((isOnline || uiState.regions.isEmpty()) && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null) {
+            SharedEmptyState(
+              artwork = EmptyStateArtwork.NoLiveMatches,
+              title = stringResource(Res.string.no_rankings_yet),
+              message = selectedRanking?.let {
+                stringResource(Res.string.region_rankings_unpublished, it.regionLabel.ifBlank { it.region })
+              }
+                ?: stringResource(Res.string.regional_rankings_unpublished),
+              modifier = Modifier.fillMaxWidth().weight(1f),
+            )
+          }
+        }
+
+        else -> {
+          RankingsContent(
+            selectedRanking = selectedRanking,
+            onTeamSelected = onTeamSelected,
+            modifier = Modifier.fillMaxSize(),
+          )
+        }
       }
     }
+    TeamSearchOverlay(
+      state = searchState,
+      onClose = onCloseSearch,
+      onQueryChanged = onSearchQueryChanged,
+      onRetry = onRetrySearch,
+      onTeamSelected = onTeamSelected,
+    )
   }
 }
 

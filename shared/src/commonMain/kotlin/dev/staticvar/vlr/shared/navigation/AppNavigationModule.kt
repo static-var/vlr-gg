@@ -21,6 +21,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.settings.CacheCleanupPreferencesRepository
 import dev.staticvar.vlr.core.settings.ReleaseNotesPreferencesRepository
@@ -246,10 +249,22 @@ internal fun appNavigationModule(): Module = module {
   navigation<AppRoute.Rankings>(metadata = listPane(group = "rankings")) {
     val viewModel = koinViewModel<RankingsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val searchState by viewModel.searchState.collectAsStateWithLifecycle()
+    val appState = LocalVlrAppState.current
+    NavigationBackHandler(
+      state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
+      isBackEnabled = searchState.isOpen && appState.backStack.lastOrNull() == AppRoute.Rankings,
+      onBackCompleted = viewModel::closeSearch,
+    )
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     RankingsRoute(
       uiState = uiState,
+      searchState = searchState,
+      onOpenSearch = viewModel::openSearch,
+      onCloseSearch = viewModel::closeSearch,
+      onSearchQueryChanged = viewModel::updateSearchQuery,
+      onRetrySearch = viewModel::retrySearch,
       onRefresh = viewModel::refresh,
       onRegionSelected = viewModel::selectRegion,
       onTeamSelected = LocalVlrAppState.current::showRootTeamDetails,
