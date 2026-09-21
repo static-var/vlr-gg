@@ -13,6 +13,7 @@ import org.koin.android.ext.koin.androidContext
 class VlrApplication : Application() {
   override fun onCreate() {
     super.onCreate()
+    configureLeakDetection()
     initializeAppKoin(
       appDeclaration = {
         androidContext(this@VlrApplication)
