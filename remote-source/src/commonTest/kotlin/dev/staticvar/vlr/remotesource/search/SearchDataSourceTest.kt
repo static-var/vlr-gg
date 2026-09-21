@@ -23,6 +23,16 @@ import kotlin.test.assertTrue
 class SearchDataSourceTest {
 
   @Test
+  fun search_preserves_optional_short_name() = runTest {
+    val source = SearchDataSourceImpl(singleResponseClient(
+      """[{"id":"1","name":"Paper Rex","short_name":"PRX"},{"id":"2","name":"FNATIC"}]""",
+    ))
+    val results = source.search(SearchCategory.TEAM, "prx").getOrThrow()
+    assertEquals("PRX", results[0].shortName)
+    assertEquals(null, results[1].shortName)
+  }
+
+  @Test
   fun search_parses_real_search_fixture() = runTest {
     val json = readFixture("search_teams_fnatic.json")
     val ds = SearchDataSourceImpl(singleResponseClient(json))
