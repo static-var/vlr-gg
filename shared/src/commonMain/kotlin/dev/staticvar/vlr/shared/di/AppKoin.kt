@@ -26,7 +26,7 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.mp.KoinPlatform
 
 private object AppNetworkDefaults {
-  const val ApiHost: String = "vlr-scraper.akhilnarang.dev"
+  const val ApiHost: String = "val-esports-backend.akhilnarang.dev"
   const val ApplicationHeader: String = "app-name"
   const val ApplicationId: String = "dev.staticvar.vlr"
   const val AuthorizationHeader: String = "Authorization"
