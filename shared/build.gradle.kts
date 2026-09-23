@@ -64,6 +64,7 @@ kotlin {
         implementation(libs.lifecycle.viewmodel.compose.cmp)
         implementation(libs.lifecycle.viewmodel.navigation3)
         implementation(libs.kotlinx.serialization)
+        implementation(libs.multiplatform.settings)
         implementation(libs.koin.core)
         implementation(libs.koin.compose)
         implementation(libs.koin.compose.viewmodel)

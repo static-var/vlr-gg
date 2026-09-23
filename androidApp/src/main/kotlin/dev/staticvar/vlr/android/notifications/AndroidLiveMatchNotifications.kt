@@ -20,6 +20,8 @@ import dev.staticvar.vlr.android.MainActivity
 import dev.staticvar.vlr.android.R
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
+import dev.staticvar.vlr.core.notifications.LiveUpdateStateProvider
+import dev.staticvar.vlr.core.notifications.PushPlatform
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
@@ -37,13 +39,21 @@ internal class AndroidLiveMatchNotifications(
   json: Json,
   private val preferences: LiveMatchNotificationPreferencesRepository,
   private val spoilerPreferences: SpoilerPreferencesRepository,
-) {
+) : LiveUpdateStateProvider {
+  override val platform: PushPlatform = PushPlatform.Android
   private val appContext = context.applicationContext
   private val notificationManager = appContext.getSystemService(NotificationManager::class.java)
   private val parser = LiveMatchUpdateParser(json)
   private val stateStore = LiveMatchNotificationStateStore(appContext)
   private val renderer = LiveMatchNotificationRenderer(appContext)
   private val lock = Any()
+
+  override fun canRequestStart(): Boolean = supportsLiveMatchNotifications() &&
+    preferences.preferences.value.enabled && canPostNotifications()
+
+  override fun observedMatchIds(): List<String> = synchronized(lock) {
+    stateStore.trackedMatchIds().toList()
+  }
 
   fun handle(data: Map<String, String>) {
     synchronized(lock) {

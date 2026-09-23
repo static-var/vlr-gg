@@ -27,6 +27,7 @@ import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.notifications.PushTokenProvider
+import dev.staticvar.vlr.core.notifications.LiveUpdateStateProvider
 import dev.staticvar.vlr.core.settings.CatppuccinFlavour
 import dev.staticvar.vlr.core.settings.CacheCleanupPreferencesRepository
 import dev.staticvar.vlr.core.settings.MascotPreference
@@ -42,6 +43,7 @@ import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
 import dev.staticvar.vlr.shared.navigation.AppNavHost
 import dev.staticvar.vlr.shared.navigation.rememberVlrAppState
 import dev.staticvar.vlr.shared.notifications.FavoriteLiveUpdateCoordinator
+import dev.staticvar.vlr.shared.notifications.LiveActivityStartCoordinator
 import dev.staticvar.vlr.shared.notifications.LocalLiveMatchNotificationSettingsController
 import dev.staticvar.vlr.shared.notifications.PushTokenRegistrationCoordinator
 import dev.staticvar.vlr.shared.notifications.PushTokenRegistrationUploader
@@ -70,6 +72,7 @@ public fun App(
   onWidgetSnapshotChanged: suspend (String) -> Unit = {},
   onSearchFavoritesChanged: suspend (String) -> Unit = {},
   pushTokenProvider: PushTokenProvider? = null,
+  liveUpdateStateProvider: LiveUpdateStateProvider? = null,
 ) {
   ProvideSharedImageLoader()
   PublishSearchFavorites(onSearchFavoritesChanged)
@@ -87,6 +90,7 @@ public fun App(
   val notificationPermissionProvider = LocalNotificationPermissionProvider.current
   val notificationPreferences = koinInject<LiveMatchNotificationPreferencesRepository>()
   val favoriteLiveUpdateCoordinator = koinInject<FavoriteLiveUpdateCoordinator>()
+  val liveActivityStartCoordinator = koinInject<LiveActivityStartCoordinator>()
   val pushTokenRegistrationUploader = koinInject<PushTokenRegistrationUploader>()
   val mainScope = rememberCoroutineScope()
   val pushTokenRegistrationCoordinator = if (pushTokenProvider != null && notificationPermissionProvider != null) {
@@ -95,6 +99,7 @@ public fun App(
       notificationPermissionProvider,
       notificationPreferences,
       favoriteLiveUpdateCoordinator,
+      liveActivityStartCoordinator,
       pushTokenRegistrationUploader,
       mainScope,
     ) {
@@ -104,8 +109,14 @@ public fun App(
         notificationPreferences = notificationPreferences,
         uploader = pushTokenRegistrationUploader,
         mainScope = mainScope,
-        onEligibilityChanged = favoriteLiveUpdateCoordinator::onEligibilityChanged,
-        onSyncRequested = favoriteLiveUpdateCoordinator::retry,
+        onEligibilityChanged = { eligibility ->
+          favoriteLiveUpdateCoordinator.onEligibilityChanged(eligibility)
+          liveActivityStartCoordinator.onEligibilityChanged(eligibility)
+        },
+        onSyncRequested = {
+          favoriteLiveUpdateCoordinator.retry()
+          liveActivityStartCoordinator.retryRejected()
+        },
       )
     }
   } else {
@@ -125,6 +136,10 @@ public fun App(
   DisposableEffect(pushTokenRegistrationCoordinator) {
     pushTokenRegistrationCoordinator?.start()
     onDispose { pushTokenRegistrationCoordinator?.stop() }
+  }
+  DisposableEffect(liveActivityStartCoordinator, liveUpdateStateProvider, pushTokenProvider) {
+    liveActivityStartCoordinator.attach(liveUpdateStateProvider?.takeIf { it.platform == pushTokenProvider?.platform })
+    onDispose { liveActivityStartCoordinator.attach(null) }
   }
   LaunchedEffect(lifecycleState, pushTokenRegistrationCoordinator) {
     if (lifecycleState == Lifecycle.State.RESUMED) {

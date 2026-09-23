@@ -55,6 +55,7 @@ class MainActivity : ComponentActivity() {
         App(
           deepLinkHandler = deepLinkHandler,
           pushTokenProvider = (application as VlrApplication).pushTokenProvider,
+          liveUpdateStateProvider = (application as VlrApplication).liveMatchNotifications,
           onWidgetSnapshotChanged = { snapshotJson ->
             try {
               if (WidgetSnapshotStore.writeIfChanged(applicationContext, snapshotJson)) {

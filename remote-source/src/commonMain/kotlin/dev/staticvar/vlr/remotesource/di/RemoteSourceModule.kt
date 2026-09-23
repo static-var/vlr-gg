@@ -8,6 +8,8 @@ import dev.staticvar.vlr.remotesource.events.EventDataSource
 import dev.staticvar.vlr.remotesource.events.EventDataSourceImpl
 import dev.staticvar.vlr.remotesource.liveupdates.FavoriteLiveUpdateDataSource
 import dev.staticvar.vlr.remotesource.liveupdates.FavoriteLiveUpdateDataSourceImpl
+import dev.staticvar.vlr.remotesource.liveupdates.LiveActivityStartDataSource
+import dev.staticvar.vlr.remotesource.liveupdates.LiveActivityStartDataSourceImpl
 import dev.staticvar.vlr.remotesource.liveupdates.PushTokenRegistrationDataSource
 import dev.staticvar.vlr.remotesource.liveupdates.PushTokenRegistrationDataSourceImpl
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
@@ -68,6 +70,7 @@ fun remoteSourceModule(
 
   // DataSources
   single<FavoriteLiveUpdateDataSource> { FavoriteLiveUpdateDataSourceImpl(get()) }
+  single<LiveActivityStartDataSource> { LiveActivityStartDataSourceImpl(get()) }
   single<MatchDataSource> { MatchDataSourceImpl(get()) }
   single<PushTokenRegistrationDataSource> { PushTokenRegistrationDataSourceImpl(get()) }
   single<EventDataSource> { EventDataSourceImpl(get()) }

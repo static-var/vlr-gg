@@ -50,7 +50,8 @@ private struct ComposeView: UIViewControllerRepresentable {
                 FavoriteSearchStore.shared.publish(snapshotJSON)
             },
             notificationPermissionProvider: context.coordinator.notificationPermissionProvider,
-            pushTokenProvider: context.coordinator.pushTokenProvider
+            pushTokenProvider: context.coordinator.pushTokenProvider,
+            liveUpdateStateProvider: context.coordinator.liveUpdateStateProvider
         )
     }
 
@@ -62,6 +63,7 @@ private struct ComposeView: UIViewControllerRepresentable {
         let deepLinkHandler = AppDeepLinkHandler()
         let notificationPermissionProvider = IosLiveActivityPermissionProvider()
         let pushTokenProvider = IosActivityPushTokenProvider()
+        let liveUpdateStateProvider = IosLiveUpdateStateProvider()
         private var lastDeepLinkID: UUID?
 
         func open(_ deepLink: PendingDeepLink?) {

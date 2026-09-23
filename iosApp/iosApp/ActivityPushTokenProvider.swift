@@ -23,6 +23,7 @@ final class MatchActivityLogoObserver {
     }
 
     private func observe(_ activity: Activity<MatchActivityAttributes>) {
+        ObservedMatchActivities.record(activity.attributes.match_id)
         guard contentTasks[activity.id] == nil,
               activity.activityState != .ended,
               activity.activityState != .dismissed else { return }
@@ -53,6 +54,37 @@ final class MatchActivityLogoObserver {
 
     private func prefetch(_ state: MatchActivityAttributes.ContentState) async {
         await MatchActivityLogoCache.prefetch(state.teams.compactMap(\.img))
+    }
+}
+
+@available(iOS 16.2, *)
+private enum ObservedMatchActivities {
+    private static let key = "notifications.observedLiveActivityMatchIds"
+    private static let limit = 256
+
+    static func record(_ matchID: String) {
+        let previous = UserDefaults.standard.stringArray(forKey: key) ?? []
+        UserDefaults.standard.set(Array((previous.filter { $0 != matchID } + [matchID]).suffix(limit)), forKey: key)
+    }
+
+    static func all() -> [String] {
+        let stored = UserDefaults.standard.stringArray(forKey: key) ?? []
+        let current = Activity<MatchActivityAttributes>.activities.map { $0.attributes.match_id }
+        for matchID in current where !stored.contains(matchID) {
+            record(matchID)
+        }
+        return Array(Set(stored + current))
+    }
+}
+
+final class IosLiveUpdateStateProvider: NSObject, LiveUpdateStateProvider {
+    var platform: PushPlatform { .ios }
+
+    func canRequestStart() -> Bool { true }
+
+    func observedMatchIds() -> [String] {
+        guard #available(iOS 16.2, *) else { return [] }
+        return ObservedMatchActivities.all()
     }
 }
 
