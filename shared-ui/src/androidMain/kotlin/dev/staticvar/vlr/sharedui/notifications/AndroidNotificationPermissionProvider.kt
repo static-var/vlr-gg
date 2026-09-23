@@ -49,6 +49,10 @@ private class AndroidNotificationPermissionProvider(private val context: Context
   var launchRequest: (() -> Unit)? = null
   var shouldShowRationale: (() -> Boolean)? = null
 
+  override fun supportsLiveUpdates(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA &&
+      Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1
+
   override fun areLiveActivitiesEnabled(): Boolean? = null
 
   override fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {
