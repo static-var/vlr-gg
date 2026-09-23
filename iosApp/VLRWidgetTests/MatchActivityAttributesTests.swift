@@ -68,7 +68,7 @@ final class MatchActivityAttributesTests: XCTestCase {
     func testSyntheticMatchPayloadAdvancesToFinal() throws {
         for tick in 1...6 {
             let json = """
-            {"match_id":"3141592653","observed_at":1790000000,"terminal":\(tick == 6),"teams":[{"name":"Test Alpha","img":null,"score":\(tick)},{"name":"Test Beta","img":null,"score":\(tick - 1)}],"current_map":{"name":"Test Range","scores":[\(tick),\(tick - 1)]}}
+            {"match_id":"3141592653","observed_at":1790000000,"terminal":\(tick == 6),"teams":[{"name":"Test Alpha","tag":"TA","img":null,"score":\(tick)},{"name":"Test Beta","tag":"TB","img":null,"score":\(tick - 1)}],"current_map":{"name":"Test Range","number":2,"scores":[\(tick),\(tick - 1)]},"total_maps":3}
             """
             let state = try JSONDecoder().decode(
                 MatchActivityAttributes.ContentState.self,
@@ -76,10 +76,26 @@ final class MatchActivityAttributesTests: XCTestCase {
             )
             XCTAssertEqual(state.match_id, "3141592653")
             XCTAssertEqual(state.teams.map(\.name), ["Test Alpha", "Test Beta"])
+            XCTAssertEqual(state.teams.map(\.visibleName), ["TA", "TB"])
+            XCTAssertEqual(state.teams.map(\.logoInitials), ["TA", "TB"])
             XCTAssertEqual(state.teams.map(\.score), [tick, tick - 1])
             XCTAssertEqual(state.current_map?.scores, [tick, tick - 1])
+            XCTAssertEqual(state.current_map?.number, 2)
+            XCTAssertEqual(state.total_maps, 3)
             XCTAssertEqual(state.terminal, tick == 6)
         }
+    }
+
+    @available(iOS 16.1, *)
+    func testTeamTagFallbackAfterDecoding() throws {
+        let json = #"[{"name":"Alpha Wolves","img":null,"score":0},{"name":"Beta Squad","tag":null,"img":null,"score":0},{"name":"Gamma Group","tag":"  \t  ","img":null,"score":0},{"name":"Delta Force","tag":" DF ","img":null,"score":0}]"#
+        let teams = try JSONDecoder().decode(
+            [MatchActivityAttributes.ContentState.Team].self,
+            from: Data(json.utf8)
+        )
+
+        XCTAssertEqual(teams.map(\.visibleName), ["Alpha Wolves", "Beta Squad", "Gamma Group", "DF"])
+        XCTAssertEqual(teams.map(\.logoInitials), ["AW", "BS", "GG", "DF"])
     }
 
     @available(iOS 16.1, *)
@@ -101,9 +117,13 @@ final class MatchActivityAttributesTests: XCTestCase {
         XCTAssertEqual(state.observed_at, 1_788_789_340)
         XCTAssertFalse(state.terminal)
         XCTAssertNil(state.teams[0].img)
+        XCTAssertNil(state.teams[0].tag)
+        XCTAssertEqual(state.teams[0].visibleName, "FNATIC")
         XCTAssertNil(state.teams[1].score)
         XCTAssertEqual(state.current_map?.name, "Ascent")
+        XCTAssertNil(state.current_map?.number)
         XCTAssertEqual(state.current_map?.scores, [12, nil])
+        XCTAssertNil(state.total_maps)
 
         let stateWithoutMap = try JSONDecoder().decode(
             MatchActivityAttributes.ContentState.self,

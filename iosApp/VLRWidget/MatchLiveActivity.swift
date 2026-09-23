@@ -108,7 +108,8 @@ struct MatchLiveActivityLockScreen: View {
         return VStack(spacing: 7) {
             MatchLiveActivityLogo(team: value, size: 58)
                 .accessibilityHidden(true)
-            Text(value?.name ?? "—")
+            Text(value?.visibleName ?? "—")
+                .accessibilityLabel(value?.name ?? "—")
                 .font(PrismWidgetFont.regular(13, relativeTo: .caption))
                 .lineLimit(2)
                 .minimumScaleFactor(0.75)
@@ -131,7 +132,7 @@ private struct MatchLiveActivityLogo: View {
                     .resizable()
                     .scaledToFit()
             } else {
-                Text(initials)
+                Text(team?.logoInitials ?? "—")
                     .font(PrismWidgetFont.regular(size * 0.45, relativeTo: .headline))
                     .foregroundStyle(colorScheme == .dark ? PrismWidgetPalette.dark.accent : PrismWidgetPalette.light.accent)
                     .lineLimit(1)
@@ -140,14 +141,6 @@ private struct MatchLiveActivityLogo: View {
         }
         .frame(width: size, height: size)
         .accessibilityLabel(team?.name ?? "—")
-    }
-
-    private var initials: String {
-        guard let name = team?.name, !name.isEmpty else { return "—" }
-        let words = name.split(whereSeparator: \.isWhitespace)
-        return words.count > 1
-            ? words.prefix(2).compactMap(\.first).map(String.init).joined().uppercased()
-            : String(name.prefix(2)).uppercased()
     }
 }
 
