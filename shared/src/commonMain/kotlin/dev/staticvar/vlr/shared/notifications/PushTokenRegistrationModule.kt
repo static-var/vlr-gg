@@ -11,6 +11,15 @@ import org.koin.dsl.module
 
 internal fun pushTokenRegistrationModule(): Module = module {
   single {
+    FavoriteLiveUpdateCoordinator(
+      identityRepository = get(),
+      favoritesRepository = get(),
+      tokenPreferences = get(),
+      dataSource = get(),
+      appScope = get<CoroutineScope>(DispatcherQualifiers.AppScope),
+    )
+  }
+  single {
     PushTokenRegistrationUploader(
       preferences = get(),
       identityRepository = get(),

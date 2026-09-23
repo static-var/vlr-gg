@@ -34,6 +34,7 @@ class PushTokenRegistrationTest {
     harness.coordinator.onForeground()
     runCurrent()
     assertEquals(0, harness.tokenProvider.starts)
+    assertEquals(listOf(LiveUpdateEligibility.Pending), harness.eligibility)
     harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
     runCurrent()
 
@@ -90,6 +91,7 @@ class PushTokenRegistrationTest {
     assertEquals(0, harness.permissionProvider.reads)
     assertEquals(1, harness.tokenProvider.starts)
     assertEquals("activity-token", harness.dataSource.requests.single().token)
+    assertEquals(listOf(LiveUpdateEligibility.Pending, LiveUpdateEligibility.Enabled), harness.eligibility)
 
     harness.coordinator.onAuthorizationChanged(NotificationAuthorization.Denied)
     runCurrent()
@@ -238,6 +240,31 @@ class PushTokenRegistrationTest {
     )
     assertEquals(1, harness.dataSource.requests.size)
   }
+
+  @Test
+  fun favoriteSyncWaitsForAccessAndClearsOnlyAfterAConfirmedDenial() = runTest {
+    val harness = Harness(backgroundScope, notificationsEnabled = true)
+    harness.coordinator.start()
+    harness.coordinator.onForeground()
+    runCurrent()
+
+    assertEquals(listOf(LiveUpdateEligibility.Pending), harness.eligibility)
+
+    harness.permissionProvider.completeRead(NotificationAuthorization.Error)
+    runCurrent()
+    assertEquals(listOf(LiveUpdateEligibility.Pending), harness.eligibility)
+
+    harness.coordinator.onAuthorizationChanged(NotificationAuthorization.Denied)
+    runCurrent()
+    assertEquals(
+      listOf(LiveUpdateEligibility.Pending, LiveUpdateEligibility.Disabled),
+      harness.eligibility,
+    )
+
+    harness.coordinator.stop()
+    runCurrent()
+    assertEquals(2, harness.eligibility.size)
+  }
 }
 
 private class Harness(
@@ -253,6 +280,7 @@ private class Harness(
   }
   val tokenPreferences = PushTokenRegistrationPreferencesRepository(MapSettings())
   val identity = UserIdentityRepository(MapSettings(), allowDelayedRestore = allowDelayedIdentityRestore)
+  val eligibility = mutableListOf<LiveUpdateEligibility>()
   private val uploader = PushTokenRegistrationUploader(tokenPreferences, identity, dataSource, scope)
   val coordinator = PushTokenRegistrationCoordinator(
     pushTokenProvider = tokenProvider,
@@ -260,6 +288,7 @@ private class Harness(
     notificationPreferences = notificationPreferences,
     uploader = uploader,
     mainScope = scope,
+    onEligibilityChanged = eligibility::add,
   )
 }
 

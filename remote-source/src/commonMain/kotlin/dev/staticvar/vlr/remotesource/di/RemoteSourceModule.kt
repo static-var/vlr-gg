@@ -6,10 +6,12 @@ package dev.staticvar.vlr.remotesource.di
 
 import dev.staticvar.vlr.remotesource.events.EventDataSource
 import dev.staticvar.vlr.remotesource.events.EventDataSourceImpl
-import dev.staticvar.vlr.remotesource.match.MatchDataSource
-import dev.staticvar.vlr.remotesource.match.MatchDataSourceImpl
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteLiveUpdateDataSource
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteLiveUpdateDataSourceImpl
 import dev.staticvar.vlr.remotesource.liveupdates.PushTokenRegistrationDataSource
 import dev.staticvar.vlr.remotesource.liveupdates.PushTokenRegistrationDataSourceImpl
+import dev.staticvar.vlr.remotesource.match.MatchDataSource
+import dev.staticvar.vlr.remotesource.match.MatchDataSourceImpl
 import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
 import dev.staticvar.vlr.remotesource.network.HttpClientFactory
 import dev.staticvar.vlr.remotesource.network.NetworkConfiguration
@@ -65,6 +67,7 @@ fun remoteSourceModule(
   }
 
   // DataSources
+  single<FavoriteLiveUpdateDataSource> { FavoriteLiveUpdateDataSourceImpl(get()) }
   single<MatchDataSource> { MatchDataSourceImpl(get()) }
   single<PushTokenRegistrationDataSource> { PushTokenRegistrationDataSourceImpl(get()) }
   single<EventDataSource> { EventDataSourceImpl(get()) }

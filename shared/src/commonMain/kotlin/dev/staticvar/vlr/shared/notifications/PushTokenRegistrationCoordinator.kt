@@ -19,9 +19,12 @@ internal class PushTokenRegistrationCoordinator(
   private val notificationPreferences: LiveMatchNotificationPreferencesRepository,
   private val uploader: PushTokenRegistrationUploader,
   private val mainScope: CoroutineScope,
+  private val onEligibilityChanged: (LiveUpdateEligibility) -> Unit = {},
+  private val onSyncRequested: () -> Unit = {},
 ) {
   private var observationJob: Job? = null
   private var running: Boolean = false
+  private var preferencesLoaded: Boolean = false
   private var enabled: Boolean = false
   private var authorization: NotificationAuthorization? = null
   private var supportsLiveUpdates: Boolean = false
@@ -32,6 +35,7 @@ internal class PushTokenRegistrationCoordinator(
   private var refreshTokenAfterPermissionRead: Boolean = false
   private var permissionGeneration: Int = 0
   private var tokenGeneration: Int = 0
+  private var reportedEligibility: LiveUpdateEligibility? = null
 
   fun start() {
     if (observationJob != null) return
@@ -39,6 +43,7 @@ internal class PushTokenRegistrationCoordinator(
     observationJob = mainScope.launch {
       notificationPreferences.preferences.collect { value ->
         val becameEnabled = value.enabled && !enabled
+        preferencesLoaded = true
         enabled = value.enabled
         if (becameEnabled) {
           authorization = null
@@ -54,6 +59,7 @@ internal class PushTokenRegistrationCoordinator(
     permissionGeneration++
     permissionReadPending = false
     refreshTokenAfterPermissionRead = false
+    preferencesLoaded = false
     enabled = false
     authorization = null
     observationJob?.cancel()
@@ -73,8 +79,7 @@ internal class PushTokenRegistrationCoordinator(
       permissionReadPending = false
       authorization = value
       liveActivitiesEnabled = readLiveActivityCapability()
-      restartTokenProviderAfterForegroundRead()
-      updateTokenProvider()
+      finishAccessRefresh()
     }
   }
 
@@ -87,8 +92,7 @@ internal class PushTokenRegistrationCoordinator(
       permissionGeneration++
       permissionReadPending = false
       authorization = null
-      restartTokenProviderAfterForegroundRead()
-      updateTokenProvider()
+      finishAccessRefresh()
       return
     }
     permissionReadPending = true
@@ -100,8 +104,7 @@ internal class PushTokenRegistrationCoordinator(
           permissionReadPending = false
           authorization = value
           liveActivitiesEnabled = readLiveActivityCapability()
-          restartTokenProviderAfterForegroundRead()
-          updateTokenProvider()
+          finishAccessRefresh()
         }
       }
     } catch (_: Exception) {
@@ -114,10 +117,12 @@ internal class PushTokenRegistrationCoordinator(
   }
 
   private fun updateTokenProvider() {
-    val shouldStart = enabled &&
-      supportsLiveUpdates &&
-      (!requiresNotificationPermission || authorization == NotificationAuthorization.Authorized) &&
-      liveActivitiesEnabled != false
+    val eligibility = liveUpdateEligibility()
+    if (eligibility != reportedEligibility) {
+      reportedEligibility = eligibility
+      onEligibilityChanged(eligibility)
+    }
+    val shouldStart = eligibility == LiveUpdateEligibility.Enabled
     if (shouldStart && !tokenProviderStarted) {
       val generation = ++tokenGeneration
       tokenProviderStarted = true
@@ -137,6 +142,16 @@ internal class PushTokenRegistrationCoordinator(
     } else if (!shouldStart && tokenProviderStarted) {
       stopTokenProvider()
     }
+  }
+
+  private fun liveUpdateEligibility(): LiveUpdateEligibility = when {
+    !preferencesLoaded -> LiveUpdateEligibility.Pending
+    !enabled -> LiveUpdateEligibility.Disabled
+    !supportsLiveUpdates || liveActivitiesEnabled == false -> LiveUpdateEligibility.Disabled
+    !requiresNotificationPermission || authorization == NotificationAuthorization.Authorized -> LiveUpdateEligibility.Enabled
+    authorization == NotificationAuthorization.Denied ||
+      authorization == NotificationAuthorization.NotDetermined -> LiveUpdateEligibility.Disabled
+    else -> LiveUpdateEligibility.Pending
   }
 
   private fun stopTokenProvider() {
@@ -170,9 +185,11 @@ internal class PushTokenRegistrationCoordinator(
     true
   }
 
-  private fun restartTokenProviderAfterForegroundRead() {
-    if (!refreshTokenAfterPermissionRead) return
+  private fun finishAccessRefresh() {
+    val syncRequested = refreshTokenAfterPermissionRead
     refreshTokenAfterPermissionRead = false
-    if (tokenProviderStarted) stopTokenProvider()
+    if (syncRequested && tokenProviderStarted) stopTokenProvider()
+    updateTokenProvider()
+    if (syncRequested) onSyncRequested()
   }
 }

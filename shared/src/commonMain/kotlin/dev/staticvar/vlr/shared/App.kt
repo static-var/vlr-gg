@@ -41,6 +41,7 @@ import dev.staticvar.vlr.shared.appearance.ApplyPlatformAppearance
 import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
 import dev.staticvar.vlr.shared.navigation.AppNavHost
 import dev.staticvar.vlr.shared.navigation.rememberVlrAppState
+import dev.staticvar.vlr.shared.notifications.FavoriteLiveUpdateCoordinator
 import dev.staticvar.vlr.shared.notifications.LocalLiveMatchNotificationSettingsController
 import dev.staticvar.vlr.shared.notifications.PushTokenRegistrationCoordinator
 import dev.staticvar.vlr.shared.notifications.PushTokenRegistrationUploader
@@ -85,6 +86,7 @@ public fun App(
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val notificationPermissionProvider = LocalNotificationPermissionProvider.current
   val notificationPreferences = koinInject<LiveMatchNotificationPreferencesRepository>()
+  val favoriteLiveUpdateCoordinator = koinInject<FavoriteLiveUpdateCoordinator>()
   val pushTokenRegistrationUploader = koinInject<PushTokenRegistrationUploader>()
   val mainScope = rememberCoroutineScope()
   val pushTokenRegistrationCoordinator = if (pushTokenProvider != null && notificationPermissionProvider != null) {
@@ -92,6 +94,7 @@ public fun App(
       pushTokenProvider,
       notificationPermissionProvider,
       notificationPreferences,
+      favoriteLiveUpdateCoordinator,
       pushTokenRegistrationUploader,
       mainScope,
     ) {
@@ -101,6 +104,8 @@ public fun App(
         notificationPreferences = notificationPreferences,
         uploader = pushTokenRegistrationUploader,
         mainScope = mainScope,
+        onEligibilityChanged = favoriteLiveUpdateCoordinator::onEligibilityChanged,
+        onSyncRequested = favoriteLiveUpdateCoordinator::retry,
       )
     }
   } else {
