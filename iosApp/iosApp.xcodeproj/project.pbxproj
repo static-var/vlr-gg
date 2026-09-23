@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AAB7CE37C59F15BDE0A95B04 /* ICloudIdentityDeviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40212BB7FC3087ABA0CD3582 /* ICloudIdentityDeviceTests.swift */; };
 		AD5F1EABAFC8460BA502C001 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
 		AD5F1EABAFC8460BA502C002 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
 		AD5F1EABAFC8460BA502C003 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
@@ -96,6 +97,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		40212BB7FC3087ABA0CD3582 /* ICloudIdentityDeviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudIdentityDeviceTests.swift; sourceTree = "<group>"; };
 		AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityLogoCache.swift; sourceTree = "<group>"; };
 		05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchLiveActivity.swift; sourceTree = "<group>"; };
 		3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityAttributes.swift; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 			children = (
 				973F66BBC21F094338D4832F /* FavoriteSearchTests.swift */,
 				512CE686A685EA1302CD1FB1 /* NativeLocalizationTests.swift */,
+				40212BB7FC3087ABA0CD3582 /* ICloudIdentityDeviceTests.swift */,
 				E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */,
 			);
 			path = VLRAppIntentsTests;
@@ -555,6 +558,7 @@
 			files = (
 				4C32F668A1F6E32D83DC9E3F /* FavoriteSearchTests.swift in Sources */,
 				7E353AB5AAE161E37B859B61 /* NativeLocalizationTests.swift in Sources */,
+				AAB7CE37C59F15BDE0A95B04 /* ICloudIdentityDeviceTests.swift in Sources */,
 				561A93F4EB86F4A8116CB8DA /* SiriActionsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

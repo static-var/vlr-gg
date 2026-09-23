@@ -4,6 +4,12 @@
  */
 package dev.staticvar.vlr.core.identity
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSNumber
 import platform.Foundation.NSOperationQueue
@@ -16,46 +22,39 @@ import platform.Foundation.NSUbiquitousKeyValueStoreInitialSyncChange
 import platform.Foundation.NSUbiquitousKeyValueStoreServerChange
 
 /** Reconciles the local user UUID with iCloud key-value storage. */
-internal class ICloudIdentitySync(private val repository: UserIdentityRepository) {
+internal class ICloudIdentitySync(repository: UserIdentityRepository) {
   private val store = NSUbiquitousKeyValueStore.defaultStore
-  private var accountChanged = false
+  private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+  private val reconciler = ICloudIdentityReconciler(
+    repository = repository,
+    readCloudId = { store.stringForKey(UserIdentityRepository.IdentityKey) },
+    writeCloudId = { store.setString(it, UserIdentityRepository.IdentityKey) },
+    scheduleRetry = { delayMillis, action ->
+      val job = scope.launch {
+        delay(delayMillis)
+        action()
+      }
+      ({ job.cancel() })
+    },
+  )
   private val observer = NSNotificationCenter.defaultCenter.addObserverForName(
     NSUbiquitousKeyValueStoreDidChangeExternallyNotification,
     store,
     NSOperationQueue.mainQueue,
   ) { notification ->
     when ((notification?.userInfo?.get(NSUbiquitousKeyValueStoreChangeReasonKey) as? NSNumber)?.longLongValue) {
-      NSUbiquitousKeyValueStoreAccountChange -> accountChanged = true
-      NSUbiquitousKeyValueStoreInitialSyncChange -> {
-        if (!accountChanged) {
-          repository.restoreFromBackup(store.stringForKey(UserIdentityRepository.IdentityKey), confirmedByCloud = false)
-        }
-      }
+      NSUbiquitousKeyValueStoreAccountChange -> reconciler.onAccountChange()
+      NSUbiquitousKeyValueStoreInitialSyncChange -> reconciler.onInitialSyncChange()
       NSUbiquitousKeyValueStoreServerChange -> {
         val changedKeys = notification.userInfo?.get(NSUbiquitousKeyValueStoreChangedKeysKey) as? List<*>
-        if (!accountChanged && changedKeys?.contains(UserIdentityRepository.IdentityKey) == true) {
-          repository.restoreFromBackup(store.stringForKey(UserIdentityRepository.IdentityKey))
-        }
+        if (changedKeys?.contains(UserIdentityRepository.IdentityKey) == true) reconciler.onServerChange()
       }
     }
   }
 
   init {
     store.synchronize()
-    seedBackup()
-  }
-
-  /**
-   * Uses an available cloud identity before seeding iCloud with the local value.
-   * Later cloud notifications reconcile a backup that has not arrived yet.
-   */
-  private fun seedBackup() {
-    val backedUpId = store.stringForKey(UserIdentityRepository.IdentityKey)
-    repository.restoreFromBackup(backedUpId, confirmedByCloud = false)
-    if (UserIdentityRepository.parseIdentity(backedUpId) != repository.id.value) {
-      // Initial/server notifications reconcile a cloud value that arrives after this local seed.
-      store.setString(repository.id.value.toString(), UserIdentityRepository.IdentityKey)
-    }
+    reconciler.seed()
   }
 
   /**
@@ -63,5 +62,7 @@ internal class ICloudIdentitySync(private val repository: UserIdentityRepository
    */
   fun close() {
     NSNotificationCenter.defaultCenter.removeObserver(observer)
+    reconciler.close()
+    scope.cancel()
   }
 }
