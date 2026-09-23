@@ -71,7 +71,7 @@ class AndroidLiveMatchNotificationsTest {
     assertEquals(3, update.totalMaps)
     assertEquals(2, update.currentMap?.number)
     assertEquals("PRX", update.teams[1].tag)
-    assertEquals(LiveMatchMapProgress(1, 3), update.mapProgress())
+    assertEquals(LiveMatchMapProgress(2, 3), update.mapProgress())
 
     listOf("null", "0", "-1", "10", "2147483647", "\"3\"", "{}", "[]").forEach { invalid ->
       val parsed = requireNotNull(parser.parse(payload(state = state.replace("\"total_maps\":3", "\"total_maps\":$invalid"))))
@@ -87,8 +87,21 @@ class AndroidLiveMatchNotificationsTest {
   }
 
   @Test
+  fun teamTagsUseNamesUntilAvailable() {
+    val parser = LiveMatchUpdateParser(KoinPlatform.getKoin().get<Json>())
+    for (tag in listOf("null", "\"\"", "\"  \"", "\"PRX\"")) {
+      val state = validState().replace("\"name\":\"Paper Rex\"", "\"name\":\"Paper Rex\",\"tag\":$tag")
+      val match = requireNotNull(parser.parse(payload(state = state)))
+      val expected = if (tag == "\"PRX\"") "PRX" else "Paper Rex"
+      assertEquals(expected, match.teams[1].displayName)
+      val notification = LiveMatchNotificationRenderer(context).build(match.copy(terminal = true), false)
+      assertEquals("Team Liquid : 1\n$expected : 1", notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT))
+    }
+  }
+
+  @Test
   @SdkSuppress(minSdkVersion = 36)
-  fun progressShowsOnlyCompletedMapBoundariesAndFallsBackWithoutMetadata() {
+  fun progressShowsOneStopPerMapAndFallsBackWithoutMetadata() {
     val renderer = LiveMatchNotificationRenderer(context)
     val live = update("991000001", 60).copy(
       totalMaps = 3,
@@ -96,16 +109,16 @@ class AndroidLiveMatchNotificationsTest {
     )
     val notification = renderer.build(live, scoresHidden = false, sdkInt = 36)
     val progress = Notification.Builder.recoverBuilder(context, notification).style as Notification.ProgressStyle
-    assertEquals(1, progress.progress)
+    assertEquals(2, progress.progress)
     assertEquals(3, progress.progressMax)
     assertEquals(listOf(1, 1, 1), progress.progressSegments.map { it.length })
-    assertEquals(listOf(1, 2), progress.progressPoints.map { it.position })
+    assertEquals(listOf(1, 2, 3), progress.progressPoints.map { it.position })
     assertEquals("Team Liquid : 1\nPaper Rex : 1", notification.extras.getCharSequence(Notification.EXTRA_TEXT))
 
     val firstMap = live.copy(currentMap = live.currentMap?.copy(number = 1))
-    assertEquals(LiveMatchMapProgress(0, 3), firstMap.mapProgress())
+    assertEquals(LiveMatchMapProgress(1, 3), firstMap.mapProgress())
     val lastMap = live.copy(currentMap = live.currentMap?.copy(number = 3))
-    assertEquals(LiveMatchMapProgress(2, 3), lastMap.mapProgress())
+    assertEquals(LiveMatchMapProgress(3, 3), lastMap.mapProgress())
     listOf(live.copy(totalMaps = null), live.copy(currentMap = null), live.copy(terminal = true)).forEach { state ->
       assertTrue(Notification.Builder.recoverBuilder(context, renderer.build(state, false, 36)).style is Notification.BigTextStyle)
     }

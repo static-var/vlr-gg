@@ -128,7 +128,9 @@ internal data class LiveMatchUpdate(
   val totalMaps: Int? = null,
 )
 
-internal data class LiveMatchTeam(val name: String, val imageUrl: String?, val score: Int?, val tag: String? = null)
+internal data class LiveMatchTeam(val name: String, val imageUrl: String?, val score: Int?, val tag: String? = null) {
+  val displayName: String get() = tag?.trim()?.takeIf(String::isNotEmpty) ?: name
+}
 
 internal data class LiveMatchMap(val name: String, val scores: List<Int?>, val number: Int? = null)
 
@@ -359,9 +361,9 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
   private fun applyFinal(builder: Notification.Builder, update: LiveMatchUpdate, scoresHidden: Boolean) {
     val teams = update.teams
     val matchSummary = if (scoresHidden) {
-      context.getString(R.string.widget_match_teams, teams[0].name, teams[1].name)
+      context.getString(R.string.widget_match_teams, teams[0].displayName, teams[1].displayName)
     } else {
-      "${teams[0].name} ${scorePair(teams.map(LiveMatchTeam::score), false)} ${teams[1].name}"
+      "${teams[0].displayName} ${scorePair(teams.map(LiveMatchTeam::score), false)} ${teams[1].displayName}"
     }
     val scoreLines = teamScoreLines(update, scoresHidden)
     builder.setContentTitle(joinMetadata(context.getString(R.string.live_match_notification_final), matchSummary))
@@ -373,7 +375,7 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
   private fun teamScoreLines(update: LiveMatchUpdate, scoresHidden: Boolean): String = update.teams.joinToString("\n") { team ->
     context.getString(
       R.string.widget_live_score,
-      team.name,
+      team.displayName,
       team.score.takeUnless { scoresHidden }?.toString() ?: context.getString(R.string.widget_score_unavailable),
     )
   }
@@ -408,7 +410,7 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
   }
 }
 
-internal data class LiveMatchMapProgress(val completedMaps: Int, val totalMaps: Int)
+internal data class LiveMatchMapProgress(val currentMapNumber: Int, val totalMaps: Int)
 
 private const val MaxVisibleMapSegments = 9
 
@@ -416,7 +418,7 @@ internal fun LiveMatchUpdate.mapProgress(): LiveMatchMapProgress? {
   if (terminal) return null
   val maximumMaps = totalMaps?.takeIf { it in 1..MaxVisibleMapSegments } ?: return null
   val activeMap = currentMap?.number?.takeIf { it in 1..maximumMaps } ?: return null
-  return LiveMatchMapProgress(activeMap - 1, maximumMaps)
+  return LiveMatchMapProgress(activeMap, maximumMaps)
 }
 
 @RequiresApi(36)
@@ -425,8 +427,8 @@ private object Api36Notification {
     builder.setStyle(
       Notification.ProgressStyle()
         .setProgressSegments(List(progress.totalMaps) { Notification.ProgressStyle.Segment(1) })
-        .setProgressPoints((1 until progress.totalMaps).map { Notification.ProgressStyle.Point(it) })
-        .setProgress(progress.completedMaps),
+        .setProgressPoints((1..progress.totalMaps).map { Notification.ProgressStyle.Point(it) })
+        .setProgress(progress.currentMapNumber),
     )
   }
 }
@@ -452,7 +454,7 @@ private object Api37Notification {
       } else {
         Notification.Metric.FixedInt(score)
       }
-      style.addMetric(Notification.Metric(value, team.name))
+      style.addMetric(Notification.Metric(value, team.displayName))
     }
     builder.setStyle(style.setCriticalMetric(Notification.MetricStyle.METRIC_INDEX_NONE))
   }
