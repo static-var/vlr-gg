@@ -2,6 +2,60 @@ import ActivityKit
 import Foundation
 import shared
 
+@available(iOS 16.2, *)
+@MainActor
+final class MatchActivityLogoObserver {
+    static let shared = MatchActivityLogoObserver()
+
+    private var activityTask: Task<Void, Never>?
+    private var contentTasks: [String: Task<Void, Never>] = [:]
+
+    func start() {
+        guard activityTask == nil else { return }
+        activityTask = Task {
+            for activity in Activity<MatchActivityAttributes>.activities {
+                observe(activity)
+            }
+            for await activity in Activity<MatchActivityAttributes>.activityUpdates {
+                observe(activity)
+            }
+        }
+    }
+
+    private func observe(_ activity: Activity<MatchActivityAttributes>) {
+        guard contentTasks[activity.id] == nil,
+              activity.activityState != .ended,
+              activity.activityState != .dismissed else { return }
+        contentTasks[activity.id] = Task {
+            let stateTask = Task {
+                for await state in activity.activityStateUpdates {
+                    if state == .ended || state == .dismissed {
+                        contentTasks[activity.id]?.cancel()
+                        break
+                    }
+                }
+            }
+            defer {
+                stateTask.cancel()
+                contentTasks[activity.id] = nil
+            }
+            guard activity.activityState != .ended,
+                  activity.activityState != .dismissed else { return }
+            await prefetch(activity.content.state)
+            guard !Task.isCancelled, !activity.content.state.terminal else { return }
+            for await content in activity.contentUpdates {
+                guard !Task.isCancelled else { return }
+                await prefetch(content.state)
+                if content.state.terminal { break }
+            }
+        }
+    }
+
+    private func prefetch(_ state: MatchActivityAttributes.ContentState) async {
+        await MatchActivityLogoCache.prefetch(state.teams.compactMap(\.img))
+    }
+}
+
 final class IosActivityPushTokenProvider: NSObject, PushTokenProvider {
     var platform: PushPlatform { .ios }
 
@@ -62,6 +116,9 @@ enum SimulatorMatchActivity {
             let payload = try JSONDecoder().decode(Payload.self, from: Data(json.utf8))
             guard payload.state.match_id == "3141592653" else {
                 throw TestError.unsupportedMatch
+            }
+            if payload.event != .inspect {
+                await MatchActivityLogoCache.prefetch(payload.state.teams.compactMap(\.img))
             }
             let content = ActivityContent(state: payload.state, staleDate: Date().addingTimeInterval(180))
             let activities = Activity<MatchActivityAttributes>.activities.filter {

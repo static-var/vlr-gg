@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AD5F1EABAFC8460BA502C001 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
+		AD5F1EABAFC8460BA502C002 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
+		AD5F1EABAFC8460BA502C003 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
+
 		7A40E5F690294147A5126801 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */; };
 		1E500497BDD6693B31A1A4B2 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */; };
 		41ED708CD7A4065E2C2DDCB6 /* MatchActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */; };
@@ -92,6 +96,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityLogoCache.swift; sourceTree = "<group>"; };
 		05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchLiveActivity.swift; sourceTree = "<group>"; };
 		3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityAttributes.swift; sourceTree = "<group>"; };
 		D1F8D968CF01C749B570E7A9 /* ActivityPushTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityPushTokenProvider.swift; sourceTree = "<group>"; };
@@ -272,6 +277,7 @@
 		BE812D4F3BD7A6E3E029D946 /* WidgetShared */ = {
 			isa = PBXGroup;
 			children = (
+				AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */,
 				3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */,
 				48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */,
 			);
@@ -532,6 +538,7 @@
 				CD369A06E85A4B3F85B9452D /* LiveActivityPermissionProvider.swift in Sources */,
 				B5774EBA09C9BF2544502554 /* FavoriteSearch.swift in Sources */,
 				8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */,
+				AD5F1EABAFC8460BA502C001 /* MatchActivityLogoCache.swift in Sources */,
 				DF927176F502A5D4C6FFC3A7 /* MatchActivityAttributes.swift in Sources */,
 				7D487293553B3F4031496A2A /* NativeLocalization.swift in Sources */,
 				B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */,
@@ -556,6 +563,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD5F1EABAFC8460BA502C002 /* MatchActivityLogoCache.swift in Sources */,
 				C4F26D6615E5B84E8ABD7919 /* MatchActivityAttributes.swift in Sources */,
 				7A40E5F690294147A5126801 /* MatchLiveActivity.swift in Sources */,
 				D3FAD1589057032649BD28A1 /* MatchActivityAttributesTests.swift in Sources */,
@@ -574,6 +582,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A549AA5B4708B66DBB9797F1 /* GeneratedBuildConfig.swift in Sources */,
+				AD5F1EABAFC8460BA502C003 /* MatchActivityLogoCache.swift in Sources */,
 				41ED708CD7A4065E2C2DDCB6 /* MatchActivityAttributes.swift in Sources */,
 				1E500497BDD6693B31A1A4B2 /* MatchLiveActivity.swift in Sources */,
 				9DD4C32FDB291AC803C0907D /* UpcomingMatchesWidget.swift in Sources */,
