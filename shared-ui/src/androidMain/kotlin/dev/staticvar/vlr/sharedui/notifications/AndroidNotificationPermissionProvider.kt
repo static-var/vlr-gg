@@ -24,10 +24,10 @@ import dev.staticvar.vlr.core.notifications.NotificationAuthorization
 import dev.staticvar.vlr.core.notifications.NotificationPermissionProvider
 
 @Composable
-public fun rememberAndroidNotificationPermissionProvider(): NotificationPermissionProvider {
+public fun rememberAndroidNotificationPermissionProvider(supportsLiveUpdates: () -> Boolean): NotificationPermissionProvider {
   val context = LocalContext.current.applicationContext
   val activity = LocalActivity.current
-  val provider = remember(context) { AndroidNotificationPermissionProvider(context) }
+  val provider = remember(context, supportsLiveUpdates) { AndroidNotificationPermissionProvider(context, supportsLiveUpdates) }
   val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
     provider.completeRequest()
   }
@@ -42,16 +42,17 @@ public fun rememberAndroidNotificationPermissionProvider(): NotificationPermissi
   return provider
 }
 
-private class AndroidNotificationPermissionProvider(private val context: Context) : NotificationPermissionProvider {
+private class AndroidNotificationPermissionProvider(
+  private val context: Context,
+  private val supportsLiveNotifications: () -> Boolean,
+) : NotificationPermissionProvider {
   private val mainHandler = Handler(Looper.getMainLooper())
   private val preferences = context.getSharedPreferences("notification_permission", Context.MODE_PRIVATE)
   private var pendingResult: ((NotificationAuthorization) -> Unit)? = null
   var launchRequest: (() -> Unit)? = null
   var shouldShowRationale: (() -> Boolean)? = null
 
-  override fun supportsLiveUpdates(): Boolean =
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA &&
-      Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1
+  override fun supportsLiveUpdates(): Boolean = supportsLiveNotifications()
 
   override fun areLiveActivitiesEnabled(): Boolean? = null
 

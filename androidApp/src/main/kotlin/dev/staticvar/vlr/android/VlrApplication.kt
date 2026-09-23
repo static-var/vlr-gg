@@ -22,7 +22,7 @@ import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.koin.androidContext
 
 class VlrApplication : Application() {
-  internal val pushTokenProvider = AndroidPushTokenProvider()
+  internal val pushTokenProvider by lazy { AndroidPushTokenProvider(this) }
   internal lateinit var liveTopicSubscriptions: AndroidLiveTopicSubscriptions
     private set
   internal lateinit var liveMatchNotifications: AndroidLiveMatchNotifications

@@ -2,7 +2,6 @@ package dev.staticvar.vlr.android.notifications
 
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
@@ -25,6 +24,7 @@ internal class AndroidLiveTopicSubscriptions(
   private val preferences: LiveMatchNotificationPreferencesRepository,
   scope: CoroutineScope,
 ) {
+  private val appContext = context.applicationContext
   private val storage = context.getSharedPreferences("live_match_topics", Context.MODE_PRIVATE)
   private val notifications = context.getSystemService(NotificationManager::class.java)
   private val refreshes = Channel<Unit>(Channel.CONFLATED)
@@ -57,8 +57,8 @@ internal class AndroidLiveTopicSubscriptions(
 
   private suspend fun synchronize() {
     val snapshot = favoritesSnapshot ?: return
+    if (!AndroidLiveNotificationAvailability.isAvailable(appContext)) return
     val enabled = preferences.preferences.value.enabled &&
-      Build.VERSION.SDK_INT >= 36 && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1 &&
       notifications.areNotificationsEnabled() &&
       notifications.getNotificationChannel("live_matches")?.importance != NotificationManager.IMPORTANCE_NONE
     val desired = if (enabled) snapshot.liveTopics() else emptySet()

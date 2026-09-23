@@ -48,7 +48,7 @@ internal class AndroidLiveMatchNotifications(
   private val renderer = LiveMatchNotificationRenderer(appContext)
   private val lock = Any()
 
-  override fun canRequestStart(): Boolean = supportsLiveMatchNotifications() &&
+  override fun canRequestStart(): Boolean = AndroidLiveNotificationAvailability.isAvailable(appContext) &&
     preferences.preferences.value.enabled && canPostNotifications()
 
   override fun observedMatchIds(): List<String> = synchronized(lock) {
@@ -57,7 +57,9 @@ internal class AndroidLiveMatchNotifications(
 
   fun handle(data: Map<String, String>) {
     synchronized(lock) {
-      if (!supportsLiveMatchNotifications() || !preferences.preferences.value.enabled || !canPostNotifications()) return
+      if (!AndroidLiveNotificationAvailability.isAvailable(appContext) ||
+        !preferences.preferences.value.enabled || !canPostNotifications()
+      ) return
       val update = parser.parse(data) ?: return
       if (!stateStore.shouldAccept(update)) return
 
@@ -197,10 +199,6 @@ private fun LiveMatchUpdate.isValid(): Boolean =
 
 private fun String.isValidMatchId(): Boolean =
   length in 1..10 && all { it in '0'..'9' } && toLongOrNull()?.let { it > 0 } == true
-
-internal fun supportsLiveMatchNotifications(): Boolean =
-  Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA &&
-    Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1
 
 internal class LiveMatchNotificationStateStore(
   context: Context,

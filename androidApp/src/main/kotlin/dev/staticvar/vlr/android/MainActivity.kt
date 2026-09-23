@@ -11,20 +11,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import dev.staticvar.vlr.sharedui.icon.syncLauncherSplashTheme
-import dev.staticvar.vlr.widget.ScoreWidget
 import androidx.glance.appwidget.updateAll
-import dev.staticvar.vlr.android.widget.LegacyWidgetRefreshScheduler
+import dev.staticvar.vlr.android.notifications.AndroidLiveNotificationAvailability
 import dev.staticvar.vlr.android.widget.FavoriteMatchWidgets
+import dev.staticvar.vlr.android.widget.LegacyWidgetRefreshScheduler
 import dev.staticvar.vlr.android.widget.WidgetSnapshotStore
 import dev.staticvar.vlr.shared.App
 import dev.staticvar.vlr.shared.di.LocalViewModelObserver
 import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
+import dev.staticvar.vlr.sharedui.icon.syncLauncherSplashTheme
 import dev.staticvar.vlr.sharedui.notifications.LocalNotificationPermissionProvider
 import dev.staticvar.vlr.sharedui.notifications.rememberAndroidNotificationPermissionProvider
 import dev.staticvar.vlr.sharedui.share.LocalImageSharer
 import dev.staticvar.vlr.sharedui.share.rememberAndroidImageSharer
+import dev.staticvar.vlr.widget.ScoreWidget
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
@@ -47,10 +49,13 @@ class MainActivity : ComponentActivity() {
     }
 
     setContent {
+      val supportsLiveNotifications = remember {
+        { AndroidLiveNotificationAvailability.isAvailable(applicationContext) }
+      }
       CompositionLocalProvider(
         LocalViewModelObserver provides viewModelLeakObserver,
         LocalImageSharer provides rememberAndroidImageSharer(),
-        LocalNotificationPermissionProvider provides rememberAndroidNotificationPermissionProvider(),
+        LocalNotificationPermissionProvider provides rememberAndroidNotificationPermissionProvider(supportsLiveNotifications),
       ) {
         App(
           deepLinkHandler = deepLinkHandler,

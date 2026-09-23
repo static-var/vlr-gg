@@ -141,9 +141,10 @@ public fun App(
     liveActivityStartCoordinator.attach(liveUpdateStateProvider?.takeIf { it.platform == pushTokenProvider?.platform })
     onDispose { liveActivityStartCoordinator.attach(null) }
   }
-  LaunchedEffect(lifecycleState, pushTokenRegistrationCoordinator) {
+  LaunchedEffect(lifecycleState, pushTokenRegistrationCoordinator, notificationSettingsController) {
     if (lifecycleState == Lifecycle.State.RESUMED) {
       pushTokenRegistrationCoordinator?.onForeground()
+      notificationSettingsController?.refresh()
     }
   }
   val cleanupPreferences = koinInject<CacheCleanupPreferencesRepository>()
