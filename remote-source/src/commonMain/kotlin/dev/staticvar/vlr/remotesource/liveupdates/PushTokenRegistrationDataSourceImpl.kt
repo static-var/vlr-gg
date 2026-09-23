@@ -37,6 +37,6 @@ private data class PushTokenRegistrationRequest(
 
 private val PushPlatform.wireValue: String
   get() = when (this) {
-    PushPlatform.Ios -> "ios"
+    PushPlatform.Ios -> "iOS"
     PushPlatform.Android -> "android"
   }

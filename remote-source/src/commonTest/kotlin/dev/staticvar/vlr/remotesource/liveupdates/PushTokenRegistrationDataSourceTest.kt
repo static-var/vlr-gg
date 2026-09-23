@@ -22,7 +22,7 @@ import kotlin.test.assertTrue
 
 class PushTokenRegistrationDataSourceTest {
   @Test
-  fun iosRequestUsesClientPathAndLowercasePlatform() = runTest {
+  fun iosRequestUsesClientPathAndBackendPlatformValue() = runTest {
     val requests = mutableListOf<Triple<String, HttpMethod, String>>()
     val client = mockClient { request ->
       requests += Triple(request.url.encodedPath, request.method, request.body.toByteArray().decodeToString())
@@ -36,7 +36,7 @@ class PushTokenRegistrationDataSourceTest {
     assertEquals("/api/v1/live-updates/clients/$ClientId/token", path)
     assertEquals(HttpMethod.Put, method)
     assertEquals("00aaff", testJson().parseToJsonElement(body).jsonObject.getValue("token").jsonPrimitive.content)
-    assertEquals("ios", testJson().parseToJsonElement(body).jsonObject.getValue("platform").jsonPrimitive.content)
+    assertEquals("iOS", testJson().parseToJsonElement(body).jsonObject.getValue("platform").jsonPrimitive.content)
   }
 
   @Test
