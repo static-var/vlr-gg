@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.remotesource.di
 
+import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.remotesource.events.EventDataSource
 import dev.staticvar.vlr.remotesource.events.EventDataSourceImpl
 import dev.staticvar.vlr.remotesource.liveupdates.FavoriteLiveUpdateDataSource
@@ -65,7 +66,7 @@ fun remoteSourceModule(
 
   // HttpClient instance
   single<HttpClient> {
-    get<HttpClientFactory>().create(get(), get(), get())
+    get<HttpClientFactory>().create(get(), get(), get(), get<NetworkMonitor>())
   }
 
   // DataSources

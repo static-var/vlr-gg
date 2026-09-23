@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.remotesource.network
 
+import dev.staticvar.vlr.core.network.NetworkMonitor
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 
@@ -16,5 +17,6 @@ expect class HttpClientFactory() {
     json: Json,
     configuration: NetworkConfiguration,
     acceptLanguageProvider: AcceptLanguageProvider,
+    networkMonitor: NetworkMonitor,
   ): HttpClient
 }
