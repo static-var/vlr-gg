@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 
@@ -19,6 +20,11 @@ public sealed interface PrismNavigationRailStyle {
   @get:ReadOnlyComposable
   public val frame: PrismFrameTokens
     get() = Prism.frames.compact
+
+  @get:Composable
+  @get:ReadOnlyComposable
+  public val labelTextStyle: TextStyle
+    get() = Prism.typography.caption
 
   @Composable
   @ReadOnlyComposable
