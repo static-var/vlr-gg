@@ -155,6 +155,42 @@ class FavoriteLiveUpdateCoordinatorTest {
     assertEquals(2, harness.dataSource.requests.size)
   }
 
+  @Test
+  fun optOutClearsClientEvenWhenFavoritePutResponseWasLost() = runTest {
+    val harness = FavoriteSyncHarness(backgroundScope, favorites(teams = listOf("11"))).apply {
+      dataSource.succeeds = false
+    }
+    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Enabled)
+    runCurrent()
+    assertEquals(setOf(harness.identity.id.value.toString()), harness.tokenPreferences.possiblySyncedFavoriteClients())
+
+    harness.dataSource.succeeds = true
+    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Disabled)
+    runCurrent()
+
+    assertEquals(2, harness.dataSource.requests.size)
+    assertTrue(harness.dataSource.requests.last().isEmpty())
+    assertTrue(harness.tokenPreferences.possiblySyncedFavoriteClients().isEmpty())
+  }
+
+  @Test
+  fun revertingAfterLostPutResponseResendsThePreviousSnapshot() = runTest {
+    val first = favorites(matches = listOf("1"))
+    val harness = FavoriteSyncHarness(backgroundScope, first)
+    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Enabled)
+    runCurrent()
+
+    harness.dataSource.succeeds = false
+    harness.favorites.direct.value = favorites(matches = listOf("2"))
+    runCurrent()
+    harness.dataSource.succeeds = true
+    harness.favorites.direct.value = first
+    runCurrent()
+
+    assertEquals(listOf(listOf("1"), listOf("2"), listOf("1")), harness.dataSource.requests.map(FavoriteRequest::matches))
+    assertEquals(listOf("1"), harness.coordinator.syncedFavorites.value?.favorites?.matches)
+  }
+
   private companion object {
     const val RestoredClientId: String = "01996ff9-3000-7000-8000-000000000002"
   }
@@ -169,7 +205,7 @@ private class FavoriteSyncHarness(
   val favorites = FakeFavoritesRepository(initialFavorites)
   val dataSource = FakeFavoriteLiveUpdateDataSource()
   val identity = UserIdentityRepository(MapSettings(), allowDelayedRestore = allowDelayedIdentityRestore)
-  private val tokenPreferences = PushTokenRegistrationPreferencesRepository(MapSettings()).apply {
+  val tokenPreferences = PushTokenRegistrationPreferencesRepository(MapSettings()).apply {
     if (previouslyRegistered) markUploaded(identity.id.value.toString(), PushPlatform.Ios, "token")
   }
   val coordinator = FavoriteLiveUpdateCoordinator(identity, favorites, tokenPreferences, dataSource, scope)

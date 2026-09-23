@@ -15,6 +15,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 internal enum class LiveUpdateEligibility {
@@ -26,7 +28,7 @@ internal enum class LiveUpdateEligibility {
 internal class FavoriteLiveUpdateCoordinator(
   identityRepository: UserIdentityRepository,
   favoritesRepository: FavoritesRepository,
-  tokenPreferences: PushTokenRegistrationPreferencesRepository,
+  private val tokenPreferences: PushTokenRegistrationPreferencesRepository,
   private val dataSource: FavoriteLiveUpdateDataSource,
   private val appScope: CoroutineScope,
 ) {
@@ -38,8 +40,11 @@ internal class FavoriteLiveUpdateCoordinator(
   private val attemptedRequests = mutableSetOf<Request>()
   private var lastSuccessfulRequest: Request? = null
   private val serverClients = linkedSetOf<String>().apply {
+    addAll(tokenPreferences.possiblySyncedFavoriteClients())
     tokenPreferences.preferences.value.uploadedClientId?.let(::add)
   }
+  private val synced = MutableStateFlow<SyncedFavorites?>(null)
+  val syncedFavorites: StateFlow<SyncedFavorites?> = synced
 
   init {
     appScope.launch {
@@ -69,12 +74,14 @@ internal class FavoriteLiveUpdateCoordinator(
         eligibility = action.value
         advanceRevision()
         uploadIfNeeded()
+        publishCurrentAck()
       }
 
       is Action.SnapshotChanged -> {
         snapshot = action.value
         advanceRevision()
         uploadIfNeeded()
+        publishCurrentAck()
       }
 
       Action.Retry -> {
@@ -88,12 +95,14 @@ internal class FavoriteLiveUpdateCoordinator(
           lastSuccessfulRequest = action.upload.request
           if (action.upload.request.favorites == FavoriteIds.Empty) {
             serverClients.remove(action.upload.request.clientId)
+            tokenPreferences.markFavoriteClientCleared(action.upload.request.clientId)
           } else {
             serverClients.add(action.upload.request.clientId)
           }
         }
         inFlight = null
         uploadIfNeeded()
+        publishCurrentAck()
       }
     }
   }
@@ -123,6 +132,14 @@ internal class FavoriteLiveUpdateCoordinator(
 
     inFlight = upload
     attemptedRequests += request
+    if (request != lastSuccessfulRequest) {
+      lastSuccessfulRequest = null
+      synced.value = null
+    }
+    if (request.favorites != FavoriteIds.Empty) {
+      tokenPreferences.markFavoriteUploadAttempt(request.clientId)
+      serverClients.add(request.clientId)
+    }
     appScope.launch {
       val success = try {
         dataSource.replace(
@@ -146,9 +163,20 @@ internal class FavoriteLiveUpdateCoordinator(
     attemptedRequests.clear()
   }
 
+  private fun publishCurrentAck() {
+    val current = snapshot
+    synced.value = if (eligibility == LiveUpdateEligibility.Enabled && inFlight == null && current != null &&
+      lastSuccessfulRequest == Request(current.clientId, current.favorites)
+    ) {
+      SyncedFavorites(current.clientId, current.favorites)
+    } else {
+      null
+    }
+  }
+
   private data class ClientFavorites(val clientId: String, val favorites: FavoriteIds)
 
-  private data class FavoriteIds(
+  internal data class FavoriteIds(
     val teams: List<String>,
     val matches: List<String>,
     val players: List<String>,
@@ -167,6 +195,8 @@ internal class FavoriteLiveUpdateCoordinator(
   }
 
   private data class Request(val clientId: String, val favorites: FavoriteIds)
+
+  internal data class SyncedFavorites(val clientId: String, val favorites: FavoriteIds)
 
   private data class Upload(val request: Request, val revision: Long)
 

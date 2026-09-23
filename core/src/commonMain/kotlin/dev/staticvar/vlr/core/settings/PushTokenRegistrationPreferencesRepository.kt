@@ -41,6 +41,20 @@ public class PushTokenRegistrationPreferencesRepository(private val storage: Set
     )
   }
 
+  public fun possiblySyncedFavoriteClients(): Set<String> = storage.getStringOrNull(FavoriteClientsKey)
+    ?.split(',')
+    ?.filter(String::isNotBlank)
+    ?.toSet()
+    .orEmpty()
+
+  public fun markFavoriteUploadAttempt(clientId: String) {
+    storage.putString(FavoriteClientsKey, (possiblySyncedFavoriteClients() + clientId).joinToString(","))
+  }
+
+  public fun markFavoriteClientCleared(clientId: String) {
+    storage.putString(FavoriteClientsKey, (possiblySyncedFavoriteClients() - clientId).joinToString(","))
+  }
+
   private fun readPreferences(): PushTokenRegistrationPreferences = PushTokenRegistrationPreferences(
     token = storage.getStringOrNull(TokenKey),
     tokenPlatform = storage.getStringOrNull(TokenPlatformKey).toPushPlatformOrNull(),
@@ -58,5 +72,6 @@ public class PushTokenRegistrationPreferencesRepository(private val storage: Set
     const val UploadedTokenKey: String = "notifications.uploadedPushToken"
     const val UploadedPlatformKey: String = "notifications.uploadedPushTokenPlatform"
     const val UploadedClientIdKey: String = "notifications.uploadedPushTokenClientId"
+    const val FavoriteClientsKey: String = "notifications.possiblySyncedFavoriteClients"
   }
 }
