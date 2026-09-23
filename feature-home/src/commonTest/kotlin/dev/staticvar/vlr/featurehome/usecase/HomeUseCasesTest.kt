@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.featurehome.usecase
 
+import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.model.EventDetails
@@ -22,12 +23,16 @@ import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.featurehome.presentation.initialHomeMatchPage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -75,6 +80,7 @@ class HomeUseCasesTest {
 
     val feed = ObserveHomeFeedUseCase(
       FakeFavoritesRepository(directFavorites), FakeMatchRepository(matches), FakeEventRepository(events),
+      dispatchers = TestDispatcherProvider(StandardTestDispatcher(testScheduler)),
       clock = object : Clock {
         override fun now(): Instant = Instant.parse("2026-09-12T12:00:00Z")
       },
@@ -92,6 +98,31 @@ class HomeUseCasesTest {
     assertEquals(directFavorites.players, feed.directFavorites.players)
     assertEquals(5, directFavorites.matches.size)
     assertEquals(6, directFavorites.events.size)
+  }
+
+  @Test
+  fun homeFeedAssemblyRunsOnDefaultDispatcher() = runTest {
+    val defaultDispatcher = TrackingDispatcher(StandardTestDispatcher(testScheduler))
+    var clockInvocations = 0
+    var clockObservedDefaultDispatcher = false
+    val useCase = ObserveHomeFeedUseCase(
+      favoritesRepository = FakeFavoritesRepository(DirectFavoriteSnapshot()),
+      matchRepository = FakeMatchRepository(emptyList()),
+      eventRepository = FakeEventRepository(emptyList()),
+      dispatchers = TestDispatcherProvider(defaultDispatcher),
+      clock = object : Clock {
+        override fun now(): Instant {
+          clockInvocations++
+          clockObservedDefaultDispatcher = defaultDispatcher.isRunning
+          return Instant.parse("2026-09-12T12:00:00Z")
+        }
+      },
+    )
+
+    useCase().first()
+
+    assertEquals(1, clockInvocations)
+    assertTrue(clockObservedDefaultDispatcher)
   }
 
   @Test
@@ -276,6 +307,31 @@ class HomeUseCasesTest {
 
     assertFailsWith<CancellationException> { useCase() }
     assertTrue(matchCancelled)
+  }
+}
+
+private class TestDispatcherProvider(
+  override val default: CoroutineDispatcher,
+) : DispatcherProvider {
+  override val io: CoroutineDispatcher = default
+  override val main: CoroutineDispatcher = default
+}
+
+private class TrackingDispatcher(
+  private val delegate: CoroutineDispatcher,
+) : CoroutineDispatcher() {
+  var isRunning: Boolean = false
+    private set
+
+  override fun dispatch(context: CoroutineContext, block: Runnable) {
+    delegate.dispatch(context) {
+      isRunning = true
+      try {
+        block.run()
+      } finally {
+        isRunning = false
+      }
+    }
   }
 }
 
