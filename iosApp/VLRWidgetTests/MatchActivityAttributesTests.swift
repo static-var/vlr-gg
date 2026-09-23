@@ -11,6 +11,7 @@ final class MatchActivityAttributesTests: XCTestCase {
         CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, nil)
         let scenarios = [("live", false, false), ("hidden", false, true), ("final", true, false)]
         for (name, terminal, hidden) in scenarios {
+          for scheme in [ColorScheme.light, .dark] {
             let state = MatchActivityAttributes.ContentState(
                 match_id: "3141592653", observed_at: 1790000000, terminal: terminal,
                 teams: [
@@ -21,18 +22,46 @@ final class MatchActivityAttributesTests: XCTestCase {
             )
             let content = MatchLiveActivityLockScreen(state: state, spoilersHidden: hidden)
                 .frame(width: 370)
-                .background(PrismWidgetPalette.dark.background)
-                .environment(\.colorScheme, .dark)
+                .background(PrismWidgetPalette.background(for: scheme))
+                .environment(\.colorScheme, scheme)
                 .environment(\.locale, Locale(identifier: "en_US"))
             let renderer = ImageRenderer(content: content)
             renderer.scale = 3
             let image = try XCTUnwrap(renderer.uiImage)
             XCTAssertLessThanOrEqual(image.size.height, 160)
             let attachment = XCTAttachment(image: image)
-            attachment.name = "live-activity-\(name)"
+            attachment.name = "live-activity-\(name)-\(scheme)"
             attachment.lifetime = .keepAlways
             add(attachment)
+          }
         }
+    }
+
+    @available(iOS 16.1, *)
+    func testDisplayedScoresFollowMatchPhaseAndSpoilerPreference() {
+        func state(terminal: Bool, map: MatchActivityAttributes.ContentState.CurrentMap?) -> MatchActivityAttributes.ContentState {
+            .init(match_id: "3141592653", observed_at: 0, terminal: terminal,
+                  teams: [.init(name: "Alpha", img: nil, score: 2), .init(name: "Beta", img: nil, score: 1)],
+                  current_map: map)
+        }
+        let map = MatchActivityAttributes.ContentState.CurrentMap(name: "Ascent", scores: [13, 9])
+        let live = MatchLiveActivityScores(state: state(terminal: false, map: map), hidden: false)
+        XCTAssertEqual(live.primaryLeft, "13")
+        XCTAssertEqual(live.primaryRight, "9")
+        XCTAssertEqual(live.series, "2 – 1")
+        let final = MatchLiveActivityScores(state: state(terminal: true, map: map), hidden: false)
+        XCTAssertEqual(final.primaryLeft, "2")
+        XCTAssertEqual(final.primaryRight, "1")
+        for terminal in [false, true] {
+            let hidden = MatchLiveActivityScores(state: state(terminal: terminal, map: map), hidden: true)
+            XCTAssertEqual(hidden.primaryLeft, "—")
+            XCTAssertEqual(hidden.primaryRight, "—")
+            XCTAssertEqual(hidden.series, "— – —")
+        }
+        XCTAssertEqual(MatchLiveActivityScores(state: state(terminal: false, map: nil), hidden: false).primaryLeft, "2")
+        let incomplete = MatchLiveActivityScores(state: state(terminal: false, map: .init(name: "Ascent", scores: [nil])), hidden: false)
+        XCTAssertEqual(incomplete.primaryLeft, "—")
+        XCTAssertEqual(incomplete.primaryRight, "—")
     }
 
     @available(iOS 16.1, *)
