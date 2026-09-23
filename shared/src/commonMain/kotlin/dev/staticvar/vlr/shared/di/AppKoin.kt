@@ -22,6 +22,7 @@ import dev.staticvar.vlr.remotesource.di.remoteSourceModule
 import dev.staticvar.vlr.remotesource.network.NetworkConfiguration
 import dev.staticvar.vlr.shared.widget.widgetModule
 import dev.staticvar.vlr.shared.navigation.appNavigationModule
+import dev.staticvar.vlr.shared.notifications.pushTokenRegistrationModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.mp.KoinPlatform
@@ -77,6 +78,7 @@ public fun initializeAppKoin(
       teamFeatureModule(),
       playerFeatureModule(),
       appNavigationModule(),
+      pushTokenRegistrationModule(),
       widgetModule(),
     )
   }

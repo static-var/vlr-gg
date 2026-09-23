@@ -18,6 +18,7 @@ public data class LiveMatchNotificationAccess(
 public class LiveMatchNotificationSettingsController(
   private val repository: LiveMatchNotificationPreferencesRepository,
   private val provider: NotificationPermissionProvider,
+  private val onAuthorizationChanged: (NotificationAuthorization) -> Unit = {},
 ) {
   public val preferences: StateFlow<LiveMatchNotificationPreferences> = repository.preferences
   public val access: StateFlow<LiveMatchNotificationAccess>
@@ -29,7 +30,10 @@ public class LiveMatchNotificationSettingsController(
     val current = ++generation
     access.value = access.value.copy(activitiesEnabled = provider.areLiveActivitiesEnabled())
     provider.readNotificationAuthorization { result ->
-      if (generation == current) access.value = access.value.copy(notifications = result)
+      if (generation == current) {
+        access.value = access.value.copy(notifications = result)
+        onAuthorizationChanged(result)
+      }
     }
   }
 
@@ -50,6 +54,7 @@ public class LiveMatchNotificationSettingsController(
     provider.requestNotificationAuthorization { result ->
       if (generation == current) {
         access.value = LiveMatchNotificationAccess(provider.areLiveActivitiesEnabled(), result)
+        onAuthorizationChanged(result)
       }
     }
   }

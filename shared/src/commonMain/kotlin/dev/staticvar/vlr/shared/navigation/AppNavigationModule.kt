@@ -31,8 +31,7 @@ import dev.staticvar.vlr.featureabout.presentation.AppearanceRoute
 import dev.staticvar.vlr.featureabout.presentation.BundledRelease
 import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
 import dev.staticvar.vlr.featureabout.presentation.NotificationsRoute
-import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
-import dev.staticvar.vlr.core.settings.LiveMatchNotificationSettingsController
+import dev.staticvar.vlr.shared.notifications.LocalLiveMatchNotificationSettingsController
 import dev.staticvar.vlr.sharedui.notifications.LocalNotificationPermissionProvider
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewBanner
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewRoute
@@ -336,10 +335,8 @@ internal fun appNavigationModule(): Module = module {
     )
   }
   navigation<AppRoute.Notifications> {
-    val provider = LocalNotificationPermissionProvider.current
-    if (provider != null) {
-      val repository = koinInject<LiveMatchNotificationPreferencesRepository>()
-      val controller = remember(repository, provider) { LiveMatchNotificationSettingsController(repository, provider) }
+    val controller = LocalLiveMatchNotificationSettingsController.current
+    if (controller != null) {
       NotificationsRoute(controller, onBack = LocalVlrAppState.current::navigateUp)
     }
   }
