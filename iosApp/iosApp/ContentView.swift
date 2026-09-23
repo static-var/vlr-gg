@@ -9,6 +9,13 @@ struct ContentView: View {
     var body: some View {
         ComposeView(pendingDeepLink: pendingDeepLink)
             .ignoresSafeArea()
+            .task {
+                #if DEBUG && targetEnvironment(simulator)
+                if #available(iOS 16.2, *) {
+                    await SimulatorMatchActivity.runIfRequested()
+                }
+                #endif
+            }
             .onChange(of: scenePhase) { phase in
                 if phase == .active { FavoriteSearchStore.shared.retryIndexing() }
             }
