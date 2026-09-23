@@ -3,6 +3,7 @@ import Foundation
 import ImageIO
 import UIKit
 
+/// Downloads and caches team logos for the app and Live Activity widget.
 enum MatchActivityLogoCache {
     static func image(for source: String?) -> UIImage? {
         guard let source, let file = fileURL(for: source),
@@ -10,6 +11,8 @@ enum MatchActivityLogoCache {
         return image(data: data)
     }
 
+    /// Downloads missing HTTPS logos and stores valid images in the shared cache.
+    /// Skips failed or oversized responses and trims the cache after each write.
     static func prefetch(_ sources: [String]) async {
         for source in Set(sources) {
             guard !Task.isCancelled,
@@ -34,6 +37,8 @@ enum MatchActivityLogoCache {
         }
     }
 
+    /// Removes the oldest cached files until their total size fits the cache limit.
+    /// Failed deletions leave their sizes counted toward the remaining total.
     private static func trimCache(in directory: URL) {
         let keys: Set<URLResourceKey> = [.fileSizeKey, .contentModificationDateKey]
         guard let files = try? FileManager.default.contentsOfDirectory(
@@ -64,6 +69,8 @@ enum MatchActivityLogoCache {
             .appendingPathComponent(key, isDirectory: false)
     }
 
+    /// Decodes a thumbnail sized for the Live Activity logo.
+    /// Applies the source image’s orientation while limiting its pixel dimensions.
     private static func image(data: Data) -> UIImage? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil),
               let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, [

@@ -2,6 +2,7 @@ import ActivityKit
 import SwiftUI
 import WidgetKit
 
+/// Shows match updates on the Lock Screen and Dynamic Island.
 @available(iOS 16.1, *)
 struct MatchLiveActivity: Widget {
     var body: some WidgetConfiguration {
@@ -39,6 +40,7 @@ struct MatchLiveActivity: Widget {
     }
 }
 
+/// Displays teams and scores for a live or finished match.
 @available(iOS 16.1, *)
 struct MatchLiveActivityLockScreen: View {
     let state: MatchActivityAttributes.ContentState
@@ -119,6 +121,7 @@ struct MatchLiveActivityLockScreen: View {
     }
 }
 
+/// Displays a cached team logo or falls back to team initials.
 @available(iOS 16.1, *)
 private struct MatchLiveActivityLogo: View {
     let team: MatchActivityAttributes.ContentState.Team?
@@ -144,6 +147,7 @@ private struct MatchLiveActivityLogo: View {
     }
 }
 
+/// Displays two scores with a shared accessibility label.
 private struct MatchLiveActivityScorePair: View {
     let left: String
     let right: String
@@ -171,6 +175,7 @@ private struct MatchLiveActivityScorePair: View {
     }
 }
 
+/// Formats match scores according to the match phase and spoiler preference.
 @available(iOS 16.1, *)
 struct MatchLiveActivityScores {
     let state: MatchActivityAttributes.ContentState
@@ -181,6 +186,8 @@ struct MatchLiveActivityScores {
     var series: String { "\(display(seriesScores, at: 0)) – \(display(seriesScores, at: 1))" }
 
     private var seriesScores: [Int?] { state.teams.map(\.score) }
+    /// Uses map scores during play and series scores once the match finishes.
+    /// Falls back to series scores when current map data is unavailable.
     private var primary: [Int?] {
         state.terminal ? seriesScores : state.current_map?.scores ?? seriesScores
     }
@@ -191,6 +198,7 @@ struct MatchLiveActivityScores {
     }
 }
 
+/// Reads the spoiler preference shared with the app.
 private enum MatchLiveActivitySpoilerPreference {
     static var isHidden: Bool {
         WidgetSnapshotRepository().loadSource()?.spoilersHidden ?? true

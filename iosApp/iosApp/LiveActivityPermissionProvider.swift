@@ -2,6 +2,7 @@ import ActivityKit
 import UIKit
 import shared
 
+/// Reports iOS Live Activity support and opens the app’s system settings.
 final class IosLiveActivityPermissionProvider: NSObject, NotificationPermissionProvider {
     func supportsLiveUpdates() -> Bool {
         if #available(iOS 17.2, *) {

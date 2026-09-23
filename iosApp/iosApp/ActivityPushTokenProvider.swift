@@ -2,6 +2,7 @@ import ActivityKit
 import Foundation
 import shared
 
+/// Watches Live Activities and caches logos when their teams change.
 @available(iOS 16.2, *)
 @MainActor
 final class MatchActivityLogoObserver {
@@ -10,6 +11,8 @@ final class MatchActivityLogoObserver {
     private var activityTask: Task<Void, Never>?
     private var contentTasks: [String: Task<Void, Never>] = [:]
 
+    /// Observes existing activities and any activities started later.
+    /// Repeated calls reuse the active observation task.
     func start() {
         guard activityTask == nil else { return }
         activityTask = Task {
@@ -22,6 +25,8 @@ final class MatchActivityLogoObserver {
         }
     }
 
+    /// Records the match and caches logos as its activity content changes.
+    /// Stops watching when the activity ends, is dismissed, or receives a final score.
     private func observe(_ activity: Activity<MatchActivityAttributes>) {
         ObservedMatchActivities.record(activity.attributes.match_id)
         guard contentTasks[activity.id] == nil,
@@ -57,6 +62,7 @@ final class MatchActivityLogoObserver {
     }
 }
 
+/// Remembers matches seen in current and recent Live Activities.
 @available(iOS 16.2, *)
 private enum ObservedMatchActivities {
     private static let key = "notifications.observedLiveActivityMatchIds"
@@ -77,6 +83,7 @@ private enum ObservedMatchActivities {
     }
 }
 
+/// Exposes iOS Live Activity availability and observed matches to shared code.
 final class IosLiveUpdateStateProvider: NSObject, LiveUpdateStateProvider {
     var platform: PushPlatform { .ios }
 
@@ -88,11 +95,14 @@ final class IosLiveUpdateStateProvider: NSObject, LiveUpdateStateProvider {
     }
 }
 
+/// Forwards new iOS push-to-start tokens to shared code.
 final class IosActivityPushTokenProvider: NSObject, PushTokenProvider {
     var platform: PushPlatform { .ios }
 
     private var observationTask: Task<Void, Never>?
 
+    /// Emits the current push-to-start token, then watches for replacements.
+    /// Suppresses duplicate tokens and keeps only one observation task running.
     func start(onToken: @escaping (String) -> Void) {
         guard observationTask == nil else { return }
         guard #available(iOS 17.2, *) else { return }
@@ -135,11 +145,14 @@ private extension Data {
 }
 
 #if DEBUG && targetEnvironment(simulator)
+/// Runs Live Activity test commands supplied through the simulator environment.
 @available(iOS 16.2, *)
 @MainActor
 enum SimulatorMatchActivity {
     private static var hasRun = false
 
+    /// Runs one environment-supplied command against the synthetic test match.
+    /// Writes the activity state or failure to a cache file for test inspection.
     static func runIfRequested() async {
         guard !hasRun,
               let json = ProcessInfo.processInfo.environment["VLR_TEST_LIVE_ACTIVITY"] else { return }
@@ -197,12 +210,15 @@ enum SimulatorMatchActivity {
         try? data.write(to: directory.appendingPathComponent("live-activity-test-result.json"), options: .atomic)
     }
 
+    /// Pairs a simulator test command with its match state.
     private struct Payload: Decodable {
+        /// Lists the Live Activity commands supported by simulator tests.
         enum Event: String, Decodable { case start, update, end, inspect }
         let event: Event
         let state: MatchActivityAttributes.ContentState
     }
 
+    /// Describes unsupported matches and missing activities in simulator tests.
     private enum TestError: Error { case unsupportedMatch, noActivity }
 }
 #endif

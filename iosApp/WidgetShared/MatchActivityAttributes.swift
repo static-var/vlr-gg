@@ -1,9 +1,12 @@
 import ActivityKit
 import Foundation
 
+/// Identifies the match tracked by a Live Activity.
 @available(iOS 16.1, *)
 struct MatchActivityAttributes: ActivityAttributes {
+    /// Holds the latest teams, scores, and match status.
     struct ContentState: Codable, Hashable {
+        /// Holds a team’s name, logo, tag, and series score.
         struct Team: Codable, Hashable {
             let name: String
             let img: String?
@@ -31,6 +34,7 @@ struct MatchActivityAttributes: ActivityAttributes {
             }
         }
 
+        /// Holds the current map’s name, number, and team scores.
         struct CurrentMap: Codable, Hashable {
             let name: String
             let scores: [Int?]

@@ -3,6 +3,7 @@ import XCTest
 import SwiftUI
 import CoreText
 
+/// Checks Live Activity payloads, score display, and layouts.
 final class MatchActivityAttributesTests: XCTestCase {
     @available(iOS 16.1, *)
     @MainActor
