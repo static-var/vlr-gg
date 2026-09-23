@@ -186,6 +186,8 @@ dependencies {
   implementation(libs.koin.android)
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.messaging)
+  implementation(libs.coroutines.core)
+  implementation(libs.kotlinx.serialization)
 
   // Project modules
   implementation(projects.shared)

@@ -36,4 +36,9 @@
     <string name="widget_preview_day">일</string>
     <string name="widget_preview_clock">오후 7:30</string>
     <string name="widget_preview_compact_time">일 · 오후 7:30</string>
+    <string name="live_match_notification_channel_name">실시간 경기 점수</string>
+    <string name="live_match_notification_channel_description">즐겨찾는 경기의 실시간 점수</string>
+    <string name="live_match_notification_unpin">고정 해제</string>
+    <string name="live_match_notification_final">종료</string>
+    <string name="live_match_notification_open_match">경기 열기</string>
 </resources>

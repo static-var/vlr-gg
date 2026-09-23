@@ -36,4 +36,9 @@
     <string name="widget_preview_day">dom</string>
     <string name="widget_preview_clock">19:30</string>
     <string name="widget_preview_compact_time">dom · 19:30</string>
+    <string name="live_match_notification_channel_name">Resultados en directo</string>
+    <string name="live_match_notification_channel_description">Resultados en directo de tus favoritos</string>
+    <string name="live_match_notification_unpin">Desanclar</string>
+    <string name="live_match_notification_final">Final</string>
+    <string name="live_match_notification_open_match">Abrir partido</string>
 </resources>

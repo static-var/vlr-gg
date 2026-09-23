@@ -36,4 +36,9 @@
     <string name="widget_preview_day">Sun</string>
     <string name="widget_preview_clock">7:30 PM</string>
     <string name="widget_preview_compact_time">Sun · 7:30 PM</string>
+    <string name="live_match_notification_channel_name">Live match updates</string>
+    <string name="live_match_notification_channel_description">Score updates for your favorite live matches</string>
+    <string name="live_match_notification_open_match">Open match</string>
+    <string name="live_match_notification_unpin">Unpin</string>
+    <string name="live_match_notification_final">Final</string>
 </resources>

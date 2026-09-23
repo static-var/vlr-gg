@@ -5,14 +5,28 @@
 package dev.staticvar.vlr.android
 
 import android.app.Application
+import dev.staticvar.vlr.android.notifications.AndroidLiveMatchNotifications
+import dev.staticvar.vlr.android.notifications.AndroidLiveTopicSubscriptions
 import dev.staticvar.vlr.android.notifications.AndroidPushTokenProvider
+import dev.staticvar.vlr.core.di.DispatcherQualifiers
+import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
+import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.androidNetworkModule
 import dev.staticvar.vlr.shared.telemetry.initializeSentryTelemetry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.koin.androidContext
 
 class VlrApplication : Application() {
   internal val pushTokenProvider = AndroidPushTokenProvider()
+  internal lateinit var liveTopicSubscriptions: AndroidLiveTopicSubscriptions
+    private set
+  internal lateinit var liveMatchNotifications: AndroidLiveMatchNotifications
+    private set
 
   override fun onCreate() {
     super.onCreate()
@@ -35,5 +49,28 @@ class VlrApplication : Application() {
       dist = "android-${BuildConfig.VERSION_CODE}",
       enabled = BuildConfig.SENTRY_ENABLED,
     )
+    val scope = getKoin().get<CoroutineScope>(DispatcherQualifiers.AppScope)
+    val notificationPreferences = getKoin().get<LiveMatchNotificationPreferencesRepository>()
+    val spoilerPreferences = getKoin().get<SpoilerPreferencesRepository>()
+    liveMatchNotifications = AndroidLiveMatchNotifications(
+      context = this,
+      json = getKoin().get(),
+      preferences = notificationPreferences,
+      spoilerPreferences = spoilerPreferences,
+    )
+    liveTopicSubscriptions = AndroidLiveTopicSubscriptions(
+      context = this,
+      favorites = getKoin().get(),
+      preferences = notificationPreferences,
+      scope = scope,
+    )
+    pushTokenProvider.onTokenChanged = liveTopicSubscriptions::refresh
+    scope.launch {
+      combine(notificationPreferences.preferences, spoilerPreferences.enabled) { notifications, hidden ->
+        !notifications.enabled || hidden
+      }.collect { shouldRemove ->
+        if (shouldRemove) liveMatchNotifications.cancelAll()
+      }
+    }
   }
 }

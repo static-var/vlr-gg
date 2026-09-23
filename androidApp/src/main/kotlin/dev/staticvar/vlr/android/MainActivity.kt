@@ -79,6 +79,11 @@ class MainActivity : ComponentActivity() {
     openDeepLink(intent)
   }
 
+  override fun onResume() {
+    super.onResume()
+    (application as VlrApplication).liveTopicSubscriptions.refresh()
+  }
+
   private fun normalizeLauncherIntent(intent: Intent) {
     if (intent.action != Intent.ACTION_MAIN ||
       !intent.hasCategory(Intent.CATEGORY_LAUNCHER) ||

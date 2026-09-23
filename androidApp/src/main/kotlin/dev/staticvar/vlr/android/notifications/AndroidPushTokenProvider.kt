@@ -9,6 +9,7 @@ import dev.staticvar.vlr.core.notifications.PushPlatform
 import dev.staticvar.vlr.core.notifications.PushTokenProvider
 
 internal class AndroidPushTokenProvider : PushTokenProvider {
+  var onTokenChanged: (() -> Unit)? = null
   override val platform: PushPlatform = PushPlatform.Android
 
   private val callbackLock = Any()
@@ -34,6 +35,7 @@ internal class AndroidPushTokenProvider : PushTokenProvider {
   }
 
   internal fun onNewToken(token: String) {
+    onTokenChanged?.invoke()
     publish(token)
   }
 
