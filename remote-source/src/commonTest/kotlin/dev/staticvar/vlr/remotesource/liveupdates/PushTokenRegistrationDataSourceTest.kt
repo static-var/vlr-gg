@@ -57,6 +57,21 @@ class PushTokenRegistrationDataSourceTest {
     assertEquals("android", payload.getValue("platform").jsonPrimitive.content)
   }
 
+  @Test
+  fun deleteUsesTheClientTokenPathWithoutARequestBody() = runTest {
+    val requests = mutableListOf<Triple<String, HttpMethod, String>>()
+    val client = mockClient { request ->
+      requests += Triple(request.url.encodedPath, request.method, request.body.toByteArray().decodeToString())
+      respond("", status = HttpStatusCode.NoContent, headers = jsonHeaders())
+    }
+
+    assertTrue(PushTokenRegistrationDataSourceImpl(client).delete(ClientId))
+    assertEquals(
+      listOf(Triple("/api/v1/live-updates/clients/$ClientId/token", HttpMethod.Delete, "")),
+      requests,
+    )
+  }
+
   /** Holds the client ID used in API request tests. */
   private companion object {
     const val ClientId: String = "01996ff9-3000-7000-8000-000000000001"

@@ -6,6 +6,7 @@ package dev.staticvar.vlr.remotesource.liveupdates
 
 import dev.staticvar.vlr.core.notifications.PushPlatform
 import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -23,6 +24,14 @@ internal class PushTokenRegistrationDataSourceImpl(
       contentType(ContentType.Application.Json)
       setBody(PushTokenRegistrationRequest(token = token, platform = platform.wireValue))
     }.status.isSuccess()
+  } catch (cancellation: CancellationException) {
+    throw cancellation
+  } catch (_: Exception) {
+    false
+  }
+
+  override suspend fun delete(clientId: String): Boolean = try {
+    client.delete("/api/v1/live-updates/clients/$clientId/token").status.isSuccess()
   } catch (cancellation: CancellationException) {
     throw cancellation
   } catch (_: Exception) {
