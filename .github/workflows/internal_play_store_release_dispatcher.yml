@@ -52,6 +52,14 @@ jobs:
           echo "VLR_SIGNING_STORE_FILE=$signing_store" >> "$GITHUB_ENV"
           printf '%s' "$ENCODED_STRING" | base64 --decode > "$signing_store"
 
+      - name: Configure Firebase
+        env:
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+        run: |
+          umask 077
+          test -n "$FIREBASE_CONFIG"
+          printf '%s' "$FIREBASE_CONFIG" > androidApp/google-services.json
+
       - name: Build release
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

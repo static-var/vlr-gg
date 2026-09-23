@@ -41,6 +41,7 @@ kotlin {
         implementation(libs.kotlin.stdlib)
         implementation(libs.coroutines.core)
         implementation(libs.kotlinx.serialization)
+        implementation(libs.kotlinx.io.core)
         implementation(libs.ktor.core)
         api(libs.ktor.http)
         implementation(libs.ktor.negotiation)

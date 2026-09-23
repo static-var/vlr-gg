@@ -5,6 +5,9 @@ import shared
 struct iOSApp: App {
     init() {
         VlrAppShortcuts.updateAppShortcutParameters()
+        if #available(iOS 16.2, *) {
+            MatchActivityLogoObserver.shared.start()
+        }
 
         #if DEBUG
         let defaultEnvironment = "development"

@@ -36,4 +36,9 @@
     <string name="widget_preview_day">Вс</string>
     <string name="widget_preview_clock">19:30</string>
     <string name="widget_preview_compact_time">Вс · 19:30</string>
+    <string name="live_match_notification_channel_name">Счёт матчей в реальном времени</string>
+    <string name="live_match_notification_channel_description">Текущий счёт избранных матчей</string>
+    <string name="live_match_notification_unpin">Открепить</string>
+    <string name="live_match_notification_final">Итог</string>
+    <string name="live_match_notification_open_match">Открыть матч</string>
 </resources>

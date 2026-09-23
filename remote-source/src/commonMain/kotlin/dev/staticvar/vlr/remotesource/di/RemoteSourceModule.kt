@@ -4,8 +4,15 @@
  */
 package dev.staticvar.vlr.remotesource.di
 
+import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.remotesource.events.EventDataSource
 import dev.staticvar.vlr.remotesource.events.EventDataSourceImpl
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteLiveUpdateDataSource
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteLiveUpdateDataSourceImpl
+import dev.staticvar.vlr.remotesource.liveupdates.LiveActivityStartDataSource
+import dev.staticvar.vlr.remotesource.liveupdates.LiveActivityStartDataSourceImpl
+import dev.staticvar.vlr.remotesource.liveupdates.PushTokenRegistrationDataSource
+import dev.staticvar.vlr.remotesource.liveupdates.PushTokenRegistrationDataSourceImpl
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
 import dev.staticvar.vlr.remotesource.match.MatchDataSourceImpl
 import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
@@ -59,11 +66,14 @@ fun remoteSourceModule(
 
   // HttpClient instance
   single<HttpClient> {
-    get<HttpClientFactory>().create(get(), get(), get())
+    get<HttpClientFactory>().create(get(), get(), get(), get<NetworkMonitor>())
   }
 
   // DataSources
+  single<FavoriteLiveUpdateDataSource> { FavoriteLiveUpdateDataSourceImpl(get()) }
+  single<LiveActivityStartDataSource> { LiveActivityStartDataSourceImpl(get()) }
   single<MatchDataSource> { MatchDataSourceImpl(get()) }
+  single<PushTokenRegistrationDataSource> { PushTokenRegistrationDataSourceImpl(get()) }
   single<EventDataSource> { EventDataSourceImpl(get()) }
   single<NewsDataSource> { NewsDataSourceImpl(get()) }
   single<PlayerDataSource> { PlayerDataSourceImpl(get()) }

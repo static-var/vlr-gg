@@ -54,6 +54,7 @@ kotlin {
         implementation(libs.coil.network.ktor3)
         implementation(libs.kotlinx.datetime)
         implementation(projects.designsystem)
+        api(projects.core)
         implementation(projects.domain)
       }
     }

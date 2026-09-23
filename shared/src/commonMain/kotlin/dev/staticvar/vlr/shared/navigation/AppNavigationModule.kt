@@ -30,6 +30,8 @@ import dev.staticvar.vlr.featureabout.presentation.AboutRoute
 import dev.staticvar.vlr.featureabout.presentation.AppearanceRoute
 import dev.staticvar.vlr.featureabout.presentation.BundledRelease
 import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
+import dev.staticvar.vlr.featureabout.presentation.NotificationsRoute
+import dev.staticvar.vlr.shared.notifications.LocalLiveMatchNotificationSettingsController
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewBanner
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailSection
@@ -59,7 +61,7 @@ import dev.staticvar.vlr.sharedui.component.event.ProvideEventTransitionScope
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.match.ProvideMatchTransitionScope
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
+import dev.staticvar.vlr.shared.di.vlrViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -78,7 +80,7 @@ internal fun appNavigationModule(): Module = module {
 
   navigation<AppRoute.Home>(metadata = mapOf(EventTransitionRoleKey to EventTransitionRole.List, MatchTransitionRoleKey to EventTransitionRole.List)) {
     val appState = LocalVlrAppState.current
-    val viewModel = koinViewModel<HomeViewModel>()
+    val viewModel = vlrViewModel<HomeViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
@@ -114,7 +116,7 @@ internal fun appNavigationModule(): Module = module {
   }
   navigation<AppRoute.News>(metadata = listPane(group = "news")) {
     val appState = LocalVlrAppState.current
-    val viewModel = koinViewModel<NewsListViewModel>()
+    val viewModel = vlrViewModel<NewsListViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
@@ -127,7 +129,7 @@ internal fun appNavigationModule(): Module = module {
     )
   }
   navigation<AppRoute.NewsArticle>(metadata = detailPane(group = "news")) { route ->
-    val viewModel = koinViewModel<NewsArticleViewModel> { parametersOf(route.articleId) }
+    val viewModel = vlrViewModel<NewsArticleViewModel> { parametersOf(route.articleId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
@@ -140,7 +142,7 @@ internal fun appNavigationModule(): Module = module {
     )
   }
   navigation<AppRoute.Matches>(metadata = listPane(group = "matches") + (MatchTransitionRoleKey to EventTransitionRole.List)) {
-    val viewModel = koinViewModel<MatchesViewModel>()
+    val viewModel = vlrViewModel<MatchesViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
@@ -161,7 +163,7 @@ internal fun appNavigationModule(): Module = module {
   }
   navigation<AppRoute.MatchDetails>(metadata = detailPane(group = "matches") + (MatchTransitionRoleKey to EventTransitionRole.Detail)) { route ->
     val appState = LocalVlrAppState.current
-    val viewModel = koinViewModel<MatchDetailsViewModel> { parametersOf(route.matchId) }
+    val viewModel = vlrViewModel<MatchDetailsViewModel> { parametersOf(route.matchId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
@@ -188,7 +190,7 @@ internal fun appNavigationModule(): Module = module {
   ) {
     val appState = LocalVlrAppState.current
     val eventLogoTransitionEnabled = LocalAppEventSharedTransitionScope.current != null
-    val viewModel = koinViewModel<EventsViewModel>()
+    val viewModel = vlrViewModel<EventsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
@@ -212,7 +214,7 @@ internal fun appNavigationModule(): Module = module {
     metadata = detailPane(group = "events") + (EventTransitionRoleKey to EventTransitionRole.Detail),
   ) { route ->
     val appState = LocalVlrAppState.current
-    val viewModel = koinViewModel<EventDetailsViewModel> { parametersOf(route.eventId) }
+    val viewModel = vlrViewModel<EventDetailsViewModel> { parametersOf(route.eventId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var section by rememberSaveable(route.eventId) { mutableStateOf(EventDetailSection.Matches) }
     var matchGrouping by rememberSaveable(route.eventId) { mutableStateOf(EventMatchGrouping.Status) }
@@ -244,7 +246,7 @@ internal fun appNavigationModule(): Module = module {
     }
   }
   navigation<AppRoute.Rankings>(metadata = listPane(group = "rankings")) {
-    val viewModel = koinViewModel<RankingsViewModel>()
+    val viewModel = vlrViewModel<RankingsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
@@ -258,7 +260,7 @@ internal fun appNavigationModule(): Module = module {
   }
   navigation<AppRoute.TeamDetails>(metadata = listPane(group = "team") + detailPane(group = "rankings")) { route ->
     val appState = LocalVlrAppState.current
-    val viewModel = koinViewModel<TeamDetailsViewModel> { parametersOf(route.teamId) }
+    val viewModel = vlrViewModel<TeamDetailsViewModel> { parametersOf(route.teamId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var section by rememberSaveable(route.teamId) { mutableStateOf(TeamMatchesSection.Upcoming) }
 
@@ -278,7 +280,7 @@ internal fun appNavigationModule(): Module = module {
     )
   }
   navigation<AppRoute.PlayerDetails>(metadata = detailPane(group = "team")) { route ->
-    val viewModel = koinViewModel<PlayerDetailsViewModel> { parametersOf(route.playerId) }
+    val viewModel = vlrViewModel<PlayerDetailsViewModel> { parametersOf(route.playerId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
@@ -312,6 +314,12 @@ internal fun appNavigationModule(): Module = module {
   }
   navigation<AppRoute.Settings> {
     val appState = LocalVlrAppState.current
+    val notificationController = LocalLiveMatchNotificationSettingsController.current
+    val notificationAccess = if (notificationController == null) {
+      null
+    } else {
+      notificationController.access.collectAsStateWithLifecycle().value
+    }
     val cleanupPreferences = koinInject<CacheCleanupPreferencesRepository>()
     val cleanupRepository = koinInject<CacheCleanupRepository>()
     val autoCleanupEnabled by cleanupPreferences.enabled.collectAsStateWithLifecycle()
@@ -324,14 +332,22 @@ internal fun appNavigationModule(): Module = module {
       deletedCacheRecords = cleanupStats.deletedRecords,
       onAutoCleanupChanged = cleanupPreferences::setEnabled,
       onAppearance = appState::showAppearance,
+      onNotifications = if (notificationAccess?.supportsLiveUpdates == true) appState::showNotifications else null,
+      liveActivities = notificationAccess?.requiresNotificationPermission == false,
       onAbout = appState::showAbout,
       onWhatsNew = appState::showWhatsNew,
       onBack = appState::navigateUp,
       modifier = Modifier.fillMaxSize(),
     )
   }
+  navigation<AppRoute.Notifications> {
+    val controller = LocalLiveMatchNotificationSettingsController.current
+    if (controller != null) {
+      NotificationsRoute(controller, onBack = LocalVlrAppState.current::navigateUp)
+    }
+  }
   navigation<AppRoute.Appearance> {
-    val viewModel = koinViewModel<AppearanceViewModel>()
+    val viewModel = vlrViewModel<AppearanceViewModel>()
     val appearance by viewModel.appearance.collectAsStateWithLifecycle()
     AppearanceRoute(
       isDark = appearance.isDark(isSystemInDarkTheme()),

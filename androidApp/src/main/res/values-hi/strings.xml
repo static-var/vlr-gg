@@ -36,4 +36,9 @@
     <string name="widget_preview_day">रवि</string>
     <string name="widget_preview_clock">7:30 PM</string>
     <string name="widget_preview_compact_time">रवि · 7:30 PM</string>
+    <string name="live_match_notification_channel_name">लाइव मैच स्कोर</string>
+    <string name="live_match_notification_channel_description">आपके पसंदीदा मैचों के लाइव स्कोर</string>
+    <string name="live_match_notification_unpin">पिन हटाएँ</string>
+    <string name="live_match_notification_final">अंतिम</string>
+    <string name="live_match_notification_open_match">मैच खोलें</string>
 </resources>

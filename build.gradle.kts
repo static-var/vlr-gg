@@ -12,6 +12,7 @@ plugins {
   alias(libs.plugins.compose.multiplatform) apply false
   alias(libs.plugins.ksp.plugin) apply false
   alias(libs.plugins.kotlin.serialization) apply false
+  alias(libs.plugins.google.services) apply false
   alias(libs.plugins.detekt)
   alias(libs.plugins.spotless.plugin)
   id("vlr.detekt")

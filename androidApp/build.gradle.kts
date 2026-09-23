@@ -13,6 +13,7 @@ plugins {
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.sentry.android)
   alias(libs.plugins.baselineprofile)
+  alias(libs.plugins.google.services)
 }
 
 val localProperties = Properties()
@@ -175,6 +176,7 @@ dependencies {
 
   // Preview support
   debugImplementation(libs.compose.ui.tooling.cmp)
+  debugImplementation(libs.leakcanary.android)
 
   // Activity Compose
   implementation(libs.activity.compose)
@@ -182,6 +184,10 @@ dependencies {
   implementation(libs.work.runtime)
   implementation(libs.splashscreen)
   implementation(libs.koin.android)
+  implementation(platform(libs.firebase.bom))
+  implementation(libs.firebase.messaging)
+  implementation(libs.coroutines.core)
+  implementation(libs.kotlinx.serialization)
 
   // Project modules
   implementation(projects.shared)
