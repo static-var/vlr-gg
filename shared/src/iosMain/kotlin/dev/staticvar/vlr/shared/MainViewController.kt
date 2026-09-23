@@ -9,6 +9,7 @@ package dev.staticvar.vlr.shared
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.window.ComposeUIViewController
 import dev.staticvar.vlr.core.notifications.NotificationPermissionProvider
+import dev.staticvar.vlr.core.notifications.PushTokenProvider
 import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.iosNetworkModule
 import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
@@ -41,6 +42,7 @@ fun MainViewController(
   onWidgetSnapshotChanged: (String) -> Unit = {},
   onSearchFavoritesChanged: (String) -> Unit = {},
   notificationPermissionProvider: NotificationPermissionProvider? = null,
+  pushTokenProvider: PushTokenProvider? = null,
 ): UIViewController {
   ensureUnhandledExceptionLoggingInstalled()
 
@@ -58,6 +60,7 @@ fun MainViewController(
           deepLinkHandler = deepLinkHandler,
           onWidgetSnapshotChanged = { onWidgetSnapshotChanged(it) },
           onSearchFavoritesChanged = { onSearchFavoritesChanged(it) },
+          pushTokenProvider = pushTokenProvider,
         )
       }
     }

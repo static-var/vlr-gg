@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E500497BDD6693B31A1A4B2 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */; };
+		41ED708CD7A4065E2C2DDCB6 /* MatchActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */; };
+		98EBCF0009BC343633523083 /* ActivityPushTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1F8D968CF01C749B570E7A9 /* ActivityPushTokenProvider.swift */; };
+		C4F26D6615E5B84E8ABD7919 /* MatchActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */; };
+		DF927176F502A5D4C6FFC3A7 /* MatchActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */; };
+		D3FAD1589057032649BD28A1 /* MatchActivityAttributesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593AC05C89885B2102D4BE59 /* MatchActivityAttributesTests.swift */; };
 		CD369A06E85A4B3F85B9452D /* LiveActivityPermissionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7B64D40E8F44E29B9D622C /* LiveActivityPermissionProvider.swift */; };
 		E8A5403574A3EA968A57C900 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0CF0BA8A92206DCBD9D678DD /* LaunchScreen.storyboard */; };
 		099124514C9782698F2C797B /* VLRWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */; };
@@ -85,6 +91,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchLiveActivity.swift; sourceTree = "<group>"; };
+		3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityAttributes.swift; sourceTree = "<group>"; };
+		D1F8D968CF01C749B570E7A9 /* ActivityPushTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityPushTokenProvider.swift; sourceTree = "<group>"; };
+		593AC05C89885B2102D4BE59 /* MatchActivityAttributesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityAttributesTests.swift; sourceTree = "<group>"; };
 		5C7B64D40E8F44E29B9D622C /* LiveActivityPermissionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityPermissionProvider.swift; sourceTree = "<group>"; };
 		0CF0BA8A92206DCBD9D678DD /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		07ED39F464598B211EB46A3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -161,6 +171,7 @@
 		1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				D1F8D968CF01C749B570E7A9 /* ActivityPushTokenProvider.swift */,
 				0BB1981F5112C6B7BAF59688 /* AppIconAmethyst.icon */,
 				BA4B618CEB799D4C32090E7B /* AppIconTicket.icon */,
 				0760F40680698C4EE84BE177 /* AppIconMint.icon */,
@@ -221,6 +232,7 @@
 		87A46388EB4C69847A9B7748 /* VLRWidgetTests */ = {
 			isa = PBXGroup;
 			children = (
+				593AC05C89885B2102D4BE59 /* MatchActivityAttributesTests.swift */,
 				0E64F35EE4AE373F79416126 /* TestGeneratedBuildConfig.swift */,
 				A9F7405903B24AF121E4A00B /* WidgetLocalizationTests.swift */,
 				2BF1F4E25E5E55367392BE6A /* WidgetRefreshTests.swift */,
@@ -246,6 +258,7 @@
 				07ED39F464598B211EB46A3B /* Info.plist */,
 				35E37CA9801AAA27B09231B9 /* InfoPlist.xcstrings */,
 				672A36C30B70C0E9C6B1F76E /* Localizable.xcstrings */,
+				05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */,
 				09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */,
 				4C823E9D6BCD587C88AD7701 /* VLRWidget.entitlements */,
 				6062090215F075FB02BCE24E /* VLRWidgetBundle.swift */,
@@ -258,6 +271,7 @@
 		BE812D4F3BD7A6E3E029D946 /* WidgetShared */ = {
 			isa = PBXGroup;
 			children = (
+				3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */,
 				48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */,
 			);
 			path = WidgetShared;
@@ -374,6 +388,11 @@
 					78B53CC79860CBFC2F5543C6 = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 					8947B1549A27B788497DBABC = {
 						DevelopmentTeam = "";
@@ -507,10 +526,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98EBCF0009BC343633523083 /* ActivityPushTokenProvider.swift in Sources */,
 				56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
 				CD369A06E85A4B3F85B9452D /* LiveActivityPermissionProvider.swift in Sources */,
 				B5774EBA09C9BF2544502554 /* FavoriteSearch.swift in Sources */,
 				8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */,
+				DF927176F502A5D4C6FFC3A7 /* MatchActivityAttributes.swift in Sources */,
 				7D487293553B3F4031496A2A /* NativeLocalization.swift in Sources */,
 				B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */,
 				46EC9AF029F1281A4995F80D /* VLRWidgetModels.swift in Sources */,
@@ -534,6 +555,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4F26D6615E5B84E8ABD7919 /* MatchActivityAttributes.swift in Sources */,
+				D3FAD1589057032649BD28A1 /* MatchActivityAttributesTests.swift in Sources */,
 				44E37D45D9CD7737C66D6C33 /* TestGeneratedBuildConfig.swift in Sources */,
 				BC44AC391E69BD6D0F675BE0 /* UpcomingMatchesWidget.swift in Sources */,
 				1613C021234E871D6799F0C5 /* VLRWidgetContract.swift in Sources */,
@@ -549,6 +572,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A549AA5B4708B66DBB9797F1 /* GeneratedBuildConfig.swift in Sources */,
+				41ED708CD7A4065E2C2DDCB6 /* MatchActivityAttributes.swift in Sources */,
+				1E500497BDD6693B31A1A4B2 /* MatchLiveActivity.swift in Sources */,
 				9DD4C32FDB291AC803C0907D /* UpcomingMatchesWidget.swift in Sources */,
 				88FAF2F8FE95B1B3827271DA /* VLRWidgetBundle.swift in Sources */,
 				E723B4A1BB6FF42A310E01F1 /* VLRWidgetContract.swift in Sources */,
@@ -882,6 +907,7 @@
 		9221A1FDC06803E8A2FC6E61 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APS_ENVIRONMENT = development;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
 					AppIconAmethyst,
 					AppIconTicket,
@@ -905,6 +931,7 @@
 		AF835BFF1220CA5AB5B867E4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APS_ENVIRONMENT = production;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
 					AppIconAmethyst,
 					AppIconTicket,

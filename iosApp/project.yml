@@ -60,6 +60,11 @@ targets:
           - AppIconAmethyst
           - AppIconTicket
         CODE_SIGN_ENTITLEMENTS: iosApp/iosApp.entitlements
+      configs:
+        Debug:
+          APS_ENVIRONMENT: development
+        Release:
+          APS_ENVIRONMENT: production
     preBuildScripts:
       - name: Build shared framework
         basedOnDependencyAnalysis: false

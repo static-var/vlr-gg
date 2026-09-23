@@ -208,7 +208,7 @@ struct PrismWidgetPalette {
     }
 }
 
-private enum PrismWidgetFont {
+enum PrismWidgetFont {
     static func regular(_ size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
         .custom("ChakraPetch-Regular", size: size, relativeTo: style)
     }

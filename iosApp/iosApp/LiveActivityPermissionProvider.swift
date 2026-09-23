@@ -5,7 +5,7 @@ import shared
 
 final class IosLiveActivityPermissionProvider: NSObject, NotificationPermissionProvider {
     func areLiveActivitiesEnabled() -> KotlinBoolean? {
-        guard #available(iOS 16.1, *) else { return KotlinBoolean(bool: false) }
+        guard #available(iOS 17.2, *) else { return KotlinBoolean(bool: false) }
         return KotlinBoolean(bool: ActivityAuthorizationInfo().areActivitiesEnabled)
     }
 
