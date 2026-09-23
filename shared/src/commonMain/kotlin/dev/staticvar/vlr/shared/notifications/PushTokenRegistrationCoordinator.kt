@@ -81,6 +81,7 @@ internal class PushTokenRegistrationCoordinator(
    * Also retries synchronization once that check finishes.
    */
   fun onForeground() {
+    uploader.retry()
     refreshTokenAfterPermissionRead = true
     refreshAccess()
   }

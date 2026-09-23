@@ -139,8 +139,8 @@ class LiveActivityStartCoordinatorTest {
   }
 
   @Test
-  fun knownRejectionRetriesOnForegroundAndRestoredUuidNeedsItsOwnRegistration() = runTest {
-    val harness = StartHarness(backgroundScope, testScheduler, PushPlatform.Ios, restoreIdentity = true)
+  fun knownRejectionRetriesOnForegroundAndLateCloudUuidKeepsCurrentRegistration() = runTest {
+    val harness = StartHarness(backgroundScope, testScheduler, PushPlatform.Ios, trackCloudBackup = true)
     harness.favorites.value = DirectFavoriteSnapshot(matches = listOf(DirectFavorite.Match("123", "One", "")))
     harness.schedule.value = listOf(live("123"))
     harness.startSource.result = LiveActivityStartResult.Rejected
@@ -155,12 +155,13 @@ class LiveActivityStartCoordinatorTest {
     assertEquals(2, harness.startSource.requests.size)
 
     val restored = "01996ff9-3000-7000-8000-000000000002"
-    harness.identity.restoreFromBackup(restored)
+    harness.identity.observeCloudIdentity(restored)
     runCurrent()
     assertEquals(2, harness.startSource.requests.size)
     harness.registerToken("one")
     runCurrent()
-    assertEquals(restored to "123", harness.startSource.requests.last())
+    assertEquals(harness.clientId to "123", harness.startSource.requests.last())
+    assertEquals(2, harness.startSource.requests.size)
   }
 }
 
@@ -169,10 +170,10 @@ private class StartHarness(
   scope: kotlinx.coroutines.CoroutineScope,
   scheduler: kotlinx.coroutines.test.TestCoroutineScheduler,
   platform: PushPlatform,
-  restoreIdentity: Boolean = false,
+  trackCloudBackup: Boolean = false,
 ) {
   val storage = MapSettings()
-  val identity = UserIdentityRepository(MapSettings(), allowDelayedRestore = restoreIdentity)
+  val identity = UserIdentityRepository(MapSettings(), trackCloudBackup = trackCloudBackup)
   val tokenPreferences = PushTokenRegistrationPreferencesRepository(storage)
   val favorites = MutableStateFlow(DirectFavoriteSnapshot())
   val schedule = MutableStateFlow<List<FavoriteScheduledMatch>>(emptyList())

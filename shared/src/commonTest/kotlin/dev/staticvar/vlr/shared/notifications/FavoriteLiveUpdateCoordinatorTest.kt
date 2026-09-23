@@ -98,24 +98,24 @@ class FavoriteLiveUpdateCoordinatorTest {
   }
 
   @Test
-  fun restoredIdentityUploadsTheCurrentSnapshotForTheNewClient() = runTest {
+  fun lateCloudIdentityKeepsCurrentFavoritesUnderTheLocalClient() = runTest {
     val harness = FavoriteSyncHarness(
       backgroundScope,
       favorites(events = listOf("44")),
-      allowDelayedIdentityRestore = true,
+      trackCloudBackup = true,
     )
     harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Enabled)
     runCurrent()
     val previousId = harness.identity.id.value.toString()
 
-    harness.identity.restoreFromBackup(RestoredClientId)
+    harness.identity.observeCloudIdentity(RestoredClientId)
     runCurrent()
 
     assertEquals(
-      listOf(previousId, previousId, RestoredClientId),
+      listOf(previousId),
       harness.dataSource.requests.map(FavoriteRequest::clientId),
     )
-    assertTrue(harness.dataSource.requests[1].isEmpty())
+    assertEquals(previousId, harness.identity.id.value.toString())
     assertEquals(listOf("44"), harness.dataSource.requests.last().events)
   }
 
@@ -202,12 +202,12 @@ class FavoriteLiveUpdateCoordinatorTest {
 private class FavoriteSyncHarness(
   scope: kotlinx.coroutines.CoroutineScope,
   initialFavorites: DirectFavoriteSnapshot,
-  allowDelayedIdentityRestore: Boolean = false,
+  trackCloudBackup: Boolean = false,
   previouslyRegistered: Boolean = false,
 ) {
   val favorites = FakeFavoritesRepository(initialFavorites)
   val dataSource = FakeFavoriteLiveUpdateDataSource()
-  val identity = UserIdentityRepository(MapSettings(), allowDelayedRestore = allowDelayedIdentityRestore)
+  val identity = UserIdentityRepository(MapSettings(), trackCloudBackup = trackCloudBackup)
   val tokenPreferences = PushTokenRegistrationPreferencesRepository(MapSettings()).apply {
     if (previouslyRegistered) markUploaded(identity.id.value.toString(), PushPlatform.Ios, "token")
   }

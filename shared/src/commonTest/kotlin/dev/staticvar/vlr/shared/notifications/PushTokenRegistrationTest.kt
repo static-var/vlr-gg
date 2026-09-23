@@ -163,8 +163,8 @@ class PushTokenRegistrationTest {
   }
 
   @Test
-  fun rotationAndRestoredUuidUploadOnceForEachDistinctTuple() = runTest {
-    val harness = Harness(backgroundScope, notificationsEnabled = true, allowDelayedIdentityRestore = true).apply {
+  fun rotationAndLateCloudUuidKeepOnlyTheLocalClientRegistered() = runTest {
+    val harness = Harness(backgroundScope, notificationsEnabled = true, trackCloudBackup = true).apply {
       tokenProvider.tokenOnStart = "token-one"
     }
     harness.coordinator.start()
@@ -178,15 +178,87 @@ class PushTokenRegistrationTest {
     harness.tokenProvider.emit("token-two")
     runCurrent()
     val restoredId = "01996ff9-3000-7000-8000-000000000002"
-    harness.identity.restoreFromBackup(restoredId)
+    val localId = harness.identity.id.value.toString()
+    harness.identity.observeCloudIdentity(restoredId)
     runCurrent()
 
     assertEquals(
-      listOf("token-one", "token-two", "token-two"),
+      listOf("token-one", "token-two"),
       harness.dataSource.requests.map(RegistrationRequest::token),
     )
-    assertEquals(2, harness.dataSource.requests.map(RegistrationRequest::clientId).distinct().size)
-    assertEquals(restoredId, harness.dataSource.requests.last().clientId)
+    assertEquals(listOf(localId), harness.dataSource.requests.map(RegistrationRequest::clientId).distinct())
+    assertEquals(listOf(restoredId), harness.dataSource.deletions)
+    assertEquals(null, harness.identity.pendingTokenCleanup.value)
+  }
+
+  @Test
+  fun oldTokenDeletionWaitsForCurrentRegistrationAndDoesNotDeleteTheActiveUuid() = runTest {
+    val registrationGate = CompletableDeferred<Unit>()
+    val harness = Harness(backgroundScope, notificationsEnabled = true, trackCloudBackup = true).apply {
+      tokenProvider.tokenOnStart = "active-token"
+      dataSource.beforeResponse = registrationGate
+    }
+    harness.coordinator.start()
+    harness.coordinator.onForeground()
+    runCurrent()
+    harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+
+    val activeId = harness.identity.id.value.toString()
+    val oldId = "01996ff9-3000-7000-8000-000000000002"
+    harness.identity.observeCloudIdentity(oldId)
+    runCurrent()
+    assertTrue(harness.dataSource.deletions.isEmpty())
+
+    registrationGate.complete(Unit)
+    runCurrent()
+    assertEquals(listOf(oldId), harness.dataSource.deletions)
+    assertFalse(activeId in harness.dataSource.deletions)
+  }
+
+  @Test
+  fun failedDeletionWaitsForForegroundRetryAndSurvivesRestartWithoutAnotherPut() = runTest {
+    val identitySettings = MapSettings()
+    val tokenSettings = MapSettings()
+    val first = Harness(
+      backgroundScope,
+      notificationsEnabled = true,
+      trackCloudBackup = true,
+      identitySettings = identitySettings,
+      tokenSettings = tokenSettings,
+    ).apply {
+      tokenProvider.tokenOnStart = "active-token"
+      dataSource.deleteSucceeds = false
+    }
+    first.coordinator.start()
+    first.coordinator.onForeground()
+    runCurrent()
+    first.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+    val oldId = "01996ff9-3000-7000-8000-000000000002"
+    first.identity.observeCloudIdentity(oldId)
+    runCurrent()
+    assertEquals(listOf(oldId), first.dataSource.deletions)
+    assertEquals(1, first.dataSource.requests.size)
+    runCurrent()
+    assertEquals(1, first.dataSource.deletions.size)
+
+    first.uploader.retry()
+    runCurrent()
+    assertEquals(2, first.dataSource.deletions.size)
+    assertEquals(1, first.dataSource.requests.size)
+
+    val restarted = Harness(
+      backgroundScope,
+      notificationsEnabled = true,
+      trackCloudBackup = true,
+      identitySettings = identitySettings,
+      tokenSettings = tokenSettings,
+    )
+    runCurrent()
+    assertEquals(listOf(oldId), restarted.dataSource.deletions)
+    assertTrue(restarted.dataSource.requests.isEmpty())
+    assertEquals(null, restarted.identity.pendingTokenCleanup.value)
   }
 
   @Test
@@ -272,7 +344,9 @@ class PushTokenRegistrationTest {
 private class Harness(
   scope: kotlinx.coroutines.CoroutineScope,
   notificationsEnabled: Boolean,
-  allowDelayedIdentityRestore: Boolean = false,
+  trackCloudBackup: Boolean = false,
+  identitySettings: MapSettings = MapSettings(),
+  tokenSettings: MapSettings = MapSettings(),
 ) {
   val permissionProvider = FakePermissionProvider()
   val tokenProvider = FakePushTokenProvider()
@@ -280,10 +354,10 @@ private class Harness(
   val notificationPreferences = LiveMatchNotificationPreferencesRepository(MapSettings()).apply {
     setEnabled(notificationsEnabled)
   }
-  val tokenPreferences = PushTokenRegistrationPreferencesRepository(MapSettings())
-  val identity = UserIdentityRepository(MapSettings(), allowDelayedRestore = allowDelayedIdentityRestore)
+  val tokenPreferences = PushTokenRegistrationPreferencesRepository(tokenSettings)
+  val identity = UserIdentityRepository(identitySettings, trackCloudBackup = trackCloudBackup)
   val eligibility = mutableListOf<LiveUpdateEligibility>()
-  private val uploader = PushTokenRegistrationUploader(tokenPreferences, identity, dataSource, scope)
+  val uploader = PushTokenRegistrationUploader(tokenPreferences, identity, dataSource, scope)
   val coordinator = PushTokenRegistrationCoordinator(
     pushTokenProvider = tokenProvider,
     permissionProvider = permissionProvider,
@@ -358,12 +432,19 @@ private data class RegistrationRequest(val clientId: String, val platform: PushP
 /** Records token uploads and lets tests delay or fail responses. */
 private class FakeRegistrationDataSource : PushTokenRegistrationDataSource {
   val requests = mutableListOf<RegistrationRequest>()
+  val deletions = mutableListOf<String>()
   var beforeResponse: CompletableDeferred<Unit>? = null
   var succeeds: Boolean = true
+  var deleteSucceeds: Boolean = true
 
   override suspend fun register(clientId: String, platform: PushPlatform, token: String): Boolean {
     requests += RegistrationRequest(clientId, platform, token)
     beforeResponse?.await()
     return succeeds
+  }
+
+  override suspend fun delete(clientId: String): Boolean {
+    deletions += clientId
+    return deleteSucceeds
   }
 }

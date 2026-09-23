@@ -7,10 +7,13 @@ package dev.staticvar.vlr.core.identity
 import com.russhwolf.settings.MapSettings
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
-/** Verifies UUID persistence and reconciliation with delayed backup identities. */
+/** Verifies stable per-install UUIDs and durable old-token cleanup provenance. */
 class UserIdentityRepositoryTest {
   @Test
   fun firstLaunchGeneratesV7AndRelaunchReusesIt() {
@@ -23,7 +26,7 @@ class UserIdentityRepositoryTest {
   }
 
   @Test
-  fun backupRestoresMissingOrCorruptLocalIdentityWithoutGeneratingAnother() {
+  fun cachedBackupRestoresOnlyWhenLocalIdentityIsMissingOrInvalid() {
     for (local in listOf(null, "broken", Uuid.NIL.toString())) {
       val storage = MapSettings()
       local?.let { storage.putString(UserIdentityRepository.IdentityKey, it) }
@@ -34,61 +37,91 @@ class UserIdentityRepositoryTest {
   }
 
   @Test
-  fun localIdentityIsUsedBeforeCloudSynchronization() {
-    val storage = MapSettings().apply { putString(UserIdentityRepository.IdentityKey, LocalId.toString()) }
-
-    val repository = UserIdentityRepository(storage, CloudId.toString(), allowDelayedRestore = true)
-    repository.restoreFromBackup(CloudId.toString())
-    assertEquals(LocalId, repository.id.value)
-  }
-
-  @Test
-  fun delayedRestoreReplacesGeneratedIdentityAndSurvivesRelaunch() {
-    val storage = MapSettings()
-    val repository = UserIdentityRepository(storage, allowDelayedRestore = true)
-    assertNotEquals(CloudId, repository.id.value)
-
-    repository.restoreFromBackup(CloudId.toString())
-
-    assertEquals(CloudId, repository.id.value)
-    assertEquals(CloudId, UserIdentityRepository(storage).id.value)
-  }
-
-  @Test
-  fun pendingRestoreSurvivesRelaunchAndCachedWritesAreNotCloudConfirmation() {
-    val storage = MapSettings()
-    val generated = UserIdentityRepository(storage, allowDelayedRestore = true).id.value
-    val restarted = UserIdentityRepository(storage, generated.toString(), allowDelayedRestore = true)
-    restarted.restoreFromBackup(generated.toString(), confirmedByCloud = false)
-    restarted.restoreFromBackup(CloudId.toString())
-    assertEquals(CloudId, restarted.id.value)
-
-    restarted.restoreFromBackup(LocalId.toString())
-    assertEquals(CloudId, restarted.id.value)
-    assertEquals(CloudId, UserIdentityRepository(storage, allowDelayedRestore = true).id.value)
-  }
-
-  @Test
-  fun restoredAndroidPreferencesAreReusedAtStartup() {
-    val restoredPreferences = MapSettings().apply {
-      putString(UserIdentityRepository.IdentityKey, CloudId.toString())
+  fun establishedLocalIdentityDoesNotRetireUnrelatedCloudUuid() {
+    val storage = MapSettings().apply {
+      putString(UserIdentityRepository.IdentityKey, LocalId.toString())
+      putBoolean("identity.restorePending", true)
     }
+    val repository = UserIdentityRepository(storage, CloudId.toString(), trackCloudBackup = true)
 
-    assertEquals(CloudId, UserIdentityRepository(restoredPreferences).id.value)
+    assertFalse(repository.observeCloudIdentity(CloudId.toString(), confirmedByCloud = true))
+    assertEquals(LocalId, repository.id.value)
+    assertNull(repository.pendingTokenCleanup.value)
   }
 
   @Test
-  fun invalidOrRemovedCloudValuesDoNotEraseTheLocalIdentity() {
-    val repository = UserIdentityRepository(MapSettings(), allowDelayedRestore = true)
+  fun lateBackupKeepsGeneratedUuidAndPersistsOldTokenCleanupAcrossRestart() {
+    val storage = MapSettings()
+    val first = UserIdentityRepository(storage, trackCloudBackup = true)
+    val generated = first.id.value
+    assertNotEquals(CloudId, generated)
+
+    assertTrue(first.observeCloudIdentity(CloudId.toString()))
+    assertEquals(generated, first.id.value)
+    assertEquals(CloudId, first.pendingTokenCleanup.value)
+
+    val restarted = UserIdentityRepository(storage, CloudId.toString(), trackCloudBackup = true)
+    assertEquals(generated, restarted.id.value)
+    assertEquals(CloudId, restarted.pendingTokenCleanup.value)
+    assertTrue(restarted.observeCloudIdentity(CloudId.toString()))
+    restarted.markTokenCleanupComplete(CloudId)
+    assertNull(restarted.pendingTokenCleanup.value)
+    assertTrue(UserIdentityRepository(storage).observeCloudIdentity(CloudId.toString()))
+  }
+
+  @Test
+  fun equalUnconfirmedCacheDoesNotEndLateBackupWindow() {
+    val storage = MapSettings()
+    val generated = UserIdentityRepository(storage, trackCloudBackup = true).id.value
+    val restarted = UserIdentityRepository(storage, generated.toString(), trackCloudBackup = true)
+
+    assertFalse(restarted.observeCloudIdentity(generated.toString()))
+    assertTrue(restarted.observeCloudIdentity(CloudId.toString()))
+    assertEquals(generated, restarted.id.value)
+    assertEquals(CloudId, restarted.pendingTokenCleanup.value)
+  }
+
+  @Test
+  fun serverConfirmationOrAccountChangeEndsLateBackupWindow() {
+    for (endWindow in listOf<(UserIdentityRepository) -> Unit>(
+      { it.observeCloudIdentity(it.id.value.toString(), confirmedByCloud = true) },
+      { it.stopAwaitingCloudBackup() },
+    )) {
+      val storage = MapSettings()
+      val repository = UserIdentityRepository(storage, trackCloudBackup = true)
+      endWindow(repository)
+
+      assertFalse(UserIdentityRepository(storage, trackCloudBackup = true).observeCloudIdentity(CloudId.toString()))
+      assertNull(UserIdentityRepository(storage).pendingTokenCleanup.value)
+    }
+  }
+
+  @Test
+  fun currentCloudConfirmationLeavesOldTokenDeletionPending() {
+    val storage = MapSettings()
+    val repository = UserIdentityRepository(storage, trackCloudBackup = true)
+    repository.observeCloudIdentity(CloudId.toString())
+
+    repository.observeCloudIdentity(repository.id.value.toString(), confirmedByCloud = true)
+
+    assertEquals(CloudId, UserIdentityRepository(storage).pendingTokenCleanup.value)
+    assertFalse(repository.observeCloudIdentity(LocalId.toString()))
+  }
+
+  @Test
+  fun invalidCloudValuesAndActiveCleanupNeverChangeIdentity() {
+    val repository = UserIdentityRepository(MapSettings(), trackCloudBackup = true)
     val original = repository.id.value
 
     for (value in listOf(null, "", "broken", Uuid.NIL.toString(), "ffffffff-ffff-ffff-ffff-ffffffffffff")) {
-      repository.restoreFromBackup(value)
+      assertFalse(repository.observeCloudIdentity(value))
       assertEquals(original, repository.id.value)
     }
+    repository.markTokenCleanupComplete(original)
+    assertNull(repository.pendingTokenCleanup.value)
   }
 
-  /** Provides distinct local and cloud identities for restoration tests. */
+  /** Distinct UUIDs make local retention and cleanup observable. */
   private companion object {
     val LocalId: Uuid = Uuid.parse("01996ff9-3000-7000-8000-000000000001")
     val CloudId: Uuid = Uuid.parse("01996ff9-3000-7000-8000-000000000002")

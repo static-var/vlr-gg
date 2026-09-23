@@ -18,7 +18,7 @@ public actual val platformIdentityModule: Module = module {
     UserIdentityRepository(
       NSUserDefaultsSettings(NSUserDefaults.standardUserDefaults),
       backupId = NSUbiquitousKeyValueStore.defaultStore.stringForKey(UserIdentityRepository.IdentityKey),
-      allowDelayedRestore = true,
+      trackCloudBackup = true,
     )
   }
   single(createdAtStart = true) { ICloudIdentitySync(get()) } onClose { it?.close() }

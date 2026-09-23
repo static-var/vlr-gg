@@ -5,7 +5,7 @@ import XCTest
 @MainActor
 final class ICloudIdentityDeviceTests: XCTestCase {
     /// Reads the existing identity without clearing app data or modifying the cloud key.
-    /// This checks device integration; delayed restoration is covered by deterministic tests.
+    /// This checks device integration; late-backup cleanup is covered by deterministic tests.
     func testExistingIdentityMatchesICloudWithoutResettingData() async throws {
         #if targetEnvironment(simulator)
         throw XCTSkip("Requires a signed-in physical iPhone.")

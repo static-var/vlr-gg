@@ -5,7 +5,7 @@
 package dev.staticvar.vlr.core.identity
 
 /**
- * Reconciles an iCloud UUID with the local identity across initial download and server changes.
+ * Publishes the stable local UUID to iCloud and records a late older cloud UUID for token cleanup.
  * A retry rereads iCloud before writing because a delayed cloud identity may have arrived.
  */
 internal class ICloudIdentityReconciler(
@@ -19,41 +19,48 @@ internal class ICloudIdentityReconciler(
   private var retryIndex = 0
   private var cancelRetry: (() -> Unit)? = null
 
-  /** Restores an available cloud UUID, or publishes the local UUID when iCloud has none. */
+  /** Publishes the local UUID when iCloud has none or reports a superseded UUID. */
   fun seed() {
     if (accountChanged || closed) return
     val cloudId = readCloudId()
-    repository.restoreFromBackup(cloudId, confirmedByCloud = false)
-    if (UserIdentityRepository.parseIdentity(cloudId) == null) {
+    val publishLocal = repository.observeCloudIdentity(cloudId)
+    if (publishLocal || UserIdentityRepository.parseIdentity(cloudId) == null) {
       writeCloudId(repository.id.value.toString())
+      if (publishLocal) scheduleNextRetry()
     }
   }
 
   /** Initial sync rejected a write while cloud download was in progress. */
   fun onInitialSyncChange() {
     if (accountChanged || closed) return
-    val localId = repository.id.value
     val cloudId = readCloudId()
-    repository.restoreFromBackup(cloudId, confirmedByCloud = false)
+    val publishLocal = repository.observeCloudIdentity(cloudId)
     val parsedCloudId = UserIdentityRepository.parseIdentity(cloudId)
-    if (parsedCloudId != null && parsedCloudId != localId) {
+    if (publishLocal) writeCloudId(repository.id.value.toString())
+    if (parsedCloudId != null && parsedCloudId != repository.id.value && !publishLocal) {
       cancelPendingRetry()
       return
     }
     scheduleNextRetry()
   }
 
-  /** A server change can confirm the restored identity and end the retry sequence. */
+  /** A server change can confirm the local identity or reveal an older cloud UUID. */
   fun onServerChange() {
     if (accountChanged || closed) return
     val cloudId = readCloudId()
-    repository.restoreFromBackup(cloudId)
-    if (UserIdentityRepository.parseIdentity(cloudId) != null) cancelPendingRetry()
+    val publishLocal = repository.observeCloudIdentity(cloudId, confirmedByCloud = true)
+    if (publishLocal) {
+      writeCloudId(repository.id.value.toString())
+      scheduleNextRetry()
+    } else if (UserIdentityRepository.parseIdentity(cloudId) != null) {
+      cancelPendingRetry()
+    }
   }
 
   /** Stops reconciliation when the active iCloud account changes. */
   fun onAccountChange() {
     accountChanged = true
+    repository.stopAwaitingCloudBackup()
     cancelPendingRetry()
   }
 
@@ -71,11 +78,10 @@ internal class ICloudIdentityReconciler(
       cancelRetry = null
       if (accountChanged || closed) return@retry
 
-      val localId = repository.id.value
       val cloudId = readCloudId()
       val parsedCloudId = UserIdentityRepository.parseIdentity(cloudId)
-      repository.restoreFromBackup(cloudId, confirmedByCloud = false)
-      if (parsedCloudId != null && parsedCloudId != localId) return@retry
+      val publishLocal = repository.observeCloudIdentity(cloudId)
+      if (parsedCloudId != null && parsedCloudId != repository.id.value && !publishLocal) return@retry
 
       // An equal cached value may be the local write rejected during initial download.
       writeCloudId(repository.id.value.toString())

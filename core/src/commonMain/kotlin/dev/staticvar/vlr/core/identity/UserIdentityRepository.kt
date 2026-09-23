@@ -10,50 +10,81 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-/** Stores the anonymous user UUID and restores a backed-up identity when it becomes available. */
+/** Stores one stable UUID per installation and tracks a superseded cloud token for cleanup. */
 public class UserIdentityRepository(
   private val storage: Settings,
   backupId: String? = null,
-  allowDelayedRestore: Boolean = false,
+  trackCloudBackup: Boolean = false,
 ) {
   private val localId = parseIdentity(storage.getStringOrNull(IdentityKey))
-  private var awaitingBackup = allowDelayedRestore && if (localId != null) {
-    storage.getBoolean(RestorePendingKey, false)
+  private val cachedBackupId = parseIdentity(backupId)
+  private var awaitingCloudBackup = if (localId != null) {
+    storage.getBoolean(AwaitingCloudBackupKey, false)
   } else {
-    parseIdentity(backupId) == null
+    trackCloudBackup && cachedBackupId == null
   }
+  private var supersededCloudId = parseIdentity(storage.getStringOrNull(SupersededCloudIdKey))
 
   public val id: StateFlow<Uuid>
+    field = MutableStateFlow(localId ?: cachedBackupId ?: generateIdentity())
+
+  /** A previous cloud UUID whose token must be removed after the active token is registered. */
+  public val pendingTokenCleanup: StateFlow<Uuid?>
     field = MutableStateFlow(
-      localId
-        ?: parseIdentity(backupId)
-        ?: generateIdentity(),
+      parseIdentity(storage.getStringOrNull(PendingTokenCleanupKey))?.takeUnless { it == id.value },
     )
 
   init {
-    storage.putBoolean(RestorePendingKey, awaitingBackup)
     storage.putString(IdentityKey, id.value.toString())
+    storage.putBoolean(AwaitingCloudBackupKey, awaitingCloudBackup)
+    if (pendingTokenCleanup.value == null) storage.remove(PendingTokenCleanupKey)
   }
 
   /**
-   * Replaces a provisional local identity while backup restoration is still pending.
-   * A cloud-confirmed value completes restoration so later updates cannot replace it.
+   * Records a late cloud UUID only when this installation generated its UUID before cloud download.
+   * Returns whether iCloud should be updated with the retained local UUID.
    */
-  public fun restoreFromBackup(value: String?, confirmedByCloud: Boolean = true) {
-    if (!awaitingBackup) return
-    val restored = parseIdentity(value) ?: return
-    storage.putString(IdentityKey, restored.toString())
-    id.value = restored
-    if (confirmedByCloud) {
-      awaitingBackup = false
-      storage.putBoolean(RestorePendingKey, false)
+  public fun observeCloudIdentity(value: String?, confirmedByCloud: Boolean = false): Boolean {
+    val cloudId = parseIdentity(value) ?: return false
+    if (cloudId == id.value) {
+      if (confirmedByCloud) {
+        awaitingCloudBackup = false
+        supersededCloudId = null
+        storage.putBoolean(AwaitingCloudBackupKey, false)
+        storage.remove(SupersededCloudIdKey)
+      }
+      return false
     }
+    if (supersededCloudId == cloudId) return true
+    if (!awaitingCloudBackup) return false
+    storage.putString(PendingTokenCleanupKey, cloudId.toString())
+    storage.putString(SupersededCloudIdKey, cloudId.toString())
+    storage.putBoolean(AwaitingCloudBackupKey, false)
+    supersededCloudId = cloudId
+    pendingTokenCleanup.value = cloudId
+    awaitingCloudBackup = false
+    return true
+  }
+
+  /** Removes a completed cleanup only if it still names the pending, inactive UUID. */
+  public fun markTokenCleanupComplete(value: Uuid) {
+    if (value == id.value || pendingTokenCleanup.value != value) return
+    storage.remove(PendingTokenCleanupKey)
+    pendingTokenCleanup.value = null
+  }
+
+  /** Prevents a future account's cloud UUID from being treated as this install's old backup. */
+  public fun stopAwaitingCloudBackup() {
+    awaitingCloudBackup = false
+    storage.putBoolean(AwaitingCloudBackupKey, false)
   }
 
   /** Defines identity storage keys and helpers for validating and generating UUIDs. */
   public companion object {
     public const val IdentityKey: String = "identity.uuid"
-    private const val RestorePendingKey: String = "identity.restorePending"
+    private const val AwaitingCloudBackupKey: String = "identity.awaitingCloudBackup"
+    private const val PendingTokenCleanupKey: String = "identity.pendingTokenCleanup"
+    private const val SupersededCloudIdKey: String = "identity.supersededCloudId"
 
     internal fun parseIdentity(value: String?): Uuid? = value?.let(Uuid::parseOrNull)
       ?.takeUnless { it == Uuid.NIL || it == Uuid.fromLongs(-1L, -1L) }

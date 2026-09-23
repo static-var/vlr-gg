@@ -14,7 +14,7 @@ import kotlin.uuid.Uuid
 /** Verifies cloud reconciliation against delayed downloads and rejected writes. */
 class ICloudIdentityReconcilerTest {
   @Test
-  fun cloudIdentityArrivingBeforeRetryRestoresLocalIdentityWithoutOverwritingCloud() {
+  fun cloudIdentityArrivingBeforeRetryKeepsLocalIdentityAndQueuesCleanup() {
     val fixture = Fixture()
     val provisionalId = fixture.repository.id.value
     fixture.reconciler.seed()
@@ -24,9 +24,9 @@ class ICloudIdentityReconcilerTest {
     fixture.cloud.value = CloudId.toString()
     fixture.scheduler.runNext()
 
-    assertEquals(CloudId, fixture.repository.id.value)
-    assertEquals(listOf(provisionalId.toString()), fixture.cloud.writes)
-    assertFalse(fixture.scheduler.hasPending())
+    assertEquals(provisionalId, fixture.repository.id.value)
+    assertEquals(CloudId, fixture.repository.pendingTokenCleanup.value)
+    assertTrue(fixture.cloud.writes.all { it == provisionalId.toString() })
   }
 
   @Test
@@ -41,8 +41,8 @@ class ICloudIdentityReconcilerTest {
     assertEquals(4, fixture.cloud.writes.size)
     assertTrue(fixture.cloud.writes.all { it == fixture.repository.id.value.toString() })
     assertEquals(listOf(1_000L, 3_000L, 9_000L), fixture.scheduler.delays)
-    fixture.repository.restoreFromBackup(CloudId.toString())
-    assertEquals(CloudId, fixture.repository.id.value)
+    assertTrue(fixture.repository.observeCloudIdentity(CloudId.toString()))
+    assertEquals(CloudId, fixture.repository.pendingTokenCleanup.value)
   }
 
   @Test
@@ -86,18 +86,55 @@ class ICloudIdentityReconcilerTest {
   }
 
   @Test
-  fun serverChangeStopsRetriesAndConfirmsProvisionalIdentity() {
+  fun accountChangePreventsAnotherAccountsUuidFromBeingRetiredAfterRestart() {
     val fixture = Fixture()
+    fixture.reconciler.seed()
+    fixture.reconciler.onAccountChange()
+
+    val restarted = fixture.restartRepository()
+    assertFalse(restarted.observeCloudIdentity(CloudId.toString()))
+    assertEquals(null, restarted.pendingTokenCleanup.value)
+  }
+
+  @Test
+  fun completedDeletionDoesNotStopCloudRewriteAfterRestart() {
+    val fixture = Fixture()
+    fixture.reconciler.seed()
+    fixture.cloud.rejectWrites = true
+    fixture.cloud.value = CloudId.toString()
+    fixture.reconciler.onServerChange()
+    fixture.repository.markTokenCleanupComplete(CloudId)
+    val writesBeforeRestart = fixture.cloud.writes.size
+
+    val restarted = fixture.restartRepository()
+    ICloudIdentityReconciler(
+      restarted,
+      readCloudId = { fixture.cloud.value },
+      writeCloudId = fixture.cloud::write,
+      scheduleRetry = fixture.scheduler::schedule,
+    ).seed()
+
+    assertEquals(writesBeforeRestart + 1, fixture.cloud.writes.size)
+    assertEquals(restarted.id.value.toString(), fixture.cloud.writes.last())
+    assertEquals(null, restarted.pendingTokenCleanup.value)
+  }
+
+  @Test
+  fun serverChangeRetainsGeneratedIdentityAndPublishesItToCloud() {
+    val fixture = Fixture()
+    val generated = fixture.repository.id.value
     fixture.reconciler.seed()
     fixture.reconciler.onInitialSyncChange()
     fixture.cloud.value = CloudId.toString()
 
     fixture.reconciler.onServerChange()
 
-    assertEquals(CloudId, fixture.repository.id.value)
-    assertFalse(fixture.scheduler.hasPending())
-    fixture.repository.restoreFromBackup(LocalId.toString())
-    assertEquals(CloudId, fixture.repository.id.value)
+    assertEquals(generated, fixture.repository.id.value)
+    assertEquals(CloudId, fixture.repository.pendingTokenCleanup.value)
+    assertEquals(generated.toString(), fixture.cloud.writes.last())
+    fixture.repository.markTokenCleanupComplete(CloudId)
+    fixture.cloud.value = CloudId.toString()
+    assertTrue(fixture.repository.observeCloudIdentity(fixture.cloud.value))
   }
 
   /** Holds one local repository, cloud store, and retry scheduler for a sequence. */
@@ -105,7 +142,7 @@ class ICloudIdentityReconcilerTest {
     private val settings = MapSettings().apply {
       localId?.let { putString(UserIdentityRepository.IdentityKey, it.toString()) }
     }
-    val repository = UserIdentityRepository(settings, allowDelayedRestore = true)
+    val repository = UserIdentityRepository(settings, trackCloudBackup = true)
     val cloud = FakeCloud(cloudId)
     val scheduler = FakeScheduler()
     val reconciler = ICloudIdentityReconciler(
@@ -114,6 +151,8 @@ class ICloudIdentityReconcilerTest {
       writeCloudId = cloud::write,
       scheduleRetry = scheduler::schedule,
     )
+
+    fun restartRepository(): UserIdentityRepository = UserIdentityRepository(settings, trackCloudBackup = true)
   }
 
   /** Mimics the local iCloud cache, including an initial write rejection. */
