@@ -76,6 +76,63 @@ class PushTokenRegistrationTest {
   }
 
   @Test
+  fun liveActivitiesIgnoreDeniedOrdinaryNotificationAuthorizationWithoutReadingIt() = runTest {
+    val harness = Harness(backgroundScope, notificationsEnabled = true).apply {
+      permissionProvider.requiresPermission = false
+      permissionProvider.activitiesEnabled = true
+      tokenProvider.tokenOnStart = "activity-token"
+    }
+
+    harness.coordinator.start()
+    harness.coordinator.onForeground()
+    runCurrent()
+
+    assertEquals(0, harness.permissionProvider.reads)
+    assertEquals(1, harness.tokenProvider.starts)
+    assertEquals("activity-token", harness.dataSource.requests.single().token)
+
+    harness.coordinator.onAuthorizationChanged(NotificationAuthorization.Denied)
+    runCurrent()
+
+    assertEquals(1, harness.tokenProvider.starts)
+    assertEquals(0, harness.tokenProvider.stops)
+    assertEquals(1, harness.dataSource.requests.size)
+  }
+
+  @Test
+  fun liveActivitiesStillRequireActivityKitCapability() = runTest {
+    val harness = Harness(backgroundScope, notificationsEnabled = true).apply {
+      permissionProvider.requiresPermission = false
+      permissionProvider.activitiesEnabled = false
+      tokenProvider.tokenOnStart = "must-not-upload"
+    }
+
+    harness.coordinator.start()
+    harness.coordinator.onForeground()
+    runCurrent()
+
+    assertEquals(0, harness.permissionProvider.reads)
+    assertEquals(0, harness.tokenProvider.starts)
+    assertTrue(harness.dataSource.requests.isEmpty())
+  }
+
+  @Test
+  fun unsupportedPlatformDoesNotStartTokenProviderForRestoredOptIn() = runTest {
+    val harness = Harness(backgroundScope, notificationsEnabled = true).apply {
+      permissionProvider.supported = false
+      tokenProvider.tokenOnStart = "must-not-upload"
+    }
+
+    harness.coordinator.start()
+    harness.coordinator.onForeground()
+    runCurrent()
+
+    assertEquals(0, harness.permissionProvider.reads)
+    assertEquals(0, harness.tokenProvider.starts)
+    assertTrue(harness.dataSource.requests.isEmpty())
+  }
+
+  @Test
   fun settingsGrantStartsRegistrationAfterSettingsOwnerIsGone() = runTest {
     val harness = Harness(backgroundScope, notificationsEnabled = false).apply {
       tokenProvider.tokenOnStart = "after-grant"
@@ -207,13 +264,21 @@ private class Harness(
 }
 
 private class FakePermissionProvider : NotificationPermissionProvider {
+  var supported: Boolean = true
+  var requiresPermission: Boolean = true
   var activitiesEnabled: Boolean? = null
+  var reads: Int = 0
   private var readCallback: ((NotificationAuthorization) -> Unit)? = null
   private var requestCallback: ((NotificationAuthorization) -> Unit)? = null
+
+  override fun supportsLiveUpdates(): Boolean = supported
+
+  override fun requiresNotificationPermission(): Boolean = requiresPermission
 
   override fun areLiveActivitiesEnabled(): Boolean? = activitiesEnabled
 
   override fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {
+    reads++
     readCallback = onResult
   }
 
@@ -236,6 +301,7 @@ private class FakePushTokenProvider : PushTokenProvider {
   override val platform: PushPlatform = PushPlatform.Ios
   var tokenOnStart: String? = null
   var starts: Int = 0
+  var stops: Int = 0
   private var callback: ((String) -> Unit)? = null
 
   override fun start(onToken: (String) -> Unit) {
@@ -244,7 +310,9 @@ private class FakePushTokenProvider : PushTokenProvider {
     tokenOnStart?.let(onToken)
   }
 
-  override fun stop() = Unit
+  override fun stop() {
+    stops++
+  }
 
   fun emit(token: String) {
     callback?.invoke(token)

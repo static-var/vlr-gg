@@ -12,6 +12,10 @@ public enum class NotificationAuthorization {
 }
 
 public interface NotificationPermissionProvider {
+  public fun supportsLiveUpdates(): Boolean = true
+
+  public fun requiresNotificationPermission(): Boolean = true
+
   public fun areLiveActivitiesEnabled(): Boolean?
 
   public fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit)

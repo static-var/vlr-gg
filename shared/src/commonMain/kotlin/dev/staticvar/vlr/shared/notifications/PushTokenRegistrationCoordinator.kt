@@ -24,6 +24,8 @@ internal class PushTokenRegistrationCoordinator(
   private var running: Boolean = false
   private var enabled: Boolean = false
   private var authorization: NotificationAuthorization? = null
+  private var supportsLiveUpdates: Boolean = false
+  private var requiresNotificationPermission: Boolean = true
   private var liveActivitiesEnabled: Boolean? = null
   private var tokenProviderStarted: Boolean = false
   private var permissionReadPending: Boolean = false
@@ -40,7 +42,7 @@ internal class PushTokenRegistrationCoordinator(
         enabled = value.enabled
         if (becameEnabled) {
           authorization = null
-          refreshAuthorization()
+          refreshAccess()
         }
         updateTokenProvider()
       }
@@ -61,12 +63,12 @@ internal class PushTokenRegistrationCoordinator(
 
   fun onForeground() {
     refreshTokenAfterPermissionRead = true
-    refreshAuthorization()
+    refreshAccess()
   }
 
   fun onAuthorizationChanged(value: NotificationAuthorization) {
     mainScope.launch {
-      if (!running) return@launch
+      if (!running || !requiresNotificationPermission) return@launch
       permissionGeneration++
       permissionReadPending = false
       authorization = value
@@ -76,10 +78,20 @@ internal class PushTokenRegistrationCoordinator(
     }
   }
 
-  private fun refreshAuthorization() {
+  private fun refreshAccess() {
     if (!running || permissionReadPending) return
-    permissionReadPending = true
+    supportsLiveUpdates = readSupportsLiveUpdates()
+    requiresNotificationPermission = readRequiresNotificationPermission()
     liveActivitiesEnabled = readLiveActivityCapability()
+    if (!supportsLiveUpdates || !requiresNotificationPermission) {
+      permissionGeneration++
+      permissionReadPending = false
+      authorization = null
+      restartTokenProviderAfterForegroundRead()
+      updateTokenProvider()
+      return
+    }
+    permissionReadPending = true
     val generation = ++permissionGeneration
     try {
       permissionProvider.readNotificationAuthorization { value ->
@@ -103,7 +115,8 @@ internal class PushTokenRegistrationCoordinator(
 
   private fun updateTokenProvider() {
     val shouldStart = enabled &&
-      authorization == NotificationAuthorization.Authorized &&
+      supportsLiveUpdates &&
+      (!requiresNotificationPermission || authorization == NotificationAuthorization.Authorized) &&
       liveActivitiesEnabled != false
     if (shouldStart && !tokenProviderStarted) {
       val generation = ++tokenGeneration
@@ -143,6 +156,18 @@ internal class PushTokenRegistrationCoordinator(
     permissionProvider.areLiveActivitiesEnabled()
   } catch (_: Exception) {
     false
+  }
+
+  private fun readSupportsLiveUpdates(): Boolean = try {
+    permissionProvider.supportsLiveUpdates()
+  } catch (_: Exception) {
+    false
+  }
+
+  private fun readRequiresNotificationPermission(): Boolean = try {
+    permissionProvider.requiresNotificationPermission()
+  } catch (_: Exception) {
+    true
   }
 
   private fun restartTokenProviderAfterForegroundRead() {

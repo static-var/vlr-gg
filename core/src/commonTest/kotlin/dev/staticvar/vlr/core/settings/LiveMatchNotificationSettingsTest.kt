@@ -75,16 +75,63 @@ class LiveMatchNotificationSettingsTest {
     controller.openSettings()
     assertEquals(1, provider.settingsOpened)
   }
+
+  @Test
+  fun liveActivitiesNeverReadOrRequestOrdinaryNotificationPermission() {
+    val provider = FakeProvider().apply {
+      requiresPermission = false
+      activitiesEnabled = true
+    }
+    val controller = LiveMatchNotificationSettingsController(
+      LiveMatchNotificationPreferencesRepository(MapSettings()),
+      provider,
+    )
+
+    controller.refresh()
+    controller.setEnabled(true)
+    controller.requestNotifications()
+
+    assertEquals(0, provider.reads)
+    assertEquals(0, provider.requests)
+    assertEquals(null, controller.access.value.notifications)
+    assertFalse(controller.access.value.requiresNotificationPermission)
+    assertTrue(controller.preferences.value.enabled)
+  }
+
+  @Test
+  fun unsupportedLiveUpdatesDoNotRequestPermission() {
+    val provider = FakeProvider().apply { supported = false }
+    val controller = LiveMatchNotificationSettingsController(
+      LiveMatchNotificationPreferencesRepository(MapSettings()),
+      provider,
+    )
+
+    controller.setEnabled(true)
+    controller.refresh()
+    controller.requestNotifications()
+
+    assertFalse(controller.access.value.supportsLiveUpdates)
+    assertEquals(0, provider.reads)
+    assertEquals(0, provider.requests)
+  }
 }
 
 private class FakeProvider : NotificationPermissionProvider {
+  var supported = true
+  var requiresPermission = true
   var activitiesEnabled: Boolean? = true
+  var reads = 0
   var requests = 0
   var settingsOpened = 0
   var readResult: ((NotificationAuthorization) -> Unit)? = null
   var requestResult: ((NotificationAuthorization) -> Unit)? = null
+  override fun supportsLiveUpdates(): Boolean = supported
+  override fun requiresNotificationPermission(): Boolean = requiresPermission
   override fun areLiveActivitiesEnabled(): Boolean? = activitiesEnabled
-  override fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) { readResult = onResult }
+  override fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {
+    reads++
+    readResult = onResult
+  }
   override fun requestNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {
     requests++
     requestResult = onResult

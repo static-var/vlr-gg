@@ -32,7 +32,6 @@ import dev.staticvar.vlr.featureabout.presentation.BundledRelease
 import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
 import dev.staticvar.vlr.featureabout.presentation.NotificationsRoute
 import dev.staticvar.vlr.shared.notifications.LocalLiveMatchNotificationSettingsController
-import dev.staticvar.vlr.sharedui.notifications.LocalNotificationPermissionProvider
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewBanner
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailSection
@@ -315,6 +314,12 @@ internal fun appNavigationModule(): Module = module {
   }
   navigation<AppRoute.Settings> {
     val appState = LocalVlrAppState.current
+    val notificationController = LocalLiveMatchNotificationSettingsController.current
+    val notificationAccess = if (notificationController == null) {
+      null
+    } else {
+      notificationController.access.collectAsStateWithLifecycle().value
+    }
     val cleanupPreferences = koinInject<CacheCleanupPreferencesRepository>()
     val cleanupRepository = koinInject<CacheCleanupRepository>()
     val autoCleanupEnabled by cleanupPreferences.enabled.collectAsStateWithLifecycle()
@@ -327,7 +332,8 @@ internal fun appNavigationModule(): Module = module {
       deletedCacheRecords = cleanupStats.deletedRecords,
       onAutoCleanupChanged = cleanupPreferences::setEnabled,
       onAppearance = appState::showAppearance,
-      onNotifications = if (LocalNotificationPermissionProvider.current != null) appState::showNotifications else null,
+      onNotifications = if (notificationAccess?.supportsLiveUpdates == true) appState::showNotifications else null,
+      liveActivities = notificationAccess?.requiresNotificationPermission == false,
       onAbout = appState::showAbout,
       onWhatsNew = appState::showWhatsNew,
       onBack = appState::navigateUp,

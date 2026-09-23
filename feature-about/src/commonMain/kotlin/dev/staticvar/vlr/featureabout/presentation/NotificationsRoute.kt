@@ -39,7 +39,6 @@ import vlr.feature_about.generated.resources.live_activities_disabled
 import vlr.feature_about.generated.resources.live_activity_permissions_description
 import vlr.feature_about.generated.resources.live_match_updates
 import vlr.feature_about.generated.resources.live_match_updates_description
-import vlr.feature_about.generated.resources.notification_access_denied
 import vlr.feature_about.generated.resources.notification_access_error
 import vlr.feature_about.generated.resources.notification_preferences_description
 import vlr.feature_about.generated.resources.notifications
@@ -58,10 +57,10 @@ public fun NotificationsRoute(
     controller.refresh()
     onPauseOrDispose { }
   }
-  val hasLiveActivities = access.activitiesEnabled != null
+  val hasLiveActivities = !access.requiresNotificationPermission
   Column(modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM)) {
     PrismScreenTitleBar(
-      title = stringResource(Res.string.notifications),
+      title = stringResource(if (hasLiveActivities) Res.string.live_activities else Res.string.notifications),
       subtitle = stringResource(Res.string.notification_preferences_description),
       onBackPress = onBack,
     )
@@ -83,24 +82,28 @@ public fun NotificationsRoute(
         title = stringResource(Res.string.live_activity_favorites),
         description = stringResource(Res.string.live_activity_favorites_description),
         checked = preferences.enabled,
-        enabled = !access.requesting,
+        enabled = access.supportsLiveUpdates && !access.requesting,
         onChange = controller::setEnabled,
       )
       Text(stringResource(Res.string.live_activity_permissions_description), style = Prism.typography.caption, color = Prism.color.captionColor)
-      if (preferences.enabled) {
+      if (preferences.enabled && access.supportsLiveUpdates) {
         if (access.activitiesEnabled == false) {
           PermissionMessage(stringResource(Res.string.live_activities_disabled))
         }
-        if (access.notifications == NotificationAuthorization.Denied) {
-          PermissionMessage(stringResource(if (hasLiveActivities) Res.string.notification_access_denied else Res.string.notifications_permission_description))
+        if (access.requiresNotificationPermission && access.notifications == NotificationAuthorization.Denied) {
+          PermissionMessage(stringResource(Res.string.notifications_permission_description))
         }
-        if (access.activitiesEnabled == false || access.notifications == NotificationAuthorization.Denied) {
+        if (access.activitiesEnabled == false ||
+          access.requiresNotificationPermission && access.notifications == NotificationAuthorization.Denied
+        ) {
           PrismButton(onClick = controller::openSettings) { Text(stringResource(Res.string.open_system_settings)) }
         }
-        if (access.notifications == NotificationAuthorization.Error) {
+        if (access.requiresNotificationPermission && access.notifications == NotificationAuthorization.Error) {
           PermissionMessage(stringResource(Res.string.notification_access_error))
         }
-        if (access.notifications == NotificationAuthorization.Error || access.notifications == NotificationAuthorization.NotDetermined) {
+        if (access.requiresNotificationPermission &&
+          (access.notifications == NotificationAuthorization.Error || access.notifications == NotificationAuthorization.NotDetermined)
+        ) {
           PrismButton(onClick = controller::requestNotifications, enabled = !access.requesting) {
             Text(stringResource(Res.string.allow_notifications))
           }
