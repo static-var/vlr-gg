@@ -13,6 +13,7 @@ import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 internal class FavoritesRepositoryImpl(
@@ -40,6 +41,7 @@ internal class FavoritesRepositoryImpl(
       )
     }
     .distinctUntilChanged()
+    .flowOn(dispatchers.default)
 
   override fun observeTeamIds(): Flow<Set<String>> = database.teamsQueries
     .getFavoriteTeamIds()
@@ -47,6 +49,7 @@ internal class FavoritesRepositoryImpl(
     .mapToList(dispatchers.io)
     .map { it.toSet() }
     .distinctUntilChanged()
+    .flowOn(dispatchers.default)
 
   override fun observePlayerIds(): Flow<Set<String>> = database.playersQueries
     .getFavoritePlayerIds()
@@ -54,4 +57,5 @@ internal class FavoritesRepositoryImpl(
     .mapToList(dispatchers.io)
     .map { it.toSet() }
     .distinctUntilChanged()
+    .flowOn(dispatchers.default)
 }
