@@ -5,6 +5,40 @@ import UIKit
 
 /// Downloads and caches team logos for the app and Live Activity widget.
 enum MatchActivityLogoCache {
+    /// Accepts logo URLs only from the two image hosts used by match payloads.
+    static func allowedRemoteURL(for source: String) -> URL? {
+        guard let url = URL(string: source),
+              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              url.scheme?.lowercased() == "https",
+              let host = components.percentEncodedHost?.lowercased(),
+              host == "owcdn.net" || host == "www.vlr.gg",
+              url.user == nil, url.password == nil,
+              url.port == nil || url.port == 443 else { return nil }
+        return url
+    }
+
+    /// Rejects redirects that would move a logo request outside the approved hosts.
+    final class RedirectGuard: NSObject, URLSessionTaskDelegate {
+        func urlSession(
+            _ session: URLSession,
+            task: URLSessionTask,
+            willPerformHTTPRedirection response: HTTPURLResponse,
+            newRequest request: URLRequest,
+            completionHandler: @escaping (URLRequest?) -> Void
+        ) {
+            completionHandler(request.url.flatMap { MatchActivityLogoCache.allowedRemoteURL(for: $0.absoluteString) } != nil
+                ? request : nil)
+        }
+    }
+
+    private static let session: URLSession = {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.httpShouldSetCookies = false
+        configuration.httpCookieStorage = nil
+        configuration.urlCredentialStorage = nil
+        return URLSession(configuration: configuration, delegate: RedirectGuard(), delegateQueue: nil)
+    }()
+
     static func image(for source: String?) -> UIImage? {
         guard let source, let file = fileURL(for: source),
               let data = try? Data(contentsOf: file) else { return nil }
@@ -17,11 +51,11 @@ enum MatchActivityLogoCache {
         for source in Set(sources) {
             guard !Task.isCancelled,
                   image(for: source) == nil,
-                  let remote = URL(string: source), remote.scheme == "https",
+                  let remote = allowedRemoteURL(for: source),
                   let file = fileURL(for: source) else { continue }
             do {
                 let request = URLRequest(url: remote, timeoutInterval: 10)
-                let (data, response) = try await URLSession.shared.data(for: request)
+                let (data, response) = try await session.data(for: request)
                 guard !Task.isCancelled,
                       let response = response as? HTTPURLResponse,
                       (200..<300).contains(response.statusCode),
@@ -62,6 +96,7 @@ enum MatchActivityLogoCache {
     }
 
     private static func fileURL(for source: String) -> URL? {
+        guard allowedRemoteURL(for: source) != nil else { return nil }
         let key = SHA256.hash(data: Data(source.utf8)).map { String(format: "%02x", $0) }.joined()
         return FileManager.default
             .containerURL(forSecurityApplicationGroupIdentifier: VLRWidgetContract.appGroupIdentifier)?

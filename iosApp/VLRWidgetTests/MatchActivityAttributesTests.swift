@@ -5,6 +5,64 @@ import CoreText
 
 /// Checks Live Activity payloads, score display, and layouts.
 final class MatchActivityAttributesTests: XCTestCase {
+    func testLogoURLValidationAcceptsKnownHosts() {
+        for source in [
+            "https://owcdn.net/img/team.png",
+            "https://www.vlr.gg/img/team.png",
+            "https://owcdn.net:443/img/team.png",
+        ] {
+            XCTAssertNotNil(MatchActivityLogoCache.allowedRemoteURL(for: source), source)
+        }
+    }
+
+    func testLogoURLValidationRejectsUntrustedAuthorities() {
+        for source in [
+            "http://owcdn.net/img/team.png",
+            "https://owcdn.net.evil.example/img/team.png",
+            "https://evil-owcdn.net/img/team.png",
+            "https://www.vlr.gg.evil.example/img/team.png",
+            "https://owcdn%2Enet/img/team.png",
+            "https://owcdn.net./img/team.png",
+            "https://127.0.0.1/img/team.png",
+            "https://[::1]/img/team.png",
+            "https://user@owcdn.net/img/team.png",
+            "https://user:password@www.vlr.gg/img/team.png",
+            "https://owcdn.net:444/img/team.png",
+            "file:///tmp/team.png",
+        ] {
+            XCTAssertNil(MatchActivityLogoCache.allowedRemoteURL(for: source), source)
+        }
+    }
+
+    func testLogoRedirectGuardRejectsUntrustedDestinations() throws {
+        let original = try XCTUnwrap(URL(string: "https://owcdn.net/img/team.png"))
+        let session = URLSession(configuration: .ephemeral)
+        let task = session.dataTask(with: original)
+        let response = try XCTUnwrap(HTTPURLResponse(
+            url: original, statusCode: 302, httpVersion: nil, headerFields: nil
+        ))
+        let guardDelegate = MatchActivityLogoCache.RedirectGuard()
+
+        for (destination, allowed) in [
+            ("https://www.vlr.gg/img/team.png", true),
+            ("https://owcdn.net/img/other.png", true),
+            ("https://owcdn.net.evil.example/img/team.png", false),
+            ("https://127.0.0.1/img/team.png", false),
+            ("http://owcdn.net/img/team.png", false),
+            ("https://user@owcdn.net/img/team.png", false),
+            ("https://owcdn.net:444/img/team.png", false),
+        ] {
+            let request = URLRequest(url: try XCTUnwrap(URL(string: destination)))
+            var accepted: URLRequest?
+            guardDelegate.urlSession(
+                session, task: task, willPerformHTTPRedirection: response, newRequest: request
+            ) { accepted = $0 }
+            XCTAssertEqual(accepted?.url, allowed ? request.url : nil, destination)
+        }
+        task.cancel()
+        session.invalidateAndCancel()
+    }
+
     @available(iOS 16.1, *)
     @MainActor
     func testLiveActivityLayouts() throws {
