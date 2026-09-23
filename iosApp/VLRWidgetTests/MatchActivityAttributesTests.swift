@@ -1,7 +1,58 @@
 import Foundation
 import XCTest
+import SwiftUI
+import CoreText
 
 final class MatchActivityAttributesTests: XCTestCase {
+    @available(iOS 16.1, *)
+    @MainActor
+    func testLiveActivityLayouts() throws {
+        let fontURL = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "chakra_petch_regular", withExtension: "ttf"))
+        CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, nil)
+        let scenarios = [("live", false, false), ("hidden", false, true), ("final", true, false)]
+        for (name, terminal, hidden) in scenarios {
+            let state = MatchActivityAttributes.ContentState(
+                match_id: "3141592653", observed_at: 1790000000, terminal: terminal,
+                teams: [
+                    .init(name: "Test Alpha", img: nil, score: terminal ? 6 : 1),
+                    .init(name: "Test Beta", img: nil, score: terminal ? 5 : 0),
+                ],
+                current_map: .init(name: "Test Range", scores: terminal ? [6, 5] : [1, 0])
+            )
+            let content = MatchLiveActivityLockScreen(state: state, spoilersHidden: hidden)
+                .frame(width: 370)
+                .background(PrismWidgetPalette.dark.background)
+                .environment(\.colorScheme, .dark)
+                .environment(\.locale, Locale(identifier: "en_US"))
+            let renderer = ImageRenderer(content: content)
+            renderer.scale = 3
+            let image = try XCTUnwrap(renderer.uiImage)
+            XCTAssertLessThanOrEqual(image.size.height, 160)
+            let attachment = XCTAttachment(image: image)
+            attachment.name = "live-activity-\(name)"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    @available(iOS 16.1, *)
+    func testSyntheticMatchPayloadAdvancesToFinal() throws {
+        for tick in 1...6 {
+            let json = """
+            {"match_id":"3141592653","observed_at":1790000000,"terminal":\(tick == 6),"teams":[{"name":"Test Alpha","img":null,"score":\(tick)},{"name":"Test Beta","img":null,"score":\(tick - 1)}],"current_map":{"name":"Test Range","scores":[\(tick),\(tick - 1)]}}
+            """
+            let state = try JSONDecoder().decode(
+                MatchActivityAttributes.ContentState.self,
+                from: Data(json.utf8)
+            )
+            XCTAssertEqual(state.match_id, "3141592653")
+            XCTAssertEqual(state.teams.map(\.name), ["Test Alpha", "Test Beta"])
+            XCTAssertEqual(state.teams.map(\.score), [tick, tick - 1])
+            XCTAssertEqual(state.current_map?.scores, [tick, tick - 1])
+            XCTAssertEqual(state.terminal, tick == 6)
+        }
+    }
+
     @available(iOS 16.1, *)
     func testDecodesCompactBackendPayload() throws {
         let attributesJSON = #"{"match_id":"734308"}"#

@@ -162,6 +162,7 @@ targets:
       - path: VLRWidget/VLRWidgetModels.swift
       - path: VLRWidget/VLRWidgetRefresh.swift
       - path: VLRWidget/UpcomingMatchesWidget.swift
+      - path: VLRWidget/MatchLiveActivity.swift
       - path: VLRWidget/Localizable.xcstrings
         buildPhase: resources
       - path: WidgetShared

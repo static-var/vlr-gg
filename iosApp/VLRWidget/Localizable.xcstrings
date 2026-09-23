@@ -69,6 +69,12 @@
         }
       }
     },
+    "FINAL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "BEENDET" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "FINAL" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "FINALIZADA" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "TERMINÉ" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "समाप्त" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "종료" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "ENCERRADA" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "ЗАВЕРШЁН" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "TAMAMLANDI" } }
+      }
+    },
     "FAVORITES" : {
       "extractionState" : "manual",
       "localizations" : {

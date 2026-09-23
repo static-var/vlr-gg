@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A40E5F690294147A5126801 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */; };
 		1E500497BDD6693B31A1A4B2 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */; };
 		41ED708CD7A4065E2C2DDCB6 /* MatchActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */; };
 		98EBCF0009BC343633523083 /* ActivityPushTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1F8D968CF01C749B570E7A9 /* ActivityPushTokenProvider.swift */; };
@@ -556,6 +557,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C4F26D6615E5B84E8ABD7919 /* MatchActivityAttributes.swift in Sources */,
+				7A40E5F690294147A5126801 /* MatchLiveActivity.swift in Sources */,
 				D3FAD1589057032649BD28A1 /* MatchActivityAttributesTests.swift in Sources */,
 				44E37D45D9CD7737C66D6C33 /* TestGeneratedBuildConfig.swift in Sources */,
 				BC44AC391E69BD6D0F675BE0 /* UpcomingMatchesWidget.swift in Sources */,
