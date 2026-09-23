@@ -10,6 +10,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailabilityLight
 import com.google.firebase.FirebaseApp
 
+/** Checks Android version, Google Play services, and Firebase support for live notifications. */
 internal object AndroidLiveNotificationAvailability {
   fun isAvailable(context: Context): Boolean {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA ||

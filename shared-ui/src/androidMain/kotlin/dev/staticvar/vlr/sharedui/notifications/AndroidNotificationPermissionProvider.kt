@@ -42,6 +42,7 @@ public fun rememberAndroidNotificationPermissionProvider(supportsLiveUpdates: ()
   return provider
 }
 
+/** Reads and requests Android notification permission and opens notification settings. */
 private class AndroidNotificationPermissionProvider(
   private val context: Context,
   private val supportsLiveNotifications: () -> Boolean,
@@ -131,6 +132,7 @@ private class AndroidNotificationPermissionProvider(
     if (Looper.myLooper() == Looper.getMainLooper()) block() else mainHandler.post(block)
   }
 
+  /** Defines the preference key that records a notification permission response. */
   private companion object {
     const val HAS_PERMISSION_RESPONSE = "has_permission_response"
   }

@@ -10,6 +10,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
 
+/** Checks topic synchronization after token changes, disabling, and partial failures. */
 class AndroidLiveTopicSubscriptionsTest {
   @Test
   fun tokenRotationResubscribesDesiredTopics() = runBlocking {
@@ -78,6 +79,7 @@ class AndroidLiveTopicSubscriptionsTest {
   }
 }
 
+/** Records topic operations and can fail a subscription for tests. */
 private class FakeTransport(
   private val token: String,
   private val failSubscription: String? = null,

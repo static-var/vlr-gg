@@ -18,6 +18,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+/** Keeps Firebase live match topics in sync with favorites and notification settings. */
 internal class AndroidLiveTopicSubscriptions(
   context: Context,
   favorites: FavoritesRepository,
@@ -55,6 +56,10 @@ internal class AndroidLiveTopicSubscriptions(
     refreshes.trySend(Unit)
   }
 
+  /**
+   * Reconciles saved Firebase topics with the latest favorites and notification settings.
+   * Saves each completed change so a later refresh can continue after a failure.
+   */
   private suspend fun synchronize() {
     val snapshot = favoritesSnapshot ?: return
     if (!AndroidLiveNotificationAvailability.isAvailable(appContext)) return
@@ -81,11 +86,13 @@ internal class AndroidLiveTopicSubscriptions(
   }
 }
 
+/** Records the push token and its known live match topic subscriptions. */
 internal data class LiveTopicSubscriptionState(
   val token: String?,
   val topics: Set<String>,
 )
 
+/** Provides a push token and operations to change live match topic subscriptions. */
 internal interface LiveTopicSubscriptionTransport {
   suspend fun currentToken(): String
 
@@ -94,6 +101,10 @@ internal interface LiveTopicSubscriptionTransport {
   suspend fun unsubscribe(topic: String)
 }
 
+/**
+ * Removes unwanted topics and subscribes to missing ones, saving completed changes.
+ * After token rotation, rebuilds desired subscriptions and clears stale saved membership.
+ */
 internal suspend fun reconcileLiveTopicSubscriptions(
   desired: Set<String>,
   previous: LiveTopicSubscriptionState,
@@ -121,6 +132,7 @@ internal suspend fun reconcileLiveTopicSubscriptions(
   }
 }
 
+/** Runs live match topic subscription operations through Firebase Messaging. */
 private class FirebaseLiveTopicSubscriptionTransport(
   private val messaging: FirebaseMessaging,
 ) : LiveTopicSubscriptionTransport {

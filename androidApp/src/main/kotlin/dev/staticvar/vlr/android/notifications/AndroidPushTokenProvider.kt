@@ -9,6 +9,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import dev.staticvar.vlr.core.notifications.PushPlatform
 import dev.staticvar.vlr.core.notifications.PushTokenProvider
 
+/** Delivers the current Firebase push token and later token changes. */
 internal class AndroidPushTokenProvider(context: Context) : PushTokenProvider {
   private val appContext = context.applicationContext
   var onTokenChanged: (() -> Unit)? = null
@@ -18,6 +19,10 @@ internal class AndroidPushTokenProvider(context: Context) : PushTokenProvider {
   private var generation: Long = 0
   private var callback: ((String) -> Unit)? = null
 
+  /**
+   * Requests the current Firebase token and registers its recipient.
+   * A generation check discards results from an earlier start or a stopped request.
+   */
   override fun start(onToken: (String) -> Unit) {
     if (!AndroidLiveNotificationAvailability.isAvailable(appContext)) return
     val requestGeneration = synchronized(callbackLock) {
@@ -43,6 +48,10 @@ internal class AndroidPushTokenProvider(context: Context) : PushTokenProvider {
     publish(token)
   }
 
+  /**
+   * Delivers a usable token to the current recipient.
+   * When a request generation is supplied, ignores callbacks from superseded requests.
+   */
   private fun publish(token: String, requestGeneration: Long? = null) {
     if (token.isBlank() || !AndroidLiveNotificationAvailability.isAvailable(appContext)) return
     val currentCallback = synchronized(callbackLock) {

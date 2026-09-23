@@ -34,6 +34,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 
+/** Handles incoming match updates and manages their Android notifications. */
 internal class AndroidLiveMatchNotifications(
   context: Context,
   json: Json,
@@ -55,6 +56,10 @@ internal class AndroidLiveMatchNotifications(
     stateStore.trackedMatchIds().toList()
   }
 
+  /**
+   * Posts eligible updates that pass ordering and dismissal checks.
+   * Records the update after posting succeeds so a failed notification can be retried.
+   */
   fun handle(data: Map<String, String>) {
     synchronized(lock) {
       if (!AndroidLiveNotificationAvailability.isAvailable(appContext) ||
@@ -83,6 +88,10 @@ internal class AndroidLiveMatchNotifications(
     }
   }
 
+  /**
+   * Remembers the dismissal and cancels the visible match notification.
+   * Later updates for that match remain suppressed while the saved state is retained.
+   */
   fun dismiss(matchId: String) {
     synchronized(lock) {
       if (!matchId.isValidMatchId()) return
@@ -111,6 +120,7 @@ internal class AndroidLiveMatchNotifications(
     return true
   }
 
+  /** Identifies the notification channel and each match notification. */
   private companion object {
     const val ChannelId = "live_matches"
     const val NotificationId = 1
@@ -119,6 +129,7 @@ internal class AndroidLiveMatchNotifications(
   }
 }
 
+/** Holds a match snapshot received for a live notification. */
 internal data class LiveMatchUpdate(
   val matchId: String,
   val observedAt: Long,
@@ -128,12 +139,15 @@ internal data class LiveMatchUpdate(
   val totalMaps: Int? = null,
 )
 
+/** Holds a team name, badge, and series score for a notification. */
 internal data class LiveMatchTeam(val name: String, val imageUrl: String?, val score: Int?, val tag: String? = null) {
   val displayName: String get() = tag?.trim()?.takeIf(String::isNotEmpty) ?: name
 }
 
+/** Holds the current map name, round scores, and map number. */
 internal data class LiveMatchMap(val name: String, val scores: List<Int?>, val number: Int? = null)
 
+/** Parses and validates live match snapshots from Firebase messages. */
 internal class LiveMatchUpdateParser(private val json: Json) {
   fun parse(data: Map<String, String>): LiveMatchUpdate? {
     if (data[PayloadTypeKey] != PayloadType) return null
@@ -183,8 +197,10 @@ internal class LiveMatchUpdateParser(private val json: Json) {
     else -> jsonPrimitive.intOrNull?.takeIf { it >= 0 }?.let(::ScoreResult)
   }
 
+  /** Distinguishes a valid missing score from an invalid score. */
   private data class ScoreResult(val value: Int?)
 
+  /** Defines the expected Firebase payload type and field names. */
   private companion object {
     const val PayloadTypeKey = "type"
     const val PayloadType = "match-live-v1"
@@ -202,6 +218,7 @@ private fun LiveMatchUpdate.isValid(): Boolean =
 private fun String.isValidMatchId(): Boolean =
   length in 1..10 && all { it in '0'..'9' } && toLongOrNull()?.let { it > 0 } == true
 
+/** Stores update timestamps and dismissals to reject stale or finished match updates. */
 internal class LiveMatchNotificationStateStore(
   context: Context,
   private val nowMillis: () -> Long = System::currentTimeMillis,
@@ -212,6 +229,10 @@ internal class LiveMatchNotificationStateStore(
     pruneStale()
   }
 
+  /**
+   * Rejects dismissed, finished, and older match updates.
+   * Allows a final update with the same timestamp as the last live update.
+   */
   fun shouldAccept(update: LiveMatchUpdate): Boolean {
     if (storage.getBoolean(update.key(DismissedSuffix), false) ||
       storage.getBoolean(update.key(TerminalSuffix), false)
@@ -230,6 +251,10 @@ internal class LiveMatchNotificationStateStore(
       .apply()
   }
 
+  /**
+   * Saves a dismissal even if no update has been recorded for the match.
+   * Refreshes its retention timestamp so later updates stay suppressed.
+   */
   fun dismiss(matchId: String) {
     pruneStale()
     storage.edit()
@@ -261,6 +286,7 @@ internal class LiveMatchNotificationStateStore(
     }.apply()
   }
 
+  /** Defines storage keys and the retention period for match notification state. */
   internal companion object {
     const val StorageName = "live_match_notifications"
     private const val TrackedMatchesKey = "tracked_matches"
@@ -272,7 +298,12 @@ internal class LiveMatchNotificationStateStore(
   }
 }
 
+/** Builds live and final match notifications while respecting hidden scores. */
 internal class LiveMatchNotificationRenderer(private val context: Context) {
+  /**
+   * Builds a live or final notification with match actions and optional hidden scores.
+   * Uses the native progress or metric style when the Android version supports it.
+   */
   fun build(update: LiveMatchUpdate, scoresHidden: Boolean, sdkInt: Int = Build.VERSION.SDK_INT): Notification {
     val openMatch = PendingIntent.getActivity(
       context,
@@ -403,6 +434,7 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
   )
 
+  /** Defines the live notification channel, promotion flag, and timeout. */
   private companion object {
     const val ChannelId = "live_matches"
     const val PromotedOngoingExtra = "android.requestPromotedOngoing"
@@ -410,10 +442,15 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
   }
 }
 
+/** Describes the active map position within a match series. */
 internal data class LiveMatchMapProgress(val currentMapNumber: Int, val totalMaps: Int)
 
 private const val MaxVisibleMapSegments = 9
 
+/**
+ * Returns map progress only for an active match with usable map numbers.
+ * Omits progress when the map metadata is missing or outside the supported range.
+ */
 internal fun LiveMatchUpdate.mapProgress(): LiveMatchMapProgress? {
   if (terminal) return null
   val maximumMaps = totalMaps?.takeIf { it in 1..MaxVisibleMapSegments } ?: return null
@@ -421,6 +458,7 @@ internal fun LiveMatchUpdate.mapProgress(): LiveMatchMapProgress? {
   return LiveMatchMapProgress(activeMap, maximumMaps)
 }
 
+/** Applies the map progress notification style available on Android API 36. */
 @RequiresApi(36)
 private object Api36Notification {
   fun applyProgressStyle(builder: Notification.Builder, progress: LiveMatchMapProgress) {
@@ -433,6 +471,7 @@ private object Api36Notification {
   }
 }
 
+/** Applies promoted notifications and map score metrics on Android API 37. */
 @RequiresApi(37)
 private object Api37Notification {
   fun applyPromotedOngoing(builder: Notification.Builder) {

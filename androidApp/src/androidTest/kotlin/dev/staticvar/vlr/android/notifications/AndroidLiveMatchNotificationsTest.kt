@@ -22,6 +22,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.koin.mp.KoinPlatform
 
+/** Checks live notification parsing, saved state, and Android rendering. */
 class AndroidLiveMatchNotificationsTest {
   private val context = InstrumentationRegistry.getInstrumentation().targetContext
   private val fixtureIds = setOf("991000001", "991000002")

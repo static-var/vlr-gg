@@ -8,6 +8,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dev.staticvar.vlr.android.VlrApplication
 
+/** Routes Firebase match messages and refreshed tokens to the app. */
 public class VlrFirebaseMessagingService : FirebaseMessagingService() {
   override fun onMessageReceived(message: RemoteMessage) {
     super.onMessageReceived(message)
