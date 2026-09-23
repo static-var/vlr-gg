@@ -13,6 +13,7 @@ plugins {
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.sentry.android)
   alias(libs.plugins.baselineprofile)
+  alias(libs.plugins.google.services)
 }
 
 val localProperties = Properties()
@@ -183,6 +184,8 @@ dependencies {
   implementation(libs.work.runtime)
   implementation(libs.splashscreen)
   implementation(libs.koin.android)
+  implementation(platform(libs.firebase.bom))
+  implementation(libs.firebase.messaging)
 
   // Project modules
   implementation(projects.shared)

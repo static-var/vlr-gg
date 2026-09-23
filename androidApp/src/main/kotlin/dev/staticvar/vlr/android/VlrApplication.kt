@@ -5,12 +5,15 @@
 package dev.staticvar.vlr.android
 
 import android.app.Application
+import dev.staticvar.vlr.android.notifications.AndroidPushTokenProvider
 import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.androidNetworkModule
 import dev.staticvar.vlr.shared.telemetry.initializeSentryTelemetry
 import org.koin.android.ext.koin.androidContext
 
 class VlrApplication : Application() {
+  internal val pushTokenProvider = AndroidPushTokenProvider()
+
   override fun onCreate() {
     super.onCreate()
     configureLeakDetection()
