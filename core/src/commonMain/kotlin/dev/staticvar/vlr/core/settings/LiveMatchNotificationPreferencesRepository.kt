@@ -8,8 +8,10 @@ import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+/** Stores whether the user has enabled live updates for favorites. */
 public data class LiveMatchNotificationPreferences(val enabled: Boolean = false)
 
+/** Persists the live-update preference and exposes changes to observers. */
 public class LiveMatchNotificationPreferencesRepository(private val storage: Settings) {
   public val preferences: StateFlow<LiveMatchNotificationPreferences>
     field = MutableStateFlow(

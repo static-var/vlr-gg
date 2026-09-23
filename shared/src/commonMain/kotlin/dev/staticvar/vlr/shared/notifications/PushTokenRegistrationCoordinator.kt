@@ -13,6 +13,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+/** Controls push token collection using notification settings and platform access. */
 internal class PushTokenRegistrationCoordinator(
   private val pushTokenProvider: PushTokenProvider,
   private val permissionProvider: NotificationPermissionProvider,
@@ -37,6 +38,10 @@ internal class PushTokenRegistrationCoordinator(
   private var tokenGeneration: Int = 0
   private var reportedEligibility: LiveUpdateEligibility? = null
 
+  /**
+   * Observes the saved notification preference and checks access when enabled.
+   * Repeated starts reuse the existing observer.
+   */
   fun start() {
     if (observationJob != null) return
     running = true
@@ -54,6 +59,10 @@ internal class PushTokenRegistrationCoordinator(
     }
   }
 
+  /**
+   * Stops observing settings and collecting tokens.
+   * Invalidates outstanding permission and token callbacks.
+   */
   fun stop() {
     running = false
     permissionGeneration++
@@ -67,6 +76,10 @@ internal class PushTokenRegistrationCoordinator(
     stopTokenProvider()
   }
 
+  /**
+   * Refreshes platform access and requests a fresh token after the access check.
+   * Also retries synchronization once that check finishes.
+   */
   fun onForeground() {
     refreshTokenAfterPermissionRead = true
     refreshAccess()
@@ -83,6 +96,10 @@ internal class PushTokenRegistrationCoordinator(
     }
   }
 
+  /**
+   * Reads platform capabilities and notification permission when required.
+   * Uses a generation counter to discard results from obsolete permission checks.
+   */
   private fun refreshAccess() {
     if (!running || permissionReadPending) return
     supportsLiveUpdates = readSupportsLiveUpdates()
@@ -116,6 +133,10 @@ internal class PushTokenRegistrationCoordinator(
     }
   }
 
+  /**
+   * Reports current eligibility and starts or stops native token collection.
+   * Ignores token callbacks from previous collection sessions.
+   */
   private fun updateTokenProvider() {
     val eligibility = liveUpdateEligibility()
     if (eligibility != reportedEligibility) {
@@ -144,6 +165,10 @@ internal class PushTokenRegistrationCoordinator(
     }
   }
 
+  /**
+   * Combines the saved preference, platform support, and access status.
+   * Keeps unresolved permission checks pending instead of treating them as denied.
+   */
   private fun liveUpdateEligibility(): LiveUpdateEligibility = when {
     !preferencesLoaded -> LiveUpdateEligibility.Pending
     !enabled -> LiveUpdateEligibility.Disabled

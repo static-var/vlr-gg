@@ -15,6 +15,7 @@ import platform.Foundation.NSUbiquitousKeyValueStoreDidChangeExternallyNotificat
 import platform.Foundation.NSUbiquitousKeyValueStoreInitialSyncChange
 import platform.Foundation.NSUbiquitousKeyValueStoreServerChange
 
+/** Reconciles the local user UUID with iCloud key-value storage. */
 internal class ICloudIdentitySync(private val repository: UserIdentityRepository) {
   private val store = NSUbiquitousKeyValueStore.defaultStore
   private var accountChanged = false
@@ -44,6 +45,10 @@ internal class ICloudIdentitySync(private val repository: UserIdentityRepository
     seedBackup()
   }
 
+  /**
+   * Uses an available cloud identity before seeding iCloud with the local value.
+   * Later cloud notifications reconcile a backup that has not arrived yet.
+   */
   private fun seedBackup() {
     val backedUpId = store.stringForKey(UserIdentityRepository.IdentityKey)
     repository.restoreFromBackup(backedUpId, confirmedByCloud = false)
@@ -53,6 +58,9 @@ internal class ICloudIdentitySync(private val repository: UserIdentityRepository
     }
   }
 
+  /**
+   * Removes the iCloud change observer when this synchronization owner is released.
+   */
   fun close() {
     NSNotificationCenter.defaultCenter.removeObserver(observer)
   }

@@ -11,6 +11,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/** Verifies persisted push tokens and registration acknowledgements. */
 class PushTokenRegistrationPreferencesRepositoryTest {
   @Test
   fun tokenAndSuccessfulUploadArePersistedSeparately() {
@@ -31,6 +32,7 @@ class PushTokenRegistrationPreferencesRepositoryTest {
     assertFalse(restored.wasUploaded(ClientId, PushPlatform.Android, "rotated-token"))
   }
 
+  /** Provides distinct client identities for registration tests. */
   private companion object {
     const val ClientId: String = "01996ff9-3000-7000-8000-000000000001"
     const val OtherClientId: String = "01996ff9-3000-7000-8000-000000000002"

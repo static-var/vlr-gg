@@ -14,6 +14,7 @@ import io.ktor.http.isSuccess
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 
+/** Uploads a client's push token to the live updates API. */
 internal class PushTokenRegistrationDataSourceImpl(
   private val client: HttpClient,
 ) : PushTokenRegistrationDataSource {
@@ -29,6 +30,7 @@ internal class PushTokenRegistrationDataSourceImpl(
   }
 }
 
+/** Push token and platform name sent to the registration API. */
 @Serializable
 private data class PushTokenRegistrationRequest(
   val token: String,

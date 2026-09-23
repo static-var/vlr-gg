@@ -19,12 +19,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/** Whether live updates are allowed or still awaiting an access check. */
 internal enum class LiveUpdateEligibility {
   Pending,
   Enabled,
   Disabled,
 }
 
+/** Syncs eligible favorites and clears subscriptions when access or identity changes. */
 internal class FavoriteLiveUpdateCoordinator(
   identityRepository: UserIdentityRepository,
   favoritesRepository: FavoritesRepository,
@@ -67,6 +69,10 @@ internal class FavoriteLiveUpdateCoordinator(
     actions.trySend(Action.Retry)
   }
 
+  /**
+   * Processes changes and upload results one at a time.
+   * Updates server subscription tracking before choosing the next request.
+   */
   private fun handle(action: Action) {
     when (action) {
       is Action.EligibilityChanged -> {
@@ -107,6 +113,10 @@ internal class FavoriteLiveUpdateCoordinator(
     }
   }
 
+  /**
+   * Uploads the current favorites or clears subscriptions for old or disabled clients.
+   * Allows one upload at a time and one attempt per request until a change or retry.
+   */
   private fun uploadIfNeeded() {
     if (inFlight != null) return
     val current = snapshot ?: return
@@ -163,6 +173,10 @@ internal class FavoriteLiveUpdateCoordinator(
     attemptedRequests.clear()
   }
 
+  /**
+   * Publishes confirmation only when the server matches the current eligible favorites.
+   * Clears it while an upload is pending or access is disabled.
+   */
   private fun publishCurrentAck() {
     val current = snapshot
     synced.value = if (eligibility == LiveUpdateEligibility.Enabled && inFlight == null && current != null &&
@@ -174,14 +188,17 @@ internal class FavoriteLiveUpdateCoordinator(
     }
   }
 
+  /** Pairs the current client identity with its selected favorites. */
   private data class ClientFavorites(val clientId: String, val favorites: FavoriteIds)
 
+  /** Sorted, unique favorite IDs grouped by entity type. */
   internal data class FavoriteIds(
     val teams: List<String>,
     val matches: List<String>,
     val players: List<String>,
     val events: List<String>,
   ) {
+    /** Creates empty or normalized favorite ID groups. */
     companion object {
       val Empty = FavoriteIds(emptyList(), emptyList(), emptyList(), emptyList())
 
@@ -194,19 +211,27 @@ internal class FavoriteLiveUpdateCoordinator(
     }
   }
 
+  /** Favorites to replace on the server for one client. */
   private data class Request(val clientId: String, val favorites: FavoriteIds)
 
+  /** The current client favorites confirmed by the server. */
   internal data class SyncedFavorites(val clientId: String, val favorites: FavoriteIds)
 
+  /** Tracks a favorite upload and the revision that started it. */
   private data class Upload(val request: Request, val revision: Long)
 
+  /** Events processed in order by the favorite sync coordinator. */
   private sealed interface Action {
+    /** Reports a change in access to live updates. */
     data class EligibilityChanged(val value: LiveUpdateEligibility) : Action
 
+    /** Supplies the latest client identity and favorites. */
     data class SnapshotChanged(val value: ClientFavorites) : Action
 
+    /** Reports the outcome of a favorite upload. */
     data class UploadCompleted(val upload: Upload, val success: Boolean) : Action
 
+    /** Requests another attempt to sync the current favorites. */
     data object Retry : Action
   }
 }

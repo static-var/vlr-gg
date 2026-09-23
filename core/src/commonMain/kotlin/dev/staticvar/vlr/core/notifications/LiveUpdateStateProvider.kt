@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.core.notifications
 
+/** Reports whether live updates can start and which matches the device has already observed. */
 public interface LiveUpdateStateProvider {
   public val platform: PushPlatform
 

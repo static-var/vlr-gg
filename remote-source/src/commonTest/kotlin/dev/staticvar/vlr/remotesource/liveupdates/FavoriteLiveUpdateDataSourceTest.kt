@@ -20,6 +20,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/** Checks favorite replacement request contents and failure handling. */
 class FavoriteLiveUpdateDataSourceTest {
   @Test
   fun replaceSendsEveryFavoriteGroupToTheClientPath() = runTest {
@@ -71,6 +72,7 @@ class FavoriteLiveUpdateDataSourceTest {
   private fun kotlinx.serialization.json.JsonElement.stringValues(): List<String> =
     (this as JsonArray).map { it.jsonPrimitive.content }
 
+  /** Holds the client ID used in API request tests. */
   private companion object {
     const val ClientId: String = "01996ff9-3000-7000-8000-000000000001"
   }

@@ -4,11 +4,13 @@
  */
 package dev.staticvar.vlr.core.notifications
 
+/** Identifies the platform that issued a push token. */
 public enum class PushPlatform {
   Ios,
   Android,
 }
 
+/** Delivers native push tokens and their changes while observation is active. */
 public interface PushTokenProvider {
   public val platform: PushPlatform
 

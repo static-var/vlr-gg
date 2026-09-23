@@ -20,6 +20,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/** Checks token registration request contents and platform values. */
 class PushTokenRegistrationDataSourceTest {
   @Test
   fun iosRequestUsesClientPathAndBackendPlatformValue() = runTest {
@@ -56,6 +57,7 @@ class PushTokenRegistrationDataSourceTest {
     assertEquals("android", payload.getValue("platform").jsonPrimitive.content)
   }
 
+  /** Holds the client ID used in API request tests. */
   private companion object {
     const val ClientId: String = "01996ff9-3000-7000-8000-000000000001"
   }

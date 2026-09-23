@@ -22,6 +22,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+/** Checks favorite syncing across access, identity, and upload changes. */
 class FavoriteLiveUpdateCoordinatorTest {
   @Test
   fun pendingAccessDoesNotWriteAndEnabledAccessUploadsTheInitialSnapshot() = runTest {
@@ -191,11 +192,13 @@ class FavoriteLiveUpdateCoordinatorTest {
     assertEquals(listOf("1"), harness.coordinator.syncedFavorites.value?.favorites?.matches)
   }
 
+  /** Holds the client ID used to test identity restoration. */
   private companion object {
     const val RestoredClientId: String = "01996ff9-3000-7000-8000-000000000002"
   }
 }
 
+/** Connects a favorite sync coordinator to controllable test dependencies. */
 private class FavoriteSyncHarness(
   scope: kotlinx.coroutines.CoroutineScope,
   initialFavorites: DirectFavoriteSnapshot,
@@ -211,6 +214,7 @@ private class FavoriteSyncHarness(
   val coordinator = FavoriteLiveUpdateCoordinator(identity, favorites, tokenPreferences, dataSource, scope)
 }
 
+/** Lets tests change the selected favorites through a state flow. */
 private class FakeFavoritesRepository(initial: DirectFavoriteSnapshot) : FavoritesRepository {
   val direct = MutableStateFlow(initial)
 
@@ -221,6 +225,7 @@ private class FakeFavoritesRepository(initial: DirectFavoriteSnapshot) : Favorit
   override fun observePlayerIds(): Flow<Set<String>> = flowOf(emptySet())
 }
 
+/** Records the client and favorite IDs uploaded by a test. */
 private data class FavoriteRequest(
   val clientId: String,
   val teams: List<String> = emptyList(),
@@ -231,6 +236,7 @@ private data class FavoriteRequest(
   fun isEmpty(): Boolean = teams.isEmpty() && matches.isEmpty() && players.isEmpty() && events.isEmpty()
 }
 
+/** Records favorite uploads and lets tests delay or fail responses. */
 private class FakeFavoriteLiveUpdateDataSource : FavoriteLiveUpdateDataSource {
   val requests = mutableListOf<FavoriteRequest>()
   var firstResponse: CompletableDeferred<Unit>? = null

@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.remotesource.liveupdates
 
+/** Replaces the favorites a client receives live updates for. */
 public interface FavoriteLiveUpdateDataSource {
   public suspend fun replace(
     clientId: String,

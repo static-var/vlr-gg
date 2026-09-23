@@ -28,6 +28,7 @@ import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+/** Checks when favorite matches can start a Live Activity and how retries behave. */
 class LiveActivityStartCoordinatorTest {
   @Test
   fun waitsForExactFavoriteAckAndRegisteredTokenThenStartsIndirectLiveMatch() = runTest {
@@ -163,6 +164,7 @@ class LiveActivityStartCoordinatorTest {
   }
 }
 
+/** Connects Live Activity starting to controllable favorites, registration, and device state. */
 private class StartHarness(
   scope: kotlinx.coroutines.CoroutineScope,
   scheduler: kotlinx.coroutines.test.TestCoroutineScheduler,
@@ -204,6 +206,7 @@ private class StartHarness(
   }
 }
 
+/** Lets tests control device readiness and already observed matches. */
 private class FakeLiveUpdateStateProvider(override val platform: PushPlatform) : LiveUpdateStateProvider {
   val observed = mutableSetOf<String>()
   var available = true
@@ -211,6 +214,7 @@ private class FakeLiveUpdateStateProvider(override val platform: PushPlatform) :
   override fun observedMatchIds(): List<String> = observed.toList()
 }
 
+/** Lets tests delay confirmation that favorites reached the server. */
 private class FakeFavoriteSource : FavoriteLiveUpdateDataSource {
   var gate: CompletableDeferred<Unit>? = null
   override suspend fun replace(
@@ -225,6 +229,7 @@ private class FakeFavoriteSource : FavoriteLiveUpdateDataSource {
   }
 }
 
+/** Records Live Activity start requests with controllable timing and results. */
 private class FakeStartSource : LiveActivityStartDataSource {
   val requests = mutableListOf<Pair<String, String>>()
   var result = LiveActivityStartResult.Started

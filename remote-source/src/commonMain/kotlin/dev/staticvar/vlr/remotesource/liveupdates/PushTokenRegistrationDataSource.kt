@@ -6,6 +6,7 @@ package dev.staticvar.vlr.remotesource.liveupdates
 
 import dev.staticvar.vlr.core.notifications.PushPlatform
 
+/** Registers a client's platform push token for live updates. */
 public interface PushTokenRegistrationDataSource {
   public suspend fun register(clientId: String, platform: PushPlatform, token: String): Boolean
 }

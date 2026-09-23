@@ -10,6 +10,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.uuid.Uuid
 
+/** Verifies UUID persistence and reconciliation with delayed backup identities. */
 class UserIdentityRepositoryTest {
   @Test
   fun firstLaunchGeneratesV7AndRelaunchReusesIt() {
@@ -87,6 +88,7 @@ class UserIdentityRepositoryTest {
     }
   }
 
+  /** Provides distinct local and cloud identities for restoration tests. */
   private companion object {
     val LocalId: Uuid = Uuid.parse("01996ff9-3000-7000-8000-000000000001")
     val CloudId: Uuid = Uuid.parse("01996ff9-3000-7000-8000-000000000002")

@@ -9,6 +9,7 @@ import dev.staticvar.vlr.core.notifications.PushPlatform
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+/** Holds the current push token and the last registration acknowledged by the backend. */
 public data class PushTokenRegistrationPreferences(
   val token: String? = null,
   val tokenPlatform: PushPlatform? = null,
@@ -20,6 +21,7 @@ public data class PushTokenRegistrationPreferences(
     uploadedClientId == clientId && uploadedPlatform == platform && uploadedToken == token
 }
 
+/** Persists push registration state and clients whose server favorites may need clearing. */
 public class PushTokenRegistrationPreferencesRepository(private val storage: Settings) {
   public val preferences: StateFlow<PushTokenRegistrationPreferences>
     field = MutableStateFlow(readPreferences())
@@ -30,6 +32,10 @@ public class PushTokenRegistrationPreferencesRepository(private val storage: Set
     preferences.value = preferences.value.copy(token = token, tokenPlatform = platform)
   }
 
+  /**
+   * Records the exact client, platform, and token acknowledged by the backend.
+   * A rotated token or restored identity must receive its own acknowledgement.
+   */
   public fun markUploaded(clientId: String, platform: PushPlatform, token: String) {
     storage.putString(UploadedClientIdKey, clientId)
     storage.putString(UploadedPlatformKey, platform.name)
@@ -47,6 +53,10 @@ public class PushTokenRegistrationPreferencesRepository(private val storage: Set
     ?.toSet()
     .orEmpty()
 
+  /**
+   * Records a possible server write before sending favorites.
+   * This keeps opt-out cleanup possible even when the server response is lost.
+   */
   public fun markFavoriteUploadAttempt(clientId: String) {
     storage.putString(FavoriteClientsKey, (possiblySyncedFavoriteClients() + clientId).joinToString(","))
   }
@@ -66,6 +76,7 @@ public class PushTokenRegistrationPreferencesRepository(private val storage: Set
   private fun String?.toPushPlatformOrNull(): PushPlatform? =
     this?.let { stored -> PushPlatform.entries.firstOrNull { it.name == stored } }
 
+  /** Defines preference keys for tokens, acknowledgements, and pending favorites cleanup. */
   private companion object {
     const val TokenKey: String = "notifications.pushToken"
     const val TokenPlatformKey: String = "notifications.pushTokenPlatform"

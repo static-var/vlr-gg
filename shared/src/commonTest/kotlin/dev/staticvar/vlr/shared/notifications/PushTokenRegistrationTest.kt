@@ -22,6 +22,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/** Checks token registration across permission, lifecycle, and identity changes. */
 class PushTokenRegistrationTest {
   @Test
   fun synchronousNativeTokenIsStoredAndUploadedOnlyAfterEveryGatePasses() = runTest {
@@ -267,6 +268,7 @@ class PushTokenRegistrationTest {
   }
 }
 
+/** Connects token registration to controllable platform providers and storage. */
 private class Harness(
   scope: kotlinx.coroutines.CoroutineScope,
   notificationsEnabled: Boolean,
@@ -292,6 +294,7 @@ private class Harness(
   )
 }
 
+/** Lets tests control platform capabilities and permission callbacks. */
 private class FakePermissionProvider : NotificationPermissionProvider {
   var supported: Boolean = true
   var requiresPermission: Boolean = true
@@ -326,6 +329,7 @@ private class FakePermissionProvider : NotificationPermissionProvider {
   }
 }
 
+/** Emits test push tokens and records provider starts and stops. */
 private class FakePushTokenProvider : PushTokenProvider {
   override val platform: PushPlatform = PushPlatform.Ios
   var tokenOnStart: String? = null
@@ -348,8 +352,10 @@ private class FakePushTokenProvider : PushTokenProvider {
   }
 }
 
+/** Records a client, platform, and token uploaded by a test. */
 private data class RegistrationRequest(val clientId: String, val platform: PushPlatform, val token: String)
 
+/** Records token uploads and lets tests delay or fail responses. */
 private class FakeRegistrationDataSource : PushTokenRegistrationDataSource {
   val requests = mutableListOf<RegistrationRequest>()
   var beforeResponse: CompletableDeferred<Unit>? = null

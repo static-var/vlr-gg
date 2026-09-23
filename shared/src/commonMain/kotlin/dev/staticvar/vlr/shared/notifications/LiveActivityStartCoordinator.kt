@@ -25,6 +25,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Starts Live Activities for live favorite matches after registration and favorite sync.
+ * Rechecks device and client state before each request, and records attempts to prevent duplicates.
+ */
 internal class LiveActivityStartCoordinator(
   private val identity: UserIdentityRepository,
   private val favorites: FavoritesRepository,
@@ -107,11 +111,16 @@ internal class LiveActivityStartCoordinator(
     stateProvider.value = provider
   }
 
+  /**
+   * Allows server-rejected matches to be considered again.
+   * Triggers a fresh check even if the schedule and registration have not changed.
+   */
   fun retryRejected() {
     rejected.value = emptySet()
     retryRevision.value++
   }
 
+  /** Checks whether registration and synced favorites allow a Live Activity start. */
   private data class Readiness(
     val clientId: String,
     val selected: DirectFavoriteSnapshot,
@@ -119,6 +128,10 @@ internal class LiveActivityStartCoordinator(
     val synced: FavoriteLiveUpdateCoordinator.SyncedFavorites?,
     val eligibility: LiveUpdateEligibility,
   ) {
+    /**
+     * Requires an uploaded token for this client and platform.
+     * Also requires the server to have confirmed the current favorite selection.
+     */
     fun canStart(platform: PushPlatform): Boolean = eligibility == LiveUpdateEligibility.Enabled &&
       registration.tokenPlatform == platform &&
       registration.token?.let { registration.wasUploaded(clientId, platform, it) } == true &&

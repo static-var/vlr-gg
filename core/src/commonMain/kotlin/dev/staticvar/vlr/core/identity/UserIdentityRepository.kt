@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+/** Stores the anonymous user UUID and restores a backed-up identity when it becomes available. */
 public class UserIdentityRepository(
   private val storage: Settings,
   backupId: String? = null,
@@ -34,6 +35,10 @@ public class UserIdentityRepository(
     storage.putString(IdentityKey, id.value.toString())
   }
 
+  /**
+   * Replaces a provisional local identity while backup restoration is still pending.
+   * A cloud-confirmed value completes restoration so later updates cannot replace it.
+   */
   public fun restoreFromBackup(value: String?, confirmedByCloud: Boolean = true) {
     if (!awaitingBackup) return
     val restored = parseIdentity(value) ?: return
@@ -45,6 +50,7 @@ public class UserIdentityRepository(
     }
   }
 
+  /** Defines identity storage keys and helpers for validating and generating UUIDs. */
   public companion object {
     public const val IdentityKey: String = "identity.uuid"
     private const val RestorePendingKey: String = "identity.restorePending"

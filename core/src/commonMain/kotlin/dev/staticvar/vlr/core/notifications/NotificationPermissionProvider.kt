@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.core.notifications
 
+/** Represents the result of checking or requesting notification permission. */
 public enum class NotificationAuthorization {
   NotDetermined,
   Authorized,
@@ -11,6 +12,7 @@ public enum class NotificationAuthorization {
   Error,
 }
 
+/** Exposes platform notification permissions, Live Activity access, and system settings. */
 public interface NotificationPermissionProvider {
   public fun supportsLiveUpdates(): Boolean = true
 

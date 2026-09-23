@@ -14,6 +14,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+/** Uploads active push tokens and records successful registration for each client. */
 internal class PushTokenRegistrationUploader(
   private val preferences: PushTokenRegistrationPreferencesRepository,
   private val identityRepository: UserIdentityRepository,
@@ -44,6 +45,10 @@ internal class PushTokenRegistrationUploader(
     actions.trySend(Action.Deactivated)
   }
 
+  /**
+   * Processes identity, token, and upload events one at a time.
+   * Records successful requests before checking whether another upload is needed.
+   */
   private fun handle(action: Action) {
     when (action) {
       is Action.IdentityChanged -> {
@@ -79,6 +84,10 @@ internal class PushTokenRegistrationUploader(
     }
   }
 
+  /**
+   * Uploads the active token only when this client registration is not already saved.
+   * Avoids concurrent uploads and repeated attempts for the same request.
+   */
   private fun uploadIfNeeded() {
     val token = activeToken ?: return
     val request = RegistrationRequest(clientId, token)
@@ -99,17 +108,24 @@ internal class PushTokenRegistrationUploader(
     }
   }
 
+  /** A push token paired with its platform. */
   private data class RegistrationToken(val platform: PushPlatform, val value: String)
 
+  /** Pairs a client identity with the token to register. */
   private data class RegistrationRequest(val clientId: String, val token: RegistrationToken)
 
+  /** Events processed in order by the token uploader. */
   private sealed interface Action {
+    /** Reports the client identity to use for registration. */
     data class IdentityChanged(val clientId: String) : Action
 
+    /** Supplies a token to register for the active client. */
     data class TokenReceived(val token: RegistrationToken) : Action
 
+    /** Reports the outcome of a token registration request. */
     data class UploadCompleted(val request: RegistrationRequest, val success: Boolean) : Action
 
+    /** Stops further uploads of the active token. */
     data object Deactivated : Action
   }
 }

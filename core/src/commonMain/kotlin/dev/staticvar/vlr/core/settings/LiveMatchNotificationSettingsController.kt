@@ -9,6 +9,7 @@ import dev.staticvar.vlr.core.notifications.NotificationPermissionProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+/** Describes platform support, permission status, and any active permission request. */
 public data class LiveMatchNotificationAccess(
   val activitiesEnabled: Boolean?,
   val notifications: NotificationAuthorization? = null,
@@ -17,6 +18,7 @@ public data class LiveMatchNotificationAccess(
   val requiresNotificationPermission: Boolean = true,
 )
 
+/** Coordinates the live-update setting with platform permission checks and requests. */
 public class LiveMatchNotificationSettingsController(
   private val repository: LiveMatchNotificationPreferencesRepository,
   private val provider: NotificationPermissionProvider,
@@ -27,6 +29,10 @@ public class LiveMatchNotificationSettingsController(
     field = MutableStateFlow(readAccess())
   private var generation: Int = 0
 
+  /**
+   * Refreshes platform capability and permission state without prompting the user.
+   * Results from an older permission check cannot overwrite a newer request.
+   */
   public fun refresh() {
     if (access.value.requesting) return
     val current = ++generation
@@ -40,6 +46,10 @@ public class LiveMatchNotificationSettingsController(
     }
   }
 
+  /**
+   * Persists the user preference and requests permission only when the platform needs it.
+   * Platforms using Live Activity access refresh that access without a notification prompt.
+   */
   public fun setEnabled(enabled: Boolean) {
     repository.setEnabled(enabled)
     if (enabled && access.value.supportsLiveUpdates) {
@@ -54,6 +64,10 @@ public class LiveMatchNotificationSettingsController(
     }
   }
 
+  /**
+   * Starts one permission request for a supported platform and publishes its result.
+   * The request generation prevents late callbacks from replacing newer state.
+   */
   public fun requestNotifications() {
     if (access.value.requesting || !access.value.supportsLiveUpdates || !access.value.requiresNotificationPermission) return
     val current = ++generation

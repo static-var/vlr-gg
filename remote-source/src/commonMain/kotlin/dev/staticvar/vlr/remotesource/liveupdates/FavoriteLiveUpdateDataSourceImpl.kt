@@ -13,6 +13,7 @@ import io.ktor.http.isSuccess
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 
+/** Uploads a client's favorite IDs to the live updates API. */
 internal class FavoriteLiveUpdateDataSourceImpl(
   private val client: HttpClient,
 ) : FavoriteLiveUpdateDataSource {
@@ -41,6 +42,7 @@ internal class FavoriteLiveUpdateDataSourceImpl(
   }
 }
 
+/** Favorite IDs sent in a replacement request. */
 @Serializable
 private data class FavoriteLiveUpdateRequest(
   val teams: List<String>,

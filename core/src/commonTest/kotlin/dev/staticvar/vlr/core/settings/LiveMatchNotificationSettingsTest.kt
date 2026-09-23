@@ -12,6 +12,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/** Verifies live-update preferences and platform permission handling. */
 class LiveMatchNotificationSettingsTest {
   @Test
   fun preferenceDefaultsOffAndRestoresEnabledAndDisabled() {
@@ -116,6 +117,7 @@ class LiveMatchNotificationSettingsTest {
   }
 }
 
+/** Controls permission responses and records platform requests in settings tests. */
 private class FakeProvider : NotificationPermissionProvider {
   var supported = true
   var requiresPermission = true

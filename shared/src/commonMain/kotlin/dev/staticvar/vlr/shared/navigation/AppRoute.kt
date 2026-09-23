@@ -38,6 +38,7 @@ public sealed interface AppRoute : NavKey {
   @Serializable
   public data object Appearance : AppRoute
 
+  /** Opens the live match notification settings screen. */
   @Serializable
   public data object Notifications : AppRoute
 
