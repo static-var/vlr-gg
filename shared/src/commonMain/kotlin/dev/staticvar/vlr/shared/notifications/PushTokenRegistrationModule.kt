@@ -11,6 +11,14 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 internal fun pushTokenRegistrationModule(): Module = module {
+  single(createdAtStart = true) {
+    LiveUpdateReconnectRecovery(
+      networkMonitor = get(),
+      tokenUploader = get(),
+      favoriteSync = get(),
+      appScope = get<CoroutineScope>(DispatcherQualifiers.AppScope),
+    )
+  }
   single {
     FavoriteLiveUpdateCoordinator(
       identityRepository = get(),

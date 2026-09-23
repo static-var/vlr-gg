@@ -36,7 +36,7 @@ internal class PushTokenRegistrationUploader(
       identityRepository.id.collect { id -> actions.send(Action.IdentityChanged(id.toString())) }
     }
     appScope.launch {
-      identityRepository.pendingTokenCleanup.collect { id -> actions.send(Action.CleanupPending(id)) }
+      identityRepository.pendingTokenCleanup.collect { actions.send(Action.CleanupPending) }
     }
     appScope.launch {
       for (action in actions) handle(action)
@@ -52,7 +52,7 @@ internal class PushTokenRegistrationUploader(
     actions.trySend(Action.Deactivated)
   }
 
-  /** Retries a failed token registration or old-token deletion on the next foreground event. */
+  /** Retries a failed token registration or old-token deletion after foregrounding or reconnecting. */
   fun retry() {
     actions.trySend(Action.Retry)
   }
@@ -68,8 +68,8 @@ internal class PushTokenRegistrationUploader(
         advance()
       }
 
-      is Action.CleanupPending -> {
-        pendingCleanup = action.clientId
+      Action.CleanupPending -> {
+        pendingCleanup = identityRepository.pendingTokenCleanup.value
         if (lastCleanupAttempted != pendingCleanup) lastCleanupAttempted = null
         advance()
       }
@@ -103,8 +103,10 @@ internal class PushTokenRegistrationUploader(
       is Action.CleanupCompleted -> {
         if (cleanupInFlight != action.clientId) return
         cleanupInFlight = null
-        if (action.success) identityRepository.markTokenCleanupComplete(action.clientId)
-        else lastCleanupAttempted = action.clientId
+        if (action.success) {
+          identityRepository.markTokenCleanupComplete(action.clientId)
+          pendingCleanup = identityRepository.pendingTokenCleanup.value
+        }
         advance()
       }
 
@@ -147,7 +149,7 @@ internal class PushTokenRegistrationUploader(
     }
   }
 
-  /** Attempts each persisted cleanup once until a later foreground retry. */
+  /** Attempts each persisted cleanup once until a later foreground or reconnect retry. */
   private fun cleanupIfNeeded() {
     val oldId = pendingCleanup ?: return
     if (oldId.toString() == clientId || cleanupInFlight != null || inFlight != null || oldId == lastCleanupAttempted) return
@@ -188,13 +190,13 @@ internal class PushTokenRegistrationUploader(
     /** Reports the outcome of a token registration request. */
     data class UploadCompleted(val request: RegistrationRequest, val success: Boolean) : Action
 
-    /** Reports a persisted UUID whose token should be deleted. */
-    data class CleanupPending(val clientId: Uuid?) : Action
+    /** Signals a change to the persisted UUID whose token should be deleted. */
+    data object CleanupPending : Action
 
     /** Reports an old-token deletion response. */
     data class CleanupCompleted(val clientId: Uuid, val success: Boolean) : Action
 
-    /** Allows one more attempt after foregrounding. */
+    /** Allows one more attempt after foregrounding or reconnecting. */
     data object Retry : Action
 
     /** Stops further uploads of the active token. */
