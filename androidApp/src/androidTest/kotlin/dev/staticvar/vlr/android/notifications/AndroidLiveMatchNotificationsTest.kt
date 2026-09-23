@@ -62,6 +62,60 @@ class AndroidLiveMatchNotificationsTest {
   }
 
   @Test
+  fun parserAcceptsMapMetadataAndKeepsScoresWhenOptionalMetadataIsMalformed() {
+    val parser = LiveMatchUpdateParser(KoinPlatform.getKoin().get<Json>())
+    val state = validState().replace("\"future_field\":true", "\"total_maps\":3")
+      .replace("\"name\":\"Ascent\"", "\"name\":\"Ascent\",\"number\":2")
+      .replace("\"name\":\"Paper Rex\"", "\"name\":\"Paper Rex\",\"tag\":\"PRX\"")
+    val update = requireNotNull(parser.parse(payload(state = state)))
+    assertEquals(3, update.totalMaps)
+    assertEquals(2, update.currentMap?.number)
+    assertEquals("PRX", update.teams[1].tag)
+    assertEquals(LiveMatchMapProgress(1, 3), update.mapProgress())
+
+    listOf("null", "0", "-1", "10", "2147483647", "\"3\"", "{}", "[]").forEach { invalid ->
+      val parsed = requireNotNull(parser.parse(payload(state = state.replace("\"total_maps\":3", "\"total_maps\":$invalid"))))
+      assertNull(parsed.mapProgress())
+      assertEquals(listOf(8, 6), parsed.currentMap?.scores)
+    }
+    listOf("null", "0", "-1", "4", "\"2\"", "{}", "[]").forEach { invalid ->
+      val parsed = requireNotNull(parser.parse(payload(state = state.replace("\"number\":2", "\"number\":$invalid"))))
+      assertNull(parsed.mapProgress())
+    }
+    assertNull(requireNotNull(parser.parse(payload())).mapProgress())
+    assertNull(update.copy(terminal = true).mapProgress())
+  }
+
+  @Test
+  @SdkSuppress(minSdkVersion = 36)
+  fun progressShowsOnlyCompletedMapBoundariesAndFallsBackWithoutMetadata() {
+    val renderer = LiveMatchNotificationRenderer(context)
+    val live = update("991000001", 60).copy(
+      totalMaps = 3,
+      currentMap = LiveMatchMap("Ascent", listOf(8, 6), number = 2),
+    )
+    val notification = renderer.build(live, scoresHidden = false, sdkInt = 36)
+    val progress = Notification.Builder.recoverBuilder(context, notification).style as Notification.ProgressStyle
+    assertEquals(1, progress.progress)
+    assertEquals(3, progress.progressMax)
+    assertEquals(listOf(1, 1, 1), progress.progressSegments.map { it.length })
+    assertEquals(listOf(1, 2), progress.progressPoints.map { it.position })
+    assertEquals("Team Liquid : 1\nPaper Rex : 1", notification.extras.getCharSequence(Notification.EXTRA_TEXT))
+
+    val firstMap = live.copy(currentMap = live.currentMap?.copy(number = 1))
+    assertEquals(LiveMatchMapProgress(0, 3), firstMap.mapProgress())
+    val lastMap = live.copy(currentMap = live.currentMap?.copy(number = 3))
+    assertEquals(LiveMatchMapProgress(2, 3), lastMap.mapProgress())
+    listOf(live.copy(totalMaps = null), live.copy(currentMap = null), live.copy(terminal = true)).forEach { state ->
+      assertTrue(Notification.Builder.recoverBuilder(context, renderer.build(state, false, 36)).style is Notification.BigTextStyle)
+    }
+    assertTrue(Notification.Builder.recoverBuilder(context, renderer.build(live, true, 36)).style is Notification.BigTextStyle)
+    if (Build.VERSION.SDK_INT >= 37) {
+      assertTrue(Notification.Builder.recoverBuilder(context, renderer.build(live, false)).style is Notification.MetricStyle)
+    }
+  }
+
+  @Test
   fun observedTimeIsMonotonicAndTerminalCannotRevive() {
     val store = LiveMatchNotificationStateStore(context)
     val live = update(matchId = "991000001", observedAt = 40)
@@ -149,7 +203,10 @@ class AndroidLiveMatchNotificationsTest {
     manager.notify(
       "live-match-991000001",
       1,
-      LiveMatchNotificationRenderer(context).build(update("991000001", 70), scoresHidden = false),
+      LiveMatchNotificationRenderer(context).build(
+        update("991000001", 70).copy(totalMaps = 3, currentMap = LiveMatchMap("Ascent", listOf(8, 6), number = 2)),
+        scoresHidden = false,
+      ),
     )
   }
 

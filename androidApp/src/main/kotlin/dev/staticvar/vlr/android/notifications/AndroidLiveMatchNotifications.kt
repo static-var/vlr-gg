@@ -23,6 +23,7 @@ import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.intOrNull
@@ -112,11 +113,12 @@ internal data class LiveMatchUpdate(
   val terminal: Boolean,
   val teams: List<LiveMatchTeam>,
   val currentMap: LiveMatchMap?,
+  val totalMaps: Int? = null,
 )
 
-internal data class LiveMatchTeam(val name: String, val imageUrl: String?, val score: Int?)
+internal data class LiveMatchTeam(val name: String, val imageUrl: String?, val score: Int?, val tag: String? = null)
 
-internal data class LiveMatchMap(val name: String, val scores: List<Int?>)
+internal data class LiveMatchMap(val name: String, val scores: List<Int?>, val number: Int? = null)
 
 internal class LiveMatchUpdateParser(private val json: Json) {
   fun parse(data: Map<String, String>): LiveMatchUpdate? {
@@ -139,6 +141,7 @@ internal class LiveMatchUpdateParser(private val json: Json) {
         name = team["name"]?.jsonPrimitive?.contentOrNull ?: return null,
         imageUrl = team["img"]?.takeUnless { it is JsonNull }?.jsonPrimitive?.contentOrNull,
         score = (team.nullableScore("score") ?: return null).value,
+        tag = (team["tag"] as? JsonPrimitive)?.takeIf { it.isString }?.contentOrNull,
       )
     } ?: return null
     val currentMap = root["current_map"]?.takeUnless { it is JsonNull }?.let { mapElement ->
@@ -148,10 +151,15 @@ internal class LiveMatchUpdateParser(private val json: Json) {
         scores = map["scores"]?.jsonArray?.map { scoreElement ->
           (scoreElement.nullableScore() ?: return null).value
         } ?: return null,
+        number = map.optionalInt("number"),
       )
     }
-    return LiveMatchUpdate(matchId, observedAt, terminal, teams, currentMap).takeIf(LiveMatchUpdate::isValid)
+    return LiveMatchUpdate(matchId, observedAt, terminal, teams, currentMap, root.optionalInt("total_maps"))
+      .takeIf(LiveMatchUpdate::isValid)
   }
+
+  private fun JsonObject.optionalInt(key: String): Int? =
+    (get(key) as? JsonPrimitive)?.takeUnless { it.isString }?.intOrNull
 
   private fun JsonObject.nullableScore(key: String): ScoreResult? =
     if (containsKey(key)) getValue(key).nullableScore() else ScoreResult(null)
@@ -332,7 +340,12 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
     builder.setContentTitle(title)
       .setContentText(scoreLines)
       .setSubText(if (scoresHidden) context.getString(R.string.widget_scores_hidden) else seriesScore)
-      .setStyle(Notification.BigTextStyle().bigText(scoreLines))
+    val progress = update.mapProgress()
+    if (sdkInt >= 36 && progress != null && !scoresHidden) {
+      Api36Notification.applyProgressStyle(builder, progress)
+    } else {
+      builder.setStyle(Notification.BigTextStyle().bigText(scoreLines))
+    }
   }
 
   private fun applyFinal(builder: Notification.Builder, update: LiveMatchUpdate, scoresHidden: Boolean) {
@@ -384,6 +397,29 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
     const val ChannelId = "live_matches"
     const val PromotedOngoingExtra = "android.requestPromotedOngoing"
     const val LiveNotificationTimeoutMillis = 5 * 60 * 1_000L
+  }
+}
+
+internal data class LiveMatchMapProgress(val completedMaps: Int, val totalMaps: Int)
+
+private const val MaxVisibleMapSegments = 9
+
+internal fun LiveMatchUpdate.mapProgress(): LiveMatchMapProgress? {
+  if (terminal) return null
+  val maximumMaps = totalMaps?.takeIf { it in 1..MaxVisibleMapSegments } ?: return null
+  val activeMap = currentMap?.number?.takeIf { it in 1..maximumMaps } ?: return null
+  return LiveMatchMapProgress(activeMap - 1, maximumMaps)
+}
+
+@RequiresApi(36)
+private object Api36Notification {
+  fun applyProgressStyle(builder: Notification.Builder, progress: LiveMatchMapProgress) {
+    builder.setStyle(
+      Notification.ProgressStyle()
+        .setProgressSegments(List(progress.totalMaps) { Notification.ProgressStyle.Segment(1) })
+        .setProgressPoints((1 until progress.totalMaps).map { Notification.ProgressStyle.Point(it) })
+        .setProgress(progress.completedMaps),
+    )
   }
 }
 
