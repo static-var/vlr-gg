@@ -58,18 +58,22 @@ private val LocalTransitionContentFade = compositionLocalOf<TransitionContentFad
 internal fun ProvideTransitionContentScope(
   sharedTransitionScope: SharedTransitionScope,
   animatedVisibilityScope: AnimatedVisibilityScope,
+  enabled: Boolean = true,
   content: @Composable () -> Unit,
 ) {
   val navTransition = animatedVisibilityScope.transition
   val settled = transitionContentSettled(
-    hasScope = true,
+    hasScope = enabled,
     navCurrentVisible = navTransition.currentState == EnterExitState.Visible,
     navTargetVisible = navTransition.targetState == EnterExitState.Visible,
     navRunning = navTransition.isRunning,
     sharedRunning = sharedTransitionScope.isTransitionActive,
   )
   val fade = rememberTransitionContentFadeState(visible = settled, isSettled = settled)
-  CompositionLocalProvider(LocalTransitionContentFade provides fade, content = content)
+  CompositionLocalProvider(
+    LocalTransitionContentFade provides if (enabled) fade else null,
+    content = content,
+  )
 }
 
 @Composable

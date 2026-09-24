@@ -32,6 +32,7 @@ public fun ProvideMatchTransitionScope(
   sharedTransitionScope: SharedTransitionScope,
   animatedVisibilityScope: AnimatedVisibilityScope,
   enabled: Boolean = true,
+  fadeEnabled: Boolean = true,
   content: @Composable () -> Unit,
 ) {
   if (!enabled) {
@@ -43,6 +44,7 @@ public fun ProvideMatchTransitionScope(
   ProvideTransitionContentScope(
     sharedTransitionScope = sharedTransitionScope,
     animatedVisibilityScope = animatedVisibilityScope,
+    enabled = fadeEnabled,
   ) {
     CompositionLocalProvider(
       LocalMatchTransitionScope provides MatchTransitionScope(

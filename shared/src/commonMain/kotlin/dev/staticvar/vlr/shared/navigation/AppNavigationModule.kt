@@ -85,8 +85,9 @@ internal fun appNavigationModule(): Module = module {
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     val eventTransitionEnabled = LocalAppEventSharedTransitionScope.current != null
-    EventLogoTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Home) {
-      MatchTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Home) {
+    val hasDetailTransition = appState.matchTransitionPreview != null || appState.eventTransitionPreview != null
+    EventLogoTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Home, fadeEnabled = hasDetailTransition) {
+      MatchTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Home, fadeEnabled = hasDetailTransition) {
         HomeRoute(
           uiState = uiState,
           onRefresh = viewModel::refresh,
@@ -148,7 +149,10 @@ internal fun appNavigationModule(): Module = module {
 
     val appState = LocalVlrAppState.current
     val transitionEnabled = LocalAppEventSharedTransitionScope.current != null
-    MatchTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Matches) {
+    MatchTransitionHost(
+      enabled = appState.selectedRootRoute == AppRoute.Matches,
+      fadeEnabled = appState.matchTransitionPreview != null,
+    ) {
       MatchesOverviewRoute(
         uiState = uiState,
         onRefresh = viewModel::refresh,
@@ -194,7 +198,10 @@ internal fun appNavigationModule(): Module = module {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
-    EventLogoTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Events) {
+    EventLogoTransitionHost(
+      enabled = appState.selectedRootRoute == AppRoute.Events,
+      fadeEnabled = appState.eventTransitionPreview != null,
+    ) {
       EventsOverviewRoute(
         uiState = uiState,
         onRefresh = viewModel::refresh,
@@ -375,6 +382,7 @@ internal fun ProvideVlrAppState(appState: VlrAppState, content: @Composable () -
 @Composable
 private fun EventLogoTransitionHost(
   enabled: Boolean = true,
+  fadeEnabled: Boolean = true,
   content: @Composable () -> Unit,
 ) {
   val sharedTransitionScope = LocalAppEventSharedTransitionScope.current
@@ -387,13 +395,18 @@ private fun EventLogoTransitionHost(
     sharedTransitionScope = sharedTransitionScope,
     animatedVisibilityScope = LocalNavAnimatedContentScope.current,
     enabled = enabled,
+    fadeEnabled = fadeEnabled,
     content = content,
   )
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun MatchTransitionHost(enabled: Boolean = true, content: @Composable () -> Unit) {
+private fun MatchTransitionHost(
+  enabled: Boolean = true,
+  fadeEnabled: Boolean = true,
+  content: @Composable () -> Unit,
+) {
   val scope = LocalAppEventSharedTransitionScope.current
   if (scope == null) {
     content()
@@ -402,6 +415,7 @@ private fun MatchTransitionHost(enabled: Boolean = true, content: @Composable ()
       sharedTransitionScope = scope,
       animatedVisibilityScope = LocalNavAnimatedContentScope.current,
       enabled = enabled,
+      fadeEnabled = fadeEnabled,
       content = content,
     )
   }
