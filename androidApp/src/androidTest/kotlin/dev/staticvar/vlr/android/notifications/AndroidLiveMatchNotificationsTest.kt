@@ -25,6 +25,7 @@ import kotlinx.serialization.json.Json
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -59,6 +60,7 @@ class AndroidLiveMatchNotificationsTest {
     val tracked = storage.getStringSet("tracked_matches", emptySet()).orEmpty() - fixtureIds
     storage.edit().apply {
       fixtureIds.forEach { matchId ->
+        remove("match.$matchId.generation")
         remove("match.$matchId.observed_at")
         remove("match.$matchId.terminal")
         remove("match.$matchId.dismissed")
@@ -250,25 +252,68 @@ class AndroidLiveMatchNotificationsTest {
     var now = 2_000_000L
     var elapsed = 1_000_000L
     val store = LiveMatchNotificationStateStore(context, nowMillis = { now }, elapsedRealtimeMillis = { elapsed })
-    store.record(update(matchId = "991000003", observedAt = 50))
+    store.record(update(matchId = "991000003", observedAt = 50), "original")
     elapsed += 60_000
-    assertFalse(store.liveTimeoutElapsed("991000003"))
+    assertTrue(store.shouldRememberDeletion("991000003", "original"))
     now -= 3_600_000
-    assertFalse(store.liveTimeoutElapsed("991000003"))
+    assertTrue(store.shouldRememberDeletion("991000003", "original"))
     elapsed += LiveNotificationTimeoutMillis
-    assertTrue(LiveMatchNotificationStateStore(context, { now }, { elapsed }).liveTimeoutElapsed("991000003"))
+    assertFalse(LiveMatchNotificationStateStore(context, { now }, { elapsed }).shouldRememberDeletion("991000003", "original"))
     elapsed = 0 // A reboot resets elapsedRealtime, but cannot make this a swipe from this boot.
-    assertTrue(store.liveTimeoutElapsed("991000003"))
+    assertFalse(store.shouldRememberDeletion("991000003", "original"))
+  }
+
+  @Test
+  fun delayedTimeoutCannotDismissAReplacementNotification() {
+    var elapsed = 1_000_000L
+    val store = LiveMatchNotificationStateStore(context, elapsedRealtimeMillis = { elapsed })
+    val live = update("991000001", 60)
+    store.record(live, "old")
+    elapsed += LiveNotificationTimeoutMillis
+    store.record(live.copy(observedAt = 61), "new")
+
+    val restored = LiveMatchNotificationStateStore(context, elapsedRealtimeMillis = { elapsed })
+    assertFalse(restored.shouldRememberDeletion(live.matchId, "old"))
+    assertTrue(restored.shouldAccept(live.copy(observedAt = 62)))
+    assertTrue(restored.shouldRememberDeletion(live.matchId, "new"))
+    restored.dismiss(live.matchId)
+    assertFalse(restored.shouldAccept(live.copy(observedAt = 62)))
+  }
+
+  @Test
+  fun finalDeletionHasNoLiveTimeoutAndOldLiveIntentCannotDeleteIt() {
+    var elapsed = 1_000_000L
+    val store = LiveMatchNotificationStateStore(context, elapsedRealtimeMillis = { elapsed })
+    val live = update("991000002", 60)
+    store.record(live, "live")
+    store.record(live.copy(terminal = true), "final")
+    elapsed += LiveNotificationTimeoutMillis + 1
+
+    assertFalse(store.shouldRememberDeletion(live.matchId, "live"))
+    assertTrue(store.shouldRememberDeletion(live.matchId, "final"))
+  }
+
+  @Test
+  fun eachPostHasAnIndependentDeleteIntentButUnpinStillTargetsTheMatch() {
+    val renderer = LiveMatchNotificationRenderer(context)
+    val live = update("991000003", 60)
+    val original = renderer.build(live, false, generation = "old")
+    val replacement = renderer.build(live.copy(observedAt = 61), false, generation = "new")
+
+    assertNotEquals(original.deleteIntent, replacement.deleteIntent)
+    assertEquals(original.actions.last().actionIntent, replacement.actions.last().actionIntent)
+    original.deleteIntent.cancel()
+    replacement.deleteIntent.cancel()
   }
 
   @Test
   fun staleLifecycleStateIsPrunedAfterTerminalDeliveryCanNoLongerArrive() {
     var now = 1_000_000L
     val terminal = update(matchId = "991000001", observedAt = 50).copy(terminal = true)
-    LiveMatchNotificationStateStore(context) { now }.record(terminal)
+    LiveMatchNotificationStateStore(context, nowMillis = { now }).record(terminal)
     now += LiveMatchNotificationStateStore.RetentionMillis + 1
 
-    assertTrue(LiveMatchNotificationStateStore(context) { now }.shouldAccept(terminal.copy(observedAt = 51, terminal = false)))
+    assertTrue(LiveMatchNotificationStateStore(context, nowMillis = { now }).shouldAccept(terminal.copy(observedAt = 51, terminal = false)))
   }
 
   @Test

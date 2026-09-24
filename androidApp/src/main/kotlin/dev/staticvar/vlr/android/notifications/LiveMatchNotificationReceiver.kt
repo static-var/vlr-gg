@@ -15,7 +15,7 @@ internal class LiveMatchNotificationReceiver : BroadcastReceiver() {
     val matchId = intent.getStringExtra(ExtraMatchId) ?: return
     val notifications = (context.applicationContext as? VlrApplication)?.liveMatchNotifications ?: return
     when (intent.action) {
-      ActionDismiss -> notifications.onNotificationDeleted(matchId)
+      ActionDismiss -> intent.getStringExtra(ExtraGeneration)?.let { notifications.onNotificationDeleted(matchId, it) }
       ActionUnpin -> notifications.dismiss(matchId)
     }
   }
@@ -24,6 +24,7 @@ internal class LiveMatchNotificationReceiver : BroadcastReceiver() {
   internal companion object {
     const val ActionDismiss = "dev.staticvar.vlr.action.DISMISS_LIVE_MATCH"
     const val ActionUnpin = "dev.staticvar.vlr.action.UNPIN_LIVE_MATCH"
+    const val ExtraGeneration = "notification_generation"
     const val ExtraMatchId = "match_id"
   }
 }

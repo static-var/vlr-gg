@@ -31,6 +31,7 @@ import dev.staticvar.vlr.core.notifications.DismissedLiveUpdateProvider
 import dev.staticvar.vlr.core.notifications.PushPlatform
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
+import java.util.UUID
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -110,8 +111,9 @@ internal class AndroidLiveMatchNotifications(
         return
       }
 
+      val generation = UUID.randomUUID().toString()
       val notification = try {
-        renderer.build(update, spoilerPreferences.enabled.value)
+        renderer.build(update, spoilerPreferences.enabled.value, generation = generation)
       } catch (error: Exception) {
         if (error is CancellationException) throw error
         LiveNotificationDiagnostics.failed("render", error)
@@ -124,7 +126,7 @@ internal class AndroidLiveMatchNotifications(
         LiveNotificationDiagnostics.failed("post", error)
         return
       }
-      stateStore.record(update)
+      stateStore.record(update, generation)
       dismissed.value = stateStore.dismissedMatchIds()
       if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= 36) {
         runCatching {
@@ -164,13 +166,14 @@ internal class AndroidLiveMatchNotifications(
   /**
    * Handles the notification's delete intent, which Android also sends when a live notification
    * times out. A timeout means updates paused, not that the user dismissed the match, so it is not
-   * remembered and the next update posts the notification again.
+   * remembered and the next update posts the notification again. Callbacks from older posts
+   * cannot dismiss a replacement notification.
    */
-  fun onNotificationDeleted(matchId: String) {
+  fun onNotificationDeleted(matchId: String, generation: String) {
     synchronized(lock) {
-      if (!matchId.isValidMatchId() || stateStore.liveTimeoutElapsed(matchId)) return
+      if (!matchId.isValidMatchId() || !stateStore.shouldRememberDeletion(matchId, generation)) return
+      dismiss(matchId)
     }
-    dismiss(matchId)
   }
 
   private fun canPostNotifications(): Boolean {
@@ -341,10 +344,11 @@ internal class LiveMatchNotificationStateStore(
     }
   }
 
-  fun record(update: LiveMatchUpdate) {
+  fun record(update: LiveMatchUpdate, generation: String = UUID.randomUUID().toString()) {
     pruneStale()
     storage.edit()
       .remove(update.key(RestoringSuffix))
+      .putString(update.key(GenerationSuffix), generation)
       .putLong(update.key(ObservedAtSuffix), update.observedAt)
       .putBoolean(update.key(TerminalSuffix), update.terminal)
       .putLong(update.key(RecordedAtSuffix), nowMillis())
@@ -388,12 +392,14 @@ internal class LiveMatchNotificationStateStore(
     if (storage.getBoolean(matchId.key(RestoringSuffix), false)) dismiss(matchId)
   }
 
-  /** Whether a live notification posted at the last recorded update has reached its timeout. */
-  fun liveTimeoutElapsed(matchId: String): Boolean {
+  /** Only a timely deletion of the current notification counts as a user dismissal. */
+  fun shouldRememberDeletion(matchId: String, generation: String): Boolean {
+    if (storage.getString(matchId.key(GenerationSuffix), null) != generation) return false
+    if (storage.getBoolean(matchId.key(TerminalSuffix), false)) return true
     val recordedAt = storage.getLong(matchId.key(RecordedElapsedRealtimeSuffix), -1)
     if (recordedAt < 0) return false
     val elapsed = elapsedRealtimeMillis()
-    return elapsed < recordedAt || elapsed - recordedAt >= LiveNotificationTimeoutMillis - TimeoutGraceMillis
+    return elapsed >= recordedAt && elapsed - recordedAt < LiveNotificationTimeoutMillis - TimeoutGraceMillis
   }
 
   fun trackedMatchIds(): Set<String> = storage.getStringSet(TrackedMatchesKey, emptySet()).orEmpty().toSet()
@@ -409,6 +415,7 @@ internal class LiveMatchNotificationStateStore(
     if (stale.isEmpty()) return
     storage.edit().apply {
       stale.forEach { matchId ->
+        remove(matchId.key(GenerationSuffix))
         remove(matchId.key(ObservedAtSuffix))
         remove(matchId.key(TerminalSuffix))
         remove(matchId.key(DismissedSuffix))
@@ -424,6 +431,7 @@ internal class LiveMatchNotificationStateStore(
   internal companion object {
     const val StorageName = "live_match_notifications"
     private const val TrackedMatchesKey = "tracked_matches"
+    private const val GenerationSuffix = "generation"
     private const val ObservedAtSuffix = "observed_at"
     private const val TerminalSuffix = "terminal"
     private const val DismissedSuffix = "dismissed"
@@ -448,7 +456,12 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
    * Builds a live or final notification with match actions and optional hidden scores.
    * Uses the native progress or metric style when the Android version supports it.
    */
-  fun build(update: LiveMatchUpdate, scoresHidden: Boolean, sdkInt: Int = Build.VERSION.SDK_INT): Notification {
+  fun build(
+    update: LiveMatchUpdate,
+    scoresHidden: Boolean,
+    sdkInt: Int = Build.VERSION.SDK_INT,
+    generation: String = UUID.randomUUID().toString(),
+  ): Notification {
     val openMatch = PendingIntent.getActivity(
       context,
       update.matchId.hashCode(),
@@ -460,7 +473,7 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
       .setSmallIcon(R.drawable.ic_launcher_monochrome)
       .setColor(context.getColor(R.color.widget_preview_accent))
       .setContentIntent(openMatch)
-      .setDeleteIntent(dismissIntent(update.matchId, LiveMatchNotificationReceiver.ActionDismiss))
+      .setDeleteIntent(dismissIntent(update.matchId, LiveMatchNotificationReceiver.ActionDismiss, generation))
       .setOnlyAlertOnce(true)
       .setShowWhen(false)
       .setVisibility(Notification.VISIBILITY_PUBLIC)
@@ -585,13 +598,14 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
       .append(context.getString(R.string.widget_match_metadata_separator))
       .append(second)
 
-  private fun dismissIntent(matchId: String, action: String): PendingIntent = PendingIntent.getBroadcast(
+  private fun dismissIntent(matchId: String, action: String, generation: String? = null): PendingIntent = PendingIntent.getBroadcast(
     context,
     31 * matchId.hashCode() + action.hashCode(),
     Intent(context, LiveMatchNotificationReceiver::class.java)
       .setAction(action)
-      .setData(android.net.Uri.parse("vlr-live-notification://action/$matchId"))
-      .putExtra(LiveMatchNotificationReceiver.ExtraMatchId, matchId),
+      .setData(android.net.Uri.parse("vlr-live-notification://action/$matchId/${generation.orEmpty()}"))
+      .putExtra(LiveMatchNotificationReceiver.ExtraMatchId, matchId)
+      .putExtra(LiveMatchNotificationReceiver.ExtraGeneration, generation),
     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
   )
 
