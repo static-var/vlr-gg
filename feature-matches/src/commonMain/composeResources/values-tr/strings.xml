@@ -64,4 +64,5 @@
     <string name="mascot_team_won_and">%1$s kazandı ve</string>
     <string name="mascot_player_cooked_combined">%1$s şov yaptı!!!</string>
     <string name="calendar_versus">-</string>
+  <string name="show_live_notification">Canlı bildirimi göster</string>
 </resources>

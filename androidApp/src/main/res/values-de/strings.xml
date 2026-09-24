@@ -41,4 +41,7 @@
     <string name="live_match_notification_unpin">Loslösen</string>
     <string name="live_match_notification_final">Endstand</string>
     <string name="live_match_notification_open_match">Spiel öffnen</string>
+    <string name="match_alert_channel_name">Spielbenachrichtigungen</string>
+    <string name="match_alert_channel_description">Benachrichtigungen, wenn deine favorisierten Spiele beginnen</string>
+    <string name="match_alert_live">Spiel läuft</string>
 </resources>

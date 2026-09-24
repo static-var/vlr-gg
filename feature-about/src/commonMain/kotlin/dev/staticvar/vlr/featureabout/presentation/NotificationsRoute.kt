@@ -38,7 +38,10 @@ import vlr.feature_about.generated.resources.live_activities_description
 import vlr.feature_about.generated.resources.live_activities_disabled
 import vlr.feature_about.generated.resources.live_activity_permissions_description
 import vlr.feature_about.generated.resources.live_match_updates
+import vlr.feature_about.generated.resources.match_alerts
+import vlr.feature_about.generated.resources.match_alerts_description
 import vlr.feature_about.generated.resources.live_match_updates_description
+import vlr.feature_about.generated.resources.notification_promotion_unavailable
 import vlr.feature_about.generated.resources.notification_access_error
 import vlr.feature_about.generated.resources.notification_preferences_description
 import vlr.feature_about.generated.resources.notifications
@@ -69,12 +72,20 @@ public fun NotificationsRoute(
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
       Text(
-        stringResource(if (hasLiveActivities) Res.string.live_activities else Res.string.live_match_updates),
+        stringResource(when {
+          hasLiveActivities -> Res.string.live_activities
+          access.supportsLiveUpdates -> Res.string.live_match_updates
+          else -> Res.string.match_alerts
+        }),
         style = Prism.typography.sectionTitle,
         color = Prism.color.contentPrimary,
       )
       Text(
-        stringResource(if (hasLiveActivities) Res.string.live_activities_description else Res.string.live_match_updates_description),
+        stringResource(when {
+          hasLiveActivities -> Res.string.live_activities_description
+          access.supportsLiveUpdates -> Res.string.live_match_updates_description
+          else -> Res.string.match_alerts_description
+        }),
         style = Prism.typography.bodySmall,
         color = Prism.color.bodyColor,
       )
@@ -82,11 +93,11 @@ public fun NotificationsRoute(
         title = stringResource(Res.string.live_activity_favorites),
         description = stringResource(Res.string.live_activity_favorites_description),
         checked = preferences.enabled,
-        enabled = access.supportsLiveUpdates && !access.requesting,
+        enabled = access.supportsNotifications && !access.requesting,
         onChange = controller::setEnabled,
       )
       Text(stringResource(Res.string.live_activity_permissions_description), style = Prism.typography.caption, color = Prism.color.captionColor)
-      if (preferences.enabled && access.supportsLiveUpdates) {
+      if (preferences.enabled && access.supportsNotifications) {
         if (access.activitiesEnabled == false) {
           PermissionMessage(stringResource(Res.string.live_activities_disabled))
         }
@@ -97,6 +108,10 @@ public fun NotificationsRoute(
           access.requiresNotificationPermission && access.notifications == NotificationAuthorization.Denied
         ) {
           PrismButton(onClick = controller::openSettings) { Text(stringResource(Res.string.open_system_settings)) }
+        }
+        if (access.supportsLiveUpdates && access.notifications == NotificationAuthorization.Authorized && access.promotionAllowed == false) {
+          PermissionMessage(stringResource(Res.string.notification_promotion_unavailable))
+          PrismButton(onClick = controller::openPromotionSettings) { Text(stringResource(Res.string.open_system_settings)) }
         }
         if (access.requiresNotificationPermission && access.notifications == NotificationAuthorization.Error) {
           PermissionMessage(stringResource(Res.string.notification_access_error))

@@ -29,9 +29,8 @@ import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.featureabout.presentation.AboutRoute
 import dev.staticvar.vlr.featureabout.presentation.AppearanceRoute
 import dev.staticvar.vlr.featureabout.presentation.BundledRelease
-import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
 import dev.staticvar.vlr.featureabout.presentation.NotificationsRoute
-import dev.staticvar.vlr.shared.notifications.LocalLiveMatchNotificationSettingsController
+import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewBanner
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailSection
@@ -57,11 +56,13 @@ import dev.staticvar.vlr.featureteam.presentation.TeamDetailsRoute
 import dev.staticvar.vlr.featureteam.presentation.TeamDetailsViewModel
 import dev.staticvar.vlr.featureteam.presentation.TeamMatchesSection
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
+import dev.staticvar.vlr.shared.di.vlrViewModel
+import dev.staticvar.vlr.shared.notifications.LiveActivityStartCoordinator
+import dev.staticvar.vlr.shared.notifications.LocalLiveMatchNotificationSettingsController
 import dev.staticvar.vlr.sharedui.component.event.ProvideEventTransitionScope
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.match.ProvideMatchTransitionScope
 import org.koin.compose.koinInject
-import dev.staticvar.vlr.shared.di.vlrViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -170,10 +171,14 @@ internal fun appNavigationModule(): Module = module {
 
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
+    val liveStart = koinInject<LiveActivityStartCoordinator>()
+    val restorableMatches by liveStart.restorableMatchIds.collectAsStateWithLifecycle()
     val matchPreview = appState.matchTransitionPreview?.takeIf { it.id == route.matchId }
     MatchTransitionHost(enabled = matchPreview != null) {
       MatchDetailsRoute(
         onFavoriteClick = viewModel::toggleFavorite,
+        canRestoreNotification = route.matchId in restorableMatches,
+        onRestoreNotification = { liveStart.restoreNotification(route.matchId) },
         uiState = uiState,
         matchPreview = matchPreview,
         onRefresh = viewModel::refresh,
@@ -332,7 +337,7 @@ internal fun appNavigationModule(): Module = module {
       deletedCacheRecords = cleanupStats.deletedRecords,
       onAutoCleanupChanged = cleanupPreferences::setEnabled,
       onAppearance = appState::showAppearance,
-      onNotifications = if (notificationAccess?.supportsLiveUpdates == true) appState::showNotifications else null,
+      onNotifications = if (notificationAccess?.supportsNotifications == true) appState::showNotifications else null,
       liveActivities = notificationAccess?.requiresNotificationPermission == false,
       onAbout = appState::showAbout,
       onWhatsNew = appState::showWhatsNew,
