@@ -4,8 +4,6 @@
  */
 package dev.staticvar.vlr.featureevents.presentation
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +22,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,6 +64,8 @@ import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
+import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailMatchItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPreviewHeaderItem
@@ -77,6 +76,7 @@ import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGroupSelector
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.event.detail.eventFormattingLabels
 import dev.staticvar.vlr.sharedui.component.event.detail.groupEventMatches
+import dev.staticvar.vlr.sharedui.component.event.rememberEventDetailContentFade
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
@@ -167,12 +167,13 @@ internal fun EventDetailsScreen(
   val event = uiState.event
   val isOnline = LocalIsOnline.current
   val spoilersHidden = LocalSpoilerMode.current.enabled
+  val transitionContentFade = rememberEventDetailContentFade()
   val bodyReady = event != null && (
       event.teams.isNotEmpty() || event.matches.isNotEmpty() ||
         event.standings.isNotEmpty() || event.prizes.isNotEmpty() ||
         (!uiState.isLoading && !uiState.isDetailLoadPending)
       )
-  val bodyFade = rememberEventContentFade(bodyReady)
+  val bodyFade = rememberEventDetailContentFade(bodyReady)
 
   var isGroupingMenuExpanded by remember(event?.id) { mutableStateOf(false) }
   var isNavigatingAway by remember(event?.id) { mutableStateOf(false) }
@@ -180,8 +181,8 @@ internal fun EventDetailsScreen(
   val participantsState = rememberLazyListState()
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val mascotCharacter = LocalMascotCharacter.current
-  val candidates = remember(event, uiState.favoriteTeamIds, spoilersHidden) {
-    if (spoilersHidden) emptyList() else event?.let { eventMascotCues(it, uiState.favoriteTeamIds) }.orEmpty()
+  val candidates = remember(event, uiState.favoriteTeamIds, spoilersHidden, mascotCharacter) {
+    if (spoilersHidden || mascotCharacter == null) emptyList() else event?.let { eventMascotCues(it, uiState.favoriteTeamIds) }.orEmpty()
   }
   val mascotState = rememberMascot(
     screenKey = event?.id ?: "event-details",
@@ -215,16 +216,20 @@ internal fun EventDetailsScreen(
         modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       )
 
-      if (event == null && eventPreview != null) {
-        EventDetailPreviewHeaderItem(
-          event = eventPreview,
-          modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-        )
+      if (event == null) {
+        eventPreview?.let { preview ->
+          EventDetailPreviewHeaderItem(
+            event = preview,
+            extraContentFade = transitionContentFade,
+            modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
+          )
+        }
       }
 
       when {
         (!isOnline || uiState.isLoading || uiState.isRefreshing) && event == null -> EventDetailsLoading(
-          modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
+          modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM)
+            .transitionContentFade(transitionContentFade),
           label = stringResource(Res.string.loading_event),
         )
 
@@ -234,14 +239,16 @@ internal fun EventDetailsScreen(
             errorDetails = uiState.errorDetails,
             onRefresh = onRefresh,
             centered = true,
-            modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
+            modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM)
+              .transitionContentFade(transitionContentFade),
           )
 
         event == null -> SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveEvents,
           title = stringResource(Res.string.no_event_details_yet),
           message = stringResource(Res.string.details_will_appear_when_this_event_is_published),
-          modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM),
+          modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM)
+            .transitionContentFade(transitionContentFade),
         )
 
         else -> EventDetailsContent(
@@ -255,8 +262,11 @@ internal fun EventDetailsScreen(
           spoilersHidden = spoilersHidden,
           listState = listState,
           participantsState = participantsState,
-          contentAlpha = bodyFade,
+          contentAlpha = bodyFade.alpha,
           showContent = bodyReady,
+          showLoading = !bodyReady,
+          contentEnabled = bodyFade.acceptsInput,
+          extraContentFade = transitionContentFade,
           onToggleFavorite = onToggleFavorite,
           onSectionSelected = onSectionSelected,
           onMatchGroupingSelected = onMatchGroupingSelected,
@@ -335,6 +345,9 @@ private fun EventDetailsContent(
   participantsState: LazyListState,
   contentAlpha: State<Float>,
   showContent: Boolean,
+  showLoading: Boolean,
+  contentEnabled: Boolean,
+  extraContentFade: TransitionContentFade,
   onToggleFavorite: () -> Unit,
   onSectionSelected: (EventDetailSection) -> Unit,
   onMatchGroupingSelected: (EventMatchGrouping) -> Unit,
@@ -359,16 +372,22 @@ private fun EventDetailsContent(
     state = listState,
     contentAlpha = contentAlpha,
     showContent = showContent,
+    showLoading = showLoading,
+    contentEnabled = contentEnabled,
     modifier = modifier,
     hero = {
       EventDetailsHero(
         event = event,
+        extraContentFade = extraContentFade,
         isSavingFavorite = isSavingFavorite,
         onToggleFavorite = onToggleFavorite,
       )
     },
     loading = { loadingModifier ->
-      EventDetailsLoading(label = stringResource(Res.string.loading_event_details), modifier = loadingModifier)
+      EventDetailsLoading(
+        label = stringResource(Res.string.loading_event_details),
+        modifier = loadingModifier.transitionContentFade(extraContentFade),
+      )
     },
   ) {
     if (event.teams.isNotEmpty()) {
@@ -420,11 +439,13 @@ private fun EventDetailsContent(
 @Composable
 private fun EventDetailsHero(
   event: EventDetails,
+  extraContentFade: TransitionContentFade,
   isSavingFavorite: Boolean,
   onToggleFavorite: () -> Unit,
 ) {
   EventDetailHeaderItem(
     event = event,
+    extraContentFade = extraContentFade,
     modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
     favoriteAction = {
       PrismButton(
@@ -644,18 +665,6 @@ private fun EventParticipantsRail(
       }
     }
   }
-}
-
-@Composable
-private fun rememberEventContentFade(ready: Boolean): State<Float> {
-  val alpha = remember { Animatable(0f) }
-  val animation = Prism.anim.standard
-  LaunchedEffect(ready, alpha) {
-    if (ready) {
-      alpha.animateTo(1f, tween(durationMillis = animation.durationMillis, easing = animation.easing))
-    }
-  }
-  return alpha.asState()
 }
 
 @Composable

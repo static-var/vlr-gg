@@ -6,6 +6,11 @@ struct UpcomingMatchesEntry: TimelineEntry {
     let snapshot: UpcomingMatchesSnapshot?
 }
 
+struct UpcomingMatchesTimelinePlan {
+    let entry: UpcomingMatchesEntry
+    let refreshDate: Date
+}
+
 struct UpcomingMatchesProvider: TimelineProvider {
     private let repository: WidgetSnapshotRepository
     private let refreshService: WidgetRefreshService
@@ -30,45 +35,20 @@ struct UpcomingMatchesProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<UpcomingMatchesEntry>) -> Void) {
         Task {
             let now = Date.now
-            let source = repository.loadSource()
-            var snapshot = repository.loadBestSnapshot()
-
-            if let source, source.hasFavorites {
-                do {
-                    let refreshed = try await refreshService.refresh(source: source, now: now)
-                    if repository.store(refreshed, for: source) {
-                        snapshot = refreshed.usingConfiguration(from: source)
-                    } else {
-                        snapshot = repository.loadBestSnapshot()
-                    }
-                } catch {
-                    snapshot = repository.loadBestSnapshot() ?? snapshot
-                }
-            }
-
-            let refreshDate = nextRefreshDate(for: snapshot, now: now)
-            completion(
-                Timeline(
-                    entries: [UpcomingMatchesEntry(date: now, snapshot: snapshot)],
-                    policy: .after(refreshDate)
-                )
+            let outcome = await WidgetRefreshCoordinator.shared.refresh(
+                repository: repository, service: refreshService, now: now
             )
+
+            let plan = Self.timelinePlan(for: outcome, at: now)
+            completion(Timeline(entries: [plan.entry], policy: .after(plan.refreshDate)))
         }
     }
 
-    private func nextRefreshDate(for snapshot: UpcomingMatchesSnapshot?, now: Date) -> Date {
-        let hasLiveMatch = snapshot?.matches.contains { $0.status == .live } == true
-        let requestedInterval: TimeInterval = hasLiveMatch ? 15 * 60 : 30 * 60
-        var requestedDate = now.addingTimeInterval(requestedInterval)
-
-        if let nextStart = snapshot?.matches
-            .filter({ $0.status == .upcoming })
-            .compactMap(\.startTime)
-            .filter({ $0 > now.addingTimeInterval(5 * 60) })
-            .min() {
-            requestedDate = min(requestedDate, nextStart)
-        }
-        return requestedDate
+    static func timelinePlan(for outcome: WidgetRefreshOutcome, at date: Date) -> UpcomingMatchesTimelinePlan {
+        UpcomingMatchesTimelinePlan(
+            entry: UpcomingMatchesEntry(date: date, snapshot: outcome.snapshot),
+            refreshDate: outcome.refreshDate
+        )
     }
 }
 
@@ -208,7 +188,7 @@ struct PrismWidgetPalette {
     }
 }
 
-private enum PrismWidgetFont {
+enum PrismWidgetFont {
     static func regular(_ size: CGFloat, relativeTo style: Font.TextStyle) -> Font {
         .custom("ChakraPetch-Regular", size: size, relativeTo: style)
     }

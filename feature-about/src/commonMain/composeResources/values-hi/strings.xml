@@ -107,4 +107,27 @@
     <string name="app_icon_arcade">आर्केड</string>
     <string name="app_icon_midnight">मध्यरात्रि</string>
     <string name="app_icon_mint">पुदीना</string>
+    <string name="notifications">सूचनाएँ</string>
+    <string name="notification_preferences_description">आपके पसंदीदा के लिए लाइव अपडेट</string>
+    <string name="live_activities">लाइव ऐक्टिविटीज़</string>
+    <string name="live_activities_description">लॉक स्क्रीन और Dynamic Island पर लाइव स्कोर देखें।</string>
+    <string name="live_activity_favorites">पसंदीदा मैच और इवेंट</string>
+    <string name="live_activity_favorites_description">अपने पसंदीदा मैचों के अपडेट पाएँ, जिनमें पसंदीदा इवेंट के मैच भी शामिल हैं।</string>
+    <string name="live_activities_disabled">सिस्टम सेटिंग में लाइव ऐक्टिविटीज़ बंद हैं।</string>
+    <string name="notification_access_denied">सूचनाएँ बंद हैं। आप सिस्टम सेटिंग में उन्हें अनुमति दे सकते हैं। लाइव ऐक्टिविटीज़ की सेटिंग अलग है।</string>
+    <string name="notification_access_error">सूचनाओं की अनुमति की जाँच नहीं हो सकी या अनुमति नहीं माँगी जा सकी। फिर से कोशिश करें।</string>
+    <string name="open_system_settings">सिस्टम सेटिंग खोलें</string>
+    <string name="allow_notifications">सूचनाओं की अनुमति दें</string>
+    <string name="live_activity_permissions_description">आपकी प्राथमिकताएँ इस डिवाइस पर सहेजी जाती हैं। उपलब्धता आपकी सिस्टम सेटिंग पर भी निर्भर करती है।</string>
+    <string name="live_match_updates">मैच के लाइव अपडेट</string>
+    <string name="live_match_updates_description">सूचनाओं में लाइव स्कोर देखें।</string>
+    <string name="notifications_permission_description">मैच के लाइव अपडेट पाने के लिए सूचनाओं की अनुमति दें।</string>
+    <string name="release_1_0_4_introduction">लाइव स्कोर देखें, ऐप का रूप चुनें और मैच की ज़्यादा जानकारी पाएँ।</string>
+    <string name="release_1_0_4_live_title">आपके पसंदीदा मैचों के लाइव स्कोर</string>
+    <string name="release_1_0_4_live_description">समर्थित डिवाइस पर पसंदीदा मैचों और इवेंट के लाइव स्कोर चालू करें: iOS पर Live Activities और Android पर Live Updates के साथ।</string>
+    <string name="release_1_0_4_appearance_title">ऐप को अपना रूप दें</string>
+    <string name="release_1_0_4_appearance_description">नई अपीयरेंस सेटिंग्स में ऐप आइकन, थीम और मैस्कॉट चुनें।</string>
+    <string name="notification_promotion_unavailable">लाइव स्कोर सामान्य सूचनाओं में अब भी दिख सकते हैं। आपका डिवाइस इस ऐप के लिए प्रमुख लाइव अपडेट की अनुमति नहीं दे रहा है। सिस्टम की सूचना सेटिंग देखें; उपलब्धता आपके डिवाइस पर भी निर्भर करती है।</string>
+    <string name="match_alerts">मैच अलर्ट</string>
+    <string name="match_alerts_description">पसंदीदा मैच शुरू होने पर सूचना पाएँ। इस डिवाइस पर लाइव स्कोर अपडेट उपलब्ध नहीं हैं।</string>
 </resources>

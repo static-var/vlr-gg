@@ -64,4 +64,5 @@
     <string name="mascot_team_won_and">%1$s победили и</string>
     <string name="mascot_player_cooked_combined">%1$s разнёс всех!!!</string>
     <string name="calendar_versus">против</string>
+  <string name="show_live_notification">Показать уведомление о матче</string>
 </resources>

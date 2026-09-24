@@ -60,6 +60,11 @@ targets:
           - AppIconAmethyst
           - AppIconTicket
         CODE_SIGN_ENTITLEMENTS: iosApp/iosApp.entitlements
+      configs:
+        Debug:
+          APS_ENVIRONMENT: development
+        Release:
+          APS_ENVIRONMENT: production
     preBuildScripts:
       - name: Build shared framework
         basedOnDependencyAnalysis: false
@@ -157,6 +162,7 @@ targets:
       - path: VLRWidget/VLRWidgetModels.swift
       - path: VLRWidget/VLRWidgetRefresh.swift
       - path: VLRWidget/UpcomingMatchesWidget.swift
+      - path: VLRWidget/MatchLiveActivity.swift
       - path: VLRWidget/Localizable.xcstrings
         buildPhase: resources
       - path: WidgetShared

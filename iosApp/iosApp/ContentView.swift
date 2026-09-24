@@ -9,6 +9,13 @@ struct ContentView: View {
     var body: some View {
         ComposeView(pendingDeepLink: pendingDeepLink)
             .ignoresSafeArea()
+            .task {
+                #if DEBUG && targetEnvironment(simulator)
+                if #available(iOS 16.2, *) {
+                    await SimulatorMatchActivity.runIfRequested()
+                }
+                #endif
+            }
             .onChange(of: scenePhase) { phase in
                 if phase == .active { FavoriteSearchStore.shared.retryIndexing() }
             }
@@ -41,7 +48,10 @@ private struct ComposeView: UIViewControllerRepresentable {
             },
             onSearchFavoritesChanged: { snapshotJSON in
                 FavoriteSearchStore.shared.publish(snapshotJSON)
-            }
+            },
+            notificationPermissionProvider: context.coordinator.notificationPermissionProvider,
+            pushTokenProvider: context.coordinator.pushTokenProvider,
+            liveUpdateStateProvider: context.coordinator.liveUpdateStateProvider
         )
     }
 
@@ -51,6 +61,9 @@ private struct ComposeView: UIViewControllerRepresentable {
 
     final class Coordinator {
         let deepLinkHandler = AppDeepLinkHandler()
+        let notificationPermissionProvider = IosLiveActivityPermissionProvider()
+        let pushTokenProvider = IosActivityPushTokenProvider()
+        let liveUpdateStateProvider = IosLiveUpdateStateProvider()
         private var lastDeepLinkID: UUID?
 
         func open(_ deepLink: PendingDeepLink?) {

@@ -1,12 +1,13 @@
 getDirectFavorites:
-SELECT entity_type, id, title, image_url
+SELECT entity_type, id, title, image_url, current_team_id
 FROM (
     SELECT
         0 AS entity_order,
         'TEAM' AS entity_type,
         favorite.team_id AS id,
         COALESCE(NULLIF(TRIM(team.name), ''), favorite.team_id) AS title,
-        COALESCE(team.logo_url, '') AS image_url
+        COALESCE(team.logo_url, '') AS image_url,
+        NULL AS current_team_id
     FROM favorite_teams AS favorite
     LEFT JOIN teams AS team ON team.id = favorite.team_id
 
@@ -17,7 +18,8 @@ FROM (
         'EVENT' AS entity_type,
         favorite.event_id AS id,
         COALESCE(NULLIF(TRIM(event.name), ''), favorite.event_id) AS title,
-        COALESCE(event.logo_url, '') AS image_url
+        COALESCE(event.logo_url, '') AS image_url,
+        NULL AS current_team_id
     FROM favorite_events AS favorite
     LEFT JOIN events AS event ON event.id = favorite.event_id
 
@@ -34,7 +36,8 @@ FROM (
                 THEN favorite.match_id
             ELSE TRIM(cached_match.team1_name) || ' vs ' || TRIM(cached_match.team2_name)
         END AS title,
-        COALESCE(cached_match.event_logo_url, '') AS image_url
+        COALESCE(cached_match.event_logo_url, '') AS image_url,
+        NULL AS current_team_id
     FROM favorite_matches AS favorite
     LEFT JOIN matches AS cached_match ON cached_match.id = favorite.match_id
 
@@ -49,7 +52,8 @@ FROM (
             NULLIF(TRIM(player.name), ''),
             favorite.player_id
         ) AS title,
-        COALESCE(player.image_url, '') AS image_url
+        COALESCE(player.image_url, '') AS image_url,
+        NULLIF(TRIM(player.current_team_id), '') AS current_team_id
     FROM favorite_players AS favorite
     LEFT JOIN players AS player ON player.id = favorite.player_id
 ) AS direct_favorites

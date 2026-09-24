@@ -108,4 +108,27 @@
     <string name="app_icon_arcade">Arcade</string>
     <string name="app_icon_midnight">Meia-noite</string>
     <string name="app_icon_mint">Menta</string>
+    <string name="notifications">Notificações</string>
+    <string name="notification_preferences_description">Atualizações ao vivo dos seus favoritos</string>
+    <string name="live_activities">Atividades ao Vivo</string>
+    <string name="live_activities_description">Acompanhe os placares ao vivo na Tela Bloqueada e na Dynamic Island.</string>
+    <string name="live_activity_favorites">Partidas e eventos favoritos</string>
+    <string name="live_activity_favorites_description">Acompanhe suas partidas favoritas, incluindo as partidas dos seus eventos favoritos.</string>
+    <string name="live_activities_disabled">As Atividades ao Vivo estão desativadas nos ajustes do sistema.</string>
+    <string name="notification_access_denied">As notificações estão desativadas. Você pode permiti-las nos ajustes do sistema. As Atividades ao Vivo têm um ajuste separado.</string>
+    <string name="notification_access_error">Não foi possível verificar ou solicitar a permissão para enviar notificações. Tente novamente.</string>
+    <string name="open_system_settings">Abrir ajustes do sistema</string>
+    <string name="allow_notifications">Permitir notificações</string>
+    <string name="live_activity_permissions_description">Suas preferências são salvas neste dispositivo. A disponibilidade também depende dos ajustes do sistema.</string>
+    <string name="live_match_updates">Atualizações de partidas ao vivo</string>
+    <string name="live_match_updates_description">Acompanhe os placares ao vivo nas notificações.</string>
+    <string name="notifications_permission_description">Permita as notificações para receber atualizações de partidas ao vivo.</string>
+    <string name="release_1_0_4_introduction">Acompanhe placares ao vivo, personalize o visual do app e veja mais detalhes das partidas.</string>
+    <string name="release_1_0_4_live_title">Placares ao vivo dos seus favoritos</string>
+    <string name="release_1_0_4_live_description">Ative os placares ao vivo de partidas e eventos favoritos em dispositivos compatíveis, com Atividades ao Vivo no iOS e Live Updates no Android.</string>
+    <string name="release_1_0_4_appearance_title">Deixe o app com a sua cara</string>
+    <string name="release_1_0_4_appearance_description">Escolha o ícone, o tema e o mascote do app nas novas configurações de Aparência.</string>
+    <string name="notification_promotion_unavailable">Os placares ao vivo ainda podem aparecer como notificações comuns. Seu dispositivo não permite atualizações ao vivo em destaque para este app. Confira as configurações de notificação do sistema; a disponibilidade também depende do dispositivo.</string>
+    <string name="match_alerts">Alertas de partidas</string>
+    <string name="match_alerts_description">Receba uma notificação quando uma partida favorita começar. Atualizações de placar ao vivo não estão disponíveis neste dispositivo.</string>
 </resources>

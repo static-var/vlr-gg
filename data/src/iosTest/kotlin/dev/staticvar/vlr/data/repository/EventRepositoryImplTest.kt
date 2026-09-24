@@ -74,17 +74,18 @@ class EventRepositoryImplTest {
   @Test
   fun savedCompletedMatchUpdatesEventReasonsWithoutSavingEvent() = runTest(dispatcher) {
     insertEvent("event1", "Champions", "", "COMPLETED", "$1", "2025-01-01", "NA")
+    insertEvent("cached-event", "Cached Event", "", "COMPLETED", "$1", "2025-01-01", "NA")
     val match = MatchPreviewDto(
       id = "match1", eventId = "event1", event = "Champions", series = "Final",
       status = MatchStatus.COMPLETED, time = "2025-01-01",
       team1 = TeamDto(id = "t1", name = "Alpha"),
       team2 = TeamDto(id = "t2", name = "Beta"),
     )
-    database.matchesQueries.insertMatch(match.toEntity())
+    database.matchesQueries.insertMatch(match.toEntity().copy(event_id = "cached-event"))
     database.matchOverviewQueries.upsertMatchOverview(match.toOverviewEntity())
     val expected = listOf(EventFavoriteReason(EventFavoriteSource.MATCH, "match1", "Alpha vs Beta"))
 
-    repository.getEvents().map { it.single() }.distinctUntilChanged().test {
+    repository.getEvents().map { events -> events.single { it.id == "event1" } }.distinctUntilChanged().test {
       assertEquals(emptyList(), awaitItem().favoriteReasons)
       database.matchesQueries.addFavoriteMatch("match1")
       val related = awaitItem()
@@ -93,6 +94,7 @@ class EventRepositoryImplTest {
       val details = requireNotNull(repository.getEventDetails("event1").first())
       assertEquals(expected, details.favoriteReasons)
       assertEquals(false, details.isFavorite)
+      assertEquals(emptyList(), repository.getEventDetails("cached-event").first()?.favoriteReasons)
 
       database.matchesQueries.removeFavoriteMatch("match1")
       assertEquals(emptyList(), awaitItem().favoriteReasons)

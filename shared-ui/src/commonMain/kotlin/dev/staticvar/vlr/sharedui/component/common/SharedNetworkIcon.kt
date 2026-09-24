@@ -27,6 +27,7 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
+import coil3.size.Scale
 import dev.staticvar.designsystem.component.icon.PrismIcon
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
@@ -68,8 +69,10 @@ public fun SharedNetworkIcon(
 
   val useConditionalOutline = conditionalOutline && size != PrismIconSize.Small && tint == PrismIconTint.None && contentScale == ContentScale.Fit
   val context = LocalPlatformContext.current
-  val request = remember(context, imageUrl, useConditionalOutline) {
-    ImageRequest.Builder(context).data(imageUrl).apply {
+  // Share one decode size across list and hero icons, independent of animated bounds.
+  val decodeSizePx = with(LocalDensity.current) { PrismIconSize.Hero.containerSizeDp.roundToPx() }
+  val request = remember(context, imageUrl, useConditionalOutline, decodeSizePx) {
+    ImageRequest.Builder(context).data(imageUrl).size(decodeSizePx).scale(Scale.FIT).apply {
       if (useConditionalOutline) softwareLogo()
     }.build()
   }
@@ -87,20 +90,9 @@ public fun SharedNetworkIcon(
   }
 
   val image = (painterState as? AsyncImagePainter.State.Success)?.result?.image
-  val source = remember(image) { image?.takeIf { it.shareable }?.let(::LogoSource) }
   var pixelSize by remember { mutableStateOf(IntSize.Zero) }
-  val radiusPx = with(LocalDensity.current) { 1.dp.toPx() }
   val background = style.containerColor.compositeOver(parentBackground)
-  val treatmentRequest = remember(source, pixelSize, radiusPx, background, useConditionalOutline) {
-    if (useConditionalOutline && source != null && pixelSize.width > 0 && pixelSize.height > 0) {
-      LogoTreatmentRequest(source, pixelSize, radiusPx, background)
-    } else null
-  }
-  val treatment by rememberLogoTreatment(treatmentRequest, sharedLogoTreatments)
-  val displayPainter = remember(treatment, painter, pixelSize) {
-    val outlined = treatment as? LogoTreatment.Outlined
-    if (outlined != null) PreparedLogoPainter(outlined, pixelSize) else painter
-  }
+  val displayPainter = rememberOutlinedLogoPainter(image, painter, pixelSize, background, useConditionalOutline)
 
   PrismIcon(
     painter = displayPainter,
@@ -124,7 +116,7 @@ private fun SharedNetworkIconFallback(
   style: PrismIconStyle,
   tint: PrismIconTint,
 ) {
-  val containerSize = size.fallbackContainerSize
+  val containerSize = size.containerSizeDp
   PrismSurface(
     modifier = modifier.size(containerSize),
     color = when (tint) {
@@ -155,7 +147,7 @@ private fun SharedNetworkIconFallback(
   }
 }
 
-private val PrismIconSize.fallbackContainerSize: Dp
+private val PrismIconSize.containerSizeDp: Dp
   get() = when (this) {
     PrismIconSize.Size16 -> 16.dp
     PrismIconSize.Size32 -> 32.dp

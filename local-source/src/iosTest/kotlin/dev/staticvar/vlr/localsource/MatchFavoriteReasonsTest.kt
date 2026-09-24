@@ -9,7 +9,9 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.driver.native.NativeSqliteDriver
 import app.cash.sqldelight.driver.native.inMemoryDriver
 import dev.staticvar.vlr.localsource.database.Matches
+import dev.staticvar.vlr.localsource.database.Match_overview
 import dev.staticvar.vlr.localsource.database.Players
+import dev.staticvar.vlr.localsource.database.GetMatchFavoriteReasons
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -68,9 +70,13 @@ class MatchFavoriteReasonsTest {
     var inheritedMatches = emptySet<String>()
     val dispatcher = StandardTestDispatcher(testScheduler)
     backgroundScope.launch(dispatcher) {
-      database.matchesQueries.getMatchFavoriteReasons().asFlow().mapToList(dispatcher).collect {
-        inheritedMatches = it.map { reason -> reason.match_id }.toSet()
-      }
+      database.matchesQueries
+        .getMatchFavoriteReasons()
+        .asFlow()
+        .mapToList(dispatcher)
+        .collect {
+          inheritedMatches = it.map { reason -> reason.match_id }.toSet()
+        }
     }
     runCurrent()
     assertEquals(setOf("old-team"), inheritedMatches)
@@ -111,8 +117,66 @@ class MatchFavoriteReasonsTest {
     assertEquals(emptySet(), sources("unknown"))
   }
 
+  @Test
+  fun scopesReasonsByMatchAndOverviewEvent() {
+    database.matchesQueries.insertMatch(match("target", eventId = "cached-event"))
+    database.matchesQueries.insertMatch(match("other", eventId = "cached-event"))
+    database.matchOverviewQueries.upsertMatchOverview(overview("target", "overview-event"))
+    database.matchOverviewQueries.upsertMatchOverview(overview("other", "other-event"))
+    database.matchesQueries.addFavoriteMatch("target")
+    database.teamsQueries.addFavoriteTeam("100t")
+    database.eventsQueries.addFavoriteEvent("cached-event")
+
+    val targetReasons = database.matchesQueries
+      .getScopedMatchFavoriteReasons(
+        matchId = "target",
+        eventId = null,
+        mapper = ::GetMatchFavoriteReasons,
+      )
+      .executeAsList()
+    assertEquals(setOf("MATCH", "TEAM", "EVENT"), targetReasons.map { it.source }.toSet())
+    assertEquals(setOf("target"), targetReasons.map { it.match_id }.toSet())
+    assertEquals(
+      targetReasons,
+      database.matchesQueries.getMatchFavoriteReasons().executeAsList().filter { it.match_id == "target" },
+    )
+
+    val eventReasons = database.matchesQueries
+      .getScopedMatchFavoriteReasons(
+        matchId = null,
+        eventId = "overview-event",
+        mapper = ::GetMatchFavoriteReasons,
+      )
+      .executeAsList()
+    assertEquals(targetReasons, eventReasons)
+    assertEquals(
+      emptyList(),
+      database.matchesQueries
+        .getScopedMatchFavoriteReasons(
+          matchId = null,
+          eventId = "cached-event",
+          mapper = ::GetMatchFavoriteReasons,
+        )
+        .executeAsList(),
+    )
+  }
+
   private fun sources(matchId: String): Set<String> = database.matchesQueries
-    .getMatchFavoriteReasons().executeAsList().filter { it.match_id == matchId }.map { it.source }.toSet()
+    .getScopedMatchFavoriteReasons(
+      matchId = matchId,
+      eventId = null,
+      mapper = ::GetMatchFavoriteReasons,
+    )
+    .executeAsList()
+    .map { it.source }
+    .toSet()
+
+  private fun overview(id: String, eventId: String) = Match_overview(
+    id = id, event_id = eventId, event_name = "Overview Event", series = "Bo3",
+    status = "UPCOMING", time = "", team1_id = "100t", team1_name = "100 Thieves",
+    team1_logo_url = "", team1_score = null, team2_id = "opponent", team2_name = "Opponent",
+    team2_logo_url = "", team2_score = null,
+  )
 
   private fun player(id: String, teamId: String) = Players(
     id = id, name = id, alias = "", real_name = null, country = "US", current_team_id = teamId,

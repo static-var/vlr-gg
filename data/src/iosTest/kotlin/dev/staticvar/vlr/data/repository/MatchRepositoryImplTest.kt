@@ -9,6 +9,7 @@ import app.cash.sqldelight.driver.native.inMemoryDriver
 import app.cash.turbine.test
 import com.russhwolf.settings.MapSettings
 import dev.staticvar.vlr.data.cache.MatchVetoStore
+import dev.staticvar.vlr.data.cache.VetoStore
 import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
@@ -31,14 +32,18 @@ import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
 import dev.staticvar.vlr.remotesource.match.VetoDto
 import dev.staticvar.vlr.remotesource.common.VetoAction as RemoteVetoAction
 import kotlinx.serialization.json.Json
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.coroutines.CoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -506,6 +511,37 @@ class MatchRepositoryImplTest {
     }
   }
 
+  @Test
+  fun matchDetailAssemblyRunsOnDefaultDispatcher() = runTest(dispatcher) {
+    prepareFavoriteMatch()
+    val defaultDispatcher = TrackingDispatcher(dispatcher)
+    val trackingVetoStore = object : VetoStore {
+      override val version = MutableStateFlow(0L)
+      var readOnDefault = false
+
+      override fun get(matchId: String, rawBans: List<String>): List<MatchVeto> {
+        readOnDefault = defaultDispatcher.isRunning
+        return emptyList()
+      }
+
+      override suspend fun put(matchId: String, rawBans: List<String>, veto: List<MatchVeto>) = Unit
+    }
+    val trackedRepository = MatchRepositoryImpl(
+      matchDataSource = dataSource,
+      database = database,
+      dispatchers = object : DispatcherProvider {
+        override val default = defaultDispatcher
+        override val io = dispatcher
+        override val main = dispatcher
+      },
+      vetoStore = trackingVetoStore,
+    )
+
+    requireNotNull(trackedRepository.getMatchDetails("match1").first())
+
+    assertTrue(trackingVetoStore.readOnDefault)
+  }
+
   private suspend fun prepareFavoriteMatch() {
     dataSource.listResult = Result.success(
       listOf(
@@ -546,6 +582,24 @@ class MatchRepositoryImplTest {
     override val default = dispatcher
     override val io = dispatcher
     override val main = dispatcher
+  }
+
+  private class TrackingDispatcher(
+    private val delegate: CoroutineDispatcher,
+  ) : CoroutineDispatcher() {
+    var isRunning: Boolean = false
+      private set
+
+    override fun dispatch(context: CoroutineContext, block: Runnable) {
+      delegate.dispatch(context) {
+        isRunning = true
+        try {
+          block.run()
+        } finally {
+          isRunning = false
+        }
+      }
+    }
   }
 
   private class FakeMatchDataSource : MatchDataSource {

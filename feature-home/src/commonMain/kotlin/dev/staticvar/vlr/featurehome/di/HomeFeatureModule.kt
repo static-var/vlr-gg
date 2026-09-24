@@ -17,13 +17,13 @@ public fun homeFeatureModule(): Module = module {
       favoritesRepository = get(),
       matchRepository = get(),
       eventRepository = get(),
+      dispatchers = get(),
     )
   }
   factory {
     RefreshHomeUseCase(
       matchRepository = get(),
       eventRepository = get(),
-      initialFavoriteProfilesRefresh = get(),
     )
   }
   viewModel {

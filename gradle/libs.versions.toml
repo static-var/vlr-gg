@@ -23,8 +23,12 @@ multiplatform-nav3-ui = "1.1.1"
 agentPreview = "0.3.1"
 glance = "1.2.0"
 work = "2.11.2"
+leakcanary = "2.14"
+firebase = "34.12.0"
+google-services = "4.4.4"
 
 [libraries]
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 android-junit = { module = "androidx.test.ext:junit", version = "1.3.0" }
 android-test-runner = { module = "androidx.test:runner", version = "1.7.0" }
 uiautomator = { module = "androidx.test.uiautomator:uiautomator", version = "2.4.0" }
@@ -43,6 +47,9 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 
 compose-ui-tooling-cmp = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-multiplatform" }
 compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
@@ -126,3 +133,4 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 spotless-plugin = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 agentpreview = { id = "dev.staticvar.agentpreview", version.ref = "agentPreview" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }

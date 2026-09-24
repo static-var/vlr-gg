@@ -40,11 +40,13 @@ import kotlin.math.roundToInt
  * Slots size to their content; the notches follow the body/stub boundary. Cutouts reveal the actual
  * background. [style] owns the visual treatment. Place actions inside the slots; the ticket itself
  * has no click behavior and does not merge its children's accessibility semantics.
+ * Disable [animateSizeChanges] when an enclosing transition already controls the ticket bounds.
  */
 @Composable
 public fun PrismTicket(
   modifier: Modifier = Modifier,
   style: PrismTicketStyle = PrismTicketStyle.Standard,
+  animateSizeChanges: Boolean = true,
   header: (@Composable ColumnScope.() -> Unit)? = null,
   stub: @Composable ColumnScope.() -> Unit,
   content: @Composable ColumnScope.() -> Unit,
@@ -62,14 +64,14 @@ public fun PrismTicket(
       Column(
         Modifier.fillMaxWidth()
           .onSizeChanged { seam.floatValue = it.height.toFloat() }
-          .animateContentSize(animationSpec = sizeAnimation),
+          .then(if (animateSizeChanges) Modifier.animateContentSize(animationSpec = sizeAnimation) else Modifier),
       ) {
-        if (header != null) {
+        header?.let { headerContent ->
           CompositionLocalProvider(LocalContentColor provides style.headerContentColor) {
             Column(
               Modifier.fillMaxWidth().background(style.headerColor)
                 .padding(horizontal = style.padding, vertical = style.headerVerticalPadding),
-              content = header,
+              content = headerContent,
             )
           }
         }
@@ -77,7 +79,8 @@ public fun PrismTicket(
       }
       Column(
         Modifier.fillMaxWidth().background(style.stubColor)
-          .animateContentSize(animationSpec = sizeAnimation).padding(style.padding),
+          .then(if (animateSizeChanges) Modifier.animateContentSize(animationSpec = sizeAnimation) else Modifier)
+          .padding(style.padding),
         content = stub,
       )
     }

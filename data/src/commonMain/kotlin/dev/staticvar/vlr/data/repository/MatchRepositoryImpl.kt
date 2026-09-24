@@ -38,11 +38,13 @@ import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.localsource.database.GetMatchWithFavoriteStatus
+import dev.staticvar.vlr.localsource.database.GetMatchFavoriteReasons
 import dev.staticvar.vlr.localsource.database.GetMatchesWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -75,6 +77,7 @@ internal class MatchRepositoryImpl(
         )
       }
     }
+    .flowOn(dispatchers.default)
 
   override fun getMatchDetails(matchId: String): Flow<MatchDetails?> {
     val matchFlow = matchesQueries
@@ -141,7 +144,7 @@ internal class MatchRepositoryImpl(
           veto = vetoStore.get(matchId, slices.bans.map { it.ban_value }),
         )
       }
-    }.combine(observeFavoriteReasons()) { match, reasonsByMatch ->
+    }.combine(observeFavoriteReasons(matchId = matchId)) { match, reasonsByMatch ->
       match?.let {
         val reasons = reasonsByMatch[it.id].orEmpty()
         it.copy(
@@ -150,24 +153,34 @@ internal class MatchRepositoryImpl(
           favoriteReasons = reasons,
         )
       }
-    }
+    }.flowOn(dispatchers.default)
   }
 
-  private fun observeFavoriteReasons(): Flow<Map<String, List<MatchFavoriteReason>>> = matchesQueries
-    .getMatchFavoriteReasons()
-    .asFlow()
-    .mapToList(dispatchers.io)
-    .map { rows ->
-      rows.groupBy { it.match_id }.mapValues { (_, reasons) ->
-        reasons.map { reason ->
-          MatchFavoriteReason(
-            source = MatchFavoriteSource.valueOf(reason.source),
-            id = reason.entity_id,
-            name = reason.entity_name,
-          )
-        }.sortedWith(compareBy({ it.source.ordinal }, { it.name }, { it.id }))
+  private fun observeFavoriteReasons(
+    matchId: String? = null,
+  ): Flow<Map<String, List<MatchFavoriteReason>>> {
+    val query = matchId?.let { scopedMatchId ->
+      matchesQueries.getScopedMatchFavoriteReasons(
+        matchId = scopedMatchId,
+        eventId = null,
+        mapper = ::GetMatchFavoriteReasons,
+      )
+    } ?: matchesQueries.getMatchFavoriteReasons()
+    return query
+      .asFlow()
+      .mapToList(dispatchers.io)
+      .map { rows ->
+        rows.groupBy { it.match_id }.mapValues { (_, reasons) ->
+          reasons.map { reason ->
+            MatchFavoriteReason(
+              source = MatchFavoriteSource.valueOf(reason.source),
+              id = reason.entity_id,
+              name = reason.entity_name,
+            )
+          }.sortedWith(compareBy({ it.source.ordinal }, { it.name }, { it.id }))
+        }
       }
-    }
+  }
 
   override suspend fun addToFavorites(matchId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {

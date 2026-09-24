@@ -14,6 +14,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.rememberTransitionContentFade
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 private data class EventTransitionScope(
@@ -34,15 +36,20 @@ public fun ProvideEventTransitionScope(
 ) {
   CompositionLocalProvider(
     LocalEventTransitionScope provides if (enabled) {
-      EventTransitionScope(
-        sharedTransitionScope = sharedTransitionScope,
-        animatedVisibilityScope = animatedVisibilityScope,
-      )
+      EventTransitionScope(sharedTransitionScope, animatedVisibilityScope)
     } else {
       null
     },
     content = content,
   )
+}
+
+/** Keeps detail-only content hidden until the shared entrance has settled. */
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+public fun rememberEventDetailContentFade(ready: Boolean = true): TransitionContentFade {
+  val scope = LocalEventTransitionScope.current
+  return rememberTransitionContentFade(scope?.sharedTransitionScope, scope?.animatedVisibilityScope, ready)
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -61,9 +68,7 @@ internal fun Modifier.eventLogoSharedElement(eventId: String): Modifier {
   }
 }
 
-internal enum class EventSharedContent {
-  Card, Logo, Title, Dates, Prize, Status, Favorite,
-}
+internal enum class EventSharedContent { Card, Logo, Title }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

@@ -11,7 +11,6 @@ import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.MatchVideos
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.MatchRepository
-import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -36,23 +35,16 @@ class MatchesUseCasesTest {
   }
 
   @Test
-  fun refreshMatchesWaitsForProfilesAndStillFetchesAfterProfileFailure() {
+  fun refreshMatchesDelegatesRepositoryFailure() {
     runTest {
-      val calls = mutableListOf<String>()
-      val expected = IllegalStateException("profile refresh failed")
+      val expected = IllegalStateException("match refresh failed")
       val repository = FakeMatchRepository(matches = emptyList()) {
-        calls += "matches"
-        Result.success(Unit)
-      }
-      val profiles = InitialFavoriteProfilesRefresh {
-        calls += "profiles"
         Result.failure(expected)
       }
 
-      val result = RefreshMatchesUseCase(repository, profiles)()
+      val result = RefreshMatchesUseCase(repository)()
 
       assertSame(expected, result.exceptionOrNull())
-      assertEquals(listOf("profiles", "matches"), calls)
       assertEquals(1, repository.refreshMatchesCalls)
     }
   }

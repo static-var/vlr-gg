@@ -14,6 +14,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.rememberTransitionContentFade
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 private data class MatchTransitionScope(
@@ -34,10 +36,7 @@ public fun ProvideMatchTransitionScope(
 ) {
   CompositionLocalProvider(
     LocalMatchTransitionScope provides if (enabled) {
-      MatchTransitionScope(
-        sharedTransitionScope = sharedTransitionScope,
-        animatedVisibilityScope = animatedVisibilityScope,
-      )
+      MatchTransitionScope(sharedTransitionScope, animatedVisibilityScope)
     } else {
       null
     },
@@ -45,8 +44,16 @@ public fun ProvideMatchTransitionScope(
   )
 }
 
+/** Keeps detail-only content hidden until the shared entrance has settled. */
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+public fun rememberMatchDetailContentFade(ready: Boolean = true): TransitionContentFade {
+  val scope = LocalMatchTransitionScope.current
+  return rememberTransitionContentFade(scope?.sharedTransitionScope, scope?.animatedVisibilityScope, ready)
+}
+
 internal enum class MatchSharedContent {
-  Card, Event, Series, Time, Status, Favorite, Reasons, TeamName, TeamScore,
+  Card, Event, TeamName, TeamScore,
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

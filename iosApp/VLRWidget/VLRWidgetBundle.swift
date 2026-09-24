@@ -5,6 +5,9 @@ import WidgetKit
 struct VLRWidgetBundle: WidgetBundle {
     var body: some Widget {
         UpcomingMatchesWidget()
+        if #available(iOS 16.1, *) {
+            MatchLiveActivity()
+        }
     }
 }
 

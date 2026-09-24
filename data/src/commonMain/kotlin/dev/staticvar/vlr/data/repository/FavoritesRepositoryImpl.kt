@@ -13,6 +13,7 @@ import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 internal class FavoritesRepositoryImpl(
@@ -20,12 +21,12 @@ internal class FavoritesRepositoryImpl(
   private val dispatchers: DispatcherProvider,
 ) : FavoritesRepository {
   override fun observeDirectFavorites(): Flow<DirectFavoriteSnapshot> = database.homeQueries
-    .getDirectFavorites { entityType, id, title, imageUrl ->
+    .getDirectFavorites { entityType, id, title, imageUrl, currentTeamId ->
       when (entityType) {
         "TEAM" -> DirectFavorite.Team(id = id, title = title, imageUrl = imageUrl)
         "EVENT" -> DirectFavorite.Event(id = id, title = title, imageUrl = imageUrl)
         "MATCH" -> DirectFavorite.Match(id = id, title = title, imageUrl = imageUrl)
-        "PLAYER" -> DirectFavorite.Player(id = id, title = title, imageUrl = imageUrl)
+        "PLAYER" -> DirectFavorite.Player(id = id, title = title, imageUrl = imageUrl, currentTeamId = currentTeamId)
         else -> error("Unknown direct favorite type: $entityType")
       }
     }
@@ -40,6 +41,7 @@ internal class FavoritesRepositoryImpl(
       )
     }
     .distinctUntilChanged()
+    .flowOn(dispatchers.default)
 
   override fun observeTeamIds(): Flow<Set<String>> = database.teamsQueries
     .getFavoriteTeamIds()
@@ -47,6 +49,7 @@ internal class FavoritesRepositoryImpl(
     .mapToList(dispatchers.io)
     .map { it.toSet() }
     .distinctUntilChanged()
+    .flowOn(dispatchers.default)
 
   override fun observePlayerIds(): Flow<Set<String>> = database.playersQueries
     .getFavoritePlayerIds()
@@ -54,4 +57,5 @@ internal class FavoritesRepositoryImpl(
     .mapToList(dispatchers.io)
     .map { it.toSet() }
     .distinctUntilChanged()
+    .flowOn(dispatchers.default)
 }

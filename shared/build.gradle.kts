@@ -44,6 +44,7 @@ kotlin {
     target.binaries.framework {
       baseName = "shared"
       isStatic = true
+      export(projects.core)
       // Explicit bundle ID to silence Kotlin/Native warning and stabilize metadata
       freeCompilerArgs += listOf("-Xbinary=bundleId=dev.staticvar.vlr.shared")
     }
@@ -65,13 +66,14 @@ kotlin {
         implementation(libs.lifecycle.viewmodel.compose.cmp)
         implementation(libs.lifecycle.viewmodel.navigation3)
         implementation(libs.kotlinx.serialization)
+        implementation(libs.multiplatform.settings)
         implementation(libs.koin.core)
         implementation(libs.koin.compose)
         implementation(libs.koin.compose.viewmodel)
         implementation(libs.koin.compose.navigation3)
         implementation(libs.navigation3.ui.cmp)
         implementation(projects.designsystem)
-        implementation(projects.core)
+        api(projects.core)
         implementation(projects.localSource)
         implementation(projects.remoteSource)
         implementation(projects.data)
@@ -112,6 +114,9 @@ kotlin {
     val commonTest by getting {
       dependencies {
         implementation(kotlin("test"))
+        implementation(libs.coroutine.test)
+        implementation(libs.multiplatform.settings)
+        implementation(libs.multiplatform.settings.test)
       }
     }
   }

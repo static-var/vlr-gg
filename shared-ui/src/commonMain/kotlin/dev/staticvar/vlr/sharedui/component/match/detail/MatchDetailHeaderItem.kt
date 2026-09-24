@@ -34,7 +34,9 @@ import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
+import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
+import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
 import dev.staticvar.vlr.sharedui.component.match.matchFavoriteReasonLabels
 import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
@@ -53,6 +55,7 @@ import vlr.shared_ui.generated.resources.match_event_time_tba
 @Composable
 public fun MatchDetailHeaderItem(
   match: MatchDetails,
+  extraContentFade: TransitionContentFade,
   modifier: Modifier = Modifier,
   onEventSelected: ((String) -> Unit)? = null,
   onTeamSelected: ((String) -> Unit)? = null,
@@ -66,6 +69,7 @@ public fun MatchDetailHeaderItem(
   var showVeto by remember(match.id, spoilersHidden) { mutableStateOf(false) }
   MatchDetailHeaderContent(
     matchId = match.id,
+    extraContentFade = extraContentFade,
     eventId = match.event.id,
     eventName = match.event.name,
     series = match.matchDetailMeta(),
@@ -98,9 +102,14 @@ public fun MatchDetailHeaderItem(
 }
 
 @Composable
-public fun MatchDetailPreviewHeaderItem(match: MatchPreview, modifier: Modifier = Modifier) {
+public fun MatchDetailPreviewHeaderItem(
+  match: MatchPreview,
+  extraContentFade: TransitionContentFade,
+  modifier: Modifier = Modifier,
+) {
   MatchDetailHeaderContent(
     matchId = match.id,
+    extraContentFade = extraContentFade,
     eventId = match.eventId,
     eventName = match.event,
     series = match.series,
@@ -118,6 +127,7 @@ public fun MatchDetailPreviewHeaderItem(match: MatchPreview, modifier: Modifier 
 @Composable
 private fun MatchDetailHeaderContent(
   matchId: String,
+  extraContentFade: TransitionContentFade,
   eventId: String,
   eventName: String,
   series: String,
@@ -138,23 +148,25 @@ private fun MatchDetailHeaderContent(
   FavoriteTicketCardBox(
     selected = isFavorite,
     modifier = modifier.fillMaxWidth(),
-    favoriteModifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.Favorite),
+    favoriteModifier = Modifier.transitionContentFade(extraContentFade),
   ) {
     PrismTicket(
       modifier = Modifier.fillMaxWidth().matchSharedBounds(matchId, MatchSharedContent.Card),
+      animateSizeChanges = extraContentFade.isSettled,
       header = {
-        MatchTicketStatus(matchId, series, statusLabel, statusStyle, favoriteAction)
+        MatchTicketStatus(series, statusLabel, statusStyle, favoriteAction, extraContentFade)
       },
       stub = {
-        MatchTicketStub(matchId, time, format, onVetoSelected, actions)
+        MatchTicketStub(time, format, onVetoSelected, actions, extraContentFade)
       },
     ) {
-      MatchTicketEvent(matchId, eventId, eventName, onEventSelected)
-      MatchTicketTeams(matchId = matchId, teams = teams, onTeamSelected = onTeamSelected)
+      MatchTicketEvent(matchId, eventId, eventName, onEventSelected, extraContentFade)
+      MatchTicketTeams(matchId = matchId, teams = teams, onTeamSelected = onTeamSelected, extraContentFade = extraContentFade)
       if (favoriteLabels.isNotEmpty()) {
         Text(
           text = stringResource(Res.string.match_event_favorite_via, favoriteLabels.joinToString(" · ")),
-          modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
+          modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)
+            .transitionContentFade(extraContentFade),
           style = Prism.typography.caption,
           color = Prism.color.contentSecondary,
           textAlign = TextAlign.Center,
@@ -170,9 +182,10 @@ private fun MatchTicketEvent(
   eventId: String,
   eventName: String,
   onEventSelected: ((String) -> Unit)?,
+  extraContentFade: TransitionContentFade,
 ) {
   val eventModifier = if (eventId.isNotBlank() && onEventSelected != null) {
-    Modifier.clickable(role = Role.Button) { onEventSelected(eventId) }
+    Modifier.clickable(enabled = extraContentFade.acceptsInput, role = Role.Button) { onEventSelected(eventId) }
   } else {
     Modifier
   }
@@ -189,21 +202,20 @@ private fun MatchTicketEvent(
 
 @Composable
 private fun MatchTicketStatus(
-  matchId: String,
   series: String,
   statusLabel: String,
   statusStyle: PrismTagStyle,
   favoriteAction: (@Composable () -> Unit)?,
+  extraContentFade: TransitionContentFade,
 ) {
   Row(
-    Modifier.fillMaxWidth(),
+    Modifier.fillMaxWidth().transitionContentFade(extraContentFade),
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
       Text(
         text = series,
-        modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.Series),
         style = Prism.typography.bodySmall,
         color = Prism.color.contentSecondary,
         maxLines = 2,
@@ -212,7 +224,6 @@ private fun MatchTicketStatus(
       PrismTag(
         text = statusLabel,
         style = statusStyle,
-        modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.Status),
       )
     }
     favoriteAction?.invoke()
@@ -221,14 +232,14 @@ private fun MatchTicketStatus(
 
 @Composable
 private fun MatchTicketStub(
-  matchId: String,
   time: String?,
   format: String,
   onVetoSelected: (() -> Unit)?,
   actions: (@Composable () -> Unit)?,
+  extraContentFade: TransitionContentFade,
 ) {
   Row(
-    Modifier.fillMaxWidth(),
+    Modifier.fillMaxWidth().transitionContentFade(extraContentFade),
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -240,7 +251,6 @@ private fun MatchTicketStub(
       )
       Text(
         text = time ?: stringResource(Res.string.match_event_time_tba),
-        modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.Time),
         style = Prism.typography.bodySmall,
       )
     }
@@ -253,13 +263,17 @@ private fun MatchTicketStub(
       Text(format, style = Prism.typography.bodySmall)
     }
   }
-  if (actions != null) {
-    Column(Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)) { actions() }
+  actions?.let { content ->
+    Column(
+      Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM).transitionContentFade(extraContentFade),
+    ) { content() }
   }
-  if (onVetoSelected != null) {
+  onVetoSelected?.let { openVeto ->
     PrismButton(
-      modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
-      onClick = onVetoSelected,
+      modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)
+        .transitionContentFade(extraContentFade),
+      onClick = openVeto,
+      enabled = extraContentFade.acceptsInput,
       style = PrismButtonStyle.Alternate,
     ) {
       Text(stringResource(Res.string.match_event_map_veto))

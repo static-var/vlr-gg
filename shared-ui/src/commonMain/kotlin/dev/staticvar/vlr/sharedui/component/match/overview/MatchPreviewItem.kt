@@ -55,7 +55,6 @@ public fun MatchPreviewItem(
   FavoriteTicketCardBox(
     selected = matchPreview.isFavorite,
     modifier = modifier,
-    favoriteModifier = Modifier.matchSharedBounds(matchPreview.id, MatchSharedContent.Favorite),
   ) {
     PrismCard(
       modifier = Modifier.fillMaxWidth().matchSharedBounds(matchPreview.id, MatchSharedContent.Card),
@@ -77,7 +76,6 @@ public fun MatchPreviewItem(
         when (matchPreview.status) {
           MatchStatus.LIVE -> PrismTag(
             text = stringResource(Res.string.match_event_live),
-            modifier = Modifier.matchSharedBounds(matchPreview.id, MatchSharedContent.Status),
             style = PrismTagStyle.Accent,
           )
 
@@ -86,7 +84,6 @@ public fun MatchPreviewItem(
           -> time?.let { formattedTime ->
             PrismTag(
               text = formattedTime,
-              modifier = Modifier.matchSharedBounds(matchPreview.id, MatchSharedContent.Time),
             )
           }
 
@@ -108,7 +105,7 @@ public fun MatchPreviewItem(
       ) {
         Text(
           text = matchPreview.series,
-          modifier = Modifier.weight(1f).matchSharedBounds(matchPreview.id, MatchSharedContent.Series),
+          modifier = Modifier.weight(1f),
           style = Prism.typography.label,
           color = Prism.color.labelColor,
           textAlign = TextAlign.Start,
@@ -126,10 +123,7 @@ public fun MatchPreviewItem(
           if (sharing) {
             footerAction?.invoke()
           } else {
-            MatchFavoriteReasons(
-              reasons = matchPreview.favoriteReasons,
-              modifier = Modifier.matchSharedBounds(matchPreview.id, MatchSharedContent.Reasons),
-            )
+            MatchFavoriteReasons(reasons = matchPreview.favoriteReasons)
           }
         }
       }
@@ -149,7 +143,9 @@ private fun ScoreBox(
   val (actualTeam1, actualTeam2) = rememberTeamPreview(team1, team2, state, spoilersHidden)
   Column(modifier = modifier.fillMaxWidth()) {
     TeamScoreRow(actualTeam1, matchId = matchId, useAltColor = !spoilersHidden && state != MatchStatus.UPCOMING)
-    PrismDivider(style = PrismDividerStyle.Hairline)
+    PrismDivider(
+      style = PrismDividerStyle.Hairline,
+    )
     TeamScoreRow(actualTeam2, matchId = matchId, useAltColor = !spoilersHidden && state == MatchStatus.LIVE)
   }
 }

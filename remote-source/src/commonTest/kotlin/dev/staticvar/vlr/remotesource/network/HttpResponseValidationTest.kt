@@ -51,6 +51,7 @@ class HttpResponseValidationTest {
       object : AcceptLanguageProvider {
         override fun preferredLanguageTags(): List<String> = listOf("en-US")
       },
+      TestNetworkMonitor(),
     )
     engine { addHandler { respond(body, status, jsonHeaders()) } }
   }

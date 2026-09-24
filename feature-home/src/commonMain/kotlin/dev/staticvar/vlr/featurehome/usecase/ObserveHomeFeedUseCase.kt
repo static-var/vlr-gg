@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.featurehome.usecase
 
+import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
@@ -15,6 +16,7 @@ import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.featurehome.presentation.HomeFeed
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
@@ -23,6 +25,7 @@ public class ObserveHomeFeedUseCase(
   private val favoritesRepository: FavoritesRepository,
   private val matchRepository: MatchRepository,
   private val eventRepository: EventRepository,
+  private val dispatchers: DispatcherProvider,
   private val clock: Clock = Clock.System,
 ) {
   public operator fun invoke(): Flow<HomeFeed> = combine(
@@ -31,7 +34,7 @@ public class ObserveHomeFeedUseCase(
     eventRepository.getEvents(),
   ) { favorites, matches, events ->
     buildHomeFeed(favorites, matches, events, clock.now())
-  }
+  }.flowOn(dispatchers.default)
 }
 
 internal fun buildHomeFeed(

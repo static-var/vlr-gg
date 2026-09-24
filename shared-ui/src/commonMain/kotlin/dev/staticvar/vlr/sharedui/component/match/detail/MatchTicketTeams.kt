@@ -27,6 +27,8 @@ import dev.staticvar.designsystem.component.ticket.PrismTicketStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
 import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
@@ -36,9 +38,14 @@ import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.match_event_tbd
 
 @Composable
-internal fun MatchTicketTeams(matchId: String, teams: List<TeamPreview>, onTeamSelected: ((String) -> Unit)?) {
+internal fun MatchTicketTeams(
+  matchId: String,
+  teams: List<TeamPreview>,
+  onTeamSelected: ((String) -> Unit)?,
+  extraContentFade: TransitionContentFade,
+) {
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-    MatchTicketTeam(matchId, teams.getOrNull(0), Modifier.weight(1f), onTeamSelected)
+    MatchTicketTeam(matchId, teams.getOrNull(0), Modifier.weight(1f), onTeamSelected, extraContentFade)
     Box(
       Modifier.weight(0.9f).height(64.dp),
       contentAlignment = Alignment.Center,
@@ -46,12 +53,17 @@ internal fun MatchTicketTeams(matchId: String, teams: List<TeamPreview>, onTeamS
       SpoilerContent {
         Row(verticalAlignment = Alignment.CenterVertically) {
           MatchTicketScore(matchId, teams.getOrNull(0))
-          Text(":", style = Prism.typography.headline, color = Prism.color.contentTertiary)
+          Text(
+            ":",
+            modifier = Modifier.transitionContentFade(extraContentFade),
+            style = Prism.typography.headline,
+            color = Prism.color.contentTertiary,
+          )
           MatchTicketScore(matchId, teams.getOrNull(1))
         }
       }
     }
-    MatchTicketTeam(matchId, teams.getOrNull(1), Modifier.weight(1f), onTeamSelected)
+    MatchTicketTeam(matchId, teams.getOrNull(1), Modifier.weight(1f), onTeamSelected, extraContentFade)
   }
 }
 
@@ -73,10 +85,11 @@ private fun MatchTicketTeam(
   team: TeamPreview?,
   modifier: Modifier,
   onTeamSelected: ((String) -> Unit)?,
+  extraContentFade: TransitionContentFade,
 ) {
   val teamId = team?.id?.takeIf(String::isNotBlank)
   val clickModifier = if (teamId != null && onTeamSelected != null) {
-    Modifier.clickable(role = Role.Button) { onTeamSelected(teamId) }
+    Modifier.clickable(enabled = extraContentFade.acceptsInput, role = Role.Button) { onTeamSelected(teamId) }
   } else {
     Modifier
   }
@@ -92,6 +105,7 @@ private fun MatchTicketTeam(
       style = PrismIconStyle.Plain,
       parentBackground = PrismTicketStyle.Standard.containerColor,
       tint = PrismIconTint.None,
+      modifier = Modifier.transitionContentFade(extraContentFade),
     )
     Text(
       text = team?.name?.takeIf(String::isNotBlank) ?: stringResource(Res.string.match_event_tbd),
@@ -109,7 +123,13 @@ private fun MatchTicketTeam(
       overflow = TextOverflow.Ellipsis,
     )
     team?.region?.takeIf(String::isNotBlank)?.let { region ->
-      Text(region, style = Prism.typography.caption, color = Prism.color.contentSecondary, textAlign = TextAlign.Center)
+      Text(
+        region,
+        modifier = Modifier.transitionContentFade(extraContentFade),
+        style = Prism.typography.caption,
+        color = Prism.color.contentSecondary,
+        textAlign = TextAlign.Center,
+      )
     }
   }
 }

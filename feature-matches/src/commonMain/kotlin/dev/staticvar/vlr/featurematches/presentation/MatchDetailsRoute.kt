@@ -4,8 +4,6 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,9 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
@@ -57,12 +57,15 @@ import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
+import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailPreviewHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
 import dev.staticvar.vlr.sharedui.component.match.detail.resolveSelectedMapIndex
+import dev.staticvar.vlr.sharedui.component.match.rememberMatchDetailContentFade
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
@@ -84,6 +87,7 @@ import vlr.feature_matches.generated.resources.media
 import vlr.feature_matches.generated.resources.no_match_breakdown_yet
 import vlr.feature_matches.generated.resources.no_match_details_yet
 import vlr.feature_matches.generated.resources.remove_match_from_favorites
+import vlr.feature_matches.generated.resources.show_live_notification
 import vlr.feature_matches.generated.resources.stream
 import vlr.feature_matches.generated.resources.streams_vods
 import vlr.feature_matches.generated.resources.updating_favorite
@@ -102,6 +106,8 @@ public fun MatchDetailsRoute(
   onRefresh: () -> Unit = {},
   onPreferencesChange: (MatchDetailsPreferences) -> Unit = {},
   onFavoriteClick: () -> Unit = {},
+  canRestoreNotification: Boolean = false,
+  onRestoreNotification: () -> Unit = {},
 ) {
   MatchDetailsScreen(
     uiState = uiState,
@@ -115,6 +121,8 @@ public fun MatchDetailsRoute(
     onRefresh = onRefresh,
     onPreferencesChange = onPreferencesChange,
     onFavoriteClick = onFavoriteClick,
+    canRestoreNotification = canRestoreNotification,
+    onRestoreNotification = onRestoreNotification,
   )
 }
 
@@ -131,6 +139,8 @@ internal fun MatchDetailsScreen(
   onRefresh: () -> Unit = {},
   onPreferencesChange: (MatchDetailsPreferences) -> Unit = {},
   onFavoriteClick: () -> Unit = {},
+  canRestoreNotification: Boolean = false,
+  onRestoreNotification: () -> Unit = {},
 ) {
   val isOnline = LocalIsOnline.current
   val match = uiState.match
@@ -139,7 +149,8 @@ internal fun MatchDetailsScreen(
         match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()
       )
   val bodyReady = match != null && (hasDetailedContent || (!uiState.isLoading && !uiState.isDetailLoadPending))
-  val bodyFade = rememberMatchContentFade(bodyReady)
+  val extraContentFade = rememberMatchDetailContentFade()
+  val bodyFade = rememberMatchDetailContentFade(bodyReady)
   val uriHandler = LocalUriHandler.current
   var selectedMapIndex: Int? by remember(match?.id) { mutableStateOf<Int?>(null) }
   val maps = match?.matchData.orEmpty()
@@ -156,8 +167,8 @@ internal fun MatchDetailsScreen(
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val mascotCharacter = LocalMascotCharacter.current
   val spoilersHidden = LocalSpoilerMode.current.enabled
-  val candidates = remember(match, uiState.favoriteTeamIds, uiState.favoritePlayerIds, resolvedMapIndex, spoilersHidden) {
-    match?.takeUnless { spoilersHidden }?.let {
+  val candidates = remember(match, uiState.favoriteTeamIds, uiState.favoritePlayerIds, resolvedMapIndex, spoilersHidden, mascotCharacter) {
+    match?.takeUnless { spoilersHidden || mascotCharacter == null }?.let {
       matchMascotCues(
         it,
         uiState.favoriteTeamIds,
@@ -196,12 +207,17 @@ internal fun MatchDetailsScreen(
         onBack = { leaveScreen(onBack) },
         onRefresh = onRefresh,
       )
-      if (match == null && matchPreview != null) {
-        MatchDetailPreviewHeaderItem(match = matchPreview)
+      if (canRestoreNotification) {
+        PrismButton(onClick = onRestoreNotification, enabled = isOnline, style = PrismButtonStyle.Secondary) {
+          Text(stringResource(Res.string.show_live_notification))
+        }
+      }
+      if (match == null) {
+        matchPreview?.let { preview -> MatchDetailPreviewHeaderItem(match = preview, extraContentFade = extraContentFade) }
       }
       when {
         (!isOnline || uiState.isLoading || uiState.isDetailLoadPending || uiState.isRefreshing) && match == null -> MatchDetailsLoading(
-          modifier = Modifier.fillMaxSize(),
+          modifier = Modifier.fillMaxSize().transitionContentFade(extraContentFade),
           label = stringResource(Res.string.loading_match),
         )
 
@@ -211,14 +227,14 @@ internal fun MatchDetailsScreen(
             errorDetails = uiState.errorDetails,
             onRefresh = onRefresh,
             centered = true,
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier.fillMaxWidth().weight(1f).transitionContentFade(extraContentFade),
           )
 
         match == null -> SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveMatches,
           title = stringResource(Res.string.no_match_details_yet),
           message = stringResource(Res.string.details_will_appear_when_this_match_is_published),
-          modifier = Modifier.fillMaxWidth().weight(1f),
+          modifier = Modifier.fillMaxWidth().weight(1f).transitionContentFade(extraContentFade),
         )
 
         else -> MatchDetailsContent(
@@ -231,8 +247,9 @@ internal fun MatchDetailsScreen(
           isFavoriteInherited = uiState.isFavoriteInherited,
           canToggleFavorite = uiState.canToggleFavorite,
           listState = listState,
-          contentAlpha = bodyFade,
-          showContent = bodyReady,
+          contentFade = bodyFade,
+          bodyReady = bodyReady,
+          extraContentFade = extraContentFade,
           modifier = Modifier.fillMaxWidth().weight(1f),
           onFavoriteClick = onFavoriteClick,
           onEventSelected = { id -> leaveScreen { onEventSelected(id) } },
@@ -321,8 +338,9 @@ private fun MatchDetailsContent(
   isFavoriteInherited: Boolean,
   canToggleFavorite: Boolean,
   listState: LazyListState,
-  contentAlpha: State<Float>,
-  showContent: Boolean,
+  contentFade: TransitionContentFade,
+  bodyReady: Boolean,
+  extraContentFade: TransitionContentFade,
   modifier: Modifier = Modifier,
   onFavoriteClick: () -> Unit,
   onEventSelected: (String) -> Unit,
@@ -335,12 +353,15 @@ private fun MatchDetailsContent(
 ) {
   SharedScrollingDetails(
     state = listState,
-    contentAlpha = contentAlpha,
-    showContent = showContent,
+    contentAlpha = contentFade.alpha,
+    showContent = bodyReady,
+    showLoading = !bodyReady,
+    contentEnabled = contentFade.acceptsInput,
     modifier = modifier,
     hero = {
       MatchDetailsHero(
         match = match,
+        extraContentFade = extraContentFade,
         isFavoritePending = isFavoritePending,
         isFavoriteInherited = isFavoriteInherited,
         canToggleFavorite = canToggleFavorite,
@@ -350,7 +371,10 @@ private fun MatchDetailsContent(
       )
     },
     loading = { loadingModifier ->
-      MatchDetailsLoading(label = stringResource(Res.string.loading_match_details), modifier = loadingModifier)
+      MatchDetailsLoading(
+        label = stringResource(Res.string.loading_match_details),
+        modifier = loadingModifier.transitionContentFade(extraContentFade),
+      )
     },
   ) {
     matchDetailItems(
@@ -370,6 +394,7 @@ private fun MatchDetailsContent(
 @Composable
 private fun MatchDetailsHero(
   match: MatchDetails,
+  extraContentFade: TransitionContentFade,
   isFavoritePending: Boolean,
   isFavoriteInherited: Boolean,
   canToggleFavorite: Boolean,
@@ -379,10 +404,12 @@ private fun MatchDetailsHero(
 ) {
   MatchDetailHeaderItem(
     match = match,
+    extraContentFade = extraContentFade,
     favoriteAction = {
       PrismFavoriteIcon(
         selected = match.isFavorite,
         size = PrismFavoriteIconSize.Large,
+        enabled = canToggleFavorite,
         contentDescription = when {
           isFavoritePending -> stringResource(Res.string.updating_favorite)
           isFavoriteInherited -> stringResource(Res.string.favorite_match)
@@ -486,18 +513,6 @@ private fun MatchDetailMediaRow(videos: MatchVideos, onVideoSelected: (String) -
 
 private fun String.asExternalUrl(): String =
   if (startsWith("http://") || startsWith("https://")) this else "https://$this"
-
-@Composable
-private fun rememberMatchContentFade(ready: Boolean): State<Float> {
-  val alpha = remember { Animatable(0f) }
-  val animation = Prism.anim.standard
-  LaunchedEffect(ready, alpha) {
-    if (ready) {
-      alpha.animateTo(1f, tween(durationMillis = animation.durationMillis, easing = animation.easing))
-    }
-  }
-  return alpha.asState()
-}
 
 @Composable
 private fun MatchDetailsLoading(label: String, modifier: Modifier = Modifier) {

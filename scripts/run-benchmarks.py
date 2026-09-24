@@ -67,7 +67,7 @@ def main():
         "suiteCommand": ":benchmark:connectedBenchmarkReleaseAndroidTest",
         "testClass": args.test_class or "all",
         "buildType": "benchmarkRelease",
-        "dataPolicy": "Existing app data; startup Home and local Settings/About navigation",
+        "dataPolicy": "Existing app data and live backend; English locale; compact phone layout for detail openings; first/second/third are process-local openings, not cleared disk caches",
     }
     metadata_path = staging / "run-metadata.json"
     metadata_path.write_text(json.dumps(metadata, indent=2) + "\n")

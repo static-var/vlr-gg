@@ -14,10 +14,10 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
  */
 actual class DatabaseDriverFactory(private val context: Context) {
   actual fun createDriver(): SqlDriver = AndroidSqliteDriver(
-    schema = VlrDatabase.Schema,
+    schema = MigratingDatabaseSchema,
     context = context,
     name = DatabaseConstants.DATABASE_NAME,
-    callback = object : AndroidSqliteDriver.Callback(VlrDatabase.Schema) {
+    callback = object : AndroidSqliteDriver.Callback(MigratingDatabaseSchema) {
       override fun onConfigure(db: SupportSQLiteDatabase) {
         db.setForeignKeyConstraintsEnabled(true)
       }

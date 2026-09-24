@@ -6,6 +6,7 @@ package dev.staticvar.vlr.sharedui.component.common
 
 import androidx.compose.runtime.Composable
 import kotlin.time.Instant
+import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.getString
@@ -30,7 +31,7 @@ public fun formatMatchPreviewTime(isoUtcTime: String?, timeZone: TimeZone = Time
   val dateTime = parseMatchPreviewTime(isoUtcTime, timeZone) ?: return null
   return stringResource(
     Res.string.format_match_preview_date,
-    previewMonthNames()[dateTime.month.ordinal],
+    previewMonthName(dateTime.month),
     dateTime.dayOfMonth,
     dateTime.hour.twoDigits(),
     dateTime.minute.twoDigits(),
@@ -46,7 +47,7 @@ internal fun parseMatchPreviewTime(
 private fun Int.twoDigits(): String = toString().padStart(length = 2, padChar = '0')
 
 @Composable
-internal fun previewMonthNames(): List<String> = previewMonthResources.map { stringResource(it) }
+internal fun previewMonthName(month: Month): String = stringResource(previewMonthResources[month.ordinal])
 
 private val previewMonthResources = listOf(
   Res.string.format_month_jan,

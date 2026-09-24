@@ -44,7 +44,6 @@ public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPr
   FavoriteTicketCardBox(
     selected = eventPreview.isFavorite,
     modifier = modifier,
-    favoriteModifier = Modifier.eventSharedBounds(eventPreview.id, EventSharedContent.Favorite),
   ) {
     val cardStyle = if (eventPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled
     PrismCard(
@@ -61,7 +60,6 @@ public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPr
         PrismTag(
           text = eventPreview.status.label,
           style = eventPreview.status.tagStyle,
-          modifier = Modifier.eventSharedBounds(eventPreview.id, EventSharedContent.Status),
         )
       }
       Row(
@@ -90,7 +88,7 @@ public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPr
             text = eventPreview.dates,
             modifier = Modifier.padding(
               top = Prism.dimens.spacingXs,
-            ).eventSharedBounds(eventPreview.id, EventSharedContent.Dates),
+            ),
             style = Prism.typography.label,
             color = Prism.color.bodyColor,
           )
@@ -104,7 +102,7 @@ public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPr
       ) {
         Text(
           text = eventPreview.prize,
-          modifier = Modifier.weight(1f).eventSharedBounds(eventPreview.id, EventSharedContent.Prize),
+          modifier = Modifier.weight(1f),
           style = Prism.typography.bodySmall,
           color = Prism.color.labelColor,
         )

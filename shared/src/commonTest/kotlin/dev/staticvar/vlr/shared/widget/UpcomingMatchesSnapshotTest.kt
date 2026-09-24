@@ -4,6 +4,8 @@
  */
 package dev.staticvar.vlr.shared.widget
 
+import dev.staticvar.vlr.domain.model.DirectFavorite
+import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.model.FavoriteScheduledMatch
 import dev.staticvar.vlr.domain.model.MatchStatus
 import kotlinx.serialization.encodeToString
@@ -18,6 +20,22 @@ import kotlin.time.Instant
 
 class UpcomingMatchesSnapshotTest {
   private val now = Instant.parse("2026-09-12T12:00:00Z").toEpochMilliseconds()
+
+  @Test
+  fun `widget team IDs include cached player teams without duplicates or missing links`() {
+    val favorites = DirectFavoriteSnapshot(
+      teams = listOf(DirectFavorite.Team("direct", "Team", "")),
+      players = listOf(
+        DirectFavorite.Player("one", "One", "", currentTeamId = "cached"),
+        DirectFavorite.Player("two", "Two", "", currentTeamId = "direct"),
+        DirectFavorite.Player("three", "Three", ""),
+        DirectFavorite.Player("four", "Four", "", currentTeamId = " "),
+      ),
+    ).widgetFavorites()
+
+    assertEquals(listOf("cached", "direct"), favorites.teamIds)
+    assertEquals(listOf("four", "one", "three", "two"), favorites.playerIds)
+  }
 
   @Test
   fun `future schedule entries appear in time order with unknown times last`() {

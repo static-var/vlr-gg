@@ -82,12 +82,16 @@ struct WidgetSnapshotRepository {
 
     func loadBestSnapshot() -> UpcomingMatchesSnapshot? {
         guard let source = loadSource() else { return nil }
+        return loadRefreshedSnapshot(for: source) ?? source
+    }
+
+    func loadRefreshedSnapshot(for source: UpcomingMatchesSnapshot) -> UpcomingMatchesSnapshot? {
         guard
             let envelope = decode(RefreshedSnapshotEnvelope.self, from: refreshedURL),
             envelope.sourceSignature == source.sourceSignature,
             envelope.snapshot.savedAtEpochMillis >= source.savedAtEpochMillis
         else {
-            return source
+            return nil
         }
         return envelope.snapshot.usingConfiguration(from: source)
     }
@@ -122,6 +126,81 @@ struct WidgetSnapshotRepository {
     }
 }
 
+enum WidgetRefreshOutcome: Equatable {
+    case available(snapshot: UpcomingMatchesSnapshot, refreshAfter: Date)
+    case retry(snapshot: UpcomingMatchesSnapshot?, refreshAfter: Date)
+
+    var snapshot: UpcomingMatchesSnapshot? {
+        switch self {
+        case .available(let snapshot, _): snapshot
+        case .retry(let snapshot, _): snapshot
+        }
+    }
+
+    var refreshDate: Date {
+        switch self {
+        case .available(_, let refreshAfter), .retry(_, let refreshAfter): refreshAfter
+        }
+    }
+}
+
+/// Shares an in-flight refresh across widget families without reusing another configuration's result.
+actor WidgetRefreshCoordinator {
+    static let shared = WidgetRefreshCoordinator()
+    private static let retryInterval: TimeInterval = 5 * 60
+
+    private var pending: [String: Task<WidgetRefreshOutcome, Never>] = [:]
+    private var retryAfter: [String: Date] = [:]
+
+    func refresh(repository: WidgetSnapshotRepository, service: WidgetRefreshService, now: Date) async -> WidgetRefreshOutcome {
+        guard let source = repository.loadSource() else {
+            return .retry(snapshot: nil, refreshAfter: now.addingTimeInterval(Self.retryInterval))
+        }
+        guard source.hasFavorites else {
+            return .available(
+                snapshot: source,
+                refreshAfter: max(source.refreshDate, now.addingTimeInterval(Self.retryInterval))
+            )
+        }
+        let refreshed = repository.loadRefreshedSnapshot(for: source)
+        if let refreshed, refreshed.refreshDate > now {
+            return .available(snapshot: refreshed, refreshAfter: refreshed.refreshDate)
+        }
+        return await refresh(repository: repository, service: service, source: source, cached: refreshed ?? source, now: now)
+    }
+
+    private func refresh(repository: WidgetSnapshotRepository, service: WidgetRefreshService, source: UpcomingMatchesSnapshot, cached: UpcomingMatchesSnapshot, now: Date) async -> WidgetRefreshOutcome {
+        let key = (repository.sourceURL?.absoluteString ?? "") + source.sourceSignature
+        if let task = pending[key] { return await task.value }
+        retryAfter = retryAfter.filter { $0.value > now }
+        if let retryAfter = retryAfter[key] {
+            return .retry(snapshot: repository.loadBestSnapshot(), refreshAfter: retryAfter)
+        }
+        let task = Task<WidgetRefreshOutcome, Never> {
+            do {
+                let refreshed = try await service.refresh(source: cached, now: now)
+                if repository.store(refreshed, for: source) {
+                    let snapshot = repository.loadBestSnapshot() ?? refreshed
+                    return .available(snapshot: snapshot, refreshAfter: snapshot.refreshDate)
+                }
+                if repository.loadSource()?.sourceSignature == source.sourceSignature {
+                    return .available(snapshot: refreshed, refreshAfter: refreshed.refreshDate)
+                }
+                let retryAfter = now.addingTimeInterval(Self.retryInterval)
+                return .retry(snapshot: repository.loadBestSnapshot(), refreshAfter: retryAfter)
+            } catch {
+                let retryAfter = now.addingTimeInterval(Self.retryInterval)
+                self.retryAfter[key] = retryAfter
+                return .retry(snapshot: repository.loadBestSnapshot(), refreshAfter: retryAfter)
+            }
+        }
+        pending[key] = task
+        let result = await task.value
+        pending[key] = nil
+        return result
+    }
+}
+
 struct WidgetRefreshService {
     private static let maximumFavoriteIDsPerKind = 12
     private static let maximumMatches = 12
@@ -139,23 +218,11 @@ struct WidgetRefreshService {
         }
 
         let favoriteMatchIDs = source.favorites.matchIds.filter { !$0.isEmpty }.unique()
-        let directTeamIDs = source.favorites.teamIds.filter { !$0.isEmpty }.unique()
+        let favoriteTeamIDs = source.favorites.teamIds.filter { !$0.isEmpty }.unique()
         let favoriteEventIDs = source.favorites.eventIds.filter { !$0.isEmpty }.unique()
-        let favoritePlayerIDs = source.favorites.playerIds.filter { !$0.isEmpty }.unique()
-        let playerLookupIDs = bounded(favoritePlayerIDs)
 
-        async let overviewRequest: [RemoteMatchPreview] = api.get("/api/v1/matches/")
-        async let playerRequest: [(String, RemotePlayerDetails)] = fetchMany(
-            playerLookupIDs,
-            path: { "/api/v1/player/\($0)" },
-            as: RemotePlayerDetails.self
-        )
-        let (overview, players) = try await (overviewRequest, playerRequest)
-
-        let playerTeamIDs = players.compactMap(\.1.currentTeam?.id)
-        let allResolvedTeamIDs = (directTeamIDs + playerTeamIDs).unique()
-        let teamLookupIDs = bounded(allResolvedTeamIDs)
-        let favoriteTeamIDSet = Set(directTeamIDs + playerTeamIDs)
+        let overview: [RemoteMatchPreview] = try await api.get("/api/v1/matches/")
+        let favoriteTeamIDSet = Set(favoriteTeamIDs)
         let favoriteMatchIDSet = Set(favoriteMatchIDs)
         let favoriteEventIDSet = Set(favoriteEventIDs)
 
@@ -174,7 +241,19 @@ struct WidgetRefreshService {
             case .upcoming, .live:
                 knownOverviewIDs.insert(preview.id)
                 if let match = preview.widgetMatch {
-                    freshMatches.append(match)
+                    if let cached = source.matches.first(where: { $0.id == match.id }),
+                       Set([cached.team1, cached.team2]) == Set([match.team1, match.team2]) {
+                        freshMatches.append(UpcomingMatch(
+                            id: match.id, event: match.event,
+                            team1: match.team1, team2: match.team2,
+                            startTimeEpochMillis: match.startTimeEpochMillis,
+                            status: match.status, score1: match.score1, score2: match.score2,
+                            format: match.format.isEmpty ? cached.format : match.format,
+                            stage: match.stage.isEmpty ? cached.stage : match.stage
+                        ))
+                    } else {
+                        freshMatches.append(match)
+                    }
                 }
             case .completed:
                 knownOverviewIDs.insert(preview.id)
@@ -184,51 +263,50 @@ struct WidgetRefreshService {
             }
         }
 
-        let missingDirectMatchIDs = favoriteMatchIDs.filter { !knownOverviewIDs.contains($0) }
-        let overviewEnrichmentIDs = freshMatches.map(\.id)
-        let matchLookupIDs = bounded(missingDirectMatchIDs + overviewEnrichmentIDs)
-        async let teamRequest: [(String, RemoteTeamDetails)] = fetchMany(
-            teamLookupIDs,
-            path: { "/api/v1/team/\($0)" },
-            as: RemoteTeamDetails.self
-        )
-        async let eventRequest: [(String, RemoteEventDetails)] = fetchMany(
+        // Finish event requests before match requests so the total concurrency stays bounded.
+        let events: [(String, RemoteEventDetails)] = try await fetchMany(
             bounded(favoriteEventIDs),
             path: { "/api/v1/events/\($0)" },
             as: RemoteEventDetails.self
         )
-        async let matchRequest: [(String, RemoteMatchDetails)] = fetchMany(
-            matchLookupIDs,
-            path: { "/api/v1/matches/\($0)" },
-            as: RemoteMatchDetails.self
-        )
-
-        let (teams, events, directMatches) = try await (teamRequest, eventRequest, matchRequest)
-
-        for (_, details) in teams {
-            freshMatches.append(contentsOf: details.upcoming.compactMap { $0.widgetMatch(teamName: details.name) })
-        }
 
         for (_, details) in events {
             for match in details.matches {
                 switch match.remoteStatus {
                 case .upcoming, .live:
                     if let candidate = match.widgetMatch(event: details.title) {
+                        knownOverviewIDs.insert(match.id)
+                        unresolvedStatusIDs.remove(match.id)
                         freshMatches.append(candidate)
+                    } else {
+                        unresolvedStatusIDs.insert(match.id)
                     }
                 case .unknown:
                     unresolvedStatusIDs.insert(match.id)
                 case .completed:
+                    knownOverviewIDs.insert(match.id)
                     terminalMatchIDs.insert(match.id)
                     break
                 }
             }
         }
 
+        let cachedMatchIDs = source.matches.map(\.id)
+        let matchLookupCandidates = (favoriteMatchIDs + cachedMatchIDs + unresolvedStatusIDs.sorted())
+            .unique()
+            .filter { !knownOverviewIDs.contains($0) && !terminalMatchIDs.contains($0) }
+        let matchLookupIDs = bounded(matchLookupCandidates)
+        let directMatches: [(String, RemoteMatchDetails)] = try await fetchMany(
+            matchLookupIDs,
+            path: { "/api/v1/matches/\($0)" },
+            as: RemoteMatchDetails.self
+        )
+
         for (requestedID, details) in directMatches {
             switch details.event.remoteStatus {
             case .upcoming, .live:
                 if let match = details.widgetMatch(id: requestedID) {
+                    unresolvedStatusIDs.remove(requestedID)
                     freshMatches.append(match)
                 }
             case .unknown:
@@ -239,13 +317,13 @@ struct WidgetRefreshService {
             }
         }
 
-        let lookupsWereCapped = playerLookupIDs.count < favoritePlayerIDs.count
-            || teamLookupIDs.count < allResolvedTeamIDs.count
-            || bounded(favoriteEventIDs).count < favoriteEventIDs.count
-            || matchLookupIDs.count < (missingDirectMatchIDs + overviewEnrichmentIDs).unique().count
+        let lookupsWereCapped = bounded(favoriteEventIDs).count < favoriteEventIDs.count
+            || matchLookupIDs.count < matchLookupCandidates.count
+        let resolvedMatchIDs = Set(freshMatches.map(\.id))
         freshMatches.append(contentsOf: source.matches.filter { match in
-            unresolvedStatusIDs.contains(match.id)
-                || (lookupsWereCapped && !terminalMatchIDs.contains(match.id))
+            !resolvedMatchIDs.contains(match.id)
+                && !terminalMatchIDs.contains(match.id)
+                && (unresolvedStatusIDs.contains(match.id) || lookupsWereCapped)
         })
         let normalized = normalize(freshMatches.filter { !terminalMatchIDs.contains($0.id) })
         return source.withRefreshedMatches(normalized, at: now)
@@ -401,48 +479,6 @@ private struct RemoteMatchPreview: Decodable {
     }
 }
 
-private struct RemotePlayerTeam: Decodable {
-    let id: String?
-}
-
-private struct RemotePlayerDetails: Decodable {
-    let currentTeam: RemotePlayerTeam?
-
-    enum CodingKeys: String, CodingKey {
-        case currentTeam = "current_team"
-    }
-}
-
-private struct RemoteTeamMatch: Decodable {
-    let id: String
-    let event: String
-    let stage: String
-    let opponent: String
-    let date: String?
-
-    func widgetMatch(teamName: String) -> UpcomingMatch? {
-        guard !id.isEmpty else { return nil }
-        let detail = splitFormatAndStage(stage)
-        return UpcomingMatch(
-            id: id,
-            event: event,
-            team1: teamName,
-            team2: opponent,
-            startTimeEpochMillis: epochMillis(date),
-            status: .upcoming,
-            score1: nil,
-            score2: nil,
-            format: detail.format,
-            stage: detail.stage
-        )
-    }
-}
-
-private struct RemoteTeamDetails: Decodable {
-    let name: String
-    let upcoming: [RemoteTeamMatch]
-}
-
 private struct RemoteEventTeam: Decodable {
     let name: String
     let score: Int?
@@ -536,19 +572,6 @@ private func epochMillis(_ value: String?) -> Int64? {
 
 private func epochMillis(date: String, time: String) -> Int64? {
     epochMillis("\(date)T\(time)Z")
-}
-
-private func splitFormatAndStage(_ value: String) -> (format: String, stage: String) {
-    for separator in ["–", "⋅", ":"] {
-        let components = value.components(separatedBy: separator)
-        if components.count > 1 {
-            return (
-                components[0].trimmingCharacters(in: .whitespacesAndNewlines),
-                components.dropFirst().joined(separator: separator).trimmingCharacters(in: .whitespacesAndNewlines)
-            )
-        }
-    }
-    return (value, "")
 }
 
 private func normalizedMatchFormat(_ value: String) -> String {

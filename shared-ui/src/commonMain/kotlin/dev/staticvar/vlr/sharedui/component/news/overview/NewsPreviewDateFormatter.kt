@@ -5,7 +5,7 @@
 package dev.staticvar.vlr.sharedui.component.news.overview
 
 import dev.staticvar.vlr.sharedui.component.common.parseMatchPreviewTime
-import dev.staticvar.vlr.sharedui.component.common.previewMonthNames
+import dev.staticvar.vlr.sharedui.component.common.previewMonthName
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
@@ -19,7 +19,7 @@ internal fun formatNewsPreviewDate(rawDate: String, timeZone: TimeZone = TimeZon
   val dateTime = parseMatchPreviewTime(trimmedDate, timeZone) ?: return trimmedDate
   return stringResource(
     Res.string.format_news_preview_date,
-    previewMonthNames()[dateTime.month.ordinal],
+    previewMonthName(dateTime.month),
     dateTime.dayOfMonth,
     dateTime.year,
   )

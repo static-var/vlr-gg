@@ -22,10 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
@@ -42,6 +40,7 @@ import dev.staticvar.vlr.domain.model.TeamCompletedMatch
 import dev.staticvar.vlr.domain.model.TeamPlayer
 import dev.staticvar.vlr.domain.model.TeamUpcomingMatch
 import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.component.common.SharedNetworkLogo
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
@@ -339,11 +338,11 @@ private fun TeamSummaryCard(name: String, logoUrl: String, metadata: String, ran
       }
       if (hasLogo) {
         Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.CenterEnd) {
-          AsyncImage(
-            model = logoUrl,
+          SharedNetworkLogo(
+            imageUrl = logoUrl,
+            background = PrismCardStyle.Outlined.containerColor,
             contentDescription = name,
             modifier = Modifier.fillMaxHeight().fillMaxWidth(0.35f),
-            contentScale = ContentScale.Fit,
             alignment = Alignment.CenterEnd,
           )
         }

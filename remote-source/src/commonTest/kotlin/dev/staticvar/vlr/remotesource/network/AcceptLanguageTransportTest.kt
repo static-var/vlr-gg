@@ -106,7 +106,7 @@ class AcceptLanguageTransportTest {
     configuration: NetworkConfiguration = NetworkConfiguration(host = "api.example"),
     handler: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData,
   ): HttpClient = HttpClient(MockEngine) {
-    configureHttpClient(testJson(), configuration, provider)
+    configureHttpClient(testJson(), configuration, provider, TestNetworkMonitor())
     engine { addHandler(handler) }
   }
 }
