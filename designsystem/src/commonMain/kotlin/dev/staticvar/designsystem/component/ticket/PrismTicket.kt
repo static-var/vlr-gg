@@ -66,12 +66,12 @@ public fun PrismTicket(
           .onSizeChanged { seam.floatValue = it.height.toFloat() }
           .then(if (animateSizeChanges) Modifier.animateContentSize(animationSpec = sizeAnimation) else Modifier),
       ) {
-        if (header != null) {
+        header?.let { headerContent ->
           CompositionLocalProvider(LocalContentColor provides style.headerContentColor) {
             Column(
               Modifier.fillMaxWidth().background(style.headerColor)
                 .padding(horizontal = style.padding, vertical = style.headerVerticalPadding),
-              content = header,
+              content = headerContent,
             )
           }
         }

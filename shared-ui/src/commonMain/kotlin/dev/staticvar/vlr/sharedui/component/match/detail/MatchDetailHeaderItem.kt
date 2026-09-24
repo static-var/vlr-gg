@@ -35,7 +35,6 @@ import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
-import dev.staticvar.vlr.sharedui.component.common.currentTransitionContentFade
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
@@ -56,6 +55,7 @@ import vlr.shared_ui.generated.resources.match_event_time_tba
 @Composable
 public fun MatchDetailHeaderItem(
   match: MatchDetails,
+  extraContentFade: TransitionContentFade,
   modifier: Modifier = Modifier,
   onEventSelected: ((String) -> Unit)? = null,
   onTeamSelected: ((String) -> Unit)? = null,
@@ -69,6 +69,7 @@ public fun MatchDetailHeaderItem(
   var showVeto by remember(match.id, spoilersHidden) { mutableStateOf(false) }
   MatchDetailHeaderContent(
     matchId = match.id,
+    extraContentFade = extraContentFade,
     eventId = match.event.id,
     eventName = match.event.name,
     series = match.matchDetailMeta(),
@@ -101,9 +102,14 @@ public fun MatchDetailHeaderItem(
 }
 
 @Composable
-public fun MatchDetailPreviewHeaderItem(match: MatchPreview, modifier: Modifier = Modifier) {
+public fun MatchDetailPreviewHeaderItem(
+  match: MatchPreview,
+  extraContentFade: TransitionContentFade,
+  modifier: Modifier = Modifier,
+) {
   MatchDetailHeaderContent(
     matchId = match.id,
+    extraContentFade = extraContentFade,
     eventId = match.eventId,
     eventName = match.event,
     series = match.series,
@@ -121,6 +127,7 @@ public fun MatchDetailPreviewHeaderItem(match: MatchPreview, modifier: Modifier 
 @Composable
 private fun MatchDetailHeaderContent(
   matchId: String,
+  extraContentFade: TransitionContentFade,
   eventId: String,
   eventName: String,
   series: String,
@@ -138,7 +145,6 @@ private fun MatchDetailHeaderContent(
   actions: (@Composable () -> Unit)? = null,
   favoriteAction: (@Composable () -> Unit)? = null,
 ) {
-  val extraContentFade = currentTransitionContentFade()
   FavoriteTicketCardBox(
     selected = isFavorite,
     modifier = modifier.fillMaxWidth(),
@@ -155,7 +161,7 @@ private fun MatchDetailHeaderContent(
       },
     ) {
       MatchTicketEvent(matchId, eventId, eventName, onEventSelected, extraContentFade)
-      MatchTicketTeams(matchId = matchId, teams = teams, onTeamSelected = onTeamSelected)
+      MatchTicketTeams(matchId = matchId, teams = teams, onTeamSelected = onTeamSelected, extraContentFade = extraContentFade)
       if (favoriteLabels.isNotEmpty()) {
         Text(
           text = stringResource(Res.string.match_event_favorite_via, favoriteLabels.joinToString(" · ")),
@@ -257,16 +263,16 @@ private fun MatchTicketStub(
       Text(format, style = Prism.typography.bodySmall)
     }
   }
-  if (actions != null) {
+  actions?.let { content ->
     Column(
       Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM).transitionContentFade(extraContentFade),
-    ) { actions() }
+    ) { content() }
   }
-  if (onVetoSelected != null) {
+  onVetoSelected?.let { openVeto ->
     PrismButton(
       modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)
         .transitionContentFade(extraContentFade),
-      onClick = onVetoSelected,
+      onClick = openVeto,
       enabled = extraContentFade.acceptsInput,
       style = PrismButtonStyle.Alternate,
     ) {

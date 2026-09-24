@@ -55,8 +55,6 @@ import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
-import dev.staticvar.vlr.sharedui.component.common.currentTransitionContentFade
-import dev.staticvar.vlr.sharedui.component.common.rememberTransitionContentFade
 import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
@@ -64,6 +62,7 @@ import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailPreviewHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailVideoItem
 import dev.staticvar.vlr.sharedui.component.match.detail.resolveSelectedMapIndex
+import dev.staticvar.vlr.sharedui.component.match.rememberMatchDetailContentFade
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
@@ -140,8 +139,8 @@ internal fun MatchDetailsScreen(
         match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()
       )
   val bodyReady = match != null && (hasDetailedContent || (!uiState.isLoading && !uiState.isDetailLoadPending))
-  val extraContentFade = currentTransitionContentFade()
-  val bodyFade = rememberTransitionContentFade(bodyReady)
+  val extraContentFade = rememberMatchDetailContentFade()
+  val bodyFade = rememberMatchDetailContentFade(bodyReady)
   val uriHandler = LocalUriHandler.current
   var selectedMapIndex: Int? by remember(match?.id) { mutableStateOf<Int?>(null) }
   val maps = match?.matchData.orEmpty()
@@ -198,8 +197,8 @@ internal fun MatchDetailsScreen(
         onBack = { leaveScreen(onBack) },
         onRefresh = onRefresh,
       )
-      if (match == null && matchPreview != null) {
-        MatchDetailPreviewHeaderItem(match = matchPreview)
+      if (match == null) {
+        matchPreview?.let { preview -> MatchDetailPreviewHeaderItem(match = preview, extraContentFade = extraContentFade) }
       }
       when {
         (!isOnline || uiState.isLoading || uiState.isDetailLoadPending || uiState.isRefreshing) && match == null -> MatchDetailsLoading(
@@ -347,6 +346,7 @@ private fun MatchDetailsContent(
     hero = {
       MatchDetailsHero(
         match = match,
+        extraContentFade = extraContentFade,
         isFavoritePending = isFavoritePending,
         isFavoriteInherited = isFavoriteInherited,
         canToggleFavorite = canToggleFavorite,
@@ -379,6 +379,7 @@ private fun MatchDetailsContent(
 @Composable
 private fun MatchDetailsHero(
   match: MatchDetails,
+  extraContentFade: TransitionContentFade,
   isFavoritePending: Boolean,
   isFavoriteInherited: Boolean,
   canToggleFavorite: Boolean,
@@ -388,6 +389,7 @@ private fun MatchDetailsHero(
 ) {
   MatchDetailHeaderItem(
     match = match,
+    extraContentFade = extraContentFade,
     favoriteAction = {
       PrismFavoriteIcon(
         selected = match.isFavorite,

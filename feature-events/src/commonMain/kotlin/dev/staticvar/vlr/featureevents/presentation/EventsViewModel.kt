@@ -17,9 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 
 public class EventsViewModel(
   observeEventListUseCase: ObserveEventListUseCase,
@@ -29,22 +27,15 @@ public class EventsViewModel(
   public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
   private val refresher = RefreshController(viewModelScope, networkMonitor) { refreshEventsUseCase() }
-  private val selectedFilter = MutableStateFlow<EventStatusFilter?>(null)
-  private val events = observeEventListUseCase().onEach { events ->
-    selectedFilter.update { selected ->
-      val preferred = selected ?: events.firstOrNull()?.status?.let(::eventStatusToFilter)
-        ?: EventStatusFilter.Ongoing
-      events.availableStatusOrSelected(preferred)
-    }
-  }
+  private val selectedFilter = MutableStateFlow(EventStatusFilter.Ongoing)
+  private val events = observeEventListUseCase()
 
   public val uiState: StateFlow<EventsUiState> = combine(
     events, selectedFilter, refresher.state,
   ) { events, selected, refresh ->
-    val filter = selected ?: EventStatusFilter.Ongoing
     EventsUiState(
       events = events,
-      selectedStatus = filter,
+      selectedStatus = selected,
       isLoading = refresh.isLoading(hasContent = events.isNotEmpty()),
       isRefreshing = refresh.isRefreshing,
       errorMessage = refresh.errorMessage,
@@ -69,10 +60,3 @@ private fun eventStatusToFilter(status: EventStatus): EventStatusFilter = when (
 
 internal fun List<EventPreview>.filterByStatus(filter: EventStatusFilter): List<EventPreview> =
   filter { event -> eventStatusToFilter(event.status) == filter }
-
-private fun List<EventPreview>.availableStatusOrSelected(selectedStatus: EventStatusFilter): EventStatusFilter =
-  if (any { eventStatusToFilter(it.status) == selectedStatus }) {
-    selectedStatus
-  } else {
-    EventStatusFilter.entries.firstOrNull { filter -> any { eventStatusToFilter(it.status) == filter } } ?: selectedStatus
-  }

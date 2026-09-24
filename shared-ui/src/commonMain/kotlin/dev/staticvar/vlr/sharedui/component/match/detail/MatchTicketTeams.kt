@@ -28,7 +28,6 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
-import dev.staticvar.vlr.sharedui.component.common.currentTransitionContentFade
 import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
 import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
@@ -39,8 +38,12 @@ import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.match_event_tbd
 
 @Composable
-internal fun MatchTicketTeams(matchId: String, teams: List<TeamPreview>, onTeamSelected: ((String) -> Unit)?) {
-  val extraContentFade = currentTransitionContentFade()
+internal fun MatchTicketTeams(
+  matchId: String,
+  teams: List<TeamPreview>,
+  onTeamSelected: ((String) -> Unit)?,
+  extraContentFade: TransitionContentFade,
+) {
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
     MatchTicketTeam(matchId, teams.getOrNull(0), Modifier.weight(1f), onTeamSelected, extraContentFade)
     Box(

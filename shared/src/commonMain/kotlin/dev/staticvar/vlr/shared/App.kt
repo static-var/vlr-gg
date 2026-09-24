@@ -36,7 +36,6 @@ import dev.staticvar.vlr.core.settings.LiveMatchNotificationSettingsController
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import dev.staticvar.vlr.core.settings.ThemeFamily
 import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
-import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
 import dev.staticvar.vlr.shared.appearance.ApplyPlatformAppearance
 import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
@@ -59,7 +58,6 @@ import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerMode
 import org.koin.compose.koinInject
 import dev.staticvar.vlr.shared.di.vlrViewModel
-import kotlinx.coroutines.flow.first
 import kotlin.time.Clock
 
 /**
@@ -81,11 +79,6 @@ public fun App(
   val spoilerPreferences = koinInject<SpoilerPreferencesRepository>()
   val spoilersHidden by spoilerPreferences.enabled.collectAsStateWithLifecycle()
   val networkStatus by networkMonitor.status.collectAsStateWithLifecycle()
-  val initialFavoriteProfilesRefresh = koinInject<InitialFavoriteProfilesRefresh>()
-  LaunchedEffect(initialFavoriteProfilesRefresh) {
-    networkMonitor.status.first { it == NetworkStatus.Online }
-    initialFavoriteProfilesRefresh.awaitInitialRefresh()
-  }
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val notificationPermissionProvider = LocalNotificationPermissionProvider.current
   val notificationPreferences = koinInject<LiveMatchNotificationPreferencesRepository>()
@@ -152,9 +145,7 @@ public fun App(
   val autoCleanupEnabled by cleanupPreferences.enabled.collectAsStateWithLifecycle()
   LaunchedEffect(lifecycleState, autoCleanupEnabled, networkStatus) {
     if (lifecycleState == Lifecycle.State.RESUMED && autoCleanupEnabled && networkStatus == NetworkStatus.Online) {
-      if (initialFavoriteProfilesRefresh.awaitInitialRefresh().isSuccess) {
-        cleanupRepository.cleanupIfDue(Clock.System.now().toEpochMilliseconds())
-      }
+      cleanupRepository.cleanupIfDue(Clock.System.now().toEpochMilliseconds())
     }
   }
   val viewModel = vlrViewModel<AppearanceViewModel>()

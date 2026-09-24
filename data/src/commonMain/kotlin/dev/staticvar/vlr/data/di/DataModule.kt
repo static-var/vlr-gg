@@ -18,7 +18,6 @@ import dev.staticvar.vlr.data.repository.NewsRepositoryImpl
 import dev.staticvar.vlr.data.repository.PlayerRepositoryImpl
 import dev.staticvar.vlr.data.repository.RankingsRepositoryImpl
 import dev.staticvar.vlr.data.repository.TeamRepositoryImpl
-import dev.staticvar.vlr.data.refresh.InitialFavoriteProfilesRefreshImpl
 import dev.staticvar.vlr.domain.repository.CircuitStandingsRepository
 import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.domain.repository.EventRepository
@@ -29,7 +28,6 @@ import dev.staticvar.vlr.domain.repository.NewsRepository
 import dev.staticvar.vlr.domain.repository.PlayerRepository
 import dev.staticvar.vlr.domain.repository.RankingsRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
-import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
 import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
 import kotlinx.serialization.json.Json
@@ -99,14 +97,7 @@ fun dataModule(): Module = module {
       dispatchers = get(),
     )
   }
-  single { RefreshFavoriteMatches(get(), get(), get(), get(), get(), get()) }
-  single<InitialFavoriteProfilesRefresh> {
-    InitialFavoriteProfilesRefreshImpl(
-      favoritesRepository = get(),
-      playerRepository = get(),
-      teamRepository = get(),
-    )
-  }
+  single { RefreshFavoriteMatches(get(), get(), get(), get()) }
   single<CircuitStandingsRepository> {
     CircuitStandingsRepositoryImpl(
       standingsDataSource = get(),

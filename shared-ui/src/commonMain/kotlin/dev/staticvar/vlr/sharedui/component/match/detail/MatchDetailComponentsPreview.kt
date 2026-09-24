@@ -33,6 +33,7 @@ import dev.staticvar.vlr.domain.model.RoundInfo
 import dev.staticvar.vlr.domain.model.TeamDetails
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.model.VideoReference
+import dev.staticvar.vlr.sharedui.component.match.rememberMatchDetailContentFade
 
 @PrismPreview
 @Composable
@@ -48,7 +49,7 @@ internal fun MatchDetailComponentsPreview(@PreviewParameter(PrismPreviewProvider
         .padding(16.dp),
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-      MatchDetailHeaderItem(match = match)
+      MatchDetailHeaderItem(match = match, extraContentFade = rememberMatchDetailContentFade())
       MatchDetailMapsItem(
         maps = match.matchData,
         selectedMapIndex = selectedMapIndex,

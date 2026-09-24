@@ -11,10 +11,9 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -24,14 +23,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import dev.staticvar.designsystem.prism.Prism
 
-/** Identifies the single card whose metadata participates in a detail transition. */
-public sealed interface TransitionItem {
-  public data class Match(public val id: String) : TransitionItem
-  public data class Event(public val id: String) : TransitionItem
-}
-
 /** Alpha and readiness for content that must stay out of a shared navigation transition. */
-public class TransitionContentFade internal constructor(
+@Stable
+@ConsistentCopyVisibility
+public data class TransitionContentFade internal constructor(
   public val alpha: State<Float>,
   public val isSettled: Boolean,
   public val isVisible: Boolean,
@@ -42,72 +37,22 @@ public class TransitionContentFade internal constructor(
     get() = isVisible && acceptsInputState.value
 }
 
-private object FullyVisibleAlpha : State<Float> {
-  override val value: Float = 1f
-}
-
-private object AcceptingInput : State<Boolean> {
-  override val value: Boolean = true
-}
-
-private val UnscopedTransitionContentFade = TransitionContentFade(
-  alpha = FullyVisibleAlpha,
-  isSettled = true,
-  isVisible = true,
-  acceptsInputState = AcceptingInput,
-)
-
-private val LocalTransitionItem = compositionLocalOf<TransitionItem?> { null }
-
-private val LocalTransitionContentFade = compositionLocalOf<TransitionContentFade?> { null }
-
+/** Fades ready detail content after its navigation and shared transitions have settled. */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun ProvideTransitionContentScope(
-  sharedTransitionScope: SharedTransitionScope,
-  animatedVisibilityScope: AnimatedVisibilityScope,
-  item: TransitionItem?,
-  content: @Composable () -> Unit,
-) {
-  val navTransition = animatedVisibilityScope.transition
+internal fun rememberTransitionContentFade(
+  sharedTransitionScope: SharedTransitionScope?,
+  animatedVisibilityScope: AnimatedVisibilityScope?,
+  ready: Boolean,
+): TransitionContentFade {
+  val transition = animatedVisibilityScope?.transition
   val settled = transitionContentSettled(
-    hasScope = item != null,
-    navCurrentVisible = navTransition.currentState == EnterExitState.Visible,
-    navTargetVisible = navTransition.targetState == EnterExitState.Visible,
-    navRunning = navTransition.isRunning,
-    sharedRunning = sharedTransitionScope.isTransitionActive,
+    hasScope = transition != null,
+    navCurrentVisible = transition?.currentState == EnterExitState.Visible,
+    navTargetVisible = transition?.targetState == EnterExitState.Visible,
+    navRunning = transition?.isRunning == true,
+    sharedRunning = sharedTransitionScope?.isTransitionActive == true,
   )
-  val fade = rememberTransitionContentFadeState(visible = settled, isSettled = settled)
-  CompositionLocalProvider(
-    LocalTransitionItem provides item,
-    LocalTransitionContentFade provides if (item != null) fade else null,
-    content = content,
-  )
-}
-
-@Composable
-internal fun ProvideUnscopedTransitionContent(content: @Composable () -> Unit) {
-  CompositionLocalProvider(LocalTransitionItem provides null, LocalTransitionContentFade provides null, content = content)
-}
-
-/** Returns the scope-level fade shared by preview and header extras. */
-@Composable
-public fun currentTransitionContentFade(item: TransitionItem? = null): TransitionContentFade =
-  selectTransitionContentFade(LocalTransitionContentFade.current, LocalTransitionItem.current, item)
-
-internal fun selectTransitionContentFade(
-  fade: TransitionContentFade?,
-  activeItem: TransitionItem?,
-  requestedItem: TransitionItem?,
-): TransitionContentFade =
-  if (requestedItem == null || requestedItem == activeItem) fade ?: UnscopedTransitionContentFade
-  else UnscopedTransitionContentFade
-
-/** Fades ready detail content after its navigation and shared transitions have settled. */
-@Composable
-public fun rememberTransitionContentFade(ready: Boolean): TransitionContentFade {
-  val scopedFade = LocalTransitionContentFade.current
-  val settled = scopedFade?.isSettled ?: true
   return rememberTransitionContentFadeState(visible = ready && settled, isSettled = settled)
 }
 

@@ -57,7 +57,6 @@ import dev.staticvar.vlr.featureteam.presentation.TeamDetailsRoute
 import dev.staticvar.vlr.featureteam.presentation.TeamDetailsViewModel
 import dev.staticvar.vlr.featureteam.presentation.TeamMatchesSection
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
-import dev.staticvar.vlr.sharedui.component.common.TransitionItem
 import dev.staticvar.vlr.sharedui.component.event.ProvideEventTransitionScope
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.match.ProvideMatchTransitionScope
@@ -320,11 +319,7 @@ internal fun appNavigationModule(): Module = module {
   navigation<AppRoute.Settings> {
     val appState = LocalVlrAppState.current
     val notificationController = LocalLiveMatchNotificationSettingsController.current
-    val notificationAccess = if (notificationController == null) {
-      null
-    } else {
-      notificationController.access.collectAsStateWithLifecycle().value
-    }
+    val notificationAccess = notificationController?.access?.collectAsStateWithLifecycle()?.value
     val cleanupPreferences = koinInject<CacheCleanupPreferencesRepository>()
     val cleanupRepository = koinInject<CacheCleanupRepository>()
     val autoCleanupEnabled by cleanupPreferences.enabled.collectAsStateWithLifecycle()
@@ -346,8 +341,7 @@ internal fun appNavigationModule(): Module = module {
     )
   }
   navigation<AppRoute.Notifications> {
-    val controller = LocalLiveMatchNotificationSettingsController.current
-    if (controller != null) {
+    LocalLiveMatchNotificationSettingsController.current?.let { controller ->
       NotificationsRoute(controller, onBack = LocalVlrAppState.current::navigateUp)
     }
   }
@@ -376,13 +370,6 @@ internal fun ProvideVlrAppState(appState: VlrAppState, content: @Composable () -
   CompositionLocalProvider(LocalVlrAppState provides appState, content = content)
 }
 
-@Composable
-private fun activeTransitionItem(): TransitionItem? {
-  val appState = LocalVlrAppState.current
-  return appState.matchTransitionPreview?.let { TransitionItem.Match(it.id) }
-    ?: appState.eventTransitionPreview?.let { TransitionItem.Event(it.id) }
-}
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun EventLogoTransitionHost(
@@ -399,7 +386,6 @@ private fun EventLogoTransitionHost(
     sharedTransitionScope = sharedTransitionScope,
     animatedVisibilityScope = LocalNavAnimatedContentScope.current,
     enabled = enabled,
-    transitionItem = activeTransitionItem(),
     content = content,
   )
 }
@@ -418,7 +404,6 @@ private fun MatchTransitionHost(
       sharedTransitionScope = scope,
       animatedVisibilityScope = LocalNavAnimatedContentScope.current,
       enabled = enabled,
-      transitionItem = activeTransitionItem(),
       content = content,
     )
   }

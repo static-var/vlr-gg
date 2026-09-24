@@ -14,7 +14,6 @@ import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.MatchRepository
-import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchListUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchesUseCase
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +49,7 @@ class MatchesViewModelTest {
   }
 
   @Test
-  fun initSelectsFilterFromFirstMatchStatus() {
+  fun initDefaultsToLiveRegardlessOfSourceOrder() {
     runTest(dispatcher) {
       val repository =
         FakeMatchRepository(
@@ -64,8 +63,8 @@ class MatchesViewModelTest {
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
 
-      assertEquals(MatchStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
-      assertEquals(listOf("m1"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
+      assertEquals(MatchStatusFilter.Live, viewModel.uiState.value.selectedStatus)
+      assertEquals(listOf("m2"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
       assertEquals(0, repository.refreshMatchesCallCount)
     }
   }
@@ -100,7 +99,7 @@ class MatchesViewModelTest {
   }
 
   @Test
-  fun initSelectsAvailableFilterAfterEmptyCacheRefresh() {
+  fun refreshKeepsLiveSelectedWhenOnlyUpcomingMatchesExist() {
     runTest(dispatcher) {
       val repository =
         FakeMatchRepository(
@@ -113,8 +112,8 @@ class MatchesViewModelTest {
       viewModel.refresh()
       advanceUntilIdle()
 
-      assertEquals(MatchStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
-      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
+      assertEquals(MatchStatusFilter.Live, viewModel.uiState.value.selectedStatus)
+      assertEquals(emptyList(), viewModel.uiState.value.pageMatches)
     }
   }
 
@@ -199,10 +198,7 @@ class MatchesViewModelTest {
 
   private fun createViewModel(repository: FakeMatchRepository): MatchesViewModel = MatchesViewModel(
     observeMatchListUseCase = ObserveMatchListUseCase(repository),
-    refreshMatchesUseCase = RefreshMatchesUseCase(
-      matchRepository = repository,
-      initialFavoriteProfilesRefresh = InitialFavoriteProfilesRefresh { Result.success(Unit) },
-    ),
+    refreshMatchesUseCase = RefreshMatchesUseCase(matchRepository = repository),
     networkMonitor = object : NetworkMonitor {
       override val status = MutableStateFlow(NetworkStatus.Online)
     },

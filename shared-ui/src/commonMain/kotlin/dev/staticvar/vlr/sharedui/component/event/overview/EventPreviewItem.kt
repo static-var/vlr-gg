@@ -27,9 +27,6 @@ import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
-import dev.staticvar.vlr.sharedui.component.common.TransitionItem
-import dev.staticvar.vlr.sharedui.component.common.currentTransitionContentFade
-import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.event.EventFavoriteReasons
 import dev.staticvar.vlr.sharedui.component.event.EventSharedContent
 import dev.staticvar.vlr.sharedui.component.event.eventLogoSharedElement
@@ -44,21 +41,18 @@ import vlr.shared_ui.generated.resources.match_event_upcoming
 
 @Composable
 public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPreview, onClick: (() -> Unit)? = null) {
-  val extraContentFade = currentTransitionContentFade(TransitionItem.Event(eventPreview.id))
   FavoriteTicketCardBox(
     selected = eventPreview.isFavorite,
     modifier = modifier,
-    favoriteModifier = Modifier.transitionContentFade(extraContentFade),
   ) {
     val cardStyle = if (eventPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled
     PrismCard(
       modifier = Modifier.fillMaxWidth().eventSharedBounds(eventPreview.id, EventSharedContent.Card),
       style = cardStyle,
       onClick = onClick,
-      enabled = extraContentFade.acceptsInput,
     ) {
       Row(
-        modifier = Modifier.fillMaxWidth().transitionContentFade(extraContentFade),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
       ) {
@@ -94,7 +88,7 @@ public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPr
             text = eventPreview.dates,
             modifier = Modifier.padding(
               top = Prism.dimens.spacingXs,
-            ).transitionContentFade(extraContentFade),
+            ),
             style = Prism.typography.label,
             color = Prism.color.bodyColor,
           )
@@ -102,8 +96,7 @@ public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPr
         Spacer(modifier = Modifier.weight(1f))
       }
       Row(
-        modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingS)
-          .transitionContentFade(extraContentFade),
+        modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingS),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       ) {

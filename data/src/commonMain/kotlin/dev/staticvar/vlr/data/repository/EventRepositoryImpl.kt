@@ -109,28 +109,24 @@ internal class EventRepositoryImpl(
 
   private fun observeRelatedFavoriteReasons(
     eventId: String? = null,
-  ): Flow<Map<String, List<EventFavoriteReason>>> {
-    if (eventId != null) {
-      return database.matchesQueries
-        .getScopedMatchFavoriteReasons(
-          matchId = null,
-          eventId = eventId,
-          mapper = ::GetMatchFavoriteReasons,
-        )
-        .asFlow()
-        .mapToList(dispatchers.io)
-        .map { reasons -> reasons.toEventFavoriteReasons { eventId } }
-    }
-
-    return database.matchesQueries
-      .getMatchFavoriteReasons()
+  ): Flow<Map<String, List<EventFavoriteReason>>> = eventId?.let { scopedEventId ->
+    database.matchesQueries
+      .getScopedMatchFavoriteReasons(
+        matchId = null,
+        eventId = scopedEventId,
+        mapper = ::GetMatchFavoriteReasons,
+      )
       .asFlow()
       .mapToList(dispatchers.io)
-      .combine(database.matchOverviewQueries.getMatchOverview().asFlow().mapToList(dispatchers.io)) { reasons, matches ->
-        val eventIdsByMatch = matches.associate { it.id to it.event_id }
-        reasons.toEventFavoriteReasons { reason -> eventIdsByMatch[reason.match_id] }
-      }
-  }
+      .map { reasons -> reasons.toEventFavoriteReasons { scopedEventId } }
+  } ?: database.matchesQueries
+    .getMatchFavoriteReasons()
+    .asFlow()
+    .mapToList(dispatchers.io)
+    .combine(database.matchOverviewQueries.getMatchOverview().asFlow().mapToList(dispatchers.io)) { reasons, matches ->
+      val eventIdsByMatch = matches.associate { it.id to it.event_id }
+      reasons.toEventFavoriteReasons { reason -> eventIdsByMatch[reason.match_id] }
+    }
 
   private fun List<GetMatchFavoriteReasons>.toEventFavoriteReasons(
     eventId: (GetMatchFavoriteReasons) -> String?,

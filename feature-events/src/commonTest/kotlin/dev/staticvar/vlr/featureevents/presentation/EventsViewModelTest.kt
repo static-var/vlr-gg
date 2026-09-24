@@ -11,7 +11,6 @@ import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.repository.EventRepository
-import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import dev.staticvar.vlr.featureevents.usecase.ObserveEventListUseCase
 import dev.staticvar.vlr.featureevents.usecase.RefreshEventsUseCase
 import kotlinx.coroutines.CompletableDeferred
@@ -60,6 +59,8 @@ class EventsViewModelTest {
     val viewModel = createViewModel(repository)
     advanceUntilIdle()
 
+    viewModel.selectFilter(EventStatusFilter.Paused)
+    advanceUntilIdle()
     assertEquals(EventStatusFilter.Paused, viewModel.uiState.value.selectedStatus)
     assertEquals(listOf("paused"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
     viewModel.selectFilter(EventStatusFilter.Unknown)
@@ -71,7 +72,7 @@ class EventsViewModelTest {
   }
 
   @Test
-  fun initSelectsFilterFromFirstEventStatus() {
+  fun initDefaultsToOngoingWhenOnlyCompletedEventsExist() {
     runTest(dispatcher) {
       val repository =
         FakeEventRepository(
@@ -81,8 +82,8 @@ class EventsViewModelTest {
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
 
-      assertEquals(EventStatusFilter.Completed, viewModel.uiState.value.selectedStatus)
-      assertEquals(listOf("e1"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
+      assertEquals(EventStatusFilter.Ongoing, viewModel.uiState.value.selectedStatus)
+      assertEquals(emptyList(), viewModel.uiState.value.pageEvents)
       assertEquals(0, repository.refreshEventsCallCount)
     }
   }
@@ -101,7 +102,7 @@ class EventsViewModelTest {
   }
 
   @Test
-  fun initSelectsAvailableFilterAfterEmptyCacheRefresh() {
+  fun refreshKeepsOngoingSelectedWhenOnlyUpcomingEventsExist() {
     runTest(dispatcher) {
       val repository =
         FakeEventRepository(
@@ -115,8 +116,8 @@ class EventsViewModelTest {
       viewModel.refresh()
       advanceUntilIdle()
 
-      assertEquals(EventStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
-      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
+      assertEquals(EventStatusFilter.Ongoing, viewModel.uiState.value.selectedStatus)
+      assertEquals(emptyList(), viewModel.uiState.value.pageEvents)
     }
   }
 
@@ -129,6 +130,7 @@ class EventsViewModelTest {
         .copy(title = "Valorant Champions 2022"),
     )
     val viewModel = createViewModel(FakeEventRepository(sourceOrder))
+    viewModel.selectFilter(EventStatusFilter.Completed)
     advanceUntilIdle()
     assertEquals(listOf("1657", "1015"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
   }
@@ -215,6 +217,7 @@ class EventsViewModelTest {
           refreshedEvents = emptyList(),
         )
         val viewModel = createViewModel(repository)
+        viewModel.selectFilter(filter)
         advanceUntilIdle()
         viewModel.refresh()
         advanceUntilIdle()
@@ -232,10 +235,7 @@ class EventsViewModelTest {
 
   private fun createViewModel(repository: FakeEventRepository): EventsViewModel = EventsViewModel(
     observeEventListUseCase = ObserveEventListUseCase(repository),
-    refreshEventsUseCase = RefreshEventsUseCase(
-      eventRepository = repository,
-      initialFavoriteProfilesRefresh = InitialFavoriteProfilesRefresh { Result.success(Unit) },
-    ),
+    refreshEventsUseCase = RefreshEventsUseCase(eventRepository = repository),
     networkMonitor = object : NetworkMonitor {
       override val status = MutableStateFlow(NetworkStatus.Online)
     },

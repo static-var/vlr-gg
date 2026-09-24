@@ -14,16 +14,11 @@ import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.MatchVideos
-import dev.staticvar.vlr.domain.model.PlayerInfo
-import dev.staticvar.vlr.domain.model.PlayerTeam
-import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
-import dev.staticvar.vlr.domain.repository.PlayerRepository
-import dev.staticvar.vlr.domain.repository.TeamRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -42,8 +37,6 @@ class RefreshFavoriteMatchesTest {
 
     assertEquals(0, fixture.matches.overviewRefreshes)
     assertEquals(emptyList(), fixture.matches.detailRefreshes)
-    assertEquals(emptyList(), fixture.players.refreshes)
-    assertEquals(emptyList(), fixture.teams.refreshes)
     assertEquals(emptyList(), fixture.events.refreshes)
   }
 
@@ -57,14 +50,11 @@ class RefreshFavoriteMatchesTest {
         players = listOf(DirectFavorite.Player("player", "Player", "")),
       ),
       scheduledMatches = listOf(scheduledMatch("scheduled-match")),
-      playerDetails = mapOf("player" to player("player", currentTeamId = "current-team")),
     )
 
     fixture.useCase()
 
     assertEquals(1, fixture.matches.overviewRefreshes)
-    assertEquals(listOf("player"), fixture.players.refreshes)
-    assertEquals(setOf("direct-team", "current-team"), fixture.teams.refreshes.toSet())
     assertEquals(listOf("event"), fixture.events.refreshes)
     assertEquals(setOf("direct-match", "scheduled-match"), fixture.matches.detailRefreshes.toSet())
   }
@@ -110,7 +100,7 @@ class RefreshFavoriteMatchesTest {
     val cancelledFixture = Fixture(
       favorites = DirectFavoriteSnapshot(players = listOf(DirectFavorite.Player("player", "Player", ""))),
     )
-    cancelledFixture.players.result = Result.failure(cancellation)
+    cancelledFixture.matches.overviewResult = Result.failure(cancellation)
 
     assertSame(cancellation, assertFailsWith<CancellationException> { cancelledFixture.useCase() })
   }
@@ -121,19 +111,14 @@ private class Fixture(
   scheduledMatches: List<FavoriteScheduledMatch> = emptyList(),
   matchPreviews: List<MatchPreview> = emptyList(),
   matchDetails: Map<String, MatchDetails> = emptyMap(),
-  playerDetails: Map<String, PlayerInfo> = emptyMap(),
 ) {
   val matches = FakeMatchRepository(matchPreviews, matchDetails)
-  val teams = FakeTeamRepository()
   val events = FakeEventRepository()
-  val players = FakePlayerRepository(playerDetails)
 
   val useCase = RefreshFavoriteMatches(
     favorites = FakeFavoritesRepository(favorites),
     matches = matches,
-    teams = teams,
     events = events,
-    players = players,
     schedule = FakeFavoriteScheduleRepository(scheduledMatches),
   )
 }
@@ -181,25 +166,6 @@ private class FakeMatchRepository(
   }
 }
 
-private class FakeTeamRepository : TeamRepository {
-  val refreshes = mutableListOf<String>()
-
-  override fun getTeams(): Flow<List<TeamInfo>> = flowOf(emptyList())
-
-  override fun getTeamDetails(teamId: String): Flow<TeamInfo?> = flowOf(null)
-
-  override fun getTeamsByRegion(region: String): Flow<List<TeamInfo>> = flowOf(emptyList())
-
-  override suspend fun addToFavorites(teamId: String): Result<Unit> = Result.success(Unit)
-
-  override suspend fun removeFromFavorites(teamId: String): Result<Unit> = Result.success(Unit)
-
-  override suspend fun refreshTeamDetails(teamId: String): Result<Unit> {
-    refreshes += teamId
-    return Result.success(Unit)
-  }
-}
-
 private class FakeEventRepository : EventRepository {
   val refreshes = mutableListOf<String>()
 
@@ -216,27 +182,6 @@ private class FakeEventRepository : EventRepository {
   override suspend fun refreshEventDetails(eventId: String): Result<Unit> {
     refreshes += eventId
     return Result.success(Unit)
-  }
-}
-
-private class FakePlayerRepository(
-  private val details: Map<String, PlayerInfo>,
-) : PlayerRepository {
-  val refreshes = mutableListOf<String>()
-  var result: Result<Unit> = Result.success(Unit)
-
-  override fun getPlayerInTeam(teamId: String): Flow<List<PlayerInfo?>> = flowOf(emptyList())
-
-  override fun getPlayerDetails(playerId: String): Flow<PlayerInfo?> =
-    flowOf(details[playerId]?.takeIf { playerId in refreshes })
-
-  override suspend fun addToFavorites(playerId: String): Result<Unit> = Result.success(Unit)
-
-  override suspend fun removeFromFavorites(playerId: String): Result<Unit> = Result.success(Unit)
-
-  override suspend fun refreshPlayerDetails(playerId: String): Result<Unit> {
-    refreshes += playerId
-    return result
   }
 }
 
@@ -274,19 +219,4 @@ private fun scheduledMatch(id: String): FavoriteScheduledMatch = FavoriteSchedul
   score1 = null,
   score2 = null,
   format = "Bo3",
-)
-
-private fun player(id: String, currentTeamId: String): PlayerInfo = PlayerInfo(
-  id = id,
-  name = "Player",
-  alias = "player",
-  realName = null,
-  country = "",
-  imageUrl = "",
-  twitterUrl = null,
-  twitchUrl = null,
-  totalWinnings = 0.0,
-  currentTeam = PlayerTeam(currentTeamId, "Current team", "", true),
-  pastTeams = emptyList(),
-  agentStats = emptyList(),
 )
