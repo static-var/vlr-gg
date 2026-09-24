@@ -130,4 +130,18 @@
     <string name="notification_promotion_unavailable">Live scores can still appear as regular notifications. Your device is not allowing promoted Live Updates for this app. Check system notification settings; availability also depends on your device.</string>
     <string name="match_alerts">Match alerts</string>
     <string name="match_alerts_description">Get a notification when a favorite match goes live. Live score updates are unavailable on this device.</string>
+    <string name="release_1_0_5_introduction">Everything new since 1.0.0: live scores for your favorites, team search, a personal look, and easier ways to keep up.</string>
+    <string name="release_1_0_5_live_title">Follow your favorites live</string>
+    <string name="release_1_0_5_live_ios_description">Enable Live Activities for favorite matches and events. Follow map scores on your Lock Screen and Dynamic Island, with clearer team logos.</string>
+    <string name="release_1_0_5_live_android_description">Enable Live Updates for favorite matches and events on supported devices. Other compatible Android devices receive match-start alerts instead.</string>
+    <string name="release_1_0_5_search_title">Find your team</string>
+    <string name="release_1_0_5_search_description">Search for teams from Rankings, including teams outside the current rankings, and open their profiles.</string>
+    <string name="release_1_0_5_appearance_title">Make the app yours</string>
+    <string name="release_1_0_5_appearance_description">Choose your app icon, theme, and mascot in Appearance settings.</string>
+    <string name="release_1_0_5_favorites_title">Catch up at a glance</string>
+    <string name="release_1_0_5_favorites_description">Home includes favorite matches from the past 24 hours and opens the carousel on a live match when one is available. Redesigned widgets keep your favorites close.</string>
+    <string name="release_1_0_5_spotlight_title">Find favorites with Spotlight and Siri</string>
+    <string name="release_1_0_5_spotlight_description">Open favorite teams, players, events, and matches from Spotlight. Use Siri to check favorite matches and control spoiler protection.</string>
+    <string name="release_1_0_5_polish_title">Smoother browsing, clearer logos</string>
+    <string name="release_1_0_5_polish_description">Match and event pages open more smoothly. Logos are easier to see, background refreshes are reduced, and database upgrades preserve your favorites.</string>
 </resources>

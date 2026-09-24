@@ -1,3 +1,7 @@
-Enable Live Updates for favorite matches and events on supported Android devices.
-Choose your app icon, theme, and mascot in Appearance settings.
-See round outcomes and recent favorite matches, with smoother match and event transitions and fewer background refreshes.
+New since 1.0.0:
+- Live Updates for favorites on supported devices, with match-start alerts on other compatible devices.
+- Team search in Rankings.
+- App icons, themes and mascot settings.
+- Redesigned widgets and recent favorite matches on Home.
+- Support for 9 languages.
+- Clearer logos, smoother match and event pages, fewer background refreshes and fixes that preserve favorites during upgrades.
