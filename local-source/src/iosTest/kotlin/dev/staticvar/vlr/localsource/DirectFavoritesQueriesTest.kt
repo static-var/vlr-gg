@@ -102,6 +102,7 @@ class DirectFavoritesQueriesTest {
     addAllFavorites()
 
     val cached = database.homeQueries.getDirectFavorites().executeAsList()
+    assertEquals("team-id", cached.single { it.entity_type == "PLAYER" }.current_team_id)
     assertEquals(
       listOf("Team Name", "Event Name", "Alpha vs Bravo", "Player Alias"),
       cached.map { it.title },
@@ -122,6 +123,7 @@ class DirectFavoritesQueriesTest {
     database.playersQueries.deletePlayerById("player-id")
 
     val afterRemoval = database.homeQueries.getDirectFavorites().executeAsList()
+    assertEquals(null, afterRemoval.single { it.entity_type == "PLAYER" }.current_team_id)
     assertEquals(listOf("team-id", "event-id", "match-id", "player-id"), afterRemoval.map { it.title })
     assertEquals(listOf("", "", "", ""), afterRemoval.map { it.image_url })
   }

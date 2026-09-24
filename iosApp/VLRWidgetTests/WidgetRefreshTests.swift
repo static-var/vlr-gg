@@ -68,14 +68,10 @@ final class WidgetRefreshTests: XCTestCase {
         }
     }
 
-    func testRefreshDiscoversEveryFavoriteRouteAndMasksScores() async throws {
+    func testRefreshUsesCachedPlayerTeamIDWithoutPlayerOrTeamRequestsAndKeepsOtherRoutes() async throws {
         let recorder = RequestRecorder(responses: [
             "/api/v1/matches/": .ok("""
                 [{"id":"100","event":"Masters","series":"Bo3","status":"live","team1":{"id":"88","name":"Alpha","score":1},"team2":{"id":"2","name":"Beta","score":0},"time":"2026-09-12T18:00:00Z","event_id":"5"}]
-                """),
-            "/api/v1/player/77": .ok("{\"current_team\":{\"id\":\"88\"}}"),
-            "/api/v1/team/88": .ok("""
-                {"name":"Alpha","upcoming":[{"id":"200","event":"Challengers","stage":"Playoffs ⋅ Final","opponent":"Gamma","date":"2026-09-14T18:00:00Z"}]}
                 """),
             "/api/v1/events/99": .ok("""
                 {"title":"Game Changers","matches":[{"id":"300","time":"20:00:00","date":"2026-09-15","status":"upcoming","teams":[{"name":"Delta","score":null},{"name":"Epsilon","score":null}],"round":"Upper Final","stage":"Playoffs"}]}
@@ -103,12 +99,53 @@ final class WidgetRefreshTests: XCTestCase {
             now: Date(timeIntervalSince1970: 1_788_800_000)
         )
 
-        XCTAssertEqual(Set(refreshed.matches.map(\.id)), Set(["42", "100", "200", "300"]))
+        XCTAssertEqual(Set(refreshed.matches.map(\.id)), Set(["42", "100", "300"]))
         XCTAssertTrue(refreshed.matches.allSatisfy { $0.score1 == nil && $0.score2 == nil })
         XCTAssertEqual(refreshed.matches.first(where: { $0.id == "100" })?.format, "BO3")
         XCTAssertEqual(refreshed.matches.first(where: { $0.id == "100" })?.stage, "Swiss Round 2")
+        XCTAssertEqual(
+            Set(recorder.requestPaths),
+            Set(["/api/v1/matches", "/api/v1/matches/42", "/api/v1/matches/100", "/api/v1/events/99"])
+        )
+        XCTAssertEqual(recorder.requestPaths.count, 4)
+        XCTAssertFalse(recorder.requestPaths.contains { $0.hasPrefix("/api/v1/player/") })
+        XCTAssertFalse(recorder.requestPaths.contains { $0.hasPrefix("/api/v1/team/") })
         XCTAssertEqual(recorder.authorizationValues, Set(["fixture-token"]))
         XCTAssertEqual(recorder.appNameValues, Set(["dev.staticvar.vlr"]))
+    }
+
+    func testRefreshRetainsCachedTeamScheduleMatchMissingFromOverview() async throws {
+        let recorder = RequestRecorder(responses: [
+            "/api/v1/matches/": .ok("[]"),
+            "/api/v1/matches/200": .ok("""
+                {"event":{"name":"Challengers","series":"Bo3","stage":"Final","date":"2026-09-14T18:00:00Z","status":"upcoming"},"teams":[{"name":"Alpha","score":null},{"name":"Gamma","score":null}]}
+                """),
+        ])
+        let service = WidgetRefreshService(api: recorder.client())
+        let cachedMatch = UpcomingMatch(
+            id: "200",
+            event: "Challengers",
+            team1: "Alpha",
+            team2: "Gamma",
+            startTimeEpochMillis: nil,
+            status: .upcoming,
+            score1: nil,
+            score2: nil,
+            format: "BO3",
+            stage: "Final"
+        )
+        let source = snapshot(
+            favorites: WidgetFavoriteIDs(matchIds: [], teamIds: ["88"], eventIds: [], playerIds: ["77"]),
+            matches: [cachedMatch]
+        )
+
+        let refreshed = try await service.refresh(source: source)
+
+        XCTAssertEqual(refreshed.matches.map(\.id), ["200"])
+        XCTAssertEqual(Set(recorder.requestPaths), Set(["/api/v1/matches", "/api/v1/matches/200"]))
+        XCTAssertEqual(recorder.requestPaths.count, 2)
+        XCTAssertFalse(recorder.requestPaths.contains { $0.hasPrefix("/api/v1/player/") })
+        XCTAssertFalse(recorder.requestPaths.contains { $0.hasPrefix("/api/v1/team/") })
     }
 
     func testUnknownStatusKeepsPreviousMatchWithoutTreatingItAsLive() async throws {
@@ -272,6 +309,7 @@ private final class RequestRecorder {
     private let responses: [String: Response]
     private(set) var authorizationValues = Set<String>()
     private(set) var appNameValues = Set<String>()
+    private(set) var requestPaths: [String] = []
 
     init(responses: [String: Response]) {
         self.responses = responses
@@ -308,6 +346,7 @@ private final class RequestRecorder {
             appNameValues.insert(value)
         }
         let path = request.url?.path ?? ""
+        requestPaths.append(path)
         if let response = responses[path] {
             return response
         }

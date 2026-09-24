@@ -139,23 +139,11 @@ struct WidgetRefreshService {
         }
 
         let favoriteMatchIDs = source.favorites.matchIds.filter { !$0.isEmpty }.unique()
-        let directTeamIDs = source.favorites.teamIds.filter { !$0.isEmpty }.unique()
+        let favoriteTeamIDs = source.favorites.teamIds.filter { !$0.isEmpty }.unique()
         let favoriteEventIDs = source.favorites.eventIds.filter { !$0.isEmpty }.unique()
-        let favoritePlayerIDs = source.favorites.playerIds.filter { !$0.isEmpty }.unique()
-        let playerLookupIDs = bounded(favoritePlayerIDs)
 
-        async let overviewRequest: [RemoteMatchPreview] = api.get("/api/v1/matches/")
-        async let playerRequest: [(String, RemotePlayerDetails)] = fetchMany(
-            playerLookupIDs,
-            path: { "/api/v1/player/\($0)" },
-            as: RemotePlayerDetails.self
-        )
-        let (overview, players) = try await (overviewRequest, playerRequest)
-
-        let playerTeamIDs = players.compactMap(\.1.currentTeam?.id)
-        let allResolvedTeamIDs = (directTeamIDs + playerTeamIDs).unique()
-        let teamLookupIDs = bounded(allResolvedTeamIDs)
-        let favoriteTeamIDSet = Set(directTeamIDs + playerTeamIDs)
+        let overview: [RemoteMatchPreview] = try await api.get("/api/v1/matches/")
+        let favoriteTeamIDSet = Set(favoriteTeamIDs)
         let favoriteMatchIDSet = Set(favoriteMatchIDs)
         let favoriteEventIDSet = Set(favoriteEventIDs)
 
@@ -186,12 +174,11 @@ struct WidgetRefreshService {
 
         let missingDirectMatchIDs = favoriteMatchIDs.filter { !knownOverviewIDs.contains($0) }
         let overviewEnrichmentIDs = freshMatches.map(\.id)
-        let matchLookupIDs = bounded(missingDirectMatchIDs + overviewEnrichmentIDs)
-        async let teamRequest: [(String, RemoteTeamDetails)] = fetchMany(
-            teamLookupIDs,
-            path: { "/api/v1/team/\($0)" },
-            as: RemoteTeamDetails.self
-        )
+        let cachedMatchIDs = source.matches
+            .map(\.id)
+            .filter { !$0.isEmpty && !terminalMatchIDs.contains($0) }
+        let matchLookupCandidates = (missingDirectMatchIDs + overviewEnrichmentIDs + cachedMatchIDs).unique()
+        let matchLookupIDs = bounded(matchLookupCandidates)
         async let eventRequest: [(String, RemoteEventDetails)] = fetchMany(
             bounded(favoriteEventIDs),
             path: { "/api/v1/events/\($0)" },
@@ -203,11 +190,7 @@ struct WidgetRefreshService {
             as: RemoteMatchDetails.self
         )
 
-        let (teams, events, directMatches) = try await (teamRequest, eventRequest, matchRequest)
-
-        for (_, details) in teams {
-            freshMatches.append(contentsOf: details.upcoming.compactMap { $0.widgetMatch(teamName: details.name) })
-        }
+        let (events, directMatches) = try await (eventRequest, matchRequest)
 
         for (_, details) in events {
             for match in details.matches {
@@ -239,10 +222,8 @@ struct WidgetRefreshService {
             }
         }
 
-        let lookupsWereCapped = playerLookupIDs.count < favoritePlayerIDs.count
-            || teamLookupIDs.count < allResolvedTeamIDs.count
-            || bounded(favoriteEventIDs).count < favoriteEventIDs.count
-            || matchLookupIDs.count < (missingDirectMatchIDs + overviewEnrichmentIDs).unique().count
+        let lookupsWereCapped = bounded(favoriteEventIDs).count < favoriteEventIDs.count
+            || matchLookupIDs.count < matchLookupCandidates.count
         freshMatches.append(contentsOf: source.matches.filter { match in
             unresolvedStatusIDs.contains(match.id)
                 || (lookupsWereCapped && !terminalMatchIDs.contains(match.id))
@@ -401,48 +382,6 @@ private struct RemoteMatchPreview: Decodable {
     }
 }
 
-private struct RemotePlayerTeam: Decodable {
-    let id: String?
-}
-
-private struct RemotePlayerDetails: Decodable {
-    let currentTeam: RemotePlayerTeam?
-
-    enum CodingKeys: String, CodingKey {
-        case currentTeam = "current_team"
-    }
-}
-
-private struct RemoteTeamMatch: Decodable {
-    let id: String
-    let event: String
-    let stage: String
-    let opponent: String
-    let date: String?
-
-    func widgetMatch(teamName: String) -> UpcomingMatch? {
-        guard !id.isEmpty else { return nil }
-        let detail = splitFormatAndStage(stage)
-        return UpcomingMatch(
-            id: id,
-            event: event,
-            team1: teamName,
-            team2: opponent,
-            startTimeEpochMillis: epochMillis(date),
-            status: .upcoming,
-            score1: nil,
-            score2: nil,
-            format: detail.format,
-            stage: detail.stage
-        )
-    }
-}
-
-private struct RemoteTeamDetails: Decodable {
-    let name: String
-    let upcoming: [RemoteTeamMatch]
-}
-
 private struct RemoteEventTeam: Decodable {
     let name: String
     let score: Int?
@@ -536,19 +475,6 @@ private func epochMillis(_ value: String?) -> Int64? {
 
 private func epochMillis(date: String, time: String) -> Int64? {
     epochMillis("\(date)T\(time)Z")
-}
-
-private func splitFormatAndStage(_ value: String) -> (format: String, stage: String) {
-    for separator in ["–", "⋅", ":"] {
-        let components = value.components(separatedBy: separator)
-        if components.count > 1 {
-            return (
-                components[0].trimmingCharacters(in: .whitespacesAndNewlines),
-                components.dropFirst().joined(separator: separator).trimmingCharacters(in: .whitespacesAndNewlines)
-            )
-        }
-    }
-    return (value, "")
 }
 
 private func normalizedMatchFormat(_ value: String) -> String {

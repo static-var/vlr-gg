@@ -45,7 +45,8 @@ public data class WidgetFavorites(
 
 internal fun DirectFavoriteSnapshot.widgetFavorites(): WidgetFavorites = WidgetFavorites(
   matchIds = matches.map { it.id }.sorted(),
-  teamIds = teams.map { it.id }.sorted(),
+  teamIds = (teams.map { it.id } + players.mapNotNull { it.currentTeamId })
+    .filter { it.isNotBlank() }.distinct().sorted(),
   eventIds = events.map { it.id }.sorted(),
   playerIds = players.map { it.id }.sorted(),
 )
