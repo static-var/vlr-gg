@@ -49,7 +49,7 @@ class MatchesViewModelTest {
   }
 
   @Test
-  fun initSelectsFilterFromFirstMatchStatus() {
+  fun initDefaultsToLiveRegardlessOfSourceOrder() {
     runTest(dispatcher) {
       val repository =
         FakeMatchRepository(
@@ -63,8 +63,8 @@ class MatchesViewModelTest {
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
 
-      assertEquals(MatchStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
-      assertEquals(listOf("m1"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
+      assertEquals(MatchStatusFilter.Live, viewModel.uiState.value.selectedStatus)
+      assertEquals(listOf("m2"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
       assertEquals(0, repository.refreshMatchesCallCount)
     }
   }
@@ -99,7 +99,7 @@ class MatchesViewModelTest {
   }
 
   @Test
-  fun initSelectsAvailableFilterAfterEmptyCacheRefresh() {
+  fun refreshKeepsLiveSelectedWhenOnlyUpcomingMatchesExist() {
     runTest(dispatcher) {
       val repository =
         FakeMatchRepository(
@@ -112,8 +112,8 @@ class MatchesViewModelTest {
       viewModel.refresh()
       advanceUntilIdle()
 
-      assertEquals(MatchStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
-      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
+      assertEquals(MatchStatusFilter.Live, viewModel.uiState.value.selectedStatus)
+      assertEquals(emptyList(), viewModel.uiState.value.pageMatches)
     }
   }
 
