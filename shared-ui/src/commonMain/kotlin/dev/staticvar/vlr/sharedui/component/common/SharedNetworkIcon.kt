@@ -90,20 +90,9 @@ public fun SharedNetworkIcon(
   }
 
   val image = (painterState as? AsyncImagePainter.State.Success)?.result?.image
-  val source = remember(image) { image?.takeIf { it.shareable }?.let(::LogoSource) }
   var pixelSize by remember { mutableStateOf(IntSize.Zero) }
-  val radiusPx = with(LocalDensity.current) { 1.dp.toPx() }
   val background = style.containerColor.compositeOver(parentBackground)
-  val treatmentRequest = remember(source, pixelSize, radiusPx, background, useConditionalOutline) {
-    if (useConditionalOutline && source != null && pixelSize.width > 0 && pixelSize.height > 0) {
-      LogoTreatmentRequest(source, pixelSize, radiusPx, background)
-    } else null
-  }
-  val treatment by rememberLogoTreatment(treatmentRequest, sharedLogoTreatments)
-  val displayPainter = remember(treatment, painter, pixelSize) {
-    val outlined = treatment as? LogoTreatment.Outlined
-    outlined?.let { PreparedLogoPainter(it, pixelSize) } ?: painter
-  }
+  val displayPainter = rememberOutlinedLogoPainter(image, painter, pixelSize, background, useConditionalOutline)
 
   PrismIcon(
     painter = displayPainter,

@@ -24,6 +24,12 @@ kotlin {
     compileSdk = 37
     minSdk = 24
     androidResources.enable = true
+
+    withDeviceTestBuilder {
+      sourceSetTreeName = "deviceTest"
+    }.configure {
+      instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
   }
 
   val fastIos = project.findProperty("fastIos") == "true"
@@ -70,6 +76,14 @@ kotlin {
       dependencies {
         implementation(libs.activity.compose)
         implementation(libs.ktor.okhttp)
+      }
+    }
+
+    val androidDeviceTest by getting {
+      dependencies {
+        implementation(libs.android.junit)
+        implementation(libs.android.test.runner)
+        implementation("org.jetbrains.compose.ui:ui-test-junit4:${libs.versions.compose.multiplatform.get()}")
       }
     }
 
