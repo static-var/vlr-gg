@@ -6,6 +6,11 @@ struct UpcomingMatchesEntry: TimelineEntry {
     let snapshot: UpcomingMatchesSnapshot?
 }
 
+struct UpcomingMatchesTimelinePlan {
+    let entry: UpcomingMatchesEntry
+    let refreshDate: Date
+}
+
 struct UpcomingMatchesProvider: TimelineProvider {
     private let repository: WidgetSnapshotRepository
     private let refreshService: WidgetRefreshService
@@ -30,23 +35,20 @@ struct UpcomingMatchesProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<UpcomingMatchesEntry>) -> Void) {
         Task {
             let now = Date.now
-            let snapshot = await WidgetRefreshCoordinator.shared.snapshot(
+            let outcome = await WidgetRefreshCoordinator.shared.refresh(
                 repository: repository, service: refreshService, now: now
             )
 
-            let refreshDate = nextRefreshDate(for: snapshot, now: now)
-            completion(
-                Timeline(
-                    entries: [UpcomingMatchesEntry(date: now, snapshot: snapshot)],
-                    policy: .after(refreshDate)
-                )
-            )
+            let plan = Self.timelinePlan(for: outcome, at: now)
+            completion(Timeline(entries: [plan.entry], policy: .after(plan.refreshDate)))
         }
     }
 
-    private func nextRefreshDate(for snapshot: UpcomingMatchesSnapshot?, now: Date) -> Date {
-        // A failed refresh must not schedule an immediate retry loop.
-        max(snapshot?.refreshDate ?? now, now.addingTimeInterval(5 * 60))
+    static func timelinePlan(for outcome: WidgetRefreshOutcome, at date: Date) -> UpcomingMatchesTimelinePlan {
+        UpcomingMatchesTimelinePlan(
+            entry: UpcomingMatchesEntry(date: date, snapshot: outcome.snapshot),
+            refreshDate: outcome.refreshDate
+        )
     }
 }
 
