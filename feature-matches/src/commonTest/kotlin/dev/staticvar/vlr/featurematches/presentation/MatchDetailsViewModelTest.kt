@@ -259,6 +259,38 @@ class MatchDetailsViewModelTest {
   }
 
   @Test
+  fun completedMatchesKeepTheirFavoriteStateAndRejectFavoriteChanges() = runTest(dispatcher) {
+    val completedFavorite = matchDetails("match-1", status = "COMPLETED").copy(
+      isFavorite = true,
+      isDirectFavorite = true,
+    )
+    val repository = FakeMatchRepository(details = completedFavorite)
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    assertEquals(false, viewModel.uiState.value.canToggleFavorite)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+
+    assertEquals(true, viewModel.uiState.value.match?.isFavorite)
+    assertEquals(true, viewModel.uiState.value.match?.isDirectFavorite)
+    assertEquals(emptyList(), repository.favoriteRequests)
+
+    repository.publishDetails(matchDetails("match-1", status = "LIVE"))
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.canToggleFavorite)
+
+    repository.publishDetails(matchDetails("match-1", status = "final"))
+    advanceUntilIdle()
+    assertEquals(false, viewModel.uiState.value.canToggleFavorite)
+    viewModel.toggleFavorite()
+    advanceUntilIdle()
+
+    assertEquals(false, viewModel.uiState.value.match?.isFavorite)
+    assertEquals(emptyList(), repository.favoriteRequests)
+  }
+
+  @Test
   fun favoriteMutationBlocksRepeatedTapsAndExposesFailureForRetry() = runTest(dispatcher) {
     val repository = FakeMatchRepository(details = matchDetails("match-1"))
     repository.blockFavorite = true
@@ -332,7 +364,11 @@ class MatchDetailsViewModelTest {
     favoritesRepository = favoritesRepository,
   ).also { viewModelStore.put("viewModel-${nextViewModelKey++}", it) }
 
-  private fun matchDetails(matchId: String, hasDetails: Boolean = false): MatchDetails = MatchDetails(
+  private fun matchDetails(
+    matchId: String,
+    hasDetails: Boolean = false,
+    status: String = "LIVE",
+  ): MatchDetails = MatchDetails(
     id = matchId,
     event = EventInfo(
       id = "event-1",
@@ -342,7 +378,7 @@ class MatchDetailsViewModelTest {
       img = "",
       date = "Today",
       patch = null,
-      status = "LIVE",
+      status = status,
     ),
     head2head = emptyList(),
     note = "",

@@ -383,6 +383,7 @@ private fun MatchDetailsHero(
       PrismFavoriteIcon(
         selected = match.isFavorite,
         size = PrismFavoriteIconSize.Large,
+        enabled = canToggleFavorite,
         contentDescription = when {
           isFavoritePending -> stringResource(Res.string.updating_favorite)
           isFavoriteInherited -> stringResource(Res.string.favorite_match)

@@ -26,5 +26,8 @@ public data class MatchDetailsUiState(
     get() = match?.favoriteReasons.orEmpty().any { it.source != MatchFavoriteSource.MATCH }
 
   public val canToggleFavorite: Boolean
-    get() = match != null && !isFavoritePending && !isFavoriteInherited
+    get() = match != null && !match.isCompleted && !isFavoritePending && !isFavoriteInherited
 }
+
+private val MatchDetails.isCompleted: Boolean
+  get() = event.status.orEmpty().trim().lowercase() in setOf("completed", "final")
