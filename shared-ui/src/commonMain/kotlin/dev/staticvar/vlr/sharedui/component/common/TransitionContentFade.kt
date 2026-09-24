@@ -12,7 +12,9 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
@@ -25,13 +27,18 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import dev.staticvar.designsystem.prism.Prism
 
 /** Identifies the single card whose metadata participates in a detail transition. */
+@Immutable
 public sealed interface TransitionItem {
+  @Immutable
   public data class Match(public val id: String) : TransitionItem
+  @Immutable
   public data class Event(public val id: String) : TransitionItem
 }
 
 /** Alpha and readiness for content that must stay out of a shared navigation transition. */
-public class TransitionContentFade internal constructor(
+@Stable
+@ConsistentCopyVisibility
+public data class TransitionContentFade internal constructor(
   public val alpha: State<Float>,
   public val isSettled: Boolean,
   public val isVisible: Boolean,
