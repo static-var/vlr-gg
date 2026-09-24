@@ -82,12 +82,16 @@ struct WidgetSnapshotRepository {
 
     func loadBestSnapshot() -> UpcomingMatchesSnapshot? {
         guard let source = loadSource() else { return nil }
+        return loadRefreshedSnapshot(for: source) ?? source
+    }
+
+    func loadRefreshedSnapshot(for source: UpcomingMatchesSnapshot) -> UpcomingMatchesSnapshot? {
         guard
             let envelope = decode(RefreshedSnapshotEnvelope.self, from: refreshedURL),
             envelope.sourceSignature == source.sourceSignature,
             envelope.snapshot.savedAtEpochMillis >= source.savedAtEpochMillis
         else {
-            return source
+            return nil
         }
         return envelope.snapshot.usingConfiguration(from: source)
     }
@@ -119,6 +123,41 @@ struct WidgetSnapshotRepository {
     private func decode<Value: Decodable>(_ type: Value.Type, from url: URL?) -> Value? {
         guard let url, let data = try? Data(contentsOf: url) else { return nil }
         return try? JSONDecoder().decode(Value.self, from: data)
+    }
+}
+
+/// Shares an in-flight refresh across widget families without reusing another configuration's result.
+actor WidgetRefreshCoordinator {
+    static let shared = WidgetRefreshCoordinator()
+    private var pending: [String: Task<UpcomingMatchesSnapshot?, Never>] = [:]
+    private var retryAfter: [String: Date] = [:]
+
+    func snapshot(repository: WidgetSnapshotRepository, service: WidgetRefreshService, now: Date) async -> UpcomingMatchesSnapshot? {
+        guard let source = repository.loadSource() else { return nil }
+        guard source.hasFavorites else { return source }
+        let refreshed = repository.loadRefreshedSnapshot(for: source)
+        if let refreshed, refreshed.refreshDate > now { return refreshed }
+        return await refresh(repository: repository, service: service, source: source, cached: refreshed ?? source, now: now)
+    }
+
+    private func refresh(repository: WidgetSnapshotRepository, service: WidgetRefreshService, source: UpcomingMatchesSnapshot, cached: UpcomingMatchesSnapshot, now: Date) async -> UpcomingMatchesSnapshot? {
+        let key = (repository.sourceURL?.absoluteString ?? "") + source.sourceSignature
+        if let task = pending[key] { return await task.value }
+        retryAfter = retryAfter.filter { $0.value > now }
+        if retryAfter[key] != nil { return repository.loadBestSnapshot() }
+        let task = Task<UpcomingMatchesSnapshot?, Never> {
+            do {
+                let refreshed = try await service.refresh(source: cached, now: now)
+                repository.store(refreshed, for: source)
+            } catch {
+                retryAfter[key] = now.addingTimeInterval(5 * 60)
+            }
+            return repository.loadBestSnapshot()
+        }
+        pending[key] = task
+        let result = await task.value
+        pending[key] = nil
+        return result
     }
 }
 
@@ -162,7 +201,19 @@ struct WidgetRefreshService {
             case .upcoming, .live:
                 knownOverviewIDs.insert(preview.id)
                 if let match = preview.widgetMatch {
-                    freshMatches.append(match)
+                    if let cached = source.matches.first(where: { $0.id == match.id }),
+                       Set([cached.team1, cached.team2]) == Set([match.team1, match.team2]) {
+                        freshMatches.append(UpcomingMatch(
+                            id: match.id, event: match.event,
+                            team1: match.team1, team2: match.team2,
+                            startTimeEpochMillis: match.startTimeEpochMillis,
+                            status: match.status, score1: match.score1, score2: match.score2,
+                            format: match.format.isEmpty ? cached.format : match.format,
+                            stage: match.stage.isEmpty ? cached.stage : match.stage
+                        ))
+                    } else {
+                        freshMatches.append(match)
+                    }
                 }
             case .completed:
                 knownOverviewIDs.insert(preview.id)
@@ -172,46 +223,50 @@ struct WidgetRefreshService {
             }
         }
 
-        let missingDirectMatchIDs = favoriteMatchIDs.filter { !knownOverviewIDs.contains($0) }
-        let overviewEnrichmentIDs = freshMatches.map(\.id)
-        let cachedMatchIDs = source.matches
-            .map(\.id)
-            .filter { !$0.isEmpty && !terminalMatchIDs.contains($0) }
-        let matchLookupCandidates = (missingDirectMatchIDs + overviewEnrichmentIDs + cachedMatchIDs).unique()
-        let matchLookupIDs = bounded(matchLookupCandidates)
-        async let eventRequest: [(String, RemoteEventDetails)] = fetchMany(
+        // Finish event requests before match requests so the total concurrency stays bounded.
+        let events: [(String, RemoteEventDetails)] = try await fetchMany(
             bounded(favoriteEventIDs),
             path: { "/api/v1/events/\($0)" },
             as: RemoteEventDetails.self
         )
-        async let matchRequest: [(String, RemoteMatchDetails)] = fetchMany(
-            matchLookupIDs,
-            path: { "/api/v1/matches/\($0)" },
-            as: RemoteMatchDetails.self
-        )
-
-        let (events, directMatches) = try await (eventRequest, matchRequest)
 
         for (_, details) in events {
             for match in details.matches {
                 switch match.remoteStatus {
                 case .upcoming, .live:
                     if let candidate = match.widgetMatch(event: details.title) {
+                        knownOverviewIDs.insert(match.id)
+                        unresolvedStatusIDs.remove(match.id)
                         freshMatches.append(candidate)
+                    } else {
+                        unresolvedStatusIDs.insert(match.id)
                     }
                 case .unknown:
                     unresolvedStatusIDs.insert(match.id)
                 case .completed:
+                    knownOverviewIDs.insert(match.id)
                     terminalMatchIDs.insert(match.id)
                     break
                 }
             }
         }
 
+        let cachedMatchIDs = source.matches.map(\.id)
+        let matchLookupCandidates = (favoriteMatchIDs + cachedMatchIDs + unresolvedStatusIDs.sorted())
+            .unique()
+            .filter { !knownOverviewIDs.contains($0) && !terminalMatchIDs.contains($0) }
+        let matchLookupIDs = bounded(matchLookupCandidates)
+        let directMatches: [(String, RemoteMatchDetails)] = try await fetchMany(
+            matchLookupIDs,
+            path: { "/api/v1/matches/\($0)" },
+            as: RemoteMatchDetails.self
+        )
+
         for (requestedID, details) in directMatches {
             switch details.event.remoteStatus {
             case .upcoming, .live:
                 if let match = details.widgetMatch(id: requestedID) {
+                    unresolvedStatusIDs.remove(requestedID)
                     freshMatches.append(match)
                 }
             case .unknown:
@@ -224,9 +279,11 @@ struct WidgetRefreshService {
 
         let lookupsWereCapped = bounded(favoriteEventIDs).count < favoriteEventIDs.count
             || matchLookupIDs.count < matchLookupCandidates.count
+        let resolvedMatchIDs = Set(freshMatches.map(\.id))
         freshMatches.append(contentsOf: source.matches.filter { match in
-            unresolvedStatusIDs.contains(match.id)
-                || (lookupsWereCapped && !terminalMatchIDs.contains(match.id))
+            !resolvedMatchIDs.contains(match.id)
+                && !terminalMatchIDs.contains(match.id)
+                && (unresolvedStatusIDs.contains(match.id) || lookupsWereCapped)
         })
         let normalized = normalize(freshMatches.filter { !terminalMatchIDs.contains($0.id) })
         return source.withRefreshedMatches(normalized, at: now)

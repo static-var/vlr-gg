@@ -48,6 +48,14 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         Date(timeIntervalSince1970: TimeInterval(savedAtEpochMillis) / 1_000)
     }
 
+    /// Cached results expire at the normal refresh interval or the next scheduled start.
+    var refreshDate: Date {
+        let interval: TimeInterval = matches.contains { $0.status == .live } ? 15 * 60 : 30 * 60
+        let nextStart = matches.filter { $0.status == .upcoming }
+            .compactMap(\.startTime).filter { $0 > savedAt }.min()
+        return min(savedAt.addingTimeInterval(interval), nextStart ?? .distantFuture)
+    }
+
     init(
         savedAtEpochMillis: Int64,
         hasFavorites: Bool,
