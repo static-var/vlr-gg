@@ -14,14 +14,10 @@ import dev.staticvar.vlr.domain.model.FavoriteScheduledMatch
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
-import dev.staticvar.vlr.domain.model.PlayerInfo
-import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
-import dev.staticvar.vlr.domain.repository.PlayerRepository
-import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
 import dev.staticvar.vlr.shared.widget.UpcomingWidgetMatch
 import dev.staticvar.vlr.shared.widget.WidgetJson
@@ -135,7 +131,7 @@ private class Fixture(hasFavorites: Boolean = true) {
         single<FavoritesRepository> { favorites }
         single<FavoriteScheduleRepository> { schedule }
         single { preferences }
-        single { RefreshFavoriteMatches(favorites, remote, UnusedTeamRepository, UnusedEventRepository, UnusedPlayerRepository, schedule) }
+        single { RefreshFavoriteMatches(favorites, remote, UnusedEventRepository, schedule) }
       })
     }
     widgetJson = app.koin.get(WidgetJson)
@@ -159,15 +155,6 @@ private class SiriRemoteRepositories : MatchRepository {
   override suspend fun removeFromFavorites(matchId: String): Result<Unit> = error("Unexpected favorite mutation")
 }
 
-private object UnusedTeamRepository : TeamRepository {
-  override suspend fun addToFavorites(teamId: String): Result<Unit> = error("Unexpected favorite mutation")
-  override suspend fun removeFromFavorites(teamId: String): Result<Unit> = error("Unexpected favorite mutation")
-  override fun getTeams() = flowOf(emptyList<TeamInfo>())
-  override fun getTeamDetails(teamId: String) = flowOf<TeamInfo?>(null)
-  override fun getTeamsByRegion(region: String) = flowOf(emptyList<TeamInfo>())
-  override suspend fun refreshTeamDetails(teamId: String): Result<Unit> = error("No favorite team")
-}
-
 private object UnusedEventRepository : EventRepository {
   override suspend fun addToFavorites(eventId: String): Result<Unit> = error("Unexpected favorite mutation")
   override suspend fun removeFromFavorites(eventId: String): Result<Unit> = error("Unexpected favorite mutation")
@@ -175,14 +162,6 @@ private object UnusedEventRepository : EventRepository {
   override fun getEventDetails(eventId: String) = flowOf<EventDetails?>(null)
   override suspend fun refreshEvents(): Result<Unit> = error("Unexpected events refresh")
   override suspend fun refreshEventDetails(eventId: String): Result<Unit> = error("No favorite event")
-}
-
-private object UnusedPlayerRepository : PlayerRepository {
-  override suspend fun addToFavorites(playerId: String): Result<Unit> = error("Unexpected favorite mutation")
-  override suspend fun removeFromFavorites(playerId: String): Result<Unit> = error("Unexpected favorite mutation")
-  override fun getPlayerInTeam(teamId: String) = flowOf(emptyList<PlayerInfo?>())
-  override fun getPlayerDetails(playerId: String) = flowOf<PlayerInfo?>(null)
-  override suspend fun refreshPlayerDetails(playerId: String): Result<Unit> = error("No favorite player")
 }
 
 private fun scheduledMatch(id: String, status: MatchStatus) = FavoriteScheduledMatch(

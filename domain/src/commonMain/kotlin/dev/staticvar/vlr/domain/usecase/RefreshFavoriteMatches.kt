@@ -9,8 +9,6 @@ import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
-import dev.staticvar.vlr.domain.repository.PlayerRepository
-import dev.staticvar.vlr.domain.repository.TeamRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -24,9 +22,7 @@ import kotlinx.coroutines.sync.withPermit
 public class RefreshFavoriteMatches(
   private val favorites: FavoritesRepository,
   private val matches: MatchRepository,
-  private val teams: TeamRepository,
   private val events: EventRepository,
-  private val players: PlayerRepository,
   private val schedule: FavoriteScheduleRepository,
 ) {
   private val refreshMutex = Mutex()
@@ -36,17 +32,7 @@ public class RefreshFavoriteMatches(
     if (!selected.hasAny) return@withLock
 
     matches.refreshMatches().getOrThrow()
-    refreshAll(selected.players.map { player -> { players.refreshPlayerDetails(player.id) } })
-    val teamIds = selected.teams.map { it.id }.toMutableSet()
-    selected.players.forEach { player ->
-      players.getPlayerDetails(player.id).first()?.currentTeam?.id?.takeIf { it.isNotBlank() }?.let(teamIds::add)
-    }
-    refreshAll(
-      buildList<suspend () -> Result<Unit>> {
-        teamIds.forEach { id -> add { teams.refreshTeamDetails(id) } }
-        selected.events.forEach { event -> add { events.refreshEventDetails(event.id) } }
-      },
-    )
+    refreshAll(selected.events.map { event -> { events.refreshEventDetails(event.id) } })
 
     val overview = matches.getMatches().first().associateBy { it.id }
     val candidates = (selected.matches.map { it.id } + schedule.observeMatches().first().map { it.id }).distinct()

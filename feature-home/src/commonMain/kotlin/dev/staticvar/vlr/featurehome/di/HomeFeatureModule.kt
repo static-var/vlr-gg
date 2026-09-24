@@ -24,7 +24,6 @@ public fun homeFeatureModule(): Module = module {
     RefreshHomeUseCase(
       matchRepository = get(),
       eventRepository = get(),
-      initialFavoriteProfilesRefresh = get(),
     )
   }
   viewModel {

@@ -8,7 +8,6 @@ import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.repository.EventRepository
-import dev.staticvar.vlr.domain.usecase.InitialFavoriteProfilesRefresh
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -33,23 +32,16 @@ class EventsUseCasesTest {
   }
 
   @Test
-  fun refreshEventsWaitsForProfilesAndStillFetchesAfterProfileFailure() {
+  fun refreshEventsDelegatesRepositoryFailure() {
     runTest {
-      val calls = mutableListOf<String>()
-      val expected = IllegalStateException("profile refresh failed")
+      val expected = IllegalStateException("event refresh failed")
       val repository = FakeEventRepository(events = emptyList()) {
-        calls += "events"
-        Result.success(Unit)
-      }
-      val profiles = InitialFavoriteProfilesRefresh {
-        calls += "profiles"
         Result.failure(expected)
       }
 
-      val result = RefreshEventsUseCase(repository, profiles)()
+      val result = RefreshEventsUseCase(repository)()
 
       assertSame(expected, result.exceptionOrNull())
-      assertEquals(listOf("profiles", "events"), calls)
       assertEquals(1, repository.refreshEventsCalls)
     }
   }
