@@ -344,7 +344,11 @@ private fun LazyListScope.playerAgentStatItems(
 @Composable
 private fun PlayerAgentStatItem(stat: PlayerAgentStat) {
   PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
-    Text(text = stat.agentName, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
+    Text(
+      text = stat.agentName.replaceFirstChar { it.titlecase() },
+      style = Prism.typography.cardTitle,
+      color = Prism.color.titleColor,
+    )
     SpoilerContent(modifier = Modifier.padding(top = Prism.dimens.spacingXs)) {
       Column {
         Text(
