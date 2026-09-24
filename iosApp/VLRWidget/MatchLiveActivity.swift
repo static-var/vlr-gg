@@ -130,7 +130,11 @@ private struct MatchLiveActivityLogo: View {
 
     var body: some View {
         Group {
-            if let image = MatchActivityLogoCache.image(for: team?.img) {
+            if let image = MatchActivityLogoCache.image(
+                for: team?.img,
+                appearance: colorScheme == .dark ? .dark : .light,
+                size: size <= 20 ? .compact : .expanded
+            ) {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
