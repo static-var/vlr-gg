@@ -20,6 +20,14 @@ final class IosLiveActivityPermissionProvider: NSObject, NotificationPermissionP
         return KotlinBoolean(bool: ActivityAuthorizationInfo().areActivitiesEnabled)
     }
 
+    func canPromoteNotifications() -> KotlinBoolean? {
+        nil
+    }
+
+    func openPromotionSettings() {
+        openSettings()
+    }
+
     func readNotificationAuthorization(onResult: @escaping (NotificationAuthorization) -> Void) {
         onResult(.error)
     }

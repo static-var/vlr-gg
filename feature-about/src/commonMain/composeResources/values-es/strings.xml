@@ -123,4 +123,5 @@
     <string name="live_match_updates">Actualizaciones de partidas en directo</string>
     <string name="live_match_updates_description">Sigue los resultados en directo en las notificaciones.</string>
     <string name="notifications_permission_description">Permite las notificaciones para recibir actualizaciones de partidas en directo.</string>
+    <string name="notification_promotion_unavailable">Los resultados en directo pueden seguir apareciendo como notificaciones normales. Tu dispositivo no permite actualizaciones en directo destacadas para esta app. Revisa los ajustes de notificaciones del sistema; la disponibilidad también depende del dispositivo.</string>
 </resources>

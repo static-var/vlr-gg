@@ -123,4 +123,5 @@
     <string name="live_match_updates">Atualizações de partidas ao vivo</string>
     <string name="live_match_updates_description">Acompanhe os placares ao vivo nas notificações.</string>
     <string name="notifications_permission_description">Permita as notificações para receber atualizações de partidas ao vivo.</string>
+    <string name="notification_promotion_unavailable">Os placares ao vivo ainda podem aparecer como notificações comuns. Seu dispositivo não permite atualizações ao vivo em destaque para este app. Confira as configurações de notificação do sistema; a disponibilidade também depende do dispositivo.</string>
 </resources>

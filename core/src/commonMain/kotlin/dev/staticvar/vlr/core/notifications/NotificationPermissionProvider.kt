@@ -20,9 +20,14 @@ public interface NotificationPermissionProvider {
 
   public fun areLiveActivitiesEnabled(): Boolean?
 
+  /** Returns Android promotion access, or null when unavailable or not applicable. */
+  public fun canPromoteNotifications(): Boolean? = null
+
   public fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit)
 
   public fun requestNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit)
 
   public fun openSettings()
+
+  public fun openPromotionSettings() { openSettings() }
 }

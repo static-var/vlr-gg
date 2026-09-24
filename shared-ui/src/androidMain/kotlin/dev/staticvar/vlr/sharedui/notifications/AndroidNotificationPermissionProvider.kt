@@ -57,6 +57,16 @@ private class AndroidNotificationPermissionProvider(
 
   override fun areLiveActivitiesEnabled(): Boolean? = null
 
+  override fun canPromoteNotifications(): Boolean? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+    try {
+      context.getSystemService(NotificationManager::class.java).canPostPromotedNotifications()
+    } catch (_: RuntimeException) {
+      null
+    }
+  } else {
+    null
+  }
+
   override fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {
     onMain { onResult(readAuthorization()) }
   }
@@ -86,14 +96,38 @@ private class AndroidNotificationPermissionProvider(
   }
 
   override fun openSettings() {
+    onMain { openNotificationSettings() }
+  }
+
+  override fun openPromotionSettings() {
     onMain {
-      val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-      } else {
-        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}"))
-      }
-      context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+      val opened = Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA && tryOpenSettings(
+        Intent(Settings.ACTION_APP_NOTIFICATION_PROMOTION_SETTINGS)
+          .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName),
+      )
+      if (!opened) openNotificationSettings()
     }
+  }
+
+  /** Falls back to app details when an OEM does not provide notification settings. */
+  private fun openNotificationSettings() {
+    val opened = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && tryOpenSettings(
+      Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName),
+    )
+    if (!opened) {
+      tryOpenSettings(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")))
+    }
+  }
+
+  private fun tryOpenSettings(intent: Intent): Boolean = try {
+    if (intent.resolveActivity(context.packageManager) == null) {
+      false
+    } else {
+      context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+      true
+    }
+  } catch (_: RuntimeException) {
+    false
   }
 
   fun completeRequest() {

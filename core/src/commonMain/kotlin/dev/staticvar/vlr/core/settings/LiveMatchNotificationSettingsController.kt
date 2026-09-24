@@ -14,6 +14,7 @@ public data class LiveMatchNotificationAccess(
   val activitiesEnabled: Boolean?,
   val notifications: NotificationAuthorization? = null,
   val requesting: Boolean = false,
+  val promotionAllowed: Boolean? = null,
   val supportsLiveUpdates: Boolean = true,
   val requiresNotificationPermission: Boolean = true,
 )
@@ -84,9 +85,14 @@ public class LiveMatchNotificationSettingsController(
     if (access.value.supportsLiveUpdates) provider.openSettings()
   }
 
+  public fun openPromotionSettings() {
+    if (access.value.supportsLiveUpdates) provider.openPromotionSettings()
+  }
+
   private fun readAccess(notifications: NotificationAuthorization? = null): LiveMatchNotificationAccess =
     LiveMatchNotificationAccess(
       activitiesEnabled = provider.areLiveActivitiesEnabled(),
+      promotionAllowed = provider.canPromoteNotifications(),
       notifications = notifications,
       supportsLiveUpdates = provider.supportsLiveUpdates(),
       requiresNotificationPermission = provider.requiresNotificationPermission(),

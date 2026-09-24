@@ -39,6 +39,7 @@ import vlr.feature_about.generated.resources.live_activities_disabled
 import vlr.feature_about.generated.resources.live_activity_permissions_description
 import vlr.feature_about.generated.resources.live_match_updates
 import vlr.feature_about.generated.resources.live_match_updates_description
+import vlr.feature_about.generated.resources.notification_promotion_unavailable
 import vlr.feature_about.generated.resources.notification_access_error
 import vlr.feature_about.generated.resources.notification_preferences_description
 import vlr.feature_about.generated.resources.notifications
@@ -97,6 +98,10 @@ public fun NotificationsRoute(
           access.requiresNotificationPermission && access.notifications == NotificationAuthorization.Denied
         ) {
           PrismButton(onClick = controller::openSettings) { Text(stringResource(Res.string.open_system_settings)) }
+        }
+        if (access.notifications == NotificationAuthorization.Authorized && access.promotionAllowed == false) {
+          PermissionMessage(stringResource(Res.string.notification_promotion_unavailable))
+          PrismButton(onClick = controller::openPromotionSettings) { Text(stringResource(Res.string.open_system_settings)) }
         }
         if (access.requiresNotificationPermission && access.notifications == NotificationAuthorization.Error) {
           PermissionMessage(stringResource(Res.string.notification_access_error))
