@@ -12,7 +12,7 @@ import app.cash.sqldelight.driver.native.NativeSqliteDriver
  */
 actual class DatabaseDriverFactory {
   actual fun createDriver(): SqlDriver = NativeSqliteDriver(
-    schema = VlrDatabase.Schema,
+    schema = MigratingDatabaseSchema,
     name = DatabaseConstants.DATABASE_NAME,
   ).also { driver ->
     // Enable foreign key constraints
