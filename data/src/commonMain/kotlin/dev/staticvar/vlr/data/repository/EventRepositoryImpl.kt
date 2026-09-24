@@ -30,10 +30,12 @@ import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.localsource.database.GetEventWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetEventsWithFavoriteStatus
+import dev.staticvar.vlr.localsource.database.GetMatchFavoriteReasons
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.events.EventDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -56,6 +58,7 @@ internal class EventRepositoryImpl(
         event.copy(favoriteReasons = favoriteReasons(event.id, event.title, event.isFavorite, reasonsByEvent))
       }
     }
+    .flowOn(dispatchers.default)
 
   override fun getEventDetails(eventId: String): Flow<EventDetails?> {
     val eventFlow = eventsQueries
@@ -98,31 +101,52 @@ internal class EventRepositoryImpl(
             matches = slices.matches,
           )
         }
-      }.combine(observeRelatedFavoriteReasons()) { event, reasonsByEvent ->
+      }.combine(observeRelatedFavoriteReasons(eventId)) { event, reasonsByEvent ->
         event?.copy(favoriteReasons = favoriteReasons(event.id, event.title, event.isFavorite, reasonsByEvent))
+      }
+      .flowOn(dispatchers.default)
+  }
+
+  private fun observeRelatedFavoriteReasons(
+    eventId: String? = null,
+  ): Flow<Map<String, List<EventFavoriteReason>>> {
+    if (eventId != null) {
+      return database.matchesQueries
+        .getScopedMatchFavoriteReasons(
+          matchId = null,
+          eventId = eventId,
+          mapper = ::GetMatchFavoriteReasons,
+        )
+        .asFlow()
+        .mapToList(dispatchers.io)
+        .map { reasons -> reasons.toEventFavoriteReasons { eventId } }
+    }
+
+    return database.matchesQueries
+      .getMatchFavoriteReasons()
+      .asFlow()
+      .mapToList(dispatchers.io)
+      .combine(database.matchOverviewQueries.getMatchOverview().asFlow().mapToList(dispatchers.io)) { reasons, matches ->
+        val eventIdsByMatch = matches.associate { it.id to it.event_id }
+        reasons.toEventFavoriteReasons { reason -> eventIdsByMatch[reason.match_id] }
       }
   }
 
-  private fun observeRelatedFavoriteReasons(): Flow<Map<String, List<EventFavoriteReason>>> = database.matchesQueries
-    .getMatchFavoriteReasons()
-    .asFlow()
-    .mapToList(dispatchers.io)
-    .combine(database.matchOverviewQueries.getMatchOverview().asFlow().mapToList(dispatchers.io)) { reasons, matches ->
-      val eventIdsByMatch = matches.associate { it.id to it.event_id }
-      reasons.filter { it.source != "EVENT" }
-        .mapNotNull { reason ->
-          val eventId = eventIdsByMatch[reason.match_id]?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
-          eventId to EventFavoriteReason(
-            source = EventFavoriteSource.valueOf(reason.source),
-            id = reason.entity_id,
-            name = reason.entity_name,
-          )
-        }
-        .groupBy({ it.first }, { it.second })
-        .mapValues { (_, eventReasons) ->
-          eventReasons.distinctBy { it.source to it.id }
-            .sortedWith(compareBy({ it.source.ordinal }, { it.name }, { it.id }))
-        }
+  private fun List<GetMatchFavoriteReasons>.toEventFavoriteReasons(
+    eventId: (GetMatchFavoriteReasons) -> String?,
+  ): Map<String, List<EventFavoriteReason>> = filter { it.source != "EVENT" }
+    .mapNotNull { reason ->
+      val relatedEventId = eventId(reason)?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+      relatedEventId to EventFavoriteReason(
+        source = EventFavoriteSource.valueOf(reason.source),
+        id = reason.entity_id,
+        name = reason.entity_name,
+      )
+    }
+    .groupBy({ it.first }, { it.second })
+    .mapValues { (_, eventReasons) ->
+      eventReasons.distinctBy { it.source to it.id }
+        .sortedWith(compareBy({ it.source.ordinal }, { it.name }, { it.id }))
     }
 
   private fun favoriteReasons(

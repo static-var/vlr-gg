@@ -14,6 +14,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.TransitionItem
+import dev.staticvar.vlr.sharedui.component.common.ProvideTransitionContentScope
+import dev.staticvar.vlr.sharedui.component.common.ProvideUnscopedTransitionContent
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 private data class EventTransitionScope(
@@ -30,19 +33,28 @@ public fun ProvideEventTransitionScope(
   sharedTransitionScope: SharedTransitionScope,
   animatedVisibilityScope: AnimatedVisibilityScope,
   enabled: Boolean = true,
+  transitionItem: TransitionItem? = null,
   content: @Composable () -> Unit,
 ) {
-  CompositionLocalProvider(
-    LocalEventTransitionScope provides if (enabled) {
-      EventTransitionScope(
+  if (!enabled) {
+    CompositionLocalProvider(LocalEventTransitionScope provides null) {
+      ProvideUnscopedTransitionContent(content)
+    }
+    return
+  }
+  ProvideTransitionContentScope(
+    sharedTransitionScope = sharedTransitionScope,
+    animatedVisibilityScope = animatedVisibilityScope,
+    item = transitionItem,
+  ) {
+    CompositionLocalProvider(
+      LocalEventTransitionScope provides EventTransitionScope(
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedVisibilityScope,
-      )
-    } else {
-      null
-    },
-    content = content,
-  )
+      ),
+      content = content,
+    )
+  }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -61,9 +73,7 @@ internal fun Modifier.eventLogoSharedElement(eventId: String): Modifier {
   }
 }
 
-internal enum class EventSharedContent {
-  Card, Logo, Title, Dates, Prize, Status, Favorite,
-}
+internal enum class EventSharedContent { Card, Logo, Title }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

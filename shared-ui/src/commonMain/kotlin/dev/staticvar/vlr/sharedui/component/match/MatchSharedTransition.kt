@@ -14,6 +14,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.TransitionItem
+import dev.staticvar.vlr.sharedui.component.common.ProvideTransitionContentScope
+import dev.staticvar.vlr.sharedui.component.common.ProvideUnscopedTransitionContent
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 private data class MatchTransitionScope(
@@ -30,23 +33,32 @@ public fun ProvideMatchTransitionScope(
   sharedTransitionScope: SharedTransitionScope,
   animatedVisibilityScope: AnimatedVisibilityScope,
   enabled: Boolean = true,
+  transitionItem: TransitionItem? = null,
   content: @Composable () -> Unit,
 ) {
-  CompositionLocalProvider(
-    LocalMatchTransitionScope provides if (enabled) {
-      MatchTransitionScope(
+  if (!enabled) {
+    CompositionLocalProvider(LocalMatchTransitionScope provides null) {
+      ProvideUnscopedTransitionContent(content)
+    }
+    return
+  }
+  ProvideTransitionContentScope(
+    sharedTransitionScope = sharedTransitionScope,
+    animatedVisibilityScope = animatedVisibilityScope,
+    item = transitionItem,
+  ) {
+    CompositionLocalProvider(
+      LocalMatchTransitionScope provides MatchTransitionScope(
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedVisibilityScope,
-      )
-    } else {
-      null
-    },
-    content = content,
-  )
+      ),
+      content = content,
+    )
+  }
 }
 
 internal enum class MatchSharedContent {
-  Card, Event, Series, Time, Status, Favorite, Reasons, TeamName, TeamScore,
+  Card, Event, TeamName, TeamScore,
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

@@ -57,6 +57,7 @@ import dev.staticvar.vlr.featureteam.presentation.TeamDetailsRoute
 import dev.staticvar.vlr.featureteam.presentation.TeamDetailsViewModel
 import dev.staticvar.vlr.featureteam.presentation.TeamMatchesSection
 import dev.staticvar.vlr.shared.appearance.AppearanceViewModel
+import dev.staticvar.vlr.sharedui.component.common.TransitionItem
 import dev.staticvar.vlr.sharedui.component.event.ProvideEventTransitionScope
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.match.ProvideMatchTransitionScope
@@ -148,7 +149,9 @@ internal fun appNavigationModule(): Module = module {
 
     val appState = LocalVlrAppState.current
     val transitionEnabled = LocalAppEventSharedTransitionScope.current != null
-    MatchTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Matches) {
+    MatchTransitionHost(
+      enabled = appState.selectedRootRoute == AppRoute.Matches,
+    ) {
       MatchesOverviewRoute(
         uiState = uiState,
         onRefresh = viewModel::refresh,
@@ -194,7 +197,9 @@ internal fun appNavigationModule(): Module = module {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
-    EventLogoTransitionHost(enabled = appState.selectedRootRoute == AppRoute.Events) {
+    EventLogoTransitionHost(
+      enabled = appState.selectedRootRoute == AppRoute.Events,
+    ) {
       EventsOverviewRoute(
         uiState = uiState,
         onRefresh = viewModel::refresh,
@@ -371,6 +376,13 @@ internal fun ProvideVlrAppState(appState: VlrAppState, content: @Composable () -
   CompositionLocalProvider(LocalVlrAppState provides appState, content = content)
 }
 
+@Composable
+private fun activeTransitionItem(): TransitionItem? {
+  val appState = LocalVlrAppState.current
+  return appState.matchTransitionPreview?.let { TransitionItem.Match(it.id) }
+    ?: appState.eventTransitionPreview?.let { TransitionItem.Event(it.id) }
+}
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun EventLogoTransitionHost(
@@ -387,13 +399,17 @@ private fun EventLogoTransitionHost(
     sharedTransitionScope = sharedTransitionScope,
     animatedVisibilityScope = LocalNavAnimatedContentScope.current,
     enabled = enabled,
+    transitionItem = activeTransitionItem(),
     content = content,
   )
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun MatchTransitionHost(enabled: Boolean = true, content: @Composable () -> Unit) {
+private fun MatchTransitionHost(
+  enabled: Boolean = true,
+  content: @Composable () -> Unit,
+) {
   val scope = LocalAppEventSharedTransitionScope.current
   if (scope == null) {
     content()
@@ -402,6 +418,7 @@ private fun MatchTransitionHost(enabled: Boolean = true, content: @Composable ()
       sharedTransitionScope = scope,
       animatedVisibilityScope = LocalNavAnimatedContentScope.current,
       enabled = enabled,
+      transitionItem = activeTransitionItem(),
       content = content,
     )
   }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -41,6 +42,7 @@ public fun PrismFavoriteIcon(
   modifier: Modifier = Modifier,
   size: PrismFavoriteIconSize = PrismFavoriteIconSize.Medium,
   style: PrismFavoriteIconStyle = PrismFavoriteIconStyle.Boxed,
+  enabled: Boolean = true,
   contentDescription: String? =
     stringResource(if (selected) Res.string.prism_favorite else Res.string.prism_not_favorite),
 ) {
@@ -49,6 +51,7 @@ public fun PrismFavoriteIcon(
 
   PrismSurface(
     modifier = modifier
+      .alpha(if (enabled) 1f else DisabledFavoriteAlpha)
       .size(size.containerSize)
       .then(
         if (contentDescription == null) {
@@ -86,6 +89,8 @@ public fun PrismFavoriteIcon(
     }
   }
 }
+
+private const val DisabledFavoriteAlpha = 0.72f
 
 private fun bookmarkTagPath(size: Size): Path = Path().apply {
   moveTo(size.width * 0.18f, 0f)
