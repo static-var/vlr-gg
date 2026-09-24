@@ -9,8 +9,11 @@
 /* Begin PBXBuildFile section */
 		AAB7CE37C59F15BDE0A95B04 /* ICloudIdentityDeviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40212BB7FC3087ABA0CD3582 /* ICloudIdentityDeviceTests.swift */; };
 		AD5F1EABAFC8460BA502C001 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
+		BD5F1EABAFC8460BA502C001 /* MatchActivityLogoTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */; };
 		AD5F1EABAFC8460BA502C002 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
+		BD5F1EABAFC8460BA502C002 /* MatchActivityLogoTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */; };
 		AD5F1EABAFC8460BA502C003 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
+		BD5F1EABAFC8460BA502C003 /* MatchActivityLogoTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */; };
 
 		7A40E5F690294147A5126801 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */; };
 		1E500497BDD6693B31A1A4B2 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */; };
@@ -19,6 +22,7 @@
 		C4F26D6615E5B84E8ABD7919 /* MatchActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */; };
 		DF927176F502A5D4C6FFC3A7 /* MatchActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */; };
 		D3FAD1589057032649BD28A1 /* MatchActivityAttributesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593AC05C89885B2102D4BE59 /* MatchActivityAttributesTests.swift */; };
+		E3FAD1589057032649BD28A1 /* MatchActivityLogoTreatmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693AC05C89885B2102D4BE59 /* MatchActivityLogoTreatmentTests.swift */; };
 		CD369A06E85A4B3F85B9452D /* LiveActivityPermissionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7B64D40E8F44E29B9D622C /* LiveActivityPermissionProvider.swift */; };
 		E8A5403574A3EA968A57C900 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0CF0BA8A92206DCBD9D678DD /* LaunchScreen.storyboard */; };
 		099124514C9782698F2C797B /* VLRWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */; };
@@ -99,10 +103,12 @@
 /* Begin PBXFileReference section */
 		40212BB7FC3087ABA0CD3582 /* ICloudIdentityDeviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudIdentityDeviceTests.swift; sourceTree = "<group>"; };
 		AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityLogoCache.swift; sourceTree = "<group>"; };
+		BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityLogoTreatment.swift; sourceTree = "<group>"; };
 		05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchLiveActivity.swift; sourceTree = "<group>"; };
 		3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityAttributes.swift; sourceTree = "<group>"; };
 		D1F8D968CF01C749B570E7A9 /* ActivityPushTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityPushTokenProvider.swift; sourceTree = "<group>"; };
 		593AC05C89885B2102D4BE59 /* MatchActivityAttributesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityAttributesTests.swift; sourceTree = "<group>"; };
+		693AC05C89885B2102D4BE59 /* MatchActivityLogoTreatmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityLogoTreatmentTests.swift; sourceTree = "<group>"; };
 		5C7B64D40E8F44E29B9D622C /* LiveActivityPermissionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityPermissionProvider.swift; sourceTree = "<group>"; };
 		0CF0BA8A92206DCBD9D678DD /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		07ED39F464598B211EB46A3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -242,6 +248,7 @@
 			isa = PBXGroup;
 			children = (
 				593AC05C89885B2102D4BE59 /* MatchActivityAttributesTests.swift */,
+				693AC05C89885B2102D4BE59 /* MatchActivityLogoTreatmentTests.swift */,
 				0E64F35EE4AE373F79416126 /* TestGeneratedBuildConfig.swift */,
 				A9F7405903B24AF121E4A00B /* WidgetLocalizationTests.swift */,
 				2BF1F4E25E5E55367392BE6A /* WidgetRefreshTests.swift */,
@@ -281,6 +288,7 @@
 			isa = PBXGroup;
 			children = (
 				AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */,
+				BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */,
 				3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */,
 				48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */,
 			);
@@ -542,6 +550,7 @@
 				B5774EBA09C9BF2544502554 /* FavoriteSearch.swift in Sources */,
 				8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */,
 				AD5F1EABAFC8460BA502C001 /* MatchActivityLogoCache.swift in Sources */,
+				BD5F1EABAFC8460BA502C001 /* MatchActivityLogoTreatment.swift in Sources */,
 				DF927176F502A5D4C6FFC3A7 /* MatchActivityAttributes.swift in Sources */,
 				7D487293553B3F4031496A2A /* NativeLocalization.swift in Sources */,
 				B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */,
@@ -568,9 +577,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD5F1EABAFC8460BA502C002 /* MatchActivityLogoCache.swift in Sources */,
+				BD5F1EABAFC8460BA502C002 /* MatchActivityLogoTreatment.swift in Sources */,
 				C4F26D6615E5B84E8ABD7919 /* MatchActivityAttributes.swift in Sources */,
 				7A40E5F690294147A5126801 /* MatchLiveActivity.swift in Sources */,
 				D3FAD1589057032649BD28A1 /* MatchActivityAttributesTests.swift in Sources */,
+				E3FAD1589057032649BD28A1 /* MatchActivityLogoTreatmentTests.swift in Sources */,
 				44E37D45D9CD7737C66D6C33 /* TestGeneratedBuildConfig.swift in Sources */,
 				BC44AC391E69BD6D0F675BE0 /* UpcomingMatchesWidget.swift in Sources */,
 				1613C021234E871D6799F0C5 /* VLRWidgetContract.swift in Sources */,
@@ -587,6 +598,7 @@
 			files = (
 				A549AA5B4708B66DBB9797F1 /* GeneratedBuildConfig.swift in Sources */,
 				AD5F1EABAFC8460BA502C003 /* MatchActivityLogoCache.swift in Sources */,
+				BD5F1EABAFC8460BA502C003 /* MatchActivityLogoTreatment.swift in Sources */,
 				41ED708CD7A4065E2C2DDCB6 /* MatchActivityAttributes.swift in Sources */,
 				1E500497BDD6693B31A1A4B2 /* MatchLiveActivity.swift in Sources */,
 				9DD4C32FDB291AC803C0907D /* UpcomingMatchesWidget.swift in Sources */,

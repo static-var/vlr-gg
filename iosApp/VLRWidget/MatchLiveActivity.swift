@@ -14,6 +14,7 @@ struct MatchLiveActivity: Widget {
             .widgetURL(VLRWidgetContract.matchURL(id: context.attributes.match_id))
         } dynamicIsland: { context in
             let hidden = MatchLiveActivitySpoilerPreference.isHidden
+            let scores = MatchLiveActivityScores(state: context.state, hidden: hidden)
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.bottom) {
                     MatchLiveActivityLockScreen(state: context.state, spoilersHidden: hidden)
@@ -22,14 +23,23 @@ struct MatchLiveActivity: Widget {
             } compactLeading: {
                 HStack(spacing: 4) {
                     MatchLiveActivityLogo(team: context.state.teams.first, size: 20)
-                    MatchLiveActivityLogo(team: context.state.teams.dropFirst().first, size: 20)
+                    Text(scores.primaryLeft)
                 }
+                .font(PrismWidgetFont.regular(13, relativeTo: .caption))
+                .foregroundStyle(PrismWidgetPalette.dark.accent)
+                .monospacedDigit()
+                .accessibilityElement(children: .combine)
                 .environment(\.colorScheme, .dark)
             } compactTrailing: {
-                Text(MatchLiveActivityScores(state: context.state, hidden: hidden).series)
-                    .font(PrismWidgetFont.regular(13, relativeTo: .caption))
-                    .foregroundStyle(PrismWidgetPalette.dark.accent)
-                    .monospacedDigit()
+                HStack(spacing: 4) {
+                    Text(scores.primaryRight)
+                    MatchLiveActivityLogo(team: context.state.teams.dropFirst().first, size: 20)
+                }
+                .font(PrismWidgetFont.regular(13, relativeTo: .caption))
+                .foregroundStyle(PrismWidgetPalette.dark.accent)
+                .monospacedDigit()
+                .accessibilityElement(children: .combine)
+                .environment(\.colorScheme, .dark)
             } minimal: {
                 MatchLiveActivityLogo(team: context.state.teams.first, size: 20)
                     .environment(\.colorScheme, .dark)
@@ -130,7 +140,11 @@ private struct MatchLiveActivityLogo: View {
 
     var body: some View {
         Group {
-            if let image = MatchActivityLogoCache.image(for: team?.img) {
+            if let image = MatchActivityLogoCache.image(
+                for: team?.img,
+                appearance: colorScheme == .dark ? .dark : .light,
+                size: size <= 20 ? .compact : .expanded
+            ) {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
