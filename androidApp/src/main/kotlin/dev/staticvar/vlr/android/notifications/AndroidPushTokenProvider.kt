@@ -30,8 +30,12 @@ internal class AndroidPushTokenProvider(context: Context) : PushTokenProvider {
       callback = onToken
       generation
     }
-    FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
-      publish(token, requestGeneration)
+    try {
+      FirebaseMessaging.getInstance().token
+        .addOnSuccessListener { token -> publish(token, requestGeneration) }
+        .addOnFailureListener { error -> LiveNotificationDiagnostics.failed("token_request", error) }
+    } catch (error: RuntimeException) {
+      LiveNotificationDiagnostics.failed("token_request", error)
     }
   }
 

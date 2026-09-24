@@ -152,10 +152,12 @@ class AndroidLiveMatchNotificationsTest {
     assertTrue(store.shouldAccept(live))
     store.record(live)
     assertFalse(store.shouldAccept(live))
+    assertEquals("duplicate_or_out_of_order", store.rejectionReason(live))
     assertFalse(store.shouldAccept(live.copy(observedAt = 39)))
     assertTrue(store.shouldAccept(terminal.copy(observedAt = 40)))
     store.record(terminal.copy(observedAt = 40))
     assertFalse(store.shouldAccept(live.copy(observedAt = 42)))
+    assertEquals("match_terminal", store.rejectionReason(live.copy(observedAt = 42)))
   }
 
   @Test
@@ -164,6 +166,7 @@ class AndroidLiveMatchNotificationsTest {
     LiveMatchNotificationStateStore(context).dismiss(update.matchId)
 
     assertFalse(LiveMatchNotificationStateStore(context).shouldAccept(update))
+    assertEquals("match_dismissed", LiveMatchNotificationStateStore(context).rejectionReason(update))
   }
 
   @Test

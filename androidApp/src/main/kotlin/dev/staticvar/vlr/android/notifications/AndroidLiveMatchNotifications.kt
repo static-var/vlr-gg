@@ -24,6 +24,7 @@ import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepositor
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import dev.staticvar.vlr.core.notifications.LiveUpdateStateProvider
 import dev.staticvar.vlr.core.notifications.PushPlatform
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
@@ -64,20 +65,36 @@ internal class AndroidLiveMatchNotifications(
    */
   fun handle(data: Map<String, String>) {
     synchronized(lock) {
-      if (!AndroidLiveNotificationAvailability.isAvailable(appContext) ||
-        !preferences.preferences.value.enabled || !canPostNotifications()
-      ) return
+      if (!AndroidLiveNotificationAvailability.isAvailable(appContext)) {
+        LiveNotificationDiagnostics.skipped("device_unavailable")
+        return
+      }
+      if (!preferences.preferences.value.enabled) {
+        LiveNotificationDiagnostics.skipped("preference_disabled")
+        return
+      }
+      if (!canPostNotifications()) {
+        LiveNotificationDiagnostics.skipped("notification_permission_or_channel_blocked")
+        return
+      }
       val update = parser.parse(data) ?: return
-      if (!stateStore.shouldAccept(update)) return
+      stateStore.rejectionReason(update)?.let { reason ->
+        LiveNotificationDiagnostics.skipped(reason, update.matchId)
+        return
+      }
 
       val notification = try {
         renderer.build(update, spoilerPreferences.enabled.value)
-      } catch (_: Exception) {
+      } catch (error: Exception) {
+        if (error is CancellationException) throw error
+        LiveNotificationDiagnostics.failed("render", error)
         return
       }
       try {
         notificationManager.notify(notificationTag(update.matchId), NotificationId, notification)
-      } catch (_: Exception) {
+      } catch (error: Exception) {
+        if (error is CancellationException) throw error
+        LiveNotificationDiagnostics.failed("post", error)
         return
       }
       stateStore.record(update)
@@ -165,13 +182,19 @@ internal data class LiveMatchMap(val name: String, val scores: List<Int?>, val n
 /** Parses and validates live match snapshots from Firebase messages. */
 internal class LiveMatchUpdateParser(private val json: Json) {
   fun parse(data: Map<String, String>): LiveMatchUpdate? {
-    if (data[PayloadTypeKey] != PayloadType) return null
-    val encodedState = data[StateKey] ?: return null
-    return try {
-      parseState(json.parseToJsonElement(encodedState).jsonObject)
-    } catch (_: Exception) {
+    if (data[PayloadTypeKey] != PayloadType) {
+      LiveNotificationDiagnostics.skipped("unsupported_payload_type")
+      return null
+    }
+    val encodedState = data[StateKey]
+    val update = try {
+      encodedState?.let { parseState(json.parseToJsonElement(it).jsonObject) }
+    } catch (error: Exception) {
+      if (error is CancellationException) throw error
       null
     }
+    if (update == null) LiveNotificationDiagnostics.skipped("malformed_payload")
+    return update
   }
 
   private fun parseState(root: JsonObject): LiveMatchUpdate? {
@@ -248,12 +271,18 @@ internal class LiveMatchNotificationStateStore(
    * Rejects dismissed, finished, and older match updates.
    * Allows a final update with the same timestamp as the last live update.
    */
-  fun shouldAccept(update: LiveMatchUpdate): Boolean {
-    if (storage.getBoolean(update.key(DismissedSuffix), false) ||
-      storage.getBoolean(update.key(TerminalSuffix), false)
-    ) return false
+  fun shouldAccept(update: LiveMatchUpdate): Boolean = rejectionReason(update) == null
+
+  /** Reports the saved-state rule that rejects an update without exposing its contents. */
+  fun rejectionReason(update: LiveMatchUpdate): String? {
+    if (storage.getBoolean(update.key(DismissedSuffix), false)) return "match_dismissed"
+    if (storage.getBoolean(update.key(TerminalSuffix), false)) return "match_terminal"
     val lastObservedAt = storage.getLong(update.key(ObservedAtSuffix), -1)
-    return update.observedAt > lastObservedAt || (update.terminal && update.observedAt == lastObservedAt)
+    return if (update.observedAt > lastObservedAt || (update.terminal && update.observedAt == lastObservedAt)) {
+      null
+    } else {
+      "duplicate_or_out_of_order"
+    }
   }
 
   fun record(update: LiveMatchUpdate) {
