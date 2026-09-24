@@ -31,6 +31,7 @@ sealed interface DirectFavorite {
     override val id: String,
     override val title: String,
     override val imageUrl: String,
+    val currentTeamId: String? = null,
   ) : DirectFavorite
 }
 

@@ -21,12 +21,12 @@ internal class FavoritesRepositoryImpl(
   private val dispatchers: DispatcherProvider,
 ) : FavoritesRepository {
   override fun observeDirectFavorites(): Flow<DirectFavoriteSnapshot> = database.homeQueries
-    .getDirectFavorites { entityType, id, title, imageUrl ->
+    .getDirectFavorites { entityType, id, title, imageUrl, currentTeamId ->
       when (entityType) {
         "TEAM" -> DirectFavorite.Team(id = id, title = title, imageUrl = imageUrl)
         "EVENT" -> DirectFavorite.Event(id = id, title = title, imageUrl = imageUrl)
         "MATCH" -> DirectFavorite.Match(id = id, title = title, imageUrl = imageUrl)
-        "PLAYER" -> DirectFavorite.Player(id = id, title = title, imageUrl = imageUrl)
+        "PLAYER" -> DirectFavorite.Player(id = id, title = title, imageUrl = imageUrl, currentTeamId = currentTeamId)
         else -> error("Unknown direct favorite type: $entityType")
       }
     }
