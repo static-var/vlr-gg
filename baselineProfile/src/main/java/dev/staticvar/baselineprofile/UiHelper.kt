@@ -52,16 +52,17 @@ internal fun UiDevice.browseMatches() {
   browseList()
   openFirstCard(By.clickable(true).longClickable(true))
   requireSubtitle("Maps, scores and player stats")
-  val addedFavorite = addFavorite("match", inheritedDescription = "Favorite match")
+  val favoriteAction = requireObject(
+    By.desc(Pattern.compile("Add match to favorites|Remove match from favorites|Favorite match")),
+  )
+  check(!favoriteAction.isEnabled) {
+    "Completed match favorite action must be disabled"
+  }
   check(wait(Until.gone(By.textStartsWith("Loading match details")), TIMEOUT)) {
     "Match breakdown did not finish loading"
   }
   scrollTo(By.text(Pattern.compile("Maps|No match breakdown yet")))
   browseList()
-  if (addedFavorite) {
-    scrollTo(By.desc("Remove match from favorites"), Direction.UP).click(100)
-    requireObject(By.desc("Add match to favorites"))
-  }
   pressBack()
   requireSubtitle("Results, schedules and live scores")
 }
@@ -135,11 +136,11 @@ internal fun UiDevice.browseTeamAndPlayer() {
   requireSubtitle("Your Favorites")
 }
 
-private fun UiDevice.addFavorite(kind: String, inheritedDescription: String? = null): Boolean {
+private fun UiDevice.addFavorite(kind: String): Boolean {
   val add = By.desc("Add $kind to favorites")
   val remove = By.desc("Remove $kind from favorites")
   awaitUi("$kind favorite action") {
-    hasObject(add) || hasObject(remove) || inheritedDescription?.let { hasObject(By.desc(it)) } == true
+    hasObject(add) || hasObject(remove)
   }
   if (!hasObject(add)) return false
   requireObject(add).click(100)
@@ -227,7 +228,7 @@ private fun UiDevice.openFirstCard(selector: BySelector = By.clickable(true)) {
       SystemClock.sleep(200)
       if (card.visibleBounds == bounds) {
         Log.i("VlrProfile", "Opening card at $bounds: ${card.findObjects(By.clazz("android.widget.TextView")).map { it.text }}")
-        card.click(100)
+        card.activate()
       } else null
     }
   }

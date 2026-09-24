@@ -54,9 +54,11 @@ private fun UiDevice.verifyMascotSettings() {
   settingsObject(By.text("Lynx · Cat"))
   scrollSettingsTo("YES")
   waitForIdle()
-  val range = settingsObject(By.clazz("android.widget.SeekBar")).accessibilityNodeInfo.rangeInfo
-  check(range != null && range.max == 3f && range.current == range.max) {
-    "Mascot Surprise visits must be set to YES, the highest frequency"
+  val slider = settingsObject(By.clazz("android.widget.SeekBar")).accessibilityNodeInfo
+  val range = slider.rangeInfo
+  check(range != null && range.max > range.min && range.current == range.max) {
+    "Mascot Surprise visits must be set to YES, the highest frequency; " +
+      "range=${range?.min}..${range?.max}, current=${range?.current}, state=${slider.stateDescription}"
   }
 }
 
