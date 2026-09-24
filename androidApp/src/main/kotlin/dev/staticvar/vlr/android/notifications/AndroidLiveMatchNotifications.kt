@@ -14,9 +14,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import dev.staticvar.vlr.android.MainActivity
+import dev.staticvar.vlr.android.BuildConfig
 import dev.staticvar.vlr.android.R
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
@@ -79,6 +81,19 @@ internal class AndroidLiveMatchNotifications(
         return
       }
       stateStore.record(update)
+      if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= 36) {
+        runCatching {
+          val posted = notificationManager.activeNotifications.firstOrNull {
+            it.tag == notificationTag(update.matchId) && it.id == NotificationId
+          }
+          Log.d(
+            "LiveMatchNotifications",
+            "sdk=${Build.VERSION.SDK_INT}, promotionAllowed=${notificationManager.canPostPromotedNotifications()}, " +
+              "promotable=${notification.hasPromotableCharacteristics()}, " +
+              "immediatePostedPromotedSnapshot=${posted?.notification?.let { it.flags and Notification.FLAG_PROMOTED_ONGOING != 0 }}",
+          )
+        }
+      }
     }
   }
 

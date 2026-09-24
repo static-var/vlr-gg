@@ -13,9 +13,7 @@ import com.google.firebase.FirebaseApp
 /** Checks Android version, Google Play services, and Firebase support for live notifications. */
 internal object AndroidLiveNotificationAvailability {
   fun isAvailable(context: Context): Boolean {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA ||
-      Build.VERSION.SDK_INT_FULL < Build.VERSION_CODES_FULL.BAKLAVA_1
-    ) return false
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA) return false
 
     return try {
       GoogleApiAvailabilityLight.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS &&

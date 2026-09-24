@@ -10,6 +10,9 @@ import android.app.NotificationManager
 import android.os.Build
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailabilityLight
+import com.google.firebase.FirebaseApp
 import dev.staticvar.vlr.android.R
 import kotlinx.serialization.json.Json
 import org.junit.After
@@ -20,12 +23,23 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.Assume.assumeTrue
 import org.koin.mp.KoinPlatform
 
 /** Checks live notification parsing, saved state, and Android rendering. */
 class AndroidLiveMatchNotificationsTest {
   private val context = InstrumentationRegistry.getInstrumentation().targetContext
   private val fixtureIds = setOf("991000001", "991000002")
+
+  @Test
+  @SdkSuppress(minSdkVersion = 36)
+  fun liveNotificationsAreAvailableWithPlayServicesAndFirebaseOnAndroid16() {
+    assumeTrue(GoogleApiAvailabilityLight.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS)
+    val options = FirebaseApp.getInstance().options
+    assumeTrue(options.applicationId.isNotBlank() && !options.gcmSenderId.isNullOrBlank())
+
+    assertTrue(AndroidLiveNotificationAvailability.isAvailable(context))
+  }
 
   @Before
   fun clearPreviousFixtureState() {
