@@ -123,4 +123,11 @@
     <string name="live_match_updates">Atualizações de partidas ao vivo</string>
     <string name="live_match_updates_description">Acompanhe os placares ao vivo nas notificações.</string>
     <string name="notifications_permission_description">Permita as notificações para receber atualizações de partidas ao vivo.</string>
+    <string name="release_1_0_4_introduction">Acompanhe placares ao vivo, personalize o visual do app e veja mais detalhes das partidas.</string>
+    <string name="release_1_0_4_live_title">Placares ao vivo dos seus favoritos</string>
+    <string name="release_1_0_4_live_description">Ative os placares ao vivo de partidas e eventos favoritos em dispositivos compatíveis, com Atividades ao Vivo no iOS e Live Updates no Android.</string>
+    <string name="release_1_0_4_appearance_title">Deixe o app com a sua cara</string>
+    <string name="release_1_0_4_appearance_description">Escolha o ícone, o tema e o mascote do app nas novas configurações de Aparência.</string>
+    <string name="release_1_0_4_matches_title">Mais detalhes de cada partida</string>
+    <string name="release_1_0_4_matches_description">Confira os resultados dos rounds e suas partidas favoritas recentes, com transições mais suaves para partidas e eventos e menos atualizações em segundo plano.</string>
 </resources>

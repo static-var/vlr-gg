@@ -121,4 +121,11 @@
     <string name="live_match_updates">경기 실시간 소식</string>
     <string name="live_match_updates_description">알림에서 실시간 점수를 확인하세요.</string>
     <string name="notifications_permission_description">경기 실시간 소식을 받으려면 알림을 허용하세요.</string>
+    <string name="release_1_0_4_introduction">실시간 점수를 확인하고 앱의 모양을 바꾸며 더 자세한 경기 정보를 살펴보세요.</string>
+    <string name="release_1_0_4_live_title">즐겨찾는 경기의 실시간 점수</string>
+    <string name="release_1_0_4_live_description">지원되는 기기에서 즐겨찾는 경기와 이벤트의 실시간 점수를 켜세요. iOS에서는 실시간 현황, Android에서는 Live Updates로 확인할 수 있습니다.</string>
+    <string name="release_1_0_4_appearance_title">나만의 앱 꾸미기</string>
+    <string name="release_1_0_4_appearance_description">새로운 모양 설정에서 앱 아이콘, 테마, 마스코트를 선택하세요.</string>
+    <string name="release_1_0_4_matches_title">더 자세한 경기 정보</string>
+    <string name="release_1_0_4_matches_description">라운드 결과와 최근 즐겨찾는 경기를 확인하세요. 경기 및 이벤트 화면 전환이 더 부드러워지고 백그라운드 새로고침이 줄었습니다.</string>
 </resources>

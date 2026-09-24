@@ -121,4 +121,11 @@
     <string name="live_match_updates">Canlı maç güncellemeleri</string>
     <string name="live_match_updates_description">Canlı skorları bildirimlerden takip et.</string>
     <string name="notifications_permission_description">Canlı maç güncellemelerini almak için bildirimlere izin ver.</string>
+    <string name="release_1_0_4_introduction">Canlı skorları takip edin, uygulamanın görünümünü seçin ve daha fazla maç ayrıntısını keşfedin.</string>
+    <string name="release_1_0_4_live_title">Favorilerinizin canlı skorları</string>
+    <string name="release_1_0_4_live_description">Desteklenen cihazlarda favori maç ve etkinliklerinizin canlı skorlarını açın: iOS’ta Canlı Etkinlikler, Android’de Live Updates ile takip edin.</string>
+    <string name="release_1_0_4_appearance_title">Uygulamayı kendinize göre ayarlayın</string>
+    <string name="release_1_0_4_appearance_description">Yeni Görünüm ayarlarından uygulama simgesini, temayı ve maskotu seçin.</string>
+    <string name="release_1_0_4_matches_title">Her maçtan daha fazla ayrıntı</string>
+    <string name="release_1_0_4_matches_description">Raunt sonuçlarını ve yakın zamandaki favori maçlarınızı görün. Maç ve etkinlik geçişleri daha akıcı, arka plan yenilemeleri ise daha az.</string>
 </resources>
