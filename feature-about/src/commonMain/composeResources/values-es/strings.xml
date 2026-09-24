@@ -123,6 +123,11 @@
     <string name="live_match_updates">Actualizaciones de partidas en directo</string>
     <string name="live_match_updates_description">Sigue los resultados en directo en las notificaciones.</string>
     <string name="notifications_permission_description">Permite las notificaciones para recibir actualizaciones de partidas en directo.</string>
+    <string name="release_1_0_4_introduction">Sigue los marcadores en directo, personaliza la app y descubre más detalles de cada partida.</string>
+    <string name="release_1_0_4_live_title">Marcadores en directo de tus favoritos</string>
+    <string name="release_1_0_4_live_description">Activa los marcadores en directo de tus partidas y eventos favoritos en dispositivos compatibles, con Actividades en directo en iOS y Live Updates en Android.</string>
+    <string name="release_1_0_4_appearance_title">Personaliza la app</string>
+    <string name="release_1_0_4_appearance_description">Elige el icono, el tema y la mascota de la app en los nuevos ajustes de Apariencia.</string>
     <string name="notification_promotion_unavailable">Los resultados en directo pueden seguir apareciendo como notificaciones normales. Tu dispositivo no permite actualizaciones en directo destacadas para esta app. Revisa los ajustes de notificaciones del sistema; la disponibilidad también depende del dispositivo.</string>
     <string name="match_alerts">Alertas de partidos</string>
     <string name="match_alerts_description">Recibe una notificación cuando empiece un partido favorito. Las actualizaciones de resultados en directo no están disponibles en este dispositivo.</string>
