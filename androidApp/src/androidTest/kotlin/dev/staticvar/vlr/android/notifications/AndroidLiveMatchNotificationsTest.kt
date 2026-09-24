@@ -8,6 +8,8 @@ import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.graphics.Bitmap
+import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.SystemClock
 import android.text.Spanned
@@ -184,6 +186,12 @@ class AndroidLiveMatchNotificationsTest {
     assertEquals(listOf(1, 1, 1), progress.progressSegments.map { it.length })
     assertEquals(listOf(1, 2, 3), progress.progressPoints.map { it.position })
     assertEquals("Team Liquid : 1\nPaper Rex : 1", notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+    assertEquals(null, progress.progressStartIcon)
+
+    val logo = Icon.createWithBitmap(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
+    val withLogos = renderer.build(live, scoresHidden = false, sdkInt = 36, logos = TeamLogos(logo, logo))
+    val logoProgress = Notification.Builder.recoverBuilder(context, withLogos).style as Notification.ProgressStyle
+    assertTrue(logoProgress.progressStartIcon != null && logoProgress.progressEndIcon != null)
 
     val firstMap = live.copy(currentMap = live.currentMap?.copy(number = 1))
     assertEquals(LiveMatchMapProgress(1, 3), firstMap.mapProgress())

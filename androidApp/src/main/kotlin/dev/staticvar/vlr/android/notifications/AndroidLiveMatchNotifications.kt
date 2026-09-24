@@ -14,6 +14,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.drawable.Icon
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -62,6 +63,7 @@ internal class AndroidLiveMatchNotifications(
   private val parser = LiveMatchUpdateParser(json)
   private val stateStore = LiveMatchNotificationStateStore(appContext)
   private val renderer = LiveMatchNotificationRenderer(appContext)
+  private val logoLoader = TeamLogoLoader(appContext)
   private val lock = Any()
   private val dismissed = MutableStateFlow(stateStore.dismissedMatchIds())
   override val dismissedMatchIds = dismissed.asStateFlow()
@@ -113,7 +115,9 @@ internal class AndroidLiveMatchNotifications(
 
       val generation = UUID.randomUUID().toString()
       val notification = try {
-        renderer.build(update, spoilerPreferences.enabled.value, generation = generation)
+        val scoresHidden = spoilerPreferences.enabled.value
+        val logos = if (!scoresHidden && update.mapProgress() != null) teamLogos(update) else null
+        renderer.build(update, scoresHidden, logos = logos, generation = generation)
       } catch (error: Exception) {
         if (error is CancellationException) throw error
         LiveNotificationDiagnostics.failed("render", error)
@@ -176,6 +180,12 @@ internal class AndroidLiveMatchNotifications(
     }
   }
 
+  /** Loads both team logos only when API 36 can show them beside the progress bar. */
+  private fun teamLogos(update: LiveMatchUpdate): TeamLogos? {
+    if (Build.VERSION.SDK_INT != 36) return null
+    return TeamLogos(logoLoader.load(update.teams[0].imageUrl), logoLoader.load(update.teams[1].imageUrl))
+  }
+
   private fun canPostNotifications(): Boolean {
     if (!notificationManager.areNotificationsEnabled()) return false
     if (Build.VERSION.SDK_INT >= 33 &&
@@ -226,6 +236,9 @@ internal data class LiveMatchTeam(
 ) {
   val displayName: String get() = tag?.trim()?.takeIf(String::isNotEmpty) ?: name
 }
+
+/** Holds the two team logos shown at either end of the map progress bar. */
+internal data class TeamLogos(val first: Icon?, val second: Icon?)
 
 /** Holds the current map name, round scores, and map number. */
 internal data class LiveMatchMap(val name: String, val scores: List<Int?>, val number: Int? = null)
@@ -460,6 +473,7 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
     update: LiveMatchUpdate,
     scoresHidden: Boolean,
     sdkInt: Int = Build.VERSION.SDK_INT,
+    logos: TeamLogos? = null,
     generation: String = UUID.randomUUID().toString(),
   ): Notification {
     val openMatch = PendingIntent.getActivity(
@@ -491,7 +505,7 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
       return builder.setOngoing(false).setAutoCancel(true).build()
     }
 
-    applyLive(builder, update, scoresHidden, sdkInt)
+    applyLive(builder, update, scoresHidden, sdkInt, logos)
     builder
       .setOngoing(true)
       .setAutoCancel(false)
@@ -514,7 +528,13 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
     return builder.build()
   }
 
-  private fun applyLive(builder: Notification.Builder, update: LiveMatchUpdate, scoresHidden: Boolean, sdkInt: Int) {
+  private fun applyLive(
+    builder: Notification.Builder,
+    update: LiveMatchUpdate,
+    scoresHidden: Boolean,
+    sdkInt: Int,
+    logos: TeamLogos?,
+  ) {
     val seriesScore = scorePair(update.teams.map(LiveMatchTeam::score), scoresHidden)
     val map = update.currentMap
     if (sdkInt >= 37 && map != null) {
@@ -541,7 +561,7 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
       .setSubText(if (scoresHidden) context.getString(R.string.widget_scores_hidden) else seriesScore)
     val progress = update.mapProgress()
     if (sdkInt >= 36 && progress != null && !scoresHidden) {
-      Api36Notification.applyProgressStyle(builder, progress, colors)
+      Api36Notification.applyProgressStyle(builder, progress, colors, logos)
     } else {
       builder.setStyle(Notification.BigTextStyle().bigText(scoreLines))
     }
@@ -647,18 +667,25 @@ internal fun LiveMatchUpdate.mapProgress(): LiveMatchMapProgress? {
 /** Applies the map progress notification style available on Android API 36. */
 @RequiresApi(36)
 private object Api36Notification {
-  fun applyProgressStyle(builder: Notification.Builder, progress: LiveMatchMapProgress, colors: LiveMatchTeamColors) {
-    builder.setStyle(
-      Notification.ProgressStyle()
-        .setProgressSegments(List(progress.totalMaps) { index ->
-          Notification.ProgressStyle.Segment(1).setColor(colors.winner(progress.winnerTeamIndices[index]))
-        })
-        .setProgressPoints(List(progress.totalMaps) { index ->
-          Notification.ProgressStyle.Point(index + 1).setColor(colors.winner(progress.winnerTeamIndices[index]))
-        })
-        .setStyledByProgress(false)
-        .setProgress(progress.currentMapNumber),
-    )
+  fun applyProgressStyle(
+    builder: Notification.Builder,
+    progress: LiveMatchMapProgress,
+    colors: LiveMatchTeamColors,
+    logos: TeamLogos?,
+  ) {
+    val style = Notification.ProgressStyle()
+      .setProgressSegments(List(progress.totalMaps) { index ->
+        Notification.ProgressStyle.Segment(1).setColor(colors.winner(progress.winnerTeamIndices[index]))
+      })
+      .setProgressPoints(List(progress.totalMaps) { index ->
+        Notification.ProgressStyle.Point(index + 1).setColor(colors.winner(progress.winnerTeamIndices[index]))
+      })
+      .setStyledByProgress(false)
+      .setProgress(progress.currentMapNumber)
+    // Team logos flank the map bar, mirroring the logo-score-logo layout of the iOS Live Activity.
+    logos?.first?.let(style::setProgressStartIcon)
+    logos?.second?.let(style::setProgressEndIcon)
+    builder.setStyle(style)
   }
 }
 
