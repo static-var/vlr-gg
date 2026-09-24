@@ -27,6 +27,7 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
+import coil3.size.Scale
 import dev.staticvar.designsystem.component.icon.PrismIcon
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
@@ -68,8 +69,10 @@ public fun SharedNetworkIcon(
 
   val useConditionalOutline = conditionalOutline && size != PrismIconSize.Small && tint == PrismIconTint.None && contentScale == ContentScale.Fit
   val context = LocalPlatformContext.current
-  val request = remember(context, imageUrl, useConditionalOutline) {
-    ImageRequest.Builder(context).data(imageUrl).apply {
+  // Share one decode size across list and hero icons, independent of animated bounds.
+  val decodeSizePx = with(LocalDensity.current) { PrismIconSize.Hero.containerSizeDp.roundToPx() }
+  val request = remember(context, imageUrl, useConditionalOutline, decodeSizePx) {
+    ImageRequest.Builder(context).data(imageUrl).size(decodeSizePx).scale(Scale.FIT).apply {
       if (useConditionalOutline) softwareLogo()
     }.build()
   }
@@ -124,7 +127,7 @@ private fun SharedNetworkIconFallback(
   style: PrismIconStyle,
   tint: PrismIconTint,
 ) {
-  val containerSize = size.fallbackContainerSize
+  val containerSize = size.containerSizeDp
   PrismSurface(
     modifier = modifier.size(containerSize),
     color = when (tint) {
@@ -155,7 +158,7 @@ private fun SharedNetworkIconFallback(
   }
 }
 
-private val PrismIconSize.fallbackContainerSize: Dp
+private val PrismIconSize.containerSizeDp: Dp
   get() = when (this) {
     PrismIconSize.Size16 -> 16.dp
     PrismIconSize.Size32 -> 32.dp
