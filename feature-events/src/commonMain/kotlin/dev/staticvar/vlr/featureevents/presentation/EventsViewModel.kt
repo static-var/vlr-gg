@@ -44,7 +44,6 @@ public class EventsViewModel(
     val filter = selected ?: EventStatusFilter.Ongoing
     EventsUiState(
       events = events,
-      filteredEvents = events.filterByStatus(filter),
       selectedStatus = filter,
       isLoading = refresh.isLoading(hasContent = events.isNotEmpty()),
       isRefreshing = refresh.isRefreshing,
@@ -72,6 +71,8 @@ internal fun List<EventPreview>.filterByStatus(filter: EventStatusFilter): List<
   filter { event -> eventStatusToFilter(event.status) == filter }
 
 private fun List<EventPreview>.availableStatusOrSelected(selectedStatus: EventStatusFilter): EventStatusFilter =
-  EventStatusFilter.entries.firstOrNull { filter -> filter == selectedStatus && filterByStatus(filter).isNotEmpty() }
-    ?: EventStatusFilter.entries.firstOrNull { filter -> filterByStatus(filter).isNotEmpty() }
-    ?: selectedStatus
+  if (any { eventStatusToFilter(it.status) == selectedStatus }) {
+    selectedStatus
+  } else {
+    EventStatusFilter.entries.firstOrNull { filter -> any { eventStatusToFilter(it.status) == filter } } ?: selectedStatus
+  }

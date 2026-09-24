@@ -46,7 +46,6 @@ public class MatchesViewModel(
     val filter = selected ?: MatchStatusFilter.Live
     MatchesUiState(
       matches = matches,
-      filteredMatches = matches.filterByStatus(filter),
       selectedStatus = filter,
       isLoading = refresh.isLoading(hasContent = matches.isNotEmpty()),
       isRefreshing = refresh.isRefreshing,
@@ -70,18 +69,18 @@ private fun matchStatusToFilter(status: MatchStatus): MatchStatusFilter = when (
 }
 
 internal fun List<MatchPreview>.filterByStatus(filter: MatchStatusFilter): List<MatchPreview> {
-  val filtered = filter { match ->
-    when (filter) {
-      MatchStatusFilter.Live -> match.status == MatchStatus.LIVE
-      MatchStatusFilter.Upcoming -> match.status == MatchStatus.UPCOMING
-      MatchStatusFilter.Completed -> match.status == MatchStatus.COMPLETED
-    }
-  }
+  val filtered = filter { it.matchesStatus(filter) }
   return when (filter) {
     MatchStatusFilter.Live -> filtered.sortedBy { match -> match.sortEpochMillis(nullsLast = true) }
     MatchStatusFilter.Upcoming -> filtered.sortedWith(upcomingMatchComparator(nowEpochMillis = Clock.System.now().toEpochMilliseconds()))
     MatchStatusFilter.Completed -> filtered.sortedByDescending { match -> match.sortEpochMillis(nullsLast = false) }
   }
+}
+
+private fun MatchPreview.matchesStatus(filter: MatchStatusFilter): Boolean = when (filter) {
+  MatchStatusFilter.Live -> status == MatchStatus.LIVE
+  MatchStatusFilter.Upcoming -> status == MatchStatus.UPCOMING
+  MatchStatusFilter.Completed -> status == MatchStatus.COMPLETED
 }
 
 private fun upcomingMatchComparator(nowEpochMillis: Long): Comparator<MatchPreview> = compareBy<MatchPreview> { match ->
@@ -96,6 +95,8 @@ private fun MatchPreview.sortEpochMillis(nullsLast: Boolean): Long = time
   ?: if (nullsLast) Long.MAX_VALUE else Long.MIN_VALUE
 
 private fun List<MatchPreview>.availableStatusOrSelected(selectedStatus: MatchStatusFilter): MatchStatusFilter =
-  MatchStatusFilter.entries.firstOrNull { filter -> filter == selectedStatus && filterByStatus(filter).isNotEmpty() }
-    ?: MatchStatusFilter.entries.firstOrNull { filter -> filterByStatus(filter).isNotEmpty() }
-    ?: selectedStatus
+  if (any { it.matchesStatus(selectedStatus) }) {
+    selectedStatus
+  } else {
+    MatchStatusFilter.entries.firstOrNull { filter -> any { it.matchesStatus(filter) } } ?: selectedStatus
+  }

@@ -126,10 +126,7 @@ public fun MatchPreviewItem(
           if (sharing) {
             footerAction?.invoke()
           } else {
-            MatchFavoriteReasons(
-              reasons = matchPreview.favoriteReasons,
-              modifier = Modifier.matchSharedBounds(matchPreview.id, MatchSharedContent.Reasons),
-            )
+            MatchFavoriteReasons(reasons = matchPreview.favoriteReasons)
           }
         }
       }

@@ -156,8 +156,8 @@ internal fun MatchDetailsScreen(
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val mascotCharacter = LocalMascotCharacter.current
   val spoilersHidden = LocalSpoilerMode.current.enabled
-  val candidates = remember(match, uiState.favoriteTeamIds, uiState.favoritePlayerIds, resolvedMapIndex, spoilersHidden) {
-    match?.takeUnless { spoilersHidden }?.let {
+  val candidates = remember(match, uiState.favoriteTeamIds, uiState.favoritePlayerIds, resolvedMapIndex, spoilersHidden, mascotCharacter) {
+    match?.takeUnless { spoilersHidden || mascotCharacter == null }?.let {
       matchMascotCues(
         it,
         uiState.favoriteTeamIds,

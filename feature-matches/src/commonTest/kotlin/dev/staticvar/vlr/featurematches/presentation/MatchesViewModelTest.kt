@@ -65,7 +65,7 @@ class MatchesViewModelTest {
       advanceUntilIdle()
 
       assertEquals(MatchStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
-      assertEquals(listOf("m1"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
+      assertEquals(listOf("m1"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
       assertEquals(0, repository.refreshMatchesCallCount)
     }
   }
@@ -93,7 +93,7 @@ class MatchesViewModelTest {
     viewModel.selectFilter(MatchStatusFilter.Live)
     advanceUntilIdle()
 
-    assertEquals(emptyList(), viewModel.uiState.value.filteredMatches)
+    assertEquals(emptyList(), viewModel.uiState.value.pageMatches)
     assertEquals(listOf(cached), viewModel.uiState.value.matches)
     assertEquals(false, viewModel.uiState.value.isLoading)
     assertEquals(null, viewModel.uiState.value.errorMessage)
@@ -114,7 +114,7 @@ class MatchesViewModelTest {
       advanceUntilIdle()
 
       assertEquals(MatchStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
-      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
+      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
     }
   }
 
@@ -134,20 +134,20 @@ class MatchesViewModelTest {
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
 
-      assertEquals(listOf("live-earlier", "live-later"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
+      assertEquals(listOf("live-earlier", "live-later"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
 
       viewModel.selectFilter(MatchStatusFilter.Upcoming)
       advanceUntilIdle()
-      assertEquals(listOf("upcoming-earlier", "upcoming-later"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
+      assertEquals(listOf("upcoming-earlier", "upcoming-later"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
 
       viewModel.selectFilter(MatchStatusFilter.Completed)
       advanceUntilIdle()
-      assertEquals(listOf("completed-newer", "completed-older"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
+      assertEquals(listOf("completed-newer", "completed-older"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
     }
   }
 
   @Test
-  fun selectFilterUpdatesFilteredMatches() {
+  fun selectFilterUpdatesSelectedPage() {
     runTest(dispatcher) {
       val repository =
         FakeMatchRepository(
@@ -164,7 +164,7 @@ class MatchesViewModelTest {
       viewModel.selectFilter(MatchStatusFilter.Completed)
       advanceUntilIdle()
 
-      assertEquals(listOf("completed-1"), viewModel.uiState.value.filteredMatches.map(MatchPreview::id))
+      assertEquals(listOf("completed-1"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
     }
   }
 
@@ -174,7 +174,7 @@ class MatchesViewModelTest {
     val repository = FakeMatchRepository(matches = listOf(match))
     val viewModel = createViewModel(repository)
     advanceUntilIdle()
-    assertEquals(false, viewModel.uiState.value.filteredMatches.single().isFavorite)
+    assertEquals(false, viewModel.uiState.value.pageMatches.single().isFavorite)
 
     val reasons = listOf(
       MatchFavoriteReason(MatchFavoriteSource.TEAM, "100t", "100 Thieves"),
@@ -184,15 +184,18 @@ class MatchesViewModelTest {
     repository.matchesFlow.value = listOf(match.copy(isFavorite = true, favoriteReasons = reasons))
     advanceUntilIdle()
 
-    assertEquals(true, viewModel.uiState.value.filteredMatches.single().isFavorite)
-    assertEquals(false, viewModel.uiState.value.filteredMatches.single().isDirectFavorite)
-    assertEquals(reasons, viewModel.uiState.value.filteredMatches.single().favoriteReasons)
+    assertEquals(true, viewModel.uiState.value.pageMatches.single().isFavorite)
+    assertEquals(false, viewModel.uiState.value.pageMatches.single().isDirectFavorite)
+    assertEquals(reasons, viewModel.uiState.value.pageMatches.single().favoriteReasons)
 
     repository.matchesFlow.value = listOf(match)
     advanceUntilIdle()
-    assertEquals(false, viewModel.uiState.value.filteredMatches.single().isFavorite)
-    assertEquals(emptyList(), viewModel.uiState.value.filteredMatches.single().favoriteReasons)
+    assertEquals(false, viewModel.uiState.value.pageMatches.single().isFavorite)
+    assertEquals(emptyList(), viewModel.uiState.value.pageMatches.single().favoriteReasons)
   }
+
+  private val MatchesUiState.pageMatches: List<MatchPreview>
+    get() = matches.filterByStatus(selectedStatus)
 
   private fun createViewModel(repository: FakeMatchRepository): MatchesViewModel = MatchesViewModel(
     observeMatchListUseCase = ObserveMatchListUseCase(repository),

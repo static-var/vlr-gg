@@ -180,8 +180,8 @@ internal fun EventDetailsScreen(
   val participantsState = rememberLazyListState()
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val mascotCharacter = LocalMascotCharacter.current
-  val candidates = remember(event, uiState.favoriteTeamIds, spoilersHidden) {
-    if (spoilersHidden) emptyList() else event?.let { eventMascotCues(it, uiState.favoriteTeamIds) }.orEmpty()
+  val candidates = remember(event, uiState.favoriteTeamIds, spoilersHidden, mascotCharacter) {
+    if (spoilersHidden || mascotCharacter == null) emptyList() else event?.let { eventMascotCues(it, uiState.favoriteTeamIds) }.orEmpty()
   }
   val mascotState = rememberMascot(
     screenKey = event?.id ?: "event-details",

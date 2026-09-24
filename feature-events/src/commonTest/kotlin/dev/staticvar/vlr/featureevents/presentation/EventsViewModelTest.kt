@@ -61,13 +61,13 @@ class EventsViewModelTest {
     advanceUntilIdle()
 
     assertEquals(EventStatusFilter.Paused, viewModel.uiState.value.selectedStatus)
-    assertEquals(listOf("paused"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+    assertEquals(listOf("paused"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
     viewModel.selectFilter(EventStatusFilter.Unknown)
     advanceUntilIdle()
-    assertEquals(listOf("unknown"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+    assertEquals(listOf("unknown"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
     viewModel.selectFilter(EventStatusFilter.Upcoming)
     advanceUntilIdle()
-    assertEquals(listOf("upcoming"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+    assertEquals(listOf("upcoming"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
   }
 
   @Test
@@ -82,7 +82,7 @@ class EventsViewModelTest {
       advanceUntilIdle()
 
       assertEquals(EventStatusFilter.Completed, viewModel.uiState.value.selectedStatus)
-      assertEquals(listOf("e1"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+      assertEquals(listOf("e1"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
       assertEquals(0, repository.refreshEventsCallCount)
     }
   }
@@ -116,7 +116,7 @@ class EventsViewModelTest {
       advanceUntilIdle()
 
       assertEquals(EventStatusFilter.Upcoming, viewModel.uiState.value.selectedStatus)
-      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
     }
   }
 
@@ -130,7 +130,7 @@ class EventsViewModelTest {
     )
     val viewModel = createViewModel(FakeEventRepository(sourceOrder))
     advanceUntilIdle()
-    assertEquals(listOf("1657", "1015"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+    assertEquals(listOf("1657", "1015"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
   }
 
   @Test
@@ -149,20 +149,20 @@ class EventsViewModelTest {
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
 
-      assertEquals(listOf("ongoing-later", "ongoing-earlier"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+      assertEquals(listOf("ongoing-later", "ongoing-earlier"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
 
       viewModel.selectFilter(EventStatusFilter.Upcoming)
       advanceUntilIdle()
-      assertEquals(listOf("upcoming-later", "upcoming-earlier"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+      assertEquals(listOf("upcoming-later", "upcoming-earlier"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
 
       viewModel.selectFilter(EventStatusFilter.Completed)
       advanceUntilIdle()
-      assertEquals(listOf("completed-older", "completed-newer"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+      assertEquals(listOf("completed-older", "completed-newer"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
     }
   }
 
   @Test
-  fun selectFilterUpdatesFilteredEvents() {
+  fun selectFilterUpdatesSelectedPage() {
     runTest(dispatcher) {
       val repository =
         FakeEventRepository(
@@ -179,7 +179,7 @@ class EventsViewModelTest {
       viewModel.selectFilter(EventStatusFilter.Upcoming)
       advanceUntilIdle()
 
-      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.filteredEvents.map(EventPreview::id))
+      assertEquals(listOf("upcoming-1"), viewModel.uiState.value.pageEvents.map(EventPreview::id))
     }
   }
 
@@ -221,11 +221,14 @@ class EventsViewModelTest {
 
         val state = viewModel.uiState.value
         assertEquals(filter, state.selectedStatus)
-        assertTrue(state.filteredEvents.isEmpty())
+        assertTrue(state.pageEvents.isEmpty())
         assertTrue(filter in state.visibleStatusFilters)
 
       }
   }
+
+  private val EventsUiState.pageEvents: List<EventPreview>
+    get() = events.filterByStatus(selectedStatus)
 
   private fun createViewModel(repository: FakeEventRepository): EventsViewModel = EventsViewModel(
     observeEventListUseCase = ObserveEventListUseCase(repository),

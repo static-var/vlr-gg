@@ -46,7 +46,7 @@ public fun ProvideMatchTransitionScope(
 }
 
 internal enum class MatchSharedContent {
-  Card, Event, Series, Time, Status, Favorite, Reasons, TeamName, TeamScore,
+  Card, Event, Series, Time, Status, Favorite, TeamName, TeamScore,
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
