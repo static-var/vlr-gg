@@ -64,4 +64,5 @@
     <string name="mascot_team_won_and">%1$s venceu e</string>
     <string name="mascot_player_cooked_combined">%1$s amassou!!!</string>
     <string name="calendar_versus">vs.</string>
+  <string name="show_live_notification">Mostrar notificação ao vivo</string>
 </resources>

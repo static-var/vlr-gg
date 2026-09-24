@@ -64,4 +64,5 @@
     <string name="mascot_team_won_and">%1$s जीता और</string>
     <string name="mascot_player_cooked_combined">%1$s ने कमाल कर दिया!!!</string>
     <string name="calendar_versus">बनाम</string>
+  <string name="show_live_notification">लाइव सूचना दिखाएँ</string>
 </resources>

@@ -4,26 +4,31 @@
  */
 package dev.staticvar.vlr.android.notifications
 
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import android.os.SystemClock
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailabilityLight
 import com.google.firebase.FirebaseApp
+import com.russhwolf.settings.MapSettings
 import dev.staticvar.vlr.android.R
+import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
+import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import kotlinx.serialization.json.Json
 import org.junit.After
-import org.junit.Before
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Test
 import org.junit.Assume.assumeTrue
+import org.junit.Before
+import org.junit.Test
 import org.koin.mp.KoinPlatform
 
 /** Checks live notification parsing, saved state, and Android rendering. */
@@ -55,6 +60,7 @@ class AndroidLiveMatchNotificationsTest {
         remove("match.$matchId.observed_at")
         remove("match.$matchId.terminal")
         remove("match.$matchId.dismissed")
+        remove("match.$matchId.restoring")
         remove("match.$matchId.recorded_at")
       }
       putStringSet("tracked_matches", tracked)
@@ -170,6 +176,28 @@ class AndroidLiveMatchNotificationsTest {
   }
 
   @Test
+  fun explicitRestoreAllowsSameSnapshotOnceWithoutAcceptingOldOrFinishedState() {
+    val store = LiveMatchNotificationStateStore(context)
+    val live = update(matchId = "991000001", observedAt = 50)
+    store.record(live)
+    store.dismiss(live.matchId)
+    assertEquals(setOf(live.matchId), store.dismissedMatchIds().intersect(fixtureIds))
+    assertTrue(store.restore(live.matchId))
+    assertFalse(store.restore(live.matchId))
+    assertFalse(store.shouldAccept(live.copy(observedAt = 49)))
+    assertTrue(store.shouldAccept(live))
+    store.record(live)
+    store.rejectRestore(live.matchId)
+    assertFalse(live.matchId in store.dismissedMatchIds())
+    assertFalse(store.shouldAccept(live))
+    val final = live.copy(observedAt = 51, terminal = true)
+    store.record(final)
+    store.dismiss(live.matchId)
+    assertFalse(store.restore(live.matchId))
+    assertFalse(store.shouldAccept(live.copy(observedAt = 52)))
+  }
+
+  @Test
   fun staleLifecycleStateIsPrunedAfterTerminalDeliveryCanNoLongerArrive() {
     var now = 1_000_000L
     val terminal = update(matchId = "991000001", observedAt = 50).copy(terminal = true)
@@ -216,6 +244,51 @@ class AndroidLiveMatchNotificationsTest {
       val style = Notification.Builder.recoverBuilder(context, metric).style as Notification.MetricStyle
       assertEquals(listOf("Team Liquid", "Paper Rex"), style.metrics.map { it.label.toString() })
       assertEquals(2, style.metrics.size)
+    }
+  }
+
+  @Test
+  @SdkSuppress(minSdkVersion = 36)
+  fun dismissedNotificationCanBeRestoredFromTheSamePayload() {
+    assertTrue(AndroidLiveNotificationAvailability.isAvailable(context))
+    InstrumentationRegistry.getInstrumentation().uiAutomation
+      .grantRuntimePermission(context.packageName, Manifest.permission.POST_NOTIFICATIONS)
+    val preferences = LiveMatchNotificationPreferencesRepository(MapSettings()).apply { setEnabled(true) }
+    val notifications = AndroidLiveMatchNotifications(
+      context,
+      KoinPlatform.getKoin().get<Json>(),
+      preferences,
+      SpoilerPreferencesRepository(MapSettings()),
+    )
+    val manager = context.getSystemService(NotificationManager::class.java)
+    val matchId = "991000001"
+    val tag = "live-match-$matchId"
+    fun awaitVisible(visible: Boolean) {
+      val deadline = SystemClock.elapsedRealtime() + 3_000
+      while (manager.activeNotifications.any { it.tag == tag } != visible && SystemClock.elapsedRealtime() < deadline) {
+        SystemClock.sleep(20)
+      }
+      assertEquals(visible, manager.activeNotifications.any { it.tag == tag })
+    }
+    try {
+      val data = payload(matchId = matchId, observedAt = 70)
+      notifications.handle(data)
+      awaitVisible(true)
+      notifications.dismiss(matchId)
+      awaitVisible(false)
+      assertTrue(matchId in notifications.dismissedMatchIds.value)
+      assertTrue(notifications.restoreDismissedMatch(matchId))
+      notifications.handle(data)
+      awaitVisible(true)
+      assertFalse(matchId in notifications.dismissedMatchIds.value)
+      val before = manager.activeNotifications.single { it.tag == tag }.notification
+      notifications.handle(payload(state = validState(matchId, 69).replace("[8,6]", "[0,0]")))
+      val after = manager.activeNotifications.single { it.tag == tag }.notification
+      assertEquals(before.extras.getCharSequence(Notification.EXTRA_TITLE), after.extras.getCharSequence(Notification.EXTRA_TITLE))
+      assertFalse(LiveMatchNotificationStateStore(context).shouldAccept(update(matchId, 70)))
+    } finally {
+      manager.cancel(tag, 1)
+      awaitVisible(false)
     }
   }
 

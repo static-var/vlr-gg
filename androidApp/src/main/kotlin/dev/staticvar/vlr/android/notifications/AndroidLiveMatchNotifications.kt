@@ -17,14 +17,16 @@ import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import dev.staticvar.vlr.android.MainActivity
 import dev.staticvar.vlr.android.BuildConfig
+import dev.staticvar.vlr.android.MainActivity
 import dev.staticvar.vlr.android.R
+import dev.staticvar.vlr.core.notifications.DismissedLiveUpdateProvider
+import dev.staticvar.vlr.core.notifications.PushPlatform
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
-import dev.staticvar.vlr.core.notifications.LiveUpdateStateProvider
-import dev.staticvar.vlr.core.notifications.PushPlatform
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
@@ -43,7 +45,7 @@ internal class AndroidLiveMatchNotifications(
   json: Json,
   private val preferences: LiveMatchNotificationPreferencesRepository,
   private val spoilerPreferences: SpoilerPreferencesRepository,
-) : LiveUpdateStateProvider {
+) : DismissedLiveUpdateProvider {
   override val platform: PushPlatform = PushPlatform.Android
   private val appContext = context.applicationContext
   private val notificationManager = appContext.getSystemService(NotificationManager::class.java)
@@ -51,6 +53,22 @@ internal class AndroidLiveMatchNotifications(
   private val stateStore = LiveMatchNotificationStateStore(appContext)
   private val renderer = LiveMatchNotificationRenderer(appContext)
   private val lock = Any()
+  private val dismissed = MutableStateFlow(stateStore.dismissedMatchIds())
+  override val dismissedMatchIds = dismissed.asStateFlow()
+
+  override fun restoreDismissedMatch(matchId: String): Boolean = synchronized(lock) {
+    if (!canRequestStart() || !stateStore.restore(matchId)) return@synchronized false
+    dismissed.value = stateStore.dismissedMatchIds()
+    true
+  }
+
+  override fun keepMatchDismissed(matchId: String) {
+    synchronized(lock) {
+      stateStore.rejectRestore(matchId)
+      dismissed.value = stateStore.dismissedMatchIds()
+    }
+  }
+
 
   override fun canRequestStart(): Boolean = AndroidLiveNotificationAvailability.isAvailable(appContext) &&
     preferences.preferences.value.enabled && canPostNotifications()
@@ -98,6 +116,7 @@ internal class AndroidLiveMatchNotifications(
         return
       }
       stateStore.record(update)
+      dismissed.value = stateStore.dismissedMatchIds()
       if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= 36) {
         runCatching {
           val posted = notificationManager.activeNotifications.firstOrNull {
@@ -128,6 +147,7 @@ internal class AndroidLiveMatchNotifications(
     synchronized(lock) {
       if (!matchId.isValidMatchId()) return
       stateStore.dismiss(matchId)
+      dismissed.value = stateStore.dismissedMatchIds()
       notificationManager.cancel(notificationTag(matchId), NotificationId)
     }
   }
@@ -278,7 +298,7 @@ internal class LiveMatchNotificationStateStore(
     if (storage.getBoolean(update.key(DismissedSuffix), false)) return "match_dismissed"
     if (storage.getBoolean(update.key(TerminalSuffix), false)) return "match_terminal"
     val lastObservedAt = storage.getLong(update.key(ObservedAtSuffix), -1)
-    return if (update.observedAt > lastObservedAt || (update.terminal && update.observedAt == lastObservedAt)) {
+    return if (update.observedAt > lastObservedAt || ((update.terminal || storage.getBoolean(update.key(RestoringSuffix), false)) && update.observedAt == lastObservedAt)) {
       null
     } else {
       "duplicate_or_out_of_order"
@@ -288,6 +308,7 @@ internal class LiveMatchNotificationStateStore(
   fun record(update: LiveMatchUpdate) {
     pruneStale()
     storage.edit()
+      .remove(update.key(RestoringSuffix))
       .putLong(update.key(ObservedAtSuffix), update.observedAt)
       .putBoolean(update.key(TerminalSuffix), update.terminal)
       .putLong(update.key(RecordedAtSuffix), nowMillis())
@@ -302,10 +323,31 @@ internal class LiveMatchNotificationStateStore(
   fun dismiss(matchId: String) {
     pruneStale()
     storage.edit()
+      .remove(matchId.key(RestoringSuffix))
       .putBoolean(matchId.key(DismissedSuffix), true)
       .putLong(matchId.key(RecordedAtSuffix), nowMillis())
       .putStringSet(TrackedMatchesKey, trackedMatchIds() + matchId)
       .apply()
+  }
+
+  /** Returns dismissed live matches that can still be explicitly followed again. */
+  fun dismissedMatchIds(): Set<String> = trackedMatchIds().filterTo(mutableSetOf()) {
+    storage.getBoolean(it.key(DismissedSuffix), false) && !storage.getBoolean(it.key(TerminalSuffix), false)
+  }
+
+  /** Clears dismissal while retaining the timestamp and terminal safeguards. */
+  fun restore(matchId: String): Boolean {
+    if (matchId !in dismissedMatchIds()) return false
+    storage.edit()
+      .putBoolean(matchId.key(DismissedSuffix), false)
+      .putBoolean(matchId.key(RestoringSuffix), true)
+      .apply()
+    return true
+  }
+
+  /** Leaves a notification delivered meanwhile intact if the start request was rejected. */
+  fun rejectRestore(matchId: String) {
+    if (storage.getBoolean(matchId.key(RestoringSuffix), false)) dismiss(matchId)
   }
 
   fun trackedMatchIds(): Set<String> = storage.getStringSet(TrackedMatchesKey, emptySet()).orEmpty().toSet()
@@ -324,6 +366,7 @@ internal class LiveMatchNotificationStateStore(
         remove(matchId.key(ObservedAtSuffix))
         remove(matchId.key(TerminalSuffix))
         remove(matchId.key(DismissedSuffix))
+        remove(matchId.key(RestoringSuffix))
         remove(matchId.key(RecordedAtSuffix))
       }
       putStringSet(TrackedMatchesKey, trackedMatchIds() - stale)
@@ -337,6 +380,7 @@ internal class LiveMatchNotificationStateStore(
     private const val ObservedAtSuffix = "observed_at"
     private const val TerminalSuffix = "terminal"
     private const val DismissedSuffix = "dismissed"
+    private const val RestoringSuffix = "restoring"
     private const val RecordedAtSuffix = "recorded_at"
     internal const val RetentionMillis = 24 * 60 * 60 * 1_000L
   }
