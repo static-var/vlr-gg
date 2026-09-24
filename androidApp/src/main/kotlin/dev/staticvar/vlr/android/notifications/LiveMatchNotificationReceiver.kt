@@ -12,9 +12,12 @@ import dev.staticvar.vlr.android.VlrApplication
 /** Handles dismiss and unpin actions for live match notifications. */
 internal class LiveMatchNotificationReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
-    if (intent.action != ActionDismiss && intent.action != ActionUnpin) return
     val matchId = intent.getStringExtra(ExtraMatchId) ?: return
-    (context.applicationContext as? VlrApplication)?.liveMatchNotifications?.dismiss(matchId)
+    val notifications = (context.applicationContext as? VlrApplication)?.liveMatchNotifications ?: return
+    when (intent.action) {
+      ActionDismiss -> notifications.onNotificationDeleted(matchId)
+      ActionUnpin -> notifications.dismiss(matchId)
+    }
   }
 
   /** Defines the broadcast actions and match identifier extra. */

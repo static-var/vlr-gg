@@ -20,6 +20,7 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -158,6 +159,18 @@ internal class AndroidLiveMatchNotifications(
       dismissed.value = stateStore.dismissedMatchIds()
       notificationManager.cancel(notificationTag(matchId), NotificationId)
     }
+  }
+
+  /**
+   * Handles the notification's delete intent, which Android also sends when a live notification
+   * times out. A timeout means updates paused, not that the user dismissed the match, so it is not
+   * remembered and the next update posts the notification again.
+   */
+  fun onNotificationDeleted(matchId: String) {
+    synchronized(lock) {
+      if (!matchId.isValidMatchId() || stateStore.liveTimeoutElapsed(matchId)) return
+    }
+    dismiss(matchId)
   }
 
   private fun canPostNotifications(): Boolean {
@@ -302,6 +315,7 @@ private fun String.isValidMatchId(): Boolean =
 internal class LiveMatchNotificationStateStore(
   context: Context,
   private val nowMillis: () -> Long = System::currentTimeMillis,
+  private val elapsedRealtimeMillis: () -> Long = SystemClock::elapsedRealtime,
 ) {
   private val storage = context.getSharedPreferences(StorageName, Context.MODE_PRIVATE)
 
@@ -334,6 +348,7 @@ internal class LiveMatchNotificationStateStore(
       .putLong(update.key(ObservedAtSuffix), update.observedAt)
       .putBoolean(update.key(TerminalSuffix), update.terminal)
       .putLong(update.key(RecordedAtSuffix), nowMillis())
+      .putLong(update.key(RecordedElapsedRealtimeSuffix), elapsedRealtimeMillis())
       .putStringSet(TrackedMatchesKey, trackedMatchIds() + update.matchId)
       .apply()
   }
@@ -348,6 +363,7 @@ internal class LiveMatchNotificationStateStore(
       .remove(matchId.key(RestoringSuffix))
       .putBoolean(matchId.key(DismissedSuffix), true)
       .putLong(matchId.key(RecordedAtSuffix), nowMillis())
+      .remove(matchId.key(RecordedElapsedRealtimeSuffix))
       .putStringSet(TrackedMatchesKey, trackedMatchIds() + matchId)
       .apply()
   }
@@ -372,6 +388,14 @@ internal class LiveMatchNotificationStateStore(
     if (storage.getBoolean(matchId.key(RestoringSuffix), false)) dismiss(matchId)
   }
 
+  /** Whether a live notification posted at the last recorded update has reached its timeout. */
+  fun liveTimeoutElapsed(matchId: String): Boolean {
+    val recordedAt = storage.getLong(matchId.key(RecordedElapsedRealtimeSuffix), -1)
+    if (recordedAt < 0) return false
+    val elapsed = elapsedRealtimeMillis()
+    return elapsed < recordedAt || elapsed - recordedAt >= LiveNotificationTimeoutMillis - TimeoutGraceMillis
+  }
+
   fun trackedMatchIds(): Set<String> = storage.getStringSet(TrackedMatchesKey, emptySet()).orEmpty().toSet()
 
   private fun LiveMatchUpdate.key(suffix: String): String = matchId.key(suffix)
@@ -390,6 +414,7 @@ internal class LiveMatchNotificationStateStore(
         remove(matchId.key(DismissedSuffix))
         remove(matchId.key(RestoringSuffix))
         remove(matchId.key(RecordedAtSuffix))
+        remove(matchId.key(RecordedElapsedRealtimeSuffix))
       }
       putStringSet(TrackedMatchesKey, trackedMatchIds() - stale)
     }.apply()
@@ -404,7 +429,9 @@ internal class LiveMatchNotificationStateStore(
     private const val DismissedSuffix = "dismissed"
     private const val RestoringSuffix = "restoring"
     private const val RecordedAtSuffix = "recorded_at"
+    private const val RecordedElapsedRealtimeSuffix = "recorded_elapsed_realtime"
     internal const val RetentionMillis = 24 * 60 * 60 * 1_000L
+    private const val TimeoutGraceMillis = 5_000L
   }
 }
 
@@ -568,13 +595,15 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
   )
 
-  /** Defines the live notification channel, promotion flag, and timeout. */
+  /** Defines the live notification channel and promotion flag. */
   private companion object {
     const val ChannelId = "live_matches"
     const val PromotedOngoingExtra = "android.requestPromotedOngoing"
-    const val LiveNotificationTimeoutMillis = 5 * 60 * 1_000L
   }
 }
+
+/** Removes a live notification that stops receiving updates, such as during a server outage. */
+internal const val LiveNotificationTimeoutMillis = 5 * 60 * 1_000L
 
 /** Describes the active map position within a match series. */
 internal data class LiveMatchMapProgress(

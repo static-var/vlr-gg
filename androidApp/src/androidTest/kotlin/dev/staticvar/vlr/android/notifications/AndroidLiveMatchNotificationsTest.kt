@@ -36,7 +36,7 @@ import org.koin.mp.KoinPlatform
 /** Checks live notification parsing, saved state, and Android rendering. */
 class AndroidLiveMatchNotificationsTest {
   private val context = InstrumentationRegistry.getInstrumentation().targetContext
-  private val fixtureIds = setOf("991000001", "991000002")
+  private val fixtureIds = setOf("991000001", "991000002", "991000003")
 
   @Test
   @SdkSuppress(minSdkVersion = 36)
@@ -64,6 +64,7 @@ class AndroidLiveMatchNotificationsTest {
         remove("match.$matchId.dismissed")
         remove("match.$matchId.restoring")
         remove("match.$matchId.recorded_at")
+        remove("match.$matchId.recorded_elapsed_realtime")
       }
       putStringSet("tracked_matches", tracked)
     }.commit()
@@ -241,6 +242,23 @@ class AndroidLiveMatchNotificationsTest {
     store.dismiss(live.matchId)
     assertFalse(store.restore(live.matchId))
     assertFalse(store.shouldAccept(live.copy(observedAt = 52)))
+  }
+
+  @Test
+  fun timeoutDeletionDoesNotSuppressLaterUpdates() {
+    // Android sends the delete intent on timeout too; only a swipe within the timeout is a dismissal.
+    var now = 2_000_000L
+    var elapsed = 1_000_000L
+    val store = LiveMatchNotificationStateStore(context, nowMillis = { now }, elapsedRealtimeMillis = { elapsed })
+    store.record(update(matchId = "991000003", observedAt = 50))
+    elapsed += 60_000
+    assertFalse(store.liveTimeoutElapsed("991000003"))
+    now -= 3_600_000
+    assertFalse(store.liveTimeoutElapsed("991000003"))
+    elapsed += LiveNotificationTimeoutMillis
+    assertTrue(LiveMatchNotificationStateStore(context, { now }, { elapsed }).liveTimeoutElapsed("991000003"))
+    elapsed = 0 // A reboot resets elapsedRealtime, but cannot make this a swipe from this boot.
+    assertTrue(store.liveTimeoutElapsed("991000003"))
   }
 
   @Test
