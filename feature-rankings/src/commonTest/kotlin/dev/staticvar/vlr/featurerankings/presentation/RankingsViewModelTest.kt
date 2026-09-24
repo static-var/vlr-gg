@@ -9,23 +9,30 @@ import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.domain.model.RegionalRanking
 import dev.staticvar.vlr.domain.model.TeamRanking
+import dev.staticvar.vlr.domain.model.TeamSearchResult
 import dev.staticvar.vlr.domain.repository.RankingsRepository
+import dev.staticvar.vlr.domain.repository.TeamSearchRepository
 import dev.staticvar.vlr.featurerankings.usecase.ObserveRankingsUseCase
 import dev.staticvar.vlr.featurerankings.usecase.RefreshRankingsUseCase
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RankingsViewModelTest {
@@ -142,9 +149,101 @@ class RankingsViewModelTest {
     assertEquals("EMEA", viewModel.uiState.value.selectedRegion)
   }
 
-  private fun createViewModel(repository: FakeRankingsRepository): RankingsViewModel = RankingsViewModel(
+  @Test
+  fun searchWaitsForThreeTrimmedCharactersAndDebouncesEdits() = runTest(dispatcher) {
+    val queries = mutableListOf<String>()
+    val viewModel = createViewModel(FakeRankingsRepository(emptyList())) { query ->
+      queries += query
+      Result.success(emptyList())
+    }
+    viewModel.openSearch()
+    for (query in listOf("", "f", "fn", " fn ")) {
+      viewModel.updateSearchQuery(query)
+      advanceUntilIdle()
+      assertIs<TeamSearchResults.Idle>(viewModel.searchState.value.results)
+    }
+    assertEquals(emptyList(), queries)
+
+    viewModel.updateSearchQuery(" fna ")
+    advanceTimeBy(299)
+    assertEquals(emptyList(), queries)
+    viewModel.updateSearchQuery(" fnat ")
+    advanceTimeBy(300)
+    runCurrent()
+    assertEquals(listOf("fnat"), queries)
+    assertEquals(TeamSearchResults.Success(emptyList()), viewModel.searchState.value.results)
+  }
+
+  @Test
+  fun newerQueryWinsEvenWhenOldRequestIgnoresCancellation() = runTest(dispatcher) {
+    val oldResponse = CompletableDeferred<Unit>()
+    val viewModel = createViewModel(FakeRankingsRepository(emptyList())) { query ->
+      if (query == "old") withContext(NonCancellable) { oldResponse.await() }
+      Result.success(listOf(TeamSearchResult(query, query, "")))
+    }
+    viewModel.openSearch()
+    viewModel.updateSearchQuery("old")
+    advanceTimeBy(300)
+    runCurrent()
+    assertIs<TeamSearchResults.Loading>(viewModel.searchState.value.results)
+    viewModel.updateSearchQuery("new")
+    advanceUntilIdle()
+    oldResponse.complete(Unit)
+    advanceUntilIdle()
+    assertEquals("new", assertIs<TeamSearchResults.Success>(viewModel.searchState.value.results).teams.single().teamId)
+  }
+
+  @Test
+  fun shorteningOrClosingSearchClearsResultsAndCancelsRequests() = runTest(dispatcher) {
+    val gate = CompletableDeferred<Unit>()
+    val viewModel = createViewModel(FakeRankingsRepository(emptyList())) {
+      withContext(NonCancellable) { gate.await() }
+      Result.success(listOf(TeamSearchResult("1", "FNATIC", "")))
+    }
+    viewModel.openSearch()
+    viewModel.updateSearchQuery("fna")
+    advanceTimeBy(300)
+    runCurrent()
+    viewModel.updateSearchQuery("fn")
+    gate.complete(Unit)
+    advanceUntilIdle()
+    assertIs<TeamSearchResults.Idle>(viewModel.searchState.value.results)
+
+    viewModel.updateSearchQuery("fna")
+    viewModel.closeSearch()
+    advanceUntilIdle()
+    assertEquals(TeamSearchUiState(), viewModel.searchState.value)
+    viewModel.openSearch()
+    assertEquals(TeamSearchUiState(isOpen = true), viewModel.searchState.value)
+  }
+
+  @Test
+  fun failedSearchCanRetryAndKeepsAliasMatches() = runTest(dispatcher) {
+    var attempts = 0
+    val team = TeamSearchResult("1", "Paper Rex", "logo", "PRX")
+    val viewModel = createViewModel(FakeRankingsRepository(emptyList())) {
+      attempts++
+      if (attempts == 1) Result.failure(IllegalStateException("offline")) else Result.success(listOf(team))
+    }
+    viewModel.openSearch()
+    viewModel.updateSearchQuery("prx")
+    advanceUntilIdle()
+    assertEquals(TeamSearchResults.Error("offline"), viewModel.searchState.value.results)
+    viewModel.retrySearch()
+    runCurrent()
+    assertEquals(TeamSearchResults.Success(listOf(team)), viewModel.searchState.value.results)
+    assertEquals(2, attempts)
+  }
+
+  private fun createViewModel(
+    repository: FakeRankingsRepository,
+    search: suspend (String) -> Result<List<TeamSearchResult>> = { Result.success(emptyList()) },
+  ): RankingsViewModel = RankingsViewModel(
     observeRankingsUseCase = ObserveRankingsUseCase(repository),
     refreshRankingsUseCase = RefreshRankingsUseCase(repository),
+    teamSearchRepository = object : TeamSearchRepository {
+      override suspend fun searchTeams(query: String): Result<List<TeamSearchResult>> = search(query)
+    },
     networkMonitor = object : NetworkMonitor {
       override val status = MutableStateFlow(NetworkStatus.Online)
     },

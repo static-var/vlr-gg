@@ -10,4 +10,10 @@
     <string name="ranking_points">%1$s pts</string>
     <string name="ranking_team_label">#%1$d %2$s</string>
     <string name="country_with_separator">%1$s •</string>
+    <string name="search_teams">Buscar equipes</string>
+    <string name="close_team_search">Fechar busca</string>
+    <string name="search_teams_hint">Digite pelo menos 3 caracteres</string>
+    <string name="searching_teams">Buscando equipes</string>
+    <string name="no_teams_found">Nenhuma equipe encontrada</string>
+    <string name="try_another_team_name">Tente outro nome ou nome abreviado da equipe.</string>
 </resources>

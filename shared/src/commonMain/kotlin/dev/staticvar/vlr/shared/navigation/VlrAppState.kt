@@ -10,8 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.savedstate.serialization.SavedStateConfiguration
@@ -26,9 +24,6 @@ internal const val HOME_ID: String = "home"
 internal const val MATCHES_ID: String = "matches"
 internal const val EVENTS_ID: String = "events"
 internal const val RANKINGS_ID: String = "rankings"
-
-internal val sceneBreakpoint: Dp = 920.dp
-internal val railBreakpoint: Dp = 1120.dp
 
 private val appRouteSavedStateConfiguration: SavedStateConfiguration =
   SavedStateConfiguration {

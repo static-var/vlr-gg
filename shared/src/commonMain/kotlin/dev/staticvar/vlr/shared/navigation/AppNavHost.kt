@@ -17,6 +17,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -25,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
@@ -77,11 +79,12 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
   )
 
   ProvideVlrAppState(appState = appState) {
-    androidx.compose.foundation.layout.BoxWithConstraints(
+    Box(
       modifier = modifier.fillMaxSize().cardMascotViewport(),
     ) {
-      val showSceneLayout: Boolean = maxWidth >= sceneBreakpoint
-      val showRail: Boolean = maxWidth >= railBreakpoint
+      val adaptiveLayout = appAdaptiveLayout(currentWindowAdaptiveInfoV2())
+      val showSceneLayout = adaptiveLayout.showTwoPanes
+      val showRail = adaptiveLayout.showRail
       val sceneStrategy = rememberGroupedListDetailSceneStrategy<NavKey>(enabled = showSceneLayout)
       val eventTransitionDurationMillis = Prism.anim.standard.durationMillis
       val entries = rememberDecoratedNavEntries(appState.backStack, entryDecorators, entryProvider)

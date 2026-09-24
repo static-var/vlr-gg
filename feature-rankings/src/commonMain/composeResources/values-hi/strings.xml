@@ -10,4 +10,10 @@
     <string name="ranking_points">%1$s अंक</string>
     <string name="ranking_team_label">#%1$d %2$s</string>
     <string name="country_with_separator">%1$s •</string>
+    <string name="search_teams">टीमें खोजें</string>
+    <string name="close_team_search">खोज बंद करें</string>
+    <string name="search_teams_hint">कम से कम 3 अक्षर दर्ज करें</string>
+    <string name="searching_teams">टीमें खोजी जा रही हैं</string>
+    <string name="no_teams_found">कोई टीम नहीं मिली</string>
+    <string name="try_another_team_name">टीम का कोई दूसरा नाम या छोटा नाम आज़माएँ।</string>
 </resources>

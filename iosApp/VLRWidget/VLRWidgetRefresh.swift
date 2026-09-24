@@ -26,7 +26,7 @@ struct WidgetAPIClient {
         configuration.waitsForConnectivity = false
         let session = URLSession(configuration: configuration)
         return WidgetAPIClient(
-            baseURL: URL(string: "https://vlr-scraper.akhilnarang.dev")!,
+            baseURL: URL(string: "https://val-esports-backend.akhilnarang.dev")!,
             authorization: authorization
         ) { request in
             let (data, response) = try await session.data(for: request)
