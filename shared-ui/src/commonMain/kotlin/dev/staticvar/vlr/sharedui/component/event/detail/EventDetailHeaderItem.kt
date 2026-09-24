@@ -165,12 +165,12 @@ private fun EventDetailHeaderContent(
               Text(teams, style = Prism.typography.bodySmall)
             }
           }
-          if (favoriteAction != null) {
-            Column(Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)) { favoriteAction() }
+          favoriteAction?.let { action ->
+            Column(Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)) { action() }
           }
-          if (onOpenEvent != null) {
+          onOpenEvent?.let { openEvent ->
             PrismButton(
-              onClick = onOpenEvent,
+              onClick = openEvent,
               modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
               style = PrismButtonStyle.Primary,
             ) {

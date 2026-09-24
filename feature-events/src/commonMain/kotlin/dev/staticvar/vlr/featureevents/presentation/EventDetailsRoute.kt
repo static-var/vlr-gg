@@ -217,11 +217,13 @@ internal fun EventDetailsScreen(
         modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
       )
 
-      if (event == null && eventPreview != null) {
-        EventDetailPreviewHeaderItem(
-          event = eventPreview,
-          modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-        )
+      if (event == null) {
+        eventPreview?.let { preview ->
+          EventDetailPreviewHeaderItem(
+            event = preview,
+            modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
+          )
+        }
       }
 
       when {

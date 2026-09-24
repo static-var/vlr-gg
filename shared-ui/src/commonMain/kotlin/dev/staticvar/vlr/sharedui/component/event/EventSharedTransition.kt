@@ -14,9 +14,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.vlr.sharedui.component.common.TransitionItem
 import dev.staticvar.vlr.sharedui.component.common.ProvideTransitionContentScope
 import dev.staticvar.vlr.sharedui.component.common.ProvideUnscopedTransitionContent
+import dev.staticvar.vlr.sharedui.component.common.TransitionItem
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 private data class EventTransitionScope(

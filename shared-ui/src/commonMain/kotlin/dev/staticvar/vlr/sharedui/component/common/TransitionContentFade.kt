@@ -87,7 +87,7 @@ internal fun ProvideTransitionContentScope(
   val fade = rememberTransitionContentFadeState(visible = settled, isSettled = settled)
   CompositionLocalProvider(
     LocalTransitionItem provides item,
-    LocalTransitionContentFade provides if (item != null) fade else null,
+    LocalTransitionContentFade provides item?.let { fade },
     content = content,
   )
 }

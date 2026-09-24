@@ -257,16 +257,16 @@ private fun MatchTicketStub(
       Text(format, style = Prism.typography.bodySmall)
     }
   }
-  if (actions != null) {
+  actions?.let { content ->
     Column(
       Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM).transitionContentFade(extraContentFade),
-    ) { actions() }
+    ) { content() }
   }
-  if (onVetoSelected != null) {
+  onVetoSelected?.let { openVeto ->
     PrismButton(
       modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)
         .transitionContentFade(extraContentFade),
-      onClick = onVetoSelected,
+      onClick = openVeto,
       enabled = extraContentFade.acceptsInput,
       style = PrismButtonStyle.Alternate,
     ) {

@@ -320,11 +320,7 @@ internal fun appNavigationModule(): Module = module {
   navigation<AppRoute.Settings> {
     val appState = LocalVlrAppState.current
     val notificationController = LocalLiveMatchNotificationSettingsController.current
-    val notificationAccess = if (notificationController == null) {
-      null
-    } else {
-      notificationController.access.collectAsStateWithLifecycle().value
-    }
+    val notificationAccess = notificationController?.access?.collectAsStateWithLifecycle()?.value
     val cleanupPreferences = koinInject<CacheCleanupPreferencesRepository>()
     val cleanupRepository = koinInject<CacheCleanupRepository>()
     val autoCleanupEnabled by cleanupPreferences.enabled.collectAsStateWithLifecycle()
@@ -346,8 +342,7 @@ internal fun appNavigationModule(): Module = module {
     )
   }
   navigation<AppRoute.Notifications> {
-    val controller = LocalLiveMatchNotificationSettingsController.current
-    if (controller != null) {
+    LocalLiveMatchNotificationSettingsController.current?.let { controller ->
       NotificationsRoute(controller, onBack = LocalVlrAppState.current::navigateUp)
     }
   }

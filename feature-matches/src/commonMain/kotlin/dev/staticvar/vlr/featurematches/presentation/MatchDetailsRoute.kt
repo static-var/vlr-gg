@@ -198,8 +198,8 @@ internal fun MatchDetailsScreen(
         onBack = { leaveScreen(onBack) },
         onRefresh = onRefresh,
       )
-      if (match == null && matchPreview != null) {
-        MatchDetailPreviewHeaderItem(match = matchPreview)
+      if (match == null) {
+        matchPreview?.let { preview -> MatchDetailPreviewHeaderItem(match = preview) }
       }
       when {
         (!isOnline || uiState.isLoading || uiState.isDetailLoadPending || uiState.isRefreshing) && match == null -> MatchDetailsLoading(

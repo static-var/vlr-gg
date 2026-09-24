@@ -102,7 +102,7 @@ public fun SharedNetworkIcon(
   val treatment by rememberLogoTreatment(treatmentRequest, sharedLogoTreatments)
   val displayPainter = remember(treatment, painter, pixelSize) {
     val outlined = treatment as? LogoTreatment.Outlined
-    if (outlined != null) PreparedLogoPainter(outlined, pixelSize) else painter
+    outlined?.let { PreparedLogoPainter(it, pixelSize) } ?: painter
   }
 
   PrismIcon(
