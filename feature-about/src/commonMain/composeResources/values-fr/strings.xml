@@ -128,6 +128,4 @@
     <string name="release_1_0_4_live_description">Activez les scores en direct pour vos matchs et événements favoris sur les appareils compatibles, avec les Activités en direct sur iOS et Live Updates sur Android.</string>
     <string name="release_1_0_4_appearance_title">Une app à votre goût</string>
     <string name="release_1_0_4_appearance_description">Choisissez l’icône, le thème et la mascotte de l’app dans les nouveaux réglages Apparence.</string>
-    <string name="release_1_0_4_matches_title">Plus de détails sur chaque match</string>
-    <string name="release_1_0_4_matches_description">Consultez les résultats des manches et vos matchs favoris récents, avec des transitions plus fluides vers les matchs et événements et moins d’actualisations en arrière-plan.</string>
 </resources>

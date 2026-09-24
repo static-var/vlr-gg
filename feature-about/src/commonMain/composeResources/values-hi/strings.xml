@@ -127,6 +127,4 @@
     <string name="release_1_0_4_live_description">समर्थित डिवाइस पर पसंदीदा मैचों और इवेंट के लाइव स्कोर चालू करें: iOS पर Live Activities और Android पर Live Updates के साथ।</string>
     <string name="release_1_0_4_appearance_title">ऐप को अपना रूप दें</string>
     <string name="release_1_0_4_appearance_description">नई अपीयरेंस सेटिंग्स में ऐप आइकन, थीम और मैस्कॉट चुनें।</string>
-    <string name="release_1_0_4_matches_title">हर मैच की और जानकारी</string>
-    <string name="release_1_0_4_matches_description">राउंड के नतीजे और हाल के पसंदीदा मैच देखें। मैच और इवेंट खोलने के ट्रांज़िशन अब ज़्यादा सहज हैं और बैकग्राउंड रिफ़्रेश कम होते हैं।</string>
 </resources>

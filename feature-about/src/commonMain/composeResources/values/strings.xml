@@ -127,6 +127,4 @@
     <string name="release_1_0_4_live_description">Enable live scores for favorite matches and events on supported devices, with Live Activities on iOS and Live Updates on Android.</string>
     <string name="release_1_0_4_appearance_title">Make the app yours</string>
     <string name="release_1_0_4_appearance_description">Choose your app icon, theme, and mascot in the new Appearance settings.</string>
-    <string name="release_1_0_4_matches_title">More from every match</string>
-    <string name="release_1_0_4_matches_description">See round outcomes and recent favorite matches, with smoother match and event transitions and fewer background refreshes.</string>
 </resources>

@@ -127,6 +127,4 @@
     <string name="release_1_0_4_live_description">Aktiviere Live-Spielstände für favorisierte Matches und Events auf unterstützten Geräten, mit Live-Aktivitäten unter iOS und Live Updates unter Android.</string>
     <string name="release_1_0_4_appearance_title">Gestalte deine App</string>
     <string name="release_1_0_4_appearance_description">Wähle App-Symbol, Design und Maskottchen in den neuen Darstellungseinstellungen.</string>
-    <string name="release_1_0_4_matches_title">Mehr zu jedem Match</string>
-    <string name="release_1_0_4_matches_description">Sieh dir Rundenergebnisse und kürzlich gespielte favorisierte Matches an, mit flüssigeren Übergängen zu Matches und Events und weniger Aktualisierungen im Hintergrund.</string>
 </resources>

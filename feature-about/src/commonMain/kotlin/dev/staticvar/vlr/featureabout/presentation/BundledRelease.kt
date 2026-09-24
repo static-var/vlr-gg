@@ -13,8 +13,6 @@ import vlr.feature_about.generated.resources.release_1_0_4_appearance_title
 import vlr.feature_about.generated.resources.release_1_0_4_introduction
 import vlr.feature_about.generated.resources.release_1_0_4_live_description
 import vlr.feature_about.generated.resources.release_1_0_4_live_title
-import vlr.feature_about.generated.resources.release_1_0_4_matches_description
-import vlr.feature_about.generated.resources.release_1_0_4_matches_title
 import vlr.feature_about.generated.resources.see_what_s_new
 import vlr.feature_about.generated.resources.what_s_new
 
@@ -35,10 +33,6 @@ public object BundledRelease {
     Highlight(
       title = Res.string.release_1_0_4_appearance_title,
       description = Res.string.release_1_0_4_appearance_description,
-    ),
-    Highlight(
-      title = Res.string.release_1_0_4_matches_title,
-      description = Res.string.release_1_0_4_matches_description,
     ),
   ).filter { it.platform == null || it.platform == releasePlatform }
 

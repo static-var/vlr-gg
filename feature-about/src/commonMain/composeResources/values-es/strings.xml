@@ -128,6 +128,4 @@
     <string name="release_1_0_4_live_description">Activa los marcadores en directo de tus partidas y eventos favoritos en dispositivos compatibles, con Actividades en directo en iOS y Live Updates en Android.</string>
     <string name="release_1_0_4_appearance_title">Personaliza la app</string>
     <string name="release_1_0_4_appearance_description">Elige el icono, el tema y la mascota de la app en los nuevos ajustes de Apariencia.</string>
-    <string name="release_1_0_4_matches_title">Más detalles de cada partida</string>
-    <string name="release_1_0_4_matches_description">Consulta los resultados de las rondas y tus partidas favoritas recientes, con transiciones más fluidas a partidas y eventos y menos actualizaciones en segundo plano.</string>
 </resources>

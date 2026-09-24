@@ -128,6 +128,4 @@
     <string name="release_1_0_4_live_description">Ative os placares ao vivo de partidas e eventos favoritos em dispositivos compatíveis, com Atividades ao Vivo no iOS e Live Updates no Android.</string>
     <string name="release_1_0_4_appearance_title">Deixe o app com a sua cara</string>
     <string name="release_1_0_4_appearance_description">Escolha o ícone, o tema e o mascote do app nas novas configurações de Aparência.</string>
-    <string name="release_1_0_4_matches_title">Mais detalhes de cada partida</string>
-    <string name="release_1_0_4_matches_description">Confira os resultados dos rounds e suas partidas favoritas recentes, com transições mais suaves para partidas e eventos e menos atualizações em segundo plano.</string>
 </resources>

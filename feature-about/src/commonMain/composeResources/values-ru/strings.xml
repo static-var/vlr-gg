@@ -129,6 +129,4 @@
     <string name="release_1_0_4_live_description">Включите показ счёта для избранных матчей и событий на поддерживаемых устройствах: через Live Activities на iOS и Live Updates на Android.</string>
     <string name="release_1_0_4_appearance_title">Оформление на ваш вкус</string>
     <string name="release_1_0_4_appearance_description">Выберите значок приложения, тему и маскота в новом разделе настроек оформления.</string>
-    <string name="release_1_0_4_matches_title">Больше подробностей о матчах</string>
-    <string name="release_1_0_4_matches_description">Смотрите результаты раундов и недавние избранные матчи. Переходы к матчам и событиям стали плавнее, а фоновых обновлений — меньше.</string>
 </resources>
