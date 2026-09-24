@@ -65,8 +65,6 @@ import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
-import dev.staticvar.vlr.sharedui.component.common.currentTransitionContentFade
-import dev.staticvar.vlr.sharedui.component.common.rememberTransitionContentFade
 import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailMatchItem
@@ -78,6 +76,7 @@ import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGroupSelector
 import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.event.detail.eventFormattingLabels
 import dev.staticvar.vlr.sharedui.component.event.detail.groupEventMatches
+import dev.staticvar.vlr.sharedui.component.event.rememberEventDetailContentFade
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
 import dev.staticvar.vlr.sharedui.mascot.MascotCelebration
@@ -168,13 +167,13 @@ internal fun EventDetailsScreen(
   val event = uiState.event
   val isOnline = LocalIsOnline.current
   val spoilersHidden = LocalSpoilerMode.current.enabled
-  val transitionContentFade = currentTransitionContentFade()
+  val transitionContentFade = rememberEventDetailContentFade()
   val bodyReady = event != null && (
       event.teams.isNotEmpty() || event.matches.isNotEmpty() ||
         event.standings.isNotEmpty() || event.prizes.isNotEmpty() ||
         (!uiState.isLoading && !uiState.isDetailLoadPending)
       )
-  val bodyFade = rememberTransitionContentFade(bodyReady)
+  val bodyFade = rememberEventDetailContentFade(bodyReady)
 
   var isGroupingMenuExpanded by remember(event?.id) { mutableStateOf(false) }
   var isNavigatingAway by remember(event?.id) { mutableStateOf(false) }
@@ -221,6 +220,7 @@ internal fun EventDetailsScreen(
         eventPreview?.let { preview ->
           EventDetailPreviewHeaderItem(
             event = preview,
+            extraContentFade = transitionContentFade,
             modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
           )
         }
@@ -378,6 +378,7 @@ private fun EventDetailsContent(
     hero = {
       EventDetailsHero(
         event = event,
+        extraContentFade = extraContentFade,
         isSavingFavorite = isSavingFavorite,
         onToggleFavorite = onToggleFavorite,
       )
@@ -438,11 +439,13 @@ private fun EventDetailsContent(
 @Composable
 private fun EventDetailsHero(
   event: EventDetails,
+  extraContentFade: TransitionContentFade,
   isSavingFavorite: Boolean,
   onToggleFavorite: () -> Unit,
 ) {
   EventDetailHeaderItem(
     event = event,
+    extraContentFade = extraContentFade,
     modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
     favoriteAction = {
       PrismButton(

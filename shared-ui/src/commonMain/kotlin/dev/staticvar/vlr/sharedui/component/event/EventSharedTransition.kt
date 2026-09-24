@@ -14,9 +14,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.vlr.sharedui.component.common.ProvideTransitionContentScope
-import dev.staticvar.vlr.sharedui.component.common.ProvideUnscopedTransitionContent
-import dev.staticvar.vlr.sharedui.component.common.TransitionItem
+import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.rememberTransitionContentFade
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 private data class EventTransitionScope(
@@ -33,28 +32,24 @@ public fun ProvideEventTransitionScope(
   sharedTransitionScope: SharedTransitionScope,
   animatedVisibilityScope: AnimatedVisibilityScope,
   enabled: Boolean = true,
-  transitionItem: TransitionItem? = null,
   content: @Composable () -> Unit,
 ) {
-  if (!enabled) {
-    CompositionLocalProvider(LocalEventTransitionScope provides null) {
-      ProvideUnscopedTransitionContent(content)
-    }
-    return
-  }
-  ProvideTransitionContentScope(
-    sharedTransitionScope = sharedTransitionScope,
-    animatedVisibilityScope = animatedVisibilityScope,
-    item = transitionItem,
-  ) {
-    CompositionLocalProvider(
-      LocalEventTransitionScope provides EventTransitionScope(
-        sharedTransitionScope = sharedTransitionScope,
-        animatedVisibilityScope = animatedVisibilityScope,
-      ),
-      content = content,
-    )
-  }
+  CompositionLocalProvider(
+    LocalEventTransitionScope provides if (enabled) {
+      EventTransitionScope(sharedTransitionScope, animatedVisibilityScope)
+    } else {
+      null
+    },
+    content = content,
+  )
+}
+
+/** Keeps detail-only content hidden until the shared entrance has settled. */
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+public fun rememberEventDetailContentFade(ready: Boolean = true): TransitionContentFade {
+  val scope = LocalEventTransitionScope.current
+  return rememberTransitionContentFade(scope?.sharedTransitionScope, scope?.animatedVisibilityScope, ready)
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

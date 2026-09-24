@@ -28,7 +28,7 @@ import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
-import dev.staticvar.vlr.sharedui.component.common.currentTransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
 import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.event.EventFavoriteReasons
 import dev.staticvar.vlr.sharedui.component.event.EventSharedContent
@@ -49,6 +49,7 @@ import vlr.shared_ui.generated.resources.match_event_view_at_vlr
 @Composable
 public fun EventDetailHeaderItem(
   event: EventDetails,
+  extraContentFade: TransitionContentFade,
   modifier: Modifier = Modifier,
   onOpenEvent: (() -> Unit)? = null,
   favoriteAction: (@Composable () -> Unit)? = null,
@@ -65,6 +66,7 @@ public fun EventDetailHeaderItem(
       isFavorite = event.isFavorite,
       favoriteReasons = event.favoriteReasons,
     ),
+    extraContentFade = extraContentFade,
     subtitle = event.subtitle,
     teams = event.teams.size.takeIf { it > 0 }?.toString() ?: stringResource(Res.string.match_event_tbd),
     modifier = modifier,
@@ -77,20 +79,24 @@ public fun EventDetailHeaderItem(
  * Immediate event identity shown while the full detail record is loading.
  */
 @Composable
-public fun EventDetailPreviewHeaderItem(event: EventPreview, modifier: Modifier = Modifier) {
-  EventDetailHeaderContent(event = event, modifier = modifier)
+public fun EventDetailPreviewHeaderItem(
+  event: EventPreview,
+  extraContentFade: TransitionContentFade,
+  modifier: Modifier = Modifier,
+) {
+  EventDetailHeaderContent(event = event, extraContentFade = extraContentFade, modifier = modifier)
 }
 
 @Composable
 private fun EventDetailHeaderContent(
   event: EventPreview,
+  extraContentFade: TransitionContentFade,
   modifier: Modifier = Modifier,
   subtitle: String = "",
   teams: String = stringResource(Res.string.match_event_tbd),
   onOpenEvent: (() -> Unit)? = null,
   favoriteAction: (@Composable () -> Unit)? = null,
 ) {
-  val extraContentFade = currentTransitionContentFade()
   FavoriteTicketCardBox(
     selected = event.isFavorite,
     modifier = modifier.fillMaxWidth(),

@@ -32,11 +32,7 @@ import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
-import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
-import dev.staticvar.vlr.sharedui.component.common.TransitionItem
-import dev.staticvar.vlr.sharedui.component.common.currentTransitionContentFade
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
-import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.match.MatchFavoriteReasons
 import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
 import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
@@ -56,17 +52,14 @@ public fun MatchPreviewItem(
   onClick: (() -> Unit)? = null,
 ) {
   val selectionAnimation = Prism.anim.selection
-  val extraContentFade = currentTransitionContentFade(TransitionItem.Match(matchPreview.id))
   FavoriteTicketCardBox(
     selected = matchPreview.isFavorite,
     modifier = modifier,
-    favoriteModifier = Modifier.transitionContentFade(extraContentFade),
   ) {
     PrismCard(
       modifier = Modifier.fillMaxWidth().matchSharedBounds(matchPreview.id, MatchSharedContent.Card),
       style = if (matchPreview.isFavorite) PrismCardStyle.Outlined else PrismCardStyle.Filled,
       onClick = onClick,
-      enabled = extraContentFade.acceptsInput,
       onLongClick = onLongClick,
     ) {
       Row(
@@ -83,7 +76,6 @@ public fun MatchPreviewItem(
         when (matchPreview.status) {
           MatchStatus.LIVE -> PrismTag(
             text = stringResource(Res.string.match_event_live),
-            modifier = Modifier.transitionContentFade(extraContentFade),
             style = PrismTagStyle.Accent,
           )
 
@@ -92,7 +84,6 @@ public fun MatchPreviewItem(
           -> time?.let { formattedTime ->
             PrismTag(
               text = formattedTime,
-              modifier = Modifier.transitionContentFade(extraContentFade),
             )
           }
 
@@ -104,13 +95,11 @@ public fun MatchPreviewItem(
         team1 = matchPreview.team1,
         team2 = matchPreview.team2,
         state = matchPreview.status,
-        extraContentFade = extraContentFade,
       )
       Row(
         modifier = Modifier
           .fillMaxWidth()
-          .padding(top = Prism.dimens.spacingS)
-          .transitionContentFade(extraContentFade),
+          .padding(top = Prism.dimens.spacingS),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       ) {
@@ -149,14 +138,12 @@ private fun ScoreBox(
   team1: TeamPreview,
   team2: TeamPreview,
   state: MatchStatus,
-  extraContentFade: TransitionContentFade,
 ) {
   val spoilersHidden = LocalSpoilerMode.current.enabled
   val (actualTeam1, actualTeam2) = rememberTeamPreview(team1, team2, state, spoilersHidden)
   Column(modifier = modifier.fillMaxWidth()) {
     TeamScoreRow(actualTeam1, matchId = matchId, useAltColor = !spoilersHidden && state != MatchStatus.UPCOMING)
     PrismDivider(
-      modifier = Modifier.transitionContentFade(extraContentFade),
       style = PrismDividerStyle.Hairline,
     )
     TeamScoreRow(actualTeam2, matchId = matchId, useAltColor = !spoilersHidden && state == MatchStatus.LIVE)

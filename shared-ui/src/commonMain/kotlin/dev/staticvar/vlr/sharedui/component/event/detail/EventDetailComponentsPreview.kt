@@ -36,6 +36,7 @@ import dev.staticvar.vlr.domain.model.EventPrizeTeam
 import dev.staticvar.vlr.domain.model.EventStanding
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.model.EventTeam
+import dev.staticvar.vlr.sharedui.component.event.rememberEventDetailContentFade
 
 @PrismPreview
 @Composable
@@ -57,6 +58,7 @@ internal fun EventDetailComponentsPreview(@PreviewParameter(PrismPreviewProvider
     ) {
       EventDetailHeaderItem(
         event = event,
+        extraContentFade = rememberEventDetailContentFade(),
         onOpenEvent = {},
         favoriteAction = {
           PrismButton(onClick = {}, modifier = Modifier.fillMaxWidth()) {
