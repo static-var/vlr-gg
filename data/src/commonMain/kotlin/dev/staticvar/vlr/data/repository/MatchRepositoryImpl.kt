@@ -159,15 +159,13 @@ internal class MatchRepositoryImpl(
   private fun observeFavoriteReasons(
     matchId: String? = null,
   ): Flow<Map<String, List<MatchFavoriteReason>>> {
-    val query = if (matchId == null) {
-      matchesQueries.getMatchFavoriteReasons()
-    } else {
+    val query = matchId?.let { scopedMatchId ->
       matchesQueries.getScopedMatchFavoriteReasons(
-        matchId = matchId,
+        matchId = scopedMatchId,
         eventId = null,
         mapper = ::GetMatchFavoriteReasons,
       )
-    }
+    } ?: matchesQueries.getMatchFavoriteReasons()
     return query
       .asFlow()
       .mapToList(dispatchers.io)
