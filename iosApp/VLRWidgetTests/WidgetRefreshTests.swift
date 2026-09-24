@@ -231,11 +231,12 @@ final class WidgetRefreshTests: XCTestCase {
         let repository = WidgetSnapshotRepository(sourceURL: sourceURL, refreshedURL: directory.appendingPathComponent("refresh.json"))
         XCTAssertTrue(repository.store(source, for: source))
         let recorder = RequestRecorder(responses: [:])
-        let result = await WidgetRefreshCoordinator().snapshot(
+        let result = await WidgetRefreshCoordinator().refresh(
             repository: repository,
             service: WidgetRefreshService(api: recorder.client()), now: now.addingTimeInterval(60)
         )
-        XCTAssertEqual(result, source)
+        XCTAssertEqual(result.snapshot, source)
+        XCTAssertEqual(result.refreshDate, source.refreshDate)
         XCTAssertTrue(recorder.requestPaths.isEmpty)
         XCTAssertEqual(source.refreshDate.timeIntervalSince(source.savedAt), 900)
     }
@@ -254,11 +255,11 @@ final class WidgetRefreshTests: XCTestCase {
         let coordinator = WidgetRefreshCoordinator()
         let service = WidgetRefreshService(api: recorder.client())
         let now = Date.now
-        async let first = coordinator.snapshot(repository: repository, service: service, now: now)
-        async let second = coordinator.snapshot(repository: repository, service: service, now: now)
+        async let first = coordinator.refresh(repository: repository, service: service, now: now)
+        async let second = coordinator.refresh(repository: repository, service: service, now: now)
         let results = await (first, second)
         XCTAssertEqual(results.0, results.1)
-        let cached = await coordinator.snapshot(repository: repository, service: service, now: now.addingTimeInterval(60))
+        let cached = await coordinator.refresh(repository: repository, service: service, now: now.addingTimeInterval(60))
         XCTAssertEqual(cached, results.0)
         XCTAssertEqual(recorder.requestPaths.count, 1)
     }
@@ -279,14 +280,103 @@ final class WidgetRefreshTests: XCTestCase {
         let recorder = RequestRecorder(responses: ["/api/v1/matches/": Response(statusCode: 503, body: Data())])
         let service = WidgetRefreshService(api: recorder.client())
         let coordinator = WidgetRefreshCoordinator()
-        let first = await coordinator.snapshot(repository: repository, service: service, now: now)
-        XCTAssertEqual(first, source)
+        let retryAfter = now.addingTimeInterval(5 * 60)
+        let first = await coordinator.refresh(repository: repository, service: service, now: now)
+        XCTAssertEqual(first.snapshot, source)
+        XCTAssertEqual(first.refreshDate, retryAfter)
+        assertTimeline(first, at: now)
         XCTAssertEqual(recorder.requestPaths.count, 1)
-        let second = await coordinator.snapshot(repository: repository, service: service, now: now.addingTimeInterval(60))
-        XCTAssertEqual(second, source)
+        let second = await coordinator.refresh(repository: repository, service: service, now: now.addingTimeInterval(60))
+        XCTAssertEqual(second.snapshot, source)
+        XCTAssertEqual(second.refreshDate, retryAfter)
         XCTAssertEqual(recorder.requestPaths.count, 1)
-        _ = await coordinator.snapshot(repository: repository, service: service, now: now.addingTimeInterval(301))
+        _ = await coordinator.refresh(repository: repository, service: service, now: now.addingTimeInterval(301))
         XCTAssertEqual(recorder.requestPaths.count, 2)
+    }
+
+    func testSuccessfulRefreshUsesFetchedDataAndSoonMatchDeadlineWhenCacheWriteFails() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let matchStart = now.addingTimeInterval(2 * 60)
+        let source = snapshot(
+            savedAtEpochMillis: Int64(now.addingTimeInterval(-31 * 60).timeIntervalSince1970 * 1_000),
+            favorites: WidgetFavoriteIDs(matchIds: ["42"], teamIds: [], eventIds: [], playerIds: [])
+        )
+        let sourceURL = directory.appendingPathComponent("source.json")
+        try JSONEncoder().encode(source).write(to: sourceURL)
+        let refreshedURL = directory.appendingPathComponent("refresh.json", isDirectory: true)
+        try FileManager.default.createDirectory(at: refreshedURL, withIntermediateDirectories: true)
+        let repository = WidgetSnapshotRepository(sourceURL: sourceURL, refreshedURL: refreshedURL)
+        let start = ISO8601DateFormatter().string(from: matchStart)
+        let recorder = RequestRecorder(responses: [
+            "/api/v1/matches/": .ok("""
+                [{"id":"42","event":"Champions","series":"Bo3","status":"upcoming","team1":{"name":"Alpha"},"team2":{"name":"Beta"},"time":"\(start)","event_id":"5"}]
+                """),
+        ])
+
+        let result = await WidgetRefreshCoordinator().refresh(
+            repository: repository,
+            service: WidgetRefreshService(api: recorder.client()),
+            now: now
+        )
+
+        XCTAssertEqual(result.snapshot?.matches.first?.startTime, matchStart)
+        XCTAssertEqual(result.refreshDate, matchStart)
+        assertTimeline(result, at: now)
+        XCTAssertEqual(recorder.requestPaths, ["/api/v1/matches"])
+    }
+
+    func testSourceChangeDuringRefreshRejectsOldConfigurationResult() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let source = snapshot(
+            savedAtEpochMillis: Int64(now.addingTimeInterval(-31 * 60).timeIntervalSince1970 * 1_000),
+            favorites: WidgetFavoriteIDs(matchIds: ["42"], teamIds: [], eventIds: [], playerIds: [])
+        )
+        let replacement = snapshot(
+            savedAtEpochMillis: Int64(now.timeIntervalSince1970 * 1_000),
+            favorites: WidgetFavoriteIDs(matchIds: ["99"], teamIds: [], eventIds: [], playerIds: [])
+        )
+        let sourceURL = directory.appendingPathComponent("source.json")
+        try JSONEncoder().encode(source).write(to: sourceURL)
+        let repository = WidgetSnapshotRepository(
+            sourceURL: sourceURL,
+            refreshedURL: directory.appendingPathComponent("refresh.json")
+        )
+        let responseBody = Data("""
+            [{"id":"42","event":"Champions","series":"Bo3","status":"live","team1":{"name":"Alpha"},"team2":{"name":"Beta"},"time":null,"event_id":"5"}]
+            """.utf8)
+        let client = WidgetAPIClient(
+            baseURL: URL(string: "https://fixture.invalid")!,
+            authorization: nil
+        ) { request in
+            try JSONEncoder().encode(replacement).write(to: sourceURL, options: .atomic)
+            return (
+                responseBody,
+                HTTPURLResponse(
+                    url: try XCTUnwrap(request.url),
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil
+                )!
+            )
+        }
+
+        let result = await WidgetRefreshCoordinator().refresh(
+            repository: repository,
+            service: WidgetRefreshService(api: client),
+            now: now
+        )
+
+        XCTAssertEqual(
+            result,
+            .retry(snapshot: replacement, refreshAfter: now.addingTimeInterval(5 * 60))
+        )
+        assertTimeline(result, at: now)
     }
 
     func testIncompleteEventMatchFallsBackToMatchDetails() async throws {
@@ -413,6 +503,18 @@ final class WidgetRefreshTests: XCTestCase {
             format: "BO3",
             stage: "Final"
         )
+    }
+
+    private func assertTimeline(
+        _ outcome: WidgetRefreshOutcome,
+        at date: Date,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let plan = UpcomingMatchesProvider.timelinePlan(for: outcome, at: date)
+        XCTAssertEqual(plan.entry.date, date, file: file, line: line)
+        XCTAssertEqual(plan.entry.snapshot, outcome.snapshot, file: file, line: line)
+        XCTAssertEqual(plan.refreshDate, outcome.refreshDate, file: file, line: line)
     }
 }
 

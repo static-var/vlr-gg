@@ -126,33 +126,73 @@ struct WidgetSnapshotRepository {
     }
 }
 
+enum WidgetRefreshOutcome: Equatable {
+    case available(snapshot: UpcomingMatchesSnapshot, refreshAfter: Date)
+    case retry(snapshot: UpcomingMatchesSnapshot?, refreshAfter: Date)
+
+    var snapshot: UpcomingMatchesSnapshot? {
+        switch self {
+        case .available(let snapshot, _): snapshot
+        case .retry(let snapshot, _): snapshot
+        }
+    }
+
+    var refreshDate: Date {
+        switch self {
+        case .available(_, let refreshAfter), .retry(_, let refreshAfter): refreshAfter
+        }
+    }
+}
+
 /// Shares an in-flight refresh across widget families without reusing another configuration's result.
 actor WidgetRefreshCoordinator {
     static let shared = WidgetRefreshCoordinator()
-    private var pending: [String: Task<UpcomingMatchesSnapshot?, Never>] = [:]
+    private static let retryInterval: TimeInterval = 5 * 60
+
+    private var pending: [String: Task<WidgetRefreshOutcome, Never>] = [:]
     private var retryAfter: [String: Date] = [:]
 
-    func snapshot(repository: WidgetSnapshotRepository, service: WidgetRefreshService, now: Date) async -> UpcomingMatchesSnapshot? {
-        guard let source = repository.loadSource() else { return nil }
-        guard source.hasFavorites else { return source }
+    func refresh(repository: WidgetSnapshotRepository, service: WidgetRefreshService, now: Date) async -> WidgetRefreshOutcome {
+        guard let source = repository.loadSource() else {
+            return .retry(snapshot: nil, refreshAfter: now.addingTimeInterval(Self.retryInterval))
+        }
+        guard source.hasFavorites else {
+            return .available(
+                snapshot: source,
+                refreshAfter: max(source.refreshDate, now.addingTimeInterval(Self.retryInterval))
+            )
+        }
         let refreshed = repository.loadRefreshedSnapshot(for: source)
-        if let refreshed, refreshed.refreshDate > now { return refreshed }
+        if let refreshed, refreshed.refreshDate > now {
+            return .available(snapshot: refreshed, refreshAfter: refreshed.refreshDate)
+        }
         return await refresh(repository: repository, service: service, source: source, cached: refreshed ?? source, now: now)
     }
 
-    private func refresh(repository: WidgetSnapshotRepository, service: WidgetRefreshService, source: UpcomingMatchesSnapshot, cached: UpcomingMatchesSnapshot, now: Date) async -> UpcomingMatchesSnapshot? {
+    private func refresh(repository: WidgetSnapshotRepository, service: WidgetRefreshService, source: UpcomingMatchesSnapshot, cached: UpcomingMatchesSnapshot, now: Date) async -> WidgetRefreshOutcome {
         let key = (repository.sourceURL?.absoluteString ?? "") + source.sourceSignature
         if let task = pending[key] { return await task.value }
         retryAfter = retryAfter.filter { $0.value > now }
-        if retryAfter[key] != nil { return repository.loadBestSnapshot() }
-        let task = Task<UpcomingMatchesSnapshot?, Never> {
+        if let retryAfter = retryAfter[key] {
+            return .retry(snapshot: repository.loadBestSnapshot(), refreshAfter: retryAfter)
+        }
+        let task = Task<WidgetRefreshOutcome, Never> {
             do {
                 let refreshed = try await service.refresh(source: cached, now: now)
-                repository.store(refreshed, for: source)
+                if repository.store(refreshed, for: source) {
+                    let snapshot = repository.loadBestSnapshot() ?? refreshed
+                    return .available(snapshot: snapshot, refreshAfter: snapshot.refreshDate)
+                }
+                if repository.loadSource()?.sourceSignature == source.sourceSignature {
+                    return .available(snapshot: refreshed, refreshAfter: refreshed.refreshDate)
+                }
+                let retryAfter = now.addingTimeInterval(Self.retryInterval)
+                return .retry(snapshot: repository.loadBestSnapshot(), refreshAfter: retryAfter)
             } catch {
-                retryAfter[key] = now.addingTimeInterval(5 * 60)
+                let retryAfter = now.addingTimeInterval(Self.retryInterval)
+                self.retryAfter[key] = retryAfter
+                return .retry(snapshot: repository.loadBestSnapshot(), refreshAfter: retryAfter)
             }
-            return repository.loadBestSnapshot()
         }
         pending[key] = task
         let result = await task.value
