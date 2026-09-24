@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
@@ -84,6 +87,7 @@ import vlr.feature_matches.generated.resources.media
 import vlr.feature_matches.generated.resources.no_match_breakdown_yet
 import vlr.feature_matches.generated.resources.no_match_details_yet
 import vlr.feature_matches.generated.resources.remove_match_from_favorites
+import vlr.feature_matches.generated.resources.show_live_notification
 import vlr.feature_matches.generated.resources.stream
 import vlr.feature_matches.generated.resources.streams_vods
 import vlr.feature_matches.generated.resources.updating_favorite
@@ -102,6 +106,8 @@ public fun MatchDetailsRoute(
   onRefresh: () -> Unit = {},
   onPreferencesChange: (MatchDetailsPreferences) -> Unit = {},
   onFavoriteClick: () -> Unit = {},
+  canRestoreNotification: Boolean = false,
+  onRestoreNotification: () -> Unit = {},
 ) {
   MatchDetailsScreen(
     uiState = uiState,
@@ -115,6 +121,8 @@ public fun MatchDetailsRoute(
     onRefresh = onRefresh,
     onPreferencesChange = onPreferencesChange,
     onFavoriteClick = onFavoriteClick,
+    canRestoreNotification = canRestoreNotification,
+    onRestoreNotification = onRestoreNotification,
   )
 }
 
@@ -131,6 +139,8 @@ internal fun MatchDetailsScreen(
   onRefresh: () -> Unit = {},
   onPreferencesChange: (MatchDetailsPreferences) -> Unit = {},
   onFavoriteClick: () -> Unit = {},
+  canRestoreNotification: Boolean = false,
+  onRestoreNotification: () -> Unit = {},
 ) {
   val isOnline = LocalIsOnline.current
   val match = uiState.match
@@ -197,6 +207,11 @@ internal fun MatchDetailsScreen(
         onBack = { leaveScreen(onBack) },
         onRefresh = onRefresh,
       )
+      if (canRestoreNotification) {
+        PrismButton(onClick = onRestoreNotification, enabled = isOnline, style = PrismButtonStyle.Secondary) {
+          Text(stringResource(Res.string.show_live_notification))
+        }
+      }
       if (match == null) {
         matchPreview?.let { preview -> MatchDetailPreviewHeaderItem(match = preview, extraContentFade = extraContentFade) }
       }

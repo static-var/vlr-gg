@@ -64,4 +64,5 @@
     <string name="mascot_team_won_and">%1$s 승리 &amp;</string>
     <string name="mascot_player_cooked_combined">%1$s 선수가 제대로 해냈어요!!!</string>
     <string name="calendar_versus">대</string>
+  <string name="show_live_notification">실시간 알림 표시</string>
 </resources>

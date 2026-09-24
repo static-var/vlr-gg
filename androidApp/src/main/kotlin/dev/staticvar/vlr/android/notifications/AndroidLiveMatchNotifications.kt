@@ -12,17 +12,30 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.graphics.Color
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import dev.staticvar.vlr.android.BuildConfig
 import dev.staticvar.vlr.android.MainActivity
 import dev.staticvar.vlr.android.R
+import dev.staticvar.vlr.core.notifications.DismissedLiveUpdateProvider
+import dev.staticvar.vlr.core.notifications.PushPlatform
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
-import dev.staticvar.vlr.core.notifications.LiveUpdateStateProvider
-import dev.staticvar.vlr.core.notifications.PushPlatform
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -40,7 +53,7 @@ internal class AndroidLiveMatchNotifications(
   json: Json,
   private val preferences: LiveMatchNotificationPreferencesRepository,
   private val spoilerPreferences: SpoilerPreferencesRepository,
-) : LiveUpdateStateProvider {
+) : DismissedLiveUpdateProvider {
   override val platform: PushPlatform = PushPlatform.Android
   private val appContext = context.applicationContext
   private val notificationManager = appContext.getSystemService(NotificationManager::class.java)
@@ -48,6 +61,22 @@ internal class AndroidLiveMatchNotifications(
   private val stateStore = LiveMatchNotificationStateStore(appContext)
   private val renderer = LiveMatchNotificationRenderer(appContext)
   private val lock = Any()
+  private val dismissed = MutableStateFlow(stateStore.dismissedMatchIds())
+  override val dismissedMatchIds = dismissed.asStateFlow()
+
+  override fun restoreDismissedMatch(matchId: String): Boolean = synchronized(lock) {
+    if (!canRequestStart() || !stateStore.restore(matchId)) return@synchronized false
+    dismissed.value = stateStore.dismissedMatchIds()
+    true
+  }
+
+  override fun keepMatchDismissed(matchId: String) {
+    synchronized(lock) {
+      stateStore.rejectRestore(matchId)
+      dismissed.value = stateStore.dismissedMatchIds()
+    }
+  }
+
 
   override fun canRequestStart(): Boolean = AndroidLiveNotificationAvailability.isAvailable(appContext) &&
     preferences.preferences.value.enabled && canPostNotifications()
@@ -62,23 +91,53 @@ internal class AndroidLiveMatchNotifications(
    */
   fun handle(data: Map<String, String>) {
     synchronized(lock) {
-      if (!AndroidLiveNotificationAvailability.isAvailable(appContext) ||
-        !preferences.preferences.value.enabled || !canPostNotifications()
-      ) return
+      if (!AndroidLiveNotificationAvailability.isAvailable(appContext)) {
+        LiveNotificationDiagnostics.skipped("device_unavailable")
+        return
+      }
+      if (!preferences.preferences.value.enabled) {
+        LiveNotificationDiagnostics.skipped("preference_disabled")
+        return
+      }
+      if (!canPostNotifications()) {
+        LiveNotificationDiagnostics.skipped("notification_permission_or_channel_blocked")
+        return
+      }
       val update = parser.parse(data) ?: return
-      if (!stateStore.shouldAccept(update)) return
+      stateStore.rejectionReason(update)?.let { reason ->
+        LiveNotificationDiagnostics.skipped(reason, update.matchId)
+        return
+      }
 
       val notification = try {
         renderer.build(update, spoilerPreferences.enabled.value)
-      } catch (_: Exception) {
+      } catch (error: Exception) {
+        if (error is CancellationException) throw error
+        LiveNotificationDiagnostics.failed("render", error)
         return
       }
       try {
         notificationManager.notify(notificationTag(update.matchId), NotificationId, notification)
-      } catch (_: Exception) {
+      } catch (error: Exception) {
+        if (error is CancellationException) throw error
+        LiveNotificationDiagnostics.failed("post", error)
         return
       }
       stateStore.record(update)
+      dismissed.value = stateStore.dismissedMatchIds()
+      if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= 36) {
+        runCatching {
+          val posted = notificationManager.activeNotifications.firstOrNull {
+            it.tag == notificationTag(update.matchId) && it.id == NotificationId
+          }
+          Log.d(
+            "LiveMatchNotifications",
+            "sdk=${Build.VERSION.SDK_INT}, promotionAllowed=${notificationManager.canPostPromotedNotifications()}, " +
+              "promotable=${notification.hasPromotableCharacteristics()}, " +
+              "immediatePostedPromotedSnapshot=${posted?.notification?.let { it.flags and Notification.FLAG_PROMOTED_ONGOING != 0 }}",
+          )
+        }
+      }
     }
   }
 
@@ -96,6 +155,7 @@ internal class AndroidLiveMatchNotifications(
     synchronized(lock) {
       if (!matchId.isValidMatchId()) return
       stateStore.dismiss(matchId)
+      dismissed.value = stateStore.dismissedMatchIds()
       notificationManager.cancel(notificationTag(matchId), NotificationId)
     }
   }
@@ -137,10 +197,17 @@ internal data class LiveMatchUpdate(
   val teams: List<LiveMatchTeam>,
   val currentMap: LiveMatchMap?,
   val totalMaps: Int? = null,
+  val mapWinners: List<String?> = emptyList(),
 )
 
 /** Holds a team name, badge, and series score for a notification. */
-internal data class LiveMatchTeam(val name: String, val imageUrl: String?, val score: Int?, val tag: String? = null) {
+internal data class LiveMatchTeam(
+  val name: String,
+  val imageUrl: String?,
+  val score: Int?,
+  val tag: String? = null,
+  val id: String? = null,
+) {
   val displayName: String get() = tag?.trim()?.takeIf(String::isNotEmpty) ?: name
 }
 
@@ -150,13 +217,19 @@ internal data class LiveMatchMap(val name: String, val scores: List<Int?>, val n
 /** Parses and validates live match snapshots from Firebase messages. */
 internal class LiveMatchUpdateParser(private val json: Json) {
   fun parse(data: Map<String, String>): LiveMatchUpdate? {
-    if (data[PayloadTypeKey] != PayloadType) return null
-    val encodedState = data[StateKey] ?: return null
-    return try {
-      parseState(json.parseToJsonElement(encodedState).jsonObject)
-    } catch (_: Exception) {
+    if (data[PayloadTypeKey] != PayloadType) {
+      LiveNotificationDiagnostics.skipped("unsupported_payload_type")
+      return null
+    }
+    val encodedState = data[StateKey]
+    val update = try {
+      encodedState?.let { parseState(json.parseToJsonElement(it).jsonObject) }
+    } catch (error: Exception) {
+      if (error is CancellationException) throw error
       null
     }
+    if (update == null) LiveNotificationDiagnostics.skipped("malformed_payload")
+    return update
   }
 
   private fun parseState(root: JsonObject): LiveMatchUpdate? {
@@ -170,6 +243,7 @@ internal class LiveMatchUpdateParser(private val json: Json) {
         imageUrl = team["img"]?.takeUnless { it is JsonNull }?.jsonPrimitive?.contentOrNull,
         score = (team.nullableScore("score") ?: return null).value,
         tag = (team["tag"] as? JsonPrimitive)?.takeIf { it.isString }?.contentOrNull,
+        id = team["id"].teamIdOrNull(),
       )
     } ?: return null
     val currentMap = root["current_map"]?.takeUnless { it is JsonNull }?.let { mapElement ->
@@ -182,9 +256,15 @@ internal class LiveMatchUpdateParser(private val json: Json) {
         number = map.optionalInt("number"),
       )
     }
-    return LiveMatchUpdate(matchId, observedAt, terminal, teams, currentMap, root.optionalInt("total_maps"))
+    return LiveMatchUpdate(
+      matchId, observedAt, terminal, teams, currentMap, root.optionalInt("total_maps"),
+      (root["map_winners"] as? JsonArray)?.take(MaxVisibleMapSegments)?.map { it.teamIdOrNull() }.orEmpty(),
+    )
       .takeIf(LiveMatchUpdate::isValid)
   }
+
+  private fun JsonElement?.teamIdOrNull(): String? =
+    (this as? JsonPrimitive)?.contentOrNull?.toLongOrNull()?.takeIf { it > 0 }?.toString()
 
   private fun JsonObject.optionalInt(key: String): Int? =
     (get(key) as? JsonPrimitive)?.takeUnless { it.isString }?.intOrNull
@@ -233,17 +313,24 @@ internal class LiveMatchNotificationStateStore(
    * Rejects dismissed, finished, and older match updates.
    * Allows a final update with the same timestamp as the last live update.
    */
-  fun shouldAccept(update: LiveMatchUpdate): Boolean {
-    if (storage.getBoolean(update.key(DismissedSuffix), false) ||
-      storage.getBoolean(update.key(TerminalSuffix), false)
-    ) return false
+  fun shouldAccept(update: LiveMatchUpdate): Boolean = rejectionReason(update) == null
+
+  /** Reports the saved-state rule that rejects an update without exposing its contents. */
+  fun rejectionReason(update: LiveMatchUpdate): String? {
+    if (storage.getBoolean(update.key(DismissedSuffix), false)) return "match_dismissed"
+    if (storage.getBoolean(update.key(TerminalSuffix), false)) return "match_terminal"
     val lastObservedAt = storage.getLong(update.key(ObservedAtSuffix), -1)
-    return update.observedAt > lastObservedAt || (update.terminal && update.observedAt == lastObservedAt)
+    return if (update.observedAt > lastObservedAt || ((update.terminal || storage.getBoolean(update.key(RestoringSuffix), false)) && update.observedAt == lastObservedAt)) {
+      null
+    } else {
+      "duplicate_or_out_of_order"
+    }
   }
 
   fun record(update: LiveMatchUpdate) {
     pruneStale()
     storage.edit()
+      .remove(update.key(RestoringSuffix))
       .putLong(update.key(ObservedAtSuffix), update.observedAt)
       .putBoolean(update.key(TerminalSuffix), update.terminal)
       .putLong(update.key(RecordedAtSuffix), nowMillis())
@@ -258,10 +345,31 @@ internal class LiveMatchNotificationStateStore(
   fun dismiss(matchId: String) {
     pruneStale()
     storage.edit()
+      .remove(matchId.key(RestoringSuffix))
       .putBoolean(matchId.key(DismissedSuffix), true)
       .putLong(matchId.key(RecordedAtSuffix), nowMillis())
       .putStringSet(TrackedMatchesKey, trackedMatchIds() + matchId)
       .apply()
+  }
+
+  /** Returns dismissed live matches that can still be explicitly followed again. */
+  fun dismissedMatchIds(): Set<String> = trackedMatchIds().filterTo(mutableSetOf()) {
+    storage.getBoolean(it.key(DismissedSuffix), false) && !storage.getBoolean(it.key(TerminalSuffix), false)
+  }
+
+  /** Clears dismissal while retaining the timestamp and terminal safeguards. */
+  fun restore(matchId: String): Boolean {
+    if (matchId !in dismissedMatchIds()) return false
+    storage.edit()
+      .putBoolean(matchId.key(DismissedSuffix), false)
+      .putBoolean(matchId.key(RestoringSuffix), true)
+      .apply()
+    return true
+  }
+
+  /** Leaves a notification delivered meanwhile intact if the start request was rejected. */
+  fun rejectRestore(matchId: String) {
+    if (storage.getBoolean(matchId.key(RestoringSuffix), false)) dismiss(matchId)
   }
 
   fun trackedMatchIds(): Set<String> = storage.getStringSet(TrackedMatchesKey, emptySet()).orEmpty().toSet()
@@ -280,6 +388,7 @@ internal class LiveMatchNotificationStateStore(
         remove(matchId.key(ObservedAtSuffix))
         remove(matchId.key(TerminalSuffix))
         remove(matchId.key(DismissedSuffix))
+        remove(matchId.key(RestoringSuffix))
         remove(matchId.key(RecordedAtSuffix))
       }
       putStringSet(TrackedMatchesKey, trackedMatchIds() - stale)
@@ -293,6 +402,7 @@ internal class LiveMatchNotificationStateStore(
     private const val ObservedAtSuffix = "observed_at"
     private const val TerminalSuffix = "terminal"
     private const val DismissedSuffix = "dismissed"
+    private const val RestoringSuffix = "restoring"
     private const val RecordedAtSuffix = "recorded_at"
     internal const val RetentionMillis = 24 * 60 * 60 * 1_000L
   }
@@ -300,6 +410,13 @@ internal class LiveMatchNotificationStateStore(
 
 /** Builds live and final match notifications while respecting hidden scores. */
 internal class LiveMatchNotificationRenderer(private val context: Context) {
+  private val colors: LiveMatchTeamColors
+    get() = if (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
+      LiveMatchTeamColors(Color.rgb(207, 178, 255), Color.rgb(100, 218, 199), Color.rgb(158, 158, 166))
+    } else {
+      LiveMatchTeamColors(Color.rgb(103, 58, 183), Color.rgb(0, 105, 92), Color.rgb(117, 117, 125))
+    }
+
   /**
    * Builds a live or final notification with match actions and optional hidden scores.
    * Uses the native progress or metric style when the Android version supports it.
@@ -368,6 +485,7 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
         update,
         scoresHidden,
         context.getString(R.string.widget_score_unavailable),
+        colors,
       )
       return
     }
@@ -383,7 +501,7 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
       .setSubText(if (scoresHidden) context.getString(R.string.widget_scores_hidden) else seriesScore)
     val progress = update.mapProgress()
     if (sdkInt >= 36 && progress != null && !scoresHidden) {
-      Api36Notification.applyProgressStyle(builder, progress)
+      Api36Notification.applyProgressStyle(builder, progress, colors)
     } else {
       builder.setStyle(Notification.BigTextStyle().bigText(scoreLines))
     }
@@ -394,7 +512,12 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
     val matchSummary = if (scoresHidden) {
       context.getString(R.string.widget_match_teams, teams[0].displayName, teams[1].displayName)
     } else {
-      "${teams[0].displayName} ${scorePair(teams.map(LiveMatchTeam::score), false)} ${teams[1].displayName}"
+      SpannableStringBuilder()
+        .append(teams[0].displayName.withColor(colors.first))
+        .append(" ")
+        .append(scorePair(teams.map(LiveMatchTeam::score), false))
+        .append(" ")
+        .append(teams[1].displayName.withColor(colors.second))
     }
     val scoreLines = teamScoreLines(update, scoresHidden)
     builder.setContentTitle(joinMetadata(context.getString(R.string.live_match_notification_final), matchSummary))
@@ -403,26 +526,37 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
       .setStyle(Notification.BigTextStyle().bigText(scoreLines))
   }
 
-  private fun teamScoreLines(update: LiveMatchUpdate, scoresHidden: Boolean): String = update.teams.joinToString("\n") { team ->
-    context.getString(
-      R.string.widget_live_score,
-      team.displayName,
-      team.score.takeUnless { scoresHidden }?.toString() ?: context.getString(R.string.widget_score_unavailable),
-    )
-  }
+  private fun teamScoreLines(update: LiveMatchUpdate, scoresHidden: Boolean): CharSequence =
+    SpannableStringBuilder().apply {
+      update.teams.forEachIndexed { index, team ->
+        if (index > 0) append("\n")
+        append(
+          context.getString(
+            R.string.widget_live_score,
+            team.displayName,
+            team.score.takeUnless { scoresHidden }?.toString() ?: context.getString(R.string.widget_score_unavailable),
+          ).withColor(colors.team(index)),
+        )
+      }
+    }
 
-  private fun scorePair(scores: List<Int?>, hidden: Boolean): String {
+  private fun scorePair(scores: List<Int?>, hidden: Boolean): CharSequence {
     val unavailable = context.getString(R.string.widget_score_unavailable)
     val first = scores.getOrNull(0).takeUnless { hidden }?.toString() ?: unavailable
     val second = scores.getOrNull(1).takeUnless { hidden }?.toString() ?: unavailable
-    return "$first–$second"
+    return SpannableStringBuilder()
+      .append(first.withColor(colors.first))
+      .append("–")
+      .append(second.withColor(colors.second))
   }
 
   private fun shortCriticalText(update: LiveMatchUpdate, scoresHidden: Boolean): String =
-    update.currentMap?.let { scorePair(it.scores, scoresHidden) } ?: context.getString(R.string.widget_live)
+    update.currentMap?.let { scorePair(it.scores, scoresHidden).toString() } ?: context.getString(R.string.widget_live)
 
-  private fun joinMetadata(first: String, second: String): String =
-    first + context.getString(R.string.widget_match_metadata_separator) + second
+  private fun joinMetadata(first: CharSequence, second: CharSequence): CharSequence =
+    SpannableStringBuilder(first)
+      .append(context.getString(R.string.widget_match_metadata_separator))
+      .append(second)
 
   private fun dismissIntent(matchId: String, action: String): PendingIntent = PendingIntent.getBroadcast(
     context,
@@ -443,7 +577,11 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
 }
 
 /** Describes the active map position within a match series. */
-internal data class LiveMatchMapProgress(val currentMapNumber: Int, val totalMaps: Int)
+internal data class LiveMatchMapProgress(
+  val currentMapNumber: Int,
+  val totalMaps: Int,
+  val winnerTeamIndices: List<Int?> = List(totalMaps) { null },
+)
 
 private const val MaxVisibleMapSegments = 9
 
@@ -455,17 +593,27 @@ internal fun LiveMatchUpdate.mapProgress(): LiveMatchMapProgress? {
   if (terminal) return null
   val maximumMaps = totalMaps?.takeIf { it in 1..MaxVisibleMapSegments } ?: return null
   val activeMap = currentMap?.number?.takeIf { it in 1..maximumMaps } ?: return null
-  return LiveMatchMapProgress(activeMap, maximumMaps)
+  val winners = List(maximumMaps) { mapIndex ->
+    mapWinners.getOrNull(mapIndex)?.takeIf { mapIndex + 1 < activeMap }?.let { winnerId ->
+      teams.indices.filter { teams[it].id == winnerId }.singleOrNull()
+    }
+  }
+  return LiveMatchMapProgress(activeMap, maximumMaps, winners)
 }
 
 /** Applies the map progress notification style available on Android API 36. */
 @RequiresApi(36)
 private object Api36Notification {
-  fun applyProgressStyle(builder: Notification.Builder, progress: LiveMatchMapProgress) {
+  fun applyProgressStyle(builder: Notification.Builder, progress: LiveMatchMapProgress, colors: LiveMatchTeamColors) {
     builder.setStyle(
       Notification.ProgressStyle()
-        .setProgressSegments(List(progress.totalMaps) { Notification.ProgressStyle.Segment(1) })
-        .setProgressPoints((1..progress.totalMaps).map { Notification.ProgressStyle.Point(it) })
+        .setProgressSegments(List(progress.totalMaps) { index ->
+          Notification.ProgressStyle.Segment(1).setColor(colors.winner(progress.winnerTeamIndices[index]))
+        })
+        .setProgressPoints(List(progress.totalMaps) { index ->
+          Notification.ProgressStyle.Point(index + 1).setColor(colors.winner(progress.winnerTeamIndices[index]))
+        })
+        .setStyledByProgress(false)
         .setProgress(progress.currentMapNumber),
     )
   }
@@ -483,18 +631,28 @@ private object Api37Notification {
     update: LiveMatchUpdate,
     scoresHidden: Boolean,
     unavailable: String,
+    colors: LiveMatchTeamColors,
   ) {
     val mapScores = requireNotNull(update.currentMap).scores
     val style = Notification.MetricStyle()
     update.teams.forEachIndexed { index, team ->
       val score = mapScores[index]
-      val value = if (scoresHidden || score == null) {
-        Notification.Metric.FixedText(unavailable)
-      } else {
-        Notification.Metric.FixedInt(score)
-      }
-      style.addMetric(Notification.Metric(value, team.displayName))
+      val color = colors.team(index)
+      val value = Notification.Metric.FixedText(
+        (score.takeUnless { scoresHidden }?.toString() ?: unavailable).withColor(color),
+      )
+      style.addMetric(Notification.Metric(value, team.displayName.withColor(color)))
     }
     builder.setStyle(style.setCriticalMetric(Notification.MetricStyle.METRIC_INDEX_NONE))
   }
+}
+
+/** Keeps each team's text and map wins recognizable in either system theme. */
+private data class LiveMatchTeamColors(val first: Int, val second: Int, val neutral: Int) {
+  fun team(index: Int): Int = if (index == 0) first else second
+  fun winner(index: Int?): Int = index?.let(::team) ?: neutral
+}
+
+private fun String.withColor(color: Int): CharSequence = SpannableString(this).apply {
+  setSpan(ForegroundColorSpan(color), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 }

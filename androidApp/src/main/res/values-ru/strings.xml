@@ -41,4 +41,7 @@
     <string name="live_match_notification_unpin">Открепить</string>
     <string name="live_match_notification_final">Итог</string>
     <string name="live_match_notification_open_match">Открыть матч</string>
+    <string name="match_alert_channel_name">Оповещения о матчах</string>
+    <string name="match_alert_channel_description">Оповещения о начале избранных матчей</string>
+    <string name="match_alert_live">Матч начался</string>
 </resources>

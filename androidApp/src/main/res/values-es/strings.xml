@@ -41,4 +41,7 @@
     <string name="live_match_notification_unpin">Desanclar</string>
     <string name="live_match_notification_final">Final</string>
     <string name="live_match_notification_open_match">Abrir partido</string>
+    <string name="match_alert_channel_name">Alertas de partidos</string>
+    <string name="match_alert_channel_description">Alertas cuando empiezan tus partidos favoritos</string>
+    <string name="match_alert_live">Partido en directo</string>
 </resources>

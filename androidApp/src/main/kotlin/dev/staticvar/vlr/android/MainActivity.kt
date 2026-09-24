@@ -52,10 +52,17 @@ class MainActivity : ComponentActivity() {
       val supportsLiveNotifications = remember {
         { AndroidLiveNotificationAvailability.isAvailable(applicationContext) }
       }
+      val supportsMatchAlerts = remember {
+        { AndroidLiveNotificationAvailability.supportsMatchAlerts(applicationContext) }
+      }
       CompositionLocalProvider(
         LocalViewModelObserver provides viewModelLeakObserver,
         LocalImageSharer provides rememberAndroidImageSharer(),
-        LocalNotificationPermissionProvider provides rememberAndroidNotificationPermissionProvider(supportsLiveNotifications),
+        LocalNotificationPermissionProvider provides rememberAndroidNotificationPermissionProvider(
+          supportsLiveUpdates = supportsLiveNotifications,
+          supportsMatchAlerts = supportsMatchAlerts,
+          onAuthorizationChanged = (application as VlrApplication).liveTopicSubscriptions::refresh,
+        ),
       ) {
         App(
           deepLinkHandler = deepLinkHandler,

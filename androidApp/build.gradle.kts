@@ -160,6 +160,8 @@ baselineProfile {
 }
 
 dependencies {
+  androidTestImplementation(libs.multiplatform.settings)
+  androidTestImplementation(libs.multiplatform.settings.test)
   androidTestImplementation(libs.android.junit)
   androidTestImplementation(libs.android.test.runner)
   androidTestImplementation(projects.localSource)

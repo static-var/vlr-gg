@@ -100,6 +100,62 @@ class LiveMatchNotificationSettingsTest {
   }
 
   @Test
+  fun promotionDeniedDoesNotDisableNotificationsAndRefreshTracksChanges() {
+    val provider = FakeProvider().apply { promotionAllowed = false }
+    val controller = LiveMatchNotificationSettingsController(LiveMatchNotificationPreferencesRepository(MapSettings()), provider)
+    controller.setEnabled(true)
+    provider.requestResult!!(NotificationAuthorization.Authorized)
+
+    assertTrue(controller.preferences.value.enabled)
+    assertTrue(controller.access.value.supportsLiveUpdates)
+    assertEquals(NotificationAuthorization.Authorized, controller.access.value.notifications)
+    assertEquals(false, controller.access.value.promotionAllowed)
+    controller.openPromotionSettings()
+    assertEquals(1, provider.promotionSettingsOpened)
+    assertEquals(0, provider.settingsOpened)
+
+    provider.promotionAllowed = true
+    controller.refresh()
+    provider.readResult!!(NotificationAuthorization.Authorized)
+    assertEquals(true, controller.access.value.promotionAllowed)
+  }
+
+  @Test
+  fun permissionDenialKeepsRegularSettingsActionSeparateFromPromotion() {
+    val provider = FakeProvider().apply { promotionAllowed = false }
+    val controller = LiveMatchNotificationSettingsController(LiveMatchNotificationPreferencesRepository(MapSettings()), provider)
+    controller.setEnabled(true)
+    provider.requestResult!!(NotificationAuthorization.Denied)
+    controller.openSettings()
+
+    assertEquals(1, provider.settingsOpened)
+    assertEquals(0, provider.promotionSettingsOpened)
+  }
+
+  @Test
+  fun ordinaryMatchAlertsRequestPermissionWithoutLiveUpdatesOrPromotion() {
+    val provider = FakeProvider().apply {
+      supported = false
+      matchAlertsSupported = true
+      promotionAllowed = false
+    }
+    val controller = LiveMatchNotificationSettingsController(LiveMatchNotificationPreferencesRepository(MapSettings()), provider)
+    controller.refresh()
+    provider.readResult!!(NotificationAuthorization.NotDetermined)
+    controller.setEnabled(true)
+    provider.requestResult!!(NotificationAuthorization.Authorized)
+
+    assertEquals(1, provider.requests)
+    assertTrue(controller.access.value.supportsNotifications)
+    assertFalse(controller.access.value.supportsLiveUpdates)
+    assertEquals(null, controller.access.value.promotionAllowed)
+    controller.openSettings()
+    controller.openPromotionSettings()
+    assertEquals(1, provider.settingsOpened)
+    assertEquals(0, provider.promotionSettingsOpened)
+  }
+
+  @Test
   fun unsupportedLiveUpdatesDoNotRequestPermission() {
     val provider = FakeProvider().apply { supported = false }
     val controller = LiveMatchNotificationSettingsController(
@@ -119,15 +175,20 @@ class LiveMatchNotificationSettingsTest {
 
 /** Controls permission responses and records platform requests in settings tests. */
 private class FakeProvider : NotificationPermissionProvider {
+  var matchAlertsSupported = false
   var supported = true
   var requiresPermission = true
   var activitiesEnabled: Boolean? = true
   var reads = 0
   var requests = 0
   var settingsOpened = 0
+  var promotionSettingsOpened = 0
+  var promotionAllowed: Boolean? = null
   var readResult: ((NotificationAuthorization) -> Unit)? = null
   var requestResult: ((NotificationAuthorization) -> Unit)? = null
+  override fun canPromoteNotifications(): Boolean? = promotionAllowed
   override fun supportsLiveUpdates(): Boolean = supported
+  override fun supportsMatchAlerts(): Boolean = matchAlertsSupported
   override fun requiresNotificationPermission(): Boolean = requiresPermission
   override fun areLiveActivitiesEnabled(): Boolean? = activitiesEnabled
   override fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {
@@ -139,4 +200,5 @@ private class FakeProvider : NotificationPermissionProvider {
     requestResult = onResult
   }
   override fun openSettings() { settingsOpened++ }
+  override fun openPromotionSettings() { promotionSettingsOpened++ }
 }

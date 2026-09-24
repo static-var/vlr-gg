@@ -14,9 +14,13 @@ public data class LiveMatchNotificationAccess(
   val activitiesEnabled: Boolean?,
   val notifications: NotificationAuthorization? = null,
   val requesting: Boolean = false,
+  val promotionAllowed: Boolean? = null,
   val supportsLiveUpdates: Boolean = true,
+  val supportsMatchAlerts: Boolean = false,
   val requiresNotificationPermission: Boolean = true,
-)
+) {
+  public val supportsNotifications: Boolean get() = supportsLiveUpdates || supportsMatchAlerts
+}
 
 /** Coordinates the live-update setting with platform permission checks and requests. */
 public class LiveMatchNotificationSettingsController(
@@ -37,7 +41,7 @@ public class LiveMatchNotificationSettingsController(
     if (access.value.requesting) return
     val current = ++generation
     access.value = readAccess(notifications = access.value.notifications)
-    if (!access.value.supportsLiveUpdates || !access.value.requiresNotificationPermission) return
+    if (!access.value.supportsNotifications || !access.value.requiresNotificationPermission) return
     provider.readNotificationAuthorization { result ->
       if (generation == current) {
         access.value = access.value.copy(notifications = result)
@@ -52,7 +56,7 @@ public class LiveMatchNotificationSettingsController(
    */
   public fun setEnabled(enabled: Boolean) {
     repository.setEnabled(enabled)
-    if (enabled && access.value.supportsLiveUpdates) {
+    if (enabled && access.value.supportsNotifications) {
       if (!access.value.requiresNotificationPermission) {
         refresh()
         return
@@ -69,7 +73,7 @@ public class LiveMatchNotificationSettingsController(
    * The request generation prevents late callbacks from replacing newer state.
    */
   public fun requestNotifications() {
-    if (access.value.requesting || !access.value.supportsLiveUpdates || !access.value.requiresNotificationPermission) return
+    if (access.value.requesting || !access.value.supportsNotifications || !access.value.requiresNotificationPermission) return
     val current = ++generation
     access.value = access.value.copy(requesting = true)
     provider.requestNotificationAuthorization { result ->
@@ -81,14 +85,20 @@ public class LiveMatchNotificationSettingsController(
   }
 
   public fun openSettings() {
-    if (access.value.supportsLiveUpdates) provider.openSettings()
+    if (access.value.supportsNotifications) provider.openSettings()
+  }
+
+  public fun openPromotionSettings() {
+    if (access.value.supportsLiveUpdates) provider.openPromotionSettings()
   }
 
   private fun readAccess(notifications: NotificationAuthorization? = null): LiveMatchNotificationAccess =
     LiveMatchNotificationAccess(
       activitiesEnabled = provider.areLiveActivitiesEnabled(),
+      promotionAllowed = if (provider.supportsLiveUpdates()) provider.canPromoteNotifications() else null,
       notifications = notifications,
       supportsLiveUpdates = provider.supportsLiveUpdates(),
+      supportsMatchAlerts = provider.supportsMatchAlerts(),
       requiresNotificationPermission = provider.requiresNotificationPermission(),
     )
 }

@@ -4,6 +4,8 @@
  */
 package dev.staticvar.vlr.android.notifications
 
+import dev.staticvar.vlr.domain.model.DirectFavorite
+import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -12,6 +14,33 @@ import org.junit.Test
 
 /** Checks topic synchronization after token changes, disabling, and partial failures. */
 class AndroidLiveTopicSubscriptionsTest {
+  @Test
+  fun fallbackTopicsIncludeAllFavoritesUsingCachedPlayerTeams() {
+    val snapshot = DirectFavoriteSnapshot(
+      teams = listOf(DirectFavorite.Team("11", "Team", "")),
+      events = listOf(DirectFavorite.Event("22", "Event", "")),
+      matches = listOf(DirectFavorite.Match("33", "Match", "")),
+      players = listOf(
+        DirectFavorite.Player("44", "Player", "", currentTeamId = "55"),
+        DirectFavorite.Player("66", "Teammate", "", currentTeamId = "11"),
+        DirectFavorite.Player("77", "Unknown team", ""),
+        DirectFavorite.Player("88", "Blank team", "", currentTeamId = ""),
+      ),
+    )
+
+    assertEquals(
+      setOf("live-team-11", "live-event-22", "live-match-33", "live-team-55"),
+      snapshot.notificationTopics(liveSupported = false),
+    )
+    assertEquals(
+      setOf(
+        "live-team-11", "live-event-22", "live-match-33",
+        "live-player-44", "live-player-66", "live-player-77", "live-player-88",
+      ),
+      snapshot.notificationTopics(liveSupported = true),
+    )
+  }
+
   @Test
   fun tokenRotationResubscribesDesiredTopics() = runBlocking {
     val topic = "live-team-11"

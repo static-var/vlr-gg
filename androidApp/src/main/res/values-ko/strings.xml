@@ -41,4 +41,7 @@
     <string name="live_match_notification_unpin">고정 해제</string>
     <string name="live_match_notification_final">종료</string>
     <string name="live_match_notification_open_match">경기 열기</string>
+    <string name="match_alert_channel_name">경기 알림</string>
+    <string name="match_alert_channel_description">즐겨찾는 경기가 시작될 때 알림</string>
+    <string name="match_alert_live">경기 진행 중</string>
 </resources>

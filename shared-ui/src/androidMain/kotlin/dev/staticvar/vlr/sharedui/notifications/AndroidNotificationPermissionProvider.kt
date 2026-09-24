@@ -24,10 +24,16 @@ import dev.staticvar.vlr.core.notifications.NotificationAuthorization
 import dev.staticvar.vlr.core.notifications.NotificationPermissionProvider
 
 @Composable
-public fun rememberAndroidNotificationPermissionProvider(supportsLiveUpdates: () -> Boolean): NotificationPermissionProvider {
+public fun rememberAndroidNotificationPermissionProvider(
+  supportsLiveUpdates: () -> Boolean,
+  supportsMatchAlerts: () -> Boolean = { false },
+  onAuthorizationChanged: () -> Unit = {},
+): NotificationPermissionProvider {
   val context = LocalContext.current.applicationContext
   val activity = LocalActivity.current
-  val provider = remember(context, supportsLiveUpdates) { AndroidNotificationPermissionProvider(context, supportsLiveUpdates) }
+  val provider = remember(context, supportsLiveUpdates, supportsMatchAlerts, onAuthorizationChanged) {
+    AndroidNotificationPermissionProvider(context, supportsLiveUpdates, supportsMatchAlerts, onAuthorizationChanged)
+  }
   val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
     provider.completeRequest()
   }
@@ -46,6 +52,8 @@ public fun rememberAndroidNotificationPermissionProvider(supportsLiveUpdates: ()
 private class AndroidNotificationPermissionProvider(
   private val context: Context,
   private val supportsLiveNotifications: () -> Boolean,
+  private val supportsOrdinaryMatchAlerts: () -> Boolean,
+  private val onAuthorizationChanged: () -> Unit,
 ) : NotificationPermissionProvider {
   private val mainHandler = Handler(Looper.getMainLooper())
   private val preferences = context.getSharedPreferences("notification_permission", Context.MODE_PRIVATE)
@@ -55,10 +63,25 @@ private class AndroidNotificationPermissionProvider(
 
   override fun supportsLiveUpdates(): Boolean = supportsLiveNotifications()
 
+  override fun supportsMatchAlerts(): Boolean = supportsOrdinaryMatchAlerts()
+
   override fun areLiveActivitiesEnabled(): Boolean? = null
 
+  override fun canPromoteNotifications(): Boolean? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+    try {
+      context.getSystemService(NotificationManager::class.java).canPostPromotedNotifications()
+    } catch (_: RuntimeException) {
+      null
+    }
+  } else {
+    null
+  }
+
   override fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {
-    onMain { onResult(readAuthorization()) }
+    onMain {
+      onResult(readAuthorization())
+      onAuthorizationChanged()
+    }
   }
 
   override fun requestNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {
@@ -69,6 +92,7 @@ private class AndroidNotificationPermissionProvider(
         Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
       ) {
         onResult(authorization)
+        onAuthorizationChanged()
       } else {
         val launch = launchRequest
         if (launch == null || pendingResult != null) {
@@ -86,14 +110,38 @@ private class AndroidNotificationPermissionProvider(
   }
 
   override fun openSettings() {
+    onMain { openNotificationSettings() }
+  }
+
+  override fun openPromotionSettings() {
     onMain {
-      val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-      } else {
-        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}"))
-      }
-      context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+      val opened = Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA && tryOpenSettings(
+        Intent(Settings.ACTION_APP_NOTIFICATION_PROMOTION_SETTINGS)
+          .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName),
+      )
+      if (!opened) openNotificationSettings()
     }
+  }
+
+  /** Falls back to app details when an OEM does not provide notification settings. */
+  private fun openNotificationSettings() {
+    val opened = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && tryOpenSettings(
+      Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName),
+    )
+    if (!opened) {
+      tryOpenSettings(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")))
+    }
+  }
+
+  private fun tryOpenSettings(intent: Intent): Boolean = try {
+    if (intent.resolveActivity(context.packageManager) == null) {
+      false
+    } else {
+      context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+      true
+    }
+  } catch (_: RuntimeException) {
+    false
   }
 
   fun completeRequest() {
@@ -125,7 +173,10 @@ private class AndroidNotificationPermissionProvider(
   private fun finishRequest(authorization: NotificationAuthorization) {
     val onResult = pendingResult
     pendingResult = null
-    onResult?.invoke(authorization)
+    onResult?.let {
+      it(authorization)
+      onAuthorizationChanged()
+    }
   }
 
   private fun onMain(block: () -> Unit) {

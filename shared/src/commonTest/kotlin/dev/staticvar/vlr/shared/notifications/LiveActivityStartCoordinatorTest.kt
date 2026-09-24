@@ -6,7 +6,7 @@ package dev.staticvar.vlr.shared.notifications
 
 import com.russhwolf.settings.MapSettings
 import dev.staticvar.vlr.core.identity.UserIdentityRepository
-import dev.staticvar.vlr.core.notifications.LiveUpdateStateProvider
+import dev.staticvar.vlr.core.notifications.DismissedLiveUpdateProvider
 import dev.staticvar.vlr.core.notifications.PushPlatform
 import dev.staticvar.vlr.core.settings.PushTokenRegistrationPreferencesRepository
 import dev.staticvar.vlr.domain.model.DirectFavorite
@@ -30,6 +30,50 @@ import kotlin.test.assertEquals
 
 /** Checks when favorite matches can start a Live Activity and how retries behave. */
 class LiveActivityStartCoordinatorTest {
+  @Test
+  fun explicitRestoreBypassesOnlySelectedDismissedMatchAndKeepsAutomaticDeduplication() = runTest {
+    val harness = StartHarness(backgroundScope, testScheduler, PushPlatform.Android)
+    harness.favorites.value = DirectFavoriteSnapshot(events = listOf(DirectFavorite.Event("44", "Event", "")))
+    harness.schedule.value = listOf(live("123"), live("456"))
+    harness.registerToken("token")
+    harness.enable()
+    runCurrent()
+    harness.provider.observed += setOf("123", "456")
+    harness.provider.dismissedMatchIds.value = setOf("123", "456")
+    runCurrent()
+    assertEquals(setOf("123", "456"), harness.start.restorableMatchIds.value)
+    harness.start.restoreNotification("123")
+    harness.start.restoreNotification("123")
+    runCurrent()
+    assertEquals(listOf("123", "456", "123"), harness.startSource.requests.map { it.second })
+    assertEquals(setOf("456"), harness.start.restorableMatchIds.value)
+    harness.start.retryRejected()
+    runCurrent()
+    assertEquals(3, harness.startSource.requests.size)
+  }
+
+  @Test
+  fun rejectedExplicitRestoreRemainsAvailableButCompletedMatchesCannotRestore() = runTest {
+    val harness = StartHarness(backgroundScope, testScheduler, PushPlatform.Android)
+    harness.favorites.value = DirectFavoriteSnapshot(matches = listOf(DirectFavorite.Match("123", "One", "")))
+    harness.schedule.value = listOf(live("123"))
+    harness.provider.observed += "123"
+    harness.provider.dismissedMatchIds.value = setOf("123")
+    harness.registerToken("token")
+    harness.enable()
+    runCurrent()
+    harness.startSource.result = LiveActivityStartResult.Rejected
+    harness.start.restoreNotification("123")
+    runCurrent()
+    assertEquals(setOf("123"), harness.start.restorableMatchIds.value)
+    harness.schedule.value = emptyList()
+    runCurrent()
+    harness.start.restoreNotification("123")
+    runCurrent()
+    assertEquals(1, harness.startSource.requests.size)
+    assertEquals(emptySet(), harness.start.restorableMatchIds.value)
+  }
+
   @Test
   fun waitsForExactFavoriteAckAndRegisteredTokenThenStartsIndirectLiveMatch() = runTest {
     val harness = StartHarness(backgroundScope, testScheduler, PushPlatform.Ios)
@@ -208,8 +252,15 @@ private class StartHarness(
 }
 
 /** Lets tests control device readiness and already observed matches. */
-private class FakeLiveUpdateStateProvider(override val platform: PushPlatform) : LiveUpdateStateProvider {
+private class FakeLiveUpdateStateProvider(override val platform: PushPlatform) : DismissedLiveUpdateProvider {
   val observed = mutableSetOf<String>()
+  override val dismissedMatchIds = MutableStateFlow<Set<String>>(emptySet())
+  override fun restoreDismissedMatch(matchId: String): Boolean {
+    if (matchId !in dismissedMatchIds.value) return false
+    dismissedMatchIds.value -= matchId
+    return true
+  }
+  override fun keepMatchDismissed(matchId: String) { dismissedMatchIds.value += matchId }
   var available = true
   override fun canRequestStart(): Boolean = available
   override fun observedMatchIds(): List<String> = observed.toList()
