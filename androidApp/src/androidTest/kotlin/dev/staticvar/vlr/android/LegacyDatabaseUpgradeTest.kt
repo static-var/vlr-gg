@@ -108,7 +108,7 @@ class LegacyDatabaseUpgradeTest {
 
   private fun assertNewSchema() {
     openTestDatabase().use { db ->
-      assertEquals(1, db.version)
+      assertEquals(VlrDatabase.Schema.version.toInt(), db.version)
       db.rawQuery("SELECT name FROM sqlite_master WHERE name IN ('room_master_table', 'TeamFav', 'MatchFav', 'EventFav')", null)
         .use { assertEquals(0, it.count) }
     }
