@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import UIKit
 import XCTest
 
 /// Checks silhouette contrast decisions, rendered pixels, and persistent logo variants.
@@ -61,15 +62,20 @@ final class MatchActivityLogoTreatmentTests: XCTestCase {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
         let original = directory.appendingPathComponent("synthetic-logo")
-        let source = try image(width: 40, height: 20, gray: 0, inset: 4)
+        let source = try image(width: 1024, height: 512, gray: 0, inset: 64)
         XCTAssertTrue(try MatchActivityLogoCache.prepareVariants(source, original: original))
         XCTAssertFalse(try MatchActivityLogoCache.prepareVariants(source, original: original))
         XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: directory.path).count, 4)
         for appearance in MatchActivityLogoCache.Appearance.allCases {
             for size in MatchActivityLogoCache.LogoSize.allCases {
-                let cached = try XCTUnwrap(MatchActivityLogoCache.preparedImage(
+                let loaded = try XCTUnwrap(MatchActivityLogoCache.image(
                     original: original, appearance: appearance, size: size
-                )?.cgImage)
+                ))
+                let cached = try XCTUnwrap(loaded.cgImage)
+                let expectedPoints: CGFloat = size == .compact ? 20 : 58
+                XCTAssertEqual(max(loaded.size.width, loaded.size.height), expectedPoints, accuracy: 0.001)
+                XCTAssertEqual(loaded.size.width / loaded.size.height,
+                               CGFloat(cached.width) / CGFloat(cached.height), accuracy: 0.001)
                 let expected = try XCTUnwrap(MatchActivityLogoTreatment.prepare(
                     source, background: appearance.background, maxPixelSize: size.rawValue
                 ))
@@ -79,6 +85,28 @@ final class MatchActivityLogoTreatmentTests: XCTestCase {
                 XCTAssertLessThanOrEqual(cached.height, 180)
                 XCTAssertEqual(try pixels(cached), try pixels(expected))
             }
+        }
+    }
+
+    func testMissingPreparedVariantsLoadOriginalWithinRequestedPointAndPixelBounds() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let original = directory.appendingPathComponent("synthetic-logo.png")
+        let source = try image(width: 1024, height: 512, gray: 0, inset: 64)
+        try XCTUnwrap(UIImage(cgImage: source).pngData()).write(to: original)
+
+        for size in MatchActivityLogoCache.LogoSize.allCases {
+            XCTAssertNil(MatchActivityLogoCache.preparedImage(original: original, appearance: .dark, size: size))
+            let loaded = try XCTUnwrap(MatchActivityLogoCache.image(
+                original: original, appearance: .dark, size: size
+            ))
+            let bitmap = try XCTUnwrap(loaded.cgImage)
+            let expectedPoints: CGFloat = size == .compact ? 20 : 58
+            XCTAssertEqual(loaded.size.width, expectedPoints, accuracy: 0.001)
+            XCTAssertEqual(loaded.size.height, expectedPoints / 2, accuracy: 0.001)
+            XCTAssertLessThanOrEqual(bitmap.width, size == .compact ? 60 : 174)
+            XCTAssertEqual(bitmap.width, bitmap.height * 2)
         }
     }
 

@@ -48,6 +48,13 @@ enum MatchActivityLogoCache {
     /// Three-times-resolution sizes for Dynamic Island and Lock Screen logos.
     enum LogoSize: Int, CaseIterable {
         case compact = 60, expanded = 174
+
+        var points: CGFloat { CGFloat(rawValue) / 3 }
+
+        func image(_ bitmap: CGImage) -> UIImage {
+            let scale = max(1, CGFloat(max(bitmap.width, bitmap.height)) / points)
+            return UIImage(cgImage: bitmap, scale: scale, orientation: .up)
+        }
     }
 
     private static let images: NSCache<NSString, UIImage> = {
@@ -59,8 +66,12 @@ enum MatchActivityLogoCache {
     /// Reads prepared pixels only; downloading and contrast analysis happen in app-side prefetch.
     static func image(for source: String?, appearance: Appearance, size: LogoSize) -> UIImage? {
         guard let source, let original = fileURL(for: source) else { return nil }
+        return image(original: original, appearance: appearance, size: size)
+    }
+
+    static func image(original: URL, appearance: Appearance, size: LogoSize) -> UIImage? {
         return preparedImage(original: original, appearance: appearance, size: size)
-            ?? originalImage(at: original)
+            ?? originalImage(at: original, size: size)
     }
 
     static func preparedImage(original: URL, appearance: Appearance, size: LogoSize) -> UIImage? {
@@ -70,14 +81,14 @@ enum MatchActivityLogoCache {
         guard let data = try? Data(contentsOf: file),
               let bitmap = try? PropertyListDecoder().decode(LogoBitmap.self, from: data),
               let cgImage = bitmap.image() else { return nil }
-        let result = UIImage(cgImage: cgImage)
+        let result = size.image(cgImage)
         images.setObject(result, forKey: key, cost: bitmap.pixels.count)
         return result
     }
 
-    private static func originalImage(at file: URL) -> UIImage? {
+    private static func originalImage(at file: URL, size: LogoSize = .expanded) -> UIImage? {
         guard let data = try? Data(contentsOf: file) else { return nil }
-        return image(data: data)
+        return image(data: data, size: size)
     }
 
     /// Downloads missing originals and prepares any absent theme/size variants off the main actor.
@@ -221,13 +232,13 @@ enum MatchActivityLogoCache {
 
     /// Decodes a thumbnail sized for the Live Activity logo.
     /// Applies the source image’s orientation while limiting its pixel dimensions.
-    private static func image(data: Data) -> UIImage? {
+    private static func image(data: Data, size: LogoSize = .expanded) -> UIImage? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil),
               let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, [
                 kCGImageSourceCreateThumbnailFromImageAlways: true,
                 kCGImageSourceCreateThumbnailWithTransform: true,
-                kCGImageSourceThumbnailMaxPixelSize: 174,
+                kCGImageSourceThumbnailMaxPixelSize: size.rawValue,
               ] as CFDictionary) else { return nil }
-        return UIImage(cgImage: thumbnail)
+        return size.image(thumbnail)
     }
 }
