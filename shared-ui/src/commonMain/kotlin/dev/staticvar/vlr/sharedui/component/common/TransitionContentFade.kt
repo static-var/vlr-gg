@@ -24,6 +24,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import dev.staticvar.designsystem.prism.Prism
 
+/** Identifies the single card whose metadata participates in a detail transition. */
+public sealed interface TransitionItem {
+  public data class Match(public val id: String) : TransitionItem
+  public data class Event(public val id: String) : TransitionItem
+}
+
 /** Alpha and readiness for content that must stay out of a shared navigation transition. */
 public class TransitionContentFade internal constructor(
   public val alpha: State<Float>,
@@ -51,6 +57,8 @@ private val UnscopedTransitionContentFade = TransitionContentFade(
   acceptsInputState = AcceptingInput,
 )
 
+private val LocalTransitionItem = compositionLocalOf<TransitionItem?> { null }
+
 private val LocalTransitionContentFade = compositionLocalOf<TransitionContentFade?> { null }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -58,12 +66,12 @@ private val LocalTransitionContentFade = compositionLocalOf<TransitionContentFad
 internal fun ProvideTransitionContentScope(
   sharedTransitionScope: SharedTransitionScope,
   animatedVisibilityScope: AnimatedVisibilityScope,
-  enabled: Boolean = true,
+  item: TransitionItem?,
   content: @Composable () -> Unit,
 ) {
   val navTransition = animatedVisibilityScope.transition
   val settled = transitionContentSettled(
-    hasScope = enabled,
+    hasScope = item != null,
     navCurrentVisible = navTransition.currentState == EnterExitState.Visible,
     navTargetVisible = navTransition.targetState == EnterExitState.Visible,
     navRunning = navTransition.isRunning,
@@ -71,21 +79,29 @@ internal fun ProvideTransitionContentScope(
   )
   val fade = rememberTransitionContentFadeState(visible = settled, isSettled = settled)
   CompositionLocalProvider(
-    LocalTransitionContentFade provides if (enabled) fade else null,
+    LocalTransitionItem provides item,
+    LocalTransitionContentFade provides if (item != null) fade else null,
     content = content,
   )
 }
 
 @Composable
 internal fun ProvideUnscopedTransitionContent(content: @Composable () -> Unit) {
-  CompositionLocalProvider(LocalTransitionContentFade provides null, content = content)
+  CompositionLocalProvider(LocalTransitionItem provides null, LocalTransitionContentFade provides null, content = content)
 }
 
 /** Returns the scope-level fade shared by preview and header extras. */
 @Composable
-public fun currentTransitionContentFade(): TransitionContentFade {
-  return LocalTransitionContentFade.current ?: UnscopedTransitionContentFade
-}
+public fun currentTransitionContentFade(item: TransitionItem? = null): TransitionContentFade =
+  selectTransitionContentFade(LocalTransitionContentFade.current, LocalTransitionItem.current, item)
+
+internal fun selectTransitionContentFade(
+  fade: TransitionContentFade?,
+  activeItem: TransitionItem?,
+  requestedItem: TransitionItem?,
+): TransitionContentFade =
+  if (requestedItem == null || requestedItem == activeItem) fade ?: UnscopedTransitionContentFade
+  else UnscopedTransitionContentFade
 
 /** Fades ready detail content after its navigation and shared transitions have settled. */
 @Composable

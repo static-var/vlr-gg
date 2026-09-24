@@ -27,6 +27,7 @@ import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import dev.staticvar.vlr.sharedui.component.common.TransitionItem
 import dev.staticvar.vlr.sharedui.component.common.currentTransitionContentFade
 import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.event.EventFavoriteReasons
@@ -43,7 +44,7 @@ import vlr.shared_ui.generated.resources.match_event_upcoming
 
 @Composable
 public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPreview, onClick: (() -> Unit)? = null) {
-  val extraContentFade = currentTransitionContentFade()
+  val extraContentFade = currentTransitionContentFade(TransitionItem.Event(eventPreview.id))
   FavoriteTicketCardBox(
     selected = eventPreview.isFavorite,
     modifier = modifier,

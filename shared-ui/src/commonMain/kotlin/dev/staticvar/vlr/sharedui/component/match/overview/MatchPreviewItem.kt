@@ -33,6 +33,7 @@ import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.TransitionItem
 import dev.staticvar.vlr.sharedui.component.common.currentTransitionContentFade
 import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
@@ -55,7 +56,7 @@ public fun MatchPreviewItem(
   onClick: (() -> Unit)? = null,
 ) {
   val selectionAnimation = Prism.anim.selection
-  val extraContentFade = currentTransitionContentFade()
+  val extraContentFade = currentTransitionContentFade(TransitionItem.Match(matchPreview.id))
   FavoriteTicketCardBox(
     selected = matchPreview.isFavorite,
     modifier = modifier,

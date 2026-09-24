@@ -14,6 +14,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.TransitionItem
 import dev.staticvar.vlr.sharedui.component.common.ProvideTransitionContentScope
 import dev.staticvar.vlr.sharedui.component.common.ProvideUnscopedTransitionContent
 
@@ -32,7 +33,7 @@ public fun ProvideEventTransitionScope(
   sharedTransitionScope: SharedTransitionScope,
   animatedVisibilityScope: AnimatedVisibilityScope,
   enabled: Boolean = true,
-  fadeEnabled: Boolean = true,
+  transitionItem: TransitionItem? = null,
   content: @Composable () -> Unit,
 ) {
   if (!enabled) {
@@ -44,7 +45,7 @@ public fun ProvideEventTransitionScope(
   ProvideTransitionContentScope(
     sharedTransitionScope = sharedTransitionScope,
     animatedVisibilityScope = animatedVisibilityScope,
-    enabled = fadeEnabled,
+    item = transitionItem,
   ) {
     CompositionLocalProvider(
       LocalEventTransitionScope provides EventTransitionScope(
