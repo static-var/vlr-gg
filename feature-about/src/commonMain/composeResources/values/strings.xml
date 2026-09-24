@@ -122,6 +122,11 @@
     <string name="live_match_updates">Live match updates</string>
     <string name="live_match_updates_description">Follow live scores in notifications.</string>
     <string name="notifications_permission_description">Allow notifications to receive live match updates.</string>
+    <string name="release_1_0_4_introduction">Follow live scores, choose your app’s look, and explore more match details.</string>
+    <string name="release_1_0_4_live_title">Live scores for your favorites</string>
+    <string name="release_1_0_4_live_description">Enable live scores for favorite matches and events on supported devices, with Live Activities on iOS and Live Updates on Android.</string>
+    <string name="release_1_0_4_appearance_title">Make the app yours</string>
+    <string name="release_1_0_4_appearance_description">Choose your app icon, theme, and mascot in the new Appearance settings.</string>
     <string name="notification_promotion_unavailable">Live scores can still appear as regular notifications. Your device is not allowing promoted Live Updates for this app. Check system notification settings; availability also depends on your device.</string>
     <string name="match_alerts">Match alerts</string>
     <string name="match_alerts_description">Get a notification when a favorite match goes live. Live score updates are unavailable on this device.</string>

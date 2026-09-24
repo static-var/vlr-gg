@@ -121,6 +121,11 @@
     <string name="live_match_updates">Canlı maç güncellemeleri</string>
     <string name="live_match_updates_description">Canlı skorları bildirimlerden takip et.</string>
     <string name="notifications_permission_description">Canlı maç güncellemelerini almak için bildirimlere izin ver.</string>
+    <string name="release_1_0_4_introduction">Canlı skorları takip edin, uygulamanın görünümünü seçin ve daha fazla maç ayrıntısını keşfedin.</string>
+    <string name="release_1_0_4_live_title">Favorilerinizin canlı skorları</string>
+    <string name="release_1_0_4_live_description">Desteklenen cihazlarda favori maç ve etkinliklerinizin canlı skorlarını açın: iOS’ta Canlı Etkinlikler, Android’de Live Updates ile takip edin.</string>
+    <string name="release_1_0_4_appearance_title">Uygulamayı kendinize göre ayarlayın</string>
+    <string name="release_1_0_4_appearance_description">Yeni Görünüm ayarlarından uygulama simgesini, temayı ve maskotu seçin.</string>
     <string name="notification_promotion_unavailable">Canlı skorlar normal bildirim olarak görünmeye devam edebilir. Cihazınız bu uygulama için öne çıkarılan canlı güncellemelere izin vermiyor. Sistem bildirim ayarlarını kontrol edin; kullanılabilirlik cihazınıza da bağlıdır.</string>
     <string name="match_alerts">Maç bildirimleri</string>
     <string name="match_alerts_description">Favori bir maç başladığında bildirim alın. Bu cihazda canlı skor güncellemeleri kullanılamıyor.</string>
