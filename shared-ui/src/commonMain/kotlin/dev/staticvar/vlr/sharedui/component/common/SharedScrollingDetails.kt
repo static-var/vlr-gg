@@ -30,6 +30,8 @@ public fun SharedScrollingDetails(
   state: LazyListState,
   contentAlpha: State<Float>,
   showContent: Boolean,
+  showLoading: Boolean,
+  contentEnabled: Boolean = true,
   modifier: Modifier = Modifier,
   hero: @Composable () -> Unit,
   loading: @Composable (Modifier) -> Unit,
@@ -38,19 +40,17 @@ public fun SharedScrollingDetails(
   val contentVisible by remember(showContent, contentAlpha) {
     derivedStateOf { showContent || contentAlpha.value > 0f }
   }
-  val loadingVisible by remember(contentAlpha) {
-    derivedStateOf { contentAlpha.value < 1f }
-  }
   Box(modifier) {
     LazyColumn(
       state = state,
+      userScrollEnabled = contentEnabled,
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
       modifier = Modifier.fillMaxSize().cardMascotViewport(),
     ) {
       item(key = DetailHeroKey, contentType = DetailHeroKey) { hero() }
-      if (contentVisible) FadingDetailItems(this, contentAlpha).content()
+      if (contentVisible) FadingDetailItems(this, contentAlpha, contentEnabled).content()
     }
-    if (!contentVisible || loadingVisible) {
+    if (showLoading) {
       loading(
         Modifier.matchParentSize()
           .layout { measurable, constraints ->
@@ -77,10 +77,15 @@ public fun SharedScrollingDetails(
 private class FadingDetailItems(
   private val scope: LazyListScope,
   private val alpha: State<Float>,
+  private val contentEnabled: Boolean,
 ) : LazyListScope by scope {
   override fun item(key: Any?, contentType: Any?, content: @Composable LazyItemScope.() -> Unit) {
     scope.item(key, contentType) {
-      Box(Modifier.fillMaxWidth().graphicsLayer { alpha = this@FadingDetailItems.alpha.value }) { content() }
+      Box(
+        Modifier.fillMaxWidth()
+          .graphicsLayer { alpha = this@FadingDetailItems.alpha.value }
+          .transitionContentInput(this@FadingDetailItems.contentEnabled),
+      ) { content() }
     }
   }
 
@@ -91,7 +96,11 @@ private class FadingDetailItems(
     itemContent: @Composable LazyItemScope.(Int) -> Unit,
   ) {
     scope.items(count, key, contentType) { index ->
-      Box(Modifier.fillMaxWidth().graphicsLayer { alpha = this@FadingDetailItems.alpha.value }) { itemContent(index) }
+      Box(
+        Modifier.fillMaxWidth()
+          .graphicsLayer { alpha = this@FadingDetailItems.alpha.value }
+          .transitionContentInput(this@FadingDetailItems.contentEnabled),
+      ) { itemContent(index) }
     }
   }
 }

@@ -4,8 +4,6 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,6 +54,10 @@ import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
+import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.currentTransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.rememberTransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeadToHeadItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.match.detail.MatchDetailMapsItem
@@ -139,7 +140,8 @@ internal fun MatchDetailsScreen(
         match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty()
       )
   val bodyReady = match != null && (hasDetailedContent || (!uiState.isLoading && !uiState.isDetailLoadPending))
-  val bodyFade = rememberMatchContentFade(bodyReady)
+  val extraContentFade = currentTransitionContentFade()
+  val bodyFade = rememberTransitionContentFade(bodyReady)
   val uriHandler = LocalUriHandler.current
   var selectedMapIndex: Int? by remember(match?.id) { mutableStateOf<Int?>(null) }
   val maps = match?.matchData.orEmpty()
@@ -201,7 +203,7 @@ internal fun MatchDetailsScreen(
       }
       when {
         (!isOnline || uiState.isLoading || uiState.isDetailLoadPending || uiState.isRefreshing) && match == null -> MatchDetailsLoading(
-          modifier = Modifier.fillMaxSize(),
+          modifier = Modifier.fillMaxSize().transitionContentFade(extraContentFade),
           label = stringResource(Res.string.loading_match),
         )
 
@@ -211,14 +213,14 @@ internal fun MatchDetailsScreen(
             errorDetails = uiState.errorDetails,
             onRefresh = onRefresh,
             centered = true,
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier.fillMaxWidth().weight(1f).transitionContentFade(extraContentFade),
           )
 
         match == null -> SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveMatches,
           title = stringResource(Res.string.no_match_details_yet),
           message = stringResource(Res.string.details_will_appear_when_this_match_is_published),
-          modifier = Modifier.fillMaxWidth().weight(1f),
+          modifier = Modifier.fillMaxWidth().weight(1f).transitionContentFade(extraContentFade),
         )
 
         else -> MatchDetailsContent(
@@ -231,8 +233,9 @@ internal fun MatchDetailsScreen(
           isFavoriteInherited = uiState.isFavoriteInherited,
           canToggleFavorite = uiState.canToggleFavorite,
           listState = listState,
-          contentAlpha = bodyFade,
-          showContent = bodyReady,
+          contentFade = bodyFade,
+          bodyReady = bodyReady,
+          extraContentFade = extraContentFade,
           modifier = Modifier.fillMaxWidth().weight(1f),
           onFavoriteClick = onFavoriteClick,
           onEventSelected = { id -> leaveScreen { onEventSelected(id) } },
@@ -321,8 +324,9 @@ private fun MatchDetailsContent(
   isFavoriteInherited: Boolean,
   canToggleFavorite: Boolean,
   listState: LazyListState,
-  contentAlpha: State<Float>,
-  showContent: Boolean,
+  contentFade: TransitionContentFade,
+  bodyReady: Boolean,
+  extraContentFade: TransitionContentFade,
   modifier: Modifier = Modifier,
   onFavoriteClick: () -> Unit,
   onEventSelected: (String) -> Unit,
@@ -335,8 +339,10 @@ private fun MatchDetailsContent(
 ) {
   SharedScrollingDetails(
     state = listState,
-    contentAlpha = contentAlpha,
-    showContent = showContent,
+    contentAlpha = contentFade.alpha,
+    showContent = bodyReady,
+    showLoading = !bodyReady,
+    contentEnabled = contentFade.acceptsInput,
     modifier = modifier,
     hero = {
       MatchDetailsHero(
@@ -350,7 +356,10 @@ private fun MatchDetailsContent(
       )
     },
     loading = { loadingModifier ->
-      MatchDetailsLoading(label = stringResource(Res.string.loading_match_details), modifier = loadingModifier)
+      MatchDetailsLoading(
+        label = stringResource(Res.string.loading_match_details),
+        modifier = loadingModifier.transitionContentFade(extraContentFade),
+      )
     },
   ) {
     matchDetailItems(
@@ -487,18 +496,6 @@ private fun MatchDetailMediaRow(videos: MatchVideos, onVideoSelected: (String) -
 
 private fun String.asExternalUrl(): String =
   if (startsWith("http://") || startsWith("https://")) this else "https://$this"
-
-@Composable
-private fun rememberMatchContentFade(ready: Boolean): State<Float> {
-  val alpha = remember { Animatable(0f) }
-  val animation = Prism.anim.standard
-  LaunchedEffect(ready, alpha) {
-    if (ready) {
-      alpha.animateTo(1f, tween(durationMillis = animation.durationMillis, easing = animation.easing))
-    }
-  }
-  return alpha.asState()
-}
 
 @Composable
 private fun MatchDetailsLoading(label: String, modifier: Modifier = Modifier) {

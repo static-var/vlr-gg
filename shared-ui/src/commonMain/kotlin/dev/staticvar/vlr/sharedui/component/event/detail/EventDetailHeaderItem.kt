@@ -28,6 +28,8 @@ import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import dev.staticvar.vlr.sharedui.component.common.currentTransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.event.EventFavoriteReasons
 import dev.staticvar.vlr.sharedui.component.event.EventSharedContent
 import dev.staticvar.vlr.sharedui.component.event.eventLogoSharedElement
@@ -88,15 +90,20 @@ private fun EventDetailHeaderContent(
   onOpenEvent: (() -> Unit)? = null,
   favoriteAction: (@Composable () -> Unit)? = null,
 ) {
+  val extraContentFade = currentTransitionContentFade()
   FavoriteTicketCardBox(
     selected = event.isFavorite,
     modifier = modifier.fillMaxWidth(),
-    favoriteModifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Favorite),
+    favoriteModifier = Modifier.transitionContentFade(extraContentFade),
   ) {
     PrismTicket(
       modifier = Modifier.fillMaxWidth().eventSharedBounds(event.id, EventSharedContent.Card),
+      animateSizeChanges = extraContentFade.isSettled,
       header = {
-        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+        Column(
+          modifier = Modifier.transitionContentFade(extraContentFade),
+          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+        ) {
           Row(
             Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -112,7 +119,6 @@ private fun EventDetailHeaderContent(
             )
             PrismTag(
               text = event.status.eventDetailLabel,
-              modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Status),
               style = event.status.eventDetailTagStyle,
             )
           }
@@ -123,7 +129,7 @@ private fun EventDetailHeaderContent(
           ) {
             Text(
               text = event.prize.eventHeroPrizeStat().ifBlank { stringResource(Res.string.match_event_tbd) },
-              modifier = Modifier.weight(1f).eventSharedBounds(event.id, EventSharedContent.Prize),
+              modifier = Modifier.weight(1f),
               style = Prism.typography.bodySmall,
               color = Prism.color.contentPrimary,
             )
@@ -134,41 +140,42 @@ private fun EventDetailHeaderContent(
         }
       },
       stub = {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-          Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
-            Text(
-              stringResource(Res.string.match_event_dates),
-              style = Prism.typography.overline,
-              color = Prism.color.contentSecondary,
-            )
-            Text(
-              text = event.dates.ifBlank { stringResource(Res.string.match_event_dates_tba) },
-              modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Dates),
-              style = Prism.typography.bodySmall,
-            )
+        Column(Modifier.fillMaxWidth().transitionContentFade(extraContentFade)) {
+          Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+              Text(
+                stringResource(Res.string.match_event_dates),
+                style = Prism.typography.overline,
+                color = Prism.color.contentSecondary,
+              )
+              Text(
+                text = event.dates.ifBlank { stringResource(Res.string.match_event_dates_tba) },
+                style = Prism.typography.bodySmall,
+              )
+            }
+            Column(
+              horizontalAlignment = Alignment.End,
+              verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+            ) {
+              Text(
+                stringResource(Res.string.match_event_teams),
+                style = Prism.typography.overline,
+                color = Prism.color.contentSecondary,
+              )
+              Text(teams, style = Prism.typography.bodySmall)
+            }
           }
-          Column(
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
-          ) {
-            Text(
-              stringResource(Res.string.match_event_teams),
-              style = Prism.typography.overline,
-              color = Prism.color.contentSecondary,
-            )
-            Text(teams, style = Prism.typography.bodySmall)
+          if (favoriteAction != null) {
+            Column(Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)) { favoriteAction() }
           }
-        }
-        if (favoriteAction != null) {
-          Column(Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)) { favoriteAction() }
-        }
-        if (onOpenEvent != null) {
-          PrismButton(
-            onClick = onOpenEvent,
-            modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
-            style = PrismButtonStyle.Primary,
-          ) {
-            Text(stringResource(Res.string.match_event_view_at_vlr))
+          if (onOpenEvent != null) {
+            PrismButton(
+              onClick = onOpenEvent,
+              modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
+              style = PrismButtonStyle.Primary,
+            ) {
+              Text(stringResource(Res.string.match_event_view_at_vlr))
+            }
           }
         }
       },
@@ -199,6 +206,7 @@ private fun EventDetailHeaderContent(
         if (subtitle.isNotBlank()) {
           Text(
             text = subtitle,
+            modifier = Modifier.transitionContentFade(extraContentFade),
             style = Prism.typography.bodySmall,
             color = Prism.color.labelColor,
             textAlign = TextAlign.Center,
