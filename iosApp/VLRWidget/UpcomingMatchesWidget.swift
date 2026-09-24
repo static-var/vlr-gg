@@ -30,21 +30,9 @@ struct UpcomingMatchesProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<UpcomingMatchesEntry>) -> Void) {
         Task {
             let now = Date.now
-            let source = repository.loadSource()
-            var snapshot = repository.loadBestSnapshot()
-
-            if let source, source.hasFavorites {
-                do {
-                    let refreshed = try await refreshService.refresh(source: source, now: now)
-                    if repository.store(refreshed, for: source) {
-                        snapshot = refreshed.usingConfiguration(from: source)
-                    } else {
-                        snapshot = repository.loadBestSnapshot()
-                    }
-                } catch {
-                    snapshot = repository.loadBestSnapshot() ?? snapshot
-                }
-            }
+            let snapshot = await WidgetRefreshCoordinator.shared.snapshot(
+                repository: repository, service: refreshService, now: now
+            )
 
             let refreshDate = nextRefreshDate(for: snapshot, now: now)
             completion(
@@ -57,18 +45,8 @@ struct UpcomingMatchesProvider: TimelineProvider {
     }
 
     private func nextRefreshDate(for snapshot: UpcomingMatchesSnapshot?, now: Date) -> Date {
-        let hasLiveMatch = snapshot?.matches.contains { $0.status == .live } == true
-        let requestedInterval: TimeInterval = hasLiveMatch ? 15 * 60 : 30 * 60
-        var requestedDate = now.addingTimeInterval(requestedInterval)
-
-        if let nextStart = snapshot?.matches
-            .filter({ $0.status == .upcoming })
-            .compactMap(\.startTime)
-            .filter({ $0 > now.addingTimeInterval(5 * 60) })
-            .min() {
-            requestedDate = min(requestedDate, nextStart)
-        }
-        return requestedDate
+        // A failed refresh must not schedule an immediate retry loop.
+        max(snapshot?.refreshDate ?? now, now.addingTimeInterval(5 * 60))
     }
 }
 
