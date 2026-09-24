@@ -24,10 +24,16 @@ import dev.staticvar.vlr.core.notifications.NotificationAuthorization
 import dev.staticvar.vlr.core.notifications.NotificationPermissionProvider
 
 @Composable
-public fun rememberAndroidNotificationPermissionProvider(supportsLiveUpdates: () -> Boolean): NotificationPermissionProvider {
+public fun rememberAndroidNotificationPermissionProvider(
+  supportsLiveUpdates: () -> Boolean,
+  supportsMatchAlerts: () -> Boolean = { false },
+  onAuthorizationChanged: () -> Unit = {},
+): NotificationPermissionProvider {
   val context = LocalContext.current.applicationContext
   val activity = LocalActivity.current
-  val provider = remember(context, supportsLiveUpdates) { AndroidNotificationPermissionProvider(context, supportsLiveUpdates) }
+  val provider = remember(context, supportsLiveUpdates, supportsMatchAlerts, onAuthorizationChanged) {
+    AndroidNotificationPermissionProvider(context, supportsLiveUpdates, supportsMatchAlerts, onAuthorizationChanged)
+  }
   val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
     provider.completeRequest()
   }
@@ -46,6 +52,8 @@ public fun rememberAndroidNotificationPermissionProvider(supportsLiveUpdates: ()
 private class AndroidNotificationPermissionProvider(
   private val context: Context,
   private val supportsLiveNotifications: () -> Boolean,
+  private val supportsOrdinaryMatchAlerts: () -> Boolean,
+  private val onAuthorizationChanged: () -> Unit,
 ) : NotificationPermissionProvider {
   private val mainHandler = Handler(Looper.getMainLooper())
   private val preferences = context.getSharedPreferences("notification_permission", Context.MODE_PRIVATE)
@@ -54,6 +62,8 @@ private class AndroidNotificationPermissionProvider(
   var shouldShowRationale: (() -> Boolean)? = null
 
   override fun supportsLiveUpdates(): Boolean = supportsLiveNotifications()
+
+  override fun supportsMatchAlerts(): Boolean = supportsOrdinaryMatchAlerts()
 
   override fun areLiveActivitiesEnabled(): Boolean? = null
 
@@ -68,7 +78,10 @@ private class AndroidNotificationPermissionProvider(
   }
 
   override fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {
-    onMain { onResult(readAuthorization()) }
+    onMain {
+      onResult(readAuthorization())
+      onAuthorizationChanged()
+    }
   }
 
   override fun requestNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {
@@ -79,6 +92,7 @@ private class AndroidNotificationPermissionProvider(
         Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
       ) {
         onResult(authorization)
+        onAuthorizationChanged()
       } else {
         val launch = launchRequest
         if (launch == null || pendingResult != null) {
@@ -159,7 +173,10 @@ private class AndroidNotificationPermissionProvider(
   private fun finishRequest(authorization: NotificationAuthorization) {
     val onResult = pendingResult
     pendingResult = null
-    onResult?.invoke(authorization)
+    onResult?.let {
+      it(authorization)
+      onAuthorizationChanged()
+    }
   }
 
   private fun onMain(block: () -> Unit) {

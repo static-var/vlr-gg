@@ -341,7 +341,7 @@ internal fun appNavigationModule(): Module = module {
       deletedCacheRecords = cleanupStats.deletedRecords,
       onAutoCleanupChanged = cleanupPreferences::setEnabled,
       onAppearance = appState::showAppearance,
-      onNotifications = if (notificationAccess?.supportsLiveUpdates == true) appState::showNotifications else null,
+      onNotifications = if (notificationAccess?.supportsNotifications == true) appState::showNotifications else null,
       liveActivities = notificationAccess?.requiresNotificationPermission == false,
       onAbout = appState::showAbout,
       onWhatsNew = appState::showWhatsNew,

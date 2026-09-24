@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.android
 
 import android.app.Application
+import dev.staticvar.vlr.android.notifications.AndroidMatchAlertNotifications
 import dev.staticvar.vlr.android.notifications.AndroidLiveMatchNotifications
 import dev.staticvar.vlr.android.notifications.AndroidLiveTopicSubscriptions
 import dev.staticvar.vlr.android.notifications.AndroidPushTokenProvider
@@ -26,6 +27,9 @@ class VlrApplication : Application() {
   internal lateinit var liveTopicSubscriptions: AndroidLiveTopicSubscriptions
     private set
   internal lateinit var liveMatchNotifications: AndroidLiveMatchNotifications
+    private set
+
+  internal lateinit var matchAlertNotifications: AndroidMatchAlertNotifications
     private set
 
   override fun onCreate() {
@@ -58,6 +62,11 @@ class VlrApplication : Application() {
       preferences = notificationPreferences,
       spoilerPreferences = spoilerPreferences,
     )
+    matchAlertNotifications = AndroidMatchAlertNotifications(
+      context = this,
+      json = getKoin().get(),
+      enabled = { notificationPreferences.preferences.value.enabled },
+    )
     liveTopicSubscriptions = AndroidLiveTopicSubscriptions(
       context = this,
       favorites = getKoin().get(),
@@ -65,6 +74,11 @@ class VlrApplication : Application() {
       scope = scope,
     )
     pushTokenProvider.onTokenChanged = liveTopicSubscriptions::refresh
+    scope.launch {
+      notificationPreferences.preferences.collect { preferences ->
+        if (!preferences.enabled) matchAlertNotifications.cancelAll()
+      }
+    }
     scope.launch {
       combine(notificationPreferences.preferences, spoilerPreferences.enabled) { notifications, hidden ->
         !notifications.enabled || hidden

@@ -41,4 +41,7 @@
     <string name="live_match_notification_open_match">Open match</string>
     <string name="live_match_notification_unpin">Unpin</string>
     <string name="live_match_notification_final">Final</string>
+    <string name="match_alert_channel_name">Match alerts</string>
+    <string name="match_alert_channel_description">Alerts when your favorite matches are starting</string>
+    <string name="match_alert_live">Match is live</string>
 </resources>

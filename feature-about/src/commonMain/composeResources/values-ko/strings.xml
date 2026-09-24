@@ -122,4 +122,6 @@
     <string name="live_match_updates_description">알림에서 실시간 점수를 확인하세요.</string>
     <string name="notifications_permission_description">경기 실시간 소식을 받으려면 알림을 허용하세요.</string>
     <string name="notification_promotion_unavailable">실시간 점수는 일반 알림으로 계속 표시될 수 있습니다. 기기에서 이 앱의 강조된 실시간 업데이트를 허용하지 않습니다. 시스템 알림 설정을 확인하세요. 지원 여부는 기기에 따라 다릅니다.</string>
+    <string name="match_alerts">경기 알림</string>
+    <string name="match_alerts_description">즐겨찾는 경기가 시작되면 알림을 받습니다. 이 기기에서는 실시간 점수 업데이트를 사용할 수 없습니다.</string>
 </resources>

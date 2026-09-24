@@ -123,4 +123,6 @@
     <string name="live_match_updates_description">सूचनाओं में लाइव स्कोर देखें।</string>
     <string name="notifications_permission_description">मैच के लाइव अपडेट पाने के लिए सूचनाओं की अनुमति दें।</string>
     <string name="notification_promotion_unavailable">लाइव स्कोर सामान्य सूचनाओं में अब भी दिख सकते हैं। आपका डिवाइस इस ऐप के लिए प्रमुख लाइव अपडेट की अनुमति नहीं दे रहा है। सिस्टम की सूचना सेटिंग देखें; उपलब्धता आपके डिवाइस पर भी निर्भर करती है।</string>
+    <string name="match_alerts">मैच अलर्ट</string>
+    <string name="match_alerts_description">पसंदीदा मैच शुरू होने पर सूचना पाएँ। इस डिवाइस पर लाइव स्कोर अपडेट उपलब्ध नहीं हैं।</string>
 </resources>

@@ -124,4 +124,6 @@
     <string name="live_match_updates_description">Suivez les scores en direct dans les notifications.</string>
     <string name="notifications_permission_description">Autorisez les notifications pour recevoir les actualités des matchs en direct.</string>
     <string name="notification_promotion_unavailable">Les scores en direct peuvent toujours apparaître dans les notifications ordinaires. Votre appareil ne permet pas les mises à jour en direct mises en avant pour cette application. Vérifiez les réglages de notification du système ; la disponibilité dépend aussi de votre appareil.</string>
+    <string name="match_alerts">Alertes de matchs</string>
+    <string name="match_alerts_description">Recevez une notification au début d’un match favori. Les mises à jour des scores en direct ne sont pas disponibles sur cet appareil.</string>
 </resources>

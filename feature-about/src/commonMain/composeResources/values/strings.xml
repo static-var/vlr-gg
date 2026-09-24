@@ -123,4 +123,6 @@
     <string name="live_match_updates_description">Follow live scores in notifications.</string>
     <string name="notifications_permission_description">Allow notifications to receive live match updates.</string>
     <string name="notification_promotion_unavailable">Live scores can still appear as regular notifications. Your device is not allowing promoted Live Updates for this app. Check system notification settings; availability also depends on your device.</string>
+    <string name="match_alerts">Match alerts</string>
+    <string name="match_alerts_description">Get a notification when a favorite match goes live. Live score updates are unavailable on this device.</string>
 </resources>

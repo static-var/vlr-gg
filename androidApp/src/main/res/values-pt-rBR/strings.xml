@@ -41,4 +41,7 @@
     <string name="live_match_notification_unpin">Desafixar</string>
     <string name="live_match_notification_final">Final</string>
     <string name="live_match_notification_open_match">Abrir partida</string>
+    <string name="match_alert_channel_name">Alertas de partidas</string>
+    <string name="match_alert_channel_description">Alertas quando suas partidas favoritas começam</string>
+    <string name="match_alert_live">Partida ao vivo</string>
 </resources>

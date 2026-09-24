@@ -123,4 +123,6 @@
     <string name="live_match_updates_description">Verfolge Live-Ergebnisse in Mitteilungen.</string>
     <string name="notifications_permission_description">Erlaube Mitteilungen, um Live-Spielupdates zu erhalten.</string>
     <string name="notification_promotion_unavailable">Live-Spielstände können weiterhin als normale Benachrichtigungen erscheinen. Dein Gerät erlaubt für diese App keine hervorgehobenen Live-Updates. Prüfe die Benachrichtigungseinstellungen des Systems; die Verfügbarkeit hängt auch vom Gerät ab.</string>
+    <string name="match_alerts">Spielbenachrichtigungen</string>
+    <string name="match_alerts_description">Erhalte eine Benachrichtigung, wenn ein favorisiertes Spiel beginnt. Live-Spielstände sind auf diesem Gerät nicht verfügbar.</string>
 </resources>

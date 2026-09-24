@@ -2,6 +2,7 @@ package dev.staticvar.vlr.android.notifications
 
 import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
@@ -62,11 +63,18 @@ internal class AndroidLiveTopicSubscriptions(
    */
   private suspend fun synchronize() {
     val snapshot = favoritesSnapshot ?: return
-    if (!AndroidLiveNotificationAvailability.isAvailable(appContext)) return
+    if (!AndroidLiveNotificationAvailability.supportsMatchAlerts(appContext)) return
+    val liveSupported = AndroidLiveNotificationAvailability.isAvailable(appContext)
+    val channelId = if (liveSupported) {
+      "live_matches"
+    } else {
+      "match_alerts"
+    }
     val enabled = preferences.preferences.value.enabled &&
       notifications.areNotificationsEnabled() &&
-      notifications.getNotificationChannel("live_matches")?.importance != NotificationManager.IMPORTANCE_NONE
-    val desired = if (enabled) snapshot.liveTopics() else emptySet()
+      (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+        notifications.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE)
+    val desired = if (enabled) snapshot.notificationTopics(liveSupported) else emptySet()
     val previous = LiveTopicSubscriptionState(
       token = storage.getString("token", null),
       topics = storage.getStringSet("topics", emptySet()).orEmpty(),
@@ -147,11 +155,18 @@ private class FirebaseLiveTopicSubscriptionTransport(
   }
 }
 
-internal fun DirectFavoriteSnapshot.liveTopics(): Set<String> = buildSet {
+/** Uses cached player team IDs for alerts that do not register for backend live activities. */
+internal fun DirectFavoriteSnapshot.notificationTopics(liveSupported: Boolean): Set<String> = buildSet {
   teams.forEach { add("live-team-${it.id}") }
   matches.forEach { add("live-match-${it.id}") }
   events.forEach { add("live-event-${it.id}") }
-  players.forEach { add("live-player-${it.id}") }
+  players.forEach { player ->
+    if (liveSupported) {
+      add("live-player-${player.id}")
+    } else {
+      player.currentTeamId?.takeIf(String::isNotBlank)?.let { add("live-team-$it") }
+    }
+  }
 }
 
 private suspend fun <T> Task<T>.awaitCompletion(): T = suspendCancellableCoroutine { continuation ->

@@ -122,4 +122,6 @@
     <string name="live_match_updates_description">Canlı skorları bildirimlerden takip et.</string>
     <string name="notifications_permission_description">Canlı maç güncellemelerini almak için bildirimlere izin ver.</string>
     <string name="notification_promotion_unavailable">Canlı skorlar normal bildirim olarak görünmeye devam edebilir. Cihazınız bu uygulama için öne çıkarılan canlı güncellemelere izin vermiyor. Sistem bildirim ayarlarını kontrol edin; kullanılabilirlik cihazınıza da bağlıdır.</string>
+    <string name="match_alerts">Maç bildirimleri</string>
+    <string name="match_alerts_description">Favori bir maç başladığında bildirim alın. Bu cihazda canlı skor güncellemeleri kullanılamıyor.</string>
 </resources>

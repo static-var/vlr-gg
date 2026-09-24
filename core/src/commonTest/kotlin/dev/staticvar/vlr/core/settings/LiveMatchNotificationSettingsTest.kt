@@ -133,6 +133,29 @@ class LiveMatchNotificationSettingsTest {
   }
 
   @Test
+  fun ordinaryMatchAlertsRequestPermissionWithoutLiveUpdatesOrPromotion() {
+    val provider = FakeProvider().apply {
+      supported = false
+      matchAlertsSupported = true
+      promotionAllowed = false
+    }
+    val controller = LiveMatchNotificationSettingsController(LiveMatchNotificationPreferencesRepository(MapSettings()), provider)
+    controller.refresh()
+    provider.readResult!!(NotificationAuthorization.NotDetermined)
+    controller.setEnabled(true)
+    provider.requestResult!!(NotificationAuthorization.Authorized)
+
+    assertEquals(1, provider.requests)
+    assertTrue(controller.access.value.supportsNotifications)
+    assertFalse(controller.access.value.supportsLiveUpdates)
+    assertEquals(null, controller.access.value.promotionAllowed)
+    controller.openSettings()
+    controller.openPromotionSettings()
+    assertEquals(1, provider.settingsOpened)
+    assertEquals(0, provider.promotionSettingsOpened)
+  }
+
+  @Test
   fun unsupportedLiveUpdatesDoNotRequestPermission() {
     val provider = FakeProvider().apply { supported = false }
     val controller = LiveMatchNotificationSettingsController(
@@ -152,6 +175,7 @@ class LiveMatchNotificationSettingsTest {
 
 /** Controls permission responses and records platform requests in settings tests. */
 private class FakeProvider : NotificationPermissionProvider {
+  var matchAlertsSupported = false
   var supported = true
   var requiresPermission = true
   var activitiesEnabled: Boolean? = true
@@ -164,6 +188,7 @@ private class FakeProvider : NotificationPermissionProvider {
   var requestResult: ((NotificationAuthorization) -> Unit)? = null
   override fun canPromoteNotifications(): Boolean? = promotionAllowed
   override fun supportsLiveUpdates(): Boolean = supported
+  override fun supportsMatchAlerts(): Boolean = matchAlertsSupported
   override fun requiresNotificationPermission(): Boolean = requiresPermission
   override fun areLiveActivitiesEnabled(): Boolean? = activitiesEnabled
   override fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {

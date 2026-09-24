@@ -4,6 +4,8 @@ import shared
 
 /// Reports iOS Live Activity support and opens the app’s system settings.
 final class IosLiveActivityPermissionProvider: NSObject, NotificationPermissionProvider {
+    func supportsMatchAlerts() -> Bool { false }
+
     func supportsLiveUpdates() -> Bool {
         if #available(iOS 17.2, *) {
             return true

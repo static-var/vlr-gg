@@ -12,11 +12,18 @@ import dev.staticvar.vlr.android.VlrApplication
 public class VlrFirebaseMessagingService : FirebaseMessagingService() {
   override fun onMessageReceived(message: RemoteMessage) {
     super.onMessageReceived(message)
-    (application as VlrApplication).liveMatchNotifications.handle(message.data)
+    val app = application as VlrApplication
+    if (AndroidLiveNotificationAvailability.isAvailable(this)) {
+      app.liveMatchNotifications.handle(message.data)
+    } else {
+      app.matchAlertNotifications.handle(message.data)
+    }
   }
 
   override fun onNewToken(token: String) {
     super.onNewToken(token)
-    (application as VlrApplication).pushTokenProvider.onNewToken(token)
+    val app = application as VlrApplication
+    app.pushTokenProvider.onNewToken(token)
+    app.liveTopicSubscriptions.refresh()
   }
 }
