@@ -232,7 +232,9 @@ private class StartHarness(
   private val scheduleRepository = object : FavoriteScheduleRepository {
     override fun observeMatches(): Flow<List<FavoriteScheduledMatch>> = schedule
   }
-  private val favoriteSync = FavoriteLiveUpdateCoordinator(identity, favoritesRepository, tokenPreferences, favoriteSource, scope)
+  private val favoriteSync = FavoriteLiveUpdateCoordinator(
+    identity, favoritesRepository, FakeFavoriteSyncStateRepository(), tokenPreferences, favoriteSource, scope,
+  )
   val start = LiveActivityStartCoordinator(
     identity, favoritesRepository, scheduleRepository, tokenPreferences, favoriteSync,
     startSource, LiveActivityStartLedger(storage, Json.Default),

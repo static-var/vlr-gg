@@ -25,6 +25,75 @@ import kotlin.test.assertTrue
 /** Checks token registration across permission, lifecycle, and identity changes. */
 class PushTokenRegistrationTest {
   @Test
+  fun disablingNotificationsDeletesTheCurrentTokenAndReenablingRegistersAgain() = runTest {
+    val harness = Harness(backgroundScope, notificationsEnabled = true).apply {
+      tokenProvider.tokenOnStart = "token"
+    }
+    harness.coordinator.start()
+    runCurrent()
+    harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+    assertEquals(1, harness.dataSource.requests.size)
+
+    harness.notificationPreferences.setEnabled(false)
+    runCurrent()
+    assertEquals(listOf(harness.identity.id.value.toString()), harness.dataSource.deletions)
+    assertEquals(1, harness.currentTokenDeletionCallbacks)
+    assertEquals(null, harness.tokenPreferences.preferences.value.uploadedClientId)
+
+    harness.notificationPreferences.setEnabled(true)
+    runCurrent()
+    harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+    assertEquals(2, harness.dataSource.requests.size)
+  }
+
+  @Test
+  fun failedOptOutDeletionIsPersistedAndRetried() = runTest {
+    val tokenSettings = MapSettings()
+    val harness = Harness(backgroundScope, notificationsEnabled = true, tokenSettings = tokenSettings).apply {
+      tokenProvider.tokenOnStart = "token"
+    }
+    harness.coordinator.start()
+    runCurrent()
+    harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+
+    harness.dataSource.deleteSucceeds = false
+    harness.notificationPreferences.setEnabled(false)
+    runCurrent()
+    assertEquals(harness.identity.id.value.toString(), harness.tokenPreferences.pendingTokenDeletionClientId())
+    assertEquals(1, harness.dataSource.deletions.size)
+
+    harness.dataSource.deleteSucceeds = true
+    harness.uploader.retry()
+    runCurrent()
+    assertEquals(2, harness.dataSource.deletions.size)
+    assertEquals(null, harness.tokenPreferences.pendingTokenDeletionClientId())
+    assertEquals(null, harness.tokenPreferences.preferences.value.uploadedClientId)
+  }
+
+  @Test
+  fun optOutDeletesATokenWhosePutResponseWasLost() = runTest {
+    val harness = Harness(backgroundScope, notificationsEnabled = true).apply {
+      tokenProvider.tokenOnStart = "token"
+      dataSource.succeeds = false
+    }
+    harness.coordinator.start()
+    runCurrent()
+    harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+    assertEquals(null, harness.tokenPreferences.preferences.value.uploadedClientId)
+    assertEquals(setOf(harness.identity.id.value.toString()), harness.tokenPreferences.possiblyUploadedTokenClients())
+
+    harness.notificationPreferences.setEnabled(false)
+    runCurrent()
+
+    assertEquals(listOf(harness.identity.id.value.toString()), harness.dataSource.deletions)
+    assertTrue(harness.tokenPreferences.possiblyUploadedTokenClients().isEmpty())
+  }
+
+  @Test
   fun synchronousNativeTokenIsStoredAndUploadedOnlyAfterEveryGatePasses() = runTest {
     val harness = Harness(backgroundScope, notificationsEnabled = true).apply {
       tokenProvider.tokenOnStart = "cached-native-token"
@@ -357,7 +426,10 @@ private class Harness(
   val tokenPreferences = PushTokenRegistrationPreferencesRepository(tokenSettings)
   val identity = UserIdentityRepository(identitySettings, trackCloudBackup = trackCloudBackup)
   val eligibility = mutableListOf<LiveUpdateEligibility>()
-  val uploader = PushTokenRegistrationUploader(tokenPreferences, identity, dataSource, scope)
+  var currentTokenDeletionCallbacks = 0
+  val uploader = PushTokenRegistrationUploader(tokenPreferences, identity, dataSource, scope) {
+    currentTokenDeletionCallbacks++
+  }
   val coordinator = PushTokenRegistrationCoordinator(
     pushTokenProvider = tokenProvider,
     permissionProvider = permissionProvider,

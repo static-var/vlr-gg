@@ -164,6 +164,7 @@ internal class PushTokenRegistrationCoordinator(
     } else if (!shouldStart && tokenProviderStarted) {
       stopTokenProvider()
     }
+    if (eligibility == LiveUpdateEligibility.Disabled) uploader.disableCurrentToken()
   }
 
   /**

@@ -21,12 +21,17 @@ internal class PushTokenRegistrationUploader(
   private val identityRepository: UserIdentityRepository,
   private val dataSource: PushTokenRegistrationDataSource,
   private val appScope: CoroutineScope,
+  private val onCurrentTokenDeleted: () -> Unit = {},
 ) {
   private val actions = Channel<Action>(Channel.UNLIMITED)
   private var clientId: String = identityRepository.id.value.toString()
   private var activeToken: RegistrationToken? = null
+  private var disabled = false
   private var inFlight: RegistrationRequest? = null
   private var lastAttempted: RegistrationRequest? = null
+  private var pendingDisable: String? = preferences.pendingTokenDeletionClientId()
+  private var disableInFlight: String? = null
+  private var lastDisableAttempted: String? = null
   private var pendingCleanup: Uuid? = identityRepository.pendingTokenCleanup.value
   private var cleanupInFlight: Uuid? = null
   private var lastCleanupAttempted: Uuid? = null
@@ -50,6 +55,10 @@ internal class PushTokenRegistrationUploader(
 
   fun deactivate() {
     actions.trySend(Action.Deactivated)
+  }
+
+  fun disableCurrentToken() {
+    actions.trySend(Action.DisableCurrentToken)
   }
 
   /** Retries a failed token registration or old-token deletion after foregrounding or reconnecting. */
@@ -76,6 +85,8 @@ internal class PushTokenRegistrationUploader(
 
       is Action.TokenReceived -> {
         preferences.storeToken(action.token.platform, action.token.value)
+        disabled = false
+        if (pendingDisable != null) lastDisableAttempted = null
         if (activeToken == action.token) return
         activeToken = action.token
         lastAttempted = null
@@ -87,6 +98,19 @@ internal class PushTokenRegistrationUploader(
         lastAttempted = null
       }
 
+      Action.DisableCurrentToken -> {
+        disabled = true
+        activeToken = null
+        lastAttempted = null
+        if (clientId in preferences.possiblyUploadedTokenClients() ||
+          preferences.preferences.value.uploadedClientId == clientId
+        ) {
+          preferences.markTokenDeletionPending(clientId)
+          pendingDisable = clientId
+        }
+        advance()
+      }
+
       is Action.UploadCompleted -> {
         if (inFlight != action.request) return
         if (action.success) {
@@ -96,6 +120,10 @@ internal class PushTokenRegistrationUploader(
             token = action.request.token.value,
           )
         }
+        if (disabled) {
+          preferences.markTokenDeletionPending(action.request.clientId)
+          pendingDisable = action.request.clientId
+        }
         inFlight = null
         advance()
       }
@@ -104,8 +132,20 @@ internal class PushTokenRegistrationUploader(
         if (cleanupInFlight != action.clientId) return
         cleanupInFlight = null
         if (action.success) {
+          preferences.markTokenDeleted(action.clientId.toString())
           identityRepository.markTokenCleanupComplete(action.clientId)
           pendingCleanup = identityRepository.pendingTokenCleanup.value
+        }
+        advance()
+      }
+
+      is Action.DisableCompleted -> {
+        if (disableInFlight != action.clientId) return
+        disableInFlight = null
+        if (action.success) {
+          preferences.markTokenDeleted(action.clientId)
+          pendingDisable = preferences.pendingTokenDeletionClientId()
+          if (action.clientId == clientId) onCurrentTokenDeleted()
         }
         advance()
       }
@@ -113,6 +153,7 @@ internal class PushTokenRegistrationUploader(
       Action.Retry -> {
         lastAttempted = null
         lastCleanupAttempted = null
+        lastDisableAttempted = null
         advance()
       }
     }
@@ -120,8 +161,26 @@ internal class PushTokenRegistrationUploader(
 
   /** Registers the current token before deleting any token under a superseded UUID. */
   private fun advance() {
+    disableIfNeeded()
     uploadIfNeeded()
     cleanupIfNeeded()
+  }
+
+  private fun disableIfNeeded() {
+    val target = pendingDisable ?: return
+    if (inFlight != null || cleanupInFlight != null || disableInFlight != null || target == lastDisableAttempted) return
+    disableInFlight = target
+    lastDisableAttempted = target
+    appScope.launch {
+      val success = try {
+        dataSource.delete(target)
+      } catch (cancellation: CancellationException) {
+        throw cancellation
+      } catch (_: Exception) {
+        false
+      }
+      actions.send(Action.DisableCompleted(target, success))
+    }
   }
 
   /**
@@ -129,7 +188,7 @@ internal class PushTokenRegistrationUploader(
    * Avoids concurrent uploads and repeated attempts for the same request.
    */
   private fun uploadIfNeeded() {
-    if (cleanupInFlight != null) return
+    if (disabled || pendingDisable != null || disableInFlight != null || cleanupInFlight != null) return
     val token = activeToken ?: return
     val request = RegistrationRequest(clientId, token)
     if (preferences.preferences.value.wasUploaded(clientId, token.platform, token.value)) return
@@ -137,6 +196,7 @@ internal class PushTokenRegistrationUploader(
 
     inFlight = request
     lastAttempted = request
+    preferences.markTokenUploadAttempt(request.clientId)
     appScope.launch {
       val success = try {
         dataSource.register(request.clientId, request.token.platform, request.token.value)
@@ -152,7 +212,9 @@ internal class PushTokenRegistrationUploader(
   /** Attempts each persisted cleanup once until a later foreground or reconnect retry. */
   private fun cleanupIfNeeded() {
     val oldId = pendingCleanup ?: return
-    if (oldId.toString() == clientId || cleanupInFlight != null || inFlight != null || oldId == lastCleanupAttempted) return
+    if (oldId.toString() == clientId || pendingDisable != null || disableInFlight != null ||
+      cleanupInFlight != null || inFlight != null || oldId == lastCleanupAttempted
+    ) return
     val token = activeToken ?: preferences.preferences.value.let { saved ->
       val platform = saved.tokenPlatform ?: return
       val value = saved.token ?: return
@@ -195,6 +257,10 @@ internal class PushTokenRegistrationUploader(
 
     /** Reports an old-token deletion response. */
     data class CleanupCompleted(val clientId: Uuid, val success: Boolean) : Action
+
+    data object DisableCurrentToken : Action
+
+    data class DisableCompleted(val clientId: String, val success: Boolean) : Action
 
     /** Allows one more attempt after foregrounding or reconnecting. */
     data object Retry : Action

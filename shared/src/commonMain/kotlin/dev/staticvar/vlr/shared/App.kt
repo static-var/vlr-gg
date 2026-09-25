@@ -136,6 +136,7 @@ public fun App(
   }
   LaunchedEffect(lifecycleState, pushTokenRegistrationCoordinator, notificationSettingsController) {
     if (lifecycleState == Lifecycle.State.RESUMED) {
+      favoriteLiveUpdateCoordinator.retry()
       pushTokenRegistrationCoordinator?.onForeground()
       notificationSettingsController?.refresh()
     }

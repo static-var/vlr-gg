@@ -112,7 +112,7 @@ class LiveUpdateReconnectRecoveryTest {
     harness.network.status.value = NetworkStatus.Online
     runCurrent()
     assertEquals(1, harness.tokens.registrations.size)
-    assertTrue(harness.favorites.teamUploads.last().isEmpty())
+    assertEquals(listOf("team-one"), harness.favorites.teamUploads.last())
   }
 
   @Test
@@ -196,7 +196,9 @@ private class ReconnectHarness(scope: CoroutineScope) {
   private val tokenPreferences = PushTokenRegistrationPreferencesRepository(MapSettings())
   val favoriteRepository = ReconnectFavoritesRepository()
   val uploader = PushTokenRegistrationUploader(tokenPreferences, identity, tokens, scope)
-  val favoriteSync = FavoriteLiveUpdateCoordinator(identity, favoriteRepository, tokenPreferences, favorites, scope)
+  val favoriteSync = FavoriteLiveUpdateCoordinator(
+    identity, favoriteRepository, FakeFavoriteSyncStateRepository(), tokenPreferences, favorites, scope,
+  )
 
   init {
     LiveUpdateReconnectRecovery(network, uploader, favoriteSync, scope)

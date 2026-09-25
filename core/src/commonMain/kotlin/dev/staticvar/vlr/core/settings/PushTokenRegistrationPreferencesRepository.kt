@@ -37,6 +37,7 @@ public class PushTokenRegistrationPreferencesRepository(private val storage: Set
    * A rotated token or restored identity must receive its own acknowledgement.
    */
   public fun markUploaded(clientId: String, platform: PushPlatform, token: String) {
+    markTokenUploadAttempt(clientId)
     storage.putString(UploadedClientIdKey, clientId)
     storage.putString(UploadedPlatformKey, platform.name)
     storage.putString(UploadedTokenKey, token)
@@ -65,6 +66,32 @@ public class PushTokenRegistrationPreferencesRepository(private val storage: Set
     storage.putString(FavoriteClientsKey, (possiblySyncedFavoriteClients() - clientId).joinToString(","))
   }
 
+  public fun pendingTokenDeletionClientId(): String? = storage.getStringOrNull(PendingTokenDeletionClientIdKey)
+
+  public fun possiblyUploadedTokenClients(): Set<String> = storage.getStringOrNull(TokenClientsKey)
+    ?.split(',')
+    ?.filter(String::isNotBlank)
+    ?.toSet()
+    .orEmpty()
+
+  public fun markTokenUploadAttempt(clientId: String) {
+    storage.putString(TokenClientsKey, (possiblyUploadedTokenClients() + clientId).joinToString(","))
+  }
+
+  public fun markTokenDeletionPending(clientId: String) {
+    storage.putString(PendingTokenDeletionClientIdKey, clientId)
+  }
+
+  public fun markTokenDeleted(clientId: String) {
+    if (pendingTokenDeletionClientId() == clientId) storage.remove(PendingTokenDeletionClientIdKey)
+    storage.putString(TokenClientsKey, (possiblyUploadedTokenClients() - clientId).joinToString(","))
+    if (preferences.value.uploadedClientId != clientId) return
+    storage.remove(UploadedClientIdKey)
+    storage.remove(UploadedPlatformKey)
+    storage.remove(UploadedTokenKey)
+    preferences.value = preferences.value.copy(uploadedClientId = null, uploadedPlatform = null, uploadedToken = null)
+  }
+
   private fun readPreferences(): PushTokenRegistrationPreferences = PushTokenRegistrationPreferences(
     token = storage.getStringOrNull(TokenKey),
     tokenPlatform = storage.getStringOrNull(TokenPlatformKey).toPushPlatformOrNull(),
@@ -84,5 +111,7 @@ public class PushTokenRegistrationPreferencesRepository(private val storage: Set
     const val UploadedPlatformKey: String = "notifications.uploadedPushTokenPlatform"
     const val UploadedClientIdKey: String = "notifications.uploadedPushTokenClientId"
     const val FavoriteClientsKey: String = "notifications.possiblySyncedFavoriteClients"
+    const val PendingTokenDeletionClientIdKey: String = "notifications.pendingTokenDeletionClientId"
+    const val TokenClientsKey: String = "notifications.possiblyUploadedTokenClients"
   }
 }
