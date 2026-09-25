@@ -4,13 +4,31 @@
  */
 package dev.staticvar.vlr.remotesource.liveupdates
 
-/** Replaces the favorites a client receives live updates for. */
+import kotlinx.serialization.Serializable
+
+/** Direct favorite IDs grouped by entity type. */
+@Serializable
+public data class FavoriteGroups(
+  val teams: List<String>,
+  val matches: List<String>,
+  val players: List<String>,
+  val events: List<String>,
+)
+
+/** Result of reading the favorites currently stored for a client. */
+public sealed interface FavoriteReadResult {
+  public data class Found(val favorites: FavoriteGroups) : FavoriteReadResult
+
+  public data object NotRegistered : FavoriteReadResult
+
+  public data object Failure : FavoriteReadResult
+}
+
+/** Reads and changes the direct favorites stored for a client. */
 public interface FavoriteLiveUpdateDataSource {
-  public suspend fun replace(
-    clientId: String,
-    teams: List<String>,
-    matches: List<String>,
-    players: List<String>,
-    events: List<String>,
-  ): Boolean
+  public suspend fun read(clientId: String): FavoriteReadResult
+
+  public suspend fun add(clientId: String, favorites: FavoriteGroups): Boolean
+
+  public suspend fun remove(clientId: String, favorites: FavoriteGroups): Boolean
 }
