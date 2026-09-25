@@ -35,19 +35,30 @@ import kotlin.math.roundToInt
 internal class LiveMatchLogoCache(context: Context) {
   private val appContext = context.applicationContext
   private val density get() = appContext.resources.displayMetrics.density
+  private val sourceSize = (48 * density).roundToInt().coerceAtLeast(64)
 
-  private val sources = LruCache<String, Bitmap>(32)
-  private val derived = LruCache<String, Bitmap>(96)
+  private val sources = bitmapCache(4 * 1024 * 1024)
+  private val derived = bitmapCache(8 * 1024 * 1024)
   private val lowContrast = LruCache<String, Boolean>(64)
   private val blockChipIcons = mutableSetOf<String>()
 
   fun hasLogo(url: String?): Boolean = !url.isNullOrBlank() && sources.get(url) != null
 
+  @Synchronized
   fun putLogo(url: String, bitmap: Bitmap) {
-    sources.put(url, bitmap.toSoftwareBitmap())
+    val bounded = if (maxOf(bitmap.width, bitmap.height) > sourceSize) {
+      bitmap.toSquareSoftwareBitmap(sourceSize)
+    } else {
+      bitmap.toSoftwareBitmap()
+    }
+    sources.put(url, bounded)
+    derived.evictAll()
+    lowContrast.evictAll()
+    blockChipIcons.clear()
   }
 
   /** Returns the 20dp progress-bar icon for [url], badged when it lacks contrast on the current theme. */
+  @Synchronized
   fun getStartIcon(url: String?, night: Boolean): Bitmap? {
     val source = url?.let { sources.get(it) } ?: return null
     return derived.getOrPut("icon|$night|$url") {
@@ -56,6 +67,7 @@ internal class LiveMatchLogoCache(context: Context) {
     }
   }
 
+  @Synchronized
   fun getCompositeIcon(url1: String?, url2: String?, night: Boolean): Bitmap? {
     val icon1 = getStartIcon(url1, night)
     val icon2 = getStartIcon(url2, night)
@@ -66,6 +78,7 @@ internal class LiveMatchLogoCache(context: Context) {
   }
 
   /** Returns the chip silhouette for [url], or null when the logo is unknown or only makes a solid block. */
+  @Synchronized
   fun getChipIcon(url: String?): Bitmap? {
     val source = url?.let { sources.get(it) } ?: return null
     if (url in blockChipIcons) return null
@@ -84,7 +97,9 @@ internal class LiveMatchLogoCache(context: Context) {
     val imageLoader = SingletonImageLoader.get(appContext)
     for (url in listOfNotNull(url1?.takeIf(String::isNotBlank), url2?.takeIf(String::isNotBlank))) {
       if (sources.get(url) != null || !isAllowedLogoUrl(url)) continue
-      val result = imageLoader.execute(ImageRequest.Builder(appContext).data(url).allowHardware(false).build())
+      val result = imageLoader.execute(
+        ImageRequest.Builder(appContext).data(url).size(sourceSize).allowHardware(false).build(),
+      )
       if (result is coil3.request.ErrorResult) {
         android.util.Log.w("LiveMatchNotifications", "Failed to load logo $url", result.throwable)
       }
@@ -111,6 +126,11 @@ internal class LiveMatchLogoCache(context: Context) {
     get(key) ?: create().also { put(key, it) }
 
   companion object {
+    private fun bitmapCache(maxBytes: Int): LruCache<String, Bitmap> =
+      object : LruCache<String, Bitmap>(maxBytes) {
+        override fun sizeOf(key: String, value: Bitmap): Int = value.allocationByteCount
+      }
+
     // Approximate relative luminance of the promoted notification card in light and dark themes.
     private const val LightBackgroundLuminance = 0.80
     private const val DarkBackgroundLuminance = 0.02
