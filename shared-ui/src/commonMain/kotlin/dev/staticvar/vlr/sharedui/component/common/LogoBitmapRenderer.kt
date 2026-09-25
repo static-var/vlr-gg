@@ -32,6 +32,10 @@ private const val OutlineSamples = 16
 
 internal fun analyzeLogoImage(image: Image): LogoEdgeAnalysis {
   val source = image.logoImageBitmapOrNull() ?: return LogoEdgeAnalysis.Empty
+  return analyzeLogoBitmap(source)
+}
+
+internal fun analyzeLogoBitmap(source: ImageBitmap): LogoEdgeAnalysis {
   val scale = AnalysisSize.toFloat() / max(source.width, source.height)
   val sampleSize = IntSize(
     width = (source.width * scale).roundToInt().coerceAtLeast(1),
@@ -59,6 +63,15 @@ internal fun renderOutlinedLogo(
   outlineColor: Color,
 ): ImageBitmap? {
   val source = image.logoImageBitmapOrNull() ?: return null
+  return renderOutlinedLogo(source, pixelSize, radiusPx, outlineColor)
+}
+
+internal fun renderOutlinedLogo(
+  source: ImageBitmap,
+  pixelSize: IntSize,
+  radiusPx: Float,
+  outlineColor: Color,
+): ImageBitmap {
   require(pixelSize.width > 0 && pixelSize.height > 0) { "pixelSize must be positive: $pixelSize" }
   require(radiusPx.isFinite() && radiusPx >= 0f) { "radiusPx must be finite and non-negative: $radiusPx" }
 

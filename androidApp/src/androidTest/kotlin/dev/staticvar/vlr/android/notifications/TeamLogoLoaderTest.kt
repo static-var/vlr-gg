@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.android.notifications
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import androidx.test.platform.app.InstrumentationRegistry
 import coil3.ImageLoader
 import coil3.memory.MemoryCache
@@ -13,6 +14,7 @@ import coil3.network.NetworkHeaders
 import coil3.network.NetworkRequest
 import coil3.network.NetworkResponse
 import coil3.network.NetworkResponseBody
+import dev.staticvar.vlr.sharedui.component.common.withNeutralLogoOutline
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -26,11 +28,33 @@ import kotlinx.coroutines.runBlocking
 import okio.Buffer
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TeamLogoLoaderTest {
+  @Test
+  fun neutralOutlineMakesBlackLogoEdgesVisible() {
+    val logo = transparentLogo(Color.BLACK)
+
+    val prepared = logo.withNeutralLogoOutline(radiusPx = 2f)
+
+    assertNotSame(logo, prepared)
+    assertEquals(24, prepared.width)
+    assertEquals(24, prepared.height)
+    assertTrue(prepared.containsOpaqueColor(Color.BLACK))
+    assertTrue(prepared.containsOpaqueColor(Color.WHITE))
+  }
+
+  @Test
+  fun neutralOutlineLeavesLightLogoUnchanged() {
+    val logo = transparentLogo(Color.WHITE)
+
+    assertSame(logo, logo.withNeutralLogoOutline(radiusPx = 2f))
+  }
+
   @Test
   fun urlPolicyMatchesTheLiveActivityHosts() {
     listOf(
@@ -172,5 +196,21 @@ class TeamLogoLoaderTest {
     assertNotNull(loader.cached(update).first)
     assertNotNull(loader.load(update)?.first)
     assertEquals(1, requests)
+  }
+
+  private fun transparentLogo(color: Int): Bitmap =
+    Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888).apply {
+      for (y in 6..13) {
+        for (x in 6..13) setPixel(x, y, color)
+      }
+    }
+
+  private fun Bitmap.containsOpaqueColor(color: Int): Boolean {
+    for (y in 0 until height) {
+      for (x in 0 until width) {
+        if (getPixel(x, y) == color) return true
+      }
+    }
+    return false
   }
 }

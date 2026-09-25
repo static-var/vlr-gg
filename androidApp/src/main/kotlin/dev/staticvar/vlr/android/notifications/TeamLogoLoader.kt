@@ -5,14 +5,15 @@
 package dev.staticvar.vlr.android.notifications
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.Icon
+import android.util.LruCache
 import coil3.BitmapImage
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.Uri
 import coil3.annotation.ExperimentalCoilApi
 import coil3.fetch.Fetcher
-import coil3.memory.MemoryCache
 import coil3.network.CacheStrategy
 import coil3.network.ConcurrentRequestStrategy
 import coil3.network.ConnectivityChecker
@@ -25,6 +26,7 @@ import coil3.network.NetworkResponseBody
 import coil3.request.ImageRequest
 import coil3.request.Options
 import coil3.request.allowHardware
+import dev.staticvar.vlr.sharedui.component.common.withNeutralLogoOutline
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
@@ -38,8 +40,10 @@ import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.readAvailable
 import java.io.IOException
 import java.net.URI
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import okio.Buffer
 
@@ -65,25 +69,37 @@ internal class TeamLogoLoader(
   }
 
   private fun cached(source: String?): Icon? = allowedTeamLogoUrl(source)?.let { url ->
-    (imageLoader.memoryCache?.get(MemoryCache.Key(cacheKey(url)))?.image as? BitmapImage)
-      ?.bitmap?.let(Icon::createWithBitmap)
+    preparedLogos[cacheKey(url)]?.let(Icon::createWithBitmap)
   }
 
-  private suspend fun load(source: String?): Icon? = allowedTeamLogoUrl(source)?.let { url ->
+  private suspend fun load(source: String?): Icon? {
+    val url = allowedTeamLogoUrl(source) ?: return null
+    val key = cacheKey(url)
+    preparedLogos[key]?.let { return Icon.createWithBitmap(it) }
     val request = ImageRequest.Builder(context)
       .data(url)
       .size(LogoSizePx)
       .allowHardware(false)
-      .memoryCacheKey(cacheKey(url))
-      .diskCacheKey(cacheKey(url))
+      .memoryCacheKey(key)
+      .diskCacheKey(key)
       .fetcherFactory(fetcherFactory)
       .build()
-    (imageLoader.execute(request).image as? BitmapImage)?.bitmap?.let(Icon::createWithBitmap)
+    val bitmap = (imageLoader.execute(request).image as? BitmapImage)?.bitmap ?: return null
+    val prepared = withContext(Dispatchers.Default) { bitmap.withNeutralLogoOutline(OutlineRadiusPx) }
+    preparedLogos.put(key, prepared)
+    return Icon.createWithBitmap(prepared)
   }
 
   private companion object {
     const val LogoSizePx = 192
+    const val OutlineRadiusPx = 3f
     const val DownloadTimeoutMillis = 10_000L
+    const val PreparedCacheBytes = 2 * 1024 * 1024
+
+    val preparedLogos = object : LruCache<String, Bitmap>(PreparedCacheBytes) {
+      override fun sizeOf(key: String, value: Bitmap): Int = value.allocationByteCount
+    }
+
     fun cacheKey(url: String): String = "notification-logo-$LogoSizePx:$url"
   }
 }
