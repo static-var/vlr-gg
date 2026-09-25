@@ -4,6 +4,8 @@
  */
 package dev.staticvar.vlr.android.notifications
 
+import com.russhwolf.settings.MapSettings
+import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
 import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import kotlinx.coroutines.runBlocking
@@ -14,6 +16,54 @@ import org.junit.Test
 
 /** Checks topic synchronization after token changes, disabling, and partial failures. */
 class AndroidLiveTopicSubscriptionsTest {
+  @Test
+  fun android15TopicsStayAsRemindersOnAndroid16UntilTheUserEnablesLiveUpdates() = runBlocking {
+    val preferences = LiveMatchNotificationPreferencesRepository(MapSettings())
+    val snapshot = DirectFavoriteSnapshot(
+      teams = listOf(DirectFavorite.Team("11", "Team", "")),
+      events = listOf(DirectFavorite.Event("22", "Event", "")),
+      matches = listOf(DirectFavorite.Match("33", "Match", "")),
+      players = listOf(
+        DirectFavorite.Player("44", "Player", "", currentTeamId = "11"),
+        DirectFavorite.Player("55", "Player", "", currentTeamId = "66"),
+      ),
+    )
+    val reminders = setOf("team-11", "team-66", "event-22", "match-33")
+    val live = setOf("live-team-11", "live-event-22", "live-match-33", "live-player-44", "live-player-55")
+    val transport = FakeTransport(token = "same-token")
+    var stored = LiveTopicSubscriptionState("same-token", reminders)
+
+    assertEquals(false, preferences.preferences.value.enabled)
+    reconcileLiveTopicSubscriptions(
+      snapshot.notificationTopics(preferences.preferences.value.enabled),
+      stored,
+      transport,
+    ) { stored = it }
+    assertTrue(transport.subscribed.isEmpty())
+    assertTrue(transport.unsubscribed.isEmpty())
+    assertEquals(reminders, stored.topics)
+
+    preferences.setEnabled(true)
+    reconcileLiveTopicSubscriptions(
+      snapshot.notificationTopics(preferences.preferences.value.enabled),
+      stored,
+      transport,
+    ) { stored = it }
+    assertEquals(reminders, transport.unsubscribed.toSet())
+    assertEquals(live, transport.subscribed.toSet())
+    assertEquals(live, stored.topics)
+
+    preferences.setEnabled(false)
+    reconcileLiveTopicSubscriptions(
+      snapshot.notificationTopics(preferences.preferences.value.enabled),
+      stored,
+      transport,
+    ) { stored = it }
+    assertEquals(reminders, stored.topics)
+    assertEquals(reminders.size + live.size, transport.subscribed.size)
+    assertEquals(reminders.size + live.size, transport.unsubscribed.size)
+  }
+
   @Test
   fun reminderTopicsIncludeAllFavoritesUsingCachedPlayerTeams() {
     val snapshot = DirectFavoriteSnapshot(
@@ -139,6 +189,16 @@ class AndroidLiveTopicSubscriptionsTest {
 
     assertEquals(listOf(first, second), transport.subscribed)
     assertEquals(listOf(LiveTopicSubscriptionState(token = "token-a", topics = setOf(first))), saved)
+
+    val retry = FakeTransport(token = "token-a")
+    reconcileLiveTopicSubscriptions(
+      desired = linkedSetOf(first, second),
+      previous = saved.last(),
+      transport = retry,
+      save = saved::add,
+    )
+    assertEquals(listOf(second), retry.subscribed)
+    assertEquals(setOf(first, second), saved.last().topics)
   }
 }
 
