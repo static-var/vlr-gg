@@ -77,7 +77,9 @@ class SupportAndInboxTest(unittest.TestCase):
         for changes in ({"email": "bad"}, {"category": "invalid"}, {"platform": "invalid"},
                         {"subject": ""}, {"subject": "a" * 161}, {"message": "a" * 5001},
                         {"app_version": "a" * 41}, {"device": "a" * 121}):
+            self.public.RequestHandlerClass.limiter = server.RateLimiter()
             self.assertEqual(self.support(**changes)[0], 400)
+        self.public.RequestHandlerClass.limiter = server.RateLimiter()
         response = self.support(email="bad", message='</textarea><script>alert(1)</script>', subject='" autofocus onfocus="alert(1)')
         self.assertIn('&lt;/textarea&gt;&lt;script&gt;', response[2])
         self.assertNotIn('<script>', response[2])
@@ -133,6 +135,68 @@ class SupportAndInboxTest(unittest.TestCase):
         self.assertIn("Pending invitation", self.request(self.admin, "GET", "/?view=signups")[2])
         self.assertEqual(self.action("/support/status", status="deleted")[0], 400)
         self.assertEqual(self.action("/support/status", id="999")[0], 404)
+
+    def multipart(self, files=(), **changes):
+        fields = {"email": "fan@example.com", "category": "bug", "platform": "ios",
+                  "subject": "Upload report", "message": "Details", "website": ""}
+        fields.update(changes)
+        boundary = "test-form-boundary"
+        parts = []
+        for name, value in fields.items():
+            parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"\r\n\r\n{value}\r\n'.encode())
+        for filename, data in files:
+            parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="attachment"; filename="{filename}"\r\nContent-Type: application/octet-stream\r\n\r\n'.encode() + data + b"\r\n")
+        body = b"".join(parts) + f"--{boundary}--\r\n".encode()
+        connection = http.client.HTTPConnection("127.0.0.1", self.public.server_port)
+        connection.request("POST", "/api/support-requests", body,
+                           {"Content-Type": "multipart/form-data; boundary=" + boundary})
+        response = connection.getresponse()
+        result = response.status, response.read().decode()
+        connection.close()
+        return result
+
+    def test_optional_attachment_and_private_download_roundtrip(self):
+        self.assertEqual(self.multipart()[0], 303)
+        self.assertEqual(self.multipart(files=[("", b"")])[0], 303)
+        content = b"%PDF-1.7\nexample"
+        self.assertEqual(self.multipart(files=[("report.pdf", content)])[0], 303)
+        listing = self.request(self.admin, "GET", "/")[2]
+        self.assertIn('/support/3/attachment', listing)
+        self.assertEqual(self.request(self.public, "GET", "/support/3/attachment")[0], 404)
+        connection = http.client.HTTPConnection("127.0.0.1", self.admin.server_port)
+        connection.request("GET", "/support/3/attachment")
+        response = connection.getresponse()
+        self.assertEqual(response.status, 200)
+        self.assertEqual(response.getheader("Content-Type"), "application/octet-stream")
+        self.assertEqual(response.getheader("X-Content-Type-Options"), "nosniff")
+        self.assertEqual(response.getheader("Cache-Control"), "no-store")
+        self.assertIn('attachment;', response.getheader("Content-Disposition"))
+        self.assertEqual(response.read(), content)
+        connection.close()
+        server.initialize(self.database)
+        self.assertEqual(len(self.rows()), 3)
+
+    def test_attachment_limits_types_and_platforms(self):
+        content = b"%PDF-" + b"x" * (server.MAX_ATTACHMENT_BYTES - 5)
+        self.assertEqual(self.multipart(files=[("max.pdf", content)])[0], 303)
+        status, html = self.multipart(files=[("large.pdf", content + b"x")])
+        self.assertEqual(status, 413)
+        self.assertIn("Upload report", html)
+        self.assertIn("select your attachment again", html)
+        self.assertEqual(self.multipart(files=[("fake.png", b"<svg/>")])[0], 400)
+        self.assertEqual(self.multipart(files=[("one.pdf", b"%PDF-"), ("two.pdf", b"%PDF-")])[0], 400)
+        for platform in ("website", "other"):
+            self.assertEqual(self.multipart(platform=platform)[0], 400)
+        self.assertEqual(len(self.rows()), 1)
+
+    def test_image_signatures_and_busy_upload_rejection(self):
+        for content, extension in [(b"\x89PNG\r\n\x1a\n", "png"), (b"\xff\xd8\xff", "jpg"),
+                                   (b"GIF89a", "gif"), (b"RIFF1234WEBP", "webp"),
+                                   (b"\x00\x00\x00\x14ftypheic\x00\x00\x00\x00mif1", "heic")]:
+            self.assertEqual(server.attachment_extension(content), extension)
+        with self.public.RequestHandlerClass.upload_slot:
+            self.assertEqual(self.multipart()[0], 503)
+        self.assertEqual(self.rows(), [])
 
     def test_inbox_pagination_is_bounded(self):
         with closing(sqlite3.connect(self.database)) as connection, connection:

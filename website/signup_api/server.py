@@ -1,6 +1,7 @@
 import os
 import secrets
 from html import escape
+from email.parser import BytesParser
 from contextlib import contextmanager
 import re
 import sqlite3
@@ -15,11 +16,13 @@ from urllib.parse import parse_qs, urlsplit, urlencode
 DB_PATH = Path(os.environ.get("SIGNUP_DB_PATH", "/data/signups.sqlite3"))
 MAX_BODY_BYTES = 1024
 SUPPORT_MAX_BODY_BYTES = 32768
+MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024
+MAX_MULTIPART_BYTES = MAX_ATTACHMENT_BYTES + SUPPORT_MAX_BODY_BYTES
 PUBLIC_ORIGIN = "https://valorantesports.staticvar.dev"
 ADMIN_ORIGIN = os.environ.get("ADMIN_ORIGIN", "http://127.0.0.1:8081")
 SUPPORT_FIELDS = {"email", "category", "platform", "subject", "message", "app_version", "device", "website"}
 CATEGORIES = ("bug", "feature", "question", "other")
-PLATFORMS = ("ios", "android", "website", "other")
+PLATFORMS = ("ios", "android")
 RATE_WINDOW_SECONDS = 600
 RATE_MAX_REQUESTS = 10
 EMAIL_LOCAL = re.compile(r"[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+\Z")
@@ -71,6 +74,11 @@ def initialize(db_path=DB_PATH):
             "app_version TEXT NOT NULL DEFAULT '', device TEXT NOT NULL DEFAULT '', "
             "created_at INTEGER NOT NULL, resolved_at INTEGER)"
         )
+        connection.execute(
+            "CREATE TABLE IF NOT EXISTS support_attachments ("
+            "request_id INTEGER PRIMARY KEY REFERENCES support_requests(id), "
+            "filename TEXT NOT NULL, extension TEXT NOT NULL, content BLOB NOT NULL)"
+        )
     db_path.chmod(0o600)
 
 
@@ -94,9 +102,63 @@ class RateLimiter:
             return True
 
 
+def attachment_extension(content):
+    if content.startswith(b"%PDF-"):
+        return "pdf"
+    if content.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "png"
+    if content.startswith(b"\xff\xd8\xff"):
+        return "jpg"
+    if content.startswith((b"GIF87a", b"GIF89a")):
+        return "gif"
+    if len(content) >= 12 and content[:4] == b"RIFF" and content[8:12] == b"WEBP":
+        return "webp"
+    if len(content) >= 16 and content[4:8] == b"ftyp":
+        box_size = int.from_bytes(content[:4], "big")
+        if 16 <= box_size <= min(len(content), 1024) and box_size % 4 == 0:
+            brands = {content[8:12]} | {content[i:i + 4] for i in range(16, box_size, 4)}
+            if brands & {b"heic", b"heix", b"hevc", b"hevx", b"mif1", b"msf1"}:
+                return "heic"
+    return None
+
+
+def parse_support_multipart(body, boundary):
+    """Parse the bounded, flat form without accepting nested MIME or encoded parts."""
+    if not boundary or not re.fullmatch(r"[A-Za-z0-9'()+_,./:=? -]{1,70}", boundary):
+        raise ValueError("Invalid upload form. Please try again.")
+    marker = b"--" + boundary.encode("ascii")
+    parts = body.split(b"\r\n" + marker)
+    if not parts[0].startswith(marker + b"\r\n") or parts[-1] not in (b"--", b"--\r\n"):
+        raise ValueError("Incomplete upload. Please select the file and try again.")
+    parts[0] = parts[0][len(marker):]
+    if len(parts) > len(SUPPORT_FIELDS) + 2:
+        raise ValueError("Only one attachment is allowed.")
+    fields, attachments = {}, []
+    for part in parts[:-1]:
+        if not part.startswith(b"\r\n"):
+            raise ValueError("Invalid upload form.")
+        header, separator, content = part[2:].partition(b"\r\n\r\n")
+        if not separator or len(header) > 4096:
+            raise ValueError("Invalid upload form.")
+        headers = BytesParser().parsebytes(header + b"\r\n\r\n", headersonly=True)
+        name = headers.get_param("name", header="Content-Disposition")
+        if (headers.get_content_disposition() != "form-data" or headers.get("Content-Transfer-Encoding")
+                or headers.get_content_maintype() == "multipart"):
+            raise ValueError("Invalid upload form.")
+        filename = headers.get_filename()
+        if name == "attachment" and filename is not None:
+            attachments.append((filename, content))
+        elif name not in SUPPORT_FIELDS or filename is not None or len(content) > SUPPORT_MAX_BODY_BYTES:
+            raise ValueError("Invalid form field.")
+        else:
+            fields.setdefault(name, []).append(content.decode("utf-8"))
+    return fields, attachments
+
+
 class SignupHandler(BaseHTTPRequestHandler):
     db_path = DB_PATH
     limiter = RateLimiter()
+    upload_slot = threading.BoundedSemaphore(1)
 
     def setup(self):
         super().setup()
@@ -178,9 +240,44 @@ class SignupHandler(BaseHTTPRequestHandler):
         if self.headers.get("Origin") not in (None, PUBLIC_ORIGIN):
             self.send_error(403)
             return
-        fields = self.read_form(SUPPORT_MAX_BODY_BYTES, len(SUPPORT_FIELDS))
-        if fields is None:
+        address = self.headers.get("X-Forwarded-For", self.client_address[0])
+        if not self.limiter.allows(address):
+            self.support_error({}, "Too many requests. Please wait a few minutes and try again.", 429)
             return
+        if not self.upload_slot.acquire(blocking=False):
+            self.support_error({}, "Another upload is being saved. Please try again shortly.", 503)
+            return
+        try:
+            self.save_support()
+        finally:
+            self.upload_slot.release()
+
+    def save_support(self):
+        attachments = []
+        if self.headers.get_content_type() == "multipart/form-data":
+            try:
+                size = int(self.headers.get("Content-Length", ""))
+            except ValueError:
+                self.send_error(411)
+                return
+            if size < 1 or size > MAX_MULTIPART_BYTES:
+                self.support_error({}, "The attachment must be 5 MB or smaller.", 413)
+                return
+            try:
+                self.connection.settimeout(60)
+                try:
+                    body = self.rfile.read(size)
+                finally:
+                    self.connection.settimeout(15)
+                fields, attachments = parse_support_multipart(body, self.headers.get_param("boundary"))
+                del body
+            except (UnicodeDecodeError, ValueError) as error:
+                self.support_error({}, str(error) if isinstance(error, ValueError) else "Invalid form text.")
+                return
+        else:
+            fields = self.read_form(SUPPORT_MAX_BODY_BYTES, len(SUPPORT_FIELDS))
+            if fields is None:
+                return
         if set(fields) - SUPPORT_FIELDS or any(len(value) != 1 for value in fields.values()):
             self.support_error({}, "Please submit one value for each field.")
             return
@@ -200,18 +297,34 @@ class SignupHandler(BaseHTTPRequestHandler):
             if (required and not values.get(key)) or len(values.get(key, "")) > maximum:
                 self.support_error(values, f"{key.replace('_', ' ').capitalize()} must contain {'1' if required else '0'}–{maximum} characters.")
                 return
-        address = self.headers.get("X-Forwarded-For", self.client_address[0])
-        if not self.limiter.allows(address):
-            self.support_error(values, "Too many requests. Please wait a few minutes and try again.", 429)
+        attachment = None
+        if len(attachments) > 1:
+            self.support_error(values, "Only one attachment is allowed.")
             return
+        if attachments and attachments[0] != ("", b""):
+            filename, content = attachments[0]
+            if len(content) > MAX_ATTACHMENT_BYTES:
+                self.support_error(values, "The attachment must be 5 MB or smaller.", 413)
+                return
+            extension = attachment_extension(content)
+            if extension is None:
+                self.support_error(values, "Choose a PDF, JPEG, PNG, WebP, GIF, or HEIC image.")
+                return
+            filename = "".join(c for c in filename.replace("\\", "/").split("/")[-1] if c.isprintable())[:160]
+            attachment = (filename or "attachment." + extension, extension, content)
         try:
             with connect(self.db_path) as connection:
-                connection.execute(
+                cursor = connection.execute(
                     "INSERT INTO support_requests (email, category, platform, subject, message, app_version, device, created_at) "
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     (email, values["category"], values["platform"], values["subject"], values["message"],
                      values.get("app_version", ""), values.get("device", ""), int(time.time())),
                 )
+                if attachment:
+                    connection.execute(
+                        "INSERT INTO support_attachments (request_id, filename, extension, content) VALUES (?, ?, ?, ?)",
+                        (cursor.lastrowid, *attachment),
+                    )
         except sqlite3.Error:
             self.support_error(values, "We could not save your message. Please try again shortly.", 503)
             return
@@ -254,9 +367,10 @@ class SignupHandler(BaseHTTPRequestHandler):
                 control = f'<input name="{key}" type="{"email" if key == "email" else "text"}" maxlength="{maximum}" value="{value}" {"required" if key in ("email", "subject") else ""}>'
             fields.append(f'<label>{title}{control}</label>')
         self.html_response(status, page("Contact support", f'<p role="alert">{escape(message)}</p>'
-                           '<form method="post" action="/api/support-requests">' + "".join(fields) +
+                           '<form method="post" action="/api/support-requests" enctype="multipart/form-data">' + "".join(fields) +
                            '<input name="website" hidden tabindex="-1" autocomplete="off">'
-                           '<p>Please do not include passwords, payment details, or other sensitive information.</p>'
+                           '<label>Attachment (optional)<input type="file" name="attachment" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif"></label>'
+                           '<p>One PDF or image, up to 5 MB. Please select your attachment again before resubmitting.</p>'
                            '<button>Send message</button></form><p><a href="/support/">Back to support</a></p>', public=True))
 
     def html_response(self, status, html):
@@ -319,6 +433,10 @@ class AdminHandler(SignupHandler):
             self.send_error(403)
             return
         url = urlsplit(self.path)
+        attachment_match = re.fullmatch(r"/support/([1-9][0-9]*)/attachment", url.path)
+        if attachment_match:
+            self.download_attachment(int(attachment_match[1]))
+            return
         if url.path != "/":
             self.send_error(404)
             return
@@ -334,9 +452,10 @@ class AdminHandler(SignupHandler):
         try:
             with connect(self.db_path) as connection:
                 connection.row_factory = sqlite3.Row
-                table = "support_requests" if view == "support" else "signups"
                 rows = connection.execute(
-                    f"SELECT * FROM {table} ORDER BY created_at DESC, {'id' if view == 'support' else 'email'} DESC LIMIT ? OFFSET ?",
+                    ("SELECT support_requests.*, (SELECT filename FROM support_attachments WHERE request_id = support_requests.id) AS attachment_filename FROM support_requests"
+                     if view == "support" else "SELECT * FROM signups") +
+                    f" ORDER BY created_at DESC, {'id' if view == 'support' else 'email'} DESC LIMIT ? OFFSET ?",
                     (self.page_size + 1, (current_page - 1) * self.page_size),
                 ).fetchall()
         except sqlite3.Error:
@@ -356,6 +475,8 @@ class AdminHandler(SignupHandler):
                         f'<p>{escape(row["email"])} · {escape(row["category"])} · {escape(row["platform"])}</p>'
                         f'<p>App version: {escape(row["app_version"]) or "—"} · Device: {escape(row["device"]) or "—"}</p>'
                         f'<div class="message">{escape(row["message"])}</div>')
+                if row["attachment_filename"] is not None:
+                    body += f'<p><a href="/support/{row["id"]}/attachment">Download attachment: {escape(row["attachment_filename"])}</a></p>'
                 body += self.action("support", str(row["id"]), "open" if resolved else "resolved",
                                     "Reopen" if resolved else "Mark resolved", current_page)
             else:
@@ -373,6 +494,28 @@ class AdminHandler(SignupHandler):
             content += f'<a href="/?view={view}&amp;page={current_page + 1}">Next</a>'
         content += '</nav>'
         self.html_response(200, page("Support inbox" if view == "support" else "TestFlight signups", content))
+
+    def download_attachment(self, request_id):
+        try:
+            with connect(self.db_path) as connection:
+                row = connection.execute("SELECT extension, content FROM support_attachments WHERE request_id = ?",
+                                         (request_id,)).fetchone()
+        except sqlite3.Error:
+            self.send_error(503)
+            return
+        if row is None:
+            self.send_error(404)
+            return
+        extension, content = row
+        self.send_response(200)
+        self.send_header("Content-Type", "application/octet-stream")
+        self.send_header("Content-Disposition", f'attachment; filename="support-{request_id}.{extension}"')
+        self.send_header("Content-Length", str(len(content)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Content-Security-Policy", "default-src 'none'; sandbox")
+        self.end_headers()
+        self.wfile.write(content)
 
     def action(self, view, identifier, status, label, current_page):
         fields = {"csrf": self.csrf_token, "id": identifier, "status": status, "page": str(current_page)}
