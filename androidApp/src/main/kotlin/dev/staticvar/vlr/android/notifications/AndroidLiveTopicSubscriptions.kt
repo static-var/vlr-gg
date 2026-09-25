@@ -19,7 +19,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-/** Keeps Firebase live match topics in sync with favorites and notification settings. */
+/** Keeps Firebase favorite topics in sync with favorites and the active notification mode. */
 internal class AndroidLiveTopicSubscriptions(
   context: Context,
   favorites: FavoritesRepository,
@@ -64,27 +64,35 @@ internal class AndroidLiveTopicSubscriptions(
   private suspend fun synchronize() {
     val snapshot = favoritesSnapshot ?: return
     if (!AndroidLiveNotificationAvailability.supportsMatchAlerts(appContext)) return
-    val liveSupported = AndroidLiveNotificationAvailability.isAvailable(appContext)
-    val channelId = if (liveSupported) {
+    val liveUpdatesEnabled = AndroidLiveNotificationAvailability.usesLiveUpdates(
+      appContext, preferences.preferences.value.enabled,
+    )
+    val channelId = if (liveUpdatesEnabled) {
       "live_matches"
     } else {
       "match_alerts"
     }
-    val enabled = preferences.preferences.value.enabled &&
-      notifications.areNotificationsEnabled() &&
+    val enabled = notifications.areNotificationsEnabled() &&
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
         notifications.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE)
-    val desired = if (enabled) snapshot.notificationTopics(liveSupported) else emptySet()
+    val desired = if (enabled) snapshot.notificationTopics(liveUpdatesEnabled) else emptySet()
     val previous = LiveTopicSubscriptionState(
       token = storage.getString("token", null),
       topics = storage.getStringSet("topics", emptySet()).orEmpty(),
     )
     if (desired.isEmpty() && previous.topics.isEmpty()) return
+    val transport = FirebaseLiveTopicSubscriptionTransport(FirebaseMessaging.getInstance())
+    if (liveUpdatesEnabled && snapshot.hasAny && !storage.getBoolean("legacy_topics_cleared", false)) {
+      for (topic in snapshot.notificationTopics(liveUpdatesEnabled = false) - previous.topics) {
+        transport.unsubscribe(topic)
+      }
+      storage.edit().putBoolean("legacy_topics_cleared", true).apply()
+    }
 
     reconcileLiveTopicSubscriptions(
       desired = desired,
       previous = previous,
-      transport = FirebaseLiveTopicSubscriptionTransport(FirebaseMessaging.getInstance()),
+      transport = transport,
     ) { state ->
       storage.edit()
         .putString("token", state.token)
@@ -94,13 +102,13 @@ internal class AndroidLiveTopicSubscriptions(
   }
 }
 
-/** Records the push token and its known live match topic subscriptions. */
+/** Records the push token and its known favorite topic subscriptions. */
 internal data class LiveTopicSubscriptionState(
   val token: String?,
   val topics: Set<String>,
 )
 
-/** Provides a push token and operations to change live match topic subscriptions. */
+/** Provides a push token and operations to change favorite topic subscriptions. */
 internal interface LiveTopicSubscriptionTransport {
   suspend fun currentToken(): String
 
@@ -140,7 +148,7 @@ internal suspend fun reconcileLiveTopicSubscriptions(
   }
 }
 
-/** Runs live match topic subscription operations through Firebase Messaging. */
+/** Runs topic subscription operations through Firebase Messaging. */
 private class FirebaseLiveTopicSubscriptionTransport(
   private val messaging: FirebaseMessaging,
 ) : LiveTopicSubscriptionTransport {
@@ -155,16 +163,17 @@ private class FirebaseLiveTopicSubscriptionTransport(
   }
 }
 
-/** Uses cached player team IDs for alerts that do not register for backend live activities. */
-internal fun DirectFavoriteSnapshot.notificationTopics(liveSupported: Boolean): Set<String> = buildSet {
-  teams.forEach { add("live-team-${it.id}") }
-  matches.forEach { add("live-match-${it.id}") }
-  events.forEach { add("live-event-${it.id}") }
+/** Uses cached player team IDs for legacy reminders, which do not have player topics. */
+internal fun DirectFavoriteSnapshot.notificationTopics(liveUpdatesEnabled: Boolean): Set<String> = buildSet {
+  val prefix = if (liveUpdatesEnabled) "live-" else ""
+  teams.forEach { add("${prefix}team-${it.id}") }
+  matches.forEach { add("${prefix}match-${it.id}") }
+  events.forEach { add("${prefix}event-${it.id}") }
   players.forEach { player ->
-    if (liveSupported) {
+    if (liveUpdatesEnabled) {
       add("live-player-${player.id}")
     } else {
-      player.currentTeamId?.takeIf(String::isNotBlank)?.let { add("live-team-$it") }
+      player.currentTeamId?.takeIf(String::isNotBlank)?.let { add("team-$it") }
     }
   }
 }

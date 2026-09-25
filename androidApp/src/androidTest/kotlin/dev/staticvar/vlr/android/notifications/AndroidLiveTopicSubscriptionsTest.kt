@@ -15,7 +15,7 @@ import org.junit.Test
 /** Checks topic synchronization after token changes, disabling, and partial failures. */
 class AndroidLiveTopicSubscriptionsTest {
   @Test
-  fun fallbackTopicsIncludeAllFavoritesUsingCachedPlayerTeams() {
+  fun reminderTopicsIncludeAllFavoritesUsingCachedPlayerTeams() {
     val snapshot = DirectFavoriteSnapshot(
       teams = listOf(DirectFavorite.Team("11", "Team", "")),
       events = listOf(DirectFavorite.Event("22", "Event", "")),
@@ -29,16 +29,50 @@ class AndroidLiveTopicSubscriptionsTest {
     )
 
     assertEquals(
-      setOf("live-team-11", "live-event-22", "live-match-33", "live-team-55"),
-      snapshot.notificationTopics(liveSupported = false),
+      setOf("team-11", "event-22", "match-33", "team-55"),
+      snapshot.notificationTopics(liveUpdatesEnabled = false),
     )
     assertEquals(
       setOf(
         "live-team-11", "live-event-22", "live-match-33",
         "live-player-44", "live-player-66", "live-player-77", "live-player-88",
       ),
-      snapshot.notificationTopics(liveSupported = true),
+      snapshot.notificationTopics(liveUpdatesEnabled = true),
     )
+  }
+
+  @Test
+  fun switchingToLiveTopicsRemovesReminderTopicsFirst() = runBlocking {
+    val transport = FakeTransport(token = "token-a")
+    val saved = mutableListOf<LiveTopicSubscriptionState>()
+
+    reconcileLiveTopicSubscriptions(
+      desired = setOf("live-team-11"),
+      previous = LiveTopicSubscriptionState(token = "token-a", topics = setOf("team-11")),
+      transport = transport,
+      save = saved::add,
+    )
+
+    assertEquals(listOf("team-11"), transport.unsubscribed)
+    assertEquals(listOf("live-team-11"), transport.subscribed)
+    assertEquals(setOf("live-team-11"), saved.last().topics)
+  }
+
+  @Test
+  fun switchingToRemindersRemovesLiveTopicsFirst() = runBlocking {
+    val transport = FakeTransport(token = "token-a")
+    val saved = mutableListOf<LiveTopicSubscriptionState>()
+
+    reconcileLiveTopicSubscriptions(
+      desired = setOf("team-11"),
+      previous = LiveTopicSubscriptionState(token = "token-a", topics = setOf("live-team-11")),
+      transport = transport,
+      save = saved::add,
+    )
+
+    assertEquals(listOf("live-team-11"), transport.unsubscribed)
+    assertEquals(listOf("team-11"), transport.subscribed)
+    assertEquals(setOf("team-11"), saved.last().topics)
   }
 
   @Test
@@ -66,7 +100,7 @@ class AndroidLiveTopicSubscriptionsTest {
   }
 
   @Test
-  fun disablingUnsubscribesEveryStoredTopic() = runBlocking {
+  fun blockedNotificationsUnsubscribeEveryStoredTopic() = runBlocking {
     val first = "live-event-22"
     val second = "live-player-33"
     val transport = FakeTransport(token = "token-a")
