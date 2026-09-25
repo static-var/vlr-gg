@@ -36,6 +36,7 @@
     <string name="donate_via_github_sponsors">Dona a través de GitHub Sponsors</string>
     <string name="done">Listo</string>
     <string name="experimental">Experimental</string>
+    <string name="experimental_description">Actualizaciones en directo y limpieza automática</string>
     <string name="explore_the_service_that_powers_the_app">Descubre el servicio que hace funcionar la aplicación.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">Los comentarios no están disponibles en esta versión. Puedes usar Informar de un problema en la página Acerca de.</string>

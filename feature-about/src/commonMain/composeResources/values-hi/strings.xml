@@ -35,6 +35,7 @@
     <string name="donate_via_github_sponsors">GitHub Sponsors के ज़रिए दान करें</string>
     <string name="done">हो गया</string>
     <string name="experimental">प्रयोगात्मक</string>
+    <string name="experimental_description">लाइव अपडेट और अपने-आप सफ़ाई</string>
     <string name="explore_the_service_that_powers_the_app">ऐप को चलाने वाली सेवा के बारे में जानें।</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">इस बिल्ड में फ़ीडबैक उपलब्ध नहीं है। इसके बजाय परिचय पेज पर समस्या की रिपोर्ट करें विकल्प का इस्तेमाल करें।</string>

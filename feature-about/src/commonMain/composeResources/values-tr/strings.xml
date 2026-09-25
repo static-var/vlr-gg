@@ -34,6 +34,7 @@
     <string name="donate_via_github_sponsors">GitHub Sponsors üzerinden bağış yapın</string>
     <string name="done">Bitti</string>
     <string name="experimental">Deneysel</string>
+    <string name="experimental_description">Canlı güncellemeler ve otomatik temizleme</string>
     <string name="explore_the_service_that_powers_the_app">Uygulamaya güç veren hizmeti keşfedin.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">Bu derlemede geri bildirim kullanılamıyor. Bunun yerine Hakkında sayfasındaki Sorun bildir seçeneğini kullanabilirsiniz.</string>

@@ -34,6 +34,7 @@
     <string name="donate_via_github_sponsors">GitHub Sponsors로 후원하기</string>
     <string name="done">완료</string>
     <string name="experimental">실험적 기능</string>
+    <string name="experimental_description">실시간 업데이트와 자동 정리</string>
     <string name="explore_the_service_that_powers_the_app">앱을 구동하는 서비스를 살펴보세요.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">이 빌드에서는 의견을 보낼 수 없습니다. 대신 정보 페이지에서 문제 신고를 이용해 주세요.</string>

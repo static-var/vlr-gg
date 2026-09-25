@@ -35,6 +35,7 @@
     <string name="donate_via_github_sponsors">Donate via GitHub Sponsors</string>
     <string name="done">Done</string>
     <string name="experimental">Experimental</string>
+    <string name="experimental_description">Live updates and automatic cleanup</string>
     <string name="explore_the_service_that_powers_the_app">Explore the service that powers the app.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">Feedback is unavailable in this build. You can use Report an issue on the About page instead.</string>

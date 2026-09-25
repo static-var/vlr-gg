@@ -37,6 +37,7 @@
     <string name="donate_via_github_sponsors">Поддержать через GitHub Sponsors</string>
     <string name="done">Готово</string>
     <string name="experimental">Экспериментальная функция</string>
+    <string name="experimental_description">Обновления в реальном времени и автоматическая очистка</string>
     <string name="explore_the_service_that_powers_the_app">Познакомьтесь с сервисом, на котором работает приложение.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">В этой сборке нельзя отправить отзыв. Вместо этого сообщите о проблеме на странице «О приложении».</string>
