@@ -171,10 +171,9 @@ private fun UiDevice.browseNews() {
   openFirstCard()
   requireObject(By.desc("Back"))
   awaitUi("loaded article content") {
-    hasObject(By.text("Read on VLR.gg")) || verticalListOrNull() != null
+    verticalListOrNull() != null
   }
   browseList(allowSinglePage = true)
-  scrollTo(By.text("Read on VLR.gg"))
   findObject(By.text("Top"))?.click(100)
   pressBack()
   requireSubtitle("Stories from competitive VALORANT")
@@ -240,7 +239,7 @@ private fun UiDevice.verticalListOrNull(): UiObject2? =
     .lastOrNull()
 
 private fun UiDevice.verticalList(): UiObject2 =
-  checkNotNull(verticalListOrNull()) { "Expected a vertical VLR content list" }
+  checkNotNull(verticalListOrNull()) { "Expected a vertical content list" }
 
 private fun UiDevice.scrollTo(selector: BySelector, direction: Direction = Direction.DOWN): UiObject2 {
   awaitUi("scrollable content or $selector") { hasObject(selector) || verticalListOrNull() != null }
@@ -249,7 +248,7 @@ private fun UiDevice.scrollTo(selector: BySelector, direction: Direction = Direc
     swipeList(direction)
   }
   return checkNotNull(findVisibleObject(selector)) {
-    "Expected VLR UI element was not visible after scrolling: $selector"
+    "Expected UI element was not visible after scrolling: $selector"
   }
 }
 
@@ -271,7 +270,7 @@ private fun <T> UiDevice.awaitUiValue(description: String, query: UiDevice.() ->
     } catch (_: StaleObjectException) {
       // Compose replaced the accessibility node; query the current tree again.
     }
-    check(SystemClock.uptimeMillis() < deadline) { "Expected VLR $description; verify backend data and connectivity" }
+    check(SystemClock.uptimeMillis() < deadline) { "Expected $description; verify backend data and connectivity" }
     SystemClock.sleep(100)
   }
 }
@@ -279,7 +278,7 @@ private fun <T> UiDevice.awaitUiValue(description: String, query: UiDevice.() ->
 private fun UiDevice.requireObject(selector: BySelector): UiObject2 =
   checkNotNull(wait(Until.findObject(selector), TIMEOUT)) {
     val visibleText = findObjects(By.clazz("android.widget.TextView")).map { it.text }.take(12)
-    "Expected VLR UI element was not displayed: $selector. Visible text: $visibleText"
+    "Expected UI element was not displayed: $selector. Visible text: $visibleText"
   }
 
 private fun UiObject2.activate() {
