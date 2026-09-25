@@ -15,8 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import dev.staticvar.designsystem.component.button.PrismButton
-import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
@@ -41,7 +39,6 @@ import vlr.shared_ui.generated.resources.match_event_dates_tba
 import vlr.shared_ui.generated.resources.match_event_event
 import vlr.shared_ui.generated.resources.match_event_tbd
 import vlr.shared_ui.generated.resources.match_event_teams
-import vlr.shared_ui.generated.resources.match_event_view_at_vlr
 
 /**
  * Event detail ticket for title, status, logo, core metadata, and optional actions.
@@ -51,7 +48,6 @@ public fun EventDetailHeaderItem(
   event: EventDetails,
   extraContentFade: TransitionContentFade,
   modifier: Modifier = Modifier,
-  onOpenEvent: (() -> Unit)? = null,
   favoriteAction: (@Composable () -> Unit)? = null,
 ) {
   EventDetailHeaderContent(
@@ -70,7 +66,6 @@ public fun EventDetailHeaderItem(
     subtitle = event.subtitle,
     teams = event.teams.size.takeIf { it > 0 }?.toString() ?: stringResource(Res.string.match_event_tbd),
     modifier = modifier,
-    onOpenEvent = onOpenEvent,
     favoriteAction = favoriteAction,
   )
 }
@@ -94,7 +89,6 @@ private fun EventDetailHeaderContent(
   modifier: Modifier = Modifier,
   subtitle: String = "",
   teams: String = stringResource(Res.string.match_event_tbd),
-  onOpenEvent: (() -> Unit)? = null,
   favoriteAction: (@Composable () -> Unit)? = null,
 ) {
   FavoriteTicketCardBox(
@@ -173,15 +167,6 @@ private fun EventDetailHeaderContent(
           }
           favoriteAction?.let { action ->
             Column(Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM)) { action() }
-          }
-          onOpenEvent?.let { openEvent ->
-            PrismButton(
-              onClick = openEvent,
-              modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingM),
-              style = PrismButtonStyle.Primary,
-            ) {
-              Text(stringResource(Res.string.match_event_view_at_vlr))
-            }
           }
         }
       },

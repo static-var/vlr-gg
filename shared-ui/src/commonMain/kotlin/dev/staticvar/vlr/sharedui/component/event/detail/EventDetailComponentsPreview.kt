@@ -59,7 +59,6 @@ internal fun EventDetailComponentsPreview(@PreviewParameter(PrismPreviewProvider
       EventDetailHeaderItem(
         event = event,
         extraContentFade = rememberEventDetailContentFade(),
-        onOpenEvent = {},
         favoriteAction = {
           PrismButton(onClick = {}, modifier = Modifier.fillMaxWidth()) {
             PrismFavoriteIcon(
