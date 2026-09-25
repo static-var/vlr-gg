@@ -7,7 +7,7 @@ final class IosLiveActivityPermissionProvider: NSObject, NotificationPermissionP
     func supportsMatchAlerts() -> Bool { false }
 
     func supportsLiveUpdates() -> Bool {
-        if #available(iOS 17.2, *) {
+        if #available(iOS 18.0, *) {
             return true
         }
         return false
@@ -18,7 +18,7 @@ final class IosLiveActivityPermissionProvider: NSObject, NotificationPermissionP
     }
 
     func areLiveActivitiesEnabled() -> KotlinBoolean? {
-        guard #available(iOS 17.2, *) else { return KotlinBoolean(bool: false) }
+        guard #available(iOS 18.0, *) else { return KotlinBoolean(bool: false) }
         return KotlinBoolean(bool: ActivityAuthorizationInfo().areActivitiesEnabled)
     }
 

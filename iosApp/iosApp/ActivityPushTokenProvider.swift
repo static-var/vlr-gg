@@ -143,7 +143,7 @@ final class IosActivityPushTokenProvider: NSObject, PushTokenProvider {
     /// Suppresses duplicate tokens and keeps only one observation task running.
     func start(onToken: @escaping (String) -> Void) {
         guard observationTask == nil else { return }
-        guard #available(iOS 17.2, *) else { return }
+        guard #available(iOS 18.0, *) else { return }
 
         observationTask = Task { @MainActor in
             var lastToken: String?
