@@ -5,7 +5,7 @@ final class NativeLocalizationTests: XCTestCase {
 
     func testAppIntentAndSiriCatalogIsBundledForEverySupportedLanguage() throws {
         let keys = [
-            "Open VLR",
+            "Open Val Esports",
             "Next Favorite Match",
             "Open Next Favorite Match",
             "Set Spoiler Protection",
@@ -51,7 +51,7 @@ final class NativeLocalizationTests: XCTestCase {
 
     func testAppShortcutPhrasesKeepTheApplicationNameToken() throws {
         let keys = [
-            "Open VLR in ${applicationName}",
+            "Open ${applicationName}",
             "Open my next match in ${applicationName}",
             "Turn on spoiler protection in ${applicationName}",
             "What's my next favorite match in ${applicationName}",

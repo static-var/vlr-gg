@@ -192,7 +192,7 @@ final class FavoriteSearchTests: XCTestCase {
 
     func testDecodeRejectsMismatchedDuplicateAndUnsafeIdentifiers() throws {
         let valid = #"[{"id":"team:12","kind":"team","sourceId":"12","title":"Team Liquid"}]"#
-        XCTAssertEqual(try SearchFavorite.decode(Data(valid.utf8)).first?.url.absoluteString, "vlr://team/12")
+        XCTAssertEqual(try SearchFavorite.decode(Data(valid.utf8)).first?.url.absoluteString, "https://valorantesports.staticvar.dev/team/12")
         for invalid in [
             valid.replacingOccurrences(of: "team:12", with: "event:12"),
             valid.replacingOccurrences(of: "\"sourceId\":\"12\"", with: "\"sourceId\":\"../12\""),
@@ -232,7 +232,12 @@ final class FavoriteSearchTests: XCTestCase {
             SearchFavorite(id: "\($0.rawValue):12", kind: $0, sourceId: "12", title: "Favorite")
         }
         XCTAssertEqual(Set(records.map(\.id)).count, 4)
-        XCTAssertEqual(records.map { $0.url.absoluteString }, ["vlr://team/12", "vlr://event/12", "vlr://match/12", "vlr://player/12"])
+        XCTAssertEqual(records.map { $0.url.absoluteString }, [
+            "https://valorantesports.staticvar.dev/team/12",
+            "https://valorantesports.staticvar.dev/event/12",
+            "https://valorantesports.staticvar.dev/match/12",
+            "https://valorantesports.staticvar.dev/player/12",
+        ])
     }
 
     func testCoreSpotlightUpdatesRemovesAndClearsOnlyFavoritesDomain() async throws {
@@ -250,7 +255,7 @@ final class FavoriteSearchTests: XCTestCase {
         let unrelatedAttributes = CSSearchableItemAttributeSet(contentType: .text)
         unrelatedAttributes.title = "Independent saved article"
         unrelatedAttributes.contentDescription = "Unrelated test content"
-        unrelatedAttributes.url = URL(string: "vlr://news/\(teamId)")
+        unrelatedAttributes.url = URL(string: "https://example.com/news/\(teamId)")
         let unrelated = CSSearchableItem(uniqueIdentifier: identifier, domainIdentifier: unrelatedDomain, attributeSet: unrelatedAttributes)
         do {
             try await index.indexSearchableItems([unrelated])

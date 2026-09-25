@@ -52,8 +52,9 @@ final class SiriActionsTests: XCTestCase {
     func testOpenNextMatchIntentRunsExistingDeepLinkHandoff() async throws {
         let result = try await OpenNextFavoriteMatchIntent().perform()
         let url = try XCTUnwrap(result.value)
-        XCTAssertEqual(url.scheme, "vlr")
-        XCTAssertTrue(["match", "home"].contains(url.host ?? ""))
+        XCTAssertEqual(url.scheme, "https")
+        XCTAssertEqual(url.host, "valorantesports.staticvar.dev")
+        XCTAssertTrue(url.path == "/" || url.path.hasPrefix("/match/"))
     }
 
     func testSpoilerCycleRestoresWidgetScoresWithoutChangingScheduleFreshness() async throws {

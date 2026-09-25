@@ -19,7 +19,7 @@ struct SearchFavorite: Codable, Equatable, Sendable {
     let sourceId: String
     let title: String
 
-    var url: URL { URL(string: "vlr://\(kind.rawValue)/\(sourceId)")! }
+    var url: URL { VLRWidgetContract.detailsURL(kind: kind.rawValue, id: sourceId) }
 
     static func decode(_ data: Data) throws -> [SearchFavorite] {
         let records = try JSONDecoder().decode([SearchFavorite].self, from: data)
@@ -44,7 +44,6 @@ struct SearchFavorite: Codable, Equatable, Sendable {
         attributes.textContent = "\(title). \(attributes.contentDescription ?? kind.localizedName)"
         attributes.keywords = [
             title,
-            "VLR",
             "Val Esports",
             kind.localizedName,
             NativeLocalization.string("spotlight.favorite.keyword"),
