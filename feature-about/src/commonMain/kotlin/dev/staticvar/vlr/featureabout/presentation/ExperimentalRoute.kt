@@ -43,7 +43,6 @@ import vlr.feature_about.generated.resources.live_activity_favorites
 import vlr.feature_about.generated.resources.live_activity_favorites_description
 import vlr.feature_about.generated.resources.live_activities_description
 import vlr.feature_about.generated.resources.live_activities_disabled
-import vlr.feature_about.generated.resources.live_activity_permissions_description
 import vlr.feature_about.generated.resources.live_match_updates
 import vlr.feature_about.generated.resources.match_alerts
 import vlr.feature_about.generated.resources.match_alerts_description
@@ -115,7 +114,6 @@ private fun LiveUpdatesSettings(controller: LiveMatchNotificationSettingsControl
       enabled = access.supportsNotifications && !access.requesting,
       onChange = controller::setEnabled,
     )
-    Text(stringResource(Res.string.live_activity_permissions_description), style = Prism.typography.caption, color = Prism.color.captionColor)
     if (preferences.enabled && access.supportsNotifications) {
       if (access.activitiesEnabled == false) {
         PermissionMessage(stringResource(Res.string.live_activities_disabled))

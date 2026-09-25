@@ -116,7 +116,6 @@
     <string name="notification_access_error">Die Mitteilungsberechtigung konnte nicht geprüft oder angefordert werden. Versuche es erneut.</string>
     <string name="open_system_settings">Systemeinstellungen öffnen</string>
     <string name="allow_notifications">Mitteilungen erlauben</string>
-    <string name="live_activity_permissions_description">Deine Einstellungen werden auf diesem Gerät gespeichert. Die Verfügbarkeit hängt auch von deinen Systemeinstellungen ab.</string>
     <string name="live_match_updates">Live-Spielupdates</string>
     <string name="live_match_updates_description">Verfolge Live-Ergebnisse in Mitteilungen.</string>
     <string name="notifications_permission_description">Erlaube Mitteilungen, um Live-Spielupdates zu erhalten.</string>

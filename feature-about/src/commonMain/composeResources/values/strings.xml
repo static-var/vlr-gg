@@ -116,7 +116,6 @@
     <string name="notification_access_error">Could not check or request notification access. Please try again.</string>
     <string name="open_system_settings">Open system Settings</string>
     <string name="allow_notifications">Allow notifications</string>
-    <string name="live_activity_permissions_description">Your preferences are saved on this device. Availability also depends on your system settings.</string>
     <string name="live_match_updates">Live match updates</string>
     <string name="live_match_updates_description">Follow live scores in notifications.</string>
     <string name="notifications_permission_description">Allow notifications to receive live match updates.</string>

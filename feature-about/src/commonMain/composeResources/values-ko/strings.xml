@@ -115,7 +115,6 @@
     <string name="notification_access_error">알림 권한을 확인하거나 요청하지 못했습니다. 다시 시도해 주세요.</string>
     <string name="open_system_settings">시스템 설정 열기</string>
     <string name="allow_notifications">알림 허용</string>
-    <string name="live_activity_permissions_description">환경설정은 이 기기에 저장됩니다. 사용 가능 여부는 시스템 설정에 따라 달라집니다.</string>
     <string name="live_match_updates">경기 실시간 소식</string>
     <string name="live_match_updates_description">알림에서 실시간 점수를 확인하세요.</string>
     <string name="notifications_permission_description">경기 실시간 소식을 받으려면 알림을 허용하세요.</string>

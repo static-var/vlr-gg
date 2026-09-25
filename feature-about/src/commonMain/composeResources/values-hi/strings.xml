@@ -116,7 +116,6 @@
     <string name="notification_access_error">सूचनाओं की अनुमति की जाँच नहीं हो सकी या अनुमति नहीं माँगी जा सकी। फिर से कोशिश करें।</string>
     <string name="open_system_settings">सिस्टम सेटिंग खोलें</string>
     <string name="allow_notifications">सूचनाओं की अनुमति दें</string>
-    <string name="live_activity_permissions_description">आपकी प्राथमिकताएँ इस डिवाइस पर सहेजी जाती हैं। उपलब्धता आपकी सिस्टम सेटिंग पर भी निर्भर करती है।</string>
     <string name="live_match_updates">मैच के लाइव अपडेट</string>
     <string name="live_match_updates_description">सूचनाओं में लाइव स्कोर देखें।</string>
     <string name="notifications_permission_description">मैच के लाइव अपडेट पाने के लिए सूचनाओं की अनुमति दें।</string>

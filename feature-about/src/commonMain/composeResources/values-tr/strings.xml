@@ -115,7 +115,6 @@
     <string name="notification_access_error">Bildirim izni kontrol edilemedi veya istenemedi. Lütfen tekrar dene.</string>
     <string name="open_system_settings">Sistem ayarlarını aç</string>
     <string name="allow_notifications">Bildirimlere izin ver</string>
-    <string name="live_activity_permissions_description">Tercihlerin bu cihazda kaydedilir. Kullanılabilirlik, sistem ayarlarına da bağlıdır.</string>
     <string name="live_match_updates">Canlı maç güncellemeleri</string>
     <string name="live_match_updates_description">Canlı skorları bildirimlerden takip et.</string>
     <string name="notifications_permission_description">Canlı maç güncellemelerini almak için bildirimlere izin ver.</string>

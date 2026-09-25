@@ -117,7 +117,6 @@
     <string name="notification_access_error">No se pudo comprobar ni solicitar el permiso para enviar notificaciones. Vuelve a intentarlo.</string>
     <string name="open_system_settings">Abrir ajustes del sistema</string>
     <string name="allow_notifications">Permitir notificaciones</string>
-    <string name="live_activity_permissions_description">Tus preferencias se guardan en este dispositivo. La disponibilidad también depende de los ajustes del sistema.</string>
     <string name="live_match_updates">Actualizaciones de partidas en directo</string>
     <string name="live_match_updates_description">Sigue los resultados en directo en las notificaciones.</string>
     <string name="notifications_permission_description">Permite las notificaciones para recibir actualizaciones de partidas en directo.</string>
