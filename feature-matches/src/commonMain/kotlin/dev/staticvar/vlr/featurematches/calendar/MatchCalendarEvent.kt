@@ -60,7 +60,7 @@ internal fun MatchCalendarEvent.toICalendar(generatedAt: Instant = Clock.System.
         "PRODID:-//Val Esports//Match Calendar//EN",
         "CALSCALE:GREGORIAN",
         "BEGIN:VEVENT",
-        "UID:match-$uid@vlr.gg",
+        "UID:match-$uid@valorantesports.staticvar.dev",
         "DTSTAMP:${generatedAt.calendarTimestamp()}",
         "DTSTART:${start.calendarTimestamp()}",
         "DTEND:${end.calendarTimestamp()}",
