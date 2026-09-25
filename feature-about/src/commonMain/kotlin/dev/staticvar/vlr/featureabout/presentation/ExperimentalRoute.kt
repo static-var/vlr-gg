@@ -46,7 +46,9 @@ import vlr.feature_about.generated.resources.live_activities_disabled
 import vlr.feature_about.generated.resources.live_match_updates
 import vlr.feature_about.generated.resources.match_alerts
 import vlr.feature_about.generated.resources.match_alerts_description
-import vlr.feature_about.generated.resources.live_match_updates_description
+import vlr.feature_about.generated.resources.match_reminders_description
+import vlr.feature_about.generated.resources.match_reminders_permission_description
+import vlr.feature_about.generated.resources.live_updates_with_reminders_description
 import vlr.feature_about.generated.resources.notification_promotion_unavailable
 import vlr.feature_about.generated.resources.notification_access_error
 import vlr.feature_about.generated.resources.notifications_permission_description
@@ -88,6 +90,7 @@ private fun LiveUpdatesSettings(controller: LiveMatchNotificationSettingsControl
     onPauseOrDispose { }
   }
   val hasLiveActivities = !access.requiresNotificationPermission
+  val remindersOnly = access.supportsMatchAlerts && !access.supportsLiveUpdates
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
     Text(
       stringResource(when {
@@ -101,25 +104,31 @@ private fun LiveUpdatesSettings(controller: LiveMatchNotificationSettingsControl
     Text(
       stringResource(when {
         hasLiveActivities -> Res.string.live_activities_description
-        access.supportsLiveUpdates -> Res.string.live_match_updates_description
+        access.supportsLiveUpdates -> Res.string.live_updates_with_reminders_description
+        remindersOnly -> Res.string.match_reminders_description
         else -> Res.string.match_alerts_description
       }),
       style = Prism.typography.bodySmall,
       color = Prism.color.bodyColor,
     )
-    NotificationPreferenceCard(
-      title = stringResource(Res.string.live_activity_favorites),
-      description = stringResource(Res.string.live_activity_favorites_description),
-      checked = preferences.enabled,
-      enabled = access.supportsNotifications && !access.requesting,
-      onChange = controller::setEnabled,
-    )
-    if (preferences.enabled && access.supportsNotifications) {
+    if (!remindersOnly) {
+      NotificationPreferenceCard(
+        title = stringResource(Res.string.live_activity_favorites),
+        description = stringResource(Res.string.live_activity_favorites_description),
+        checked = preferences.enabled,
+        enabled = access.supportsNotifications && !access.requesting,
+        onChange = controller::setEnabled,
+      )
+    }
+    if ((preferences.enabled || access.supportsMatchAlerts) && access.supportsNotifications) {
       if (access.activitiesEnabled == false) {
         PermissionMessage(stringResource(Res.string.live_activities_disabled))
       }
       if (access.requiresNotificationPermission && access.notifications == NotificationAuthorization.Denied) {
-        PermissionMessage(stringResource(Res.string.notifications_permission_description))
+        PermissionMessage(stringResource(
+          if (preferences.enabled && !remindersOnly) Res.string.notifications_permission_description
+          else Res.string.match_reminders_permission_description,
+        ))
       }
       if (access.activitiesEnabled == false ||
         access.requiresNotificationPermission && access.notifications == NotificationAuthorization.Denied
@@ -136,6 +145,9 @@ private fun LiveUpdatesSettings(controller: LiveMatchNotificationSettingsControl
       if (access.requiresNotificationPermission &&
         (access.notifications == NotificationAuthorization.Error || access.notifications == NotificationAuthorization.NotDetermined)
       ) {
+        if (access.notifications == NotificationAuthorization.NotDetermined) {
+          PermissionMessage(stringResource(Res.string.match_reminders_permission_description))
+        }
         PrismButton(onClick = controller::requestNotifications, enabled = !access.requesting) {
           Text(stringResource(Res.string.allow_notifications))
         }

@@ -141,4 +141,7 @@
     <string name="release_1_0_5_spotlight_description">Open favorite teams, players, events, and matches from Spotlight. Use Siri to check favorite matches and control spoiler protection.</string>
     <string name="release_1_0_5_polish_title">Smoother browsing, clearer logos</string>
     <string name="release_1_0_5_polish_description">Match and event pages open more smoothly. Logos are easier to see, background refreshes are reduced, and database upgrades preserve your favorites.</string>
+    <string name="match_reminders_description">Get a reminder before a favorite match starts. Allow notifications to receive reminders.</string>
+    <string name="match_reminders_permission_description">Allow notifications to receive reminders for your favorites.</string>
+    <string name="live_updates_with_reminders_description">Follow live scores in notifications. When Live Updates are off, favorites still receive pre-match reminders.</string>
 </resources>
