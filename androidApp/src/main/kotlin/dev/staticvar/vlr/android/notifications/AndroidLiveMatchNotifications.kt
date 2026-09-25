@@ -722,7 +722,7 @@ internal class LiveMatchNotificationRenderer(
     31 * matchId.hashCode() + action.hashCode(),
     Intent(context, LiveMatchNotificationReceiver::class.java)
       .setAction(action)
-      .setData(android.net.Uri.parse("vlr-live-notification://action/$matchId/${generation.orEmpty()}"))
+      .setData(android.net.Uri.parse("app-notification://action/$matchId/${generation.orEmpty()}"))
       .putExtra(LiveMatchNotificationReceiver.ExtraMatchId, matchId)
       .putExtra(LiveMatchNotificationReceiver.ExtraGeneration, generation),
     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
