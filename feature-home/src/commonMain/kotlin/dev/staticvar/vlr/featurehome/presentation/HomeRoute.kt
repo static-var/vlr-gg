@@ -252,14 +252,15 @@ private fun PersonalizedMatches(
         pagerState = pagerState,
         variant = PrismCarouselVariant.Multibrowse,
         showIndicators = matches.size <= MaximumVisibleIndicators,
-        key = { page -> matches[page].id },
+        key = { page -> matches.getOrNull(page)?.id ?: page },
       ) { page ->
-        val match = matches[page]
-        MatchPreviewItem(
-          matchPreview = match,
-          modifier = Modifier.fillMaxWidth(),
-          onClick = { onMatchSelected(match) },
-        )
+        matches.getOrNull(page)?.let { match ->
+          MatchPreviewItem(
+            matchPreview = match,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { onMatchSelected(match) },
+          )
+        }
       }
     }
   }
@@ -288,14 +289,15 @@ private fun PersonalizedEvents(
         itemCount = events.size,
         variant = PrismCarouselVariant.Multibrowse,
         showIndicators = events.size <= MaximumVisibleIndicators,
-        key = { page -> events[page].id },
+        key = { page -> events.getOrNull(page)?.id ?: page },
       ) { page ->
-        val event = events[page]
-        EventPreviewItem(
-          eventPreview = event,
-          modifier = Modifier.fillMaxWidth(),
-          onClick = { onEventSelected(event) },
-        )
+        events.getOrNull(page)?.let { event ->
+          EventPreviewItem(
+            eventPreview = event,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { onEventSelected(event) },
+          )
+        }
       }
     }
   }
