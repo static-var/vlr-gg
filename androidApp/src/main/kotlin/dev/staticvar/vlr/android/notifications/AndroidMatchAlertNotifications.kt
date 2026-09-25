@@ -57,7 +57,7 @@ internal class AndroidMatchAlertNotifications(
         val intent = PendingIntent.getActivity(
           context,
           alert.matchId.hashCode(),
-          Intent(Intent.ACTION_VIEW, Uri.parse("vlr://match/${alert.matchId}"), context, MainActivity::class.java),
+          Intent(Intent.ACTION_VIEW, Uri.parse("https://valorantesports.staticvar.dev/match/${alert.matchId}"), context, MainActivity::class.java),
           PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         val builder = if (Build.VERSION.SDK_INT >= 26) Notification.Builder(context, ChannelId) else Notification.Builder(context)

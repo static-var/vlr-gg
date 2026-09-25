@@ -34,7 +34,7 @@ internal suspend fun matchShareText(matches: List<MatchPreview>, timeZone: TimeZ
     matches.forEach { match ->
       appendLine(
         getString(Res.string.share_match, match.team1.name, match.team2.name,
-          matchShareTime(match, liveLabel, timeTba, getMatchPreviewTime(match.time, timeZone), timeZone), "https://www.vlr.gg/${match.id}"),
+          matchShareTime(match, liveLabel, timeTba, getMatchPreviewTime(match.time, timeZone), timeZone), "https://valorantesports.staticvar.dev/match/${match.id}"),
       )
       appendLine()
     }

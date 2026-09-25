@@ -24,6 +24,7 @@ class MatchCalendarEventTest {
     assertTrue(content.contains("DTSTART:20260905T170000Z\r\n"))
     assertTrue(content.contains("DTSTAMP:20260905T120000Z\r\n"))
     assertTrue(content.contains("DTEND:20260905T180000Z\r\n"))
+    assertTrue(content.contains("URL:https://valorantesports.staticvar.dev/match/42\r\n"))
     assertFalse(content.contains("DURATION"))
     assertTrue(content.endsWith("END:VCALENDAR\r\n"))
     val updated = event.copy(title = "Renamed team", start = generatedAt).toICalendar(generatedAt)

@@ -68,7 +68,7 @@ internal fun MatchCalendarEvent.toICalendar(generatedAt: Instant = Clock.System.
         "DESCRIPTION:${description.calendarText()}",
       ),
     )
-    if (matchId.all(Char::isDigit)) add("URL:https://www.vlr.gg/$matchId")
+    if (matchId.all(Char::isDigit)) add("URL:https://valorantesports.staticvar.dev/match/$matchId")
     add("END:VEVENT")
     add("END:VCALENDAR")
   }.joinToString(separator = "\r\n", postfix = "\r\n") { it.foldCalendarLine() }

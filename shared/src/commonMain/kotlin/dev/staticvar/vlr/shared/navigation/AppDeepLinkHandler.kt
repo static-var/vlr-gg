@@ -15,7 +15,7 @@ public class AppDeepLinkHandler {
 
   internal val state: StateFlow<AppDeepLinkState> = mutableState.asStateFlow()
 
-  /** Returns whether [url] is a supported VLR app URL. */
+  /** Returns whether [url] is a supported Valorant Esports app URL. */
   public fun openUrl(url: String): Boolean {
     val destination = parseAppDeepLink(url) ?: return false
     mutableState.update { current ->
@@ -71,8 +71,8 @@ internal sealed interface AppDeepLinkDestination {
   data class Player(val playerId: String) : AppDeepLinkDestination
 }
 
-private val detailsDeepLink = Regex("^vlr://(match|event|team|player)/([0-9]+)(?:[?#].*)?$")
-private val homeDeepLink = Regex("^vlr://home/?(?:[?#].*)?$")
+private val detailsDeepLink = Regex("^https://valorantesports\\.staticvar\\.dev/(match|event|team|player)/([0-9]+)(?:[?#].*)?$")
+private val homeDeepLink = Regex("^https://valorantesports\\.staticvar\\.dev/(?:[?#].*)?$")
 
 internal fun parseAppDeepLink(url: String): AppDeepLinkDestination? {
   val normalizedUrl = url.trim()
