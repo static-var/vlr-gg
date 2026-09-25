@@ -34,7 +34,7 @@ settings:
 packages:
   Sentry:
     url: https://github.com/getsentry/sentry-cocoa.git
-    exactVersion: 8.58.4
+    exactVersion: 9.29.2
 
 targets:
   iosApp:
