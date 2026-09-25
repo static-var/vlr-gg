@@ -10,253 +10,300 @@ import dev.staticvar.vlr.core.notifications.PushPlatform
 import dev.staticvar.vlr.core.settings.PushTokenRegistrationPreferencesRepository
 import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
-import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.FavoriteSyncStateRepository
+import dev.staticvar.vlr.domain.repository.FavoritesRepository
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteGroups
 import dev.staticvar.vlr.remotesource.liveupdates.FavoriteLiveUpdateDataSource
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteReadResult
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/** Checks favorite syncing across access, identity, and upload changes. */
 class FavoriteLiveUpdateCoordinatorTest {
   @Test
-  fun pendingAccessUploadsTheInitialSnapshot() = runTest {
-    val harness = FavoriteSyncHarness(backgroundScope, favorites(teams = listOf("11"), matches = listOf("22")))
+  fun newFavoriteAddsOnlyItsDirectIdWhileLiveUpdatesAreDisabled() = runTest {
+    val h = FavoriteSyncHarness(backgroundScope, favorites(players = listOf("9")))
+    h.coordinator.onEligibilityChanged(LiveUpdateEligibility.Disabled)
     runCurrent()
 
-    assertEquals(
-      listOf(
-        FavoriteRequest(
-          clientId = harness.identity.id.value.toString(),
-          teams = listOf("11"),
-          matches = listOf("22"),
-        ),
-      ),
-      harness.dataSource.requests,
-    )
+    assertEquals(listOf(Request(h.clientId, groups(players = listOf("9")))), h.source.additions)
+    assertEquals(emptyList(), h.source.removals)
+    assertEquals(groups(players = listOf("9")), h.source.server[h.clientId])
+    assertTrue(h.state.synced)
   }
 
   @Test
-  fun disabledFreshInstallUploadsFavorites() = runTest {
-    val harness = FavoriteSyncHarness(backgroundScope, favorites(teams = listOf("11")))
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Disabled)
-    runCurrent()
-
-    assertEquals(listOf("11"), harness.dataSource.requests.single().teams)
-    assertTrue(harness.syncState.synced)
-  }
-
-  @Test
-  fun emptyFavoritesAreUploadedOnFirstLaunch() = runTest {
-    val harness = FavoriteSyncHarness(backgroundScope, favorites())
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Disabled)
-    runCurrent()
-
-    assertEquals(listOf(FavoriteRequest(clientId = harness.identity.id.value.toString())), harness.dataSource.requests)
-    assertTrue(harness.syncState.synced)
-  }
-
-  @Test
-  fun tokenDeletionReconciliationRepeatsThePutForTheSameFavorites() = runTest {
-    val harness = FavoriteSyncHarness(backgroundScope, favorites(teams = listOf("11")))
-    runCurrent()
-    assertEquals(1, harness.dataSource.requests.size)
-
-    harness.coordinator.reconcile()
-    runCurrent()
-
-    assertEquals(2, harness.dataSource.requests.size)
-    assertEquals(harness.dataSource.requests.first(), harness.dataSource.requests.last())
-    assertEquals(2L, harness.coordinator.syncGeneration.value)
-  }
-
-  @Test
-  fun disabledAppKeepsFavoritesForAPreviouslyRegisteredClient() = runTest {
-    val harness = FavoriteSyncHarness(backgroundScope, favorites(teams = listOf("11")), previouslyRegistered = true)
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Disabled)
-    runCurrent()
-
-    assertEquals(
-      listOf(FavoriteRequest(clientId = harness.identity.id.value.toString(), teams = listOf("11"))),
-      harness.dataSource.requests,
-    )
-  }
-
-  @Test
-  fun favoriteRemovalReplacesTheSnapshotWhileAccessIsDisabled() = runTest {
-    val harness = FavoriteSyncHarness(
+  fun unfavoritingEachEntitySendsOnlyThatEntityToDelete() = runTest {
+    val h = FavoriteSyncHarness(
       backgroundScope,
       favorites(teams = listOf("11"), matches = listOf("22"), players = listOf("33"), events = listOf("44")),
     )
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Enabled)
+    h.coordinator.onEligibilityChanged(LiveUpdateEligibility.Disabled)
     runCurrent()
 
-    harness.favorites.direct.value = favorites(teams = listOf("11"))
+    h.setFavorites(favorites(matches = listOf("22"), players = listOf("33"), events = listOf("44")))
     runCurrent()
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Disabled)
+    h.setFavorites(favorites(players = listOf("33"), events = listOf("44")))
+    runCurrent()
+    h.setFavorites(favorites(events = listOf("44")))
+    runCurrent()
+    h.setFavorites(favorites())
     runCurrent()
 
     assertEquals(
       listOf(
-        FavoriteRequest(
-          clientId = harness.identity.id.value.toString(),
-          teams = listOf("11"),
-          matches = listOf("22"),
-          players = listOf("33"),
-          events = listOf("44"),
-        ),
-        FavoriteRequest(clientId = harness.identity.id.value.toString(), teams = listOf("11")),
+        Request(h.clientId, groups(teams = listOf("11"))),
+        Request(h.clientId, groups(matches = listOf("22"))),
+        Request(h.clientId, groups(players = listOf("33"))),
+        Request(h.clientId, groups(events = listOf("44"))),
       ),
-      harness.dataSource.requests,
+      h.source.removals,
     )
+    assertEquals(groups(), h.source.server[h.clientId])
+    assertTrue(h.state.synced)
   }
 
   @Test
-  fun lateCloudIdentityKeepsCurrentFavoritesUnderTheLocalClient() = runTest {
-    val harness = FavoriteSyncHarness(
+  fun launchRemovesServerFavoritesThatAreNoLongerLocal() = runTest {
+    val h = FavoriteSyncHarness(
       backgroundScope,
-      favorites(events = listOf("44")),
-      trackCloudBackup = true,
+      favorites(matches = listOf("22")),
+      initialServer = groups(teams = listOf("11"), matches = listOf("22"), players = listOf("33"), events = listOf("44")),
     )
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Enabled)
-    runCurrent()
-    val previousId = harness.identity.id.value.toString()
-
-    harness.identity.observeCloudIdentity(RestoredClientId)
     runCurrent()
 
+    assertEquals(emptyList(), h.source.additions)
     assertEquals(
-      listOf(previousId),
-      harness.dataSource.requests.map(FavoriteRequest::clientId),
+      listOf(Request(h.clientId, groups(teams = listOf("11"), players = listOf("33"), events = listOf("44")))),
+      h.source.removals,
     )
-    assertEquals(previousId, harness.identity.id.value.toString())
-    assertEquals(listOf("44"), harness.dataSource.requests.last().events)
+    assertEquals(groups(matches = listOf("22")), h.source.server[h.clientId])
+    assertTrue(h.state.synced)
   }
 
   @Test
-  fun changesDuringAnUploadWaitAndOnlyTheLatestSnapshotFollowsIt() = runTest {
-    val firstUpload = CompletableDeferred<Unit>()
-    val harness = FavoriteSyncHarness(backgroundScope, favorites(matches = listOf("1"))).apply {
-      dataSource.firstResponse = firstUpload
-    }
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Enabled)
-    runCurrent()
-    assertEquals(listOf("1"), harness.dataSource.requests.single().matches)
-
-    harness.favorites.direct.value = favorites(matches = listOf("2"))
-    harness.syncState.markDirty()
-    runCurrent()
-    harness.favorites.direct.value = favorites(matches = listOf("3"))
-    harness.syncState.markDirty()
-    runCurrent()
-    assertEquals(1, harness.dataSource.requests.size)
-
-    firstUpload.complete(Unit)
+  fun launchAddsOnlyFavoritesMissingFromTheServer() = runTest {
+    val h = FavoriteSyncHarness(
+      backgroundScope,
+      favorites(teams = listOf("11"), matches = listOf("22")),
+      initialServer = groups(teams = listOf("11")),
+    )
     runCurrent()
 
-    assertEquals(listOf(listOf("1"), listOf("3")), harness.dataSource.requests.map(FavoriteRequest::matches))
-    assertTrue(harness.syncState.synced)
+    assertEquals(listOf(Request(h.clientId, groups(matches = listOf("22")))), h.source.additions)
+    assertEquals(emptyList(), h.source.removals)
+    assertEquals(groups(teams = listOf("11"), matches = listOf("22")), h.source.server[h.clientId])
+    assertTrue(h.state.synced)
   }
 
   @Test
-  fun retryMakesOneNewAttemptAfterAFailure() = runTest {
-    val harness = FavoriteSyncHarness(backgroundScope, favorites(players = listOf("9"))).apply {
-      dataSource.succeeds = false
-    }
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Enabled)
-    runCurrent()
-    assertEquals(1, harness.dataSource.requests.size)
-
-    harness.coordinator.retry()
+  fun emptyInstallRegistersItsEmptyFavorites() = runTest {
+    val h = FavoriteSyncHarness(backgroundScope, favorites())
     runCurrent()
 
-    assertEquals(2, harness.dataSource.requests.size)
+    assertEquals(listOf(Request(h.clientId, groups())), h.source.additions)
+    assertTrue(h.state.synced)
   }
 
   @Test
-  fun failedPutRetriesLaterWithoutASettingOrLifecycleChange() = runTest {
-    val harness = FavoriteSyncHarness(backgroundScope, favorites(players = listOf("9"))).apply {
-      dataSource.succeeds = false
-    }
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Disabled)
+  fun failedDeleteRemainsDirtyAndRetriesLater() = runTest {
+    val h = FavoriteSyncHarness(backgroundScope, favorites(), initialServer = groups(teams = listOf("11")))
+    h.source.removeSucceeds = false
     runCurrent()
-    assertEquals(1, harness.dataSource.requests.size)
-    assertTrue(!harness.syncState.synced)
 
-    harness.dataSource.succeeds = true
+    assertFalse(h.state.synced)
+    assertEquals(groups(teams = listOf("11")), h.source.server[h.clientId])
+    h.source.removeSucceeds = true
     advanceTimeBy(30_000)
     runCurrent()
 
-    assertEquals(2, harness.dataSource.requests.size)
-    assertTrue(harness.syncState.synced)
+    assertEquals(2, h.source.removals.size)
+    assertEquals(groups(), h.source.server[h.clientId])
+    assertTrue(h.state.synced)
   }
 
   @Test
-  fun optOutKeepsFailedFavoritesPendingUntilRetry() = runTest {
-    val harness = FavoriteSyncHarness(backgroundScope, favorites(teams = listOf("11"))).apply {
-      dataSource.succeeds = false
-    }
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Enabled)
-    runCurrent()
-    assertEquals(setOf(harness.identity.id.value.toString()), harness.tokenPreferences.possiblySyncedFavoriteClients())
-
-    assertTrue(!harness.syncState.synced)
-    harness.dataSource.succeeds = true
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Disabled)
-    harness.coordinator.retry()
+  fun failedAddDoesNotPreventRemovingAnUnfavoritedId() = runTest {
+    val h = FavoriteSyncHarness(
+      backgroundScope,
+      favorites(players = listOf("9")),
+      initialServer = groups(teams = listOf("11")),
+    )
+    h.source.addSucceeds = false
     runCurrent()
 
-    assertEquals(2, harness.dataSource.requests.size)
-    assertEquals(listOf("11"), harness.dataSource.requests.last().teams)
-    assertTrue(harness.syncState.synced)
+    assertEquals(listOf(Request(h.clientId, groups(teams = listOf("11")))), h.source.removals)
+    assertEquals(groups(), h.source.server[h.clientId])
+    assertFalse(h.state.synced)
+
+    h.source.addSucceeds = true
+    h.coordinator.retry()
+    runCurrent()
+
+    assertEquals(groups(players = listOf("9")), h.source.server[h.clientId])
+    assertTrue(h.state.synced)
   }
 
   @Test
-  fun revertingAfterLostPutResponseResendsThePreviousSnapshot() = runTest {
-    val first = favorites(matches = listOf("1"))
-    val harness = FavoriteSyncHarness(backgroundScope, first)
-    harness.coordinator.onEligibilityChanged(LiveUpdateEligibility.Enabled)
+  fun lostDeleteResponseIsResolvedByReadingTheServerAgain() = runTest {
+    val h = FavoriteSyncHarness(backgroundScope, favorites(), initialServer = groups(events = listOf("44")))
+    h.source.removeSucceeds = false
+    h.source.applyFailedWrites = true
     runCurrent()
 
-    harness.dataSource.succeeds = false
-    harness.favorites.direct.value = favorites(matches = listOf("2"))
-    runCurrent()
-    harness.dataSource.succeeds = true
-    harness.favorites.direct.value = first
+    assertFalse(h.state.synced)
+    assertEquals(groups(), h.source.server[h.clientId])
+    h.source.removeSucceeds = true
+    h.coordinator.retry()
     runCurrent()
 
-    assertEquals(listOf(listOf("1"), listOf("2"), listOf("1")), harness.dataSource.requests.map(FavoriteRequest::matches))
-    assertEquals(listOf("1"), harness.coordinator.syncedFavorites.value?.favorites?.matches)
+    assertEquals(1, h.source.removals.size)
+    assertTrue(h.source.reads.size >= 2)
+    assertTrue(h.state.synced)
   }
 
-  /** Holds the client ID used to test identity restoration. */
-  private companion object {
-    const val RestoredClientId: String = "01996ff9-3000-7000-8000-000000000002"
+  @Test
+  fun failedVerificationReadDoesNotMarkTheDatabaseSynced() = runTest {
+    val h = FavoriteSyncHarness(backgroundScope, favorites(teams = listOf("11")))
+    h.source.failReadAt = 2
+    runCurrent()
+
+    assertEquals(groups(teams = listOf("11")), h.source.server[h.clientId])
+    assertFalse(h.state.synced)
+    h.source.failReadAt = null
+    h.coordinator.retry()
+    runCurrent()
+
+    assertEquals(1, h.source.additions.size)
+    assertTrue(h.state.synced)
+  }
+
+  @Test
+  fun mismatchedVerificationReadDoesNotMarkTheDatabaseSynced() = runTest {
+    val h = FavoriteSyncHarness(backgroundScope, favorites(teams = listOf("11")))
+    h.source.staleReadAt = 2
+    runCurrent()
+
+    assertFalse(h.state.synced)
+    h.coordinator.retry()
+    runCurrent()
+
+    assertEquals(1, h.source.additions.size)
+    assertTrue(h.state.synced)
+  }
+
+  @Test
+  fun unfavoriteDuringAnAddWaitsThenDeletesTheAddedId() = runTest {
+    val response = CompletableDeferred<Unit>()
+    val h = FavoriteSyncHarness(backgroundScope, favorites(players = listOf("9")))
+    h.source.firstAddResponse = response
+    runCurrent()
+
+    h.setFavorites(favorites())
+    runCurrent()
+    assertEquals(emptyList(), h.source.removals)
+    assertFalse(h.state.synced)
+
+    response.complete(Unit)
+    runCurrent()
+
+    assertEquals(listOf(Request(h.clientId, groups(players = listOf("9")))), h.source.removals)
+    assertEquals(groups(), h.source.server[h.clientId])
+    assertTrue(h.state.synced)
+  }
+
+  @Test
+  fun refavoriteDuringAnInFlightDeleteRestoresTheId() = runTest {
+    val response = CompletableDeferred<Unit>()
+    val original = favorites(matches = listOf("22"))
+    val h = FavoriteSyncHarness(backgroundScope, original, initialServer = groups(matches = listOf("22")))
+    runCurrent()
+    h.source.firstRemoveResponse = response
+
+    h.setFavorites(favorites())
+    runCurrent()
+    assertEquals(listOf(Request(h.clientId, groups(matches = listOf("22")))), h.source.removals)
+    h.setFavorites(original)
+    runCurrent()
+    assertFalse(h.state.synced)
+
+    response.complete(Unit)
+    runCurrent()
+
+    assertEquals(listOf(Request(h.clientId, groups(matches = listOf("22")))), h.source.additions)
+    assertEquals(groups(matches = listOf("22")), h.source.server[h.clientId])
+    assertTrue(h.state.synced)
+  }
+
+  @Test
+  fun supersededClientIsClearedWithGetAndSelectiveDelete() = runTest {
+    val oldId = "01996ff9-3000-7000-8000-000000000002"
+    val h = FavoriteSyncHarness(
+      backgroundScope,
+      favorites(events = listOf("44")),
+      legacyClientId = oldId,
+      legacyServer = groups(teams = listOf("11"), matches = listOf("22")),
+    )
+    runCurrent()
+
+    assertTrue(oldId in h.source.reads)
+    assertEquals(listOf(Request(oldId, groups(teams = listOf("11"), matches = listOf("22")))), h.source.removals)
+    assertTrue(h.source.additions.none { it.clientId == oldId })
+    assertEquals(groups(), h.source.server[oldId])
+    assertEquals(groups(events = listOf("44")), h.source.server[h.clientId])
+  }
+
+  @Test
+  fun lateCloudIdentityKeepsFavoritesUnderTheLocalClientId() = runTest {
+    val h = FavoriteSyncHarness(backgroundScope, favorites(events = listOf("44")), trackCloudBackup = true)
+    runCurrent()
+    h.identity.observeCloudIdentity("01996ff9-3000-7000-8000-000000000002")
+    runCurrent()
+
+    assertEquals(setOf(h.clientId), h.source.reads.toSet())
+    assertEquals(groups(events = listOf("44")), h.source.server[h.clientId])
   }
 }
 
-/** Connects a favorite sync coordinator to controllable test dependencies. */
 private class FavoriteSyncHarness(
   scope: kotlinx.coroutines.CoroutineScope,
   initialFavorites: DirectFavoriteSnapshot,
   trackCloudBackup: Boolean = false,
-  previouslyRegistered: Boolean = false,
+  initialServer: FavoriteGroups? = null,
+  legacyClientId: String? = null,
+  legacyServer: FavoriteGroups? = null,
 ) {
-  val favorites = FakeFavoritesRepository(initialFavorites)
-  val dataSource = FakeFavoriteLiveUpdateDataSource()
   val identity = UserIdentityRepository(MapSettings(), trackCloudBackup = trackCloudBackup)
-  val tokenPreferences = PushTokenRegistrationPreferencesRepository(MapSettings()).apply {
-    if (previouslyRegistered) markUploaded(identity.id.value.toString(), PushPlatform.Ios, "token")
+  val favorites = FakeFavoritesRepository(initialFavorites)
+  val source = StatefulFavoriteSource()
+  val state = FakeFavoriteSyncStateRepository()
+  val tokenPreferences = PushTokenRegistrationPreferencesRepository(MapSettings())
+  val clientId: String get() = identity.id.value.toString()
+
+  init {
+    if (initialServer != null) source.server[clientId] = initialServer
+    if (legacyClientId != null) {
+      tokenPreferences.markUploaded(legacyClientId, PushPlatform.Ios, "old-token")
+      if (legacyServer != null) source.server[legacyClientId] = legacyServer
+    }
   }
-  val syncState = FakeFavoriteSyncStateRepository()
-  val coordinator = FavoriteLiveUpdateCoordinator(identity, favorites, syncState, tokenPreferences, dataSource, scope)
+
+  val coordinator = FavoriteLiveUpdateCoordinator(
+    identity, favorites, state, tokenPreferences, source, scope,
+  )
+
+  fun setFavorites(value: DirectFavoriteSnapshot) {
+    favorites.direct.value = value
+    state.markDirty()
+  }
 }
 
 internal class FakeFavoriteSyncStateRepository : FavoriteSyncStateRepository {
@@ -275,46 +322,72 @@ internal class FakeFavoriteSyncStateRepository : FavoriteSyncStateRepository {
   }
 }
 
-/** Lets tests change the selected favorites through a state flow. */
 private class FakeFavoritesRepository(initial: DirectFavoriteSnapshot) : FavoritesRepository {
   val direct = MutableStateFlow(initial)
-
   override fun observeDirectFavorites(): Flow<DirectFavoriteSnapshot> = direct
-
   override fun observeTeamIds(): Flow<Set<String>> = flowOf(emptySet())
-
   override fun observePlayerIds(): Flow<Set<String>> = flowOf(emptySet())
 }
 
-/** Records the client and favorite IDs uploaded by a test. */
-private data class FavoriteRequest(
-  val clientId: String,
-  val teams: List<String> = emptyList(),
-  val matches: List<String> = emptyList(),
-  val players: List<String> = emptyList(),
-  val events: List<String> = emptyList(),
-) {
-  fun isEmpty(): Boolean = teams.isEmpty() && matches.isEmpty() && players.isEmpty() && events.isEmpty()
-}
+private data class Request(val clientId: String, val favorites: FavoriteGroups)
 
-/** Records favorite uploads and lets tests delay or fail responses. */
-private class FakeFavoriteLiveUpdateDataSource : FavoriteLiveUpdateDataSource {
-  val requests = mutableListOf<FavoriteRequest>()
-  var firstResponse: CompletableDeferred<Unit>? = null
-  var succeeds: Boolean = true
+private class StatefulFavoriteSource : FavoriteLiveUpdateDataSource {
+  val server = mutableMapOf<String, FavoriteGroups>()
+  val reads = mutableListOf<String>()
+  val additions = mutableListOf<Request>()
+  val removals = mutableListOf<Request>()
+  var firstAddResponse: CompletableDeferred<Unit>? = null
+  var firstRemoveResponse: CompletableDeferred<Unit>? = null
+  var failReadAt: Int? = null
+  var staleReadAt: Int? = null
+  var addSucceeds = true
+  var removeSucceeds = true
+  var applyFailedWrites = false
 
-  override suspend fun replace(
-    clientId: String,
-    teams: List<String>,
-    matches: List<String>,
-    players: List<String>,
-    events: List<String>,
-  ): Boolean {
-    requests += FavoriteRequest(clientId, teams, matches, players, events)
-    if (requests.size == 1) firstResponse?.await()
-    return succeeds
+  override suspend fun read(clientId: String): FavoriteReadResult {
+    reads += clientId
+    if (reads.size == failReadAt) return FavoriteReadResult.Failure
+    if (reads.size == staleReadAt) return FavoriteReadResult.Found(groups())
+    return server[clientId]?.let(FavoriteReadResult::Found) ?: FavoriteReadResult.NotRegistered
+  }
+
+  override suspend fun add(clientId: String, favorites: FavoriteGroups): Boolean {
+    additions += Request(clientId, favorites)
+    if (additions.size == 1) firstAddResponse?.await()
+    if (addSucceeds || applyFailedWrites) {
+      val old = server[clientId] ?: groups()
+      server[clientId] = groups(
+        teams = (old.teams + favorites.teams).distinct(),
+        matches = (old.matches + favorites.matches).distinct(),
+        players = (old.players + favorites.players).distinct(),
+        events = (old.events + favorites.events).distinct(),
+      )
+    }
+    return addSucceeds
+  }
+
+  override suspend fun remove(clientId: String, favorites: FavoriteGroups): Boolean {
+    removals += Request(clientId, favorites)
+    if (removals.size == 1) firstRemoveResponse?.await()
+    if (removeSucceeds || applyFailedWrites) {
+      val old = server[clientId] ?: groups()
+      server[clientId] = groups(
+        teams = old.teams - favorites.teams.toSet(),
+        matches = old.matches - favorites.matches.toSet(),
+        players = old.players - favorites.players.toSet(),
+        events = old.events - favorites.events.toSet(),
+      )
+    }
+    return removeSucceeds
   }
 }
+
+private fun groups(
+  teams: List<String> = emptyList(),
+  matches: List<String> = emptyList(),
+  players: List<String> = emptyList(),
+  events: List<String> = emptyList(),
+): FavoriteGroups = FavoriteGroups(teams, matches, players, events)
 
 private fun favorites(
   teams: List<String> = emptyList(),

@@ -14,6 +14,8 @@ import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.remotesource.liveupdates.FavoriteLiveUpdateDataSource
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteGroups
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteReadResult
 import dev.staticvar.vlr.remotesource.liveupdates.PushTokenRegistrationDataSource
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -248,18 +250,40 @@ private class ReconnectTokenSource : PushTokenRegistrationDataSource {
 /** Records favorite writes and can hold or fail the first upload. */
 private class ReconnectFavoriteSource : FavoriteLiveUpdateDataSource {
   val teamUploads = mutableListOf<List<String>>()
+  private val server = mutableMapOf<String, FavoriteGroups>()
   var firstResponse: CompletableDeferred<Unit>? = null
   var succeeds = true
 
-  override suspend fun replace(
-    clientId: String,
-    teams: List<String>,
-    matches: List<String>,
-    players: List<String>,
-    events: List<String>,
-  ): Boolean {
-    teamUploads += teams
+  override suspend fun read(clientId: String): FavoriteReadResult =
+    server[clientId]?.let(FavoriteReadResult::Found) ?: FavoriteReadResult.NotRegistered
+
+  override suspend fun add(clientId: String, favorites: FavoriteGroups): Boolean {
+    teamUploads += favorites.teams
     if (teamUploads.size == 1) firstResponse?.await()
+    if (succeeds) {
+      val old = server[clientId] ?: emptyGroups()
+      server[clientId] = FavoriteGroups(
+        teams = (old.teams + favorites.teams).distinct(),
+        matches = (old.matches + favorites.matches).distinct(),
+        players = (old.players + favorites.players).distinct(),
+        events = (old.events + favorites.events).distinct(),
+      )
+    }
     return succeeds
   }
+
+  override suspend fun remove(clientId: String, favorites: FavoriteGroups): Boolean {
+    if (succeeds) {
+      val old = server[clientId] ?: emptyGroups()
+      server[clientId] = FavoriteGroups(
+        teams = old.teams - favorites.teams.toSet(),
+        matches = old.matches - favorites.matches.toSet(),
+        players = old.players - favorites.players.toSet(),
+        events = old.events - favorites.events.toSet(),
+      )
+    }
+    return succeeds
+  }
+
+  private fun emptyGroups() = FavoriteGroups(emptyList(), emptyList(), emptyList(), emptyList())
 }

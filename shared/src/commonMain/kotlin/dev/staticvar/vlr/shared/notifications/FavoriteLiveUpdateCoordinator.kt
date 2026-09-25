@@ -10,7 +10,9 @@ import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.FavoriteSyncStateRepository
 import dev.staticvar.vlr.domain.repository.FavoriteSyncStatus
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteGroups
 import dev.staticvar.vlr.remotesource.liveupdates.FavoriteLiveUpdateDataSource
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteReadResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -46,7 +48,7 @@ internal class FavoriteLiveUpdateCoordinator(
   private var reconciliationEpoch = 0L
   private var inFlight: Upload? = null
   private val attemptedRequests = mutableSetOf<Request>()
-  private var lastSuccessfulRequest: Request? = null
+  private val lastSuccessfulRequests = mutableMapOf<String, Request>()
   private var retryJob: Job? = null
   private var retryDelayMillis = 30_000L
   private val serverClients = linkedSetOf<String>().apply {
@@ -122,6 +124,7 @@ internal class FavoriteLiveUpdateCoordinator(
           ) {
             if (action.upload.request.favorites == FavoriteIds.Empty) {
               serverClients.remove(action.upload.request.clientId)
+              lastSuccessfulRequests.remove(action.upload.request.clientId)
               tokenPreferences.markFavoriteClientCleared(action.upload.request.clientId)
             } else {
               serverClients.add(action.upload.request.clientId)
@@ -133,10 +136,10 @@ internal class FavoriteLiveUpdateCoordinator(
             if (currentId == action.upload.request.clientId && freshFavorites == action.upload.request.favorites &&
               syncState.markSynced(currentId, action.upload.localRevision)
             ) {
-              lastSuccessfulRequest = action.upload.request
+              lastSuccessfulRequests[currentId] = action.upload.request
               generation.value++
             } else {
-              lastSuccessfulRequest = null
+              lastSuccessfulRequests.remove(currentId)
               if (currentId == action.upload.request.clientId) snapshot = ClientFavorites(currentId, freshFavorites)
               advanceRevision()
             }
@@ -153,15 +156,15 @@ internal class FavoriteLiveUpdateCoordinator(
   }
 
   /**
-   * Uploads the current favorites and clears subscriptions for superseded clients.
-   * Allows one upload at a time and one attempt per request until a change or retry.
+   * Reconciles the current favorites and clears superseded clients.
+   * Allows one request at a time and one attempt per snapshot until a change or retry.
    */
   private suspend fun uploadIfNeeded() {
     if (inFlight != null) return
     val current = snapshot ?: return
     val candidates = buildList {
-      serverClients.filterTo(this) { it != current.clientId }
       add(current.clientId)
+      serverClients.filterTo(this) { it != current.clientId }
     }.map { clientId ->
       Request(
         clientId,
@@ -170,28 +173,22 @@ internal class FavoriteLiveUpdateCoordinator(
       )
     }
     val request = candidates.firstOrNull { candidate ->
-      candidate != lastSuccessfulRequest && candidate !in attemptedRequests
+      candidate != lastSuccessfulRequests[candidate.clientId] && candidate !in attemptedRequests
     } ?: return
     val localRevision = if (request.clientId == current.clientId) syncState.beginUpload() else -1L
     val upload = Upload(request, localRevision)
 
     inFlight = upload
     attemptedRequests += request
-    if (request != lastSuccessfulRequest) {
-      lastSuccessfulRequest = null
+    if (request.clientId == current.clientId) {
+      lastSuccessfulRequests.remove(current.clientId)
       synced.value = null
     }
     tokenPreferences.markFavoriteUploadAttempt(request.clientId)
     serverClients.add(request.clientId)
     appScope.launch {
       val success = try {
-        dataSource.replace(
-          clientId = request.clientId,
-          teams = request.favorites.teams,
-          matches = request.favorites.matches,
-          players = request.favorites.players,
-          events = request.favorites.events,
-        )
+        reconcile(upload)
       } catch (cancellation: CancellationException) {
         throw cancellation
       } catch (_: Exception) {
@@ -200,6 +197,50 @@ internal class FavoriteLiveUpdateCoordinator(
       actions.send(Action.UploadCompleted(upload, success))
     }
   }
+
+  private suspend fun reconcile(upload: Upload): Boolean {
+    val clientId = upload.request.clientId
+    val desired = upload.request.favorites.asGroups()
+    return when (val result = dataSource.read(clientId)) {
+      FavoriteReadResult.Failure -> false
+      FavoriteReadResult.NotRegistered -> upload.localRevision < 0L ||
+        (dataSource.add(clientId, desired) && verify(clientId, desired, allowNotRegistered = false))
+      is FavoriteReadResult.Found -> {
+        val missing = desired.minus(result.favorites)
+        val stale = result.favorites.minus(desired)
+        val removed = stale.isEmpty() || dataSource.remove(clientId, stale)
+        val added = missing.isEmpty() || dataSource.add(clientId, missing)
+        if (!removed || !added) {
+          false
+        } else if (missing.isEmpty() && stale.isEmpty()) {
+          true
+        } else {
+          verify(clientId, desired, allowNotRegistered = upload.localRevision < 0L)
+        }
+      }
+    }
+  }
+
+  private suspend fun verify(clientId: String, desired: FavoriteGroups, allowNotRegistered: Boolean): Boolean =
+    when (val result = dataSource.read(clientId)) {
+      is FavoriteReadResult.Found -> result.favorites.sameIds(desired)
+      FavoriteReadResult.NotRegistered -> allowNotRegistered && desired.isEmpty()
+      FavoriteReadResult.Failure -> false
+    }
+
+  private fun FavoriteGroups.minus(other: FavoriteGroups): FavoriteGroups = FavoriteGroups(
+    teams = teams.filterNot(other.teams.toSet()::contains),
+    matches = matches.filterNot(other.matches.toSet()::contains),
+    players = players.filterNot(other.players.toSet()::contains),
+    events = events.filterNot(other.events.toSet()::contains),
+  )
+
+  private fun FavoriteGroups.isEmpty(): Boolean =
+    teams.isEmpty() && matches.isEmpty() && players.isEmpty() && events.isEmpty()
+
+  private fun FavoriteGroups.sameIds(other: FavoriteGroups): Boolean =
+    teams.toSet() == other.teams.toSet() && matches.toSet() == other.matches.toSet() &&
+      players.toSet() == other.players.toSet() && events.toSet() == other.events.toSet()
 
   private fun advanceRevision() {
     attemptedRequests.clear()
@@ -221,8 +262,9 @@ internal class FavoriteLiveUpdateCoordinator(
    */
   private fun publishCurrentAck() {
     val current = snapshot
-    synced.value = if (eligibility == LiveUpdateEligibility.Enabled && inFlight == null && current != null &&
-      lastSuccessfulRequest == Request(current.clientId, current.favorites, reconciliationEpoch)
+    synced.value = if (eligibility == LiveUpdateEligibility.Enabled &&
+      inFlight?.request?.clientId != current?.clientId && current != null &&
+      lastSuccessfulRequests[current.clientId] == Request(current.clientId, current.favorites, reconciliationEpoch)
     ) {
       SyncedFavorites(current.clientId, current.favorites)
     } else {
@@ -245,15 +287,19 @@ internal class FavoriteLiveUpdateCoordinator(
       val Empty = FavoriteIds(emptyList(), emptyList(), emptyList(), emptyList())
 
       fun from(snapshot: DirectFavoriteSnapshot): FavoriteIds = FavoriteIds(
-        teams = snapshot.teams.map { it.id }.distinct().sorted(),
-        matches = snapshot.matches.map { it.id }.distinct().sorted(),
-        players = snapshot.players.map { it.id }.distinct().sorted(),
-        events = snapshot.events.map { it.id }.distinct().sorted(),
+        teams = snapshot.teams.map { canonicalId(it.id) }.distinct().sorted(),
+        matches = snapshot.matches.map { canonicalId(it.id) }.distinct().sorted(),
+        players = snapshot.players.map { canonicalId(it.id) }.distinct().sorted(),
+        events = snapshot.events.map { canonicalId(it.id) }.distinct().sorted(),
       )
+
+      private fun canonicalId(id: String): String = id.toLongOrNull()?.takeIf { it > 0 }?.toString() ?: id
     }
+
+    fun asGroups(): FavoriteGroups = FavoriteGroups(teams, matches, players, events)
   }
 
-  /** Favorites to replace on the server for one client. */
+  /** Desired favorites for one client. */
   private data class Request(val clientId: String, val favorites: FavoriteIds, val reconciliationEpoch: Long)
 
   /** The current client favorites confirmed by the server. */

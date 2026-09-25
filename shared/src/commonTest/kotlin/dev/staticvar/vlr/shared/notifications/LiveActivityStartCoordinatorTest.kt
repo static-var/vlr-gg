@@ -16,6 +16,8 @@ import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.remotesource.liveupdates.FavoriteLiveUpdateDataSource
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteGroups
+import dev.staticvar.vlr.remotesource.liveupdates.FavoriteReadResult
 import dev.staticvar.vlr.remotesource.liveupdates.LiveActivityStartDataSource
 import dev.staticvar.vlr.remotesource.liveupdates.LiveActivityStartResult
 import kotlinx.coroutines.CompletableDeferred
@@ -271,16 +273,35 @@ private class FakeLiveUpdateStateProvider(override val platform: PushPlatform) :
 /** Lets tests delay confirmation that favorites reached the server. */
 private class FakeFavoriteSource : FavoriteLiveUpdateDataSource {
   var gate: CompletableDeferred<Unit>? = null
-  override suspend fun replace(
-    clientId: String,
-    teams: List<String>,
-    matches: List<String>,
-    players: List<String>,
-    events: List<String>,
-  ): Boolean {
+  private val server = mutableMapOf<String, FavoriteGroups>()
+
+  override suspend fun read(clientId: String): FavoriteReadResult =
+    server[clientId]?.let(FavoriteReadResult::Found) ?: FavoriteReadResult.NotRegistered
+
+  override suspend fun add(clientId: String, favorites: FavoriteGroups): Boolean {
     gate?.await()
+    val old = server[clientId] ?: emptyGroups()
+    server[clientId] = FavoriteGroups(
+      teams = (old.teams + favorites.teams).distinct(),
+      matches = (old.matches + favorites.matches).distinct(),
+      players = (old.players + favorites.players).distinct(),
+      events = (old.events + favorites.events).distinct(),
+    )
     return true
   }
+
+  override suspend fun remove(clientId: String, favorites: FavoriteGroups): Boolean {
+    val old = server[clientId] ?: emptyGroups()
+    server[clientId] = FavoriteGroups(
+      teams = old.teams - favorites.teams.toSet(),
+      matches = old.matches - favorites.matches.toSet(),
+      players = old.players - favorites.players.toSet(),
+      events = old.events - favorites.events.toSet(),
+    )
+    return true
+  }
+
+  private fun emptyGroups() = FavoriteGroups(emptyList(), emptyList(), emptyList(), emptyList())
 }
 
 /** Records Live Activity start requests with controllable timing and results. */
