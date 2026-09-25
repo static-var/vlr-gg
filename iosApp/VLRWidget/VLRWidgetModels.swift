@@ -38,6 +38,7 @@ enum WidgetMatchStatus: String, Codable {
 
 struct UpcomingMatchesSnapshot: Codable, Equatable {
     let savedAtEpochMillis: Int64
+    let clientId: String
     let hasFavorites: Bool
     let favorites: WidgetFavoriteIDs
     let spoilersHidden: Bool
@@ -58,6 +59,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
 
     init(
         savedAtEpochMillis: Int64,
+        clientId: String = "",
         hasFavorites: Bool,
         favorites: WidgetFavoriteIDs,
         spoilersHidden: Bool,
@@ -65,6 +67,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         theme: WidgetTheme
     ) {
         self.savedAtEpochMillis = savedAtEpochMillis
+        self.clientId = clientId
         self.hasFavorites = hasFavorites
         self.favorites = favorites
         self.spoilersHidden = spoilersHidden
@@ -75,6 +78,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         savedAtEpochMillis = try container.decode(Int64.self, forKey: .savedAtEpochMillis)
+        clientId = try container.decodeIfPresent(String.self, forKey: .clientId) ?? ""
         hasFavorites = try container.decode(Bool.self, forKey: .hasFavorites)
         favorites = try container.decodeIfPresent(WidgetFavoriteIDs.self, forKey: .favorites) ?? .empty
         spoilersHidden = try container.decodeIfPresent(Bool.self, forKey: .spoilersHidden) ?? false
@@ -85,6 +89,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
     func withRefreshedMatches(_ matches: [UpcomingMatch], at date: Date) -> UpcomingMatchesSnapshot {
         UpcomingMatchesSnapshot(
             savedAtEpochMillis: Int64(date.timeIntervalSince1970 * 1_000),
+            clientId: clientId,
             hasFavorites: hasFavorites,
             favorites: favorites,
             spoilersHidden: spoilersHidden,
@@ -99,6 +104,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
     func usingConfiguration(from source: UpcomingMatchesSnapshot) -> UpcomingMatchesSnapshot {
         UpcomingMatchesSnapshot(
             savedAtEpochMillis: savedAtEpochMillis,
+            clientId: source.clientId,
             hasFavorites: source.hasFavorites,
             favorites: source.favorites,
             spoilersHidden: source.spoilersHidden,
@@ -110,6 +116,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
     var sourceSignature: String {
         let fields = [
             String(savedAtEpochMillis),
+            clientId,
             String(hasFavorites),
             String(spoilersHidden),
             favorites.matchIds.sorted().joined(separator: ","),

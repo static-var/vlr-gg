@@ -5,9 +5,8 @@
 package dev.staticvar.vlr.shared.widget
 
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
-import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
+import dev.staticvar.vlr.domain.repository.FavoriteMatchesRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
-import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
@@ -19,16 +18,15 @@ public suspend fun refreshFavoriteWidgetSnapshot(snapshotJson: String): String {
   val koin = KoinPlatform.getKoin()
   val widgetJson = koin.get<Json>(WidgetJson)
   val previous = widgetJson.decodeFromString<UpcomingMatchesSnapshot>(snapshotJson)
-  koin.get<RefreshFavoriteMatches>()()
+  val remoteMatches = koin.get<FavoriteMatchesRepository>().fetch(includeResults = false).getOrThrow()
   val favorites = koin.get<FavoritesRepository>().observeDirectFavorites().first()
-  val schedule = koin.get<FavoriteScheduleRepository>().observeMatches().first()
   val hidden = koin.get<SpoilerPreferencesRepository>().enabled.value
   val now = Clock.System.now().toEpochMilliseconds()
   return widgetJson.encodeToString(
     previous.copy(
       savedAtEpochMillis = now,
       hasFavorites = favorites.hasAny,
-      matches = favoriteWidgetMatches(schedule, now, hidden),
+      matches = favoriteWidgetRemoteMatches(remoteMatches, now, hidden),
       favorites = favorites.widgetFavorites(),
       spoilersHidden = hidden,
     ),
