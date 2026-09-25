@@ -75,6 +75,23 @@ class AndroidLiveMatchNotificationsTest {
   }
 
   @Test
+  fun logoRefreshRejectsAnOlderGenerationExpiredOrFinishedNotification() {
+    val update = requireNotNull(LiveMatchUpdateParser(Json).parse(payload()))
+    val renderer = LiveMatchNotificationRenderer(context)
+    val live = renderer.build(update, scoresHidden = false).apply {
+      extras.putString("dev.staticvar.vlr.logo_generation", "new-score")
+      extras.putLong("dev.staticvar.vlr.logo_deadline", 300_000L)
+    }
+    assertTrue(live.acceptsLogoRefresh("new-score", 1_000L))
+    assertFalse(live.acceptsLogoRefresh("old-score", 1_000L))
+    assertFalse(live.acceptsLogoRefresh("new-score", 300_000L))
+    val finished = renderer.build(update.copy(terminal = true), scoresHidden = false).apply {
+      extras.putAll(live.extras)
+    }
+    assertFalse(finished.acceptsLogoRefresh("new-score", 1_000L))
+  }
+
+  @Test
   fun parserAcceptsTheFcmContractAndRejectsMalformedState() {
     val parser = LiveMatchUpdateParser(KoinPlatform.getKoin().get<Json>())
     val valid = parser.parse(payload(matchId = "991000001", observedAt = 40))
