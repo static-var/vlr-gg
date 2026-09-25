@@ -6,6 +6,7 @@ struct iOSApp: App {
     init() {
         VlrAppShortcuts.updateAppShortcutParameters()
         if #available(iOS 16.2, *) {
+            IosMatchActivityOptOut.shared.start()
             MatchActivityLogoObserver.shared.start()
         }
 
