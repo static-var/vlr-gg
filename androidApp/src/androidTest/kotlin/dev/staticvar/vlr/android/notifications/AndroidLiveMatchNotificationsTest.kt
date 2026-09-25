@@ -92,6 +92,25 @@ class AndroidLiveMatchNotificationsTest {
   }
 
   @Test
+  fun logoRefreshEligibilityFollowsPersistedDismissalGenerationAndTerminalState() {
+    val store = LiveMatchNotificationStateStore(context)
+    val live = update("991000001", 60)
+    store.record(live, "old")
+    assertTrue(store.shouldRefreshLogos(live.matchId, "old"))
+
+    store.record(live.copy(observedAt = 61), "new")
+    assertFalse(store.shouldRefreshLogos(live.matchId, "old"))
+    assertTrue(store.shouldRefreshLogos(live.matchId, "new"))
+
+    store.dismiss(live.matchId)
+    assertFalse(store.shouldRefreshLogos(live.matchId, "new"))
+
+    val final = update("991000002", 60).copy(terminal = true)
+    store.record(final, "final")
+    assertFalse(store.shouldRefreshLogos(final.matchId, "final"))
+  }
+
+  @Test
   fun parserAcceptsTheFcmContractAndRejectsMalformedState() {
     val parser = LiveMatchUpdateParser(KoinPlatform.getKoin().get<Json>())
     val valid = parser.parse(payload(matchId = "991000001", observedAt = 40))

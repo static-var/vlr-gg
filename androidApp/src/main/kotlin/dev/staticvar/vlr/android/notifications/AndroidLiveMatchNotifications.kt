@@ -182,7 +182,9 @@ internal class AndroidLiveMatchNotifications(
   }
 
   private fun currentLogoNotification(matchId: String, generation: String): StatusBarNotification? {
-    if (Build.VERSION.SDK_INT != 36 || !canRequestStart() || spoilerPreferences.enabled.value) return null
+    if (Build.VERSION.SDK_INT != 36 || !canRequestStart() || spoilerPreferences.enabled.value ||
+      !stateStore.shouldRefreshLogos(matchId, generation)
+    ) return null
     return notificationManager.activeNotifications.firstOrNull {
       it.tag == notificationTag(matchId) && it.id == NotificationId &&
         it.notification.acceptsLogoRefresh(generation, SystemClock.elapsedRealtime())
@@ -449,6 +451,12 @@ internal class LiveMatchNotificationStateStore(
     val elapsed = elapsedRealtimeMillis()
     return elapsed >= recordedAt && elapsed - recordedAt < LiveNotificationTimeoutMillis - TimeoutGraceMillis
   }
+
+  /** Authorizes logo work only for the latest live, non-dismissed notification generation. */
+  fun shouldRefreshLogos(matchId: String, generation: String): Boolean =
+    storage.getString(matchId.key(GenerationSuffix), null) == generation &&
+      !storage.getBoolean(matchId.key(DismissedSuffix), false) &&
+      !storage.getBoolean(matchId.key(TerminalSuffix), false)
 
   fun trackedMatchIds(): Set<String> = storage.getStringSet(TrackedMatchesKey, emptySet()).orEmpty().toSet()
 
