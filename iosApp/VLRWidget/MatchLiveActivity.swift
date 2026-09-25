@@ -61,9 +61,12 @@ struct MatchLiveActivityLockScreen: View {
     private var scores: MatchLiveActivityScores {
         MatchLiveActivityScores(state: state, hidden: spoilersHidden)
     }
+    private var mapProgress: MatchLiveActivityMapProgress? {
+        MatchLiveActivityMapProgress(state: state, hidden: spoilersHidden)
+    }
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: mapProgress == nil ? 10 : 7) {
             HStack(spacing: 6) {
                 if !state.terminal {
                     Circle().fill(palette.accent).frame(width: 5, height: 5)
@@ -106,10 +109,13 @@ struct MatchLiveActivityLockScreen: View {
                 .accessibilityElement(children: .combine)
                 team(at: 1)
             }
-            .frame(height: 100)
+            .frame(height: mapProgress == nil ? 100 : 88)
+            if let mapProgress {
+                MatchLiveActivityMapProgressView(progress: mapProgress, state: state, palette: palette)
+            }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.vertical, mapProgress == nil ? 14 : 11)
         .foregroundStyle(palette.ink)
         .accessibilityElement(children: .contain)
         .accessibilityHint(String(localized: "Opens match details"))
@@ -118,11 +124,15 @@ struct MatchLiveActivityLockScreen: View {
     private func team(at index: Int) -> some View {
         let value = state.teams.indices.contains(index) ? state.teams[index] : nil
         return VStack(spacing: 7) {
-            MatchLiveActivityLogo(team: value, size: 58)
+            MatchLiveActivityLogo(
+                team: value, size: 58,
+                fallbackColor: MatchLiveActivityTeamColors.color(for: index, scheme: colorScheme)
+            )
                 .accessibilityHidden(true)
             Text(value?.visibleName ?? "—")
                 .accessibilityLabel(value?.name ?? "—")
                 .font(PrismWidgetFont.regular(13, relativeTo: .caption))
+                .foregroundStyle(MatchLiveActivityTeamColors.color(for: index, scheme: colorScheme))
                 .lineLimit(2)
                 .minimumScaleFactor(0.75)
                 .multilineTextAlignment(.center)
@@ -131,11 +141,96 @@ struct MatchLiveActivityLockScreen: View {
     }
 }
 
+@available(iOS 16.1, *)
+struct MatchLiveActivityMapProgress {
+    enum Segment: Equatable {
+        case wonBy(Int)
+        case active
+        case pending
+    }
+
+    let segments: [Segment]
+    let hidden: Bool
+
+    init?(state: MatchActivityAttributes.ContentState, hidden: Bool) {
+        guard let total = state.total_maps, (1...9).contains(total) else { return nil }
+        self.hidden = hidden
+        segments = (0..<total).map { index in
+            if hidden { return .pending }
+            if state.map_winners.indices.contains(index), let winner = state.map_winners[index] {
+                let matchingTeams = state.teams.indices.filter { state.teams[$0].id == winner }
+                if matchingTeams.count == 1 { return .wonBy(matchingTeams[0]) }
+            }
+            if !state.terminal, state.current_map?.number == index + 1 { return .active }
+            return .pending
+        }
+    }
+}
+
+@available(iOS 16.1, *)
+private struct MatchLiveActivityMapProgressView: View {
+    let progress: MatchLiveActivityMapProgress
+    let state: MatchActivityAttributes.ContentState
+    let palette: PrismWidgetPalette
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        HStack(spacing: 5) {
+            ForEach(progress.segments.indices, id: \.self) { index in
+                let segment = progress.segments[index]
+                Capsule()
+                    .fill(fill(for: segment))
+                    .overlay {
+                        if segment == .active {
+                            Capsule().strokeBorder(palette.accent, lineWidth: 1.2)
+                            Circle().fill(palette.accent).frame(width: 4, height: 4)
+                        }
+                    }
+                    .frame(height: 7)
+                    .accessibilityLabel(label(for: segment, map: index + 1))
+            }
+        }
+        .accessibilityElement(children: .contain)
+    }
+
+    private func fill(for segment: MatchLiveActivityMapProgress.Segment) -> Color {
+        if case .wonBy(let index) = segment {
+            return MatchLiveActivityTeamColors.color(for: index, scheme: colorScheme)
+        }
+        return palette.border.opacity(0.55)
+    }
+
+    private func label(for segment: MatchLiveActivityMapProgress.Segment, map: Int) -> String {
+        switch segment {
+        case .wonBy(let index):
+            return "Map \(map), \(state.teams[index].name) won"
+        case .active:
+            return "Map \(map) in progress"
+        case .pending:
+            return progress.hidden ? "Map \(map), result hidden" : "Map \(map), result unavailable"
+        }
+    }
+}
+
+private enum MatchLiveActivityTeamColors {
+    static func color(for index: Int, scheme: ColorScheme) -> Color {
+        if scheme == .dark {
+            return index == 0
+                ? Color(red: 207.0 / 255.0, green: 178.0 / 255.0, blue: 1)
+                : Color(red: 100.0 / 255.0, green: 218.0 / 255.0, blue: 199.0 / 255.0)
+        }
+        return index == 0
+            ? Color(red: 103.0 / 255.0, green: 58.0 / 255.0, blue: 183.0 / 255.0)
+            : Color(red: 0, green: 105.0 / 255.0, blue: 92.0 / 255.0)
+    }
+}
+
 /// Displays a cached team logo or falls back to team initials.
 @available(iOS 16.1, *)
 private struct MatchLiveActivityLogo: View {
     let team: MatchActivityAttributes.ContentState.Team?
     let size: CGFloat
+    var fallbackColor: Color? = nil
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
@@ -151,7 +246,7 @@ private struct MatchLiveActivityLogo: View {
             } else {
                 Text(team?.logoInitials ?? "—")
                     .font(PrismWidgetFont.regular(size * 0.45, relativeTo: .headline))
-                    .foregroundStyle(colorScheme == .dark ? PrismWidgetPalette.dark.accent : PrismWidgetPalette.light.accent)
+                    .foregroundStyle(fallbackColor ?? (colorScheme == .dark ? PrismWidgetPalette.dark.accent : PrismWidgetPalette.light.accent))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }
