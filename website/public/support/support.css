@@ -1,0 +1,18 @@
+.support-page{max-width:900px;padding-top:60px;padding-bottom:65px}
+.support-intro{max-width:680px;margin-bottom:32px}
+.support-intro h1{font-family:Chakra,Arial,sans-serif;font-weight:400;font-size:clamp(38px,6vw,62px);line-height:1.1;letter-spacing:-1px;margin:0 0 20px}
+.support-intro p{color:#55515a;margin:12px 0}
+.support-page a{color:#5720bd;overflow-wrap:anywhere}
+.support-form{position:relative;padding:32px;border:2px solid #19181b;background:#e8e1f6;box-shadow:8px 8px #19181b}
+.support-pair{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.support-field{min-width:0;margin:0 0 24px}
+.support-field label{display:block;font-size:15px;font-weight:700;margin-bottom:8px}
+.support-field .optional{font-weight:400;color:#55515a}
+.support-field input,.support-field select,.support-field textarea{display:block;width:100%;min-width:0;max-width:100%;border:2px solid #19181b;border-radius:0;background:#fff;color:#19181b;padding:12px;font:inherit;font-size:16px;line-height:1.5}
+.support-field textarea{resize:vertical;min-height:160px}
+.support-field input:focus-visible,.support-field select:focus-visible,.support-field textarea:focus-visible{outline:3px solid #7938ef;outline-offset:3px}
+.support-field .field-help{font-size:13px;color:#49434e;margin:6px 0 10px}
+.form-note{font-size:14px;color:#49434e;margin:0 0 24px}
+.support-form .button{font:inherit;font-size:16px;cursor:pointer}
+.support-email{margin-top:32px;font-size:15px}
+@media(max-width:600px){.support-page{padding-top:38px}.support-form{padding:20px;box-shadow:5px 5px #19181b}.support-pair{grid-template-columns:1fr;gap:0}.support-form .button{width:100%;padding:14px 10px}.support-page .support-intro{margin-bottom:26px}}

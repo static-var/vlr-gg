@@ -7,7 +7,8 @@ valorantesports.staticvar.dev {
     Permissions-Policy "camera=(), microphone=(), geolocation=()"
     Content-Security-Policy "default-src 'none'; style-src 'self'; font-src 'self'; img-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
   }
-  handle /api/testflight-signups {
+  @forms path /api/testflight-signups /api/support-requests
+  handle @forms {
     reverse_proxy valorant-esports-signup:8080 {
       header_up X-Forwarded-For {remote_host}
     }

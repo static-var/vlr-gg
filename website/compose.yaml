@@ -37,6 +37,8 @@ services:
     environment:
       PYTHONDONTWRITEBYTECODE: "1"
       SIGNUP_DB_PATH: /data/signups.sqlite3
+      ADMIN_ORIGIN: https://nexus.taildb5c06.ts.net:10006
+      ADMIN_BIND: 0.0.0.0
     read_only: true
     tmpfs:
       - /tmp:size=8m,mode=1777
@@ -49,6 +51,8 @@ services:
       - ./signup_api:/app:ro
       - ./data:/data
     expose: ["8080"]
+    ports:
+      - "127.0.0.1:18107:8081"
     networks:
       appsnet:
         aliases: [valorant-esports-signup]
