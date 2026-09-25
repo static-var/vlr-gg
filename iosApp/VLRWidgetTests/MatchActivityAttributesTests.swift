@@ -70,30 +70,28 @@ final class MatchActivityAttributesTests: XCTestCase {
         CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, nil)
         let scenarios = [("live", false, false), ("hidden", false, true), ("final", true, false)]
         for (name, terminal, hidden) in scenarios {
-          for scheme in [ColorScheme.light, .dark] {
             let state = MatchActivityAttributes.ContentState(
                 match_id: "3141592653", observed_at: 1790000000, terminal: terminal,
                 teams: [
-                    .init(name: "Test Alpha", img: nil, score: terminal ? 6 : 1, id: "474"),
-                    .init(name: "Test Beta", img: nil, score: terminal ? 5 : 0, id: "624"),
+                    .init(name: "TL", img: nil, score: terminal ? 6 : 1, id: "474"),
+                    .init(name: "PRX", img: nil, score: terminal ? 5 : 0, id: "624"),
                 ],
-                current_map: .init(name: "Test Range", scores: terminal ? [6, 5] : [1, 0], number: 3),
+                current_map: .init(name: "Lotus", scores: terminal ? [6, 5] : [1, 0], number: 3),
                 total_maps: 3, map_winners: terminal ? [] : ["474", "624", nil]
             )
             let content = MatchLiveActivityLockScreen(state: state, spoilersHidden: hidden)
                 .frame(width: 370)
-                .background(PrismWidgetPalette.background(for: scheme))
-                .environment(\.colorScheme, scheme)
+                .background(Color.black)
+                .environment(\.colorScheme, .dark)
                 .environment(\.locale, Locale(identifier: "en_US"))
             let renderer = ImageRenderer(content: content)
             renderer.scale = 3
             let image = try XCTUnwrap(renderer.uiImage)
             XCTAssertLessThanOrEqual(image.size.height, 160)
             let attachment = XCTAttachment(image: image)
-            attachment.name = "live-activity-\(name)-\(scheme)"
+            attachment.name = "live-activity-\(name)-dark"
             attachment.lifetime = .keepAlways
             add(attachment)
-          }
         }
     }
 

@@ -11,6 +11,9 @@ struct MatchLiveActivity: Widget {
                 state: context.state,
                 spoilersHidden: MatchLiveActivitySpoilerPreference.isHidden
             )
+            .environment(\.colorScheme, .dark)
+            .activityBackgroundTint(.black)
+            .activitySystemActionForegroundColor(.white)
             .widgetURL(VLRWidgetContract.matchURL(id: context.attributes.match_id))
         } dynamicIsland: { context in
             let hidden = MatchLiveActivitySpoilerPreference.isHidden
