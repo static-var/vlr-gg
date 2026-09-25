@@ -26,10 +26,10 @@ internal class PushTokenRegistrationUploader(
   private val actions = Channel<Action>(Channel.UNLIMITED)
   private var clientId: String = identityRepository.id.value.toString()
   private var activeToken: RegistrationToken? = null
-  private var disabled = false
+  private var liveUpdatesEnabled: Boolean? = null
   private var inFlight: RegistrationRequest? = null
   private var lastAttempted: RegistrationRequest? = null
-  private var pendingDisable: String? = preferences.pendingTokenDeletionClientId()
+  private var pendingDisable: String? = preferences.pendingTokenDeletionClientId()?.takeUnless { it == clientId }
   private var disableInFlight: String? = null
   private var lastDisableAttempted: String? = null
   private var pendingCleanup: Uuid? = identityRepository.pendingTokenCleanup.value
@@ -37,6 +37,7 @@ internal class PushTokenRegistrationUploader(
   private var lastCleanupAttempted: Uuid? = null
 
   init {
+    preferences.clearPendingTokenDeletion(clientId)
     appScope.launch {
       identityRepository.id.collect { id -> actions.send(Action.IdentityChanged(id.toString())) }
     }
@@ -57,8 +58,8 @@ internal class PushTokenRegistrationUploader(
     actions.trySend(Action.Deactivated)
   }
 
-  fun disableCurrentToken() {
-    actions.trySend(Action.DisableCurrentToken)
+  fun setLiveUpdatesEnabled(enabled: Boolean) {
+    actions.trySend(Action.LiveUpdatesChanged(enabled))
   }
 
   /** Retries a failed token registration or old-token deletion after foregrounding or reconnecting. */
@@ -85,7 +86,6 @@ internal class PushTokenRegistrationUploader(
 
       is Action.TokenReceived -> {
         preferences.storeToken(action.token.platform, action.token.value)
-        disabled = false
         if (pendingDisable != null) lastDisableAttempted = null
         if (activeToken == action.token) return
         activeToken = action.token
@@ -98,16 +98,10 @@ internal class PushTokenRegistrationUploader(
         lastAttempted = null
       }
 
-      Action.DisableCurrentToken -> {
-        disabled = true
-        activeToken = null
+      is Action.LiveUpdatesChanged -> {
+        if (liveUpdatesEnabled == action.enabled) return
+        liveUpdatesEnabled = action.enabled
         lastAttempted = null
-        if (clientId in preferences.possiblyUploadedTokenClients() ||
-          preferences.preferences.value.uploadedClientId == clientId
-        ) {
-          preferences.markTokenDeletionPending(clientId)
-          pendingDisable = clientId
-        }
         advance()
       }
 
@@ -118,11 +112,8 @@ internal class PushTokenRegistrationUploader(
             clientId = action.request.clientId,
             platform = action.request.token.platform,
             token = action.request.token.value,
+            liveUpdates = action.request.liveUpdates,
           )
-        }
-        if (disabled) {
-          preferences.markTokenDeletionPending(action.request.clientId)
-          pendingDisable = action.request.clientId
         }
         inFlight = null
         advance()
@@ -188,10 +179,15 @@ internal class PushTokenRegistrationUploader(
    * Avoids concurrent uploads and repeated attempts for the same request.
    */
   private fun uploadIfNeeded() {
-    if (disabled || pendingDisable != null || disableInFlight != null || cleanupInFlight != null) return
-    val token = activeToken ?: return
-    val request = RegistrationRequest(clientId, token)
-    if (preferences.preferences.value.wasUploaded(clientId, token.platform, token.value)) return
+    if (pendingDisable != null || disableInFlight != null || cleanupInFlight != null) return
+    val mode = liveUpdatesEnabled ?: return
+    val token = activeToken ?: if (!mode) preferences.preferences.value.let { saved ->
+      val platform = saved.tokenPlatform ?: return
+      val value = saved.token ?: return
+      RegistrationToken(platform, value)
+    } else return
+    val request = RegistrationRequest(clientId, token, mode)
+    if (preferences.preferences.value.wasUploaded(clientId, token.platform, token.value, mode)) return
     if (request == inFlight || request == lastAttempted || inFlight != null) return
 
     inFlight = request
@@ -199,7 +195,7 @@ internal class PushTokenRegistrationUploader(
     preferences.markTokenUploadAttempt(request.clientId)
     appScope.launch {
       val success = try {
-        dataSource.register(request.clientId, request.token.platform, request.token.value)
+        dataSource.register(request.clientId, request.token.platform, request.token.value, request.liveUpdates)
       } catch (cancellation: CancellationException) {
         throw cancellation
       } catch (_: Exception) {
@@ -220,7 +216,8 @@ internal class PushTokenRegistrationUploader(
       val value = saved.token ?: return
       RegistrationToken(platform, value)
     }
-    if (!preferences.preferences.value.wasUploaded(clientId, token.platform, token.value)) return
+    val mode = liveUpdatesEnabled ?: preferences.preferences.value.uploadedLiveUpdates ?: return
+    if (!preferences.preferences.value.wasUploaded(clientId, token.platform, token.value, mode)) return
     cleanupInFlight = oldId
     lastCleanupAttempted = oldId
     appScope.launch {
@@ -239,7 +236,7 @@ internal class PushTokenRegistrationUploader(
   private data class RegistrationToken(val platform: PushPlatform, val value: String)
 
   /** Pairs a client identity with the token to register. */
-  private data class RegistrationRequest(val clientId: String, val token: RegistrationToken)
+  private data class RegistrationRequest(val clientId: String, val token: RegistrationToken, val liveUpdates: Boolean)
 
   /** Events processed in order by the token uploader. */
   private sealed interface Action {
@@ -258,7 +255,7 @@ internal class PushTokenRegistrationUploader(
     /** Reports an old-token deletion response. */
     data class CleanupCompleted(val clientId: Uuid, val success: Boolean) : Action
 
-    data object DisableCurrentToken : Action
+    data class LiveUpdatesChanged(val enabled: Boolean) : Action
 
     data class DisableCompleted(val clientId: String, val success: Boolean) : Action
 

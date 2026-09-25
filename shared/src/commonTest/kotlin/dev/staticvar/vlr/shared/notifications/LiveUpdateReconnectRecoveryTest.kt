@@ -203,6 +203,7 @@ private class ReconnectHarness(scope: CoroutineScope) {
   )
 
   init {
+    uploader.setLiveUpdatesEnabled(true)
     LiveUpdateReconnectRecovery(network, uploader, favoriteSync, scope)
   }
 }
@@ -234,7 +235,7 @@ private class ReconnectTokenSource : PushTokenRegistrationDataSource {
   var succeeds = true
   var deleteSucceeds = true
 
-  override suspend fun register(clientId: String, platform: PushPlatform, token: String): Boolean {
+  override suspend fun register(clientId: String, platform: PushPlatform, token: String, liveUpdates: Boolean): Boolean {
     registrations += token
     if (registrations.size == 1) firstResponse?.await()
     return succeeds

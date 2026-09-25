@@ -20,10 +20,10 @@ import kotlinx.serialization.Serializable
 internal class PushTokenRegistrationDataSourceImpl(
   private val client: HttpClient,
 ) : PushTokenRegistrationDataSource {
-  override suspend fun register(clientId: String, platform: PushPlatform, token: String): Boolean = try {
+  override suspend fun register(clientId: String, platform: PushPlatform, token: String, liveUpdates: Boolean): Boolean = try {
     client.put("/api/v1/live-updates/clients/$clientId/token") {
       contentType(ContentType.Application.Json)
-      setBody(PushTokenRegistrationRequest(token = token, platform = platform.wireValue))
+      setBody(PushTokenRegistrationRequest(token = token, platform = platform.wireValue, liveUpdates = liveUpdates))
     }.status.isSuccess()
   } catch (cancellation: CancellationException) {
     throw cancellation
@@ -46,6 +46,7 @@ internal class PushTokenRegistrationDataSourceImpl(
 private data class PushTokenRegistrationRequest(
   val token: String,
   val platform: String,
+  @kotlinx.serialization.SerialName("live_updates") val liveUpdates: Boolean,
 )
 
 private val PushPlatform.wireValue: String
