@@ -1,4 +1,5 @@
 import http.client
+from contextlib import closing
 import os
 import sqlite3
 import subprocess
@@ -47,7 +48,7 @@ class SignupHandlerTest(unittest.TestCase):
         return result
 
     def emails(self):
-        with sqlite3.connect(self.database) as connection:
+        with closing(sqlite3.connect(self.database)) as connection, connection:
             return connection.execute("SELECT email FROM signups").fetchall()
 
     def test_valid_signup_persists_once_and_redirects(self):
@@ -80,7 +81,7 @@ class SignupHandlerTest(unittest.TestCase):
     def test_export_includes_only_uninvited_email_addresses(self):
         self.post({"email": "first@example.com"})
         self.post({"email": "second@example.com"})
-        with sqlite3.connect(self.database) as connection:
+        with closing(sqlite3.connect(self.database)) as connection, connection:
             connection.execute(
                 "UPDATE signups SET invited_at = 1 WHERE email = ?",
                 ("first@example.com",),
