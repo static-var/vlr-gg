@@ -22,6 +22,7 @@ import android.text.style.ForegroundColorSpan
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -94,7 +95,7 @@ internal class AndroidLiveMatchNotifications(
    * Records the update after posting succeeds so a failed notification can be retried.
    */
   fun handle(data: Map<String, String>) {
-    synchronized(lock) {
+    val logoWork = synchronized(lock) {
       if (!AndroidLiveNotificationAvailability.isAvailable(appContext)) {
         LiveNotificationDiagnostics.skipped("device_unavailable")
         return
@@ -113,11 +114,16 @@ internal class AndroidLiveMatchNotifications(
         return
       }
 
+      val scoresHidden = spoilerPreferences.enabled.value
+      val supportsLogos = Build.VERSION.SDK_INT == 36 && !scoresHidden && update.mapProgress() != null
+      val logos = if (supportsLogos) logoLoader.cached(update) else null
       val generation = UUID.randomUUID().toString()
       val notification = try {
-        val scoresHidden = spoilerPreferences.enabled.value
-        val logos = if (!scoresHidden && update.mapProgress() != null) teamLogos(update) else null
-        renderer.build(update, scoresHidden, logos = logos, generation = generation)
+        renderer.build(update, scoresHidden, logos = logos, generation = generation).apply {
+          extras.putString(LogoGenerationKey, generation)
+          extras.putString(LogoSnapshotKey, data["state"])
+          extras.putLong(LogoDeadlineKey, SystemClock.elapsedRealtime() + timeoutAfter)
+        }
       } catch (error: Exception) {
         if (error is CancellationException) throw error
         LiveNotificationDiagnostics.failed("render", error)
@@ -145,6 +151,41 @@ internal class AndroidLiveMatchNotifications(
           )
         }
       }
+      if (supportsLogos && (logos?.first == null || logos?.second == null)) update.matchId to generation else null
+    }
+    logoWork?.let { (matchId, generation) ->
+      runCatching { LiveMatchLogoWorker.enqueue(appContext, matchId, generation) }
+    }
+  }
+
+  /**
+   * Fetches outside the posting lock, then enriches only the notification that requested the logos.
+   * A dismissal, new score, final result, or preference change makes this work obsolete.
+   */
+  suspend fun refreshLogos(matchId: String, generation: String) {
+    if (Build.VERSION.SDK_INT != 36) return
+    val update = synchronized(lock) {
+      val notification = currentLogoNotification(matchId, generation)?.notification ?: return
+      val state = notification.extras.getString(LogoSnapshotKey) ?: return
+      parser.parse(mapOf("type" to "match-live-v1", "state" to state))
+        ?.takeIf { !it.terminal && it.mapProgress() != null } ?: return
+    }
+    val logos = logoLoader.load(update) ?: return
+    if (logos.first == null && logos.second == null) return
+    synchronized(lock) {
+      val current = currentLogoNotification(matchId, generation)?.notification ?: return
+      val builder = Notification.Builder.recoverBuilder(appContext, current)
+        .setTimeoutAfter(current.extras.getLong(LogoDeadlineKey) - SystemClock.elapsedRealtime())
+      renderer.applyProgressStyle(builder, update, logos)
+      notificationManager.notify(notificationTag(matchId), NotificationId, builder.build())
+    }
+  }
+
+  private fun currentLogoNotification(matchId: String, generation: String): StatusBarNotification? {
+    if (Build.VERSION.SDK_INT != 36 || !canRequestStart() || spoilerPreferences.enabled.value) return null
+    return notificationManager.activeNotifications.firstOrNull {
+      it.tag == notificationTag(matchId) && it.id == NotificationId &&
+        it.notification.acceptsLogoRefresh(generation, SystemClock.elapsedRealtime())
     }
   }
 
@@ -178,12 +219,6 @@ internal class AndroidLiveMatchNotifications(
       if (!matchId.isValidMatchId() || !stateStore.shouldRememberDeletion(matchId, generation)) return
       dismiss(matchId)
     }
-  }
-
-  /** Loads both team logos only when API 36 can show them beside the progress bar. */
-  private fun teamLogos(update: LiveMatchUpdate): TeamLogos? {
-    if (Build.VERSION.SDK_INT != 36) return null
-    return TeamLogos(logoLoader.load(update.teams[0].imageUrl), logoLoader.load(update.teams[1].imageUrl))
   }
 
   private fun canPostNotifications(): Boolean {
@@ -465,6 +500,11 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
       LiveMatchTeamColors(Color.rgb(103, 58, 183), Color.rgb(0, 105, 92), Color.rgb(117, 117, 125))
     }
 
+  @RequiresApi(36)
+  fun applyProgressStyle(builder: Notification.Builder, update: LiveMatchUpdate, logos: TeamLogos) {
+    Api36Notification.applyProgressStyle(builder, requireNotNull(update.mapProgress()), colors, logos)
+  }
+
   /**
    * Builds a live or final notification with match actions and optional hidden scores.
    * Uses the native progress or metric style when the Android version supports it.
@@ -726,3 +766,13 @@ private data class LiveMatchTeamColors(val first: Int, val second: Int, val neut
 private fun String.withColor(color: Int): CharSequence = SpannableString(this).apply {
   setSpan(ForegroundColorSpan(color), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 }
+
+private const val LogoGenerationKey = "dev.staticvar.vlr.logo_generation"
+private const val LogoSnapshotKey = "dev.staticvar.vlr.logo_snapshot"
+private const val LogoDeadlineKey = "dev.staticvar.vlr.logo_deadline"
+
+/** Rejects obsolete image results without extending a notification's original lifetime. */
+internal fun Notification.acceptsLogoRefresh(generation: String, elapsedRealtime: Long): Boolean =
+  extras.getString(LogoGenerationKey) == generation &&
+    extras.getLong(LogoDeadlineKey) > elapsedRealtime &&
+    flags and Notification.FLAG_ONGOING_EVENT != 0

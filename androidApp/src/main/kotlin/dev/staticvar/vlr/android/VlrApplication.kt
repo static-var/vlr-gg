@@ -15,6 +15,7 @@ import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.androidNetworkModule
 import dev.staticvar.vlr.shared.telemetry.initializeSentryTelemetry
+import dev.staticvar.vlr.sharedui.image.initializeSharedImageLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -35,6 +36,7 @@ class VlrApplication : Application() {
   override fun onCreate() {
     super.onCreate()
     configureLeakDetection()
+    initializeSharedImageLoader()
     initializeAppKoin(
       appDeclaration = {
         androidContext(this@VlrApplication)

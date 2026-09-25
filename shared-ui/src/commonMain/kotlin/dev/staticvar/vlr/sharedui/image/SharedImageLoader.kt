@@ -7,6 +7,7 @@ package dev.staticvar.vlr.sharedui.image
 import androidx.compose.runtime.Composable
 import coil3.ImageLoader
 import coil3.PlatformContext
+import coil3.SingletonImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
@@ -22,6 +23,11 @@ import coil3.request.crossfade
 @Composable
 public fun ProvideSharedImageLoader() {
   setSingletonImageLoaderFactory(::createSharedImageLoader)
+}
+
+/** Initializes the same bounded image caches for work that runs before the first UI composition. */
+public fun initializeSharedImageLoader() {
+  SingletonImageLoader.setSafe(::createSharedImageLoader)
 }
 
 private fun createSharedImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context)
