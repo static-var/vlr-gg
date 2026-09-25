@@ -45,7 +45,6 @@
     <string name="flavour_mocha">Mocha</string>
     <string name="for_the_matches_you_care_about">Önemsediğiniz maçlar için.</string>
     <string name="frequently">Sık sık</string>
-    <string name="from_the_scene_for_the_scene">Sahnenin içinden, sahne için.</string>
     <string name="help_support_continued_development">Geliştirmenin sürmesine destek olun.</string>
     <string name="how_val_esports_handles_your_data">Val Esports'un verilerinizi nasıl işlediği.</string>
     <string name="light">Açık</string>
@@ -54,7 +53,6 @@
     <string name="make_it_yours">Kendinize göre ayarlayın.</string>
     <string name="mascot">Maskot</string>
     <string name="mascot_frequency_accessibility">%1$s, ekran başına yüzde %2$d olasılık</string>
-    <string name="about_data_attribution">Maç kapsamı, istatistikler ve haberler VLR.gg'den gelir. Bu, VLR.gg veya Riot Games ile bağlantısı olmayan, resmî olmayan bir hayran projesidir.</string>
     <string name="mode">Mod</string>
     <string name="new_in_val_esports">Val Esports'taki yenilikler</string>
     <string name="none">Yok</string>
@@ -88,7 +86,6 @@
     <string name="theme_console">Konsol</string>
     <string name="using_the_app_and_its_content">Uygulamayı ve içeriğini kullanma.</string>
     <string name="visit_val_esports">Val Esports'u ziyaret et</string>
-    <string name="visit_vlr_gg">VLR.gg'yi ziyaret et</string>
     <string name="website_policies">Web sitesi ve politikalar</string>
     <string name="what_s_new">Yenilikler neler?</string>
     <string name="write_feedback">Geri bildirim yaz</string>

@@ -45,7 +45,6 @@
     <string name="flavour_mocha">모카</string>
     <string name="for_the_matches_you_care_about">관심 있는 경기를 한눈에.</string>
     <string name="frequently">자주</string>
-    <string name="from_the_scene_for_the_scene">현장에서, 현장을 위해.</string>
     <string name="help_support_continued_development">계속 개발할 수 있도록 후원해 주세요.</string>
     <string name="how_val_esports_handles_your_data">Val Esports가 데이터를 처리하는 방식입니다.</string>
     <string name="light">라이트</string>
@@ -54,7 +53,6 @@
     <string name="make_it_yours">나만의 앱으로.</string>
     <string name="mascot">마스코트</string>
     <string name="mascot_frequency_accessibility">%1$s, 화면마다 %2$d퍼센트 확률</string>
-    <string name="about_data_attribution">경기 중계, 통계, 뉴스는 VLR.gg에서 제공됩니다. 이 앱은 비공식 팬 프로젝트이며 VLR.gg 또는 Riot Games와 관련이 없습니다.</string>
     <string name="mode">모드</string>
     <string name="new_in_val_esports">Val Esports의 새로운 기능</string>
     <string name="none">없음</string>
@@ -88,7 +86,6 @@
     <string name="theme_console">콘솔</string>
     <string name="using_the_app_and_its_content">앱과 콘텐츠 이용에 관한 내용입니다.</string>
     <string name="visit_val_esports">Val Esports 방문</string>
-    <string name="visit_vlr_gg">VLR.gg 방문</string>
     <string name="website_policies">웹사이트 및 정책</string>
     <string name="what_s_new">새로운 소식</string>
     <string name="write_feedback">의견 작성</string>

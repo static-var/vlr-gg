@@ -47,7 +47,6 @@
     <string name="flavour_mocha">Mocha</string>
     <string name="for_the_matches_you_care_about">Pour les matchs qui comptent pour vous.</string>
     <string name="frequently">Souvent</string>
-    <string name="from_the_scene_for_the_scene">Par la communauté, pour la communauté.</string>
     <string name="help_support_continued_development">Aidez à poursuivre le développement.</string>
     <string name="how_val_esports_handles_your_data">Comment Val Esports traite vos données.</string>
     <string name="light">Clair</string>
@@ -56,7 +55,6 @@
     <string name="make_it_yours">À votre image.</string>
     <string name="mascot">Mascotte</string>
     <string name="mascot_frequency_accessibility">%1$s, %2$d pour cent de chances par écran</string>
-    <string name="about_data_attribution">La couverture des matchs, les statistiques et les actualités proviennent de VLR.gg. Ce projet de fans non officiel n’est affilié ni à VLR.gg ni à Riot Games.</string>
     <string name="mode">Mode</string>
     <string name="new_in_val_esports">Nouveautés de Val Esports</string>
     <string name="none">Aucun</string>
@@ -90,7 +88,6 @@
     <string name="theme_console">Console</string>
     <string name="using_the_app_and_its_content">Utilisation de l’application et de son contenu.</string>
     <string name="visit_val_esports">Visiter Val Esports</string>
-    <string name="visit_vlr_gg">Visiter VLR.gg</string>
     <string name="website_policies">Site web et politiques</string>
     <string name="what_s_new">Quoi de neuf ?</string>
     <string name="write_feedback">Écrire un commentaire</string>
