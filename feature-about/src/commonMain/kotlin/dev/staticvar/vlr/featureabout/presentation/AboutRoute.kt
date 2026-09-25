@@ -203,19 +203,19 @@ private fun AboutProjectLinks(onFeedback: () -> Unit) {
     AboutLink(
       title = stringResource(Res.string.report_an_issue),
       description = stringResource(Res.string.something_off_help_us_get_it_right),
-      url = "https://github.com/static-var/vlr-gg/issues",
+      url = AppWebsite.Issues,
     )
     PrismDivider()
     AboutLink(
       title = stringResource(Res.string.app_source_code),
       description = stringResource(Res.string.read_the_code_or_contribute_on_github),
-      url = "https://github.com/static-var/vlr-gg",
+      url = AppWebsite.Source,
     )
     PrismDivider()
     AboutLink(
       title = stringResource(Res.string.backend_source_code),
       description = stringResource(Res.string.explore_the_service_that_powers_the_app),
-      url = "https://github.com/akhilnarang/vlrgg-scraper",
+      url = AppWebsite.BackendSource,
     )
   }
 }
