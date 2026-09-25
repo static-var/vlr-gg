@@ -102,6 +102,44 @@ class LiveActivityStartCoordinatorTest {
   }
 
   @Test
+  fun explicitIosOptOutClearsStartHistoryAndAllowsReenable() = runTest {
+    val harness = StartHarness(backgroundScope, testScheduler, PushPlatform.Ios)
+    harness.favorites.value = DirectFavoriteSnapshot(matches = listOf(DirectFavorite.Match("123", "One", "")))
+    harness.schedule.value = listOf(live("123"))
+    harness.registerToken("one")
+    harness.enable()
+    runCurrent()
+    assertEquals(1, harness.startSource.requests.size)
+    assertEquals(true, LiveActivityStartLedger(harness.storage, Json.Default).contains(harness.clientId, "123"))
+
+    harness.start.onExplicitOptOut()
+    runCurrent()
+    assertEquals(false, LiveActivityStartLedger(harness.storage, Json.Default).contains(harness.clientId, "123"))
+    harness.start.retryRejected()
+    runCurrent()
+    assertEquals(1, harness.startSource.requests.size)
+
+    harness.enable()
+    runCurrent()
+    assertEquals(2, harness.startSource.requests.size)
+  }
+
+  @Test
+  fun unchangedAndroidTokenNeedsTrueServerAcknowledgementBeforeStartingLiveFavorite() = runTest {
+    val harness = StartHarness(backgroundScope, testScheduler, PushPlatform.Android)
+    harness.favorites.value = DirectFavoriteSnapshot(matches = listOf(DirectFavorite.Match("123", "One", "")))
+    harness.schedule.value = listOf(live("123"))
+    harness.registerToken("same-token", liveUpdates = false)
+    harness.enable()
+    runCurrent()
+    assertEquals(emptyList(), harness.startSource.requests)
+
+    harness.registerToken("same-token", liveUpdates = true)
+    runCurrent()
+    assertEquals(listOf(harness.clientId to "123"), harness.startSource.requests)
+  }
+
+  @Test
   fun observedActivityAndAndroidPlatformGatePreventDuplicateStarts() = runTest {
     val harness = StartHarness(backgroundScope, testScheduler, PushPlatform.Android)
     harness.favorites.value = DirectFavoriteSnapshot(events = listOf(DirectFavorite.Event("44", "Event", "")))
@@ -249,9 +287,9 @@ private class StartHarness(
     start.onEligibilityChanged(LiveUpdateEligibility.Enabled)
   }
 
-  fun registerToken(value: String) {
+  fun registerToken(value: String, liveUpdates: Boolean = true) {
     tokenPreferences.storeToken(provider.platform, value)
-    tokenPreferences.markUploaded(clientId, provider.platform, value)
+    tokenPreferences.markUploaded(clientId, provider.platform, value, liveUpdates)
   }
 }
 

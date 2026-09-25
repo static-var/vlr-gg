@@ -37,6 +37,11 @@ internal class LiveActivityStartLedger(
     persist()
   }
 
+  fun clearAttempts(clientId: String) {
+    attempts = attempts.filterNot { it.clientId == clientId }
+    persist()
+  }
+
   private fun persist() {
     storage.putString(Key, json.encodeToString(attempts))
   }

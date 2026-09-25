@@ -26,6 +26,23 @@ class LiveMatchNotificationSettingsTest {
   }
 
   @Test
+  fun preferenceCallbackRunsAfterPersistingOptOut() {
+    val repository = LiveMatchNotificationPreferencesRepository(MapSettings())
+    val values = mutableListOf<Boolean>()
+    val controller = LiveMatchNotificationSettingsController(
+      repository,
+      FakeProvider().apply { requiresPermission = false },
+      onEnabledChanged = { enabled ->
+        assertEquals(enabled, repository.preferences.value.enabled)
+        values += enabled
+      },
+    )
+    controller.setEnabled(true)
+    controller.setEnabled(false)
+    assertEquals(listOf(true, false), values)
+  }
+
+  @Test
   fun optingInRequestsOnceAndDenialPreservesTheChoiceWithoutReprompting() {
     val provider = FakeProvider()
     val controller = LiveMatchNotificationSettingsController(LiveMatchNotificationPreferencesRepository(MapSettings()), provider)

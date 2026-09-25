@@ -27,6 +27,7 @@ public class LiveMatchNotificationSettingsController(
   private val repository: LiveMatchNotificationPreferencesRepository,
   private val provider: NotificationPermissionProvider,
   private val onAuthorizationChanged: (NotificationAuthorization) -> Unit = {},
+  private val onEnabledChanged: (Boolean) -> Unit = {},
 ) {
   public val preferences: StateFlow<LiveMatchNotificationPreferences> = repository.preferences
   public val access: StateFlow<LiveMatchNotificationAccess>
@@ -56,6 +57,7 @@ public class LiveMatchNotificationSettingsController(
    */
   public fun setEnabled(enabled: Boolean) {
     repository.setEnabled(enabled)
+    onEnabledChanged(enabled)
     if (enabled && access.value.supportsNotifications) {
       if (!access.value.requiresNotificationPermission) {
         refresh()
