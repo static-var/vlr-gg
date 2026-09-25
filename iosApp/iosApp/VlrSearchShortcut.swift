@@ -4,8 +4,8 @@ import UIKit
 import shared
 
 struct OpenVlrIntent: AppIntent {
-    static let title: LocalizedStringResource = "Open VLR"
-    static let description = IntentDescription("Open Val Esports, also known as VLR.")
+    static let title: LocalizedStringResource = "Open Val Esports"
+    static let description = IntentDescription("Open Val Esports.")
     static let openAppWhenRun = true
 
     func perform() async throws -> some IntentResult {
@@ -146,8 +146,8 @@ struct VlrAppShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: OpenVlrIntent(),
-            phrases: ["Open VLR in \(.applicationName)"],
-            shortTitle: "Open VLR",
+            phrases: ["Open \(.applicationName)"],
+            shortTitle: "Open Val Esports",
             systemImageName: "play.circle"
         )
         AppShortcut(

@@ -166,32 +166,32 @@
         "tr" : { "stringUnit" : { "state" : "translated", "value" : "Favorilerinizdeki sıradaki canlı veya yaklaşan maçı açın." } }
       }
     },
-    "Open Val Esports, also known as VLR." : {
+    "Open Val Esports." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffne Val Esports, auch als VLR bekannt." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Val Esports, also known as VLR." } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Abre Val Esports, también conocido como VLR." } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouvrez Val Esports, également connu sous le nom de VLR." } },
-        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports खोलें, जिसे VLR भी कहा जाता है।" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "VLR이라고도 하는 Val Esports를 엽니다." } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abra o Val Esports, também conhecido como VLR." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Откройте Val Esports, также известный как VLR." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "VLR olarak da bilinen Val Esports'u açın." } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffne Val Esports." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Val Esports." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Abre Val Esports." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouvrez Val Esports." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports खोलें।" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports를 엽니다." } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abra o Val Esports." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Откройте Val Esports." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports'u açın." } }
       }
     },
-    "Open VLR" : {
+    "Open Val Esports" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "VLR öffnen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open VLR" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Abrir VLR" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouvrir VLR" } },
-        "hi" : { "stringUnit" : { "state" : "translated", "value" : "VLR खोलें" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "VLR 열기" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o VLR" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть VLR" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "VLR'yi aç" } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Val Esports" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Val Esports" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouvrir Val Esports" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports खोलें" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports 열기" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Val Esports" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть Val Esports" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports'u aç" } }
       }
     },
     "Set Spoiler Protection" : {
