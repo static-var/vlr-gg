@@ -24,7 +24,7 @@ public fun ProvideSharedImageLoader() {
   setSingletonImageLoaderFactory(::createSharedImageLoader)
 }
 
-private fun createSharedImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context)
+public fun createSharedImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context)
   .crossfade(enable = true)
   .memoryCache {
     MemoryCache.Builder()

@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.android
 
 import android.app.Application
+import coil3.SingletonImageLoader
 import dev.staticvar.vlr.android.notifications.AndroidMatchAlertNotifications
 import dev.staticvar.vlr.android.notifications.AndroidLiveMatchNotifications
 import dev.staticvar.vlr.android.notifications.AndroidLiveTopicSubscriptions
@@ -15,6 +16,7 @@ import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import dev.staticvar.vlr.shared.di.initializeAppKoin
 import dev.staticvar.vlr.shared.network.androidNetworkModule
 import dev.staticvar.vlr.shared.telemetry.initializeSentryTelemetry
+import dev.staticvar.vlr.sharedui.image.createSharedImageLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -54,6 +56,7 @@ class VlrApplication : Application() {
       enabled = BuildConfig.SENTRY_ENABLED,
     )
     val scope = getKoin().get<CoroutineScope>(DispatcherQualifiers.AppScope)
+    SingletonImageLoader.setSafe { context -> createSharedImageLoader(context) }
     val notificationPreferences = getKoin().get<LiveMatchNotificationPreferencesRepository>()
     val spoilerPreferences = getKoin().get<SpoilerPreferencesRepository>()
     liveMatchNotifications = AndroidLiveMatchNotifications(
@@ -61,6 +64,7 @@ class VlrApplication : Application() {
       json = getKoin().get(),
       preferences = notificationPreferences,
       spoilerPreferences = spoilerPreferences,
+      logoScope = scope,
     )
     matchAlertNotifications = AndroidMatchAlertNotifications(
       context = this,

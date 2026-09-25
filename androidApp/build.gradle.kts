@@ -182,6 +182,7 @@ dependencies {
 
   // Activity Compose
   implementation(libs.activity.compose)
+  implementation(libs.coil.compose)
   implementation(libs.glance.appwidget)
   implementation(libs.work.runtime)
   implementation(libs.splashscreen)

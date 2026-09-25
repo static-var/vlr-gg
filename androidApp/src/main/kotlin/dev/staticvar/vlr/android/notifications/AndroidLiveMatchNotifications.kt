@@ -13,14 +13,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.Color
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
+import android.graphics.Typeface
+import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -33,8 +35,12 @@ import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepositor
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import java.util.UUID
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -55,16 +61,20 @@ internal class AndroidLiveMatchNotifications(
   json: Json,
   private val preferences: LiveMatchNotificationPreferencesRepository,
   private val spoilerPreferences: SpoilerPreferencesRepository,
+  private val logoScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+  internal val logoCache: LiveMatchLogoCache = LiveMatchLogoCache(context.applicationContext),
+  private val teamLogos: TeamLogoDirectory = TeamLogoDirectory(context, json),
 ) : DismissedLiveUpdateProvider {
   override val platform: PushPlatform = PushPlatform.Android
   private val appContext = context.applicationContext
   private val notificationManager = appContext.getSystemService(NotificationManager::class.java)
   private val parser = LiveMatchUpdateParser(json)
   private val stateStore = LiveMatchNotificationStateStore(appContext)
-  private val renderer = LiveMatchNotificationRenderer(appContext)
+  private val renderer = LiveMatchNotificationRenderer(appContext, logoCache)
   private val lock = Any()
   private val dismissed = MutableStateFlow(stateStore.dismissedMatchIds())
   override val dismissedMatchIds = dismissed.asStateFlow()
+  private val lastHandledUpdates = mutableMapOf<String, LiveMatchUpdate>()
 
   override fun restoreDismissedMatch(matchId: String): Boolean = synchronized(lock) {
     if (!canRequestStart() || !stateStore.restore(matchId)) return@synchronized false
@@ -78,7 +88,6 @@ internal class AndroidLiveMatchNotifications(
       dismissed.value = stateStore.dismissedMatchIds()
     }
   }
-
 
   override fun canRequestStart(): Boolean = AndroidLiveNotificationAvailability.isAvailable(appContext) &&
     preferences.preferences.value.enabled && canPostNotifications()
@@ -111,9 +120,11 @@ internal class AndroidLiveMatchNotifications(
         return
       }
 
+      lastHandledUpdates[update.matchId] = update
+
       val generation = UUID.randomUUID().toString()
       val notification = try {
-        renderer.build(update, spoilerPreferences.enabled.value, generation = generation)
+        renderer.build(update.withTeamLogos(), spoilerPreferences.enabled.value, generation = generation)
       } catch (error: Exception) {
         if (error is CancellationException) throw error
         LiveNotificationDiagnostics.failed("render", error)
@@ -141,11 +152,53 @@ internal class AndroidLiveMatchNotifications(
           )
         }
       }
+
+      if (!update.terminal) {
+        logoScope.launch {
+          val directoryChanged = teamLogos.refresh()
+          val teams = update.withTeamLogos().teams
+          val t1Url = teams.getOrNull(0)?.imageUrl
+          val t2Url = teams.getOrNull(1)?.imageUrl
+          val needsLogos = listOf(t1Url, t2Url).any { !it.isNullOrBlank() && !logoCache.hasLogo(it) }
+          val loaded = needsLogos && logoCache.loadAndCacheLogos(t1Url, t2Url)
+          if (directoryChanged || loaded) {
+            repostIfCurrent(update.matchId, update.observedAt)
+          }
+        }
+      } else {
+        lastHandledUpdates.remove(update.matchId)
+      }
     }
   }
 
+  private fun repostIfCurrent(matchId: String, observedAt: Long) {
+    synchronized(lock) {
+      if (!AndroidLiveNotificationAvailability.isAvailable(appContext)) return
+      if (!preferences.preferences.value.enabled) return
+      if (matchId in stateStore.dismissedMatchIds()) return
+      val currentUpdate = lastHandledUpdates[matchId] ?: return
+      if (currentUpdate.observedAt != observedAt || currentUpdate.terminal) return
+
+      val newGeneration = UUID.randomUUID().toString()
+      val notification = try {
+        renderer.build(currentUpdate.withTeamLogos(), spoilerPreferences.enabled.value, generation = newGeneration)
+      } catch (_: Exception) {
+        return
+      }
+      try {
+        notificationManager.notify(notificationTag(matchId), NotificationId, notification)
+        stateStore.record(currentUpdate, newGeneration)
+      } catch (_: Exception) {
+      }
+    }
+  }
+
+  private fun LiveMatchUpdate.withTeamLogos(): LiveMatchUpdate =
+    copy(teams = teams.map { team -> teamLogos.logoUrl(team.id)?.let { team.copy(imageUrl = it) } ?: team })
+
   fun cancelAll() {
     synchronized(lock) {
+      lastHandledUpdates.clear()
       stateStore.trackedMatchIds().forEach { notificationManager.cancel(notificationTag(it), NotificationId) }
     }
   }
@@ -157,6 +210,7 @@ internal class AndroidLiveMatchNotifications(
   fun dismiss(matchId: String) {
     synchronized(lock) {
       if (!matchId.isValidMatchId()) return
+      lastHandledUpdates.remove(matchId)
       stateStore.dismiss(matchId)
       dismissed.value = stateStore.dismissedMatchIds()
       notificationManager.cancel(notificationTag(matchId), NotificationId)
@@ -444,9 +498,15 @@ internal class LiveMatchNotificationStateStore(
 }
 
 /** Builds live and final match notifications while respecting hidden scores. */
-internal class LiveMatchNotificationRenderer(private val context: Context) {
+internal class LiveMatchNotificationRenderer(
+  private val context: Context,
+  private val logoCache: LiveMatchLogoCache = LiveMatchLogoCache(context.applicationContext),
+) {
+  private val night: Boolean
+    get() = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
   private val colors: LiveMatchTeamColors
-    get() = if (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
+    get() = if (night) {
       LiveMatchTeamColors(Color.rgb(207, 178, 255), Color.rgb(100, 218, 199), Color.rgb(158, 158, 166))
     } else {
       LiveMatchTeamColors(Color.rgb(103, 58, 183), Color.rgb(0, 105, 92), Color.rgb(117, 117, 125))
@@ -454,7 +514,7 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
 
   /**
    * Builds a live or final notification with match actions and optional hidden scores.
-   * Uses the native progress or metric style when the Android version supports it.
+   * Uses the native progress style when the Android version supports it.
    */
   fun build(
     update: LiveMatchUpdate,
@@ -486,6 +546,12 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
         ).build(),
       )
 
+    val (t1, t2) = update.teams
+    val largeLogo = logoCache.getCompositeIcon(t1.imageUrl, t2.imageUrl, night) ?: logoCache.getStartIcon(t1.imageUrl, night)
+    if (largeLogo != null) {
+      builder.setLargeIcon(Icon.createWithBitmap(largeLogo))
+    }
+
     if (update.terminal) {
       applyFinal(builder, update, scoresHidden)
       return builder.setOngoing(false).setAutoCancel(true).build()
@@ -504,7 +570,7 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
         ).build(),
       )
     if (sdkInt >= 36) {
-      builder.setShortCriticalText(shortCriticalText(update, scoresHidden))
+      applyChip(builder, update, scoresHidden)
       if (sdkInt >= 37) {
         Api37Notification.applyPromotedOngoing(builder)
       } else {
@@ -514,89 +580,181 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
     return builder.build()
   }
 
-  private fun applyLive(builder: Notification.Builder, update: LiveMatchUpdate, scoresHidden: Boolean, sdkInt: Int) {
-    val seriesScore = scorePair(update.teams.map(LiveMatchTeam::score), scoresHidden)
+  private fun applyLive(
+    builder: Notification.Builder,
+    update: LiveMatchUpdate,
+    scoresHidden: Boolean,
+    sdkInt: Int,
+  ) {
+    val (t1, t2) = update.teams
     val map = update.currentMap
-    if (sdkInt >= 37 && map != null) {
-      builder.setContentTitle(map.name)
-        .setSubText(if (scoresHidden) context.getString(R.string.widget_scores_hidden) else seriesScore)
-      Api37Notification.applyMetricStyle(
-        builder,
-        update,
-        scoresHidden,
-        context.getString(R.string.widget_score_unavailable),
-        colors,
-      )
-      return
-    }
+    val r1 = map?.scores?.getOrNull(0)
+    val r2 = map?.scores?.getOrNull(1)
 
-    val title = if (map == null) {
-      context.getString(R.string.widget_live)
-    } else {
-      joinMetadata(map.name, scorePair(map.scores, scoresHidden))
-    }
-    val scoreLines = teamScoreLines(update, scoresHidden)
-    builder.setContentTitle(title)
-      .setContentText(scoreLines)
-      .setSubText(if (scoresHidden) context.getString(R.string.widget_scores_hidden) else seriesScore)
+    val title = liveTitle(t1.displayName, t2.displayName, r1, r2, scoresHidden, map != null)
+    val contentText = liveContentText(map?.name, scoresHidden)
+    val subText = liveSubText(update.totalMaps, map?.number, t1.score, t2.score, scoresHidden)
+
+    builder
+      .setContentTitle(title)
+      .setContentText(contentText)
+      .setSubText(subText)
+
     val progress = update.mapProgress()
     if (sdkInt >= 36 && progress != null && !scoresHidden) {
-      Api36Notification.applyProgressStyle(builder, progress, colors)
+      val logo1 = logoCache.getStartIcon(t1.imageUrl, night)
+      val logo2 = logoCache.getStartIcon(t2.imageUrl, night)
+      val currentRounds = (r1 ?: 0) + (r2 ?: 0)
+      Api36Notification.applyProgressStyle(
+        builder = builder,
+        progress = progress,
+        colors = colors,
+        startIcon = logo1,
+        endIcon = logo2,
+        currentMapRounds = currentRounds,
+        context = context,
+      )
     } else {
-      builder.setStyle(Notification.BigTextStyle().bigText(scoreLines))
+      builder.setStyle(Notification.BigTextStyle().bigText(contentText))
+    }
+  }
+
+  private fun liveTitle(
+    t1Name: String,
+    t2Name: String,
+    r1: Int?,
+    r2: Int?,
+    scoresHidden: Boolean,
+    hasMap: Boolean,
+  ): CharSequence {
+    if (scoresHidden || !hasMap) {
+      return if (scoresHidden) "$t1Name vs $t2Name" else context.getString(R.string.widget_live)
+    }
+    val s1 = r1 ?: 0
+    val s2 = r2 ?: 0
+    val sb = SpannableStringBuilder()
+    val t1Part = "$t1Name $s1"
+    val separator = " – "
+    val t2Part = "$s2 $t2Name"
+    sb.append(t1Part).append(separator).append(t2Part)
+
+    if (s1 > s2) {
+      sb.setSpan(StyleSpan(Typeface.BOLD), 0, t1Part.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    } else if (s2 > s1) {
+      val start2 = t1Part.length + separator.length
+      sb.setSpan(StyleSpan(Typeface.BOLD), start2, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+    return sb
+  }
+
+  private fun liveContentText(mapName: String?, scoresHidden: Boolean): String =
+    mapName ?: context.getString(R.string.widget_live)
+
+  private fun liveSubText(
+    totalMaps: Int?,
+    mapNumber: Int?,
+    score1: Int?,
+    score2: Int?,
+    scoresHidden: Boolean,
+  ): String {
+    if (scoresHidden) return context.getString(R.string.widget_scores_hidden)
+    val series = "${score1 ?: 0}–${score2 ?: 0}"
+    return if (totalMaps != null && mapNumber != null) {
+      "Map $mapNumber of $totalMaps · Series $series"
+    } else if (totalMaps != null) {
+      "Series $series"
+    } else {
+      series
     }
   }
 
   private fun applyFinal(builder: Notification.Builder, update: LiveMatchUpdate, scoresHidden: Boolean) {
     val teams = update.teams
-    val matchSummary = if (scoresHidden) {
-      context.getString(R.string.widget_match_teams, teams[0].displayName, teams[1].displayName)
+    val t1 = teams[0]
+    val t2 = teams[1]
+    val s1 = t1.score ?: 0
+    val s2 = t2.score ?: 0
+
+    val title = if (scoresHidden) {
+      context.getString(R.string.widget_match_teams, t1.displayName, t2.displayName)
     } else {
-      SpannableStringBuilder()
-        .append(teams[0].displayName.withColor(colors.first))
-        .append(" ")
-        .append(scorePair(teams.map(LiveMatchTeam::score), false))
-        .append(" ")
-        .append(teams[1].displayName.withColor(colors.second))
-    }
-    val scoreLines = teamScoreLines(update, scoresHidden)
-    builder.setContentTitle(joinMetadata(context.getString(R.string.live_match_notification_final), matchSummary))
-      .setContentText(scoreLines)
-      .setSubText(null)
-      .setStyle(Notification.BigTextStyle().bigText(scoreLines))
-  }
-
-  private fun teamScoreLines(update: LiveMatchUpdate, scoresHidden: Boolean): CharSequence =
-    SpannableStringBuilder().apply {
-      update.teams.forEachIndexed { index, team ->
-        if (index > 0) append("\n")
-        append(
-          context.getString(
-            R.string.widget_live_score,
-            team.displayName,
-            team.score.takeUnless { scoresHidden }?.toString() ?: context.getString(R.string.widget_score_unavailable),
-          ).withColor(colors.team(index)),
-        )
+      val finalPrefix = context.getString(R.string.live_match_notification_final)
+      val sb = SpannableStringBuilder(finalPrefix).append(" · ")
+      val start = sb.length
+      val t1Part = "${t1.displayName} $s1"
+      val separator = " – "
+      val t2Part = "$s2 ${t2.displayName}"
+      sb.append(t1Part).append(separator).append(t2Part)
+      if (s1 > s2) {
+        sb.setSpan(StyleSpan(Typeface.BOLD), start, start + t1Part.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+      } else if (s2 > s1) {
+        val start2 = start + t1Part.length + separator.length
+        sb.setSpan(StyleSpan(Typeface.BOLD), start2, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
       }
+      sb
     }
 
-  private fun scorePair(scores: List<Int?>, hidden: Boolean): CharSequence {
-    val unavailable = context.getString(R.string.widget_score_unavailable)
-    val first = scores.getOrNull(0).takeUnless { hidden }?.toString() ?: unavailable
-    val second = scores.getOrNull(1).takeUnless { hidden }?.toString() ?: unavailable
-    return SpannableStringBuilder()
-      .append(first.withColor(colors.first))
-      .append("–")
-      .append(second.withColor(colors.second))
+    val contentText = update.currentMap?.name ?: ""
+    builder.setContentTitle(title)
+      .setContentText(contentText)
+      .setSubText(null)
+      .setStyle(Notification.BigTextStyle().bigText(contentText.ifBlank { title.toString() }))
   }
 
-  private fun shortCriticalText(update: LiveMatchUpdate, scoresHidden: Boolean): String =
-    update.currentMap?.let { scorePair(it.scores, scoresHidden).toString() } ?: context.getString(R.string.widget_live)
+  /**
+   * Fills the status-bar chip, which shows only the small icon and a short text.
+   *
+   * With a leader, the chip shows the leader's logo silhouette and the score leader-first (`[NRG] 10–5`). Without a
+   * usable logo it names the leader instead (`NRG 10–5`), dropping the name when the text would be too long for the
+   * chip, which hides overlong text entirely. Ties, hidden scores and the pre-round state keep the app icon.
+   */
+  private fun applyChip(builder: Notification.Builder, update: LiveMatchUpdate, scoresHidden: Boolean) {
+    val scores = chipScores(update, scoresHidden)
+    if (scores == null) {
+      builder.setShortCriticalText(context.getString(R.string.widget_live))
+      return
+    }
+    val (s1, s2) = scores
+    if (s1 == s2) {
+      builder.setShortCriticalText("$s1–$s2")
+      return
+    }
+    val leader = update.teams[if (s1 > s2) 0 else 1]
+    val score = "${maxOf(s1, s2)}–${minOf(s1, s2)}"
+    val icon = logoCache.getChipIcon(leader.imageUrl)
+    if (icon != null) {
+      builder.setSmallIcon(Icon.createWithBitmap(icon)).setShortCriticalText(score)
+    } else {
+      builder.setShortCriticalText("${leader.displayName} $score".takeIf { it.length <= ChipTextLimit } ?: score)
+    }
+  }
 
-  private fun joinMetadata(first: CharSequence, second: CharSequence): CharSequence =
-    SpannableStringBuilder(first)
-      .append(context.getString(R.string.widget_match_metadata_separator))
-      .append(second)
+  /** Returns the scores the chip shows: the series between maps, otherwise the current map; null before play. */
+  private fun chipScores(update: LiveMatchUpdate, scoresHidden: Boolean): Pair<Int, Int>? {
+    if (scoresHidden) return null
+    val map = update.currentMap ?: return null
+    val r1 = map.scores.getOrNull(0)
+    val r2 = map.scores.getOrNull(1)
+    val s1 = update.teams.getOrNull(0)?.score ?: 0
+    val s2 = update.teams.getOrNull(1)?.score ?: 0
+
+    // Before the first round: round scores are null or both 0, and no map has been won yet
+    val isFirstRound = (r1 == null || r1 == 0) && (r2 == null || r2 == 0)
+    if (isFirstRound && s1 == 0 && s2 == 0 && (map.number ?: 1) <= 1) {
+      return null
+    }
+
+    // Between maps: current map is finished
+    val mapIndex = (map.number ?: 1) - 1
+    val hasWinnerInWinners = update.mapWinners.getOrNull(mapIndex) != null
+    val hasWinningScore = r1 != null && r2 != null && maxOf(r1, r2) >= 13 && kotlin.math.abs(r1 - r2) >= 2
+    if (hasWinnerInWinners || hasWinningScore) {
+      return s1 to s2
+    }
+
+    // During a map: current-map round score
+    return (r1 ?: 0) to (r2 ?: 0)
+  }
 
   private fun dismissIntent(matchId: String, action: String, generation: String? = null): PendingIntent = PendingIntent.getBroadcast(
     context,
@@ -617,6 +775,9 @@ internal class LiveMatchNotificationRenderer(private val context: Context) {
 }
 
 /** Removes a live notification that stops receiving updates, such as during a server outage. */
+// Longest chip text seen fully on API 36 ("NRG 12–10"); longer text is not shortened but hidden.
+private const val ChipTextLimit = 9
+
 internal const val LiveNotificationTimeoutMillis = 5 * 60 * 1_000L
 
 /** Describes the active map position within a match series. */
@@ -637,7 +798,7 @@ internal fun LiveMatchUpdate.mapProgress(): LiveMatchMapProgress? {
   val maximumMaps = totalMaps?.takeIf { it in 1..MaxVisibleMapSegments } ?: return null
   val activeMap = currentMap?.number?.takeIf { it in 1..maximumMaps } ?: return null
   val winners = List(maximumMaps) { mapIndex ->
-    mapWinners.getOrNull(mapIndex)?.takeIf { mapIndex + 1 < activeMap }?.let { winnerId ->
+    mapWinners.getOrNull(mapIndex)?.takeIf { mapIndex + 1 <= activeMap }?.let { winnerId ->
       teams.indices.filter { teams[it].id == winnerId }.singleOrNull()
     }
   }
@@ -647,46 +808,51 @@ internal fun LiveMatchUpdate.mapProgress(): LiveMatchMapProgress? {
 /** Applies the map progress notification style available on Android API 36. */
 @RequiresApi(36)
 private object Api36Notification {
-  fun applyProgressStyle(builder: Notification.Builder, progress: LiveMatchMapProgress, colors: LiveMatchTeamColors) {
-    builder.setStyle(
-      Notification.ProgressStyle()
-        .setProgressSegments(List(progress.totalMaps) { index ->
-          Notification.ProgressStyle.Segment(1).setColor(colors.winner(progress.winnerTeamIndices[index]))
-        })
-        .setProgressPoints(List(progress.totalMaps) { index ->
-          Notification.ProgressStyle.Point(index + 1).setColor(colors.winner(progress.winnerTeamIndices[index]))
-        })
-        .setStyledByProgress(false)
-        .setProgress(progress.currentMapNumber),
-    )
+  const val MapSegmentLength = 100
+
+  fun applyProgressStyle(
+    builder: Notification.Builder,
+    progress: LiveMatchMapProgress,
+    colors: LiveMatchTeamColors,
+    startIcon: Bitmap?,
+    endIcon: Bitmap?,
+    currentMapRounds: Int,
+    context: Context,
+  ) {
+    val total = progress.totalMaps
+    val current = progress.currentMapNumber
+    val roundsProgress = currentMapRounds.coerceIn(0, 24) * MapSegmentLength / 24
+    val progressValue = (current - 1) * MapSegmentLength + roundsProgress
+
+    val style = Notification.ProgressStyle()
+      .setStyledByProgress(false)
+      .setProgressSegments(List(total) { index ->
+        Notification.ProgressStyle.Segment(MapSegmentLength)
+          .setColor(colors.winner(progress.winnerTeamIndices[index]))
+      })
+      .setProgressPoints((1 until total).take(4).map { index ->
+        Notification.ProgressStyle.Point(index * MapSegmentLength)
+          .setColor(colors.neutral)
+      })
+      .setProgress(progressValue)
+      .setProgressTrackerIcon(Icon.createWithResource(context, R.drawable.ic_live_tracker))
+
+    if (startIcon != null) {
+      style.setProgressStartIcon(Icon.createWithBitmap(startIcon))
+    }
+    if (endIcon != null) {
+      style.setProgressEndIcon(Icon.createWithBitmap(endIcon))
+    }
+
+    builder.setStyle(style)
   }
 }
 
-/** Applies promoted notifications and map score metrics on Android API 37. */
+/** Applies promoted notifications on Android API 37. */
 @RequiresApi(37)
 private object Api37Notification {
   fun applyPromotedOngoing(builder: Notification.Builder) {
     builder.setRequestPromotedOngoing(true)
-  }
-
-  fun applyMetricStyle(
-    builder: Notification.Builder,
-    update: LiveMatchUpdate,
-    scoresHidden: Boolean,
-    unavailable: String,
-    colors: LiveMatchTeamColors,
-  ) {
-    val mapScores = requireNotNull(update.currentMap).scores
-    val style = Notification.MetricStyle()
-    update.teams.forEachIndexed { index, team ->
-      val score = mapScores[index]
-      val color = colors.team(index)
-      val value = Notification.Metric.FixedText(
-        (score.takeUnless { scoresHidden }?.toString() ?: unavailable).withColor(color),
-      )
-      style.addMetric(Notification.Metric(value, team.displayName.withColor(color)))
-    }
-    builder.setStyle(style.setCriticalMetric(Notification.MetricStyle.METRIC_INDEX_NONE))
   }
 }
 
@@ -694,8 +860,4 @@ private object Api37Notification {
 private data class LiveMatchTeamColors(val first: Int, val second: Int, val neutral: Int) {
   fun team(index: Int): Int = if (index == 0) first else second
   fun winner(index: Int?): Int = index?.let(::team) ?: neutral
-}
-
-private fun String.withColor(color: Int): CharSequence = SpannableString(this).apply {
-  setSpan(ForegroundColorSpan(color), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 }
