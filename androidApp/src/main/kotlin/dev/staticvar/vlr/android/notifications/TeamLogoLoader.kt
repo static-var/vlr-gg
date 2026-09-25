@@ -9,6 +9,7 @@ import android.graphics.drawable.Icon
 import coil3.BitmapImage
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
+import coil3.Uri
 import coil3.annotation.ExperimentalCoilApi
 import coil3.fetch.Fetcher
 import coil3.memory.MemoryCache
@@ -46,7 +47,7 @@ import okio.Buffer
 internal class TeamLogoLoader(
   private val context: Context,
   private val imageLoader: ImageLoader = SingletonImageLoader.get(context),
-  private val fetcherFactory: Fetcher.Factory<String> = TeamLogoFetcherFactory(),
+  private val fetcherFactory: Fetcher.Factory<Uri> = TeamLogoFetcherFactory(),
 ) {
   /** Reads decoded logos only; missing images are fetched later by WorkManager. */
   fun cached(update: LiveMatchUpdate): TeamLogos = TeamLogos(
@@ -91,9 +92,9 @@ internal class TeamLogoLoader(
 @OptIn(ExperimentalCoilApi::class)
 internal class TeamLogoFetcherFactory(
   private val networkClient: NetworkClient = TeamLogoNetworkClient(),
-) : Fetcher.Factory<String> {
-  override fun create(data: String, options: Options, imageLoader: ImageLoader): Fetcher? {
-    val url = allowedTeamLogoUrl(data) ?: return null
+) : Fetcher.Factory<Uri> {
+  override fun create(data: Uri, options: Options, imageLoader: ImageLoader): Fetcher? {
+    val url = allowedTeamLogoUrl(data.toString()) ?: return null
     return NetworkFetcher(
       url = url,
       options = options,
