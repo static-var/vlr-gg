@@ -44,4 +44,6 @@
     <string name="match_alert_channel_name">Spielbenachrichtigungen</string>
     <string name="match_alert_channel_description">Benachrichtigungen, wenn deine favorisierten Spiele beginnen</string>
     <string name="match_alert_live">Spiel läuft</string>
+    <string name="live_match_notification_map_series">Karte %1$d von %2$d · Serie %3$s</string>
+    <string name="live_match_notification_series">Serie %1$s</string>
 </resources>

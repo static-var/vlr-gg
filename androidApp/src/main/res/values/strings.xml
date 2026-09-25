@@ -44,4 +44,7 @@
     <string name="match_alert_channel_name">Match alerts</string>
     <string name="match_alert_channel_description">Alerts when your favorite matches are starting</string>
     <string name="match_alert_live">Match is live</string>
+    <string name="live_match_notification_map_series">Map %1$d of %2$d · Series %3$s</string>
+    <string name="live_match_notification_series">Series %1$s</string>
+    <string name="live_match_notification_matchup_score" translatable="false">%1$s\u2003%2$s : %3$s\u2003%4$s</string>
 </resources>

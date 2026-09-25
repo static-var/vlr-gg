@@ -44,4 +44,6 @@
     <string name="match_alert_channel_name">Alertas de partidos</string>
     <string name="match_alert_channel_description">Alertas cuando empiezan tus partidos favoritos</string>
     <string name="match_alert_live">Partido en directo</string>
+    <string name="live_match_notification_map_series">Mapa %1$d de %2$d · Serie %3$s</string>
+    <string name="live_match_notification_series">Serie %1$s</string>
 </resources>

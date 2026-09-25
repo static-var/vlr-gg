@@ -44,4 +44,6 @@
     <string name="match_alert_channel_name">경기 알림</string>
     <string name="match_alert_channel_description">즐겨찾는 경기가 시작될 때 알림</string>
     <string name="match_alert_live">경기 진행 중</string>
+    <string name="live_match_notification_map_series">맵 %1$d / %2$d · 시리즈 %3$s</string>
+    <string name="live_match_notification_series">시리즈 %1$s</string>
 </resources>

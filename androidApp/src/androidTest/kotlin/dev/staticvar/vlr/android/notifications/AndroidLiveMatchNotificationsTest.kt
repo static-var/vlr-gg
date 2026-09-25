@@ -12,7 +12,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Typeface
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.SystemClock
@@ -58,18 +57,6 @@ class AndroidLiveMatchNotificationsTest {
 
   @Before
   fun clearPreviousFixtureState() {
-    if (FirebaseApp.getApps(context).isEmpty()) {
-      runCatching {
-        FirebaseApp.initializeApp(
-          context,
-          com.google.firebase.FirebaseOptions.Builder()
-            .setApplicationId(context.packageName)
-            .setGcmSenderId("100000000000")
-            .setProjectId(context.packageName)
-            .build(),
-        )
-      }
-    }
     removeFixtureState()
   }
 
@@ -202,8 +189,8 @@ class AndroidLiveMatchNotificationsTest {
     val withLogosRenderer = LiveMatchNotificationRenderer(context, logoCache)
     val notifWithLogos = withLogosRenderer.build(matchWithLogos, false, 36)
     val recoveredStyle = Notification.Builder.recoverBuilder(context, notifWithLogos).style as Notification.ProgressStyle
-    assertNotNull(recoveredStyle.progressStartIcon)
-    assertNotNull(recoveredStyle.progressEndIcon)
+    assertNull(recoveredStyle.progressStartIcon)
+    assertNull(recoveredStyle.progressEndIcon)
     assertNotNull(recoveredStyle.progressTrackerIcon)
     assertNotNull(notifWithLogos.getLargeIcon())
 
@@ -220,7 +207,7 @@ class AndroidLiveMatchNotificationsTest {
       val expected = if (tag == "\"PRX\"") "PRX" else "Paper Rex"
       assertEquals(expected, match.teams[1].displayName)
       val notification = LiveMatchNotificationRenderer(context).build(match.copy(terminal = true), false)
-      assertTrue(notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString().contains(expected))
+      assertTrue(notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString().contains(expected))
     }
   }
 
@@ -240,11 +227,10 @@ class AndroidLiveMatchNotificationsTest {
     assertEquals(listOf(100, 100, 100), progress.progressSegments.map { it.length })
     assertEquals(listOf(100, 200), progress.progressPoints.map { it.position })
     assertEquals("Ascent", notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
-    assertEquals("Team Liquid 8 – 6 Paper Rex", notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
-    val titleSpans = (notification.extras.getCharSequence(Notification.EXTRA_TITLE) as Spanned)
-      .getSpans(0, "Team Liquid 8".length, StyleSpan::class.java)
-    assertEquals(Typeface.BOLD, titleSpans.single().style)
-    assertEquals("Map 2 of 3 · Series 1–1", notification.extras.getCharSequence(Notification.EXTRA_SUB_TEXT).toString())
+    assertEquals("Team Liquid\u20038 : 6\u2003Paper Rex", notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+    val title = notification.extras.getCharSequence(Notification.EXTRA_TITLE)
+    assertTrue(title !is Spanned || title.getSpans(0, title.length, StyleSpan::class.java).isEmpty())
+    assertEquals("Map 2 of 3 · Series 1 : 1", notification.extras.getCharSequence(Notification.EXTRA_SUB_TEXT).toString())
     assertEquals("8–6", notification.extras.getCharSequence("android.shortCriticalText")?.toString())
     assertEquals(Icon.TYPE_RESOURCE, notification.smallIcon.type)
 
@@ -408,7 +394,7 @@ class AndroidLiveMatchNotificationsTest {
     val live = renderer.build(update("991000001", 60), scoresHidden = false, sdkInt = 36)
 
     assertTrue(live.flags and Notification.FLAG_ONGOING_EVENT != 0)
-    assertEquals("Team Liquid 8 – 6 Paper Rex", live.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+    assertEquals("Team Liquid\u20038 : 6\u2003Paper Rex", live.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
     assertEquals("Ascent", live.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
     assertEquals(
       listOf(
@@ -427,7 +413,13 @@ class AndroidLiveMatchNotificationsTest {
     assertFalse(final.flags and Notification.FLAG_ONGOING_EVENT != 0)
     assertTrue(final.flags and Notification.FLAG_AUTO_CANCEL != 0)
     assertFalse(final.extras.getCharSequence(Notification.EXTRA_TITLE).toString().contains("8–6"))
-    assertTrue(final.extras.getCharSequence(Notification.EXTRA_TITLE).toString().contains("Team Liquid 1 – 1 Paper Rex"))
+    assertEquals(context.getString(R.string.live_match_notification_final), final.extras.getCharSequence(Notification.EXTRA_TITLE))
+    assertEquals("Team Liquid\u20031 : 1\u2003Paper Rex", final.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+    assertFalse(final.extras.toString().contains("Ascent"))
+    val hiddenFinal = renderer.build(update("991000001", 61).copy(terminal = true), scoresHidden = true)
+    assertEquals(context.getString(R.string.live_match_notification_final), hiddenFinal.extras.getCharSequence(Notification.EXTRA_TITLE))
+    assertEquals("Team Liquid vs Paper Rex", hiddenFinal.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+    assertFalse(hiddenFinal.extras.toString().contains("Ascent"))
     assertEquals(
       listOf(context.getString(R.string.live_match_notification_open_match)),
       final.actions.map { it.title.toString() },
@@ -438,6 +430,44 @@ class AndroidLiveMatchNotificationsTest {
       val style = Notification.Builder.recoverBuilder(context, progress).style as Notification.ProgressStyle
       assertEquals(1, style.progressSegments.size)
     }
+  }
+
+  @Test
+  @SdkSuppress(minSdkVersion = 36)
+  fun missingScoresAndMapKeepTheMatchIdentifiable() {
+    val renderer = LiveMatchNotificationRenderer(context)
+    val match = update("991000001", 60).copy(
+      teams = update("991000001", 60).teams.map { it.copy(score = null) },
+      currentMap = LiveMatchMap("Ascent", listOf(null, 6), number = 2),
+      totalMaps = 3,
+    )
+    val notification = renderer.build(match, false, 36)
+    assertEquals("Team Liquid\u2003— : 6\u2003Paper Rex", notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+    assertEquals("Map 2 of 3 · Series — : —", notification.extras.getCharSequence(Notification.EXTRA_SUB_TEXT).toString())
+    assertEquals("—–6", notification.extras.getCharSequence("android.shortCriticalText").toString())
+    val final = renderer.build(match.copy(terminal = true), false, 36)
+    assertEquals("Team Liquid\u2003— : —\u2003Paper Rex", final.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+    val betweenMaps = renderer.build(match.copy(currentMap = null), false, 36)
+    assertEquals("Team Liquid vs Paper Rex", betweenMaps.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+  }
+
+  @Test
+  @SdkSuppress(minSdkVersion = 36)
+  fun trackerOnlyReachesMapBoundaryWhenTheMapHasFinished() {
+    val renderer = LiveMatchNotificationRenderer(context)
+    fun position(scores: List<Int?>, winners: List<String?> = emptyList()): Int {
+      val match = update("991000001", 60).copy(
+        totalMaps = 3,
+        currentMap = LiveMatchMap("Ascent", scores, number = 2),
+        mapWinners = winners,
+      )
+      return (Notification.Builder.recoverBuilder(context, renderer.build(match, false, 36)).style as Notification.ProgressStyle).progress
+    }
+    assertEquals(200, position(listOf(13, 5)))
+    assertEquals(199, position(listOf(12, 12)))
+    assertEquals(199, position(listOf(15, 14)))
+    assertEquals(200, position(listOf(16, 14)))
+    assertEquals(200, position(listOf(null, null), listOf(null, "474")))
   }
 
   @Test

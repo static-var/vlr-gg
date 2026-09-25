@@ -13,16 +13,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Typeface
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.StyleSpan
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -592,7 +587,7 @@ internal class LiveMatchNotificationRenderer(
     val r2 = map?.scores?.getOrNull(1)
 
     val title = liveTitle(t1.displayName, t2.displayName, r1, r2, scoresHidden, map != null)
-    val contentText = liveContentText(map?.name, scoresHidden)
+    val contentText = map?.name ?: context.getString(R.string.widget_live)
     val subText = liveSubText(update.totalMaps, map?.number, t1.score, t2.score, scoresHidden)
 
     builder
@@ -602,16 +597,11 @@ internal class LiveMatchNotificationRenderer(
 
     val progress = update.mapProgress()
     if (sdkInt >= 36 && progress != null && !scoresHidden) {
-      val logo1 = logoCache.getStartIcon(t1.imageUrl, night)
-      val logo2 = logoCache.getStartIcon(t2.imageUrl, night)
-      val currentRounds = (r1 ?: 0) + (r2 ?: 0)
       Api36Notification.applyProgressStyle(
         builder = builder,
         progress = progress,
         colors = colors,
-        startIcon = logo1,
-        endIcon = logo2,
-        currentMapRounds = currentRounds,
+        currentMapScores = map?.scores.orEmpty(),
         context = context,
       )
     } else {
@@ -626,29 +616,16 @@ internal class LiveMatchNotificationRenderer(
     r2: Int?,
     scoresHidden: Boolean,
     hasMap: Boolean,
-  ): CharSequence {
-    if (scoresHidden || !hasMap) {
-      return if (scoresHidden) "$t1Name vs $t2Name" else context.getString(R.string.widget_live)
-    }
-    val s1 = r1 ?: 0
-    val s2 = r2 ?: 0
-    val sb = SpannableStringBuilder()
-    val t1Part = "$t1Name $s1"
-    val separator = " – "
-    val t2Part = "$s2 $t2Name"
-    sb.append(t1Part).append(separator).append(t2Part)
-
-    if (s1 > s2) {
-      sb.setSpan(StyleSpan(Typeface.BOLD), 0, t1Part.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-    } else if (s2 > s1) {
-      val start2 = t1Part.length + separator.length
-      sb.setSpan(StyleSpan(Typeface.BOLD), start2, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-    }
-    return sb
+  ): String = if (scoresHidden || !hasMap) {
+    context.getString(R.string.widget_match_teams, t1Name, t2Name)
+  } else {
+    matchupScore(t1Name, t2Name, r1, r2)
   }
 
-  private fun liveContentText(mapName: String?, scoresHidden: Boolean): String =
-    mapName ?: context.getString(R.string.widget_live)
+  private fun score(value: Int?): String = value?.toString() ?: context.getString(R.string.widget_score_unavailable)
+
+  private fun matchupScore(first: String, second: String, firstScore: Int?, secondScore: Int?): String =
+    context.getString(R.string.live_match_notification_matchup_score, first, score(firstScore), score(secondScore), second)
 
   private fun liveSubText(
     totalMaps: Int?,
@@ -658,47 +635,27 @@ internal class LiveMatchNotificationRenderer(
     scoresHidden: Boolean,
   ): String {
     if (scoresHidden) return context.getString(R.string.widget_scores_hidden)
-    val series = "${score1 ?: 0}–${score2 ?: 0}"
+    val series = context.getString(R.string.widget_live_score, score(score1), score(score2))
     return if (totalMaps != null && mapNumber != null) {
-      "Map $mapNumber of $totalMaps · Series $series"
+      context.getString(R.string.live_match_notification_map_series, mapNumber, totalMaps, series)
     } else if (totalMaps != null) {
-      "Series $series"
+      context.getString(R.string.live_match_notification_series, series)
     } else {
       series
     }
   }
 
   private fun applyFinal(builder: Notification.Builder, update: LiveMatchUpdate, scoresHidden: Boolean) {
-    val teams = update.teams
-    val t1 = teams[0]
-    val t2 = teams[1]
-    val s1 = t1.score ?: 0
-    val s2 = t2.score ?: 0
-
-    val title = if (scoresHidden) {
-      context.getString(R.string.widget_match_teams, t1.displayName, t2.displayName)
+    val (first, second) = update.teams
+    val matchup = if (scoresHidden) {
+      context.getString(R.string.widget_match_teams, first.displayName, second.displayName)
     } else {
-      val finalPrefix = context.getString(R.string.live_match_notification_final)
-      val sb = SpannableStringBuilder(finalPrefix).append(" · ")
-      val start = sb.length
-      val t1Part = "${t1.displayName} $s1"
-      val separator = " – "
-      val t2Part = "$s2 ${t2.displayName}"
-      sb.append(t1Part).append(separator).append(t2Part)
-      if (s1 > s2) {
-        sb.setSpan(StyleSpan(Typeface.BOLD), start, start + t1Part.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-      } else if (s2 > s1) {
-        val start2 = start + t1Part.length + separator.length
-        sb.setSpan(StyleSpan(Typeface.BOLD), start2, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-      }
-      sb
+      matchupScore(first.displayName, second.displayName, first.score, second.score)
     }
-
-    val contentText = update.currentMap?.name ?: ""
-    builder.setContentTitle(title)
-      .setContentText(contentText)
+    builder.setContentTitle(context.getString(R.string.live_match_notification_final))
+      .setContentText(matchup)
       .setSubText(null)
-      .setStyle(Notification.BigTextStyle().bigText(contentText.ifBlank { title.toString() }))
+      .setStyle(Notification.BigTextStyle().bigText(matchup))
   }
 
   /**
@@ -715,6 +672,10 @@ internal class LiveMatchNotificationRenderer(
       return
     }
     val (s1, s2) = scores
+    if (s1 == null || s2 == null) {
+      builder.setShortCriticalText("${score(s1)}–${score(s2)}")
+      return
+    }
     if (s1 == s2) {
       builder.setShortCriticalText("$s1–$s2")
       return
@@ -730,13 +691,13 @@ internal class LiveMatchNotificationRenderer(
   }
 
   /** Returns the scores the chip shows: the series between maps, otherwise the current map; null before play. */
-  private fun chipScores(update: LiveMatchUpdate, scoresHidden: Boolean): Pair<Int, Int>? {
+  private fun chipScores(update: LiveMatchUpdate, scoresHidden: Boolean): Pair<Int?, Int?>? {
     if (scoresHidden) return null
     val map = update.currentMap ?: return null
     val r1 = map.scores.getOrNull(0)
     val r2 = map.scores.getOrNull(1)
-    val s1 = update.teams.getOrNull(0)?.score ?: 0
-    val s2 = update.teams.getOrNull(1)?.score ?: 0
+    val s1 = update.teams.getOrNull(0)?.score
+    val s2 = update.teams.getOrNull(1)?.score
 
     // Before the first round: round scores are null or both 0, and no map has been won yet
     val isFirstRound = (r1 == null || r1 == 0) && (r2 == null || r2 == 0)
@@ -753,7 +714,7 @@ internal class LiveMatchNotificationRenderer(
     }
 
     // During a map: current-map round score
-    return (r1 ?: 0) to (r2 ?: 0)
+    return r1 to r2
   }
 
   private fun dismissIntent(matchId: String, action: String, generation: String? = null): PendingIntent = PendingIntent.getBroadcast(
@@ -814,14 +775,21 @@ private object Api36Notification {
     builder: Notification.Builder,
     progress: LiveMatchMapProgress,
     colors: LiveMatchTeamColors,
-    startIcon: Bitmap?,
-    endIcon: Bitmap?,
-    currentMapRounds: Int,
+    currentMapScores: List<Int?>,
     context: Context,
   ) {
     val total = progress.totalMaps
     val current = progress.currentMapNumber
-    val roundsProgress = currentMapRounds.coerceIn(0, 24) * MapSegmentLength / 24
+    val first = currentMapScores.getOrNull(0)
+    val second = currentMapScores.getOrNull(1)
+    val completed = progress.winnerTeamIndices[current - 1] != null ||
+      (first != null && second != null && maxOf(first, second) >= 13 && kotlin.math.abs(first - second) >= 2)
+    // Round count is an estimate until the map has a winner; overtime must remain inside its segment.
+    val roundsProgress = if (completed) {
+      MapSegmentLength
+    } else {
+      (((first ?: 0) + (second ?: 0)) * MapSegmentLength / 24).coerceIn(0, MapSegmentLength - 1)
+    }
     val progressValue = (current - 1) * MapSegmentLength + roundsProgress
 
     val style = Notification.ProgressStyle()
@@ -836,13 +804,6 @@ private object Api36Notification {
       })
       .setProgress(progressValue)
       .setProgressTrackerIcon(Icon.createWithResource(context, R.drawable.ic_live_tracker))
-
-    if (startIcon != null) {
-      style.setProgressStartIcon(Icon.createWithBitmap(startIcon))
-    }
-    if (endIcon != null) {
-      style.setProgressEndIcon(Icon.createWithBitmap(endIcon))
-    }
 
     builder.setStyle(style)
   }
