@@ -15,6 +15,7 @@ public fun homeFeatureModule(): Module = module {
   factory {
     ObserveHomeFeedUseCase(
       favoritesRepository = get(),
+      favoriteMatchesRepository = get(),
       matchRepository = get(),
       eventRepository = get(),
       dispatchers = get(),
@@ -24,6 +25,7 @@ public fun homeFeatureModule(): Module = module {
     RefreshHomeUseCase(
       matchRepository = get(),
       eventRepository = get(),
+      favoriteMatchesRepository = get(),
     )
   }
   viewModel {
@@ -31,6 +33,7 @@ public fun homeFeatureModule(): Module = module {
       observeHomeFeedUseCase = get(),
       refreshHomeUseCase = get(),
       networkMonitor = get(),
+      favoriteSyncStatus = get(),
     )
   }
 }
