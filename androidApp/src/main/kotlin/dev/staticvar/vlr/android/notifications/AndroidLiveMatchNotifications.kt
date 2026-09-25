@@ -542,7 +542,7 @@ internal class LiveMatchNotificationRenderer(
       )
 
     val (t1, t2) = update.teams
-    val largeLogo = logoCache.getCompositeIcon(t1.imageUrl, t2.imageUrl, night) ?: logoCache.getStartIcon(t1.imageUrl, night)
+    val largeLogo = logoCache.getCompositeIcon(t1.imageUrl, t2.imageUrl, night) ?: logoCache.getTeamIcon(t1.imageUrl, night)
     if (largeLogo != null) {
       builder.setLargeIcon(Icon.createWithBitmap(largeLogo))
     }

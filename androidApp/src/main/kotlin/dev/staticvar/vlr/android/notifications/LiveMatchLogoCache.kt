@@ -25,7 +25,7 @@ import kotlin.math.roundToInt
 /**
  * Downloads team logos once and derives the bitmaps promoted match notifications show.
  *
- * - Start/end icons (20dp) for the ProgressStyle bar, on a contrasting badge when the logo would
+ * - Team icons (20dp), on a contrasting badge when the logo would
  *   disappear against the notification background (e.g. a white logo on a light theme).
  * - A composite two-logo large icon (16:9, 48dp tall) built from those icons.
  * - A status-bar chip icon: SystemUI draws the small icon as a one-colour silhouette of its alpha,
@@ -57,9 +57,9 @@ internal class LiveMatchLogoCache(context: Context) {
     blockChipIcons.clear()
   }
 
-  /** Returns the 20dp progress-bar icon for [url], badged when it lacks contrast on the current theme. */
+  /** Returns the 20dp team icon for [url], badged when it lacks contrast on the current theme. */
   @Synchronized
-  fun getStartIcon(url: String?, night: Boolean): Bitmap? {
+  fun getTeamIcon(url: String?, night: Boolean): Bitmap? {
     val source = url?.let { sources.get(it) } ?: return null
     return derived.getOrPut("icon|$night|$url") {
       val size = (20 * density).roundToInt().coerceAtLeast(32)
@@ -69,8 +69,8 @@ internal class LiveMatchLogoCache(context: Context) {
 
   @Synchronized
   fun getCompositeIcon(url1: String?, url2: String?, night: Boolean): Bitmap? {
-    val icon1 = getStartIcon(url1, night)
-    val icon2 = getStartIcon(url2, night)
+    val icon1 = getTeamIcon(url1, night)
+    val icon2 = getTeamIcon(url2, night)
     if (icon1 == null && icon2 == null) return null
     return derived.getOrPut("composite|$night|${url1.orEmpty()}|${url2.orEmpty()}") {
       createCompositeLargeIcon(appContext, url1?.let { sourceIcon(it, night) }, url2?.let { sourceIcon(it, night) })!!
