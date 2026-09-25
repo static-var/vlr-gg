@@ -10,6 +10,7 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.CancellationException
@@ -31,7 +32,8 @@ internal class PushTokenRegistrationDataSourceImpl(
   }
 
   override suspend fun delete(clientId: String): Boolean = try {
-    client.delete("/api/v1/live-updates/clients/$clientId/token").status.isSuccess()
+    val status = client.delete("/api/v1/live-updates/clients/$clientId/token").status
+    status.isSuccess() || status == HttpStatusCode.NotFound
   } catch (cancellation: CancellationException) {
     throw cancellation
   } catch (_: Exception) {

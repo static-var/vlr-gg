@@ -72,6 +72,15 @@ class PushTokenRegistrationDataSourceTest {
     )
   }
 
+  @Test
+  fun deletionRetryTreatsAlreadyMissingTokenAsComplete() = runTest {
+    val client = mockClient {
+      respond("", status = HttpStatusCode.NotFound, headers = jsonHeaders())
+    }
+
+    assertTrue(PushTokenRegistrationDataSourceImpl(client).delete(ClientId))
+  }
+
   /** Holds the client ID used in API request tests. */
   private companion object {
     const val ClientId: String = "01996ff9-3000-7000-8000-000000000001"
