@@ -119,17 +119,6 @@ struct MatchLiveActivityLockScreen: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, mapProgress == nil ? 14 : 11)
-        .background {
-            LinearGradient(
-                colors: [
-                    Color(red: 0.16, green: 0.12, blue: 0.06),
-                    Color(red: 0.04, green: 0.06, blue: 0.09),
-                    Color(red: 0.03, green: 0.12, blue: 0.11),
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
         .foregroundStyle(palette.ink)
         .accessibilityElement(children: .contain)
         .accessibilityHint(String(localized: "Opens match details"))
