@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,11 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.prism.Prism
@@ -46,7 +48,6 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import vlr.feature_about.generated.resources.Res
-import vlr.feature_about.generated.resources.close
 import vlr.feature_about.generated.resources.note_about
 import vlr.feature_about.generated.resources.note_contact
 import vlr.feature_about.generated.resources.note_intro
@@ -95,26 +96,18 @@ internal fun DeveloperNoteScreen(
   Box(modifier.fillMaxSize().background(Prism.color.background), contentAlignment = Alignment.TopCenter) {
     Column(
       Modifier.widthIn(max = 560.dp).fillMaxSize()
-        .windowInsetsPadding(WindowInsets.safeDrawing).padding(horizontal = 24.dp),
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+        .padding(horizontal = Prism.dimens.spacingM),
     ) {
-      PrismButton(
-        onClick = onBack,
-        modifier = Modifier.align(Alignment.End),
-        style = PrismButtonStyle.Tertiary,
-      ) {
-        Text(stringResource(Res.string.close))
-      }
+      PrismScreenTitleBar(
+        title = stringResource(Res.string.note_title),
+        onBackPress = onBack,
+      )
       Column(
         modifier = Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())
-          .padding(top = 24.dp, bottom = 24.dp),
+          .padding(horizontal = 8.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
       ) {
-        Text(
-          text = stringResource(Res.string.note_title),
-          style = Prism.typography.headline.copy(fontSize = 32.sp, lineHeight = 38.sp, letterSpacing = (-0.7).sp),
-          color = Prism.color.titleColor,
-          modifier = Modifier.semantics { heading() },
-        )
         listOf(
           Res.string.note_intro,
           Res.string.note_about,
@@ -147,7 +140,7 @@ internal fun DeveloperNoteScreen(
         }
       }
       Column(
-        modifier = Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 12.dp, bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
       ) {
         if (storeUnavailable) {
