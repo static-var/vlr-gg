@@ -46,7 +46,6 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import vlr.feature_about.generated.resources.Res
-import vlr.feature_about.generated.resources.akhil_narang
 import vlr.feature_about.generated.resources.close
 import vlr.feature_about.generated.resources.note_about
 import vlr.feature_about.generated.resources.note_contact
@@ -58,7 +57,7 @@ import vlr.feature_about.generated.resources.note_story
 import vlr.feature_about.generated.resources.note_thanks
 import vlr.feature_about.generated.resources.note_title
 import vlr.feature_about.generated.resources.note_write
-import vlr.feature_about.generated.resources.shreyansh_lodha
+import vlr.feature_about.generated.resources.note_developers
 import vlr.feature_about.generated.resources.signature_akhil
 import vlr.feature_about.generated.resources.signature_shreyansh
 
@@ -131,18 +130,20 @@ internal fun DeveloperNoteScreen(
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
           Text(stringResource(Res.string.note_signoff), style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
-          Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+          Row(
+            modifier = Modifier.widthIn(max = 224.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+          ) {
             DeveloperSignature(
               signature = Res.drawable.signature_shreyansh,
-              name = stringResource(Res.string.shreyansh_lodha),
               modifier = Modifier.weight(1f),
             )
             DeveloperSignature(
               signature = Res.drawable.signature_akhil,
-              name = stringResource(Res.string.akhil_narang),
               modifier = Modifier.weight(1f),
             )
           }
+          Text(stringResource(Res.string.note_developers), style = Prism.typography.caption, color = Prism.color.bodyColor)
         }
       }
       Column(
@@ -180,14 +181,11 @@ internal fun DeveloperNoteScreen(
 }
 
 @Composable
-private fun DeveloperSignature(signature: DrawableResource, name: String, modifier: Modifier = Modifier) {
-  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    Image(
-      painter = painterResource(signature),
-      contentDescription = null,
-      colorFilter = ColorFilter.tint(Prism.color.titleColor),
-      modifier = Modifier.fillMaxWidth().height(64.dp),
-    )
-    Text(name, style = Prism.typography.caption, color = Prism.color.bodyColor)
-  }
+private fun DeveloperSignature(signature: DrawableResource, modifier: Modifier = Modifier) {
+  Image(
+    painter = painterResource(signature),
+    contentDescription = null,
+    colorFilter = ColorFilter.tint(Prism.color.titleColor),
+    modifier = modifier.height(48.dp),
+  )
 }

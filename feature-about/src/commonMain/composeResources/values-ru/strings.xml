@@ -173,4 +173,5 @@
     <string name="note_rate_google_play">Оценить в Google Play</string>
     <string name="note_rate_app_store">Оценить в App Store</string>
     <string name="note_store_unavailable">Не удалось открыть магазин. Попробуйте ещё раз.</string>
+    <string name="note_developers">Shreyansh &amp; Akhil</string>
 </resources>

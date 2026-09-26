@@ -172,4 +172,5 @@
     <string name="note_rate_google_play">Avaliar no Google Play</string>
     <string name="note_rate_app_store">Avaliar na App Store</string>
     <string name="note_store_unavailable">Não foi possível abrir a loja. Tente novamente.</string>
+    <string name="note_developers">Shreyansh &amp; Akhil</string>
 </resources>

@@ -172,4 +172,5 @@
     <string name="note_rate_google_play">Noter sur Google Play</string>
     <string name="note_rate_app_store">Noter sur l’App Store</string>
     <string name="note_store_unavailable">Impossible d’ouvrir la boutique. Veuillez réessayer.</string>
+    <string name="note_developers">Shreyansh &amp; Akhil</string>
 </resources>

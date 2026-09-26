@@ -170,4 +170,5 @@
     <string name="note_rate_google_play">Google Play에서 평가하기</string>
     <string name="note_rate_app_store">App Store에서 평가하기</string>
     <string name="note_store_unavailable">스토어를 열 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="note_developers">Shreyansh &amp; Akhil</string>
 </resources>

@@ -170,4 +170,5 @@
     <string name="note_rate_google_play">Google Play’de değerlendir</string>
     <string name="note_rate_app_store">App Store’da değerlendir</string>
     <string name="note_store_unavailable">Mağaza açılamadı. Lütfen tekrar dene.</string>
+    <string name="note_developers">Shreyansh &amp; Akhil</string>
 </resources>
