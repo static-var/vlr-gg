@@ -11,6 +11,7 @@ import dev.staticvar.vlr.data.MatchMaps
 import dev.staticvar.vlr.data.MatchPreviousEncounters
 import dev.staticvar.vlr.data.MatchVideos
 import dev.staticvar.vlr.data.Matches
+import dev.staticvar.vlr.domain.model.CurrentMatchMap
 import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.remotesource.match.AgentInfoDto
@@ -244,3 +245,19 @@ internal fun MatchDetailsDto.toPreviousEncounterEntities(matchId: String): List<
       )
     }
   }
+
+internal fun MatchDetailsDto.toCurrentMapModel(): CurrentMatchMap? {
+  event.status?.let { if (it.name !in setOf("LIVE", "ONGOING")) return null }
+  val current = currentMap ?: return null
+  if (current.name.isBlank()) return null
+  val numberedMap = current.number?.takeIf { it > 0 }?.let { matchData.getOrNull(it - 1) }
+  val map = numberedMap?.takeIf { it.map.equals(current.name, ignoreCase = true) }
+    ?: matchData.singleOrNull { it.map.equals(current.name, ignoreCase = true) }
+  return CurrentMatchMap(
+    name = current.name,
+    number = current.number?.takeIf { it > 0 },
+    team1Score = current.scores.getOrNull(0),
+    team2Score = current.scores.getOrNull(1),
+    isLive = map?.live == true,
+  )
+}

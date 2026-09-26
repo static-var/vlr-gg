@@ -22,6 +22,15 @@ data class MatchDetails(
   val favoriteReasons: List<MatchFavoriteReason> = emptyList(),
   val isDirectFavorite: Boolean = isFavorite,
   val veto: List<MatchVeto> = emptyList(),
+  val currentMap: CurrentMatchMap? = null,
+)
+
+data class CurrentMatchMap(
+  val name: String,
+  val number: Int?,
+  val team1Score: Int?,
+  val team2Score: Int?,
+  val isLive: Boolean,
 )
 
 /** One structured map-veto step. Unknown actions keep the original note in [map]. */
