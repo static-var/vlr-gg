@@ -11,8 +11,12 @@ import androidx.compose.runtime.rememberUpdatedState
 import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
+import dev.staticvar.vlr.domain.repository.TeamRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -22,12 +26,43 @@ import org.koin.compose.koinInject
 @Composable
 internal fun PublishSearchFavorites(onFavoritesChanged: suspend (String) -> Unit) {
   val favorites = koinInject<FavoritesRepository>()
+  val teams = koinInject<TeamRepository>()
   val publish by rememberUpdatedState(onFavoritesChanged)
-  LaunchedEffect(favorites) {
-    favorites.observeDirectFavorites()
-      .map { it.searchFavorites() }
-      .distinctUntilChanged()
-      .collect { publish(Json.encodeToString(it)) }
+  LaunchedEffect(favorites, teams) {
+    publishSearchFavorites(favorites.observeDirectFavorites(), teams::refreshTeamDetails, publish)
+  }
+}
+
+internal suspend fun publishSearchFavorites(
+  snapshots: Flow<DirectFavoriteSnapshot>,
+  refreshTeam: suspend (String) -> Result<Unit>,
+  publish: suspend (String) -> Unit,
+) = coroutineScope {
+  val refreshJobs = mutableMapOf<String, Job>()
+  var published: List<SearchFavorite>? = null
+  snapshots.collect { snapshot ->
+    val entries = snapshot.searchFavorites()
+    if (entries != published) {
+      publish(Json.encodeToString(entries))
+      published = entries
+    }
+    val unresolvedTeamIds = (snapshot.teams.mapNotNull { it.unresolvedTeamId } +
+      snapshot.matches.flatMap { it.unresolvedTeamIds }).toSet()
+    (refreshJobs.keys - unresolvedTeamIds).forEach { teamId ->
+      refreshJobs.remove(teamId)?.cancel()
+    }
+    unresolvedTeamIds.forEach { teamId ->
+      if (teamId !in refreshJobs) {
+        refreshJobs[teamId] = launch {
+          var retryDelayMillis = 30_000L
+          while (true) {
+            if (refreshTeam(teamId).isSuccess) break
+            delay(retryDelayMillis)
+            retryDelayMillis = (retryDelayMillis * 2).coerceAtMost(30 * 60_000L)
+          }
+        }
+      }
+    }
   }
 }
 
@@ -49,6 +84,7 @@ internal data class SearchFavorite(
   val kind: SearchFavoriteKind,
   val sourceId: String,
   val title: String,
+  val aliases: List<String> = emptyList(),
 )
 
 internal fun DirectFavoriteSnapshot.searchFavorites(): List<SearchFavorite> =
@@ -64,5 +100,10 @@ internal fun DirectFavoriteSnapshot.searchFavorites(): List<SearchFavorite> =
       kind = kind,
       sourceId = favorite.id,
       title = favorite.title,
+      aliases = when (favorite) {
+        is DirectFavorite.Team -> listOfNotNull(favorite.shortName)
+        is DirectFavorite.Match -> favorite.teamShortNames
+        else -> emptyList()
+      },
     )
   }.distinctBy { it.id }.sortedBy { it.id }

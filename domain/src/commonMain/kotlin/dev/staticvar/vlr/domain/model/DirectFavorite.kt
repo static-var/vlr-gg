@@ -13,6 +13,8 @@ sealed interface DirectFavorite {
     override val id: String,
     override val title: String,
     override val imageUrl: String,
+    val shortName: String? = null,
+    val unresolvedTeamId: String? = null,
   ) : DirectFavorite
 
   data class Event(
@@ -25,6 +27,8 @@ sealed interface DirectFavorite {
     override val id: String,
     override val title: String,
     override val imageUrl: String,
+    val teamShortNames: List<String> = emptyList(),
+    val unresolvedTeamIds: List<String> = emptyList(),
   ) : DirectFavorite
 
   data class Player(

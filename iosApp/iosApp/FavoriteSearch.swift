@@ -18,8 +18,23 @@ struct SearchFavorite: Codable, Equatable, Sendable {
     let kind: Kind
     let sourceId: String
     let title: String
+    let aliases: [String]?
+
+    init(id: String, kind: Kind, sourceId: String, title: String, aliases: [String]? = nil) {
+        self.id = id
+        self.kind = kind
+        self.sourceId = sourceId
+        self.title = title
+        self.aliases = aliases
+    }
 
     var url: URL { VLRWidgetContract.detailsURL(kind: kind.rawValue, id: sourceId) }
+
+    private var searchableAliases: [String] {
+        guard kind == .team || kind == .match else { return [] }
+        return (aliases ?? []).map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+    }
 
     static func decode(_ data: Data) throws -> [SearchFavorite] {
         let records = try JSONDecoder().decode([SearchFavorite].self, from: data)
@@ -41,9 +56,9 @@ struct SearchFavorite: Codable, Equatable, Sendable {
             "spotlight.favorite.description",
             kind.localizedName
         )
-        attributes.textContent = "\(title). \(attributes.contentDescription ?? kind.localizedName)"
-        attributes.keywords = [
-            title,
+        attributes.textContent = ([title] + searchableAliases + [attributes.contentDescription ?? kind.localizedName])
+            .joined(separator: ". ")
+        attributes.keywords = [title] + searchableAliases + [
             "Val Esports",
             kind.localizedName,
             NativeLocalization.string("spotlight.favorite.keyword"),
@@ -55,7 +70,7 @@ struct SearchFavorite: Codable, Equatable, Sendable {
     func matches(_ query: String) -> Bool {
         let terms = query.split(whereSeparator: { $0.isWhitespace }).map(String.init)
         guard !terms.isEmpty else { return false }
-        let searchableText = "\(title) \(kind.localizedName)"
+        let searchableText = ([title] + searchableAliases + [kind.localizedName]).joined(separator: " ")
         return terms.allSatisfy { searchableText.localizedStandardContains($0) }
     }
 

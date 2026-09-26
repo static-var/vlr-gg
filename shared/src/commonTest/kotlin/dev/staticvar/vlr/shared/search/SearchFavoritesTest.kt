@@ -46,10 +46,29 @@ class SearchFavoritesTest {
     val initial = DirectFavoriteSnapshot(teams = listOf(first, second)).searchFavorites()
     val reordered = DirectFavoriteSnapshot(teams = listOf(second, first, first)).searchFavorites()
     val renamed = DirectFavoriteSnapshot(teams = listOf(first.copy(title = "New name"), second)).searchFavorites()
+    val retagged = DirectFavoriteSnapshot(teams = listOf(first.copy(shortName = "A"), second)).searchFavorites()
 
     assertEquals(initial, reordered)
     assertNotEquals(initial, renamed)
+    assertNotEquals(initial, retagged)
     assertEquals(initial.map { it.id }, renamed.map { it.id })
+    assertEquals(initial.map { it.id }, retagged.map { it.id })
+  }
+
+  @Test
+  fun teamAndMatchShortNamesBecomeSearchAliases() {
+    val favorites = DirectFavoriteSnapshot(
+      teams = listOf(DirectFavorite.Team("624", "Paper Rex", "", shortName = "PRX")),
+      matches = listOf(DirectFavorite.Match("91", "Paper Rex vs Fnatic", "", teamShortNames = listOf("PRX", "FNC"))),
+    ).searchFavorites()
+
+    assertEquals(listOf("PRX"), favorites.single { it.id == "team:624" }.aliases)
+    assertEquals(listOf("PRX", "FNC"), favorites.single { it.id == "match:91" }.aliases)
+    assertEquals("Paper Rex", favorites.single { it.id == "team:624" }.title)
+    assertEquals("Paper Rex vs Fnatic", favorites.single { it.id == "match:91" }.title)
+    assertEquals(listOf("PRX", "FNC"), Json.parseToJsonElement(Json.encodeToString(favorites))
+      .jsonArray.single { it.jsonObject.getValue("id").jsonPrimitive.content == "match:91" }
+      .jsonObject.getValue("aliases").jsonArray.map { it.jsonPrimitive.content })
   }
 
   @Test

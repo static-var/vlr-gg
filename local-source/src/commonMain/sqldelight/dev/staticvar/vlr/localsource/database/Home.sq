@@ -1,5 +1,6 @@
 getDirectFavorites:
-SELECT entity_type, id, title, image_url, current_team_id
+SELECT entity_type, id, title, image_url, current_team_id, short_name, opponent_short_name,
+    unresolved_team_id, unresolved_opponent_team_id
 FROM (
     SELECT
         0 AS entity_order,
@@ -7,7 +8,11 @@ FROM (
         favorite.team_id AS id,
         COALESCE(NULLIF(TRIM(team.name), ''), favorite.team_id) AS title,
         COALESCE(team.logo_url, '') AS image_url,
-        NULL AS current_team_id
+        NULL AS current_team_id,
+        NULLIF(TRIM(team.tag), '') AS short_name,
+        NULL AS opponent_short_name,
+        CASE WHEN NULLIF(TRIM(team.tag), '') IS NULL THEN favorite.team_id END AS unresolved_team_id,
+        NULL AS unresolved_opponent_team_id
     FROM favorite_teams AS favorite
     LEFT JOIN teams AS team ON team.id = favorite.team_id
     WHERE favorite.active = 1
@@ -20,7 +25,11 @@ FROM (
         favorite.event_id AS id,
         COALESCE(NULLIF(TRIM(event.name), ''), favorite.event_id) AS title,
         COALESCE(event.logo_url, '') AS image_url,
-        NULL AS current_team_id
+        NULL AS current_team_id,
+        NULL AS short_name,
+        NULL AS opponent_short_name,
+        NULL AS unresolved_team_id,
+        NULL AS unresolved_opponent_team_id
     FROM favorite_events AS favorite
     LEFT JOIN events AS event ON event.id = favorite.event_id
     WHERE favorite.active = 1
@@ -39,9 +48,15 @@ FROM (
             ELSE TRIM(cached_match.team1_name) || ' vs ' || TRIM(cached_match.team2_name)
         END AS title,
         COALESCE(cached_match.event_logo_url, '') AS image_url,
-        NULL AS current_team_id
+        NULL AS current_team_id,
+        NULLIF(TRIM(first_team.tag), '') AS short_name,
+        NULLIF(TRIM(second_team.tag), '') AS opponent_short_name,
+        CASE WHEN NULLIF(TRIM(first_team.tag), '') IS NULL THEN NULLIF(TRIM(cached_match.team1_id), '') END AS unresolved_team_id,
+        CASE WHEN NULLIF(TRIM(second_team.tag), '') IS NULL THEN NULLIF(TRIM(cached_match.team2_id), '') END AS unresolved_opponent_team_id
     FROM favorite_matches AS favorite
     LEFT JOIN matches AS cached_match ON cached_match.id = favorite.match_id
+    LEFT JOIN teams AS first_team ON first_team.id = cached_match.team1_id
+    LEFT JOIN teams AS second_team ON second_team.id = cached_match.team2_id
     WHERE favorite.active = 1
 
     UNION ALL
@@ -56,7 +71,11 @@ FROM (
             favorite.player_id
         ) AS title,
         COALESCE(player.image_url, '') AS image_url,
-        NULLIF(TRIM(player.current_team_id), '') AS current_team_id
+        NULLIF(TRIM(player.current_team_id), '') AS current_team_id,
+        NULL AS short_name,
+        NULL AS opponent_short_name,
+        NULL AS unresolved_team_id,
+        NULL AS unresolved_opponent_team_id
     FROM favorite_players AS favorite
     LEFT JOIN players AS player ON player.id = favorite.player_id
     WHERE favorite.active = 1
