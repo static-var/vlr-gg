@@ -7,8 +7,9 @@ import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
-import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
-import dev.staticvar.vlr.domain.repository.FavoritesRepository
+import dev.staticvar.vlr.domain.repository.FavoriteTopicMode
+import dev.staticvar.vlr.domain.repository.FavoriteTopicOperation
+import dev.staticvar.vlr.domain.repository.FavoriteTopicRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -22,7 +23,7 @@ import kotlin.coroutines.resumeWithException
 /** Keeps Firebase live match topics in sync with favorites and notification settings. */
 internal class AndroidLiveTopicSubscriptions(
   context: Context,
-  favorites: FavoritesRepository,
+  private val topics: FavoriteTopicRepository,
   private val preferences: LiveMatchNotificationPreferencesRepository,
   scope: CoroutineScope,
 ) {
@@ -30,15 +31,11 @@ internal class AndroidLiveTopicSubscriptions(
   private val storage = context.getSharedPreferences("live_match_topics", Context.MODE_PRIVATE)
   private val notifications = context.getSystemService(NotificationManager::class.java)
   private val refreshes = Channel<Unit>(Channel.CONFLATED)
-  @Volatile private var favoritesSnapshot: DirectFavoriteSnapshot? = null
 
   init {
     scope.launch {
-      combine(favorites.observeDirectFavorites(), preferences.preferences) { snapshot, _ -> snapshot }
-        .collect { snapshot ->
-          favoritesSnapshot = snapshot
-          refresh()
-        }
+      combine(topics.observeChanges(), preferences.preferences) { _, _ -> Unit }
+        .collect { refresh() }
     }
     scope.launch {
       for (ignored in refreshes) {
@@ -57,48 +54,34 @@ internal class AndroidLiveTopicSubscriptions(
     refreshes.trySend(Unit)
   }
 
-  /**
-   * Reconciles saved Firebase topics with the latest favorites and notification settings.
-   * Saves each completed change so a later refresh can continue after a failure.
-   */
   private suspend fun synchronize() {
-    val snapshot = favoritesSnapshot ?: return
-    if (!AndroidLiveNotificationAvailability.supportsMatchAlerts(appContext)) return
-    val liveSupported = AndroidLiveNotificationAvailability.isAvailable(appContext)
-    val channelId = if (liveSupported) {
-      "live_matches"
-    } else {
-      "match_alerts"
+    storage.getStringSet("topics", null)?.let { savedTopics ->
+      topics.importSubscriptions(savedTopics.toSet())
+      check(storage.edit().remove("topics").commit())
     }
-    val enabled = preferences.preferences.value.enabled &&
-      notifications.areNotificationsEnabled() &&
+    reconcileLiveTopicSubscriptions(
+      topics = topics,
+      mode = ::subscriptionMode,
+      previousToken = storage.getString("token", null),
+      transport = FirebaseLiveTopicSubscriptionTransport(FirebaseMessaging.getInstance()),
+      saveToken = { token -> check(storage.edit().putString("token", token).commit()) },
+    )
+  }
+
+  private fun subscriptionMode(): FavoriteTopicMode {
+    if (!AndroidLiveNotificationAvailability.supportsMatchAlerts(appContext)) return FavoriteTopicMode.Disabled
+    val liveSupported = AndroidLiveNotificationAvailability.isAvailable(appContext)
+    val channelId = if (liveSupported) "live_matches" else "match_alerts"
+    val enabled = preferences.preferences.value.enabled && notifications.areNotificationsEnabled() &&
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
         notifications.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE)
-    val desired = if (enabled) snapshot.notificationTopics(liveSupported) else emptySet()
-    val previous = LiveTopicSubscriptionState(
-      token = storage.getString("token", null),
-      topics = storage.getStringSet("topics", emptySet()).orEmpty(),
-    )
-    if (desired.isEmpty() && previous.topics.isEmpty()) return
-
-    reconcileLiveTopicSubscriptions(
-      desired = desired,
-      previous = previous,
-      transport = FirebaseLiveTopicSubscriptionTransport(FirebaseMessaging.getInstance()),
-    ) { state ->
-      storage.edit()
-        .putString("token", state.token)
-        .putStringSet("topics", state.topics)
-        .apply()
+    return when {
+      !enabled -> FavoriteTopicMode.Disabled
+      liveSupported -> FavoriteTopicMode.Live
+      else -> FavoriteTopicMode.TeamAlerts
     }
   }
 }
-
-/** Records the push token and its known live match topic subscriptions. */
-internal data class LiveTopicSubscriptionState(
-  val token: String?,
-  val topics: Set<String>,
-)
 
 /** Provides a push token and operations to change live match topic subscriptions. */
 internal interface LiveTopicSubscriptionTransport {
@@ -109,34 +92,25 @@ internal interface LiveTopicSubscriptionTransport {
   suspend fun unsubscribe(topic: String)
 }
 
-/**
- * Removes unwanted topics and subscribes to missing ones, saving completed changes.
- * After token rotation, rebuilds desired subscriptions and clears stale saved membership.
- */
 internal suspend fun reconcileLiveTopicSubscriptions(
-  desired: Set<String>,
-  previous: LiveTopicSubscriptionState,
+  topics: FavoriteTopicRepository,
+  mode: () -> FavoriteTopicMode,
+  previousToken: String?,
   transport: LiveTopicSubscriptionTransport,
-  save: (LiveTopicSubscriptionState) -> Unit,
+  saveToken: (String) -> Unit,
 ) {
   val token = transport.currentToken()
-  val current = previous.topics.toMutableSet()
-  if (previous.token != token) {
-    // Firebase restores subscriptions after token rotation. Remove interests that are no longer
-    // desired, then rebuild the known set so every desired topic is subscribed on the new token.
-    for (topic in current - desired) transport.unsubscribe(topic)
-    current.clear()
-    save(LiveTopicSubscriptionState(token, emptySet()))
+  if (previousToken != token) {
+    topics.invalidateAcknowledgements()
+    saveToken(token)
   }
-  for (topic in current - desired) {
-    transport.unsubscribe(topic)
-    current.remove(topic)
-    save(LiveTopicSubscriptionState(token, current.toSet()))
-  }
-  for (topic in desired - current) {
-    transport.subscribe(topic)
-    current.add(topic)
-    save(LiveTopicSubscriptionState(token, current.toSet()))
+  while (true) {
+    val operation = topics.nextOperation(mode()) ?: return
+    when (operation) {
+      is FavoriteTopicOperation.Subscribe -> transport.subscribe(operation.topic)
+      is FavoriteTopicOperation.Unsubscribe -> transport.unsubscribe(operation.topic)
+    }
+    topics.acknowledge(operation)
   }
 }
 
@@ -152,20 +126,6 @@ private class FirebaseLiveTopicSubscriptionTransport(
 
   override suspend fun unsubscribe(topic: String) {
     messaging.unsubscribeFromTopic(topic).awaitCompletion()
-  }
-}
-
-/** Uses cached player team IDs for alerts that do not register for backend live activities. */
-internal fun DirectFavoriteSnapshot.notificationTopics(liveSupported: Boolean): Set<String> = buildSet {
-  teams.forEach { add("live-team-${it.id}") }
-  matches.forEach { add("live-match-${it.id}") }
-  events.forEach { add("live-event-${it.id}") }
-  players.forEach { player ->
-    if (liveSupported) {
-      add("live-player-${player.id}")
-    } else {
-      player.currentTeamId?.takeIf(String::isNotBlank)?.let { add("live-team-$it") }
-    }
   }
 }
 

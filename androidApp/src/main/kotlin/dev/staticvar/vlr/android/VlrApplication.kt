@@ -73,7 +73,7 @@ class VlrApplication : Application() {
     )
     liveTopicSubscriptions = AndroidLiveTopicSubscriptions(
       context = this,
-      favorites = getKoin().get(),
+      topics = getKoin().get(),
       preferences = notificationPreferences,
       scope = scope,
     )
