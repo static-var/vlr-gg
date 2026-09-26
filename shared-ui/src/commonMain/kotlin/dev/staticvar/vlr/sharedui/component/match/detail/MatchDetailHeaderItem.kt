@@ -169,13 +169,8 @@ private fun MatchDetailHeaderContent(
         teams = teams,
         onTeamSelected = onTeamSelected,
         extraContentFade = extraContentFade,
+        currentMap = currentMap,
       )
-      currentMap?.let { map ->
-        MatchTicketCurrentMap(
-          map = map,
-          modifier = Modifier.padding(top = Prism.dimens.spacingM).transitionContentFade(extraContentFade),
-        )
-      }
       if (favoriteLabels.isNotEmpty()) {
         Text(
           text = stringResource(Res.string.match_event_favorite_via, favoriteLabels.joinToString(" · ")),

@@ -68,7 +68,5 @@
   <string name="match_event_win_type_defused">ENTSCHÄRFT</string>
   <string name="match_event_win_type_time_out">ZEIT ABGELAUFEN</string>
   <string name="match_event_win_type_not_played">NICHT GESPIELT</string>
-  <string name="match_event_map_number">Karte %1$d</string>
-  <string name="match_event_up_next">Als Nächstes</string>
-  <string name="match_event_round_score">Rundenstand</string>
+  <string name="match_event_match_score">Spielstand</string>
 </resources>

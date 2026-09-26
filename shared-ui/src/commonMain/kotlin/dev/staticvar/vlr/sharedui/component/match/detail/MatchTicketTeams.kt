@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,6 +27,7 @@ import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.component.ticket.PrismTicketStyle
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.domain.model.CurrentMatchMap
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
@@ -35,6 +38,7 @@ import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerContent
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
+import vlr.shared_ui.generated.resources.match_event_match_score
 import vlr.shared_ui.generated.resources.match_event_tbd
 
 @Composable
@@ -43,23 +47,53 @@ internal fun MatchTicketTeams(
   teams: List<TeamPreview>,
   onTeamSelected: ((String) -> Unit)?,
   extraContentFade: TransitionContentFade,
+  currentMap: CurrentMatchMap? = null,
 ) {
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
     MatchTicketTeam(matchId, teams.getOrNull(0), Modifier.weight(1f), onTeamSelected, extraContentFade)
     Box(
-      Modifier.weight(0.9f).height(64.dp),
+      Modifier.weight(0.9f).heightIn(min = 64.dp),
       contentAlignment = Alignment.Center,
     ) {
       SpoilerContent {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          MatchTicketScore(matchId, teams.getOrNull(0))
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          Row(Modifier.height(64.dp), verticalAlignment = Alignment.CenterVertically) {
+            MatchTicketScore(matchId, teams.getOrNull(0))
+            Text(
+              ":",
+              modifier = Modifier.transitionContentFade(extraContentFade),
+              style = Prism.typography.headline,
+              color = Prism.color.contentTertiary,
+            )
+            MatchTicketScore(matchId, teams.getOrNull(1))
+          }
           Text(
-            ":",
+            text = stringResource(Res.string.match_event_match_score),
             modifier = Modifier.transitionContentFade(extraContentFade),
-            style = Prism.typography.headline,
-            color = Prism.color.contentTertiary,
+            style = Prism.typography.caption,
+            color = Prism.color.contentSecondary,
+            textAlign = TextAlign.Center,
           )
-          MatchTicketScore(matchId, teams.getOrNull(1))
+          currentMap?.let { map ->
+            Column(
+              modifier = Modifier.padding(top = Prism.dimens.spacingS).transitionContentFade(extraContentFade),
+              horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+              Text(
+                text = "${map.team1Score?.toString() ?: "–"} : ${map.team2Score?.toString() ?: "–"}",
+                style = Prism.typography.headline,
+                maxLines = 1,
+              )
+              Text(
+                text = map.name,
+                style = Prism.typography.caption,
+                color = Prism.color.contentSecondary,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+              )
+            }
+          }
         }
       }
     }
