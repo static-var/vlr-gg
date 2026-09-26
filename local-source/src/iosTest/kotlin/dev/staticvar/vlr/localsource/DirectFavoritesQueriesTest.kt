@@ -103,6 +103,8 @@ class DirectFavoritesQueriesTest {
 
     val cached = database.homeQueries.getDirectFavorites().executeAsList()
     assertEquals("team-id", cached.single { it.entity_type == "PLAYER" }.current_team_id)
+    assertEquals("TEAM", cached.single { it.entity_type == "TEAM" }.short_name)
+    assertEquals(null, cached.single { it.entity_type == "TEAM" }.unresolved_team_id)
     assertEquals(
       listOf("Team Name", "Event Name", "Alpha vs Bravo", "Player Alias"),
       cached.map { it.title },
@@ -124,8 +126,46 @@ class DirectFavoritesQueriesTest {
 
     val afterRemoval = database.homeQueries.getDirectFavorites().executeAsList()
     assertEquals(null, afterRemoval.single { it.entity_type == "PLAYER" }.current_team_id)
+    assertEquals(null, afterRemoval.single { it.entity_type == "TEAM" }.short_name)
+    assertEquals("team-id", afterRemoval.single { it.entity_type == "TEAM" }.unresolved_team_id)
     assertEquals(listOf("team-id", "event-id", "match-id", "player-id"), afterRemoval.map { it.title })
     assertEquals(listOf("", "", "", ""), afterRemoval.map { it.image_url })
+  }
+
+  @Test
+  fun matchFavoritesIncludeCachedTeamShortNames() {
+    insertTeam("prx", "Paper Rex", " PRX ")
+    insertTeam("fnc", "Fnatic", "FNC")
+    database.teamsQueries.addFavoriteTeam("prx")
+    database.matchesQueries.insertMatch(
+      cachedMatch(team1Name = "Paper Rex").copy(
+        team1_id = "prx",
+        team2_id = "fnc",
+        team2_name = "Fnatic",
+      ),
+    )
+    database.matchesQueries.addFavoriteMatch("match-id")
+
+    val favorites = database.homeQueries.getDirectFavorites().executeAsList()
+    assertEquals("PRX", favorites.single { it.entity_type == "TEAM" }.short_name)
+    assertEquals(null, favorites.single { it.entity_type == "TEAM" }.unresolved_team_id)
+    val match = favorites.single { it.entity_type == "MATCH" }
+    assertEquals("Paper Rex vs Fnatic", match.title)
+    assertEquals("PRX", match.short_name)
+    assertEquals("FNC", match.opponent_short_name)
+    assertEquals(null, match.unresolved_team_id)
+    assertEquals(null, match.unresolved_opponent_team_id)
+
+    database.teamsQueries.deleteTeamById("prx")
+    val withoutTeam = database.homeQueries.getDirectFavorites().executeAsList()
+      .single { it.entity_type == "MATCH" }
+    assertEquals(null, withoutTeam.short_name)
+    assertEquals("FNC", withoutTeam.opponent_short_name)
+    assertEquals("prx", withoutTeam.unresolved_team_id)
+    database.teamsQueries.deleteTeamById("fnc")
+    val withoutEitherTeam = database.homeQueries.getDirectFavorites().executeAsList()
+      .single { it.entity_type == "MATCH" }
+    assertEquals("fnc", withoutEitherTeam.unresolved_opponent_team_id)
   }
 
   private fun addAllFavorites() {
@@ -136,22 +176,7 @@ class DirectFavoritesQueriesTest {
   }
 
   private fun insertCachedEntities() {
-    database.teamsQueries.insertTeam(
-      Teams(
-        id = "team-id",
-        name = "Team Name",
-        tag = "TEAM",
-        logo_url = "team.png",
-        region = "NA",
-        country = "US",
-        roster_url = null,
-        earnings = null,
-        rank = 1,
-        website = null,
-        twitter = null,
-        last_updated = 0,
-      ),
-    )
+    insertTeam("team-id", "Team Name", "TEAM")
     database.eventsQueries.insertEvent(
       Events(
         id = "event-id",
@@ -178,6 +203,25 @@ class DirectFavoritesQueriesTest {
         twitter_url = null,
         twitch_url = null,
         total_winnings = 0.0,
+        last_updated = 0,
+      ),
+    )
+  }
+
+  private fun insertTeam(id: String, name: String, tag: String) {
+    database.teamsQueries.insertTeam(
+      Teams(
+        id = id,
+        name = name,
+        tag = tag,
+        logo_url = "team.png",
+        region = "NA",
+        country = "US",
+        roster_url = null,
+        earnings = null,
+        rank = 1,
+        website = null,
+        twitter = null,
         last_updated = 0,
       ),
     )

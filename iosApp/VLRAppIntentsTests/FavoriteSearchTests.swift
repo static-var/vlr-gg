@@ -193,6 +193,8 @@ final class FavoriteSearchTests: XCTestCase {
     func testDecodeRejectsMismatchedDuplicateAndUnsafeIdentifiers() throws {
         let valid = #"[{"id":"team:12","kind":"team","sourceId":"12","title":"Team Liquid"}]"#
         XCTAssertEqual(try SearchFavorite.decode(Data(valid.utf8)).first?.url.absoluteString, "https://valorantesports.staticvar.dev/team/12")
+        let withAlias = #"[{"id":"team:624","kind":"team","sourceId":"624","title":"Paper Rex","aliases":["PRX"]}]"#
+        XCTAssertEqual(try SearchFavorite.decode(Data(withAlias.utf8)).first?.aliases, ["PRX"])
         for invalid in [
             valid.replacingOccurrences(of: "team:12", with: "event:12"),
             valid.replacingOccurrences(of: "\"sourceId\":\"12\"", with: "\"sourceId\":\"../12\""),
@@ -213,10 +215,17 @@ final class FavoriteSearchTests: XCTestCase {
         let event = SearchFavorite(id: "event:1", kind: .event, sourceId: "1", title: "Champions 2026")
         XCTAssertTrue(event.matches("2026 \(SearchFavorite.Kind.event.localizedName)"))
         XCTAssertFalse(event.matches(SearchFavorite.Kind.player.localizedName))
+        let paperRex = SearchFavorite(id: "team:624", kind: .team, sourceId: "624", title: "Paper Rex", aliases: ["PRX"])
+        let match = SearchFavorite(id: "match:91", kind: .match, sourceId: "91", title: "Paper Rex vs Fnatic", aliases: ["PRX", "FNC"])
+        XCTAssertTrue(paperRex.matches("PRX"))
+        XCTAssertTrue(match.matches("PRX"))
+        XCTAssertTrue(match.matches("FNC"))
+        XCTAssertTrue(match.matches("PRX Fnatic"))
+        XCTAssertFalse(match.matches("SEN"))
     }
 
     func testFavoriteMetadataContainsSearchableTextAndCuratedFlag() {
-        let favorite = SearchFavorite(id: "team:12", kind: .team, sourceId: "12", title: "Team Liquid")
+        let favorite = SearchFavorite(id: "team:624", kind: .team, sourceId: "624", title: "Paper Rex", aliases: ["PRX"])
         let attributes = favorite.attributes()
         XCTAssertEqual(attributes.title, favorite.title)
         XCTAssertEqual(attributes.displayName, favorite.title)
@@ -224,7 +233,12 @@ final class FavoriteSearchTests: XCTestCase {
         XCTAssertTrue(attributes.textContent?.contains(favorite.title) == true)
         XCTAssertTrue(attributes.textContent?.contains(SearchFavorite.Kind.team.localizedName) == true)
         XCTAssertTrue(attributes.keywords?.contains(favorite.title) == true)
+        XCTAssertTrue(attributes.keywords?.contains("PRX") == true)
+        XCTAssertTrue(attributes.textContent?.contains("PRX") == true)
         XCTAssertEqual(attributes.url, favorite.url)
+        let match = SearchFavorite(id: "match:91", kind: .match, sourceId: "91", title: "Paper Rex vs Fnatic", aliases: ["PRX", "FNC"])
+        XCTAssertEqual(match.attributes().title, "Paper Rex vs Fnatic")
+        XCTAssertTrue(match.attributes().keywords?.contains("PRX") == true)
     }
 
     func testEveryKindHasDistinctIdentityAndDestination() {
