@@ -11,6 +11,7 @@ import dev.staticvar.vlr.data.repository.CacheCleanupRepositoryImpl
 import dev.staticvar.vlr.data.repository.CircuitStandingsRepositoryImpl
 import dev.staticvar.vlr.data.repository.EventRepositoryImpl
 import dev.staticvar.vlr.data.repository.FavoriteScheduleRepositoryImpl
+import dev.staticvar.vlr.data.repository.FavoriteTopicRepositoryImpl
 import dev.staticvar.vlr.data.repository.FavoritesRepositoryImpl
 import dev.staticvar.vlr.data.repository.MatchRepositoryImpl
 import dev.staticvar.vlr.data.repository.NewsRepositoryImpl
@@ -22,6 +23,7 @@ import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.domain.repository.CircuitStandingsRepository
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
+import dev.staticvar.vlr.domain.repository.FavoriteTopicRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.domain.repository.NewsRepository
@@ -50,6 +52,7 @@ fun dataModule(): Module = module {
   }
   single<CacheCleanupRepository> { CacheCleanupRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoriteScheduleRepository> { FavoriteScheduleRepositoryImpl(database = get(), dispatchers = get()) }
+  single<FavoriteTopicRepository> { FavoriteTopicRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoritesRepository> { FavoritesRepositoryImpl(database = get(), dispatchers = get()) }
   single<MatchRepository> {
     get<Settings>().apply {
