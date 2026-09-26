@@ -36,6 +36,7 @@ private val appRouteSavedStateConfiguration: SavedStateConfiguration =
           subclass(AppRoute.Events::class, AppRoute.Events.serializer())
           subclass(AppRoute.Rankings::class, AppRoute.Rankings.serializer())
           subclass(AppRoute.About::class, AppRoute.About.serializer())
+          subclass(AppRoute.DeveloperNote::class, AppRoute.DeveloperNote.serializer())
           subclass(AppRoute.WhatsNew::class, AppRoute.WhatsNew.serializer())
           subclass(AppRoute.Settings::class, AppRoute.Settings.serializer())
           subclass(AppRoute.Appearance::class, AppRoute.Appearance.serializer())
@@ -168,6 +169,10 @@ public class VlrAppState internal constructor(
 
   public fun showWhatsNew() {
     pushRoute(route = AppRoute.WhatsNew)
+  }
+
+  public fun showDeveloperNote() {
+    pushRoute(route = AppRoute.DeveloperNote)
   }
 
   public fun showAbout() {

@@ -32,6 +32,7 @@ import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.featureabout.presentation.AboutRoute
 import dev.staticvar.vlr.featureabout.presentation.AppearanceRoute
 import dev.staticvar.vlr.featureabout.presentation.BundledRelease
+import dev.staticvar.vlr.featureabout.presentation.DeveloperNoteRoute
 import dev.staticvar.vlr.featureabout.presentation.ExperimentalRoute
 import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewBanner
@@ -336,12 +337,19 @@ internal fun appNavigationModule(): Module = module {
       modifier = Modifier.fillMaxSize(),
     )
   }
+  navigation<AppRoute.DeveloperNote> {
+    DeveloperNoteRoute(
+      onBack = LocalVlrAppState.current::navigateUp,
+      modifier = Modifier.fillMaxSize(),
+    )
+  }
   navigation<AppRoute.Settings> {
     val appState = LocalVlrAppState.current
     SettingsRoute(
       onAppearance = appState::showAppearance,
       onExperimental = appState::showExperimental,
       onAbout = appState::showAbout,
+      onDeveloperNote = appState::showDeveloperNote,
       onWhatsNew = appState::showWhatsNew,
       onBack = appState::navigateUp,
       modifier = Modifier.fillMaxSize(),

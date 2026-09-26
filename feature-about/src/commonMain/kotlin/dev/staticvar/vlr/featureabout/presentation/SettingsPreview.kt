@@ -25,6 +25,7 @@ internal fun SettingsPreview(@PreviewParameter(PrismPreviewProvider::class) vari
       onAppearance = {},
       onExperimental = {},
       onAbout = {},
+      onDeveloperNote = {},
       onWhatsNew = {},
     )
   }

@@ -35,6 +35,8 @@ import vlr.feature_about.generated.resources.experimental
 import vlr.feature_about.generated.resources.experimental_description
 import vlr.feature_about.generated.resources.how_val_esports_handles_your_data
 import vlr.feature_about.generated.resources.make_it_yours
+import vlr.feature_about.generated.resources.note_settings_description
+import vlr.feature_about.generated.resources.note_title
 import vlr.feature_about.generated.resources.privacy_policy
 import vlr.feature_about.generated.resources.settings
 import vlr.feature_about.generated.resources.terms_of_service
@@ -49,6 +51,7 @@ public fun SettingsRoute(
   onAppearance: () -> Unit,
   onExperimental: () -> Unit,
   onAbout: () -> Unit,
+  onDeveloperNote: () -> Unit,
   onWhatsNew: () -> Unit,
   onBack: (() -> Unit)? = null,
   modifier: Modifier = Modifier,
@@ -79,6 +82,11 @@ public fun SettingsRoute(
         title = stringResource(Res.string.what_s_new),
         description = stringResource(Res.string.the_latest_features_and_improvements),
         onClick = onWhatsNew,
+      )
+      SettingsLinkCard(
+        title = stringResource(Res.string.note_title),
+        description = stringResource(Res.string.note_settings_description),
+        onClick = onDeveloperNote,
       )
       SettingsLinkCard(
         title = stringResource(Res.string.about_val_esports),
