@@ -1,3 +1,5 @@
+import kotlin.Boolean;
+
 -- Core matches table
 CREATE TABLE matches (
     id TEXT NOT NULL PRIMARY KEY,
@@ -27,6 +29,26 @@ CREATE INDEX idx_match_event_id ON matches(event_id);
 CREATE INDEX idx_match_status_time ON matches(status, time);
 CREATE INDEX idx_match_team1_time ON matches(team1_id, time);
 CREATE INDEX idx_match_team2_time ON matches(team2_id, time);
+
+CREATE TABLE match_current_map (
+    match_id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    number INTEGER,
+    team1_score INTEGER,
+    team2_score INTEGER,
+    is_live INTEGER AS Boolean NOT NULL,
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+);
+
+CREATE TABLE match_veto (
+    match_id TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    team TEXT,
+    action TEXT NOT NULL,
+    map TEXT NOT NULL,
+    PRIMARY KEY(match_id, position),
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+);
 
 -- Match maps
 CREATE TABLE match_maps (
@@ -372,3 +394,23 @@ SELECT m.id AS match_id, 'EVENT' AS source, f.event_id AS entity_id, m.event_nam
 FROM scoped_matches AS m
 INNER JOIN favorite_events AS f ON f.event_id = m.event_id
 WHERE f.event_id != '';
+
+getMatchCurrentMap:
+SELECT * FROM match_current_map WHERE match_id = :match_id;
+
+insertMatchCurrentMap:
+INSERT OR REPLACE INTO match_current_map(match_id, name, number, team1_score, team2_score, is_live)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteMatchCurrentMap:
+DELETE FROM match_current_map WHERE match_id = :match_id;
+
+getMatchVeto:
+SELECT * FROM match_veto WHERE match_id = :match_id ORDER BY position;
+
+insertMatchVeto:
+INSERT OR REPLACE INTO match_veto(match_id, position, team, action, map)
+VALUES (?, ?, ?, ?, ?);
+
+deleteMatchVeto:
+DELETE FROM match_veto WHERE match_id = :match_id;
