@@ -119,11 +119,6 @@
     <string name="live_match_updates">Live match updates</string>
     <string name="live_match_updates_description">Follow live scores in notifications.</string>
     <string name="notifications_permission_description">Allow notifications to receive live match updates.</string>
-    <string name="release_1_0_4_introduction">Follow live scores, choose your app’s look, and explore more match details.</string>
-    <string name="release_1_0_4_live_title">Live scores for your favorites</string>
-    <string name="release_1_0_4_live_description">Enable live scores for favorite matches and events on supported devices, with Live Activities on iOS and Live Updates on Android.</string>
-    <string name="release_1_0_4_appearance_title">Make the app yours</string>
-    <string name="release_1_0_4_appearance_description">Choose your app icon, theme, and mascot in the new Appearance settings.</string>
     <string name="notification_promotion_unavailable">Live scores can still appear as regular notifications. Your device is not allowing promoted Live Updates for this app. Check system notification settings; availability also depends on your device.</string>
     <string name="match_alerts">Match alerts</string>
     <string name="match_alerts_description">Get a notification when a favorite match goes live. Live score updates are unavailable on this device.</string>
@@ -144,4 +139,23 @@
     <string name="match_reminders_description">Get a reminder before a favorite match starts. Allow notifications to receive reminders.</string>
     <string name="match_reminders_permission_description">Allow notifications to receive reminders for your favorites.</string>
     <string name="live_updates_with_reminders_description">Follow live scores in notifications. When Live Updates are off, favorites still receive pre-match reminders.</string>
+    <string name="release_1_0_6_introduction">Catch up on everything added since 1.0.0, with more ways to follow your favorites and make the app yours.</string>
+    <string name="release_1_0_6_favorites_title">Follow your favorites</string>
+    <string name="release_1_0_6_favorites_description">Find live matches and results from the past 24 hours for your favorite teams, events, and matches on Home.</string>
+    <string name="release_1_0_6_ios_live_title">Live scores for your favorites</string>
+    <string name="release_1_0_6_ios_live_description">Follow live map scores on your Lock Screen and Dynamic Island on supported iPhones with Live Activities on iOS 18 or later.</string>
+    <string name="release_1_0_6_android_live_title">Live scores and match reminders</string>
+    <string name="release_1_0_6_android_live_description">Follow scores with Live Updates on supported devices. Other devices can receive reminders before favorite matches start.</string>
+    <string name="release_1_0_6_widgets_title">Refreshed widgets</string>
+    <string name="release_1_0_6_widgets_description">See upcoming matches and live scores in refreshed home screen widgets.</string>
+    <string name="release_1_0_6_appearance_title">Make the app yours</string>
+    <string name="release_1_0_6_appearance_description">Choose your app icon, theme, and mascot in Appearance settings.</string>
+    <string name="release_1_0_6_languages_title">Now in 9 languages</string>
+    <string name="release_1_0_6_languages_description">Use the app in English, Hindi, Spanish, French, German, Brazilian Portuguese, Russian, Turkish, or Korean.</string>
+    <string name="release_1_0_6_ios_shortcuts_title">Favorites in Spotlight and Siri</string>
+    <string name="release_1_0_6_ios_shortcuts_description">Find favorite teams and events in Spotlight, or ask Siri about your next favorite match.</string>
+    <string name="release_1_0_6_stability_title">Smoother navigation</string>
+    <string name="release_1_0_6_stability_description">Move between screens more smoothly, with stability fixes including a crash when returning to Home.</string>
+    <string name="release_1_0_6_search_title">Find your team</string>
+    <string name="release_1_0_6_search_description">Search for teams from Rankings, including teams outside the current rankings, and open their profiles.</string>
 </resources>
