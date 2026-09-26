@@ -174,4 +174,7 @@
     <string name="note_rate_app_store">Оценить в App Store</string>
     <string name="note_store_unavailable">Не удалось открыть магазин. Попробуйте ещё раз.</string>
     <string name="note_developers">Shreyansh &amp; Akhil</string>
+    <string name="settings_preferences">Предпочтения</string>
+    <string name="settings_legal">Правовая информация</string>
+    <string name="settings_thank_you">Спасибо</string>
 </resources>

@@ -172,4 +172,7 @@
     <string name="note_rate_app_store">App Store पर रेटिंग दें</string>
     <string name="note_store_unavailable">स्टोर नहीं खुल सका। कृपया फिर से कोशिश करें।</string>
     <string name="note_developers">Shreyansh &amp; Akhil</string>
+    <string name="settings_preferences">प्राथमिकताएँ</string>
+    <string name="settings_legal">कानूनी जानकारी</string>
+    <string name="settings_thank_you">धन्यवाद</string>
 </resources>

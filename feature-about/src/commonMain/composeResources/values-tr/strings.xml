@@ -171,4 +171,7 @@
     <string name="note_rate_app_store">App Store’da değerlendir</string>
     <string name="note_store_unavailable">Mağaza açılamadı. Lütfen tekrar dene.</string>
     <string name="note_developers">Shreyansh &amp; Akhil</string>
+    <string name="settings_preferences">Tercihler</string>
+    <string name="settings_legal">Yasal bilgiler</string>
+    <string name="settings_thank_you">Teşekkürler</string>
 </resources>
