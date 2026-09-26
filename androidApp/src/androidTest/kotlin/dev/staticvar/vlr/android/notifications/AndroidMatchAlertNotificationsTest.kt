@@ -47,6 +47,7 @@ class AndroidMatchAlertNotificationsTest {
     grantNotificationPermission()
     val renderer = AndroidMatchAlertNotifications(context, notificationsAllowed = { true })
     renderer.handle(payload())
+    awaitVisible(true)
     assertTrue(storage.contains(matchId))
     renderer.handle(payload(body = "Duplicate"))
     assertEquals("Match is starting soon", manager.activeNotifications.single { it.tag == tag }.notification.extras.getString(Notification.EXTRA_TEXT))
