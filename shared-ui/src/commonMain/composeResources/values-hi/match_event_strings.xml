@@ -69,7 +69,5 @@
   <string name="match_event_win_type_defused">डिफ्यूज़</string>
   <string name="match_event_win_type_time_out">समय समाप्त</string>
   <string name="match_event_win_type_not_played">नहीं खेला गया</string>
-  <string name="match_event_map_number">मैप %1$d</string>
-  <string name="match_event_up_next">अगला</string>
-  <string name="match_event_round_score">राउंड स्कोर</string>
+  <string name="match_event_match_score">मैच स्कोर</string>
 </resources>
