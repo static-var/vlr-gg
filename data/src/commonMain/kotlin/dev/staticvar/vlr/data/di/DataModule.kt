@@ -13,7 +13,6 @@ import dev.staticvar.vlr.data.cache.VetoStore
 import dev.staticvar.vlr.data.repository.CacheCleanupRepositoryImpl
 import dev.staticvar.vlr.data.repository.CircuitStandingsRepositoryImpl
 import dev.staticvar.vlr.data.repository.EventRepositoryImpl
-import dev.staticvar.vlr.data.repository.FavoriteMatchesRepositoryImpl
 import dev.staticvar.vlr.data.repository.FavoriteScheduleRepositoryImpl
 import dev.staticvar.vlr.data.repository.FavoritesRepositoryImpl
 import dev.staticvar.vlr.data.repository.MatchRepositoryImpl
@@ -25,7 +24,6 @@ import dev.staticvar.vlr.data.repository.TeamSearchRepositoryImpl
 import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.domain.repository.CircuitStandingsRepository
 import dev.staticvar.vlr.domain.repository.EventRepository
-import dev.staticvar.vlr.domain.repository.FavoriteMatchesRepository
 import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
