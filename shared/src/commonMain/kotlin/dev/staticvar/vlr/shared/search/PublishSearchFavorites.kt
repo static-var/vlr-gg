@@ -12,6 +12,10 @@ import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -25,23 +29,40 @@ internal fun PublishSearchFavorites(onFavoritesChanged: suspend (String) -> Unit
   val teams = koinInject<TeamRepository>()
   val publish by rememberUpdatedState(onFavoritesChanged)
   LaunchedEffect(favorites, teams) {
-    val attemptedTeamIds = mutableSetOf<String>()
-    var published: List<SearchFavorite>? = null
-    favorites.observeDirectFavorites()
-      .collect { snapshot ->
-        val entries = snapshot.searchFavorites()
-        if (entries != published) {
-          publish(Json.encodeToString(entries))
-          published = entries
-        }
-        val unresolvedTeamIds = snapshot.teams.mapNotNull { it.unresolvedTeamId } +
-          snapshot.matches.flatMap { it.unresolvedTeamIds }
-        unresolvedTeamIds.forEach { teamId ->
-          if (attemptedTeamIds.add(teamId)) {
-            launch { teams.refreshTeamDetails(teamId) }
+    publishSearchFavorites(favorites.observeDirectFavorites(), teams::refreshTeamDetails, publish)
+  }
+}
+
+internal suspend fun publishSearchFavorites(
+  snapshots: Flow<DirectFavoriteSnapshot>,
+  refreshTeam: suspend (String) -> Result<Unit>,
+  publish: suspend (String) -> Unit,
+) = coroutineScope {
+  val refreshJobs = mutableMapOf<String, Job>()
+  var published: List<SearchFavorite>? = null
+  snapshots.collect { snapshot ->
+    val entries = snapshot.searchFavorites()
+    if (entries != published) {
+      publish(Json.encodeToString(entries))
+      published = entries
+    }
+    val unresolvedTeamIds = (snapshot.teams.mapNotNull { it.unresolvedTeamId } +
+      snapshot.matches.flatMap { it.unresolvedTeamIds }).toSet()
+    (refreshJobs.keys - unresolvedTeamIds).forEach { teamId ->
+      refreshJobs.remove(teamId)?.cancel()
+    }
+    unresolvedTeamIds.forEach { teamId ->
+      if (teamId !in refreshJobs) {
+        refreshJobs[teamId] = launch {
+          var retryDelayMillis = 30_000L
+          while (true) {
+            if (refreshTeam(teamId).isSuccess) break
+            delay(retryDelayMillis)
+            retryDelayMillis = (retryDelayMillis * 2).coerceAtMost(30 * 60_000L)
           }
         }
       }
+    }
   }
 }
 
