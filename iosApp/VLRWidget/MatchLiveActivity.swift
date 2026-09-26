@@ -26,7 +26,7 @@ struct MatchLiveActivity: Widget {
             } compactLeading: {
                 HStack(spacing: 4) {
                     MatchLiveActivityLogo(team: context.state.teams.first, size: 20)
-                    Text(scores.primaryLeft)
+                    MatchLiveActivityRollingScore(value: scores.primaryLeft, height: 20)
                 }
                 .font(PrismWidgetFont.regular(13, relativeTo: .caption))
                 .foregroundStyle(PrismWidgetPalette.dark.accent)
@@ -35,7 +35,7 @@ struct MatchLiveActivity: Widget {
                 .environment(\.colorScheme, .dark)
             } compactTrailing: {
                 HStack(spacing: 4) {
-                    Text(scores.primaryRight)
+                    MatchLiveActivityRollingScore(value: scores.primaryRight, height: 20)
                     MatchLiveActivityLogo(team: context.state.teams.dropFirst().first, size: 20)
                 }
                 .font(PrismWidgetFont.regular(13, relativeTo: .caption))
@@ -268,14 +268,16 @@ private struct MatchLiveActivityScorePair: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            Text(left).frame(maxWidth: .infinity, alignment: .trailing)
+            MatchLiveActivityRollingScore(value: left, height: size * 1.15)
+                .frame(maxWidth: .infinity, alignment: .trailing)
             VStack(spacing: 5) {
                 Circle().frame(width: 2, height: 2)
                 Circle().frame(width: 2, height: 2)
             }
             .frame(width: 5)
             .accessibilityHidden(true)
-            Text(right).frame(maxWidth: .infinity, alignment: .leading)
+            MatchLiveActivityRollingScore(value: right, height: size * 1.15)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .font(PrismWidgetFont.regular(size, relativeTo: .largeTitle))
         .foregroundStyle(color)
@@ -303,6 +305,22 @@ struct MatchLiveActivityScores {
     private var primary: [Int?] {
         state.terminal ? seriesScores : state.current_map?.scores ?? seriesScores
     }
+private struct MatchLiveActivityRollingScore: View {
+    let value: String
+    let height: CGFloat
+
+    var body: some View {
+        ZStack {
+            Text(value)
+                .id(value)
+                .transition(.push(from: .bottom))
+        }
+        .frame(height: height)
+        .clipped()
+        .animation(.easeInOut(duration: 0.45), value: value)
+    }
+}
+
 
     private func display(_ values: [Int?], at index: Int) -> String {
         guard !hidden, values.indices.contains(index), let value = values[index] else { return "—" }
