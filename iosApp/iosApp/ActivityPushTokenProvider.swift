@@ -1,6 +1,7 @@
 import ActivityKit
 import Foundation
 import shared
+import UIKit
 
 /// Watches Live Activities and caches logos when their teams change.
 @available(iOS 16.2, *)
@@ -64,8 +65,9 @@ final class MatchActivityLogoObserver {
 
 /// Remembers matches seen in current and recent Live Activities.
 @available(iOS 16.2, *)
-private enum ObservedMatchActivities {
+enum ObservedMatchActivities {
     private static let key = "notifications.observedLiveActivityMatchIds"
+    private static let endingKey = "notifications.endingLiveActivityIds"
     private static let limit = 256
 
     static func record(_ matchID: String) {
@@ -75,11 +77,47 @@ private enum ObservedMatchActivities {
 
     static func all() -> [String] {
         let stored = UserDefaults.standard.stringArray(forKey: key) ?? []
-        let current = Activity<MatchActivityAttributes>.activities.map { $0.attributes.match_id }
+        let ending = Set(UserDefaults.standard.stringArray(forKey: endingKey) ?? [])
+        let current = Activity<MatchActivityAttributes>.activities
+            .filter { $0.activityState != .ended && $0.activityState != .dismissed && !ending.contains($0.id) }
+            .map { $0.attributes.match_id }
         for matchID in current where !stored.contains(matchID) {
             record(matchID)
         }
         return Array(Set(stored + current))
+    }
+
+    static func forget(_ matchID: String) {
+        let stored = UserDefaults.standard.stringArray(forKey: key) ?? []
+        if stored.contains(matchID) {
+            UserDefaults.standard.set(stored.filter { $0 != matchID }, forKey: key)
+        }
+    }
+
+    static func clear() {
+        if !(UserDefaults.standard.stringArray(forKey: key) ?? []).isEmpty {
+            UserDefaults.standard.set([], forKey: key)
+        }
+    }
+
+    static func markEnding(_ activityID: String) {
+        let stored = UserDefaults.standard.stringArray(forKey: endingKey) ?? []
+        if !stored.contains(activityID) {
+            UserDefaults.standard.set(Array((stored + [activityID]).suffix(limit)), forKey: endingKey)
+        }
+    }
+
+    static func finishEnding(_ activityID: String) {
+        let stored = UserDefaults.standard.stringArray(forKey: endingKey) ?? []
+        if stored.contains(activityID) {
+            UserDefaults.standard.set(stored.filter { $0 != activityID }, forKey: endingKey)
+        }
+    }
+
+    static func clearEnding() {
+        if !(UserDefaults.standard.stringArray(forKey: endingKey) ?? []).isEmpty {
+            UserDefaults.standard.set([], forKey: endingKey)
+        }
     }
 }
 
@@ -105,7 +143,7 @@ final class IosActivityPushTokenProvider: NSObject, PushTokenProvider {
     /// Suppresses duplicate tokens and keeps only one observation task running.
     func start(onToken: @escaping (String) -> Void) {
         guard observationTask == nil else { return }
-        guard #available(iOS 17.2, *) else { return }
+        guard #available(iOS 18.0, *) else { return }
 
         observationTask = Task { @MainActor in
             var lastToken: String?
@@ -144,6 +182,63 @@ private extension Data {
     }
 }
 
+@available(iOS 16.2, *)
+@MainActor
+final class IosMatchActivityOptOut {
+    static let shared = IosMatchActivityOptOut()
+
+    private let preferenceKey = "notifications.favorites"
+    private var observationTask: Task<Void, Never>?
+    private var notificationObservers: [NSObjectProtocol] = []
+    private var endingActivityIDs: Set<String> = []
+
+    func start() {
+        guard observationTask == nil else { return }
+        if UserDefaults.standard.bool(forKey: preferenceKey) {
+            ObservedMatchActivities.clearEnding()
+        }
+        let center = NotificationCenter.default
+        for name in [UserDefaults.didChangeNotification, UIApplication.didBecomeActiveNotification] {
+            notificationObservers.append(center.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                Task { @MainActor in self?.reconcile() }
+            })
+        }
+        reconcile()
+        observationTask = Task {
+            for await activity in Activity<MatchActivityAttributes>.activityUpdates {
+                endIfDisabled(activity)
+            }
+        }
+    }
+
+    func preferenceChanged(_ enabled: Bool) {
+        if !enabled { reconcile() }
+    }
+
+    func reconcile() {
+        guard !UserDefaults.standard.bool(forKey: preferenceKey) else { return }
+        ObservedMatchActivities.clear()
+        for activity in Activity<MatchActivityAttributes>.activities {
+            endIfDisabled(activity)
+        }
+    }
+
+    private func endIfDisabled(_ activity: Activity<MatchActivityAttributes>) {
+        guard !UserDefaults.standard.bool(forKey: preferenceKey),
+              activity.activityState != .ended,
+              activity.activityState != .dismissed,
+              endingActivityIDs.insert(activity.id).inserted else { return }
+        ObservedMatchActivities.markEnding(activity.id)
+        ObservedMatchActivities.forget(activity.attributes.match_id)
+        Task {
+            await activity.end(nil, dismissalPolicy: .immediate)
+            endingActivityIDs.remove(activity.id)
+            ObservedMatchActivities.finishEnding(activity.id)
+            ObservedMatchActivities.forget(activity.attributes.match_id)
+        }
+    }
+}
+
 #if DEBUG && targetEnvironment(simulator)
 /// Runs Live Activity test commands supplied through the simulator environment.
 @available(iOS 16.2, *)
@@ -162,7 +257,7 @@ enum SimulatorMatchActivity {
             guard payload.state.match_id == "3141592653" else {
                 throw TestError.unsupportedMatch
             }
-            if payload.event != .inspect {
+            if payload.event != .inspect && payload.event != .enable && payload.event != .disable && payload.event != .clear {
                 await MatchActivityLogoCache.prefetch(payload.state.teams.compactMap(\.img))
             }
             let content = ActivityContent(state: payload.state, staleDate: Date().addingTimeInterval(180))
@@ -170,6 +265,11 @@ enum SimulatorMatchActivity {
                 $0.attributes.match_id == payload.state.match_id
             }
             switch payload.event {
+            case .enable, .disable:
+                let enabled = payload.event == .enable
+                UserDefaults.standard.set(enabled, forKey: "notifications.favorites")
+                IosMatchActivityOptOut.shared.preferenceChanged(enabled)
+                writeResult(["event": payload.event.rawValue, "status": "succeeded"])
             case .inspect:
                 let states = try JSONEncoder().encode(activities.map { $0.content.state })
                 writeResult([
@@ -188,6 +288,12 @@ enum SimulatorMatchActivity {
                     pushType: nil
                 )
                 writeResult(["event": "start", "activity_id": activity.id, "status": "succeeded"])
+            case .clear:
+                for activity in activities {
+                    await activity.end(nil, dismissalPolicy: .immediate)
+                }
+                ObservedMatchActivities.forget(payload.state.match_id)
+                writeResult(["event": "clear", "status": "succeeded"])
             case .update, .end:
                 guard !activities.isEmpty else { throw TestError.noActivity }
                 for activity in activities {
@@ -213,7 +319,7 @@ enum SimulatorMatchActivity {
     /// Pairs a simulator test command with its match state.
     private struct Payload: Decodable {
         /// Lists the Live Activity commands supported by simulator tests.
-        enum Event: String, Decodable { case start, update, end, inspect }
+        enum Event: String, Decodable { case start, update, end, inspect, enable, disable, clear }
         let event: Event
         let state: MatchActivityAttributes.ContentState
     }

@@ -14,37 +14,29 @@ import android.net.Uri
 import android.os.Build
 import dev.staticvar.vlr.android.MainActivity
 import dev.staticvar.vlr.android.R
-import kotlinx.serialization.json.Json
 
-/** Posts backend-driven match alerts independently of Android Live Update eligibility. */
+/** Posts the legacy pre-match reminders sent to favorite FCM topics. */
 internal class AndroidMatchAlertNotifications(
   private val context: Context,
-  json: Json,
-  private val enabled: () -> Boolean,
   private val notificationsAllowed: () -> Boolean = {
     context.getSystemService(NotificationManager::class.java).areNotificationsEnabled()
   },
   private val nowMillis: () -> Long = System::currentTimeMillis,
 ) {
-  private val parser = LiveMatchUpdateParser(json)
   private val manager = context.getSystemService(NotificationManager::class.java)
   private val delivered = context.getSharedPreferences(StorageName, Context.MODE_PRIVATE)
 
   /** Posts at most one alert per match, including duplicate deliveries through different favorite topics. */
   fun handle(data: Map<String, String>) {
-    val alert = parser.parse(data) ?: return
-    if (!enabled()) return
+    val matchId = data["match_id"]?.takeIf { it.toLongOrNull()?.let { id -> id > 0 } == true } ?: return
+    val title = data["title"]?.trim()?.takeIf(String::isNotEmpty) ?: return
+    val body = data["body"]?.trim()?.takeIf(String::isNotEmpty) ?: return
     synchronized(DeliveryLock) {
-      if (!enabled()) return
       val now = nowMillis()
       val recent = delivered.all.mapNotNull { (id, value) ->
         (value as? Long)?.takeIf { now - it in 0 until RetentionMillis }?.let { id to it }
       }.toMap()
-      if (alert.matchId in recent) return
-      if (alert.terminal) {
-        record(alert.matchId, now, recent)
-        return
-      }
+      if (matchId in recent) return
       if (!notificationsAllowed()) return
       try {
         if (Build.VERSION.SDK_INT >= 26) {
@@ -56,16 +48,15 @@ internal class AndroidMatchAlertNotifications(
         }
         val intent = PendingIntent.getActivity(
           context,
-          alert.matchId.hashCode(),
-          Intent(Intent.ACTION_VIEW, Uri.parse("vlr://match/${alert.matchId}"), context, MainActivity::class.java),
+          matchId.hashCode(),
+          Intent(Intent.ACTION_VIEW, Uri.parse("https://valorantesports.staticvar.dev/match/$matchId"), context, MainActivity::class.java),
           PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         val builder = if (Build.VERSION.SDK_INT >= 26) Notification.Builder(context, ChannelId) else Notification.Builder(context)
-        val body = context.getString(R.string.widget_match_teams, alert.teams[0].name, alert.teams[1].name)
         val notification = builder
           .setSmallIcon(R.drawable.ic_launcher_monochrome)
           .setColor(context.getColor(R.color.widget_preview_accent))
-          .setContentTitle(context.getString(R.string.match_alert_live))
+          .setContentTitle(title)
           .setContentText(body)
           .setStyle(Notification.BigTextStyle().bigText(body))
           .setContentIntent(intent)
@@ -74,8 +65,8 @@ internal class AndroidMatchAlertNotifications(
           .setDefaults(Notification.DEFAULT_SOUND or Notification.DEFAULT_LIGHTS)
           .setOnlyAlertOnce(true)
           .build()
-        manager.notify("match-alert:${alert.matchId}", NotificationId, notification)
-        record(alert.matchId, now, recent)
+        manager.notify("match-alert:$matchId", NotificationId, notification)
+        record(matchId, now, recent)
       } catch (error: Exception) {
         LiveNotificationDiagnostics.failed("match_alert_post", error)
       }

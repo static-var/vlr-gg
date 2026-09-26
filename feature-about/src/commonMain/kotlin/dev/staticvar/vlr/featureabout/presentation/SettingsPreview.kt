@@ -22,10 +22,8 @@ import dev.staticvar.vlr.core.settings.ThemeFamily
 internal fun SettingsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     SettingsRoute(
-      autoCleanupEnabled = false,
-      deletedCacheRecords = 0L,
-      onAutoCleanupChanged = {},
       onAppearance = {},
+      onExperimental = {},
       onAbout = {},
       onWhatsNew = {},
     )

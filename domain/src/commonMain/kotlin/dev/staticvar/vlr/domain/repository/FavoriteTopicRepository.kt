@@ -19,6 +19,6 @@ public interface FavoriteTopicRepository {
   public fun observeChanges(): Flow<Unit>
   public suspend fun nextOperation(mode: FavoriteTopicMode): FavoriteTopicOperation?
   public suspend fun acknowledge(operation: FavoriteTopicOperation)
-  public suspend fun importSubscriptions(topics: Set<String>)
+  public suspend fun reminderTopics(): Set<String>
   public suspend fun invalidateAcknowledgements()
 }

@@ -32,7 +32,7 @@ import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.featureabout.presentation.AboutRoute
 import dev.staticvar.vlr.featureabout.presentation.AppearanceRoute
 import dev.staticvar.vlr.featureabout.presentation.BundledRelease
-import dev.staticvar.vlr.featureabout.presentation.NotificationsRoute
+import dev.staticvar.vlr.featureabout.presentation.ExperimentalRoute
 import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewBanner
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewRoute
@@ -338,8 +338,16 @@ internal fun appNavigationModule(): Module = module {
   }
   navigation<AppRoute.Settings> {
     val appState = LocalVlrAppState.current
-    val notificationController = LocalLiveMatchNotificationSettingsController.current
-    val notificationAccess = notificationController?.access?.collectAsStateWithLifecycle()?.value
+    SettingsRoute(
+      onAppearance = appState::showAppearance,
+      onExperimental = appState::showExperimental,
+      onAbout = appState::showAbout,
+      onWhatsNew = appState::showWhatsNew,
+      onBack = appState::navigateUp,
+      modifier = Modifier.fillMaxSize(),
+    )
+  }
+  navigation<AppRoute.Experimental> {
     val cleanupPreferences = koinInject<CacheCleanupPreferencesRepository>()
     val cleanupRepository = koinInject<CacheCleanupRepository>()
     val autoCleanupEnabled by cleanupPreferences.enabled.collectAsStateWithLifecycle()
@@ -347,23 +355,14 @@ internal fun appNavigationModule(): Module = module {
     val cleanupStats by cleanupStatsFlow.collectAsStateWithLifecycle(
       initialValue = CacheCleanupStats(deletedRecords = 0L, lastRunEpochMillis = null),
     )
-    SettingsRoute(
+    ExperimentalRoute(
+      controller = LocalLiveMatchNotificationSettingsController.current,
       autoCleanupEnabled = autoCleanupEnabled,
       deletedCacheRecords = cleanupStats.deletedRecords,
       onAutoCleanupChanged = cleanupPreferences::setEnabled,
-      onAppearance = appState::showAppearance,
-      onNotifications = if (notificationAccess?.supportsNotifications == true) appState::showNotifications else null,
-      liveActivities = notificationAccess?.requiresNotificationPermission == false,
-      onAbout = appState::showAbout,
-      onWhatsNew = appState::showWhatsNew,
-      onBack = appState::navigateUp,
+      onBack = LocalVlrAppState.current::navigateUp,
       modifier = Modifier.fillMaxSize(),
     )
-  }
-  navigation<AppRoute.Notifications> {
-    LocalLiveMatchNotificationSettingsController.current?.let { controller ->
-      NotificationsRoute(controller, onBack = LocalVlrAppState.current::navigateUp)
-    }
   }
   navigation<AppRoute.Appearance> {
     val viewModel = vlrViewModel<AppearanceViewModel>()

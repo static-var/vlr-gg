@@ -10,6 +10,7 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.CancellationException
@@ -19,10 +20,10 @@ import kotlinx.serialization.Serializable
 internal class PushTokenRegistrationDataSourceImpl(
   private val client: HttpClient,
 ) : PushTokenRegistrationDataSource {
-  override suspend fun register(clientId: String, platform: PushPlatform, token: String): Boolean = try {
+  override suspend fun register(clientId: String, platform: PushPlatform, token: String, liveUpdates: Boolean): Boolean = try {
     client.put("/api/v1/live-updates/clients/$clientId/token") {
       contentType(ContentType.Application.Json)
-      setBody(PushTokenRegistrationRequest(token = token, platform = platform.wireValue))
+      setBody(PushTokenRegistrationRequest(token = token, platform = platform.wireValue, liveUpdates = liveUpdates))
     }.status.isSuccess()
   } catch (cancellation: CancellationException) {
     throw cancellation
@@ -31,7 +32,8 @@ internal class PushTokenRegistrationDataSourceImpl(
   }
 
   override suspend fun delete(clientId: String): Boolean = try {
-    client.delete("/api/v1/live-updates/clients/$clientId/token").status.isSuccess()
+    val status = client.delete("/api/v1/live-updates/clients/$clientId/token").status
+    status.isSuccess() || status == HttpStatusCode.NotFound
   } catch (cancellation: CancellationException) {
     throw cancellation
   } catch (_: Exception) {
@@ -44,6 +46,7 @@ internal class PushTokenRegistrationDataSourceImpl(
 private data class PushTokenRegistrationRequest(
   val token: String,
   val platform: String,
+  @kotlinx.serialization.SerialName("live_updates") val liveUpdates: Boolean,
 )
 
 private val PushPlatform.wireValue: String

@@ -89,14 +89,26 @@ internal class PlayerRepositoryImpl(
 
   override suspend fun addToFavorites(playerId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {
-      playersQueries.addFavoritePlayer(playerId)
+      database.transaction {
+        if (playersQueries.isFavoritePlayer(playerId).executeAsOne() == 0L) {
+          playersQueries.addFavoritePlayer(playerId)
+          database.favoriteSyncStateQueries.ensureFavoriteSyncState()
+          database.favoriteSyncStateQueries.markFavoritesDirty()
+        }
+      }
       Unit
     }
   }
 
   override suspend fun removeFromFavorites(playerId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {
-      playersQueries.removeFavoritePlayer(playerId)
+      database.transaction {
+        if (playersQueries.isFavoritePlayer(playerId).executeAsOne() != 0L) {
+          playersQueries.removeFavoritePlayer(playerId)
+          database.favoriteSyncStateQueries.ensureFavoriteSyncState()
+          database.favoriteSyncStateQueries.markFavoritesDirty()
+        }
+      }
       Unit
     }
   }

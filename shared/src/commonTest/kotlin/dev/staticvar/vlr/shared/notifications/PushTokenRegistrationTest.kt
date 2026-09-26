@@ -25,6 +25,130 @@ import kotlin.test.assertTrue
 /** Checks token registration across permission, lifecycle, and identity changes. */
 class PushTokenRegistrationTest {
   @Test
+  fun disablingNotificationsUpdatesTheCurrentTokenAndReenablingRegistersAgain() = runTest {
+    val harness = Harness(backgroundScope, notificationsEnabled = true).apply {
+      tokenProvider.tokenOnStart = "token"
+    }
+    harness.coordinator.start()
+    runCurrent()
+    harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+    assertEquals(1, harness.dataSource.requests.size)
+
+    harness.notificationPreferences.setEnabled(false)
+    runCurrent()
+    assertTrue(harness.dataSource.deletions.isEmpty())
+    assertEquals(listOf(true, false), harness.dataSource.requests.map(RegistrationRequest::liveUpdates))
+    assertEquals(false, harness.tokenPreferences.preferences.value.uploadedLiveUpdates)
+
+    harness.notificationPreferences.setEnabled(true)
+    runCurrent()
+    harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+    assertEquals(listOf(true, false, true), harness.dataSource.requests.map(RegistrationRequest::liveUpdates))
+    assertEquals(true, harness.tokenPreferences.preferences.value.uploadedLiveUpdates)
+  }
+
+  @Test
+  fun failedOptOutUpdateIsRetried() = runTest {
+    val tokenSettings = MapSettings()
+    val harness = Harness(backgroundScope, notificationsEnabled = true, tokenSettings = tokenSettings).apply {
+      tokenProvider.tokenOnStart = "token"
+    }
+    harness.coordinator.start()
+    runCurrent()
+    harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+
+    harness.dataSource.succeeds = false
+    harness.notificationPreferences.setEnabled(false)
+    runCurrent()
+    assertEquals(listOf(true, false), harness.dataSource.requests.map(RegistrationRequest::liveUpdates))
+    assertEquals(true, harness.tokenPreferences.preferences.value.uploadedLiveUpdates)
+
+    harness.dataSource.succeeds = true
+    harness.uploader.retry()
+    runCurrent()
+    assertEquals(listOf(true, false, false), harness.dataSource.requests.map(RegistrationRequest::liveUpdates))
+    assertEquals(false, harness.tokenPreferences.preferences.value.uploadedLiveUpdates)
+  }
+
+  @Test
+  fun optOutUpdatesATokenWhosePutResponseWasLost() = runTest {
+    val harness = Harness(backgroundScope, notificationsEnabled = true).apply {
+      tokenProvider.tokenOnStart = "token"
+      dataSource.succeeds = false
+    }
+    harness.coordinator.start()
+    runCurrent()
+    harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+    assertEquals(null, harness.tokenPreferences.preferences.value.uploadedClientId)
+    assertEquals(setOf(harness.identity.id.value.toString()), harness.tokenPreferences.possiblyUploadedTokenClients())
+
+    harness.notificationPreferences.setEnabled(false)
+    runCurrent()
+
+    assertTrue(harness.dataSource.deletions.isEmpty())
+    assertEquals(listOf(true, false), harness.dataSource.requests.map(RegistrationRequest::liveUpdates))
+  }
+
+  @Test
+  fun optOutWaitsForAnInFlightRegistrationThenSendsFalse() = runTest {
+    val response = CompletableDeferred<Unit>()
+    val harness = Harness(backgroundScope, notificationsEnabled = true).apply {
+      tokenProvider.tokenOnStart = "token"
+      dataSource.beforeResponse = response
+    }
+    harness.coordinator.start()
+    runCurrent()
+    harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+    assertEquals(listOf(true), harness.dataSource.requests.map(RegistrationRequest::liveUpdates))
+
+    harness.notificationPreferences.setEnabled(false)
+    runCurrent()
+    assertEquals(1, harness.dataSource.requests.size)
+
+    response.complete(Unit)
+    runCurrent()
+    assertEquals(listOf(true, false), harness.dataSource.requests.map(RegistrationRequest::liveUpdates))
+    assertEquals(false, harness.tokenPreferences.preferences.value.uploadedLiveUpdates)
+  }
+
+  @Test
+  fun disabledModeUsesOnlyARealCachedTokenAndDeduplicatesAfterRestart() = runTest {
+    val identitySettings = MapSettings()
+    val tokenSettings = MapSettings()
+    val first = Harness(
+      backgroundScope, notificationsEnabled = false, identitySettings = identitySettings, tokenSettings = tokenSettings,
+    )
+    first.coordinator.start()
+    first.coordinator.onForeground()
+    runCurrent()
+    first.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+    assertTrue(first.dataSource.requests.isEmpty())
+
+    first.tokenProvider.emit("real-token")
+    runCurrent()
+    assertEquals(listOf(false), first.dataSource.requests.map(RegistrationRequest::liveUpdates))
+
+    val restarted = Harness(
+      backgroundScope, notificationsEnabled = false, identitySettings = identitySettings, tokenSettings = tokenSettings,
+    )
+    restarted.coordinator.start()
+    restarted.coordinator.onForeground()
+    runCurrent()
+    restarted.permissionProvider.completeRead(NotificationAuthorization.Authorized)
+    runCurrent()
+    assertTrue(restarted.dataSource.requests.isEmpty())
+    assertTrue(restarted.tokenPreferences.preferences.value.wasUploaded(
+      restarted.identity.id.value.toString(), PushPlatform.Ios, "real-token", false,
+    ))
+  }
+
+  @Test
   fun synchronousNativeTokenIsStoredAndUploadedOnlyAfterEveryGatePasses() = runTest {
     val harness = Harness(backgroundScope, notificationsEnabled = true).apply {
       tokenProvider.tokenOnStart = "cached-native-token"
@@ -42,7 +166,7 @@ class PushTokenRegistrationTest {
     assertEquals(1, harness.tokenProvider.starts)
     assertEquals("cached-native-token", harness.tokenPreferences.preferences.value.token)
     assertEquals(
-      listOf(RegistrationRequest(harness.identity.id.value.toString(), PushPlatform.Ios, "cached-native-token")),
+      listOf(RegistrationRequest(harness.identity.id.value.toString(), PushPlatform.Ios, "cached-native-token", true)),
       harness.dataSource.requests,
     )
     assertTrue(
@@ -62,7 +186,7 @@ class PushTokenRegistrationTest {
     runCurrent()
     denied.permissionProvider.completeRead(NotificationAuthorization.Denied)
     runCurrent()
-    assertEquals(0, denied.tokenProvider.starts)
+    assertEquals(1, denied.tokenProvider.starts)
     assertTrue(denied.dataSource.requests.isEmpty())
 
     val activitiesDisabled = Harness(backgroundScope, notificationsEnabled = true).apply {
@@ -157,8 +281,9 @@ class PushTokenRegistrationTest {
     harness.permissionProvider.completeRequest(NotificationAuthorization.Authorized)
     runCurrent()
 
-    assertEquals(1, harness.tokenProvider.starts)
-    assertEquals("after-grant", harness.dataSource.requests.single().token)
+    assertEquals(2, harness.tokenProvider.starts)
+    assertEquals(listOf(false, true), harness.dataSource.requests.map(RegistrationRequest::liveUpdates))
+    assertEquals("after-grant", harness.dataSource.requests.last().token)
     assertEquals(null, controller)
   }
 
@@ -357,7 +482,10 @@ private class Harness(
   val tokenPreferences = PushTokenRegistrationPreferencesRepository(tokenSettings)
   val identity = UserIdentityRepository(identitySettings, trackCloudBackup = trackCloudBackup)
   val eligibility = mutableListOf<LiveUpdateEligibility>()
-  val uploader = PushTokenRegistrationUploader(tokenPreferences, identity, dataSource, scope)
+  var currentTokenDeletionCallbacks = 0
+  val uploader = PushTokenRegistrationUploader(tokenPreferences, identity, dataSource, scope) {
+    currentTokenDeletionCallbacks++
+  }
   val coordinator = PushTokenRegistrationCoordinator(
     pushTokenProvider = tokenProvider,
     permissionProvider = permissionProvider,
@@ -427,7 +555,12 @@ private class FakePushTokenProvider : PushTokenProvider {
 }
 
 /** Records a client, platform, and token uploaded by a test. */
-private data class RegistrationRequest(val clientId: String, val platform: PushPlatform, val token: String)
+private data class RegistrationRequest(
+  val clientId: String,
+  val platform: PushPlatform,
+  val token: String,
+  val liveUpdates: Boolean,
+)
 
 /** Records token uploads and lets tests delay or fail responses. */
 private class FakeRegistrationDataSource : PushTokenRegistrationDataSource {
@@ -437,8 +570,8 @@ private class FakeRegistrationDataSource : PushTokenRegistrationDataSource {
   var succeeds: Boolean = true
   var deleteSucceeds: Boolean = true
 
-  override suspend fun register(clientId: String, platform: PushPlatform, token: String): Boolean {
-    requests += RegistrationRequest(clientId, platform, token)
+  override suspend fun register(clientId: String, platform: PushPlatform, token: String, liveUpdates: Boolean): Boolean {
+    requests += RegistrationRequest(clientId, platform, token, liveUpdates)
     beforeResponse?.await()
     return succeeds
   }

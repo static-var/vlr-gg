@@ -20,7 +20,6 @@
   <string name="match_event_dates">날짜</string>
   <string name="match_event_dates_tba">날짜 추후 발표</string>
   <string name="match_event_teams">팀</string>
-  <string name="match_event_view_at_vlr">VLR에서 보기</string>
   <string name="match_event_map_breakdown_unavailable">맵별 세부 정보를 사용할 수 없습니다.</string>
   <string name="match_event_combined_stats">종합 통계</string>
   <string name="match_event_all_maps">모든 맵</string>

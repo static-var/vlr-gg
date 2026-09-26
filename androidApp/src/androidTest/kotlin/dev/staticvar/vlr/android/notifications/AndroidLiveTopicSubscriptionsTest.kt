@@ -17,6 +17,47 @@ import org.junit.Test
 
 class AndroidLiveTopicSubscriptionsTest {
   @Test
+  fun legacyMigrationClearsBothTopicPrefixesBeforeReconciliation() = runBlocking {
+    val events = mutableListOf<String>()
+    val topics = FakeTopicRepository(events, FavoriteTopicOperation.Subscribe("live-team-11"))
+    val transport = FakeTransport(events)
+    migrateLegacyTopicSubscriptions(topics, linkedSetOf("team-11", "live-team-11"), transport) {
+      events += "clear-legacy"
+    }
+    reconcileLiveTopicSubscriptions(topics, { FavoriteTopicMode.Live }, "token", transport) {}
+
+    assertEquals(
+      listOf(
+        "unsubscribe:team-11", "unsubscribe:live-team-11", "invalidate", "clear-legacy",
+        "read:Live", "subscribe:live-team-11", "ack:live-team-11", "read:Live",
+      ),
+      events,
+    )
+  }
+
+  @Test
+  fun failedLegacyMigrationRetainsAllMembershipsForRetry() = runBlocking {
+    val events = mutableListOf<String>()
+    val topics = FakeTopicRepository(events)
+    val memberships = linkedSetOf("team-11", "live-team-11")
+    var cleared = false
+    try {
+      migrateLegacyTopicSubscriptions(
+        topics, memberships, FakeTransport(events, failUnsubscription = "live-team-11"),
+      ) { cleared = true }
+      fail("Expected unsubscribe failure")
+    } catch (expected: IllegalStateException) {
+      assertEquals("unsubscribe failed", expected.message)
+    }
+    assertEquals(false, cleared)
+    assertEquals(listOf("unsubscribe:team-11", "unsubscribe:live-team-11"), events)
+    events.clear()
+    migrateLegacyTopicSubscriptions(topics, memberships, FakeTransport(events)) { cleared = true }
+    assertTrue(cleared)
+    assertEquals(listOf("unsubscribe:team-11", "unsubscribe:live-team-11", "invalidate"), events)
+  }
+
+  @Test
   fun tokenRotationInvalidatesDatabaseBeforeSavingNewToken() = runBlocking {
     val events = mutableListOf<String>()
     val topics = FakeTopicRepository(events)
@@ -95,7 +136,7 @@ private class FakeTopicRepository(
   val acknowledged = mutableListOf<FavoriteTopicOperation>()
 
   override fun observeChanges(): Flow<Unit> = flowOf(Unit)
-  override suspend fun importSubscriptions(topics: Set<String>) = Unit
+  override suspend fun reminderTopics(): Set<String> = emptySet()
   override suspend fun nextOperation(mode: FavoriteTopicMode): FavoriteTopicOperation? {
     events += "read:$mode"
     return pending.firstOrNull()

@@ -1,0 +1,6 @@
+body{font:16px/1.5 system-ui,sans-serif;margin:40px auto;max-width:760px;padding:0 20px;color:#211b30;background:#faf8ff}
+h1{line-height:1.2}a{color:#6538a3}label{display:block;margin:18px 0}
+input,select,textarea,button{box-sizing:border-box;font:inherit;padding:12px;border:2px solid #211b30;border-radius:0}
+input,select,textarea{display:block;width:100%;max-width:640px}button{cursor:pointer;background:#60349d;color:white}
+:focus-visible{outline:3px solid #7938ef;outline-offset:3px}
+[role=alert]{padding:16px;border:2px solid #6538a3;background:#e8e1f6;overflow-wrap:anywhere}

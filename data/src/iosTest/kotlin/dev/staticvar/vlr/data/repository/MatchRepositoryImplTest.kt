@@ -13,6 +13,8 @@ import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.VetoAction
+import dev.staticvar.vlr.domain.repository.FavoriteTopicMode
+import dev.staticvar.vlr.domain.repository.FavoriteTopicOperation
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.common.MatchStatus
 import dev.staticvar.vlr.remotesource.match.AgentInfoDto
@@ -408,6 +410,37 @@ class MatchRepositoryImplTest {
       assertFavoriteSources()
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun topicAcknowledgmentsPreservePendingServerSyncAfterFavoriteRemoval() = runTest(dispatcher) {
+    prepareFavoriteMatch()
+    val serverSync = FavoriteSyncStateRepositoryImpl(database, dispatcherProvider)
+    val topics = FavoriteTopicRepositoryImpl(database, dispatcherProvider)
+    assertTrue(repository.addToFavorites("match1").isSuccess)
+    val firstRevision = serverSync.beginUpload()
+    val subscribe = FavoriteTopicOperation.Subscribe("match-match1")
+    assertEquals(subscribe, topics.nextOperation(FavoriteTopicMode.TeamAlerts))
+    topics.acknowledge(subscribe)
+    assertTrue(serverSync.markSynced("client", firstRevision))
+
+    assertTrue(repository.removeFromFavorites("match1").isSuccess)
+    val pending = database.favoriteSyncStateQueries.getFavoriteSyncState().executeAsOne()
+    assertEquals(firstRevision + 1, pending.revision)
+    assertEquals(0L, pending.synced)
+    assertEquals(false, serverSync.markSynced("client", firstRevision))
+    assertEquals(0L, database.favoriteTopicsQueries.getFavoriteTopicRecords().executeAsOne().active)
+    assertTrue(FavoritesRepositoryImpl(database, dispatcherProvider).observeDirectFavorites().first().matches.isEmpty())
+
+    val unsubscribe = FavoriteTopicOperation.Unsubscribe("match-match1")
+    assertEquals(unsubscribe, topics.nextOperation(FavoriteTopicMode.TeamAlerts))
+    topics.acknowledge(unsubscribe)
+    assertEquals(null, topics.nextOperation(FavoriteTopicMode.TeamAlerts))
+    assertTrue(database.favoriteTopicsQueries.getFavoriteTopicRecords().executeAsList().isEmpty())
+    assertEquals(pending, database.favoriteSyncStateQueries.getFavoriteSyncState().executeAsOne())
+    assertTrue(repository.removeFromFavorites("match1").isSuccess)
+    assertEquals(pending, database.favoriteSyncStateQueries.getFavoriteSyncState().executeAsOne())
+    assertTrue(serverSync.markSynced("client", pending.revision))
   }
 
   @Test

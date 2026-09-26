@@ -8,6 +8,7 @@ import android.app.Application
 import coil3.SingletonImageLoader
 import dev.staticvar.vlr.android.notifications.AndroidMatchAlertNotifications
 import dev.staticvar.vlr.android.notifications.AndroidLiveMatchNotifications
+import dev.staticvar.vlr.android.notifications.AndroidLiveNotificationAvailability
 import dev.staticvar.vlr.android.notifications.AndroidLiveTopicSubscriptions
 import dev.staticvar.vlr.android.notifications.AndroidPushTokenProvider
 import dev.staticvar.vlr.core.di.DispatcherQualifiers
@@ -33,6 +34,8 @@ class VlrApplication : Application() {
 
   internal lateinit var matchAlertNotifications: AndroidMatchAlertNotifications
     private set
+  internal lateinit var notificationPreferences: LiveMatchNotificationPreferencesRepository
+    private set
 
   override fun onCreate() {
     super.onCreate()
@@ -57,7 +60,7 @@ class VlrApplication : Application() {
     )
     val scope = getKoin().get<CoroutineScope>(DispatcherQualifiers.AppScope)
     SingletonImageLoader.setSafe { context -> createSharedImageLoader(context) }
-    val notificationPreferences = getKoin().get<LiveMatchNotificationPreferencesRepository>()
+    notificationPreferences = getKoin().get()
     val spoilerPreferences = getKoin().get<SpoilerPreferencesRepository>()
     liveMatchNotifications = AndroidLiveMatchNotifications(
       context = this,
@@ -68,8 +71,6 @@ class VlrApplication : Application() {
     )
     matchAlertNotifications = AndroidMatchAlertNotifications(
       context = this,
-      json = getKoin().get(),
-      enabled = { notificationPreferences.preferences.value.enabled },
     )
     liveTopicSubscriptions = AndroidLiveTopicSubscriptions(
       context = this,
@@ -80,7 +81,9 @@ class VlrApplication : Application() {
     pushTokenProvider.onTokenChanged = liveTopicSubscriptions::refresh
     scope.launch {
       notificationPreferences.preferences.collect { preferences ->
-        if (!preferences.enabled) matchAlertNotifications.cancelAll()
+        if (AndroidLiveNotificationAvailability.usesLiveUpdates(this@VlrApplication, preferences.enabled)) {
+          matchAlertNotifications.cancelAll()
+        }
       }
     }
     scope.launch {

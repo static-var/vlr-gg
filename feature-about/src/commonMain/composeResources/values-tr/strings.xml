@@ -34,6 +34,7 @@
     <string name="donate_via_github_sponsors">GitHub Sponsors üzerinden bağış yapın</string>
     <string name="done">Bitti</string>
     <string name="experimental">Deneysel</string>
+    <string name="experimental_description">Canlı güncellemeler ve otomatik temizleme</string>
     <string name="explore_the_service_that_powers_the_app">Uygulamaya güç veren hizmeti keşfedin.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">Bu derlemede geri bildirim kullanılamıyor. Bunun yerine Hakkında sayfasındaki Sorun bildir seçeneğini kullanabilirsiniz.</string>
@@ -45,7 +46,6 @@
     <string name="flavour_mocha">Mocha</string>
     <string name="for_the_matches_you_care_about">Önemsediğiniz maçlar için.</string>
     <string name="frequently">Sık sık</string>
-    <string name="from_the_scene_for_the_scene">Sahnenin içinden, sahne için.</string>
     <string name="help_support_continued_development">Geliştirmenin sürmesine destek olun.</string>
     <string name="how_val_esports_handles_your_data">Val Esports'un verilerinizi nasıl işlediği.</string>
     <string name="light">Açık</string>
@@ -54,7 +54,6 @@
     <string name="make_it_yours">Kendinize göre ayarlayın.</string>
     <string name="mascot">Maskot</string>
     <string name="mascot_frequency_accessibility">%1$s, ekran başına yüzde %2$d olasılık</string>
-    <string name="about_data_attribution">Maç kapsamı, istatistikler ve haberler VLR.gg'den gelir. Bu, VLR.gg veya Riot Games ile bağlantısı olmayan, resmî olmayan bir hayran projesidir.</string>
     <string name="mode">Mod</string>
     <string name="new_in_val_esports">Val Esports'taki yenilikler</string>
     <string name="none">Yok</string>
@@ -88,7 +87,6 @@
     <string name="theme_console">Konsol</string>
     <string name="using_the_app_and_its_content">Uygulamayı ve içeriğini kullanma.</string>
     <string name="visit_val_esports">Val Esports'u ziyaret et</string>
-    <string name="visit_vlr_gg">VLR.gg'yi ziyaret et</string>
     <string name="website_policies">Web sitesi ve politikalar</string>
     <string name="what_s_new">Yenilikler neler?</string>
     <string name="write_feedback">Geri bildirim yaz</string>
@@ -117,15 +115,9 @@
     <string name="notification_access_error">Bildirim izni kontrol edilemedi veya istenemedi. Lütfen tekrar dene.</string>
     <string name="open_system_settings">Sistem ayarlarını aç</string>
     <string name="allow_notifications">Bildirimlere izin ver</string>
-    <string name="live_activity_permissions_description">Tercihlerin bu cihazda kaydedilir. Kullanılabilirlik, sistem ayarlarına da bağlıdır.</string>
     <string name="live_match_updates">Canlı maç güncellemeleri</string>
     <string name="live_match_updates_description">Canlı skorları bildirimlerden takip et.</string>
     <string name="notifications_permission_description">Canlı maç güncellemelerini almak için bildirimlere izin ver.</string>
-    <string name="release_1_0_4_introduction">Canlı skorları takip edin, uygulamanın görünümünü seçin ve daha fazla maç ayrıntısını keşfedin.</string>
-    <string name="release_1_0_4_live_title">Favorilerinizin canlı skorları</string>
-    <string name="release_1_0_4_live_description">Desteklenen cihazlarda favori maç ve etkinliklerinizin canlı skorlarını açın: iOS’ta Canlı Etkinlikler, Android’de Live Updates ile takip edin.</string>
-    <string name="release_1_0_4_appearance_title">Uygulamayı kendinize göre ayarlayın</string>
-    <string name="release_1_0_4_appearance_description">Yeni Görünüm ayarlarından uygulama simgesini, temayı ve maskotu seçin.</string>
     <string name="release_1_0_5_introduction">1.0.0’dan bu yana gelen tüm yenilikler: favorileriniz için canlı skorlar, takım arama, size özel bir görünüm ve gelişmeleri takip etmenin daha kolay yolları.</string>
     <string name="release_1_0_5_live_title">Favorilerinizi canlı takip edin</string>
     <string name="release_1_0_5_live_ios_description">Favori maçlar ve etkinlikler için Canlı Etkinlikleri etkinleştirin. Daha net takım logolarıyla harita skorlarını Kilit Ekranı ve Dynamic Island’dan takip edin.</string>
@@ -143,4 +135,26 @@
     <string name="notification_promotion_unavailable">Canlı skorlar normal bildirim olarak görünmeye devam edebilir. Cihazınız bu uygulama için öne çıkarılan canlı güncellemelere izin vermiyor. Sistem bildirim ayarlarını kontrol edin; kullanılabilirlik cihazınıza da bağlıdır.</string>
     <string name="match_alerts">Maç bildirimleri</string>
     <string name="match_alerts_description">Favori bir maç başladığında bildirim alın. Bu cihazda canlı skor güncellemeleri kullanılamıyor.</string>
+    <string name="release_1_0_6_introduction">Favorilerinizi takip etmenin ve uygulamayı kişiselleştirmenin yeni yollarıyla, 1.0.0 sürümünden bu yana eklenenleri keşfedin.</string>
+    <string name="release_1_0_6_favorites_title">Favorilerinizi takip edin</string>
+    <string name="release_1_0_6_favorites_description">Favori takım, etkinlik ve maçlarınız için canlı maçları ve son 24 saatin sonuçlarını Ana Sayfa’da bulun.</string>
+    <string name="release_1_0_6_ios_live_title">Favorilerinizin canlı skorları</string>
+    <string name="release_1_0_6_ios_live_description">iOS 18 ve sonraki sürümlerde Canlı Etkinlikler ile desteklenen iPhone’ların Kilitli Ekranında ve Dynamic Island’da canlı harita skorlarını takip edin.</string>
+    <string name="release_1_0_6_android_live_title">Canlı skorlar ve maç hatırlatıcıları</string>
+    <string name="release_1_0_6_android_live_description">Desteklenen cihazlarda Live Updates ile skorları takip edin. Diğer cihazlarda favori maçlar başlamadan hatırlatıcı alabilirsiniz.</string>
+    <string name="release_1_0_6_widgets_title">Yenilenen widget’lar</string>
+    <string name="release_1_0_6_widgets_description">Yenilenen ana ekran widget’larında yaklaşan maçları ve canlı skorları görün.</string>
+    <string name="release_1_0_6_appearance_title">Uygulamayı kişiselleştirin</string>
+    <string name="release_1_0_6_appearance_description">Görünüm ayarlarından uygulama simgesini, temayı ve maskotu seçin.</string>
+    <string name="release_1_0_6_languages_title">Artık 9 dilde</string>
+    <string name="release_1_0_6_languages_description">Uygulamayı İngilizce, Hintçe, İspanyolca, Fransızca, Almanca, Brezilya Portekizcesi, Rusça, Türkçe veya Korece kullanın.</string>
+    <string name="release_1_0_6_ios_shortcuts_title">Spotlight ve Siri’de favoriler</string>
+    <string name="release_1_0_6_ios_shortcuts_description">Favori takım ve etkinlikleri Spotlight’ta bulun veya Siri’ye sıradaki favori maçınızı sorun.</string>
+    <string name="release_1_0_6_stability_title">Daha akıcı gezinme</string>
+    <string name="release_1_0_6_stability_description">Ekranlar arasında daha akıcı geçiş yapın. Kararlılık düzeltmeleri, Ana Sayfa’ya dönerken oluşan çökmeyi de giderir.</string>
+    <string name="match_reminders_description">Favori bir maç başlamadan önce hatırlatıcı alın. Hatırlatıcı almak için bildirimlere izin verin.</string>
+    <string name="match_reminders_permission_description">Favorileriniz için hatırlatıcı almak üzere bildirimlere izin verin.</string>
+    <string name="live_updates_with_reminders_description">Canlı skorları bildirimlerde takip edin. Live Updates kapalıyken de favori maçlardan önce hatırlatıcı alırsınız.</string>
+    <string name="release_1_0_6_search_title">Takımınızı bulun</string>
+    <string name="release_1_0_6_search_description">Mevcut sıralamada yer almayanlar dahil takımları Sıralama’dan arayın ve profillerini açın.</string>
 </resources>

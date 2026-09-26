@@ -1,0 +1,71 @@
+services:
+  web:
+    image: nginx:1.30.4-alpine@sha256:dc5069ad14f19660b141b21236140b91656bf89bbc3e2417c70ae650cd66104c
+    restart: unless-stopped
+    user: "101:101"
+    entrypoint: ["nginx", "-g", "daemon off;"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 64m
+    cpus: 0.25
+    pids_limit: 64
+    volumes:
+      - ./public:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    expose: ["8080"]
+    networks:
+      appsnet:
+        aliases: [valorant-esports-web]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+  signup:
+    image: python:3.13-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f
+    restart: unless-stopped
+    user: "1001:1001"
+    command: ["python", "/app/server.py"]
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+      SIGNUP_DB_PATH: /data/signups.sqlite3
+      ADMIN_ORIGIN: https://nexus.taildb5c06.ts.net:10006
+      ADMIN_BIND: 0.0.0.0
+    read_only: true
+    tmpfs:
+      - /tmp:size=8m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    cpus: 0.25
+    pids_limit: 64
+    volumes:
+      - ./signup_api:/app:ro
+      - ./data:/data
+    expose: ["8080"]
+    ports:
+      - "127.0.0.1:18107:8081"
+    networks:
+      appsnet:
+        aliases: [valorant-esports-signup]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+networks:
+  appsnet:
+    external: true

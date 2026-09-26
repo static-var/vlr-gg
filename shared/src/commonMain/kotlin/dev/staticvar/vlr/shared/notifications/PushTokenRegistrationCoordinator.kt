@@ -144,7 +144,11 @@ internal class PushTokenRegistrationCoordinator(
       reportedEligibility = eligibility
       onEligibilityChanged(eligibility)
     }
-    val shouldStart = eligibility == LiveUpdateEligibility.Enabled
+    if (eligibility != LiveUpdateEligibility.Pending) {
+      uploader.setLiveUpdatesEnabled(eligibility == LiveUpdateEligibility.Enabled)
+    }
+    val shouldStart = supportsLiveUpdates && liveActivitiesEnabled != false &&
+      (!requiresNotificationPermission || authorization != null)
     if (shouldStart && !tokenProviderStarted) {
       val generation = ++tokenGeneration
       tokenProviderStarted = true

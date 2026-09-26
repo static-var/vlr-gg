@@ -8,4 +8,7 @@ internal object AppWebsite {
   const val Home = "https://valorantesports.staticvar.dev/"
   const val Privacy = "${Home}privacy/"
   const val Terms = "${Home}terms/"
+  const val Issues = "${Home}issues"
+  const val Source = "${Home}source"
+  const val BackendSource = "${Home}backend-source"
 }

@@ -27,17 +27,7 @@ internal class FavoriteTopicRepositoryImpl(
         if (record.active == 0L || mode == FavoriteTopicMode.Disabled) {
           null
         } else {
-          when (record.entity_type) {
-            "TEAM" -> "live-team-${record.id}"
-            "EVENT" -> "live-event-${record.id}"
-            "MATCH" -> "live-match-${record.id}"
-            "PLAYER" -> if (mode == FavoriteTopicMode.TeamAlerts) {
-              record.current_team_id?.takeIf(String::isNotBlank)?.let { "live-team-$it" }
-            } else {
-              "live-player-${record.id}"
-            }
-            else -> error("Unknown favorite type: ${record.entity_type}")
-          }
+          notificationTopic(record.entity_type, record.id, record.current_team_id, mode)
         }
       }
       val desiredTopics = desired.filterNotNull().toSet()
@@ -87,19 +77,11 @@ internal class FavoriteTopicRepositoryImpl(
     }
   }
 
-  override suspend fun importSubscriptions(topics: Set<String>): Unit = withContext(dispatchers.io) {
-    database.transaction {
-      topics.forEach { topic ->
-        val match = Regex("live-(team|player|event|match)-(.+)").matchEntire(topic) ?: return@forEach
-        val (_, type, id) = match.groupValues
-        when (type) {
-          "team" -> database.favoriteTopicsQueries.importTeamTopic(id = id, topic = topic)
-          "player" -> database.favoriteTopicsQueries.importPlayerTopic(id = id, topic = topic)
-          "event" -> database.favoriteTopicsQueries.importEventTopic(id = id, topic = topic)
-          "match" -> database.favoriteTopicsQueries.importMatchTopic(id = id, topic = topic)
-        }
-      }
-    }
+  override suspend fun reminderTopics(): Set<String> = withContext(dispatchers.io) {
+    database.favoriteTopicsQueries.getFavoriteTopicRecords().executeAsList()
+      .filter { it.active == 1L }
+      .mapNotNull { notificationTopic(it.entity_type, it.id, it.current_team_id, FavoriteTopicMode.TeamAlerts) }
+      .toSet()
   }
 
   override suspend fun invalidateAcknowledgements(): Unit = withContext(dispatchers.io) {
@@ -109,5 +91,20 @@ internal class FavoriteTopicRepositoryImpl(
       database.favoriteTopicsQueries.invalidateEventTopicAcknowledgements()
       database.favoriteTopicsQueries.invalidateMatchTopicAcknowledgements()
     }
+  }
+}
+
+private fun notificationTopic(type: String, id: String, currentTeamId: String?, mode: FavoriteTopicMode): String? {
+  val prefix = if (mode == FavoriteTopicMode.Live) "live-" else ""
+  return when (type) {
+    "TEAM" -> "${prefix}team-$id"
+    "EVENT" -> "${prefix}event-$id"
+    "MATCH" -> "${prefix}match-$id"
+    "PLAYER" -> if (mode == FavoriteTopicMode.TeamAlerts) {
+      currentTeamId?.takeIf(String::isNotBlank)?.let { "team-$it" }
+    } else {
+      "live-player-$id"
+    }
+    else -> error("Unknown favorite type: $type")
   }
 }

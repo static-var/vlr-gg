@@ -75,19 +75,3 @@ UPDATE favorite_players SET notification_topic = NULL, topic_synced = 0 WHERE no
 
 pruneInactivePlayerFavorites:
 DELETE FROM favorite_players WHERE active = 0 AND notification_topic IS NULL;
-
-importTeamTopic:
-INSERT OR REPLACE INTO favorite_teams(team_id, active, notification_topic, topic_synced)
-VALUES (:id, COALESCE((SELECT active FROM favorite_teams WHERE team_id = :id), 0), :topic, 1);
-
-importEventTopic:
-INSERT OR REPLACE INTO favorite_events(event_id, active, notification_topic, topic_synced)
-VALUES (:id, COALESCE((SELECT active FROM favorite_events WHERE event_id = :id), 0), :topic, 1);
-
-importMatchTopic:
-INSERT OR REPLACE INTO favorite_matches(match_id, active, notification_topic, topic_synced)
-VALUES (:id, COALESCE((SELECT active FROM favorite_matches WHERE match_id = :id), 0), :topic, 1);
-
-importPlayerTopic:
-INSERT OR REPLACE INTO favorite_players(player_id, active, notification_topic, topic_synced)
-VALUES (:id, COALESCE((SELECT active FROM favorite_players WHERE player_id = :id), 0), :topic, 1);

@@ -47,13 +47,13 @@ class FavoriteTopicRepositoryImplTest {
     player("one", "team")
     player("two", "team")
     database.teamsQueries.addFavoriteTeam("team")
-    assertEquals(subscribe("live-team-team"), repository.nextOperation(FavoriteTopicMode.TeamAlerts))
-    repository.acknowledge(subscribe("live-team-team"))
+    assertEquals(subscribe("team-team"), repository.nextOperation(FavoriteTopicMode.TeamAlerts))
+    repository.acknowledge(subscribe("team-team"))
     database.teamsQueries.removeFavoriteTeam("team")
     database.playersQueries.removeFavoritePlayer("one")
     assertNull(repository.nextOperation(FavoriteTopicMode.TeamAlerts))
     database.playersQueries.removeFavoritePlayer("two")
-    assertEquals(unsubscribe("live-team-team"), repository.nextOperation(FavoriteTopicMode.TeamAlerts))
+    assertEquals(unsubscribe("team-team"), repository.nextOperation(FavoriteTopicMode.TeamAlerts))
   }
 
   @Test
@@ -73,11 +73,11 @@ class FavoriteTopicRepositoryImplTest {
   fun playerTradeUnsubscribesOldTeamBeforeSubscribingNewTeam() = runTest(dispatcher) {
     player("player", "old")
     repository.nextOperation(FavoriteTopicMode.TeamAlerts)
-    repository.acknowledge(subscribe("live-team-old"))
+    repository.acknowledge(subscribe("team-old"))
     driver.execute(null, "UPDATE players SET current_team_id = 'new' WHERE id = 'player'", 0)
-    assertEquals(unsubscribe("live-team-old"), repository.nextOperation(FavoriteTopicMode.TeamAlerts))
-    repository.acknowledge(unsubscribe("live-team-old"))
-    assertEquals(subscribe("live-team-new"), repository.nextOperation(FavoriteTopicMode.TeamAlerts))
+    assertEquals(unsubscribe("team-old"), repository.nextOperation(FavoriteTopicMode.TeamAlerts))
+    repository.acknowledge(unsubscribe("team-old"))
+    assertEquals(subscribe("team-new"), repository.nextOperation(FavoriteTopicMode.TeamAlerts))
   }
 
   @Test
@@ -139,13 +139,42 @@ class FavoriteTopicRepositoryImplTest {
   }
 
   @Test
-  fun importedMembershipPreservesFavoritesAndCleansRemovedTopics() = runTest(dispatcher) {
-    database.teamsQueries.addFavoriteTeam("kept")
-    repository.importSubscriptions(setOf("live-team-kept", "live-event-removed"))
-    assertEquals(setOf("kept"), FavoritesRepositoryImpl(database, dispatchers).observeTeamIds().first())
-    assertEquals(unsubscribe("live-event-removed"), repository.nextOperation(FavoriteTopicMode.Live))
-    repository.acknowledge(unsubscribe("live-event-removed"))
-    assertNull(repository.nextOperation(FavoriteTopicMode.Live))
+  fun reminderTopicsIncludeAllFavoritesAndDeduplicatePlayerTeams() = runTest(dispatcher) {
+    database.teamsQueries.addFavoriteTeam("team")
+    database.matchesQueries.addFavoriteMatch("match")
+    database.eventsQueries.addFavoriteEvent("event")
+    player("one", "team")
+    player("two", "other")
+    player("unknown", " ")
+    database.teamsQueries.addFavoriteTeam("removed")
+    database.teamsQueries.removeFavoriteTeam("removed")
+
+    assertEquals(setOf("team-team", "team-other", "match-match", "event-event"), repository.reminderTopics())
+    val subscriptions = reconcile(FavoriteTopicMode.TeamAlerts)
+    assertEquals(repository.reminderTopics(), subscriptions.map { it.topic }.toSet())
+  }
+
+  @Test
+  fun modeChangesRemoveOldTopicsBeforeAddingNewTopics() = runTest(dispatcher) {
+    database.teamsQueries.addFavoriteTeam("team")
+    database.matchesQueries.addFavoriteMatch("match")
+    database.eventsQueries.addFavoriteEvent("event")
+    player("player", "team")
+    val reminders = setOf("team-team", "match-match", "event-event")
+    val live = setOf("live-team-team", "live-match-match", "live-event-event", "live-player-player")
+    assertEquals(reminders, reconcile(FavoriteTopicMode.TeamAlerts).map { it.topic }.toSet())
+
+    val toLive = reconcile(FavoriteTopicMode.Live)
+    assertEquals(reminders, toLive.take(reminders.size).map { it.topic }.toSet())
+    assertEquals(true, toLive.take(reminders.size).all { it is FavoriteTopicOperation.Unsubscribe })
+    assertEquals(live, toLive.drop(reminders.size).map { it.topic }.toSet())
+    assertEquals(true, toLive.drop(reminders.size).all { it is FavoriteTopicOperation.Subscribe })
+
+    val toReminders = reconcile(FavoriteTopicMode.TeamAlerts)
+    assertEquals(live, toReminders.take(live.size).map { it.topic }.toSet())
+    assertEquals(true, toReminders.take(live.size).all { it is FavoriteTopicOperation.Unsubscribe })
+    assertEquals(reminders, toReminders.drop(live.size).map { it.topic }.toSet())
+    assertEquals(true, toReminders.drop(live.size).all { it is FavoriteTopicOperation.Subscribe })
   }
 
   @Test
@@ -171,6 +200,15 @@ class FavoriteTopicRepositoryImplTest {
     assertNull(repository.nextOperation(FavoriteTopicMode.Disabled))
     assertEquals(setOf("team"), FavoritesRepositoryImpl(database, dispatchers).observeTeamIds().first())
     assertEquals(subscribe("live-team-team"), repository.nextOperation(FavoriteTopicMode.Live))
+  }
+
+  private suspend fun reconcile(mode: FavoriteTopicMode): List<FavoriteTopicOperation> = buildList {
+    repeat(20) {
+      val operation = repository.nextOperation(mode) ?: return@buildList
+      add(operation)
+      repository.acknowledge(operation)
+    }
+    error("Topic reconciliation did not settle")
   }
 
   private fun player(id: String, team: String) {

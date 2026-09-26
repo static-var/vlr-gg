@@ -28,6 +28,7 @@ import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.notifications.PushTokenProvider
 import dev.staticvar.vlr.core.notifications.LiveUpdateStateProvider
+import dev.staticvar.vlr.core.notifications.PushPlatform
 import dev.staticvar.vlr.core.settings.CatppuccinFlavour
 import dev.staticvar.vlr.core.settings.CacheCleanupPreferencesRepository
 import dev.staticvar.vlr.core.settings.MascotPreference
@@ -71,6 +72,7 @@ public fun App(
   onSearchFavoritesChanged: suspend (String) -> Unit = {},
   pushTokenProvider: PushTokenProvider? = null,
   liveUpdateStateProvider: LiveUpdateStateProvider? = null,
+  onLiveUpdatesChanged: (Boolean) -> Unit = {},
 ) {
   ProvideSharedImageLoader()
   PublishSearchFavorites(onSearchFavoritesChanged)
@@ -116,12 +118,18 @@ public fun App(
     null
   }
   val notificationSettingsController = notificationPermissionProvider?.let { provider ->
-    remember(notificationPreferences, provider, pushTokenRegistrationCoordinator) {
+    remember(notificationPreferences, provider, pushTokenRegistrationCoordinator, liveActivityStartCoordinator, liveUpdateStateProvider, onLiveUpdatesChanged) {
       LiveMatchNotificationSettingsController(
         repository = notificationPreferences,
         provider = provider,
         onAuthorizationChanged = { authorization ->
           pushTokenRegistrationCoordinator?.onAuthorizationChanged(authorization)
+        },
+        onEnabledChanged = { enabled ->
+          if (!enabled && liveUpdateStateProvider?.platform == PushPlatform.Ios) {
+            liveActivityStartCoordinator.onExplicitOptOut()
+          }
+          onLiveUpdatesChanged(enabled)
         },
       )
     }
@@ -136,6 +144,7 @@ public fun App(
   }
   LaunchedEffect(lifecycleState, pushTokenRegistrationCoordinator, notificationSettingsController) {
     if (lifecycleState == Lifecycle.State.RESUMED) {
+      favoriteLiveUpdateCoordinator.retry()
       pushTokenRegistrationCoordinator?.onForeground()
       notificationSettingsController?.refresh()
     }

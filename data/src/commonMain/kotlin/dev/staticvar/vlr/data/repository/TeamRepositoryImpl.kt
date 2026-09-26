@@ -113,14 +113,26 @@ internal class TeamRepositoryImpl(
 
   override suspend fun addToFavorites(teamId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {
-      teamsQueries.addFavoriteTeam(teamId)
+      database.transaction {
+        if (teamsQueries.isFavoriteTeam(teamId).executeAsOne() == 0L) {
+          teamsQueries.addFavoriteTeam(teamId)
+          database.favoriteSyncStateQueries.ensureFavoriteSyncState()
+          database.favoriteSyncStateQueries.markFavoritesDirty()
+        }
+      }
       Unit
     }
   }
 
   override suspend fun removeFromFavorites(teamId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {
-      teamsQueries.removeFavoriteTeam(teamId)
+      database.transaction {
+        if (teamsQueries.isFavoriteTeam(teamId).executeAsOne() != 0L) {
+          teamsQueries.removeFavoriteTeam(teamId)
+          database.favoriteSyncStateQueries.ensureFavoriteSyncState()
+          database.favoriteSyncStateQueries.markFavoritesDirty()
+        }
+      }
       Unit
     }
   }

@@ -35,6 +35,7 @@
     <string name="donate_via_github_sponsors">Donate via GitHub Sponsors</string>
     <string name="done">Done</string>
     <string name="experimental">Experimental</string>
+    <string name="experimental_description">Live updates and automatic cleanup</string>
     <string name="explore_the_service_that_powers_the_app">Explore the service that powers the app.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">Feedback is unavailable in this build. You can use Report an issue on the About page instead.</string>
@@ -46,7 +47,6 @@
     <string name="flavour_mocha">Mocha</string>
     <string name="for_the_matches_you_care_about">For the matches you care about.</string>
     <string name="frequently">Frequently</string>
-    <string name="from_the_scene_for_the_scene">From the scene, for the scene.</string>
     <string name="help_support_continued_development">Help support continued development.</string>
     <string name="how_val_esports_handles_your_data">How Val Esports handles your data.</string>
     <string name="light">Light</string>
@@ -55,7 +55,6 @@
     <string name="make_it_yours">Make it yours.</string>
     <string name="mascot">Mascot</string>
     <string name="mascot_frequency_accessibility">%1$s, %2$d percent chance per screen</string>
-    <string name="about_data_attribution">Match coverage, statistics, and news come from VLR.gg. This is an unofficial fan project, unaffiliated with VLR.gg or Riot Games.</string>
     <string name="mode">Mode</string>
     <string name="new_in_val_esports">New in Val Esports</string>
     <string name="none">None</string>
@@ -89,7 +88,6 @@
     <string name="theme_console">Console</string>
     <string name="using_the_app_and_its_content">Using the app and its content.</string>
     <string name="visit_val_esports">Visit Val Esports</string>
-    <string name="visit_vlr_gg">Visit VLR.gg</string>
     <string name="website_policies">Website &amp; policies</string>
     <string name="what_s_new">What's new?</string>
     <string name="write_feedback">Write feedback</string>
@@ -118,15 +116,9 @@
     <string name="notification_access_error">Could not check or request notification access. Please try again.</string>
     <string name="open_system_settings">Open system Settings</string>
     <string name="allow_notifications">Allow notifications</string>
-    <string name="live_activity_permissions_description">Your preferences are saved on this device. Availability also depends on your system settings.</string>
     <string name="live_match_updates">Live match updates</string>
     <string name="live_match_updates_description">Follow live scores in notifications.</string>
     <string name="notifications_permission_description">Allow notifications to receive live match updates.</string>
-    <string name="release_1_0_4_introduction">Follow live scores, choose your app’s look, and explore more match details.</string>
-    <string name="release_1_0_4_live_title">Live scores for your favorites</string>
-    <string name="release_1_0_4_live_description">Enable live scores for favorite matches and events on supported devices, with Live Activities on iOS and Live Updates on Android.</string>
-    <string name="release_1_0_4_appearance_title">Make the app yours</string>
-    <string name="release_1_0_4_appearance_description">Choose your app icon, theme, and mascot in the new Appearance settings.</string>
     <string name="notification_promotion_unavailable">Live scores can still appear as regular notifications. Your device is not allowing promoted Live Updates for this app. Check system notification settings; availability also depends on your device.</string>
     <string name="match_alerts">Match alerts</string>
     <string name="match_alerts_description">Get a notification when a favorite match goes live. Live score updates are unavailable on this device.</string>
@@ -144,4 +136,26 @@
     <string name="release_1_0_5_spotlight_description">Open favorite teams, players, events, and matches from Spotlight. Use Siri to check favorite matches and control spoiler protection.</string>
     <string name="release_1_0_5_polish_title">Smoother browsing, clearer logos</string>
     <string name="release_1_0_5_polish_description">Match and event pages open more smoothly. Logos are easier to see, background refreshes are reduced, and database upgrades preserve your favorites.</string>
+    <string name="match_reminders_description">Get a reminder before a favorite match starts. Allow notifications to receive reminders.</string>
+    <string name="match_reminders_permission_description">Allow notifications to receive reminders for your favorites.</string>
+    <string name="live_updates_with_reminders_description">Follow live scores in notifications. When Live Updates are off, favorites still receive pre-match reminders.</string>
+    <string name="release_1_0_6_introduction">Catch up on everything added since 1.0.0, with more ways to follow your favorites and make the app yours.</string>
+    <string name="release_1_0_6_favorites_title">Follow your favorites</string>
+    <string name="release_1_0_6_favorites_description">Find live matches and results from the past 24 hours for your favorite teams, events, and matches on Home.</string>
+    <string name="release_1_0_6_ios_live_title">Live scores for your favorites</string>
+    <string name="release_1_0_6_ios_live_description">Follow live map scores on your Lock Screen and Dynamic Island on supported iPhones with Live Activities on iOS 18 or later.</string>
+    <string name="release_1_0_6_android_live_title">Live scores and match reminders</string>
+    <string name="release_1_0_6_android_live_description">Follow scores with Live Updates on supported devices. Other devices can receive reminders before favorite matches start.</string>
+    <string name="release_1_0_6_widgets_title">Refreshed widgets</string>
+    <string name="release_1_0_6_widgets_description">See upcoming matches and live scores in refreshed home screen widgets.</string>
+    <string name="release_1_0_6_appearance_title">Make the app yours</string>
+    <string name="release_1_0_6_appearance_description">Choose your app icon, theme, and mascot in Appearance settings.</string>
+    <string name="release_1_0_6_languages_title">Now in 9 languages</string>
+    <string name="release_1_0_6_languages_description">Use the app in English, Hindi, Spanish, French, German, Brazilian Portuguese, Russian, Turkish, or Korean.</string>
+    <string name="release_1_0_6_ios_shortcuts_title">Favorites in Spotlight and Siri</string>
+    <string name="release_1_0_6_ios_shortcuts_description">Find favorite teams and events in Spotlight, or ask Siri about your next favorite match.</string>
+    <string name="release_1_0_6_stability_title">Smoother navigation</string>
+    <string name="release_1_0_6_stability_description">Move between screens more smoothly, with stability fixes including a crash when returning to Home.</string>
+    <string name="release_1_0_6_search_title">Find your team</string>
+    <string name="release_1_0_6_search_description">Search for teams from Rankings, including teams outside the current rankings, and open their profiles.</string>
 </resources>

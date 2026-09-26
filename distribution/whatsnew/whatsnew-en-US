@@ -1,7 +1,6 @@
-New since 1.0.0:
-- Live Updates for favorites on supported devices, with match-start alerts on other compatible devices.
-- Team search in Rankings.
-- App icons, themes and mascot settings.
-- Redesigned widgets and recent favorite matches on Home.
-- Support for 9 languages.
-- Clearer logos, smoother match and event pages, fewer background refreshes and fixes that preserve favorites during upgrades.
+Search for teams from Rankings and open their profiles.
+Follow favorite matches with Live Updates on supported devices, or match-start reminders on other devices.
+See recent favorite matches and refreshed home-screen widgets.
+Choose your icon, theme and mascot in Appearance settings.
+Explore round outcomes and smoother match and event screens.
+Now in 9 languages, with improved reliability and a fix for a crash when returning Home.

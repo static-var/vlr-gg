@@ -1,0 +1,22 @@
+CREATE TABLE favorite_sync_state (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+    revision INTEGER NOT NULL DEFAULT 0,
+    synced INTEGER NOT NULL DEFAULT 0 CHECK (synced IN (0, 1)),
+    client_id TEXT
+);
+
+ensureFavoriteSyncState:
+INSERT OR IGNORE INTO favorite_sync_state(id) VALUES (1);
+
+markFavoritesDirty:
+UPDATE favorite_sync_state SET revision = revision + 1, synced = 0 WHERE id = 1;
+
+markFavoritesPending:
+UPDATE favorite_sync_state SET synced = 0 WHERE id = 1;
+
+getFavoriteSyncState:
+SELECT revision, synced, client_id FROM favorite_sync_state WHERE id = 1;
+
+markFavoritesSynced:
+UPDATE favorite_sync_state SET synced = 1, client_id = :clientId
+WHERE id = 1 AND revision = :revision;

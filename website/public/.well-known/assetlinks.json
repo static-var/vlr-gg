@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "dev.staticvar.vlr",
+      "sha256_cert_fingerprints": [
+        "D6:B3:8A:BE:6D:4E:1E:8B:96:EC:C2:25:3A:5F:BB:DC:72:07:0A:6C:A3:31:29:D9:7E:DC:C8:76:3C:9A:B5:83"
+      ]
+    }
+  }
+]

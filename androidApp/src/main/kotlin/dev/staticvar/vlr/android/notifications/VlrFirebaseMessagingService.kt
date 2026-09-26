@@ -13,7 +13,9 @@ public class VlrFirebaseMessagingService : FirebaseMessagingService() {
   override fun onMessageReceived(message: RemoteMessage) {
     super.onMessageReceived(message)
     val app = application as VlrApplication
-    if (AndroidLiveNotificationAvailability.isAvailable(this)) {
+    if (AndroidLiveNotificationAvailability.usesLiveUpdates(
+        this, app.notificationPreferences.preferences.value.enabled,
+      )) {
       app.liveMatchNotifications.handle(message.data)
     } else {
       app.matchAlertNotifications.handle(message.data)

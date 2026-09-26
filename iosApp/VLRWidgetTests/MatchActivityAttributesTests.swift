@@ -70,29 +70,28 @@ final class MatchActivityAttributesTests: XCTestCase {
         CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, nil)
         let scenarios = [("live", false, false), ("hidden", false, true), ("final", true, false)]
         for (name, terminal, hidden) in scenarios {
-          for scheme in [ColorScheme.light, .dark] {
             let state = MatchActivityAttributes.ContentState(
                 match_id: "3141592653", observed_at: 1790000000, terminal: terminal,
                 teams: [
-                    .init(name: "Test Alpha", img: nil, score: terminal ? 6 : 1),
-                    .init(name: "Test Beta", img: nil, score: terminal ? 5 : 0),
+                    .init(name: "TL", img: nil, score: terminal ? 6 : 1, id: "474"),
+                    .init(name: "PRX", img: nil, score: terminal ? 5 : 0, id: "624"),
                 ],
-                current_map: .init(name: "Test Range", scores: terminal ? [6, 5] : [1, 0])
+                current_map: .init(name: "Lotus", scores: terminal ? [6, 5] : [1, 0], number: 3),
+                total_maps: 3, map_winners: terminal ? [] : ["474", "624", nil]
             )
             let content = MatchLiveActivityLockScreen(state: state, spoilersHidden: hidden)
                 .frame(width: 370)
-                .background(PrismWidgetPalette.background(for: scheme))
-                .environment(\.colorScheme, scheme)
+                .background(Color.black)
+                .environment(\.colorScheme, .dark)
                 .environment(\.locale, Locale(identifier: "en_US"))
             let renderer = ImageRenderer(content: content)
             renderer.scale = 3
             let image = try XCTUnwrap(renderer.uiImage)
             XCTAssertLessThanOrEqual(image.size.height, 160)
             let attachment = XCTAttachment(image: image)
-            attachment.name = "live-activity-\(name)-\(scheme)"
+            attachment.name = "live-activity-\(name)-dark"
             attachment.lifetime = .keepAlways
             add(attachment)
-          }
         }
     }
 
@@ -143,6 +142,38 @@ final class MatchActivityAttributesTests: XCTestCase {
             XCTAssertEqual(state.total_maps, 3)
             XCTAssertEqual(state.terminal, tick == 6)
         }
+    }
+
+    @available(iOS 16.1, *)
+    func testMapWinnersDecodeNumericAndStringIDs() throws {
+        let json = #"{"match_id":"734308","observed_at":1788789340,"terminal":false,"teams":[{"id":474,"name":"TL","img":null,"score":1},{"id":"624","name":"PRX","img":null,"score":1}],"current_map":{"name":"Lotus","number":3,"scores":[5,0]},"total_maps":3,"map_winners":["474",624,null]}"#
+        let state = try JSONDecoder().decode(
+            MatchActivityAttributes.ContentState.self,
+            from: Data(json.utf8)
+        )
+        XCTAssertEqual(state.teams.map(\.id), ["474", "624"])
+        XCTAssertEqual(state.map_winners, ["474", "624", nil])
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state, hidden: false)?.segments,
+                       [.wonBy(0), .wonBy(1), .active])
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state, hidden: true)?.segments,
+                       [.pending, .pending, .pending])
+    }
+
+    @available(iOS 16.1, *)
+    func testMapProgressHandlesIncompleteAndFinalPayloads() throws {
+        func state(terminal: Bool, winners: [String?]) -> MatchActivityAttributes.ContentState {
+            .init(match_id: "734308", observed_at: 0, terminal: terminal,
+                  teams: [.init(name: "TL", img: nil, score: 1, id: "474"),
+                          .init(name: "PRX", img: nil, score: 1, id: "624")],
+                  current_map: .init(name: "Lotus", scores: [5, 0], number: 3),
+                  total_maps: 3, map_winners: winners)
+        }
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: false, winners: ["474"]), hidden: false)?.segments,
+                       [.wonBy(0), .pending, .active])
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: true, winners: []), hidden: false)?.segments,
+                       [.pending, .pending, .pending])
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: true, winners: ["474", "624"]), hidden: false)?.segments,
+                       [.wonBy(0), .wonBy(1), .pending])
     }
 
     @available(iOS 16.1, *)

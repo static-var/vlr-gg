@@ -7,6 +7,7 @@ package dev.staticvar.vlr.shared.widget
 import dev.staticvar.vlr.domain.model.FavoriteScheduledMatch
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.model.MatchStatus
+import dev.staticvar.vlr.domain.model.MatchPreview
 import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 
@@ -14,6 +15,7 @@ import kotlin.time.Instant
 @Serializable
 public data class UpcomingMatchesSnapshot(
   val savedAtEpochMillis: Long,
+  val clientId: String = "",
   val hasFavorites: Boolean,
   val matches: List<UpcomingWidgetMatch>,
   val theme: WidgetTheme,
@@ -84,3 +86,22 @@ internal fun favoriteWidgetMatches(matches: List<FavoriteScheduledMatch>, nowEpo
   .filter { it.status == "LIVE" || it.startTimeEpochMillis == null || it.startTimeEpochMillis > nowEpochMillis }
   .sortedWith(compareBy<UpcomingWidgetMatch> { it.status != "LIVE" }.thenBy { it.startTimeEpochMillis ?: Long.MAX_VALUE }.thenBy { it.id })
   .toList()
+
+internal fun favoriteWidgetRemoteMatches(matches: List<MatchPreview>, nowEpochMillis: Long, spoilersHidden: Boolean): List<UpcomingWidgetMatch> =
+  favoriteWidgetMatches(
+    matches.map { match ->
+      FavoriteScheduledMatch(
+        id = match.id,
+        event = match.event,
+        team1 = match.team1.name,
+        team2 = match.team2.name,
+        time = match.time,
+        status = match.status,
+        score1 = match.team1.score,
+        score2 = match.team2.score,
+        format = match.series.replace(" ", "").uppercase().takeIf { it.matches(Regex("BO[135]")) }.orEmpty(),
+      )
+    },
+    nowEpochMillis,
+    spoilersHidden,
+  )

@@ -18,6 +18,9 @@ import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
+import dev.staticvar.vlr.domain.repository.FavoriteMatchesRepository
+import dev.staticvar.vlr.domain.repository.FavoriteMatchFeed
+import dev.staticvar.vlr.domain.repository.FavoriteMatchesRetryLaterException
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.featurehome.presentation.initialHomeMatchPage
 import kotlinx.coroutines.CancellationException
@@ -28,6 +31,8 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.coroutines.CoroutineContext
@@ -41,7 +46,7 @@ import kotlin.time.Instant
 
 class HomeUseCasesTest {
   @Test
-  fun homeShowsRecentMatchesAndCurrentEventsChronologicallyInBothSections() = runTest {
+  fun homeGroupsRecentMatchesByStatusAndOrdersCurrentEventsChronologicallyInBothSections() = runTest {
     val directFavorites = DirectFavoriteSnapshot(
       teams = listOf(DirectFavorite.Team("team-1", "Alpha", "")),
       players = listOf(DirectFavorite.Player("player-1", "Player", "")),
@@ -77,6 +82,7 @@ class HomeUseCasesTest {
 
     val feed = ObserveHomeFeedUseCase(
       FakeFavoritesRepository(directFavorites), FakeMatchRepository(matches), FakeEventRepository(events),
+      favoriteMatchesRepository = FakeFavoriteMatchesRepository(),
       dispatchers = TestDispatcherProvider(StandardTestDispatcher(testScheduler)),
       clock = object : Clock {
         override fun now(): Instant = Instant.parse("2026-09-12T12:00:00Z")
@@ -84,17 +90,87 @@ class HomeUseCasesTest {
     )().first()
 
     assertTrue(feed.hasDirectFavorites)
-    assertEquals(listOf("early", "live", "indirect", "no-date"), feed.personalizedMatches.map { it.id })
+    assertEquals(listOf("live", "early", "indirect", "no-date"), feed.personalizedMatches.map { it.id })
     assertEquals(
       listOf("active-from-done", "early-event", "ongoing", "related-event"),
       feed.personalizedEvents.map { it.id },
     )
-    assertEquals(listOf("early", "live"), feed.directFavorites.matches.map { it.id })
+    assertEquals(listOf("live", "early"), feed.directFavorites.matches.map { it.id })
     assertEquals(listOf("early-event", "ongoing"), feed.directFavorites.events.map { it.id })
     assertEquals(directFavorites.teams, feed.directFavorites.teams)
     assertEquals(directFavorites.players, feed.directFavorites.players)
     assertEquals(5, directFavorites.matches.size)
     assertEquals(6, directFavorites.events.size)
+  }
+
+  @Test
+  fun serverFavoritesDriveHomeRailWithCompletedMatchesBeforeLiveAndUpcoming() = runTest {
+    val favorites = DirectFavoriteSnapshot(matches = listOf(DirectFavorite.Match("done", "Done", "")))
+    val serverMatches = listOf(
+      match("live", MatchStatus.LIVE, "2026-09-25T12:00:00Z", "event", personalized = false),
+      match("upcoming", MatchStatus.UPCOMING, "2026-09-26T12:00:00Z", "event", personalized = false),
+      match("done", MatchStatus.COMPLETED, "2026-09-24T12:00:00Z", "event", personalized = false),
+    )
+    val feed = ObserveHomeFeedUseCase(
+      favoritesRepository = FakeFavoritesRepository(favorites),
+      matchRepository = FakeMatchRepository(emptyList()),
+      eventRepository = FakeEventRepository(emptyList()),
+      favoriteMatchesRepository = FakeFavoriteMatchesRepository(FavoriteMatchFeed(favorites, serverMatches)),
+      dispatchers = TestDispatcherProvider(StandardTestDispatcher(testScheduler)),
+    )().first()
+
+    assertEquals(listOf("done", "live", "upcoming"), feed.personalizedMatches.map { it.id })
+    assertEquals(listOf("done"), feed.personalizedMatches.filter { it.isDirectFavorite }.map { it.id })
+  }
+
+  @Test
+  fun scrambledServerMatchesSortByStatusThenTimeWithMissingTimesLastAndSelectFirstLive() {
+    val serverMatches = listOf(
+      match("upcoming-undated", MatchStatus.UPCOMING, null, "event"),
+      match("live-undated", MatchStatus.LIVE, null, "event"),
+      match("completed-later", MatchStatus.COMPLETED, "2026-09-20T11:00:00Z", "event"),
+      match("upcoming-later", MatchStatus.UPCOMING, "2026-09-21T12:00:00Z", "event"),
+      match("live-b", MatchStatus.LIVE, "2026-09-20T10:00:00Z", "event"),
+      match("completed-undated", MatchStatus.COMPLETED, null, "event"),
+      match("live-old", MatchStatus.LIVE, "2026-09-18T12:00:00Z", "event"),
+      match("upcoming-earlier", MatchStatus.UPCOMING, "2026-09-20T09:00:00Z", "event"),
+      match("completed-old", MatchStatus.COMPLETED, "2026-09-01T12:00:00Z", "event"),
+      match("live-a", MatchStatus.LIVE, "2026-09-20T10:00:00Z", "event"),
+    )
+    val feed = buildHomeFeed(
+      directFavorites = DirectFavoriteSnapshot(events = listOf(DirectFavorite.Event("event", "Event", ""))),
+      matches = emptyList(),
+      events = emptyList(),
+      now = Instant.parse("2026-09-20T12:00:00Z"),
+      serverMatches = serverMatches,
+    )
+
+    assertEquals(
+      listOf(
+        "completed-old", "completed-later", "completed-undated",
+        "live-old", "live-a", "live-b", "live-undated",
+        "upcoming-earlier", "upcoming-later", "upcoming-undated",
+      ),
+      feed.personalizedMatches.map { it.id },
+    )
+    assertEquals(3, initialHomeMatchPage(feed.personalizedMatches))
+  }
+
+  @Test
+  fun removedFavoriteDoesNotKeepStaleServerMatchVisible() = runTest {
+    val oldSelection = DirectFavoriteSnapshot(matches = listOf(DirectFavorite.Match("old", "Old", "")))
+    val currentSelection = DirectFavoriteSnapshot(teams = listOf(DirectFavorite.Team("new", "New", "")))
+    val feed = ObserveHomeFeedUseCase(
+      favoritesRepository = FakeFavoritesRepository(currentSelection),
+      matchRepository = FakeMatchRepository(emptyList()),
+      eventRepository = FakeEventRepository(emptyList()),
+      favoriteMatchesRepository = FakeFavoriteMatchesRepository(
+        FavoriteMatchFeed(oldSelection, listOf(match("old", MatchStatus.LIVE, null, "event"))),
+      ),
+      dispatchers = TestDispatcherProvider(StandardTestDispatcher(testScheduler)),
+    )().first()
+
+    assertTrue(feed.personalizedMatches.isEmpty())
   }
 
   @Test
@@ -104,6 +180,7 @@ class HomeUseCasesTest {
     var clockObservedDefaultDispatcher = false
     val useCase = ObserveHomeFeedUseCase(
       favoritesRepository = FakeFavoritesRepository(DirectFavoriteSnapshot()),
+      favoriteMatchesRepository = FakeFavoriteMatchesRepository(),
       matchRepository = FakeMatchRepository(emptyList()),
       eventRepository = FakeEventRepository(emptyList()),
       dispatchers = TestDispatcherProvider(defaultDispatcher),
@@ -141,7 +218,7 @@ class HomeUseCasesTest {
       now = Instant.parse("2026-09-20T12:00:00Z"),
     )
 
-    val expected = listOf("old-live", "boundary", "live", "future", "undated-upcoming")
+    val expected = listOf("boundary", "old-live", "live", "future", "undated-upcoming")
     assertEquals(expected, feed.personalizedMatches.map { it.id })
     assertEquals(expected, feed.directFavorites.matches.map { it.id })
   }
@@ -234,6 +311,7 @@ class HomeUseCasesTest {
         matchStarted.await()
         throw expected
       },
+      favoriteMatchesRepository = FakeFavoriteMatchesRepository(),
     )
 
     val completed = useCase()
@@ -256,6 +334,7 @@ class HomeUseCasesTest {
         eventsRefreshed = true
         Result.success(Unit)
       },
+      favoriteMatchesRepository = FakeFavoriteMatchesRepository(),
     )
 
     val result = useCase()
@@ -263,6 +342,19 @@ class HomeUseCasesTest {
     assertTrue(matchesRefreshed)
     assertTrue(eventsRefreshed)
     assertSame(expected, result.exceptionOrNull())
+  }
+
+  @Test
+  fun unregisteredFavoriteEndpointDoesNotFailHomeRefresh() = runTest {
+    val useCase = RefreshHomeUseCase(
+      matchRepository = FakeMatchRepository(emptyList()),
+      eventRepository = FakeEventRepository(emptyList()),
+      favoriteMatchesRepository = FakeFavoriteMatchesRepository(
+        result = Result.failure(FavoriteMatchesRetryLaterException(404)),
+      ),
+    )
+
+    assertTrue(useCase().isSuccess)
   }
 
   @Test
@@ -282,11 +374,20 @@ class HomeUseCasesTest {
         matchStarted.await()
         Result.failure(CancellationException("cancel home refresh"))
       },
+      favoriteMatchesRepository = FakeFavoriteMatchesRepository(),
     )
 
     assertFailsWith<CancellationException> { useCase() }
     assertTrue(matchCancelled)
   }
+}
+
+private class FakeFavoriteMatchesRepository(
+  initial: FavoriteMatchFeed? = null,
+  private val result: Result<List<MatchPreview>> = Result.success(emptyList()),
+) : FavoriteMatchesRepository {
+  override val homeMatches: StateFlow<FavoriteMatchFeed?> = MutableStateFlow(initial)
+  override suspend fun fetch(includeResults: Boolean): Result<List<MatchPreview>> = result
 }
 
 private class TestDispatcherProvider(

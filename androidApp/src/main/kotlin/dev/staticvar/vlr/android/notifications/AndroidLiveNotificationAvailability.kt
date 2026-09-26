@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.android.notifications
 
 import android.content.Context
+import android.app.NotificationManager
 import android.os.Build
 import android.util.Log
 import dev.staticvar.vlr.android.BuildConfig
@@ -25,6 +26,13 @@ internal object AndroidLiveNotificationAvailability {
     }
     recordStatus("live_updates", status)
     return status == "available"
+  }
+
+  fun usesLiveUpdates(context: Context, enabled: Boolean): Boolean {
+    if (!enabled || !isAvailable(context)) return false
+    val channel = context.getSystemService(NotificationManager::class.java)
+      .getNotificationChannel("live_matches")
+    return channel?.importance != NotificationManager.IMPORTANCE_NONE
   }
 
   /** Ordinary match alerts require Firebase and Play services, regardless of Android version. */

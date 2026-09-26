@@ -158,14 +158,26 @@ internal class EventRepositoryImpl(
 
   override suspend fun addToFavorites(eventId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {
-      eventsQueries.addFavoriteEvent(eventId)
+      database.transaction {
+        if (eventsQueries.isFavoriteEvent(eventId).executeAsOne() == 0L) {
+          eventsQueries.addFavoriteEvent(eventId)
+          database.favoriteSyncStateQueries.ensureFavoriteSyncState()
+          database.favoriteSyncStateQueries.markFavoritesDirty()
+        }
+      }
       Unit
     }
   }
 
   override suspend fun removeFromFavorites(eventId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {
-      eventsQueries.removeFavoriteEvent(eventId)
+      database.transaction {
+        if (eventsQueries.isFavoriteEvent(eventId).executeAsOne() != 0L) {
+          eventsQueries.removeFavoriteEvent(eventId)
+          database.favoriteSyncStateQueries.ensureFavoriteSyncState()
+          database.favoriteSyncStateQueries.markFavoritesDirty()
+        }
+      }
       Unit
     }
   }

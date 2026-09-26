@@ -166,14 +166,26 @@ internal class MatchRepositoryImpl(
 
   override suspend fun addToFavorites(matchId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {
-      matchesQueries.addFavoriteMatch(matchId)
+      database.transaction {
+        if (matchesQueries.isFavoriteMatch(matchId).executeAsOne() == 0L) {
+          matchesQueries.addFavoriteMatch(matchId)
+          database.favoriteSyncStateQueries.ensureFavoriteSyncState()
+          database.favoriteSyncStateQueries.markFavoritesDirty()
+        }
+      }
       Unit
     }
   }
 
   override suspend fun removeFromFavorites(matchId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {
-      matchesQueries.removeFavoriteMatch(matchId)
+      database.transaction {
+        if (matchesQueries.isFavoriteMatch(matchId).executeAsOne() != 0L) {
+          matchesQueries.removeFavoriteMatch(matchId)
+          database.favoriteSyncStateQueries.ensureFavoriteSyncState()
+          database.favoriteSyncStateQueries.markFavoritesDirty()
+        }
+      }
       Unit
     }
   }

@@ -34,6 +34,7 @@
     <string name="donate_via_github_sponsors">GitHub Sponsors로 후원하기</string>
     <string name="done">완료</string>
     <string name="experimental">실험적 기능</string>
+    <string name="experimental_description">실시간 업데이트와 자동 정리</string>
     <string name="explore_the_service_that_powers_the_app">앱을 구동하는 서비스를 살펴보세요.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">이 빌드에서는 의견을 보낼 수 없습니다. 대신 정보 페이지에서 문제 신고를 이용해 주세요.</string>
@@ -45,7 +46,6 @@
     <string name="flavour_mocha">모카</string>
     <string name="for_the_matches_you_care_about">관심 있는 경기를 한눈에.</string>
     <string name="frequently">자주</string>
-    <string name="from_the_scene_for_the_scene">현장에서, 현장을 위해.</string>
     <string name="help_support_continued_development">계속 개발할 수 있도록 후원해 주세요.</string>
     <string name="how_val_esports_handles_your_data">Val Esports가 데이터를 처리하는 방식입니다.</string>
     <string name="light">라이트</string>
@@ -54,7 +54,6 @@
     <string name="make_it_yours">나만의 앱으로.</string>
     <string name="mascot">마스코트</string>
     <string name="mascot_frequency_accessibility">%1$s, 화면마다 %2$d퍼센트 확률</string>
-    <string name="about_data_attribution">경기 중계, 통계, 뉴스는 VLR.gg에서 제공됩니다. 이 앱은 비공식 팬 프로젝트이며 VLR.gg 또는 Riot Games와 관련이 없습니다.</string>
     <string name="mode">모드</string>
     <string name="new_in_val_esports">Val Esports의 새로운 기능</string>
     <string name="none">없음</string>
@@ -88,7 +87,6 @@
     <string name="theme_console">콘솔</string>
     <string name="using_the_app_and_its_content">앱과 콘텐츠 이용에 관한 내용입니다.</string>
     <string name="visit_val_esports">Val Esports 방문</string>
-    <string name="visit_vlr_gg">VLR.gg 방문</string>
     <string name="website_policies">웹사이트 및 정책</string>
     <string name="what_s_new">새로운 소식</string>
     <string name="write_feedback">의견 작성</string>
@@ -117,15 +115,9 @@
     <string name="notification_access_error">알림 권한을 확인하거나 요청하지 못했습니다. 다시 시도해 주세요.</string>
     <string name="open_system_settings">시스템 설정 열기</string>
     <string name="allow_notifications">알림 허용</string>
-    <string name="live_activity_permissions_description">환경설정은 이 기기에 저장됩니다. 사용 가능 여부는 시스템 설정에 따라 달라집니다.</string>
     <string name="live_match_updates">경기 실시간 소식</string>
     <string name="live_match_updates_description">알림에서 실시간 점수를 확인하세요.</string>
     <string name="notifications_permission_description">경기 실시간 소식을 받으려면 알림을 허용하세요.</string>
-    <string name="release_1_0_4_introduction">실시간 점수를 확인하고 앱의 모양을 바꾸며 더 자세한 경기 정보를 살펴보세요.</string>
-    <string name="release_1_0_4_live_title">즐겨찾는 경기의 실시간 점수</string>
-    <string name="release_1_0_4_live_description">지원되는 기기에서 즐겨찾는 경기와 이벤트의 실시간 점수를 켜세요. iOS에서는 실시간 현황, Android에서는 Live Updates로 확인할 수 있습니다.</string>
-    <string name="release_1_0_4_appearance_title">나만의 앱 꾸미기</string>
-    <string name="release_1_0_4_appearance_description">새로운 모양 설정에서 앱 아이콘, 테마, 마스코트를 선택하세요.</string>
     <string name="release_1_0_5_introduction">1.0.0 이후 추가된 모든 기능을 만나보세요. 즐겨찾기의 실시간 점수와 팀 검색, 나만의 화면, 더 쉬워진 소식 확인까지.</string>
     <string name="release_1_0_5_live_title">즐겨찾기를 실시간으로 확인</string>
     <string name="release_1_0_5_live_ios_description">즐겨찾는 경기와 대회의 실시간 현황을 켜세요. 더 선명한 팀 로고와 함께 잠금 화면과 Dynamic Island에서 맵별 점수를 확인할 수 있습니다.</string>
@@ -143,4 +135,26 @@
     <string name="notification_promotion_unavailable">실시간 점수는 일반 알림으로 계속 표시될 수 있습니다. 기기에서 이 앱의 강조된 실시간 업데이트를 허용하지 않습니다. 시스템 알림 설정을 확인하세요. 지원 여부는 기기에 따라 다릅니다.</string>
     <string name="match_alerts">경기 알림</string>
     <string name="match_alerts_description">즐겨찾는 경기가 시작되면 알림을 받습니다. 이 기기에서는 실시간 점수 업데이트를 사용할 수 없습니다.</string>
+    <string name="release_1_0_6_introduction">1.0.0 이후 추가된 기능을 확인하세요. 즐겨찾기를 더 다양하게 팔로우하고 앱을 원하는 모습으로 꾸밀 수 있습니다.</string>
+    <string name="release_1_0_6_favorites_title">즐겨찾기 팔로우</string>
+    <string name="release_1_0_6_favorites_description">홈에서 즐겨찾는 팀, 이벤트, 경기의 진행 중인 경기와 지난 24시간의 결과를 확인하세요.</string>
+    <string name="release_1_0_6_ios_live_title">즐겨찾는 경기의 실시간 점수</string>
+    <string name="release_1_0_6_ios_live_description">iOS 18 이상에서 실시간 현황을 지원하는 iPhone의 잠금 화면과 Dynamic Island로 실시간 맵 점수를 확인하세요.</string>
+    <string name="release_1_0_6_android_live_title">실시간 점수와 경기 알림</string>
+    <string name="release_1_0_6_android_live_description">지원되는 기기에서는 Live Updates로 점수를 확인하세요. 다른 기기에서는 즐겨찾는 경기 시작 전에 알림을 받을 수 있습니다.</string>
+    <string name="release_1_0_6_widgets_title">새로워진 위젯</string>
+    <string name="release_1_0_6_widgets_description">새로워진 홈 화면 위젯에서 예정된 경기와 실시간 점수를 확인하세요.</string>
+    <string name="release_1_0_6_appearance_title">나만의 앱 꾸미기</string>
+    <string name="release_1_0_6_appearance_description">모양 설정에서 앱 아이콘, 테마, 마스코트를 선택하세요.</string>
+    <string name="release_1_0_6_languages_title">이제 9개 언어 지원</string>
+    <string name="release_1_0_6_languages_description">영어, 힌디어, 스페인어, 프랑스어, 독일어, 브라질 포르투갈어, 러시아어, 튀르키예어, 한국어로 앱을 사용하세요.</string>
+    <string name="release_1_0_6_ios_shortcuts_title">Spotlight와 Siri에서 즐겨찾기</string>
+    <string name="release_1_0_6_ios_shortcuts_description">Spotlight에서 즐겨찾는 팀과 이벤트를 찾거나 Siri에게 다음 즐겨찾는 경기를 물어보세요.</string>
+    <string name="release_1_0_6_stability_title">더 부드러운 화면 이동</string>
+    <string name="release_1_0_6_stability_description">화면 사이를 더 부드럽게 이동하세요. 홈으로 돌아갈 때 앱이 종료되는 문제를 비롯한 안정성 문제를 해결했습니다.</string>
+    <string name="match_reminders_description">즐겨찾는 경기가 시작되기 전에 알림을 받으세요. 경기 시작 알림을 받으려면 알림을 허용하세요.</string>
+    <string name="match_reminders_permission_description">즐겨찾기 경기 시작 알림을 받으려면 알림을 허용하세요.</string>
+    <string name="live_updates_with_reminders_description">알림에서 실시간 점수를 확인하세요. Live Updates를 꺼도 즐겨찾는 경기 시작 전 알림은 계속 받을 수 있습니다.</string>
+    <string name="release_1_0_6_search_title">내 팀 찾기</string>
+    <string name="release_1_0_6_search_description">랭킹에서 팀을 검색하고 프로필을 열어 보세요. 현재 랭킹에 없는 팀도 찾을 수 있습니다.</string>
 </resources>

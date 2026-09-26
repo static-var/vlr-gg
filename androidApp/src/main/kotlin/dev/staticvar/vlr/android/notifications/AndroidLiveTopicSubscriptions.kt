@@ -55,24 +55,39 @@ internal class AndroidLiveTopicSubscriptions(
   }
 
   private suspend fun synchronize() {
+    if (!AndroidLiveNotificationAvailability.supportsMatchAlerts(appContext)) return
+    val transport = FirebaseLiveTopicSubscriptionTransport(FirebaseMessaging.getInstance())
     storage.getStringSet("topics", null)?.let { savedTopics ->
-      topics.importSubscriptions(savedTopics.toSet())
-      check(storage.edit().remove("topics").commit())
+      migrateLegacyTopicSubscriptions(topics, savedTopics.toSet(), transport) {
+        check(storage.edit().remove("topics").commit())
+      }
+    }
+    if (subscriptionMode() == FavoriteTopicMode.Live && !storage.getBoolean("legacy_topics_cleared", false)) {
+      val reminders = topics.reminderTopics()
+      if (reminders.isNotEmpty()) {
+        for (topic in reminders) {
+          transport.unsubscribe(topic)
+          topics.acknowledge(FavoriteTopicOperation.Unsubscribe(topic))
+        }
+        check(storage.edit().putBoolean("legacy_topics_cleared", true).commit())
+      }
     }
     reconcileLiveTopicSubscriptions(
       topics = topics,
       mode = ::subscriptionMode,
       previousToken = storage.getString("token", null),
-      transport = FirebaseLiveTopicSubscriptionTransport(FirebaseMessaging.getInstance()),
+      transport = transport,
       saveToken = { token -> check(storage.edit().putString("token", token).commit()) },
     )
   }
 
   private fun subscriptionMode(): FavoriteTopicMode {
     if (!AndroidLiveNotificationAvailability.supportsMatchAlerts(appContext)) return FavoriteTopicMode.Disabled
-    val liveSupported = AndroidLiveNotificationAvailability.isAvailable(appContext)
+    val liveSupported = AndroidLiveNotificationAvailability.usesLiveUpdates(
+      appContext, preferences.preferences.value.enabled,
+    )
     val channelId = if (liveSupported) "live_matches" else "match_alerts"
-    val enabled = preferences.preferences.value.enabled && notifications.areNotificationsEnabled() &&
+    val enabled = notifications.areNotificationsEnabled() &&
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
         notifications.getNotificationChannel(channelId)?.importance != NotificationManager.IMPORTANCE_NONE)
     return when {
@@ -90,6 +105,17 @@ internal interface LiveTopicSubscriptionTransport {
   suspend fun subscribe(topic: String)
 
   suspend fun unsubscribe(topic: String)
+}
+
+internal suspend fun migrateLegacyTopicSubscriptions(
+  topics: FavoriteTopicRepository,
+  savedTopics: Set<String>,
+  transport: LiveTopicSubscriptionTransport,
+  clearLegacyTopics: () -> Unit,
+) {
+  for (topic in savedTopics) transport.unsubscribe(topic)
+  topics.invalidateAcknowledgements()
+  clearLegacyTopics()
 }
 
 internal suspend fun reconcileLiveTopicSubscriptions(

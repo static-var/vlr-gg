@@ -9,9 +9,12 @@ import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.model.MatchPreview
+import dev.staticvar.vlr.domain.model.MatchFavoriteReason
+import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
+import dev.staticvar.vlr.domain.repository.FavoriteMatchesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.featurehome.presentation.HomeFeed
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +28,7 @@ public class ObserveHomeFeedUseCase(
   private val favoritesRepository: FavoritesRepository,
   private val matchRepository: MatchRepository,
   private val eventRepository: EventRepository,
+  private val favoriteMatchesRepository: FavoriteMatchesRepository,
   private val dispatchers: DispatcherProvider,
   private val clock: Clock = Clock.System,
 ) {
@@ -32,8 +36,9 @@ public class ObserveHomeFeedUseCase(
     favoritesRepository.observeDirectFavorites(),
     matchRepository.getMatches(),
     eventRepository.getEvents(),
-  ) { favorites, matches, events ->
-    buildHomeFeed(favorites, matches, events, clock.now())
+    favoriteMatchesRepository.homeMatches,
+  ) { favorites, matches, events, serverFeed ->
+    buildHomeFeed(favorites, matches, events, clock.now(), serverFeed?.takeIf { it.selection == favorites }?.matches)
   }.flowOn(dispatchers.default)
 }
 
@@ -42,15 +47,20 @@ internal fun buildHomeFeed(
   matches: List<MatchPreview>,
   events: List<EventPreview>,
   now: Instant = Clock.System.now(),
+  serverMatches: List<MatchPreview>? = null,
 ): HomeFeed {
   val earliestMatchTime = (now - 24.hours).toEpochMilliseconds()
-  val relatedMatches = matches.filter { it.favoriteReasons.isNotEmpty() }
-  val personalizedMatches = relatedMatches
-    .asSequence()
-    .filter { it.isVisibleSince(earliestMatchTime) }
-    .distinctBy(MatchPreview::id)
-    .sortedWith(homeMatchComparator)
-    .toList()
+  val remoteMatches = serverMatches?.map { match -> match.withFavoriteReasons(directFavorites) }
+  val relatedMatches = remoteMatches ?: matches.filter { it.favoriteReasons.isNotEmpty() }
+  val personalizedMatches = if (remoteMatches != null) {
+    remoteMatches.distinctBy(MatchPreview::id).sortedWith(homeMatchComparator)
+  } else {
+    relatedMatches.asSequence()
+      .filter { it.isVisibleSince(earliestMatchTime) }
+      .distinctBy(MatchPreview::id)
+      .sortedWith(homeMatchComparator)
+      .toList()
+  }
 
   val relatedEventIds = buildSet {
     directFavorites.events.mapTo(this) { favorite -> favorite.id }
@@ -71,7 +81,7 @@ internal fun buildHomeFeed(
   return HomeFeed(
     hasDirectFavorites = directFavorites.hasAny,
     directFavorites = directFavorites.copy(
-      matches = matches.filter { it.isVisibleSince(earliestMatchTime) }.distinctBy { it.id }
+      matches = (remoteMatches ?: matches).filter { it.isVisibleSince(earliestMatchTime) }.distinctBy { it.id }
         .sortedWith(homeMatchComparator).mapNotNull { savedMatches[it.id] },
       events = events.filter { it.isCurrent }.distinctBy { it.id }
         .sortedWith(homeEventComparator).mapNotNull { savedEvents[it.id] },
@@ -79,6 +89,18 @@ internal fun buildHomeFeed(
     personalizedMatches = personalizedMatches,
     personalizedEvents = personalizedEvents,
   )
+}
+
+private fun MatchPreview.withFavoriteReasons(favorites: DirectFavoriteSnapshot): MatchPreview {
+  val teamIds = setOfNotNull(team1.id, team2.id)
+  val reasons = buildList {
+    favorites.matches.filter { it.id == id }.forEach { add(MatchFavoriteReason(MatchFavoriteSource.MATCH, it.id, it.title)) }
+    favorites.teams.filter { it.id in teamIds }.forEach { add(MatchFavoriteReason(MatchFavoriteSource.TEAM, it.id, it.title)) }
+    favorites.players.filter { it.currentTeamId?.let(teamIds::contains) == true }
+      .forEach { add(MatchFavoriteReason(MatchFavoriteSource.PLAYER, it.id, it.title)) }
+    favorites.events.filter { it.id == eventId }.forEach { add(MatchFavoriteReason(MatchFavoriteSource.EVENT, it.id, it.title)) }
+  }
+  return copy(isFavorite = true, isDirectFavorite = favorites.matches.any { it.id == id }, favoriteReasons = reasons)
 }
 
 private fun MatchPreview.isVisibleSince(earliestTime: Long): Boolean {
@@ -91,9 +113,19 @@ private val EventPreview.isCurrent: Boolean
   get() = status == EventStatus.ONGOING || status == EventStatus.UPCOMING
 
 private val homeMatchComparator: Comparator<MatchPreview> = Comparator { first, second ->
-  compareNullableAscending(first.time.asEpochMillis(), second.time.asEpochMillis())
+  first.status.homeSortOrder.compareTo(second.status.homeSortOrder)
+    .takeUnless { it == 0 }
+    ?: compareNullableAscending(first.time.asEpochMillis(), second.time.asEpochMillis())
     .takeUnless { it == 0 } ?: first.id.compareTo(second.id)
 }
+
+private val MatchStatus.homeSortOrder: Int
+  get() = when (this) {
+    MatchStatus.COMPLETED -> 0
+    MatchStatus.LIVE -> 1
+    MatchStatus.UPCOMING -> 2
+    MatchStatus.UNKNOWN -> 3
+  }
 
 private fun String?.asEpochMillis(): Long? = this
   ?.takeIf(String::isNotBlank)

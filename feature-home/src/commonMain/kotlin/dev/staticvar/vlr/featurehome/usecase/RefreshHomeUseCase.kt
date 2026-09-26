@@ -5,6 +5,8 @@
 package dev.staticvar.vlr.featurehome.usecase
 
 import dev.staticvar.vlr.domain.repository.EventRepository
+import dev.staticvar.vlr.domain.repository.FavoriteMatchesRepository
+import dev.staticvar.vlr.domain.repository.FavoriteMatchesRetryLaterException
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
@@ -14,11 +16,22 @@ import kotlinx.coroutines.coroutineScope
 public class RefreshHomeUseCase(
   private val matchRepository: MatchRepository,
   private val eventRepository: EventRepository,
+  private val favoriteMatchesRepository: FavoriteMatchesRepository,
 ) {
   public suspend operator fun invoke(): Result<Unit> = coroutineScope {
     val matches = async { refreshResult { matchRepository.refreshMatches() } }
     val events = async { refreshResult { eventRepository.refreshEvents() } }
-    val results = awaitAll(matches, events)
+    val favorites = async {
+      refreshResult {
+        favoriteMatchesRepository.fetch(includeResults = true).fold(
+          onSuccess = { Result.success(Unit) },
+          onFailure = { error ->
+            if (error is FavoriteMatchesRetryLaterException) Result.success(Unit) else Result.failure(error)
+          },
+        )
+      }
+    }
+    val results = awaitAll(matches, events, favorites)
     results.firstOrNull { result -> result.isFailure } ?: Result.success(Unit)
   }
 }

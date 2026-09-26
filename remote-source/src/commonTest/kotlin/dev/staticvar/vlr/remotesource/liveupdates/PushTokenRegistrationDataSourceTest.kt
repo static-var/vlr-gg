@@ -30,7 +30,7 @@ class PushTokenRegistrationDataSourceTest {
       respond("", status = HttpStatusCode.NoContent, headers = jsonHeaders())
     }
 
-    val success = PushTokenRegistrationDataSourceImpl(client).register(ClientId, PushPlatform.Ios, "00aaff")
+    val success = PushTokenRegistrationDataSourceImpl(client).register(ClientId, PushPlatform.Ios, "00aaff", true)
 
     assertTrue(success)
     val (path, method, body) = requests.single()
@@ -38,6 +38,7 @@ class PushTokenRegistrationDataSourceTest {
     assertEquals(HttpMethod.Put, method)
     assertEquals("00aaff", testJson().parseToJsonElement(body).jsonObject.getValue("token").jsonPrimitive.content)
     assertEquals("iOS", testJson().parseToJsonElement(body).jsonObject.getValue("platform").jsonPrimitive.content)
+    assertEquals("true", testJson().parseToJsonElement(body).jsonObject.getValue("live_updates").jsonPrimitive.content)
   }
 
   @Test
@@ -49,12 +50,13 @@ class PushTokenRegistrationDataSourceTest {
       respond("{}", status = HttpStatusCode.BadGateway, headers = jsonHeaders())
     }
 
-    val success = PushTokenRegistrationDataSourceImpl(client).register(ClientId, PushPlatform.Android, token)
+    val success = PushTokenRegistrationDataSourceImpl(client).register(ClientId, PushPlatform.Android, token, false)
 
     assertFalse(success)
     val payload = testJson().parseToJsonElement(body).jsonObject
     assertEquals(token, payload.getValue("token").jsonPrimitive.content)
     assertEquals("android", payload.getValue("platform").jsonPrimitive.content)
+    assertEquals("false", payload.getValue("live_updates").jsonPrimitive.content)
   }
 
   @Test
@@ -70,6 +72,15 @@ class PushTokenRegistrationDataSourceTest {
       listOf(Triple("/api/v1/live-updates/clients/$ClientId/token", HttpMethod.Delete, "")),
       requests,
     )
+  }
+
+  @Test
+  fun deletionRetryTreatsAlreadyMissingTokenAsComplete() = runTest {
+    val client = mockClient {
+      respond("", status = HttpStatusCode.NotFound, headers = jsonHeaders())
+    }
+
+    assertTrue(PushTokenRegistrationDataSourceImpl(client).delete(ClientId))
   }
 
   /** Holds the client ID used in API request tests. */

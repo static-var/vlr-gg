@@ -9,17 +9,20 @@ import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
+import dev.staticvar.vlr.domain.repository.FavoriteSyncStatus
 import dev.staticvar.vlr.featurehome.usecase.ObserveHomeFeedUseCase
 import dev.staticvar.vlr.featurehome.usecase.RefreshHomeUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 public class HomeViewModel(
   observeHomeFeedUseCase: ObserveHomeFeedUseCase,
   refreshHomeUseCase: RefreshHomeUseCase,
   networkMonitor: NetworkMonitor,
+  favoriteSyncStatus: FavoriteSyncStatus,
 ) : ViewModel() {
   public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
@@ -28,6 +31,14 @@ public class HomeViewModel(
     networkMonitor = networkMonitor,
     operation = "refresh home",
   ) { refreshHomeUseCase() }
+
+  init {
+    viewModelScope.launch {
+      favoriteSyncStatus.syncGeneration.collect { generation ->
+        if (generation > 0) refresher.refresh()
+      }
+    }
+  }
 
   public val uiState: StateFlow<HomeUiState> = combine(
     observeHomeFeedUseCase(),

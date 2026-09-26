@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -247,19 +248,25 @@ private fun PersonalizedMatches(
         initialPage = initialHomeMatchPage(matches),
         pageCount = { matches.size },
       )
+      val firstLivePage = matches.indexOfFirst { it.status == MatchStatus.LIVE }
+      val firstLiveMatchId = matches.getOrNull(firstLivePage)?.id
+      LaunchedEffect(firstLiveMatchId) {
+        if (firstLiveMatchId != null) pagerState.scrollToPage(firstLivePage)
+      }
       PrismCarousel(
         itemCount = matches.size,
         pagerState = pagerState,
         variant = PrismCarouselVariant.Multibrowse,
         showIndicators = matches.size <= MaximumVisibleIndicators,
-        key = { page -> matches[page].id },
+        key = { page -> matches.getOrNull(page)?.id ?: page },
       ) { page ->
-        val match = matches[page]
-        MatchPreviewItem(
-          matchPreview = match,
-          modifier = Modifier.fillMaxWidth(),
-          onClick = { onMatchSelected(match) },
-        )
+        matches.getOrNull(page)?.let { match ->
+          MatchPreviewItem(
+            matchPreview = match,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { onMatchSelected(match) },
+          )
+        }
       }
     }
   }
@@ -288,14 +295,15 @@ private fun PersonalizedEvents(
         itemCount = events.size,
         variant = PrismCarouselVariant.Multibrowse,
         showIndicators = events.size <= MaximumVisibleIndicators,
-        key = { page -> events[page].id },
+        key = { page -> events.getOrNull(page)?.id ?: page },
       ) { page ->
-        val event = events[page]
-        EventPreviewItem(
-          eventPreview = event,
-          modifier = Modifier.fillMaxWidth(),
-          onClick = { onEventSelected(event) },
-        )
+        events.getOrNull(page)?.let { event ->
+          EventPreviewItem(
+            eventPreview = event,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { onEventSelected(event) },
+          )
+        }
       }
     }
   }

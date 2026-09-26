@@ -520,7 +520,7 @@ internal class LiveMatchNotificationRenderer(
     val openMatch = PendingIntent.getActivity(
       context,
       update.matchId.hashCode(),
-      Intent(Intent.ACTION_VIEW, android.net.Uri.parse("vlr://match/${update.matchId}"), context, MainActivity::class.java),
+      Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://valorantesports.staticvar.dev/match/${update.matchId}"), context, MainActivity::class.java),
       PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
     val builder = if (sdkInt >= 26) Notification.Builder(context, ChannelId) else Notification.Builder(context)
@@ -548,7 +548,7 @@ internal class LiveMatchNotificationRenderer(
     }
 
     if (update.terminal) {
-      applyFinal(builder, update, scoresHidden)
+      applyFinal(builder, update, scoresHidden, sdkInt)
       return builder.setOngoing(false).setAutoCancel(true).build()
     }
 
@@ -645,7 +645,7 @@ internal class LiveMatchNotificationRenderer(
     }
   }
 
-  private fun applyFinal(builder: Notification.Builder, update: LiveMatchUpdate, scoresHidden: Boolean) {
+  private fun applyFinal(builder: Notification.Builder, update: LiveMatchUpdate, scoresHidden: Boolean, sdkInt: Int) {
     val (first, second) = update.teams
     val matchup = if (scoresHidden) {
       context.getString(R.string.widget_match_teams, first.displayName, second.displayName)
@@ -655,7 +655,19 @@ internal class LiveMatchNotificationRenderer(
     builder.setContentTitle(context.getString(R.string.live_match_notification_final))
       .setContentText(matchup)
       .setSubText(null)
-      .setStyle(Notification.BigTextStyle().bigText(matchup))
+    val progress = update.mapProgress()
+    if (sdkInt >= 36 && progress != null && !scoresHidden) {
+      Api36Notification.applyProgressStyle(
+        builder = builder,
+        progress = progress,
+        colors = colors,
+        currentMapScores = emptyList(),
+        context = context,
+        terminal = true,
+      )
+    } else {
+      builder.setStyle(Notification.BigTextStyle().bigText(matchup))
+    }
   }
 
   /**
@@ -722,7 +734,7 @@ internal class LiveMatchNotificationRenderer(
     31 * matchId.hashCode() + action.hashCode(),
     Intent(context, LiveMatchNotificationReceiver::class.java)
       .setAction(action)
-      .setData(android.net.Uri.parse("vlr-live-notification://action/$matchId/${generation.orEmpty()}"))
+      .setData(android.net.Uri.parse("app-notification://action/$matchId/${generation.orEmpty()}"))
       .putExtra(LiveMatchNotificationReceiver.ExtraMatchId, matchId)
       .putExtra(LiveMatchNotificationReceiver.ExtraGeneration, generation),
     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
@@ -751,15 +763,14 @@ internal data class LiveMatchMapProgress(
 private const val MaxVisibleMapSegments = 9
 
 /**
- * Returns map progress only for an active match with usable map numbers.
- * Omits progress when the map metadata is missing or outside the supported range.
+ * Returns map progress when map metadata is usable, including completed map winners.
+ * Missing winner entries remain neutral, including in a final state.
  */
 internal fun LiveMatchUpdate.mapProgress(): LiveMatchMapProgress? {
-  if (terminal) return null
   val maximumMaps = totalMaps?.takeIf { it in 1..MaxVisibleMapSegments } ?: return null
-  val activeMap = currentMap?.number?.takeIf { it in 1..maximumMaps } ?: return null
+  val activeMap = if (terminal) maximumMaps else currentMap?.number?.takeIf { it in 1..maximumMaps } ?: return null
   val winners = List(maximumMaps) { mapIndex ->
-    mapWinners.getOrNull(mapIndex)?.takeIf { mapIndex + 1 <= activeMap }?.let { winnerId ->
+    mapWinners.getOrNull(mapIndex)?.let { winnerId ->
       teams.indices.filter { teams[it].id == winnerId }.singleOrNull()
     }
   }
@@ -777,6 +788,7 @@ private object Api36Notification {
     colors: LiveMatchTeamColors,
     currentMapScores: List<Int?>,
     context: Context,
+    terminal: Boolean = false,
   ) {
     val total = progress.totalMaps
     val current = progress.currentMapNumber
@@ -790,7 +802,7 @@ private object Api36Notification {
     } else {
       (((first ?: 0) + (second ?: 0)) * MapSegmentLength / 24).coerceIn(0, MapSegmentLength - 1)
     }
-    val progressValue = (current - 1) * MapSegmentLength + roundsProgress
+    val progressValue = if (terminal) total * MapSegmentLength else (current - 1) * MapSegmentLength + roundsProgress
 
     val style = Notification.ProgressStyle()
       .setStyledByProgress(false)

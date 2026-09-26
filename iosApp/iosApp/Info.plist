@@ -26,17 +26,6 @@
 		<string>ko</string>
 		<string>ru</string>
 	</array>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>dev.staticvar.vlr.widget</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>vlr</string>
-			</array>
-		</dict>
-	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>

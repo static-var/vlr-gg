@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "2X75NHAZDU.dev.staticvar.vlr.ios",
+        "paths": [
+          "/",
+          "/match/*",
+          "/event/*",
+          "/team/*",
+          "/player/*"
+        ]
+      }
+    ]
+  }
+}

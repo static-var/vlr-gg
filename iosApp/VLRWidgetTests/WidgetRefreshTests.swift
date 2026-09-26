@@ -68,152 +68,35 @@ final class WidgetRefreshTests: XCTestCase {
         }
     }
 
-    func testRefreshUsesCachedPlayerTeamIDWithoutPlayerOrTeamRequestsAndKeepsOtherRoutes() async throws {
+    func testRefreshUsesFavoriteMatchesEndpointWithoutResultsAndPreservesServerOrder() async throws {
         let recorder = RequestRecorder(responses: [
-            "/api/v1/matches/": .ok("""
-                [{"id":"100","event":"Masters","series":"Bo3","status":"live","team1":{"id":"88","name":"Alpha","score":1},"team2":{"id":"2","name":"Beta","score":0},"time":"2026-09-12T18:00:00Z","event_id":"5"}]
-                """),
-            "/api/v1/events/99": .ok("""
-                {"title":"Game Changers","matches":[{"id":"300","time":"20:00:00","date":"2026-09-15","status":"upcoming","teams":[{"name":"Delta","score":null},{"name":"Epsilon","score":null}],"round":"Upper Final","stage":"Playoffs"}]}
-                """),
-            "/api/v1/matches/42": .ok("""
-                {"event":{"name":"Champions","series":"Bo5","stage":"Grand Final","date":"2026-09-16T18:00:00Z","status":"upcoming"},"score":"","teams":[{"name":"Zeta","score":null},{"name":"Eta","score":null}]}
-                """),
-            "/api/v1/matches/100": .ok("""
-                {"event":{"name":"Masters","series":"Masters 2026","stage":"Swiss Round 2","date":"2026-09-12T18:00:00Z","status":"ongoing"},"score":"1:0","teams":[{"name":"Alpha","score":1},{"name":"Beta","score":0}],"map_count":3}
-                """),
-        ])
-        let service = WidgetRefreshService(api: recorder.client(authorization: "fixture-token"))
-        let source = snapshot(
-            favorites: WidgetFavoriteIDs(
-                matchIds: ["42"],
-                teamIds: ["88"],
-                eventIds: ["99"],
-                playerIds: ["77"]
-            ),
-            spoilersHidden: true
-        )
-
-        let refreshed = try await service.refresh(
-            source: source,
-            now: Date(timeIntervalSince1970: 1_788_800_000)
-        )
-
-        XCTAssertEqual(Set(refreshed.matches.map(\.id)), Set(["42", "100", "300"]))
-        XCTAssertTrue(refreshed.matches.allSatisfy { $0.score1 == nil && $0.score2 == nil })
-        XCTAssertEqual(refreshed.matches.first(where: { $0.id == "100" })?.format, "BO3")
-        XCTAssertEqual(refreshed.matches.first(where: { $0.id == "100" })?.stage, "")
-        XCTAssertEqual(
-            Set(recorder.requestPaths),
-            Set(["/api/v1/matches", "/api/v1/matches/42", "/api/v1/events/99"])
-        )
-        XCTAssertEqual(recorder.requestPaths.count, 3)
-        XCTAssertFalse(recorder.requestPaths.contains { $0.hasPrefix("/api/v1/player/") })
-        XCTAssertFalse(recorder.requestPaths.contains { $0.hasPrefix("/api/v1/team/") })
-        XCTAssertEqual(recorder.authorizationValues, Set(["fixture-token"]))
-        XCTAssertEqual(recorder.appNameValues, Set(["dev.staticvar.vlr"]))
-    }
-
-    func testRefreshRetainsCachedTeamScheduleMatchMissingFromOverview() async throws {
-        let recorder = RequestRecorder(responses: [
-            "/api/v1/matches/": .ok("[]"),
-            "/api/v1/matches/200": .ok("""
-                {"event":{"name":"Challengers","series":"Bo3","stage":"Final","date":"2026-09-14T18:00:00Z","status":"upcoming"},"teams":[{"name":"Alpha","score":null},{"name":"Gamma","score":null}]}
-                """),
-        ])
-        let service = WidgetRefreshService(api: recorder.client())
-        let cachedMatch = UpcomingMatch(
-            id: "200",
-            event: "Challengers",
-            team1: "Alpha",
-            team2: "Gamma",
-            startTimeEpochMillis: nil,
-            status: .upcoming,
-            score1: nil,
-            score2: nil,
-            format: "BO3",
-            stage: "Final"
-        )
-        let source = snapshot(
-            favorites: WidgetFavoriteIDs(matchIds: [], teamIds: ["88"], eventIds: [], playerIds: ["77"]),
-            matches: [cachedMatch]
-        )
-
-        let refreshed = try await service.refresh(source: source)
-
-        XCTAssertEqual(refreshed.matches.map(\.id), ["200"])
-        XCTAssertEqual(Set(recorder.requestPaths), Set(["/api/v1/matches", "/api/v1/matches/200"]))
-        XCTAssertEqual(recorder.requestPaths.count, 2)
-        XCTAssertFalse(recorder.requestPaths.contains { $0.hasPrefix("/api/v1/player/") })
-        XCTAssertFalse(recorder.requestPaths.contains { $0.hasPrefix("/api/v1/team/") })
-    }
-
-    func testUnknownStatusKeepsPreviousMatchWithoutTreatingItAsLive() async throws {
-        let previous = UpcomingMatch(
-            id: "42",
-            event: "Champions",
-            team1: "Alpha",
-            team2: "Beta",
-            startTimeEpochMillis: nil,
-            status: .upcoming,
-            score1: nil,
-            score2: nil,
-            format: "BO3",
-            stage: "Final"
-        )
-        let recorder = RequestRecorder(responses: [
-            "/api/v1/matches/": .ok("""
-                [{"id":"42","event":"Champions","series":"Bo3","status":"tbd","team1":{"name":"Alpha"},"team2":{"name":"Beta"},"time":null,"event_id":"9"}]
-                """),
-            "/api/v1/matches/42": .ok("""
-                {"event":{"name":"Champions","series":"Bo3","stage":"Final","date":null,"status":"tbd"},"teams":[{"name":"Alpha"},{"name":"Beta"}]}
-                """),
-        ])
-        let service = WidgetRefreshService(api: recorder.client())
-        let source = snapshot(
-            favorites: WidgetFavoriteIDs(matchIds: ["42"], teamIds: [], eventIds: [], playerIds: []),
-            matches: [previous]
-        )
-
-        let refreshed = try await service.refresh(source: source)
-
-        XCTAssertEqual(refreshed.matches, [previous])
-        XCTAssertEqual(refreshed.matches[0].status, .upcoming)
-    }
-
-    func testOverviewKeepsCachedMetadataWithoutFetchingDetails() async throws {
-        let recorder = RequestRecorder(responses: [
-            "/api/v1/matches/": .ok("""
-                [{"id":"42","event":"Champions","series":"","status":"live","team1":{"name":"Beta","score":2},"team2":{"name":"Alpha","score":1},"time":null,"event_id":"5"}]
+            favoriteMatchesPath: .ok("""
+                [
+                  {"id":"100","event":"Masters","series":"Bo3","status":"live","team1":{"id":"88","name":"Alpha","score":1},"team2":{"id":"2","name":"Beta","score":0},"time":"2026-09-12T18:00:00Z","event_id":"5"},
+                  {"id":"200","event":"Champions","series":"Bo5","status":"upcoming","team1":{"id":"7","name":"Delta"},"team2":{"id":"8","name":"Epsilon"},"time":"2026-09-13T18:00:00Z","event_id":"6"},
+                  {"id":"300","event":"Champions","series":"Bo3","status":"completed","team1":{"id":"7","name":"Delta"},"team2":{"id":"8","name":"Epsilon"},"time":"2026-09-11T18:00:00Z","event_id":"6"}
+                ]
                 """),
         ])
         let source = snapshot(
-            favorites: WidgetFavoriteIDs(matchIds: ["42"], teamIds: [], eventIds: [], playerIds: []),
-            matches: [liveMatch(score1: 0, score2: 0)]
+            favorites: WidgetFavoriteIDs(matchIds: ["100"], teamIds: [], eventIds: [], playerIds: [])
         )
-        let refreshed = try await WidgetRefreshService(api: recorder.client()).refresh(source: source)
-        let match = try XCTUnwrap(refreshed.matches.first)
-        XCTAssertEqual(match.team1, "Beta")
-        XCTAssertEqual(match.score1, 2)
-        XCTAssertEqual(match.score2, 1)
-        XCTAssertEqual(match.format, "BO3")
-        XCTAssertEqual(match.stage, "Final")
-        XCTAssertEqual(recorder.requestPaths, ["/api/v1/matches"])
+        let refreshed = try await WidgetRefreshService(api: recorder.client(authorization: "Bearer key")).refresh(source: source)
+        XCTAssertEqual(refreshed.matches.map(\.id), ["100", "200"])
+        XCTAssertEqual(recorder.requestPaths, [favoriteMatchesPath])
+        XCTAssertEqual(recorder.requestQueries, ["include_results=false"])
+        XCTAssertEqual(recorder.authorizationValues, ["Bearer key"])
+        XCTAssertEqual(recorder.appNameValues, ["dev.staticvar.vlr"])
     }
 
-    func testCompletedOverviewRemovesCachedMatchWithoutDetails() async throws {
-        let recorder = RequestRecorder(responses: [
-            "/api/v1/matches/": .ok("""
-                [{"id":"42","event":"Champions","series":"Bo3","status":"completed","team1":{"name":"Alpha","score":2},"team2":{"name":"Beta","score":1},"time":null,"event_id":"5"}]
-                """),
-        ])
+    func testServerEmptyListClearsStaleWidgetMatches() async throws {
+        let recorder = RequestRecorder(responses: [favoriteMatchesPath: .ok("[]")])
         let source = snapshot(
             favorites: WidgetFavoriteIDs(matchIds: ["42"], teamIds: [], eventIds: [], playerIds: []),
             matches: [liveMatch(score1: 1, score2: 1)]
         )
         let refreshed = try await WidgetRefreshService(api: recorder.client()).refresh(source: source)
         XCTAssertTrue(refreshed.matches.isEmpty)
-        XCTAssertEqual(recorder.requestPaths.count, 1)
     }
 
     func testFreshVerifiedSnapshotAvoidsAllNetworkRequests() async throws {
@@ -251,7 +134,7 @@ final class WidgetRefreshTests: XCTestCase {
         let sourceURL = directory.appendingPathComponent("source.json")
         try JSONEncoder().encode(source).write(to: sourceURL)
         let repository = WidgetSnapshotRepository(sourceURL: sourceURL, refreshedURL: directory.appendingPathComponent("refresh.json"))
-        let recorder = RequestRecorder(responses: ["/api/v1/matches/": .ok("[]")], delayNanoseconds: 50_000_000)
+        let recorder = RequestRecorder(responses: [favoriteMatchesPath: .ok("[]")], delayNanoseconds: 50_000_000)
         let coordinator = WidgetRefreshCoordinator()
         let service = WidgetRefreshService(api: recorder.client())
         let now = Date.now
@@ -277,7 +160,7 @@ final class WidgetRefreshTests: XCTestCase {
         let sourceURL = directory.appendingPathComponent("source.json")
         try JSONEncoder().encode(source).write(to: sourceURL)
         let repository = WidgetSnapshotRepository(sourceURL: sourceURL, refreshedURL: directory.appendingPathComponent("refresh.json"))
-        let recorder = RequestRecorder(responses: ["/api/v1/matches/": Response(statusCode: 503, body: Data())])
+        let recorder = RequestRecorder(responses: [favoriteMatchesPath: Response(statusCode: 503, body: Data())])
         let service = WidgetRefreshService(api: recorder.client())
         let coordinator = WidgetRefreshCoordinator()
         let retryAfter = now.addingTimeInterval(5 * 60)
@@ -311,7 +194,7 @@ final class WidgetRefreshTests: XCTestCase {
         let repository = WidgetSnapshotRepository(sourceURL: sourceURL, refreshedURL: refreshedURL)
         let start = ISO8601DateFormatter().string(from: matchStart)
         let recorder = RequestRecorder(responses: [
-            "/api/v1/matches/": .ok("""
+            favoriteMatchesPath: .ok("""
                 [{"id":"42","event":"Champions","series":"Bo3","status":"upcoming","team1":{"name":"Alpha"},"team2":{"name":"Beta"},"time":"\(start)","event_id":"5"}]
                 """),
         ])
@@ -325,7 +208,7 @@ final class WidgetRefreshTests: XCTestCase {
         XCTAssertEqual(result.snapshot?.matches.first?.startTime, matchStart)
         XCTAssertEqual(result.refreshDate, matchStart)
         assertTimeline(result, at: now)
-        XCTAssertEqual(recorder.requestPaths, ["/api/v1/matches"])
+        XCTAssertEqual(recorder.requestPaths, [favoriteMatchesPath])
     }
 
     func testSourceChangeDuringRefreshRejectsOldConfigurationResult() async throws {
@@ -379,27 +262,6 @@ final class WidgetRefreshTests: XCTestCase {
         assertTimeline(result, at: now)
     }
 
-    func testIncompleteEventMatchFallsBackToMatchDetails() async throws {
-        for teams in ["[]", "[{\"name\":\"Alpha\"}]"] {
-            let recorder = RequestRecorder(responses: [
-                "/api/v1/matches/": .ok("[]"),
-                "/api/v1/events/5": .ok("""
-                    {"title":"Champions","matches":[{"id":"42","time":"18:00:00","date":"2026-09-24","status":"live","teams":\(teams),"round":"Final","stage":"Playoffs"}]}
-                    """),
-                "/api/v1/matches/42": .ok("""
-                    {"event":{"name":"Champions","series":"Bo3","stage":"Final","date":null,"status":"live"},"score":"2:1","teams":[{"name":"Alpha"},{"name":"Beta"}]}
-                    """),
-            ])
-            let source = snapshot(
-                favorites: WidgetFavoriteIDs(matchIds: [], teamIds: [], eventIds: ["5"], playerIds: []),
-                matches: [liveMatch(score1: 1, score2: 1)]
-            )
-            let refreshed = try await WidgetRefreshService(api: recorder.client()).refresh(source: source)
-            XCTAssertEqual(refreshed.matches.first?.score1, 2)
-            XCTAssertEqual(Set(recorder.requestPaths), Set(["/api/v1/matches", "/api/v1/events/5", "/api/v1/matches/42"]))
-        }
-    }
-
     func testUpcomingStartExpiresCacheBeforeNormalInterval() {
         let now = Date.now
         let match = UpcomingMatch(
@@ -415,21 +277,23 @@ final class WidgetRefreshTests: XCTestCase {
         XCTAssertEqual(source.refreshDate, match.startTime)
     }
 
-    func testNonSuccessResponseFailsRefresh() async {
-        let recorder = RequestRecorder(responses: [
-            "/api/v1/matches/": Response(statusCode: 503, body: Data()),
-        ])
-        let service = WidgetRefreshService(api: recorder.client())
+    func testUnregisteredAndUnavailableResponsesKeepRefreshRetryable() async {
+        for status in [404, 503] {
+            let recorder = RequestRecorder(responses: [
+                favoriteMatchesPath: Response(statusCode: status, body: Data()),
+            ])
+            let service = WidgetRefreshService(api: recorder.client())
 
-        do {
-            _ = try await service.refresh(
-                source: snapshot(
-                    favorites: WidgetFavoriteIDs(matchIds: ["42"], teamIds: [], eventIds: [], playerIds: [])
+            do {
+                _ = try await service.refresh(
+                    source: snapshot(
+                        favorites: WidgetFavoriteIDs(matchIds: ["42"], teamIds: [], eventIds: [], playerIds: [])
+                    )
                 )
-            )
-            XCTFail("Expected the refresh to fail")
-        } catch {
-            XCTAssertEqual(error as? WidgetRefreshError, .httpStatus(503))
+                XCTFail("Expected the refresh to fail")
+            } catch {
+                XCTAssertEqual(error as? WidgetRefreshError, .httpStatus(status))
+            }
         }
     }
 
@@ -482,6 +346,7 @@ final class WidgetRefreshTests: XCTestCase {
     ) -> UpcomingMatchesSnapshot {
         UpcomingMatchesSnapshot(
             savedAtEpochMillis: savedAtEpochMillis,
+            clientId: testClientId,
             hasFavorites: true,
             favorites: favorites,
             spoilersHidden: spoilersHidden,
@@ -534,6 +399,7 @@ private final class RequestRecorder {
     private(set) var authorizationValues = Set<String>()
     private(set) var appNameValues = Set<String>()
     private(set) var requestPaths: [String] = []
+    private(set) var requestQueries: [String?] = []
 
     init(responses: [String: Response], delayNanoseconds: UInt64 = 0) {
         self.responses = responses
@@ -573,9 +439,13 @@ private final class RequestRecorder {
         }
         let path = request.url?.path ?? ""
         requestPaths.append(path)
+        requestQueries.append(request.url?.query)
         if let response = responses[path] {
             return response
         }
         return responses[path.hasSuffix("/") ? String(path.dropLast()) : path + "/"]
     }
 }
+
+private let testClientId = "01996ff9-3000-7000-8000-000000000001"
+private let favoriteMatchesPath = "/api/v1/favorites/\(testClientId)/matches"

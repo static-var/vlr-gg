@@ -130,7 +130,7 @@ class AndroidLiveMatchNotificationsTest {
       assertNull(parsed.mapProgress())
     }
     assertNull(requireNotNull(parser.parse(payload())).mapProgress())
-    assertNull(update.copy(terminal = true).mapProgress())
+    assertEquals(LiveMatchMapProgress(3, 3), update.copy(terminal = true).mapProgress())
   }
 
   @Test
@@ -144,10 +144,23 @@ class AndroidLiveMatchNotificationsTest {
     val match = requireNotNull(parser.parse(payload(state = state)))
     assertEquals(listOf("474", "624"), match.teams.map { it.id })
     assertEquals(listOf("474", "624", "999", null, "624"), match.mapWinners)
-    assertEquals(listOf(0, 1, null, null, null), match.mapProgress()?.winnerTeamIndices)
+    assertEquals(listOf(0, 1, null, null, 1), match.mapProgress()?.winnerTeamIndices)
     val swapped = match.copy(teams = match.teams.reversed())
-    assertEquals(listOf(1, 0, null, null, null), swapped.mapProgress()?.winnerTeamIndices)
+    assertEquals(listOf(1, 0, null, null, 0), swapped.mapProgress()?.winnerTeamIndices)
     assertTrue(match.copy(teams = listOf(match.teams[0], match.teams[0])).mapProgress()!!.winnerTeamIndices.all { it == null })
+    assertEquals(
+      listOf(0, 1, 1, null, null),
+      match.copy(mapWinners = listOf("474", "624", "624"), currentMap = match.currentMap?.copy(number = 3))
+        .mapProgress()?.winnerTeamIndices,
+    )
+    assertEquals(
+      listOf(0, 1, null, null, 1),
+      match.copy(terminal = true, currentMap = null).mapProgress()?.winnerTeamIndices,
+    )
+    assertEquals(
+      List(5) { null },
+      match.copy(terminal = true, mapWinners = emptyList()).mapProgress()?.winnerTeamIndices,
+    )
     listOf("null", "{}", "true", "[{},false,null]").forEach { metadata ->
       val parsed = requireNotNull(parser.parse(payload(state = validState().replace("\"future_field\":true", "\"map_winners\":$metadata"))))
       assertEquals(listOf(8, 6), parsed.currentMap?.scores)
@@ -194,6 +207,10 @@ class AndroidLiveMatchNotificationsTest {
     assertNotNull(recoveredStyle.progressTrackerIcon)
     assertNotNull(notifWithLogos.getLargeIcon())
 
+    val final = renderer.build(match.copy(terminal = true, currentMap = null), false, 36)
+    val finalStyle = Notification.Builder.recoverBuilder(context, final).style as Notification.ProgressStyle
+    assertEquals(listOf(firstColor, secondColor), finalStyle.progressSegments.take(2).map { it.color })
+    assertEquals(300, finalStyle.progress)
     val hidden = Notification.Builder.recoverBuilder(context, renderer.build(match, true, 36)).style
     assertTrue(hidden is Notification.BigTextStyle)
   }
@@ -260,9 +277,12 @@ class AndroidLiveMatchNotificationsTest {
     assertEquals(LiveMatchMapProgress(1, 3), firstMap.mapProgress())
     val lastMap = live.copy(currentMap = live.currentMap?.copy(number = 3))
     assertEquals(LiveMatchMapProgress(3, 3), lastMap.mapProgress())
-    listOf(live.copy(totalMaps = null), live.copy(currentMap = null), live.copy(terminal = true)).forEach { state ->
+    listOf(live.copy(totalMaps = null), live.copy(currentMap = null)).forEach { state ->
       assertTrue(Notification.Builder.recoverBuilder(context, renderer.build(state, false, 36)).style is Notification.BigTextStyle)
     }
+    val final = Notification.Builder.recoverBuilder(context, renderer.build(live.copy(terminal = true), false, 36)).style
+    assertTrue(final is Notification.ProgressStyle)
+    assertEquals(300, (final as Notification.ProgressStyle).progress)
     assertTrue(Notification.Builder.recoverBuilder(context, renderer.build(live, true, 36)).style is Notification.BigTextStyle)
     if (Build.VERSION.SDK_INT >= 37) {
       assertTrue(Notification.Builder.recoverBuilder(context, renderer.build(live, false)).style is Notification.ProgressStyle)

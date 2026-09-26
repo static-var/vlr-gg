@@ -15,6 +15,8 @@ import dev.staticvar.vlr.remotesource.liveupdates.PushTokenRegistrationDataSourc
 import dev.staticvar.vlr.remotesource.liveupdates.PushTokenRegistrationDataSourceImpl
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
 import dev.staticvar.vlr.remotesource.match.MatchDataSourceImpl
+import dev.staticvar.vlr.remotesource.match.FavoriteMatchesDataSource
+import dev.staticvar.vlr.remotesource.match.FavoriteMatchesDataSourceImpl
 import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
 import dev.staticvar.vlr.remotesource.network.HttpClientFactory
 import dev.staticvar.vlr.remotesource.network.NetworkConfiguration
@@ -73,6 +75,7 @@ fun remoteSourceModule(
   single<FavoriteLiveUpdateDataSource> { FavoriteLiveUpdateDataSourceImpl(get()) }
   single<LiveActivityStartDataSource> { LiveActivityStartDataSourceImpl(get()) }
   single<MatchDataSource> { MatchDataSourceImpl(get()) }
+  single<FavoriteMatchesDataSource> { FavoriteMatchesDataSourceImpl(get()) }
   single<PushTokenRegistrationDataSource> { PushTokenRegistrationDataSourceImpl(get()) }
   single<EventDataSource> { EventDataSourceImpl(get()) }
   single<NewsDataSource> { NewsDataSourceImpl(get()) }
