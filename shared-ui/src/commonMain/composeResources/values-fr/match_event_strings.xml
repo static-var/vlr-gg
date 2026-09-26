@@ -69,4 +69,7 @@
   <string name="match_event_win_type_defused">DÉSAMORCÉ</string>
   <string name="match_event_win_type_time_out">TEMPS ÉCOULÉ</string>
   <string name="match_event_win_type_not_played">NON JOUÉ</string>
+  <string name="match_event_map_number">Carte %1$d</string>
+  <string name="match_event_up_next">À suivre</string>
+  <string name="match_event_round_score">Score des manches</string>
 </resources>
