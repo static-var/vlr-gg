@@ -44,4 +44,6 @@
     <string name="match_alert_channel_name">मैच अलर्ट</string>
     <string name="match_alert_channel_description">आपके पसंदीदा मैच शुरू होने पर अलर्ट</string>
     <string name="match_alert_live">मैच लाइव है</string>
+    <string name="live_match_notification_map_series">मैप %1$d / %2$d · सीरीज़ %3$s</string>
+    <string name="live_match_notification_series">सीरीज़ %1$s</string>
 </resources>

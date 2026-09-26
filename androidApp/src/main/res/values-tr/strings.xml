@@ -44,4 +44,6 @@
     <string name="match_alert_channel_name">Maç bildirimleri</string>
     <string name="match_alert_channel_description">Favori maçlarınız başladığında bildirimler</string>
     <string name="match_alert_live">Maç canlı</string>
+    <string name="live_match_notification_map_series">Harita %1$d / %2$d · Seri %3$s</string>
+    <string name="live_match_notification_series">Seri %1$s</string>
 </resources>

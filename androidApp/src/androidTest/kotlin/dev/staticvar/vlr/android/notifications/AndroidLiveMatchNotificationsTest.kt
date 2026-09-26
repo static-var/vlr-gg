@@ -8,10 +8,15 @@ import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.SystemClock
 import android.text.Spanned
-import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.gms.common.ConnectionResult
@@ -21,6 +26,7 @@ import com.russhwolf.settings.MapSettings
 import dev.staticvar.vlr.android.R
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -43,8 +49,8 @@ class AndroidLiveMatchNotificationsTest {
   @SdkSuppress(minSdkVersion = 36)
   fun liveNotificationsAreAvailableWithPlayServicesAndFirebaseOnAndroid16() {
     assumeTrue(GoogleApiAvailabilityLight.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS)
-    val options = FirebaseApp.getInstance().options
-    assumeTrue(options.applicationId.isNotBlank() && !options.gcmSenderId.isNullOrBlank())
+    val options = runCatching { FirebaseApp.getInstance().options }.getOrNull()
+    assumeTrue(options != null && options.applicationId.isNotBlank() && !options.gcmSenderId.isNullOrBlank())
 
     assertTrue(AndroidLiveNotificationAvailability.isAvailable(context))
   }
@@ -79,12 +85,27 @@ class AndroidLiveMatchNotificationsTest {
 
     assertNotNull(valid)
     assertEquals("Paper Rex", valid?.teams?.get(1)?.name)
+    assertEquals("https://example.test/pr.png", valid?.teams?.get(1)?.imageUrl)
     assertEquals(listOf(8, 6), valid?.currentMap?.scores)
     assertNull(parser.parse(payload(type = "other")))
     assertNull(parser.parse(payload(state = "{not-json")))
     assertNull(parser.parse(payload(state = validState().replace("[8,6]", "[8,-1]"))))
     assertNull(parser.parse(payload(state = validState().replace("\"score\":1", "\"score\":\"invalid\""))))
     assertNull(parser.parse(payload(matchId = "١٢٣")))
+
+    // The CDN manifest maps team IDs to logos; entries on hosts the logo cache refuses are ignored.
+    val cdnLogo = "https://files.akhilnarang.dev/cdn/valorant/teams/624.png"
+    val manifest = java.io.File(context.filesDir, "team_logos.json")
+    manifest.writeText("""{"624":{"logo":{"url":"$cdnLogo"}},"1":{"logo":{"url":"https://evil.example/1.png"}}}""")
+    try {
+      val directory = TeamLogoDirectory(context, KoinPlatform.getKoin().get<Json>())
+      assertTrue(runBlocking { directory.refresh() })
+      assertEquals(cdnLogo, directory.logoUrl("624"))
+      assertNull(directory.logoUrl("1"))
+      assertNull(directory.logoUrl(null))
+    } finally {
+      manifest.delete()
+    }
   }
 
   @Test
@@ -144,14 +165,35 @@ class AndroidLiveMatchNotificationsTest {
     val renderer = LiveMatchNotificationRenderer(context)
     val notification = renderer.build(match, false, 36)
     val style = Notification.Builder.recoverBuilder(context, notification).style as Notification.ProgressStyle
-    val text = notification.extras.getCharSequence(Notification.EXTRA_TEXT) as Spanned
-    val firstColor = text.getSpans(0, "Team Liquid : 1".length, ForegroundColorSpan::class.java).single().foregroundColor
-    val secondColor = text.getSpans(text.toString().indexOf("Paper Rex"), text.length, ForegroundColorSpan::class.java).single().foregroundColor
+
+    val firstColor = style.progressSegments[0].color
+    val secondColor = style.progressSegments[1].color
+    val neutralColor = style.progressSegments[2].color
     assertTrue(firstColor != secondColor)
-    assertEquals(listOf(firstColor, secondColor), style.progressSegments.take(2).map { it.color })
-    assertEquals(style.progressSegments.map { it.color }, style.progressPoints.map { it.color })
-    assertTrue(style.progressSegments[2].color !in listOf(firstColor, secondColor))
+    assertTrue(neutralColor != firstColor && neutralColor != secondColor)
+    assertEquals(listOf(firstColor, secondColor, neutralColor), style.progressSegments.map { it.color })
+    assertEquals(listOf(neutralColor, neutralColor), style.progressPoints.map { it.color })
     assertFalse(style.isStyledByProgress)
+
+    val logoCache = LiveMatchLogoCache(context)
+    val testBmp1 = Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888)
+    val testBmp2 = Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888)
+    logoCache.putLogo("https://example.test/t1.png", testBmp1)
+    logoCache.putLogo("https://example.test/t2.png", testBmp2)
+    val matchWithLogos = match.copy(
+      teams = listOf(
+        match.teams[0].copy(imageUrl = "https://example.test/t1.png"),
+        match.teams[1].copy(imageUrl = "https://example.test/t2.png"),
+      ),
+    )
+    val withLogosRenderer = LiveMatchNotificationRenderer(context, logoCache)
+    val notifWithLogos = withLogosRenderer.build(matchWithLogos, false, 36)
+    val recoveredStyle = Notification.Builder.recoverBuilder(context, notifWithLogos).style as Notification.ProgressStyle
+    assertNull(recoveredStyle.progressStartIcon)
+    assertNull(recoveredStyle.progressEndIcon)
+    assertNotNull(recoveredStyle.progressTrackerIcon)
+    assertNotNull(notifWithLogos.getLargeIcon())
+
     val hidden = Notification.Builder.recoverBuilder(context, renderer.build(match, true, 36)).style
     assertTrue(hidden is Notification.BigTextStyle)
   }
@@ -165,7 +207,7 @@ class AndroidLiveMatchNotificationsTest {
       val expected = if (tag == "\"PRX\"") "PRX" else "Paper Rex"
       assertEquals(expected, match.teams[1].displayName)
       val notification = LiveMatchNotificationRenderer(context).build(match.copy(terminal = true), false)
-      assertEquals("Team Liquid : 1\n$expected : 1", notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
+      assertTrue(notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString().contains(expected))
     }
   }
 
@@ -179,11 +221,40 @@ class AndroidLiveMatchNotificationsTest {
     )
     val notification = renderer.build(live, scoresHidden = false, sdkInt = 36)
     val progress = Notification.Builder.recoverBuilder(context, notification).style as Notification.ProgressStyle
-    assertEquals(2, progress.progress)
-    assertEquals(3, progress.progressMax)
-    assertEquals(listOf(1, 1, 1), progress.progressSegments.map { it.length })
-    assertEquals(listOf(1, 2, 3), progress.progressPoints.map { it.position })
-    assertEquals("Team Liquid : 1\nPaper Rex : 1", notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+    val expectedRoundsProgress = (8 + 6) * 100 / 24
+    assertEquals((2 - 1) * 100 + expectedRoundsProgress, progress.progress)
+    assertEquals(300, progress.progressMax)
+    assertEquals(listOf(100, 100, 100), progress.progressSegments.map { it.length })
+    assertEquals(listOf(100, 200), progress.progressPoints.map { it.position })
+    assertEquals("Ascent", notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+    assertEquals("Team Liquid\u20038 : 6\u2003Paper Rex", notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+    val title = notification.extras.getCharSequence(Notification.EXTRA_TITLE)
+    assertTrue(title !is Spanned || title.getSpans(0, title.length, StyleSpan::class.java).isEmpty())
+    assertEquals("Map 2 of 3 · Series 1 : 1", notification.extras.getCharSequence(Notification.EXTRA_SUB_TEXT).toString())
+    assertEquals("8–6", notification.extras.getCharSequence("android.shortCriticalText")?.toString())
+    assertEquals(Icon.TYPE_RESOURCE, notification.smallIcon.type)
+
+    // The chip shows the leader first, as its logo silhouette when that reads, else its tag if the text fits.
+    val logos = LiveMatchLogoCache(context)
+    logos.putLogo("https://example.test/mark.png", ringLogo(Color.RED))
+    logos.putLogo("https://example.test/plate.png", Bitmap.createBitmap(48, 48, Bitmap.Config.ARGB_8888).apply { eraseColor(Color.WHITE) })
+    fun chip(state: LiveMatchUpdate): Pair<String?, Int> =
+      LiveMatchNotificationRenderer(context, logos).build(state, scoresHidden = false, sdkInt = 36).let {
+        it.extras.getCharSequence("android.shortCriticalText")?.toString() to it.smallIcon.type
+      }
+    val trailing = live.copy(
+      teams = listOf(
+        live.teams[0].copy(tag = "TL", imageUrl = "https://example.test/plate.png"),
+        live.teams[1].copy(tag = "PRX", imageUrl = "https://example.test/mark.png"),
+      ),
+      currentMap = live.currentMap?.copy(scores = listOf(6, 8)),
+    )
+    assertEquals("8–6" to Icon.TYPE_BITMAP, chip(trailing))
+    // A logo that is a solid plate reads as a block, so the leader is named instead.
+    assertEquals("TL 8–6" to Icon.TYPE_RESOURCE, chip(trailing.copy(currentMap = live.currentMap)))
+    assertEquals("8–8" to Icon.TYPE_RESOURCE, chip(trailing.copy(currentMap = live.currentMap?.copy(scores = listOf(8, 8)))))
+    val longTag = trailing.copy(teams = listOf(trailing.teams[0].copy(tag = "TEAMLIQ", imageUrl = null), trailing.teams[1]))
+    assertEquals("12–10" to Icon.TYPE_RESOURCE, chip(longTag.copy(currentMap = live.currentMap?.copy(scores = listOf(12, 10)))))
 
     val firstMap = live.copy(currentMap = live.currentMap?.copy(number = 1))
     assertEquals(LiveMatchMapProgress(1, 3), firstMap.mapProgress())
@@ -194,7 +265,7 @@ class AndroidLiveMatchNotificationsTest {
     }
     assertTrue(Notification.Builder.recoverBuilder(context, renderer.build(live, true, 36)).style is Notification.BigTextStyle)
     if (Build.VERSION.SDK_INT >= 37) {
-      assertTrue(Notification.Builder.recoverBuilder(context, renderer.build(live, false)).style is Notification.MetricStyle)
+      assertTrue(Notification.Builder.recoverBuilder(context, renderer.build(live, false)).style is Notification.ProgressStyle)
     }
   }
 
@@ -323,8 +394,8 @@ class AndroidLiveMatchNotificationsTest {
     val live = renderer.build(update("991000001", 60), scoresHidden = false, sdkInt = 36)
 
     assertTrue(live.flags and Notification.FLAG_ONGOING_EVENT != 0)
-    assertEquals("Ascent · 8–6", live.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
-    assertEquals("Team Liquid : 1\nPaper Rex : 1", live.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
+    assertEquals("Team Liquid\u20038 : 6\u2003Paper Rex", live.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+    assertEquals("Ascent", live.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
     assertEquals(
       listOf(
         context.getString(R.string.live_match_notification_open_match),
@@ -336,24 +407,67 @@ class AndroidLiveMatchNotificationsTest {
 
     val hidden = renderer.build(update("991000001", 60), scoresHidden = true, sdkInt = 36)
     assertEquals(context.getString(R.string.widget_scores_hidden), hidden.extras.getCharSequence(Notification.EXTRA_SUB_TEXT))
-    assertEquals("Team Liquid : —\nPaper Rex : —", hidden.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
+    assertEquals("Team Liquid vs Paper Rex", hidden.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
 
     val final = renderer.build(update = update("991000001", 61).copy(terminal = true), scoresHidden = false)
     assertFalse(final.flags and Notification.FLAG_ONGOING_EVENT != 0)
     assertTrue(final.flags and Notification.FLAG_AUTO_CANCEL != 0)
     assertFalse(final.extras.getCharSequence(Notification.EXTRA_TITLE).toString().contains("8–6"))
-    assertEquals("Team Liquid : 1\nPaper Rex : 1", final.extras.getCharSequence(Notification.EXTRA_BIG_TEXT).toString())
+    assertEquals(context.getString(R.string.live_match_notification_final), final.extras.getCharSequence(Notification.EXTRA_TITLE))
+    assertEquals("Team Liquid\u20031 : 1\u2003Paper Rex", final.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+    assertFalse(final.extras.toString().contains("Ascent"))
+    val hiddenFinal = renderer.build(update("991000001", 61).copy(terminal = true), scoresHidden = true)
+    assertEquals(context.getString(R.string.live_match_notification_final), hiddenFinal.extras.getCharSequence(Notification.EXTRA_TITLE))
+    assertEquals("Team Liquid vs Paper Rex", hiddenFinal.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+    assertFalse(hiddenFinal.extras.toString().contains("Ascent"))
     assertEquals(
       listOf(context.getString(R.string.live_match_notification_open_match)),
       final.actions.map { it.title.toString() },
     )
 
     if (Build.VERSION.SDK_INT >= 37) {
-      val metric = renderer.build(update("991000001", 62), scoresHidden = false)
-      val style = Notification.Builder.recoverBuilder(context, metric).style as Notification.MetricStyle
-      assertEquals(listOf("Team Liquid", "Paper Rex"), style.metrics.map { it.label.toString() })
-      assertEquals(2, style.metrics.size)
+      val progress = renderer.build(update("991000001", 62), scoresHidden = false)
+      val style = Notification.Builder.recoverBuilder(context, progress).style as Notification.ProgressStyle
+      assertEquals(1, style.progressSegments.size)
     }
+  }
+
+  @Test
+  @SdkSuppress(minSdkVersion = 36)
+  fun missingScoresAndMapKeepTheMatchIdentifiable() {
+    val renderer = LiveMatchNotificationRenderer(context)
+    val match = update("991000001", 60).copy(
+      teams = update("991000001", 60).teams.map { it.copy(score = null) },
+      currentMap = LiveMatchMap("Ascent", listOf(null, 6), number = 2),
+      totalMaps = 3,
+    )
+    val notification = renderer.build(match, false, 36)
+    assertEquals("Team Liquid\u2003— : 6\u2003Paper Rex", notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+    assertEquals("Map 2 of 3 · Series — : —", notification.extras.getCharSequence(Notification.EXTRA_SUB_TEXT).toString())
+    assertEquals("—–6", notification.extras.getCharSequence("android.shortCriticalText").toString())
+    val final = renderer.build(match.copy(terminal = true), false, 36)
+    assertEquals("Team Liquid\u2003— : —\u2003Paper Rex", final.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+    val betweenMaps = renderer.build(match.copy(currentMap = null), false, 36)
+    assertEquals("Team Liquid vs Paper Rex", betweenMaps.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+  }
+
+  @Test
+  @SdkSuppress(minSdkVersion = 36)
+  fun trackerOnlyReachesMapBoundaryWhenTheMapHasFinished() {
+    val renderer = LiveMatchNotificationRenderer(context)
+    fun position(scores: List<Int?>, winners: List<String?> = emptyList()): Int {
+      val match = update("991000001", 60).copy(
+        totalMaps = 3,
+        currentMap = LiveMatchMap("Ascent", scores, number = 2),
+        mapWinners = winners,
+      )
+      return (Notification.Builder.recoverBuilder(context, renderer.build(match, false, 36)).style as Notification.ProgressStyle).progress
+    }
+    assertEquals(200, position(listOf(13, 5)))
+    assertEquals(199, position(listOf(12, 12)))
+    assertEquals(199, position(listOf(15, 14)))
+    assertEquals(200, position(listOf(16, 14)))
+    assertEquals(200, position(listOf(null, null), listOf(null, "474")))
   }
 
   @Test
@@ -413,14 +527,78 @@ class AndroidLiveMatchNotificationsTest {
         NotificationManager.IMPORTANCE_DEFAULT,
       ),
     )
+
+    val fixture = InstrumentationRegistry.getArguments().getString("fixture") ?: "mid_map"
+    val update = when (fixture) {
+      "between_maps" -> LiveMatchUpdate(
+        matchId = "110601034",
+        observedAt = 100,
+        terminal = false,
+        teams = listOf(
+          LiveMatchTeam("NS", "https://owcdn.net/img/6399bb707aacb.png", 0, tag = "NS", id = "11060"),
+          LiveMatchTeam("NRG", "https://owcdn.net/img/6610f026c1a9e.png", 1, tag = "NRG", id = "1034"),
+        ),
+        currentMap = LiveMatchMap("Split", listOf(5, 13), number = 1),
+        totalMaps = 3,
+        mapWinners = listOf("1034", null, null),
+      )
+      "pre_first_round" -> LiveMatchUpdate(
+        matchId = "110601034",
+        observedAt = 100,
+        terminal = false,
+        teams = listOf(
+          LiveMatchTeam("NS", "https://owcdn.net/img/6399bb707aacb.png", 0, tag = "NS", id = "11060"),
+          LiveMatchTeam("NRG", "https://owcdn.net/img/6610f026c1a9e.png", 0, tag = "NRG", id = "1034"),
+        ),
+        currentMap = LiveMatchMap("Lotus", listOf(0, 0), number = 1),
+        totalMaps = 3,
+        mapWinners = listOf(null, null, null),
+      )
+      "terminal" -> LiveMatchUpdate(
+        matchId = "110601034",
+        observedAt = 100,
+        terminal = true,
+        teams = listOf(
+          LiveMatchTeam("NS", "https://owcdn.net/img/6399bb707aacb.png", 0, tag = "NS", id = "11060"),
+          LiveMatchTeam("NRG", "https://owcdn.net/img/6610f026c1a9e.png", 2, tag = "NRG", id = "1034"),
+        ),
+        currentMap = LiveMatchMap("Split", listOf(8, 13), number = 2),
+        totalMaps = 3,
+        mapWinners = listOf("1034", "1034", null),
+      )
+      else -> LiveMatchUpdate(
+        matchId = "110601034",
+        observedAt = 100,
+        terminal = false,
+        teams = listOf(
+          LiveMatchTeam("NS", "https://owcdn.net/img/6399bb707aacb.png", 0, tag = "NS", id = "11060"),
+          LiveMatchTeam("NRG", "https://owcdn.net/img/6610f026c1a9e.png", 1, tag = "NRG", id = "1034"),
+        ),
+        currentMap = LiveMatchMap("Split", listOf(5, 10), number = 2),
+        totalMaps = 3,
+        mapWinners = listOf("1034", null, null),
+      )
+    }
+
+    val logoCache = LiveMatchLogoCache(context)
+    val t1Url = update.teams[0].imageUrl
+    val t2Url = update.teams[1].imageUrl
+    runBlocking { runCatching { logoCache.loadAndCacheLogos(t1Url, t2Url) } }
+    val renderer = LiveMatchNotificationRenderer(context, logoCache)
     manager.notify(
-      "live-match-991000001",
+      "live-match-${update.matchId}",
       1,
-      LiveMatchNotificationRenderer(context).build(
-        update("991000001", 70).copy(totalMaps = 3, mapWinners = listOf("474", "624", null), currentMap = LiveMatchMap("Ascent", listOf(8, 6), number = 3)),
-        scoresHidden = false,
-      ),
+      renderer.build(update, scoresHidden = false),
     )
+  }
+
+  /** A red ring: a mark with inner detail, which survives as a chip silhouette. */
+  private fun ringLogo(color: Int): Bitmap = Bitmap.createBitmap(48, 48, Bitmap.Config.ARGB_8888).apply {
+    Canvas(this).drawCircle(24f, 24f, 18f, Paint(Paint.ANTI_ALIAS_FLAG).apply {
+      this.color = color
+      style = Paint.Style.STROKE
+      strokeWidth = 6f
+    })
   }
 
   private fun payload(
