@@ -159,4 +159,16 @@
     <string name="live_updates_with_reminders_description">Acompanhe os placares ao vivo nas notificações. Quando Live Updates estiver desativado, você continuará recebendo lembretes antes das partidas favoritas.</string>
     <string name="release_1_0_6_search_title">Encontre seu time</string>
     <string name="release_1_0_6_search_description">Procure times na Classificação, inclusive os que estão fora da classificação atual, e abra seus perfis.</string>
+    <string name="note_title">Uma mensagem de Shreyansh</string>
+    <string name="note_settings_description">Um agradecimento do desenvolvedor.</string>
+    <string name="note_intro">Obrigado por fazer do Val Esports parte da sua forma de acompanhar VALORANT.</string>
+    <string name="note_about">Sou Shreyansh, o desenvolvedor do Val Esports. Crio o app para facilitar o acompanhamento dos times, jogadores e partidas que você curte.</string>
+    <string name="note_review">Se o app já ajudou você a não perder uma partida ou a acompanhar seu time favorito, considere deixar uma avaliação sincera. Isso ajuda outros fãs a descobrir o Val Esports.</string>
+    <string name="note_testflight">Obrigado por estar aqui enquanto o Val Esports está no TestFlight. Seu feedback me ajuda a identificar o que precisa melhorar antes que o app chegue a mais fãs.</string>
+    <string name="note_contact">Tem uma ideia, encontrou um erro ou só quer dar um oi? Vou adorar receber sua mensagem.</string>
+    <string name="note_signoff">Obrigado por fazer parte disso,</string>
+    <string name="note_write">Escrever para Shreyansh</string>
+    <string name="note_rate_google_play">Avaliar no Google Play</string>
+    <string name="note_rate_app_store">Avaliar na App Store</string>
+    <string name="note_store_unavailable">Não foi possível abrir a loja. Tente novamente.</string>
 </resources>
