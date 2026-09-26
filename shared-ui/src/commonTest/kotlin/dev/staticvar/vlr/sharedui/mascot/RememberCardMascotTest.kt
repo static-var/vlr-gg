@@ -15,15 +15,14 @@ import androidx.compose.runtime.snapshots.Snapshot
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertSame
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RememberCardMascotTest {
@@ -33,25 +32,61 @@ class RememberCardMascotTest {
   @Test
   fun rejectedVisitNeverGrantsOwnership() {
     val state = CardMascotState(allowed = false)
-    assertFalse(state.tryAcquire(firstOwner))
-    assertFalse(state.tryAcquire(secondOwner))
+    state.register(firstOwner)
+    state.register(secondOwner)
+    state.selectOwner(Random(0))
+    assertEquals(emptyList(), state.visibleCandidates)
     assertNull(state.ownerId)
   }
 
   @Test
-  fun ownershipIsExclusiveAndRepeatedAcquisitionByTheOwnerIsStable() {
+  fun ownershipIsExclusiveAndReleasedAppearanceCannotBeRepeated() {
     val state = CardMascotState(allowed = true)
-    assertTrue(state.tryAcquire(firstOwner))
-    assertTrue(state.tryAcquire(firstOwner))
-    assertFalse(state.tryAcquire(secondOwner))
+    state.register(firstOwner)
+    state.register(firstOwner)
+    assertEquals(listOf(firstOwner), state.visibleCandidates)
+    state.selectOwner(Random(0))
+    state.register(secondOwner)
+    state.selectOwner(Random(1))
+    assertSame(firstOwner, state.ownerId)
 
     state.release(secondOwner)
     assertSame(firstOwner, state.ownerId)
-
     state.release(firstOwner)
+    state.register(secondOwner)
+    state.selectOwner(Random(2))
     assertNull(state.ownerId)
-    assertFalse(state.tryAcquire(firstOwner))
-    assertFalse(state.tryAcquire(secondOwner))
+  }
+
+  @Test
+  fun laterVisibleCandidateCanWinAfterLayoutSettles() = runTest {
+    withMascot(rolls = listOf(0)) {
+      state.register(firstOwner)
+      state.register(secondOwner)
+      recompose()
+      assertNull(state.ownerId)
+      advanceTimeBy(249)
+      runCurrent()
+      assertNull(state.ownerId)
+      advanceTimeBy(1)
+      runCurrent()
+      assertSame(secondOwner, state.ownerId)
+      assertEquals(1, random.rollCount)
+    }
+  }
+
+  @Test
+  fun candidateRemovedWhileSettlingCannotWin() = runTest {
+    withMascot(rolls = listOf(0)) {
+      state.register(firstOwner)
+      state.register(secondOwner)
+      recompose()
+      advanceTimeBy(100)
+      state.release(secondOwner)
+      recompose()
+      settle()
+      assertSame(firstOwner, state.ownerId)
+    }
   }
 
   @Test
@@ -64,7 +99,8 @@ class RememberCardMascotTest {
       recompose()
       assertSame(initialState, state)
       assertEquals(1, random.rollCount)
-      assertTrue(state.tryAcquire(firstOwner))
+      state.register(firstOwner)
+      settle()
       recomposeUnrelatedContent()
       assertSame(firstOwner, state.ownerId)
 
@@ -77,8 +113,12 @@ class RememberCardMascotTest {
       recompose()
       assertEquals(2, random.rollCount)
       assertNull(initialState.ownerId)
-      assertFalse(initialState.tryAcquire(secondOwner))
-      assertTrue(state.tryAcquire(firstOwner))
+      initialState.register(secondOwner)
+      initialState.selectOwner(Random(0))
+      assertNull(initialState.ownerId)
+      state.register(firstOwner)
+      settle()
+      assertSame(firstOwner, state.ownerId)
     }
   }
 
@@ -90,36 +130,49 @@ class RememberCardMascotTest {
           probabilityPercent = percentage
           screenKey = "visit-$index"
           recompose()
-          assertEquals(roll < percentage, state.tryAcquire(MascotOwnerToken()))
+          val candidate = MascotOwnerToken()
+          state.register(candidate)
+          settle()
+          assertEquals(if (roll < percentage) candidate else null, state.ownerId)
         }
+      assertEquals(8, random.rollCount)
     }
   }
 
   @Test
   fun leavingCompositionReleasesOwnershipAndReentryStartsANewVisit() = runTest {
     withMascot(rolls = listOf(0, 0)) {
-      assertTrue(state.tryAcquire(firstOwner))
+      state.register(firstOwner)
+      settle()
+      assertSame(firstOwner, state.ownerId)
       val previousVisit = state
       isPresent = false
       recompose()
+      previousVisit.register(secondOwner)
+      previousVisit.selectOwner(Random(0))
       assertNull(previousVisit.ownerId)
-      assertFalse(previousVisit.tryAcquire(secondOwner))
 
       isPresent = true
       recompose()
       assertEquals(2, random.rollCount)
-      assertTrue(state.tryAcquire(secondOwner))
+      state.register(secondOwner)
+      settle()
       assertSame(secondOwner, state.ownerId)
     }
   }
 
   @Test
-  fun disposingBeforeAnyCardAppearsPreventsStaleCallbacksFromAcquiring() = runTest {
+  fun disposingBeforeSelectionPreventsPendingAndStaleCallbacksFromAcquiring() = runTest {
     withMascot(rolls = listOf(0)) {
       val pendingVisit = state
+      state.register(firstOwner)
+      recompose()
       isPresent = false
       recompose()
-      assertFalse(pendingVisit.tryAcquire(firstOwner))
+      pendingVisit.register(secondOwner)
+      pendingVisit.selectOwner(Random(0))
+      settle()
+      assertEquals(emptyList(), pendingVisit.visibleCandidates)
       assertNull(pendingVisit.ownerId)
     }
   }
@@ -138,12 +191,9 @@ class RememberCardMascotTest {
     var rollCount: Int = 0
       private set
 
-    override fun nextInt(until: Int): Int {
-      assertEquals(100, until)
-      return rolls[rollCount++]
-    }
+    override fun nextInt(until: Int): Int = if (until == 100) rolls[rollCount++] else until - 1
 
-    override fun nextBits(bitCount: Int): Int = error("Expected one percentage roll")
+    override fun nextBits(bitCount: Int): Int = error("Expected bounded random selection")
   }
 
   private class MascotComposition(private val scope: TestScope, rolls: List<Int>) {
@@ -178,6 +228,12 @@ class RememberCardMascotTest {
 
     fun recompose() {
       Snapshot.sendApplyNotifications()
+      scope.runCurrent()
+    }
+
+    fun settle() {
+      recompose()
+      scope.advanceTimeBy(250)
       scope.runCurrent()
     }
 

@@ -40,7 +40,7 @@ internal fun CardMascot(
   var inViewport by remember { mutableStateOf(false) }
   LaunchedEffect(state, id, active, inViewport, lifecycle) {
     if (active && inViewport && lifecycle.currentState == Lifecycle.State.RESUMED) {
-      state.tryAcquire(id)
+      state.register(id)
     } else {
       state.release(id)
     }
