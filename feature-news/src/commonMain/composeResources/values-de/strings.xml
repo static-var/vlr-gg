@@ -6,7 +6,6 @@
     <string name="article_unpublished">Dieser Artikel wurde noch nicht veröffentlicht.</string>
     <string name="no_article_text_yet">Noch kein Artikeltext</string>
     <string name="article_text_unpublished">Der Text dieses Artikels wurde noch nicht veröffentlicht.</string>
-    <string name="read_on_vlr">Auf VLR.gg lesen</string>
     <string name="loading_news">Neuigkeiten werden geladen</string>
     <string name="news_heading">NEUIGKEITEN</string>
     <string name="news_subtitle">Berichte aus der VALORANT-Wettkampfszene</string>

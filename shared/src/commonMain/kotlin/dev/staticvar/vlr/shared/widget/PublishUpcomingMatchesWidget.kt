@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
+import dev.staticvar.vlr.core.identity.UserIdentityRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.FavoriteScheduleRepository
 import kotlinx.coroutines.flow.combine
@@ -27,6 +28,7 @@ internal fun PublishUpcomingMatchesWidget(monospace: Boolean, onSnapshotChanged:
   val matches = koinInject<FavoriteScheduleRepository>()
   val favorites = koinInject<FavoritesRepository>()
   val spoilerPreferences = koinInject<SpoilerPreferencesRepository>()
+  val identity = koinInject<UserIdentityRepository>()
   val publish by rememberUpdatedState(onSnapshotChanged)
   val colors = Prism.color
   val theme = WidgetTheme(
@@ -38,10 +40,11 @@ internal fun PublishUpcomingMatchesWidget(monospace: Boolean, onSnapshotChanged:
     border = colors.stroke.argb(),
     monospace = monospace,
   )
-  LaunchedEffect(matches, favorites, theme, spoilerPreferences, widgetJson) {
-    combine(matches.observeMatches(), favorites.observeDirectFavorites(), spoilerPreferences.enabled) { previews, directFavorites, hidden ->
+  LaunchedEffect(matches, favorites, theme, spoilerPreferences, identity, widgetJson) {
+    combine(matches.observeMatches(), favorites.observeDirectFavorites(), spoilerPreferences.enabled, identity.id) { previews, directFavorites, hidden, clientId ->
       UpcomingMatchesSnapshot(
         savedAtEpochMillis = 0,
+        clientId = clientId.toString(),
         hasFavorites = directFavorites.hasAny,
         matches = favoriteWidgetMatches(previews, Clock.System.now().toEpochMilliseconds(), hidden),
         theme = theme,

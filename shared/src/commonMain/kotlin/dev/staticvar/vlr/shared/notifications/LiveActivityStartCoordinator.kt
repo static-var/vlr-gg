@@ -159,6 +159,13 @@ internal class LiveActivityStartCoordinator(
     }
   }
 
+  fun onExplicitOptOut() {
+    eligibility.value = LiveUpdateEligibility.Disabled
+    ledger.clearAttempts(identity.id.value.toString())
+    rejected.value = emptySet()
+    requestedRestores.value = emptySet()
+  }
+
   fun attach(provider: LiveUpdateStateProvider?) {
     stateProvider.value = provider
   }

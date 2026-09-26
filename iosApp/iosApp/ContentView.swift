@@ -9,15 +9,13 @@ struct ContentView: View {
     var body: some View {
         ComposeView(pendingDeepLink: pendingDeepLink)
             .ignoresSafeArea()
-            .task {
-                #if DEBUG && targetEnvironment(simulator)
-                if #available(iOS 16.2, *) {
-                    await SimulatorMatchActivity.runIfRequested()
-                }
-                #endif
-            }
             .onChange(of: scenePhase) { phase in
-                if phase == .active { FavoriteSearchStore.shared.retryIndexing() }
+                if phase == .active {
+                    FavoriteSearchStore.shared.retryIndexing()
+                    if #available(iOS 16.2, *) {
+                        IosMatchActivityOptOut.shared.reconcile()
+                    }
+                }
             }
             .onContinueUserActivity(CSSearchableItemActionType) { activity in
                 if let identifier = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String,
@@ -51,7 +49,14 @@ private struct ComposeView: UIViewControllerRepresentable {
             },
             notificationPermissionProvider: context.coordinator.notificationPermissionProvider,
             pushTokenProvider: context.coordinator.pushTokenProvider,
-            liveUpdateStateProvider: context.coordinator.liveUpdateStateProvider
+            liveUpdateStateProvider: context.coordinator.liveUpdateStateProvider,
+            onLiveUpdatesChanged: { enabled in
+                if #available(iOS 16.2, *) {
+                    Task { @MainActor in
+                        IosMatchActivityOptOut.shared.preferenceChanged(enabled.boolValue)
+                    }
+                }
+            }
         )
     }
 

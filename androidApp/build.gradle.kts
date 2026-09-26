@@ -85,6 +85,7 @@ val releaseSigningStore = providers.environmentVariable("VLR_SIGNING_STORE_FILE"
 
 android {
   sourceSets.getByName("androidTest").assets.srcDir(rootProject.file("app/schemas"))
+  sourceSets.getByName("androidTest").assets.srcDir(rootProject.file("local-source/src/commonMain/sqldelight/databases"))
   namespace = "dev.staticvar.vlr.android"
   compileSdk = 37
 

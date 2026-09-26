@@ -35,6 +35,7 @@
     <string name="donate_via_github_sponsors">Über GitHub Sponsors spenden</string>
     <string name="done">Fertig</string>
     <string name="experimental">Experimentell</string>
+    <string name="experimental_description">Live-Updates und automatische Bereinigung</string>
     <string name="explore_the_service_that_powers_the_app">Entdecke den Dienst, auf dem die App basiert.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">Feedback ist in dieser Version nicht verfügbar. Du kannst stattdessen auf der Seite „Über die App“ ein Problem melden.</string>
@@ -46,7 +47,6 @@
     <string name="flavour_mocha">Mocha</string>
     <string name="for_the_matches_you_care_about">Für die Matches, die dir wichtig sind.</string>
     <string name="frequently">Häufig</string>
-    <string name="from_the_scene_for_the_scene">Aus der Szene, für die Szene.</string>
     <string name="help_support_continued_development">Hilf mit, die weitere Entwicklung zu unterstützen.</string>
     <string name="how_val_esports_handles_your_data">Wie Val Esports mit deinen Daten umgeht.</string>
     <string name="light">Hell</string>
@@ -55,7 +55,6 @@
     <string name="make_it_yours">Mach sie zu deiner App.</string>
     <string name="mascot">Maskottchen</string>
     <string name="mascot_frequency_accessibility">%1$s, %2$d Prozent Wahrscheinlichkeit pro Bildschirm</string>
-    <string name="about_data_attribution">Matchberichte, Statistiken und Neuigkeiten stammen von VLR.gg. Dies ist ein inoffizielles Fanprojekt ohne Verbindung zu VLR.gg oder Riot Games.</string>
     <string name="mode">Modus</string>
     <string name="new_in_val_esports">Neu in Val Esports</string>
     <string name="none">Keines</string>
@@ -89,7 +88,6 @@
     <string name="theme_console">Konsole</string>
     <string name="using_the_app_and_its_content">Nutzung der App und ihrer Inhalte.</string>
     <string name="visit_val_esports">Val Esports besuchen</string>
-    <string name="visit_vlr_gg">VLR.gg besuchen</string>
     <string name="website_policies">Website und Richtlinien</string>
     <string name="what_s_new">Was ist neu?</string>
     <string name="write_feedback">Feedback schreiben</string>
@@ -118,15 +116,9 @@
     <string name="notification_access_error">Die Mitteilungsberechtigung konnte nicht geprüft oder angefordert werden. Versuche es erneut.</string>
     <string name="open_system_settings">Systemeinstellungen öffnen</string>
     <string name="allow_notifications">Mitteilungen erlauben</string>
-    <string name="live_activity_permissions_description">Deine Einstellungen werden auf diesem Gerät gespeichert. Die Verfügbarkeit hängt auch von deinen Systemeinstellungen ab.</string>
     <string name="live_match_updates">Live-Spielupdates</string>
     <string name="live_match_updates_description">Verfolge Live-Ergebnisse in Mitteilungen.</string>
     <string name="notifications_permission_description">Erlaube Mitteilungen, um Live-Spielupdates zu erhalten.</string>
-    <string name="release_1_0_4_introduction">Verfolge Live-Spielstände, passe das Aussehen der App an und entdecke mehr Matchdetails.</string>
-    <string name="release_1_0_4_live_title">Live-Spielstände für deine Favoriten</string>
-    <string name="release_1_0_4_live_description">Aktiviere Live-Spielstände für favorisierte Matches und Events auf unterstützten Geräten, mit Live-Aktivitäten unter iOS und Live Updates unter Android.</string>
-    <string name="release_1_0_4_appearance_title">Gestalte deine App</string>
-    <string name="release_1_0_4_appearance_description">Wähle App-Symbol, Design und Maskottchen in den neuen Darstellungseinstellungen.</string>
     <string name="release_1_0_5_introduction">Alles, was seit 1.0.0 neu ist: Live-Spielstände für deine Favoriten, Teamsuche, ein persönliches Erscheinungsbild und einfachere Wege, auf dem Laufenden zu bleiben.</string>
     <string name="release_1_0_5_live_title">Verfolge deine Favoriten live</string>
     <string name="release_1_0_5_live_ios_description">Aktiviere Live-Aktivitäten für favorisierte Matches und Events. Verfolge Kartenergebnisse auf deinem Sperrbildschirm und in der Dynamic Island, mit klareren Teamlogos.</string>
@@ -144,4 +136,26 @@
     <string name="notification_promotion_unavailable">Live-Spielstände können weiterhin als normale Benachrichtigungen erscheinen. Dein Gerät erlaubt für diese App keine hervorgehobenen Live-Updates. Prüfe die Benachrichtigungseinstellungen des Systems; die Verfügbarkeit hängt auch vom Gerät ab.</string>
     <string name="match_alerts">Spielbenachrichtigungen</string>
     <string name="match_alerts_description">Erhalte eine Benachrichtigung, wenn ein favorisiertes Spiel beginnt. Live-Spielstände sind auf diesem Gerät nicht verfügbar.</string>
+    <string name="release_1_0_6_introduction">Entdecke alle Neuerungen seit 1.0.0, mit mehr Möglichkeiten, deinen Favoriten zu folgen und die App anzupassen.</string>
+    <string name="release_1_0_6_favorites_title">Folge deinen Favoriten</string>
+    <string name="release_1_0_6_favorites_description">Finde auf der Startseite laufende Matches und Ergebnisse der letzten 24 Stunden für deine favorisierten Teams, Events und Matches.</string>
+    <string name="release_1_0_6_ios_live_title">Live-Spielstände für deine Favoriten</string>
+    <string name="release_1_0_6_ios_live_description">Verfolge aktuelle Map-Spielstände auf dem Sperrbildschirm und in der Dynamic Island unterstützter iPhones mit Live-Aktivitäten ab iOS 18.</string>
+    <string name="release_1_0_6_android_live_title">Live-Spielstände und Erinnerungen</string>
+    <string name="release_1_0_6_android_live_description">Verfolge Spielstände mit Live Updates auf unterstützten Geräten. Andere Geräte können Erinnerungen vor dem Start favorisierter Matches erhalten.</string>
+    <string name="release_1_0_6_widgets_title">Überarbeitete Widgets</string>
+    <string name="release_1_0_6_widgets_description">Sieh anstehende Matches und Live-Spielstände in überarbeiteten Widgets auf deinem Home-Bildschirm.</string>
+    <string name="release_1_0_6_appearance_title">Gestalte deine App</string>
+    <string name="release_1_0_6_appearance_description">Wähle App-Symbol, Design und Maskottchen in den Darstellungseinstellungen.</string>
+    <string name="release_1_0_6_languages_title">Jetzt in 9 Sprachen</string>
+    <string name="release_1_0_6_languages_description">Nutze die App auf Englisch, Hindi, Spanisch, Französisch, Deutsch, brasilianischem Portugiesisch, Russisch, Türkisch oder Koreanisch.</string>
+    <string name="release_1_0_6_ios_shortcuts_title">Favoriten in Spotlight und Siri</string>
+    <string name="release_1_0_6_ios_shortcuts_description">Finde favorisierte Teams und Events in Spotlight oder frage Siri nach deinem nächsten favorisierten Match.</string>
+    <string name="release_1_0_6_stability_title">Flüssigere Navigation</string>
+    <string name="release_1_0_6_stability_description">Wechsle flüssiger zwischen Ansichten. Stabilitätskorrekturen beheben unter anderem einen Absturz bei der Rückkehr zur Startseite.</string>
+    <string name="match_reminders_description">Erhalte eine Erinnerung, bevor ein favorisiertes Match beginnt. Erlaube Mitteilungen, um Erinnerungen zu erhalten.</string>
+    <string name="match_reminders_permission_description">Erlaube Mitteilungen, um Erinnerungen für deine Favoriten zu erhalten.</string>
+    <string name="live_updates_with_reminders_description">Verfolge Live-Spielstände in Mitteilungen. Wenn Live Updates deaktiviert sind, erhältst du weiterhin Erinnerungen vor favorisierten Matches.</string>
+    <string name="release_1_0_6_search_title">Finde dein Team</string>
+    <string name="release_1_0_6_search_description">Suche in der Rangliste nach Teams, auch nach solchen, die nicht in der aktuellen Rangliste stehen, und öffne ihre Profile.</string>
 </resources>

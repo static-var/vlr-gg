@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="match-title match-desc">
+  <title id="match-title">VLR Match point</title>
+  <desc id="match-desc">A chunky arcade match display with a two-color pixel V, a live indicator, and score lights on a lavender background.</desc>
+  <g id="background"><path fill="#CBA6F7" d="M0 0H64V64H0Z"/></g>
+  <g id="foreground" shape-rendering="crispEdges">
+    <path fill="#AD8BD8" d="M14 14H50V18H54V50H50V54H18V50H14Z"/>
+    <path fill="#45475A" d="M14 12H48V16H52V48H48V52H16V48H12V16H14Z"/>
+    <path fill="#F5E0DC" d="M14 12H48V16H50V44H46V48H14V44H10V16H14Z"/>
+    <path fill="#CDD6F4" d="M46 16H50V44H46V48H14V44H46Z"/>
+    <path fill="#1E1E2E" d="M16 18H44V22H46V38H42V42H16V38H14V22H16Z"/>
+    <path fill="#313244" d="M16 18H44V20H18V22H16V38H14V22H16Z"/>
+    <path fill="#F38BA8" d="M20 24H26V28H28V32H32V38H26V34H24V30H22V28H20Z"/>
+    <path fill="#B4BEFE" d="M38 24H42V28H40V32H38V34H36V38H30V32H34V28H36V24Z"/>
+    <path fill="#F9E2AF" d="M16 44H22V46H16Z"/>
+    <path fill="#A6ADC8" d="M26 44H32V46H26ZM36 44H42V46H36Z"/>
+    <path fill="#F38BA8" d="M40 14H44V16H40Z"/>
+    <path fill="#9399B2" d="M16 14H24V16H16Z"/>
+  </g>
+</svg>

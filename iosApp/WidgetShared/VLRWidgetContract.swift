@@ -5,7 +5,7 @@ enum VLRWidgetContract {
     static let snapshotFilename = "upcoming-matches.json"
     static let refreshedSnapshotFilename = "upcoming-matches-refreshed.json"
     static let widgetKind = "dev.staticvar.vlr.upcoming-matches"
-    static let appURL = URL(string: "vlr://home")!
+    static let appURL = URL(string: "https://valorantesports.staticvar.dev/")!
 
     static var snapshotURL: URL? {
         FileManager.default
@@ -20,10 +20,10 @@ enum VLRWidgetContract {
     }
 
     static func matchURL(id: String) -> URL {
-        var components = URLComponents()
-        components.scheme = "vlr"
-        components.host = "match"
-        components.path = "/\(id)"
-        return components.url ?? appURL
+        detailsURL(kind: "match", id: id)
+    }
+
+    static func detailsURL(kind: String, id: String) -> URL {
+        appURL.appendingPathComponent(kind).appendingPathComponent(id)
     }
 }

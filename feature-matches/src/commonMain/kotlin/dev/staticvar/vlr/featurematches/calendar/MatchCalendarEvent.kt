@@ -60,7 +60,7 @@ internal fun MatchCalendarEvent.toICalendar(generatedAt: Instant = Clock.System.
         "PRODID:-//Val Esports//Match Calendar//EN",
         "CALSCALE:GREGORIAN",
         "BEGIN:VEVENT",
-        "UID:match-$uid@vlr.gg",
+        "UID:match-$uid@valorantesports.staticvar.dev",
         "DTSTAMP:${generatedAt.calendarTimestamp()}",
         "DTSTART:${start.calendarTimestamp()}",
         "DTEND:${end.calendarTimestamp()}",
@@ -68,7 +68,7 @@ internal fun MatchCalendarEvent.toICalendar(generatedAt: Instant = Clock.System.
         "DESCRIPTION:${description.calendarText()}",
       ),
     )
-    if (matchId.all(Char::isDigit)) add("URL:https://www.vlr.gg/$matchId")
+    if (matchId.all(Char::isDigit)) add("URL:https://valorantesports.staticvar.dev/match/$matchId")
     add("END:VEVENT")
     add("END:VCALENDAR")
   }.joinToString(separator = "\r\n", postfix = "\r\n") { it.foldCalendarLine() }

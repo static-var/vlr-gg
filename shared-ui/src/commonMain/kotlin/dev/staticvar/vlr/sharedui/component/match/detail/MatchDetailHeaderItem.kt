@@ -29,6 +29,7 @@ import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.component.ticket.PrismTicket
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.domain.model.CurrentMatchMap
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.TeamPreview
@@ -82,6 +83,7 @@ public fun MatchDetailHeaderItem(
     },
     isFavorite = match.isFavorite,
     favoriteLabels = matchFavoriteReasonLabels(match.favoriteReasons),
+    currentMap = match.currentMap.takeUnless { spoilersHidden },
     modifier = modifier,
     onEventSelected = onEventSelected,
     onTeamSelected = onTeamSelected,
@@ -138,6 +140,7 @@ private fun MatchDetailHeaderContent(
   teams: List<TeamPreview>,
   isFavorite: Boolean,
   favoriteLabels: List<String>,
+  currentMap: CurrentMatchMap? = null,
   modifier: Modifier = Modifier,
   onEventSelected: ((String) -> Unit)? = null,
   onTeamSelected: ((String) -> Unit)? = null,
@@ -161,7 +164,13 @@ private fun MatchDetailHeaderContent(
       },
     ) {
       MatchTicketEvent(matchId, eventId, eventName, onEventSelected, extraContentFade)
-      MatchTicketTeams(matchId = matchId, teams = teams, onTeamSelected = onTeamSelected, extraContentFade = extraContentFade)
+      MatchTicketTeams(
+        matchId = matchId,
+        teams = teams,
+        onTeamSelected = onTeamSelected,
+        extraContentFade = extraContentFade,
+        currentMap = currentMap,
+      )
       if (favoriteLabels.isNotEmpty()) {
         Text(
           text = stringResource(Res.string.match_event_favorite_via, favoriteLabels.joinToString(" · ")),

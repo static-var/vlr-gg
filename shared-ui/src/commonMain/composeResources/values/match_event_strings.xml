@@ -20,7 +20,6 @@
   <string name="match_event_dates">DATES</string>
   <string name="match_event_dates_tba">Dates to be announced</string>
   <string name="match_event_teams">TEAMS</string>
-  <string name="match_event_view_at_vlr">View at VLR</string>
   <string name="match_event_map_breakdown_unavailable">Map breakdown unavailable.</string>
   <string name="match_event_combined_stats">Combined stats</string>
   <string name="match_event_all_maps">All maps</string>
@@ -69,4 +68,5 @@
   <string name="match_event_win_type_defused">DEFUSED</string>
   <string name="match_event_win_type_time_out">TIME OUT</string>
   <string name="match_event_win_type_not_played">NOT PLAYED</string>
+  <string name="match_event_match_score">Match score</string>
 </resources>

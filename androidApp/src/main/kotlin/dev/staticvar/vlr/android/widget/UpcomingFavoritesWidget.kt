@@ -55,8 +55,9 @@ internal abstract class FavoriteMatchWidget(private val small: Boolean) : Glance
       match.id to actionStartActivity(
         Intent(context, MainActivity::class.java).apply {
           data = Uri.Builder()
-            .scheme("vlr")
-            .authority("match")
+            .scheme("https")
+            .authority("valorantesports.staticvar.dev")
+            .appendPath("match")
             .appendPath(match.id)
             .build()
           flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP

@@ -92,8 +92,17 @@ CREATE INDEX idx_event_matches_match_id ON event_matches(match_id);
 
 -- Favorite events (device-only, no FK to keep favorites even if event purged locally)
 CREATE TABLE favorite_events (
-    event_id TEXT NOT NULL PRIMARY KEY
+    event_id TEXT NOT NULL PRIMARY KEY,
+    active INTEGER NOT NULL DEFAULT 1,
+    notification_topic TEXT,
+    topic_synced INTEGER NOT NULL DEFAULT 0
 );
+
+CREATE TRIGGER prune_inactive_favorite_events
+AFTER UPDATE OF active ON favorite_events
+BEGIN
+    DELETE FROM favorite_events WHERE active = 0 AND notification_topic IS NULL;
+END;
 
 -- ============================================================================
 -- QUERIES
@@ -120,7 +129,7 @@ SELECT
     e.*,
     CAST((fav_e.event_id IS NOT NULL) AS INTEGER) AS is_favorite
 FROM events AS e
-LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id
+LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id AND fav_e.active = 1
 ORDER BY e.dates DESC;
 
 -- Get single event with favorite status
@@ -129,7 +138,7 @@ SELECT
     e.*,
     CAST((fav_e.event_id IS NOT NULL) AS INTEGER) AS is_favorite
 FROM events AS e
-LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id
+LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id AND fav_e.active = 1
 WHERE e.id = :eventId;
 
 -- Filter events by status
@@ -138,7 +147,7 @@ SELECT
     e.*,
     CAST((fav_e.event_id IS NOT NULL) AS INTEGER) AS is_favorite
 FROM events AS e
-LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id
+LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id AND fav_e.active = 1
 WHERE e.status = :status
 ORDER BY e.dates DESC;
 
@@ -148,7 +157,7 @@ SELECT
     e.*,
     CAST((fav_e.event_id IS NOT NULL) AS INTEGER) AS is_favorite
 FROM events AS e
-LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id
+LEFT JOIN favorite_events AS fav_e ON e.id = fav_e.event_id AND fav_e.active = 1
 WHERE e.region = :region
 ORDER BY e.dates DESC;
 
@@ -221,18 +230,21 @@ DELETE FROM event_matches WHERE event_id = :eventId;
 
 -- ===================== Favorites =====================
 addFavoriteEvent:
-INSERT OR IGNORE INTO favorite_events(event_id) VALUES (?);
+INSERT OR REPLACE INTO favorite_events(event_id, active, notification_topic, topic_synced)
+VALUES (:id, 1,
+        (SELECT notification_topic FROM favorite_events WHERE event_id = :id),
+        COALESCE((SELECT topic_synced FROM favorite_events WHERE event_id = :id), 0));
 
 removeFavoriteEvent:
-DELETE FROM favorite_events WHERE event_id = ?;
+UPDATE favorite_events SET active = 0 WHERE event_id = ?;
 
 isFavoriteEvent:
-SELECT COUNT(*) FROM favorite_events WHERE event_id = :eventId;
+SELECT COUNT(*) FROM favorite_events WHERE event_id = :eventId AND active = 1;
 
 getAllFavoriteEvents:
 SELECT
     e.*,
     1 AS is_favorite
 FROM events AS e
-INNER JOIN favorite_events AS fav_e ON e.id = fav_e.event_id
+INNER JOIN favorite_events AS fav_e ON e.id = fav_e.event_id AND fav_e.active = 1
 ORDER BY e.dates DESC;

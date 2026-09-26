@@ -38,9 +38,8 @@ public sealed interface AppRoute : NavKey {
   @Serializable
   public data object Appearance : AppRoute
 
-  /** Opens the live match notification settings screen. */
   @Serializable
-  public data object Notifications : AppRoute
+  public data object Experimental : AppRoute
 
   @Serializable
   public data class MatchDetails(val matchId: String) : AppRoute
@@ -69,7 +68,7 @@ public val AppRoute.rootDestination: AppRoute
       AppRoute.Settings,
       -> this
 
-      AppRoute.About, AppRoute.WhatsNew, AppRoute.Appearance, AppRoute.Notifications -> AppRoute.Settings
+      AppRoute.About, AppRoute.WhatsNew, AppRoute.Appearance, AppRoute.Experimental -> AppRoute.Settings
 
       is AppRoute.MatchDetails -> AppRoute.Matches
 

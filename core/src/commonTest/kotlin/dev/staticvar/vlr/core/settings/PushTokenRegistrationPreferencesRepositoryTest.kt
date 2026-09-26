@@ -27,9 +27,25 @@ class PushTokenRegistrationPreferencesRepositoryTest {
     val restored = PushTokenRegistrationPreferencesRepository(storage).preferences.value
 
     assertTrue(restored.wasUploaded(ClientId, PushPlatform.Android, "opaque token:+/="))
+    assertFalse(restored.wasUploaded(ClientId, PushPlatform.Android, "opaque token:+/=", false))
     assertFalse(restored.wasUploaded(OtherClientId, PushPlatform.Android, "opaque token:+/="))
     assertFalse(restored.wasUploaded(ClientId, PushPlatform.Ios, "opaque token:+/="))
     assertFalse(restored.wasUploaded(ClientId, PushPlatform.Android, "rotated-token"))
+  }
+
+  @Test
+  fun changingLiveModeRequiresAnotherAcknowledgement() {
+    val storage = MapSettings()
+    val repository = PushTokenRegistrationPreferencesRepository(storage)
+    repository.markUploaded(ClientId, PushPlatform.Android, "token", false)
+
+    assertTrue(PushTokenRegistrationPreferencesRepository(storage).preferences.value.wasUploaded(
+      ClientId, PushPlatform.Android, "token", false,
+    ))
+    assertFalse(repository.preferences.value.wasUploaded(ClientId, PushPlatform.Android, "token", true))
+
+    repository.markUploaded(ClientId, PushPlatform.Android, "token", true)
+    assertTrue(repository.preferences.value.wasUploaded(ClientId, PushPlatform.Android, "token", true))
   }
 
   /** Provides distinct client identities for registration tests. */

@@ -20,7 +20,6 @@
   <string name="match_event_dates">DATES</string>
   <string name="match_event_dates_tba">Dates à annoncer</string>
   <string name="match_event_teams">ÉQUIPES</string>
-  <string name="match_event_view_at_vlr">Voir sur VLR</string>
   <string name="match_event_map_breakdown_unavailable">Détail des cartes indisponible.</string>
   <string name="match_event_combined_stats">Statistiques cumulées</string>
   <string name="match_event_all_maps">Toutes les cartes</string>
@@ -69,4 +68,5 @@
   <string name="match_event_win_type_defused">DÉSAMORCÉ</string>
   <string name="match_event_win_type_time_out">TEMPS ÉCOULÉ</string>
   <string name="match_event_win_type_not_played">NON JOUÉ</string>
+  <string name="match_event_match_score">Score du match</string>
 </resources>

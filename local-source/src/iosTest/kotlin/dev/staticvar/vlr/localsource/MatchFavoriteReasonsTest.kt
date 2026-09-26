@@ -161,6 +161,40 @@ class MatchFavoriteReasonsTest {
     )
   }
 
+  @Test
+  fun notificationTombstonesDoNotKeepFavoritesOrProtectCachedMatches() {
+    database.matchesQueries.insertMatch(match("match-1").copy(last_updated = 1))
+    database.playersQueries.insertPlayer(player("asuna", "100t"))
+    database.matchesQueries.addFavoriteMatch("match-1")
+    database.teamsQueries.addFavoriteTeam("100t")
+    database.playersQueries.addFavoritePlayer("asuna")
+    database.eventsQueries.addFavoriteEvent("champions")
+    database.favoriteTopicsQueries.setMatchTopic("live-match-match-1", 1, "match-1")
+    database.favoriteTopicsQueries.setTeamTopic("live-team-100t", 1, "100t")
+    database.favoriteTopicsQueries.setPlayerTopic("live-player-asuna", 1, "asuna")
+    database.favoriteTopicsQueries.setEventTopic("live-event-champions", 1, "champions")
+    assertEquals(0L, database.cacheCleanupQueries.countCacheCleanupCandidates(2).executeAsOne())
+
+    database.matchesQueries.removeFavoriteMatch("match-1")
+    database.teamsQueries.removeFavoriteTeam("100t")
+    database.playersQueries.removeFavoritePlayer("asuna")
+    database.eventsQueries.removeFavoriteEvent("champions")
+
+    assertEquals(4, database.favoriteTopicsQueries.getFavoriteTopicRecords().executeAsList().size)
+    assertEquals(emptySet(), sources("match-1"))
+    assertEquals(emptyList(), database.matchesQueries.getMatchFavoriteReasons().executeAsList())
+    assertEquals(emptyList(), database.homeQueries.getDirectFavorites().executeAsList())
+    assertEquals(emptyList(), database.favoriteScheduleQueries.getFavoriteSchedule().executeAsList())
+    assertEquals(1L, database.cacheCleanupQueries.countCacheCleanupCandidates(2).executeAsOne())
+    assertEquals(0L, database.matchesQueries.getMatchWithFavoriteStatus("match-1").executeAsOne().is_direct_favorite)
+
+    database.teamsQueries.addFavoriteTeam("100t")
+    assertEquals(setOf("TEAM"), sources("match-1"))
+    assertEquals(0L, database.cacheCleanupQueries.countCacheCleanupCandidates(2).executeAsOne())
+    assertEquals("live-team-100t", database.favoriteTopicsQueries.getFavoriteTopicRecords()
+      .executeAsList().single { it.entity_type == "TEAM" }.notification_topic)
+  }
+
   private fun sources(matchId: String): Set<String> = database.matchesQueries
     .getScopedMatchFavoriteReasons(
       matchId = matchId,

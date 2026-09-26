@@ -45,6 +45,7 @@ fun MainViewController(
   notificationPermissionProvider: NotificationPermissionProvider? = null,
   pushTokenProvider: PushTokenProvider? = null,
   liveUpdateStateProvider: LiveUpdateStateProvider? = null,
+  onLiveUpdatesChanged: (Boolean) -> Unit = {},
 ): UIViewController {
   ensureUnhandledExceptionLoggingInstalled()
 
@@ -64,6 +65,7 @@ fun MainViewController(
           onSearchFavoritesChanged = { onSearchFavoritesChanged(it) },
           pushTokenProvider = pushTokenProvider,
           liveUpdateStateProvider = liveUpdateStateProvider,
+          onLiveUpdatesChanged = onLiveUpdatesChanged,
         )
       }
     }

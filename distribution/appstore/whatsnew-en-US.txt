@@ -1,0 +1,11 @@
+There’s more to follow in Val Esports. Here’s what’s new since 1.0.0:
+
+• Search for teams from Rankings, including teams outside the current rankings, and open their profiles.
+• Keep favorite matches close with Live Activities on iOS 18 and later. Follow live map scores on your Lock Screen and Dynamic Island on supported iPhones, with team logos and map progress.
+• Catch up on recent favorite matches on Home, with live matches brought into focus and refreshed Home Screen widgets.
+• Make the app yours with alternate app icons, themes and mascot options in Appearance settings.
+• Explore round-by-round match outcomes and enjoy smoother navigation between matches and events.
+• Find favorites in Spotlight and use Siri shortcuts to open favorite matches or manage spoiler protection.
+• Use the app in English, Hindi, Spanish, French, German, Brazilian Portuguese, Russian, Turkish or Korean.
+
+We’ve also improved favorites syncing, logo visibility and background refreshes, and fixed a crash that could occur when returning to Home.

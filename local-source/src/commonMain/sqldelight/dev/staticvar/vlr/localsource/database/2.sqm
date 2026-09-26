@@ -1,0 +1,20 @@
+CREATE TABLE match_current_map (
+    match_id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    number INTEGER,
+    team1_score INTEGER,
+    team2_score INTEGER,
+    is_live INTEGER NOT NULL,
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+);
+
+CREATE TABLE match_veto (
+    match_id TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    team TEXT,
+    action TEXT NOT NULL,
+    map TEXT NOT NULL,
+    PRIMARY KEY(match_id, position),
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+);
+

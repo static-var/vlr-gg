@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.glance.appwidget.updateAll
@@ -18,6 +19,8 @@ import dev.staticvar.vlr.android.notifications.AndroidLiveNotificationAvailabili
 import dev.staticvar.vlr.android.widget.FavoriteMatchWidgets
 import dev.staticvar.vlr.android.widget.LegacyWidgetRefreshScheduler
 import dev.staticvar.vlr.android.widget.WidgetSnapshotStore
+import dev.staticvar.vlr.core.notifications.NotificationAuthorization
+import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.shared.App
 import dev.staticvar.vlr.shared.di.LocalViewModelObserver
 import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
@@ -28,6 +31,8 @@ import dev.staticvar.vlr.sharedui.share.LocalImageSharer
 import dev.staticvar.vlr.sharedui.share.rememberAndroidImageSharer
 import dev.staticvar.vlr.widget.ScoreWidget
 import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.flow.first
+import org.koin.android.ext.android.getKoin
 
 /**
  * Main activity for VLR Android app.
@@ -49,25 +54,40 @@ class MainActivity : ComponentActivity() {
     }
 
     setContent {
+      val app = application as VlrApplication
+      val favorites = remember { getKoin().get<FavoritesRepository>() }
       val supportsLiveNotifications = remember {
         { AndroidLiveNotificationAvailability.isAvailable(applicationContext) }
       }
       val supportsMatchAlerts = remember {
         { AndroidLiveNotificationAvailability.supportsMatchAlerts(applicationContext) }
       }
+      val notificationPermission = rememberAndroidNotificationPermissionProvider(
+        supportsLiveUpdates = supportsLiveNotifications,
+        supportsMatchAlerts = supportsMatchAlerts,
+        onAuthorizationChanged = app.liveTopicSubscriptions::refresh,
+      )
+      LaunchedEffect(notificationPermission, favorites) {
+        favorites.observeDirectFavorites().first { it.hasAny }
+        if (supportsMatchAlerts() && !AndroidLiveNotificationAvailability.usesLiveUpdates(
+            applicationContext, app.notificationPreferences.preferences.value.enabled,
+          )) {
+          notificationPermission.readNotificationAuthorization { authorization ->
+            if (authorization == NotificationAuthorization.NotDetermined) {
+              notificationPermission.requestNotificationAuthorization { }
+            }
+          }
+        }
+      }
       CompositionLocalProvider(
         LocalViewModelObserver provides viewModelLeakObserver,
         LocalImageSharer provides rememberAndroidImageSharer(),
-        LocalNotificationPermissionProvider provides rememberAndroidNotificationPermissionProvider(
-          supportsLiveUpdates = supportsLiveNotifications,
-          supportsMatchAlerts = supportsMatchAlerts,
-          onAuthorizationChanged = (application as VlrApplication).liveTopicSubscriptions::refresh,
-        ),
+        LocalNotificationPermissionProvider provides notificationPermission,
       ) {
         App(
           deepLinkHandler = deepLinkHandler,
-          pushTokenProvider = (application as VlrApplication).pushTokenProvider,
-          liveUpdateStateProvider = (application as VlrApplication).liveMatchNotifications,
+          pushTokenProvider = app.pushTokenProvider,
+          liveUpdateStateProvider = app.liveMatchNotifications,
           onWidgetSnapshotChanged = { snapshotJson ->
             try {
               if (WidgetSnapshotStore.writeIfChanged(applicationContext, snapshotJson)) {

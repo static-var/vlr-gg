@@ -36,6 +36,7 @@
     <string name="donate_via_github_sponsors">Doar pelo GitHub Sponsors</string>
     <string name="done">Concluído</string>
     <string name="experimental">Experimental</string>
+    <string name="experimental_description">Atualizações ao vivo e limpeza automática</string>
     <string name="explore_the_service_that_powers_the_app">Conheça o serviço que mantém o aplicativo em funcionamento.</string>
     <string name="feedback_character_count">%1$d / %2$d</string>
     <string name="feedback_unavailable">O feedback não está disponível nesta versão. Você pode usar Relatar um problema na página Sobre.</string>
@@ -47,7 +48,6 @@
     <string name="flavour_mocha">Mocha</string>
     <string name="for_the_matches_you_care_about">Para as partidas que importam para você.</string>
     <string name="frequently">Frequentemente</string>
-    <string name="from_the_scene_for_the_scene">Da comunidade, para a comunidade.</string>
     <string name="help_support_continued_development">Ajude a manter o desenvolvimento.</string>
     <string name="how_val_esports_handles_your_data">Como o Val Esports trata seus dados.</string>
     <string name="light">Claro</string>
@@ -56,7 +56,6 @@
     <string name="make_it_yours">Deixe do seu jeito.</string>
     <string name="mascot">Mascote</string>
     <string name="mascot_frequency_accessibility">%1$s, %2$d por cento de chance por tela</string>
-    <string name="about_data_attribution">A cobertura de partidas, as estatísticas e as notícias vêm do VLR.gg. Este é um projeto não oficial de fãs, sem vínculo com o VLR.gg ou a Riot Games.</string>
     <string name="mode">Modo</string>
     <string name="new_in_val_esports">Novidades do Val Esports</string>
     <string name="none">Nenhum</string>
@@ -90,7 +89,6 @@
     <string name="theme_console">Console</string>
     <string name="using_the_app_and_its_content">Uso do aplicativo e do conteúdo.</string>
     <string name="visit_val_esports">Visitar o Val Esports</string>
-    <string name="visit_vlr_gg">Visitar o VLR.gg</string>
     <string name="website_policies">Site e políticas</string>
     <string name="what_s_new">O que há de novo?</string>
     <string name="write_feedback">Escrever feedback</string>
@@ -119,15 +117,9 @@
     <string name="notification_access_error">Não foi possível verificar ou solicitar a permissão para enviar notificações. Tente novamente.</string>
     <string name="open_system_settings">Abrir ajustes do sistema</string>
     <string name="allow_notifications">Permitir notificações</string>
-    <string name="live_activity_permissions_description">Suas preferências são salvas neste dispositivo. A disponibilidade também depende dos ajustes do sistema.</string>
     <string name="live_match_updates">Atualizações de partidas ao vivo</string>
     <string name="live_match_updates_description">Acompanhe os placares ao vivo nas notificações.</string>
     <string name="notifications_permission_description">Permita as notificações para receber atualizações de partidas ao vivo.</string>
-    <string name="release_1_0_4_introduction">Acompanhe placares ao vivo, personalize o visual do app e veja mais detalhes das partidas.</string>
-    <string name="release_1_0_4_live_title">Placares ao vivo dos seus favoritos</string>
-    <string name="release_1_0_4_live_description">Ative os placares ao vivo de partidas e eventos favoritos em dispositivos compatíveis, com Atividades ao Vivo no iOS e Live Updates no Android.</string>
-    <string name="release_1_0_4_appearance_title">Deixe o app com a sua cara</string>
-    <string name="release_1_0_4_appearance_description">Escolha o ícone, o tema e o mascote do app nas novas configurações de Aparência.</string>
     <string name="release_1_0_5_introduction">Tudo o que há de novo desde a versão 1.0.0: placares ao vivo dos seus favoritos, busca de times, um visual personalizado e formas mais fáceis de acompanhar tudo.</string>
     <string name="release_1_0_5_live_title">Acompanhe seus favoritos ao vivo</string>
     <string name="release_1_0_5_live_ios_description">Ative as Atividades ao Vivo para partidas e eventos favoritos. Acompanhe os placares dos mapas na Tela Bloqueada e na Dynamic Island, com logos dos times mais nítidos.</string>
@@ -145,4 +137,26 @@
     <string name="notification_promotion_unavailable">Os placares ao vivo ainda podem aparecer como notificações comuns. Seu dispositivo não permite atualizações ao vivo em destaque para este app. Confira as configurações de notificação do sistema; a disponibilidade também depende do dispositivo.</string>
     <string name="match_alerts">Alertas de partidas</string>
     <string name="match_alerts_description">Receba uma notificação quando uma partida favorita começar. Atualizações de placar ao vivo não estão disponíveis neste dispositivo.</string>
+    <string name="release_1_0_6_introduction">Confira tudo o que chegou desde a versão 1.0.0, com mais formas de acompanhar seus favoritos e personalizar o app.</string>
+    <string name="release_1_0_6_favorites_title">Acompanhe seus favoritos</string>
+    <string name="release_1_0_6_favorites_description">Encontre na tela inicial partidas ao vivo e resultados das últimas 24 horas dos seus times, eventos e partidas favoritos.</string>
+    <string name="release_1_0_6_ios_live_title">Placares ao vivo dos seus favoritos</string>
+    <string name="release_1_0_6_ios_live_description">Acompanhe os placares dos mapas ao vivo na Tela Bloqueada e na Dynamic Island de iPhones compatíveis, com Atividades ao Vivo no iOS 18 ou posterior.</string>
+    <string name="release_1_0_6_android_live_title">Placares ao vivo e lembretes</string>
+    <string name="release_1_0_6_android_live_description">Acompanhe placares com Live Updates em dispositivos compatíveis. Outros dispositivos podem receber lembretes antes do início das partidas favoritas.</string>
+    <string name="release_1_0_6_widgets_title">Widgets renovados</string>
+    <string name="release_1_0_6_widgets_description">Veja as próximas partidas e os placares ao vivo nos widgets renovados da tela de início.</string>
+    <string name="release_1_0_6_appearance_title">Deixe o app com a sua cara</string>
+    <string name="release_1_0_6_appearance_description">Escolha o ícone, o tema e o mascote do app nas configurações de Aparência.</string>
+    <string name="release_1_0_6_languages_title">Agora em 9 idiomas</string>
+    <string name="release_1_0_6_languages_description">Use o app em inglês, hindi, espanhol, francês, alemão, português do Brasil, russo, turco ou coreano.</string>
+    <string name="release_1_0_6_ios_shortcuts_title">Favoritos no Spotlight e na Siri</string>
+    <string name="release_1_0_6_ios_shortcuts_description">Encontre times e eventos favoritos no Spotlight ou pergunte à Siri sobre sua próxima partida favorita.</string>
+    <string name="release_1_0_6_stability_title">Navegação mais fluida</string>
+    <string name="release_1_0_6_stability_description">Navegue entre as telas com mais fluidez. As correções de estabilidade incluem uma falha que fechava o app ao voltar para a tela inicial.</string>
+    <string name="match_reminders_description">Receba um lembrete antes do início de uma partida favorita. Permita as notificações para receber lembretes.</string>
+    <string name="match_reminders_permission_description">Permita as notificações para receber lembretes dos seus favoritos.</string>
+    <string name="live_updates_with_reminders_description">Acompanhe os placares ao vivo nas notificações. Quando Live Updates estiver desativado, você continuará recebendo lembretes antes das partidas favoritas.</string>
+    <string name="release_1_0_6_search_title">Encontre seu time</string>
+    <string name="release_1_0_6_search_description">Procure times na Classificação, inclusive os que estão fora da classificação atual, e abra seus perfis.</string>
 </resources>

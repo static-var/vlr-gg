@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>App support | Valorant Esports</title>
+  <meta name="description" content="Get help with Valorant Esports, report a problem or suggest an improvement. No account required.">
+  <link rel="canonical" href="https://valorantesports.staticvar.dev/support/">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/support/support.css">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top"><nav class="wrap nav" aria-label="Main"><a class="brand" href="/">VALORANT ESPORTS</a><a href="/">App website</a></nav></header>
+  <main id="main" class="wrap support-page">
+    <header class="support-intro">
+      <h1>How can we help?</h1>
+      <p>Report a problem, ask a question or suggest an improvement for Valorant Esports. No account required.</p>
+      <p>Looking for the iOS beta? <a href="/#testflight">Join the TestFlight list</a>.</p>
+    </header>
+    <form class="support-form" action="/api/support-requests" method="post" enctype="multipart/form-data">
+      <p class="form-note">Fields marked <span aria-hidden="true">*</span> are required. We'll use your email to reply about this request.</p>
+      <div class="support-field">
+        <label for="support-email">Email address <span aria-hidden="true">*</span></label>
+        <input id="support-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="254" required>
+      </div>
+      <div class="support-pair">
+        <div class="support-field">
+          <label for="support-category">What do you need help with?</label>
+          <select id="support-category" name="category"><option value="bug">Report a problem</option><option value="feature">Suggest an improvement</option><option value="question">Ask a question</option><option value="other">Something else</option></select>
+        </div>
+        <div class="support-field">
+          <label for="support-platform">Where are you using it?</label>
+          <select id="support-platform" name="platform"><option value="ios">iPhone or iPad</option><option value="android">Android</option></select>
+        </div>
+      </div>
+      <div class="support-field">
+        <label for="support-subject">Subject <span aria-hidden="true">*</span></label>
+        <input id="support-subject" name="subject" type="text" maxlength="160" required>
+      </div>
+      <div class="support-field">
+        <label for="support-message">Message <span aria-hidden="true">*</span></label>
+        <p id="message-help" class="field-help">For a problem, tell us what happened, what you expected and how to reproduce it. Maximum 5,000 characters.</p>
+        <textarea id="support-message" name="message" rows="7" maxlength="5000" aria-describedby="message-help" required></textarea>
+      </div>
+      <div class="support-pair">
+        <div class="support-field">
+          <label for="support-version">App version <span class="optional">(optional)</span></label>
+          <input id="support-version" name="app_version" type="text" maxlength="40" placeholder="e.g. 1.0.5" aria-describedby="version-help">
+          <p id="version-help" class="field-help">Find it in Settings → About.</p>
+        </div>
+        <div class="support-field">
+          <label for="support-device">Device and OS <span class="optional">(optional)</span></label>
+          <input id="support-device" name="device" type="text" maxlength="120" placeholder="e.g. iPhone 16, iOS 27">
+        </div>
+      </div>
+      <div class="support-field">
+        <label for="support-attachment">PDF or image <span class="optional">(optional)</span></label>
+        <input id="support-attachment" name="attachment" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif" aria-describedby="attachment-help">
+        <p id="attachment-help" class="field-help">One file, up to 5 MB. PDF, JPG, PNG, WebP, GIF or HEIC.</p>
+      </div>
+      <div class="signup-trap" aria-hidden="true"><label for="support-website">Website</label><input id="support-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <p id="private-data-note" class="form-note">Your request is sent privately to the developer; it is not a public post. <a href="/privacy/#website">How we handle your information</a>.</p>
+      <button class="button primary" type="submit">Send support request</button>
+    </form>
+    <p class="support-email">Prefer email? Write to <a href="mailto:me@staticvar.dev">me@staticvar.dev</a>.</p>
+  </main>
+  <footer class="wrap footer"><div class="footer-links"><a href="/">Home</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms of service</a><a href="/support/" aria-current="page">Support</a></div></footer>
+</body>
+</html>

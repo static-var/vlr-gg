@@ -46,7 +46,7 @@ public actual fun rememberMatchCalendarExporter(): (MatchCalendarEvent) -> Resul
             startDate = NSDate.dateWithTimeIntervalSince1970(event.start.toEpochMilliseconds() / 1000.0)
             endDate = NSDate.dateWithTimeIntervalSince1970(event.end.toEpochMilliseconds() / 1000.0)
             if (event.matchId.isNotEmpty() && event.matchId.all(Char::isDigit)) {
-              URL = NSURL.URLWithString("https://www.vlr.gg/${event.matchId}")
+              URL = NSURL.URLWithString("https://valorantesports.staticvar.dev/match/${event.matchId}")
             }
           }
           val editor = EKEventEditViewController().apply {

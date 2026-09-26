@@ -4,126 +4,171 @@
  */
 package dev.staticvar.vlr.android.notifications
 
-import dev.staticvar.vlr.domain.model.DirectFavorite
-import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
+import dev.staticvar.vlr.domain.repository.FavoriteTopicMode
+import dev.staticvar.vlr.domain.repository.FavoriteTopicOperation
+import dev.staticvar.vlr.domain.repository.FavoriteTopicRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
 
-/** Checks topic synchronization after token changes, disabling, and partial failures. */
 class AndroidLiveTopicSubscriptionsTest {
   @Test
-  fun fallbackTopicsIncludeAllFavoritesUsingCachedPlayerTeams() {
-    val snapshot = DirectFavoriteSnapshot(
-      teams = listOf(DirectFavorite.Team("11", "Team", "")),
-      events = listOf(DirectFavorite.Event("22", "Event", "")),
-      matches = listOf(DirectFavorite.Match("33", "Match", "")),
-      players = listOf(
-        DirectFavorite.Player("44", "Player", "", currentTeamId = "55"),
-        DirectFavorite.Player("66", "Teammate", "", currentTeamId = "11"),
-        DirectFavorite.Player("77", "Unknown team", ""),
-        DirectFavorite.Player("88", "Blank team", "", currentTeamId = ""),
-      ),
-    )
+  fun legacyMigrationClearsBothTopicPrefixesBeforeReconciliation() = runBlocking {
+    val events = mutableListOf<String>()
+    val topics = FakeTopicRepository(events, FavoriteTopicOperation.Subscribe("live-team-11"))
+    val transport = FakeTransport(events)
+    migrateLegacyTopicSubscriptions(topics, linkedSetOf("team-11", "live-team-11"), transport) {
+      events += "clear-legacy"
+    }
+    reconcileLiveTopicSubscriptions(topics, { FavoriteTopicMode.Live }, "token", transport) {}
 
-    assertEquals(
-      setOf("live-team-11", "live-event-22", "live-match-33", "live-team-55"),
-      snapshot.notificationTopics(liveSupported = false),
-    )
-    assertEquals(
-      setOf(
-        "live-team-11", "live-event-22", "live-match-33",
-        "live-player-44", "live-player-66", "live-player-77", "live-player-88",
-      ),
-      snapshot.notificationTopics(liveSupported = true),
-    )
-  }
-
-  @Test
-  fun tokenRotationResubscribesDesiredTopics() = runBlocking {
-    val topic = "live-team-11"
-    val transport = FakeTransport(token = "token-b")
-    val saved = mutableListOf<LiveTopicSubscriptionState>()
-
-    reconcileLiveTopicSubscriptions(
-      desired = setOf(topic),
-      previous = LiveTopicSubscriptionState(token = "token-a", topics = setOf(topic)),
-      transport = transport,
-      save = saved::add,
-    )
-
-    assertTrue(transport.unsubscribed.isEmpty())
-    assertEquals(listOf(topic), transport.subscribed)
     assertEquals(
       listOf(
-        LiveTopicSubscriptionState(token = "token-b", topics = emptySet()),
-        LiveTopicSubscriptionState(token = "token-b", topics = setOf(topic)),
+        "unsubscribe:team-11", "unsubscribe:live-team-11", "invalidate", "clear-legacy",
+        "read:Live", "subscribe:live-team-11", "ack:live-team-11", "read:Live",
       ),
-      saved,
+      events,
     )
   }
 
   @Test
-  fun disablingUnsubscribesEveryStoredTopic() = runBlocking {
-    val first = "live-event-22"
-    val second = "live-player-33"
-    val transport = FakeTransport(token = "token-a")
-    val saved = mutableListOf<LiveTopicSubscriptionState>()
-
-    reconcileLiveTopicSubscriptions(
-      desired = emptySet(),
-      previous = LiveTopicSubscriptionState(token = "token-a", topics = linkedSetOf(first, second)),
-      transport = transport,
-      save = saved::add,
-    )
-
-    assertEquals(listOf(first, second), transport.unsubscribed)
-    assertTrue(transport.subscribed.isEmpty())
-    assertEquals(emptySet<String>(), saved.last().topics)
+  fun failedLegacyMigrationRetainsAllMembershipsForRetry() = runBlocking {
+    val events = mutableListOf<String>()
+    val topics = FakeTopicRepository(events)
+    val memberships = linkedSetOf("team-11", "live-team-11")
+    var cleared = false
+    try {
+      migrateLegacyTopicSubscriptions(
+        topics, memberships, FakeTransport(events, failUnsubscription = "live-team-11"),
+      ) { cleared = true }
+      fail("Expected unsubscribe failure")
+    } catch (expected: IllegalStateException) {
+      assertEquals("unsubscribe failed", expected.message)
+    }
+    assertEquals(false, cleared)
+    assertEquals(listOf("unsubscribe:team-11", "unsubscribe:live-team-11"), events)
+    events.clear()
+    migrateLegacyTopicSubscriptions(topics, memberships, FakeTransport(events)) { cleared = true }
+    assertTrue(cleared)
+    assertEquals(listOf("unsubscribe:team-11", "unsubscribe:live-team-11", "invalidate"), events)
   }
 
   @Test
-  fun partialFailurePersistsOnlyCompletedSubscriptions() = runBlocking {
-    val first = "live-match-44"
-    val second = "live-team-55"
-    val transport = FakeTransport(token = "token-a", failSubscription = second)
-    val saved = mutableListOf<LiveTopicSubscriptionState>()
+  fun tokenRotationInvalidatesDatabaseBeforeSavingNewToken() = runBlocking {
+    val events = mutableListOf<String>()
+    val topics = FakeTopicRepository(events)
+    val transport = FakeTransport(events, token = "new-token")
+
+    reconcileLiveTopicSubscriptions(topics, { FavoriteTopicMode.Live }, "old-token", transport) {
+      events += "token:$it"
+    }
+
+    assertEquals(listOf("invalidate", "token:new-token", "read:Live"), events)
+  }
+
+  @Test
+  fun failedSubscriptionRemainsPendingAndRetriesAfterCompletedWork() = runBlocking {
+    val events = mutableListOf<String>()
+    val first = FavoriteTopicOperation.Subscribe("live-match-44")
+    val second = FavoriteTopicOperation.Subscribe("live-team-55")
+    val topics = FakeTopicRepository(events, first, second)
+    val transport = FakeTransport(events, failSubscription = second.topic)
 
     try {
-      reconcileLiveTopicSubscriptions(
-        desired = linkedSetOf(first, second),
-        previous = LiveTopicSubscriptionState(token = "token-a", topics = emptySet()),
-        transport = transport,
-        save = saved::add,
-      )
-      fail("Expected the second subscription to fail")
+      reconcileLiveTopicSubscriptions(topics, { FavoriteTopicMode.Live }, "token", transport) {}
+      fail("Expected subscription failure")
     } catch (expected: IllegalStateException) {
       assertEquals("subscription failed", expected.message)
     }
+    assertEquals(listOf(second), topics.pending)
+    assertEquals(listOf(first), topics.acknowledged)
 
-    assertEquals(listOf(first, second), transport.subscribed)
-    assertEquals(listOf(LiveTopicSubscriptionState(token = "token-a", topics = setOf(first))), saved)
+    val retry = FakeTransport(events)
+    reconcileLiveTopicSubscriptions(topics, { FavoriteTopicMode.Live }, "token", retry) {}
+    assertEquals(listOf(second.topic), retry.subscribed)
+    assertTrue(topics.pending.isEmpty())
+  }
+
+  @Test
+  fun failedUnsubscribeIsNotAcknowledged() = runBlocking {
+    val events = mutableListOf<String>()
+    val operation = FavoriteTopicOperation.Unsubscribe("live-event-22")
+    val topics = FakeTopicRepository(events, operation)
+    val transport = FakeTransport(events, failUnsubscription = operation.topic)
+
+    try {
+      reconcileLiveTopicSubscriptions(topics, { FavoriteTopicMode.Disabled }, "token", transport) {}
+      fail("Expected unsubscribe failure")
+    } catch (expected: IllegalStateException) {
+      assertEquals("unsubscribe failed", expected.message)
+    }
+
+    assertEquals(listOf(operation), topics.pending)
+    assertTrue(topics.acknowledged.isEmpty())
+  }
+
+  @Test
+  fun rechecksModeAfterEachNetworkOperation() = runBlocking {
+    val events = mutableListOf<String>()
+    val operation = FavoriteTopicOperation.Subscribe("live-match-44")
+    val topics = FakeTopicRepository(events, operation)
+    var mode = FavoriteTopicMode.Live
+    val transport = FakeTransport(events, afterSubscribe = { mode = FavoriteTopicMode.Disabled })
+
+    reconcileLiveTopicSubscriptions(topics, { mode }, "token", transport) {}
+
+    assertEquals(
+      listOf("read:Live", "subscribe:live-match-44", "ack:live-match-44", "read:Disabled"),
+      events,
+    )
   }
 }
 
-/** Records topic operations and can fail a subscription for tests. */
+private class FakeTopicRepository(
+  private val events: MutableList<String>,
+  vararg operations: FavoriteTopicOperation,
+) : FavoriteTopicRepository {
+  val pending = operations.toMutableList()
+  val acknowledged = mutableListOf<FavoriteTopicOperation>()
+
+  override fun observeChanges(): Flow<Unit> = flowOf(Unit)
+  override suspend fun reminderTopics(): Set<String> = emptySet()
+  override suspend fun nextOperation(mode: FavoriteTopicMode): FavoriteTopicOperation? {
+    events += "read:$mode"
+    return pending.firstOrNull()
+  }
+  override suspend fun acknowledge(operation: FavoriteTopicOperation) {
+    events += "ack:${operation.topic}"
+    acknowledged += operation
+    pending.remove(operation)
+  }
+  override suspend fun invalidateAcknowledgements() {
+    events += "invalidate"
+  }
+}
+
 private class FakeTransport(
-  private val token: String,
+  private val events: MutableList<String>,
+  private val token: String = "token",
   private val failSubscription: String? = null,
+  private val failUnsubscription: String? = null,
+  private val afterSubscribe: () -> Unit = {},
 ) : LiveTopicSubscriptionTransport {
   val subscribed = mutableListOf<String>()
-  val unsubscribed = mutableListOf<String>()
 
   override suspend fun currentToken(): String = token
-
   override suspend fun subscribe(topic: String) {
+    events += "subscribe:$topic"
     subscribed += topic
-    if (topic == failSubscription) throw IllegalStateException("subscription failed")
+    if (topic == failSubscription) error("subscription failed")
+    afterSubscribe()
   }
-
   override suspend fun unsubscribe(topic: String) {
-    unsubscribed += topic
+    events += "unsubscribe:$topic"
+    if (topic == failUnsubscription) error("unsubscribe failed")
   }
 }

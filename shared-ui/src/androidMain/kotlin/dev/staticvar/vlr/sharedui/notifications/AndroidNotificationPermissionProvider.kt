@@ -145,6 +145,7 @@ private class AndroidNotificationPermissionProvider(
   }
 
   fun completeRequest() {
+    preferences.edit().putBoolean(HAS_PERMISSION_RESPONSE, true).apply()
     finishRequest(readAuthorization())
   }
 

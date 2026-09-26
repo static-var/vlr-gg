@@ -12,28 +12,28 @@ CREATE VIEW cache_favorite_matches AS
 SELECT m.id AS match_id
 FROM matches AS m
 WHERE EXISTS (
-    SELECT 1 FROM favorite_matches AS favorite WHERE favorite.match_id = m.id
+    SELECT 1 FROM favorite_matches AS favorite WHERE favorite.active = 1 AND favorite.match_id = m.id
 )
 OR EXISTS (
-    SELECT 1 FROM favorite_events AS favorite WHERE favorite.event_id = m.event_id
+    SELECT 1 FROM favorite_events AS favorite WHERE favorite.active = 1 AND favorite.event_id = m.event_id
 )
 OR EXISTS (
     SELECT 1
     FROM event_matches AS event_match
-    INNER JOIN favorite_events AS favorite ON favorite.event_id = event_match.event_id
+    INNER JOIN favorite_events AS favorite ON favorite.event_id = event_match.event_id AND favorite.active = 1
     WHERE event_match.match_id = m.id
 )
 OR EXISTS (
     SELECT 1
     FROM favorite_teams AS favorite
-    WHERE favorite.team_id != ''
+    WHERE favorite.active = 1 AND favorite.team_id != ''
       AND (favorite.team_id = m.team1_id OR favorite.team_id = m.team2_id)
 )
 OR EXISTS (
     SELECT 1
     FROM favorite_players AS favorite
     INNER JOIN players AS player ON player.id = favorite.player_id
-    WHERE player.current_team_id IS NOT NULL
+    WHERE favorite.active = 1 AND player.current_team_id IS NOT NULL
       AND player.current_team_id != ''
       AND (player.current_team_id = m.team1_id OR player.current_team_id = m.team2_id)
 );
@@ -50,6 +50,7 @@ INNER JOIN cache_favorite_matches AS favorite ON favorite.match_id = encounter.m
 CREATE VIEW cache_protected_events AS
 SELECT event_id
 FROM favorite_events
+WHERE active = 1
 UNION
 SELECT cached_match.event_id
 FROM matches AS cached_match
@@ -63,10 +64,11 @@ INNER JOIN cache_protected_matches AS protected ON protected.match_id = event_ma
 CREATE VIEW cache_protected_teams AS
 SELECT team_id
 FROM favorite_teams
+WHERE active = 1
 UNION
 SELECT player.current_team_id AS team_id
 FROM players AS player
-INNER JOIN favorite_players AS favorite ON favorite.player_id = player.id
+INNER JOIN favorite_players AS favorite ON favorite.player_id = player.id AND favorite.active = 1
 WHERE player.current_team_id IS NOT NULL AND player.current_team_id != ''
 UNION
 SELECT cached_match.team1_id AS team_id
@@ -87,6 +89,7 @@ WHERE event_team.team_id IS NOT NULL AND event_team.team_id != '';
 CREATE VIEW cache_protected_players AS
 SELECT player_id
 FROM favorite_players
+WHERE active = 1
 UNION
 SELECT stats.player_id
 FROM match_map_player_stats AS stats

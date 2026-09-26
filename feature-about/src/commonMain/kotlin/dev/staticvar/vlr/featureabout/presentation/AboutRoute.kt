@@ -35,8 +35,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
-import dev.staticvar.designsystem.component.card.PrismCardHost
-import dev.staticvar.designsystem.component.card.cardMascotEligible
 import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.divider.PrismDivider
 import dev.staticvar.designsystem.component.surface.PrismSurface
@@ -47,7 +45,6 @@ import dev.staticvar.vlr.sharedui.mascot.RosieMascot
 import org.jetbrains.compose.resources.stringResource
 import vlr.feature_about.generated.resources.Res
 import vlr.feature_about.generated.resources.about
-import vlr.feature_about.generated.resources.about_data_attribution
 import vlr.feature_about.generated.resources.about_description
 import vlr.feature_about.generated.resources.akhil_narang
 import vlr.feature_about.generated.resources.an_independent_valorant_esports_app
@@ -58,7 +55,6 @@ import vlr.feature_about.generated.resources.backend_source_code
 import vlr.feature_about.generated.resources.donate_via_github_sponsors
 import vlr.feature_about.generated.resources.explore_the_service_that_powers_the_app
 import vlr.feature_about.generated.resources.for_the_matches_you_care_about
-import vlr.feature_about.generated.resources.from_the_scene_for_the_scene
 import vlr.feature_about.generated.resources.help_support_continued_development
 import vlr.feature_about.generated.resources.make_it_better
 import vlr.feature_about.generated.resources.open_link_in_browser
@@ -74,7 +70,6 @@ import vlr.feature_about.generated.resources.terms_of_service
 import vlr.feature_about.generated.resources.the_people_behind_it
 import vlr.feature_about.generated.resources.val_esports
 import vlr.feature_about.generated.resources.visit_val_esports
-import vlr.feature_about.generated.resources.visit_vlr_gg
 import vlr.feature_about.generated.resources.website_policies
 import vlr.feature_about.generated.resources.write_feedback
 
@@ -114,7 +109,6 @@ internal fun AboutScreen(modifier: Modifier = Modifier, onBack: () -> Unit = {})
         AboutProjectLinks(onFeedback = { showFeedback = true })
         AboutContributors()
         AboutDonations()
-        AboutSource()
       }
     }
   }
@@ -209,19 +203,19 @@ private fun AboutProjectLinks(onFeedback: () -> Unit) {
     AboutLink(
       title = stringResource(Res.string.report_an_issue),
       description = stringResource(Res.string.something_off_help_us_get_it_right),
-      url = "https://github.com/static-var/vlr-gg/issues",
+      url = AppWebsite.Issues,
     )
     PrismDivider()
     AboutLink(
       title = stringResource(Res.string.app_source_code),
       description = stringResource(Res.string.read_the_code_or_contribute_on_github),
-      url = "https://github.com/static-var/vlr-gg",
+      url = AppWebsite.Source,
     )
     PrismDivider()
     AboutLink(
       title = stringResource(Res.string.backend_source_code),
       description = stringResource(Res.string.explore_the_service_that_powers_the_app),
-      url = "https://github.com/akhilnarang/vlrgg-scraper",
+      url = AppWebsite.BackendSource,
     )
   }
 }
@@ -253,33 +247,6 @@ private fun AboutDonations() {
       description = stringResource(Res.string.help_support_continued_development),
       url = "https://github.com/sponsors/static-var",
     )
-  }
-}
-
-@Composable
-private fun AboutSource() {
-  PrismCardHost(modifier = Modifier.fillMaxWidth().cardMascotEligible(topClearance = Prism.dimens.spacingXl)) {
-    PrismSurface(
-      modifier = Modifier,
-      color = Prism.color.surfaceVariant,
-      shape = Prism.shapes.medium,
-    ) {
-      Column(modifier = Modifier.padding(Prism.dimens.spacingM)) {
-        Text(
-          text = stringResource(Res.string.from_the_scene_for_the_scene),
-          style = Prism.typography.cardTitle,
-          color = Prism.color.titleColor,
-          modifier = Modifier.semantics { heading() },
-        )
-        Text(
-          text = stringResource(Res.string.about_data_attribution),
-          modifier = Modifier.padding(top = Prism.dimens.spacingS),
-          style = Prism.typography.bodySmall,
-          color = Prism.color.bodyColor,
-        )
-        AboutLink(title = stringResource(Res.string.visit_vlr_gg), url = "https://www.vlr.gg")
-      }
-    }
   }
 }
 

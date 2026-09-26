@@ -1,4 +1,4 @@
-"Open VLR in ${applicationName}" = "Ouvrir VLR dans ${applicationName}";
+"Open ${applicationName}" = "Ouvrir ${applicationName}";
 "Open my next match in ${applicationName}" = "Ouvrir mon prochain match dans ${applicationName}";
 "Turn on spoiler protection in ${applicationName}" = "Activer la protection contre les spoilers dans ${applicationName}";
 "What's my next favorite match in ${applicationName}" = "Quel est mon prochain match favori dans ${applicationName}";

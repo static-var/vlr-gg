@@ -5,8 +5,6 @@
 package dev.staticvar.vlr.data.cache
 
 import com.russhwolf.settings.MapSettings
-import dev.staticvar.vlr.domain.model.MatchVeto
-import dev.staticvar.vlr.domain.model.VetoAction
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.test.runTest
@@ -41,59 +39,13 @@ class LocalizedContentStoreTest {
   }
 
   @Test
-  fun `veto is returned only for the raw notes that produced it`() = runTest {
-    val store = MatchVetoStore(MapSettings(), json)
-    val veto = listOf(MatchVeto(team = "FNC", action = VetoAction.BAN, map = "Bind"))
-    store.put("123", rawBans = listOf("FNC ban Bind"), veto = veto)
-
-    assertEquals(veto, store.get("123", rawBans = listOf("FNC ban Bind")))
-    assertEquals(emptyList(), store.get("123", rawBans = listOf("FNC pick Bind")))
-  }
-
-  @Test
-  fun `unknown veto keeps the complete raw note`() = runTest {
-    val store = MatchVetoStore(MapSettings(), json)
-    val veto = listOf(MatchVeto(team = null, action = VetoAction.UNKNOWN, map = "Map ban: Bind, Haven"))
-    store.put("123", rawBans = listOf("Map ban: Bind, Haven"), veto = veto)
-
-    assertEquals(veto, store.get("123", rawBans = listOf("Map ban: Bind, Haven")))
-  }
-
-  @Test
   fun `concurrent distinct writes are retained`() = runTest {
     val regionStore = LocalizedRegionLabelStore(MapSettings(), json) { "en" }
-    val vetoStore = MatchVetoStore(MapSettings(), json)
 
     listOf("North America", "Europe", "Pacific").map { region ->
       async { regionStore.put("en", mapOf(region to "$region label")) }
     }.awaitAll()
-    (1..20).map { id ->
-      async {
-        vetoStore.put(
-          matchId = id.toString(),
-          rawBans = listOf("$id ban Bind"),
-          veto = listOf(MatchVeto(id.toString(), VetoAction.BAN, "Bind")),
-        )
-      }
-    }.awaitAll()
-
     assertEquals("Europe label", regionStore.label("Europe"))
-    assertEquals("20", vetoStore.get("20", listOf("20 ban Bind")).single().team)
-  }
-
-  @Test
-  fun `veto cache evicts the oldest entry`() = runTest {
-    val store = MatchVetoStore(MapSettings(), json)
-    (1..101).forEach { id ->
-      store.put(
-        matchId = id.toString(),
-        rawBans = listOf("note $id"),
-        veto = listOf(MatchVeto(null, VetoAction.UNKNOWN, "note $id")),
-      )
-    }
-
-    assertEquals(emptyList(), store.get("1", listOf("note 1")))
-    assertEquals("note 101", store.get("101", listOf("note 101")).single().map)
   }
 
   @Test
@@ -101,9 +53,7 @@ class LocalizedContentStoreTest {
     val settings = MapSettings()
     settings.putString("localized_content.region_labels.languages", "en")
     settings.putString("localized_content.region_labels.en", "not json")
-    settings.putString("localized_content.match_veto", "not json")
 
     assertEquals("", LocalizedRegionLabelStore(settings, json) { "en" }.label("Europe"))
-    assertEquals(emptyList(), MatchVetoStore(settings, json).get("123", listOf("note")))
   }
 }

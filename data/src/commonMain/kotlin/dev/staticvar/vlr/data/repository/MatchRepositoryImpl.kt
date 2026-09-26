@@ -6,20 +6,13 @@ package dev.staticvar.vlr.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.core.telemetry.traceRefresh
-import dev.staticvar.vlr.data.MatchBans
-import dev.staticvar.vlr.data.MatchMapPlayerStats
-import dev.staticvar.vlr.data.MatchMapRounds
-import dev.staticvar.vlr.data.MatchMaps
 import dev.staticvar.vlr.data.MatchPreviousEncounters
-import dev.staticvar.vlr.data.MatchVideos
 import dev.staticvar.vlr.data.Matches
-import dev.staticvar.vlr.data.cache.EmptyVetoStore
-import dev.staticvar.vlr.data.cache.VetoStore
 import dev.staticvar.vlr.data.mapper.aggregateMatchDetails
 import dev.staticvar.vlr.data.mapper.toBanEntities
+import dev.staticvar.vlr.data.mapper.toCurrentMapModel
 import dev.staticvar.vlr.data.mapper.toDomain
 import dev.staticvar.vlr.data.mapper.toEntity
 import dev.staticvar.vlr.data.mapper.toMapEntities
@@ -28,22 +21,25 @@ import dev.staticvar.vlr.data.mapper.toOverviewEntity
 import dev.staticvar.vlr.data.mapper.toPlayerStatEntities
 import dev.staticvar.vlr.data.mapper.toPreviousEncounterEntities
 import dev.staticvar.vlr.data.mapper.toRoundEntities
-import dev.staticvar.vlr.data.mapper.toVideoEntities
 import dev.staticvar.vlr.data.mapper.toVetoModels
+import dev.staticvar.vlr.data.mapper.toVideoEntities
+import dev.staticvar.vlr.domain.model.CurrentMatchMap
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchPreview
+import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamPreview
+import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.domain.repository.MatchRepository
-import dev.staticvar.vlr.localsource.database.GetMatchWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetMatchFavoriteReasons
 import dev.staticvar.vlr.localsource.database.GetMatchesWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -56,7 +52,6 @@ internal class MatchRepositoryImpl(
   private val matchDataSource: MatchDataSource,
   private val database: VlrDatabase,
   private val dispatchers: DispatcherProvider,
-  private val vetoStore: VetoStore = EmptyVetoStore,
 ) : MatchRepository {
 
   private val matchesQueries = database.matchesQueries
@@ -80,118 +75,117 @@ internal class MatchRepositoryImpl(
     .flowOn(dispatchers.default)
 
   override fun getMatchDetails(matchId: String): Flow<MatchDetails?> {
-    val matchFlow = matchesQueries
-      .getMatchWithFavoriteStatus(matchId)
-      .asFlow()
-      .mapToOneOrNull(dispatchers.io)
+    val matchQuery = matchesQueries.getMatchWithFavoriteStatus(matchId)
+    val mapsQuery = matchesQueries.getMatchMaps(matchId)
+    val roundsQuery = matchesQueries.getMatchRounds(matchId)
+    val playerStatsQuery = matchesQueries.getMatchPlayerStats(matchId)
+    val bansQuery = matchesQueries.getMatchBans(matchId)
+    val videosQuery = matchesQueries.getMatchVideos(matchId)
+    val previousQuery = matchesQueries.getPreviousEncounters(matchId)
+    val currentMapQuery = matchesQueries.getMatchCurrentMap(matchId)
+    val vetoQuery = matchesQueries.getMatchVeto(matchId)
+    val favoritesQuery = matchesQueries.getScopedMatchFavoriteReasons(
+      matchId = matchId,
+      eventId = null,
+      mapper = ::GetMatchFavoriteReasons,
+    )
+    val changes = listOf(
+      matchQuery,
+      mapsQuery,
+      roundsQuery,
+      playerStatsQuery,
+      bansQuery,
+      videosQuery,
+      previousQuery,
+      currentMapQuery,
+      vetoQuery,
+      favoritesQuery,
+    ).map { query -> query.asFlow().map { Unit } }
 
-    val mapsFlow = matchesQueries
-      .getMatchMaps(matchId)
-      .asFlow()
-      .mapToList(dispatchers.io)
-
-    val roundsFlow = matchesQueries
-      .getMatchRounds(matchId)
-      .asFlow()
-      .mapToList(dispatchers.io)
-
-    val playerStatsFlow = matchesQueries
-      .getMatchPlayerStats(matchId)
-      .asFlow()
-      .mapToList(dispatchers.io)
-
-    val bansFlow = matchesQueries
-      .getMatchBans(matchId)
-      .asFlow()
-      .mapToList(dispatchers.io)
-
-    val videosFlow = matchesQueries
-      .getMatchVideos(matchId)
-      .asFlow()
-      .mapToList(dispatchers.io)
-
-    val previousFlow = matchesQueries
-      .getPreviousEncounters(matchId)
-      .asFlow()
-      .mapToList(dispatchers.io)
-      .map { encounters -> encounters.map { it.toDomainEncounter() } }
-
-    val coreFlow =
-      matchFlow.combine(mapsFlow) { match, maps ->
-        MatchDetailSlices(match = match, maps = maps)
-      }.combine(roundsFlow) { slices, rounds ->
-        slices.copy(rounds = rounds)
-      }.combine(playerStatsFlow) { slices, playerStats ->
-        slices.copy(playerStats = playerStats)
-      }.combine(bansFlow) { slices, bans ->
-        slices.copy(bans = bans)
-      }.combine(videosFlow) { slices, videos ->
-        slices.copy(videos = videos)
-      }
-
-    return coreFlow.combine(previousFlow) { slices, previousEncounters ->
-      slices to previousEncounters
-    }.combine(vetoStore.version) { (slices, previousEncounters), _ ->
-      slices.match?.let { match ->
+    return combine(changes) {
+      database.transactionWithResult {
+        val match = matchQuery.executeAsOneOrNull() ?: return@transactionWithResult null
+        val currentMap = currentMapQuery.executeAsOneOrNull()
+          ?.takeIf { match.status.uppercase() in setOf("LIVE", "ONGOING") }
+          ?.let { map ->
+            CurrentMatchMap(
+              name = map.name,
+              number = map.number?.toInt(),
+              team1Score = map.team1_score?.toInt(),
+              team2Score = map.team2_score?.toInt(),
+              isLive = map.is_live,
+            )
+          }
+        val reasons = favoritesQuery.executeAsList().map { reason ->
+          MatchFavoriteReason(
+            source = MatchFavoriteSource.valueOf(reason.source),
+            id = reason.entity_id,
+            name = reason.entity_name,
+          )
+        }.sortedWith(compareBy({ it.source.ordinal }, { it.name }, { it.id }))
         aggregateMatchDetails(
           match = match,
-          maps = slices.maps,
-          rounds = slices.rounds,
-          playerStats = slices.playerStats,
-          bans = slices.bans,
-          videos = slices.videos,
-          previousEncounters = previousEncounters,
-          veto = vetoStore.get(matchId, slices.bans.map { it.ban_value }),
-        )
-      }
-    }.combine(observeFavoriteReasons(matchId = matchId)) { match, reasonsByMatch ->
-      match?.let {
-        val reasons = reasonsByMatch[it.id].orEmpty()
-        it.copy(
+          maps = mapsQuery.executeAsList(),
+          rounds = roundsQuery.executeAsList(),
+          playerStats = playerStatsQuery.executeAsList(),
+          bans = bansQuery.executeAsList(),
+          videos = videosQuery.executeAsList(),
+          previousEncounters = previousQuery.executeAsList().map { it.toDomainEncounter() },
+          veto = vetoQuery.executeAsList().map { step ->
+            MatchVeto(
+              team = step.team,
+              action = VetoAction.valueOf(step.action),
+              map = step.map,
+            )
+          },
+        ).copy(
+          currentMap = currentMap,
           isFavorite = reasons.isNotEmpty(),
-          isDirectFavorite = reasons.any { reason -> reason.source == MatchFavoriteSource.MATCH },
+          isDirectFavorite = reasons.any { it.source == MatchFavoriteSource.MATCH },
           favoriteReasons = reasons,
         )
       }
-    }.flowOn(dispatchers.default)
+    }.distinctUntilChanged().flowOn(dispatchers.io)
   }
 
-  private fun observeFavoriteReasons(
-    matchId: String? = null,
-  ): Flow<Map<String, List<MatchFavoriteReason>>> {
-    val query = matchId?.let { scopedMatchId ->
-      matchesQueries.getScopedMatchFavoriteReasons(
-        matchId = scopedMatchId,
-        eventId = null,
-        mapper = ::GetMatchFavoriteReasons,
-      )
-    } ?: matchesQueries.getMatchFavoriteReasons()
-    return query
-      .asFlow()
-      .mapToList(dispatchers.io)
-      .map { rows ->
-        rows.groupBy { it.match_id }.mapValues { (_, reasons) ->
-          reasons.map { reason ->
-            MatchFavoriteReason(
-              source = MatchFavoriteSource.valueOf(reason.source),
-              id = reason.entity_id,
-              name = reason.entity_name,
-            )
-          }.sortedWith(compareBy({ it.source.ordinal }, { it.name }, { it.id }))
-        }
+  private fun observeFavoriteReasons(): Flow<Map<String, List<MatchFavoriteReason>>> = matchesQueries
+    .getMatchFavoriteReasons()
+    .asFlow()
+    .mapToList(dispatchers.io)
+    .map { rows ->
+      rows.groupBy { it.match_id }.mapValues { (_, reasons) ->
+        reasons.map { reason ->
+          MatchFavoriteReason(
+            source = MatchFavoriteSource.valueOf(reason.source),
+            id = reason.entity_id,
+            name = reason.entity_name,
+          )
+        }.sortedWith(compareBy({ it.source.ordinal }, { it.name }, { it.id }))
       }
-  }
+    }
 
   override suspend fun addToFavorites(matchId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {
-      matchesQueries.addFavoriteMatch(matchId)
+      database.transaction {
+        if (matchesQueries.isFavoriteMatch(matchId).executeAsOne() == 0L) {
+          matchesQueries.addFavoriteMatch(matchId)
+          database.favoriteSyncStateQueries.ensureFavoriteSyncState()
+          database.favoriteSyncStateQueries.markFavoritesDirty()
+        }
+      }
       Unit
     }
   }
 
   override suspend fun removeFromFavorites(matchId: String): Result<Unit> = withContext(dispatchers.io) {
     runCatching {
-      matchesQueries.removeFavoriteMatch(matchId)
+      database.transaction {
+        if (matchesQueries.isFavoriteMatch(matchId).executeAsOne() != 0L) {
+          matchesQueries.removeFavoriteMatch(matchId)
+          database.favoriteSyncStateQueries.ensureFavoriteSyncState()
+          database.favoriteSyncStateQueries.markFavoritesDirty()
+        }
+      }
       Unit
     }
   }
@@ -237,6 +231,8 @@ internal class MatchRepositoryImpl(
           matchesQueries.deleteMatchBans(matchId)
           matchesQueries.deleteMatchVideos(matchId)
           matchesQueries.deletePreviousEncounters(matchId)
+          matchesQueries.deleteMatchCurrentMap(matchId)
+          matchesQueries.deleteMatchVeto(matchId)
 
           // Insert updated match
           val cachedMatch = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
@@ -247,6 +243,26 @@ internal class MatchRepositoryImpl(
             team2_id = remoteMatch.team2_id.ifBlank { cachedMatch?.team2_id.orEmpty() },
           )
           upsertMatch(matchEntity)
+
+          dto.toCurrentMapModel()?.let { map ->
+            matchesQueries.insertMatchCurrentMap(
+              match_id = matchId,
+              name = map.name,
+              number = map.number?.toLong(),
+              team1_score = map.team1Score?.toLong(),
+              team2_score = map.team2Score?.toLong(),
+              is_live = map.isLive,
+            )
+          }
+          dto.toVetoModels().forEachIndexed { index, step ->
+            matchesQueries.insertMatchVeto(
+              match_id = matchId,
+              position = index.toLong(),
+              team = step.team,
+              action = step.action.name,
+              map = step.map,
+            )
+          }
 
           // Insert related data
           dto.toMapEntities(matchId).forEach { map ->
@@ -325,7 +341,6 @@ internal class MatchRepositoryImpl(
           }
         }
       }
-      vetoStore.put(matchId, dto.bans, dto.toVetoModels())
     }
   }
 
@@ -455,13 +470,4 @@ internal class MatchRepositoryImpl(
     if (team1Score == null || team2Score == null) return null
     return if (isTeam1) team1Score > team2Score else team2Score > team1Score
   }
-
-  private data class MatchDetailSlices(
-    val match: GetMatchWithFavoriteStatus?,
-    val maps: List<MatchMaps> = emptyList(),
-    val rounds: List<MatchMapRounds> = emptyList(),
-    val playerStats: List<MatchMapPlayerStats> = emptyList(),
-    val bans: List<MatchBans> = emptyList(),
-    val videos: List<MatchVideos> = emptyList(),
-  )
 }

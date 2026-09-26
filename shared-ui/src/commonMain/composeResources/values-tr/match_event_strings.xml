@@ -20,7 +20,6 @@
   <string name="match_event_dates">TARİHLER</string>
   <string name="match_event_dates_tba">Tarihler daha sonra duyurulacak</string>
   <string name="match_event_teams">TAKIMLAR</string>
-  <string name="match_event_view_at_vlr">VLR’de görüntüle</string>
   <string name="match_event_map_breakdown_unavailable">Harita dökümü kullanılamıyor.</string>
   <string name="match_event_combined_stats">Birleşik istatistikler</string>
   <string name="match_event_all_maps">Tüm haritalar</string>
@@ -69,4 +68,5 @@
   <string name="match_event_win_type_defused">İMHA EDİLDİ</string>
   <string name="match_event_win_type_time_out">SÜRE DOLDU</string>
   <string name="match_event_win_type_not_played">OYNANMADI</string>
+  <string name="match_event_match_score">Maç skoru</string>
 </resources>

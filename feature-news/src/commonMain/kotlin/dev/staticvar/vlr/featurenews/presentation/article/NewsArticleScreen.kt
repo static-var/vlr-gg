@@ -21,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
@@ -51,7 +50,6 @@ import vlr.feature_news.generated.resources.loading_article
 import vlr.feature_news.generated.resources.news_title
 import vlr.feature_news.generated.resources.no_article_text_yet
 import vlr.feature_news.generated.resources.no_article_yet
-import vlr.feature_news.generated.resources.read_on_vlr
 import vlr.feature_news.generated.resources.scroll_to_top
 
 @Composable
@@ -172,7 +170,6 @@ private fun LoadedNewsArticle(
   scrollState: LazyListState,
   modifier: Modifier = Modifier,
 ) {
-  val uriHandler = LocalUriHandler.current
   val labels = newsFormattingLabels()
   LazyColumn(
     modifier = modifier,
@@ -193,14 +190,6 @@ private fun LoadedNewsArticle(
       }
     } else if (article.contentHtml.isNotBlank() || article.blocks.isNotEmpty()) {
       newsDetailStoryItems(article = article, playback = playback, labels = labels)
-    }
-    item(key = "source") {
-      PrismButton(
-        onClick = { uriHandler.openUri(article.url) },
-        style = PrismButtonStyle.Tertiary,
-      ) {
-        Text(stringResource(Res.string.read_on_vlr))
-      }
     }
     item(key = "navigation-bar-spacer") {
       Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())

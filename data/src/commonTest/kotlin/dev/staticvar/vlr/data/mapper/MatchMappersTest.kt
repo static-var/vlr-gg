@@ -16,6 +16,7 @@ import dev.staticvar.vlr.domain.model.RoundWinType
 import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.remotesource.api.MatchPreviewDto
 import dev.staticvar.vlr.remotesource.match.AgentInfoDto
+import dev.staticvar.vlr.remotesource.match.CurrentMapDto
 import dev.staticvar.vlr.remotesource.match.EventDto
 import dev.staticvar.vlr.remotesource.match.MapDataDto
 import dev.staticvar.vlr.remotesource.match.MatchDetailsDto
@@ -23,8 +24,8 @@ import dev.staticvar.vlr.remotesource.match.MatchVideosDto
 import dev.staticvar.vlr.remotesource.match.PlayerStatsDto
 import dev.staticvar.vlr.remotesource.match.PreviousEncounterDto
 import dev.staticvar.vlr.remotesource.match.RoundInfoDto
-import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
 import dev.staticvar.vlr.remotesource.match.VetoDto
+import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -34,6 +35,20 @@ import dev.staticvar.vlr.remotesource.common.VetoAction as RemoteVetoAction
 import dev.staticvar.vlr.remotesource.match.TeamDto as DetailTeamDto
 
 class MatchMappersTest {
+
+  @Test
+  fun `current map retains nullable scores and resolves live flag by identity`() {
+    val details = MatchDetailsDto(
+      currentMap = CurrentMapDto(name = "Ascent", number = 2, scores = listOf(null, 0)),
+      matchData = listOf(MapDataDto(map = "Ascent", live = true), MapDataDto(map = "Bind")),
+    )
+    val current = requireNotNull(details.toCurrentMapModel())
+    assertEquals(true, current.isLive)
+    assertEquals(null, current.team1Score)
+    assertEquals(0, current.team2Score)
+    assertEquals(false, details.copy(matchData = listOf(MapDataDto(map = "Ascent"))).toCurrentMapModel()?.isLive)
+    assertEquals(null, details.copy(currentMap = null).toCurrentMapModel())
+  }
 
   @Test
   fun `round win type accepts server values containing spaces`() {
