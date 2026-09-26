@@ -4,12 +4,9 @@
  */
 package dev.staticvar.vlr.data.di
 
-import dev.staticvar.vlr.data.cache.CurrentMapStore
-import dev.staticvar.vlr.data.cache.CurrentMatchMapStore
+import com.russhwolf.settings.Settings
 import dev.staticvar.vlr.data.cache.LocalizedRegionLabelStore
-import dev.staticvar.vlr.data.cache.MatchVetoStore
 import dev.staticvar.vlr.data.cache.RegionLabelStore
-import dev.staticvar.vlr.data.cache.VetoStore
 import dev.staticvar.vlr.data.repository.CacheCleanupRepositoryImpl
 import dev.staticvar.vlr.data.repository.CircuitStandingsRepositoryImpl
 import dev.staticvar.vlr.data.repository.EventRepositoryImpl
@@ -51,18 +48,18 @@ fun dataModule(): Module = module {
     val languageProvider = get<AcceptLanguageProvider>()
     LocalizedRegionLabelStore(storage = get(), json = get(StorageJson), currentLanguageTag = languageProvider::currentLanguageTag)
   }
-  single<CurrentMapStore> { CurrentMatchMapStore(storage = get(), json = get(StorageJson)) }
-  single<VetoStore> { MatchVetoStore(storage = get(), json = get(StorageJson)) }
   single<CacheCleanupRepository> { CacheCleanupRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoriteScheduleRepository> { FavoriteScheduleRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoritesRepository> { FavoritesRepositoryImpl(database = get(), dispatchers = get()) }
   single<MatchRepository> {
+    get<Settings>().apply {
+      remove("match_details.current_map")
+      remove("localized_content.match_veto")
+    }
     MatchRepositoryImpl(
       matchDataSource = get(),
       database = get(),
       dispatchers = get(),
-      vetoStore = get(),
-      currentMapStore = get(),
     )
   }
   single<NewsRepository> {
