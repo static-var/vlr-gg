@@ -6,6 +6,7 @@ package dev.staticvar.vlr.featureevents.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -242,6 +243,7 @@ private fun EventOverviewList(
 ) {
   LazyColumn(
     modifier = Modifier.fillMaxSize().cardMascotViewport(),
+    contentPadding = PaddingValues(top = Prism.dimens.spacingXs),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     items(events, key = EventPreview::id) { event ->

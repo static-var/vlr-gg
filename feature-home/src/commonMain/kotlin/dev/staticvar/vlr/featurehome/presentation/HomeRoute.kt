@@ -26,6 +26,8 @@ import dev.staticvar.designsystem.component.button.PrismIconButton
 import dev.staticvar.designsystem.component.button.PrismIconButtonSize
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
+import dev.staticvar.designsystem.component.card.cardMascotEligible
+import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.carousel.PrismCarousel
 import dev.staticvar.designsystem.component.carousel.PrismCarouselVariant
 import dev.staticvar.designsystem.component.icon.PrismIconSize
@@ -180,7 +182,7 @@ private fun HomeFeedContent(
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
-    modifier = modifier,
+    modifier = modifier.cardMascotViewport(),
     contentPadding = PaddingValues(bottom = Prism.dimens.spacingL),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
   ) {
@@ -263,7 +265,9 @@ private fun PersonalizedMatches(
         matches.getOrNull(page)?.let { match ->
           MatchPreviewItem(
             matchPreview = match,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+              .padding(top = Prism.dimens.spacingXs)
+              .cardMascotEligible(topClearance = Prism.dimens.spacingM),
             onClick = { onMatchSelected(match) },
           )
         }
@@ -300,7 +304,9 @@ private fun PersonalizedEvents(
         events.getOrNull(page)?.let { event ->
           EventPreviewItem(
             eventPreview = event,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+              .padding(top = Prism.dimens.spacingXs)
+              .cardMascotEligible(topClearance = Prism.dimens.spacingM),
             onClick = { onEventSelected(event) },
           )
         }
@@ -363,7 +369,8 @@ private fun DirectFavoriteItem(
   onClick: () -> Unit,
 ) {
   PrismCard(
-    modifier = Modifier.fillMaxWidth().padding(horizontal = Prism.dimens.spacingM),
+    modifier = Modifier.fillMaxWidth().padding(horizontal = Prism.dimens.spacingM)
+      .cardMascotEligible(topClearance = Prism.dimens.spacingM),
     style = PrismCardStyle.Outlined,
     onClick = onClick,
   ) {

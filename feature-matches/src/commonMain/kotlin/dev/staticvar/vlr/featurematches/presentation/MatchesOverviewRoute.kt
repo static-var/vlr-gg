@@ -7,6 +7,7 @@ package dev.staticvar.vlr.featurematches.presentation
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -341,6 +342,7 @@ private fun MatchOverviewList(
 ) {
   LazyColumn(
     modifier = Modifier.fillMaxSize().cardMascotViewport(),
+    contentPadding = PaddingValues(top = Prism.dimens.spacingXs),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     items(matches, key = MatchPreview::id) { match ->

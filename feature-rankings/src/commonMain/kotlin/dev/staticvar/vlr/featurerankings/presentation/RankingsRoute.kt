@@ -4,8 +4,8 @@
  */
 package dev.staticvar.vlr.featurerankings.presentation
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +25,8 @@ import dev.staticvar.designsystem.component.button.PrismIconButton
 import dev.staticvar.designsystem.component.button.PrismIconButtonSize
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
+import dev.staticvar.designsystem.component.card.cardMascotEligible
+import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
@@ -52,9 +54,9 @@ import vlr.feature_rankings.generated.resources.ranking_points
 import vlr.feature_rankings.generated.resources.ranking_team_label
 import vlr.feature_rankings.generated.resources.rankings_subtitle
 import vlr.feature_rankings.generated.resources.rankings_title
-import vlr.feature_rankings.generated.resources.search_teams
 import vlr.feature_rankings.generated.resources.region_rankings_unpublished
 import vlr.feature_rankings.generated.resources.regional_rankings_unpublished
+import vlr.feature_rankings.generated.resources.search_teams
 import vlr.feature_rankings.generated.resources.top_teams_in_region
 
 @Composable
@@ -207,7 +209,7 @@ private fun RankingsContent(
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
-    modifier = modifier,
+    modifier = modifier.cardMascotViewport(),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     if (selectedRanking.teams.isNotEmpty()) {
@@ -227,7 +229,9 @@ private fun RankingsContent(
       RankingTeamItem(
         team = team,
         onTeamSelected = onTeamSelected,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().cardMascotEligible(
+          topClearance = Prism.dimens.spacingS * 2 + Prism.dimens.spacingXs,
+        ),
       )
     }
   }

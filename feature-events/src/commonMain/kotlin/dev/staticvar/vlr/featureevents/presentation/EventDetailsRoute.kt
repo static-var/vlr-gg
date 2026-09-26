@@ -221,7 +221,7 @@ internal fun EventDetailsScreen(
           EventDetailPreviewHeaderItem(
             event = preview,
             extraContentFade = transitionContentFade,
-            modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
+            modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).padding(top = Prism.dimens.spacingXs),
           )
         }
       }
@@ -446,7 +446,9 @@ private fun EventDetailsHero(
   EventDetailHeaderItem(
     event = event,
     extraContentFade = extraContentFade,
-    modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
+    modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)
+      .padding(top = Prism.dimens.spacingXs)
+      .cardMascotEligible(topClearance = Prism.dimens.spacingM),
     favoriteAction = {
       PrismButton(
         onClick = onToggleFavorite,

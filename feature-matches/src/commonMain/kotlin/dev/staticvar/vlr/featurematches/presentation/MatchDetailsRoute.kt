@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
+import dev.staticvar.designsystem.component.card.cardMascotEligible
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
@@ -213,7 +214,13 @@ internal fun MatchDetailsScreen(
         }
       }
       if (match == null) {
-        matchPreview?.let { preview -> MatchDetailPreviewHeaderItem(match = preview, extraContentFade = extraContentFade) }
+        matchPreview?.let { preview ->
+          MatchDetailPreviewHeaderItem(
+            match = preview,
+            extraContentFade = extraContentFade,
+            modifier = Modifier.padding(top = Prism.dimens.spacingXs),
+          )
+        }
       }
       when {
         (!isOnline || uiState.isLoading || uiState.isDetailLoadPending || uiState.isRefreshing) && match == null -> MatchDetailsLoading(
@@ -405,6 +412,7 @@ private fun MatchDetailsHero(
   MatchDetailHeaderItem(
     match = match,
     extraContentFade = extraContentFade,
+    modifier = Modifier.padding(top = Prism.dimens.spacingXs).cardMascotEligible(topClearance = Prism.dimens.spacingM),
     favoriteAction = {
       PrismFavoriteIcon(
         selected = match.isFavorite,
