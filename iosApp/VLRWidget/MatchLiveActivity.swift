@@ -138,11 +138,17 @@ struct MatchLiveActivityLockScreen: View {
     private func team(at index: Int) -> some View {
         let value = state.teams.indices.contains(index) ? state.teams[index] : nil
         return VStack(spacing: 7) {
-            MatchLiveActivityLogo(
-                team: value, size: 58,
-                fallbackColor: MatchLiveActivityTeamColors.color(for: index, scheme: colorScheme)
-            )
-                .accessibilityHidden(true)
+            if let image = MatchActivityLogoCache.image(
+                for: value?.img,
+                appearance: colorScheme == .dark ? .dark : .light,
+                size: .expanded
+            ) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 58, height: 58)
+                    .accessibilityHidden(true)
+            }
             Text(value?.visibleName ?? "—")
                 .accessibilityLabel(value?.name ?? "—")
                 .font(PrismWidgetFont.regular(13, relativeTo: .caption))
@@ -151,7 +157,7 @@ struct MatchLiveActivityLockScreen: View {
                 .minimumScaleFactor(0.75)
                 .multilineTextAlignment(.center)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
@@ -244,7 +250,6 @@ private enum MatchLiveActivityTeamColors {
 private struct MatchLiveActivityLogo: View {
     let team: MatchActivityAttributes.ContentState.Team?
     let size: CGFloat
-    var fallbackColor: Color? = nil
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
@@ -260,7 +265,7 @@ private struct MatchLiveActivityLogo: View {
             } else {
                 Text(team?.logoInitials ?? "—")
                     .font(PrismWidgetFont.regular(size * 0.45, relativeTo: .headline))
-                    .foregroundStyle(fallbackColor ?? (colorScheme == .dark ? PrismWidgetPalette.dark.accent : PrismWidgetPalette.light.accent))
+                    .foregroundStyle(colorScheme == .dark ? PrismWidgetPalette.dark.accent : PrismWidgetPalette.light.accent)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }
@@ -300,22 +305,6 @@ private struct MatchLiveActivityScorePair: View {
     }
 }
 
-/// Formats match scores according to the match phase and spoiler preference.
-@available(iOS 16.1, *)
-struct MatchLiveActivityScores {
-    let state: MatchActivityAttributes.ContentState
-    let hidden: Bool
-
-    var primaryLeft: String { display(primary, at: 0) }
-    var primaryRight: String { display(primary, at: 1) }
-    var series: String { "\(display(seriesScores, at: 0)) – \(display(seriesScores, at: 1))" }
-
-    private var seriesScores: [Int?] { state.teams.map(\.score) }
-    /// Uses map scores during play and series scores once the match finishes.
-    /// Falls back to series scores when current map data is unavailable.
-    private var primary: [Int?] {
-        state.terminal ? seriesScores : state.current_map?.scores ?? seriesScores
-    }
 private struct MatchLiveActivityRollingScore: View {
     let value: String
     let height: CGFloat
@@ -332,6 +321,22 @@ private struct MatchLiveActivityRollingScore: View {
     }
 }
 
+/// Formats match scores according to the match phase and spoiler preference.
+@available(iOS 16.1, *)
+struct MatchLiveActivityScores {
+    let state: MatchActivityAttributes.ContentState
+    let hidden: Bool
+
+    var primaryLeft: String { display(primary, at: 0) }
+    var primaryRight: String { display(primary, at: 1) }
+    var series: String { "\(display(seriesScores, at: 0)) – \(display(seriesScores, at: 1))" }
+
+    private var seriesScores: [Int?] { state.teams.map(\.score) }
+    /// Uses map scores during play and series scores once the match finishes.
+    /// Falls back to series scores when current map data is unavailable.
+    private var primary: [Int?] {
+        state.terminal ? seriesScores : state.current_map?.scores ?? seriesScores
+    }
 
     private func display(_ values: [Int?], at index: Int) -> String {
         guard !hidden, values.indices.contains(index), let value = values[index] else { return "—" }
