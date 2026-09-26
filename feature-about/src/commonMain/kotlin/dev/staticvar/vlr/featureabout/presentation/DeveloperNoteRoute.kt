@@ -124,7 +124,7 @@ internal fun DeveloperNoteScreen(
         ).forEach { paragraph ->
           Text(
             text = stringResource(paragraph),
-            style = Prism.typography.bodyLarge.copy(fontSize = 17.sp, lineHeight = 25.sp),
+            style = Prism.typography.bodyLarge.copy(fontSize = 15.sp, lineHeight = 22.sp),
             color = Prism.color.bodyColor,
           )
         }
