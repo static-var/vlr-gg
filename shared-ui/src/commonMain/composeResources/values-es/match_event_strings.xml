@@ -68,4 +68,7 @@
   <string name="match_event_win_type_defused">DESACTIVADA</string>
   <string name="match_event_win_type_time_out">TIEMPO AGOTADO</string>
   <string name="match_event_win_type_not_played">NO JUGADO</string>
+  <string name="match_event_map_number">Mapa %1$d</string>
+  <string name="match_event_up_next">A continuación</string>
+  <string name="match_event_round_score">Marcador de rondas</string>
 </resources>
