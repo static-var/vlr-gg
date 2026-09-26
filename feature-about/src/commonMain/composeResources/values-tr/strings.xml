@@ -159,11 +159,11 @@
     <string name="release_1_0_6_search_description">Mevcut sıralamada yer almayanlar dahil takımları Sıralama’dan arayın ve profillerini açın.</string>
     <string name="note_title">Geliştiricilerden bir not</string>
     <string name="note_settings_description">Shreyansh ve Akhil’den bir teşekkür.</string>
-    <string name="note_intro">Biz Shreyansh ve Akhil. VALORANT beş yılı aşkın süredir hayatımızın bir parçası. Her şey, farklı şehirlerde yaşayan arkadaşlarımızla vakit geçirmenin bir yolu olarak başladı.</string>
+    <string name="note_intro">Her şey farklı şehirlerdeki arkadaşlarla oynanan birkaç VALORANT maçıyla başladı. Beş yılı aşkın bir süre sonra oyun hâlâ hayatımızın önemli bir parçası.</string>
     <string name="note_about">Maçlar arasında bir gün, işimizde edindiğimiz becerilerle sevdiğimiz ve takip ettiğimiz bir oyun için uygulama yapmaya karar verdik.</string>
     <string name="note_story">Bu yan projeye başlayalı dört yılı geçti. Başka hayranların da kullandığı bir şeye dönüştüğünü görmek hâlâ biraz inanılmaz geliyor. Bu uygulamayı seninle paylaşabildiğimiz için çok mutluyuz.</string>
     <string name="note_review">Val Esports oyunu takip etmene yardımcı olduysa dürüst bir yorum, diğer hayranların da uygulamayı bulmasına yardımcı olur.</string>
-    <string name="note_testflight">Val Esports’u TestFlight’ta denediğin için teşekkürler. Geri bildirimlerin, uygulamayı yayınlamadan önce geliştirmemize yardımcı oluyor.</string>
+    <string name="note_thanks">Val Esports’u denediğin için teşekkürler. Geri bildirimlerin uygulamayı geliştirmemize yardımcı oluyor.</string>
     <string name="note_contact">Bir fikrin mi var, bir hata mı fark ettin, yoksa sadece merhaba mı demek istiyorsun? Senden haber almak bizi mutlu eder.</string>
     <string name="note_signoff">Görüşmek üzere,</string>
     <string name="note_write">Bize yaz</string>

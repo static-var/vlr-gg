@@ -24,7 +24,7 @@ internal fun DeveloperNotePreview(@PreviewParameter(PrismPreviewProvider::class)
 
 @PrismPreview
 @Composable
-internal fun DeveloperNoteTestFlightPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+internal fun DeveloperNoteContactPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     DeveloperNoteScreen(onBack = {}, onContact = {}, onRate = null, reviewLabel = "")
   }

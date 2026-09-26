@@ -161,11 +161,11 @@
     <string name="release_1_0_6_search_description">Recherchez des équipes depuis le classement, y compris celles qui n’y figurent pas actuellement, puis ouvrez leur profil.</string>
     <string name="note_title">Un mot des développeurs</string>
     <string name="note_settings_description">Un merci de Shreyansh et Akhil.</string>
-    <string name="note_intro">Nous sommes Shreyansh et Akhil. VALORANT fait partie de nos vies depuis plus de cinq ans. Au départ, c’était une façon de passer du temps avec des amis qui vivaient dans différentes villes.</string>
+    <string name="note_intro">Tout a commencé avec des amis dans différentes villes et quelques parties de VALORANT. Plus de cinq ans après, le jeu occupe toujours une grande place dans nos vies.</string>
     <string name="note_about">Entre deux parties, nous avons décidé de mettre nos compétences professionnelles au service d’une application pour un jeu que nous aimons et suivons de près.</string>
     <string name="note_story">Ce projet personnel a commencé il y a plus de quatre ans. Le voir devenir une application utilisée par d’autres fans nous semble encore un peu irréel. Nous sommes vraiment heureux de pouvoir la partager avec vous.</string>
     <string name="note_review">Si Val Esports vous aide à suivre le jeu, un avis sincère aide aussi d’autres fans à le découvrir.</string>
-    <string name="note_testflight">Merci d’essayer Val Esports sur TestFlight. Vos retours nous aident à l’améliorer avant son lancement.</string>
+    <string name="note_thanks">Merci d’essayer Val Esports. Vos retours nous aident à l’améliorer.</string>
     <string name="note_contact">Une idée, un bug repéré ou simplement envie de dire bonjour ? Nous serions ravis de vous lire.</string>
     <string name="note_signoff">À bientôt,</string>
     <string name="note_write">Nous écrire</string>

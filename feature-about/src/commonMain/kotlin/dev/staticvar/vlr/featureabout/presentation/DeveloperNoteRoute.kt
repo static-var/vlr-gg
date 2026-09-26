@@ -55,7 +55,7 @@ import vlr.feature_about.generated.resources.note_review
 import vlr.feature_about.generated.resources.note_signoff
 import vlr.feature_about.generated.resources.note_store_unavailable
 import vlr.feature_about.generated.resources.note_story
-import vlr.feature_about.generated.resources.note_testflight
+import vlr.feature_about.generated.resources.note_thanks
 import vlr.feature_about.generated.resources.note_title
 import vlr.feature_about.generated.resources.note_write
 import vlr.feature_about.generated.resources.shreyansh_lodha
@@ -120,7 +120,7 @@ internal fun DeveloperNoteScreen(
           Res.string.note_intro,
           Res.string.note_about,
           Res.string.note_story,
-          if (onRate == null) Res.string.note_testflight else Res.string.note_review,
+          if (onRate == null) Res.string.note_thanks else Res.string.note_review,
           Res.string.note_contact,
         ).forEach { paragraph ->
           Text(
