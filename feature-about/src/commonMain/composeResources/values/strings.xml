@@ -158,16 +158,17 @@
     <string name="release_1_0_6_stability_description">Move between screens more smoothly, with stability fixes including a crash when returning to Home.</string>
     <string name="release_1_0_6_search_title">Find your team</string>
     <string name="release_1_0_6_search_description">Search for teams from Rankings, including teams outside the current rankings, and open their profiles.</string>
-    <string name="note_title">A note from Shreyansh</string>
-    <string name="note_settings_description">A thank-you from the developer.</string>
-    <string name="note_intro">Thanks for making Val Esports part of the way you follow VALORANT.</string>
-    <string name="note_about">I’m Shreyansh, the developer behind Val Esports. I build the app to make it easier to follow the teams, players, and matches you care about.</string>
-    <string name="note_review">If the app has helped you catch a match or keep up with your favorite team, consider leaving an honest review. It helps other fans find Val Esports.</string>
-    <string name="note_testflight">Thanks for being here while Val Esports is in TestFlight. Your feedback helps me find what needs work before the app reaches more fans.</string>
-    <string name="note_contact">Have an idea, spotted a bug, or just want to say hello? I’d love to hear from you.</string>
-    <string name="note_signoff">Thanks for being part of it,</string>
-    <string name="note_write">Write to Shreyansh</string>
+    <string name="note_title">A note from the developers</string>
+    <string name="note_settings_description">A thank-you from Shreyansh and Akhil.</string>
+    <string name="note_intro">We're Shreyansh and Akhil. VALORANT has been part of our lives for over five years. It started as a way to spend time with friends scattered across different cities.</string>
+    <string name="note_about">Somewhere between matches, we decided to put the skills from our day jobs into building an app for a game we love and follow.</string>
+    <string name="note_review">If Val Esports has helped you follow the game, an honest review helps other fans find it too.</string>
+    <string name="note_testflight">Thanks for trying Val Esports on TestFlight. Your feedback helps us make it better before launch.</string>
+    <string name="note_contact">Have an idea, spotted a bug, or just want to say hello? We'd love to hear from you.</string>
+    <string name="note_signoff">See you around,</string>
+    <string name="note_write">Write to us</string>
     <string name="note_rate_google_play">Rate on Google Play</string>
     <string name="note_rate_app_store">Rate on the App Store</string>
     <string name="note_store_unavailable">Couldn’t open the store. Please try again.</string>
+    <string name="note_story">That side project began over four years ago. Seeing it become something other fans use still feels a little unreal. We're so glad we get to share it with you.</string>
 </resources>
