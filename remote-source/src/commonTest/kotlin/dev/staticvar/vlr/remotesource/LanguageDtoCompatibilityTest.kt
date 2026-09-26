@@ -21,6 +21,22 @@ class LanguageDtoCompatibilityTest {
   private val json = testJson()
 
   @Test
+  fun current_map_decodes_nullable_scores_and_explicit_live_state() {
+    val match = json.decodeFromString<MatchDetailsDto>(
+      """{
+        "current_map":{"name":"Ascent","number":2,"scores":[0,null]},
+        "data":[{"map":"Ascent","live":true,"winner":null,"teams":[{"name":"Alpha","score":null}]}]
+      }""",
+    )
+    assertEquals("Ascent", match.currentMap?.name)
+    assertEquals(2, match.currentMap?.number)
+    assertEquals(listOf(0, null), match.currentMap?.scores)
+    assertEquals(true, match.matchData.single().live)
+    assertNull(match.matchData.single().teams.single().score)
+    assertNull(json.decodeFromString<MatchDetailsDto>("{}").currentMap)
+  }
+
+  @Test
   fun localized_fields_decode_without_changing_canonical_values() {
     val match = json.decodeFromString<MatchDetailsDto>(
       """{

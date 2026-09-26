@@ -28,7 +28,15 @@ data class MatchDetailsDto(
   @SerialName("veto") val veto: List<VetoDto> = emptyList(),
   @SerialName("videos") val videos: MatchVideosDto = MatchVideosDto(),
   @SerialName("data") val matchData: List<MapDataDto> = emptyList(),
+  @SerialName("current_map") val currentMap: CurrentMapDto? = null,
   @SerialName("map_count") val mapCount: Int = 0,
+)
+
+@Serializable
+data class CurrentMapDto(
+  @SerialName("name") val name: String = "",
+  @SerialName("number") val number: Int? = null,
+  @SerialName("scores") val scores: List<Int?> = emptyList(),
 )
 
 @Serializable
@@ -71,6 +79,7 @@ data class VideoReferenceDto(@SerialName("name") val name: String = "", @SerialN
 @Serializable
 data class MapDataDto(
   @SerialName("map") val map: String = "",
+  @SerialName("live") val live: Boolean = false,
   @SerialName("members") val members: List<PlayerStatsDto> = emptyList(),
   @SerialName("teams") val teams: List<TeamDto> = emptyList(),
   @SerialName("rounds") val rounds: List<RoundInfoDto> = emptyList(),

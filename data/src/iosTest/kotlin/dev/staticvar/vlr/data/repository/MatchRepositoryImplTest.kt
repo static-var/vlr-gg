@@ -8,16 +8,19 @@ import app.cash.sqldelight.driver.native.NativeSqliteDriver
 import app.cash.sqldelight.driver.native.inMemoryDriver
 import app.cash.turbine.test
 import com.russhwolf.settings.MapSettings
+import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.data.cache.CurrentMatchMapStore
 import dev.staticvar.vlr.data.cache.MatchVetoStore
 import dev.staticvar.vlr.data.cache.VetoStore
+import dev.staticvar.vlr.domain.model.CurrentMatchMap
+import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.VetoAction
-import dev.staticvar.vlr.core.coroutines.DispatcherProvider
-import dev.staticvar.vlr.domain.model.MatchFavoriteSource
-import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.common.MatchStatus
 import dev.staticvar.vlr.remotesource.match.AgentInfoDto
+import dev.staticvar.vlr.remotesource.match.CurrentMapDto
 import dev.staticvar.vlr.remotesource.match.EventDto
 import dev.staticvar.vlr.remotesource.match.MapDataDto
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
@@ -28,27 +31,27 @@ import dev.staticvar.vlr.remotesource.match.PlayerStatsDto
 import dev.staticvar.vlr.remotesource.match.PreviousEncounterDto
 import dev.staticvar.vlr.remotesource.match.RoundInfoDto
 import dev.staticvar.vlr.remotesource.match.TeamDto
-import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
 import dev.staticvar.vlr.remotesource.match.VetoDto
-import dev.staticvar.vlr.remotesource.common.VetoAction as RemoteVetoAction
-import kotlinx.serialization.json.Json
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
+import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import dev.staticvar.vlr.remotesource.common.VetoAction as RemoteVetoAction
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MatchRepositoryImplTest {
@@ -77,7 +80,41 @@ class MatchRepositoryImplTest {
       database = database,
       dispatchers = dispatcherProvider,
       vetoStore = vetoStore,
+      currentMapStore = CurrentMatchMapStore(vetoSettings, json),
     )
+  }
+
+  @Test
+  fun currentMapSurvivesRecreationAndClearsWhenNoLongerReported() = runTest(dispatcher) {
+    val live = MatchDetailsDto(
+      event = EventDto(id = "event", status = MatchStatus.LIVE),
+      teams = listOf(TeamDto(name = "Alpha", score = 1), TeamDto(name = "Beta", score = 0)),
+      currentMap = CurrentMapDto(name = "Ascent", number = 2, scores = listOf(0, 3)),
+      matchData = listOf(MapDataDto(map = "Bind"), MapDataDto(map = "Ascent", live = true)),
+    )
+    dataSource.detailResults["match1"] = Result.success(live)
+    assertTrue(repository.refreshMatchDetails("match1").isSuccess)
+    val expected = CurrentMatchMap("Ascent", 2, 0, 3, true)
+    val details = requireNotNull(repository.getMatchDetails("match1").first())
+    assertEquals(expected, details.currentMap)
+    assertEquals(listOf(1, 0), details.teams.map { it.score })
+
+    val restored = MatchRepositoryImpl(
+      matchDataSource = dataSource,
+      database = database,
+      dispatchers = dispatcherProvider,
+      currentMapStore = CurrentMatchMapStore(vetoSettings, json),
+    )
+    assertEquals(expected, requireNotNull(restored.getMatchDetails("match1").first()).currentMap)
+
+    dataSource.detailResults["match1"] = Result.success(live.copy(currentMap = null))
+    assertTrue(restored.refreshMatchDetails("match1").isSuccess)
+    assertEquals(null, requireNotNull(restored.getMatchDetails("match1").first()).currentMap)
+    assertEquals(null, CurrentMatchMapStore(vetoSettings, json).get("match1"))
+
+    dataSource.detailResults["match1"] = Result.success(live.copy(event = live.event.copy(status = MatchStatus.COMPLETED)))
+    assertTrue(restored.refreshMatchDetails("match1").isSuccess)
+    assertEquals(null, requireNotNull(restored.getMatchDetails("match1").first()).currentMap)
   }
 
   @AfterTest

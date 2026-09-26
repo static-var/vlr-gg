@@ -16,10 +16,13 @@ import dev.staticvar.vlr.data.MatchMaps
 import dev.staticvar.vlr.data.MatchPreviousEncounters
 import dev.staticvar.vlr.data.MatchVideos
 import dev.staticvar.vlr.data.Matches
+import dev.staticvar.vlr.data.cache.CurrentMapStore
+import dev.staticvar.vlr.data.cache.EmptyCurrentMapStore
 import dev.staticvar.vlr.data.cache.EmptyVetoStore
 import dev.staticvar.vlr.data.cache.VetoStore
 import dev.staticvar.vlr.data.mapper.aggregateMatchDetails
 import dev.staticvar.vlr.data.mapper.toBanEntities
+import dev.staticvar.vlr.data.mapper.toCurrentMapModel
 import dev.staticvar.vlr.data.mapper.toDomain
 import dev.staticvar.vlr.data.mapper.toEntity
 import dev.staticvar.vlr.data.mapper.toMapEntities
@@ -28,8 +31,8 @@ import dev.staticvar.vlr.data.mapper.toOverviewEntity
 import dev.staticvar.vlr.data.mapper.toPlayerStatEntities
 import dev.staticvar.vlr.data.mapper.toPreviousEncounterEntities
 import dev.staticvar.vlr.data.mapper.toRoundEntities
-import dev.staticvar.vlr.data.mapper.toVideoEntities
 import dev.staticvar.vlr.data.mapper.toVetoModels
+import dev.staticvar.vlr.data.mapper.toVideoEntities
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
@@ -37,8 +40,8 @@ import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.MatchRepository
-import dev.staticvar.vlr.localsource.database.GetMatchWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetMatchFavoriteReasons
+import dev.staticvar.vlr.localsource.database.GetMatchWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetMatchesWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
@@ -57,6 +60,7 @@ internal class MatchRepositoryImpl(
   private val database: VlrDatabase,
   private val dispatchers: DispatcherProvider,
   private val vetoStore: VetoStore = EmptyVetoStore,
+  private val currentMapStore: CurrentMapStore = EmptyCurrentMapStore,
 ) : MatchRepository {
 
   private val matchesQueries = database.matchesQueries
@@ -144,6 +148,12 @@ internal class MatchRepositoryImpl(
           veto = vetoStore.get(matchId, slices.bans.map { it.ban_value }),
         )
       }
+    }.combine(currentMapStore.version) { details, _ ->
+      details?.copy(
+        currentMap = currentMapStore.get(matchId).takeIf {
+          details.event.status?.uppercase() in setOf("LIVE", "ONGOING")
+        },
+      )
     }.combine(observeFavoriteReasons(matchId = matchId)) { match, reasonsByMatch ->
       match?.let {
         val reasons = reasonsByMatch[it.id].orEmpty()
@@ -326,6 +336,7 @@ internal class MatchRepositoryImpl(
         }
       }
       vetoStore.put(matchId, dto.bans, dto.toVetoModels())
+      currentMapStore.put(matchId, dto.toCurrentMapModel())
     }
   }
 
