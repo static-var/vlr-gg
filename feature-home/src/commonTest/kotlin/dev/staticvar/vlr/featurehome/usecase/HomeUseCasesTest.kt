@@ -46,7 +46,7 @@ import kotlin.time.Instant
 
 class HomeUseCasesTest {
   @Test
-  fun homeShowsRecentMatchesAndCurrentEventsChronologicallyInBothSections() = runTest {
+  fun homeGroupsRecentMatchesByStatusAndOrdersCurrentEventsChronologicallyInBothSections() = runTest {
     val directFavorites = DirectFavoriteSnapshot(
       teams = listOf(DirectFavorite.Team("team-1", "Alpha", "")),
       players = listOf(DirectFavorite.Player("player-1", "Player", "")),
@@ -90,12 +90,12 @@ class HomeUseCasesTest {
     )().first()
 
     assertTrue(feed.hasDirectFavorites)
-    assertEquals(listOf("early", "live", "indirect", "no-date"), feed.personalizedMatches.map { it.id })
+    assertEquals(listOf("live", "early", "indirect", "no-date"), feed.personalizedMatches.map { it.id })
     assertEquals(
       listOf("active-from-done", "early-event", "ongoing", "related-event"),
       feed.personalizedEvents.map { it.id },
     )
-    assertEquals(listOf("early", "live"), feed.directFavorites.matches.map { it.id })
+    assertEquals(listOf("live", "early"), feed.directFavorites.matches.map { it.id })
     assertEquals(listOf("early-event", "ongoing"), feed.directFavorites.events.map { it.id })
     assertEquals(directFavorites.teams, feed.directFavorites.teams)
     assertEquals(directFavorites.players, feed.directFavorites.players)
@@ -104,7 +104,7 @@ class HomeUseCasesTest {
   }
 
   @Test
-  fun serverFavoritesDriveHomeRailInServerOrderIncludingRecentResult() = runTest {
+  fun serverFavoritesDriveHomeRailWithCompletedMatchesBeforeLiveAndUpcoming() = runTest {
     val favorites = DirectFavoriteSnapshot(matches = listOf(DirectFavorite.Match("done", "Done", "")))
     val serverMatches = listOf(
       match("live", MatchStatus.LIVE, "2026-09-25T12:00:00Z", "event", personalized = false),
@@ -119,8 +119,41 @@ class HomeUseCasesTest {
       dispatchers = TestDispatcherProvider(StandardTestDispatcher(testScheduler)),
     )().first()
 
-    assertEquals(listOf("live", "upcoming", "done"), feed.personalizedMatches.map { it.id })
+    assertEquals(listOf("done", "live", "upcoming"), feed.personalizedMatches.map { it.id })
     assertEquals(listOf("done"), feed.personalizedMatches.filter { it.isDirectFavorite }.map { it.id })
+  }
+
+  @Test
+  fun scrambledServerMatchesSortByStatusThenTimeWithMissingTimesLastAndSelectFirstLive() {
+    val serverMatches = listOf(
+      match("upcoming-undated", MatchStatus.UPCOMING, null, "event"),
+      match("live-undated", MatchStatus.LIVE, null, "event"),
+      match("completed-later", MatchStatus.COMPLETED, "2026-09-20T11:00:00Z", "event"),
+      match("upcoming-later", MatchStatus.UPCOMING, "2026-09-21T12:00:00Z", "event"),
+      match("live-b", MatchStatus.LIVE, "2026-09-20T10:00:00Z", "event"),
+      match("completed-undated", MatchStatus.COMPLETED, null, "event"),
+      match("live-old", MatchStatus.LIVE, "2026-09-18T12:00:00Z", "event"),
+      match("upcoming-earlier", MatchStatus.UPCOMING, "2026-09-20T09:00:00Z", "event"),
+      match("completed-old", MatchStatus.COMPLETED, "2026-09-01T12:00:00Z", "event"),
+      match("live-a", MatchStatus.LIVE, "2026-09-20T10:00:00Z", "event"),
+    )
+    val feed = buildHomeFeed(
+      directFavorites = DirectFavoriteSnapshot(events = listOf(DirectFavorite.Event("event", "Event", ""))),
+      matches = emptyList(),
+      events = emptyList(),
+      now = Instant.parse("2026-09-20T12:00:00Z"),
+      serverMatches = serverMatches,
+    )
+
+    assertEquals(
+      listOf(
+        "completed-old", "completed-later", "completed-undated",
+        "live-old", "live-a", "live-b", "live-undated",
+        "upcoming-earlier", "upcoming-later", "upcoming-undated",
+      ),
+      feed.personalizedMatches.map { it.id },
+    )
+    assertEquals(3, initialHomeMatchPage(feed.personalizedMatches))
   }
 
   @Test
@@ -185,7 +218,7 @@ class HomeUseCasesTest {
       now = Instant.parse("2026-09-20T12:00:00Z"),
     )
 
-    val expected = listOf("old-live", "boundary", "live", "future", "undated-upcoming")
+    val expected = listOf("boundary", "old-live", "live", "future", "undated-upcoming")
     assertEquals(expected, feed.personalizedMatches.map { it.id })
     assertEquals(expected, feed.directFavorites.matches.map { it.id })
   }

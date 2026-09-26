@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -247,6 +248,11 @@ private fun PersonalizedMatches(
         initialPage = initialHomeMatchPage(matches),
         pageCount = { matches.size },
       )
+      val firstLivePage = matches.indexOfFirst { it.status == MatchStatus.LIVE }
+      val firstLiveMatchId = matches.getOrNull(firstLivePage)?.id
+      LaunchedEffect(firstLiveMatchId) {
+        if (firstLiveMatchId != null) pagerState.scrollToPage(firstLivePage)
+      }
       PrismCarousel(
         itemCount = matches.size,
         pagerState = pagerState,

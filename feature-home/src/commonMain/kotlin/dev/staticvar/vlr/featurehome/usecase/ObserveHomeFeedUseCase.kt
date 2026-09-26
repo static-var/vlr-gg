@@ -53,7 +53,7 @@ internal fun buildHomeFeed(
   val remoteMatches = serverMatches?.map { match -> match.withFavoriteReasons(directFavorites) }
   val relatedMatches = remoteMatches ?: matches.filter { it.favoriteReasons.isNotEmpty() }
   val personalizedMatches = if (remoteMatches != null) {
-    remoteMatches.distinctBy(MatchPreview::id)
+    remoteMatches.distinctBy(MatchPreview::id).sortedWith(homeMatchComparator)
   } else {
     relatedMatches.asSequence()
       .filter { it.isVisibleSince(earliestMatchTime) }
@@ -113,9 +113,19 @@ private val EventPreview.isCurrent: Boolean
   get() = status == EventStatus.ONGOING || status == EventStatus.UPCOMING
 
 private val homeMatchComparator: Comparator<MatchPreview> = Comparator { first, second ->
-  compareNullableAscending(first.time.asEpochMillis(), second.time.asEpochMillis())
+  first.status.homeSortOrder.compareTo(second.status.homeSortOrder)
+    .takeUnless { it == 0 }
+    ?: compareNullableAscending(first.time.asEpochMillis(), second.time.asEpochMillis())
     .takeUnless { it == 0 } ?: first.id.compareTo(second.id)
 }
+
+private val MatchStatus.homeSortOrder: Int
+  get() = when (this) {
+    MatchStatus.COMPLETED -> 0
+    MatchStatus.LIVE -> 1
+    MatchStatus.UPCOMING -> 2
+    MatchStatus.UNKNOWN -> 3
+  }
 
 private fun String?.asEpochMillis(): Long? = this
   ?.takeIf(String::isNotBlank)
