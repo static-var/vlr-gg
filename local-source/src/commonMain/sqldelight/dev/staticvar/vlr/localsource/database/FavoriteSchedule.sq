@@ -2,16 +2,17 @@ getFavoriteSchedule:
 WITH favorite_team_ids(team_id) AS (
     SELECT team_id
     FROM favorite_teams
-    WHERE team_id != ''
+    WHERE active = 1 AND team_id != ''
     UNION
     SELECT players.current_team_id
     FROM players
-    INNER JOIN favorite_players ON favorite_players.player_id = players.id
+    INNER JOIN favorite_players ON favorite_players.player_id = players.id AND favorite_players.active = 1
     WHERE players.current_team_id IS NOT NULL AND players.current_team_id != ''
 ),
 favorite_match_ids(match_id) AS (
     SELECT match_id
     FROM favorite_matches
+    WHERE active = 1
     UNION
     SELECT matches.id
     FROM matches
@@ -23,7 +24,7 @@ favorite_match_ids(match_id) AS (
     ) OR EXISTS (
         SELECT 1
         FROM favorite_events
-        WHERE favorite_events.event_id = matches.event_id
+        WHERE favorite_events.active = 1 AND favorite_events.event_id = matches.event_id
     )
     UNION
     SELECT match_overview.id
@@ -36,7 +37,7 @@ favorite_match_ids(match_id) AS (
     ) OR EXISTS (
         SELECT 1
         FROM favorite_events
-        WHERE favorite_events.event_id = match_overview.event_id
+        WHERE favorite_events.active = 1 AND favorite_events.event_id = match_overview.event_id
     )
     UNION
     SELECT team_upcoming_matches.match_id
@@ -50,7 +51,7 @@ favorite_match_ids(match_id) AS (
     UNION
     SELECT event_matches.match_id
     FROM event_matches
-    INNER JOIN favorite_events ON favorite_events.event_id = event_matches.event_id
+    INNER JOIN favorite_events ON favorite_events.event_id = event_matches.event_id AND favorite_events.active = 1
 ),
 raw_candidates(
     id, event, team1, team2, time_value, source_status, score1, score2,

@@ -1,0 +1,93 @@
+getFavoriteTopicRecords:
+SELECT 'TEAM' AS entity_type, favorite.team_id AS id, favorite.active,
+       favorite.notification_topic, favorite.topic_synced, NULL AS current_team_id
+FROM favorite_teams AS favorite
+UNION ALL
+SELECT 'EVENT' AS entity_type, favorite.event_id AS id, favorite.active,
+       favorite.notification_topic, favorite.topic_synced, NULL AS current_team_id
+FROM favorite_events AS favorite
+UNION ALL
+SELECT 'MATCH' AS entity_type, favorite.match_id AS id, favorite.active,
+       favorite.notification_topic, favorite.topic_synced, NULL AS current_team_id
+FROM favorite_matches AS favorite
+UNION ALL
+SELECT 'PLAYER' AS entity_type, favorite.player_id AS id, favorite.active,
+       favorite.notification_topic, favorite.topic_synced, player.current_team_id
+FROM favorite_players AS favorite
+LEFT JOIN players AS player ON player.id = favorite.player_id;
+
+setTeamTopic:
+UPDATE favorite_teams SET notification_topic = :topic, topic_synced = :synced WHERE team_id = :id;
+
+invalidateTeamTopicAcknowledgements:
+UPDATE favorite_teams SET topic_synced = 0;
+
+acknowledgeTeamTopic:
+UPDATE favorite_teams SET topic_synced = 1 WHERE notification_topic = :topic;
+
+clearTeamTopic:
+UPDATE favorite_teams SET notification_topic = NULL, topic_synced = 0 WHERE notification_topic = :topic;
+
+pruneInactiveTeamFavorites:
+DELETE FROM favorite_teams WHERE active = 0 AND notification_topic IS NULL;
+
+setEventTopic:
+UPDATE favorite_events SET notification_topic = :topic, topic_synced = :synced WHERE event_id = :id;
+
+invalidateEventTopicAcknowledgements:
+UPDATE favorite_events SET topic_synced = 0;
+
+acknowledgeEventTopic:
+UPDATE favorite_events SET topic_synced = 1 WHERE notification_topic = :topic;
+
+clearEventTopic:
+UPDATE favorite_events SET notification_topic = NULL, topic_synced = 0 WHERE notification_topic = :topic;
+
+pruneInactiveEventFavorites:
+DELETE FROM favorite_events WHERE active = 0 AND notification_topic IS NULL;
+
+setMatchTopic:
+UPDATE favorite_matches SET notification_topic = :topic, topic_synced = :synced WHERE match_id = :id;
+
+invalidateMatchTopicAcknowledgements:
+UPDATE favorite_matches SET topic_synced = 0;
+
+acknowledgeMatchTopic:
+UPDATE favorite_matches SET topic_synced = 1 WHERE notification_topic = :topic;
+
+clearMatchTopic:
+UPDATE favorite_matches SET notification_topic = NULL, topic_synced = 0 WHERE notification_topic = :topic;
+
+pruneInactiveMatchFavorites:
+DELETE FROM favorite_matches WHERE active = 0 AND notification_topic IS NULL;
+
+setPlayerTopic:
+UPDATE favorite_players SET notification_topic = :topic, topic_synced = :synced WHERE player_id = :id;
+
+invalidatePlayerTopicAcknowledgements:
+UPDATE favorite_players SET topic_synced = 0;
+
+acknowledgePlayerTopic:
+UPDATE favorite_players SET topic_synced = 1 WHERE notification_topic = :topic;
+
+clearPlayerTopic:
+UPDATE favorite_players SET notification_topic = NULL, topic_synced = 0 WHERE notification_topic = :topic;
+
+pruneInactivePlayerFavorites:
+DELETE FROM favorite_players WHERE active = 0 AND notification_topic IS NULL;
+
+importTeamTopic:
+INSERT OR REPLACE INTO favorite_teams(team_id, active, notification_topic, topic_synced)
+VALUES (:id, COALESCE((SELECT active FROM favorite_teams WHERE team_id = :id), 0), :topic, 1);
+
+importEventTopic:
+INSERT OR REPLACE INTO favorite_events(event_id, active, notification_topic, topic_synced)
+VALUES (:id, COALESCE((SELECT active FROM favorite_events WHERE event_id = :id), 0), :topic, 1);
+
+importMatchTopic:
+INSERT OR REPLACE INTO favorite_matches(match_id, active, notification_topic, topic_synced)
+VALUES (:id, COALESCE((SELECT active FROM favorite_matches WHERE match_id = :id), 0), :topic, 1);
+
+importPlayerTopic:
+INSERT OR REPLACE INTO favorite_players(player_id, active, notification_topic, topic_synced)
+VALUES (:id, COALESCE((SELECT active FROM favorite_players WHERE player_id = :id), 0), :topic, 1);

@@ -49,7 +49,7 @@ class MatchQueriesTest {
     driver.execute(null, "DROP TABLE match_current_map", 0)
     driver.execute(null, "DROP TABLE match_veto", 0)
 
-    MigratingDatabaseSchema.migrate(driver, 2, VlrDatabase.Schema.version)
+    MigratingDatabaseSchema.migrate(driver, 2, 3)
 
     assertEquals("Team A", database.matchesQueries.getMatchWithFavoriteStatus("match1").executeAsOne().team1_name)
     assertEquals(1L, database.matchesQueries.isFavoriteMatch("match1").executeAsOne())
@@ -65,6 +65,39 @@ class MatchQueriesTest {
     val veto = database.matchesQueries.getMatchVeto("match1").executeAsList()
     assertEquals(listOf("Bind", "Ascent"), veto.map { it.map })
     assertEquals(listOf("Team A", null), veto.map { it.team })
+  }
+
+  @Test
+  fun `version three upgrade preserves favorites and adds durable topic state`() {
+    database.matchesQueries.insertMatch(createTestMatch(id = "match1"))
+    database.matchesQueries.insertMatchCurrentMap("match1", "Ascent", 2, null, 0, true)
+    val legacyFavorites = listOf(
+      Triple("favorite_teams", "team_id", "team1"),
+      Triple("favorite_events", "event_id", "event1"),
+      Triple("favorite_matches", "match_id", "match1"),
+      Triple("favorite_players", "player_id", "player1"),
+    )
+    legacyFavorites.forEach { (table, idColumn, id) ->
+      driver.execute(null, "DROP TABLE $table", 0)
+      driver.execute(null, "CREATE TABLE $table ($idColumn TEXT NOT NULL PRIMARY KEY)", 0)
+      driver.execute(null, "INSERT INTO $table ($idColumn) VALUES ('$id')", 0)
+    }
+
+    MigratingDatabaseSchema.migrate(driver, 3, 4)
+
+    val records = database.favoriteTopicsQueries.getFavoriteTopicRecords().executeAsList()
+    assertEquals(setOf("team1", "event1", "match1", "player1"), records.map { it.id }.toSet())
+    assertTrue(records.all { it.active == 1L && it.notification_topic == null && it.topic_synced == 0L })
+    assertEquals(4, database.homeQueries.getDirectFavorites().executeAsList().size)
+    assertEquals("Ascent", database.matchesQueries.getMatchCurrentMap("match1").executeAsOne().name)
+
+    database.favoriteTopicsQueries.setMatchTopic("live-match-match1", 1, "match1")
+    database.matchesQueries.removeFavoriteMatch("match1")
+    assertEquals(0L, database.matchesQueries.isFavoriteMatch("match1").executeAsOne())
+    assertEquals("live-match-match1", database.favoriteTopicsQueries.getFavoriteTopicRecords()
+      .executeAsList().single { it.id == "match1" }.notification_topic)
+    database.teamsQueries.removeFavoriteTeam("team1")
+    assertFalse(database.favoriteTopicsQueries.getFavoriteTopicRecords().executeAsList().any { it.id == "team1" })
   }
 
   @Test

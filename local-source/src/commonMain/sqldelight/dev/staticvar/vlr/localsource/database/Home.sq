@@ -10,6 +10,7 @@ FROM (
         NULL AS current_team_id
     FROM favorite_teams AS favorite
     LEFT JOIN teams AS team ON team.id = favorite.team_id
+    WHERE favorite.active = 1
 
     UNION ALL
 
@@ -22,6 +23,7 @@ FROM (
         NULL AS current_team_id
     FROM favorite_events AS favorite
     LEFT JOIN events AS event ON event.id = favorite.event_id
+    WHERE favorite.active = 1
 
     UNION ALL
 
@@ -40,6 +42,7 @@ FROM (
         NULL AS current_team_id
     FROM favorite_matches AS favorite
     LEFT JOIN matches AS cached_match ON cached_match.id = favorite.match_id
+    WHERE favorite.active = 1
 
     UNION ALL
 
@@ -56,5 +59,6 @@ FROM (
         NULLIF(TRIM(player.current_team_id), '') AS current_team_id
     FROM favorite_players AS favorite
     LEFT JOIN players AS player ON player.id = favorite.player_id
+    WHERE favorite.active = 1
 ) AS direct_favorites
 ORDER BY entity_order, title COLLATE NOCASE, id;

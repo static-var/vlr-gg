@@ -15,7 +15,7 @@ INSERT OR REPLACE INTO event_overview VALUES ?;
 getEventOverviewWithFavoriteStatus:
 SELECT e.*, CAST((f.event_id IS NOT NULL) AS INTEGER) AS is_favorite
 FROM event_overview AS e
-LEFT JOIN favorite_events AS f ON e.id = f.event_id
+LEFT JOIN favorite_events AS f ON e.id = f.event_id AND f.active = 1
 ORDER BY e.list_position;
 
 deleteEventOverviewById:

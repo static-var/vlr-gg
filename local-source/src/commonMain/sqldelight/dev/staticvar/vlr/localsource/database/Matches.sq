@@ -149,8 +149,17 @@ CREATE INDEX idx_match_prev_encounters_match_id ON match_previous_encounters(mat
 
 -- Favorite matches
 CREATE TABLE favorite_matches (
-    match_id TEXT NOT NULL PRIMARY KEY
+    match_id TEXT NOT NULL PRIMARY KEY,
+    active INTEGER NOT NULL DEFAULT 1,
+    notification_topic TEXT,
+    topic_synced INTEGER NOT NULL DEFAULT 0
 );
+
+CREATE TRIGGER prune_inactive_favorite_matches
+AFTER UPDATE OF active ON favorite_matches
+BEGIN
+    DELETE FROM favorite_matches WHERE active = 0 AND notification_topic IS NULL;
+END;
 
 -- ============================================================================
 -- QUERIES
@@ -201,7 +210,7 @@ SELECT
     0 AS is_event_favorite,
     0 AS is_team_favorite
 FROM matches AS m
-LEFT JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id
+LEFT JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id AND fav_m.active = 1
 ORDER BY m.time DESC;
 
 -- Get single match with favorite status
@@ -212,7 +221,7 @@ SELECT
     0 AS is_event_favorite,
     0 AS is_team_favorite
 FROM matches AS m
-LEFT JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id
+LEFT JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id AND fav_m.active = 1
 WHERE m.id = :matchId;
 
 -- Get matches by status
@@ -223,7 +232,7 @@ SELECT
     0 AS is_event_favorite,
     0 AS is_team_favorite
 FROM matches AS m
-LEFT JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id
+LEFT JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id AND fav_m.active = 1
 WHERE m.status = :status
 ORDER BY m.time DESC;
 
@@ -313,13 +322,16 @@ DELETE FROM match_previous_encounters WHERE match_id = :matchId;
 
 -- Favorite queries
 addFavoriteMatch:
-INSERT OR IGNORE INTO favorite_matches(match_id) VALUES (?);
+INSERT OR REPLACE INTO favorite_matches(match_id, active, notification_topic, topic_synced)
+VALUES (:id, 1,
+        (SELECT notification_topic FROM favorite_matches WHERE match_id = :id),
+        COALESCE((SELECT topic_synced FROM favorite_matches WHERE match_id = :id), 0));
 
 removeFavoriteMatch:
-DELETE FROM favorite_matches WHERE match_id = ?;
+UPDATE favorite_matches SET active = 0 WHERE match_id = ?;
 
 isFavoriteMatch:
-SELECT COUNT(*) FROM favorite_matches WHERE match_id = :matchId;
+SELECT COUNT(*) FROM favorite_matches WHERE match_id = :matchId AND active = 1;
 
 getAllFavoriteMatches:
 SELECT
@@ -328,7 +340,7 @@ SELECT
     0 AS is_event_favorite,
     0 AS is_team_favorite
 FROM matches AS m
-INNER JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id
+INNER JOIN favorite_matches AS fav_m ON m.id = fav_m.match_id AND fav_m.active = 1
 ORDER BY m.time DESC;
 
 
@@ -337,24 +349,24 @@ getMatchFavoriteReasons:
 SELECT m.id AS match_id, 'MATCH' AS source, m.id AS entity_id,
        m.team1_name || ' vs ' || m.team2_name AS entity_name
 FROM matches AS m
-INNER JOIN favorite_matches AS f ON f.match_id = m.id
+INNER JOIN favorite_matches AS f ON f.match_id = m.id AND f.active = 1
 UNION
 SELECT m.id AS match_id, 'TEAM' AS source, f.team_id AS entity_id,
        CASE WHEN f.team_id = m.team1_id THEN m.team1_name ELSE m.team2_name END AS entity_name
 FROM matches AS m
-INNER JOIN favorite_teams AS f ON f.team_id = m.team1_id OR f.team_id = m.team2_id
+INNER JOIN favorite_teams AS f ON (f.team_id = m.team1_id OR f.team_id = m.team2_id) AND f.active = 1
 WHERE f.team_id != ''
 UNION
 SELECT m.id AS match_id, 'PLAYER' AS source, p.id AS entity_id,
        COALESCE(NULLIF(TRIM(p.alias), ''), p.name) AS entity_name
 FROM matches AS m
 INNER JOIN players AS p ON p.current_team_id = m.team1_id OR p.current_team_id = m.team2_id
-INNER JOIN favorite_players AS f ON f.player_id = p.id
+INNER JOIN favorite_players AS f ON f.player_id = p.id AND f.active = 1
 WHERE p.current_team_id != ''
 UNION
 SELECT m.id AS match_id, 'EVENT' AS source, f.event_id AS entity_id, m.event_name AS entity_name
 FROM matches AS m
-INNER JOIN favorite_events AS f ON f.event_id = m.event_id
+INNER JOIN favorite_events AS f ON f.event_id = m.event_id AND f.active = 1
 WHERE f.event_id != '';
 
 getScopedMatchFavoriteReasons:
@@ -375,24 +387,24 @@ scoped_matches AS (
 SELECT m.id AS match_id, 'MATCH' AS source, m.id AS entity_id,
        m.team1_name || ' vs ' || m.team2_name AS entity_name
 FROM scoped_matches AS m
-INNER JOIN favorite_matches AS f ON f.match_id = m.id
+INNER JOIN favorite_matches AS f ON f.match_id = m.id AND f.active = 1
 UNION
 SELECT m.id AS match_id, 'TEAM' AS source, f.team_id AS entity_id,
        CASE WHEN f.team_id = m.team1_id THEN m.team1_name ELSE m.team2_name END AS entity_name
 FROM scoped_matches AS m
-INNER JOIN favorite_teams AS f ON f.team_id = m.team1_id OR f.team_id = m.team2_id
+INNER JOIN favorite_teams AS f ON (f.team_id = m.team1_id OR f.team_id = m.team2_id) AND f.active = 1
 WHERE f.team_id != ''
 UNION
 SELECT m.id AS match_id, 'PLAYER' AS source, p.id AS entity_id,
        COALESCE(NULLIF(TRIM(p.alias), ''), p.name) AS entity_name
 FROM scoped_matches AS m
 INNER JOIN players AS p ON p.current_team_id = m.team1_id OR p.current_team_id = m.team2_id
-INNER JOIN favorite_players AS f ON f.player_id = p.id
+INNER JOIN favorite_players AS f ON f.player_id = p.id AND f.active = 1
 WHERE p.current_team_id != ''
 UNION
 SELECT m.id AS match_id, 'EVENT' AS source, f.event_id AS entity_id, m.event_name AS entity_name
 FROM scoped_matches AS m
-INNER JOIN favorite_events AS f ON f.event_id = m.event_id
+INNER JOIN favorite_events AS f ON f.event_id = m.event_id AND f.active = 1
 WHERE f.event_id != '';
 
 getMatchCurrentMap:

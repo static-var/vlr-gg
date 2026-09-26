@@ -61,8 +61,17 @@ CREATE INDEX idx_player_team_history_player_id ON player_team_history(player_id)
 CREATE INDEX idx_player_team_history_current ON player_team_history(player_id, is_current);
 
 CREATE TABLE favorite_players (
-    player_id TEXT NOT NULL PRIMARY KEY
+    player_id TEXT NOT NULL PRIMARY KEY,
+    active INTEGER NOT NULL DEFAULT 1,
+    notification_topic TEXT,
+    topic_synced INTEGER NOT NULL DEFAULT 0
 );
+
+CREATE TRIGGER prune_inactive_favorite_players
+AFTER UPDATE OF active ON favorite_players
+BEGIN
+    DELETE FROM favorite_players WHERE active = 0 AND notification_topic IS NULL;
+END;
 
 -- ============================================================================
 -- QUERIES
@@ -76,7 +85,7 @@ SELECT
     p.*,
     CAST((fav_p.player_id IS NOT NULL) AS INTEGER) AS is_favorite
 FROM players AS p
-LEFT JOIN favorite_players AS fav_p ON p.id = fav_p.player_id
+LEFT JOIN favorite_players AS fav_p ON p.id = fav_p.player_id AND fav_p.active = 1
 ORDER BY p.name ASC;
 
 getPlayerWithFavoriteStatus:
@@ -84,7 +93,7 @@ SELECT
     p.*,
     CAST((fav_p.player_id IS NOT NULL) AS INTEGER) AS is_favorite
 FROM players AS p
-LEFT JOIN favorite_players AS fav_p ON p.id = fav_p.player_id
+LEFT JOIN favorite_players AS fav_p ON p.id = fav_p.player_id AND fav_p.active = 1
 WHERE p.id = :playerId;
 
 getPlayersByCountry:
@@ -92,7 +101,7 @@ SELECT
     p.*,
     CAST((fav_p.player_id IS NOT NULL) AS INTEGER) AS is_favorite
 FROM players AS p
-LEFT JOIN favorite_players AS fav_p ON p.id = fav_p.player_id
+LEFT JOIN favorite_players AS fav_p ON p.id = fav_p.player_id AND fav_p.active = 1
 WHERE p.country = :country
 ORDER BY p.name ASC;
 
@@ -101,7 +110,7 @@ SELECT
     p.*,
     CAST((fav_p.player_id IS NOT NULL) AS INTEGER) AS is_favorite
 FROM players AS p
-LEFT JOIN favorite_players AS fav_p ON p.id = fav_p.player_id
+LEFT JOIN favorite_players AS fav_p ON p.id = fav_p.player_id AND fav_p.active = 1
 WHERE p.current_team_id = :teamId
 ORDER BY p.name ASC;
 
@@ -141,21 +150,24 @@ DELETE FROM player_team_history WHERE player_id = :playerId;
 
 -- Favorites
 addFavoritePlayer:
-INSERT OR IGNORE INTO favorite_players(player_id) VALUES (?);
+INSERT OR REPLACE INTO favorite_players(player_id, active, notification_topic, topic_synced)
+VALUES (:id, 1,
+        (SELECT notification_topic FROM favorite_players WHERE player_id = :id),
+        COALESCE((SELECT topic_synced FROM favorite_players WHERE player_id = :id), 0));
 
 removeFavoritePlayer:
-DELETE FROM favorite_players WHERE player_id = ?;
+UPDATE favorite_players SET active = 0 WHERE player_id = ?;
 
 isFavoritePlayer:
-SELECT COUNT(*) FROM favorite_players WHERE player_id = :playerId;
+SELECT COUNT(*) FROM favorite_players WHERE player_id = :playerId AND active = 1;
 
 getAllFavoritePlayers:
 SELECT
     p.*,
     1 AS is_favorite
 FROM players AS p
-INNER JOIN favorite_players AS fav_p ON p.id = fav_p.player_id
+INNER JOIN favorite_players AS fav_p ON p.id = fav_p.player_id AND fav_p.active = 1
 ORDER BY p.name ASC;
 
 getFavoritePlayerIds:
-SELECT player_id FROM favorite_players;
+SELECT player_id FROM favorite_players WHERE active = 1;
