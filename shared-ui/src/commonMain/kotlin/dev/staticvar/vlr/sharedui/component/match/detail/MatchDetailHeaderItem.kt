@@ -283,7 +283,7 @@ private fun MatchTicketStub(
         .transitionContentFade(extraContentFade),
       onClick = openVeto,
       enabled = extraContentFade.acceptsInput,
-      style = PrismButtonStyle.Alternate,
+      style = PrismButtonStyle.Secondary,
     ) {
       Text(stringResource(Res.string.match_event_map_veto))
     }
