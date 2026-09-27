@@ -13,6 +13,9 @@ plugins {
 
 sentryKmp {
   linker.xcodeprojPath.set(rootProject.file("iosApp/iosApp.xcodeproj").absolutePath)
+  System.getenv("CI_DERIVED_DATA_PATH")?.let { derivedDataPath ->
+    linker.frameworkPath.set("$derivedDataPath/SourcePackages/artifacts/sentry-cocoa/Sentry/Sentry.xcframework")
+  }
 }
 
 dependencies {
