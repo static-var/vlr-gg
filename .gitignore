@@ -241,6 +241,7 @@ fabric.properties
 .zed/
 
 iosApp/VLRWidget/GeneratedBuildConfig.swift
+/iosApp/iosApp.xcodeproj/**/xcuserdata/
 /docs/
 
 # Local benchmark archives and traces
