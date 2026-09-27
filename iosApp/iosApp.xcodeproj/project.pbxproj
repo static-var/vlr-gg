@@ -516,7 +516,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euo pipefail\nUSER_HOME=\"${HOME:-$(eval echo \"~${USER:-}\")}\"\n\nexport REPO_ROOT=\"$SRCROOT/..\"\nexport GENERATED_SWIFT_PATH=\"$SRCROOT/iosApp/GeneratedBuildConfig.swift\"\n\nif ! java -version >/dev/null 2>&1; then\n  if [ -n \"$USER_HOME\" ] && [ -x \"$USER_HOME/.sdkman/candidates/java/current/bin/java\" ]; then\n    export JAVA_HOME=\"$USER_HOME/.sdkman/candidates/java/current\"\n    export PATH=\"$JAVA_HOME/bin:$PATH\"\n  elif [ -x /usr/libexec/java_home ]; then\n    JAVA_HOME=\"$(/usr/libexec/java_home 2>/dev/null || true)\"\n    if [ -n \"$JAVA_HOME\" ] && [ -x \"$JAVA_HOME/bin/java\" ]; then\n      export JAVA_HOME\n      export PATH=\"$JAVA_HOME/bin:$PATH\"\n    fi\n  fi\nfi\n\nif ! java -version >/dev/null 2>&1; then\n  echo \"error: Java runtime not found. Install a JDK or set JAVA_HOME before building iOS.\" >&2\n  exit 1\nfi\n\npython3 \"$REPO_ROOT/scripts/generate-ios-build-config.py\"\n\ncd \"$SRCROOT/..\"\nif command -v build-brief >/dev/null 2>&1; then\n  build-brief ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nelse\n  ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nfi\n";
+			shellScript = "set -euo pipefail\nUSER_HOME=\"${HOME:-$(eval echo \"~${USER:-}\")}\"\n\nexport REPO_ROOT=\"$SRCROOT/..\"\nexport GENERATED_SWIFT_PATH=\"$SRCROOT/iosApp/GeneratedBuildConfig.swift\"\n\nif [ \"${CI_XCODE_CLOUD:-}\" = TRUE ]; then\n  export JAVA_HOME=\"$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home\"\n  export PATH=\"$JAVA_HOME/bin:$PATH\"\nfi\n\nif ! java -version >/dev/null 2>&1; then\n  if [ -n \"$USER_HOME\" ] && [ -x \"$USER_HOME/.sdkman/candidates/java/current/bin/java\" ]; then\n    export JAVA_HOME=\"$USER_HOME/.sdkman/candidates/java/current\"\n    export PATH=\"$JAVA_HOME/bin:$PATH\"\n  elif [ -x /usr/libexec/java_home ]; then\n    JAVA_HOME=\"$(/usr/libexec/java_home 2>/dev/null || true)\"\n    if [ -n \"$JAVA_HOME\" ] && [ -x \"$JAVA_HOME/bin/java\" ]; then\n      export JAVA_HOME\n      export PATH=\"$JAVA_HOME/bin:$PATH\"\n    fi\n  fi\nfi\n\nif ! java -version >/dev/null 2>&1; then\n  echo \"error: Java runtime not found. Install a JDK or set JAVA_HOME before building iOS.\" >&2\n  exit 1\nfi\n\npython3 \"$REPO_ROOT/scripts/generate-ios-build-config.py\"\n\ncd \"$SRCROOT/..\"\nif command -v build-brief >/dev/null 2>&1; then\n  build-brief ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nelse\n  ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nfi\n";
 		};
 		D50BE0B098CD44B785DE478F /* Generate widget build config */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -681,7 +681,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2X75NHAZDU;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -840,7 +840,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2X75NHAZDU;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;

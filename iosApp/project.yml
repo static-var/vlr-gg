@@ -12,7 +12,7 @@ settings:
     SWIFT_VERSION: 5.0
     PRODUCT_BUNDLE_IDENTIFIER: dev.staticvar.vlr.ios
     PRODUCT_NAME: VLR
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: 2X75NHAZDU
     CODE_SIGN_STYLE: Automatic
     GENERATE_INFOPLIST_FILE: NO
     INFOPLIST_FILE: iosApp/Info.plist
@@ -74,6 +74,11 @@ targets:
 
           export REPO_ROOT="$SRCROOT/.."
           export GENERATED_SWIFT_PATH="$SRCROOT/iosApp/GeneratedBuildConfig.swift"
+
+          if [ "${CI_XCODE_CLOUD:-}" = TRUE ]; then
+            export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
+            export PATH="$JAVA_HOME/bin:$PATH"
+          fi
 
           if ! java -version >/dev/null 2>&1; then
             if [ -n "$USER_HOME" ] && [ -x "$USER_HOME/.sdkman/candidates/java/current/bin/java" ]; then
