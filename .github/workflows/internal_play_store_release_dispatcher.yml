@@ -122,7 +122,6 @@ jobs:
         with:
           to: ${{ secrets.CHAT_ID }}
           token: ${{ secrets.BOT_TOKEN }}
-          document: ${{ env.APK }}
           message: |
             Uploaded ${{ env.VERSION_NAME }} for beta review
             Release available at https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag_version.outputs.new_tag }}
