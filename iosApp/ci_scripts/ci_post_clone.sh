@@ -8,4 +8,6 @@ for swift_path in "$REPO_ROOT/iosApp/iosApp/GeneratedBuildConfig.swift" "$REPO_R
   GENERATED_SWIFT_PATH="$swift_path" python3 "$REPO_ROOT/scripts/generate-ios-build-config.py"
 done
 
+python3 "$REPO_ROOT/scripts/configure-gradle-proxy.py"
+
 brew install openjdk@17
