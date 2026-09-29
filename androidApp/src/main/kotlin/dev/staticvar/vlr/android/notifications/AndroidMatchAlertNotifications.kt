@@ -54,7 +54,7 @@ internal class AndroidMatchAlertNotifications(
         )
         val builder = if (Build.VERSION.SDK_INT >= 26) Notification.Builder(context, ChannelId) else Notification.Builder(context)
         val notification = builder
-          .setSmallIcon(R.drawable.ic_launcher_monochrome)
+          .setSmallIcon(R.drawable.ic_notification)
           .setColor(context.getColor(R.color.widget_preview_accent))
           .setContentTitle(title)
           .setContentText(body)
