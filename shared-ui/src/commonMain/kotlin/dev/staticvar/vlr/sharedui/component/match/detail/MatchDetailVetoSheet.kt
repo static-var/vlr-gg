@@ -125,11 +125,18 @@ private fun RowScope.MatchVetoContent(entry: MatchVeto) {
       horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      PrismTag(text = stringResource(requireNotNull(entry.action.labelResource)), style = PrismTagStyle.Neutral)
+      PrismTag(text = stringResource(requireNotNull(entry.action.labelResource)), style = entry.action.tagStyle)
       Text(text = entry.map, style = Prism.typography.bodyLarge, color = Prism.color.bodyColor)
     }
   }
 }
+
+private val VetoAction.tagStyle: PrismTagStyle
+  get() = when (this) {
+    VetoAction.BAN -> PrismTagStyle.Danger
+    VetoAction.PICK -> PrismTagStyle.Success
+    VetoAction.REMAINS, VetoAction.UNKNOWN -> PrismTagStyle.Neutral
+  }
 
 private val VetoAction.labelResource: StringResource?
   get() = when (this) {
