@@ -34,6 +34,8 @@ import dev.staticvar.vlr.android.MainActivity
 import dev.staticvar.vlr.android.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import org.koin.mp.KoinPlatform
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -45,8 +47,9 @@ internal abstract class FavoriteMatchWidget(private val small: Boolean) : Glance
   override val sizeMode: SizeMode = SizeMode.Single
 
   override suspend fun provideGlance(context: Context, id: GlanceId) {
+    val json = KoinPlatform.getKoin().get<Json>()
     val snapshot = withContext(Dispatchers.IO) {
-      WidgetSnapshotStore.read(context)?.let(::parseWidgetSnapshot)
+      WidgetSnapshotStore.read(context)?.let { parseWidgetSnapshot(it, json) }
     }
     val strings = WidgetStrings(context)
     val nowEpochMillis = System.currentTimeMillis()

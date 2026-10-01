@@ -96,15 +96,60 @@ class AndroidLiveMatchNotificationsTest {
     // The CDN manifest maps team IDs to logos; entries on hosts the logo cache refuses are ignored.
     val cdnLogo = "https://files.akhilnarang.dev/cdn/valorant/teams/624.png"
     val manifest = java.io.File(context.filesDir, "team_logos.json")
-    manifest.writeText("""{"624":{"logo":{"url":"$cdnLogo"}},"1":{"logo":{"url":"https://evil.example/1.png"}}}""")
+    manifest.writeText(
+      """{"624":{"name":"Paper Rex","logo":{"url":"$cdnLogo","width":256}},"1":{"logo":{"url":"https://evil.example/1.png"}},"2":{},"3":{"logo":null},"4":{"logo":{}},"5":{"logo":{"url":null}}}""",
+    )
     try {
-      val directory = TeamLogoDirectory(context, KoinPlatform.getKoin().get<Json>())
+      val directory = TeamLogoDirectory(context, Json)
       assertTrue(runBlocking { directory.refresh() })
       assertEquals(cdnLogo, directory.logoUrl("624"))
       assertNull(directory.logoUrl("1"))
+      (2..5).forEach { assertNull(directory.logoUrl(it.toString())) }
       assertNull(directory.logoUrl(null))
     } finally {
       manifest.delete()
+    }
+  }
+
+  @Test
+  fun typedPayloadDecodingPreservesScoresAndIgnoresMalformedOptionalFields() {
+    listOf(Json, KoinPlatform.getKoin().get<Json>()).forEach { json ->
+      val parser = LiveMatchUpdateParser(json)
+      fun parse(state: String) = parser.parse(payload(state = state))
+
+      val mixedIds = requireNotNull(parse(validState()
+        .replace("\"name\":\"Team Liquid\"", "\"name\":\"Team Liquid\",\"id\":474,\"future_team\":{}")
+        .replace("\"name\":\"Paper Rex\"", "\"name\":\"Paper Rex\",\"id\":\"000624\"")
+        .replace("\"name\":\"Ascent\"", "\"name\":\"Ascent\",\"future_map\":[]")
+        .replace("\"future_field\":true", "\"map_winners\":[\"000474\",624,{},false,null,0,-1,\"bad\",474,624]")))
+      assertEquals(listOf("474", "624"), mixedIds.teams.map { it.id })
+      assertEquals(listOf("474", "624", null, null, null, null, null, null, "474"), mixedIds.mapWinners)
+
+      listOf("[null,6]", "[\"8\",\"6\"]").forEach { scores ->
+        assertNotNull(parse(validState().replace("[8,6]", scores)))
+      }
+      listOf("[8,-1]", "[8,{}]", "[8,1.5]", "[8]", "[8,6,1]").forEach { scores ->
+        assertNull(parse(validState().replace("[8,6]", scores)))
+      }
+      assertNull(parse(validState().replace(",\"scores\":[8,6]", "")))
+      assertNull(parse(validState().replace("\"score\":1", "\"score\":-1")))
+      assertNull(requireNotNull(parse(validState().replace("\"score\":1", "\"score\":null"))).teams[1].score)
+      assertNull(requireNotNull(parse(validState().replace(",\"score\":1", ""))).teams[1].score)
+
+      listOf("null", "42", "{}", "[]").forEach { invalid ->
+        val parsed = requireNotNull(parse(validState()
+          .replace("\"name\":\"Paper Rex\"", "\"name\":\"Paper Rex\",\"tag\":$invalid,\"id\":$invalid")
+          .replace("\"future_field\":true", "\"pause\":{\"kind\":\"tech_pause\",\"reason\":$invalid,\"future_pause\":true}")))
+        assertNull(parsed.teams[1].tag)
+        assertEquals(LiveMatchPause(LiveMatchPauseKind.TechPause), parsed.pause)
+        assertEquals(listOf(8, 6), parsed.currentMap?.scores)
+      }
+      listOf("   " to null, "  ${"x".repeat(30)}  " to "x".repeat(24)).forEach { (reason, expected) ->
+        val parsed = requireNotNull(parse(validState().replace(
+          "\"future_field\":true", "\"pause\":{\"kind\":\"tech_pause\",\"reason\":\"$reason\"}",
+        )))
+        assertEquals(expected, parsed.pause?.reason)
+      }
     }
   }
 

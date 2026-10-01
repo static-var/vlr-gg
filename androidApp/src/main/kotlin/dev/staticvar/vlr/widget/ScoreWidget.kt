@@ -40,13 +40,14 @@ import dev.staticvar.vlr.android.widget.WidgetMatchStatus
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import org.koin.core.context.GlobalContext
 
 class ScoreWidget : GlanceAppWidget() {
   override val sizeMode: SizeMode = SizeMode.Exact
 
   override suspend fun provideGlance(context: Context, id: GlanceId) {
-    val snapshot = withContext(Dispatchers.IO) { LegacyMatchSnapshotStore.read(context) }
+    val snapshot = withContext(Dispatchers.IO) { LegacyMatchSnapshotStore.read(context, GlobalContext.get().get<Json>()) }
     val spoilersHidden = snapshot?.spoilersHidden == true ||
       GlobalContext.get().get<SpoilerPreferencesRepository>().enabled.value
     val matches = snapshot?.matches.orEmpty().filter {

@@ -24,16 +24,17 @@ import androidx.test.platform.app.InstrumentationRegistry
 import dev.staticvar.vlr.android.R
 import java.io.File
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import org.junit.Assert.*
 import org.junit.Test
+import org.koin.core.context.GlobalContext
 
 class PrismWidgetRenderTest {
   @Test
   fun remoteViewsKeepTypefaceScoresAndTwoLineNames() = runBlocking {
     val instrumentation = InstrumentationRegistry.getInstrumentation()
     val base = instrumentation.targetContext
-    val match = WidgetMatch("test", "VCT Pacific", "Team Liquid", "Paper Rex", 1900000000000,
-      WidgetMatchStatus.LIVE, 1, 2, "BO3", "Playoffs")
+    val json = GlobalContext.get().get<Json>()
     for (dark in listOf(false, true)) {
       val configuration = Configuration(base.resources.configuration).apply {
         uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
@@ -42,12 +43,22 @@ class PrismWidgetRenderTest {
       val context = base.createConfigurationContext(configuration)
       for (small in listOf(true, false)) {
         for (state in listOf("live", "hidden", "upcoming", "long-names", "compact")) {
-          val fixture = when (state) {
-            "upcoming" -> match.copy(status = WidgetMatchStatus.UPCOMING)
-            "long-names" -> match.copy(team1 = "Shopify Rebellion Gold", team2 = "Twisted Minds Esports")
-            else -> match
-          }
           val hidden = state == "hidden"
+          val fixture = requireNotNull(parseWidgetSnapshot("""
+            {
+              "savedAtEpochMillis": 1900000000000,
+              "hasFavorites": true,
+              "spoilersHidden": $hidden,
+              "matches": [{
+                "id": "test", "event": "VCT Pacific",
+                "team1": "${if (state == "long-names") "Shopify Rebellion Gold" else "Team Liquid"}",
+                "team2": "${if (state == "long-names") "Twisted Minds Esports" else "Paper Rex"}",
+                "startTimeEpochMillis": 1900000000000,
+                "status": "${if (state == "upcoming") "UPCOMING" else "LIVE"}",
+                "score1": 1, "score2": 2, "format": "BO3", "stage": "Playoffs"
+              }]
+            }
+          """.trimIndent(), json)).matches.single()
           val size = DpSize(if (small) 158.dp else 338.dp, if (state == "compact") 110.dp else 158.dp)
           val remote = object : GlanceAppWidget() {
             override suspend fun provideGlance(context: Context, id: GlanceId) {

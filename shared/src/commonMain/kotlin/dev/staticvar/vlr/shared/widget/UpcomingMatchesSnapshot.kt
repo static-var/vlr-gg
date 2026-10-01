@@ -29,7 +29,7 @@ public data class UpcomingWidgetMatch(
   val event: String,
   val team1: String,
   val team2: String,
-  val startTimeEpochMillis: Long?,
+  val startTimeEpochMillis: Long? = null,
   val status: String = "UPCOMING",
   val score1: Int? = null,
   val score2: Int? = null,

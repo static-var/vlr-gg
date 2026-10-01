@@ -10,10 +10,11 @@ import java.net.HttpURLConnection
 import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 
 /**
  * Maps VLR team IDs to the larger team logos mirrored on our CDN.
@@ -55,10 +56,10 @@ internal class TeamLogoDirectory(context: Context, private val json: Json) {
     logos != before
   }
 
-  private fun parse(body: String): Map<String, String> = json.parseToJsonElement(body).jsonObject.mapNotNull { (teamId, entry) ->
-    val url = entry.jsonObject["logo"]?.jsonObject?.get("url")?.jsonPrimitive?.contentOrNull
-    url?.takeIf(LiveMatchLogoCache::isAllowedLogoUrl)?.let { teamId to it }
-  }.toMap()
+  private fun parse(body: String): Map<String, String> = json.decodeFromString<Map<String, TeamLogoEntryDto>>(body)
+    .mapNotNull { (teamId, entry) ->
+      entry.logo?.url?.takeIf(LiveMatchLogoCache::isAllowedLogoUrl)?.let { teamId to it }
+    }.toMap()
 
   private companion object {
     const val ManifestUrl = "https://files.akhilnarang.dev/cdn/valorant/teams.json"
@@ -67,3 +68,13 @@ internal class TeamLogoDirectory(context: Context, private val json: Json) {
     const val TimeoutMillis = 10_000
   }
 }
+
+@OptIn(ExperimentalSerializationApi::class)
+@Serializable
+@JsonIgnoreUnknownKeys
+private data class TeamLogoEntryDto(val logo: TeamLogoDto? = null)
+
+@OptIn(ExperimentalSerializationApi::class)
+@Serializable
+@JsonIgnoreUnknownKeys
+private data class TeamLogoDto(val url: String? = null)

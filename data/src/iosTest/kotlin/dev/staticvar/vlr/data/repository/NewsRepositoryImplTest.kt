@@ -15,11 +15,13 @@ import dev.staticvar.vlr.remotesource.news.ArticleTextRunDto
 import dev.staticvar.vlr.remotesource.news.NewsArticleDto
 import dev.staticvar.vlr.remotesource.news.NewsDataSource
 import dev.staticvar.vlr.remotesource.news.NewsItemDto
+import dev.staticvar.vlr.remotesource.news.NewsLinkDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -116,7 +118,7 @@ class NewsRepositoryImplTest {
         content = content,
         blocks = listOf(ArticleBlockDto("paragraph", runs = listOf(ArticleTextRunDto("Cached", bold = true))),
           ArticleBlockDto("image", url = "https://example.com/image.jpg")),
-        links = listOf(mapOf("text" to "Source", "url" to "https://example.com")),
+        links = listOf(NewsLinkDto(text = "Source", url = "https://example.com")),
         images = listOf("image.jpg"),
         videos = listOf("video.mp4"),
       ),
@@ -193,7 +195,7 @@ class NewsRepositoryImplTest {
   }
 
   @Test
-  fun getNewsArticle_emitsStoredData_untilExplicitRefresh() = runTest(dispatcher) {
+  fun getNewsArticle_emitsStoredData_untilExplicitRefresh_and_preservesIt_afterFailedRefresh() = runTest(dispatcher) {
     insertNews(
       id = "story",
       title = "Story",
@@ -207,9 +209,9 @@ class NewsRepositoryImplTest {
         title = "Story",
         content = "Remote {{link_2}}\n\n{video_0}\n\n{image_1}",
         links = listOf(
-          mapOf("text" to "Earlier", "url" to "https://example.com/earlier"),
-          emptyMap(),
-          mapOf("text" to "Source", "url" to "https://example.com"),
+          NewsLinkDto(text = "Earlier", url = "https://example.com/earlier"),
+          NewsLinkDto(),
+          NewsLinkDto(text = "Source", url = "https://example.com"),
         ),
         images = listOf("", "img.png"),
         videos = listOf("clip.mp4"),
@@ -245,6 +247,11 @@ class NewsRepositoryImplTest {
     }
 
     assertEquals(listOf("story"), dataSource.articleRequests)
+
+    dataSource.articleResults["story"] = Result.failure(SerializationException("Malformed link URL"))
+    assertTrue(repository.refreshNewsArticle("story").isFailure)
+    assertEquals(storedArticle, database.newsQueries.getNewsById("story").executeAsOne())
+    assertEquals(storedMedia, database.newsQueries.getNewsMedia("story").executeAsList())
   }
 
   @Test

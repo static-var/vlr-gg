@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.data.mapper
 
 import dev.staticvar.vlr.remotesource.news.NewsArticleDto
+import dev.staticvar.vlr.remotesource.news.NewsLinkDto
 import dev.staticvar.vlr.remotesource.news.ArticleVideoPlayerDto
 import dev.staticvar.vlr.remotesource.news.ArticleBlockDto
 import dev.staticvar.vlr.remotesource.news.ArticleTextRunDto
@@ -57,7 +58,7 @@ class NewsArticleAndPlayerChildMappersTest {
       id = "n1",
       title = "Title",
       content = "<p>Content</p>",
-      links = listOf(mapOf("text" to "Site", "url" to "https://x.y")),
+      links = listOf(NewsLinkDto(text = "Site", url = "https://x.y")),
       images = listOf("img1.png", "img2.png"),
       videos = listOf("vid1.mp4"),
       date = "2024-01-01",
@@ -82,7 +83,7 @@ class NewsArticleAndPlayerChildMappersTest {
       id = "n2",
       title = "",
       content = "",
-      links = listOf(mapOf("text" to "MissingUrl")),
+      links = listOf(NewsLinkDto(text = "MissingUrl")),
       images = emptyList(),
       videos = emptyList(),
       date = null,
@@ -104,10 +105,10 @@ class NewsArticleAndPlayerChildMappersTest {
       id = "750321",
       content = content,
       links = listOf(
-        mapOf("text" to "First", "url" to "https://example.com/first"),
-        emptyMap(),
-        mapOf("text" to "Third", "url" to "https://example.com/third"),
-        mapOf("text" to "First", "url" to "https://example.com/first"),
+        NewsLinkDto(text = "First", url = "https://example.com/first"),
+        NewsLinkDto(),
+        NewsLinkDto(text = "Third", url = "https://example.com/third"),
+        NewsLinkDto(text = "First", url = "https://example.com/first"),
       ),
       images = listOf("first.png", "", "third.png", "first.png"),
       videos = listOf("", "second.mp4"),
@@ -118,8 +119,9 @@ class NewsArticleAndPlayerChildMappersTest {
     val article = aggregateNewsArticle(dto.toEntity(), rows.reversed(), json)
 
     assertEquals(content, article.contentHtml)
-    assertEquals(dto.links.map { it["text"].orEmpty() }, article.media.links.map { it.text })
-    assertEquals(dto.links.map { it["url"].orEmpty() }, article.media.links.map { it.url })
+    assertEquals(listOf("First", "", "Third", "First"), article.media.links.map { it.text })
+    assertEquals(listOf("https://example.com/first", "", "https://example.com/third", "https://example.com/first"),
+      article.media.links.map { it.url })
     assertEquals(dto.images, article.media.images)
     assertEquals(dto.videos, article.media.videos)
   }
