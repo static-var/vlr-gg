@@ -1,4 +1,4 @@
-name: Internal Play store release
+name: Play Store beta release
 
 on:
   workflow_dispatch:
@@ -8,6 +8,11 @@ on:
         type: boolean
         required: false
         default: true
+      notify_telegram:
+        description: Send a Telegram beta release announcement
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: write
@@ -113,11 +118,12 @@ jobs:
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
+          prerelease: true
           bodyFile: distribution/whatsnew/whatsnew-en-US
           artifacts: ${{ env.APK }}
 
       - name: Send Telegram release
-        if: inputs.publish
+        if: inputs.publish && inputs.notify_telegram
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.CHAT_ID }}
