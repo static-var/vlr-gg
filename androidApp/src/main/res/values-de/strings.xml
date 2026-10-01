@@ -46,4 +46,8 @@
     <string name="match_alert_live">Spiel läuft</string>
     <string name="live_match_notification_map_series">Karte %1$d von %2$d · Serie %3$s</string>
     <string name="live_match_notification_series">Serie %1$s</string>
+    <string name="live_match_notification_pause_tech">Technische Pause</string>
+    <string name="live_match_notification_pause_timeout">Auszeit</string>
+    <string name="live_match_notification_pause_halftime">Halbzeit</string>
+    <string name="live_match_notification_pause_generic">Pausiert</string>
 </resources>

@@ -46,4 +46,8 @@
     <string name="match_alert_live">Match en direct</string>
     <string name="live_match_notification_map_series">Carte %1$d sur %2$d · Série %3$s</string>
     <string name="live_match_notification_series">Série %1$s</string>
+    <string name="live_match_notification_pause_tech">Pause technique</string>
+    <string name="live_match_notification_pause_timeout">Temps mort</string>
+    <string name="live_match_notification_pause_halftime">Mi-temps</string>
+    <string name="live_match_notification_pause_generic">En pause</string>
 </resources>

@@ -46,4 +46,8 @@
     <string name="match_alert_live">Матч начался</string>
     <string name="live_match_notification_map_series">Карта %1$d из %2$d · Серия %3$s</string>
     <string name="live_match_notification_series">Серия %1$s</string>
+    <string name="live_match_notification_pause_tech">Техническая пауза</string>
+    <string name="live_match_notification_pause_timeout">Тайм-аут</string>
+    <string name="live_match_notification_pause_halftime">Перерыв</string>
+    <string name="live_match_notification_pause_generic">Пауза</string>
 </resources>
