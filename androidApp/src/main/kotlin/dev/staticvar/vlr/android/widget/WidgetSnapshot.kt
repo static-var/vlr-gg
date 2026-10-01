@@ -4,8 +4,11 @@
  */
 package dev.staticvar.vlr.android.widget
 
-import org.json.JSONException
-import org.json.JSONObject
+import dev.staticvar.vlr.shared.widget.UpcomingWidgetMatch
+import dev.staticvar.vlr.shared.widget.WidgetTheme
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 
 internal data class WidgetSnapshot(
   val savedAtEpochMillis: Long,
@@ -56,55 +59,44 @@ internal data class WidgetColors(
   }
 }
 
-internal fun parseWidgetSnapshot(json: String): WidgetSnapshot? = try {
-  val root = JSONObject(json)
-  val matchesJson = root.getJSONArray("matches")
-  val matches = buildList {
-    repeat(matchesJson.length()) { index ->
-      val match = matchesJson.getJSONObject(index)
-      add(
-        WidgetMatch(
-          id = match.getString("id"),
-          event = match.getString("event"),
-          team1 = match.getString("team1"),
-          team2 = match.getString("team2"),
-          startTimeEpochMillis = if (match.isNull("startTimeEpochMillis")) {
-            null
-          } else {
-            match.getLong("startTimeEpochMillis")
-          },
-          status = when (match.optString("status", "UPCOMING").uppercase()) {
-            "UPCOMING" -> WidgetMatchStatus.UPCOMING
-            "LIVE" -> WidgetMatchStatus.LIVE
-            else -> WidgetMatchStatus.OTHER
-          },
-          score1 = match.optionalInt("score1"),
-          score2 = match.optionalInt("score2"),
-          format = match.optString("format"),
-          stage = match.optString("stage"),
-        ),
-      )
-    }
-  }
-  val theme = root.optJSONObject("theme")
-  WidgetSnapshot(
-    savedAtEpochMillis = root.getLong("savedAtEpochMillis"),
-    hasFavorites = root.optBoolean("hasFavorites", false),
-    matches = matches,
-    spoilersHidden = root.optBoolean("spoilersHidden", false),
-    theme = if (theme == null) WidgetColors.Default else WidgetColors(
-      background = theme.getLong("background"),
-      surface = theme.getLong("surface"),
-      accent = theme.getLong("accent"),
-      content = theme.getLong("content"),
-      secondary = theme.getLong("secondary"),
-      border = theme.getLong("border"),
-      monospace = theme.getBoolean("monospace"),
-    ),
-  )
-} catch (_: JSONException) {
+internal fun parseWidgetSnapshot(payload: String, json: Json): WidgetSnapshot? = try {
+  json.decodeFromString<WidgetSnapshotDto>(payload).toSnapshot()
+} catch (_: SerializationException) {
   null
 }
 
-private fun JSONObject.optionalInt(name: String): Int? =
-  if (has(name) && !isNull(name)) getInt(name) else null
+@Serializable
+private data class WidgetSnapshotDto(
+  val savedAtEpochMillis: Long,
+  val matches: List<UpcomingWidgetMatch>,
+  val hasFavorites: Boolean = false,
+  val theme: WidgetTheme? = null,
+  val spoilersHidden: Boolean = false,
+) {
+  fun toSnapshot(): WidgetSnapshot = WidgetSnapshot(
+    savedAtEpochMillis = savedAtEpochMillis,
+    hasFavorites = hasFavorites,
+    matches = matches.map { match ->
+      WidgetMatch(
+        id = match.id,
+        event = match.event,
+        team1 = match.team1,
+        team2 = match.team2,
+        startTimeEpochMillis = match.startTimeEpochMillis,
+        status = when (match.status.uppercase()) {
+          "UPCOMING" -> WidgetMatchStatus.UPCOMING
+          "LIVE" -> WidgetMatchStatus.LIVE
+          else -> WidgetMatchStatus.OTHER
+        },
+        score1 = match.score1,
+        score2 = match.score2,
+        format = match.format,
+        stage = match.stage,
+      )
+    },
+    spoilersHidden = spoilersHidden,
+    theme = theme?.let {
+      WidgetColors(it.background, it.surface, it.accent, it.content, it.secondary, it.border, it.monospace)
+    } ?: WidgetColors.Default,
+  )
+}

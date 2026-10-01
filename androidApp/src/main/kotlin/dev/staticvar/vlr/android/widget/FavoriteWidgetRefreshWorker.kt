@@ -16,6 +16,8 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import dev.staticvar.vlr.shared.widget.refreshFavoriteWidgetSnapshot
+import kotlinx.serialization.json.Json
+import org.koin.mp.KoinPlatform
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -25,7 +27,7 @@ internal class FavoriteWidgetRefreshWorker(
 ) : CoroutineWorker(appContext, workerParameters) {
   override suspend fun doWork(): Result {
     val currentJson = WidgetSnapshotStore.read(applicationContext) ?: return Result.success()
-    if (parseWidgetSnapshot(currentJson) == null) return Result.failure()
+    if (parseWidgetSnapshot(currentJson, KoinPlatform.getKoin().get<Json>()) == null) return Result.failure()
 
     return try {
       val refreshedJson = refreshFavoriteWidgetSnapshot(currentJson)

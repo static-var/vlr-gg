@@ -18,6 +18,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import org.koin.mp.KoinPlatform
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -30,7 +31,12 @@ class WidgetUpdateWorker(context: Context, parameters: WorkerParameters) : Corou
       repository.refreshMatches().getOrThrow()
       val matches = repository.getMatches().first()
       withContext(Dispatchers.IO) {
-        LegacyMatchSnapshotStore.write(applicationContext, matches, koin.get<SpoilerPreferencesRepository>().enabled.value)
+        LegacyMatchSnapshotStore.write(
+          applicationContext,
+          matches,
+          koin.get<SpoilerPreferencesRepository>().enabled.value,
+          koin.get<Json>(),
+        )
       }
       ScoreWidget().updateAll(applicationContext)
       Result.success()
