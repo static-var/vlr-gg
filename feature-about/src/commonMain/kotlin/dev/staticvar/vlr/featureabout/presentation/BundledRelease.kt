@@ -8,76 +8,82 @@ import androidx.compose.runtime.Immutable
 import org.jetbrains.compose.resources.StringResource
 import vlr.feature_about.generated.resources.Res
 import vlr.feature_about.generated.resources.new_in_val_esports
-import vlr.feature_about.generated.resources.release_1_0_6_android_live_description
-import vlr.feature_about.generated.resources.release_1_0_6_android_live_title
-import vlr.feature_about.generated.resources.release_1_0_6_appearance_description
-import vlr.feature_about.generated.resources.release_1_0_6_appearance_title
-import vlr.feature_about.generated.resources.release_1_0_6_favorites_description
-import vlr.feature_about.generated.resources.release_1_0_6_favorites_title
-import vlr.feature_about.generated.resources.release_1_0_6_introduction
-import vlr.feature_about.generated.resources.release_1_0_6_ios_live_description
-import vlr.feature_about.generated.resources.release_1_0_6_ios_live_title
-import vlr.feature_about.generated.resources.release_1_0_6_ios_shortcuts_description
-import vlr.feature_about.generated.resources.release_1_0_6_ios_shortcuts_title
-import vlr.feature_about.generated.resources.release_1_0_6_languages_description
-import vlr.feature_about.generated.resources.release_1_0_6_languages_title
-import vlr.feature_about.generated.resources.release_1_0_6_stability_description
-import vlr.feature_about.generated.resources.release_1_0_6_stability_title
-import vlr.feature_about.generated.resources.release_1_0_6_widgets_description
-import vlr.feature_about.generated.resources.release_1_0_6_widgets_title
-import vlr.feature_about.generated.resources.release_1_0_6_search_title
-import vlr.feature_about.generated.resources.release_1_0_6_search_description
+import vlr.feature_about.generated.resources.release_1_0_7_android_live_description
+import vlr.feature_about.generated.resources.release_1_0_7_android_live_title
+import vlr.feature_about.generated.resources.release_1_0_7_appearance_description
+import vlr.feature_about.generated.resources.release_1_0_7_appearance_title
+import vlr.feature_about.generated.resources.release_1_0_7_favorites_description
+import vlr.feature_about.generated.resources.release_1_0_7_favorites_title
+import vlr.feature_about.generated.resources.release_1_0_7_introduction
+import vlr.feature_about.generated.resources.release_1_0_7_ios_live_description
+import vlr.feature_about.generated.resources.release_1_0_7_ios_live_title
+import vlr.feature_about.generated.resources.release_1_0_7_ios_shortcuts_description
+import vlr.feature_about.generated.resources.release_1_0_7_ios_shortcuts_title
+import vlr.feature_about.generated.resources.release_1_0_7_languages_description
+import vlr.feature_about.generated.resources.release_1_0_7_languages_title
+import vlr.feature_about.generated.resources.release_1_0_7_stability_description
+import vlr.feature_about.generated.resources.release_1_0_7_stability_title
+import vlr.feature_about.generated.resources.release_1_0_7_widgets_description
+import vlr.feature_about.generated.resources.release_1_0_7_widgets_title
+import vlr.feature_about.generated.resources.release_1_0_7_search_title
+import vlr.feature_about.generated.resources.release_1_0_7_search_description
+import vlr.feature_about.generated.resources.release_1_0_7_match_details_title
+import vlr.feature_about.generated.resources.release_1_0_7_match_details_description
 import vlr.feature_about.generated.resources.see_what_s_new
 import vlr.feature_about.generated.resources.what_s_new
 
 /** Release notes shipped with the app, available without a network connection. */
 public object BundledRelease {
-  public const val id: String = "val-esports-1.0.6"
+  public const val id: String = "val-esports-1.0.7-beta"
   public val title: StringResource = Res.string.what_s_new
   public val introduction: StringResource =
-    Res.string.release_1_0_6_introduction
+    Res.string.release_1_0_7_introduction
   public val bannerTitle: StringResource = Res.string.new_in_val_esports
   public val bannerAction: StringResource = Res.string.see_what_s_new
 
   public val highlights: List<Highlight> = listOf(
     Highlight(
-      title = Res.string.release_1_0_6_search_title,
-      description = Res.string.release_1_0_6_search_description,
+      title = Res.string.release_1_0_7_search_title,
+      description = Res.string.release_1_0_7_search_description,
     ),
     Highlight(
-      title = Res.string.release_1_0_6_favorites_title,
-      description = Res.string.release_1_0_6_favorites_description,
+      title = Res.string.release_1_0_7_favorites_title,
+      description = Res.string.release_1_0_7_favorites_description,
     ),
     Highlight(
-      title = Res.string.release_1_0_6_ios_live_title,
-      description = Res.string.release_1_0_6_ios_live_description,
+      title = Res.string.release_1_0_7_ios_live_title,
+      description = Res.string.release_1_0_7_ios_live_description,
       platform = ReleasePlatform.Ios,
     ),
     Highlight(
-      title = Res.string.release_1_0_6_android_live_title,
-      description = Res.string.release_1_0_6_android_live_description,
+      title = Res.string.release_1_0_7_android_live_title,
+      description = Res.string.release_1_0_7_android_live_description,
       platform = ReleasePlatform.Android,
     ),
     Highlight(
-      title = Res.string.release_1_0_6_widgets_title,
-      description = Res.string.release_1_0_6_widgets_description,
+      title = Res.string.release_1_0_7_match_details_title,
+      description = Res.string.release_1_0_7_match_details_description,
     ),
     Highlight(
-      title = Res.string.release_1_0_6_appearance_title,
-      description = Res.string.release_1_0_6_appearance_description,
+      title = Res.string.release_1_0_7_widgets_title,
+      description = Res.string.release_1_0_7_widgets_description,
     ),
     Highlight(
-      title = Res.string.release_1_0_6_languages_title,
-      description = Res.string.release_1_0_6_languages_description,
+      title = Res.string.release_1_0_7_appearance_title,
+      description = Res.string.release_1_0_7_appearance_description,
     ),
     Highlight(
-      title = Res.string.release_1_0_6_ios_shortcuts_title,
-      description = Res.string.release_1_0_6_ios_shortcuts_description,
+      title = Res.string.release_1_0_7_languages_title,
+      description = Res.string.release_1_0_7_languages_description,
+    ),
+    Highlight(
+      title = Res.string.release_1_0_7_ios_shortcuts_title,
+      description = Res.string.release_1_0_7_ios_shortcuts_description,
       platform = ReleasePlatform.Ios,
     ),
     Highlight(
-      title = Res.string.release_1_0_6_stability_title,
-      description = Res.string.release_1_0_6_stability_description,
+      title = Res.string.release_1_0_7_stability_title,
+      description = Res.string.release_1_0_7_stability_description,
     ),
   ).filter { it.platform == null || it.platform == releasePlatform }
 
