@@ -67,19 +67,46 @@ struct MatchLiveActivityLockScreen: View {
     private var mapProgress: MatchLiveActivityMapProgress? {
         MatchLiveActivityMapProgress(state: state, hidden: spoilersHidden)
     }
+    private var pause: MatchActivityAttributes.ContentState.Pause? {
+        state.terminal ? nil : state.pause
+    }
+    private var statusLabel: String {
+        if state.terminal { return String(localized: "FINAL") }
+        switch pause?.kind {
+        case .techPause: return String(localized: "TECHNICAL PAUSE")
+        case .timeout: return String(localized: "TIMEOUT")
+        case .halftime: return String(localized: "HALFTIME")
+        case .paused: return String(localized: "PAUSED")
+        case nil: return String(localized: "LIVE")
+        }
+    }
 
     var body: some View {
         VStack(spacing: mapProgress == nil ? 10 : 7) {
             HStack(spacing: 6) {
                 if !state.terminal {
-                    Circle().fill(palette.accent).frame(width: 5, height: 5)
-                        .accessibilityHidden(true)
+                    if pause != nil {
+                        Image(systemName: "pause.fill")
+                            .foregroundStyle(palette.accent)
+                            .accessibilityHidden(true)
+                    } else {
+                        Circle().fill(palette.accent).frame(width: 5, height: 5)
+                            .accessibilityHidden(true)
+                    }
                 }
-                Text(state.terminal ? String(localized: "FINAL") : String(localized: "LIVE"))
+                Text(verbatim: statusLabel)
                     .foregroundStyle(palette.accent)
+                    .minimumScaleFactor(0.7)
                 Spacer()
-                Text(verbatim: "VAL ESPORTS")
-                    .foregroundStyle(palette.secondary)
+                ViewThatFits(in: .horizontal) {
+                    if let reason = pause?.reason, !reason.contains(where: \.isNewline) {
+                        Text(verbatim: reason)
+                            .fixedSize(horizontal: true, vertical: false)
+                    }
+                    Text(verbatim: "VAL ESPORTS")
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+                .foregroundStyle(palette.secondary)
             }
             .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
             .lineLimit(1)
