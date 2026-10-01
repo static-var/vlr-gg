@@ -11,6 +11,7 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.compose.multiplatform)
   alias(libs.plugins.compose.compiler)
+  alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.sentry.android)
   alias(libs.plugins.baselineprofile)
   alias(libs.plugins.google.services)

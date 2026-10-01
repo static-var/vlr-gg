@@ -96,12 +96,15 @@ class AndroidLiveMatchNotificationsTest {
     // The CDN manifest maps team IDs to logos; entries on hosts the logo cache refuses are ignored.
     val cdnLogo = "https://files.akhilnarang.dev/cdn/valorant/teams/624.png"
     val manifest = java.io.File(context.filesDir, "team_logos.json")
-    manifest.writeText("""{"624":{"logo":{"url":"$cdnLogo"}},"1":{"logo":{"url":"https://evil.example/1.png"}}}""")
+    manifest.writeText(
+      """{"624":{"name":"Paper Rex","logo":{"url":"$cdnLogo","width":256}},"1":{"logo":{"url":"https://evil.example/1.png"}},"2":{},"3":{"logo":null},"4":{"logo":{}},"5":{"logo":{"url":null}}}""",
+    )
     try {
-      val directory = TeamLogoDirectory(context, KoinPlatform.getKoin().get<Json>())
+      val directory = TeamLogoDirectory(context, Json)
       assertTrue(runBlocking { directory.refresh() })
       assertEquals(cdnLogo, directory.logoUrl("624"))
       assertNull(directory.logoUrl("1"))
+      (2..5).forEach { assertNull(directory.logoUrl(it.toString())) }
       assertNull(directory.logoUrl(null))
     } finally {
       manifest.delete()
