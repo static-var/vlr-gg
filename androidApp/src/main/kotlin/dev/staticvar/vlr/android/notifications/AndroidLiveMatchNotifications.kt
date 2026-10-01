@@ -37,18 +37,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.booleanOrNull
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.intOrNull
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.longOrNull
 
 /** Handles incoming match updates and manages their Android notifications. */
 internal class AndroidLiveMatchNotifications(
@@ -285,105 +273,6 @@ internal data class LiveMatchPause(val kind: LiveMatchPauseKind, val reason: Str
 
 /** Names the pause overlays the tracker recognizes; any other kind is a generic pause. */
 internal enum class LiveMatchPauseKind { TechPause, Timeout, Halftime, Paused }
-
-/** Parses and validates live match snapshots from Firebase messages. */
-internal class LiveMatchUpdateParser(private val json: Json) {
-  fun parse(data: Map<String, String>): LiveMatchUpdate? {
-    if (data[PayloadTypeKey] != PayloadType) {
-      LiveNotificationDiagnostics.skipped("unsupported_payload_type")
-      return null
-    }
-    val encodedState = data[StateKey]
-    val update = try {
-      encodedState?.let { parseState(json.parseToJsonElement(it).jsonObject) }
-    } catch (error: Exception) {
-      if (error is CancellationException) throw error
-      null
-    }
-    if (update == null) LiveNotificationDiagnostics.skipped("malformed_payload")
-    return update
-  }
-
-  private fun parseState(root: JsonObject): LiveMatchUpdate? {
-    val matchId = root["match_id"]?.jsonPrimitive?.contentOrNull ?: return null
-    val observedAt = root["observed_at"]?.jsonPrimitive?.longOrNull ?: return null
-    val terminal = root["terminal"]?.jsonPrimitive?.booleanOrNull ?: return null
-    val teams = root["teams"]?.jsonArray?.map { teamElement ->
-      val team = teamElement.jsonObject
-      LiveMatchTeam(
-        name = team["name"]?.jsonPrimitive?.contentOrNull ?: return null,
-        imageUrl = team["img"]?.takeUnless { it is JsonNull }?.jsonPrimitive?.contentOrNull,
-        score = (team.nullableScore("score") ?: return null).value,
-        tag = (team["tag"] as? JsonPrimitive)?.takeIf { it.isString }?.contentOrNull,
-        id = team["id"].teamIdOrNull(),
-      )
-    } ?: return null
-    val currentMap = root["current_map"]?.takeUnless { it is JsonNull }?.let { mapElement ->
-      val map = mapElement.jsonObject
-      LiveMatchMap(
-        name = map["name"]?.jsonPrimitive?.contentOrNull ?: return null,
-        scores = map["scores"]?.jsonArray?.map { scoreElement ->
-          (scoreElement.nullableScore() ?: return null).value
-        } ?: return null,
-        number = map.optionalInt("number"),
-      )
-    }
-    return LiveMatchUpdate(
-      matchId, observedAt, terminal, teams, currentMap, root.optionalInt("total_maps"),
-      (root["map_winners"] as? JsonArray)?.take(MaxVisibleMapSegments)?.map { it.teamIdOrNull() }.orEmpty(),
-      pause = (root["pause"] as? JsonObject)?.pauseOrNull(),
-    )
-      .takeIf(LiveMatchUpdate::isValid)
-  }
-
-  private fun JsonElement?.teamIdOrNull(): String? =
-    (this as? JsonPrimitive)?.contentOrNull?.toLongOrNull()?.takeIf { it > 0 }?.toString()
-
-  private fun JsonObject.optionalInt(key: String): Int? =
-    (get(key) as? JsonPrimitive)?.takeUnless { it.isString }?.intOrNull
-
-  private fun JsonObject.pauseOrNull(): LiveMatchPause? {
-    val kind = (get("kind") as? JsonPrimitive)?.takeIf { it.isString }?.content ?: return null
-    return LiveMatchPause(
-      kind = when (kind) {
-        "tech_pause" -> LiveMatchPauseKind.TechPause
-        "timeout" -> LiveMatchPauseKind.Timeout
-        "halftime" -> LiveMatchPauseKind.Halftime
-        else -> LiveMatchPauseKind.Paused
-      },
-      reason = (get("reason") as? JsonPrimitive)?.takeIf { it.isString }?.content?.trim()
-        ?.takeIf(String::isNotEmpty)?.take(MaxPauseReasonLength),
-    )
-  }
-
-  private fun JsonObject.nullableScore(key: String): ScoreResult? =
-    if (containsKey(key)) getValue(key).nullableScore() else ScoreResult(null)
-
-  private fun kotlinx.serialization.json.JsonElement.nullableScore(): ScoreResult? = when (this) {
-    JsonNull -> ScoreResult(null)
-    else -> jsonPrimitive.intOrNull?.takeIf { it >= 0 }?.let(::ScoreResult)
-  }
-
-  /** Distinguishes a valid missing score from an invalid score. */
-  private data class ScoreResult(val value: Int?)
-
-  /** Defines the expected Firebase payload type and field names. */
-  private companion object {
-    const val PayloadTypeKey = "type"
-    const val PayloadType = "match-live-v1"
-    const val StateKey = "state"
-  }
-}
-
-private fun LiveMatchUpdate.isValid(): Boolean =
-  matchId.isValidMatchId() &&
-    observedAt >= 0 &&
-    teams.size == 2 &&
-    teams.all { it.name.isNotBlank() } &&
-    (currentMap == null || (currentMap.name.isNotBlank() && currentMap.scores.size == 2))
-
-private fun String.isValidMatchId(): Boolean =
-  length in 1..10 && all { it in '0'..'9' } && toLongOrNull()?.let { it > 0 } == true
 
 /** Stores update timestamps and dismissals to reject stale or finished match updates. */
 internal class LiveMatchNotificationStateStore(
@@ -795,9 +684,7 @@ internal data class LiveMatchMapProgress(
   val winnerTeamIndices: List<Int?> = List(totalMaps) { null },
 )
 
-private const val MaxVisibleMapSegments = 9
-
-private const val MaxPauseReasonLength = 24
+internal const val MaxVisibleMapSegments = 9
 
 /**
  * Returns map progress when map metadata is usable, including completed map winners.
