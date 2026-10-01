@@ -2,6 +2,7 @@ import Foundation
 import XCTest
 import SwiftUI
 import CoreText
+import Vision
 
 /// Checks Live Activity payloads, score display, and layouts.
 final class MatchActivityAttributesTests: XCTestCase {
@@ -68,8 +69,21 @@ final class MatchActivityAttributesTests: XCTestCase {
     func testLiveActivityLayouts() throws {
         let fontURL = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "chakra_petch_regular", withExtension: "ttf"))
         CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, nil)
-        let scenarios = [("live", false, false), ("hidden", false, true), ("final", true, false)]
-        for (name, terminal, hidden) in scenarios {
+        typealias Pause = MatchActivityAttributes.ContentState.Pause
+        let scenarios: [(String, Bool, Bool, Pause?, String, String)] = [
+            ("live", false, false, nil, "LIVE", "VAL ESPORTS"),
+            ("hidden", false, true, nil, "LIVE", "VAL ESPORTS"),
+            ("final", true, false, nil, "FINAL", "VAL ESPORTS"),
+            ("technical", false, false, .init(kind: .techPause, reason: "Player disconnected"), "TECHNICAL PAUSE", "Player disconnected"),
+            ("timeout", false, false, .init(kind: .timeout, reason: "Team timeout"), "TIMEOUT", "Team timeout"),
+            ("halftime", false, false, .init(kind: .halftime), "HALFTIME", "VAL ESPORTS"),
+            ("paused", false, false, .init(kind: .paused), "PAUSED", "VAL ESPORTS"),
+            ("long-reason", false, false, .init(kind: .techPause, reason: "Player disconnected; officials are resolving an equipment issue"), "TECHNICAL PAUSE", "VAL ESPORTS"),
+            ("multiline-reason", false, false, .init(kind: .techPause, reason: "Player disconnected\nEquipment issue"), "TECHNICAL PAUSE", "VAL ESPORTS"),
+            ("paused-hidden", false, true, .init(kind: .techPause, reason: "Player disconnected"), "TECHNICAL PAUSE", "Player disconnected"),
+            ("final-with-pause", true, false, .init(kind: .techPause, reason: "Player disconnected"), "FINAL", "VAL ESPORTS"),
+        ]
+        for (name, terminal, hidden, pause, status, detail) in scenarios {
             let state = MatchActivityAttributes.ContentState(
                 match_id: "3141592653", observed_at: 1790000000, terminal: terminal,
                 teams: [
@@ -77,22 +91,109 @@ final class MatchActivityAttributesTests: XCTestCase {
                     .init(name: "PRX", img: nil, score: terminal ? 5 : 0, id: "624"),
                 ],
                 current_map: .init(name: "Lotus", scores: terminal ? [6, 5] : [1, 0], number: 3),
-                total_maps: 3, map_winners: terminal ? [] : ["474", "624", nil]
+                total_maps: 3, map_winners: terminal ? [] : ["474", "624", nil], pause: pause
             )
-            let content = MatchLiveActivityLockScreen(state: state, spoilersHidden: hidden)
-                .frame(width: 370)
-                .background(Color.black)
-                .environment(\.colorScheme, .dark)
-                .environment(\.locale, Locale(identifier: "en_US"))
-            let renderer = ImageRenderer(content: content)
-            renderer.scale = 3
-            let image = try XCTUnwrap(renderer.uiImage)
-            XCTAssertLessThanOrEqual(image.size.height, 160)
-            let attachment = XCTAttachment(image: image)
-            attachment.name = "live-activity-\(name)-dark"
-            attachment.lifetime = .keepAlways
-            add(attachment)
+            for width in [320.0, 370.0] {
+                let content = MatchLiveActivityLockScreen(state: state, spoilersHidden: hidden)
+                    .frame(width: width)
+                    .background(Color.black)
+                    .environment(\.colorScheme, .dark)
+                    .environment(\.locale, Locale(identifier: "en_US"))
+                let renderer = ImageRenderer(content: content)
+                renderer.scale = 3
+                let image = try XCTUnwrap(renderer.uiImage)
+                XCTAssertLessThanOrEqual(image.size.height, 160, name)
+                XCTAssertEqual(image.size.width, width, name)
+                let request = VNRecognizeTextRequest()
+                request.recognitionLevel = .accurate
+                request.recognitionLanguages = ["en-US"]
+                request.usesLanguageCorrection = false
+                try VNImageRequestHandler(cgImage: try XCTUnwrap(image.cgImage)).perform([request])
+                let recognized = request.results?.compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ").uppercased() ?? ""
+                XCTAssertTrue(recognized.contains(status), "\(name), \(width): \(recognized)")
+                XCTAssertTrue(recognized.contains(detail.uppercased()), "\(name), \(width): \(recognized)")
+                if detail == "VAL ESPORTS", pause?.reason != nil {
+                    XCTAssertFalse(recognized.contains("PLAYER DISCONNECTED"), name)
+                }
+                let attachment = XCTAttachment(image: image)
+                attachment.name = "live-activity-\(name)-\(Int(width))-dark"
+                attachment.lifetime = .keepAlways
+                add(attachment)
+            }
         }
+    }
+
+    @available(iOS 16.1, *)
+    @MainActor
+    func testPauseHeaderAtLargerTextSize() throws {
+        let fontURL = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "chakra_petch_regular", withExtension: "ttf"))
+        CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, nil)
+        let state = try decodePauseState(pauseJSON: #"{"kind":"tech_pause"}"#)
+        let renderer = ImageRenderer(content: MatchLiveActivityLockScreen(state: state, spoilersHidden: false)
+            .frame(width: 320)
+            .background(Color.black)
+            .environment(\.colorScheme, .dark)
+            .dynamicTypeSize(.xxxLarge))
+        renderer.scale = 3
+        let image = try XCTUnwrap(renderer.uiImage)
+        let request = VNRecognizeTextRequest()
+        request.recognitionLevel = .accurate
+        request.recognitionLanguages = ["en-US"]
+        request.usesLanguageCorrection = false
+        try VNImageRequestHandler(cgImage: try XCTUnwrap(image.cgImage)).perform([request])
+        let recognized = request.results?.compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ").uppercased() ?? ""
+        XCTAssertTrue(recognized.contains("TECHNICAL PAUSE"), recognized)
+        XCTAssertTrue(recognized.contains("VAL ESPORTS"), recognized)
+        let attachment = XCTAttachment(image: image)
+        attachment.name = "live-activity-larger-text"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    @available(iOS 16.1, *)
+    func testDecodesPauseKindsAndOptionalReasons() throws {
+        typealias Pause = MatchActivityAttributes.ContentState.Pause
+        let cases: [(String, Pause.Kind, String?)] = [
+            (#"{"kind":"tech_pause","reason":" Player disconnected "}"#, .techPause, "Player disconnected"),
+            (#"{"kind":"timeout","reason":null}"#, .timeout, nil),
+            (#"{"kind":"halftime"}"#, .halftime, nil),
+            (#"{"kind":"pause","reason":"  "}"#, .paused, nil),
+            (#"{"kind":"future_kind","reason":"Broadcast paused"}"#, .paused, "Broadcast paused"),
+            (#"{"kind":"timeout","reason":42}"#, .timeout, nil),
+        ]
+        for (json, kind, reason) in cases {
+            let state = try decodePauseState(pauseJSON: json)
+            XCTAssertEqual(state.pause?.kind, kind, json)
+            XCTAssertEqual(state.pause?.reason, reason, json)
+            let encoded = try JSONEncoder().encode(state)
+            XCTAssertEqual(try JSONDecoder().decode(MatchActivityAttributes.ContentState.self, from: encoded), state)
+        }
+    }
+
+    @available(iOS 16.1, *)
+    func testMalformedPauseDoesNotDiscardMatchAndResumeClearsPause() throws {
+        for pauseJSON in [nil, "null", "42", #""paused""#, "[]", "{}", #"{"kind":null}"#, #"{"kind":42}"#] as [String?] {
+            let state = try decodePauseState(pauseJSON: pauseJSON)
+            XCTAssertNil(state.pause)
+            XCTAssertEqual(state.current_map?.scores, [9, 7])
+        }
+        let paused = try decodePauseState(pauseJSON: #"{"kind":"tech_pause","reason":"Player disconnected"}"#)
+        let resumed = try decodePauseState(pauseJSON: nil)
+        XCTAssertNotNil(paused.pause)
+        XCTAssertNil(resumed.pause)
+        XCTAssertEqual(MatchLiveActivityScores(state: paused, hidden: false).primaryLeft,
+                       MatchLiveActivityScores(state: resumed, hidden: false).primaryLeft)
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: paused, hidden: false)?.segments,
+                       MatchLiveActivityMapProgress(state: resumed, hidden: false)?.segments)
+    }
+
+    @available(iOS 16.1, *)
+    private func decodePauseState(pauseJSON: String?) throws -> MatchActivityAttributes.ContentState {
+        let pauseField = pauseJSON.map { #", "pause": "# + $0 } ?? ""
+        let json = """
+        {"match_id":"734308","observed_at":1788789340,"terminal":false,"teams":[{"id":"474","name":"TL","score":1},{"id":"624","name":"PRX","score":1}],"current_map":{"name":"Lotus","number":3,"scores":[9,7]},"total_maps":3,"map_winners":["474","624",null]\(pauseField)}
+        """
+        return try JSONDecoder().decode(MatchActivityAttributes.ContentState.self, from: Data(json.utf8))
     }
 
     @available(iOS 16.1, *)

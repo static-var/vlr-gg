@@ -99,6 +99,12 @@
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Favoriten-Matches" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Favorite matches" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Partidas favoritas" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Matchs favoris" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "पसंदीदा मैच" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "즐겨찾기 경기" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Partidas favoritas" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Избранные матчи" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Favori maçlar" } }
       }
     },
+    "HALFTIME" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "HALBZEIT" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "HALFTIME" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "MEDIO TIEMPO" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "MI-TEMPS" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "हाफ़टाइम" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "하프타임" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "INTERVALO" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "ПЕРЕРЫВ" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "DEVRE ARASI" } }
+      }
+    },
     "LIVE" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -159,6 +165,12 @@
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffnet die Matchdetails" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Opens match details" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Abre los detalles de la partida" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouvre les détails du match" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "मैच का विवरण खोलता है" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "경기 세부사항 열기" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abre os detalhes da partida" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открывает сведения о матче" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Maç ayrıntılarını açar" } }
       }
     },
+    "PAUSED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "PAUSIERT" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "PAUSED" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "EN PAUSA" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "EN PAUSE" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "रुका हुआ" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "일시정지" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "PAUSADO" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "ПАУЗА" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "DURAKLATILDI" } }
+      }
+    },
     "Score hidden" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -181,6 +193,18 @@
       "extractionState" : "manual",
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "NOCH OFFEN" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "TBD" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "POR DEFINIR" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "À DÉFINIR" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "तय होना बाकी" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "미정" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A DEFINIR" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "НЕ ОПР." } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "BELLİ DEĞİL" } }
+      }
+    },
+    "TECHNICAL PAUSE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "TECHNISCHE PAUSE" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "TECHNICAL PAUSE" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "PAUSA TÉCNICA" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "PAUSE TECHNIQUE" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "तकनीकी विराम" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "기술적 일시정지" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "PAUSA TÉCNICA" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "ТЕХНИЧЕСКАЯ ПАУЗА" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "TEKNİK MOLA" } }
+      }
+    },
+    "TIMEOUT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "AUSZEIT" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "TIMEOUT" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "TIEMPO MUERTO" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "TEMPS MORT" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "टाइमआउट" } }, "ko" : { "stringUnit" : { "state" : "translated", "value" : "작전 타임" } }, "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "PAUSA TÁTICA" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "ТАЙМ-АУТ" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "TAKTİK MOLA" } }
       }
     },
     "UPCOMING" : {
