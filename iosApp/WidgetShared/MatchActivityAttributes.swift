@@ -60,6 +60,38 @@ struct MatchActivityAttributes: ActivityAttributes {
             }
         }
 
+        struct Pause: Codable, Hashable {
+            enum Kind: String, Codable {
+                case techPause = "tech_pause"
+                case timeout
+                case halftime
+                case paused = "pause"
+
+                init(from decoder: Decoder) throws {
+                    let rawValue = try decoder.singleValueContainer().decode(String.self)
+                    self = Kind(rawValue: rawValue) ?? .paused
+                }
+            }
+
+            let kind: Kind
+            let reason: String?
+
+            init(kind: Kind, reason: String? = nil) {
+                self.kind = kind
+                let trimmedReason = reason?.trimmingCharacters(in: .whitespacesAndNewlines)
+                self.reason = trimmedReason.flatMap { $0.isEmpty ? nil : $0 }
+            }
+
+            private enum CodingKeys: String, CodingKey { case kind, reason }
+
+            init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                let kind = try container.decode(Kind.self, forKey: .kind)
+                let reason = try? container.decodeIfPresent(String.self, forKey: .reason)
+                self.init(kind: kind, reason: reason)
+            }
+        }
+
         let match_id: String
         let observed_at: Int
         let terminal: Bool
@@ -67,8 +99,9 @@ struct MatchActivityAttributes: ActivityAttributes {
         let current_map: CurrentMap?
         let total_maps: Int?
         let map_winners: [String?]
+        let pause: Pause?
 
-        init(match_id: String, observed_at: Int, terminal: Bool, teams: [Team], current_map: CurrentMap?, total_maps: Int? = nil, map_winners: [String?] = []) {
+        init(match_id: String, observed_at: Int, terminal: Bool, teams: [Team], current_map: CurrentMap?, total_maps: Int? = nil, map_winners: [String?] = [], pause: Pause? = nil) {
             self.match_id = match_id
             self.observed_at = observed_at
             self.terminal = terminal
@@ -76,10 +109,11 @@ struct MatchActivityAttributes: ActivityAttributes {
             self.current_map = current_map
             self.total_maps = total_maps
             self.map_winners = map_winners
+            self.pause = pause
         }
 
         private enum CodingKeys: String, CodingKey {
-            case match_id, observed_at, terminal, teams, current_map, total_maps, map_winners
+            case match_id, observed_at, terminal, teams, current_map, total_maps, map_winners, pause
         }
 
         init(from decoder: Decoder) throws {
@@ -92,6 +126,7 @@ struct MatchActivityAttributes: ActivityAttributes {
             total_maps = try container.decodeIfPresent(Int.self, forKey: .total_maps)
             map_winners = (try? container.decodeIfPresent([MatchActivityTeamID?].self, forKey: .map_winners))?
                 .map { $0?.value } ?? []
+            pause = try? container.decodeIfPresent(Pause.self, forKey: .pause)
         }
     }
 
