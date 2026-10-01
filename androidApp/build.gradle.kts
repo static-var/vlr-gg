@@ -167,6 +167,8 @@ dependencies {
   androidTestImplementation(libs.android.junit)
   androidTestImplementation(libs.android.test.runner)
   androidTestImplementation(projects.localSource)
+  androidTestImplementation(projects.data)
+  androidTestImplementation(projects.remoteSource)
   androidTestImplementation(libs.sqldelight.android.driver)
   baselineProfile(projects.baselineProfile)
   implementation(libs.profileinstaller)
