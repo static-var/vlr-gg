@@ -20,6 +20,62 @@ import kotlin.test.assertTrue
 
 class NewsDataSourceTest {
   @Test
+  fun decodes_links_in_wire_order_with_missing_fields_nulls_blanks_and_unknown_metadata() = runTest {
+    val client = singleResponseClient("""{"links":[
+      {"text":"First","url":"https://example.com/first"},
+      {"url":"https://example.com/no-text"},
+      {"text":"Missing URL"},
+      {},
+      {"text":null,"url":null},
+      {"text":" ","url":""},
+      {"text":"Last","url":"https://example.com/last","metadata":{"source":"news"}}
+    ]}""")
+    try {
+      assertEquals(listOf(
+        NewsLinkDto(text = "First", url = "https://example.com/first"),
+        NewsLinkDto(url = "https://example.com/no-text"),
+        NewsLinkDto(text = "Missing URL"),
+        NewsLinkDto(),
+        NewsLinkDto(),
+        NewsLinkDto(text = " "),
+        NewsLinkDto(text = "Last", url = "https://example.com/last"),
+      ), NewsDataSourceImpl(client).article("1").getOrThrow().links)
+    } finally {
+      client.close()
+    }
+  }
+
+  @Test
+  fun omitted_and_empty_links_decode_as_empty_lists() = runTest {
+    listOf("{}", """{"links":[]}""").forEach { payload ->
+      val client = singleResponseClient(payload)
+      try {
+        assertEquals(emptyList(), NewsDataSourceImpl(client).article("1").getOrThrow().links)
+      } finally {
+        client.close()
+      }
+    }
+  }
+
+  @Test
+  fun malformed_link_shapes_return_failure() = runTest {
+    listOf(
+      """{"links":{}}""",
+      """{"links":["invalid"]}""",
+      """{"links":[null]}""",
+      """{"links":[{"text":[]}]}""",
+      """{"links":[{"url":{}}]}""",
+    ).forEach { payload ->
+      val client = singleResponseClient(payload)
+      try {
+        assertTrue(NewsDataSourceImpl(client).article("1").isFailure, payload)
+      } finally {
+        client.close()
+      }
+    }
+  }
+
+  @Test
   fun resolves_provider_players_only_against_api_origin_and_preserves_nested_metadata() = runTest {
     val client = mockClient {
       respond("""{"blocks":[
@@ -99,7 +155,7 @@ class NewsDataSourceTest {
       listOf("750541", "750541/team-heretics", "https://www.vlr.gg/750541/team-heretics").forEach { id ->
         val article = source.article(id).getOrThrow()
         assertEquals("Opening {{link_0}}\n\n{image_0}\n\n{video_0}", article.content)
-        assertEquals("https://www.vlr.gg/team/1001", article.links.single()["url"])
+        assertEquals("https://www.vlr.gg/team/1001", article.links.single().url)
         assertEquals("Server author", article.author)
       }
       assertEquals(3, requests)

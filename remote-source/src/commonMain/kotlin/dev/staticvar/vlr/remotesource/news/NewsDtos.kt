@@ -22,11 +22,17 @@ data class NewsArticleDto(
   @SerialName("title") val title: String = "",
   @SerialName("content") val content: String = "",
   @SerialName("blocks") val blocks: List<ArticleBlockDto> = emptyList(),
-  @SerialName("links") val links: List<Map<String, String>> = emptyList(),
+  @SerialName("links") val links: List<NewsLinkDto> = emptyList(),
   @SerialName("images") val images: List<String> = emptyList(),
   @SerialName("videos") val videos: List<String> = emptyList(),
   @SerialName("date") val date: String? = null,
   @SerialName("author") val author: String = "",
+)
+
+@Serializable
+data class NewsLinkDto(
+  @SerialName("text") val text: String = "",
+  @SerialName("url") val url: String = "",
 )
 
 @Serializable

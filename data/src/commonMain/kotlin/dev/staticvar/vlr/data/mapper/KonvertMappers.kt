@@ -56,13 +56,13 @@ internal fun NewsArticleDto.toEntity(): News = News(
 )
 
 internal fun NewsArticleDto.toMediaEntities(json: Json, articleId: String = id): List<NewsMedia> {
-  val linkMedia = links.map { map ->
+  val linkMedia = links.map { link ->
     NewsMedia(
       id = 0,
       news_id = articleId,
       media_type = "link",
-      media_value = map["url"].orEmpty(),
-      media_text = map["text"].orEmpty(),
+      media_value = link.url,
+      media_text = link.text,
     )
   }
   val imageMedia = images.map { url ->
