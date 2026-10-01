@@ -46,4 +46,8 @@
     <string name="match_alert_live">경기 진행 중</string>
     <string name="live_match_notification_map_series">맵 %1$d / %2$d · 시리즈 %3$s</string>
     <string name="live_match_notification_series">시리즈 %1$s</string>
+    <string name="live_match_notification_pause_tech">기술적 일시정지</string>
+    <string name="live_match_notification_pause_timeout">작전 타임</string>
+    <string name="live_match_notification_pause_halftime">하프타임</string>
+    <string name="live_match_notification_pause_generic">일시정지</string>
 </resources>

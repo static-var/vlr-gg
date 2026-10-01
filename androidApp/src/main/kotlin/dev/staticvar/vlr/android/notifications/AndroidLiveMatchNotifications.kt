@@ -263,6 +263,7 @@ internal data class LiveMatchUpdate(
   val currentMap: LiveMatchMap?,
   val totalMaps: Int? = null,
   val mapWinners: List<String?> = emptyList(),
+  val pause: LiveMatchPause? = null,
 )
 
 /** Holds a team name, badge, and series score for a notification. */
@@ -278,6 +279,12 @@ internal data class LiveMatchTeam(
 
 /** Holds the current map name, round scores, and map number. */
 internal data class LiveMatchMap(val name: String, val scores: List<Int?>, val number: Int? = null)
+
+/** Holds a broadcast pause the server reports for the current map. */
+internal data class LiveMatchPause(val kind: LiveMatchPauseKind, val reason: String? = null)
+
+/** Names the pause overlays the tracker recognizes; any other kind is a generic pause. */
+internal enum class LiveMatchPauseKind { TechPause, Timeout, Halftime, Paused }
 
 /** Parses and validates live match snapshots from Firebase messages. */
 internal class LiveMatchUpdateParser(private val json: Json) {
@@ -324,6 +331,7 @@ internal class LiveMatchUpdateParser(private val json: Json) {
     return LiveMatchUpdate(
       matchId, observedAt, terminal, teams, currentMap, root.optionalInt("total_maps"),
       (root["map_winners"] as? JsonArray)?.take(MaxVisibleMapSegments)?.map { it.teamIdOrNull() }.orEmpty(),
+      pause = (root["pause"] as? JsonObject)?.pauseOrNull(),
     )
       .takeIf(LiveMatchUpdate::isValid)
   }
@@ -333,6 +341,20 @@ internal class LiveMatchUpdateParser(private val json: Json) {
 
   private fun JsonObject.optionalInt(key: String): Int? =
     (get(key) as? JsonPrimitive)?.takeUnless { it.isString }?.intOrNull
+
+  private fun JsonObject.pauseOrNull(): LiveMatchPause? {
+    val kind = (get("kind") as? JsonPrimitive)?.takeIf { it.isString }?.content ?: return null
+    return LiveMatchPause(
+      kind = when (kind) {
+        "tech_pause" -> LiveMatchPauseKind.TechPause
+        "timeout" -> LiveMatchPauseKind.Timeout
+        "halftime" -> LiveMatchPauseKind.Halftime
+        else -> LiveMatchPauseKind.Paused
+      },
+      reason = (get("reason") as? JsonPrimitive)?.takeIf { it.isString }?.content?.trim()
+        ?.takeIf(String::isNotEmpty)?.take(MaxPauseReasonLength),
+    )
+  }
 
   private fun JsonObject.nullableScore(key: String): ScoreResult? =
     if (containsKey(key)) getValue(key).nullableScore() else ScoreResult(null)
@@ -587,7 +609,8 @@ internal class LiveMatchNotificationRenderer(
     val r2 = map?.scores?.getOrNull(1)
 
     val title = liveTitle(t1.displayName, t2.displayName, r1, r2, scoresHidden, map != null)
-    val contentText = map?.name ?: context.getString(R.string.widget_live)
+    val contentText = listOfNotNull(map?.name, update.pause?.let(::pauseLabel)).joinToString(" · ")
+      .ifEmpty { context.getString(R.string.widget_live) }
     val subText = liveSubText(update.totalMaps, map?.number, t1.score, t2.score, scoresHidden)
 
     builder
@@ -607,6 +630,18 @@ internal class LiveMatchNotificationRenderer(
     } else {
       builder.setStyle(Notification.BigTextStyle().bigText(contentText))
     }
+  }
+
+  private fun pauseLabel(pause: LiveMatchPause): String {
+    val label = context.getString(
+      when (pause.kind) {
+        LiveMatchPauseKind.TechPause -> R.string.live_match_notification_pause_tech
+        LiveMatchPauseKind.Timeout -> R.string.live_match_notification_pause_timeout
+        LiveMatchPauseKind.Halftime -> R.string.live_match_notification_pause_halftime
+        LiveMatchPauseKind.Paused -> R.string.live_match_notification_pause_generic
+      },
+    )
+    return pause.reason?.let { "$label · $it" } ?: label
   }
 
   private fun liveTitle(
@@ -761,6 +796,8 @@ internal data class LiveMatchMapProgress(
 )
 
 private const val MaxVisibleMapSegments = 9
+
+private const val MaxPauseReasonLength = 24
 
 /**
  * Returns map progress when map metadata is usable, including completed map winners.

@@ -47,4 +47,8 @@
     <string name="live_match_notification_map_series">Map %1$d of %2$d · Series %3$s</string>
     <string name="live_match_notification_series">Series %1$s</string>
     <string name="live_match_notification_matchup_score" translatable="false">%1$s\u2003%2$s : %3$s\u2003%4$s</string>
+    <string name="live_match_notification_pause_tech">Technical pause</string>
+    <string name="live_match_notification_pause_timeout">Timeout</string>
+    <string name="live_match_notification_pause_halftime">Halftime</string>
+    <string name="live_match_notification_pause_generic">Paused</string>
 </resources>

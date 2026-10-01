@@ -131,6 +131,20 @@ class AndroidLiveMatchNotificationsTest {
     }
     assertNull(requireNotNull(parser.parse(payload())).mapProgress())
     assertEquals(LiveMatchMapProgress(3, 3), update.copy(terminal = true).mapProgress())
+
+    // Pause metadata rides along as an optional update: only a string kind is recognized and the scores stay.
+    fun paused(value: String) = requireNotNull(parser.parse(payload(state = validState().replace("\"future_field\":true", "\"pause\":$value"))))
+    assertEquals(LiveMatchPause(LiveMatchPauseKind.TechPause, "GEAR"), paused("""{"kind":"tech_pause","reason":" GEAR "}""").pause)
+    assertEquals(LiveMatchPause(LiveMatchPauseKind.Timeout), paused("""{"kind":"timeout","reason":null}""").pause)
+    assertEquals(LiveMatchPause(LiveMatchPauseKind.Halftime), paused("""{"kind":"halftime"}""").pause)
+    listOf("""{"kind":"coffee"}""", """{"kind":"pause"}""").forEach { kind ->
+      assertEquals(LiveMatchPause(LiveMatchPauseKind.Paused), paused(kind).pause)
+    }
+    listOf("null", "\"tech_pause\"", "{}", """{"kind":1}""", "[]").forEach { invalid ->
+      val parsed = paused(invalid)
+      assertNull(parsed.pause)
+      assertEquals(listOf(8, 6), parsed.currentMap?.scores)
+    }
   }
 
   @Test
@@ -272,6 +286,23 @@ class AndroidLiveMatchNotificationsTest {
     assertEquals("8–8" to Icon.TYPE_RESOURCE, chip(trailing.copy(currentMap = live.currentMap?.copy(scores = listOf(8, 8)))))
     val longTag = trailing.copy(teams = listOf(trailing.teams[0].copy(tag = "TEAMLIQ", imageUrl = null), trailing.teams[1]))
     assertEquals("12–10" to Icon.TYPE_RESOURCE, chip(longTag.copy(currentMap = live.currentMap?.copy(scores = listOf(12, 10)))))
+
+    // A pause joins the map name in the content text; the status-bar chip stays score-only.
+    val paused = live.copy(pause = LiveMatchPause(LiveMatchPauseKind.TechPause))
+    val pausedNotification = renderer.build(paused, scoresHidden = false, sdkInt = 36)
+    assertEquals("Team Liquid\u20038 : 6\u2003Paper Rex", pausedNotification.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+    assertEquals(
+      "Ascent · ${context.getString(R.string.live_match_notification_pause_tech)}",
+      pausedNotification.extras.getCharSequence(Notification.EXTRA_TEXT).toString(),
+    )
+    assertEquals(chip(live), chip(paused))
+    assertEquals(chip(trailing), chip(trailing.copy(pause = LiveMatchPause(LiveMatchPauseKind.Halftime))))
+    val reasoned = renderer.build(paused.copy(pause = LiveMatchPause(LiveMatchPauseKind.TechPause, "GEAR")), false, 36)
+    assertTrue(reasoned.extras.getCharSequence(Notification.EXTRA_TEXT).toString().endsWith(" · GEAR"))
+    val terminalPaused = renderer.build(paused.copy(terminal = true), false, 36)
+    val pauseLabel = context.getString(R.string.live_match_notification_pause_tech)
+    assertFalse(terminalPaused.extras.getCharSequence(Notification.EXTRA_TEXT).toString().contains(pauseLabel))
+    assertFalse(terminalPaused.extras.getCharSequence(Notification.EXTRA_TITLE).toString().contains(pauseLabel))
 
     val firstMap = live.copy(currentMap = live.currentMap?.copy(number = 1))
     assertEquals(LiveMatchMapProgress(1, 3), firstMap.mapProgress())
@@ -549,6 +580,18 @@ class AndroidLiveMatchNotificationsTest {
     )
 
     val fixture = InstrumentationRegistry.getArguments().getString("fixture") ?: "mid_map"
+    val midMap = LiveMatchUpdate(
+      matchId = "110601034",
+      observedAt = 100,
+      terminal = false,
+      teams = listOf(
+        LiveMatchTeam("NS", "https://owcdn.net/img/6399bb707aacb.png", 0, tag = "NS", id = "11060"),
+        LiveMatchTeam("NRG", "https://owcdn.net/img/6610f026c1a9e.png", 1, tag = "NRG", id = "1034"),
+      ),
+      currentMap = LiveMatchMap("Split", listOf(5, 10), number = 2),
+      totalMaps = 3,
+      mapWinners = listOf("1034", null, null),
+    )
     val update = when (fixture) {
       "between_maps" -> LiveMatchUpdate(
         matchId = "110601034",
@@ -586,18 +629,9 @@ class AndroidLiveMatchNotificationsTest {
         totalMaps = 3,
         mapWinners = listOf("1034", "1034", null),
       )
-      else -> LiveMatchUpdate(
-        matchId = "110601034",
-        observedAt = 100,
-        terminal = false,
-        teams = listOf(
-          LiveMatchTeam("NS", "https://owcdn.net/img/6399bb707aacb.png", 0, tag = "NS", id = "11060"),
-          LiveMatchTeam("NRG", "https://owcdn.net/img/6610f026c1a9e.png", 1, tag = "NRG", id = "1034"),
-        ),
-        currentMap = LiveMatchMap("Split", listOf(5, 10), number = 2),
-        totalMaps = 3,
-        mapWinners = listOf("1034", null, null),
-      )
+      "paused" -> midMap.copy(pause = LiveMatchPause(LiveMatchPauseKind.TechPause))
+      "halftime" -> midMap.copy(pause = LiveMatchPause(LiveMatchPauseKind.Halftime))
+      else -> midMap
     }
 
     val logoCache = LiveMatchLogoCache(context)
