@@ -155,10 +155,8 @@
     <string name="match_reminders_description">Favori bir maç başlamadan önce hatırlatıcı alın. Hatırlatıcı almak için bildirimlere izin verin.</string>
     <string name="match_reminders_permission_description">Favorileriniz için hatırlatıcı almak üzere bildirimlere izin verin.</string>
     <string name="live_updates_with_reminders_description">Canlı skorları bildirimlerde takip edin. Live Updates kapalıyken de favori maçlardan önce hatırlatıcı alırsınız.</string>
-    <string name="release_1_0_7_calendar_title">Etkinlik maçları takviminde</string>
-    <string name="release_1_0_7_calendar_description">Bir etkinliğin yaklaşan maçlarını takvimine aktar.</string>
-    <string name="release_1_0_7_navigation_title">Daha kolay gezinme</string>
-    <string name="release_1_0_7_navigation_description">Uygulamanın maçlara ve etkinliklere odaklanması için Haberler sekmesi kaldırıldı.</string>
+    <string name="release_1_0_7_calendar_title">Maçlar takviminde</string>
+    <string name="release_1_0_7_calendar_description">Yaklaşan bir maçı takvimine ekle veya bir etkinliğin yaklaşan maçlarının tüm programını aktar.</string>
     <string name="release_1_0_7_search_title">Takımınızı bulun</string>
     <string name="release_1_0_7_search_description">Mevcut sıralamada yer almayanlar dahil takımları Sıralama’dan arayın ve profillerini açın.</string>
     <string name="release_1_0_7_match_details_title">Her maçın ayrıntılarını keşfedin</string>

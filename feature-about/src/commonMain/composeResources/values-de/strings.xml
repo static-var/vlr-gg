@@ -156,10 +156,8 @@
     <string name="match_reminders_description">Erhalte eine Erinnerung, bevor ein favorisiertes Match beginnt. Erlaube Mitteilungen, um Erinnerungen zu erhalten.</string>
     <string name="match_reminders_permission_description">Erlaube Mitteilungen, um Erinnerungen für deine Favoriten zu erhalten.</string>
     <string name="live_updates_with_reminders_description">Verfolge Live-Spielstände in Mitteilungen. Wenn Live Updates deaktiviert sind, erhältst du weiterhin Erinnerungen vor favorisierten Matches.</string>
-    <string name="release_1_0_7_calendar_title">Event-Matches in deinem Kalender</string>
-    <string name="release_1_0_7_calendar_description">Exportiere anstehende Matches eines Events in deinen Kalender.</string>
-    <string name="release_1_0_7_navigation_title">Einfachere Navigation</string>
-    <string name="release_1_0_7_navigation_description">Der News-Tab wurde entfernt, damit sich die App auf Matches und Events konzentriert.</string>
+    <string name="release_1_0_7_calendar_title">Matches in deinem Kalender</string>
+    <string name="release_1_0_7_calendar_description">Füge ein anstehendes Match zu deinem Kalender hinzu oder exportiere den gesamten anstehenden Spielplan eines Events.</string>
     <string name="release_1_0_7_search_title">Finde dein Team</string>
     <string name="release_1_0_7_search_description">Suche in der Rangliste nach Teams, auch nach solchen, die nicht in der aktuellen Rangliste stehen, und öffne ihre Profile.</string>
     <string name="release_1_0_7_match_details_title">Verfolge jedes Match genauer</string>

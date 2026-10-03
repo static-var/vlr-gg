@@ -157,10 +157,8 @@
     <string name="match_reminders_description">Recibe un recordatorio antes de que empiece una partida favorita. Permite las notificaciones para recibir recordatorios.</string>
     <string name="match_reminders_permission_description">Permite las notificaciones para recibir recordatorios de tus favoritos.</string>
     <string name="live_updates_with_reminders_description">Sigue los marcadores en directo en las notificaciones. Cuando Live Updates esté desactivado, seguirás recibiendo recordatorios antes de tus partidas favoritas.</string>
-    <string name="release_1_0_7_calendar_title">Partidos de eventos en tu calendario</string>
-    <string name="release_1_0_7_calendar_description">Exporta los próximos partidos de un evento a tu calendario.</string>
-    <string name="release_1_0_7_navigation_title">Navegación más sencilla</string>
-    <string name="release_1_0_7_navigation_description">Se ha eliminado la pestaña de noticias para centrar la app en partidos y eventos.</string>
+    <string name="release_1_0_7_calendar_title">Partidos en tu calendario</string>
+    <string name="release_1_0_7_calendar_description">Añade un próximo partido a tu calendario o exporta todos los próximos partidos de un evento.</string>
     <string name="release_1_0_7_search_title">Encuentra tu equipo</string>
     <string name="release_1_0_7_search_description">Busca equipos en Clasificación, incluidos los que no aparecen en la clasificación actual, y abre sus perfiles.</string>
     <string name="release_1_0_7_match_details_title">Sigue cada partida más de cerca</string>

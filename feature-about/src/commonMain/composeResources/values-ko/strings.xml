@@ -155,10 +155,8 @@
     <string name="match_reminders_description">즐겨찾는 경기가 시작되기 전에 알림을 받으세요. 경기 시작 알림을 받으려면 알림을 허용하세요.</string>
     <string name="match_reminders_permission_description">즐겨찾기 경기 시작 알림을 받으려면 알림을 허용하세요.</string>
     <string name="live_updates_with_reminders_description">알림에서 실시간 점수를 확인하세요. Live Updates를 꺼도 즐겨찾는 경기 시작 전 알림은 계속 받을 수 있습니다.</string>
-    <string name="release_1_0_7_calendar_title">이벤트 경기를 캘린더에</string>
-    <string name="release_1_0_7_calendar_description">이벤트의 예정된 경기를 캘린더로 내보내세요.</string>
-    <string name="release_1_0_7_navigation_title">더 간단한 화면 이동</string>
-    <string name="release_1_0_7_navigation_description">경기와 이벤트에 집중할 수 있도록 뉴스 탭을 제거했습니다.</string>
+    <string name="release_1_0_7_calendar_title">경기를 캘린더에</string>
+    <string name="release_1_0_7_calendar_description">예정된 경기 하나를 캘린더에 추가하거나 이벤트의 전체 예정 경기 일정을 내보내세요.</string>
     <string name="release_1_0_7_search_title">내 팀 찾기</string>
     <string name="release_1_0_7_search_description">랭킹에서 팀을 검색하고 프로필을 열어 보세요. 현재 랭킹에 없는 팀도 찾을 수 있습니다.</string>
     <string name="release_1_0_7_match_details_title">모든 경기를 더 자세히</string>

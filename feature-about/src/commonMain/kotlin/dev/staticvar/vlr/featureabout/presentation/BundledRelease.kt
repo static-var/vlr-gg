@@ -23,8 +23,6 @@ import vlr.feature_about.generated.resources.release_1_0_7_ios_shortcuts_descrip
 import vlr.feature_about.generated.resources.release_1_0_7_ios_shortcuts_title
 import vlr.feature_about.generated.resources.release_1_0_7_languages_description
 import vlr.feature_about.generated.resources.release_1_0_7_languages_title
-import vlr.feature_about.generated.resources.release_1_0_7_navigation_description
-import vlr.feature_about.generated.resources.release_1_0_7_navigation_title
 import vlr.feature_about.generated.resources.release_1_0_7_stability_description
 import vlr.feature_about.generated.resources.release_1_0_7_stability_title
 import vlr.feature_about.generated.resources.release_1_0_7_widgets_description
@@ -88,10 +86,6 @@ public object BundledRelease {
       title = Res.string.release_1_0_7_ios_shortcuts_title,
       description = Res.string.release_1_0_7_ios_shortcuts_description,
       platform = ReleasePlatform.Ios,
-    ),
-    Highlight(
-      title = Res.string.release_1_0_7_navigation_title,
-      description = Res.string.release_1_0_7_navigation_description,
     ),
     Highlight(
       title = Res.string.release_1_0_7_stability_title,

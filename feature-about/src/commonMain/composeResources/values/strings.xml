@@ -156,10 +156,8 @@
     <string name="release_1_0_7_ios_shortcuts_description">Find favorite teams and events in Spotlight, or ask Siri about your next favorite match.</string>
     <string name="release_1_0_7_stability_title">Smoother navigation</string>
     <string name="release_1_0_7_stability_description">Move between matches and events more smoothly, find settings more easily, and keep your favorites reliably after app updates.</string>
-    <string name="release_1_0_7_calendar_title">Event matches in your calendar</string>
-    <string name="release_1_0_7_calendar_description">Export upcoming matches from an event to your calendar.</string>
-    <string name="release_1_0_7_navigation_title">Simpler navigation</string>
-    <string name="release_1_0_7_navigation_description">The News tab has been removed to keep the app focused on matches and events.</string>
+    <string name="release_1_0_7_calendar_title">Matches in your calendar</string>
+    <string name="release_1_0_7_calendar_description">Add an upcoming match to your calendar, or export an event's full upcoming schedule.</string>
     <string name="release_1_0_7_search_title">Find your team</string>
     <string name="release_1_0_7_search_description">Search for teams from Rankings, including teams outside the current rankings, and open their profiles.</string>
     <string name="release_1_0_7_match_details_title">Get closer to every match</string>

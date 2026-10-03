@@ -158,10 +158,8 @@
     <string name="match_reminders_description">Получайте напоминания перед началом избранных матчей. Разрешите уведомления, чтобы получать напоминания.</string>
     <string name="match_reminders_permission_description">Разрешите уведомления, чтобы получать напоминания об избранном.</string>
     <string name="live_updates_with_reminders_description">Следите за счётом в реальном времени в уведомлениях. Если Live Updates отключены, напоминания перед избранными матчами по-прежнему приходят.</string>
-    <string name="release_1_0_7_calendar_title">Матчи событий в вашем календаре</string>
-    <string name="release_1_0_7_calendar_description">Экспортируйте предстоящие матчи события в свой календарь.</string>
-    <string name="release_1_0_7_navigation_title">Более простая навигация</string>
-    <string name="release_1_0_7_navigation_description">Вкладка новостей удалена, чтобы приложение было сосредоточено на матчах и событиях.</string>
+    <string name="release_1_0_7_calendar_title">Матчи в вашем календаре</string>
+    <string name="release_1_0_7_calendar_description">Добавьте предстоящий матч в свой календарь или экспортируйте полное расписание предстоящих матчей события.</string>
     <string name="release_1_0_7_search_title">Найдите свою команду</string>
     <string name="release_1_0_7_search_description">Ищите команды в разделе «Рейтинг», в том числе те, которых нет в текущем рейтинге, и открывайте их профили.</string>
     <string name="release_1_0_7_match_details_title">Больше подробностей о каждом матче</string>
