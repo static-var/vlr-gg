@@ -1,11 +1,11 @@
 {
   "images": [
     {
-      "filename": "launch-wordmark-light.svg",
+      "filename": "launch-logo-light.svg",
       "idiom": "universal"
     },
     {
-      "filename": "launch-wordmark-dark.svg",
+      "filename": "launch-logo-dark.svg",
       "idiom": "universal",
       "appearances": [
         {

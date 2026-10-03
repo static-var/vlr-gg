@@ -29,8 +29,15 @@ The monochrome frame and its V are centered independently on the canvas. Its spa
 
 ## Splash screens
 
-Both platforms show the transparent Match point illustration on Mocha `#1E1E2E`. The visible artwork is centered and measures 132 by 126 dp/pt at its nominal display size.
+Both platforms show the transparent Match point illustration on the design system background (`#0A0A0A` dark, `#FFFFFF` light) with the outlined Val Esports wordmark.
 
-Android uses the native splash screen through AndroidX, with `Theme.VLR.Starting` and `ic_splash_logo`. `MainActivity` installs it before `super.onCreate()` and then switches to the normal app theme.
+Android uses the native splash screen through AndroidX, with `Theme.VLR.Starting` and `ic_splash_logo`. `MainActivity` installs it before `super.onCreate()` and then switches to the normal app theme. Android 12 and later also draw the `splash_branding` wordmark near the bottom edge; the platform has no slot for the iOS caption.
 
-iOS uses `UILaunchScreen` with the `LaunchLogo` image and `LaunchBackground` color assets. The image has 1x, 2x, and 3x representations. Both generator scripts reproduce their platform's splash logo.
+iOS uses `LaunchScreen.storyboard` with the `LaunchLogo` and `LaunchCaption` images and the `LaunchBackground` color. The logo stacks the illustration above the wordmark. The caption sits above the bottom safe area. Both images are SVGs with light and dark variants.
+
+Regenerate the launch wordmarks with fontTools installed:
+
+```sh
+rtk proxy python3 art/app-icon/generate-ios-launch-screen.py
+rtk proxy python3 art/app-icon/generate-android-splash-branding.py
+```
