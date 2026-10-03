@@ -55,7 +55,6 @@ import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
@@ -223,7 +222,7 @@ internal fun MatchDetailsScreen(
         }
       }
       when {
-        (!isOnline || uiState.isLoading || uiState.isDetailLoadPending || uiState.isRefreshing) && match == null -> MatchDetailsLoading(
+        (uiState.isLoading || uiState.isDetailLoadPending || uiState.isRefreshing) && match == null -> MatchDetailsLoading(
           modifier = Modifier.fillMaxSize().transitionContentFade(extraContentFade),
           label = stringResource(Res.string.loading_match),
         )
@@ -248,7 +247,7 @@ internal fun MatchDetailsScreen(
           match = match,
           preferences = uiState.preferences,
           showBreakdownEmpty = !hasDetailedContent && uiState.preferences.showBreakdown &&
-            isOnline && !uiState.isLoading && !uiState.isDetailLoadPending && !uiState.isRefreshing && uiState.errorMessage == null,
+            !uiState.isLoading && !uiState.isDetailLoadPending && !uiState.isRefreshing && uiState.errorMessage == null,
           selectedMapIndex = resolvedMapIndex,
           isFavoritePending = uiState.isFavoritePending,
           isFavoriteInherited = uiState.isFavoriteInherited,
@@ -524,9 +523,5 @@ private fun String.asExternalUrl(): String =
 
 @Composable
 private fun MatchDetailsLoading(label: String, modifier: Modifier = Modifier) {
-  if (LocalIsOnline.current) {
-    PrismFullscreenLoader(modifier = modifier, size = PrismLoaderSize.Large, label = label)
-  } else {
-    SharedScreenLoading(label = label, modifier = modifier)
-  }
+  PrismFullscreenLoader(modifier = modifier, size = PrismLoaderSize.Large, label = label)
 }

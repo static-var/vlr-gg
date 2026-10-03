@@ -56,12 +56,10 @@ import dev.staticvar.vlr.domain.model.EventTeam
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.featureevents.presentation.mascot.eventMascotCues
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
@@ -165,7 +163,6 @@ internal fun EventDetailsScreen(
   onToggleFavorite: () -> Unit = {},
 ) {
   val event = uiState.event
-  val isOnline = LocalIsOnline.current
   val spoilersHidden = LocalSpoilerMode.current.enabled
   val transitionContentFade = rememberEventDetailContentFade()
   val bodyReady = event != null && (
@@ -227,7 +224,7 @@ internal fun EventDetailsScreen(
       }
 
       when {
-        (!isOnline || uiState.isLoading || uiState.isRefreshing) && event == null -> EventDetailsLoading(
+        (uiState.isLoading || uiState.isRefreshing) && event == null -> EventDetailsLoading(
           modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM)
             .transitionContentFade(transitionContentFade),
           label = stringResource(Res.string.loading_event),
@@ -257,7 +254,7 @@ internal fun EventDetailsScreen(
           matchGrouping = matchGrouping,
           selectedMatchGroupName = selectedMatchGroupName,
           isSavingFavorite = uiState.isSavingFavorite,
-          canShowEmptySection = isOnline && !uiState.isLoading && !uiState.isDetailLoadPending &&
+          canShowEmptySection = !uiState.isLoading && !uiState.isDetailLoadPending &&
             !uiState.isRefreshing && uiState.errorMessage == null,
           spoilersHidden = spoilersHidden,
           listState = listState,
@@ -671,9 +668,5 @@ private fun EventParticipantsRail(
 
 @Composable
 private fun EventDetailsLoading(label: String, modifier: Modifier = Modifier) {
-  if (LocalIsOnline.current) {
-    PrismFullscreenLoader(modifier = modifier, size = PrismLoaderSize.Large, label = label)
-  } else {
-    SharedScreenLoading(label = label, modifier = modifier)
-  }
+  PrismFullscreenLoader(modifier = modifier, size = PrismLoaderSize.Large, label = label)
 }

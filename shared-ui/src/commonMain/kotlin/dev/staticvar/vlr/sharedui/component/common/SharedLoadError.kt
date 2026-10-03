@@ -83,13 +83,13 @@ public fun SharedLoadError(
   }
   var showDetails by remember(errorMessage, errorDetails) { mutableStateOf(false) }
   val actions: @Composable () -> Unit = {
-    if (isOnline) {
-      FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs, Alignment.CenterHorizontally),
-      ) {
-        PrismButton(onClick = onRefresh, style = PrismButtonStyle.Tertiary) {
-          Text(stringResource(Res.string.shared_retry))
-        }
+    FlowRow(
+      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs, Alignment.CenterHorizontally),
+    ) {
+      PrismButton(onClick = onRefresh, style = PrismButtonStyle.Tertiary) {
+        Text(stringResource(Res.string.shared_retry))
+      }
+      if (isOnline || errorDetails != null) {
         PrismButton(onClick = {
           showDetails = true
         }, style = PrismButtonStyle.Tertiary) { Text(stringResource(Res.string.shared_show_details)) }
