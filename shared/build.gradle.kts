@@ -86,7 +86,6 @@ kotlin {
         implementation(projects.featureHome)
         implementation(projects.featureEvents)
         implementation(projects.featureMatches)
-        implementation(projects.featureNews)
         implementation(projects.featurePlayer)
         implementation(projects.featureRankings)
         implementation(projects.featureTeam)

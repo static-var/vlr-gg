@@ -55,10 +55,6 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
     viewModelScope.launch { _resetScroll.emit(false) }
   }
 
-  fun refreshNews() = repository.updateLatestNews().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
-
-  fun getNews() = repository.getNewsFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
-
   fun refreshMatches() = repository.updateLatestMatches().stateIn(viewModelScope, SharingStarted.Lazily, Ok(false))
 
   fun getMatches() = repository.getMatchesFromDb().stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
@@ -98,8 +94,6 @@ class VlrViewModel @Inject constructor(private val repository: VlrRepository) : 
 
   fun getPlayerDetails(id: String) =
     repository.getPlayerDetailsFromDb(id).stateIn(viewModelScope, SharingStarted.Lazily, Waiting())
-
-  fun parseNews(id: String) = repository.parseNews(id).stateIn(viewModelScope, SharingStarted.Lazily, null)
 
   fun trackMatch(id: String) = viewModelScope.launch { repository.addFavoriteMatch(id) }
   fun untrackMatch(id: String) = viewModelScope.launch { repository.removeFavoriteMatch(id) }

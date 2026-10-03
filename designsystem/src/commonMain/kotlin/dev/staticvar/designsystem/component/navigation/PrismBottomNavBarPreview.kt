@@ -70,7 +70,6 @@ private fun rememberBottomNavPreviewItems(): List<PrismBottomNavItem> {
       navPreviewItem("matches", "Matches", icons.matches.unselected, icons.matches.selected),
       navPreviewItem("events", "Events", icons.events.unselected, icons.events.selected),
       navPreviewItem("rankings", "Rankings", icons.rankings.unselected, icons.rankings.selected),
-      navPreviewItem("news", "News", icons.news.unselected, icons.news.selected),
     )
   }
 }

@@ -16,6 +16,11 @@ internal val CatppuccinIcons: PrismIcons by lazy {
       outline = "M12 15 V3 M7.5 7.5 L12 3 L16.5 7.5 M5 12 V18 Q5 21 8 21 H16 Q19 21 19 18 V12",
       rounded = true,
     ),
+    calendarAdd = prismIconArtwork(
+      name = "CatppuccinCalendarAdd",
+      outline = "M6 5 H18 Q20 5 20 7 V18 Q20 20 18 20 H6 Q4 20 4 18 V7 Q4 5 6 5 Z M8 3 V7 M16 3 V7 M4 10 H20 M12 12.5 V17.5 M9.5 15 H14.5",
+      rounded = true,
+    ),
     preview = prismIconArtwork(
       name = "CatppuccinPreview",
       outline = "M2 12 Q6 5 12 5 Q18 5 22 12 Q18 19 12 19 Q6 19 2 12 Z M15 12 A3 3 0 1 1 9 12 A3 3 0 1 1 15 12 Z",
@@ -32,12 +37,6 @@ internal val CatppuccinIcons: PrismIcons by lazy {
       outline = "M3 10 L10.5 3 Q12 1.5 13.5 3 L21 10 V19 Q21 21 19 21 H15 V14 H9 V21 H5 Q3 21 3 19 Z",
       selectedOutline = "",
       selectedFill = "M3 10 L10.5 3 Q12 1.5 13.5 3 L21 10 V19 Q21 21 19 21 H15 V14 H9 V21 H5 Q3 21 3 19 Z",
-    ),
-    news = catppuccinNavigation(
-      name = "News",
-      outline = "M7 3 H17 Q20 3 20 6 V18 Q20 21 17 21 H7 Q4 21 4 18 V6 Q4 3 7 3 Z M8 7 H11 V11 H8 Z M15 7 H16 M15 11 H16 M8 15 H16 M8 18 H14",
-      selectedOutline = "M7 3 H17 Q20 3 20 6 V18 Q20 21 17 21 H7 Q4 21 4 18 V6 Q4 3 7 3 Z M8 15 H16 M8 18 H14",
-      selectedFill = "M8 6 H16 Q17 6 17 7 V11 Q17 12 16 12 H8 Q7 12 7 11 V7 Q7 6 8 6 Z",
     ),
     matches = catppuccinNavigation(
       name = "Matches",

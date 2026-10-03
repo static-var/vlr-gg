@@ -12,9 +12,7 @@ import androidx.navigation.NavOptionsBuilder
 
 private object Destinations {
   const val MATCH_OVERVIEW = "match_overview"
-  const val NEWS_OVERVIEW = "news_overview"
   const val EVENTS_OVERVIEW = "event_overview"
-  const val NEWS = "news"
   const val MATCH = "match"
   const val EVENT = "event"
   const val TEAM = "team"
@@ -25,7 +23,6 @@ private object Destinations {
 
 sealed class Destination(val route: String) {
   object MatchOverview : Destination(Destinations.MATCH_OVERVIEW)
-  object NewsOverview : Destination(Destinations.NEWS_OVERVIEW)
   object EventOverview : Destination(Destinations.EVENTS_OVERVIEW)
   object About : Destination(Destinations.ABOUT)
   object Rank : Destination(Destinations.RANK)
@@ -47,12 +44,6 @@ sealed class Destination(val route: String) {
     }
   }
 
-  object News : Destination("${Destinations.NEWS}/{${Args.ID}}") {
-    object Args {
-      const val ID = "id"
-    }
-  }
-
   object Player : Destination("${Destinations.PLAYER}/{${Args.ID}}") {
     object Args {
       const val ID = "id"
@@ -66,10 +57,6 @@ class Action(private val navController: NavHostController) {
 
   val matchOverview: () -> Unit = {
     navController.navigate(Destinations.MATCH_OVERVIEW, builder = { navConfig(navController) })
-  }
-
-  val goNews: () -> Unit = {
-    navController.navigate(Destinations.NEWS_OVERVIEW, builder = { navConfig(navController) })
   }
 
   val goEvents: () -> Unit = {
@@ -89,8 +76,6 @@ class Action(private val navController: NavHostController) {
   val event: (String) -> Unit = { id -> navController.navigate("${Destinations.EVENT}/$id") }
 
   val team: (String) -> Unit = { id -> navController.navigate("${Destinations.TEAM}/$id") }
-
-  val news: (String) -> Unit = { id -> navController.navigate("${Destinations.NEWS}/$id") }
 
   val player: (String) -> Unit = { id -> navController.navigate("${Destinations.PLAYER}/$id") }
 }

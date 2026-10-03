@@ -137,7 +137,7 @@
     <string name="notification_promotion_unavailable">Os placares ao vivo ainda podem aparecer como notificações comuns. Seu dispositivo não permite atualizações ao vivo em destaque para este app. Confira as configurações de notificação do sistema; a disponibilidade também depende do dispositivo.</string>
     <string name="match_alerts">Alertas de partidas</string>
     <string name="match_alerts_description">Receba uma notificação quando uma partida favorita começar. Atualizações de placar ao vivo não estão disponíveis neste dispositivo.</string>
-    <string name="release_1_0_7_introduction">Confira tudo o que chegou desde a versão 1.0.0, com mais formas de acompanhar suas partidas favoritas e personalizar o app.</string>
+    <string name="release_1_0_7_introduction">Descubra tudo o que foi adicionado desde a versão 1.0.0, com mais formas de acompanhar suas partidas favoritas e exportar a programação dos eventos para seu calendário.</string>
     <string name="release_1_0_7_favorites_title">Acompanhe seus favoritos</string>
     <string name="release_1_0_7_favorites_description">Encontre na tela inicial partidas ao vivo e resultados das últimas 24 horas dos seus times, eventos e partidas favoritos.</string>
     <string name="release_1_0_7_ios_live_title">Placares ao vivo dos seus favoritos</string>
@@ -157,6 +157,8 @@
     <string name="match_reminders_description">Receba um lembrete antes do início de uma partida favorita. Permita as notificações para receber lembretes.</string>
     <string name="match_reminders_permission_description">Permita as notificações para receber lembretes dos seus favoritos.</string>
     <string name="live_updates_with_reminders_description">Acompanhe os placares ao vivo nas notificações. Quando Live Updates estiver desativado, você continuará recebendo lembretes antes das partidas favoritas.</string>
+    <string name="release_1_0_7_calendar_title">Partidas no seu calendário</string>
+    <string name="release_1_0_7_calendar_description">Adicione uma próxima partida ao seu calendário ou exporte todas as próximas partidas de um evento.</string>
     <string name="release_1_0_7_search_title">Encontre seu time</string>
     <string name="release_1_0_7_search_description">Procure times na Classificação, inclusive os que estão fora da classificação atual, e abra seus perfis.</string>
     <string name="release_1_0_7_match_details_title">Acompanhe cada partida de perto</string>

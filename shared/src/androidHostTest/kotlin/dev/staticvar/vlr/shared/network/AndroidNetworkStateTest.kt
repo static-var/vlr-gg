@@ -15,76 +15,51 @@ import kotlinx.coroutines.test.runTest
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidNetworkStateTest {
   @Test
-  fun unvalidatedNetworkBecomesOfflineAfterFiveSeconds() = runTest {
+  fun unvalidatedNetworkStaysUnknownAfterFiveSeconds() = runTest {
     var status = NetworkStatus.Unknown
-    val state = AndroidNetworkState(this) { status = it }
+    val state = AndroidNetworkState { status = it }
 
     state.update(network = 1L, validated = false)
     runCurrent()
-    advanceTimeBy(4_999)
+    advanceTimeBy(60_000)
     runCurrent()
     assertEquals(NetworkStatus.Unknown, status)
 
-    advanceTimeBy(1)
-    runCurrent()
-    assertEquals(NetworkStatus.Offline, status)
-  }
-
-  @Test
-  fun validationPublishesOnlineAndCancelsPendingTimeout() = runTest {
-    var status = NetworkStatus.Unknown
-    val state = AndroidNetworkState(this) { status = it }
-
-    state.update(network = 1L, validated = false)
-    runCurrent()
-    advanceTimeBy(2_000)
     state.update(network = 1L, validated = true)
     assertEquals(NetworkStatus.Online, status)
+  }
 
-    advanceTimeBy(5_000)
-    runCurrent()
+  @Test
+  fun availabilityPreservesValidationFromTheInitialProbe() {
+    var status = NetworkStatus.Unknown
+    val state = AndroidNetworkState { status = it }
+
+    state.update(network = 1L, validated = true)
+    state.available(network = 1L)
+
     assertEquals(NetworkStatus.Online, status)
   }
 
   @Test
-  fun repeatedUnvalidatedUpdatesDoNotExtendTheDeadline() = runTest {
+  fun replacementNetworkWaitsForItsOwnCapabilities() {
     var status = NetworkStatus.Unknown
-    val state = AndroidNetworkState(this) { status = it }
+    val state = AndroidNetworkState { status = it }
 
-    state.update(network = 1L, validated = false)
-    runCurrent()
-    advanceTimeBy(4_000)
-    state.update(network = 1L, validated = false)
-    runCurrent()
-    advanceTimeBy(1_000)
-    runCurrent()
-
-    assertEquals(NetworkStatus.Offline, status)
-  }
-
-  @Test
-  fun replacementNetworkGetsItsOwnValidationDeadline() = runTest {
-    var status = NetworkStatus.Unknown
-    val state = AndroidNetworkState(this) { status = it }
-
-    state.update(network = 1L, validated = false)
-    runCurrent()
-    advanceTimeBy(4_000)
-    state.update(network = 2L, validated = false)
-    runCurrent()
-    advanceTimeBy(1_000)
-    runCurrent()
+    state.update(network = 1L, validated = true)
+    state.available(network = 2L)
     assertEquals(NetworkStatus.Unknown, status)
 
-    advanceTimeBy(4_000)
-    runCurrent()
-    assertEquals(NetworkStatus.Offline, status)
+    state.update(network = 2L, validated = true)
+    assertEquals(NetworkStatus.Online, status)
+
+    state.update(network = 2L, validated = false)
+    assertEquals(NetworkStatus.Unknown, status)
   }
 
   @Test
-  fun losingAnOldNetworkDoesNotDisconnectTheReplacement() = runTest {
+  fun losingAnOldNetworkDoesNotDisconnectTheReplacement() {
     var status = NetworkStatus.Unknown
-    val state = AndroidNetworkState(this) { status = it }
+    val state = AndroidNetworkState { status = it }
 
     state.update(network = 1L, validated = true)
     state.update(network = 2L, validated = true)
@@ -96,27 +71,29 @@ class AndroidNetworkStateTest {
   }
 
   @Test
-  fun absentNetworkPublishesOfflineImmediately() = runTest {
+  fun validatedCallbackRecoversFromAnAbsentInitialNetwork() {
     var status = NetworkStatus.Unknown
-    val state = AndroidNetworkState(this) { status = it }
+    val state = AndroidNetworkState { status = it }
 
     state.update(network = null, validated = false)
-
     assertEquals(NetworkStatus.Offline, status)
+
+    state.available(network = 1L)
+    state.update(network = 1L, validated = true)
+    assertEquals(NetworkStatus.Online, status)
   }
 
   @Test
-  fun closingCancelsPendingValidation() = runTest {
+  fun closingIgnoresFurtherCallbacks() {
     val statuses = mutableListOf<NetworkStatus>()
-    val state = AndroidNetworkState(this) { statuses += it }
+    val state = AndroidNetworkState { statuses += it }
 
-    state.update(network = 1L, validated = false)
-    runCurrent()
+    state.update(network = 1L, validated = true)
     state.close()
-    val beforeTimeout = statuses.toList()
-    advanceTimeBy(5_000)
-    runCurrent()
+    state.lost(network = 1L)
+    state.available(network = 2L)
+    state.update(network = 2L, validated = false)
 
-    assertEquals(beforeTimeout, statuses)
+    assertEquals(listOf(NetworkStatus.Online), statuses)
   }
 }

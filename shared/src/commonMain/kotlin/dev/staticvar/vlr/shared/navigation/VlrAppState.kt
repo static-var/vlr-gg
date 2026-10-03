@@ -7,6 +7,7 @@ package dev.staticvar.vlr.shared.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -19,7 +20,6 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-internal const val NEWS_ID: String = "news"
 internal const val HOME_ID: String = "home"
 internal const val MATCHES_ID: String = "matches"
 internal const val EVENTS_ID: String = "events"
@@ -31,7 +31,6 @@ private val appRouteSavedStateConfiguration: SavedStateConfiguration =
       SerializersModule {
         polymorphic(NavKey::class) {
           subclass(AppRoute.Home::class, AppRoute.Home.serializer())
-          subclass(AppRoute.News::class, AppRoute.News.serializer())
           subclass(AppRoute.Matches::class, AppRoute.Matches.serializer())
           subclass(AppRoute.Events::class, AppRoute.Events.serializer())
           subclass(AppRoute.Rankings::class, AppRoute.Rankings.serializer())
@@ -43,7 +42,6 @@ private val appRouteSavedStateConfiguration: SavedStateConfiguration =
           subclass(AppRoute.Experimental::class, AppRoute.Experimental.serializer())
           subclass(AppRoute.MatchDetails::class, AppRoute.MatchDetails.serializer())
           subclass(AppRoute.EventDetails::class, AppRoute.EventDetails.serializer())
-          subclass(AppRoute.NewsArticle::class, AppRoute.NewsArticle.serializer())
           subclass(AppRoute.TeamDetails::class, AppRoute.TeamDetails.serializer())
           subclass(AppRoute.PlayerDetails::class, AppRoute.PlayerDetails.serializer())
         }
@@ -143,10 +141,6 @@ public class VlrAppState internal constructor(
     matchTransitionPreview = null
   }
 
-  public fun showRootNewsArticle(articleId: String) {
-    replaceWithDetail(route = AppRoute.NewsArticle(articleId = articleId))
-  }
-
   public fun showRootTeamDetails(teamId: String) {
     replaceWithDetail(route = AppRoute.TeamDetails(teamId = teamId))
   }
@@ -185,10 +179,6 @@ public class VlrAppState internal constructor(
 
   public fun showEventDetails(eventId: String) {
     pushRoute(route = AppRoute.EventDetails(eventId = eventId))
-  }
-
-  public fun showNewsArticle(articleId: String) {
-    pushRoute(route = AppRoute.NewsArticle(articleId = articleId))
   }
 
   public fun showTeamDetails(teamId: String) {
@@ -234,14 +224,15 @@ public class VlrAppState internal constructor(
 
 @Composable
 public fun rememberVlrAppState(): VlrAppState {
-  val backStack = rememberNavBackStack(appRouteSavedStateConfiguration, AppRoute.Home)
+  val backStack = key("vlr-navigation-v2") {
+    rememberNavBackStack(appRouteSavedStateConfiguration, AppRoute.Home)
+  }
   return remember(backStack) { VlrAppState(backStack = backStack) }
 }
 
 private val AppRoute.rootNavigationId: String
   get() = when (this) {
     AppRoute.Home -> HOME_ID
-    AppRoute.News -> NEWS_ID
     AppRoute.Matches -> MATCHES_ID
     AppRoute.Events -> EVENTS_ID
     AppRoute.Rankings -> RANKINGS_ID
@@ -250,7 +241,6 @@ private val AppRoute.rootNavigationId: String
 
 private fun toRootRoute(itemId: String): AppRoute = when (itemId) {
   HOME_ID -> AppRoute.Home
-  NEWS_ID -> AppRoute.News
   MATCHES_ID -> AppRoute.Matches
   EVENTS_ID -> AppRoute.Events
   RANKINGS_ID -> AppRoute.Rankings
@@ -258,4 +248,4 @@ private fun toRootRoute(itemId: String): AppRoute = when (itemId) {
 }
 
 private val tabRoutes: Set<AppRoute> =
-  setOf(AppRoute.Home, AppRoute.Matches, AppRoute.Events, AppRoute.Rankings, AppRoute.News)
+  setOf(AppRoute.Home, AppRoute.Matches, AppRoute.Events, AppRoute.Rankings)

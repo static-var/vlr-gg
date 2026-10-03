@@ -15,7 +15,7 @@ import kotlin.test.assertNull
 class GroupedListDetailSceneStrategyTest {
   @Test
   fun groupedListsKeepTheirSceneIdentityWhenDetailsOpenAndChange() {
-    for (group in listOf("matches", "events", "news", "rankings")) {
+    for (group in listOf("matches", "events", "rankings")) {
       val list = entry(group, listPane(group))
       val firstDetail = entry("$group-first", detailPane(group))
       val nextDetail = entry("$group-next", detailPane(group))
@@ -60,8 +60,8 @@ class GroupedListDetailSceneStrategyTest {
 
   @Test
   fun compactLayoutsUseTheFallbackForBothListAndDetail() {
-    val list = entry("news", listPane("news"))
-    val detail = entry("article", detailPane("news"))
+    val list = entry("matches", listPane("matches"))
+    val detail = entry("match", detailPane("matches"))
     assertNull(scene(listOf(list), enabled = false))
     assertNull(scene(listOf(list, detail), enabled = false))
   }

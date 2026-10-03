@@ -1,7 +1,7 @@
 <resources>
     <string name="add_to_calendar">Añadir al calendario</string>
     <string name="match_time_hasn_t_been_announced">La hora del partido aún no se ha anunciado.</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">No se pudo abrir el archivo de calendario. Inténtalo de nuevo.</string>
+    <string name="unable_to_save_matches_to_calendar">No se pudieron guardar los partidos en el calendario. Inténtalo de nuevo.</string>
     <string name="cancel">Cancelar</string>
     <string name="preview_selected_matches_for_sharing">Vista previa de los partidos seleccionados para compartir</string>
     <string name="match_overview">Resumen de partidos</string>
@@ -65,4 +65,7 @@
     <string name="mascot_player_cooked_combined">¡¡¡%1$s arrasó!!!</string>
     <string name="calendar_versus">vs.</string>
   <string name="show_live_notification">Mostrar notificación en directo</string>
+    <string name="match_saved_to_your_calendar">Partido guardado en tu calendario.</string>
+    <string name="match_already_in_your_calendar">Este partido ya está en tu calendario.</string>
+    <string name="allow_calendar_access_to_add_matches">Permite el acceso al calendario en Ajustes para añadir partidos.</string>
 </resources>

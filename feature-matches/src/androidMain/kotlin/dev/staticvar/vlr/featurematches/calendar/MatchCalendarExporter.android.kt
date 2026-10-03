@@ -11,10 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
+import dev.staticvar.vlr.sharedui.calendar.CalendarExportResult
 import java.io.File
 
 @Composable
-public actual fun rememberMatchCalendarExporter(): (MatchCalendarEvent) -> Result<Unit> {
+public actual fun rememberMatchCalendarExporter(): suspend (MatchCalendarEvent) -> CalendarExportResult {
   val context = LocalContext.current
   return remember(context) {
     { event ->
@@ -40,6 +41,9 @@ public actual fun rememberMatchCalendarExporter(): (MatchCalendarEvent) -> Resul
           }
           context.startActivity(Intent.createChooser(share, "Export calendar file"))
         },
+      ).fold(
+        onSuccess = { CalendarExportResult.Opened },
+        onFailure = { CalendarExportResult.Failed },
       )
     }
   }

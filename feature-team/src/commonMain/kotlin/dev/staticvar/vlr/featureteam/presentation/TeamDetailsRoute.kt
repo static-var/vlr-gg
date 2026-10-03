@@ -39,7 +39,6 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.TeamCompletedMatch
 import dev.staticvar.vlr.domain.model.TeamPlayer
 import dev.staticvar.vlr.domain.model.TeamUpcomingMatch
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkLogo
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
@@ -113,7 +112,6 @@ internal fun TeamDetailsScreen(
   onRefresh: () -> Unit = {},
   onToggleFavorite: () -> Unit = {},
 ) {
-  val isOnline = LocalIsOnline.current
   val team = uiState.team
   val spoilersHidden = LocalSpoilerMode.current.enabled
   val itemSeparator = " ${stringResource(Res.string.middle_dot)} "
@@ -140,7 +138,7 @@ internal fun TeamDetailsScreen(
     }
 
     when {
-      (!isOnline || uiState.isLoading || uiState.isRefreshing) && team == null ->
+      (uiState.isLoading || uiState.isRefreshing) && team == null ->
         SharedScreenLoading(
           label = stringResource(Res.string.loading_team),
           modifier = Modifier.fillMaxSize(),
@@ -181,7 +179,7 @@ internal fun TeamDetailsScreen(
           section = section,
           spoilersHidden = spoilersHidden,
           canShowEmpty =
-            isOnline && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null,
+            !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null,
           onSectionSelected = onSectionSelected,
           onMatchSelected = onMatchSelected,
           onPlayerSelected = onPlayerSelected,

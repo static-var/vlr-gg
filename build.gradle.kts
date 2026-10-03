@@ -30,7 +30,6 @@ val composeReportModules =
     "feature-events",
     "feature-home",
     "feature-matches",
-    "feature-news",
     "feature-player",
     "feature-rankings",
     "feature-team",

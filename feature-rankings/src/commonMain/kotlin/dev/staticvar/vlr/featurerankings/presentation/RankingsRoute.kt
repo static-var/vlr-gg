@@ -36,7 +36,6 @@ import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.RegionalRanking
 import dev.staticvar.vlr.domain.model.TeamRanking
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
@@ -99,7 +98,6 @@ internal fun RankingsScreen(
   onSearchQueryChanged: (String) -> Unit = {},
   onRetrySearch: () -> Unit = {},
 ) {
-  val isOnline = LocalIsOnline.current
   val selectedRegion = uiState.selectedRegion
   val selectedRanking = remember(uiState.regions, selectedRegion) {
     uiState.regions.firstOrNull { it.region == selectedRegion }
@@ -155,7 +153,7 @@ internal fun RankingsScreen(
       }
 
       when {
-        (!isOnline || uiState.isLoading || uiState.isRefreshing) && uiState.regions.isEmpty() -> {
+        (uiState.isLoading || uiState.isRefreshing) && uiState.regions.isEmpty() -> {
           SharedScreenLoading(label = stringResource(Res.string.loading_rankings), modifier = Modifier.fillMaxSize())
         }
 
@@ -170,7 +168,7 @@ internal fun RankingsScreen(
         }
 
         selectedRanking == null || selectedRanking.teams.isEmpty() -> {
-          if ((isOnline || uiState.regions.isEmpty()) && !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null) {
+          if (!uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null) {
             SharedEmptyState(
               artwork = EmptyStateArtwork.NoLiveMatches,
               title = stringResource(Res.string.no_rankings_yet),

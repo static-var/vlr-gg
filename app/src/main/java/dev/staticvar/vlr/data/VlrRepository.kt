@@ -11,7 +11,6 @@ import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
-import dev.staticvar.vlr.data.api.response.NewsResponseItem
 import dev.staticvar.vlr.data.api.response.PlayerData
 import dev.staticvar.vlr.data.api.response.RankPerRegion
 import dev.staticvar.vlr.data.api.response.TeamDetails
@@ -39,7 +38,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
@@ -55,32 +53,9 @@ constructor(
   private val teamFavDao: TeamFavDao,
   private val ktorHttpClient: HttpClient,
   @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-  private val json: Json,
 ) {
   /** Upcoming matches Method returns all the upcoming matches we have stored in db */
   fun upcomingMatches() = vlrDao.getAllMatchesPreviewNoFlow()
-
-  /**
-   * Get news Method which calls API and requests for latest news article info This method won't
-   * make the call again till 180 seconds
-   */
-  fun updateLatestNews() = flow<Result<Boolean, Throwable?>> {
-    if (TimeElapsed.hasElapsed(Endpoints.NEWS)) {
-      emit(Ok(true))
-      val result = runSuspendCatching {
-        ktorHttpClient.get(Endpoints.NEWS).body<List<NewsResponseItem>>()
-      }
-      result.get()?.let {
-        vlrDao.deleteAndInsertNews(it)
-        TimeElapsed.start(Endpoints.NEWS, 180.seconds)
-        emit(Ok(false))
-      }
-        ?: emit(Err(result.getError()))
-    }
-  }
-
-  /** Get news from db */
-  fun getNewsFromDb() = vlrDao.getNews().map { Pass(it) }
 
   /**
    * Get matches from server This method will request server to return the latest matches This call
@@ -319,13 +294,6 @@ constructor(
    * @param id
    */
   fun getPlayerDetailsFromDb(id: String) = vlrDao.getPlayerById(id).map { Pass(it) }
-
-  /**
-   * Parse news
-   *
-   * @param id
-   */
-  fun parseNews(id: String) = NewsParser.parser(id, json).flowOn(ioDispatcher)
 
   suspend fun deleteObsoleteRecords() {
     val time = System.currentTimeMillis() - DAY_15

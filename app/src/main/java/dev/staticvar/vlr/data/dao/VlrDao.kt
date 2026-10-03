@@ -13,20 +13,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface VlrDao {
 
-  // -------------- DAO calls for [NewsResponseItem] start here --------------//
-  @Upsert suspend fun insertAllNews(news: List<NewsResponseItem>)
-
-  @Query("SELECT * from NewsResponseItem") fun getNews(): Flow<List<NewsResponseItem>>
-
-  @Query("DELETE from NewsResponseItem") fun deleteAllNews()
-
-  @Transaction
-  suspend fun deleteAndInsertNews(items: List<NewsResponseItem>) {
-    deleteAllNews()
-    insertAllNews(items)
-  }
-  // -------------- DAO calls for [NewsResponseItem] ends here --------------//
-
   // -------------- DAO calls for [MatchPreviewInfo] start here --------------//
   @Upsert suspend fun insertAllMatches(matches: List<MatchPreviewInfo>)
 

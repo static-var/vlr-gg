@@ -135,7 +135,7 @@
     <string name="notification_promotion_unavailable">Canlı skorlar normal bildirim olarak görünmeye devam edebilir. Cihazınız bu uygulama için öne çıkarılan canlı güncellemelere izin vermiyor. Sistem bildirim ayarlarını kontrol edin; kullanılabilirlik cihazınıza da bağlıdır.</string>
     <string name="match_alerts">Maç bildirimleri</string>
     <string name="match_alerts_description">Favori bir maç başladığında bildirim alın. Bu cihazda canlı skor güncellemeleri kullanılamıyor.</string>
-    <string name="release_1_0_7_introduction">1.0.0 sürümünden bu yana eklenen tüm yenilikleri keşfedin. Favori maçlarınızı takip etmenin ve uygulamayı kişiselleştirmenin artık daha fazla yolu var.</string>
+    <string name="release_1_0_7_introduction">1.0.0 sürümünden bu yana eklenen tüm yenilikleri keşfet. Favori maçlarını takip etmenin yeni yollarını kullan ve etkinlik maç programlarını takvimine aktar.</string>
     <string name="release_1_0_7_favorites_title">Favorilerinizi takip edin</string>
     <string name="release_1_0_7_favorites_description">Favori takım, etkinlik ve maçlarınız için canlı maçları ve son 24 saatin sonuçlarını Ana Sayfa’da bulun.</string>
     <string name="release_1_0_7_ios_live_title">Favorilerinizin canlı skorları</string>
@@ -155,6 +155,8 @@
     <string name="match_reminders_description">Favori bir maç başlamadan önce hatırlatıcı alın. Hatırlatıcı almak için bildirimlere izin verin.</string>
     <string name="match_reminders_permission_description">Favorileriniz için hatırlatıcı almak üzere bildirimlere izin verin.</string>
     <string name="live_updates_with_reminders_description">Canlı skorları bildirimlerde takip edin. Live Updates kapalıyken de favori maçlardan önce hatırlatıcı alırsınız.</string>
+    <string name="release_1_0_7_calendar_title">Maçlar takviminde</string>
+    <string name="release_1_0_7_calendar_description">Yaklaşan bir maçı takvimine ekle veya bir etkinliğin yaklaşan maçlarının tüm programını aktar.</string>
     <string name="release_1_0_7_search_title">Takımınızı bulun</string>
     <string name="release_1_0_7_search_description">Mevcut sıralamada yer almayanlar dahil takımları Sıralama’dan arayın ve profillerini açın.</string>
     <string name="release_1_0_7_match_details_title">Her maçın ayrıntılarını keşfedin</string>

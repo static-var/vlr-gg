@@ -38,6 +38,10 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Val Esports saves your chosen matches to your calendar and reads them to update their times and avoid duplicates.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Val Esports saves your chosen matches to your calendar and reads them to update their times and avoid duplicates.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

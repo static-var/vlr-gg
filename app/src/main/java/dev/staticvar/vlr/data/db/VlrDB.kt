@@ -6,13 +6,14 @@ package dev.staticvar.vlr.data.db
 
 import androidx.room.AutoMigration
 import androidx.room.Database
+import androidx.room.DeleteTable
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
-import dev.staticvar.vlr.data.api.response.NewsResponseItem
 import dev.staticvar.vlr.data.api.response.PlayerData
 import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.data.api.response.TournamentDetails
@@ -29,7 +30,6 @@ import dev.staticvar.vlr.data.model.TopicTracker
 @Database(
   entities =
     [
-      NewsResponseItem::class,
       MatchPreviewInfo::class,
       MatchInfo::class,
       TournamentPreview::class,
@@ -42,8 +42,13 @@ import dev.staticvar.vlr.data.model.TopicTracker
       EventFav::class
     ],
   exportSchema = true,
-  version = 14,
-  autoMigrations = [AutoMigration(9, 10), AutoMigration(12, 13), AutoMigration(13, 14)]
+  version = 15,
+  autoMigrations = [
+    AutoMigration(9, 10),
+    AutoMigration(12, 13),
+    AutoMigration(13, 14),
+    AutoMigration(14, 15, spec = RemoveNewsTable::class),
+  ]
 )
 @TypeConverters(VlrTypeConverter::class)
 abstract class VlrDB : RoomDatabase() {
@@ -52,6 +57,9 @@ abstract class VlrDB : RoomDatabase() {
   abstract fun getMatchFavDao(): MatchFavDao
   abstract fun getTeamFavDao(): TeamFavDao
 }
+
+@DeleteTable(tableName = "NewsResponseItem")
+class RemoveNewsTable : AutoMigrationSpec
 
 val Migration_7_8 =
   object : Migration(7, 8) {

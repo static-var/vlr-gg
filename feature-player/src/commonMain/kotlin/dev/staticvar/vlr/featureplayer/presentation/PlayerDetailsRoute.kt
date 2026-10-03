@@ -38,7 +38,6 @@ import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.PlayerAgentStat
 import dev.staticvar.vlr.domain.model.PlayerTeam
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
@@ -99,7 +98,6 @@ internal fun PlayerDetailsScreen(
   onRefresh: () -> Unit = {},
   onToggleFavorite: () -> Unit = {},
 ) {
-  val isOnline = LocalIsOnline.current
   val player = uiState.player
   val spoilersHidden = LocalSpoilerMode.current.enabled
 
@@ -125,7 +123,7 @@ internal fun PlayerDetailsScreen(
     }
 
     when {
-      (!isOnline || uiState.isLoading || uiState.isRefreshing) && player == null ->
+      (uiState.isLoading || uiState.isRefreshing) && player == null ->
         SharedScreenLoading(
           label = stringResource(Res.string.loading_player),
           modifier = Modifier.fillMaxSize(),

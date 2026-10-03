@@ -22,7 +22,6 @@ import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventStatus
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
@@ -197,10 +196,9 @@ private fun EventOverviewPage(
   onSelectTab: (String) -> Unit,
   onRefresh: () -> Unit,
 ) {
-  val isOnline = LocalIsOnline.current
   val events = remember(allEvents, status) { allEvents.filterByStatus(status) }
   when {
-    (!isOnline || isLoading || isRefreshing) && allEvents.isEmpty() -> SharedScreenLoading(
+    (isLoading || isRefreshing) && allEvents.isEmpty() -> SharedScreenLoading(
       label = stringResource(Res.string.loading_events),
       modifier = Modifier.fillMaxSize(),
     )
@@ -213,7 +211,7 @@ private fun EventOverviewPage(
       modifier = Modifier.fillMaxSize(),
     )
 
-    events.isEmpty() && !isRefreshing && !isLoading && errorMessage == null && isOnline -> {
+    events.isEmpty() && !isRefreshing && !isLoading && errorMessage == null -> {
       val (title, message) = when (status) {
         EventStatusFilter.Ongoing -> stringResource(Res.string.no_live_events) to stringResource(Res.string.no_events_are_in_progress_right_now_check_upcoming_events_for_what_s_next)
         EventStatusFilter.Upcoming -> stringResource(Res.string.no_upcoming_events) to stringResource(Res.string.new_events_will_appear_here_when_their_schedules_are_announced)

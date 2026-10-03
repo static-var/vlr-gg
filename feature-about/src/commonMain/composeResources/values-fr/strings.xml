@@ -137,7 +137,7 @@
     <string name="notification_promotion_unavailable">Les scores en direct peuvent toujours apparaître dans les notifications ordinaires. Votre appareil ne permet pas les mises à jour en direct mises en avant pour cette application. Vérifiez les réglages de notification du système ; la disponibilité dépend aussi de votre appareil.</string>
     <string name="match_alerts">Alertes de matchs</string>
     <string name="match_alerts_description">Recevez une notification au début d’un match favori. Les mises à jour des scores en direct ne sont pas disponibles sur cet appareil.</string>
-    <string name="release_1_0_7_introduction">Découvrez tous les ajouts depuis la version 1.0.0, avec plus de façons de suivre vos matchs favoris et de personnaliser l’app.</string>
+    <string name="release_1_0_7_introduction">Découvrez tous les ajouts depuis la version 1.0.0, avec plus de façons de suivre vos matchs favoris et d’exporter les programmes des événements vers votre calendrier.</string>
     <string name="release_1_0_7_favorites_title">Suivez vos favoris</string>
     <string name="release_1_0_7_favorites_description">Retrouvez dans Accueil les matchs en direct et les résultats des dernières 24 heures pour vos équipes, événements et matchs favoris.</string>
     <string name="release_1_0_7_ios_live_title">Les scores de vos favoris en direct</string>
@@ -157,6 +157,8 @@
     <string name="match_reminders_description">Recevez un rappel avant le début d’un match favori. Autorisez les notifications pour recevoir des rappels.</string>
     <string name="match_reminders_permission_description">Autorisez les notifications pour recevoir des rappels pour vos favoris.</string>
     <string name="live_updates_with_reminders_description">Suivez les scores en direct dans les notifications. Lorsque Live Updates est désactivé, vous recevez toujours des rappels avant vos matchs favoris.</string>
+    <string name="release_1_0_7_calendar_title">Vos matchs dans votre calendrier</string>
+    <string name="release_1_0_7_calendar_description">Ajoutez un prochain match à votre calendrier ou exportez tous les prochains matchs d’un événement.</string>
     <string name="release_1_0_7_search_title">Trouvez votre équipe</string>
     <string name="release_1_0_7_search_description">Recherchez des équipes depuis le classement, y compris celles qui n’y figurent pas actuellement, puis ouvrez leur profil.</string>
     <string name="release_1_0_7_match_details_title">Suivez chaque match de plus près</string>

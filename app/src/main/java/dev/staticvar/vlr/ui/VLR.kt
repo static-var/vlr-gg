@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Feed
-import androidx.compose.material.icons.automirrored.outlined.Feed
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Leaderboard
@@ -70,7 +68,7 @@ fun VLR() {
     viewModel.resetScroll()
   }
 
-  var currentNav by remember { mutableStateOf(Destination.NewsOverview.route) }
+  var currentNav by remember { mutableStateOf(Destination.MatchOverview.route) }
   val currentDestination = backStackEntry?.destination?.route
 
   val selectedMatchTypePosition by
@@ -81,15 +79,6 @@ fun VLR() {
 
   val navItems =
     listOf<NavItem>(
-      NavItem(
-        title = stringResource(id = R.string.news),
-        Destination.NewsOverview.route,
-        Icons.AutoMirrored.Filled.Feed,
-        Icons.AutoMirrored.Outlined.Feed,
-        onClick = {
-          if (currentNav == Destination.NewsOverview.route) resetScroll() else action.goNews()
-        },
-      ),
       NavItem(
         title = stringResource(id = R.string.matches),
         Destination.MatchOverview.route,

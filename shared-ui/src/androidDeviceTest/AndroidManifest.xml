@@ -5,5 +5,9 @@
       android:name="dev.staticvar.vlr.sharedui.component.common.SharedNetworkLogoTestActivity"
       android:exported="true"
       android:theme="@android:style/Theme.Material.Light.NoActionBar.Fullscreen" />
+    <activity
+      android:name="dev.staticvar.vlr.sharedui.component.common.SharedOfflineRefreshTestActivity"
+      android:exported="true"
+      android:theme="@android:style/Theme.Material.Light.NoActionBar.Fullscreen" />
   </application>
 </manifest>

@@ -45,4 +45,10 @@
     <string name="tab_standings">Standings</string>
     <string name="tab_prizes">Prizes</string>
     <string name="mascot_event_won">%1$s won the event!</string>
+    <string name="add_upcoming_matches_to_calendar">Add upcoming matches to calendar</string>
+    <string name="unable_to_save_matches_to_calendar">Unable to save matches to the calendar. Please try again.</string>
+    <string name="calendar_versus">vs</string>
+    <string name="upcoming_matches_added_to_your_calendar">Upcoming matches saved to your calendar.</string>
+    <string name="matches_already_in_your_calendar">These matches are already in your calendar.</string>
+    <string name="allow_calendar_access_to_add_matches">Allow calendar access in Settings to add matches.</string>
 </resources>

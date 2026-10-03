@@ -50,7 +50,7 @@ class RefreshControllerTest {
   }
 
   @Test
-  fun queuedFollowupWaitsForConnectivity() = runTest {
+  fun queuedFollowupRunsEvenIfConnectivityChanges() = runTest {
     val network = TestNetworkMonitor()
     val firstRequest = CompletableDeferred<Unit>()
     var calls = 0
@@ -66,35 +66,42 @@ class RefreshControllerTest {
     controller.refresh()
     firstRequest.complete(Unit)
     runCurrent()
-    assertEquals(1, calls)
+    assertEquals(2, calls)
     assertFalse(controller.state.value.isRefreshing)
+  }
 
-    network.status.value = NetworkStatus.Online
+  @Test
+  fun offlineRequestShowsProgressAndFailureWithoutReportingExpectedErrors() = runTest {
+    val network = TestNetworkMonitor(online = false)
+    val response = CompletableDeferred<Unit>()
+    val telemetry = RecordingTelemetry()
+    var calls = 0
+    val controller = RefreshController(backgroundScope, network, telemetry) {
+      calls++
+      response.await()
+      Result.failure(IllegalStateException("No connection"))
+    }
+
+    controller.refresh()
+    runCurrent()
+    assertEquals(1, calls)
+    assertTrue(controller.state.value.isRefreshing)
+
+    response.complete(Unit)
+    runCurrent()
+    assertEquals("No connection", controller.state.value.errorMessage)
+    assertTrue(controller.state.value.hasCompleted)
+    assertFalse(controller.state.value.isRefreshing)
+    assertTrue(telemetry.failures.isEmpty())
+    assertTrue(telemetry.logs.isEmpty())
+
+    controller.refresh()
     runCurrent()
     assertEquals(2, calls)
   }
 
   @Test
-  fun offlineRequestWaitsWithoutShowingRefreshProgress() = runTest {
-    val network = TestNetworkMonitor(online = false)
-    var calls = 0
-    val controller = RefreshController(backgroundScope, network) {
-      calls++
-      Result.success(Unit)
-    }
-
-    controller.refresh()
-    runCurrent()
-    assertEquals(0, calls)
-    assertEquals(RefreshState(), controller.state.value)
-
-    network.status.value = NetworkStatus.Online
-    runCurrent()
-    assertEquals(1, calls)
-  }
-
-  @Test
-  fun unknownConnectivityWaitsForConfirmedOnline() = runTest {
+  fun unknownConnectivityCanReachTheServer() = runTest {
     val network = TestNetworkMonitor().apply { status.value = NetworkStatus.Unknown }
     var calls = 0
     val controller = RefreshController(backgroundScope, network) {
@@ -104,16 +111,8 @@ class RefreshControllerTest {
 
     controller.refresh()
     runCurrent()
-    assertEquals(0, calls)
-    assertEquals(RefreshState(), controller.state.value)
-
-    network.status.value = NetworkStatus.Offline
-    runCurrent()
-    assertEquals(0, calls)
-
-    network.status.value = NetworkStatus.Online
-    runCurrent()
     assertEquals(1, calls)
+    assertEquals(RefreshState(hasCompleted = true), controller.state.value)
   }
 
   @Test

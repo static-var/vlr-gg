@@ -136,7 +136,7 @@
     <string name="notification_promotion_unavailable">लाइव स्कोर सामान्य सूचनाओं में अब भी दिख सकते हैं। आपका डिवाइस इस ऐप के लिए प्रमुख लाइव अपडेट की अनुमति नहीं दे रहा है। सिस्टम की सूचना सेटिंग देखें; उपलब्धता आपके डिवाइस पर भी निर्भर करती है।</string>
     <string name="match_alerts">मैच अलर्ट</string>
     <string name="match_alerts_description">पसंदीदा मैच शुरू होने पर सूचना पाएँ। इस डिवाइस पर लाइव स्कोर अपडेट उपलब्ध नहीं हैं।</string>
-    <string name="release_1_0_7_introduction">1.0.0 के बाद जोड़ी गई सभी सुविधाएँ देखें। अपने पसंदीदा मैचों को फ़ॉलो करने और ऐप को अपना रूप देने के अब और भी तरीके हैं।</string>
+    <string name="release_1_0_7_introduction">1.0.0 के बाद जोड़ी गई सभी सुविधाएँ जानें। अपने पसंदीदा मैचों को फ़ॉलो करने के और तरीके पाएँ और इवेंट के मैचों का शेड्यूल अपने कैलेंडर में एक्सपोर्ट करें।</string>
     <string name="release_1_0_7_favorites_title">अपने पसंदीदा को फ़ॉलो करें</string>
     <string name="release_1_0_7_favorites_description">होम पर अपनी पसंदीदा टीम, इवेंट और मैच से जुड़े लाइव मैच और पिछले 24 घंटों के नतीजे देखें।</string>
     <string name="release_1_0_7_ios_live_title">आपके पसंदीदा मैचों के लाइव स्कोर</string>
@@ -156,6 +156,8 @@
     <string name="match_reminders_description">पसंदीदा मैच शुरू होने से पहले रिमाइंडर पाएँ। रिमाइंडर पाने के लिए सूचनाओं की अनुमति दें।</string>
     <string name="match_reminders_permission_description">अपने पसंदीदा के रिमाइंडर पाने के लिए सूचनाओं की अनुमति दें।</string>
     <string name="live_updates_with_reminders_description">सूचनाओं में लाइव स्कोर देखें। Live Updates बंद होने पर भी पसंदीदा मैचों के शुरू होने से पहले रिमाइंडर मिलते रहेंगे।</string>
+    <string name="release_1_0_7_calendar_title">मैच अपने कैलेंडर में</string>
+    <string name="release_1_0_7_calendar_description">कोई आगामी मैच अपने कैलेंडर में जोड़ें या किसी इवेंट के सभी आगामी मैचों का शेड्यूल एक्सपोर्ट करें।</string>
     <string name="release_1_0_7_search_title">अपनी टीम खोजें</string>
     <string name="release_1_0_7_search_description">रैंकिंग में टीम खोजें, जिसमें मौजूदा रैंकिंग से बाहर की टीमें भी शामिल हैं, और उनकी प्रोफ़ाइल खोलें।</string>
     <string name="release_1_0_7_match_details_title">हर मैच को और करीब से जानें</string>

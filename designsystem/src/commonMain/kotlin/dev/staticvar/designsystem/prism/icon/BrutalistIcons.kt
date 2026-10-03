@@ -14,6 +14,10 @@ internal val BrutalistIcons: PrismIcons by lazy {
       name = "BrutalistShare",
       outline = "M12 15 V3 M7 8 L12 3 L17 8 M4 13 V21 H20 V13",
     ),
+    calendarAdd = prismIconArtwork(
+      name = "BrutalistCalendarAdd",
+      outline = "M4 6 H20 V20 H4 Z M8 3 V8 M16 3 V8 M4 10 H20 M12 12.5 V17.5 M9.5 15 H14.5",
+    ),
     preview = prismIconArtwork(
       name = "BrutalistPreview",
       outline = "M2 12 L8 5 H16 L22 12 L16 19 H8 Z M9 9 H15 V15 H9 Z",
@@ -28,12 +32,6 @@ internal val BrutalistIcons: PrismIcons by lazy {
       outline = "M3 10 L12 2 L21 10 V21 H15 V14 H9 V21 H3 Z",
       selectedOutline = "",
       selectedFill = "M3 10 L12 2 L21 10 V21 H15 V14 H9 V21 H3 Z",
-    ),
-    news = brutalistNavigation(
-      name = "News",
-      outline = "M4 3 H20 V21 H4 Z M8 7 H12 V11 H8 Z M16 7 H17 M16 11 H17 M8 15 H16 M8 18 H14",
-      selectedOutline = "M4 3 H20 V21 H4 Z M8 15 H16 M8 18 H14",
-      selectedFill = "M7 6 H17 V12 H7 Z",
     ),
     matches = brutalistNavigation(
       name = "Matches",

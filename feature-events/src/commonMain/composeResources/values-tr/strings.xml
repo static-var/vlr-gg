@@ -45,4 +45,10 @@
     <string name="tab_standings">Puan durumu</string>
     <string name="tab_prizes">Ödüller</string>
     <string name="mascot_event_won">%1$s etkinliği kazandı!</string>
+    <string name="add_upcoming_matches_to_calendar">Yaklaşan maçları takvime ekle</string>
+    <string name="unable_to_save_matches_to_calendar">Maçlar takvime kaydedilemedi. Lütfen tekrar deneyin.</string>
+    <string name="calendar_versus">-</string>
+    <string name="upcoming_matches_added_to_your_calendar">Yaklaşan maçlar takviminize kaydedildi.</string>
+    <string name="matches_already_in_your_calendar">Bu maçlar zaten takviminizde.</string>
+    <string name="allow_calendar_access_to_add_matches">Maç eklemek için Ayarlar bölümünden takvim erişimine izin verin.</string>
 </resources>

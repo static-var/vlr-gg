@@ -3,7 +3,6 @@
     <string name="widget_description">VLR widget for live matches or upcoming matches</string>
     <string name="notification_channel_id">Match Channel</string>
     <string name="notification_channel_title">Subscribed matches</string>
-    <string name="news">News</string>
     <string name="games">Games</string>
     <string name="matches">Matches</string>
     <string name="tournament">Tournament</string>

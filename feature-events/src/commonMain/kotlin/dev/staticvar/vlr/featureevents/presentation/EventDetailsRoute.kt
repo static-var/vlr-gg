@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +38,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
+import dev.staticvar.designsystem.component.button.PrismIconButton
+import dev.staticvar.designsystem.component.button.PrismIconButtonSize
 import dev.staticvar.designsystem.component.card.cardMascotEligible
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIcon
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
@@ -55,13 +59,15 @@ import dev.staticvar.vlr.domain.model.EventStanding
 import dev.staticvar.vlr.domain.model.EventTeam
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
+import dev.staticvar.vlr.featureevents.calendar.calendarFileName
+import dev.staticvar.vlr.featureevents.calendar.upcomingCalendarEntries
 import dev.staticvar.vlr.featureevents.presentation.mascot.eventMascotCues
-import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
+import dev.staticvar.vlr.sharedui.calendar.CalendarExportResult
+import dev.staticvar.vlr.sharedui.calendar.rememberCalendarExporter
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
-import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
@@ -84,15 +90,20 @@ import dev.staticvar.vlr.sharedui.mascot.rememberMascot
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 import dev.staticvar.vlr.sharedui.text.resolve
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import vlr.feature_events.generated.resources.Res
+import vlr.feature_events.generated.resources.add_upcoming_matches_to_calendar
+import vlr.feature_events.generated.resources.allow_calendar_access_to_add_matches
+import vlr.feature_events.generated.resources.calendar_versus
 import vlr.feature_events.generated.resources.details_will_appear_when_this_event_is_published
 import vlr.feature_events.generated.resources.event
 import vlr.feature_events.generated.resources.favorite_event
 import vlr.feature_events.generated.resources.loading_event
 import vlr.feature_events.generated.resources.loading_event_details
 import vlr.feature_events.generated.resources.match_fixtures_have_not_been_published_for_this_event
+import vlr.feature_events.generated.resources.matches_already_in_your_calendar
 import vlr.feature_events.generated.resources.no_event_details_yet
 import vlr.feature_events.generated.resources.no_matches_yet
 import vlr.feature_events.generated.resources.no_prize_breakdown_yet
@@ -110,7 +121,9 @@ import vlr.feature_events.generated.resources.table
 import vlr.feature_events.generated.resources.team_standings_have_not_been_published_for_this_event
 import vlr.feature_events.generated.resources.teams
 import vlr.feature_events.generated.resources.teams_matches_and_standings
+import vlr.feature_events.generated.resources.unable_to_save_matches_to_calendar
 import vlr.feature_events.generated.resources.updating_favorite
+import vlr.feature_events.generated.resources.upcoming_matches_added_to_your_calendar
 
 @Composable
 public fun EventDetailsRoute(
@@ -165,7 +178,6 @@ internal fun EventDetailsScreen(
   onToggleFavorite: () -> Unit = {},
 ) {
   val event = uiState.event
-  val isOnline = LocalIsOnline.current
   val spoilersHidden = LocalSpoilerMode.current.enabled
   val transitionContentFade = rememberEventDetailContentFade()
   val bodyReady = event != null && (
@@ -227,7 +239,7 @@ internal fun EventDetailsScreen(
       }
 
       when {
-        (!isOnline || uiState.isLoading || uiState.isRefreshing) && event == null -> EventDetailsLoading(
+        (uiState.isLoading || uiState.isRefreshing) && event == null -> EventDetailsLoading(
           modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = Prism.dimens.spacingM)
             .transitionContentFade(transitionContentFade),
           label = stringResource(Res.string.loading_event),
@@ -257,7 +269,7 @@ internal fun EventDetailsScreen(
           matchGrouping = matchGrouping,
           selectedMatchGroupName = selectedMatchGroupName,
           isSavingFavorite = uiState.isSavingFavorite,
-          canShowEmptySection = isOnline && !uiState.isLoading && !uiState.isDetailLoadPending &&
+          canShowEmptySection = !uiState.isLoading && !uiState.isDetailLoadPending &&
             !uiState.isRefreshing && uiState.errorMessage == null,
           spoilersHidden = spoilersHidden,
           listState = listState,
@@ -443,6 +455,13 @@ private fun EventDetailsHero(
   isSavingFavorite: Boolean,
   onToggleFavorite: () -> Unit,
 ) {
+  val versus = stringResource(Res.string.calendar_versus)
+  val hasUpcomingMatches = remember(event.matches, versus) { event.upcomingCalendarEntries(versus).isNotEmpty() }
+  val exportCalendar = rememberCalendarExporter()
+  val scope = rememberCoroutineScope()
+  var isExporting by remember(event.id) { mutableStateOf(false) }
+  var calendarResult by remember(event.id) { mutableStateOf<CalendarExportResult?>(null) }
+
   EventDetailHeaderItem(
     event = event,
     extraContentFade = extraContentFade,
@@ -450,25 +469,65 @@ private fun EventDetailsHero(
       .padding(top = Prism.dimens.spacingXs)
       .cardMascotEligible(topClearance = Prism.dimens.spacingM),
     favoriteAction = {
-      PrismButton(
-        onClick = onToggleFavorite,
-        enabled = !isSavingFavorite,
-        modifier = Modifier.fillMaxWidth(),
-        style = PrismButtonStyle.Primary,
-      ) {
-        PrismFavoriteIcon(
-          selected = event.isFavorite,
-          size = PrismFavoriteIconSize.Medium,
-          style = PrismFavoriteIconStyle.Inline,
-          contentDescription = null,
-        )
-        Text(
-          when {
-            isSavingFavorite -> stringResource(Res.string.updating_favorite)
-            event.isFavorite -> stringResource(Res.string.remove_from_favorites)
-            else -> stringResource(Res.string.favorite_event)
-          },
-        )
+      Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+        ) {
+          PrismButton(
+            onClick = onToggleFavorite,
+            enabled = !isSavingFavorite,
+            modifier = Modifier.weight(1f),
+            style = PrismButtonStyle.Primary,
+          ) {
+            PrismFavoriteIcon(
+              selected = event.isFavorite,
+              size = PrismFavoriteIconSize.Medium,
+              style = PrismFavoriteIconStyle.Inline,
+              contentDescription = null,
+            )
+            Text(
+              when {
+                isSavingFavorite -> stringResource(Res.string.updating_favorite)
+                event.isFavorite -> stringResource(Res.string.remove_from_favorites)
+                else -> stringResource(Res.string.favorite_event)
+              },
+            )
+          }
+          if (hasUpcomingMatches) {
+            PrismIconButton(
+              icon = Prism.icons.calendarAdd,
+              contentDescription = stringResource(Res.string.add_upcoming_matches_to_calendar),
+              onClick = {
+                // Matches can start while the screen is open, so the list is rebuilt for each export.
+                val entries = event.upcomingCalendarEntries(versus)
+                if (entries.isNotEmpty()) {
+                  isExporting = true
+                  scope.launch {
+                    calendarResult = exportCalendar(event.calendarFileName, entries)
+                    isExporting = false
+                  }
+                }
+              },
+              size = PrismIconButtonSize.Toolbar,
+              enabled = !isExporting,
+            )
+          }
+        }
+        val calendarMessage = when (calendarResult) {
+          CalendarExportResult.Added -> Res.string.upcoming_matches_added_to_your_calendar
+          CalendarExportResult.AlreadyAdded -> Res.string.matches_already_in_your_calendar
+          CalendarExportResult.Denied -> Res.string.allow_calendar_access_to_add_matches
+          CalendarExportResult.Failed -> Res.string.unable_to_save_matches_to_calendar
+          CalendarExportResult.Opened, null -> null
+        }
+        calendarMessage?.let { message ->
+          Text(
+            text = stringResource(message),
+            style = Prism.typography.bodySmall,
+            color = Prism.color.bodyColor,
+          )
+        }
       }
     },
   )
@@ -671,9 +730,5 @@ private fun EventParticipantsRail(
 
 @Composable
 private fun EventDetailsLoading(label: String, modifier: Modifier = Modifier) {
-  if (LocalIsOnline.current) {
-    PrismFullscreenLoader(modifier = modifier, size = PrismLoaderSize.Large, label = label)
-  } else {
-    SharedScreenLoading(label = label, modifier = modifier)
-  }
+  PrismFullscreenLoader(modifier = modifier, size = PrismLoaderSize.Large, label = label)
 }

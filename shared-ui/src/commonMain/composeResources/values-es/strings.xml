@@ -1,8 +1,6 @@
 <resources>
   <string name="shared_offline_title">Estás sin conexión</string>
-  <string name="shared_offline_loading">Conéctate a internet para cargar esta pantalla. Se actualizará cuando vuelvas a conectarte.</string>
   <string name="shared_loading">Cargando</string>
-  <string name="shared_offline">Sin conexión</string>
   <string name="shared_refreshing">Actualizando</string>
   <string name="shared_ready_to_refresh">Listo para actualizar</string>
   <string name="shared_load_failed">No se pudieron cargar los datos</string>

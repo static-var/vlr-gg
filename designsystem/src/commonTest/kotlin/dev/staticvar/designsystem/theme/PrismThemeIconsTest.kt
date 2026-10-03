@@ -42,8 +42,8 @@ internal class PrismThemeIconsTest {
     )
     families.forEach { icons ->
       assertTrue(icons.back.autoMirror)
-      val navigation = listOf(icons.home, icons.news, icons.matches, icons.events, icons.rankings, icons.settings)
-      val vectors = listOf(icons.refresh, icons.share, icons.preview, icons.back) +
+      val navigation = listOf(icons.home, icons.matches, icons.events, icons.rankings, icons.settings)
+      val vectors = listOf(icons.refresh, icons.share, icons.calendarAdd, icons.preview, icons.back) +
         navigation.flatMap { listOf(it.unselected, it.selected) }
       vectors.forEach { vector ->
         assertEquals(24.dp, vector.defaultWidth, vector.name)
