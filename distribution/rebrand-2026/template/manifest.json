@@ -21,13 +21,33 @@
       "platform": "android",
       "width": 1080,
       "height": 1920,
-      "directory": "play-1080x1920"
+      "directory": "play-1080x1920",
+      "device_frame": {
+        "path": "frames/pixel-9-pro.webp",
+        "screen": [
+          60,
+          64,
+          1280,
+          2856
+        ],
+        "screen_mask": "frames/pixel-9-pro-screen-mask.webp"
+      }
     },
     "app_store": {
       "platform": "ios",
       "width": 1320,
       "height": 2868,
-      "directory": "app-store-iphone-1320x2868"
+      "directory": "app-store-iphone-1320x2868",
+      "device_frame": {
+        "path": "../../app-store-941/frames/iphone18-pro-silver.png",
+        "screen": [
+          72,
+          69,
+          1206,
+          2622
+        ],
+        "screen_mask": "../../app-store-941/frames/iphone18-pro-silver-screen-mask.png"
+      }
     }
   },
   "optional_outputs": {
@@ -41,7 +61,17 @@
       "platform": "ios_ipad",
       "width": 2064,
       "height": 2752,
-      "directory": "app-store-ipad-2064x2752"
+      "directory": "app-store-ipad-2064x2752",
+      "device_frame": {
+        "path": "../../app-store-941/frames/ipad-pro13-m5-silver.png",
+        "screen": [
+          118,
+          124,
+          2064,
+          2752
+        ],
+        "screen_mask": "../../app-store-941/frames/ipad-pro13-m5-silver-screen-mask.png"
+      }
     }
   },
   "slides": [

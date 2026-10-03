@@ -259,10 +259,13 @@ def add_product_bezel(
     scale = outer_width / bezel.width
     left = x + (max_width - outer_width) // 2
     top = y + (max_height - outer_height) // 2
-    capture_width, capture_height = fit_inside(capture.size, (round(screen_width * scale), round(screen_height * scale)))
+    display_size = (round(screen_width * scale), round(screen_height * scale))
+    capture_width, capture_height = fit_inside(capture.size, display_size)
     screen_left = left + round(screen_x * scale)
     screen_top = top + round(screen_y * scale)
-    screen = capture.convert("RGBA").resize((capture_width, capture_height), RESAMPLE)
+    screen = Image.new("RGBA", display_size, (0, 0, 0, 255))
+    resized = capture.convert("RGBA").resize((capture_width, capture_height), RESAMPLE)
+    screen.alpha_composite(resized, ((screen.width - capture_width) // 2, (screen.height - capture_height) // 2))
     mask = Image.open(device["screen_mask"]).convert("L").resize(screen.size, RESAMPLE)
     screen.putalpha(mask)
     canvas.alpha_composite(screen, (screen_left, screen_top))
