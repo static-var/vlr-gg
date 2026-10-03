@@ -16,7 +16,6 @@ import dev.staticvar.vlr.data.repository.FavoriteSyncStateRepositoryImpl
 import dev.staticvar.vlr.data.repository.FavoriteTopicRepositoryImpl
 import dev.staticvar.vlr.data.repository.FavoritesRepositoryImpl
 import dev.staticvar.vlr.data.repository.MatchRepositoryImpl
-import dev.staticvar.vlr.data.repository.NewsRepositoryImpl
 import dev.staticvar.vlr.data.repository.PlayerRepositoryImpl
 import dev.staticvar.vlr.data.repository.RankingsRepositoryImpl
 import dev.staticvar.vlr.data.repository.TeamRepositoryImpl
@@ -30,7 +29,6 @@ import dev.staticvar.vlr.domain.repository.FavoriteSyncStateRepository
 import dev.staticvar.vlr.domain.repository.FavoriteTopicRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
-import dev.staticvar.vlr.domain.repository.NewsRepository
 import dev.staticvar.vlr.domain.repository.PlayerRepository
 import dev.staticvar.vlr.domain.repository.RankingsRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
@@ -67,14 +65,6 @@ fun dataModule(): Module = module {
     }
     MatchRepositoryImpl(
       matchDataSource = get(),
-      database = get(),
-      dispatchers = get(),
-    )
-  }
-  single<NewsRepository> {
-    NewsRepositoryImpl(
-      json = get(StorageJson),
-      newsDataSource = get(),
       database = get(),
       dispatchers = get(),
     )

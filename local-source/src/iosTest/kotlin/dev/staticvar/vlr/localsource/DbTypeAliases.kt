@@ -28,8 +28,6 @@ typealias PlayerAgentStats = dev.staticvar.vlr.localsource.database.Player_agent
 typealias PlayerTeamHistory = dev.staticvar.vlr.localsource.database.Player_team_history
 typealias FavoritePlayers = dev.staticvar.vlr.localsource.database.Favorite_players
 
-// News module
-typealias NewsMedia = dev.staticvar.vlr.localsource.database.News_media
 
 // Rankings (already fine: Rankings, Standings)
 

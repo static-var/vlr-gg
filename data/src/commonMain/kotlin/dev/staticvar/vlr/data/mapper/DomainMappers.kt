@@ -13,15 +13,12 @@ import dev.staticvar.vlr.data.MatchMapPlayerStats
 import dev.staticvar.vlr.data.MatchMapRounds
 import dev.staticvar.vlr.data.MatchMaps
 import dev.staticvar.vlr.data.MatchVideos
-import dev.staticvar.vlr.data.News
-import dev.staticvar.vlr.data.NewsMedia
 import dev.staticvar.vlr.data.PlayerAgentStats
 import dev.staticvar.vlr.data.PlayerTeamHistory
 import dev.staticvar.vlr.data.Players
 import dev.staticvar.vlr.data.Standings
 import dev.staticvar.vlr.data.Teams
 import dev.staticvar.vlr.domain.model.AgentInfo
-import dev.staticvar.vlr.domain.model.ArticleLink
 import dev.staticvar.vlr.domain.model.CircuitRegion
 import dev.staticvar.vlr.domain.model.CircuitStandings
 import dev.staticvar.vlr.domain.model.CircuitTeam
@@ -40,9 +37,6 @@ import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
-import dev.staticvar.vlr.domain.model.NewsArticle
-import dev.staticvar.vlr.domain.model.NewsArticleMedia
-import dev.staticvar.vlr.domain.model.NewsItem
 import dev.staticvar.vlr.domain.model.PlayerAgentStat
 import dev.staticvar.vlr.domain.model.PlayerInfo
 import dev.staticvar.vlr.domain.model.PlayerStats
@@ -76,7 +70,6 @@ import dev.staticvar.vlr.localsource.database.GetTeamsWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.Team_completed_matches
 import dev.staticvar.vlr.localsource.database.Team_upcoming_matches
 import dev.staticvar.vlr.domain.model.MatchVideos as DomainMatchVideos
-import kotlinx.serialization.json.Json
 
 /**
  * Maps database query result to domain MatchPreview model.
@@ -285,60 +278,6 @@ private fun MatchVideos.toVideoReference(): VideoReference = VideoReference(
   name = name,
   url = url,
 )
-
-// ============================================================================
-// NEWS MAPPERS
-// ============================================================================
-
-/**
- * Maps database News entity to domain NewsItem model.
- */
-internal fun News.toNewsItem(): NewsItem = NewsItem(
-  id = id,
-  url = url,
-  title = title,
-  description = description ?: "",
-  date = date,
-  author = author,
-  coverUrl = cover_url,
-)
-
-/**
- * Aggregates News entity with its media to create domain NewsArticle model.
- */
-internal fun aggregateNewsArticle(news: News, media: List<NewsMedia>, json: Json): NewsArticle {
-  // API placeholders address each media array by index, including empty entries.
-  val orderedMedia = media.sortedBy { it.id }
-  val links = orderedMedia
-    .filter { it.media_type == "link" }
-    .map { mediaItem ->
-      ArticleLink(text = mediaItem.media_text.orEmpty(), url = mediaItem.media_value)
-    }
-
-  val images = orderedMedia
-    .filter { it.media_type == "image" }
-    .map { it.media_value }
-
-  val videos = orderedMedia
-    .filter { it.media_type == "video" }
-    .map { it.media_value }
-
-  return NewsArticle(
-    id = news.id,
-    url = news.url,
-    title = news.title,
-    author = news.author,
-    date = news.date,
-    coverUrl = news.cover_url,
-    contentHtml = news.content_html ?: "",
-    blocks = decodeArticleBlocks(orderedMedia.filter { it.media_type == "block" }.map { it.media_value }, json),
-    media = NewsArticleMedia(
-      links = links,
-      images = images,
-      videos = videos,
-    ),
-  )
-}
 
 // ============================================================================
 // TEAM MAPPERS

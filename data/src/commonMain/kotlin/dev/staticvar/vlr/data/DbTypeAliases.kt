@@ -8,7 +8,6 @@ package dev.staticvar.vlr.data
 // a single import surface for data layer mappers. Expand as new entities are mapped.
 
 // Simple tables
-typealias News = dev.staticvar.vlr.localsource.database.News
 typealias Rankings = dev.staticvar.vlr.localsource.database.Rankings
 typealias Standings = dev.staticvar.vlr.localsource.database.Standings
 typealias Events = dev.staticvar.vlr.localsource.database.Events
@@ -34,9 +33,6 @@ typealias EventMatches = dev.staticvar.vlr.localsource.database.Event_matches
 typealias TeamRoster = dev.staticvar.vlr.localsource.database.Team_roster
 typealias TeamUpcomingMatches = dev.staticvar.vlr.localsource.database.Team_upcoming_matches
 typealias TeamCompletedMatches = dev.staticvar.vlr.localsource.database.Team_completed_matches
-
-// News child
-typealias NewsMedia = dev.staticvar.vlr.localsource.database.News_media
 
 // Player child tables
 typealias PlayerAgentStats = dev.staticvar.vlr.localsource.database.Player_agent_stats

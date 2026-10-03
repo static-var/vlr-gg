@@ -192,6 +192,49 @@ class KmpDatabaseUpgradeTest {
     }
   }
 
+  @Test
+  fun versionFiveUpgradeRemovesNewsAndPreservesOtherCachedState() {
+    withDatabase { it.favoriteScheduleQueries.getFavoriteSchedule().executeAsList() }
+    val freshSchema = openTestDatabase().use(::schemaDescription)
+    removeTestDatabase()
+    val path = context.getDatabasePath("vlr")
+    instrumentation.context.assets.open("5.db").use { source ->
+      path.outputStream().use { destination -> source.copyTo(destination) }
+    }
+    openTestDatabase().use { db ->
+      db.execSQL(
+        "INSERT INTO news(id, url, title, author, date, cover_url) " +
+          "VALUES ('story', 'https://vlr.gg/story', 'Story', 'Author', '2026', '')",
+      )
+      db.execSQL("INSERT INTO news_media(news_id, media_type, media_value) VALUES ('story', 'image', 'cover.webp')")
+      db.execSQL(
+        "INSERT INTO search_index(entity_type, entity_id, name) " +
+          "VALUES ('NEWS', 'story', 'Story'), ('news', 'lower', 'Lower'), ('TEAM', 'team', 'Team')",
+      )
+      db.execSQL("INSERT INTO teams(id, name, logo_url, country) VALUES ('team', 'Cached team', '', '')")
+      db.execSQL("INSERT INTO favorite_teams(team_id) VALUES ('team')")
+      db.execSQL("INSERT INTO favorite_sync_state VALUES (1, 17, 1, 'existing-client')")
+      db.execSQL("INSERT INTO cache_cleanup_state VALUES (1, 42, 1234)")
+      db.version = 5
+    }
+
+    withDatabase { database ->
+      assertEquals(listOf("team"), database.teamsQueries.getFavoriteTeamIds().executeAsList())
+      assertEquals("Cached team", database.teamsQueries.getTeamWithFavoriteStatus("team").executeAsOne().name)
+      assertEquals(listOf("team"), database.searchQueries.search("", 10).executeAsList().map { it.entity_id })
+    }
+    openTestDatabase().use { db ->
+      assertEquals(VlrDatabase.Schema.version.toInt(), db.version)
+      assertEquals(freshSchema, schemaDescription(db))
+      assertTrue(rows(db, "SELECT name FROM sqlite_master WHERE name IN ('news', 'news_media')").isEmpty())
+      assertEquals(listOf("17", "1", "existing-client"),
+        rows(db, "SELECT revision, synced, client_id FROM favorite_sync_state").single())
+      assertEquals(listOf("42", "1234"),
+        rows(db, "SELECT deleted_records, last_run_epoch_millis FROM cache_cleanup_state").single())
+      assertTrue(rows(db, "PRAGMA foreign_key_check").isEmpty())
+    }
+  }
+
   private fun createHistoricalDatabase(revision: String) {
     val sql = instrumentation.context.assets.open("kmp-schemas/$revision.sql")
       .bufferedReader().use { it.readText() }

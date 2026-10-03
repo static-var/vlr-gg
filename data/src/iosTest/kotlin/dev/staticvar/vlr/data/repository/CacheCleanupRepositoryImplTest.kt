@@ -11,7 +11,6 @@ import dev.staticvar.vlr.localsource.database.Event_overview
 import dev.staticvar.vlr.localsource.database.Events
 import dev.staticvar.vlr.localsource.database.Match_overview
 import dev.staticvar.vlr.localsource.database.Matches
-import dev.staticvar.vlr.localsource.database.News
 import dev.staticvar.vlr.localsource.database.Players
 import dev.staticvar.vlr.localsource.database.Teams
 import dev.staticvar.vlr.localsource.database.VlrDatabase
@@ -68,13 +67,12 @@ class CacheCleanupRepositoryImplTest {
     insertEvent("stale-event", stale)
     insertTeam("stale-team", stale)
     insertPlayer("stale-player", stale)
-    insertNews("stale-news", stale)
     insertRanking("stale-team", stale)
     insertStanding("stale-team", stale)
-    insertNews("fresh-news", fresh)
-    insertNews("unknown-news", 0)
+    insertPlayer("fresh-player", fresh)
+    insertPlayer("unknown-player", 0)
     database.searchQueries.insertSearchEntry("MATCH", "stale-match", "Stale match", "", "")
-    database.searchQueries.insertSearchEntry("NEWS", "unknown-news", "Unknown news", "", "")
+    database.searchQueries.insertSearchEntry("PLAYER", "unknown-player", "Unknown player", "", "")
 
     assertTrue(repository.cleanupIfDue(now).isSuccess)
 
@@ -90,14 +88,13 @@ class CacheCleanupRepositoryImplTest {
     assertNull(database.playersQueries.getPlayerWithFavoriteStatus("stale-player").executeAsOneOrNull())
     assertTrue(database.rankingsQueries.getAllRankings().executeAsList().isEmpty())
     assertTrue(database.rankingsQueries.getStandingsByYear(2026).executeAsList().isEmpty())
-    assertNull(database.newsQueries.getNewsById("stale-news").executeAsOneOrNull())
-    assertNotNull(database.newsQueries.getNewsById("fresh-news").executeAsOneOrNull())
-    assertNotNull(database.newsQueries.getNewsById("unknown-news").executeAsOneOrNull())
+    assertNotNull(database.playersQueries.getPlayerWithFavoriteStatus("fresh-player").executeAsOneOrNull())
+    assertNotNull(database.playersQueries.getPlayerWithFavoriteStatus("unknown-player").executeAsOneOrNull())
     assertEquals(
-      listOf("unknown-news"),
+      listOf("unknown-player"),
       database.searchQueries.search("", 10).executeAsList().map { it.entity_id },
     )
-    assertEquals(7L, repository.observeStats().first().deletedRecords)
+    assertEquals(6L, repository.observeStats().first().deletedRecords)
     assertEquals(now, repository.observeStats().first().lastRunEpochMillis)
   }
 
@@ -173,7 +170,7 @@ class CacheCleanupRepositoryImplTest {
     insertPlayer("favorite-player", stale, currentTeamId = "player-team")
     insertMatch("player-match", stale, team2Id = "player-team")
     database.playersQueries.addFavoritePlayer("favorite-player")
-    insertNews("disposable", stale)
+    insertPlayer("disposable", stale)
 
     assertTrue(repository.cleanupIfDue(now).isSuccess)
 
@@ -198,7 +195,7 @@ class CacheCleanupRepositoryImplTest {
     }
     assertEquals(1, database.rankingsQueries.getAllRankings().executeAsList().size)
     assertEquals(1, database.rankingsQueries.getStandingsByYear(2026).executeAsList().size)
-    assertNull(database.newsQueries.getNewsById("disposable").executeAsOneOrNull())
+    assertNull(database.playersQueries.getPlayerWithFavoriteStatus("disposable").executeAsOneOrNull())
     assertEquals(1L, repository.observeStats().first().deletedRecords)
   }
 
@@ -209,17 +206,17 @@ class CacheCleanupRepositoryImplTest {
     assertEquals(0L, repository.observeStats().first().deletedRecords)
     assertNull(repository.observeStats().first().lastRunEpochMillis)
 
-    insertNews("first", stale)
+    insertPlayer("first", stale)
     assertTrue(repository.cleanupIfDue(now).isSuccess)
-    insertNews("second", stale)
+    insertPlayer("second", stale)
 
     assertTrue(repository.cleanupIfDue(now + ONE_DAY - 1).isSuccess)
-    assertNotNull(database.newsQueries.getNewsById("second").executeAsOneOrNull())
+    assertNotNull(database.playersQueries.getPlayerWithFavoriteStatus("second").executeAsOneOrNull())
     assertEquals(1L, repository.observeStats().first().deletedRecords)
     assertEquals(now, repository.observeStats().first().lastRunEpochMillis)
 
     assertTrue(repository.cleanupIfDue(now + ONE_DAY).isSuccess)
-    assertNull(database.newsQueries.getNewsById("second").executeAsOneOrNull())
+    assertNull(database.playersQueries.getPlayerWithFavoriteStatus("second").executeAsOneOrNull())
     val reopenedRepository = CacheCleanupRepositoryImpl(database, dispatchers)
     assertEquals(2L, reopenedRepository.observeStats().first().deletedRecords)
     assertEquals(now + ONE_DAY, reopenedRepository.observeStats().first().lastRunEpochMillis)
@@ -230,12 +227,12 @@ class CacheCleanupRepositoryImplTest {
     val now = 4_000_000_000L
     val stale = now - THIRTY_DAYS - 1
     insertMatch("stale-match", stale)
-    insertNews("stale-news", stale)
+    insertPlayer("another-stale-player", stale)
     driver.execute(
       identifier = null,
       sql = """
         CREATE TRIGGER fail_cache_cleanup
-        BEFORE DELETE ON news
+        BEFORE DELETE ON players
         BEGIN
           SELECT RAISE(ABORT, 'injected cleanup failure');
         END
@@ -245,14 +242,14 @@ class CacheCleanupRepositoryImplTest {
 
     assertTrue(repository.cleanupIfDue(now).isFailure)
     assertNotNull(database.matchesQueries.getMatchWithFavoriteStatus("stale-match").executeAsOneOrNull())
-    assertNotNull(database.newsQueries.getNewsById("stale-news").executeAsOneOrNull())
+    assertNotNull(database.playersQueries.getPlayerWithFavoriteStatus("another-stale-player").executeAsOneOrNull())
     assertEquals(0L, repository.observeStats().first().deletedRecords)
     assertNull(repository.observeStats().first().lastRunEpochMillis)
 
     driver.execute(null, "DROP TRIGGER fail_cache_cleanup", 0)
     assertTrue(repository.cleanupIfDue(now).isSuccess)
     assertNull(database.matchesQueries.getMatchWithFavoriteStatus("stale-match").executeAsOneOrNull())
-    assertNull(database.newsQueries.getNewsById("stale-news").executeAsOneOrNull())
+    assertNull(database.playersQueries.getPlayerWithFavoriteStatus("another-stale-player").executeAsOneOrNull())
     assertEquals(2L, repository.observeStats().first().deletedRecords)
     assertEquals(now, repository.observeStats().first().lastRunEpochMillis)
   }
@@ -337,12 +334,6 @@ class CacheCleanupRepositoryImplTest {
   private fun insertPlayer(id: String, lastUpdated: Long, currentTeamId: String? = null) {
     database.playersQueries.insertPlayer(
       Players(id, "Player $id", id, null, "US", currentTeamId, null, null, null, 0.0, lastUpdated),
-    )
-  }
-
-  private fun insertNews(id: String, lastUpdated: Long) {
-    database.newsQueries.insertNews(
-      News(id, id, "News $id", "Author", "2026", "", null, null, null, lastUpdated),
     )
   }
 

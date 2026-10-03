@@ -141,12 +141,6 @@ FROM (
 
     UNION ALL
 
-    SELECT 'NEWS', id
-    FROM news
-    WHERE last_updated > 0 AND last_updated < :cutoffEpochMillis
-
-    UNION ALL
-
     SELECT 'RANKING', team_id || ':' || region
     FROM rankings
     WHERE last_updated > 0
@@ -218,10 +212,6 @@ WHERE last_updated > 0
   AND last_updated < :cutoffEpochMillis
   AND id NOT IN (SELECT player_id FROM cache_protected_players);
 
-deleteStaleNews:
-DELETE FROM news
-WHERE last_updated > 0 AND last_updated < :cutoffEpochMillis;
-
 deleteOrphanedSearchEntries:
 DELETE FROM search_index
 WHERE (
@@ -235,8 +225,7 @@ WHERE (
         AND entity_id NOT IN (SELECT id FROM event_overview)
       )
    OR (UPPER(entity_type) = 'TEAM' AND entity_id NOT IN (SELECT id FROM teams))
-   OR (UPPER(entity_type) = 'PLAYER' AND entity_id NOT IN (SELECT id FROM players))
-   OR (UPPER(entity_type) = 'NEWS' AND entity_id NOT IN (SELECT id FROM news));
+   OR (UPPER(entity_type) = 'PLAYER' AND entity_id NOT IN (SELECT id FROM players));
 
 saveCacheCleanupState:
 INSERT OR REPLACE INTO cache_cleanup_state(id, deleted_records, last_run_epoch_millis)

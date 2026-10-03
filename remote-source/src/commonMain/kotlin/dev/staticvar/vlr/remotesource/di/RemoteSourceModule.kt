@@ -21,8 +21,6 @@ import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
 import dev.staticvar.vlr.remotesource.network.HttpClientFactory
 import dev.staticvar.vlr.remotesource.network.NetworkConfiguration
 import dev.staticvar.vlr.remotesource.network.PlatformAcceptLanguageProvider
-import dev.staticvar.vlr.remotesource.news.NewsDataSource
-import dev.staticvar.vlr.remotesource.news.NewsDataSourceImpl
 import dev.staticvar.vlr.remotesource.player.PlayerDataSource
 import dev.staticvar.vlr.remotesource.player.PlayerDataSourceImpl
 import dev.staticvar.vlr.remotesource.rankings.RankingsDataSource
@@ -78,7 +76,6 @@ fun remoteSourceModule(
   single<FavoriteMatchesDataSource> { FavoriteMatchesDataSourceImpl(get()) }
   single<PushTokenRegistrationDataSource> { PushTokenRegistrationDataSourceImpl(get()) }
   single<EventDataSource> { EventDataSourceImpl(get()) }
-  single<NewsDataSource> { NewsDataSourceImpl(get()) }
   single<PlayerDataSource> { PlayerDataSourceImpl(get()) }
   single<RankingsDataSource> { RankingsDataSourceImpl(get()) }
   single<StandingsDataSource> { StandingsDataSourceImpl(get()) }
