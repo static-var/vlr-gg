@@ -43,7 +43,6 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:relinquishTaskIdentity="true"
             android:theme="@style/Theme.VLR.Starting">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -92,14 +91,22 @@
             </intent-filter>
         </activity>
 
+        <!-- Launcher aliases open in their own task so changing the icon never removes MainActivity's task. -->
+        <activity
+            android:name=".LauncherActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity="${applicationId}.launcher"
+            android:theme="@style/Theme.VLR.Starting" />
+
         <activity-alias
             android:name="dev.staticvar.vlr.android.MainActivityDefault"
             android:enabled="true"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
-            android:targetActivity=".MainActivity">
-            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Default" />
+            android:targetActivity=".LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -111,8 +118,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_amethyst"
             android:roundIcon="@mipmap/ic_launcher_amethyst_round"
-            android:targetActivity=".MainActivity">
-            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Amethyst" />
+            android:targetActivity=".LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -124,8 +130,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_ticket"
             android:roundIcon="@mipmap/ic_launcher_ticket_round"
-            android:targetActivity=".MainActivity">
-            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Ticket" />
+            android:targetActivity=".LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -138,8 +143,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_arcade"
             android:roundIcon="@mipmap/ic_launcher_arcade_round"
-            android:targetActivity=".MainActivity">
-            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Arcade" />
+            android:targetActivity=".LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -151,8 +155,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_midnight"
             android:roundIcon="@mipmap/ic_launcher_midnight_round"
-            android:targetActivity=".MainActivity">
-            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Midnight" />
+            android:targetActivity=".LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -164,8 +167,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_mint"
             android:roundIcon="@mipmap/ic_launcher_mint_round"
-            android:targetActivity=".MainActivity">
-            <meta-data android:name="dev.staticvar.vlr.SPLASH_THEME" android:resource="@style/Theme.VLR.Starting.Mint" />
+            android:targetActivity=".LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
