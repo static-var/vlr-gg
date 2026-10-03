@@ -1,0 +1,11 @@
+Review information for Val Esports 1.0.7 (81)
+
+Val Esports is an independent, open-source companion for competitive Valorant. Browse matches, scores, teams, players, events and regional rankings. Save favorites, use spoiler protection, and follow matches through widgets and Live Activities. No account, sign-in or review credentials are required.
+
+Network access is required for current esports data. Match times use the device time zone. Live scores and Live Activities depend on the match schedule; enable Live Activities in Settings and favorite a match to follow it when it is live. Availability is controlled by iOS.
+
+To try calendar export, open an upcoming match with a known start time and tap Add to calendar. An event with upcoming scheduled matches also has a calendar action beside its favorite button. Calendar access is requested when exporting. Full calendar access lets the app find and update previously saved matches as schedules or teams change. Repeated exports update the existing entry while preserving its calendar and reminders.
+
+Settings contains Appearance, spoiler controls and What's new? Appearance offers app icons, themes and mascots. What's new? contains the release highlights.
+
+The app has its own mobile interface and does not claim affiliation with or endorsement by Riot Games. Valorant and related marks belong to Riot Games. It has no subscriptions, in-app purchases or public user-generated content.
