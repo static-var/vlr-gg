@@ -2,7 +2,7 @@ name: vlr-sentry-relay
 
 services:
   relay:
-    image: ghcr.io/getsentry/relay:26.8.0
+    image: ghcr.io/getsentry/relay:26.9.0
     command: [run]
     restart: unless-stopped
     init: true
