@@ -65,4 +65,7 @@
     <string name="mascot_player_cooked_combined">%1$s ने कमाल कर दिया!!!</string>
     <string name="calendar_versus">बनाम</string>
   <string name="show_live_notification">लाइव सूचना दिखाएँ</string>
+    <string name="match_saved_to_your_calendar">मैच आपके कैलेंडर में सहेज दिया गया।</string>
+    <string name="match_already_in_your_calendar">यह मैच पहले से आपके कैलेंडर में है।</string>
+    <string name="allow_calendar_access_to_add_matches">मैच जोड़ने के लिए सेटिंग्स में कैलेंडर की अनुमति दें।</string>
 </resources>

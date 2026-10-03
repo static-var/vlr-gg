@@ -45,7 +45,7 @@ public enum class CalendarExportResult {
 
 /**
  * Adds entries to the user's calendar. Android hands an ICS file to a calendar app, with share targets as the
- * fallback. iOS has no ICS import for apps, so it saves the entries with add-only calendar access.
+ * fallback. iOS saves or reschedules entries with calendar access, checking saved events to avoid duplicates.
  */
 @Composable
 public expect fun rememberCalendarExporter(): suspend (fileName: String, entries: List<CalendarEntry>) -> CalendarExportResult

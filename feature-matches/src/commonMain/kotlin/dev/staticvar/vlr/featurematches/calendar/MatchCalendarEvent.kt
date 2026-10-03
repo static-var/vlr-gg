@@ -6,6 +6,7 @@ package dev.staticvar.vlr.featurematches.calendar
 
 import androidx.compose.runtime.Composable
 import dev.staticvar.vlr.domain.model.MatchDetails
+import dev.staticvar.vlr.sharedui.calendar.CalendarExportResult
 import dev.staticvar.vlr.sharedui.calendar.matchCalendarEntry
 import dev.staticvar.vlr.sharedui.calendar.toICalendar
 import kotlin.time.Clock
@@ -39,9 +40,9 @@ public fun MatchDetails.toCalendarEvent(versus: String): MatchCalendarEvent? {
   )
 }
 
-/** Opens the calendar editor or shares ICS on failure. Success means handoff, not a saved event. */
+/** Android opens the calendar editor; iOS adds or reschedules the saved match. */
 @Composable
-public expect fun rememberMatchCalendarExporter(): (MatchCalendarEvent) -> Result<Unit>
+public expect fun rememberMatchCalendarExporter(): suspend (MatchCalendarEvent) -> CalendarExportResult
 
 internal fun openCalendarWithIcsFallback(
   openCalendar: () -> Unit,

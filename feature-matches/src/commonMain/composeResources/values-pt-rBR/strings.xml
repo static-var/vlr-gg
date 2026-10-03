@@ -65,4 +65,7 @@
     <string name="mascot_player_cooked_combined">%1$s amassou!!!</string>
     <string name="calendar_versus">vs.</string>
   <string name="show_live_notification">Mostrar notificação ao vivo</string>
+    <string name="match_saved_to_your_calendar">Partida salva no seu calendário.</string>
+    <string name="match_already_in_your_calendar">Essa partida já está no seu calendário.</string>
+    <string name="allow_calendar_access_to_add_matches">Permita o acesso ao calendário nos Ajustes para adicionar partidas.</string>
 </resources>

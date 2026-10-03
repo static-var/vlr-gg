@@ -65,4 +65,7 @@
     <string name="mascot_player_cooked_combined">%1$s a tout détruit !!!</string>
     <string name="calendar_versus">contre</string>
   <string name="show_live_notification">Afficher la notification en direct</string>
+    <string name="match_saved_to_your_calendar">Match enregistré dans votre calendrier.</string>
+    <string name="match_already_in_your_calendar">Ce match est déjà dans votre calendrier.</string>
+    <string name="allow_calendar_access_to_add_matches">Autorisez l'accès au calendrier dans Réglages pour ajouter des matchs.</string>
 </resources>

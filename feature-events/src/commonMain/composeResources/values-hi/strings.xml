@@ -48,7 +48,7 @@
     <string name="add_upcoming_matches_to_calendar">आने वाले मैच कैलेंडर में जोड़ें</string>
     <string name="unable_to_open_the_calendar_file_please_try_again">कैलेंडर फ़ाइल नहीं खुल सकी। फिर से कोशिश करें।</string>
     <string name="calendar_versus">बनाम</string>
-    <string name="upcoming_matches_added_to_your_calendar">आने वाले मैच आपके कैलेंडर में जोड़ दिए गए।</string>
+    <string name="upcoming_matches_added_to_your_calendar">आने वाले मैच आपके कैलेंडर में सहेज दिए गए।</string>
     <string name="matches_already_in_your_calendar">ये मैच पहले से आपके कैलेंडर में हैं।</string>
     <string name="allow_calendar_access_to_add_matches">मैच जोड़ने के लिए सेटिंग्स में कैलेंडर की अनुमति दें।</string>
 </resources>

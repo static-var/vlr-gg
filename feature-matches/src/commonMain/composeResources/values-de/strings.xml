@@ -65,4 +65,7 @@
     <string name="mascot_player_cooked_combined">%1$s hat abgeliefert!!!</string>
     <string name="calendar_versus">gegen</string>
   <string name="show_live_notification">Live-Benachrichtigung anzeigen</string>
+    <string name="match_saved_to_your_calendar">Match in deinem Kalender gespeichert.</string>
+    <string name="match_already_in_your_calendar">Dieses Match ist bereits in deinem Kalender.</string>
+    <string name="allow_calendar_access_to_add_matches">Erlaube den Kalenderzugriff in den Einstellungen, um Matches hinzuzufügen.</string>
 </resources>
