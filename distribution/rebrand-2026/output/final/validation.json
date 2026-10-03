@@ -4,6 +4,296 @@
   "asset_count": 22,
   "assets": [
     {
+      "asset": "play/01",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/play-1080x1920/01.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/android/01.png",
+      "source_dimensions": [
+        1080,
+        2400
+      ],
+      "rendered_capture_dimensions": [
+        559,
+        1242
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/template/frames/pixel-9-pro.webp",
+        "screen": [
+          60,
+          64,
+          1280,
+          2856
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/template/frames/pixel-9-pro-screen-mask.webp"
+      }
+    },
+    {
+      "asset": "play/02",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/play-1080x1920/02.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/android/02.png",
+      "source_dimensions": [
+        1080,
+        2400
+      ],
+      "rendered_capture_dimensions": [
+        559,
+        1242
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/template/frames/pixel-9-pro.webp",
+        "screen": [
+          60,
+          64,
+          1280,
+          2856
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/template/frames/pixel-9-pro-screen-mask.webp"
+      }
+    },
+    {
+      "asset": "play/03",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/play-1080x1920/03.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/android/03.png",
+      "source_dimensions": [
+        1080,
+        2400
+      ],
+      "rendered_capture_dimensions": [
+        559,
+        1242
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/template/frames/pixel-9-pro.webp",
+        "screen": [
+          60,
+          64,
+          1280,
+          2856
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/template/frames/pixel-9-pro-screen-mask.webp"
+      }
+    },
+    {
+      "asset": "play/04",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/play-1080x1920/04.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/android/04.png",
+      "source_dimensions": [
+        1080,
+        2400
+      ],
+      "rendered_capture_dimensions": [
+        559,
+        1242
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/template/frames/pixel-9-pro.webp",
+        "screen": [
+          60,
+          64,
+          1280,
+          2856
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/template/frames/pixel-9-pro-screen-mask.webp"
+      }
+    },
+    {
+      "asset": "play/05",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/play-1080x1920/05.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/android/05.png",
+      "source_dimensions": [
+        1080,
+        2400
+      ],
+      "rendered_capture_dimensions": [
+        559,
+        1242
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/template/frames/pixel-9-pro.webp",
+        "screen": [
+          60,
+          64,
+          1280,
+          2856
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/template/frames/pixel-9-pro-screen-mask.webp"
+      }
+    },
+    {
+      "asset": "app_store/01",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/app-store-iphone-1320x2868/01.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/01.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        915,
+        1989
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/iphone18-pro-silver.png",
+        "screen": [
+          72,
+          69,
+          1206,
+          2622
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/iphone18-pro-silver-screen-mask.png"
+      }
+    },
+    {
+      "asset": "app_store/02",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/app-store-iphone-1320x2868/02.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/02.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        915,
+        1989
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/iphone18-pro-silver.png",
+        "screen": [
+          72,
+          69,
+          1206,
+          2622
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/iphone18-pro-silver-screen-mask.png"
+      }
+    },
+    {
+      "asset": "app_store/03",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/app-store-iphone-1320x2868/03.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/03.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        915,
+        1989
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/iphone18-pro-silver.png",
+        "screen": [
+          72,
+          69,
+          1206,
+          2622
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/iphone18-pro-silver-screen-mask.png"
+      }
+    },
+    {
+      "asset": "app_store/04",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/app-store-iphone-1320x2868/04.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/04.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        915,
+        1989
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/iphone18-pro-silver.png",
+        "screen": [
+          72,
+          69,
+          1206,
+          2622
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/iphone18-pro-silver-screen-mask.png"
+      }
+    },
+    {
+      "asset": "app_store/05",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/app-store-iphone-1320x2868/05.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/05.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        915,
+        1989
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/iphone18-pro-silver.png",
+        "screen": [
+          72,
+          69,
+          1206,
+          2622
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/iphone18-pro-silver-screen-mask.png"
+      }
+    },
+    {
       "asset": "play_tablet/01",
       "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/play-tablet-1920x1080/01.png",
       "dimensions": [
@@ -99,196 +389,6 @@
       "aspect_ratio_preserved": true
     },
     {
-      "asset": "app_store/01",
-      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/app-store-iphone-1320x2868/01.png",
-      "dimensions": [
-        1320,
-        2868
-      ],
-      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/01.png",
-      "source_dimensions": [
-        1206,
-        2622
-      ],
-      "rendered_capture_dimensions": [
-        963,
-        2094
-      ],
-      "preview_source": false,
-      "aspect_ratio_preserved": true
-    },
-    {
-      "asset": "app_store/02",
-      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/app-store-iphone-1320x2868/02.png",
-      "dimensions": [
-        1320,
-        2868
-      ],
-      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/02.png",
-      "source_dimensions": [
-        1206,
-        2622
-      ],
-      "rendered_capture_dimensions": [
-        963,
-        2094
-      ],
-      "preview_source": false,
-      "aspect_ratio_preserved": true
-    },
-    {
-      "asset": "app_store/03",
-      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/app-store-iphone-1320x2868/03.png",
-      "dimensions": [
-        1320,
-        2868
-      ],
-      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/03.png",
-      "source_dimensions": [
-        1206,
-        2622
-      ],
-      "rendered_capture_dimensions": [
-        963,
-        2094
-      ],
-      "preview_source": false,
-      "aspect_ratio_preserved": true
-    },
-    {
-      "asset": "app_store/04",
-      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/app-store-iphone-1320x2868/04.png",
-      "dimensions": [
-        1320,
-        2868
-      ],
-      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/04.png",
-      "source_dimensions": [
-        1206,
-        2622
-      ],
-      "rendered_capture_dimensions": [
-        963,
-        2094
-      ],
-      "preview_source": false,
-      "aspect_ratio_preserved": true
-    },
-    {
-      "asset": "app_store/05",
-      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/app-store-iphone-1320x2868/05.png",
-      "dimensions": [
-        1320,
-        2868
-      ],
-      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/05.png",
-      "source_dimensions": [
-        1206,
-        2622
-      ],
-      "rendered_capture_dimensions": [
-        963,
-        2094
-      ],
-      "preview_source": false,
-      "aspect_ratio_preserved": true
-    },
-    {
-      "asset": "play/01",
-      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/play-1080x1920/01.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/android/01.png",
-      "source_dimensions": [
-        1080,
-        2400
-      ],
-      "rendered_capture_dimensions": [
-        586,
-        1302
-      ],
-      "preview_source": false,
-      "aspect_ratio_preserved": true
-    },
-    {
-      "asset": "play/02",
-      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/play-1080x1920/02.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/android/02.png",
-      "source_dimensions": [
-        1080,
-        2400
-      ],
-      "rendered_capture_dimensions": [
-        586,
-        1302
-      ],
-      "preview_source": false,
-      "aspect_ratio_preserved": true
-    },
-    {
-      "asset": "play/03",
-      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/play-1080x1920/03.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/android/03.png",
-      "source_dimensions": [
-        1080,
-        2400
-      ],
-      "rendered_capture_dimensions": [
-        586,
-        1302
-      ],
-      "preview_source": false,
-      "aspect_ratio_preserved": true
-    },
-    {
-      "asset": "play/04",
-      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/play-1080x1920/04.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/android/04.png",
-      "source_dimensions": [
-        1080,
-        2400
-      ],
-      "rendered_capture_dimensions": [
-        586,
-        1302
-      ],
-      "preview_source": false,
-      "aspect_ratio_preserved": true
-    },
-    {
-      "asset": "play/05",
-      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/play-1080x1920/05.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/android/05.png",
-      "source_dimensions": [
-        1080,
-        2400
-      ],
-      "rendered_capture_dimensions": [
-        586,
-        1302
-      ],
-      "preview_source": false,
-      "aspect_ratio_preserved": true
-    },
-    {
       "asset": "app_store_ipad/01",
       "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/final/app-store-ipad-2064x2752/01.png",
       "dimensions": [
@@ -301,11 +401,21 @@
         2752
       ],
       "rendered_capture_dimensions": [
-        1400,
-        1866
+        1284,
+        1712
       ],
       "preview_source": false,
-      "aspect_ratio_preserved": true
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/ipad-pro13-m5-silver.png",
+        "screen": [
+          118,
+          124,
+          2064,
+          2752
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/ipad-pro13-m5-silver-screen-mask.png"
+      }
     },
     {
       "asset": "app_store_ipad/02",
@@ -320,11 +430,21 @@
         2752
       ],
       "rendered_capture_dimensions": [
-        1400,
-        1866
+        1284,
+        1712
       ],
       "preview_source": false,
-      "aspect_ratio_preserved": true
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/ipad-pro13-m5-silver.png",
+        "screen": [
+          118,
+          124,
+          2064,
+          2752
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/ipad-pro13-m5-silver-screen-mask.png"
+      }
     },
     {
       "asset": "app_store_ipad/03",
@@ -339,11 +459,21 @@
         2752
       ],
       "rendered_capture_dimensions": [
-        1400,
-        1866
+        1284,
+        1712
       ],
       "preview_source": false,
-      "aspect_ratio_preserved": true
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/ipad-pro13-m5-silver.png",
+        "screen": [
+          118,
+          124,
+          2064,
+          2752
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/ipad-pro13-m5-silver-screen-mask.png"
+      }
     },
     {
       "asset": "app_store_ipad/04",
@@ -358,11 +488,21 @@
         2752
       ],
       "rendered_capture_dimensions": [
-        1400,
-        1866
+        1284,
+        1712
       ],
       "preview_source": false,
-      "aspect_ratio_preserved": true
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/ipad-pro13-m5-silver.png",
+        "screen": [
+          118,
+          124,
+          2064,
+          2752
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/ipad-pro13-m5-silver-screen-mask.png"
+      }
     },
     {
       "asset": "app_store_ipad/05",
@@ -377,11 +517,21 @@
         2752
       ],
       "rendered_capture_dimensions": [
-        1400,
-        1866
+        1284,
+        1712
       ],
       "preview_source": false,
-      "aspect_ratio_preserved": true
+      "aspect_ratio_preserved": true,
+      "device_frame": {
+        "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/ipad-pro13-m5-silver.png",
+        "screen": [
+          118,
+          124,
+          2064,
+          2752
+        ],
+        "screen_mask": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/frames/ipad-pro13-m5-silver-screen-mask.png"
+      }
     },
     {
       "asset": "feature_graphic",
