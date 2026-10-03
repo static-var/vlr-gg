@@ -46,7 +46,7 @@
     <string name="tab_prizes">Призы</string>
     <string name="mascot_event_won">Победитель турнира — %1$s!</string>
     <string name="add_upcoming_matches_to_calendar">Добавить предстоящие матчи в календарь</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">Не удалось открыть файл календаря. Повторите попытку.</string>
+    <string name="unable_to_save_matches_to_calendar">Не удалось сохранить матчи в календаре. Повторите попытку.</string>
     <string name="calendar_versus">против</string>
     <string name="upcoming_matches_added_to_your_calendar">Предстоящие матчи сохранены в календаре.</string>
     <string name="matches_already_in_your_calendar">Эти матчи уже есть в календаре.</string>

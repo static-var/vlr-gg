@@ -1,7 +1,7 @@
 <resources>
     <string name="add_to_calendar">Добавить в календарь</string>
     <string name="match_time_hasn_t_been_announced">Время матча ещё не объявлено.</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">Не удалось открыть файл календаря. Повторите попытку.</string>
+    <string name="unable_to_save_matches_to_calendar">Не удалось сохранить матчи в календаре. Повторите попытку.</string>
     <string name="cancel">Отмена</string>
     <string name="preview_selected_matches_for_sharing">Предпросмотр выбранных матчей для отправки</string>
     <string name="match_overview">Обзор матчей</string>

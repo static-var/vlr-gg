@@ -46,7 +46,7 @@
     <string name="tab_prizes">Preisgelder</string>
     <string name="mascot_event_won">%1$s hat das Event gewonnen!</string>
     <string name="add_upcoming_matches_to_calendar">Anstehende Matches zum Kalender hinzufügen</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">Die Kalenderdatei konnte nicht geöffnet werden. Bitte erneut versuchen.</string>
+    <string name="unable_to_save_matches_to_calendar">Matches konnten nicht im Kalender gespeichert werden. Bitte erneut versuchen.</string>
     <string name="calendar_versus">gegen</string>
     <string name="upcoming_matches_added_to_your_calendar">Anstehende Matches wurden in deinem Kalender gespeichert.</string>
     <string name="matches_already_in_your_calendar">Diese Matches sind bereits in deinem Kalender.</string>

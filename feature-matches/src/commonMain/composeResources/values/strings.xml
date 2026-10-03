@@ -1,7 +1,7 @@
 <resources>
     <string name="add_to_calendar">Add to calendar</string>
     <string name="match_time_hasn_t_been_announced">Match time hasn't been announced.</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">Unable to open the calendar file. Please try again.</string>
+    <string name="unable_to_save_matches_to_calendar">Unable to save matches to the calendar. Please try again.</string>
     <string name="cancel">Cancel</string>
     <string name="preview_selected_matches_for_sharing">Preview selected matches for sharing</string>
     <string name="match_overview">Match overview</string>

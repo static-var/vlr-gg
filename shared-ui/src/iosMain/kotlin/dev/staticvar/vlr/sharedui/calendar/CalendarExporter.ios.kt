@@ -54,34 +54,59 @@ private suspend fun addToCalendar(entries: List<CalendarEntry>): CalendarExportR
   if (!granted) return CalendarExportResult.Denied
   val defaults = NSUserDefaults.standardUserDefaults
   val saved = defaults.dictionaryForKey(SAVED_EVENT_IDS_KEY).orEmpty().entries
-    .mapNotNull { (uid, id) -> if (uid is String && id is String) uid to id else null }
+    .mapNotNull { (uid, record) ->
+      if (uid !is String || record !is Map<*, *>) return@mapNotNull null
+      val id = (record["id"] as? String)?.takeIf(String::isNotBlank) ?: return@mapNotNull null
+      val start = (record["start"] as? String)?.toDoubleOrNull()?.takeIf(Double::isFinite) ?: return@mapNotNull null
+      uid to SavedCalendarEvent(id, start)
+    }
     .toMap().toMutableMap()
-  val changed = entries.distinctBy(CalendarEntry::uid).mapNotNull { entry ->
-    val existing = saved[entry.uid]?.let(store::eventWithIdentifier)
+  var changed = false
+  val events = entries.distinctBy(CalendarEntry::uid).map { entry ->
+    val record = saved[entry.uid]
+    val existing = record?.let { store.eventWithIdentifier(it.id) }
+      ?: record?.let { store.findMatch(entry.url, it.startEpochSeconds) }
     val start = NSDate.dateWithTimeIntervalSince1970(entry.start.toEpochMilliseconds() / 1000.0)
     val end = NSDate.dateWithTimeIntervalSince1970(entry.end.toEpochMilliseconds() / 1000.0)
     val url = entry.url?.let { NSURL.URLWithString(it) }
-    if (existing != null && existing.startDate == start && existing.endDate == end &&
-      existing.title == entry.title && existing.notes == entry.description && existing.URL == url
-    ) return@mapNotNull null
+    if (existing != null && existing.startDate == start && existing.endDate == end && existing.URL == url) {
+      return@map entry to existing
+    }
     val event = existing ?: EKEvent.eventWithEventStore(store).apply {
       calendar = checkNotNull(store.defaultCalendarForNewEvents) { "No calendar accepts new events." }
+      title = entry.title
+      notes = entry.description
     }
-    event.title = entry.title
-    event.notes = entry.description
     event.startDate = start
     event.endDate = end
     event.URL = url
     check(store.saveEvent(event, span = EKSpan.EKSpanThisEvent, commit = false, error = null)) {
       "Unable to prepare the calendar event."
     }
-    entry.uid to event
+    changed = true
+    entry to event
   }
-  if (changed.isEmpty()) return CalendarExportResult.AlreadyAdded
-  check(store.commit(null)) { "Unable to save the calendar events." }
-  changed.forEach { (uid, event) -> saved[uid] = checkNotNull(event.eventIdentifier) }
-  defaults.setObject(saved, forKey = SAVED_EVENT_IDS_KEY)
-  return CalendarExportResult.Added
+  if (changed) check(store.commit(null)) { "Unable to save the calendar events." }
+  events.forEach { (entry, event) ->
+    saved[entry.uid] = SavedCalendarEvent(checkNotNull(event.eventIdentifier), entry.start.epochSeconds.toDouble())
+  }
+  defaults.setObject(
+    saved.mapValues { (_, event) -> mapOf("id" to event.id, "start" to event.startEpochSeconds.toString()) },
+    forKey = SAVED_EVENT_IDS_KEY,
+  )
+  return if (changed) CalendarExportResult.Added else CalendarExportResult.AlreadyAdded
 }
+
+private fun EKEventStore.findMatch(url: String?, lastStartEpochSeconds: Double): EKEvent? {
+  if (url == null) return null
+  val predicate = predicateForEventsWithStartDate(
+    NSDate.dateWithTimeIntervalSince1970(lastStartEpochSeconds - 86_400),
+    endDate = NSDate.dateWithTimeIntervalSince1970(lastStartEpochSeconds + 86_400),
+    calendars = null,
+  )
+  return eventsMatchingPredicate(predicate).filterIsInstance<EKEvent>().firstOrNull { it.URL?.absoluteString == url }
+}
+
+private data class SavedCalendarEvent(val id: String, val startEpochSeconds: Double)
 
 private const val SAVED_EVENT_IDS_KEY = "calendar.savedEventIds"

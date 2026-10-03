@@ -1,7 +1,7 @@
 <resources>
     <string name="add_to_calendar">캘린더에 추가</string>
     <string name="match_time_hasn_t_been_announced">경기 시간이 아직 발표되지 않았습니다.</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">캘린더 파일을 열 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="unable_to_save_matches_to_calendar">경기를 캘린더에 저장하지 못했습니다. 다시 시도해 주세요.</string>
     <string name="cancel">취소</string>
     <string name="preview_selected_matches_for_sharing">공유할 선택 경기 미리보기</string>
     <string name="match_overview">경기 개요</string>

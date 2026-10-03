@@ -1,7 +1,7 @@
 <resources>
     <string name="add_to_calendar">Takvime ekle</string>
     <string name="match_time_hasn_t_been_announced">Maç saati henüz açıklanmadı.</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">Takvim dosyası açılamadı. Lütfen tekrar deneyin.</string>
+    <string name="unable_to_save_matches_to_calendar">Maçlar takvime kaydedilemedi. Lütfen tekrar deneyin.</string>
     <string name="cancel">İptal</string>
     <string name="preview_selected_matches_for_sharing">Paylaşmak için seçilen maçları önizle</string>
     <string name="match_overview">Maçlara genel bakış</string>

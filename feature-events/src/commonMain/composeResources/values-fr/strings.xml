@@ -46,7 +46,7 @@
     <string name="tab_prizes">Récompenses</string>
     <string name="mascot_event_won">%1$s a remporté l’événement !</string>
     <string name="add_upcoming_matches_to_calendar">Ajouter les prochains matchs au calendrier</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">Impossible d'ouvrir le fichier de calendrier. Réessayez.</string>
+    <string name="unable_to_save_matches_to_calendar">Impossible d'enregistrer les matchs dans le calendrier. Réessayez.</string>
     <string name="calendar_versus">contre</string>
     <string name="upcoming_matches_added_to_your_calendar">Les prochains matchs ont été enregistrés dans votre calendrier.</string>
     <string name="matches_already_in_your_calendar">Ces matchs sont déjà dans votre calendrier.</string>

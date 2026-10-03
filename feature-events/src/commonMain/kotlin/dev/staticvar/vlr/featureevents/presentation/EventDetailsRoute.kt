@@ -121,7 +121,7 @@ import vlr.feature_events.generated.resources.table
 import vlr.feature_events.generated.resources.team_standings_have_not_been_published_for_this_event
 import vlr.feature_events.generated.resources.teams
 import vlr.feature_events.generated.resources.teams_matches_and_standings
-import vlr.feature_events.generated.resources.unable_to_open_the_calendar_file_please_try_again
+import vlr.feature_events.generated.resources.unable_to_save_matches_to_calendar
 import vlr.feature_events.generated.resources.updating_favorite
 import vlr.feature_events.generated.resources.upcoming_matches_added_to_your_calendar
 
@@ -518,7 +518,7 @@ private fun EventDetailsHero(
           CalendarExportResult.Added -> Res.string.upcoming_matches_added_to_your_calendar
           CalendarExportResult.AlreadyAdded -> Res.string.matches_already_in_your_calendar
           CalendarExportResult.Denied -> Res.string.allow_calendar_access_to_add_matches
-          CalendarExportResult.Failed -> Res.string.unable_to_open_the_calendar_file_please_try_again
+          CalendarExportResult.Failed -> Res.string.unable_to_save_matches_to_calendar
           CalendarExportResult.Opened, null -> null
         }
         calendarMessage?.let { message ->

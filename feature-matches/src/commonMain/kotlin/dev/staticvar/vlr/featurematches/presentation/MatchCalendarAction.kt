@@ -34,7 +34,7 @@ import vlr.feature_matches.generated.resources.calendar_versus
 import vlr.feature_matches.generated.resources.match_already_in_your_calendar
 import vlr.feature_matches.generated.resources.match_saved_to_your_calendar
 import vlr.feature_matches.generated.resources.match_time_hasn_t_been_announced
-import vlr.feature_matches.generated.resources.unable_to_open_the_calendar_file_please_try_again
+import vlr.feature_matches.generated.resources.unable_to_save_matches_to_calendar
 
 internal fun MatchDetails.shouldShowCalendarAction(now: Instant = Clock.System.now()): Boolean =
   event.status.equals("upcoming", ignoreCase = true) &&
@@ -74,7 +74,7 @@ internal fun MatchCalendarAction(match: MatchDetails) {
       result == CalendarExportResult.Added -> Res.string.match_saved_to_your_calendar
       result == CalendarExportResult.AlreadyAdded -> Res.string.match_already_in_your_calendar
       result == CalendarExportResult.Denied -> Res.string.allow_calendar_access_to_add_matches
-      result == CalendarExportResult.Failed -> Res.string.unable_to_open_the_calendar_file_please_try_again
+      result == CalendarExportResult.Failed -> Res.string.unable_to_save_matches_to_calendar
       else -> null
     }
     message?.let {

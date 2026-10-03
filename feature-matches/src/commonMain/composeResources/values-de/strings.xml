@@ -1,7 +1,7 @@
 <resources>
     <string name="add_to_calendar">Zum Kalender hinzufügen</string>
     <string name="match_time_hasn_t_been_announced">Die Uhrzeit des Matches wurde noch nicht bekannt gegeben.</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">Die Kalenderdatei konnte nicht geöffnet werden. Bitte erneut versuchen.</string>
+    <string name="unable_to_save_matches_to_calendar">Matches konnten nicht im Kalender gespeichert werden. Bitte erneut versuchen.</string>
     <string name="cancel">Abbrechen</string>
     <string name="preview_selected_matches_for_sharing">Ausgewählte Matches zum Teilen in der Vorschau anzeigen</string>
     <string name="match_overview">Matchübersicht</string>

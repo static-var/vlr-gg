@@ -1,7 +1,7 @@
 <resources>
     <string name="add_to_calendar">कैलेंडर में जोड़ें</string>
     <string name="match_time_hasn_t_been_announced">मैच का समय अभी घोषित नहीं हुआ है।</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">कैलेंडर फ़ाइल नहीं खुल सकी। फिर से कोशिश करें।</string>
+    <string name="unable_to_save_matches_to_calendar">मैच कैलेंडर में सहेजे नहीं जा सके। फिर से कोशिश करें।</string>
     <string name="cancel">रद्द करें</string>
     <string name="preview_selected_matches_for_sharing">शेयर करने के लिए चुने गए मैचों का पूर्वावलोकन करें</string>
     <string name="match_overview">मैच का अवलोकन</string>

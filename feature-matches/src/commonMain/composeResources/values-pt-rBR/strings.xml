@@ -1,7 +1,7 @@
 <resources>
     <string name="add_to_calendar">Adicionar ao calendário</string>
     <string name="match_time_hasn_t_been_announced">O horário da partida ainda não foi anunciado.</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">Não foi possível abrir o arquivo do calendário. Tente novamente.</string>
+    <string name="unable_to_save_matches_to_calendar">Não foi possível salvar as partidas no calendário. Tente novamente.</string>
     <string name="cancel">Cancelar</string>
     <string name="preview_selected_matches_for_sharing">Visualizar as partidas selecionadas antes de compartilhar</string>
     <string name="match_overview">Visão geral das partidas</string>
