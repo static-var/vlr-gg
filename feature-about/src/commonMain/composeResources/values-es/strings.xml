@@ -137,7 +137,7 @@
     <string name="notification_promotion_unavailable">Los resultados en directo pueden seguir apareciendo como notificaciones normales. Tu dispositivo no permite actualizaciones en directo destacadas para esta app. Revisa los ajustes de notificaciones del sistema; la disponibilidad también depende del dispositivo.</string>
     <string name="match_alerts">Alertas de partidos</string>
     <string name="match_alerts_description">Recibe una notificación cuando empiece un partido favorito. Las actualizaciones de resultados en directo no están disponibles en este dispositivo.</string>
-    <string name="release_1_0_7_introduction">Descubre todo lo añadido desde la versión 1.0.0, con más formas de seguir tus partidas favoritas y personalizar la app.</string>
+    <string name="release_1_0_7_introduction">Descubre todo lo añadido desde la versión 1.0.0, con más formas de seguir tus partidos favoritos y exportar los calendarios de eventos a tu calendario.</string>
     <string name="release_1_0_7_favorites_title">Sigue a tus favoritos</string>
     <string name="release_1_0_7_favorites_description">Encuentra en Inicio partidas en directo y resultados de las últimas 24 horas de tus equipos, eventos y partidas favoritos.</string>
     <string name="release_1_0_7_ios_live_title">Marcadores en directo de tus favoritos</string>
@@ -157,6 +157,10 @@
     <string name="match_reminders_description">Recibe un recordatorio antes de que empiece una partida favorita. Permite las notificaciones para recibir recordatorios.</string>
     <string name="match_reminders_permission_description">Permite las notificaciones para recibir recordatorios de tus favoritos.</string>
     <string name="live_updates_with_reminders_description">Sigue los marcadores en directo en las notificaciones. Cuando Live Updates esté desactivado, seguirás recibiendo recordatorios antes de tus partidas favoritas.</string>
+    <string name="release_1_0_7_calendar_title">Partidos de eventos en tu calendario</string>
+    <string name="release_1_0_7_calendar_description">Exporta los próximos partidos de un evento a tu calendario.</string>
+    <string name="release_1_0_7_navigation_title">Navegación más sencilla</string>
+    <string name="release_1_0_7_navigation_description">Se ha eliminado la pestaña de noticias para centrar la app en partidos y eventos.</string>
     <string name="release_1_0_7_search_title">Encuentra tu equipo</string>
     <string name="release_1_0_7_search_description">Busca equipos en Clasificación, incluidos los que no aparecen en la clasificación actual, y abre sus perfiles.</string>
     <string name="release_1_0_7_match_details_title">Sigue cada partida más de cerca</string>

@@ -139,7 +139,7 @@
     <string name="match_reminders_description">Get a reminder before a favorite match starts. Allow notifications to receive reminders.</string>
     <string name="match_reminders_permission_description">Allow notifications to receive reminders for your favorites.</string>
     <string name="live_updates_with_reminders_description">Follow live scores in notifications. When Live Updates are off, favorites still receive pre-match reminders.</string>
-    <string name="release_1_0_7_introduction">Discover everything added since 1.0.0, with more ways to follow your favorite matches and make the app yours.</string>
+    <string name="release_1_0_7_introduction">Discover everything added since 1.0.0, including more ways to follow your favorite matches and export event schedules to your calendar.</string>
     <string name="release_1_0_7_favorites_title">Follow your favorites</string>
     <string name="release_1_0_7_favorites_description">Find live matches and results from the past 24 hours for your favorite teams, events, and matches on Home.</string>
     <string name="release_1_0_7_ios_live_title">Live scores for your favorites</string>
@@ -156,6 +156,10 @@
     <string name="release_1_0_7_ios_shortcuts_description">Find favorite teams and events in Spotlight, or ask Siri about your next favorite match.</string>
     <string name="release_1_0_7_stability_title">Smoother navigation</string>
     <string name="release_1_0_7_stability_description">Move between matches and events more smoothly, find settings more easily, and keep your favorites reliably after app updates.</string>
+    <string name="release_1_0_7_calendar_title">Event matches in your calendar</string>
+    <string name="release_1_0_7_calendar_description">Export upcoming matches from an event to your calendar.</string>
+    <string name="release_1_0_7_navigation_title">Simpler navigation</string>
+    <string name="release_1_0_7_navigation_description">The News tab has been removed to keep the app focused on matches and events.</string>
     <string name="release_1_0_7_search_title">Find your team</string>
     <string name="release_1_0_7_search_description">Search for teams from Rankings, including teams outside the current rankings, and open their profiles.</string>
     <string name="release_1_0_7_match_details_title">Get closer to every match</string>

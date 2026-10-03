@@ -136,7 +136,7 @@
     <string name="notification_promotion_unavailable">Live-Spielstände können weiterhin als normale Benachrichtigungen erscheinen. Dein Gerät erlaubt für diese App keine hervorgehobenen Live-Updates. Prüfe die Benachrichtigungseinstellungen des Systems; die Verfügbarkeit hängt auch vom Gerät ab.</string>
     <string name="match_alerts">Spielbenachrichtigungen</string>
     <string name="match_alerts_description">Erhalte eine Benachrichtigung, wenn ein favorisiertes Spiel beginnt. Live-Spielstände sind auf diesem Gerät nicht verfügbar.</string>
-    <string name="release_1_0_7_introduction">Entdecke alle Neuerungen seit 1.0.0, mit mehr Möglichkeiten, deine Lieblingsmatches zu verfolgen und die App anzupassen.</string>
+    <string name="release_1_0_7_introduction">Entdecke alle Neuerungen seit Version 1.0.0, mit mehr Möglichkeiten, deine Lieblingsmatches zu verfolgen und Event-Spielpläne in deinen Kalender zu exportieren.</string>
     <string name="release_1_0_7_favorites_title">Folge deinen Favoriten</string>
     <string name="release_1_0_7_favorites_description">Finde auf der Startseite laufende Matches und Ergebnisse der letzten 24 Stunden für deine favorisierten Teams, Events und Matches.</string>
     <string name="release_1_0_7_ios_live_title">Live-Spielstände für deine Favoriten</string>
@@ -156,6 +156,10 @@
     <string name="match_reminders_description">Erhalte eine Erinnerung, bevor ein favorisiertes Match beginnt. Erlaube Mitteilungen, um Erinnerungen zu erhalten.</string>
     <string name="match_reminders_permission_description">Erlaube Mitteilungen, um Erinnerungen für deine Favoriten zu erhalten.</string>
     <string name="live_updates_with_reminders_description">Verfolge Live-Spielstände in Mitteilungen. Wenn Live Updates deaktiviert sind, erhältst du weiterhin Erinnerungen vor favorisierten Matches.</string>
+    <string name="release_1_0_7_calendar_title">Event-Matches in deinem Kalender</string>
+    <string name="release_1_0_7_calendar_description">Exportiere anstehende Matches eines Events in deinen Kalender.</string>
+    <string name="release_1_0_7_navigation_title">Einfachere Navigation</string>
+    <string name="release_1_0_7_navigation_description">Der News-Tab wurde entfernt, damit sich die App auf Matches und Events konzentriert.</string>
     <string name="release_1_0_7_search_title">Finde dein Team</string>
     <string name="release_1_0_7_search_description">Suche in der Rangliste nach Teams, auch nach solchen, die nicht in der aktuellen Rangliste stehen, und öffne ihre Profile.</string>
     <string name="release_1_0_7_match_details_title">Verfolge jedes Match genauer</string>
