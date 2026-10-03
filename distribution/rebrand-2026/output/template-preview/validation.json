@@ -1,0 +1,215 @@
+{
+  "manifest": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/template/manifest.json",
+  "mode": "preview",
+  "asset_count": 12,
+  "assets": [
+    {
+      "asset": "play/01",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/play-1080x1920/01.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/docs/compose-refactor-2026-09-13/visual-after/android/04-matches-list.png",
+      "source_dimensions": [
+        1080,
+        2400
+      ],
+      "rendered_capture_dimensions": [
+        586,
+        1302
+      ],
+      "preview_source": true,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "play/02",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/play-1080x1920/02.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/android/02.png",
+      "source_dimensions": [
+        1080,
+        2400
+      ],
+      "rendered_capture_dimensions": [
+        586,
+        1302
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "play/03",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/play-1080x1920/03.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/docs/compose-refactor-2026-09-13/visual-after/android/01b-home-populated.png",
+      "source_dimensions": [
+        1080,
+        2400
+      ],
+      "rendered_capture_dimensions": [
+        586,
+        1302
+      ],
+      "preview_source": true,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "play/04",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/play-1080x1920/04.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/docs/compose-refactor-2026-09-13/visual-after/android/07-event-detail.png",
+      "source_dimensions": [
+        1080,
+        2400
+      ],
+      "rendered_capture_dimensions": [
+        586,
+        1302
+      ],
+      "preview_source": true,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "play/05",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/play-1080x1920/05.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/docs/compose-refactor-2026-09-13/visual-after/android/08-rankings.png",
+      "source_dimensions": [
+        1080,
+        2400
+      ],
+      "rendered_capture_dimensions": [
+        586,
+        1302
+      ],
+      "preview_source": true,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store/01",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/app-store-iphone-1320x2868/01.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/01.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        963,
+        2094
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store/02",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/app-store-iphone-1320x2868/02.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/02.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        963,
+        2094
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store/03",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/app-store-iphone-1320x2868/03.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/raw/ios/03.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        963,
+        2094
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store/04",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/app-store-iphone-1320x2868/04.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/docs/compose-refactor-2026-09-13/visual-after/ios/event-china-act3.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        963,
+        2094
+      ],
+      "preview_source": true,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store/05",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/app-store-iphone-1320x2868/05.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/docs/compose-refactor-2026-09-13/visual-after/ios/rankings.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        963,
+        2094
+      ],
+      "preview_source": true,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "feature_graphic",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/feature-graphic-1024x500.png",
+      "dimensions": [
+        1024,
+        500
+      ],
+      "preview_source": false
+    },
+    {
+      "asset": "social",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/rebrand-2026/output/template-preview/social-1600x900.png",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "preview_source": false
+    }
+  ]
+}

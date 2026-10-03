@@ -1,20 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23501" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="launch-controller">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
-    <dependencies><plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23500"/><capability name="Named colors" minToolsVersion="9.0"/><capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/></dependencies>
+    <dependencies><plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23500"/><capability name="Named colors" minToolsVersion="9.0"/><capability name="Safe area layout guides" minToolsVersion="9.0"/><capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/></dependencies>
     <scenes><scene sceneID="launch-scene"><objects>
         <viewController id="launch-controller" sceneMemberID="viewController">
             <view key="view" contentMode="scaleToFill" id="launch-view">
                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                <subviews><imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="LaunchWordmark" translatesAutoresizingMaskIntoConstraints="NO" id="launch-art">
-                    <rect key="frame" x="56.5" y="316" width="280" height="220"/>
-                    <constraints><constraint firstAttribute="width" constant="280" id="art-width"/><constraint firstAttribute="height" constant="220" id="art-height"/></constraints>
-                </imageView></subviews>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="LaunchLogo" translatesAutoresizingMaskIntoConstraints="NO" id="launch-logo">
+                        <rect key="frame" x="56.5" y="294" width="280" height="240"/>
+                        <constraints><constraint firstAttribute="width" constant="280" id="logo-width"/><constraint firstAttribute="height" constant="240" id="logo-height"/></constraints>
+                    </imageView>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="LaunchCaption" translatesAutoresizingMaskIntoConstraints="NO" id="launch-caption">
+                        <rect key="frame" x="66.5" y="778" width="260" height="16"/>
+                        <constraints><constraint firstAttribute="width" constant="260" id="caption-width"/><constraint firstAttribute="height" constant="16" id="caption-height"/></constraints>
+                    </imageView>
+                </subviews>
+                <viewLayoutGuide key="safeArea" id="launch-safe-area"/>
                 <color key="backgroundColor" name="LaunchBackground"/>
-                <constraints><constraint firstItem="launch-art" firstAttribute="centerX" secondItem="launch-view" secondAttribute="centerX" id="art-center-x"/><constraint firstItem="launch-art" firstAttribute="centerY" secondItem="launch-view" secondAttribute="centerY" id="art-center-y"/></constraints>
+                <constraints>
+                    <constraint firstItem="launch-logo" firstAttribute="centerX" secondItem="launch-view" secondAttribute="centerX" id="logo-center-x"/>
+                    <constraint firstItem="launch-logo" firstAttribute="centerY" secondItem="launch-view" secondAttribute="centerY" constant="-12" id="logo-center-y"/>
+                    <constraint firstItem="launch-caption" firstAttribute="centerX" secondItem="launch-view" secondAttribute="centerX" id="caption-center-x"/>
+                    <constraint firstItem="launch-safe-area" firstAttribute="bottom" secondItem="launch-caption" secondAttribute="bottom" constant="24" id="caption-bottom"/>
+                </constraints>
             </view>
         </viewController>
         <placeholder placeholderIdentifier="IBFirstResponder" id="launch-responder" userLabel="First Responder" sceneMemberID="firstResponder"/>
     </objects></scene></scenes>
-    <resources><image name="LaunchWordmark" width="280" height="220"/><namedColor name="LaunchBackground"><color red="0.937" green="0.945" blue="0.961" alpha="1" colorSpace="custom" customColorSpace="sRGB"/></namedColor></resources>
+    <resources><image name="LaunchLogo" width="280" height="240"/><image name="LaunchCaption" width="260" height="16"/><namedColor name="LaunchBackground"><color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/></namedColor></resources>
 </document>

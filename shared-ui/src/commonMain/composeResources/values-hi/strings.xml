@@ -1,8 +1,6 @@
 <resources>
   <string name="shared_offline_title">आप ऑफ़लाइन हैं</string>
-  <string name="shared_offline_loading">यह स्क्रीन लोड करने के लिए इंटरनेट से कनेक्ट करें। आपके दोबारा ऑनलाइन आने पर यह अपडेट हो जाएगी।</string>
   <string name="shared_loading">लोड हो रहा है</string>
-  <string name="shared_offline">ऑफ़लाइन</string>
   <string name="shared_refreshing">रीफ़्रेश हो रहा है</string>
   <string name="shared_ready_to_refresh">रीफ़्रेश करने के लिए तैयार</string>
   <string name="shared_load_failed">डेटा लोड नहीं हो सका</string>

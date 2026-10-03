@@ -8,11 +8,9 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import dev.staticvar.vlr.sharedui.icon.syncLauncherSplashTheme
 
 private const val DefaultAlias = "dev.staticvar.vlr.android.MainActivityDefault"
 private const val AmethystAlias = "dev.staticvar.vlr.android.MainActivityAmethyst"
@@ -24,16 +22,10 @@ private const val MintAlias = "dev.staticvar.vlr.android.MainActivityMint"
 @Composable
 internal actual fun rememberAppIconController(): AppIconController {
   val applicationContext = LocalContext.current.applicationContext
-  val activity = LocalActivity.current
-  return remember(applicationContext, activity) {
-    AndroidAppIconController(applicationContext) { activity?.syncLauncherSplashTheme() }
-  }
+  return remember(applicationContext) { AndroidAppIconController(applicationContext) }
 }
 
-private class AndroidAppIconController(
-  context: Context,
-  private val onIconChanged: () -> Unit,
-) : AppIconController {
+private class AndroidAppIconController(context: Context) : AppIconController {
   private val packageManager = context.packageManager
   private val aliases = mapOf(
     AppIcon.Arcade to ComponentName(context.packageName, ArcadeAlias),
@@ -68,7 +60,6 @@ private class AndroidAppIconController(
           )
         },
       )
-      onIconChanged()
       return
     }
 
@@ -84,6 +75,5 @@ private class AndroidAppIconController(
         PackageManager.DONT_KILL_APP,
       )
     }
-    onIconChanged()
   }
 }

@@ -45,4 +45,10 @@
     <string name="tab_standings">순위</string>
     <string name="tab_prizes">상금</string>
     <string name="mascot_event_won">%1$s 팀이 이벤트에서 우승했습니다!</string>
+    <string name="add_upcoming_matches_to_calendar">예정된 경기를 캘린더에 추가</string>
+    <string name="unable_to_save_matches_to_calendar">경기를 캘린더에 저장하지 못했습니다. 다시 시도해 주세요.</string>
+    <string name="calendar_versus">대</string>
+    <string name="upcoming_matches_added_to_your_calendar">예정된 경기를 캘린더에 저장했습니다.</string>
+    <string name="matches_already_in_your_calendar">이 경기들은 이미 캘린더에 있습니다.</string>
+    <string name="allow_calendar_access_to_add_matches">경기를 추가하려면 설정에서 캘린더 접근을 허용해 주세요.</string>
 </resources>

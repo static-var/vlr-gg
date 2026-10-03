@@ -32,10 +32,9 @@ public fun SharedRefreshStatus(
   hasContent: Boolean = true,
 ) {
   val status = when {
-    !LocalIsOnline.current && hasContent -> RefreshStatus.Failed(stringResource(Res.string.shared_no_internet), null)
-    !LocalIsOnline.current -> RefreshStatus.Idle
     isRefreshing -> RefreshStatus.Refreshing
     errorMessage != null -> RefreshStatus.Failed(errorMessage, errorDetails)
+    !LocalIsOnline.current && hasContent -> RefreshStatus.Failed(stringResource(Res.string.shared_no_internet), null)
     else -> RefreshStatus.Idle
   }
   val animation = Prism.anim.standard

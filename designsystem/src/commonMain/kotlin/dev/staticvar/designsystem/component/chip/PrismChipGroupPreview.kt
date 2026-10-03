@@ -49,7 +49,7 @@ internal fun PrismChipGroupPreview(@PreviewParameter(PrismPreviewProvider::class
           PrismChip(
             id = "upcoming",
             label = "Upcoming",
-            icon = icons.news.unselected,
+            icon = icons.events.unselected,
             enabled = false,
           ),
         )

@@ -51,7 +51,6 @@ internal class CacheCleanupRepositoryImpl(
           queries.deleteStaleStandings(cutoff)
           queries.deleteStaleTeams(cutoff)
           queries.deleteStalePlayers(cutoff)
-          queries.deleteStaleNews(cutoff)
           queries.deleteOrphanedSearchEntries()
           queries.saveCacheCleanupState(
             deletedRecords = (state?.deleted_records ?: 0) + deletedRecords,

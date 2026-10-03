@@ -12,7 +12,6 @@ import dev.staticvar.designsystem.component.button.PrismRefreshButton
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.shared_loading
-import vlr.shared_ui.generated.resources.shared_offline
 import vlr.shared_ui.generated.resources.shared_ready_to_refresh
 import vlr.shared_ui.generated.resources.shared_refreshing
 
@@ -26,17 +25,15 @@ public fun SharedRefreshButton(
   modifier: Modifier = Modifier,
   animateWhileLoading: Boolean = false,
 ) {
-  val isOnline = LocalIsOnline.current
   val busy = isLoading || isRefreshing
   val refreshState = when {
-    !isOnline -> stringResource(Res.string.shared_offline)
     isRefreshing -> stringResource(Res.string.shared_refreshing)
     isLoading -> stringResource(Res.string.shared_loading)
     else -> stringResource(Res.string.shared_ready_to_refresh)
   }
   PrismRefreshButton(
-    isRefreshing = isOnline && ((hasContent && isRefreshing) || (animateWhileLoading && busy)),
-    enabled = isOnline && !busy,
+    isRefreshing = (hasContent && isRefreshing) || (animateWhileLoading && busy),
+    enabled = !busy,
     onClick = onRefresh,
     modifier = modifier.semantics {
       stateDescription = refreshState

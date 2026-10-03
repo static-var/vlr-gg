@@ -1,7 +1,7 @@
 <resources>
     <string name="add_to_calendar">Добавить в календарь</string>
     <string name="match_time_hasn_t_been_announced">Время матча ещё не объявлено.</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">Не удалось открыть файл календаря. Повторите попытку.</string>
+    <string name="unable_to_save_matches_to_calendar">Не удалось сохранить матчи в календаре. Повторите попытку.</string>
     <string name="cancel">Отмена</string>
     <string name="preview_selected_matches_for_sharing">Предпросмотр выбранных матчей для отправки</string>
     <string name="match_overview">Обзор матчей</string>
@@ -65,4 +65,7 @@
     <string name="mascot_player_cooked_combined">%1$s разнёс всех!!!</string>
     <string name="calendar_versus">против</string>
   <string name="show_live_notification">Показать уведомление о матче</string>
+    <string name="match_saved_to_your_calendar">Матч сохранён в календаре.</string>
+    <string name="match_already_in_your_calendar">Этот матч уже есть в календаре.</string>
+    <string name="allow_calendar_access_to_add_matches">Разрешите доступ к календарю в Настройках, чтобы добавлять матчи.</string>
 </resources>

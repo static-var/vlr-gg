@@ -1,0 +1,28 @@
+[
+  {
+    "path": "iphone18-pro-silver.png",
+    "screen": [
+      72,
+      69,
+      1206,
+      2622
+    ],
+    "source": "https://devimages-cdn.apple.com/design/resources/download/Bezel-iPhone-18.dmg",
+    "source_page": "https://developer.apple.com/design/resources/",
+    "screen_mask": "iphone18-pro-silver-screen-mask.png",
+    "mask_note": "Transparent display component isolated from official PNG, expanded two pixels under bezel for anti-aliasing. No screenshot pixels edited."
+  },
+  {
+    "path": "ipad-pro13-m5-silver.png",
+    "screen": [
+      118,
+      124,
+      2064,
+      2752
+    ],
+    "source": "https://devimages-cdn.apple.com/design/resources/download/Bezel-iPad-Pro-%28M5%29.dmg",
+    "source_page": "https://developer.apple.com/design/resources/",
+    "screen_mask": "ipad-pro13-m5-silver-screen-mask.png",
+    "mask_note": "Transparent display component isolated from official PNG, expanded two pixels under bezel for anti-aliasing. No screenshot pixels edited."
+  }
+]

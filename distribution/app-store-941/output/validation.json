@@ -1,0 +1,197 @@
+{
+  "manifest": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/manifest.json",
+  "mode": "final",
+  "asset_count": 10,
+  "assets": [
+    {
+      "asset": "app_store_ipad/01",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/output/app-store-ipad-2064x2752/01.png",
+      "dimensions": [
+        2064,
+        2752
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/raw/ios-ipad/01.png",
+      "source_dimensions": [
+        2064,
+        2752
+      ],
+      "rendered_capture_dimensions": [
+        1400,
+        1866
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store_ipad/02",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/output/app-store-ipad-2064x2752/02.png",
+      "dimensions": [
+        2064,
+        2752
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/raw/ios-ipad/02.png",
+      "source_dimensions": [
+        2064,
+        2752
+      ],
+      "rendered_capture_dimensions": [
+        1400,
+        1866
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store_ipad/03",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/output/app-store-ipad-2064x2752/03.png",
+      "dimensions": [
+        2064,
+        2752
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/raw/ios-ipad/03.png",
+      "source_dimensions": [
+        2064,
+        2752
+      ],
+      "rendered_capture_dimensions": [
+        1400,
+        1866
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store_ipad/04",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/output/app-store-ipad-2064x2752/04.png",
+      "dimensions": [
+        2064,
+        2752
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/raw/ios-ipad/04.png",
+      "source_dimensions": [
+        2064,
+        2752
+      ],
+      "rendered_capture_dimensions": [
+        1400,
+        1866
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store_ipad/05",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/output/app-store-ipad-2064x2752/05.png",
+      "dimensions": [
+        2064,
+        2752
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/raw/ios-ipad/05.png",
+      "source_dimensions": [
+        2064,
+        2752
+      ],
+      "rendered_capture_dimensions": [
+        1400,
+        1866
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store/01",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/output/app-store-iphone-1320x2868/01.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/raw/ios/01.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        963,
+        2094
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store/02",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/output/app-store-iphone-1320x2868/02.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/raw/ios/02.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        963,
+        2094
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store/03",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/output/app-store-iphone-1320x2868/03.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/raw/ios/03.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        963,
+        2094
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store/04",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/output/app-store-iphone-1320x2868/04.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/raw/ios/04.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        963,
+        2094
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    },
+    {
+      "asset": "app_store/05",
+      "path": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/output/app-store-iphone-1320x2868/05.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "source": "/Users/staticvar/Projects/vlr-gg/distribution/app-store-941/raw/ios/05.png",
+      "source_dimensions": [
+        1206,
+        2622
+      ],
+      "rendered_capture_dimensions": [
+        963,
+        2094
+      ],
+      "preview_source": false,
+      "aspect_ratio_preserved": true
+    }
+  ]
+}

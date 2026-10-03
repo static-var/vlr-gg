@@ -19,24 +19,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.shared_loading
-import vlr.shared_ui.generated.resources.shared_offline_loading
-import vlr.shared_ui.generated.resources.shared_offline_title
 
 @Composable
 public fun SharedScreenLoading(label: String, modifier: Modifier = Modifier) {
-  if (!LocalIsOnline.current) {
-    SharedEmptyState(
-      artwork = EmptyStateArtwork.NoInternet,
-      title = stringResource(Res.string.shared_offline_title),
-      message = stringResource(Res.string.shared_offline_loading),
-      modifier = modifier,
-    )
-    return
-  }
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,

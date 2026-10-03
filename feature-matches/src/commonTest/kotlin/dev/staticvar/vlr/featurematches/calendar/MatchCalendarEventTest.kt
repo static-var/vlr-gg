@@ -7,9 +7,11 @@ package dev.staticvar.vlr.featurematches.calendar
 import dev.staticvar.vlr.domain.model.EventInfo
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchVideos
+import dev.staticvar.vlr.domain.model.TeamDetails
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
@@ -58,6 +60,31 @@ class MatchCalendarEventTest {
     }
     assertEquals(generatedAt, match("2026-09-05T12:00:00Z").toCalendarEvent("vs")?.start)
   }
+
+  @Test
+  fun announcedTeamsReplaceTheEventFallbackWithoutChangingIdentity() {
+    val scheduledMatch = match("2026-09-05T12:00:00Z")
+    val placeholder = scheduledMatch.copy(
+      event = scheduledMatch.event.copy(name = " Champions ", series = "Bo3", stage = "Playoffs: Grand Final"),
+      note = "Match detail only note",
+      teams = listOf(team(" TBD "), team("tbd")),
+    )
+    val before = assertNotNull(placeholder.toCalendarEvent("vs"))
+    val after = assertNotNull(placeholder.copy(teams = listOf(team(" NRG "), team(" LOUD "))).toCalendarEvent("vs"))
+
+    assertEquals("Champions", before.title)
+    assertEquals("NRG vs LOUD", after.title)
+    assertEquals("Champions", before.description)
+    assertEquals(before.description, after.description)
+    assertEquals(before.matchId, after.matchId)
+    assertEquals(before.start, after.start)
+    assertEquals(
+      before.toICalendar(generatedAt).lines().first { it.startsWith("UID:") },
+      after.toICalendar(generatedAt).lines().first { it.startsWith("UID:") },
+    )
+  }
+
+  private fun team(name: String): TeamDetails = TeamDetails(null, name, "", "", null, null)
 
   private fun match(date: String?): MatchDetails = MatchDetails(
     id = "42",

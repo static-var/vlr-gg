@@ -167,7 +167,6 @@ dependencies {
   implementation(libs.bundles.accompanist)
 
   implementation(libs.browser)
-  implementation(libs.webkit)
 
   implementation(libs.immutable.collection)
   implementation(libs.androidx.collection)
@@ -192,7 +191,6 @@ dependencies {
   implementation(libs.bundles.ktor)
   implementation(libs.logging.interceptor)
 
-  implementation(libs.jsoup)
   implementation(libs.landscapist.glide)
   implementation(libs.landscapist.animation)
   implementation(libs.haze)

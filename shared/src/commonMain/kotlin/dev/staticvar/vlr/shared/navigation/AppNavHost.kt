@@ -55,7 +55,6 @@ import vlr.shared.generated.resources.Res
 import vlr.shared.generated.resources.navigation_events
 import vlr.shared.generated.resources.navigation_home
 import vlr.shared.generated.resources.navigation_matches
-import vlr.shared.generated.resources.navigation_news
 import vlr.shared.generated.resources.navigation_ranking
 
 @OptIn(KoinExperimentalAPI::class, ExperimentalSharedTransitionApi::class)
@@ -70,7 +69,6 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
     PrismBottomNavItem(id = MATCHES_ID, label = stringResource(Res.string.navigation_matches), icon = icons.matches.unselected, selectedIcon = icons.matches.selected),
     PrismBottomNavItem(id = EVENTS_ID, label = stringResource(Res.string.navigation_events), icon = icons.events.unselected, selectedIcon = icons.events.selected),
     PrismBottomNavItem(id = RANKINGS_ID, label = stringResource(Res.string.navigation_ranking), icon = icons.rankings.unselected, selectedIcon = icons.rankings.selected),
-    PrismBottomNavItem(id = NEWS_ID, label = stringResource(Res.string.navigation_news), icon = icons.news.unselected, selectedIcon = icons.news.selected),
   )
   val entryProvider = koinEntryProvider<NavKey>()
   val entryDecorators = listOf(

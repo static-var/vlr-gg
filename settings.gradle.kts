@@ -56,7 +56,6 @@ include(":lint")
 
 include(":feature-home")
 
-include(":feature-news")
 
 include(":feature-matches")
 

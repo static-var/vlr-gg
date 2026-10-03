@@ -1,7 +1,7 @@
 <resources>
     <string name="add_to_calendar">Ajouter au calendrier</string>
     <string name="match_time_hasn_t_been_announced">L'heure du match n'a pas encore été annoncée.</string>
-    <string name="unable_to_open_the_calendar_file_please_try_again">Impossible d'ouvrir le fichier de calendrier. Réessayez.</string>
+    <string name="unable_to_save_matches_to_calendar">Impossible d'enregistrer les matchs dans le calendrier. Réessayez.</string>
     <string name="cancel">Annuler</string>
     <string name="preview_selected_matches_for_sharing">Prévisualiser les matchs sélectionnés pour les partager</string>
     <string name="match_overview">Vue d'ensemble des matchs</string>
@@ -65,4 +65,7 @@
     <string name="mascot_player_cooked_combined">%1$s a tout détruit !!!</string>
     <string name="calendar_versus">contre</string>
   <string name="show_live_notification">Afficher la notification en direct</string>
+    <string name="match_saved_to_your_calendar">Match enregistré dans votre calendrier.</string>
+    <string name="match_already_in_your_calendar">Ce match est déjà dans votre calendrier.</string>
+    <string name="allow_calendar_access_to_add_matches">Autorisez l'accès au calendrier dans Réglages pour ajouter des matchs.</string>
 </resources>

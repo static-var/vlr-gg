@@ -68,5 +68,4 @@
   <string name="format_month_nov">Nov</string>
   <string name="format_month_dec">Dez</string>
   <string name="format_match_preview_date">%2$d de %1$s, %3$s:%4$s</string>
-  <string name="format_news_preview_date">%2$d de %1$s de %3$d</string>
 </resources>

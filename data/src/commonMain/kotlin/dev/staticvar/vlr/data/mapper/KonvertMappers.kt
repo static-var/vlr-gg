@@ -4,96 +4,23 @@
  */
 package dev.staticvar.vlr.data.mapper
 
-import dev.staticvar.vlr.data.News
-import dev.staticvar.vlr.data.NewsMedia
 import dev.staticvar.vlr.data.PlayerAgentStats
 import dev.staticvar.vlr.data.PlayerTeamHistory
 import dev.staticvar.vlr.data.Rankings
 import dev.staticvar.vlr.data.Standings
-import dev.staticvar.vlr.remotesource.news.NewsArticleDto
-import dev.staticvar.vlr.remotesource.news.NewsItemDto
 import dev.staticvar.vlr.remotesource.player.PlayerAgentStatsDto
 import dev.staticvar.vlr.remotesource.player.PlayerTeamRefDto
 import dev.staticvar.vlr.remotesource.rankings.TeamRankingDto
 import dev.staticvar.vlr.remotesource.standings.TeamStandingDto
-import kotlinx.serialization.json.Json
 import kotlin.time.Clock
 
 /**
- * Simple manual mappers for News, Rankings, and Standings.
+ * Simple manual mappers for Rankings and Standings.
  * These are 1:1 or near-1:1 mappings that don't require Konvert.
  *
  * Note: EventPrizeDto and EventTeamDto mappers are in EventTeamMappers.kt
  * Note: PlayerDetailsDto mapper is complex and should be manual
  */
-
-// ----------------------------- News -----------------------------
-
-internal fun NewsItemDto.toEntity(listPosition: Long): News = News(
-  id = url.toArticleId(),
-  url = url.toAbsoluteVlrUrl(),
-  title = title,
-  author = author,
-  date = date,
-  description = description,
-  cover_url = "", // Not provided in NewsItemDto
-  content_html = null,
-  list_position = listPosition,
-  last_updated = Clock.System.now().toEpochMilliseconds(),
-)
-
-internal fun NewsArticleDto.toEntity(): News = News(
-  id = id.toArticleId(),
-  url = id.toAbsoluteVlrUrl(),
-  title = title,
-  author = author,
-  date = date ?: "",
-  description = null,
-  cover_url = images.firstOrNull() ?: "",
-  content_html = content,
-  list_position = null,
-  last_updated = Clock.System.now().toEpochMilliseconds(),
-)
-
-internal fun NewsArticleDto.toMediaEntities(json: Json, articleId: String = id): List<NewsMedia> {
-  val linkMedia = links.map { link ->
-    NewsMedia(
-      id = 0,
-      news_id = articleId,
-      media_type = "link",
-      media_value = link.url,
-      media_text = link.text,
-    )
-  }
-  val imageMedia = images.map { url ->
-    NewsMedia(id = 0, news_id = articleId, media_type = "image", media_value = url, media_text = null)
-  }
-  val videoMedia = videos.map { vid ->
-    NewsMedia(id = 0, news_id = articleId, media_type = "video", media_value = vid, media_text = null)
-  }
-  val blockMedia = blocks.map { block ->
-    NewsMedia(id = 0, news_id = articleId, media_type = "block",
-      media_value = json.encodeToString(block), media_text = null)
-  }
-  return linkMedia + imageMedia + videoMedia + blockMedia
-}
-
-private fun String.toAbsoluteVlrUrl(): String {
-  val value = trim()
-  return when {
-    value.startsWith("https://") || value.startsWith("http://") -> value
-    value.startsWith("/") -> "https://www.vlr.gg$value"
-    else -> "https://www.vlr.gg/$value"
-  }
-}
-
-private fun String.toArticleId(): String {
-  val absolute = toAbsoluteVlrUrl()
-  return absolute
-    .removePrefix("https://www.vlr.gg/")
-    .removePrefix("http://www.vlr.gg/")
-    .trim('/')
-}
 
 // ----------------------------- Rankings -----------------------------
 

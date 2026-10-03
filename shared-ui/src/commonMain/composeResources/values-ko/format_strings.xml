@@ -68,5 +68,4 @@
   <string name="format_month_nov">11월</string>
   <string name="format_month_dec">12월</string>
   <string name="format_match_preview_date">%1$s %2$d일 %3$s:%4$s</string>
-  <string name="format_news_preview_date">%3$d년 %1$s %2$d일</string>
 </resources>

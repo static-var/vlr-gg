@@ -4,8 +4,6 @@
  */
 package dev.staticvar.designsystem.prism.icon
 
-import dev.staticvar.designsystem.prism.icon.news.StairStepNews
-import dev.staticvar.designsystem.prism.icon.news.StairStepNewsFilled
 import dev.staticvar.designsystem.prism.icon.matches.StairStepMatches
 import dev.staticvar.designsystem.prism.icon.matches.StairStepMatchesFilled
 import dev.staticvar.designsystem.prism.icon.events.StairStepEvents
@@ -23,6 +21,10 @@ internal val ConsoleIcons: PrismIcons by lazy {
     share = prismIconArtwork(
       name = "ConsoleShare",
       fill = "M11 2 H13 V4 H15 V6 H17 V8 H15 V6 H13 V16 H11 V6 H9 V8 H7 V6 H9 V4 H11 Z M3 12 H5 V20 H19 V12 H21 V22 H3 Z",
+    ),
+    calendarAdd = prismIconArtwork(
+      name = "ConsoleCalendarAdd",
+      fill = "M6 2 H8 V4 H16 V2 H18 V4 H22 V22 H2 V4 H6 Z M4 10 V20 H20 V10 Z M11 12 H13 V14 H15 V16 H13 V18 H11 V16 H9 V14 H11 Z",
     ),
     preview = prismIconArtwork(
       name = "ConsolePreview",
@@ -43,7 +45,6 @@ internal val ConsoleIcons: PrismIcons by lazy {
         fill = "M10 2 H14 V4 H16 V6 H18 V8 H20 V10 H22 V22 H14 V16 H10 V22 H2 V10 H4 V8 H6 V6 H8 V4 H10 Z",
       ),
     ),
-    news = PrismNavigationIcons(StairStepNews, StairStepNewsFilled),
     matches = PrismNavigationIcons(StairStepMatches, StairStepMatchesFilled),
     events = PrismNavigationIcons(StairStepEvents, StairStepEventsFilled),
     rankings = PrismNavigationIcons(StairStepRankings, StairStepRankingsFilled),

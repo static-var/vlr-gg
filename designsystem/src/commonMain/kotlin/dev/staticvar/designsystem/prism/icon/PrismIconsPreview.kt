@@ -36,7 +36,7 @@ internal fun PrismIconsPreview(@PreviewParameter(IconThemePreviewProvider::class
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       Text(text = theme.label, color = Prism.color.contentPrimary)
-      val actions = listOf(icons.refresh, icons.share, icons.preview, icons.back)
+      val actions = listOf(icons.refresh, icons.share, icons.calendarAdd, icons.preview, icons.back)
       IconPreviewRow("Actions", actions)
       Text(text = "Disabled actions", color = Prism.color.contentPrimary)
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -44,7 +44,7 @@ internal fun PrismIconsPreview(@PreviewParameter(IconThemePreviewProvider::class
           PrismIconButton(icon = icon, contentDescription = icon.name, onClick = {}, enabled = false)
         }
       }
-      val navigation = listOf(icons.home, icons.news, icons.matches, icons.events, icons.rankings, icons.settings)
+      val navigation = listOf(icons.home, icons.matches, icons.events, icons.rankings, icons.settings)
       IconPreviewRow("Navigation", navigation.map { it.unselected })
       IconPreviewRow("Selected", navigation.map { it.selected })
     }

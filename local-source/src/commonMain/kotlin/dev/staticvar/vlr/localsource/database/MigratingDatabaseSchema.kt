@@ -51,7 +51,6 @@ object MigratingDatabaseSchema : SqlSchema<QueryResult.Value<Unit>> by VlrDataba
       "stage" to "TEXT NOT NULL DEFAULT ''",
       "eta" to "TEXT",
     ))
-    addMissingColumns(driver, "news", mapOf("list_position" to "INTEGER"))
     addMissingColumns(driver, "event_overview", mapOf("list_position" to "INTEGER NOT NULL DEFAULT 0"))
   }
 

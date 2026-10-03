@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-/** Retries pending live-update writes after a confirmed return from offline status. */
+/** Retries pending live-update writes when connectivity is confirmed after being unavailable. */
 internal class LiveUpdateReconnectRecovery(
   networkMonitor: NetworkMonitor,
   private val tokenUploader: PushTokenRegistrationUploader,
@@ -19,16 +19,15 @@ internal class LiveUpdateReconnectRecovery(
 ) {
   init {
     appScope.launch {
-      var wasOffline = false
+      var wasUnavailable = false
       networkMonitor.status.collect { status ->
         when (status) {
-          NetworkStatus.Offline -> wasOffline = true
-          NetworkStatus.Online -> if (wasOffline) {
-            wasOffline = false
+          NetworkStatus.Offline, NetworkStatus.Unknown -> wasUnavailable = true
+          NetworkStatus.Online -> if (wasUnavailable) {
+            wasUnavailable = false
             tokenUploader.retry()
             favoriteSync.retry()
           }
-          NetworkStatus.Unknown -> Unit
         }
       }
     }

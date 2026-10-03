@@ -97,59 +97,7 @@ internal class VlrRepositoryTest {
   }
 
   private val repository: VlrRepository by lazy {
-    VlrRepository(vlrDao, mockk(), mockk(), mockk(), vlrHttpClient, testDispatcher, json)
-  }
-
-  @Test
-  fun `test if Ok(false) is returned when updateLatestNews api call is successful`() = runTest(testDispatcher) {
-    TimeElapsed.reset(Endpoints.NEWS) // Reset cache key for api calls
-    repository.updateLatestNews().test {
-      assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
-      assertThat(awaitItem().get()).isFalse() // Api call complete, should return [Ok(false)]
-      awaitComplete()
-    }
-  }
-
-  @Test
-  fun `test if Err(exception) is returned when updateLatestNews api responds with error`() = runTest(testDispatcher) {
-    TimeElapsed.reset(Endpoints.NEWS) // Reset cache key for api calls
-    vlrMockEngine.nextResponseWithServerError() // Ensure the api call fails
-
-    repository.updateLatestNews().test {
-      assertThat(awaitItem().get()).isTrue() // Initial Loading, should return [Ok(true)]
-      assertThat(awaitItem().getError())
-        .isNotNull() // Api call complete, should error [Err(ServerResponseException)]
-      awaitComplete()
-    }
-  }
-
-  @Test
-  fun `test if getNewsFromDb gets data when api call is successful`() = runTest(testDispatcher) {
-    TimeElapsed.reset(Endpoints.NEWS) // Reset cache key for api calls
-
-    repository.updateLatestNews().collect()
-
-    repository.getNewsFromDb().test {
-      val data = awaitItem()
-      assertThat(data)
-        .isInstanceOf(Pass::class.java) // Pass is a wrapper class around the actual data
-      assertThat(data.data).isNotNull()
-      assertThat(data.data?.size).isAtLeast(1) // Check if DAO data has at least 1 item
-    }
-  }
-
-  @Test
-  fun `test if getNewsFromDb has same data as before when api call fails`() = runTest(testDispatcher) {
-    TimeElapsed.reset(Endpoints.NEWS) // Reset cache key for api calls
-
-    repository.getNewsFromDb().test {
-      assertThat(awaitItem().data).isEmpty() // Check if DAO returns has 0 data
-
-      vlrMockEngine.nextResponseWithServerError()
-      repository.updateLatestNews().collect()
-
-      expectNoEvents() // This will assert that flow does not emit anything after API call fails
-    }
+    VlrRepository(vlrDao, mockk(), mockk(), mockk(), vlrHttpClient, testDispatcher)
   }
 
   @Test

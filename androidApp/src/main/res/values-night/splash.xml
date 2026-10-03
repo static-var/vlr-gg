@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="splash_background">#1E1E2E</color>
+    <color name="splash_background">#0A0A0A</color>
+    <color name="splash_wordmark">#FFFFFF</color>
+    <color name="splash_accent">#A78BFA</color>
     <bool name="splash_light_system_bars">false</bool>
 </resources>

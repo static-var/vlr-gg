@@ -5,8 +5,6 @@
 package dev.staticvar.vlr.ui.analytics
 
 enum class AnalyticsEvent {
-  NEWS_OVERVIEW,
-  NEWS_DETAIL,
   MATCH_OVERVIEW,
   MATCH_DETAIL,
   EVENT_OVERVIEW,

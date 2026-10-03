@@ -51,9 +51,9 @@ internal fun telemetryEndpoint(encodedPath: String): String {
   if (segments.size !in 3..4 || segments[0] != "api" || segments[1] != "v1") return "<other>"
   val resource = segments[2]
   return when {
-    segments.size == 3 && resource in listOf("events", "matches", "news", "rankings", "search", "version") ->
+    segments.size == 3 && resource in listOf("events", "matches", "rankings", "search", "version") ->
       "/api/v1/$resource"
-    segments.size == 4 && resource in listOf("events", "matches", "news", "player", "team") ->
+    segments.size == 4 && resource in listOf("events", "matches", "player", "team") ->
       "/api/v1/$resource/{id}"
     segments.size == 4 && resource == "standings" -> "/api/v1/standings/{year}"
     else -> "<other>"

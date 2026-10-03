@@ -22,7 +22,7 @@ internal fun PrismHeaderPreview(@PreviewParameter(PrismPreviewProvider::class) v
   PrismTheme(variant = variant) {
     Column(modifier = Modifier.fillMaxWidth().background(Prism.color.background)) {
       PrismHeader(text = "Matches")
-      PrismHeader(text = "Latest News")
+      PrismHeader(text = "Upcoming Events")
       PrismHeader(text = "VCT Pacific")
     }
   }

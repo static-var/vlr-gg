@@ -12,8 +12,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import dev.staticvar.vlr.core.network.NetworkStatus
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 internal fun RefreshWhenResumed(networkStatus: StateFlow<NetworkStatus>, onRefresh: () -> Unit) {
@@ -22,7 +23,15 @@ internal fun RefreshWhenResumed(networkStatus: StateFlow<NetworkStatus>, onRefre
 
   LaunchedEffect(lifecycle, networkStatus) {
     lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-      networkStatus.filter { it == NetworkStatus.Online }.collect { refresh() }
+      refreshOnConnectivity(networkStatus) { refresh() }
     }
+  }
+}
+
+internal suspend fun refreshOnConnectivity(networkStatus: Flow<NetworkStatus>, onRefresh: () -> Unit) {
+  var initial = true
+  networkStatus.distinctUntilChanged().collect { status ->
+    if (initial || status != NetworkStatus.Offline) onRefresh()
+    initial = false
   }
 }

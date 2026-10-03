@@ -40,7 +40,7 @@ internal class AndroidNetworkMonitor(context: Context) : NetworkMonitor {
   private val manager = context.getSystemService(ConnectivityManager::class.java)
 
   override val status: StateFlow<NetworkStatus> = callbackFlow {
-    val state = AndroidNetworkState(this) { trySend(it) }
+    val state = AndroidNetworkState { trySend(it) }
     val callbackLock = Any()
     fun probe() {
       val network = manager.activeNetwork
@@ -48,12 +48,10 @@ internal class AndroidNetworkMonitor(context: Context) : NetworkMonitor {
     }
     val callback = object : ConnectivityManager.NetworkCallback() {
       override fun onAvailable(network: Network) = synchronized(callbackLock) {
-        state.update(network.networkHandle, false)
+        state.available(network.networkHandle)
       }
       override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) = synchronized(callbackLock) {
-        if (network == manager.activeNetwork) {
-          state.update(network.networkHandle, capabilities.hasValidatedInternet())
-        }
+        state.update(network.networkHandle, capabilities.hasValidatedInternet())
       }
       override fun onLost(network: Network) = synchronized(callbackLock) {
         state.lost(network.networkHandle)

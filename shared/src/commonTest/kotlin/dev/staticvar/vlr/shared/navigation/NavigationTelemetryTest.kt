@@ -20,15 +20,15 @@ class NavigationTelemetryTest {
     })
 
     telemetry.show(null)
-    telemetry.show(AppRoute.News)
-    telemetry.show(AppRoute.News)
+    telemetry.show(AppRoute.Rankings)
+    telemetry.show(AppRoute.Rankings)
     telemetry.show(AppRoute.PlayerDetails("private-id-1"))
     telemetry.show(AppRoute.PlayerDetails("private-id-1"))
     telemetry.show(AppRoute.PlayerDetails("private-id-2"))
-    telemetry.show(AppRoute.News)
+    telemetry.show(AppRoute.Rankings)
 
     assertEquals(
-      listOf("navigation News", "navigation PlayerDetails", "navigation PlayerDetails", "navigation News"),
+      listOf("navigation Rankings", "navigation PlayerDetails", "navigation PlayerDetails", "navigation Rankings"),
       breadcrumbs,
     )
   }
@@ -36,14 +36,14 @@ class NavigationTelemetryTest {
   @Test
   fun everyRouteHasAStableScreenName() {
     val routes = listOf(
-      AppRoute.Home, AppRoute.News, AppRoute.Matches, AppRoute.Events, AppRoute.Rankings, AppRoute.About, AppRoute.Settings, AppRoute.WhatsNew, AppRoute.DeveloperNote,
-      AppRoute.MatchDetails("secret"), AppRoute.EventDetails("secret"), AppRoute.NewsArticle("secret"),
+      AppRoute.Home, AppRoute.Matches, AppRoute.Events, AppRoute.Rankings, AppRoute.About, AppRoute.Settings, AppRoute.WhatsNew, AppRoute.DeveloperNote,
+      AppRoute.MatchDetails("secret"), AppRoute.EventDetails("secret"),
       AppRoute.TeamDetails("secret"), AppRoute.PlayerDetails("secret"),
     )
     assertEquals(
       listOf(
-        "Home", "News", "Matches", "Events", "Rankings", "About", "Settings", "WhatsNew", "DeveloperNote", "MatchDetails", "EventDetails",
-        "NewsArticle", "TeamDetails", "PlayerDetails",
+        "Home", "Matches", "Events", "Rankings", "About", "Settings", "WhatsNew", "DeveloperNote", "MatchDetails", "EventDetails",
+        "TeamDetails", "PlayerDetails",
       ),
       routes.map { it.telemetryScreenName },
     )

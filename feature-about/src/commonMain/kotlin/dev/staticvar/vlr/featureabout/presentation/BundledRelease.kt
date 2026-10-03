@@ -12,6 +12,8 @@ import vlr.feature_about.generated.resources.release_1_0_7_android_live_descript
 import vlr.feature_about.generated.resources.release_1_0_7_android_live_title
 import vlr.feature_about.generated.resources.release_1_0_7_appearance_description
 import vlr.feature_about.generated.resources.release_1_0_7_appearance_title
+import vlr.feature_about.generated.resources.release_1_0_7_calendar_description
+import vlr.feature_about.generated.resources.release_1_0_7_calendar_title
 import vlr.feature_about.generated.resources.release_1_0_7_favorites_description
 import vlr.feature_about.generated.resources.release_1_0_7_favorites_title
 import vlr.feature_about.generated.resources.release_1_0_7_introduction
@@ -49,6 +51,10 @@ public object BundledRelease {
     Highlight(
       title = Res.string.release_1_0_7_favorites_title,
       description = Res.string.release_1_0_7_favorites_description,
+    ),
+    Highlight(
+      title = Res.string.release_1_0_7_calendar_title,
+      description = Res.string.release_1_0_7_calendar_description,
     ),
     Highlight(
       title = Res.string.release_1_0_7_ios_live_title,
