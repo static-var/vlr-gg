@@ -1,0 +1,549 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../ui-uikit/1.12.0-vlr-a11y1/ui-uikit-1.12.0-vlr-a11y1.module",
+    "group": "org.jetbrains.compose.ui",
+    "module": "ui-uikit",
+    "version": "1.12.0-vlr-a11y1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.5.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "iosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.12.0-vlr-a11y1"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-geometry",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-graphics",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-graphics-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-test",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-test-junit4",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-test-manifest",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-test-manifest-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-text",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-text-google-fonts",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling-data",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling-preview",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-unit",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-util",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-viewbinding",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-backhandler",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        }
+      ],
+      "files": [
+        {
+          "name": "ui-uikit-iosSimulatorArm64Main-1.12.0-vlr-a11y1.klib",
+          "url": "ui-uikit-iossimulatorarm64-1.12.0-vlr-a11y1.klib",
+          "size": 80201,
+          "sha512": "61d386667af089f781b8edd268b6a4dc4686eb21d08a7519b2b3fbf70e01071dcae41f70e43d1f83a449667d69e36b96b4b11d25793f3fead99d3e0e47b4c0ae",
+          "sha256": "7db5a7ea0998d3ba64d67c5fdfd3437187bc954934e8c57cb863d7d5e9b71244",
+          "sha1": "dd8815be1317b544ea319bdf1bc7399ce7fe6596",
+          "md5": "96b4ed5eb65fb6bbe879d63055a2216a"
+        },
+        {
+          "name": "ui-uikit-iosSimulatorArm64Cinterop-utilsMain-1.12.0-vlr-a11y1.klib",
+          "url": "ui-uikit-iossimulatorarm64-1.12.0-vlr-a11y1-cinterop-utils.klib",
+          "size": 28908,
+          "sha512": "4193e85dac5439d66cd457fcecd5b5f28fce724d2d3ce501e12f0c297adb3186eaefb13f2ba3a119d06b0c64d4c0a2073e5934415526acd31591df4e1b6f8009",
+          "sha256": "7208089c54380ae7c6882857048167a1517c4c4220abf211413f98428fff1586",
+          "sha1": "f2231a8fce2bb36feaef8e20360615f4abc2db35",
+          "md5": "f748467aed677cbac0cbc339299ff9e1"
+        }
+      ]
+    },
+    {
+      "name": "iosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.12.0-vlr-a11y1"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-geometry",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-graphics",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-graphics-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-test",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-test-junit4",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-test-manifest",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-test-manifest-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-text",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-text-google-fonts",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling-data",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling-preview",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-unit",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-util",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-viewbinding",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-backhandler",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        }
+      ],
+      "files": [
+        {
+          "name": "ui-uikit-iossimulatorarm64-1.12.0-vlr-a11y1-sources.jar",
+          "url": "ui-uikit-iossimulatorarm64-1.12.0-vlr-a11y1-sources.jar",
+          "size": 1632,
+          "sha512": "73bc399abd4d8883dea19ab2f00be8fc4eb586723e764ecab4ec3436031490baabdd904c76174d75320df04a6a1141c57e52f9d3e4e3174b18ef07981f8d6bb4",
+          "sha256": "c2c4299d1fe0730942ad0fa780a596ec8aaaf327fcb184cbb225647006e2ff40",
+          "sha1": "c302eb13da091f94909d0822d1bf671ac7b46252",
+          "md5": "37f21e2ff34b54bdb429449d1cb7c13c"
+        }
+      ]
+    },
+    {
+      "name": "iosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.12.0-vlr-a11y1"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-geometry",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-graphics",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-graphics-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-test",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-test-junit4",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-test-manifest",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-test-manifest-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-text",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-text-google-fonts",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling-data",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling-preview",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-unit",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-util",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-viewbinding",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-backhandler",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui-uikit is in atomic group androidx.compose.ui"
+        }
+      ],
+      "files": [
+        {
+          "name": "ui-uikit-iossimulatorarm64-1.12.0-vlr-a11y1-metadata.jar",
+          "url": "ui-uikit-iossimulatorarm64-1.12.0-vlr-a11y1-metadata.jar",
+          "size": 92975,
+          "sha512": "2869c5aa6dc5ea52cbec142b87345a195867b19cef0b0d02a8560c4e62e25d8ce54e09673498f0efe15e6c4a9f6434313d943774a4aa77b8a827ce309e6d00f0",
+          "sha256": "1a1870e43cae6c0939b0147ebc979f566960dec538d4af06200af753579f2298",
+          "sha1": "2857764e1d5ba857368671622f35ca6dac4413ec",
+          "md5": "1222e3e65fbeaaad952aaf91804bba8b"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,239 @@
+diff --git a/compose/ui/ui-uikit/src/iosMain/objc/CMPUIKitUtils/CMPUIKitUtils/CMPAccessibilityElement.h b/compose/ui/ui-uikit/src/iosMain/objc/CMPUIKitUtils/CMPUIKitUtils/CMPAccessibilityElement.h
+index df9da6a54..a79e89e38 100644
+--- a/compose/ui/ui-uikit/src/iosMain/objc/CMPUIKitUtils/CMPUIKitUtils/CMPAccessibilityElement.h
++++ b/compose/ui/ui-uikit/src/iosMain/objc/CMPUIKitUtils/CMPUIKitUtils/CMPAccessibilityElement.h
+@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
+ 
+ @interface CMPAccessibilityElement : UIAccessibilityElement <UIFocusItem>
+ 
++@property (nonatomic, assign) BOOL isDisposed;
++
+ - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions;
+ 
+ - (UIAccessibilityTraits)accessibilityTraits;
+diff --git a/compose/ui/ui-uikit/src/iosMain/objc/CMPUIKitUtils/CMPUIKitUtils/CMPAccessibilityElement.m b/compose/ui/ui-uikit/src/iosMain/objc/CMPUIKitUtils/CMPUIKitUtils/CMPAccessibilityElement.m
+index fea04e41b..b781b3741 100644
+--- a/compose/ui/ui-uikit/src/iosMain/objc/CMPUIKitUtils/CMPUIKitUtils/CMPAccessibilityElement.m
++++ b/compose/ui/ui-uikit/src/iosMain/objc/CMPUIKitUtils/CMPUIKitUtils/CMPAccessibilityElement.m
+@@ -129,6 +129,10 @@ - (nullable id)accessibilityHitTest:(CGPoint)point withEvent:(nullable UIEvent *
+     }
+ }
+ 
++- (void)dealloc {
++    _isDisposed = TRUE;
++}
++
+ @end
+ 
+ NS_ASSUME_NONNULL_END
+diff --git a/compose/ui/ui/src/iosMain/kotlin/androidx/compose/ui/platform/Accessibility.ios.kt b/compose/ui/ui/src/iosMain/kotlin/androidx/compose/ui/platform/Accessibility.ios.kt
+index c1b28f737..17c2ae6bd 100644
+--- a/compose/ui/ui/src/iosMain/kotlin/androidx/compose/ui/platform/Accessibility.ios.kt
++++ b/compose/ui/ui/src/iosMain/kotlin/androidx/compose/ui/platform/Accessibility.ios.kt
+@@ -562,6 +562,7 @@ private class AccessibilityElement(
+ 
+     private val scrollableProtocol = objc_getProtocol("UIFocusItemScrollableContainer")!!
+     override fun conformsToProtocol(aProtocol: Protocol?): Boolean {
++        if (isDisposed) return super.conformsToProtocol(aProtocol)
+         if (protocol_isEqual(proto = aProtocol, other = scrollableProtocol)) {
+             return getIfAlive { node.canScroll } ?: false
+         }
+@@ -570,12 +571,10 @@ private class AccessibilityElement(
+ 
+     val key: AccessibilityElementKey get() = node.key
+ 
+-    private var disposed = false
+-
+     /**
+      * Indicates whether this element is still present in the tree.
+      */
+-    private val isAlive get() = !disposed && node.semanticsNode.isValid
++    private val isAlive get() = !isDisposed && node.semanticsNode.isValid
+ 
+     init {
+         setAccessibilityElements(children + nodeSemanticsElements())
+@@ -610,11 +609,11 @@ private class AccessibilityElement(
+     }
+ 
+     fun dispose() {
+-        check(!disposed) {
++        check(!this.isDisposed) {
+             "AccessibilityElement is already disposed"
+         }
+ 
+-        disposed = true
++        isDisposed = true
+         setAccessibilityContainer(null)
+         setAccessibilityElements(emptyList<Any>())
+         if (available(OS.Ios to OSVersion(major = 17))) {
+@@ -775,15 +774,20 @@ private class AccessibilityElement(
+     override fun focusItemContainer(): UIFocusItemContainerProtocol = this
+ 
+     var focusFrame: CValue<CGRect> = CGRectZero.readValue()
+-    override fun frame(): CValue<CGRect> = if (USE_HIERARCHICAL_COORDINATE_SPACE) {
+-        focusFrame
+-    } else {
+-        convertRect(rect = bounds(), toCoordinateSpace = mediator.view)
+-    }
++    override fun frame(): CValue<CGRect> = getIfAlive {
++        if (USE_HIERARCHICAL_COORDINATE_SPACE) {
++            focusFrame
++        } else {
++            convertRect(rect = bounds(), toCoordinateSpace = mediator.view)
++        }
++    } ?: CGRectZero.readValue()
+ 
+-    override fun focusEffectRect(): CValue<CGRect> = convertRect(rect = bounds, toCoordinateSpace = mediator.view)
++    override fun focusEffectRect(): CValue<CGRect> = getIfAlive {
++        convertRect(rect = bounds, toCoordinateSpace = mediator.view)
++    } ?: CGRectZero.readValue()
+ 
+     override fun bounds(): CValue<CGRect> {
++        if (!isAlive) return CGRectZero.readValue()
+         val offset = contentOffset()
+         return CGRectMake(
+             x = offset.useContents { x },
+@@ -796,36 +800,43 @@ private class AccessibilityElement(
+     override fun parentFocusEnvironment(): UIFocusEnvironmentProtocol? =
+         accessibilityContainer as? UIFocusEnvironmentProtocol
+ 
+-    override fun preferredFocusEnvironments(): List<*> =
+-        accessibilityElements?.filterIsInstance<UIFocusEnvironmentProtocol>() ?: emptyList<Any>()
++    override fun preferredFocusEnvironments(): List<*> = getIfAlive {
++        accessibilityElements?.filterIsInstance<UIFocusEnvironmentProtocol>()
++    } ?: emptyList<Any>()
+ 
+     private var updateFocusScheduled = false
+     override fun setNeedsFocusUpdate() {
++        if (!isAlive) return
+         if (updateFocusScheduled) {
+             return
+         }
+         updateFocusScheduled = true
+         CoroutineScope(Dispatchers.Main).launch {
+-            updateFocusIfNeeded()
+-            updateFocusScheduled = false
++            if (!isDisposed) {
++                updateFocusIfNeeded()
++                updateFocusScheduled = false
++            }
+         }
+     }
+ 
+     override fun updateFocusIfNeeded() {
++        if (isDisposed) return
+         UIFocusSystem.focusSystemForEnvironment(environment = this)?.updateFocusIfNeeded()
+     }
+ 
+     override fun shouldUpdateFocusInContext(context: UIFocusUpdateContext): Boolean = true
+ 
+     override fun coordinateSpace(): UICoordinateSpaceProtocol =
+-        if (USE_HIERARCHICAL_COORDINATE_SPACE) {
++        if (isDisposed || USE_HIERARCHICAL_COORDINATE_SPACE) {
+             this
+         } else {
+             mediator.view
+         }
+ 
+-    override fun focusItemsInRect(rect: CValue<CGRect>): List<*> = accessibilityElements?.filter {
+-        it is UIFocusItemProtocol && CGRectIntersectsRect(it.frame, rect)
++    override fun focusItemsInRect(rect: CValue<CGRect>): List<*> = getIfAlive {
++        accessibilityElements?.filter {
++            it is UIFocusItemProtocol && CGRectIntersectsRect(it.frame, rect)
++        }
+     } ?: emptyList<Any>()
+ 
+     override fun isTransparentFocusItem(): Boolean = true
+@@ -876,6 +887,9 @@ private class AccessibilityElement(
+         point: CValue<CGPoint>,
+         toCoordinateSpace: UICoordinateSpaceProtocol
+     ): CValue<CGPoint> {
++        if (!isAlive || (toCoordinateSpace is AccessibilityElement && !toCoordinateSpace.isAlive)) {
++            return CGPointZero.readValue()
++        }
+         val globalPoint = convertPointToGlobal(point)
+         return when (toCoordinateSpace) {
+             is AccessibilityElement -> toCoordinateSpace.convertPointFromGlobal(globalPoint)
+@@ -889,6 +903,9 @@ private class AccessibilityElement(
+         point: CValue<CGPoint>,
+         fromCoordinateSpace: UICoordinateSpaceProtocol
+     ): CValue<CGPoint> {
++        if (!isAlive || (fromCoordinateSpace is AccessibilityElement && !fromCoordinateSpace.isAlive)) {
++            return CGPointZero.readValue()
++        }
+         val globalPoint = when (fromCoordinateSpace) {
+             is AccessibilityElement -> fromCoordinateSpace.convertPointToGlobal(point)
+             is UIView -> fromCoordinateSpace.convertPoint(point, toView = null)
+@@ -902,6 +919,9 @@ private class AccessibilityElement(
+         rect: CValue<CGRect>,
+         toCoordinateSpace: UICoordinateSpaceProtocol
+     ): CValue<CGRect> {
++        if (!isAlive || (toCoordinateSpace is AccessibilityElement && !toCoordinateSpace.isAlive)) {
++            return CGRectZero.readValue()
++        }
+         val globalRect = convertRectToGlobal(rect)
+         return when (toCoordinateSpace) {
+             is AccessibilityElement -> toCoordinateSpace.convertRectFromGlobal(globalRect)
+@@ -915,6 +935,9 @@ private class AccessibilityElement(
+         rect: CValue<CGRect>,
+         fromCoordinateSpace: UICoordinateSpaceProtocol
+     ): CValue<CGRect> {
++        if (!isAlive || (fromCoordinateSpace is AccessibilityElement && !fromCoordinateSpace.isAlive)) {
++            return CGRectZero.readValue()
++        }
+         val globalRect = when (fromCoordinateSpace) {
+             is AccessibilityElement -> fromCoordinateSpace.convertRectToGlobal(rect)
+             is UIView -> fromCoordinateSpace.convertRect(rect, toView = null)
+@@ -927,6 +950,7 @@ private class AccessibilityElement(
+         var globalPoint = point
+         var current: AccessibilityElement? = this
+         while (current != null) {
++            if (!current.isAlive) return CGPointZero.readValue()
+             globalPoint = globalPoint.useContents {
+                 CGPointMake(
+                     x = x + CGRectGetMinX(current.focusFrame) - current.contentOffset().useContents { x },
+@@ -944,6 +968,7 @@ private class AccessibilityElement(
+ 
+     private fun convertPointFromGlobal(point: CValue<CGPoint>): CValue<CGPoint> {
+         fun convertPoint(point: CValue<CGPoint>, element: AccessibilityElement): CValue<CGPoint> {
++            if (!element.isAlive) return CGPointZero.readValue()
+             val parentPoint = when (val container = element.accessibilityContainer) {
+                 is AccessibilityElement -> convertPoint(point, container)
+                 is AccessibilityRoot -> container.mediator.view.convertPoint(point, fromView = null)
+@@ -963,6 +988,7 @@ private class AccessibilityElement(
+         var globalRect = rect
+         var current: AccessibilityElement? = this
+         while (current != null) {
++            if (!current.isAlive) return CGRectZero.readValue()
+             globalRect = globalRect.useContents {
+                 CGRectMake(
+                     x = origin.x + CGRectGetMinX(current.focusFrame) - current.contentOffset().useContents { x },
+@@ -982,6 +1008,7 @@ private class AccessibilityElement(
+ 
+     private fun convertRectFromGlobal(rect: CValue<CGRect>): CValue<CGRect> {
+         fun convertPoint(rect: CValue<CGRect>, element: AccessibilityElement): CValue<CGRect> {
++            if (!element.isAlive) return CGRectZero.readValue()
+             val parentPoint = when (val container = element.accessibilityContainer) {
+                 is AccessibilityElement -> convertPoint(rect, container)
+                 is AccessibilityRoot -> container.mediator.view.convertRect(rect, fromView = null)
+@@ -1395,10 +1422,6 @@ internal class AccessibilityMediator(
+         refocusKeyboardElementIfNeeded()
+         view.accessibilityElements = listOf<NSObject>()
+ 
+-        for (element in accessibilityElementsMap.values) {
+-            element.dispose()
+-        }
+-
+         cleanUp()
+     }
+ 
+@@ -1409,6 +1432,9 @@ internal class AccessibilityMediator(
+         disableAccessibilityJob = null
+         isAccessibilityActive = false
+ 
++        for (element in accessibilityElementsMap.values) {
++            element.dispose()
++        }
+         root.element = null
+         accessibilityElementsMap.clear()
+     }

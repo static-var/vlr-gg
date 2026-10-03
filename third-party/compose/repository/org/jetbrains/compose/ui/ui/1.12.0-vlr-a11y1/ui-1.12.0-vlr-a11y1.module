@@ -1,0 +1,870 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.compose.ui",
+    "module": "ui",
+    "version": "1.12.0-vlr-a11y1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.5.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "metadataApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.annotation",
+          "module": "annotation",
+          "version": {
+            "requires": "1.9.1"
+          }
+        },
+        {
+          "group": "androidx.collection",
+          "module": "collection",
+          "version": {
+            "requires": "1.5.0"
+          }
+        },
+        {
+          "group": "androidx.compose.runtime",
+          "module": "runtime-retain",
+          "version": {
+            "requires": "1.12.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-viewmodel-compose",
+          "version": {
+            "requires": "2.11.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-viewmodel-savedstate",
+          "version": {
+            "requires": "2.11.0"
+          }
+        },
+        {
+          "group": "androidx.savedstate",
+          "module": "savedstate-compose",
+          "version": {
+            "requires": "1.4.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-runtime-compose",
+          "version": {
+            "requires": "2.9.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-viewmodel",
+          "version": {
+            "requires": "2.9.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-viewmodel-savedstate",
+          "version": {
+            "requires": "2.9.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.navigationevent",
+          "module": "navigationevent-compose",
+          "version": {
+            "requires": "1.1.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.annotation-internal",
+          "module": "annotation",
+          "version": {
+            "requires": "1.10.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.collection-internal",
+          "module": "collection",
+          "version": {
+            "requires": "1.10.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.12.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime-saveable",
+          "version": {
+            "requires": "1.12.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-backhandler",
+          "version": {
+            "requires": "1.12.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-geometry",
+          "version": {
+            "requires": "1.12.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-graphics",
+          "version": {
+            "requires": "1.12.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-text",
+          "version": {
+            "requires": "1.12.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-uikit",
+          "version": {
+            "requires": "1.12.0-vlr-a11y1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-unit",
+          "version": {
+            "requires": "1.12.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-util",
+          "version": {
+            "requires": "1.12.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "atomicfu",
+          "version": {
+            "requires": "0.28.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-browser",
+          "version": {
+            "requires": "0.5.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko",
+          "version": {
+            "requires": "0.150.1"
+          }
+        }
+      ],
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-geometry",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-graphics",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-graphics-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-test",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-test-junit4",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-test-manifest",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-test-manifest-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-text",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-text-google-fonts",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling-data",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling-preview",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-unit",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-util",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-viewbinding",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-backhandler",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        }
+      ],
+      "files": [
+        {
+          "name": "ui-metadata-1.12.0-vlr-a11y1.jar",
+          "url": "ui-1.12.0-vlr-a11y1.jar",
+          "size": 386102,
+          "sha512": "92e052edb9e3a2c5e655badcf7ee3953c8bc0e48dee88d471393dae71a9d96a905e31f296d656426a9c0137b94cb3ab1433964110ca5c8a9ebafd160f4671e1d",
+          "sha256": "e570d6386b7ac4eab1b3805bd0b74f824e40af75b00e7eb64453059c5707860a",
+          "sha1": "ecb3f00f93315fb620b774ad5a291b1995663657",
+          "md5": "e71bef06d65bb5479f6e28e7292c721d"
+        }
+      ]
+    },
+    {
+      "name": "metadataSourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-geometry",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-graphics",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-graphics-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-test",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-test-junit4",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-test-manifest",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-test-manifest-lint",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-text",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-text-google-fonts",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling-data",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling-preview",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-unit",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-util",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui-viewbinding",
+          "version": {
+            "requires": "1.12.0-beta01"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-backhandler",
+          "version": {
+            "requires": "1.12.0"
+          },
+          "reason": "ui is in atomic group androidx.compose.ui"
+        }
+      ],
+      "files": [
+        {
+          "name": "ui-kotlin-1.12.0-vlr-a11y1-sources.jar",
+          "url": "ui-1.12.0-vlr-a11y1-sources.jar",
+          "size": 1212421,
+          "sha512": "67ca28f347f6293cc63c76fcdd19e6226be1dd42625d6a866af07688e5ff58e2d3a9b8df3b546d7edbe1d00ec7484b19b20aedf34eae8dbdac0e0ec09a3122a9",
+          "sha256": "0014ca78c117a8c067de3b02e721d20f5a486f59f1295c36a6a55fe14b982d41",
+          "sha1": "e2ae7aa35b3a5b7e30e6221cacdbb71cae116179",
+          "md5": "e83ffc7fb7d64415a3a9aecc3a674a14"
+        }
+      ]
+    },
+    {
+      "name": "androidApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ui-android/1.12.0-vlr-a11y1/ui-android-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-android",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "androidRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ui-android/1.12.0-vlr-a11y1/ui-android-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-android",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "androidSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ui-android/1.12.0-vlr-a11y1/ui-android-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-android",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "desktopApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ui-desktop/1.12.0-vlr-a11y1/ui-desktop-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-desktop",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "desktopRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ui-desktop/1.12.0-vlr-a11y1/ui-desktop-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-desktop",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "desktopSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ui-desktop/1.12.0-vlr-a11y1/ui-desktop-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-desktop",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "iosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ui-iosarm64/1.12.0-vlr-a11y1/ui-iosarm64-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-iosarm64",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "iosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ui-iosarm64/1.12.0-vlr-a11y1/ui-iosarm64-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-iosarm64",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "iosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ui-iosarm64/1.12.0-vlr-a11y1/ui-iosarm64-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-iosarm64",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ui-iossimulatorarm64/1.12.0-vlr-a11y1/ui-iossimulatorarm64-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-iossimulatorarm64",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ui-iossimulatorarm64/1.12.0-vlr-a11y1/ui-iossimulatorarm64-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-iossimulatorarm64",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ui-iossimulatorarm64/1.12.0-vlr-a11y1/ui-iossimulatorarm64-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-iossimulatorarm64",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "jsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../ui-js/1.12.0-vlr-a11y1/ui-js-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-js",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "jsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../ui-js/1.12.0-vlr-a11y1/ui-js-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-js",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "jsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../ui-js/1.12.0-vlr-a11y1/ui-js-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-js",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "macosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ui-macosarm64/1.12.0-vlr-a11y1/ui-macosarm64-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-macosarm64",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "macosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ui-macosarm64/1.12.0-vlr-a11y1/ui-macosarm64-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-macosarm64",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "macosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ui-macosarm64/1.12.0-vlr-a11y1/ui-macosarm64-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-macosarm64",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../ui-wasm-js/1.12.0-vlr-a11y1/ui-wasm-js-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-wasm-js",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../ui-wasm-js/1.12.0-vlr-a11y1/ui-wasm-js-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-wasm-js",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../ui-wasm-js/1.12.0-vlr-a11y1/ui-wasm-js-1.12.0-vlr-a11y1.module",
+        "group": "org.jetbrains.compose.ui",
+        "module": "ui-wasm-js",
+        "version": "1.12.0-vlr-a11y1"
+      }
+    }
+  ]
+}
