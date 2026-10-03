@@ -18,7 +18,6 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -39,7 +38,6 @@ class RefreshController(
   init {
     scope.launch {
       for (request in requests) {
-        networkMonitor.status.first { it == NetworkStatus.Online }
         state.update { it.copy(isRefreshing = true, errorMessage = null, errorDetails = null) }
         try {
           action().getOrThrow()
@@ -49,8 +47,10 @@ class RefreshController(
           throw cancellation
         } catch (error: Exception) {
           currentCoroutineContext().ensureActive()
-          telemetry.captureExceptionSafely(error, operation)
-          telemetry.logSafely(TelemetryLevel.Warning, "$operation failed")
+          if (networkMonitor.status.value != NetworkStatus.Offline) {
+            telemetry.captureExceptionSafely(error, operation)
+            telemetry.logSafely(TelemetryLevel.Warning, "$operation failed")
+          }
           val message = error.message ?: getString(Res.string.refresh_error)
           state.update {
             it.copy(
