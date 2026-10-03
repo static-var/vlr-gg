@@ -29,12 +29,6 @@ internal val BrutalistIcons: PrismIcons by lazy {
       selectedOutline = "",
       selectedFill = "M3 10 L12 2 L21 10 V21 H15 V14 H9 V21 H3 Z",
     ),
-    news = brutalistNavigation(
-      name = "News",
-      outline = "M4 3 H20 V21 H4 Z M8 7 H12 V11 H8 Z M16 7 H17 M16 11 H17 M8 15 H16 M8 18 H14",
-      selectedOutline = "M4 3 H20 V21 H4 Z M8 15 H16 M8 18 H14",
-      selectedFill = "M7 6 H17 V12 H7 Z",
-    ),
     matches = brutalistNavigation(
       name = "Matches",
       outline = "M6 5 H18 L21 9 V19 H16 L14 16 H10 L8 19 H3 V9 Z M6 11 H10 M8 9 V13 M15 10 H16 M18 13 H19",

@@ -15,7 +15,6 @@ public data class PrismIcons(
   val preview: ImageVector,
   val back: ImageVector,
   val home: PrismNavigationIcons,
-  val news: PrismNavigationIcons,
   val matches: PrismNavigationIcons,
   val events: PrismNavigationIcons,
   val rankings: PrismNavigationIcons,

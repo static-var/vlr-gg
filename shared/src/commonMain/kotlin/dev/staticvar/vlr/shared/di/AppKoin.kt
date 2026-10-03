@@ -12,7 +12,6 @@ import dev.staticvar.vlr.data.di.dataModule
 import dev.staticvar.vlr.featurehome.di.homeFeatureModule
 import dev.staticvar.vlr.featureevents.di.eventsFeatureModule
 import dev.staticvar.vlr.featurematches.di.matchesFeatureModule
-import dev.staticvar.vlr.featurenews.di.newsFeatureModule
 import dev.staticvar.vlr.featureplayer.di.playerFeatureModule
 import dev.staticvar.vlr.featurerankings.di.rankingsFeatureModule
 import dev.staticvar.vlr.featureteam.di.teamFeatureModule
@@ -73,7 +72,6 @@ public fun initializeAppKoin(
       homeFeatureModule(),
       matchesFeatureModule(),
       eventsFeatureModule(),
-      newsFeatureModule(),
       rankingsFeatureModule(),
       teamFeatureModule(),
       playerFeatureModule(),

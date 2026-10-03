@@ -27,8 +27,7 @@ internal fun MacrobenchmarkScope.startup() {
   device.requireObject(By.desc("Settings"))
 }
 
-internal fun UiDevice.browseNewsAndSettings() {
-  browseNews()
+internal fun UiDevice.browseSettings() {
   navigateTo("Home", "Your Favorites")
   requireObject(By.desc("Settings")).click(100)
   requireObject(By.text("// MAKE IT YOURS."))
@@ -163,20 +162,6 @@ private fun UiDevice.swipeList(direction: Direction, allowSinglePage: Boolean = 
     else -> error("Expected a vertical list direction")
   }
   waitForIdle(2_000)
-}
-
-private fun UiDevice.browseNews() {
-  navigateTo("News", "Stories from competitive VALORANT")
-  browseList()
-  openFirstCard()
-  requireObject(By.desc("Back"))
-  awaitUi("loaded article content") {
-    verticalListOrNull() != null
-  }
-  browseList(allowSinglePage = true)
-  findObject(By.text("Top"))?.click(100)
-  pressBack()
-  requireSubtitle("Stories from competitive VALORANT")
 }
 
 private fun UiDevice.navigateTo(destination: String, subtitle: String) {

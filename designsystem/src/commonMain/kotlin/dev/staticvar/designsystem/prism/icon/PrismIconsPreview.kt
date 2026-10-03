@@ -44,7 +44,7 @@ internal fun PrismIconsPreview(@PreviewParameter(IconThemePreviewProvider::class
           PrismIconButton(icon = icon, contentDescription = icon.name, onClick = {}, enabled = false)
         }
       }
-      val navigation = listOf(icons.home, icons.news, icons.matches, icons.events, icons.rankings, icons.settings)
+      val navigation = listOf(icons.home, icons.matches, icons.events, icons.rankings, icons.settings)
       IconPreviewRow("Navigation", navigation.map { it.unselected })
       IconPreviewRow("Selected", navigation.map { it.selected })
     }

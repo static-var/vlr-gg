@@ -73,7 +73,7 @@ internal fun PrismSectionTitlePreview(@PreviewParameter(PrismPreviewProvider::cl
       )
 
       PrismSectionTitle(
-        title = "News",
+        title = "Events",
         showDivider = false,
       )
 

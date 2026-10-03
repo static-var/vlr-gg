@@ -27,7 +27,7 @@ class BaselineProfileGenerator {
   fun teamsAndPlayers() = collect { browseTeamAndPlayer() }
 
   @Test
-  fun newsAndSettings() = collect { browseNewsAndSettings() }
+  fun settings() = collect { browseSettings() }
 
   private fun collect(journey: UiDevice.() -> Unit) =
     baselineProfileRule.collect(packageName = TARGET_PACKAGE, maxIterations = 5) {

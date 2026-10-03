@@ -15,9 +15,6 @@ public sealed interface AppRoute : NavKey {
   public data object Home : Root
 
   @Serializable
-  public data object News : Root
-
-  @Serializable
   public data object Matches : Root
 
   @Serializable
@@ -51,9 +48,6 @@ public sealed interface AppRoute : NavKey {
   public data class EventDetails(val eventId: String) : AppRoute
 
   @Serializable
-  public data class NewsArticle(val articleId: String) : AppRoute
-
-  @Serializable
   public data class TeamDetails(val teamId: String) : AppRoute
 
   @Serializable
@@ -64,7 +58,6 @@ public val AppRoute.rootDestination: AppRoute
   get() =
     when (this) {
       AppRoute.Home,
-      AppRoute.News,
       AppRoute.Matches,
       AppRoute.Events,
       AppRoute.Rankings,
@@ -76,8 +69,6 @@ public val AppRoute.rootDestination: AppRoute
       is AppRoute.MatchDetails -> AppRoute.Matches
 
       is AppRoute.EventDetails -> AppRoute.Events
-
-      is AppRoute.NewsArticle -> AppRoute.News
 
       is AppRoute.TeamDetails -> AppRoute.Rankings
 

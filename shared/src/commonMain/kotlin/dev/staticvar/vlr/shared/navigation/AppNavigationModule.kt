@@ -48,10 +48,6 @@ import dev.staticvar.vlr.featurematches.presentation.MatchDetailsRoute
 import dev.staticvar.vlr.featurematches.presentation.MatchDetailsViewModel
 import dev.staticvar.vlr.featurematches.presentation.MatchesOverviewRoute
 import dev.staticvar.vlr.featurematches.presentation.MatchesViewModel
-import dev.staticvar.vlr.featurenews.presentation.article.NewsArticleRoute
-import dev.staticvar.vlr.featurenews.presentation.article.NewsArticleViewModel
-import dev.staticvar.vlr.featurenews.presentation.list.NewsListViewModel
-import dev.staticvar.vlr.featurenews.presentation.root.NewsRootScreen
 import dev.staticvar.vlr.featureplayer.presentation.PlayerDetailsRoute
 import dev.staticvar.vlr.featureplayer.presentation.PlayerDetailsViewModel
 import dev.staticvar.vlr.featurerankings.presentation.RankingsRoute
@@ -118,33 +114,6 @@ internal fun appNavigationModule(): Module = module {
         )
       }
     }
-  }
-  navigation<AppRoute.News>(metadata = listPane(group = "news")) {
-    val appState = LocalVlrAppState.current
-    val viewModel = vlrViewModel<NewsListViewModel>()
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
-
-    NewsRootScreen(
-      uiState = uiState,
-      selectedArticleId = (appState.backStack.lastOrNull() as? AppRoute.NewsArticle)?.articleId,
-      onArticleSelected = appState::showRootNewsArticle,
-      onRefresh = viewModel::refresh,
-      modifier = Modifier.fillMaxSize(),
-    )
-  }
-  navigation<AppRoute.NewsArticle>(metadata = detailPane(group = "news")) { route ->
-    val viewModel = vlrViewModel<NewsArticleViewModel> { parametersOf(route.articleId) }
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
-
-    NewsArticleRoute(
-      uiState = uiState,
-      onBack = LocalVlrAppState.current::navigateUp,
-      onRefresh = viewModel::refresh,
-      modifier = Modifier.fillMaxSize(),
-    )
   }
   navigation<AppRoute.Matches>(metadata = listPane(group = "matches") + (MatchTransitionRoleKey to EventTransitionRole.List)) {
     val viewModel = vlrViewModel<MatchesViewModel>()

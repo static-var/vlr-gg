@@ -20,7 +20,6 @@ FEATURE_MODULES = (
     "feature-events",
     "feature-home",
     "feature-matches",
-    "feature-news",
     "feature-player",
     "feature-rankings",
     "feature-team",

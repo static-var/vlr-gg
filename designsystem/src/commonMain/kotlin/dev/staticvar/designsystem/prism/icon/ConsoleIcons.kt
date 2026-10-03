@@ -4,8 +4,6 @@
  */
 package dev.staticvar.designsystem.prism.icon
 
-import dev.staticvar.designsystem.prism.icon.news.StairStepNews
-import dev.staticvar.designsystem.prism.icon.news.StairStepNewsFilled
 import dev.staticvar.designsystem.prism.icon.matches.StairStepMatches
 import dev.staticvar.designsystem.prism.icon.matches.StairStepMatchesFilled
 import dev.staticvar.designsystem.prism.icon.events.StairStepEvents
@@ -43,7 +41,6 @@ internal val ConsoleIcons: PrismIcons by lazy {
         fill = "M10 2 H14 V4 H16 V6 H18 V8 H20 V10 H22 V22 H14 V16 H10 V22 H2 V10 H4 V8 H6 V6 H8 V4 H10 Z",
       ),
     ),
-    news = PrismNavigationIcons(StairStepNews, StairStepNewsFilled),
     matches = PrismNavigationIcons(StairStepMatches, StairStepMatchesFilled),
     events = PrismNavigationIcons(StairStepEvents, StairStepEventsFilled),
     rankings = PrismNavigationIcons(StairStepRankings, StairStepRankingsFilled),

@@ -78,5 +78,4 @@
   <string name="format_month_nov">нояб.</string>
   <string name="format_month_dec">дек.</string>
   <string name="format_match_preview_date">%2$d %1$s, %3$s:%4$s</string>
-  <string name="format_news_preview_date">%2$d %1$s %3$d г.</string>
 </resources>

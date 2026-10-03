@@ -23,7 +23,7 @@ class RefreshTraceTest {
   fun overlappingRefreshesKeepTheirParentsAcrossDispatcherChanges() = runTest {
     val reporter = Recorder()
     val dispatcher = StandardTestDispatcher(testScheduler)
-    listOf("matches", "news").map { name ->
+    listOf("matches", "events").map { name ->
       async {
         traceRefresh(dispatcher, name, reporter) {
           val parent = this
