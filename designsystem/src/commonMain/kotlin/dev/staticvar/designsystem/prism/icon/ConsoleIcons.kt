@@ -22,6 +22,10 @@ internal val ConsoleIcons: PrismIcons by lazy {
       name = "ConsoleShare",
       fill = "M11 2 H13 V4 H15 V6 H17 V8 H15 V6 H13 V16 H11 V6 H9 V8 H7 V6 H9 V4 H11 Z M3 12 H5 V20 H19 V12 H21 V22 H3 Z",
     ),
+    calendarAdd = prismIconArtwork(
+      name = "ConsoleCalendarAdd",
+      fill = "M6 2 H8 V4 H16 V2 H18 V4 H22 V22 H2 V4 H6 Z M4 10 V20 H20 V10 Z M11 12 H13 V14 H15 V16 H13 V18 H11 V16 H9 V14 H11 Z",
+    ),
     preview = prismIconArtwork(
       name = "ConsolePreview",
       fill = "M8 4 H16 V6 H20 V8 H22 V10 H24 V14 H22 V16 H20 V18 H16 V20 H8 V18 H4 V16 H2 V14 H0 V10 H2 V8 H4 V6 H8 Z M8 6 V8 H4 V10 H2 V14 H4 V16 H8 V18 H16 V16 H20 V14 H22 V10 H20 V8 H16 V6 Z M10 8 H14 V10 H16 V14 H14 V16 H10 V14 H8 V10 H10 Z",

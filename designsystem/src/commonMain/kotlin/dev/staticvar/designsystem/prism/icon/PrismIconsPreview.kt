@@ -36,7 +36,7 @@ internal fun PrismIconsPreview(@PreviewParameter(IconThemePreviewProvider::class
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       Text(text = theme.label, color = Prism.color.contentPrimary)
-      val actions = listOf(icons.refresh, icons.share, icons.preview, icons.back)
+      val actions = listOf(icons.refresh, icons.share, icons.calendarAdd, icons.preview, icons.back)
       IconPreviewRow("Actions", actions)
       Text(text = "Disabled actions", color = Prism.color.contentPrimary)
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

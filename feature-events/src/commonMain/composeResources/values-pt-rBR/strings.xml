@@ -45,4 +45,10 @@
     <string name="tab_standings">Classificação</string>
     <string name="tab_prizes">Premiação</string>
     <string name="mascot_event_won">%1$s venceu o evento!</string>
+    <string name="add_upcoming_matches_to_calendar">Adicionar próximas partidas ao calendário</string>
+    <string name="unable_to_open_the_calendar_file_please_try_again">Não foi possível abrir o arquivo do calendário. Tente novamente.</string>
+    <string name="calendar_versus">vs.</string>
+    <string name="upcoming_matches_added_to_your_calendar">As próximas partidas foram adicionadas ao seu calendário.</string>
+    <string name="matches_already_in_your_calendar">Essas partidas já estão no seu calendário.</string>
+    <string name="allow_calendar_access_to_add_matches">Permita o acesso ao calendário nos Ajustes para adicionar partidas.</string>
 </resources>

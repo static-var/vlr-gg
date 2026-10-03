@@ -1,0 +1,20 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSCalendarsWriteOnlyAccessUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports fügt die anstehenden Matches, die du auswählst, deinem Kalender hinzu." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports adds the upcoming matches you choose to your calendar." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports añade a tu calendario los próximos partidos que elijas." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports ajoute à votre calendrier les prochains matchs que vous choisissez." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports आपके चुने हुए आने वाले मैच आपके कैलेंडर में जोड़ता है।" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports가 선택한 예정 경기를 캘린더에 추가합니다." } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Val Esports adiciona ao seu calendário as próximas partidas que você escolher." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports добавляет выбранные вами предстоящие матчи в календарь." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports, seçtiğiniz yaklaşan maçları takviminize ekler." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 public data class PrismIcons(
   val refresh: ImageVector,
   val share: ImageVector,
+  val calendarAdd: ImageVector,
   val preview: ImageVector,
   val back: ImageVector,
   val home: PrismNavigationIcons,
