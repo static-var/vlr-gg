@@ -10,23 +10,18 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.get
 import com.github.michaelbull.result.getError
-import com.github.michaelbull.result.getOr
 import com.google.common.truth.Truth.assertThat
-import dev.staticvar.vlr.data.NewsArticle
 import dev.staticvar.vlr.data.VlrRepository
 import dev.staticvar.vlr.data.api.response.MatchInfo
 import dev.staticvar.vlr.data.api.response.MatchPreviewInfo
-import dev.staticvar.vlr.data.api.response.NewsResponseItem
 import dev.staticvar.vlr.data.api.response.TeamDetails
 import dev.staticvar.vlr.data.api.response.TournamentDetails
 import dev.staticvar.vlr.data.api.response.TournamentPreview
 import dev.staticvar.vlr.utils.Pass
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -54,32 +49,6 @@ internal class VlrViewModelTest {
   @After
   fun cleanup() {
     Dispatchers.resetMain()
-  }
-
-  @Test
-  fun `test if refreshNews emits correct loading states if api is successful`() = runTest {
-    every { vlrRepository.updateLatestNews() } returns
-      flow {
-        emit(Ok(true))
-        emit(Ok(false))
-      }
-
-    viewModel.refreshNews().test {
-      skipItems(1)
-      assertThat(awaitItem().get()).isTrue()
-      assertThat(awaitItem().get()).isFalse()
-    }
-  }
-
-  @Test
-  fun `test if refreshNews emits correct error if api is unsuccessful`() = runTest {
-    val exception = IllegalStateException()
-    every { vlrRepository.updateLatestNews() } returns flow { emit(Err(exception)) }
-
-    viewModel.refreshNews().test {
-      assertThat(awaitItem().get()).isFalse()
-      assertThat(awaitItem().getError()).isEqualTo(exception)
-    }
   }
 
   @Test
@@ -187,19 +156,6 @@ internal class VlrViewModelTest {
   }
 
   @Test
-  fun `test if getNews emits data from db`() = runTest {
-    val data = listOf(NewsResponseItem())
-    every { vlrRepository.getNewsFromDb() } returns flow { emit(Pass(data)) }
-    viewModel.getNews().test {
-      skipItems(1)
-
-      val response = awaitItem()
-      assertThat(response).isInstanceOf(Pass::class.java)
-      assertThat(response.dataOrNull()).isNotEmpty()
-    }
-  }
-
-  @Test
   fun `test if getMatches emits data from db`() = runTest {
     val data = listOf(MatchPreviewInfo())
     every { vlrRepository.getMatchesFromDb() } returns flow { emit(Pass(data)) }
@@ -268,16 +224,4 @@ internal class VlrViewModelTest {
 //      runBlocking { viewModel.isTopicTracked(id) }
 //      verify { vlrRepository.isTopicTracked(id) }
 //    }
-
-  @Test
-  fun `test if parseNews emits data from repository`() = runTest {
-    val id = "800"
-    val data = NewsArticle()
-    every { vlrRepository.parseNews(id) } returns flowOf(Ok(NewsArticle()))
-    viewModel.parseNews(id).test {
-      skipItems(1)
-      assertThat(awaitItem()?.getOr(NewsArticle())).isEqualTo(data)
-    }
-    verify { vlrRepository.parseNews(id) }
-  }
 }

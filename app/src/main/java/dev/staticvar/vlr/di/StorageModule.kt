@@ -68,6 +68,5 @@ object StorageModule {
     teamFavDao: TeamFavDao,
     @Named("vlrClient") ktorHttpClient: HttpClient,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
-    json: Json,
-  ) = VlrRepository(vlrDao, matchFavDao, eventFavDao, teamFavDao, ktorHttpClient, ioDispatcher, json)
+  ) = VlrRepository(vlrDao, matchFavDao, eventFavDao, teamFavDao, ktorHttpClient, ioDispatcher)
 }

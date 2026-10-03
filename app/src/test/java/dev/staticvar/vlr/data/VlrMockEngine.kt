@@ -48,7 +48,6 @@ internal class VlrMockEngine(private var sendISR: Boolean = false) {
             )
           println(request.url.encodedPath.removePrefix("/"))
           when (request.url.encodedPath.removePrefix("/")) {
-            Endpoints.NEWS -> respond(readJson("news.json"), HttpStatusCode.OK, responseHeaders)
             Endpoints.MATCHES_OVERVIEW ->
               respond(readJson("matches.json"), HttpStatusCode.OK, responseHeaders)
             Endpoints.EVENTS_OVERVIEW ->
