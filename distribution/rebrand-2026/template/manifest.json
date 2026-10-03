@@ -1,0 +1,150 @@
+{
+  "brand": {
+    "name": "Valorant Esports",
+    "descriptor": "UNOFFICIAL ESPORTS COMPANION",
+    "palette": {
+      "ivory": "#F5F1E8",
+      "violet": "#956DFF",
+      "violet_light": "#D9CCFF",
+      "ink": "#16131B",
+      "muted_ink": "#5F5866",
+      "white": "#FFFFFF"
+    },
+    "fonts": {
+      "headline": "/System/Library/Fonts/Supplemental/Arial Black.ttf",
+      "body": "/System/Library/Fonts/Supplemental/Arial.ttf",
+      "body_bold": "/System/Library/Fonts/Supplemental/Arial Bold.ttf"
+    }
+  },
+  "outputs": {
+    "play": {
+      "platform": "android",
+      "width": 1080,
+      "height": 1920,
+      "directory": "play-1080x1920"
+    },
+    "app_store": {
+      "platform": "ios",
+      "width": 1320,
+      "height": 2868,
+      "directory": "app-store-iphone-1320x2868"
+    }
+  },
+  "optional_outputs": {
+    "play_tablet": {
+      "platform": "android_tablet",
+      "width": 1920,
+      "height": 1080,
+      "directory": "play-tablet-1920x1080"
+    },
+    "app_store_ipad": {
+      "platform": "ios_ipad",
+      "width": 2064,
+      "height": 2752,
+      "directory": "app-store-ipad-2064x2752"
+    }
+  },
+  "slides": [
+    {
+      "id": "01",
+      "headline": "Matches worth following",
+      "kicker": "MATCH SCHEDULES",
+      "motif": "court",
+      "theme": "ivory",
+      "sources": {
+        "android": "../raw/android/01.png",
+        "android_tablet": "../raw/android-tablet/01.png",
+        "ios": "../raw/ios/01.png",
+        "ios_ipad": "../raw/ios-ipad/01.png"
+      },
+      "preview_sources": {
+        "android": "../../../docs/compose-refactor-2026-09-13/visual-after/android/04-matches-list.png",
+        "ios": "../../../docs/compose-refactor-2026-09-13/visual-after/ios/matches.png"
+      }
+    },
+    {
+      "id": "02",
+      "headline": "Every round. Every detail.",
+      "kicker": "MATCH DETAILS",
+      "motif": "target",
+      "theme": "ink",
+      "sources": {
+        "android": "../raw/android/02.png",
+        "android_tablet": "../raw/android-tablet/02.png",
+        "ios": "../raw/ios/02.png",
+        "ios_ipad": "../raw/ios-ipad/02.png"
+      },
+      "preview_sources": {
+        "android": "../../../docs/compose-refactor-2026-09-13/visual-after/android/05-match-detail.png",
+        "ios": "../../../docs/compose-refactor-2026-09-13/visual-after/ios/match-748633.png"
+      }
+    },
+    {
+      "id": "03",
+      "headline": "Your favorites. One home.",
+      "kicker": "YOUR HOME FEED",
+      "motif": "ticket",
+      "theme": "violet",
+      "sources": {
+        "android": "../raw/android/03.png",
+        "android_tablet": "../raw/android-tablet/03.png",
+        "ios": "../raw/ios/03.png",
+        "ios_ipad": "../raw/ios-ipad/03.png"
+      },
+      "preview_sources": {
+        "android": "../../../docs/compose-refactor-2026-09-13/visual-after/android/01b-home-populated.png",
+        "ios": "../../../docs/compose-refactor-2026-09-13/visual-after/ios/home.png"
+      }
+    },
+    {
+      "id": "04",
+      "headline": "Follow the whole event",
+      "kicker": "EVENTS AND BRACKETS",
+      "motif": "bracket",
+      "theme": "ivory",
+      "sources": {
+        "android": "../raw/android/04.png",
+        "android_tablet": "../raw/android-tablet/04.png",
+        "ios": "../raw/ios/04.png",
+        "ios_ipad": "../raw/ios-ipad/04.png"
+      },
+      "preview_sources": {
+        "android": "../../../docs/compose-refactor-2026-09-13/visual-after/android/07-event-detail.png",
+        "ios": "../../../docs/compose-refactor-2026-09-13/visual-after/ios/event-china-act3.png"
+      }
+    },
+    {
+      "id": "05",
+      "headline": "See who's climbing",
+      "kicker": "REGIONAL RANKINGS",
+      "motif": "rank",
+      "theme": "ink",
+      "sources": {
+        "android": "../raw/android/05.png",
+        "android_tablet": "../raw/android-tablet/05.png",
+        "ios": "../raw/ios/05.png",
+        "ios_ipad": "../raw/ios-ipad/05.png"
+      },
+      "preview_sources": {
+        "android": "../../../docs/compose-refactor-2026-09-13/visual-after/android/08-rankings.png",
+        "ios": "../../../docs/compose-refactor-2026-09-13/visual-after/ios/rankings.png"
+      }
+    }
+  ],
+  "wide_assets": {
+    "feature_graphic": {
+      "width": 1024,
+      "height": 500,
+      "filename": "feature-graphic-1024x500.png",
+      "headline": "Valorant Esports",
+      "kicker": "MATCHES / EVENTS / RANKINGS"
+    },
+    "social": {
+      "width": 1600,
+      "height": 900,
+      "filename": "social-1600x900.png",
+      "headline": "Follow every round",
+      "kicker": "VALORANT ESPORTS FOR IOS AND ANDROID"
+    }
+  }
+}
