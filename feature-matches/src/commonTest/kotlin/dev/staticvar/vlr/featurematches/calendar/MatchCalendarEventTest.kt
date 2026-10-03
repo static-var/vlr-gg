@@ -63,8 +63,9 @@ class MatchCalendarEventTest {
 
   @Test
   fun announcedTeamsReplaceTheEventFallbackWithoutChangingIdentity() {
-    val placeholder = match("2026-09-05T12:00:00Z").copy(
-      event = match(null).event.copy(name = " Champions ", series = "Bo3", stage = "Playoffs: Grand Final"),
+    val scheduledMatch = match("2026-09-05T12:00:00Z")
+    val placeholder = scheduledMatch.copy(
+      event = scheduledMatch.event.copy(name = " Champions ", series = "Bo3", stage = "Playoffs: Grand Final"),
       note = "Match detail only note",
       teams = listOf(team(" TBD "), team("tbd")),
     )
