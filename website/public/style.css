@@ -2,13 +2,14 @@
 .hero>*{min-width:0}@media(max-width:380px){.hero h1{font-size:47px}.brand-icon{width:34px;height:34px}.brand{gap:8px;font-size:14px}.navlinks{font-size:12px}.eyebrow.tag{font-size:19px}}
 .policy .button.primary{color:#fff}
 
-.testflight{background:#e8e1f6;border-bottom:2px solid #19181b;scroll-margin-top:24px}
-.testflight-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:center;padding-top:80px;padding-bottom:80px}
-.testflight-copy .tag{color:#5720bd}
-.testflight h2{font-family:Chakra,Arial,sans-serif;font-size:clamp(36px,4vw,54px);font-weight:400;line-height:1.1;letter-spacing:-1px;margin:16px 0 20px}
-.testflight-copy p{max-width:480px;margin:0;color:#49434e}
-.testflight-copy .testflight-note{font-size:13px;margin-top:16px;color:#615c65}
-.signup-form{position:relative;padding:28px;background:#f5f3ec;border:2px solid #19181b;box-shadow:8px 8px #19181b}
+.ios-download{background:#e8e1f6;border-bottom:2px solid #19181b;scroll-margin-top:24px}
+.ios-download-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:center;padding-top:80px;padding-bottom:80px}
+.ios-download-copy .tag{color:#5720bd}
+.ios-download h2{font-family:Chakra,Arial,sans-serif;font-size:clamp(36px,4vw,54px);font-weight:400;line-height:1.1;letter-spacing:-1px;margin:16px 0 20px}
+.ios-download-copy p{max-width:480px;margin:0;color:#49434e}
+.signup-form,.ios-download-card{position:relative;padding:28px;background:#f5f3ec;border:2px solid #19181b;box-shadow:8px 8px #19181b}
+.ios-download-card p{margin:0 0 22px;color:#49434e}
+.ios-download-card .button{width:100%}
 .signup-form label{display:block;margin-bottom:13px;font-size:15px;font-weight:700}
 .signup-fields{display:flex;gap:12px;align-items:stretch}
 .signup-fields input{min-width:0;flex:1;padding:14px;border:2px solid #19181b;border-radius:0;background:white;color:#19181b;font:inherit;font-size:15px}
@@ -21,8 +22,8 @@
 .response-page h1{font-family:Chakra,Arial,sans-serif;font-size:clamp(42px,6vw,68px);font-weight:400;line-height:1.08;letter-spacing:-2px;margin:18px 0}
 .response-page p{max-width:620px;color:#55515a}
 .response-page .button{margin-top:24px}
-@media(max-width:950px){.testflight-grid{grid-template-columns:1fr;gap:28px;padding-top:60px;padding-bottom:60px}}
-@media(max-width:700px){.testflight-grid{padding-top:48px;padding-bottom:48px}.signup-form{padding:22px;box-shadow:5px 5px #19181b}.signup-fields{flex-direction:column}.signup-fields .button{width:100%;white-space:normal}.response-page{padding-top:70px;padding-bottom:70px}}
+@media(max-width:950px){.ios-download-grid{grid-template-columns:1fr;gap:28px;padding-top:60px;padding-bottom:60px}}
+@media(max-width:700px){.ios-download-grid{padding-top:48px;padding-bottom:48px}.signup-form,.ios-download-card{padding:22px;box-shadow:5px 5px #19181b}.signup-fields{flex-direction:column}.signup-fields .button{width:100%;white-space:normal}.response-page{padding-top:70px;padding-bottom:70px}}
 
 .product-preview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:start;max-width:510px;width:100%;justify-self:center}
 .screen-preview{margin:0;min-width:0}
