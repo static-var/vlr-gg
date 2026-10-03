@@ -32,12 +32,8 @@ internal fun MatchDetails.calendarStart(): Instant? {
 
 public fun MatchDetails.toCalendarEvent(versus: String): MatchCalendarEvent? {
   val start = calendarStart() ?: return null
-  return MatchCalendarEvent(
-    matchId = id,
-    title = teams.joinToString(" $versus ") { it.name }.ifBlank { event.name },
-    description = listOf(event.name, event.series, event.stage, note).filter(String::isNotBlank).joinToString("\n"),
-    start = start,
-  )
+  val entry = matchCalendarEntry(id, event.name, teams.map { it.name }, versus, start)
+  return MatchCalendarEvent(matchId = id, title = entry.title, description = entry.description, start = start)
 }
 
 /** Android opens the calendar editor; iOS adds or reschedules the saved match. */

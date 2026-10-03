@@ -25,16 +25,11 @@ internal fun EventDetails.upcomingCalendarEntries(
   .distinctBy(EventMatch::matchId)
   .mapNotNull { match ->
     val start = match.calendarStart()?.takeIf { it > now } ?: return@mapNotNull null
-    val teams = match.teams.map { it.name.trim() }.filter(String::isNotEmpty)
-    val context = listOf(match.stage, match.round).map(String::trim).filter(String::isNotEmpty)
     matchCalendarEntry(
       matchId = match.matchId,
-      title = if (teams.any { !it.equals(UNDECIDED_TEAM, ignoreCase = true) }) {
-        teams.joinToString(" $versus ")
-      } else {
-        (context.takeLast(1) + title).joinToString(" · ")
-      },
-      description = (listOf(title) + context).filter(String::isNotBlank).joinToString("\n"),
+      eventName = title,
+      teamNames = match.teams.map { it.name },
+      versus = versus,
       start = start,
     )
   }
@@ -54,4 +49,3 @@ internal fun EventMatch.calendarStart(): Instant? {
 
 private val FINISHED_STATUSES = setOf("completed", "final")
 private val TIME_OF_DAY = Regex("""\d{2}:\d{2}(:\d{2})?""")
-private const val UNDECIDED_TEAM = "TBD"

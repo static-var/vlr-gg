@@ -34,6 +34,25 @@ public fun matchCalendarEntry(matchId: String, title: String, description: Strin
   )
 }
 
+/** Uses the metadata shared by match details and event schedules. */
+public fun matchCalendarEntry(
+  matchId: String,
+  eventName: String,
+  teamNames: List<String>,
+  versus: String,
+  start: Instant,
+): CalendarEntry {
+  val teams = teamNames.map(String::trim).filter(String::isNotEmpty)
+    .map { if (it.equals("TBD", ignoreCase = true)) "TBD" else it }
+  val event = eventName.trim()
+  return matchCalendarEntry(
+    matchId = matchId,
+    title = if (teams.any { it != "TBD" }) teams.joinToString(" ${versus.trim()} ") else event,
+    description = event,
+    start = start,
+  )
+}
+
 public enum class CalendarExportResult {
   /** The entries were handed to another app; whether they were saved is unknown. */
   Opened,

@@ -41,15 +41,15 @@ class EventCalendarTest {
   }
 
   @Test
-  fun entriesNameTheTeamsOrTheRound() {
+  fun entriesNameTrimmedTeamsOrTheEvent() {
     val entries = event(
-      match("10", "2026-09-19", "09:00:00", "upcoming", "NRG", "LOUD"),
+      match("10", "2026-09-19", "09:00:00", "upcoming", " NRG ", " LOUD "),
       match("11", "2026-09-20", "09:00:00", "upcoming", "TBD", "TBD"),
       match("12", "2026-09-21", "09:00:00", "upcoming", "NRG", "TBD"),
     ).upcomingCalendarEntries("vs", now)
 
-    assertEquals(listOf("NRG vs LOUD", "Grand Final · Champions", "NRG vs TBD"), entries.map { it.title })
-    assertEquals("Champions\nPlayoffs\nGrand Final", entries.first().description)
+    assertEquals(listOf("NRG vs LOUD", "Champions", "NRG vs TBD"), entries.map { it.title })
+    assertEquals(listOf("Champions", "Champions", "Champions"), entries.map { it.description })
     assertEquals("https://valorantesports.staticvar.dev/match/10", entries.first().url)
   }
 

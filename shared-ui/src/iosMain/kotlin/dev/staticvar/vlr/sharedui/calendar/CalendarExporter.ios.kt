@@ -69,14 +69,16 @@ private suspend fun addToCalendar(entries: List<CalendarEntry>): CalendarExportR
     val start = NSDate.dateWithTimeIntervalSince1970(entry.start.toEpochMilliseconds() / 1000.0)
     val end = NSDate.dateWithTimeIntervalSince1970(entry.end.toEpochMilliseconds() / 1000.0)
     val url = entry.url?.let { NSURL.URLWithString(it) }
-    if (existing != null && existing.startDate == start && existing.endDate == end && existing.URL == url) {
+    if (existing != null && existing.startDate == start && existing.endDate == end && existing.URL == url &&
+      existing.title == entry.title && existing.notes == entry.description
+    ) {
       return@map entry to existing
     }
     val event = existing ?: EKEvent.eventWithEventStore(store).apply {
       calendar = checkNotNull(store.defaultCalendarForNewEvents) { "No calendar accepts new events." }
-      title = entry.title
-      notes = entry.description
     }
+    event.title = entry.title
+    event.notes = entry.description
     event.startDate = start
     event.endDate = end
     event.URL = url
