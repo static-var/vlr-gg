@@ -33,6 +33,31 @@ import kotlin.test.assertTrue
 /** Checks that reconnect recovery uses the pending state owned by each coordinator. */
 class LiveUpdateReconnectRecoveryTest {
   @Test
+  fun failedTokenAndFavoritesRetryOnceAfterOnlineUnknownOnline() = runTest {
+    val harness = ReconnectHarness(backgroundScope)
+    harness.tokens.succeeds = false
+    harness.favorites.succeeds = false
+    harness.network.status.value = NetworkStatus.Online
+    harness.favoriteSync.onEligibilityChanged(LiveUpdateEligibility.Enabled)
+    harness.uploader.activate(PushPlatform.Android, "token-one")
+    runCurrent()
+    assertEquals(1, harness.tokens.registrations.size)
+    assertEquals(1, harness.favorites.teamUploads.size)
+
+    harness.network.status.value = NetworkStatus.Unknown
+    runCurrent()
+    harness.network.status.value = NetworkStatus.Online
+    runCurrent()
+
+    assertEquals(2, harness.tokens.registrations.size)
+    assertEquals(2, harness.favorites.teamUploads.size)
+    harness.network.status.value = NetworkStatus.Online
+    runCurrent()
+    assertEquals(2, harness.tokens.registrations.size)
+    assertEquals(2, harness.favorites.teamUploads.size)
+  }
+
+  @Test
   fun failedTokenAndFavoritesRetryOnceAfterOfflineUnknownOnline() = runTest {
     val harness = ReconnectHarness(backgroundScope)
     harness.tokens.succeeds = false
