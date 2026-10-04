@@ -49,6 +49,9 @@
     <string name="unable_to_save_matches_to_calendar">Não foi possível salvar as partidas no calendário. Tente novamente.</string>
     <string name="calendar_versus">vs.</string>
     <string name="upcoming_matches_added_to_your_calendar">As próximas partidas foram salvas no seu calendário.</string>
-    <string name="matches_already_in_your_calendar">Essas partidas já estão no seu calendário.</string>
-    <string name="allow_calendar_access_to_add_matches">Permita o acesso ao calendário nos Ajustes para adicionar partidas.</string>
+    <string name="matches_already_in_your_calendar">As partidas estão no seu calendário. Toque no botão do calendário para removê-las.</string>
+    <string name="allow_calendar_access_to_add_matches">Permita o acesso completo ao calendário nos Ajustes para adicionar ou remover partidas.</string>
+    <string name="remove_matches_from_calendar">Remover partidas do calendário</string>
+    <string name="matches_removed_from_your_calendar">As partidas foram removidas do seu calendário.</string>
+    <string name="unable_to_remove_matches_from_calendar">Não foi possível remover as partidas. Tente novamente.</string>
 </resources>

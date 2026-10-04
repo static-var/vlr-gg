@@ -49,6 +49,9 @@
     <string name="unable_to_save_matches_to_calendar">Impossible d'enregistrer les matchs dans le calendrier. Réessayez.</string>
     <string name="calendar_versus">contre</string>
     <string name="upcoming_matches_added_to_your_calendar">Les prochains matchs ont été enregistrés dans votre calendrier.</string>
-    <string name="matches_already_in_your_calendar">Ces matchs sont déjà dans votre calendrier.</string>
-    <string name="allow_calendar_access_to_add_matches">Autorisez l'accès au calendrier dans Réglages pour ajouter des matchs.</string>
+    <string name="matches_already_in_your_calendar">Les matchs sont dans votre calendrier. Appuyez sur le bouton du calendrier pour les supprimer.</string>
+    <string name="allow_calendar_access_to_add_matches">Autorisez l'accès complet au calendrier dans Réglages pour ajouter ou supprimer des matchs.</string>
+    <string name="remove_matches_from_calendar">Supprimer les matchs du calendrier</string>
+    <string name="matches_removed_from_your_calendar">Les matchs ont été supprimés de votre calendrier.</string>
+    <string name="unable_to_remove_matches_from_calendar">Impossible de supprimer les matchs. Réessayez.</string>
 </resources>

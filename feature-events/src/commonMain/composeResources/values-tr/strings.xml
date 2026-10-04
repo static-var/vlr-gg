@@ -49,6 +49,9 @@
     <string name="unable_to_save_matches_to_calendar">Maçlar takvime kaydedilemedi. Lütfen tekrar deneyin.</string>
     <string name="calendar_versus">-</string>
     <string name="upcoming_matches_added_to_your_calendar">Yaklaşan maçlar takviminize kaydedildi.</string>
-    <string name="matches_already_in_your_calendar">Bu maçlar zaten takviminizde.</string>
-    <string name="allow_calendar_access_to_add_matches">Maç eklemek için Ayarlar bölümünden takvim erişimine izin verin.</string>
+    <string name="matches_already_in_your_calendar">Maçlar takviminizde. Kaldırmak için takvim düğmesine dokunun.</string>
+    <string name="allow_calendar_access_to_add_matches">Maç eklemek veya kaldırmak için Ayarlar bölümünden takvime tam erişim izni verin.</string>
+    <string name="remove_matches_from_calendar">Maçları takvimden kaldır</string>
+    <string name="matches_removed_from_your_calendar">Maçlar takviminizden kaldırıldı.</string>
+    <string name="unable_to_remove_matches_from_calendar">Maçlar kaldırılamadı. Lütfen tekrar deneyin.</string>
 </resources>

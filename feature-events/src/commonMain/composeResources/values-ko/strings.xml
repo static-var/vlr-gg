@@ -49,6 +49,9 @@
     <string name="unable_to_save_matches_to_calendar">경기를 캘린더에 저장하지 못했습니다. 다시 시도해 주세요.</string>
     <string name="calendar_versus">대</string>
     <string name="upcoming_matches_added_to_your_calendar">예정된 경기를 캘린더에 저장했습니다.</string>
-    <string name="matches_already_in_your_calendar">이 경기들은 이미 캘린더에 있습니다.</string>
-    <string name="allow_calendar_access_to_add_matches">경기를 추가하려면 설정에서 캘린더 접근을 허용해 주세요.</string>
+    <string name="matches_already_in_your_calendar">경기가 캘린더에 있습니다. 삭제하려면 캘린더 버튼을 탭해 주세요.</string>
+    <string name="allow_calendar_access_to_add_matches">경기를 추가하거나 삭제하려면 설정에서 캘린더에 대한 전체 접근을 허용해 주세요.</string>
+    <string name="remove_matches_from_calendar">캘린더에서 경기 삭제</string>
+    <string name="matches_removed_from_your_calendar">캘린더에서 경기를 삭제했습니다.</string>
+    <string name="unable_to_remove_matches_from_calendar">경기를 삭제하지 못했습니다. 다시 시도해 주세요.</string>
 </resources>

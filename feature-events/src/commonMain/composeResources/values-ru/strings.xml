@@ -49,6 +49,9 @@
     <string name="unable_to_save_matches_to_calendar">Не удалось сохранить матчи в календаре. Повторите попытку.</string>
     <string name="calendar_versus">против</string>
     <string name="upcoming_matches_added_to_your_calendar">Предстоящие матчи сохранены в календаре.</string>
-    <string name="matches_already_in_your_calendar">Эти матчи уже есть в календаре.</string>
-    <string name="allow_calendar_access_to_add_matches">Разрешите доступ к календарю в Настройках, чтобы добавлять матчи.</string>
+    <string name="matches_already_in_your_calendar">Матчи есть в календаре. Нажмите кнопку календаря, чтобы удалить их.</string>
+    <string name="allow_calendar_access_to_add_matches">Разрешите полный доступ к календарю в Настройках, чтобы добавлять или удалять матчи.</string>
+    <string name="remove_matches_from_calendar">Удалить матчи из календаря</string>
+    <string name="matches_removed_from_your_calendar">Матчи удалены из календаря.</string>
+    <string name="unable_to_remove_matches_from_calendar">Не удалось удалить матчи. Повторите попытку.</string>
 </resources>
