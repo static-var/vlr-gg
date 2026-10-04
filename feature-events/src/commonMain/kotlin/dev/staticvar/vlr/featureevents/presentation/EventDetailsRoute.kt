@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -60,10 +62,11 @@ import dev.staticvar.vlr.domain.model.EventTeam
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.featureevents.calendar.calendarFileName
+import dev.staticvar.vlr.featureevents.calendar.calendarMatchUids
 import dev.staticvar.vlr.featureevents.calendar.upcomingCalendarEntries
 import dev.staticvar.vlr.featureevents.presentation.mascot.eventMascotCues
-import dev.staticvar.vlr.sharedui.calendar.CalendarExportResult
-import dev.staticvar.vlr.sharedui.calendar.rememberCalendarExporter
+import dev.staticvar.vlr.sharedui.calendar.CalendarEntryStatus
+import dev.staticvar.vlr.sharedui.calendar.rememberCalendarManager
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
@@ -95,7 +98,6 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import vlr.feature_events.generated.resources.Res
 import vlr.feature_events.generated.resources.add_upcoming_matches_to_calendar
-import vlr.feature_events.generated.resources.allow_calendar_access_to_add_matches
 import vlr.feature_events.generated.resources.calendar_versus
 import vlr.feature_events.generated.resources.details_will_appear_when_this_event_is_published
 import vlr.feature_events.generated.resources.event
@@ -103,7 +105,6 @@ import vlr.feature_events.generated.resources.favorite_event
 import vlr.feature_events.generated.resources.loading_event
 import vlr.feature_events.generated.resources.loading_event_details
 import vlr.feature_events.generated.resources.match_fixtures_have_not_been_published_for_this_event
-import vlr.feature_events.generated.resources.matches_already_in_your_calendar
 import vlr.feature_events.generated.resources.no_event_details_yet
 import vlr.feature_events.generated.resources.no_matches_yet
 import vlr.feature_events.generated.resources.no_prize_breakdown_yet
@@ -113,6 +114,7 @@ import vlr.feature_events.generated.resources.placements
 import vlr.feature_events.generated.resources.prize_placements_have_not_been_published_for_this_event
 import vlr.feature_events.generated.resources.prizes
 import vlr.feature_events.generated.resources.remove_from_favorites
+import vlr.feature_events.generated.resources.remove_matches_from_calendar
 import vlr.feature_events.generated.resources.standings
 import vlr.feature_events.generated.resources.tab_matches
 import vlr.feature_events.generated.resources.tab_prizes
@@ -121,9 +123,7 @@ import vlr.feature_events.generated.resources.table
 import vlr.feature_events.generated.resources.team_standings_have_not_been_published_for_this_event
 import vlr.feature_events.generated.resources.teams
 import vlr.feature_events.generated.resources.teams_matches_and_standings
-import vlr.feature_events.generated.resources.unable_to_save_matches_to_calendar
 import vlr.feature_events.generated.resources.updating_favorite
-import vlr.feature_events.generated.resources.upcoming_matches_added_to_your_calendar
 
 @Composable
 public fun EventDetailsRoute(
@@ -457,10 +457,22 @@ private fun EventDetailsHero(
 ) {
   val versus = stringResource(Res.string.calendar_versus)
   val hasUpcomingMatches = remember(event.matches, versus) { event.upcomingCalendarEntries(versus).isNotEmpty() }
-  val exportCalendar = rememberCalendarExporter()
+  val calendar = rememberCalendarManager()
+  val calendarUids = remember(event.matches) { event.calendarMatchUids }
+  val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+  var calendarStatus by remember(event.id) { mutableStateOf<CalendarEntryStatus?>(null) }
   val scope = rememberCoroutineScope()
-  var isExporting by remember(event.id) { mutableStateOf(false) }
-  var calendarResult by remember(event.id) { mutableStateOf<CalendarExportResult?>(null) }
+  var isUpdatingCalendar by remember(event.id) { mutableStateOf(false) }
+  var calendarFeedback by remember(event.id) { mutableStateOf<EventCalendarFeedback?>(null) }
+
+  LaunchedEffect(event.id, calendarUids, lifecycleState, isUpdatingCalendar) {
+    if (lifecycleState == Lifecycle.State.RESUMED && !isUpdatingCalendar) {
+      val status = calendar.status(calendarUids)
+      if (calendarStatus != status) calendarFeedback = null
+      calendarStatus = status
+    }
+  }
+  val canRemove = calendarStatus == CalendarEntryStatus.Added
 
   EventDetailHeaderItem(
     event = event,
@@ -494,36 +506,45 @@ private fun EventDetailsHero(
               },
             )
           }
-          if (hasUpcomingMatches) {
+          if (hasUpcomingMatches || canRemove) {
             PrismIconButton(
-              icon = Prism.icons.calendarAdd,
-              contentDescription = stringResource(Res.string.add_upcoming_matches_to_calendar),
+              icon = if (canRemove) Prism.icons.calendarRemove else Prism.icons.calendarAdd,
+              contentDescription = stringResource(
+                if (canRemove) Res.string.remove_matches_from_calendar else Res.string.add_upcoming_matches_to_calendar,
+              ),
               onClick = {
-                // Matches can start while the screen is open, so the list is rebuilt for each export.
-                val entries = event.upcomingCalendarEntries(versus)
-                if (entries.isNotEmpty()) {
-                  isExporting = true
+                if (!isUpdatingCalendar) {
+                  isUpdatingCalendar = true
                   scope.launch {
-                    calendarResult = exportCalendar(event.calendarFileName, entries)
-                    isExporting = false
+                    try {
+                      val action = if (canRemove) EventCalendarAction.Remove else EventCalendarAction.Add
+                      val result = when (action) {
+                        EventCalendarAction.Remove -> calendar.remove(calendarUids)
+                        EventCalendarAction.Add -> {
+                          val upcoming = event.upcomingCalendarEntries(versus)
+                          if (upcoming.isEmpty()) return@launch
+                          calendar.add(event.calendarFileName, upcoming)
+                        }
+                      }
+                      calendarFeedback = EventCalendarFeedback(action, result)
+                      calendarStatus = calendar.status(calendarUids)
+                    } finally {
+                      isUpdatingCalendar = false
+                    }
                   }
                 }
               },
               size = PrismIconButtonSize.Toolbar,
-              enabled = !isExporting,
+              enabled = !isUpdatingCalendar && calendarStatus != null,
             )
           }
         }
-        val calendarMessage = when (calendarResult) {
-          CalendarExportResult.Added -> Res.string.upcoming_matches_added_to_your_calendar
-          CalendarExportResult.AlreadyAdded -> Res.string.matches_already_in_your_calendar
-          CalendarExportResult.Denied -> Res.string.allow_calendar_access_to_add_matches
-          CalendarExportResult.Failed -> Res.string.unable_to_save_matches_to_calendar
-          CalendarExportResult.Opened, null -> null
-        }
+        val calendarMessage = eventCalendarMessage(calendarStatus, calendarFeedback)
         calendarMessage?.let { message ->
           Text(
             text = stringResource(message),
+            modifier = Modifier.fillMaxWidth().padding(vertical = Prism.dimens.spacingS),
+            textAlign = TextAlign.Center,
             style = Prism.typography.bodySmall,
             color = Prism.color.bodyColor,
           )

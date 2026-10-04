@@ -16,6 +16,8 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import platform.EventKit.EKAuthorizationStatusAuthorized
+import platform.EventKit.EKAuthorizationStatusNotDetermined
 import platform.EventKit.EKEntityType
 import platform.EventKit.EKEvent
 import platform.EventKit.EKEventStore
@@ -27,45 +29,90 @@ import platform.Foundation.NSUserDefaults
 import platform.Foundation.dateWithTimeIntervalSince1970
 
 @Composable
-public actual fun rememberCalendarExporter(): suspend (fileName: String, entries: List<CalendarEntry>) -> CalendarExportResult =
-  remember {
-    { _, entries ->
-      try {
-        withContext(Dispatchers.Main) { calendarExportMutex.withLock { addToCalendar(entries) } }
-      } catch (cancelled: CancellationException) {
-        throw cancelled
-      } catch (_: Exception) {
-        CalendarExportResult.Failed
+public actual fun rememberCalendarManager(): CalendarManager = remember { IosCalendarManager }
+
+@Composable
+public actual fun rememberCalendarExporter(): suspend (fileName: String, entries: List<CalendarEntry>) -> CalendarExportResult {
+  val manager = rememberCalendarManager()
+  return remember(manager) { { fileName, entries -> manager.add(fileName, entries) } }
+}
+
+private object IosCalendarManager : CalendarManager {
+  override suspend fun status(uids: Set<String>): CalendarEntryStatus = withContext(Dispatchers.Main) {
+    calendarExportMutex.withLock {
+      when (EKEventStore.authorizationStatusForEntityType(EKEntityType.EKEntityTypeEvent)) {
+        EKAuthorizationStatusNotDetermined -> CalendarEntryStatus.NotAdded
+        EKAuthorizationStatusAuthorized -> {
+          val store = EKEventStore()
+          val saved = readSavedEvents()
+          if (uids.any { uid -> saved[uid]?.let { store.findOwnedEvent(it) } != null }) {
+            CalendarEntryStatus.Added
+          } else {
+            CalendarEntryStatus.NotAdded
+          }
+        }
+        else -> CalendarEntryStatus.Denied
       }
     }
   }
 
+  override suspend fun add(fileName: String, entries: List<CalendarEntry>): CalendarExportResult = mutateCalendar { store ->
+    store.addToCalendar(entries)
+  }
+
+  override suspend fun remove(uids: Set<String>): CalendarExportResult = mutateCalendar { store ->
+    val saved = readSavedEvents()
+    val removed = mutableSetOf<String>()
+    uids.forEach { uid ->
+      saved[uid]?.let { store.findOwnedEvent(it) }?.let { event ->
+        check(store.removeEvent(event, span = EKSpan.EKSpanThisEvent, commit = false, error = null)) {
+          "Unable to prepare calendar removal."
+        }
+        removed += uid
+      }
+    }
+    if (removed.isNotEmpty()) check(store.commit(null)) { "Unable to remove calendar events." }
+    removed.forEach(saved::remove)
+    writeSavedEvents(saved)
+    CalendarExportResult.Removed
+  }
+}
+
 private val calendarExportMutex = Mutex()
 
-private suspend fun addToCalendar(entries: List<CalendarEntry>): CalendarExportResult {
-  val store = EKEventStore()
-  val granted = suspendCancellableCoroutine { continuation ->
-    if (NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion >= 17 }) {
-      store.requestFullAccessToEventsWithCompletion { granted, _ -> continuation.resume(granted) }
-    } else {
-      store.requestAccessToEntityType(EKEntityType.EKEntityTypeEvent) { granted, _ -> continuation.resume(granted) }
+private suspend fun mutateCalendar(action: (EKEventStore) -> CalendarExportResult): CalendarExportResult = try {
+  withContext(Dispatchers.Main) {
+    calendarExportMutex.withLock {
+      val store = EKEventStore()
+      if (store.requestCalendarAccess()) action(store) else CalendarExportResult.Denied
     }
   }
-  if (!granted) return CalendarExportResult.Denied
-  val defaults = NSUserDefaults.standardUserDefaults
-  val saved = defaults.dictionaryForKey(SAVED_EVENT_IDS_KEY).orEmpty().entries
-    .mapNotNull { (uid, record) ->
-      if (uid !is String || record !is Map<*, *>) return@mapNotNull null
-      val id = (record["id"] as? String)?.takeIf(String::isNotBlank) ?: return@mapNotNull null
-      val start = (record["start"] as? String)?.toDoubleOrNull()?.takeIf(Double::isFinite) ?: return@mapNotNull null
-      uid to SavedCalendarEvent(id, start)
+} catch (cancelled: CancellationException) {
+  throw cancelled
+} catch (_: Exception) {
+  CalendarExportResult.Failed
+}
+
+private suspend fun EKEventStore.requestCalendarAccess(): Boolean {
+  if (EKEventStore.authorizationStatusForEntityType(EKEntityType.EKEntityTypeEvent) == EKAuthorizationStatusAuthorized) {
+    return true
+  }
+  return suspendCancellableCoroutine { continuation ->
+    if (NSProcessInfo.processInfo.operatingSystemVersion.useContents { majorVersion >= 17 }) {
+      requestFullAccessToEventsWithCompletion { granted, _ -> continuation.resume(granted) }
+    } else {
+      requestAccessToEntityType(EKEntityType.EKEntityTypeEvent) { granted, _ -> continuation.resume(granted) }
     }
-    .toMap().toMutableMap()
+  }
+}
+
+private fun EKEventStore.addToCalendar(entries: List<CalendarEntry>): CalendarExportResult {
+  val store = this
+  val saved = readSavedEvents()
   var changed = false
   val events = entries.distinctBy(CalendarEntry::uid).map { entry ->
     val record = saved[entry.uid]
-    val existing = record?.let { store.eventWithIdentifier(it.id) }
-      ?: record?.let { store.findMatch(entry.url, it.startEpochSeconds) }
+    val existing = record?.let { store.findOwnedEvent(it) }
     val start = NSDate.dateWithTimeIntervalSince1970(entry.start.toEpochMilliseconds() / 1000.0)
     val end = NSDate.dateWithTimeIntervalSince1970(entry.end.toEpochMilliseconds() / 1000.0)
     val url = entry.url?.let { NSURL.URLWithString(it) }
@@ -90,25 +137,37 @@ private suspend fun addToCalendar(entries: List<CalendarEntry>): CalendarExportR
   }
   if (changed) check(store.commit(null)) { "Unable to save the calendar events." }
   events.forEach { (entry, event) ->
-    saved[entry.uid] = SavedCalendarEvent(checkNotNull(event.eventIdentifier), entry.start.epochSeconds.toDouble())
+    saved[entry.uid] = SavedCalendarEvent(
+      id = checkNotNull(event.eventIdentifier),
+      externalId = event.calendarItemExternalIdentifier,
+      calendarId = event.calendar?.calendarIdentifier,
+    )
   }
-  defaults.setObject(
-    saved.mapValues { (_, event) -> mapOf("id" to event.id, "start" to event.startEpochSeconds.toString()) },
-    forKey = SAVED_EVENT_IDS_KEY,
-  )
+  writeSavedEvents(saved)
   return if (changed) CalendarExportResult.Added else CalendarExportResult.AlreadyAdded
 }
 
-private fun EKEventStore.findMatch(url: String?, lastStartEpochSeconds: Double): EKEvent? {
-  if (url == null) return null
-  val predicate = predicateForEventsWithStartDate(
-    NSDate.dateWithTimeIntervalSince1970(lastStartEpochSeconds - 86_400),
-    endDate = NSDate.dateWithTimeIntervalSince1970(lastStartEpochSeconds + 86_400),
-    calendars = null,
-  )
-  return eventsMatchingPredicate(predicate).filterIsInstance<EKEvent>().firstOrNull { it.URL?.absoluteString == url }
+private fun EKEventStore.findOwnedEvent(record: SavedCalendarEvent): EKEvent? {
+  eventWithIdentifier(record.id)?.let { return it }
+  val externalId = record.externalId ?: return null
+  return calendarItemsWithExternalIdentifier(externalId).filterIsInstance<EKEvent>()
+    .filter { record.matchesFallback(it.calendarItemExternalIdentifier, it.calendar?.calendarIdentifier) }
+    .singleOrNull()
 }
 
-private data class SavedCalendarEvent(val id: String, val startEpochSeconds: Double)
+private fun readSavedEvents(): MutableMap<String, SavedCalendarEvent> =
+  NSUserDefaults.standardUserDefaults.dictionaryForKey(SAVED_EVENT_IDS_KEY).orEmpty().entries
+    .mapNotNull { (uid, record) ->
+      if (uid !is String) return@mapNotNull null
+      SavedCalendarEvent.fromRecord(record)?.let { uid to it }
+    }
+    .toMap().toMutableMap()
+
+private fun writeSavedEvents(saved: Map<String, SavedCalendarEvent>) {
+  NSUserDefaults.standardUserDefaults.setObject(
+    saved.mapValues { (_, event) -> event.toRecord() },
+    forKey = SAVED_EVENT_IDS_KEY,
+  )
+}
 
 private const val SAVED_EVENT_IDS_KEY = "calendar.savedEventIds"

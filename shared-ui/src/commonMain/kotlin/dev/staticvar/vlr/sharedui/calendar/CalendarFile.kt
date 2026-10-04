@@ -22,16 +22,20 @@ public data class CalendarEntry(
 
 /** Calendar entry for a match. The UID depends only on the match ID, so a repeated import updates the entry. */
 public fun matchCalendarEntry(matchId: String, title: String, description: String, start: Instant): CalendarEntry {
-  require(matchId.isNotBlank())
-  val uid = matchId.encodeToByteArray().joinToString("") { it.toUByte().toString(16).padStart(2, '0') }
   return CalendarEntry(
-    uid = "match-$uid@valorantesports.staticvar.dev",
+    uid = matchCalendarUid(matchId),
     title = title,
     description = description,
     start = start,
     end = start + 1.hours,
     url = "https://valorantesports.staticvar.dev/match/$matchId".takeIf { matchId.all(Char::isDigit) },
   )
+}
+
+public fun matchCalendarUid(matchId: String): String {
+  require(matchId.isNotBlank())
+  val uid = matchId.encodeToByteArray().joinToString("") { it.toUByte().toString(16).padStart(2, '0') }
+  return "match-$uid@valorantesports.staticvar.dev"
 }
 
 /** Uses the metadata shared by match details and event schedules. */
@@ -58,9 +62,28 @@ public enum class CalendarExportResult {
   Opened,
   Added,
   AlreadyAdded,
+  Removed,
   Denied,
   Failed,
 }
+
+public enum class CalendarEntryStatus {
+  NotAdded,
+  /** At least one requested match saved by this app is still in the calendar. */
+  Added,
+  Denied,
+}
+
+public interface CalendarManager {
+  public suspend fun status(uids: Set<String>): CalendarEntryStatus
+
+  public suspend fun add(fileName: String, entries: List<CalendarEntry>): CalendarExportResult
+
+  public suspend fun remove(uids: Set<String>): CalendarExportResult
+}
+
+@Composable
+public expect fun rememberCalendarManager(): CalendarManager
 
 /**
  * Adds entries to the user's calendar. Android hands an ICS file to a calendar app, with share targets as the

@@ -41,6 +41,18 @@ class EventCalendarTest {
   }
 
   @Test
+  fun removalIncludesCompletedAndUnscheduledMatchesWithoutBlankOrDuplicateIds() {
+    val uids = event(
+      match("1", "2026-09-17", "07:00:00", "completed"),
+      match("2", "2026-09-18", "TBD", "upcoming"),
+      match("2", "2026-09-18", "TBD", "upcoming"),
+      match("", "2026-09-18", "09:00:00", "upcoming"),
+    ).calendarMatchUids
+
+    assertEquals(setOf("match-31@valorantesports.staticvar.dev", "match-32@valorantesports.staticvar.dev"), uids)
+  }
+
+  @Test
   fun entriesNameTrimmedTeamsOrTheEvent() {
     val entries = event(
       match("10", "2026-09-19", "09:00:00", "upcoming", " NRG ", " LOUD "),
