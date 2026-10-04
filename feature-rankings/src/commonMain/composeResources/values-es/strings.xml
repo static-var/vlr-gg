@@ -16,4 +16,13 @@
     <string name="searching_teams">Buscando equipos</string>
     <string name="no_teams_found">No se encontraron equipos</string>
     <string name="try_another_team_name">Prueba con otro nombre de equipo o nombre corto.</string>
+    <string name="rankings_info_title">Cómo funciona la clasificación</string>
+    <string name="rankings_info_introduction">La clasificación muestra cómo se comparan los equipos dentro de cada región. Los puntos resumen su rendimiento según los resultados de los partidos.</string>
+    <string name="rankings_info_points_title">Posición y puntos</string>
+    <string name="rankings_info_points_body">Más puntos significan una posición más alta en la tabla. Los puntos son una valoración, no un recuento de victorias ni un porcentaje de victorias. El equipo en el puesto #1 es el mejor clasificado de esa región.</string>
+    <string name="rankings_info_elo_title">Cómo funciona Elo</string>
+    <string name="rankings_info_elo_body">Elo compara el resultado de un partido con lo que predicen las valoraciones. Ganar a un equipo más fuerte da más puntos. Perder contra uno más débil resta más. Los resultados esperados suelen cambiar menos las valoraciones.</string>
+    <string name="rankings_info_context_title">Interpreta los puntos en su contexto</string>
+    <string name="rankings_info_context_body">Compara los puntos dentro de la misma región. Cada región tiene su propia clasificación, así que una cifra mayor por sí sola no indica qué equipo es más fuerte entre regiones.</string>
+    <string name="rankings_info_close">Listo</string>
 </resources>

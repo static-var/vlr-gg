@@ -16,4 +16,13 @@
     <string name="searching_teams">팀 검색 중</string>
     <string name="no_teams_found">팀을 찾을 수 없습니다</string>
     <string name="try_another_team_name">다른 팀 이름이나 약칭으로 검색해 보세요.</string>
+    <string name="rankings_info_title">랭킹은 어떻게 정해지나요</string>
+    <string name="rankings_info_introduction">랭킹은 각 지역에서 팀들이 서로 비교해 어느 위치에 있는지 보여 줍니다. 점수는 경기 결과를 바탕으로 팀의 성적을 요약합니다.</string>
+    <string name="rankings_info_points_title">순위와 점수</string>
+    <string name="rankings_info_points_body">점수가 높을수록 순위도 높아집니다. 점수는 팀의 실력을 평가하는 수치이며, 승리 횟수나 승률이 아닙니다. 순위 #1은 해당 지역에서 가장 높은 순위의 팀입니다.</string>
+    <string name="rankings_info_elo_title">Elo는 어떻게 작동하나요</string>
+    <string name="rankings_info_elo_body">Elo는 경기 결과를 팀의 점수로 예측한 결과와 비교합니다. 더 강한 팀을 이기면 더 많은 점수를 얻고, 더 약한 팀에 지면 더 많은 점수를 잃습니다. 예상대로 경기가 끝나면 보통 점수 변화가 더 작습니다.</string>
+    <string name="rankings_info_context_title">점수를 해석할 때 알아둘 점</string>
+    <string name="rankings_info_context_body">점수는 같은 지역 안에서 비교하세요. 지역마다 별도의 순위표를 사용하므로, 숫자가 더 크다는 이유만으로 다른 지역의 팀보다 더 강하다고 볼 수는 없습니다.</string>
+    <string name="rankings_info_close">완료</string>
 </resources>

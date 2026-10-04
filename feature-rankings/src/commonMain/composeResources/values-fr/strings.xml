@@ -16,4 +16,13 @@
     <string name="searching_teams">Recherche des équipes</string>
     <string name="no_teams_found">Aucune équipe trouvée</string>
     <string name="try_another_team_name">Essayez un autre nom d’équipe ou nom court.</string>
+    <string name="rankings_info_title">Comment fonctionne le classement</string>
+    <string name="rankings_info_introduction">Le classement montre comment les équipes se comparent au sein de chaque région. Les points résument leurs performances selon les résultats des matchs.</string>
+    <string name="rankings_info_points_title">Position et points</string>
+    <string name="rankings_info_points_body">Plus de points signifie une meilleure position dans le classement. Les points sont une évaluation, pas un nombre de victoires ni un pourcentage de victoires. L’équipe à la place #1 est la mieux classée de cette région.</string>
+    <string name="rankings_info_elo_title">Comment fonctionne Elo</string>
+    <string name="rankings_info_elo_body">Elo compare le résultat d’un match à ce que prédisent les évaluations. Battre une équipe plus forte rapporte plus de points. Perdre contre une équipe plus faible en coûte davantage. Les résultats attendus font généralement moins varier les évaluations.</string>
+    <string name="rankings_info_context_title">Lire les points dans leur contexte</string>
+    <string name="rankings_info_context_body">Comparez les points au sein d’une même région. Chaque région a son propre classement. Un nombre plus élevé ne suffit donc pas à dire quelle équipe est la plus forte entre les régions.</string>
+    <string name="rankings_info_close">Terminé</string>
 </resources>

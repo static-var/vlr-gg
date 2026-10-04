@@ -16,4 +16,13 @@
     <string name="searching_teams">Teams werden gesucht</string>
     <string name="no_teams_found">Keine Teams gefunden</string>
     <string name="try_another_team_name">Versuche einen anderen Teamnamen oder Kurznamen.</string>
+    <string name="rankings_info_title">Wie die Rangliste funktioniert</string>
+    <string name="rankings_info_introduction">Die Rangliste zeigt, wie Teams innerhalb ihrer Region abschneiden. Die Punkte bewerten ihre Leistung anhand der Spielergebnisse.</string>
+    <string name="rankings_info_points_title">Platzierung und Punkte</string>
+    <string name="rankings_info_points_body">Mehr Punkte bedeuten eine höhere Platzierung in der Tabelle. Die Punkte sind eine Bewertung, keine Anzahl von Siegen und keine Siegquote. Das Team auf Platz #1 ist das bestplatzierte Team dieser Region.</string>
+    <string name="rankings_info_elo_title">Wie Elo funktioniert</string>
+    <string name="rankings_info_elo_body">Elo vergleicht ein Spielergebnis mit der Prognose der Bewertungen. Ein Sieg gegen ein stärkeres Team bringt mehr Punkte. Eine Niederlage gegen ein schwächeres Team kostet mehr. Erwartete Ergebnisse verändern die Bewertungen meist weniger.</string>
+    <string name="rankings_info_context_title">Punkte im Kontext betrachten</string>
+    <string name="rankings_info_context_body">Vergleiche Punkte innerhalb derselben Region. Jede Region hat eine eigene Rangliste. Eine höhere Punktzahl allein zeigt daher nicht, welches Team im Vergleich zu anderen Regionen stärker ist.</string>
+    <string name="rankings_info_close">Fertig</string>
 </resources>
