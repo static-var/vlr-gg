@@ -15,7 +15,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -33,6 +37,7 @@ import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.designsystem.prism.icon.about.StairStepAbout
 import dev.staticvar.vlr.domain.model.RegionalRanking
 import dev.staticvar.vlr.domain.model.TeamRanking
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
@@ -51,6 +56,7 @@ import vlr.feature_rankings.generated.resources.loading_rankings
 import vlr.feature_rankings.generated.resources.no_rankings_yet
 import vlr.feature_rankings.generated.resources.ranking_points
 import vlr.feature_rankings.generated.resources.ranking_team_label
+import vlr.feature_rankings.generated.resources.rankings_info_title
 import vlr.feature_rankings.generated.resources.rankings_subtitle
 import vlr.feature_rankings.generated.resources.rankings_title
 import vlr.feature_rankings.generated.resources.region_rankings_unpublished
@@ -98,6 +104,7 @@ internal fun RankingsScreen(
   onSearchQueryChanged: (String) -> Unit = {},
   onRetrySearch: () -> Unit = {},
 ) {
+  var showRankingInfo by rememberSaveable { mutableStateOf(false) }
   val selectedRegion = uiState.selectedRegion
   val selectedRanking = remember(uiState.regions, selectedRegion) {
     uiState.regions.firstOrNull { it.region == selectedRegion }
@@ -111,7 +118,7 @@ internal fun RankingsScreen(
   Box(modifier = modifier.fillMaxSize()) {
     Column(
       modifier = Modifier.fillMaxSize()
-        .then(if (searchState.isOpen) Modifier.clearAndSetSemantics {} else Modifier)
+        .then(if (searchState.isOpen || showRankingInfo) Modifier.clearAndSetSemantics {} else Modifier)
         .padding(horizontal = Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
@@ -120,6 +127,12 @@ internal fun RankingsScreen(
           title = stringResource(Res.string.rankings_title),
           subtitle = stringResource(Res.string.rankings_subtitle),
           actions = {
+            PrismIconButton(
+              icon = StairStepAbout,
+              contentDescription = stringResource(Res.string.rankings_info_title),
+              size = PrismIconButtonSize.Toolbar,
+              onClick = { showRankingInfo = true },
+            )
             SharedRefreshButton(
               isLoading = uiState.isLoading,
               isRefreshing = uiState.isRefreshing,
@@ -198,6 +211,7 @@ internal fun RankingsScreen(
       onTeamSelected = onTeamSelected,
     )
   }
+  RankingsInfoSheet(visible = showRankingInfo, onDismiss = { showRankingInfo = false })
 }
 
 @Composable
