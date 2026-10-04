@@ -211,6 +211,8 @@ class AndroidLiveMatchNotificationsTest {
     assertTrue(neutralColor != firstColor && neutralColor != secondColor)
     assertEquals(listOf(neutralColor, neutralColor), style.progressPoints.map { it.color })
     assertFalse(style.isStyledByProgress)
+    assertNull(style.progressStartIcon)
+    assertNull(style.progressEndIcon)
 
     val logoCache = LiveMatchLogoCache(context)
     val testBmp1 = Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888)
@@ -226,14 +228,22 @@ class AndroidLiveMatchNotificationsTest {
     val withLogosRenderer = LiveMatchNotificationRenderer(context, logoCache)
     val notifWithLogos = withLogosRenderer.build(matchWithLogos, false, 36)
     val recoveredStyle = Notification.Builder.recoverBuilder(context, notifWithLogos).style as Notification.ProgressStyle
-    assertNull(recoveredStyle.progressStartIcon)
-    assertNull(recoveredStyle.progressEndIcon)
+    assertEquals(Icon.TYPE_BITMAP, recoveredStyle.progressStartIcon?.type)
+    assertEquals(Icon.TYPE_BITMAP, recoveredStyle.progressEndIcon?.type)
     assertNotNull(recoveredStyle.progressTrackerIcon)
     assertNotNull(notifWithLogos.getLargeIcon())
 
-    val final = renderer.build(match.copy(terminal = true, currentMap = null), false, 36)
+    val final = withLogosRenderer.build(matchWithLogos.copy(terminal = true, currentMap = null), false, 36)
     val finalStyle = Notification.Builder.recoverBuilder(context, final).style as Notification.ProgressStyle
     assertEquals(listOf(firstColor, secondColor), finalStyle.progressSegments.take(2).map { it.color })
+    assertEquals(Icon.TYPE_BITMAP, finalStyle.progressStartIcon?.type)
+    assertEquals(Icon.TYPE_BITMAP, finalStyle.progressEndIcon?.type)
+
+    val ordinary = withLogosRenderer.build(matchWithLogos, false, 36, showScoreInStatusBar = false)
+    val ordinaryStyle = Notification.Builder.recoverBuilder(context, ordinary).style as Notification.ProgressStyle
+    assertEquals(Icon.TYPE_BITMAP, ordinaryStyle.progressStartIcon?.type)
+    assertEquals(Icon.TYPE_BITMAP, ordinaryStyle.progressEndIcon?.type)
+    assertNull(ordinary.extras.getCharSequence("android.shortCriticalText"))
   }
 
   @Test
@@ -292,9 +302,10 @@ class AndroidLiveMatchNotificationsTest {
     assertEquals("TL 8–6" to Icon.TYPE_RESOURCE, chip(trailing.copy(currentMap = live.currentMap)))
     assertEquals("8–8" to Icon.TYPE_RESOURCE, chip(trailing.copy(currentMap = live.currentMap?.copy(scores = listOf(8, 8)))))
     val longTag = trailing.copy(teams = listOf(trailing.teams[0].copy(tag = "TEAMLIQ", imageUrl = null), trailing.teams[1]))
-    assertEquals("12–10" to Icon.TYPE_RESOURCE, chip(longTag.copy(currentMap = live.currentMap?.copy(scores = listOf(12, 10)))))
+    val longScore = longTag.copy(currentMap = live.currentMap?.copy(scores = listOf(12, 10)))
+    assertEquals("12–10" to Icon.TYPE_RESOURCE, chip(longScore))
 
-    // A pause joins the map name in the content text; the status-bar chip stays score-only.
+    // A pause joins the map name in the content text and marks the status-bar chip with the pause glyph.
     val paused = live.copy(pause = LiveMatchPause(LiveMatchPauseKind.TechPause))
     val pausedNotification = renderer.build(paused, scoresHidden = false, sdkInt = 36)
     assertEquals("Team Liquid\u20038 : 6\u2003Paper Rex", pausedNotification.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
@@ -302,8 +313,20 @@ class AndroidLiveMatchNotificationsTest {
       "Ascent · ${context.getString(R.string.live_match_notification_pause_tech)}",
       pausedNotification.extras.getCharSequence(Notification.EXTRA_TEXT).toString(),
     )
-    assertEquals(chip(live), chip(paused))
-    assertEquals(chip(trailing), chip(trailing.copy(pause = LiveMatchPause(LiveMatchPauseKind.Halftime))))
+    assertEquals("8–6 ⏸" to Icon.TYPE_RESOURCE, chip(paused))
+    assertEquals("8–6 ⏸" to Icon.TYPE_BITMAP, chip(trailing.copy(pause = LiveMatchPause(LiveMatchPauseKind.Halftime))))
+    // The glyph survives the tag fallback: a tag that fits keeps the suffix, an overlong one drops only the tag.
+    assertEquals(
+      "TL 8–6 ⏸" to Icon.TYPE_RESOURCE,
+      chip(trailing.copy(currentMap = live.currentMap, pause = paused.pause)),
+    )
+    assertEquals("12–10 ⏸" to Icon.TYPE_RESOURCE, chip(longScore.copy(pause = paused.pause)))
+    // Hidden scores leave the chip no score, so the generic text carries the pause instead.
+    val hiddenPaused = LiveMatchNotificationRenderer(context, logos).build(paused, scoresHidden = true, sdkInt = 36)
+    assertEquals(
+      "${context.getString(R.string.widget_live)} ⏸",
+      hiddenPaused.extras.getCharSequence("android.shortCriticalText")?.toString(),
+    )
     val reasoned = renderer.build(paused.copy(pause = LiveMatchPause(LiveMatchPauseKind.TechPause, "GEAR")), false, 36)
     assertTrue(reasoned.extras.getCharSequence(Notification.EXTRA_TEXT).toString().endsWith(" · GEAR"))
     val terminalPaused = renderer.build(paused.copy(terminal = true), false, 36)
@@ -605,7 +628,7 @@ class AndroidLiveMatchNotificationsTest {
     val matchId = "991000002"
     val tag = "live-match-$matchId"
     fun state(observedAt: Long) = validState(matchId, observedAt)
-      .replace("\"future_field\":true", "\"total_maps\":3")
+      .replace("\"future_field\":true", "\"total_maps\":3,\"pause\":{\"kind\":\"timeout\"}")
       .replace("\"name\":\"Ascent\"", "\"name\":\"Ascent\",\"number\":2")
     fun awaitMode(showChip: Boolean): Notification {
       val deadline = SystemClock.elapsedRealtime() + 3_000
@@ -620,6 +643,7 @@ class AndroidLiveMatchNotificationsTest {
     try {
       notifications.handle(payload(state = state(70)))
       val initial = awaitMode(true)
+      assertEquals("8–6 ⏸", initial.extras.getCharSequence("android.shortCriticalText").toString())
       preferences.setShowScoreInStatusBar(false)
       notifications.refreshPresentation()
       val ordinary = awaitMode(false)
@@ -656,6 +680,7 @@ class AndroidLiveMatchNotificationsTest {
       preferences.setShowScoreInStatusBar(true)
       recovered.refreshPresentation()
       val recoveredChip = awaitMode(true)
+      assertEquals("9–6 ⏸", recoveredChip.extras.getCharSequence("android.shortCriticalText").toString())
       assertEquals(restored.extras.getCharSequence("android.shortCriticalText").toString(), recoveredChip.extras.getCharSequence("android.shortCriticalText").toString())
       assertEquals(restored.smallIcon.type, recoveredChip.smallIcon.type)
 

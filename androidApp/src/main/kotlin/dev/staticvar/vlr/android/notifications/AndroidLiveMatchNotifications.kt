@@ -13,6 +13,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Icon
 import android.os.Build
@@ -612,6 +613,8 @@ internal class LiveMatchNotificationRenderer(
         colors = colors,
         currentMapScores = map?.scores.orEmpty(),
         context = context,
+        startIcon = logoCache.getTeamIcon(t1.imageUrl, night),
+        endIcon = logoCache.getTeamIcon(t2.imageUrl, night),
       )
     } else {
       builder.setStyle(Notification.BigTextStyle().bigText(contentText))
@@ -685,6 +688,8 @@ internal class LiveMatchNotificationRenderer(
         currentMapScores = emptyList(),
         context = context,
         terminal = true,
+        startIcon = logoCache.getTeamIcon(first.imageUrl, night),
+        endIcon = logoCache.getTeamIcon(second.imageUrl, night),
       )
     } else {
       builder.setStyle(Notification.BigTextStyle().bigText(matchup))
@@ -696,7 +701,8 @@ internal class LiveMatchNotificationRenderer(
    *
    * With a leader, the chip shows the leader's logo silhouette and the score leader-first (`[NRG] 10–5`). Without a
    * usable logo it names the leader instead (`NRG 10–5`), dropping the name when the text would be too long for the
-   * chip, which hides overlong text entirely. Ties, hidden scores and the pre-round state keep the app icon.
+   * chip, which hides overlong text entirely. A trailing pause glyph marks a broadcast pause, including on the score
+   * fallback and the generic text. Ties, hidden scores and the pre-round state keep the app icon.
    */
   private fun applyChip(
     builder: Notification.Builder,
@@ -719,23 +725,25 @@ internal class LiveMatchNotificationRenderer(
 
   private fun chipPresentation(update: LiveMatchUpdate, scoresHidden: Boolean): ChipPresentation {
     val scores = chipScores(update, scoresHidden)
+    val pauseSuffix = if (update.pause != null) PauseChipSuffix else ""
     if (scores == null) {
-      return ChipPresentation(context.getString(R.string.widget_live))
+      return ChipPresentation("${context.getString(R.string.widget_live)}$pauseSuffix")
     }
     val (s1, s2) = scores
     if (s1 == null || s2 == null) {
-      return ChipPresentation("${score(s1)}–${score(s2)}")
+      return ChipPresentation("${score(s1)}–${score(s2)}$pauseSuffix")
     }
     if (s1 == s2) {
-      return ChipPresentation("$s1–$s2")
+      return ChipPresentation("$s1–$s2$pauseSuffix")
     }
     val leader = update.teams[if (s1 > s2) 0 else 1]
     val score = "${maxOf(s1, s2)}–${minOf(s1, s2)}"
     val icon = logoCache.getChipIcon(leader.imageUrl)
     return if (icon != null) {
-      ChipPresentation(score, Icon.createWithBitmap(icon))
+      ChipPresentation("$score$pauseSuffix", Icon.createWithBitmap(icon))
     } else {
-      ChipPresentation("${leader.displayName} $score".takeIf { it.length <= ChipTextLimit } ?: score)
+      val text = "${leader.displayName} $score$pauseSuffix"
+      ChipPresentation(text.takeIf { it.length <= ChipTextLimit } ?: "$score$pauseSuffix")
     }
   }
 
@@ -792,6 +800,9 @@ internal class LiveMatchNotificationRenderer(
 // Longest chip text seen fully on API 36 ("NRG 12–10"); longer text is not shortened but hidden.
 private const val ChipTextLimit = 9
 
+// Marks a broadcast pause on the chip, where the glyph is the only pause indicator that fits.
+private const val PauseChipSuffix = " ⏸"
+
 internal const val LiveNotificationTimeoutMillis = 5 * 60 * 1_000L
 
 /** Describes the active map position within a match series. */
@@ -830,6 +841,8 @@ private object Api36Notification {
     currentMapScores: List<Int?>,
     context: Context,
     terminal: Boolean = false,
+    startIcon: Bitmap? = null,
+    endIcon: Bitmap? = null,
   ) {
     val total = progress.totalMaps
     val current = progress.currentMapNumber
@@ -857,6 +870,9 @@ private object Api36Notification {
       })
       .setProgress(progressValue)
       .setProgressTrackerIcon(Icon.createWithResource(context, R.drawable.ic_live_tracker))
+
+    startIcon?.let { style.setProgressStartIcon(Icon.createWithBitmap(it)) }
+    endIcon?.let { style.setProgressEndIcon(Icon.createWithBitmap(it)) }
 
     builder.setStyle(style)
   }

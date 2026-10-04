@@ -30,9 +30,11 @@ import kotlin.math.roundToInt
  * - A composite two-logo large icon (16:9, 48dp tall) built from those icons.
  * - A status-bar chip icon: SystemUI draws the small icon as a one-colour silhouette of its alpha,
  *   so only the logo's coloured or bright pixels are kept, letting inner detail survive instead of
- *   a filled outline. An opaque white plate behind the artwork measures as a near-solid mask, so the
- *   silhouette is rebuilt from the coloured pixels alone; logos that still come out as a solid block
- *   have no chip icon.
+ *   a filled outline. An opaque plate, whether white or saturated, behind contrasting artwork
+ *   measures as a near-solid mask, so the silhouette is rebuilt from the artwork it carries: the
+ *   coloured pixels alone for a white plate (e.g. Global Esports), or the dark artwork on a
+ *   saturated plate (e.g. Sentinels' red square); logos that still come out as a solid block have
+ *   no chip icon.
  */
 internal class LiveMatchLogoCache(context: Context) {
   private val appContext = context.applicationContext
@@ -141,6 +143,8 @@ internal class LiveMatchLogoCache(context: Context) {
     private const val MinimumContrast = 2.0
     // A chip mask filling this much of its own bounds is a plate or block, not a recognisable mark.
     private const val BlockSolidity = 0.85f
+    // Shared threshold for the chip masks: below this a pixel is dark artwork, and never saturated.
+    private const val DarkLuminanceLimit = 0.35f
     // Above this, a mask is likely a white plate behind coloured artwork (e.g. Global Esports) that hides it.
     private const val NearBlockSolidity = 0.7f
     // Rejects tiny coloured fragments; the retry must keep this share of the combined mask to replace it.
@@ -235,8 +239,10 @@ internal class LiveMatchLogoCache(context: Context) {
     /**
      * Keeps saturated or bright pixels as an opaque silhouette; null when that is empty or a solid block.
      *
-     * A mask at or above [NearBlockSolidity] is usually a white plate behind coloured artwork whose silhouette
-     * would be a white blob; when the saturated pixels alone stay recognisable, they replace the combined mask.
+     * An opaque plate, whether white or saturated, behind contrasting artwork reads as a near-solid mask
+     * whose silhouette would be a blob. When the saturated pixels alone stay recognisable, they replace the
+     * combined mask. A saturated plate itself, such as Sentinels' red square, passes that check, so the
+     * dark artwork drawn on it is tried next and used when it stays recognisable.
      */
     private fun Bitmap.chipMask(): Bitmap? {
       val combined = maskOf { hsv -> isSaturated(hsv) || hsv[2] > 0.75f } ?: return null
@@ -245,7 +251,13 @@ internal class LiveMatchLogoCache(context: Context) {
       if (coloured != null && coloured.solidity < BlockSolidity && coloured.kept >= combined.kept * PlateKeptShare) {
         return coloured.bitmap
       }
-      return combined.bitmap.takeIf { combined.solidity < BlockSolidity }
+      if (combined.solidity < BlockSolidity) return combined.bitmap
+      // Dark artwork on a saturated plate, e.g. the Sentinels emblem inside its red square.
+      val dark = maskOf { hsv -> hsv[2] <= DarkLuminanceLimit }
+      if (dark != null && dark.solidity < BlockSolidity && dark.kept >= combined.kept * PlateKeptShare) {
+        return dark.bitmap
+      }
+      return null
     }
 
     /** Keeps pixels matching [keep] as an opaque silhouette over transparent, with their bounds. */
@@ -275,7 +287,7 @@ internal class LiveMatchLogoCache(context: Context) {
       return Mask(output, kept, (maxX - minX + 1) * (maxY - minY + 1))
     }
 
-    private fun isSaturated(hsv: FloatArray): Boolean = hsv[1] > 0.35f && hsv[2] > 0.35f
+    private fun isSaturated(hsv: FloatArray): Boolean = hsv[1] > DarkLuminanceLimit && hsv[2] > DarkLuminanceLimit
 
     private class Mask(val bitmap: Bitmap, val kept: Int, val boundsArea: Int) {
       val solidity = kept.toFloat() / boundsArea

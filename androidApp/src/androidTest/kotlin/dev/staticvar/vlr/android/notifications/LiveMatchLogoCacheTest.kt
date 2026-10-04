@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -43,13 +44,23 @@ class LiveMatchLogoCacheTest {
   }
 
   @Test
-  fun plateLogosKeepColouredChipDetail() {
+  fun plateLogosKeepTheirChipDetail() {
     // Regression: the Global Esports chip showed a solid white badge instead of its artwork, 2026-10.
     val cache = LiveMatchLogoCache(context)
     cache.putLogo("plate", plateLogo())
     val plate = requireNotNull(cache.getChipIcon("plate"))
     assertTrue(plate.hasOpaquePixelAt(32, 29))
     assertFalse(plate.hasOpaquePixelAt(32, 14))
+
+    // Regression: the Sentinels chip had no icon at all because its saturated red plate read as a block, 2026-10.
+    // The dark emblem inside that plate must become the silhouette instead.
+    cache.putLogo("dark-plate", darkPlateLogo())
+    val darkPlate = requireNotNull(cache.getChipIcon("dark-plate"))
+    assertFalse(darkPlate.hasOpaquePixelAt(6, 6))
+    assertFalse(darkPlate.hasOpaquePixelAt(58, 58))
+    assertTrue(darkPlate.hasOpaquePixelAt(32, 42))
+    // The notch between the emblem's arms stays transparent: the mask is the emblem, not a solid block.
+    assertFalse(darkPlate.hasOpaquePixelAt(32, 25))
 
     // A near-solid white mark on transparent enters the saturated retry; the empty retry must fall back to it.
     cache.putLogo("white", whiteCircleLogo())
@@ -77,6 +88,24 @@ class LiveMatchLogoCacheTest {
       strokeWidth = 6f
     })
     canvas.drawRect(18f, 27f, 46f, 32f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.rgb(15, 76, 201) })
+  }
+
+  /** A saturated red plate filling most of the bitmap with a dark emblem on it, like the Sentinels logo. */
+  private fun darkPlateLogo(): Bitmap = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888).apply {
+    val canvas = Canvas(this)
+    canvas.drawRect(2f, 2f, 62f, 62f, Paint().apply { color = Color.rgb(232, 17, 45) })
+    canvas.drawPath(
+      Path().apply {
+        moveTo(14f, 20f)
+        lineTo(23f, 20f)
+        lineTo(32f, 36f)
+        lineTo(41f, 20f)
+        lineTo(50f, 20f)
+        lineTo(32f, 50f)
+        close()
+      },
+      Paint().apply { color = Color.rgb(16, 16, 16) },
+    )
   }
 
   /** A filled white mark on transparent, solid enough to reach the near-solid retry. */
