@@ -8,6 +8,7 @@ import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.sharedui.calendar.CalendarEntry
 import dev.staticvar.vlr.sharedui.calendar.matchCalendarEntry
+import dev.staticvar.vlr.sharedui.calendar.matchCalendarUid
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -34,6 +35,9 @@ internal fun EventDetails.upcomingCalendarEntries(
     )
   }
   .sortedBy(CalendarEntry::start)
+
+internal val EventDetails.calendarMatchUids: Set<String>
+  get() = matches.map { it.matchId }.filter(String::isNotBlank).map(::matchCalendarUid).toSet()
 
 // The API sends a UTC date and time, or a full timestamp in the time field.
 internal fun EventMatch.calendarStart(): Instant? {

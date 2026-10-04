@@ -49,6 +49,9 @@
     <string name="unable_to_save_matches_to_calendar">Unable to save matches to the calendar. Please try again.</string>
     <string name="calendar_versus">vs</string>
     <string name="upcoming_matches_added_to_your_calendar">Upcoming matches saved to your calendar.</string>
-    <string name="matches_already_in_your_calendar">These matches are already in your calendar.</string>
-    <string name="allow_calendar_access_to_add_matches">Allow calendar access in Settings to add matches.</string>
+    <string name="matches_already_in_your_calendar">Matches are in your calendar. Tap the calendar button to remove them.</string>
+    <string name="allow_calendar_access_to_add_matches">Allow full calendar access in Settings to add or remove matches.</string>
+    <string name="remove_matches_from_calendar">Remove matches from calendar</string>
+    <string name="matches_removed_from_your_calendar">Matches removed from your calendar.</string>
+    <string name="unable_to_remove_matches_from_calendar">Unable to remove matches. Please try again.</string>
 </resources>

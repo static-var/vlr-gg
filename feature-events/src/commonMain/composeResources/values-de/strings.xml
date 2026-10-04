@@ -49,6 +49,9 @@
     <string name="unable_to_save_matches_to_calendar">Matches konnten nicht im Kalender gespeichert werden. Bitte erneut versuchen.</string>
     <string name="calendar_versus">gegen</string>
     <string name="upcoming_matches_added_to_your_calendar">Anstehende Matches wurden in deinem Kalender gespeichert.</string>
-    <string name="matches_already_in_your_calendar">Diese Matches sind bereits in deinem Kalender.</string>
-    <string name="allow_calendar_access_to_add_matches">Erlaube den Kalenderzugriff in den Einstellungen, um Matches hinzuzufügen.</string>
+    <string name="matches_already_in_your_calendar">Die Matches sind in deinem Kalender. Tippe auf die Kalender-Schaltfläche, um sie zu entfernen.</string>
+    <string name="allow_calendar_access_to_add_matches">Erlaube in den Einstellungen den Vollzugriff auf den Kalender, um Matches hinzuzufügen oder zu entfernen.</string>
+    <string name="remove_matches_from_calendar">Matches aus dem Kalender entfernen</string>
+    <string name="matches_removed_from_your_calendar">Matches wurden aus deinem Kalender entfernt.</string>
+    <string name="unable_to_remove_matches_from_calendar">Matches konnten nicht entfernt werden. Bitte erneut versuchen.</string>
 </resources>

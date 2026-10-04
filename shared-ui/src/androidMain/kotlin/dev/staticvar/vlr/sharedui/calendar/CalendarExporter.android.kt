@@ -15,6 +15,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
+public actual fun rememberCalendarManager(): CalendarManager {
+  val export = rememberCalendarExporter()
+  return remember(export) {
+    object : CalendarManager {
+      override suspend fun status(uids: Set<String>): CalendarEntryStatus = CalendarEntryStatus.NotAdded
+
+      override suspend fun add(fileName: String, entries: List<CalendarEntry>): CalendarExportResult = export(fileName, entries)
+
+      override suspend fun remove(uids: Set<String>): CalendarExportResult = CalendarExportResult.Failed
+    }
+  }
+}
+
+@Composable
 public actual fun rememberCalendarExporter(): suspend (fileName: String, entries: List<CalendarEntry>) -> CalendarExportResult {
   val context = LocalContext.current
   return remember(context) {

@@ -4,29 +4,29 @@
     "NSCalendarsFullAccessUsageDescription" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports speichert deine ausgewählten Matches im Kalender und prüft sie, um ihre Zeiten zu aktualisieren und Duplikate zu vermeiden." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports saves your chosen matches to your calendar and reads them to update their times and avoid duplicates." } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports guarda los partidos que elijas en tu calendario y los consulta para actualizar sus horarios y evitar duplicados." } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports enregistre les matchs choisis dans votre calendrier et les consulte pour mettre à jour leurs horaires et éviter les doublons." } },
-        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports आपके चुने हुए मैच कैलेंडर में सहेजता है और उनका समय अपडेट करने व डुप्लिकेट से बचने के लिए उन्हें पढ़ता है।" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports는 선택한 경기를 캘린더에 저장하고, 경기 시간을 업데이트하고 중복을 방지하기 위해 저장한 경기를 확인합니다." } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Val Esports salva as partidas escolhidas no seu calendário e as consulta para atualizar os horários e evitar duplicatas." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports сохраняет выбранные матчи в календаре и читает их, чтобы обновлять время и избегать дубликатов." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports seçtiğiniz maçları takviminize kaydeder ve saatlerini güncellemek ve kopyaları önlemek için onları okur." } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports speichert, aktualisiert und entfernt die von dir ausgewählten Matches in deinem Kalender. Der Kalenderzugriff hilft auch, Duplikate zu vermeiden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports saves, updates, and removes the matches you choose in your calendar. Calendar access also helps avoid duplicates." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports guarda, actualiza y elimina los partidos que elijas en tu calendario. El acceso al calendario también ayuda a evitar duplicados." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports enregistre, met à jour et supprime les matchs de votre choix dans votre calendrier. L'accès au calendrier permet aussi d'éviter les doublons." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports आपके चुने हुए मैच कैलेंडर में सहेजता है, अपडेट करता है और हटाता है। कैलेंडर की अनुमति से एक ही मैच को दोबारा जोड़ने से बचने में भी मदद मिलती है।" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports는 선택한 경기를 캘린더에 저장하고 업데이트하거나 삭제합니다. 캘린더 접근 권한은 중복을 방지하는 데에도 사용됩니다." } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Val Esports salva, atualiza e remove as partidas que você escolher no seu calendário. O acesso ao calendário também ajuda a evitar duplicatas." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports сохраняет, обновляет и удаляет выбранные вами матчи в календаре. Доступ к календарю также помогает избежать дубликатов." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports seçtiğiniz maçları takviminize kaydeder, günceller ve kaldırır. Takvim erişimi aynı maçın birden fazla eklenmesini önlemeye de yardımcı olur." } }
       }
     },
     "NSCalendarsUsageDescription" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports speichert deine ausgewählten Matches im Kalender und prüft sie, um ihre Zeiten zu aktualisieren und Duplikate zu vermeiden." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports saves your chosen matches to your calendar and reads them to update their times and avoid duplicates." } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports guarda los partidos que elijas en tu calendario y los consulta para actualizar sus horarios y evitar duplicados." } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports enregistre les matchs choisis dans votre calendrier et les consulte pour mettre à jour leurs horaires et éviter les doublons." } },
-        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports आपके चुने हुए मैच कैलेंडर में सहेजता है और उनका समय अपडेट करने व डुप्लिकेट से बचने के लिए उन्हें पढ़ता है।" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports는 선택한 경기를 캘린더에 저장하고, 경기 시간을 업데이트하고 중복을 방지하기 위해 저장한 경기를 확인합니다." } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Val Esports salva as partidas escolhidas no seu calendário e as consulta para atualizar os horários e evitar duplicatas." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports сохраняет выбранные матчи в календаре и читает их, чтобы обновлять время и избегать дубликатов." } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports seçtiğiniz maçları takviminize kaydeder ve saatlerini güncellemek ve kopyaları önlemek için onları okur." } }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports speichert, aktualisiert und entfernt die von dir ausgewählten Matches in deinem Kalender. Der Kalenderzugriff hilft auch, Duplikate zu vermeiden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports saves, updates, and removes the matches you choose in your calendar. Calendar access also helps avoid duplicates." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports guarda, actualiza y elimina los partidos que elijas en tu calendario. El acceso al calendario también ayuda a evitar duplicados." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports enregistre, met à jour et supprime les matchs de votre choix dans votre calendrier. L'accès au calendrier permet aussi d'éviter les doublons." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports आपके चुने हुए मैच कैलेंडर में सहेजता है, अपडेट करता है और हटाता है। कैलेंडर की अनुमति से एक ही मैच को दोबारा जोड़ने से बचने में भी मदद मिलती है।" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports는 선택한 경기를 캘린더에 저장하고 업데이트하거나 삭제합니다. 캘린더 접근 권한은 중복을 방지하는 데에도 사용됩니다." } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Val Esports salva, atualiza e remove as partidas que você escolher no seu calendário. O acesso ao calendário também ajuda a evitar duplicatas." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports сохраняет, обновляет и удаляет выбранные вами матчи в календаре. Доступ к календарю также помогает избежать дубликатов." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Val Esports seçtiğiniz maçları takviminize kaydeder, günceller ve kaldırır. Takvim erişimi aynı maçın birden fazla eklenmesini önlemeye de yardımcı olur." } }
       }
     }
   },
