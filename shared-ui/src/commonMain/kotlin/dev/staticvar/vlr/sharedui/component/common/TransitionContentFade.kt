@@ -19,7 +19,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -59,8 +58,13 @@ internal fun rememberTransitionContentFade(
     sharedRunning = sharedTransitionScope?.isTransitionActive == true,
   )
   // A cancelled back gesture must not hide content that was already shown.
-  var hasShownReadyContent by rememberSaveable { mutableStateOf(false) }
-  val visible = ready && (settled || hasShownReadyContent)
+  var hasShownReadyContent by remember { mutableStateOf(false) }
+  val visible = transitionContentVisible(
+    ready = ready,
+    settled = settled,
+    hasShownReadyContent = hasShownReadyContent,
+    navTargetVisible = transition == null || transition.targetState == EnterExitState.Visible,
+  )
   SideEffect {
     if (visible) hasShownReadyContent = true
   }
@@ -89,28 +93,32 @@ private fun rememberTransitionContentFadeState(visible: Boolean, isSettled: Bool
 }
 
 /** Applies [fade] while hiding semantics and consuming input until the content is fully visible. */
-public fun Modifier.transitionContentFade(fade: TransitionContentFade): Modifier {
-  return this
-    .graphicsLayer { alpha = fade.alpha.value }
-    .transitionContentInput(fade.acceptsInput)
-}
+public fun Modifier.transitionContentFade(fade: TransitionContentFade): Modifier = this
+  .graphicsLayer { alpha = fade.alpha.value }
+  .transitionContentInput(fade.acceptsInput)
 
-internal fun Modifier.transitionContentInput(acceptsInput: Boolean): Modifier =
-  this
-    .then(if (acceptsInput) Modifier else Modifier.clearAndSetSemantics {})
-    .then(
-      if (acceptsInput) {
-        Modifier
-      } else {
-        Modifier.pointerInput(Unit) {
-          awaitPointerEventScope {
-            while (true) {
-              awaitPointerEvent(PointerEventPass.Initial).changes.forEach { it.consume() }
-            }
+internal fun Modifier.transitionContentInput(acceptsInput: Boolean): Modifier = this
+  .then(if (acceptsInput) Modifier else Modifier.clearAndSetSemantics {})
+  .then(
+    if (acceptsInput) {
+      Modifier
+    } else {
+      Modifier.pointerInput(Unit) {
+        awaitPointerEventScope {
+          while (true) {
+            awaitPointerEvent(PointerEventPass.Initial).changes.forEach { it.consume() }
           }
         }
-      },
-    )
+      }
+    },
+  )
+
+internal fun transitionContentVisible(
+  ready: Boolean,
+  settled: Boolean,
+  hasShownReadyContent: Boolean,
+  navTargetVisible: Boolean,
+): Boolean = ready && (settled || (hasShownReadyContent && navTargetVisible))
 
 internal fun transitionContentSettled(
   hasScope: Boolean,
