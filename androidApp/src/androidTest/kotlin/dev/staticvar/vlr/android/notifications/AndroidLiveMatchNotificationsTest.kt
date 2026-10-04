@@ -676,6 +676,25 @@ class AndroidLiveMatchNotificationsTest {
       )
       "paused" -> midMap.copy(pause = LiveMatchPause(LiveMatchPauseKind.TechPause))
       "halftime" -> midMap.copy(pause = LiveMatchPause(LiveMatchPauseKind.Halftime))
+      // Global Esports' white plate badge must keep its coloured artwork in the chip.
+      "ge_leading" -> LiveMatchUpdate(
+        matchId = "110601034",
+        observedAt = 100,
+        terminal = false,
+        teams = listOf(
+          LiveMatchTeam(
+            "Global Esports",
+            "https://files.akhilnarang.dev/cdn/valorant/teams/918.png",
+            1,
+            tag = "GE",
+            id = "918",
+          ),
+          LiveMatchTeam("LOUD", "https://owcdn.net/img/62bbec8dc1b9f.png", 0, tag = "LOUD", id = "6961"),
+        ),
+        currentMap = LiveMatchMap("Split", listOf(10, 5), number = 2),
+        totalMaps = 3,
+        mapWinners = listOf("918", null, null),
+      )
       else -> midMap
     }
 
