@@ -23,6 +23,6 @@
     <string name="rankings_info_elo_title">How Elo works</string>
     <string name="rankings_info_elo_body">Elo compares a match result with what the ratings predict. Beating a stronger team earns more points; losing to a weaker team costs more. Expected results usually move ratings less.</string>
     <string name="rankings_info_context_title">Read scores in context</string>
-    <string name="rankings_info_context_body">Compare points within the same region. Different regions have separate leaderboards, so a bigger number alone does not show which team is stronger across regions. A higher rating does not guarantee a win.</string>
+    <string name="rankings_info_context_body">Compare points within the same region. Different regions have separate leaderboards, so a bigger number alone does not show which team is stronger across regions.</string>
     <string name="rankings_info_close">Done</string>
 </resources>

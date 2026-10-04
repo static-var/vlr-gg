@@ -23,6 +23,6 @@
     <string name="rankings_info_elo_title">Comment fonctionne Elo</string>
     <string name="rankings_info_elo_body">Elo compare le résultat d’un match à ce que prédisent les évaluations. Battre une équipe plus forte rapporte plus de points. Perdre contre une équipe plus faible en coûte davantage. Les résultats attendus font généralement moins varier les évaluations.</string>
     <string name="rankings_info_context_title">Lire les points dans leur contexte</string>
-    <string name="rankings_info_context_body">Comparez les points au sein d’une même région. Chaque région a son propre classement. Un nombre plus élevé ne suffit donc pas à dire quelle équipe est la plus forte entre les régions. Une meilleure évaluation ne garantit pas une victoire.</string>
+    <string name="rankings_info_context_body">Comparez les points au sein d’une même région. Chaque région a son propre classement. Un nombre plus élevé ne suffit donc pas à dire quelle équipe est la plus forte entre les régions.</string>
     <string name="rankings_info_close">Terminé</string>
 </resources>
