@@ -18,6 +18,10 @@ internal val BrutalistIcons: PrismIcons by lazy {
       name = "BrutalistCalendarAdd",
       outline = "M4 6 H20 V20 H4 Z M8 3 V8 M16 3 V8 M4 10 H20 M12 12.5 V17.5 M9.5 15 H14.5",
     ),
+    calendarRemove = prismIconArtwork(
+      name = "BrutalistCalendarRemove",
+      outline = "M4 6 H20 V20 H4 Z M8 3 V8 M16 3 V8 M4 10 H20 M9.5 15 H14.5",
+    ),
     preview = prismIconArtwork(
       name = "BrutalistPreview",
       outline = "M2 12 L8 5 H16 L22 12 L16 19 H8 Z M9 9 H15 V15 H9 Z",

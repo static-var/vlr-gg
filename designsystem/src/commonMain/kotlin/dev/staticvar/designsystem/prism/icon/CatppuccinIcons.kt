@@ -21,6 +21,11 @@ internal val CatppuccinIcons: PrismIcons by lazy {
       outline = "M6 5 H18 Q20 5 20 7 V18 Q20 20 18 20 H6 Q4 20 4 18 V7 Q4 5 6 5 Z M8 3 V7 M16 3 V7 M4 10 H20 M12 12.5 V17.5 M9.5 15 H14.5",
       rounded = true,
     ),
+    calendarRemove = prismIconArtwork(
+      name = "CatppuccinCalendarRemove",
+      outline = "M6 5 H18 Q20 5 20 7 V18 Q20 20 18 20 H6 Q4 20 4 18 V7 Q4 5 6 5 Z M8 3 V7 M16 3 V7 M4 10 H20 M9.5 15 H14.5",
+      rounded = true,
+    ),
     preview = prismIconArtwork(
       name = "CatppuccinPreview",
       outline = "M2 12 Q6 5 12 5 Q18 5 22 12 Q18 19 12 19 Q6 19 2 12 Z M15 12 A3 3 0 1 1 9 12 A3 3 0 1 1 15 12 Z",

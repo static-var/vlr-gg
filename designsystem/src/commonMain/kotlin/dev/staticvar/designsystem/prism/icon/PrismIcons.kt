@@ -13,6 +13,7 @@ public data class PrismIcons(
   val refresh: ImageVector,
   val share: ImageVector,
   val calendarAdd: ImageVector,
+  val calendarRemove: ImageVector,
   val preview: ImageVector,
   val back: ImageVector,
   val home: PrismNavigationIcons,
