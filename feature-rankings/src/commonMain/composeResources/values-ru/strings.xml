@@ -16,4 +16,13 @@
     <string name="searching_teams">Поиск команд</string>
     <string name="no_teams_found">Команды не найдены</string>
     <string name="try_another_team_name">Попробуйте другое название команды или сокращение.</string>
+    <string name="rankings_info_title">Как устроен рейтинг</string>
+    <string name="rankings_info_introduction">Рейтинг показывает, как команды соотносятся друг с другом внутри каждого региона. Очки отражают их выступления на основе результатов матчей.</string>
+    <string name="rankings_info_points_title">Место и очки</string>
+    <string name="rankings_info_points_body">Чем больше очков, тем выше место в таблице. Очки оценивают силу команды, а не показывают число побед или процент побед. Место #1 занимает лучшая по рейтингу команда региона.</string>
+    <string name="rankings_info_elo_title">Как работает Elo</string>
+    <string name="rankings_info_elo_body">Elo сравнивает результат матча с прогнозом на основе рейтингов команд. Победа над более сильной командой приносит больше очков, а поражение от более слабой отнимает больше. Ожидаемые результаты обычно меньше меняют рейтинг.</string>
+    <string name="rankings_info_context_title">Как понимать очки</string>
+    <string name="rankings_info_context_body">Сравнивайте очки внутри одного региона. У разных регионов отдельные таблицы, поэтому одно лишь большее число очков не показывает, какая команда сильнее при сравнении регионов. Более высокий рейтинг не гарантирует победу.</string>
+    <string name="rankings_info_close">Готово</string>
 </resources>

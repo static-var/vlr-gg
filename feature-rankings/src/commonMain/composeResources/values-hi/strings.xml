@@ -16,4 +16,13 @@
     <string name="searching_teams">टीमें खोजी जा रही हैं</string>
     <string name="no_teams_found">कोई टीम नहीं मिली</string>
     <string name="try_another_team_name">टीम का कोई दूसरा नाम या छोटा नाम आज़माएँ।</string>
+    <string name="rankings_info_title">रैंकिंग कैसे काम करती है</string>
+    <string name="rankings_info_introduction">रैंकिंग बताती है कि हर क्षेत्र में टीमें एक-दूसरे के मुकाबले कहाँ खड़ी हैं। अंक मैच के नतीजों के आधार पर प्रदर्शन का सार बताते हैं।</string>
+    <string name="rankings_info_points_title">रैंक और अंक</string>
+    <string name="rankings_info_points_body">ज़्यादा अंक होने पर तालिका में स्थान ऊँचा होता है। अंक एक रेटिंग हैं, जीतों की गिनती या जीत का प्रतिशत नहीं। रैंक #1 उस क्षेत्र की सबसे ऊँची रैंक वाली टीम है।</string>
+    <string name="rankings_info_elo_title">Elo कैसे काम करता है</string>
+    <string name="rankings_info_elo_body">Elo मैच के नतीजे की तुलना रेटिंग के आधार पर अपेक्षित नतीजे से करता है। मज़बूत टीम को हराने पर ज़्यादा अंक मिलते हैं और कमज़ोर टीम से हारने पर ज़्यादा अंक कटते हैं। अपेक्षित नतीजों से आम तौर पर रेटिंग में कम बदलाव होता है।</string>
+    <string name="rankings_info_context_title">अंकों को सही संदर्भ में समझें</string>
+    <string name="rankings_info_context_body">अंकों की तुलना एक ही क्षेत्र में करें। अलग-अलग क्षेत्रों की अलग रैंकिंग होती है, इसलिए सिर्फ़ ज़्यादा अंक होने से यह तय नहीं होता कि अलग-अलग क्षेत्रों की टीमों में कौन ज़्यादा मज़बूत है। ऊँची रेटिंग जीत की गारंटी नहीं है।</string>
+    <string name="rankings_info_close">हो गया</string>
 </resources>

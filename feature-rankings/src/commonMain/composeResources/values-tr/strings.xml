@@ -16,4 +16,13 @@
     <string name="searching_teams">Takımlar aranıyor</string>
     <string name="no_teams_found">Takım bulunamadı</string>
     <string name="try_another_team_name">Başka bir takım adı veya kısa ad deneyin.</string>
+    <string name="rankings_info_title">Sıralamalar nasıl belirlenir</string>
+    <string name="rankings_info_introduction">Sıralamalar, her bölgedeki takımların birbirlerine göre durumunu gösterir. Puanlar, maç sonuçlarına dayalı performansı özetler.</string>
+    <string name="rankings_info_points_title">Sıra ve puan</string>
+    <string name="rankings_info_points_body">Daha fazla puan, tabloda daha yüksek bir sıra demektir. Puanlar bir derecelendirmedir, galibiyet sayısı veya galibiyet yüzdesi değildir. #1, o bölgenin en üst sıradaki takımıdır.</string>
+    <string name="rankings_info_elo_title">Elo nasıl çalışır</string>
+    <string name="rankings_info_elo_body">Elo, maç sonucunu takımların puanlarına göre beklenen sonuçla karşılaştırır. Daha güçlü bir takımı yenmek daha fazla puan kazandırır; daha zayıf bir takıma yenilmek daha fazla puan kaybettirir. Beklenen sonuçlar genellikle puanları daha az değiştirir.</string>
+    <string name="rankings_info_context_title">Puanları nasıl yorumlamalı</string>
+    <string name="rankings_info_context_body">Puanları aynı bölge içinde karşılaştırın. Her bölgenin ayrı bir sıralaması vardır. Bu yüzden yalnızca daha yüksek bir sayı, farklı bölgelerdeki takımlardan hangisinin daha güçlü olduğunu göstermez. Daha yüksek puan, galibiyeti garanti etmez.</string>
+    <string name="rankings_info_close">Tamam</string>
 </resources>
