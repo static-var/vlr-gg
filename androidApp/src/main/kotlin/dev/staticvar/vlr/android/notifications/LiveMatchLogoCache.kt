@@ -30,7 +30,9 @@ import kotlin.math.roundToInt
  * - A composite two-logo large icon (16:9, 48dp tall) built from those icons.
  * - A status-bar chip icon: SystemUI draws the small icon as a one-colour silhouette of its alpha,
  *   so only the logo's coloured or bright pixels are kept, letting inner detail survive instead of
- *   a filled outline. Logos that still come out as a solid block have no chip icon.
+ *   a filled outline. An opaque white plate behind the artwork measures as a near-solid mask, so the
+ *   silhouette is rebuilt from the coloured pixels alone; logos that still come out as a solid block
+ *   have no chip icon.
  */
 internal class LiveMatchLogoCache(context: Context) {
   private val appContext = context.applicationContext
@@ -139,6 +141,11 @@ internal class LiveMatchLogoCache(context: Context) {
     private const val MinimumContrast = 2.0
     // A chip mask filling this much of its own bounds is a plate or block, not a recognisable mark.
     private const val BlockSolidity = 0.85f
+    // Above this, a mask is likely a white plate behind coloured artwork (e.g. Global Esports) that hides it.
+    private const val NearBlockSolidity = 0.7f
+    // Rejects tiny coloured fragments; the retry must keep this share of the combined mask to replace it.
+    // Global Esports keeps roughly half of its combined mask, so this 10% floor is a conservative heuristic.
+    private const val PlateKeptShare = 0.1f
     private val LightBadge = Color.rgb(236, 236, 242)
     private val DarkBadge = Color.rgb(30, 30, 40)
 
@@ -225,8 +232,24 @@ internal class LiveMatchLogoCache(context: Context) {
       return if (visible == 0) 0.0 else low.toDouble() / visible
     }
 
-    /** Keeps saturated or bright pixels as an opaque silhouette; null when that is empty or a solid block. */
+    /**
+     * Keeps saturated or bright pixels as an opaque silhouette; null when that is empty or a solid block.
+     *
+     * A mask at or above [NearBlockSolidity] is usually a white plate behind coloured artwork whose silhouette
+     * would be a white blob; when the saturated pixels alone stay recognisable, they replace the combined mask.
+     */
     private fun Bitmap.chipMask(): Bitmap? {
+      val combined = maskOf { hsv -> isSaturated(hsv) || hsv[2] > 0.75f } ?: return null
+      if (combined.solidity < NearBlockSolidity) return combined.bitmap
+      val coloured = maskOf(::isSaturated)
+      if (coloured != null && coloured.solidity < BlockSolidity && coloured.kept >= combined.kept * PlateKeptShare) {
+        return coloured.bitmap
+      }
+      return combined.bitmap.takeIf { combined.solidity < BlockSolidity }
+    }
+
+    /** Keeps pixels matching [keep] as an opaque silhouette over transparent, with their bounds. */
+    private fun Bitmap.maskOf(keep: (FloatArray) -> Boolean): Mask? {
       val output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
       val hsv = FloatArray(3)
       var kept = 0
@@ -239,7 +262,7 @@ internal class LiveMatchLogoCache(context: Context) {
           val color = getPixel(x, y)
           if (Color.alpha(color) < 128) continue
           Color.colorToHSV(color, hsv)
-          if (!(hsv[1] > 0.35f && hsv[2] > 0.35f || hsv[2] > 0.75f)) continue
+          if (!keep(hsv)) continue
           output.setPixel(x, y, Color.WHITE)
           kept++
           minX = minOf(minX, x)
@@ -249,8 +272,13 @@ internal class LiveMatchLogoCache(context: Context) {
         }
       }
       if (kept == 0) return null
-      val boundsArea = (maxX - minX + 1) * (maxY - minY + 1)
-      return output.takeIf { kept.toFloat() / boundsArea < BlockSolidity }
+      return Mask(output, kept, (maxX - minX + 1) * (maxY - minY + 1))
+    }
+
+    private fun isSaturated(hsv: FloatArray): Boolean = hsv[1] > 0.35f && hsv[2] > 0.35f
+
+    private class Mask(val bitmap: Bitmap, val kept: Int, val boundsArea: Int) {
+      val solidity = kept.toFloat() / boundsArea
     }
   }
 }

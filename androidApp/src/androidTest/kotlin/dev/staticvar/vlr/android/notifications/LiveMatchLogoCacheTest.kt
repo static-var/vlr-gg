@@ -5,7 +5,9 @@
 package dev.staticvar.vlr.android.notifications
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -39,6 +41,56 @@ class LiveMatchLogoCacheTest {
     assertFalse(updated.containsColor(Color.RED))
     assertTrue(updated.containsColor(Color.GREEN))
   }
+
+  @Test
+  fun plateLogosKeepColouredChipDetail() {
+    // Regression: the Global Esports chip showed a solid white badge instead of its artwork, 2026-10.
+    val cache = LiveMatchLogoCache(context)
+    cache.putLogo("plate", plateLogo())
+    val plate = requireNotNull(cache.getChipIcon("plate"))
+    assertTrue(plate.hasOpaquePixelAt(32, 29))
+    assertFalse(plate.hasOpaquePixelAt(32, 14))
+
+    // A near-solid white mark on transparent enters the saturated retry; the empty retry must fall back to it.
+    cache.putLogo("white", whiteCircleLogo())
+    val white = requireNotNull(cache.getChipIcon("white"))
+    assertTrue(white.hasOpaquePixelAt(32, 32))
+
+    // A coloured fragment too small to read must not replace the white silhouette either.
+    cache.putLogo("fragment", whiteCircleLogo { canvas ->
+      canvas.drawLine(16f, 36f, 32f, 20f, Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.RED
+        strokeWidth = 4f
+      })
+    })
+    val fragment = requireNotNull(cache.getChipIcon("fragment"))
+    assertTrue(fragment.hasOpaquePixelAt(32, 32))
+  }
+
+  /** A white badge plate with coloured artwork on it, like the Global Esports logo. */
+  private fun plateLogo(): Bitmap = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888).apply {
+    val canvas = Canvas(this)
+    canvas.drawRoundRect(4f, 4f, 60f, 60f, 26f, 26f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
+    canvas.drawCircle(32f, 32f, 24f, Paint(Paint.ANTI_ALIAS_FLAG).apply {
+      color = Color.rgb(232, 17, 45)
+      style = Paint.Style.STROKE
+      strokeWidth = 6f
+    })
+    canvas.drawRect(18f, 27f, 46f, 32f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.rgb(15, 76, 201) })
+  }
+
+  /** A filled white mark on transparent, solid enough to reach the near-solid retry. */
+  private fun whiteCircleLogo(
+    extra: (Canvas) -> Unit = {},
+  ): Bitmap = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888).apply {
+    val canvas = Canvas(this)
+    canvas.drawCircle(32f, 32f, 28f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
+    extra(canvas)
+  }
+
+  /** Reads a 64px source coordinate from the scaled chip mask. */
+  private fun Bitmap.hasOpaquePixelAt(sourceX: Int, sourceY: Int): Boolean =
+    Color.alpha(getPixel(sourceX * width / 64, sourceY * height / 64)) != 0
 
   private fun solidLogo(color: Int): Bitmap =
     Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888).apply { eraseColor(color) }
