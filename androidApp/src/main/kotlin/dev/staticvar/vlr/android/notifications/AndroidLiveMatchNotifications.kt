@@ -436,7 +436,7 @@ internal class LiveMatchNotificationRenderer(
     )
     val builder = if (sdkInt >= 26) Notification.Builder(context, ChannelId) else Notification.Builder(context)
     builder
-      .setSmallIcon(R.drawable.ic_launcher_monochrome)
+      .setSmallIcon(R.drawable.ic_notification)
       .setColor(context.getColor(R.color.widget_preview_accent))
       .setContentIntent(openMatch)
       .setDeleteIntent(dismissIntent(update.matchId, LiveMatchNotificationReceiver.ActionDismiss, generation))
