@@ -461,6 +461,24 @@ class AndroidLiveMatchNotificationsTest {
   }
 
   @Test
+  fun presentationRefreshPreservesExpiryAndIgnoresThePreviousDeleteIntent() {
+    var elapsed = 10_000L
+    val store = LiveMatchNotificationStateStore(context, elapsedRealtimeMillis = { elapsed })
+    val match = update("991000003", 60)
+    store.record(match, "initial")
+    elapsed += 60_000
+    store.replaceGeneration(match.matchId, "refreshed")
+
+    assertEquals(LiveNotificationTimeoutMillis - 60_000, store.remainingTimeoutMillis(match.matchId))
+    assertFalse(store.shouldRememberDeletion(match.matchId, "initial"))
+    assertTrue(store.shouldRememberDeletion(match.matchId, "refreshed"))
+    assertFalse(store.shouldAccept(match))
+    elapsed += LiveNotificationTimeoutMillis - 60_000
+    assertNull(store.remainingTimeoutMillis(match.matchId))
+    assertFalse(store.shouldRememberDeletion(match.matchId, "refreshed"))
+  }
+
+  @Test
   fun eachPostHasAnIndependentDeleteIntentButUnpinStillTargetsTheMatch() {
     val renderer = LiveMatchNotificationRenderer(context)
     val live = update("991000003", 60)
@@ -481,6 +499,35 @@ class AndroidLiveMatchNotificationsTest {
     now += LiveMatchNotificationStateStore.RetentionMillis + 1
 
     assertTrue(LiveMatchNotificationStateStore(context, nowMillis = { now }).shouldAccept(terminal.copy(observedAt = 51, terminal = false)))
+  }
+
+  @Test
+  @SdkSuppress(minSdkVersion = 36)
+  fun hidingStatusBarScoreKeepsUpdatingNotificationContentAndActions() {
+    val renderer = LiveMatchNotificationRenderer(context)
+    val match = update("991000001", 60).copy(totalMaps = 3, currentMap = LiveMatchMap("Ascent", listOf(8, 6), number = 2))
+    val live = renderer.build(match, scoresHidden = false)
+    val ordinary = renderer.build(match, scoresHidden = false, showScoreInStatusBar = false)
+
+    assertTrue(live.extras.getBoolean("android.requestPromotedOngoing"))
+    assertNotNull(live.extras.getCharSequence("android.shortCriticalText"))
+    assertFalse(ordinary.extras.getBoolean("android.requestPromotedOngoing"))
+    assertNull(ordinary.extras.getCharSequence("android.shortCriticalText"))
+    assertTrue(ordinary.flags and Notification.FLAG_ONGOING_EVENT != 0)
+    assertEquals(Icon.TYPE_RESOURCE, ordinary.smallIcon.type)
+    assertEquals(live.extras.getCharSequence(Notification.EXTRA_TITLE).toString(), ordinary.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+    assertEquals(live.extras.getCharSequence(Notification.EXTRA_TEXT).toString(), ordinary.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+    assertEquals(live.contentIntent, ordinary.contentIntent)
+    assertEquals(live.actions.map { it.actionIntent }, ordinary.actions.map { it.actionIntent })
+    assertTrue(Notification.Builder.recoverBuilder(context, ordinary).style is Notification.ProgressStyle)
+
+    val updated = renderer.build(match.copy(currentMap = match.currentMap?.copy(scores = listOf(9, 6))), false, showScoreInStatusBar = false)
+    assertEquals("Team Liquid\u20039 : 6\u2003Paper Rex", updated.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+    assertFalse(updated.extras.getBoolean("android.requestPromotedOngoing"))
+    assertNull(updated.extras.getCharSequence("android.shortCriticalText"))
+    val final = renderer.build(match.copy(terminal = true), false, showScoreInStatusBar = false)
+    assertFalse(final.flags and Notification.FLAG_ONGOING_EVENT != 0)
+    assertEquals(context.getString(R.string.live_match_notification_final), final.extras.getCharSequence(Notification.EXTRA_TITLE))
   }
 
   @Test
@@ -613,6 +660,77 @@ class AndroidLiveMatchNotificationsTest {
 
   @Test
   @SdkSuppress(minSdkVersion = 36)
+  fun changingChipSettingRefreshesActiveScoresAndSurvivesNotificationManagerRecovery() {
+    assertTrue(AndroidLiveNotificationAvailability.isAvailable(context))
+    InstrumentationRegistry.getInstrumentation().uiAutomation
+      .grantRuntimePermission(context.packageName, Manifest.permission.POST_NOTIFICATIONS)
+    val preferences = LiveMatchNotificationPreferencesRepository(MapSettings()).apply { setEnabled(true) }
+    val spoilers = SpoilerPreferencesRepository(MapSettings())
+    fun createNotifications() = AndroidLiveMatchNotifications(context, KoinPlatform.getKoin().get<Json>(), preferences, spoilers)
+    val notifications = createNotifications()
+    val manager = context.getSystemService(NotificationManager::class.java)
+    val matchId = "991000002"
+    val tag = "live-match-$matchId"
+    fun awaitMode(showChip: Boolean): Notification {
+      val deadline = SystemClock.elapsedRealtime() + 3_000
+      var posted: Notification? = null
+      do {
+        posted = manager.activeNotifications.firstOrNull { it.tag == tag }?.notification
+        if (posted != null && posted.extras.getBoolean("android.requestPromotedOngoing") == showChip) return posted
+        SystemClock.sleep(20)
+      } while (SystemClock.elapsedRealtime() < deadline)
+      error("Notification did not reach chip mode $showChip: $posted")
+    }
+    try {
+      notifications.handle(payload(matchId = matchId, observedAt = 70))
+      val initial = awaitMode(true)
+      preferences.setShowScoreInStatusBar(false)
+      notifications.refreshPresentation()
+      val ordinary = awaitMode(false)
+      assertNull(ordinary.extras.getCharSequence("android.shortCriticalText"))
+      assertTrue(ordinary.flags and Notification.FLAG_ONGOING_EVENT != 0)
+      assertFalse(ordinary.flags and Notification.FLAG_PROMOTED_ONGOING != 0)
+      assertEquals(initial.extras.getCharSequence(Notification.EXTRA_TITLE).toString(), ordinary.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+      assertTrue(ordinary.timeoutAfter in 1..initial.timeoutAfter)
+      assertFalse(matchId in notifications.dismissedMatchIds.value)
+
+      notifications.handle(payload(matchId = matchId, observedAt = 71, state = validState(matchId, 71).replace("[8,6]", "[9,6]")))
+      val updateDeadline = SystemClock.elapsedRealtime() + 3_000
+      while (!awaitMode(false).extras.getCharSequence(Notification.EXTRA_TITLE).toString().contains("9 : 6") && SystemClock.elapsedRealtime() < updateDeadline) {
+        SystemClock.sleep(20)
+      }
+      assertEquals("Team Liquid\u20039 : 6\u2003Paper Rex", awaitMode(false).extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+      preferences.setShowScoreInStatusBar(true)
+      notifications.refreshPresentation()
+      val restored = awaitMode(true)
+      assertNotNull(restored.extras.getCharSequence("android.shortCriticalText"))
+
+      val recovered = createNotifications()
+      preferences.setShowScoreInStatusBar(false)
+      recovered.refreshPresentation()
+      val recoveredOrdinary = awaitMode(false)
+      assertNull(recoveredOrdinary.extras.getCharSequence("android.shortCriticalText"))
+      assertFalse(recoveredOrdinary.flags and Notification.FLAG_PROMOTED_ONGOING != 0)
+      assertEquals("Team Liquid\u20039 : 6\u2003Paper Rex", recoveredOrdinary.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+      preferences.setShowScoreInStatusBar(true)
+      recovered.refreshPresentation()
+      val recoveredChip = awaitMode(true)
+      assertEquals(restored.extras.getCharSequence("android.shortCriticalText").toString(), recoveredChip.extras.getCharSequence("android.shortCriticalText").toString())
+      assertEquals(restored.smallIcon.type, recoveredChip.smallIcon.type)
+      recovered.dismiss(matchId)
+      recovered.refreshPresentation()
+      val dismissalDeadline = SystemClock.elapsedRealtime() + 3_000
+      while (manager.activeNotifications.any { it.tag == tag } && SystemClock.elapsedRealtime() < dismissalDeadline) {
+        SystemClock.sleep(20)
+      }
+      assertTrue(manager.activeNotifications.none { it.tag == tag })
+    } finally {
+      manager.cancel(tag, 1)
+    }
+  }
+
+  @Test
+  @SdkSuppress(minSdkVersion = 36)
   fun postNativeLiveFixtureWhenRequested() {
     if (InstrumentationRegistry.getArguments().getString("leave_notification") != "true") return
     val manager = context.getSystemService(NotificationManager::class.java)
@@ -703,10 +821,17 @@ class AndroidLiveMatchNotificationsTest {
     val t2Url = update.teams[1].imageUrl
     runBlocking { runCatching { logoCache.loadAndCacheLogos(t1Url, t2Url) } }
     val renderer = LiveMatchNotificationRenderer(context, logoCache)
+    val generation = "visual-fixture"
+    LiveMatchNotificationStateStore(context).record(update, generation)
     manager.notify(
       "live-match-${update.matchId}",
       1,
-      renderer.build(update, scoresHidden = false),
+      renderer.build(
+        update,
+        scoresHidden = false,
+        generation = generation,
+        showScoreInStatusBar = KoinPlatform.getKoin().get<LiveMatchNotificationPreferencesRepository>().preferences.value.showScoreInStatusBar,
+      ),
     )
   }
 
