@@ -7,6 +7,7 @@ package dev.staticvar.vlr.android.notifications
 import android.Manifest
 import android.app.Notification
 import android.app.NotificationManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -16,6 +17,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.text.Spanned
 import android.text.style.StyleSpan
+import androidx.core.graphics.ColorUtils
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import com.russhwolf.settings.MapSettings
@@ -194,50 +196,68 @@ class AndroidLiveMatchNotificationsTest {
 
   @Test
   @SdkSuppress(minSdkVersion = 36)
-  fun progressWinnerColorsMatchTeamTextAndHideWithSpoilers() {
+  fun progressColorsFollowMapWinnersAndLogoPalette() {
     val match = update("991000001", 60).copy(
-      totalMaps = 3,
-      mapWinners = listOf("474", "624", null),
+      totalMaps = 4,
+      mapWinners = listOf("474", "624", null, null),
       currentMap = LiveMatchMap("Ascent", listOf(8, 6), number = 3),
     )
-    val renderer = LiveMatchNotificationRenderer(context)
-    val notification = renderer.build(match, false, 36)
-    val style = Notification.Builder.recoverBuilder(context, notification).style as Notification.ProgressStyle
-
-    val firstColor = style.progressSegments[0].color
-    val secondColor = style.progressSegments[1].color
-    val neutralColor = style.progressSegments[2].color
-    assertTrue(firstColor != secondColor)
-    assertTrue(neutralColor != firstColor && neutralColor != secondColor)
-    assertEquals(listOf(neutralColor, neutralColor), style.progressPoints.map { it.color })
-    assertFalse(style.isStyledByProgress)
-    assertNull(style.progressStartIcon)
-    assertNull(style.progressEndIcon)
-
-    val logoCache = LiveMatchLogoCache(context)
-    val testBmp1 = Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888)
-    val testBmp2 = Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888)
-    logoCache.putLogo("https://example.test/t1.png", testBmp1)
-    logoCache.putLogo("https://example.test/t2.png", testBmp2)
-    val matchWithLogos = match.copy(
-      teams = listOf(
-        match.teams[0].copy(imageUrl = "https://example.test/t1.png"),
-        match.teams[1].copy(imageUrl = "https://example.test/t2.png"),
-      ),
-    )
-    val withLogosRenderer = LiveMatchNotificationRenderer(context, logoCache)
-    val notifWithLogos = withLogosRenderer.build(matchWithLogos, false, 36)
-    val recoveredStyle = Notification.Builder.recoverBuilder(context, notifWithLogos).style as Notification.ProgressStyle
-    assertNull(recoveredStyle.progressStartIcon)
-    assertNull(recoveredStyle.progressEndIcon)
-    assertNotNull(recoveredStyle.progressTrackerIcon)
-    assertNotNull(notifWithLogos.getLargeIcon())
-
-    val final = withLogosRenderer.build(matchWithLogos.copy(terminal = true, currentMap = null), false, 36)
-    val finalStyle = Notification.Builder.recoverBuilder(context, final).style as Notification.ProgressStyle
-    assertEquals(listOf(firstColor, secondColor), finalStyle.progressSegments.take(2).map { it.color })
-    assertNull(finalStyle.progressStartIcon)
-    assertNull(finalStyle.progressEndIcon)
+    val teal = Color.rgb(0, 136, 102)
+    for (night in listOf(false, true)) {
+      val themed = context.createConfigurationContext(Configuration(context.resources.configuration).apply {
+        uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
+          if (night) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
+      })
+      fun progress(renderer: LiveMatchNotificationRenderer, update: LiveMatchUpdate): Notification.ProgressStyle =
+        Notification.Builder.recoverBuilder(themed, renderer.build(update, false, 36)).style as Notification.ProgressStyle
+      val defaults = progress(LiveMatchNotificationRenderer(themed), match).progressSegments.map { it.color }
+      assertNotEquals(defaults[0], defaults[1])
+      val cache = LiveMatchLogoCache(themed)
+      val withLogos = match.copy(teams = listOf(
+        match.teams[0].copy(imageUrl = "first"),
+        match.teams[1].copy(imageUrl = "second"),
+      ))
+      val renderer = LiveMatchNotificationRenderer(themed, cache)
+      for ((firstLogo, secondLogo) in listOf(
+        Color.RED to teal,
+        Color.RED to Color.rgb(255, 8, 5),
+        teal to teal,
+        Color.WHITE to Color.BLACK,
+        Color.YELLOW to Color.rgb(0, 0, 64),
+      )) {
+        cache.putLogo("first", Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888).apply { eraseColor(firstLogo) })
+        cache.putLogo("second", Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888).apply { eraseColor(secondLogo) })
+        val style = progress(renderer, withLogos)
+        val colors = style.progressSegments.map { it.color }
+        assertNotEquals(colors[0], colors[1])
+        assertNotEquals(colors[0], colors[2])
+        assertNotEquals(colors[1], colors[2])
+        assertEquals(listOf(colors[0], colors[1], colors[2]), style.progressPoints.map { it.color })
+        when (firstLogo) {
+          Color.RED -> {
+            assertEquals(Color.RED, colors[0])
+            if (secondLogo == teal) assertEquals(teal, colors[1]) else assertTrue(colors[1] in defaults.take(2))
+          }
+          teal -> {
+            assertEquals(teal, colors[0])
+            assertEquals(defaults[0], colors[1])
+          }
+          Color.WHITE -> assertEquals(defaults, colors)
+        }
+        for (color in colors.take(2)) {
+          val background = if (night) 0.02 else 0.80
+          val luminance = ColorUtils.calculateLuminance(color)
+          assertTrue((maxOf(luminance, background) + 0.05) / (minOf(luminance, background) + 0.05) >= 3)
+        }
+        assertFalse(style.isStyledByProgress)
+        assertNull(style.progressStartIcon)
+        assertNull(style.progressEndIcon)
+        assertNotNull(style.progressTrackerIcon)
+        assertEquals(colors, progress(renderer, withLogos.copy(terminal = true, currentMap = null)).progressSegments.map { it.color })
+        val swapped = progress(renderer, withLogos.copy(mapWinners = listOf("624", "474", null, null)))
+        assertEquals(listOf(colors[1], colors[0], colors[2]), swapped.progressPoints.map { it.color })
+      }
+    }
   }
 
   @Test

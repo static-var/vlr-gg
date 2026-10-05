@@ -44,6 +44,7 @@ internal class LiveMatchLogoCache(context: Context) {
   private val sources = bitmapCache(4 * 1024 * 1024)
   private val derived = bitmapCache(8 * 1024 * 1024)
   private val lowContrast = LruCache<String, Boolean>(64)
+  private val teamColors = LruCache<String, Int>(64)
   private val blockChipIcons = mutableSetOf<String>()
 
   fun hasLogo(url: String?): Boolean = !url.isNullOrBlank() && sources.get(url) != null
@@ -58,7 +59,15 @@ internal class LiveMatchLogoCache(context: Context) {
     sources.put(url, bounded)
     derived.evictAll()
     lowContrast.evictAll()
+    teamColors.evictAll()
     blockChipIcons.clear()
+  }
+
+  @Synchronized
+  fun getTeamColor(url: String?): Int? {
+    val source = url?.let { sources.get(it) } ?: return null
+    val color = teamColors.get(url) ?: source.dominantColor().also { teamColors.put(url, it) }
+    return color.takeUnless { it == Color.TRANSPARENT }
   }
 
   /** Returns the 20dp team icon for [url], badged when it lacks contrast on the current theme. */
@@ -198,6 +207,42 @@ internal class LiveMatchLogoCache(context: Context) {
 
     private fun Bitmap.toSoftwareBitmap(): Bitmap =
       if (config == Bitmap.Config.ARGB_8888) this else copy(Bitmap.Config.ARGB_8888, false)
+
+    private fun Bitmap.dominantColor(): Int {
+      val sample = toSquareSoftwareBitmap(32)
+      val pixels = IntArray(32 * 32)
+      sample.getPixels(pixels, 0, 32, 0, 0, 32, 32)
+      sample.recycle()
+      val counts = IntArray(4096)
+      val hsv = FloatArray(3)
+      var visible = 0
+      for (pixel in pixels) {
+        if (Color.alpha(pixel) < 128) continue
+        visible++
+        Color.colorToHSV(pixel, hsv)
+        // Exclude monochrome plates and tiny accents so they cannot dictate a team's color.
+        if (hsv[1] < 0.25f || hsv[2] < 0.15f) continue
+        counts[colorBin(pixel)]++
+      }
+      val bin = counts.indices.maxBy { counts[it] }
+      val count = counts[bin]
+      if (count == 0 || count < visible * 0.05f) return Color.TRANSPARENT
+      var red = 0
+      var green = 0
+      var blue = 0
+      for (pixel in pixels) {
+        if (Color.alpha(pixel) < 128 || colorBin(pixel) != bin) continue
+        Color.colorToHSV(pixel, hsv)
+        if (hsv[1] < 0.25f || hsv[2] < 0.15f) continue
+        red += Color.red(pixel)
+        green += Color.green(pixel)
+        blue += Color.blue(pixel)
+      }
+      return Color.rgb(red / count, green / count, blue / count)
+    }
+
+    private fun colorBin(color: Int): Int =
+      ((Color.red(color) shr 4) shl 8) or ((Color.green(color) shr 4) shl 4) or (Color.blue(color) shr 4)
 
     /** Draws the logo centred on a rounded badge that contrasts with the current theme. */
     private fun Bitmap.onBadge(size: Int, night: Boolean): Bitmap {

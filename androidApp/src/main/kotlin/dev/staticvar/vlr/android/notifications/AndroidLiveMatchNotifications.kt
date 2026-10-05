@@ -21,6 +21,7 @@ import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import dev.staticvar.vlr.android.BuildConfig
 import dev.staticvar.vlr.android.MainActivity
 import dev.staticvar.vlr.android.R
@@ -470,12 +471,11 @@ internal class LiveMatchNotificationRenderer(
   private val night: Boolean
     get() = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
-  private val colors: LiveMatchTeamColors
-    get() = if (night) {
-      LiveMatchTeamColors(Color.rgb(207, 178, 255), Color.rgb(100, 218, 199), Color.rgb(158, 158, 166))
-    } else {
-      LiveMatchTeamColors(Color.rgb(103, 58, 183), Color.rgb(0, 105, 92), Color.rgb(117, 117, 125))
-    }
+  private fun colors(update: LiveMatchUpdate): LiveMatchTeamColors = LiveMatchTeamColors.fromLogos(
+    logoCache.getTeamColor(update.teams[0].imageUrl),
+    logoCache.getTeamColor(update.teams[1].imageUrl),
+    night,
+  )
 
   /**
    * Builds a live or final notification with match actions and optional hidden scores.
@@ -609,7 +609,7 @@ internal class LiveMatchNotificationRenderer(
       Api36Notification.applyProgressStyle(
         builder = builder,
         progress = progress,
-        colors = colors,
+        colors = colors(update),
         currentMapScores = map?.scores.orEmpty(),
         context = context,
       )
@@ -681,7 +681,7 @@ internal class LiveMatchNotificationRenderer(
       Api36Notification.applyProgressStyle(
         builder = builder,
         progress = progress,
-        colors = colors,
+        colors = colors(update),
         currentMapScores = emptyList(),
         context = context,
         terminal = true,
@@ -859,7 +859,7 @@ private object Api36Notification {
       })
       .setProgressPoints((1 until total).take(4).map { index ->
         Notification.ProgressStyle.Point(index * MapSegmentLength)
-          .setColor(colors.neutral)
+          .setColor(colors.winner(progress.winnerTeamIndices[index - 1]))
       })
       .setProgress(progressValue)
       .setProgressTrackerIcon(Icon.createWithResource(context, R.drawable.ic_live_tracker))
@@ -876,8 +876,49 @@ private object Api37Notification {
   }
 }
 
-/** Keeps each team's text and map wins recognizable in either system theme. */
+/** Keeps map winners distinct from one another and from maps without a winner. */
 private data class LiveMatchTeamColors(val first: Int, val second: Int, val neutral: Int) {
   fun team(index: Int): Int = if (index == 0) first else second
   fun winner(index: Int?): Int = index?.let(::team) ?: neutral
+
+  companion object {
+    fun fromLogos(firstLogo: Int?, secondLogo: Int?, night: Boolean): LiveMatchTeamColors {
+      val defaults = if (night) {
+        LiveMatchTeamColors(Color.rgb(207, 178, 255), Color.rgb(100, 218, 199), Color.rgb(158, 158, 166))
+      } else {
+        LiveMatchTeamColors(Color.rgb(103, 58, 183), Color.rgb(0, 105, 92), Color.rgb(117, 117, 125))
+      }
+      fun logoColor(color: Int?, fallback: Int): Int = color?.let { visibleColor(it, night) }
+        ?.takeIf { distance(it, defaults.neutral) >= 30 } ?: fallback
+      val first = logoColor(firstLogo, defaults.first)
+      val second = logoColor(secondLogo, defaults.second)
+      val distinctSecond = if (distance(first, second) >= 30) second else {
+        listOf(defaults.first, defaults.second).maxBy { distance(first, it) }
+      }
+      return LiveMatchTeamColors(first, distinctSecond, defaults.neutral)
+    }
+
+    private fun visibleColor(color: Int, night: Boolean): Int {
+      val background = if (night) 0.02 else 0.80
+      val hsl = FloatArray(3)
+      ColorUtils.colorToHSL(color, hsl)
+      var adjusted = color
+      repeat(40) {
+        val luminance = ColorUtils.calculateLuminance(adjusted)
+        val contrast = (maxOf(luminance, background) + 0.05) / (minOf(luminance, background) + 0.05)
+        if (contrast >= 3) return adjusted
+        hsl[2] = (hsl[2] + if (night) 0.025f else -0.025f).coerceIn(0f, 1f)
+        adjusted = ColorUtils.HSLToColor(hsl)
+      }
+      return adjusted
+    }
+
+    private fun distance(first: Int, second: Int): Double {
+      val firstLab = DoubleArray(3)
+      val secondLab = DoubleArray(3)
+      ColorUtils.colorToLAB(first, firstLab)
+      ColorUtils.colorToLAB(second, secondLab)
+      return ColorUtils.distanceEuclidean(firstLab, secondLab)
+    }
+  }
 }

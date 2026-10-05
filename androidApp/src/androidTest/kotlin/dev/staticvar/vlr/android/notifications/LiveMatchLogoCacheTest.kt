@@ -11,6 +11,8 @@ import android.graphics.Paint
 import android.graphics.Path
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -36,11 +38,13 @@ class LiveMatchLogoCacheTest {
     val cache = LiveMatchLogoCache(context)
     cache.putLogo("first", solidLogo(Color.RED))
     cache.getCompositeIcon("first", null, night = true)
+    assertEquals(Color.RED, cache.getTeamColor("first"))
 
     cache.putLogo("first", solidLogo(Color.GREEN))
     val updated = requireNotNull(cache.getCompositeIcon("first", null, night = true))
     assertFalse(updated.containsColor(Color.RED))
     assertTrue(updated.containsColor(Color.GREEN))
+    assertEquals(Color.GREEN, cache.getTeamColor("first"))
   }
 
   @Test
@@ -49,6 +53,8 @@ class LiveMatchLogoCacheTest {
     val cache = LiveMatchLogoCache(context)
     cache.putLogo("plate", plateLogo())
     val plate = requireNotNull(cache.getChipIcon("plate"))
+    val plateColor = requireNotNull(cache.getTeamColor("plate"))
+    assertTrue(Color.red(plateColor) > 220 && Color.green(plateColor) < 40 && Color.blue(plateColor) < 65)
     assertTrue(plate.hasOpaquePixelAt(32, 29))
     assertFalse(plate.hasOpaquePixelAt(32, 14))
 
@@ -56,6 +62,8 @@ class LiveMatchLogoCacheTest {
     // The dark emblem inside that plate must become the silhouette instead.
     cache.putLogo("dark-plate", darkPlateLogo())
     val darkPlate = requireNotNull(cache.getChipIcon("dark-plate"))
+    val darkPlateColor = requireNotNull(cache.getTeamColor("dark-plate"))
+    assertTrue(Color.red(darkPlateColor) > 220 && Color.green(darkPlateColor) < 40 && Color.blue(darkPlateColor) < 65)
     assertFalse(darkPlate.hasOpaquePixelAt(6, 6))
     assertFalse(darkPlate.hasOpaquePixelAt(58, 58))
     assertTrue(darkPlate.hasOpaquePixelAt(32, 42))
@@ -65,6 +73,8 @@ class LiveMatchLogoCacheTest {
     // A near-solid white mark on transparent enters the saturated retry; the empty retry must fall back to it.
     cache.putLogo("white", whiteCircleLogo())
     val white = requireNotNull(cache.getChipIcon("white"))
+    assertNull(cache.getTeamColor("white"))
+    assertNull(cache.getTeamColor("missing"))
     assertTrue(white.hasOpaquePixelAt(32, 32))
 
     // A coloured fragment too small to read must not replace the white silhouette either.
