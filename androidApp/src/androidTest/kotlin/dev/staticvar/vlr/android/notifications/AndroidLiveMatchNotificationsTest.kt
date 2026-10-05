@@ -593,7 +593,7 @@ class AndroidLiveMatchNotificationsTest {
 
   @Test
   @SdkSuppress(minSdkVersion = 36)
-  fun changingChipSettingRefreshesActiveScoresAndSurvivesNotificationManagerRecovery() {
+  fun chipChangesRespectSpoilersAndSurviveNotificationManagerRecovery() {
     assertTrue(AndroidLiveNotificationAvailability.isAvailable(context))
     InstrumentationRegistry.getInstrumentation().uiAutomation
       .grantRuntimePermission(context.packageName, Manifest.permission.POST_NOTIFICATIONS)
@@ -658,6 +658,20 @@ class AndroidLiveMatchNotificationsTest {
       val recoveredChip = awaitMode(true)
       assertEquals(restored.extras.getCharSequence("android.shortCriticalText").toString(), recoveredChip.extras.getCharSequence("android.shortCriticalText").toString())
       assertEquals(restored.smallIcon.type, recoveredChip.smallIcon.type)
+
+      spoilers.toggle()
+      preferences.setShowScoreInStatusBar(false)
+      recovered.refreshPresentation()
+      val spoilerDeadline = SystemClock.elapsedRealtime() + 3_000
+      while (manager.activeNotifications.any { it.tag == tag } && SystemClock.elapsedRealtime() < spoilerDeadline) {
+        SystemClock.sleep(20)
+      }
+      assertTrue("Presentation refresh must remove scores while Spoiler Mode is enabled", manager.activeNotifications.none { it.tag == tag })
+      assertFalse(matchId in recovered.dismissedMatchIds.value)
+
+      spoilers.toggle()
+      recovered.handle(payload(state = state(72)))
+      awaitMode(false)
       recovered.dismiss(matchId)
       recovered.refreshPresentation()
       val dismissalDeadline = SystemClock.elapsedRealtime() + 3_000
