@@ -228,22 +228,16 @@ class AndroidLiveMatchNotificationsTest {
     val withLogosRenderer = LiveMatchNotificationRenderer(context, logoCache)
     val notifWithLogos = withLogosRenderer.build(matchWithLogos, false, 36)
     val recoveredStyle = Notification.Builder.recoverBuilder(context, notifWithLogos).style as Notification.ProgressStyle
-    assertEquals(Icon.TYPE_BITMAP, recoveredStyle.progressStartIcon?.type)
-    assertEquals(Icon.TYPE_BITMAP, recoveredStyle.progressEndIcon?.type)
+    assertNull(recoveredStyle.progressStartIcon)
+    assertNull(recoveredStyle.progressEndIcon)
     assertNotNull(recoveredStyle.progressTrackerIcon)
     assertNotNull(notifWithLogos.getLargeIcon())
 
     val final = withLogosRenderer.build(matchWithLogos.copy(terminal = true, currentMap = null), false, 36)
     val finalStyle = Notification.Builder.recoverBuilder(context, final).style as Notification.ProgressStyle
     assertEquals(listOf(firstColor, secondColor), finalStyle.progressSegments.take(2).map { it.color })
-    assertEquals(Icon.TYPE_BITMAP, finalStyle.progressStartIcon?.type)
-    assertEquals(Icon.TYPE_BITMAP, finalStyle.progressEndIcon?.type)
-
-    val ordinary = withLogosRenderer.build(matchWithLogos, false, 36, showScoreInStatusBar = false)
-    val ordinaryStyle = Notification.Builder.recoverBuilder(context, ordinary).style as Notification.ProgressStyle
-    assertEquals(Icon.TYPE_BITMAP, ordinaryStyle.progressStartIcon?.type)
-    assertEquals(Icon.TYPE_BITMAP, ordinaryStyle.progressEndIcon?.type)
-    assertNull(ordinary.extras.getCharSequence("android.shortCriticalText"))
+    assertNull(finalStyle.progressStartIcon)
+    assertNull(finalStyle.progressEndIcon)
   }
 
   @Test

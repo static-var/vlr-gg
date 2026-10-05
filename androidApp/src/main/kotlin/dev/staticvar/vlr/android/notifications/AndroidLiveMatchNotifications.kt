@@ -13,7 +13,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Icon
 import android.os.Build
@@ -613,8 +612,6 @@ internal class LiveMatchNotificationRenderer(
         colors = colors,
         currentMapScores = map?.scores.orEmpty(),
         context = context,
-        startIcon = logoCache.getTeamIcon(t1.imageUrl, night),
-        endIcon = logoCache.getTeamIcon(t2.imageUrl, night),
       )
     } else {
       builder.setStyle(Notification.BigTextStyle().bigText(contentText))
@@ -688,8 +685,6 @@ internal class LiveMatchNotificationRenderer(
         currentMapScores = emptyList(),
         context = context,
         terminal = true,
-        startIcon = logoCache.getTeamIcon(first.imageUrl, night),
-        endIcon = logoCache.getTeamIcon(second.imageUrl, night),
       )
     } else {
       builder.setStyle(Notification.BigTextStyle().bigText(matchup))
@@ -841,8 +836,6 @@ private object Api36Notification {
     currentMapScores: List<Int?>,
     context: Context,
     terminal: Boolean = false,
-    startIcon: Bitmap? = null,
-    endIcon: Bitmap? = null,
   ) {
     val total = progress.totalMaps
     val current = progress.currentMapNumber
@@ -870,9 +863,6 @@ private object Api36Notification {
       })
       .setProgress(progressValue)
       .setProgressTrackerIcon(Icon.createWithResource(context, R.drawable.ic_live_tracker))
-
-    startIcon?.let { style.setProgressStartIcon(Icon.createWithBitmap(it)) }
-    endIcon?.let { style.setProgressEndIcon(Icon.createWithBitmap(it)) }
 
     builder.setStyle(style)
   }
