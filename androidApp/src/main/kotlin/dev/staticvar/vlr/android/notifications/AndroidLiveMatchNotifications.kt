@@ -173,6 +173,10 @@ internal class AndroidLiveMatchNotifications(
   }
 
   private fun refreshPresentation(matchId: String?) {
+    if (spoilerPreferences.enabled.value) {
+      cancelAll()
+      return
+    }
     if (!AndroidLiveNotificationAvailability.isAvailable(appContext)) return
     if (!preferences.preferences.value.enabled || !canPostNotifications()) return
     val active = notificationManager.activeNotifications
