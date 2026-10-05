@@ -90,6 +90,10 @@ public class LiveMatchNotificationSettingsController(
     if (access.value.supportsNotifications) provider.openSettings()
   }
 
+  public fun setShowScoreInStatusBar(show: Boolean) {
+    repository.setShowScoreInStatusBar(show)
+  }
+
   public fun openPromotionSettings() {
     if (access.value.supportsLiveUpdates) provider.openPromotionSettings()
   }

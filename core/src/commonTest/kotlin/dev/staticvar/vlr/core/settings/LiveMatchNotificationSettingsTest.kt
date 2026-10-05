@@ -26,6 +26,37 @@ class LiveMatchNotificationSettingsTest {
   }
 
   @Test
+  fun statusBarScoreDefaultsOnAndPersistsIndependentlyFromFavorites() {
+    val storage = MapSettings().apply { putBoolean("notifications.favorites", true) }
+    val repository = LiveMatchNotificationPreferencesRepository(storage)
+    assertTrue(repository.preferences.value.showScoreInStatusBar)
+
+    repository.setShowScoreInStatusBar(false)
+    assertEquals(LiveMatchNotificationPreferences(true, false), LiveMatchNotificationPreferencesRepository(storage).preferences.value)
+    repository.setEnabled(false)
+    repository.setEnabled(true)
+    assertEquals(LiveMatchNotificationPreferences(true, false), LiveMatchNotificationPreferencesRepository(storage).preferences.value)
+
+    repository.setShowScoreInStatusBar(true)
+    assertEquals(LiveMatchNotificationPreferences(true, true), LiveMatchNotificationPreferencesRepository(storage).preferences.value)
+  }
+
+  @Test
+  fun statusBarScoreChoiceDoesNotRequestPermissionOrChangeFavorites() {
+    val provider = FakeProvider()
+    val repository = LiveMatchNotificationPreferencesRepository(MapSettings())
+    repository.setEnabled(true)
+    val controller = LiveMatchNotificationSettingsController(repository, provider)
+
+    controller.setShowScoreInStatusBar(false)
+
+    assertEquals(LiveMatchNotificationPreferences(true, false), controller.preferences.value)
+    assertEquals(0, provider.requests)
+    assertEquals(0, provider.reads)
+    assertFalse(controller.access.value.requesting)
+  }
+
+  @Test
   fun preferenceCallbackRunsAfterPersistingOptOut() {
     val repository = LiveMatchNotificationPreferencesRepository(MapSettings())
     val values = mutableListOf<Boolean>()

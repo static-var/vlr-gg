@@ -112,6 +112,8 @@
     <string name="live_activities_description">Suivez les scores en direct sur votre écran verrouillé et dans la Dynamic Island.</string>
     <string name="live_activity_favorites">Matchs et événements favoris</string>
     <string name="live_activity_favorites_description">Suivez vos matchs favoris, y compris ceux de vos événements favoris.</string>
+    <string name="show_score_in_status_bar">Afficher le score dans la barre d’état</string>
+    <string name="show_score_in_status_bar_description">Affiche le score en direct dans la barre d’état. Désactivez cette option pour garder les scores dans le volet des notifications.</string>
     <string name="live_activities_disabled">Les activités en direct sont désactivées dans les réglages du système.</string>
     <string name="notification_access_denied">Les notifications sont désactivées. Vous pouvez les autoriser dans les réglages du système. Les activités en direct ont un réglage distinct.</string>
     <string name="notification_access_error">Impossible de vérifier ou de demander l'autorisation d'envoyer des notifications. Réessayez.</string>
