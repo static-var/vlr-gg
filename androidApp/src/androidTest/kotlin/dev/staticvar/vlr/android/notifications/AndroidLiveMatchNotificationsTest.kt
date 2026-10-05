@@ -327,18 +327,18 @@ class AndroidLiveMatchNotificationsTest {
       "Ascent · ${context.getString(R.string.live_match_notification_pause_tech)}",
       pausedNotification.extras.getCharSequence(Notification.EXTRA_TEXT).toString(),
     )
-    assertEquals("8–6 ⏸" to Icon.TYPE_RESOURCE, chip(paused))
-    assertEquals("8–6 ⏸" to Icon.TYPE_BITMAP, chip(trailing.copy(pause = LiveMatchPause(LiveMatchPauseKind.Halftime))))
+    assertEquals("8–6 ||" to Icon.TYPE_RESOURCE, chip(paused))
+    assertEquals("8–6 ||" to Icon.TYPE_BITMAP, chip(trailing.copy(pause = LiveMatchPause(LiveMatchPauseKind.Halftime))))
     // The glyph survives the tag fallback: a tag that fits keeps the suffix, an overlong one drops only the tag.
     assertEquals(
-      "TL 8–6 ⏸" to Icon.TYPE_RESOURCE,
+      "TL 8–6 ||" to Icon.TYPE_RESOURCE,
       chip(trailing.copy(currentMap = live.currentMap, pause = paused.pause)),
     )
-    assertEquals("12–10 ⏸" to Icon.TYPE_RESOURCE, chip(longScore.copy(pause = paused.pause)))
+    assertEquals("12–10 ||" to Icon.TYPE_RESOURCE, chip(longScore.copy(pause = paused.pause)))
     // Hidden scores leave the chip no score, so the generic text carries the pause instead.
     val hiddenPaused = LiveMatchNotificationRenderer(context, logos).build(paused, scoresHidden = true, sdkInt = 36)
     assertEquals(
-      "${context.getString(R.string.widget_live)} ⏸",
+      "${context.getString(R.string.widget_live)} ||",
       hiddenPaused.extras.getCharSequence("android.shortCriticalText")?.toString(),
     )
     val reasoned = renderer.build(paused.copy(pause = LiveMatchPause(LiveMatchPauseKind.TechPause, "GEAR")), false, 36)
@@ -657,7 +657,7 @@ class AndroidLiveMatchNotificationsTest {
     try {
       notifications.handle(payload(state = state(70)))
       val initial = awaitMode(true)
-      assertEquals("8–6 ⏸", initial.extras.getCharSequence("android.shortCriticalText").toString())
+      assertEquals("8–6 ||", initial.extras.getCharSequence("android.shortCriticalText").toString())
       preferences.setShowScoreInStatusBar(false)
       notifications.refreshPresentation()
       val ordinary = awaitMode(false)
@@ -694,7 +694,7 @@ class AndroidLiveMatchNotificationsTest {
       preferences.setShowScoreInStatusBar(true)
       recovered.refreshPresentation()
       val recoveredChip = awaitMode(true)
-      assertEquals("9–6 ⏸", recoveredChip.extras.getCharSequence("android.shortCriticalText").toString())
+      assertEquals("9–6 ||", recoveredChip.extras.getCharSequence("android.shortCriticalText").toString())
       assertEquals(restored.extras.getCharSequence("android.shortCriticalText").toString(), recoveredChip.extras.getCharSequence("android.shortCriticalText").toString())
       assertEquals(restored.smallIcon.type, recoveredChip.smallIcon.type)
 

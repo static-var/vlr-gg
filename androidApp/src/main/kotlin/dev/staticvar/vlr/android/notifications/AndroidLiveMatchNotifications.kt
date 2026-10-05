@@ -795,8 +795,8 @@ internal class LiveMatchNotificationRenderer(
 // Longest chip text seen fully on API 36 ("NRG 12–10"); longer text is not shortened but hidden.
 private const val ChipTextLimit = 9
 
-// Marks a broadcast pause on the chip, where the glyph is the only pause indicator that fits.
-private const val PauseChipSuffix = " ⏸"
+// ASCII pause bars stay monochrome without depending on emoji fonts.
+private const val PauseChipSuffix = " ||"
 
 internal const val LiveNotificationTimeoutMillis = 5 * 60 * 1_000L
 
