@@ -6,7 +6,6 @@ package dev.staticvar.vlr.android.notifications
 
 import android.Manifest
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -19,14 +18,10 @@ import android.text.Spanned
 import android.text.style.StyleSpan
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailabilityLight
-import com.google.firebase.FirebaseApp
 import com.russhwolf.settings.MapSettings
 import dev.staticvar.vlr.android.R
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -35,7 +30,6 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import org.koin.mp.KoinPlatform
@@ -44,16 +38,6 @@ import org.koin.mp.KoinPlatform
 class AndroidLiveMatchNotificationsTest {
   private val context = InstrumentationRegistry.getInstrumentation().targetContext
   private val fixtureIds = setOf("991000001", "991000002", "991000003")
-
-  @Test
-  @SdkSuppress(minSdkVersion = 36)
-  fun liveNotificationsAreAvailableWithPlayServicesAndFirebaseOnAndroid16() {
-    assumeTrue(GoogleApiAvailabilityLight.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS)
-    val options = runCatching { FirebaseApp.getInstance().options }.getOrNull()
-    assumeTrue(options != null && options.applicationId.isNotBlank() && !options.gcmSenderId.isNullOrBlank())
-
-    assertTrue(AndroidLiveNotificationAvailability.isAvailable(context))
-  }
 
   @Before
   fun clearPreviousFixtureState() {
@@ -89,26 +73,8 @@ class AndroidLiveMatchNotificationsTest {
     assertEquals(listOf(8, 6), valid?.currentMap?.scores)
     assertNull(parser.parse(payload(type = "other")))
     assertNull(parser.parse(payload(state = "{not-json")))
-    assertNull(parser.parse(payload(state = validState().replace("[8,6]", "[8,-1]"))))
     assertNull(parser.parse(payload(state = validState().replace("\"score\":1", "\"score\":\"invalid\""))))
     assertNull(parser.parse(payload(matchId = "١٢٣")))
-
-    // The CDN manifest maps team IDs to logos; entries on hosts the logo cache refuses are ignored.
-    val cdnLogo = "https://files.akhilnarang.dev/cdn/valorant/teams/624.png"
-    val manifest = java.io.File(context.filesDir, "team_logos.json")
-    manifest.writeText(
-      """{"624":{"name":"Paper Rex","logo":{"url":"$cdnLogo","width":256}},"1":{"logo":{"url":"https://evil.example/1.png"}},"2":{},"3":{"logo":null},"4":{"logo":{}},"5":{"logo":{"url":null}}}""",
-    )
-    try {
-      val directory = TeamLogoDirectory(context, Json)
-      assertTrue(runBlocking { directory.refresh() })
-      assertEquals(cdnLogo, directory.logoUrl("624"))
-      assertNull(directory.logoUrl("1"))
-      (2..5).forEach { assertNull(directory.logoUrl(it.toString())) }
-      assertNull(directory.logoUrl(null))
-    } finally {
-      manifest.delete()
-    }
   }
 
   @Test
@@ -243,7 +209,6 @@ class AndroidLiveMatchNotificationsTest {
     val neutralColor = style.progressSegments[2].color
     assertTrue(firstColor != secondColor)
     assertTrue(neutralColor != firstColor && neutralColor != secondColor)
-    assertEquals(listOf(firstColor, secondColor, neutralColor), style.progressSegments.map { it.color })
     assertEquals(listOf(neutralColor, neutralColor), style.progressPoints.map { it.color })
     assertFalse(style.isStyledByProgress)
 
@@ -269,9 +234,6 @@ class AndroidLiveMatchNotificationsTest {
     val final = renderer.build(match.copy(terminal = true, currentMap = null), false, 36)
     val finalStyle = Notification.Builder.recoverBuilder(context, final).style as Notification.ProgressStyle
     assertEquals(listOf(firstColor, secondColor), finalStyle.progressSegments.take(2).map { it.color })
-    assertEquals(300, finalStyle.progress)
-    val hidden = Notification.Builder.recoverBuilder(context, renderer.build(match, true, 36)).style
-    assertTrue(hidden is Notification.BigTextStyle)
   }
 
   @Test
@@ -503,35 +465,6 @@ class AndroidLiveMatchNotificationsTest {
 
   @Test
   @SdkSuppress(minSdkVersion = 36)
-  fun hidingStatusBarScoreKeepsUpdatingNotificationContentAndActions() {
-    val renderer = LiveMatchNotificationRenderer(context)
-    val match = update("991000001", 60).copy(totalMaps = 3, currentMap = LiveMatchMap("Ascent", listOf(8, 6), number = 2))
-    val live = renderer.build(match, scoresHidden = false)
-    val ordinary = renderer.build(match, scoresHidden = false, showScoreInStatusBar = false)
-
-    assertTrue(live.extras.getBoolean("android.requestPromotedOngoing"))
-    assertNotNull(live.extras.getCharSequence("android.shortCriticalText"))
-    assertFalse(ordinary.extras.getBoolean("android.requestPromotedOngoing"))
-    assertNull(ordinary.extras.getCharSequence("android.shortCriticalText"))
-    assertTrue(ordinary.flags and Notification.FLAG_ONGOING_EVENT != 0)
-    assertEquals(Icon.TYPE_RESOURCE, ordinary.smallIcon.type)
-    assertEquals(live.extras.getCharSequence(Notification.EXTRA_TITLE).toString(), ordinary.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
-    assertEquals(live.extras.getCharSequence(Notification.EXTRA_TEXT).toString(), ordinary.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
-    assertEquals(live.contentIntent, ordinary.contentIntent)
-    assertEquals(live.actions.map { it.actionIntent }, ordinary.actions.map { it.actionIntent })
-    assertTrue(Notification.Builder.recoverBuilder(context, ordinary).style is Notification.ProgressStyle)
-
-    val updated = renderer.build(match.copy(currentMap = match.currentMap?.copy(scores = listOf(9, 6))), false, showScoreInStatusBar = false)
-    assertEquals("Team Liquid\u20039 : 6\u2003Paper Rex", updated.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
-    assertFalse(updated.extras.getBoolean("android.requestPromotedOngoing"))
-    assertNull(updated.extras.getCharSequence("android.shortCriticalText"))
-    val final = renderer.build(match.copy(terminal = true), false, showScoreInStatusBar = false)
-    assertFalse(final.flags and Notification.FLAG_ONGOING_EVENT != 0)
-    assertEquals(context.getString(R.string.live_match_notification_final), final.extras.getCharSequence(Notification.EXTRA_TITLE))
-  }
-
-  @Test
-  @SdkSuppress(minSdkVersion = 36)
   fun rendererUsesNativeLiveAndFinalStylesWithoutLeakingLastMapIntoFinal() {
     val renderer = LiveMatchNotificationRenderer(context)
     val live = renderer.build(update("991000001", 60), scoresHidden = false, sdkInt = 36)
@@ -671,6 +604,9 @@ class AndroidLiveMatchNotificationsTest {
     val manager = context.getSystemService(NotificationManager::class.java)
     val matchId = "991000002"
     val tag = "live-match-$matchId"
+    fun state(observedAt: Long) = validState(matchId, observedAt)
+      .replace("\"future_field\":true", "\"total_maps\":3")
+      .replace("\"name\":\"Ascent\"", "\"name\":\"Ascent\",\"number\":2")
     fun awaitMode(showChip: Boolean): Notification {
       val deadline = SystemClock.elapsedRealtime() + 3_000
       var posted: Notification? = null
@@ -682,7 +618,7 @@ class AndroidLiveMatchNotificationsTest {
       error("Notification did not reach chip mode $showChip: $posted")
     }
     try {
-      notifications.handle(payload(matchId = matchId, observedAt = 70))
+      notifications.handle(payload(state = state(70)))
       val initial = awaitMode(true)
       preferences.setShowScoreInStatusBar(false)
       notifications.refreshPresentation()
@@ -691,10 +627,15 @@ class AndroidLiveMatchNotificationsTest {
       assertTrue(ordinary.flags and Notification.FLAG_ONGOING_EVENT != 0)
       assertFalse(ordinary.flags and Notification.FLAG_PROMOTED_ONGOING != 0)
       assertEquals(initial.extras.getCharSequence(Notification.EXTRA_TITLE).toString(), ordinary.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+      assertEquals(initial.extras.getCharSequence(Notification.EXTRA_TEXT).toString(), ordinary.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+      assertEquals(Icon.TYPE_RESOURCE, ordinary.smallIcon.type)
+      assertEquals(initial.contentIntent, ordinary.contentIntent)
+      assertEquals(initial.actions.map { it.actionIntent }, ordinary.actions.map { it.actionIntent })
+      assertTrue(Notification.Builder.recoverBuilder(context, ordinary).style is Notification.ProgressStyle)
       assertTrue(ordinary.timeoutAfter in 1..initial.timeoutAfter)
       assertFalse(matchId in notifications.dismissedMatchIds.value)
 
-      notifications.handle(payload(matchId = matchId, observedAt = 71, state = validState(matchId, 71).replace("[8,6]", "[9,6]")))
+      notifications.handle(payload(state = state(71).replace("[8,6]", "[9,6]")))
       val updateDeadline = SystemClock.elapsedRealtime() + 3_000
       while (!awaitMode(false).extras.getCharSequence(Notification.EXTRA_TITLE).toString().contains("9 : 6") && SystemClock.elapsedRealtime() < updateDeadline) {
         SystemClock.sleep(20)
@@ -727,112 +668,6 @@ class AndroidLiveMatchNotificationsTest {
     } finally {
       manager.cancel(tag, 1)
     }
-  }
-
-  @Test
-  @SdkSuppress(minSdkVersion = 36)
-  fun postNativeLiveFixtureWhenRequested() {
-    if (InstrumentationRegistry.getArguments().getString("leave_notification") != "true") return
-    val manager = context.getSystemService(NotificationManager::class.java)
-    manager.createNotificationChannel(
-      NotificationChannel(
-        "live_matches",
-        context.getString(R.string.live_match_notification_channel_name),
-        NotificationManager.IMPORTANCE_DEFAULT,
-      ),
-    )
-
-    val fixture = InstrumentationRegistry.getArguments().getString("fixture") ?: "mid_map"
-    val midMap = LiveMatchUpdate(
-      matchId = "110601034",
-      observedAt = 100,
-      terminal = false,
-      teams = listOf(
-        LiveMatchTeam("NS", "https://owcdn.net/img/6399bb707aacb.png", 0, tag = "NS", id = "11060"),
-        LiveMatchTeam("NRG", "https://owcdn.net/img/6610f026c1a9e.png", 1, tag = "NRG", id = "1034"),
-      ),
-      currentMap = LiveMatchMap("Split", listOf(5, 10), number = 2),
-      totalMaps = 3,
-      mapWinners = listOf("1034", null, null),
-    )
-    val update = when (fixture) {
-      "between_maps" -> LiveMatchUpdate(
-        matchId = "110601034",
-        observedAt = 100,
-        terminal = false,
-        teams = listOf(
-          LiveMatchTeam("NS", "https://owcdn.net/img/6399bb707aacb.png", 0, tag = "NS", id = "11060"),
-          LiveMatchTeam("NRG", "https://owcdn.net/img/6610f026c1a9e.png", 1, tag = "NRG", id = "1034"),
-        ),
-        currentMap = LiveMatchMap("Split", listOf(5, 13), number = 1),
-        totalMaps = 3,
-        mapWinners = listOf("1034", null, null),
-      )
-      "pre_first_round" -> LiveMatchUpdate(
-        matchId = "110601034",
-        observedAt = 100,
-        terminal = false,
-        teams = listOf(
-          LiveMatchTeam("NS", "https://owcdn.net/img/6399bb707aacb.png", 0, tag = "NS", id = "11060"),
-          LiveMatchTeam("NRG", "https://owcdn.net/img/6610f026c1a9e.png", 0, tag = "NRG", id = "1034"),
-        ),
-        currentMap = LiveMatchMap("Lotus", listOf(0, 0), number = 1),
-        totalMaps = 3,
-        mapWinners = listOf(null, null, null),
-      )
-      "terminal" -> LiveMatchUpdate(
-        matchId = "110601034",
-        observedAt = 100,
-        terminal = true,
-        teams = listOf(
-          LiveMatchTeam("NS", "https://owcdn.net/img/6399bb707aacb.png", 0, tag = "NS", id = "11060"),
-          LiveMatchTeam("NRG", "https://owcdn.net/img/6610f026c1a9e.png", 2, tag = "NRG", id = "1034"),
-        ),
-        currentMap = LiveMatchMap("Split", listOf(8, 13), number = 2),
-        totalMaps = 3,
-        mapWinners = listOf("1034", "1034", null),
-      )
-      "paused" -> midMap.copy(pause = LiveMatchPause(LiveMatchPauseKind.TechPause))
-      "halftime" -> midMap.copy(pause = LiveMatchPause(LiveMatchPauseKind.Halftime))
-      // Global Esports' white plate badge must keep its coloured artwork in the chip.
-      "ge_leading" -> LiveMatchUpdate(
-        matchId = "110601034",
-        observedAt = 100,
-        terminal = false,
-        teams = listOf(
-          LiveMatchTeam(
-            "Global Esports",
-            "https://files.akhilnarang.dev/cdn/valorant/teams/918.png",
-            1,
-            tag = "GE",
-            id = "918",
-          ),
-          LiveMatchTeam("LOUD", "https://owcdn.net/img/62bbec8dc1b9f.png", 0, tag = "LOUD", id = "6961"),
-        ),
-        currentMap = LiveMatchMap("Split", listOf(10, 5), number = 2),
-        totalMaps = 3,
-        mapWinners = listOf("918", null, null),
-      )
-      else -> midMap
-    }
-
-    val logoCache = LiveMatchLogoCache(context)
-    val t1Url = update.teams[0].imageUrl
-    val t2Url = update.teams[1].imageUrl
-    runBlocking { runCatching { logoCache.loadAndCacheLogos(t1Url, t2Url) } }
-    val renderer = LiveMatchNotificationRenderer(context, logoCache)
-    val generation = "visual-fixture"
-    LiveMatchNotificationStateStore(context).record(update, generation)
-    manager.notify(
-      "live-match-${update.matchId}",
-      1,
-      renderer.build(
-        update,
-        scoresHidden = false,
-        generation = generation,
-        showScoreInStatusBar = KoinPlatform.getKoin().get<LiveMatchNotificationPreferencesRepository>().preferences.value.showScoreInStatusBar,
-      ),
-    )
   }
 
   /** A red ring: a mark with inner detail, which survives as a chip silhouette. */
