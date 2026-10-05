@@ -44,8 +44,11 @@ struct MatchLiveActivity: Widget {
                 .accessibilityElement(children: .combine)
                 .environment(\.colorScheme, .dark)
             } minimal: {
-                MatchLiveActivityLogo(team: context.state.teams.first, size: 20)
-                    .environment(\.colorScheme, .dark)
+                Image("LiveActivityAppLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                    .accessibilityLabel("VAL ESPORTS")
             }
             .keylineTint(PrismWidgetPalette.dark.accent)
             .widgetURL(VLRWidgetContract.matchURL(id: context.attributes.match_id))

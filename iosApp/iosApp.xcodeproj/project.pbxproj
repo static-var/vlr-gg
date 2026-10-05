@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD1AE638BF254C849030A711 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD1AE638BF254C849030A710 /* Assets.xcassets */; };
 		AAB7CE37C59F15BDE0A95B04 /* ICloudIdentityDeviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40212BB7FC3087ABA0CD3582 /* ICloudIdentityDeviceTests.swift */; };
 		AD5F1EABAFC8460BA502C001 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
 		BD5F1EABAFC8460BA502C001 /* MatchActivityLogoTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */; };
@@ -102,6 +103,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CD1AE638BF254C849030A710 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		40212BB7FC3087ABA0CD3582 /* ICloudIdentityDeviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudIdentityDeviceTests.swift; sourceTree = "<group>"; };
 		AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityLogoCache.swift; sourceTree = "<group>"; };
 		BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityLogoTreatment.swift; sourceTree = "<group>"; };
@@ -273,6 +275,7 @@
 		B792E9D2D932475168B27185 /* VLRWidget */ = {
 			isa = PBXGroup;
 			children = (
+				CD1AE638BF254C849030A710 /* Assets.xcassets */,
 				F95B8B8B53351C500C2EACA2 /* GeneratedBuildConfig.swift */,
 				07ED39F464598B211EB46A3B /* Info.plist */,
 				35E37CA9801AAA27B09231B9 /* InfoPlist.xcstrings */,
@@ -485,6 +488,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD1AE638BF254C849030A711 /* Assets.xcassets in Resources */,
 				DE960AE631BFF2761050F3A2 /* InfoPlist.xcstrings in Resources */,
 				FC50F0393FF11D14E14CB722 /* Localizable.xcstrings in Resources */,
 				81F0194729993D1D335F3D75 /* chakra_petch_OFL.txt in Resources */,
