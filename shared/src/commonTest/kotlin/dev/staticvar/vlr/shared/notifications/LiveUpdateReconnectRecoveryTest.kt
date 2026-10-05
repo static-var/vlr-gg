@@ -33,58 +33,39 @@ import kotlin.test.assertTrue
 /** Checks that reconnect recovery uses the pending state owned by each coordinator. */
 class LiveUpdateReconnectRecoveryTest {
   @Test
-  fun failedTokenAndFavoritesRetryOnceAfterOnlineUnknownOnline() = runTest {
-    val harness = ReconnectHarness(backgroundScope)
-    harness.tokens.succeeds = false
-    harness.favorites.succeeds = false
-    harness.network.status.value = NetworkStatus.Online
-    harness.favoriteSync.onEligibilityChanged(LiveUpdateEligibility.Enabled)
-    harness.uploader.activate(PushPlatform.Android, "token-one")
-    runCurrent()
-    assertEquals(1, harness.tokens.registrations.size)
-    assertEquals(1, harness.favorites.teamUploads.size)
+  fun failedUploadsRetryOnceThroughUnknownWithOrWithoutAnOfflineTransition() = runTest {
+    for (wentOffline in listOf(false, true)) {
+      val harness = ReconnectHarness(backgroundScope)
+      harness.tokens.succeeds = false
+      harness.favorites.succeeds = false
+      harness.network.status.value = NetworkStatus.Online
+      harness.favoriteSync.onEligibilityChanged(LiveUpdateEligibility.Enabled)
+      harness.uploader.activate(if (wentOffline) PushPlatform.Ios else PushPlatform.Android, "token-one")
+      runCurrent()
+      assertEquals(listOf("token-one"), harness.tokens.registrations)
+      assertEquals(listOf(listOf("team-one")), harness.favorites.teamUploads)
 
-    harness.network.status.value = NetworkStatus.Unknown
-    runCurrent()
-    harness.network.status.value = NetworkStatus.Online
-    runCurrent()
+      if (wentOffline) {
+        harness.tokens.succeeds = true
+        harness.favorites.succeeds = true
+        harness.network.status.value = NetworkStatus.Offline
+        runCurrent()
+      }
+      harness.network.status.value = NetworkStatus.Unknown
+      runCurrent()
+      harness.network.status.value = NetworkStatus.Online
+      runCurrent()
 
-    assertEquals(2, harness.tokens.registrations.size)
-    assertEquals(2, harness.favorites.teamUploads.size)
-    harness.network.status.value = NetworkStatus.Online
-    runCurrent()
-    assertEquals(2, harness.tokens.registrations.size)
-    assertEquals(2, harness.favorites.teamUploads.size)
-  }
-
-  @Test
-  fun failedTokenAndFavoritesRetryOnceAfterOfflineUnknownOnline() = runTest {
-    val harness = ReconnectHarness(backgroundScope)
-    harness.tokens.succeeds = false
-    harness.favorites.succeeds = false
-    harness.network.status.value = NetworkStatus.Online
-    harness.favoriteSync.onEligibilityChanged(LiveUpdateEligibility.Enabled)
-    harness.uploader.activate(PushPlatform.Ios, "token-one")
-    runCurrent()
-    assertEquals(listOf("token-one"), harness.tokens.registrations)
-    assertEquals(listOf(listOf("team-one")), harness.favorites.teamUploads)
-
-    harness.tokens.succeeds = true
-    harness.favorites.succeeds = true
-    harness.network.status.value = NetworkStatus.Offline
-    runCurrent()
-    harness.network.status.value = NetworkStatus.Unknown
-    runCurrent()
-    harness.network.status.value = NetworkStatus.Online
-    runCurrent()
-
-    assertEquals(listOf("token-one", "token-one"), harness.tokens.registrations)
-    assertEquals(listOf(listOf("team-one"), listOf("team-one")), harness.favorites.teamUploads)
-    assertEquals(listOf("team-one"), harness.favoriteSync.syncedFavorites.value?.favorites?.teams)
-    harness.network.status.value = NetworkStatus.Online
-    runCurrent()
-    assertEquals(2, harness.tokens.registrations.size)
-    assertEquals(2, harness.favorites.teamUploads.size)
+      assertEquals(listOf("token-one", "token-one"), harness.tokens.registrations, "wentOffline=$wentOffline")
+      assertEquals(listOf(listOf("team-one"), listOf("team-one")), harness.favorites.teamUploads, "wentOffline=$wentOffline")
+      if (wentOffline) {
+        assertEquals(listOf("team-one"), harness.favoriteSync.syncedFavorites.value?.favorites?.teams)
+      }
+      harness.network.status.value = NetworkStatus.Online
+      runCurrent()
+      assertEquals(2, harness.tokens.registrations.size, "wentOffline=$wentOffline")
+      assertEquals(2, harness.favorites.teamUploads.size, "wentOffline=$wentOffline")
+    }
   }
 
   @Test

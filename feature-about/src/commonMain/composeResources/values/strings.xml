@@ -111,6 +111,8 @@
     <string name="live_activities_description">Follow live scores on your Lock Screen and Dynamic Island.</string>
     <string name="live_activity_favorites">Favorite matches and events</string>
     <string name="live_activity_favorites_description">Follow your favorite matches, including matches from favorite events.</string>
+    <string name="show_score_in_status_bar">Show score in status bar</string>
+    <string name="show_score_in_status_bar_description">Show a live score chip in the status bar. Turn off to keep live scores in the notification drawer.</string>
     <string name="live_activities_disabled">Live Activities are disabled in system Settings.</string>
     <string name="notification_access_denied">Notifications are disabled. You can allow them in system Settings. Live Activities have a separate setting.</string>
     <string name="notification_access_error">Could not check or request notification access. Please try again.</string>

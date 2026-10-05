@@ -43,17 +43,6 @@ class AndroidMatchAlertNotificationsTest {
   }
 
   @Test
-  fun duplicateReminderForOneMatchIsSuppressed() {
-    grantNotificationPermission()
-    val renderer = AndroidMatchAlertNotifications(context, notificationsAllowed = { true })
-    renderer.handle(payload())
-    awaitVisible(true)
-    assertTrue(storage.contains(matchId))
-    renderer.handle(payload(body = "Duplicate"))
-    assertEquals("Match is starting soon", manager.activeNotifications.single { it.tag == tag }.notification.extras.getString(Notification.EXTRA_TEXT))
-  }
-
-  @Test
   fun blockedAlertsDoNotRecordDelivery() {
     AndroidMatchAlertNotifications(context, notificationsAllowed = { false }).handle(payload())
     assertFalse(storage.contains(matchId))
@@ -66,8 +55,11 @@ class AndroidMatchAlertNotificationsTest {
     val renderer = AndroidMatchAlertNotifications(context)
     renderer.handle(payload())
     awaitVisible(true)
+    assertTrue(storage.contains(matchId))
+    renderer.handle(payload(body = "Duplicate"))
     val notification = manager.activeNotifications.single { it.tag == tag }.notification
     assertEquals("Alpha vs Beta", notification.extras.getString(Notification.EXTRA_TITLE))
+    assertEquals("Match is starting soon", notification.extras.getString(Notification.EXTRA_TEXT))
     assertEquals("Match is starting soon", notification.extras.getString(Notification.EXTRA_BIG_TEXT))
     assertNotNull(notification.contentIntent)
     assertEquals(0, notification.flags and Notification.FLAG_ONGOING_EVENT)

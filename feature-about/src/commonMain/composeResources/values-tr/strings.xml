@@ -110,6 +110,8 @@
     <string name="live_activities_description">Kilit Ekranında ve Dynamic Island'da canlı skorları takip et.</string>
     <string name="live_activity_favorites">Favori maçlar ve etkinlikler</string>
     <string name="live_activity_favorites_description">Favori etkinliklerdeki maçlar dahil favori maçlarını takip et.</string>
+    <string name="show_score_in_status_bar">Durum çubuğunda skoru göster</string>
+    <string name="show_score_in_status_bar_description">Durum çubuğunda canlı skoru göster. Kapatıldığında canlı skorlar bildirim panelinde görünmeye devam eder.</string>
     <string name="live_activities_disabled">Canlı Etkinlikler sistem ayarlarında kapalı.</string>
     <string name="notification_access_denied">Bildirimler kapalı. Sistem ayarlarından izin verebilirsin. Canlı Etkinlikler ayrı bir ayara sahiptir.</string>
     <string name="notification_access_error">Bildirim izni kontrol edilemedi veya istenemedi. Lütfen tekrar dene.</string>

@@ -15,36 +15,42 @@ import kotlin.test.assertTrue
 /** Verifies live-update preferences and platform permission handling. */
 class LiveMatchNotificationSettingsTest {
   @Test
-  fun preferenceDefaultsOffAndRestoresEnabledAndDisabled() {
+  fun preferencesRestoreDefaultsAndIndependentFavoritesAndStatusBarChoices() {
     val storage = MapSettings()
     val repository = LiveMatchNotificationPreferencesRepository(storage)
-    assertEquals(LiveMatchNotificationPreferences(), repository.preferences.value)
+    assertEquals(LiveMatchNotificationPreferences(false, true), repository.preferences.value)
+
     repository.setEnabled(true)
-    assertTrue(LiveMatchNotificationPreferencesRepository(storage).preferences.value.enabled)
+    assertEquals(LiveMatchNotificationPreferences(true, true), LiveMatchNotificationPreferencesRepository(storage).preferences.value)
+    repository.setShowScoreInStatusBar(false)
+    assertEquals(LiveMatchNotificationPreferences(true, false), LiveMatchNotificationPreferencesRepository(storage).preferences.value)
     repository.setEnabled(false)
-    assertFalse(LiveMatchNotificationPreferencesRepository(storage).preferences.value.enabled)
+    assertEquals(LiveMatchNotificationPreferences(false, false), LiveMatchNotificationPreferencesRepository(storage).preferences.value)
+    repository.setEnabled(true)
+    assertEquals(LiveMatchNotificationPreferences(true, false), LiveMatchNotificationPreferencesRepository(storage).preferences.value)
+
+    repository.setShowScoreInStatusBar(true)
+    assertEquals(LiveMatchNotificationPreferences(true, true), LiveMatchNotificationPreferencesRepository(storage).preferences.value)
   }
 
   @Test
-  fun preferenceCallbackRunsAfterPersistingOptOut() {
+  fun statusBarScoreChoiceDoesNotRequestPermissionOrChangeFavorites() {
+    val provider = FakeProvider()
     val repository = LiveMatchNotificationPreferencesRepository(MapSettings())
-    val values = mutableListOf<Boolean>()
-    val controller = LiveMatchNotificationSettingsController(
-      repository,
-      FakeProvider().apply { requiresPermission = false },
-      onEnabledChanged = { enabled ->
-        assertEquals(enabled, repository.preferences.value.enabled)
-        values += enabled
-      },
-    )
-    controller.setEnabled(true)
-    controller.setEnabled(false)
-    assertEquals(listOf(true, false), values)
+    repository.setEnabled(true)
+    val controller = LiveMatchNotificationSettingsController(repository, provider)
+
+    controller.setShowScoreInStatusBar(false)
+
+    assertEquals(LiveMatchNotificationPreferences(true, false), controller.preferences.value)
+    assertEquals(0, provider.requests)
+    assertEquals(0, provider.reads)
+    assertFalse(controller.access.value.requesting)
   }
 
   @Test
   fun optingInRequestsOnceAndDenialPreservesTheChoiceWithoutReprompting() {
-    val provider = FakeProvider()
+    val provider = FakeProvider().apply { promotionAllowed = false }
     val controller = LiveMatchNotificationSettingsController(LiveMatchNotificationPreferencesRepository(MapSettings()), provider)
     controller.refresh()
     provider.readResult!!(NotificationAuthorization.NotDetermined)
@@ -55,6 +61,9 @@ class LiveMatchNotificationSettingsTest {
     provider.requestResult!!(NotificationAuthorization.Denied)
     assertEquals(LiveMatchNotificationPreferences(true), controller.preferences.value)
     assertFalse(controller.access.value.requesting)
+    controller.openSettings()
+    assertEquals(1, provider.settingsOpened)
+    assertEquals(0, provider.promotionSettingsOpened)
     controller.setEnabled(false)
     controller.setEnabled(true)
     assertEquals(1, provider.requests)
@@ -95,14 +104,20 @@ class LiveMatchNotificationSettingsTest {
   }
 
   @Test
-  fun liveActivitiesNeverReadOrRequestOrdinaryNotificationPermission() {
+  fun liveActivitiesSkipNotificationPermissionAndNotifyAfterPreferenceChanges() {
     val provider = FakeProvider().apply {
       requiresPermission = false
       activitiesEnabled = true
     }
+    val repository = LiveMatchNotificationPreferencesRepository(MapSettings())
+    val values = mutableListOf<Boolean>()
     val controller = LiveMatchNotificationSettingsController(
-      LiveMatchNotificationPreferencesRepository(MapSettings()),
+      repository,
       provider,
+      onEnabledChanged = { enabled ->
+        assertEquals(enabled, repository.preferences.value.enabled)
+        values += enabled
+      },
     )
 
     controller.refresh()
@@ -114,6 +129,8 @@ class LiveMatchNotificationSettingsTest {
     assertEquals(null, controller.access.value.notifications)
     assertFalse(controller.access.value.requiresNotificationPermission)
     assertTrue(controller.preferences.value.enabled)
+    controller.setEnabled(false)
+    assertEquals(listOf(true, false), values)
   }
 
   @Test
@@ -135,18 +152,6 @@ class LiveMatchNotificationSettingsTest {
     controller.refresh()
     provider.readResult!!(NotificationAuthorization.Authorized)
     assertEquals(true, controller.access.value.promotionAllowed)
-  }
-
-  @Test
-  fun permissionDenialKeepsRegularSettingsActionSeparateFromPromotion() {
-    val provider = FakeProvider().apply { promotionAllowed = false }
-    val controller = LiveMatchNotificationSettingsController(LiveMatchNotificationPreferencesRepository(MapSettings()), provider)
-    controller.setEnabled(true)
-    provider.requestResult!!(NotificationAuthorization.Denied)
-    controller.openSettings()
-
-    assertEquals(1, provider.settingsOpened)
-    assertEquals(0, provider.promotionSettingsOpened)
   }
 
   @Test

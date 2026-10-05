@@ -21,6 +21,8 @@ import dev.staticvar.vlr.sharedui.image.createSharedImageLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.koin.androidContext
@@ -85,6 +87,12 @@ class VlrApplication : Application() {
           matchAlertNotifications.cancelAll()
         }
       }
+    }
+    scope.launch {
+      notificationPreferences.preferences
+        .map { it.showScoreInStatusBar }
+        .distinctUntilChanged()
+        .collect { liveMatchNotifications.refreshPresentation() }
     }
     scope.launch {
       combine(notificationPreferences.preferences, spoilerPreferences.enabled) { notifications, hidden ->

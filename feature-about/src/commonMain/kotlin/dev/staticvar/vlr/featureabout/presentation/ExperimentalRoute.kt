@@ -54,6 +54,8 @@ import vlr.feature_about.generated.resources.notification_access_error
 import vlr.feature_about.generated.resources.notifications_permission_description
 import vlr.feature_about.generated.resources.open_system_settings
 import vlr.feature_about.generated.resources.remove_cached_items_that_haven_t_been_refreshed_in_30_days
+import vlr.feature_about.generated.resources.show_score_in_status_bar
+import vlr.feature_about.generated.resources.show_score_in_status_bar_description
 
 @Composable
 public fun ExperimentalRoute(
@@ -120,6 +122,15 @@ private fun LiveUpdatesSettings(controller: LiveMatchNotificationSettingsControl
         onChange = controller::setEnabled,
       )
     }
+    if (access.supportsLiveUpdates && access.requiresNotificationPermission) {
+      NotificationPreferenceCard(
+        title = stringResource(Res.string.show_score_in_status_bar),
+        description = stringResource(Res.string.show_score_in_status_bar_description),
+        checked = preferences.showScoreInStatusBar,
+        enabled = !access.requesting,
+        onChange = controller::setShowScoreInStatusBar,
+      )
+    }
     if ((preferences.enabled || access.supportsMatchAlerts) && access.supportsNotifications) {
       if (access.activitiesEnabled == false) {
         PermissionMessage(stringResource(Res.string.live_activities_disabled))
@@ -135,7 +146,9 @@ private fun LiveUpdatesSettings(controller: LiveMatchNotificationSettingsControl
       ) {
         PrismButton(onClick = controller::openSettings) { Text(stringResource(Res.string.open_system_settings)) }
       }
-      if (access.supportsLiveUpdates && access.notifications == NotificationAuthorization.Authorized && access.promotionAllowed == false) {
+      if (preferences.showScoreInStatusBar && access.supportsLiveUpdates &&
+        access.notifications == NotificationAuthorization.Authorized && access.promotionAllowed == false
+      ) {
         PermissionMessage(stringResource(Res.string.notification_promotion_unavailable))
         PrismButton(onClick = controller::openPromotionSettings) { Text(stringResource(Res.string.open_system_settings)) }
       }

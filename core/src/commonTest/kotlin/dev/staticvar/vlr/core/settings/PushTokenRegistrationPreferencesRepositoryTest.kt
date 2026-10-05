@@ -14,7 +14,7 @@ import kotlin.test.assertTrue
 /** Verifies persisted push tokens and registration acknowledgements. */
 class PushTokenRegistrationPreferencesRepositoryTest {
   @Test
-  fun tokenAndSuccessfulUploadArePersistedSeparately() {
+  fun tokenAndAcknowledgementPersistSeparatelyAndTrackIdentityAndLiveMode() {
     val storage = MapSettings()
     val repository = PushTokenRegistrationPreferencesRepository(storage)
 
@@ -31,21 +31,15 @@ class PushTokenRegistrationPreferencesRepositoryTest {
     assertFalse(restored.wasUploaded(OtherClientId, PushPlatform.Android, "opaque token:+/="))
     assertFalse(restored.wasUploaded(ClientId, PushPlatform.Ios, "opaque token:+/="))
     assertFalse(restored.wasUploaded(ClientId, PushPlatform.Android, "rotated-token"))
-  }
 
-  @Test
-  fun changingLiveModeRequiresAnotherAcknowledgement() {
-    val storage = MapSettings()
-    val repository = PushTokenRegistrationPreferencesRepository(storage)
-    repository.markUploaded(ClientId, PushPlatform.Android, "token", false)
-
+    repository.markUploaded(ClientId, PushPlatform.Android, "opaque token:+/=", false)
     assertTrue(PushTokenRegistrationPreferencesRepository(storage).preferences.value.wasUploaded(
-      ClientId, PushPlatform.Android, "token", false,
+      ClientId, PushPlatform.Android, "opaque token:+/=", false,
     ))
-    assertFalse(repository.preferences.value.wasUploaded(ClientId, PushPlatform.Android, "token", true))
+    assertFalse(repository.preferences.value.wasUploaded(ClientId, PushPlatform.Android, "opaque token:+/=", true))
 
-    repository.markUploaded(ClientId, PushPlatform.Android, "token", true)
-    assertTrue(repository.preferences.value.wasUploaded(ClientId, PushPlatform.Android, "token", true))
+    repository.markUploaded(ClientId, PushPlatform.Android, "opaque token:+/=", true)
+    assertTrue(repository.preferences.value.wasUploaded(ClientId, PushPlatform.Android, "opaque token:+/=", true))
   }
 
   /** Provides distinct client identities for registration tests. */

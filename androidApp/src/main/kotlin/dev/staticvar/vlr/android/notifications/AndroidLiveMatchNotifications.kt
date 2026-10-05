@@ -103,11 +103,14 @@ internal class AndroidLiveMatchNotifications(
         return
       }
 
-      lastHandledUpdates[update.matchId] = update
-
       val generation = UUID.randomUUID().toString()
       val notification = try {
-        renderer.build(update.withTeamLogos(), spoilerPreferences.enabled.value, generation = generation)
+        renderer.build(
+          update.withTeamLogos(),
+          spoilerPreferences.enabled.value,
+          generation = generation,
+          showScoreInStatusBar = preferences.preferences.value.showScoreInStatusBar,
+        )
       } catch (error: Exception) {
         if (error is CancellationException) throw error
         LiveNotificationDiagnostics.failed("render", error)
@@ -121,6 +124,7 @@ internal class AndroidLiveMatchNotifications(
         return
       }
       stateStore.record(update, generation)
+      lastHandledUpdates[update.matchId] = update
       dismissed.value = stateStore.dismissedMatchIds()
       if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= 36) {
         runCatching {
@@ -156,22 +160,62 @@ internal class AndroidLiveMatchNotifications(
 
   private fun repostIfCurrent(matchId: String, observedAt: Long) {
     synchronized(lock) {
-      if (!AndroidLiveNotificationAvailability.isAvailable(appContext)) return
-      if (!preferences.preferences.value.enabled) return
-      if (matchId in stateStore.dismissedMatchIds()) return
       val currentUpdate = lastHandledUpdates[matchId] ?: return
       if (currentUpdate.observedAt != observedAt || currentUpdate.terminal) return
+      refreshPresentation(matchId)
+    }
+  }
+
+  fun refreshPresentation() {
+    synchronized(lock) {
+      refreshPresentation(matchId = null)
+    }
+  }
+
+  private fun refreshPresentation(matchId: String?) {
+    if (!AndroidLiveNotificationAvailability.isAvailable(appContext)) return
+    if (!preferences.preferences.value.enabled || !canPostNotifications()) return
+    val active = notificationManager.activeNotifications
+    val dismissedMatchIds = stateStore.dismissedMatchIds()
+    active.forEach { posted ->
+      val activeMatchId = posted.tag?.takeIf { it.startsWith("live-match-") }?.removePrefix("live-match-") ?: return@forEach
+      if (posted.id != NotificationId || !activeMatchId.isValidMatchId()) return@forEach
+      if (matchId != null && activeMatchId != matchId) return@forEach
+      if (activeMatchId in dismissedMatchIds || posted.notification.flags and Notification.FLAG_ONGOING_EVENT == 0) return@forEach
+      val timeoutMillis = stateStore.remainingTimeoutMillis(activeMatchId) ?: return@forEach
+      val currentUpdate = lastHandledUpdates[activeMatchId]
+      if (currentUpdate?.terminal == true) return@forEach
 
       val newGeneration = UUID.randomUUID().toString()
       val notification = try {
-        renderer.build(currentUpdate.withTeamLogos(), spoilerPreferences.enabled.value, generation = newGeneration)
-      } catch (_: Exception) {
-        return
+        if (currentUpdate != null) {
+          renderer.build(
+            currentUpdate.withTeamLogos(),
+            spoilerPreferences.enabled.value,
+            generation = newGeneration,
+            showScoreInStatusBar = preferences.preferences.value.showScoreInStatusBar,
+            timeoutMillis = timeoutMillis,
+          )
+        } else {
+          renderer.refreshPresentation(
+            posted.notification,
+            activeMatchId,
+            newGeneration,
+            preferences.preferences.value.showScoreInStatusBar,
+            timeoutMillis,
+          )
+        }
+      } catch (error: Exception) {
+        if (error is CancellationException) throw error
+        LiveNotificationDiagnostics.failed("render", error)
+        return@forEach
       }
       try {
-        notificationManager.notify(notificationTag(matchId), NotificationId, notification)
-        stateStore.record(currentUpdate, newGeneration)
-      } catch (_: Exception) {
+        notificationManager.notify(notificationTag(activeMatchId), NotificationId, notification)
+        stateStore.replaceGeneration(activeMatchId, newGeneration)
+      } catch (error: Exception) {
+        if (error is CancellationException) throw error
+        LiveNotificationDiagnostics.failed("post", error)
       }
     }
   }
@@ -317,6 +361,17 @@ internal class LiveMatchNotificationStateStore(
       .apply()
   }
 
+  fun remainingTimeoutMillis(matchId: String): Long? {
+    val recordedAt = storage.getLong(matchId.key(RecordedElapsedRealtimeSuffix), -1)
+    val elapsed = elapsedRealtimeMillis()
+    if (recordedAt < 0 || elapsed < recordedAt) return null
+    return (LiveNotificationTimeoutMillis - (elapsed - recordedAt)).takeIf { it > 0 }
+  }
+
+  fun replaceGeneration(matchId: String, generation: String) {
+    storage.edit().putString(matchId.key(GenerationSuffix), generation).apply()
+  }
+
   /**
    * Saves a dismissal even if no update has been recorded for the match.
    * Refreshes its retention timestamp so later updates stay suppressed.
@@ -427,6 +482,8 @@ internal class LiveMatchNotificationRenderer(
     scoresHidden: Boolean,
     sdkInt: Int = Build.VERSION.SDK_INT,
     generation: String = UUID.randomUUID().toString(),
+    showScoreInStatusBar: Boolean = true,
+    timeoutMillis: Long = LiveNotificationTimeoutMillis,
   ): Notification {
     val openMatch = PendingIntent.getActivity(
       context,
@@ -467,7 +524,7 @@ internal class LiveMatchNotificationRenderer(
     builder
       .setOngoing(true)
       .setAutoCancel(false)
-      .setTimeoutAfter(LiveNotificationTimeoutMillis)
+      .setTimeoutAfter(timeoutMillis)
       .addAction(
         Notification.Action.Builder(
           null,
@@ -476,11 +533,47 @@ internal class LiveMatchNotificationRenderer(
         ).build(),
       )
     if (sdkInt >= 36) {
-      applyChip(builder, update, scoresHidden)
-      if (sdkInt >= 37) {
-        Api37Notification.applyPromotedOngoing(builder)
+      applyChip(builder, update, scoresHidden, showScoreInStatusBar)
+      if (showScoreInStatusBar) {
+        if (sdkInt >= 37) {
+          Api37Notification.applyPromotedOngoing(builder)
+        } else {
+          builder.addExtras(Bundle().apply { putBoolean(PromotedOngoingExtra, true) })
+        }
+      }
+    }
+    return builder.build()
+  }
+
+  fun refreshPresentation(
+    notification: Notification,
+    matchId: String,
+    generation: String,
+    showScoreInStatusBar: Boolean,
+    timeoutMillis: Long,
+  ): Notification {
+    val source = notification.clone().apply {
+      if (Build.VERSION.SDK_INT >= 36) flags = flags and Notification.FLAG_PROMOTED_ONGOING.inv()
+    }
+    val builder = Notification.Builder.recoverBuilder(context, source)
+      .setDeleteIntent(dismissIntent(matchId, LiveMatchNotificationReceiver.ActionDismiss, generation))
+      .setTimeoutAfter(timeoutMillis)
+    builder.setSmallIcon(R.drawable.ic_notification)
+    if (Build.VERSION.SDK_INT >= 36) {
+      builder.setShortCriticalText(
+        if (showScoreInStatusBar) {
+          notification.extras.getString(ChipTextExtra) ?: context.getString(R.string.widget_live)
+        } else {
+          null
+        },
+      )
+      if (showScoreInStatusBar) {
+        notification.extras.getParcelable(ChipIconExtra, Icon::class.java)?.let(builder::setSmallIcon)
+      }
+      if (Build.VERSION.SDK_INT >= 37) {
+        Api37Notification.applyPromotedOngoing(builder, showScoreInStatusBar)
       } else {
-        builder.addExtras(Bundle().apply { putBoolean(PromotedOngoingExtra, true) })
+        builder.addExtras(Bundle().apply { putBoolean(PromotedOngoingExtra, showScoreInStatusBar) })
       }
     }
     return builder.build()
@@ -601,30 +694,48 @@ internal class LiveMatchNotificationRenderer(
    * usable logo it names the leader instead (`NRG 10–5`), dropping the name when the text would be too long for the
    * chip, which hides overlong text entirely. Ties, hidden scores and the pre-round state keep the app icon.
    */
-  private fun applyChip(builder: Notification.Builder, update: LiveMatchUpdate, scoresHidden: Boolean) {
+  private fun applyChip(
+    builder: Notification.Builder,
+    update: LiveMatchUpdate,
+    scoresHidden: Boolean,
+    showScoreInStatusBar: Boolean,
+  ) {
+    val presentation = chipPresentation(update, scoresHidden)
+    builder.addExtras(
+      Bundle().apply {
+        putString(ChipTextExtra, presentation.text)
+        putParcelable(ChipIconExtra, presentation.icon)
+      },
+    )
+    if (showScoreInStatusBar) {
+      builder.setShortCriticalText(presentation.text)
+      presentation.icon?.let(builder::setSmallIcon)
+    }
+  }
+
+  private fun chipPresentation(update: LiveMatchUpdate, scoresHidden: Boolean): ChipPresentation {
     val scores = chipScores(update, scoresHidden)
     if (scores == null) {
-      builder.setShortCriticalText(context.getString(R.string.widget_live))
-      return
+      return ChipPresentation(context.getString(R.string.widget_live))
     }
     val (s1, s2) = scores
     if (s1 == null || s2 == null) {
-      builder.setShortCriticalText("${score(s1)}–${score(s2)}")
-      return
+      return ChipPresentation("${score(s1)}–${score(s2)}")
     }
     if (s1 == s2) {
-      builder.setShortCriticalText("$s1–$s2")
-      return
+      return ChipPresentation("$s1–$s2")
     }
     val leader = update.teams[if (s1 > s2) 0 else 1]
     val score = "${maxOf(s1, s2)}–${minOf(s1, s2)}"
     val icon = logoCache.getChipIcon(leader.imageUrl)
-    if (icon != null) {
-      builder.setSmallIcon(Icon.createWithBitmap(icon)).setShortCriticalText(score)
+    return if (icon != null) {
+      ChipPresentation(score, Icon.createWithBitmap(icon))
     } else {
-      builder.setShortCriticalText("${leader.displayName} $score".takeIf { it.length <= ChipTextLimit } ?: score)
+      ChipPresentation("${leader.displayName} $score".takeIf { it.length <= ChipTextLimit } ?: score)
     }
   }
+
+  private data class ChipPresentation(val text: String, val icon: Icon? = null)
 
   /** Returns the scores the chip shows: the series between maps, otherwise the current map; null before play. */
   private fun chipScores(update: LiveMatchUpdate, scoresHidden: Boolean): Pair<Int?, Int?>? {
@@ -668,6 +779,8 @@ internal class LiveMatchNotificationRenderer(
   private companion object {
     const val ChannelId = "live_matches"
     const val PromotedOngoingExtra = "android.requestPromotedOngoing"
+    const val ChipTextExtra = "dev.staticvar.vlr.liveMatch.chipText"
+    const val ChipIconExtra = "dev.staticvar.vlr.liveMatch.chipIcon"
   }
 }
 
@@ -748,8 +861,8 @@ private object Api36Notification {
 /** Applies promoted notifications on Android API 37. */
 @RequiresApi(37)
 private object Api37Notification {
-  fun applyPromotedOngoing(builder: Notification.Builder) {
-    builder.setRequestPromotedOngoing(true)
+  fun applyPromotedOngoing(builder: Notification.Builder, promoted: Boolean = true) {
+    builder.setRequestPromotedOngoing(promoted)
   }
 }
 

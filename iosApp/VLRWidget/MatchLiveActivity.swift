@@ -19,8 +19,20 @@ struct MatchLiveActivity: Widget {
             let hidden = MatchLiveActivitySpoilerPreference.isHidden
             let scores = MatchLiveActivityScores(state: context.state, hidden: hidden)
             return DynamicIsland {
+                DynamicIslandExpandedRegion(.leading) {
+                    MatchLiveActivityStatus(state: context.state)
+                        .padding(.leading, 8)
+                        .environment(\.colorScheme, .dark)
+                }
+                DynamicIslandExpandedRegion(.trailing) {
+                    MatchLiveActivityDetail(state: context.state)
+                        .padding(.trailing, 8)
+                        .environment(\.colorScheme, .dark)
+                }
                 DynamicIslandExpandedRegion(.bottom) {
-                    MatchLiveActivityLockScreen(state: context.state, spoilersHidden: hidden)
+                    MatchLiveActivityScoreContent(state: context.state, spoilersHidden: hidden, isExpanded: true)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 4)
                         .environment(\.colorScheme, .dark)
                 }
             } compactLeading: {
@@ -44,8 +56,11 @@ struct MatchLiveActivity: Widget {
                 .accessibilityElement(children: .combine)
                 .environment(\.colorScheme, .dark)
             } minimal: {
-                MatchLiveActivityLogo(team: context.state.teams.first, size: 20)
-                    .environment(\.colorScheme, .dark)
+                Image("LiveActivityAppLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 20, height: 20)
+                    .accessibilityLabel("VAL ESPORTS")
             }
             .keylineTint(PrismWidgetPalette.dark.accent)
             .widgetURL(VLRWidgetContract.matchURL(id: context.attributes.match_id))
@@ -61,18 +76,38 @@ struct MatchLiveActivityLockScreen: View {
     @Environment(\.colorScheme) private var colorScheme
 
     private var palette: PrismWidgetPalette { colorScheme == .dark ? .dark : .light }
-    private var scores: MatchLiveActivityScores {
-        MatchLiveActivityScores(state: state, hidden: spoilersHidden)
-    }
     private var mapProgress: MatchLiveActivityMapProgress? {
         MatchLiveActivityMapProgress(state: state, hidden: spoilersHidden)
     }
-    private var pause: MatchActivityAttributes.ContentState.Pause? {
-        state.terminal ? nil : state.pause
+
+    var body: some View {
+        VStack(spacing: mapProgress == nil ? 10 : 7) {
+            HStack(spacing: 6) {
+                MatchLiveActivityStatus(state: state)
+                Spacer()
+                MatchLiveActivityDetail(state: state)
+            }
+            .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
+            .lineLimit(1)
+
+            MatchLiveActivityScoreContent(state: state, spoilersHidden: spoilersHidden, isExpanded: false)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, mapProgress == nil ? 14 : 11)
+        .foregroundStyle(palette.ink)
+        .accessibilityElement(children: .contain)
+        .accessibilityHint(String(localized: "Opens match details"))
     }
+}
+
+@available(iOS 16.1, *)
+private struct MatchLiveActivityStatus: View {
+    let state: MatchActivityAttributes.ContentState
+    @Environment(\.colorScheme) private var colorScheme
+
     private var statusLabel: String {
         if state.terminal { return String(localized: "FINAL") }
-        switch pause?.kind {
+        switch state.pause?.kind {
         case .techPause: return String(localized: "TECHNICAL PAUSE")
         case .timeout: return String(localized: "TIMEOUT")
         case .halftime: return String(localized: "HALFTIME")
@@ -82,35 +117,62 @@ struct MatchLiveActivityLockScreen: View {
     }
 
     var body: some View {
-        VStack(spacing: mapProgress == nil ? 10 : 7) {
-            HStack(spacing: 6) {
-                if !state.terminal {
-                    if pause != nil {
-                        Image(systemName: "pause.fill")
-                            .foregroundStyle(palette.accent)
-                            .accessibilityHidden(true)
-                    } else {
-                        Circle().fill(palette.accent).frame(width: 5, height: 5)
-                            .accessibilityHidden(true)
-                    }
+        HStack(spacing: 6) {
+            if !state.terminal {
+                if state.pause != nil {
+                    Image(systemName: "pause.fill")
+                        .accessibilityHidden(true)
+                } else {
+                    Circle().frame(width: 5, height: 5)
+                        .accessibilityHidden(true)
                 }
-                Text(verbatim: statusLabel)
-                    .foregroundStyle(palette.accent)
-                    .minimumScaleFactor(0.7)
-                Spacer()
-                ViewThatFits(in: .horizontal) {
-                    if let reason = pause?.reason, !reason.contains(where: \.isNewline) {
-                        Text(verbatim: reason)
-                            .fixedSize(horizontal: true, vertical: false)
-                    }
-                    Text(verbatim: "VAL ESPORTS")
-                        .fixedSize(horizontal: true, vertical: false)
-                }
-                .foregroundStyle(palette.secondary)
             }
-            .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
-            .lineLimit(1)
+            Text(verbatim: statusLabel)
+                .minimumScaleFactor(0.7)
+        }
+        .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
+        .foregroundStyle(colorScheme == .dark ? PrismWidgetPalette.dark.accent : PrismWidgetPalette.light.accent)
+        .lineLimit(1)
+    }
+}
 
+@available(iOS 16.1, *)
+private struct MatchLiveActivityDetail: View {
+    let state: MatchActivityAttributes.ContentState
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            if !state.terminal, let reason = state.pause?.reason, !reason.contains(where: \.isNewline) {
+                Text(verbatim: reason)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+            Text(verbatim: "VAL ESPORTS")
+                .fixedSize(horizontal: true, vertical: false)
+        }
+        .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
+        .foregroundStyle(colorScheme == .dark ? PrismWidgetPalette.dark.secondary : PrismWidgetPalette.light.secondary)
+        .lineLimit(1)
+    }
+}
+
+@available(iOS 16.1, *)
+private struct MatchLiveActivityScoreContent: View {
+    let state: MatchActivityAttributes.ContentState
+    let spoilersHidden: Bool
+    let isExpanded: Bool
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var palette: PrismWidgetPalette { colorScheme == .dark ? .dark : .light }
+    private var scores: MatchLiveActivityScores {
+        MatchLiveActivityScores(state: state, hidden: spoilersHidden)
+    }
+    private var mapProgress: MatchLiveActivityMapProgress? {
+        MatchLiveActivityMapProgress(state: state, hidden: spoilersHidden)
+    }
+
+    var body: some View {
+        VStack(spacing: mapProgress == nil ? 10 : 7) {
             HStack(alignment: state.terminal ? .top : .center, spacing: 8) {
                 team(at: 0)
                 VStack(spacing: 3) {
@@ -124,13 +186,13 @@ struct MatchLiveActivityLockScreen: View {
                     MatchLiveActivityScorePair(
                         left: scores.primaryLeft,
                         right: scores.primaryRight,
-                        size: state.terminal ? 58 : 43,
+                        size: state.terminal ? (isExpanded ? 48 : 58) : (isExpanded ? 36 : 43),
                         color: palette.ink
                     )
-                    .frame(height: state.terminal ? 58 : 48)
+                    .frame(height: state.terminal ? (isExpanded ? 52 : 58) : (isExpanded ? 41 : 48))
                     if !state.terminal, state.current_map != nil {
                         Text(scores.series)
-                            .font(PrismWidgetFont.regular(14, relativeTo: .caption))
+                            .font(PrismWidgetFont.regular(isExpanded ? 12 : 14, relativeTo: .caption))
                             .foregroundStyle(palette.secondary)
                             .monospacedDigit()
                     }
@@ -139,13 +201,11 @@ struct MatchLiveActivityLockScreen: View {
                 .accessibilityElement(children: .combine)
                 team(at: 1)
             }
-            .frame(height: mapProgress == nil ? 100 : 88)
+            .frame(height: isExpanded ? (mapProgress == nil ? 88 : 72) : (mapProgress == nil ? 100 : 88))
             if let mapProgress {
                 MatchLiveActivityMapProgressView(progress: mapProgress, state: state, palette: palette)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, mapProgress == nil ? 14 : 11)
         .foregroundStyle(palette.ink)
         .accessibilityElement(children: .contain)
         .accessibilityHint(String(localized: "Opens match details"))
@@ -162,7 +222,7 @@ struct MatchLiveActivityLockScreen: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 58, height: 58)
+                    .frame(width: isExpanded ? 40 : 58, height: isExpanded ? 40 : 58)
                     .accessibilityHidden(true)
             }
             Text(value?.visibleName ?? "—")

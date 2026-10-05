@@ -111,6 +111,8 @@
     <string name="live_activities_description">लॉक स्क्रीन और Dynamic Island पर लाइव स्कोर देखें।</string>
     <string name="live_activity_favorites">पसंदीदा मैच और इवेंट</string>
     <string name="live_activity_favorites_description">अपने पसंदीदा मैचों के अपडेट पाएँ, जिनमें पसंदीदा इवेंट के मैच भी शामिल हैं।</string>
+    <string name="show_score_in_status_bar">स्टेटस बार में स्कोर दिखाएँ</string>
+    <string name="show_score_in_status_bar_description">स्टेटस बार में लाइव स्कोर दिखाएँ। इसे बंद करने पर लाइव स्कोर सूचना पैनल में उपलब्ध रहेंगे।</string>
     <string name="live_activities_disabled">सिस्टम सेटिंग में लाइव ऐक्टिविटीज़ बंद हैं।</string>
     <string name="notification_access_denied">सूचनाएँ बंद हैं। आप सिस्टम सेटिंग में उन्हें अनुमति दे सकते हैं। लाइव ऐक्टिविटीज़ की सेटिंग अलग है।</string>
     <string name="notification_access_error">सूचनाओं की अनुमति की जाँच नहीं हो सकी या अनुमति नहीं माँगी जा सकी। फिर से कोशिश करें।</string>

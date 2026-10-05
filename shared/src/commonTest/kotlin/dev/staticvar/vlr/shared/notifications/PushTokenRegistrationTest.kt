@@ -80,9 +80,15 @@ class PushTokenRegistrationTest {
       dataSource.succeeds = false
     }
     harness.coordinator.start()
+    harness.coordinator.onForeground()
     runCurrent()
     harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
     runCurrent()
+    assertEquals("token", harness.tokenPreferences.preferences.value.token)
+    assertFalse(harness.tokenPreferences.preferences.value.wasUploaded(
+      harness.identity.id.value.toString(), PushPlatform.Ios, "token",
+    ))
+    assertEquals(1, harness.dataSource.requests.size)
     assertEquals(null, harness.tokenPreferences.preferences.value.uploadedClientId)
     assertEquals(setOf(harness.identity.id.value.toString()), harness.tokenPreferences.possiblyUploadedTokenClients())
 
@@ -414,29 +420,6 @@ class PushTokenRegistrationTest {
       ),
     )
     assertFalse(harness.tokenPreferences.preferences.value.token == "late-token")
-  }
-
-  @Test
-  fun failedUploadKeepsTokenWithoutMarkingTheTupleUploaded() = runTest {
-    val harness = Harness(backgroundScope, notificationsEnabled = true).apply {
-      tokenProvider.tokenOnStart = "not-uploaded"
-      dataSource.succeeds = false
-    }
-    harness.coordinator.start()
-    harness.coordinator.onForeground()
-    runCurrent()
-    harness.permissionProvider.completeRead(NotificationAuthorization.Authorized)
-    runCurrent()
-
-    assertEquals("not-uploaded", harness.tokenPreferences.preferences.value.token)
-    assertFalse(
-      harness.tokenPreferences.preferences.value.wasUploaded(
-        harness.identity.id.value.toString(),
-        PushPlatform.Ios,
-        "not-uploaded",
-      ),
-    )
-    assertEquals(1, harness.dataSource.requests.size)
   }
 
   @Test
