@@ -72,34 +72,19 @@ class FavoriteLiveUpdateCoordinatorTest {
   }
 
   @Test
-  fun launchRemovesServerFavoritesThatAreNoLongerLocal() = runTest {
-    val h = FavoriteSyncHarness(
-      backgroundScope,
-      favorites(matches = listOf("22")),
-      initialServer = groups(teams = listOf("11"), matches = listOf("22"), players = listOf("33"), events = listOf("44")),
-    )
-    runCurrent()
-
-    assertEquals(emptyList(), h.source.additions)
-    assertEquals(
-      listOf(Request(h.clientId, groups(teams = listOf("11"), players = listOf("33"), events = listOf("44")))),
-      h.source.removals,
-    )
-    assertEquals(groups(matches = listOf("22")), h.source.server[h.clientId])
-    assertTrue(h.state.synced)
-  }
-
-  @Test
-  fun launchAddsOnlyFavoritesMissingFromTheServer() = runTest {
+  fun launchAddsMissingFavoritesAndRemovesStaleFavoritesWithoutResendingSharedIds() = runTest {
     val h = FavoriteSyncHarness(
       backgroundScope,
       favorites(teams = listOf("11"), matches = listOf("22")),
-      initialServer = groups(teams = listOf("11")),
+      initialServer = groups(teams = listOf("11", "12"), players = listOf("33"), events = listOf("44")),
     )
     runCurrent()
 
     assertEquals(listOf(Request(h.clientId, groups(matches = listOf("22")))), h.source.additions)
-    assertEquals(emptyList(), h.source.removals)
+    assertEquals(
+      listOf(Request(h.clientId, groups(teams = listOf("12"), players = listOf("33"), events = listOf("44")))),
+      h.source.removals,
+    )
     assertEquals(groups(teams = listOf("11"), matches = listOf("22")), h.source.server[h.clientId])
     assertTrue(h.state.synced)
   }
@@ -171,33 +156,21 @@ class FavoriteLiveUpdateCoordinatorTest {
   }
 
   @Test
-  fun failedVerificationReadDoesNotMarkTheDatabaseSynced() = runTest {
-    val h = FavoriteSyncHarness(backgroundScope, favorites(teams = listOf("11")))
-    h.source.failReadAt = 2
-    runCurrent()
+  fun failedOrMismatchedVerificationDoesNotMarkSyncedOrResendFavorites() = runTest {
+    for (failedRead in listOf(true, false)) {
+      val h = FavoriteSyncHarness(backgroundScope, favorites(teams = listOf("11")))
+      if (failedRead) h.source.failReadAt = 2 else h.source.staleReadAt = 2
+      runCurrent()
 
-    assertEquals(groups(teams = listOf("11")), h.source.server[h.clientId])
-    assertFalse(h.state.synced)
-    h.source.failReadAt = null
-    h.coordinator.retry()
-    runCurrent()
+      assertEquals(groups(teams = listOf("11")), h.source.server[h.clientId])
+      assertFalse(h.state.synced, "failedRead=$failedRead")
+      h.source.failReadAt = null
+      h.coordinator.retry()
+      runCurrent()
 
-    assertEquals(1, h.source.additions.size)
-    assertTrue(h.state.synced)
-  }
-
-  @Test
-  fun mismatchedVerificationReadDoesNotMarkTheDatabaseSynced() = runTest {
-    val h = FavoriteSyncHarness(backgroundScope, favorites(teams = listOf("11")))
-    h.source.staleReadAt = 2
-    runCurrent()
-
-    assertFalse(h.state.synced)
-    h.coordinator.retry()
-    runCurrent()
-
-    assertEquals(1, h.source.additions.size)
-    assertTrue(h.state.synced)
+      assertEquals(1, h.source.additions.size, "failedRead=$failedRead")
+      assertTrue(h.state.synced, "failedRead=$failedRead")
+    }
   }
 
   @Test
