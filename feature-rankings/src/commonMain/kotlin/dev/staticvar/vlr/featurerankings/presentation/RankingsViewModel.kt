@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
+import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.domain.repository.TeamSearchRepository
 import dev.staticvar.vlr.featurerankings.usecase.ObserveRankingsUseCase
 import dev.staticvar.vlr.featurerankings.usecase.RefreshRankingsUseCase
@@ -32,17 +33,17 @@ public class RankingsViewModel(
 ) : ViewModel() {
   public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
-  private val selectedRegion: MutableStateFlow<String?> = MutableStateFlow(null)
   private val refresher: RefreshController = RefreshController(viewModelScope, networkMonitor) {
     refreshRankingsUseCase()
   }
 
+  private val selectedRegion: MutableStateFlow<RankingRegion?> = MutableStateFlow(null)
+
   public val uiState: StateFlow<RankingsUiState> =
-    combine(observeRankingsUseCase(), selectedRegion, refresher.state) { rankings, region, refresh ->
+    combine(observeRankingsUseCase(), refresher.state, selectedRegion) { rankings, refresh, region ->
       RankingsUiState(
-        regions = rankings,
-        selectedRegion = region?.takeIf { selected -> rankings.any { it.region == selected } }
-          ?: rankings.firstOrNull()?.region,
+        teams = rankings,
+        selectedRegion = region,
         isLoading = refresh.isLoading(hasContent = rankings.isNotEmpty()),
         isRefreshing = refresh.isRefreshing,
         errorMessage = refresh.errorMessage,
@@ -98,7 +99,7 @@ public class RankingsViewModel(
     }
   }
 
-  public fun selectRegion(region: String) {
+  public fun selectRegion(region: RankingRegion?) {
     selectedRegion.value = region
   }
 

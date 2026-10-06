@@ -1,15 +1,22 @@
 <resources>
     <string name="rankings_title">Classificação</string>
-    <string name="rankings_subtitle">Os melhores times de cada região</string>
+    <string name="rankings_subtitle">Os melhores times do mundo por Elo</string>
+    <string name="rankings_beta">Beta</string>
     <string name="loading_rankings">Carregando classificação</string>
     <string name="no_rankings_yet">Nenhuma classificação ainda</string>
-    <string name="regional_rankings_unpublished">As classificações regionais dos times ainda não foram publicadas.</string>
+    <string name="rankings_unpublished">Nenhum time tem partidas recentes suficientes para ser classificado ainda.</string>
     <string name="favorite_team">Time favorito</string>
-    <string name="region_rankings_unpublished">As classificações dos times de %1$s ainda não foram publicadas.</string>
-    <string name="top_teams_in_region">%1$d melhores • %2$s</string>
-    <string name="ranking_points">%1$s pts</string>
+    <string name="region_all">Todos</string>
+    <string name="region_americas">Américas</string>
+    <string name="region_emea">EMEA</string>
+    <string name="region_pacific">Pacífico</string>
+    <string name="region_china">China</string>
+    <string name="region_rankings_unpublished">Nenhum time de %1$s tem partidas recentes suficientes para ser classificado ainda.</string>
+    <string name="top_teams_in_region">Top %1$d • %2$s</string>
+    <string name="top_teams_all_circuits">Top %1$d • Todos os circuitos</string>
+    <string name="ranking_elo">%1$d Elo</string>
+    <string name="ranking_record">%1$dV–%2$dD</string>
     <string name="ranking_team_label">#%1$d %2$s</string>
-    <string name="country_with_separator">%1$s •</string>
     <string name="search_teams">Buscar equipes</string>
     <string name="close_team_search">Fechar busca</string>
     <string name="search_teams_hint">Digite pelo menos 3 caracteres</string>
@@ -17,12 +24,12 @@
     <string name="no_teams_found">Nenhuma equipe encontrada</string>
     <string name="try_another_team_name">Tente outro nome ou nome abreviado da equipe.</string>
     <string name="rankings_info_title">Como funciona a classificação</string>
-    <string name="rankings_info_introduction">A classificação mostra como os times se comparam dentro de cada região. Os pontos resumem o desempenho com base nos resultados das partidas.</string>
-    <string name="rankings_info_points_title">Posição e pontos</string>
-    <string name="rankings_info_points_body">Mais pontos significam uma posição mais alta na tabela. Os pontos são uma avaliação, não uma contagem de vitórias nem uma porcentagem de vitórias. O time na posição #1 é o mais bem colocado daquela região.</string>
+    <string name="rankings_info_introduction">O ranking usa um Elo calculado com as partidas encerradas de todos os circuitos, então todos os times dividem uma única tabela. Ele está em beta e pode mudar enquanto é ajustado.</string>
+    <string name="rankings_info_eligibility_title">Quem aparece</string>
+    <string name="rankings_info_eligibility_body">Um time aparece depois de jogar pelo menos 5 séries pontuadas nos últimos 180 dias, com uma partida nos últimos 90 dias. Times que param de jogar saem até voltarem.</string>
     <string name="rankings_info_elo_title">Como funciona o Elo</string>
     <string name="rankings_info_elo_body">O Elo compara o resultado de uma partida com o que as avaliações preveem. Vencer um time mais forte rende mais pontos. Perder para um time mais fraco custa mais. Resultados esperados costumam alterar menos as avaliações.</string>
-    <string name="rankings_info_context_title">Entenda os pontos no contexto</string>
-    <string name="rankings_info_context_body">Compare os pontos dentro da mesma região. Cada região tem sua própria classificação, então um número maior, por si só, não mostra qual time é mais forte entre regiões.</string>
+    <string name="rankings_info_context_title">Entenda o Elo no contexto</string>
+    <string name="rankings_info_context_body">Times de regiões e circuitos diferentes se enfrentam menos, então seus Elo se conectam por menos partidas. Diferenças pequenas são apertadas; o retrospecto V–D dá contexto ao Elo.</string>
     <string name="rankings_info_close">Concluído</string>
 </resources>

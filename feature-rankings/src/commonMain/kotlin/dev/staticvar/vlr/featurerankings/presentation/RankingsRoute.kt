@@ -16,14 +16,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismIconButton
 import dev.staticvar.designsystem.component.button.PrismIconButtonSize
@@ -36,9 +37,11 @@ import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
+import dev.staticvar.designsystem.component.tag.PrismTag
+import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.icon.about.StairStepAbout
-import dev.staticvar.vlr.domain.model.RegionalRanking
+import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.domain.model.TeamRanking
 import dev.staticvar.vlr.sharedui.component.common.FavoriteTicketCardBox
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
@@ -50,26 +53,34 @@ import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import org.jetbrains.compose.resources.stringResource
 import vlr.feature_rankings.generated.resources.Res
-import vlr.feature_rankings.generated.resources.country_with_separator
 import vlr.feature_rankings.generated.resources.favorite_team
 import vlr.feature_rankings.generated.resources.loading_rankings
 import vlr.feature_rankings.generated.resources.no_rankings_yet
-import vlr.feature_rankings.generated.resources.ranking_points
+import vlr.feature_rankings.generated.resources.ranking_elo
+import vlr.feature_rankings.generated.resources.ranking_record
 import vlr.feature_rankings.generated.resources.ranking_team_label
+import vlr.feature_rankings.generated.resources.rankings_beta
 import vlr.feature_rankings.generated.resources.rankings_info_title
 import vlr.feature_rankings.generated.resources.rankings_subtitle
 import vlr.feature_rankings.generated.resources.rankings_title
+import vlr.feature_rankings.generated.resources.rankings_unpublished
+import vlr.feature_rankings.generated.resources.region_all
+import vlr.feature_rankings.generated.resources.region_americas
+import vlr.feature_rankings.generated.resources.region_emea
+import vlr.feature_rankings.generated.resources.region_pacific
+import vlr.feature_rankings.generated.resources.region_china
 import vlr.feature_rankings.generated.resources.region_rankings_unpublished
-import vlr.feature_rankings.generated.resources.regional_rankings_unpublished
-import vlr.feature_rankings.generated.resources.search_teams
 import vlr.feature_rankings.generated.resources.top_teams_in_region
+import vlr.feature_rankings.generated.resources.search_teams
+import vlr.feature_rankings.generated.resources.top_teams_all_circuits
+import kotlin.math.roundToInt
 
 @Composable
 public fun RankingsRoute(
   uiState: RankingsUiState,
-  onRegionSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRegionSelected: (RankingRegion?) -> Unit = {},
   onRefresh: () -> Unit = {},
   searchState: TeamSearchUiState = TeamSearchUiState(),
   onOpenSearch: () -> Unit = {},
@@ -79,10 +90,10 @@ public fun RankingsRoute(
 ) {
   RankingsScreen(
     uiState = uiState,
-    onRegionSelected = onRegionSelected,
     onTeamSelected = onTeamSelected,
     modifier = modifier,
     onRefresh = onRefresh,
+    onRegionSelected = onRegionSelected,
     searchState = searchState,
     onOpenSearch = onOpenSearch,
     onCloseSearch = onCloseSearch,
@@ -94,9 +105,9 @@ public fun RankingsRoute(
 @Composable
 internal fun RankingsScreen(
   uiState: RankingsUiState,
-  onRegionSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onRegionSelected: (RankingRegion?) -> Unit = {},
   onRefresh: () -> Unit = {},
   searchState: TeamSearchUiState = TeamSearchUiState(),
   onOpenSearch: () -> Unit = {},
@@ -105,14 +116,12 @@ internal fun RankingsScreen(
   onRetrySearch: () -> Unit = {},
 ) {
   var showRankingInfo by rememberSaveable { mutableStateOf(false) }
-  val selectedRegion = uiState.selectedRegion
-  val selectedRanking = remember(uiState.regions, selectedRegion) {
-    uiState.regions.firstOrNull { it.region == selectedRegion }
-  }
-  val tabs = remember(uiState.regions) {
-    uiState.regions.map { ranking ->
-      PrismTab(id = ranking.region, label = ranking.regionLabel.ifBlank { ranking.region })
-    }
+  val hasContent = uiState.teams.isNotEmpty()
+  val visibleTeams = uiState.visibleTeams
+  val tabs = listOf(
+    PrismTab(id = "all", label = stringResource(Res.string.region_all)),
+  ) + RankingRegion.entries.map { region ->
+    PrismTab(id = region.apiValue, label = regionLabel(region))
   }
 
   Box(modifier = modifier.fillMaxSize()) {
@@ -126,6 +135,7 @@ internal fun RankingsScreen(
         PrismScreenTitleBar(
           title = stringResource(Res.string.rankings_title),
           subtitle = stringResource(Res.string.rankings_subtitle),
+          titleAccessory = { PrismTag(text = stringResource(Res.string.rankings_beta), style = PrismTagStyle.Accent) },
           actions = {
             PrismIconButton(
               icon = StairStepAbout,
@@ -136,7 +146,7 @@ internal fun RankingsScreen(
             SharedRefreshButton(
               isLoading = uiState.isLoading,
               isRefreshing = uiState.isRefreshing,
-              hasContent = uiState.regions.isNotEmpty(),
+              hasContent = hasContent,
               onRefresh = onRefresh,
             )
             PrismIconButton(
@@ -149,28 +159,28 @@ internal fun RankingsScreen(
         )
 
         SharedRefreshStatus(
-          hasContent = uiState.regions.isNotEmpty(),
+          hasContent = hasContent,
           isRefreshing = false,
-          errorMessage = uiState.errorMessage.takeIf { uiState.regions.isNotEmpty() },
+          errorMessage = uiState.errorMessage.takeIf { hasContent },
           errorDetails = uiState.errorDetails,
           onRefresh = onRefresh,
         )
       }
 
-      if (uiState.regions.isNotEmpty()) {
-        PrismTabs(
-          tabs = tabs,
-          selectedTabId = selectedRegion ?: uiState.regions.first().region,
-          onTabSelected = { onRegionSelected(it.id) },
-        )
-      }
+      PrismTabs(
+        tabs = tabs,
+        selectedTabId = uiState.selectedRegion?.apiValue ?: "all",
+        onTabSelected = { tab ->
+          onRegionSelected(RankingRegion.entries.firstOrNull { it.apiValue == tab.id })
+        },
+      )
 
       when {
-        (uiState.isLoading || uiState.isRefreshing) && uiState.regions.isEmpty() -> {
+        (uiState.isLoading || uiState.isRefreshing) && !hasContent -> {
           SharedScreenLoading(label = stringResource(Res.string.loading_rankings), modifier = Modifier.fillMaxSize())
         }
 
-        uiState.errorMessage != null && uiState.regions.isEmpty() -> {
+        uiState.errorMessage != null && !hasContent -> {
           SharedLoadError(
             errorMessage = uiState.errorMessage,
             errorDetails = uiState.errorDetails,
@@ -180,26 +190,26 @@ internal fun RankingsScreen(
           )
         }
 
-        selectedRanking == null || selectedRanking.teams.isEmpty() -> {
-          if (!uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null) {
-            SharedEmptyState(
-              artwork = EmptyStateArtwork.NoLiveMatches,
-              title = stringResource(Res.string.no_rankings_yet),
-              message = selectedRanking?.let {
-                stringResource(Res.string.region_rankings_unpublished, it.regionLabel.ifBlank { it.region })
-              }
-                ?: stringResource(Res.string.regional_rankings_unpublished),
-              modifier = Modifier.fillMaxWidth().weight(1f),
-            )
-          }
+        visibleTeams.isEmpty() -> {
+          SharedEmptyState(
+            artwork = EmptyStateArtwork.NoLiveMatches,
+            title = stringResource(Res.string.no_rankings_yet),
+            message = uiState.selectedRegion?.let { region ->
+              stringResource(Res.string.region_rankings_unpublished, regionLabel(region))
+            } ?: stringResource(Res.string.rankings_unpublished),
+            modifier = Modifier.fillMaxWidth().weight(1f),
+          )
         }
 
         else -> {
-          RankingsContent(
-            selectedRanking = selectedRanking,
-            onTeamSelected = onTeamSelected,
-            modifier = Modifier.fillMaxSize(),
-          )
+          key(uiState.selectedRegion) {
+            RankingsContent(
+              teams = visibleTeams,
+              selectedRegion = uiState.selectedRegion,
+              onTeamSelected = onTeamSelected,
+              modifier = Modifier.fillMaxSize(),
+            )
+          }
         }
       }
     }
@@ -216,7 +226,8 @@ internal fun RankingsScreen(
 
 @Composable
 private fun RankingsContent(
-  selectedRanking: RegionalRanking,
+  teams: List<TeamRanking>,
+  selectedRegion: RankingRegion?,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -224,20 +235,16 @@ private fun RankingsContent(
     modifier = modifier.cardMascotViewport(),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
-    if (selectedRanking.teams.isNotEmpty()) {
-      item {
-        Text(
-          text = stringResource(
-            Res.string.top_teams_in_region,
-            selectedRanking.teams.size,
-            selectedRanking.regionLabel.ifBlank { selectedRanking.region },
-          ),
-          style = Prism.typography.label,
-          color = Prism.color.labelColor,
-        )
-      }
+    item {
+      Text(
+        text = selectedRegion?.let { region ->
+          stringResource(Res.string.top_teams_in_region, teams.size, regionLabel(region))
+        } ?: stringResource(Res.string.top_teams_all_circuits, teams.size),
+        style = Prism.typography.label,
+        color = Prism.color.labelColor,
+      )
     }
-    items(selectedRanking.teams, key = { it.teamId }) { team ->
+    items(teams, key = { it.teamId }) { team ->
       RankingTeamItem(
         team = team,
         onTeamSelected = onTeamSelected,
@@ -277,22 +284,18 @@ private fun RankingTeamItem(
             style = Prism.typography.cardTitle,
             color = if (team.isFavorite) Prism.color.accent else Prism.color.titleColor,
           )
-          Row(
+          Text(
+            text = listOf(
+              stringResource(Res.string.ranking_elo, team.elo.roundToInt()),
+              stringResource(Res.string.ranking_record, team.wins, team.losses),
+              team.country,
+            ).filter(String::isNotBlank).joinToString(separator = " • "),
             modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-            horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            Text(
-              text = stringResource(Res.string.country_with_separator, team.country),
-              style = Prism.typography.bodySmall,
-              color = Prism.color.labelColor,
-            )
-            Text(
-              text = stringResource(Res.string.ranking_points, team.points),
-              style = Prism.typography.bodySmall,
-              color = Prism.color.labelColor,
-            )
-          }
+            style = Prism.typography.bodySmall,
+            color = Prism.color.labelColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+          )
         }
         SharedNetworkIcon(
           imageUrl = team.teamLogo,
@@ -306,3 +309,13 @@ private fun RankingTeamItem(
     }
   }
 }
+
+@Composable
+private fun regionLabel(region: RankingRegion): String = stringResource(
+  when (region) {
+    RankingRegion.Americas -> Res.string.region_americas
+    RankingRegion.Emea -> Res.string.region_emea
+    RankingRegion.Pacific -> Res.string.region_pacific
+    RankingRegion.China -> Res.string.region_china
+  },
+)

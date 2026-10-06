@@ -1,15 +1,22 @@
 <resources>
     <string name="rankings_title">Рейтинг</string>
-    <string name="rankings_subtitle">Лучшие команды каждого региона</string>
+    <string name="rankings_subtitle">Лучшие команды мира по Elo</string>
+    <string name="rankings_beta">Бета</string>
     <string name="loading_rankings">Загрузка рейтинга</string>
     <string name="no_rankings_yet">Рейтинга пока нет</string>
-    <string name="regional_rankings_unpublished">Региональные рейтинги команд ещё не опубликованы.</string>
+    <string name="rankings_unpublished">Пока ни у одной команды нет достаточного числа недавних матчей для рейтинга.</string>
     <string name="favorite_team">Избранная команда</string>
-    <string name="region_rankings_unpublished">Рейтинг команд региона %1$s ещё не опубликован.</string>
-    <string name="top_teams_in_region">Топ-%1$d • %2$s</string>
-    <string name="ranking_points">%1$s очк.</string>
+    <string name="region_all">Все</string>
+    <string name="region_americas">Америка</string>
+    <string name="region_emea">EMEA</string>
+    <string name="region_pacific">Тихоокеанский регион</string>
+    <string name="region_china">Китай</string>
+    <string name="region_rankings_unpublished">Пока ни у одной команды в регионе %1$s нет достаточного числа недавних матчей для рейтинга.</string>
+    <string name="top_teams_in_region">Топ %1$d • %2$s</string>
+    <string name="top_teams_all_circuits">Топ %1$d • Все серии турниров</string>
+    <string name="ranking_elo">%1$d Elo</string>
+    <string name="ranking_record">В–П %1$d–%2$d</string>
     <string name="ranking_team_label">#%1$d %2$s</string>
-    <string name="country_with_separator">%1$s •</string>
     <string name="search_teams">Поиск команд</string>
     <string name="close_team_search">Закрыть поиск</string>
     <string name="search_teams_hint">Введите не менее 3 символов</string>
@@ -17,12 +24,12 @@
     <string name="no_teams_found">Команды не найдены</string>
     <string name="try_another_team_name">Попробуйте другое название команды или сокращение.</string>
     <string name="rankings_info_title">Как устроен рейтинг</string>
-    <string name="rankings_info_introduction">Рейтинг показывает, как команды соотносятся друг с другом внутри каждого региона. Очки отражают их выступления на основе результатов матчей.</string>
-    <string name="rankings_info_points_title">Место и очки</string>
-    <string name="rankings_info_points_body">Чем больше очков, тем выше место в таблице. Очки оценивают силу команды, а не показывают число побед или процент побед. Место #1 занимает лучшая по рейтингу команда региона.</string>
+    <string name="rankings_info_introduction">Рейтинг использует Elo по завершённым матчам всех серий турниров, поэтому все команды находятся в одной таблице. Рейтинг в бета-версии и может меняться по мере настройки.</string>
+    <string name="rankings_info_eligibility_title">Кто попадает в рейтинг</string>
+    <string name="rankings_info_eligibility_body">Команда появляется после минимум 5 учтённых серий за последние 180 дней и матча за последние 90 дней. Команды, которые перестали играть, выпадают до возвращения.</string>
     <string name="rankings_info_elo_title">Как работает Elo</string>
     <string name="rankings_info_elo_body">Elo сравнивает результат матча с прогнозом на основе рейтингов команд. Победа над более сильной командой приносит больше очков, а поражение от более слабой отнимает больше. Ожидаемые результаты обычно меньше меняют рейтинг.</string>
-    <string name="rankings_info_context_title">Как понимать очки</string>
-    <string name="rankings_info_context_body">Сравнивайте очки внутри одного региона. У разных регионов отдельные таблицы, поэтому одно лишь большее число очков не показывает, какая команда сильнее при сравнении регионов.</string>
+    <string name="rankings_info_context_title">Как понимать рейтинг</string>
+    <string name="rankings_info_context_body">Команды из разных регионов и серий турниров встречаются реже, поэтому их рейтинги связаны меньшим числом матчей. Небольшой разрыв — это почти равенство; баланс В–П дополняет рейтинг.</string>
     <string name="rankings_info_close">Готово</string>
 </resources>

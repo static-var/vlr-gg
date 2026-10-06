@@ -20,11 +20,11 @@ import vlr.feature_rankings.generated.resources.Res
 import vlr.feature_rankings.generated.resources.rankings_info_close
 import vlr.feature_rankings.generated.resources.rankings_info_context_body
 import vlr.feature_rankings.generated.resources.rankings_info_context_title
+import vlr.feature_rankings.generated.resources.rankings_info_eligibility_body
+import vlr.feature_rankings.generated.resources.rankings_info_eligibility_title
 import vlr.feature_rankings.generated.resources.rankings_info_elo_body
 import vlr.feature_rankings.generated.resources.rankings_info_elo_title
 import vlr.feature_rankings.generated.resources.rankings_info_introduction
-import vlr.feature_rankings.generated.resources.rankings_info_points_body
-import vlr.feature_rankings.generated.resources.rankings_info_points_title
 import vlr.feature_rankings.generated.resources.rankings_info_title
 
 @Composable
@@ -55,8 +55,8 @@ internal fun RankingsInfoSheet(visible: Boolean, onDismiss: () -> Unit) {
         color = Prism.color.bodyColor,
       )
       RankingInfoSection(
-        title = stringResource(Res.string.rankings_info_points_title),
-        body = stringResource(Res.string.rankings_info_points_body),
+        title = stringResource(Res.string.rankings_info_eligibility_title),
+        body = stringResource(Res.string.rankings_info_eligibility_body),
       )
       RankingInfoSection(
         title = stringResource(Res.string.rankings_info_elo_title),

@@ -241,13 +241,13 @@ internal fun appNavigationModule(): Module = module {
 
     RankingsRoute(
       uiState = uiState,
+      onRegionSelected = viewModel::selectRegion,
       searchState = searchState,
       onOpenSearch = viewModel::openSearch,
       onCloseSearch = viewModel::closeSearch,
       onSearchQueryChanged = viewModel::updateSearchQuery,
       onRetrySearch = viewModel::retrySearch,
       onRefresh = viewModel::refresh,
-      onRegionSelected = viewModel::selectRegion,
       onTeamSelected = LocalVlrAppState.current::showRootTeamDetails,
       modifier = Modifier.fillMaxSize(),
     )

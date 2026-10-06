@@ -1,15 +1,22 @@
 <resources>
     <string name="rankings_title">Ranking</string>
-    <string name="rankings_subtitle">The top teams in every region</string>
+    <string name="rankings_subtitle">Top teams worldwide by Elo</string>
+    <string name="rankings_beta">Beta</string>
     <string name="loading_rankings">Loading rankings</string>
     <string name="no_rankings_yet">No rankings yet</string>
-    <string name="regional_rankings_unpublished">Regional team rankings have not been published.</string>
+    <string name="rankings_unpublished">No team has enough recent matches to be ranked yet.</string>
     <string name="favorite_team">Favorite team</string>
-    <string name="region_rankings_unpublished">Team rankings for %1$s have not been published.</string>
+    <string name="region_all">All</string>
+    <string name="region_americas">Americas</string>
+    <string name="region_emea">EMEA</string>
+    <string name="region_pacific">Pacific</string>
+    <string name="region_china">China</string>
+    <string name="region_rankings_unpublished">No team in %1$s has enough recent matches to be ranked yet.</string>
     <string name="top_teams_in_region">Top %1$d • %2$s</string>
-    <string name="ranking_points">%1$s pts</string>
+    <string name="top_teams_all_circuits">Top %1$d • All circuits</string>
+    <string name="ranking_elo">%1$d Elo</string>
+    <string name="ranking_record">%1$dW–%2$dL</string>
     <string name="ranking_team_label">#%1$d %2$s</string>
-    <string name="country_with_separator">%1$s •</string>
     <string name="search_teams">Search teams</string>
     <string name="close_team_search">Close search</string>
     <string name="search_teams_hint">Enter at least 3 characters</string>
@@ -17,12 +24,12 @@
     <string name="no_teams_found">No teams found</string>
     <string name="try_another_team_name">Try another team name or short name.</string>
     <string name="rankings_info_title">How rankings work</string>
-    <string name="rankings_info_introduction">Rankings show how teams compare within each region. Points summarize performance based on match results.</string>
-    <string name="rankings_info_points_title">Rank and points</string>
-    <string name="rankings_info_points_body">More points means a higher position in the table. Points are a rating, not a count of wins or a win percentage. Rank #1 is the highest-ranked team in that region.</string>
+    <string name="rankings_info_introduction">Rankings use an Elo rating built from completed matches across every circuit, so all teams share one leaderboard. This ranking is in beta and may change as it is tuned.</string>
+    <string name="rankings_info_eligibility_title">Who is ranked</string>
+    <string name="rankings_info_eligibility_body">A team appears after playing at least 5 rated series in the last 180 days, with a match in the last 90 days. Teams that stop playing drop off until they return.</string>
     <string name="rankings_info_elo_title">How Elo works</string>
     <string name="rankings_info_elo_body">Elo compares a match result with what the ratings predict. Beating a stronger team earns more points; losing to a weaker team costs more. Expected results usually move ratings less.</string>
-    <string name="rankings_info_context_title">Read scores in context</string>
-    <string name="rankings_info_context_body">Compare points within the same region. Different regions have separate leaderboards, so a bigger number alone does not show which team is stronger across regions.</string>
+    <string name="rankings_info_context_title">Read ratings in context</string>
+    <string name="rankings_info_context_body">Teams from different regions and circuits meet less often, so their ratings are linked through fewer matches. Treat small gaps as close, and the W–L record as context for the rating.</string>
     <string name="rankings_info_close">Done</string>
 </resources>

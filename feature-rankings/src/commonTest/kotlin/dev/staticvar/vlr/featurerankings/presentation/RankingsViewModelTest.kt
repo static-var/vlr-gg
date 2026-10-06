@@ -7,7 +7,7 @@ package dev.staticvar.vlr.featurerankings.presentation
 import androidx.lifecycle.ViewModelStore
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
-import dev.staticvar.vlr.domain.model.RegionalRanking
+import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.domain.model.TeamRanking
 import dev.staticvar.vlr.domain.model.TeamSearchResult
 import dev.staticvar.vlr.domain.repository.RankingsRepository
@@ -51,22 +51,16 @@ class RankingsViewModelTest {
   }
 
   @Test
-  fun initSelectsFirstRegionWhenRankingsExist() {
+  fun initExposesRankedTeamsInRepositoryOrder() {
     runTest(dispatcher) {
-      val repository =
-        FakeRankingsRepository(
-          rankings =
-          listOf(
-            ranking(region = "EMEA", teamName = "FNATIC", rank = 1),
-            ranking(region = "Americas", teamName = "G2", rank = 1),
-          ),
-        )
+      val teams = listOf(ranking("NRG", rank = 1), ranking("FNATIC", rank = 2))
+      val repository = FakeRankingsRepository(rankings = teams)
 
       val viewModel = createViewModel(repository)
       advanceUntilIdle()
 
-      assertEquals("EMEA", viewModel.uiState.value.selectedRegion)
-      assertEquals(2, viewModel.uiState.value.regions.size)
+      assertEquals(teams, viewModel.uiState.value.teams)
+      assertEquals(false, viewModel.uiState.value.isLoading)
     }
   }
 
@@ -85,7 +79,7 @@ class RankingsViewModelTest {
 
   @Test
   fun refreshCoalescesAndKeepsCacheOnFailure() = runTest(dispatcher) {
-    val cached = listOf(ranking("EMEA", "FNATIC", 1))
+    val cached = listOf(ranking("FNATIC", 1))
     val repository = FakeRankingsRepository(cached)
     val gate = CompletableDeferred<Unit>()
     repository.refreshGate = gate
@@ -98,55 +92,84 @@ class RankingsViewModelTest {
     advanceUntilIdle()
     assertEquals(1, repository.refreshCallCount)
     assertEquals(true, viewModel.uiState.value.isRefreshing)
-    assertEquals(cached, viewModel.uiState.value.regions)
+    assertEquals(cached, viewModel.uiState.value.teams)
 
     gate.complete(Unit)
     advanceUntilIdle()
     assertEquals(false, viewModel.uiState.value.isRefreshing)
     assertEquals("offline", viewModel.uiState.value.errorMessage)
-    assertEquals(cached, viewModel.uiState.value.regions)
+    assertEquals(cached, viewModel.uiState.value.teams)
   }
 
   @Test
-  fun chosenRegionSurvivesDatabaseUpdatesAndRefresh() = runTest(dispatcher) {
-    val emea = ranking("EMEA", "FNATIC", 1)
-    val americas = ranking("Americas", "G2", 1)
-    val repository = FakeRankingsRepository(listOf(emea, americas))
+  fun databaseUpdatesReplaceTheRankedTeams() = runTest(dispatcher) {
+    val nrg = ranking("NRG", 1)
+    val fnatic = ranking("FNATIC", 2)
+    val repository = FakeRankingsRepository(listOf(nrg, fnatic))
     val viewModel = createViewModel(repository)
     advanceUntilIdle()
 
-    viewModel.selectRegion("Americas")
-    repository.rankingsFlow.value = listOf(americas, emea)
-    viewModel.refresh()
+    repository.rankingsFlow.value = listOf(fnatic.copy(rank = 1), nrg.copy(rank = 2))
     advanceUntilIdle()
-
-    assertEquals("Americas", viewModel.uiState.value.selectedRegion)
-    assertEquals(listOf(americas, emea), viewModel.uiState.value.regions)
-  }
-
-  @Test
-  fun missingSelectedRegionFallsBackToAvailableRankings() = runTest(dispatcher) {
-    val emea = ranking("EMEA", "FNATIC", 1)
-    val americas = ranking("Americas", "G2", 1)
-    val repository = FakeRankingsRepository(listOf(emea, americas))
-    val viewModel = createViewModel(repository)
-    advanceUntilIdle()
-    viewModel.selectRegion("Americas")
-    advanceUntilIdle()
-    assertEquals("Americas", viewModel.uiState.value.selectedRegion)
-
-    repository.rankingsFlow.value = listOf(emea)
-    advanceUntilIdle()
-    assertEquals("EMEA", viewModel.uiState.value.selectedRegion)
-    assertEquals(listOf(emea), viewModel.uiState.value.regions)
+    assertEquals(listOf("FNATIC", "NRG"), viewModel.uiState.value.teams.map { it.teamName })
 
     repository.rankingsFlow.value = emptyList()
     advanceUntilIdle()
-    assertEquals(null, viewModel.uiState.value.selectedRegion)
+    assertEquals(emptyList(), viewModel.uiState.value.teams)
+  }
 
-    repository.rankingsFlow.value = listOf(emea)
+  @Test
+  fun regionSelectionUsesCacheAndPreservesApiTiesAndGlobalRanks() = runTest(dispatcher) {
+    val teams = listOf(
+      ranking("NRG", 1).copy(region = RankingRegion.Americas, elo = 1800.0),
+      ranking("FNATIC", 2).copy(region = RankingRegion.Emea),
+      ranking("G2", 3).copy(region = RankingRegion.Americas, elo = 1800.0),
+      ranking("MIBR", 3).copy(region = RankingRegion.Americas, elo = 1800.0),
+      ranking("Unassigned", 5),
+      ranking("Cloud9", 6).copy(region = RankingRegion.Americas),
+    )
+    val repository = FakeRankingsRepository(teams)
+    val viewModel = createViewModel(repository, networkStatus = NetworkStatus.Offline)
     advanceUntilIdle()
-    assertEquals("EMEA", viewModel.uiState.value.selectedRegion)
+    assertEquals(null, viewModel.uiState.value.selectedRegion)
+    assertEquals(teams, viewModel.uiState.value.visibleTeams)
+
+    viewModel.selectRegion(RankingRegion.Americas)
+    advanceUntilIdle()
+    assertEquals(listOf("NRG", "G2", "MIBR", "Cloud9"), viewModel.uiState.value.visibleTeams.map { it.teamName })
+    assertEquals(listOf(1, 2, 2, 4), viewModel.uiState.value.visibleTeams.map { it.rank })
+    assertEquals(teams, repository.rankingsFlow.value)
+    assertEquals(0, repository.refreshCallCount)
+
+    viewModel.selectRegion(null)
+    advanceUntilIdle()
+    assertEquals(teams, viewModel.uiState.value.visibleTeams)
+    assertEquals(0, repository.refreshCallCount)
+  }
+
+  @Test
+  fun emptyRegionRemainsLoadedAndSelectionSurvivesRefreshAndCacheUpdates() = runTest(dispatcher) {
+    val repository = FakeRankingsRepository(listOf(ranking("NRG", 1).copy(region = RankingRegion.Americas)))
+    val gate = CompletableDeferred<Unit>()
+    repository.refreshGate = gate
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+    viewModel.selectRegion(RankingRegion.China)
+    viewModel.refresh()
+    advanceUntilIdle()
+
+    assertEquals(emptyList(), viewModel.uiState.value.visibleTeams)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(true, viewModel.uiState.value.isRefreshing)
+
+    val edg = ranking("EDward Gaming", 8).copy(region = RankingRegion.China, isFavorite = true)
+    repository.rankingsFlow.value += edg
+    gate.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(RankingRegion.China, viewModel.uiState.value.selectedRegion)
+    assertEquals(listOf(edg.copy(rank = 1)), viewModel.uiState.value.visibleTeams)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(false, viewModel.uiState.value.isRefreshing)
   }
 
   @Test
@@ -237,6 +260,7 @@ class RankingsViewModelTest {
 
   private fun createViewModel(
     repository: FakeRankingsRepository,
+    networkStatus: NetworkStatus = NetworkStatus.Online,
     search: suspend (String) -> Result<List<TeamSearchResult>> = { Result.success(emptyList()) },
   ): RankingsViewModel = RankingsViewModel(
     observeRankingsUseCase = ObserveRankingsUseCase(repository),
@@ -245,36 +269,29 @@ class RankingsViewModelTest {
       override suspend fun searchTeams(query: String): Result<List<TeamSearchResult>> = search(query)
     },
     networkMonitor = object : NetworkMonitor {
-      override val status = MutableStateFlow(NetworkStatus.Online)
+      override val status = MutableStateFlow(networkStatus)
     },
   ).also { viewModelStore.put("viewModel", it) }
 
-  private fun ranking(region: String, teamName: String, rank: Int): RegionalRanking = RegionalRanking(
-    region = region,
-    teams =
-    listOf(
-      TeamRanking(
-        teamId = "$region-$rank",
-        teamName = teamName,
-        teamLogo = "",
-        country = region,
-        rank = rank,
-        points = "100",
-      ),
-    ),
+  private fun ranking(teamName: String, rank: Int): TeamRanking = TeamRanking(
+    teamId = "$teamName-$rank",
+    teamName = teamName,
+    teamLogo = "",
+    country = "",
+    rank = rank,
+    elo = 1800.0 - rank,
+    wins = 10,
+    losses = rank,
   )
 
-  private class FakeRankingsRepository(rankings: List<RegionalRanking>) : RankingsRepository {
+  private class FakeRankingsRepository(rankings: List<TeamRanking>) : RankingsRepository {
     var refreshGate: CompletableDeferred<Unit>? = null
     var refreshResult: Result<Unit> = Result.success(Unit)
     val rankingsFlow = MutableStateFlow(rankings)
     var refreshCallCount: Int = 0
       private set
 
-    override fun getAllRankings(): Flow<List<RegionalRanking>> = rankingsFlow
-
-    override fun getRankingsByRegion(region: String): Flow<RegionalRanking?> =
-      MutableStateFlow(rankingsFlow.value.firstOrNull { it.region == region })
+    override fun getRankings(): Flow<List<TeamRanking>> = rankingsFlow
 
     override suspend fun refreshRankings(): Result<Unit> {
       refreshCallCount += 1

@@ -1,15 +1,22 @@
 <resources>
     <string name="rankings_title">랭킹</string>
-    <string name="rankings_subtitle">지역별 상위 팀</string>
+    <string name="rankings_subtitle">Elo 기준 세계 최상위 팀</string>
+    <string name="rankings_beta">베타</string>
     <string name="loading_rankings">랭킹 불러오는 중</string>
     <string name="no_rankings_yet">아직 랭킹이 없습니다</string>
-    <string name="regional_rankings_unpublished">지역별 팀 랭킹이 아직 게시되지 않았습니다.</string>
+    <string name="rankings_unpublished">아직 순위에 오를 만큼 최근 경기를 치른 팀이 없습니다.</string>
     <string name="favorite_team">즐겨찾는 팀</string>
-    <string name="region_rankings_unpublished">%1$s 팀 랭킹이 아직 게시되지 않았습니다.</string>
-    <string name="top_teams_in_region">상위 %1$d개 팀 • %2$s</string>
-    <string name="ranking_points">%1$s점</string>
+    <string name="region_all">전체</string>
+    <string name="region_americas">아메리카</string>
+    <string name="region_emea">EMEA</string>
+    <string name="region_pacific">퍼시픽</string>
+    <string name="region_china">중국</string>
+    <string name="region_rankings_unpublished">%1$s 지역에는 아직 순위에 오를 만큼 최근 경기를 치른 팀이 없습니다.</string>
+    <string name="top_teams_in_region">상위 %1$d • %2$s</string>
+    <string name="top_teams_all_circuits">상위 %1$d • 전체 서킷</string>
+    <string name="ranking_elo">Elo %1$d</string>
+    <string name="ranking_record">%1$d승 %2$d패</string>
     <string name="ranking_team_label">#%1$d %2$s</string>
-    <string name="country_with_separator">%1$s •</string>
     <string name="search_teams">팀 검색</string>
     <string name="close_team_search">검색 닫기</string>
     <string name="search_teams_hint">3자 이상 입력하세요</string>
@@ -17,12 +24,12 @@
     <string name="no_teams_found">팀을 찾을 수 없습니다</string>
     <string name="try_another_team_name">다른 팀 이름이나 약칭으로 검색해 보세요.</string>
     <string name="rankings_info_title">랭킹은 어떻게 정해지나요</string>
-    <string name="rankings_info_introduction">랭킹은 각 지역에서 팀들이 서로 비교해 어느 위치에 있는지 보여 줍니다. 점수는 경기 결과를 바탕으로 팀의 성적을 요약합니다.</string>
-    <string name="rankings_info_points_title">순위와 점수</string>
-    <string name="rankings_info_points_body">점수가 높을수록 순위도 높아집니다. 점수는 팀의 실력을 평가하는 수치이며, 승리 횟수나 승률이 아닙니다. 순위 #1은 해당 지역에서 가장 높은 순위의 팀입니다.</string>
+    <string name="rankings_info_introduction">순위는 모든 서킷의 종료된 경기로 계산한 Elo 레이팅을 사용하므로 모든 팀이 하나의 순위표를 공유합니다. 이 순위는 베타 버전이며 조정 과정에서 바뀔 수 있습니다.</string>
+    <string name="rankings_info_eligibility_title">순위 대상</string>
+    <string name="rankings_info_eligibility_body">최근 180일 동안 레이팅 시리즈를 5회 이상 치르고 최근 90일 안에 경기를 치른 팀이 표시됩니다. 경기를 멈춘 팀은 복귀할 때까지 제외됩니다.</string>
     <string name="rankings_info_elo_title">Elo는 어떻게 작동하나요</string>
     <string name="rankings_info_elo_body">Elo는 경기 결과를 팀의 점수로 예측한 결과와 비교합니다. 더 강한 팀을 이기면 더 많은 점수를 얻고, 더 약한 팀에 지면 더 많은 점수를 잃습니다. 예상대로 경기가 끝나면 보통 점수 변화가 더 작습니다.</string>
     <string name="rankings_info_context_title">점수를 해석할 때 알아둘 점</string>
-    <string name="rankings_info_context_body">점수는 같은 지역 안에서 비교하세요. 지역마다 별도의 순위표를 사용하므로, 숫자가 더 크다는 이유만으로 다른 지역의 팀보다 더 강하다고 볼 수는 없습니다.</string>
+    <string name="rankings_info_context_body">서로 다른 지역과 서킷의 팀은 맞붙는 일이 적어 레이팅이 더 적은 경기로 연결됩니다. 작은 차이는 접전으로 보고, 승패 기록은 레이팅의 참고로 활용하세요.</string>
     <string name="rankings_info_close">완료</string>
 </resources>

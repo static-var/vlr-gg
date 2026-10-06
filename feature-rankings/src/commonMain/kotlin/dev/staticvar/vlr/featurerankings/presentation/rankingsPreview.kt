@@ -14,46 +14,62 @@ import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
-import dev.staticvar.vlr.domain.model.RegionalRanking
+import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.domain.model.TeamRanking
 
 @PrismPreview
 @Composable
 internal fun RankingsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+  RankingsPreviewContent(variant, selectedRegion = null)
+}
+
+@PrismPreview
+@Composable
+internal fun RegionalRankingsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+  RankingsPreviewContent(variant, selectedRegion = RankingRegion.Emea)
+}
+
+@PrismPreview
+@Composable
+internal fun EmptyRegionalRankingsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+  RankingsPreviewContent(variant, selectedRegion = RankingRegion.China)
+}
+
+@Composable
+private fun RankingsPreviewContent(variant: PrismVariant, selectedRegion: RankingRegion?) {
   PrismTheme(variant = variant) {
     RankingsScreen(
       uiState =
       RankingsUiState(
-        regions =
+        teams =
         listOf(
-          RegionalRanking(
-            region = "EMEA",
-            teams =
-            listOf(
-              TeamRanking(
-                teamId = "fnc",
-                teamName = "FNATIC",
-                teamLogo = "",
-                country = "EU",
-                rank = 1,
-                points = "100",
-                isFavorite = true,
-              ),
-              TeamRanking(
-                teamId = "vit",
-                teamName = "Vitality",
-                teamLogo = "",
-                country = "EU",
-                rank = 2,
-                points = "88",
-              ),
-            ),
+          TeamRanking(
+            teamId = "1034",
+            teamName = "NRG",
+            teamLogo = "",
+            country = "United States",
+            rank = 1,
+            elo = 1834.6,
+            wins = 31,
+            losses = 10,
+            isFavorite = true,
+            region = RankingRegion.Americas,
+          ),
+          TeamRanking(
+            teamId = "2593",
+            teamName = "FNATIC",
+            teamLogo = "",
+            country = "Europe",
+            rank = 2,
+            elo = 1802.4,
+            wins = 27,
+            losses = 11,
+            region = RankingRegion.Emea,
           ),
         ),
-        selectedRegion = "EMEA",
         isLoading = false,
+        selectedRegion = selectedRegion,
       ),
-      onRegionSelected = {},
       onTeamSelected = {},
       modifier = Modifier.fillMaxSize().background(Prism.color.background),
     )

@@ -4,7 +4,6 @@
  */
 package dev.staticvar.vlr.featurerankings.usecase
 
-import dev.staticvar.vlr.domain.model.RegionalRanking
 import dev.staticvar.vlr.domain.model.TeamRanking
 import dev.staticvar.vlr.domain.repository.RankingsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,19 +21,15 @@ class RankingsUseCasesTest {
     runTest {
       val expected =
         listOf(
-          RegionalRanking(
-            region = "EMEA",
-            teams =
-            listOf(
-              TeamRanking(
-                teamId = "fnc",
-                teamName = "FNATIC",
-                teamLogo = "",
-                country = "EU",
-                rank = 1,
-                points = "100",
-              ),
-            ),
+          TeamRanking(
+            teamId = "2593",
+            teamName = "FNATIC",
+            teamLogo = "",
+            country = "Europe",
+            rank = 1,
+            elo = 1800.0,
+            wins = 20,
+            losses = 5,
           ),
         )
       val repository = FakeRankingsRepository(rankings = expected)
@@ -57,14 +52,12 @@ class RankingsUseCasesTest {
     }
   }
 
-  private class FakeRankingsRepository(rankings: List<RegionalRanking>) : RankingsRepository {
-    private val rankingsFlow: Flow<List<RegionalRanking>> = flowOf(rankings)
+  private class FakeRankingsRepository(rankings: List<TeamRanking>) : RankingsRepository {
+    private val rankingsFlow: Flow<List<TeamRanking>> = flowOf(rankings)
     var refreshCalls: Int = 0
       private set
 
-    override fun getAllRankings(): Flow<List<RegionalRanking>> = rankingsFlow
-
-    override fun getRankingsByRegion(region: String): Flow<RegionalRanking?> = flowOf(null)
+    override fun getRankings(): Flow<List<TeamRanking>> = rankingsFlow
 
     override suspend fun refreshRankings(): Result<Unit> {
       refreshCalls += 1

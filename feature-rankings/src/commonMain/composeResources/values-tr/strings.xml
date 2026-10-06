@@ -1,15 +1,22 @@
 <resources>
     <string name="rankings_title">Sıralama</string>
-    <string name="rankings_subtitle">Her bölgenin en iyi takımları</string>
+    <string name="rankings_subtitle">Elo'ya göre dünyanın en iyi takımları</string>
+    <string name="rankings_beta">Beta</string>
     <string name="loading_rankings">Sıralamalar yükleniyor</string>
     <string name="no_rankings_yet">Henüz sıralama yok</string>
-    <string name="regional_rankings_unpublished">Bölgesel takım sıralamaları henüz yayımlanmadı.</string>
+    <string name="rankings_unpublished">Henüz sıralamaya girecek kadar yakın tarihli maçı olan takım yok.</string>
     <string name="favorite_team">Favori takım</string>
-    <string name="region_rankings_unpublished">%1$s için takım sıralamaları henüz yayımlanmadı.</string>
+    <string name="region_all">Tümü</string>
+    <string name="region_americas">Amerika</string>
+    <string name="region_emea">EMEA</string>
+    <string name="region_pacific">Pasifik</string>
+    <string name="region_china">Çin</string>
+    <string name="region_rankings_unpublished">%1$s bölgesinde henüz sıralamaya girecek kadar yakın tarihli maçı olan takım yok.</string>
     <string name="top_teams_in_region">İlk %1$d • %2$s</string>
-    <string name="ranking_points">%1$s puan</string>
+    <string name="top_teams_all_circuits">İlk %1$d • Tüm ligler</string>
+    <string name="ranking_elo">%1$d Elo</string>
+    <string name="ranking_record">%1$dG–%2$dM</string>
     <string name="ranking_team_label">#%1$d %2$s</string>
-    <string name="country_with_separator">%1$s •</string>
     <string name="search_teams">Takım ara</string>
     <string name="close_team_search">Aramayı kapat</string>
     <string name="search_teams_hint">En az 3 karakter girin</string>
@@ -17,12 +24,12 @@
     <string name="no_teams_found">Takım bulunamadı</string>
     <string name="try_another_team_name">Başka bir takım adı veya kısa ad deneyin.</string>
     <string name="rankings_info_title">Sıralamalar nasıl belirlenir</string>
-    <string name="rankings_info_introduction">Sıralamalar, her bölgedeki takımların birbirlerine göre durumunu gösterir. Puanlar, maç sonuçlarına dayalı performansı özetler.</string>
-    <string name="rankings_info_points_title">Sıra ve puan</string>
-    <string name="rankings_info_points_body">Daha fazla puan, tabloda daha yüksek bir sıra demektir. Puanlar bir derecelendirmedir, galibiyet sayısı veya galibiyet yüzdesi değildir. #1, o bölgenin en üst sıradaki takımıdır.</string>
+    <string name="rankings_info_introduction">Sıralama, tüm liglerdeki tamamlanmış maçlardan hesaplanan Elo puanını kullanır; bu yüzden tüm takımlar tek bir tabloyu paylaşır. Sıralama beta aşamasındadır ve ayarlandıkça değişebilir.</string>
+    <string name="rankings_info_eligibility_title">Kimler sıralanır</string>
+    <string name="rankings_info_eligibility_body">Bir takım, son 180 günde en az 5 puanlı seri ve son 90 günde bir maç oynadıktan sonra görünür. Oynamayı bırakan takımlar dönene kadar listeden çıkar.</string>
     <string name="rankings_info_elo_title">Elo nasıl çalışır</string>
     <string name="rankings_info_elo_body">Elo, maç sonucunu takımların puanlarına göre beklenen sonuçla karşılaştırır. Daha güçlü bir takımı yenmek daha fazla puan kazandırır; daha zayıf bir takıma yenilmek daha fazla puan kaybettirir. Beklenen sonuçlar genellikle puanları daha az değiştirir.</string>
     <string name="rankings_info_context_title">Puanları nasıl yorumlamalı</string>
-    <string name="rankings_info_context_body">Puanları aynı bölge içinde karşılaştırın. Her bölgenin ayrı bir sıralaması vardır. Bu yüzden yalnızca daha yüksek bir sayı, farklı bölgelerdeki takımlardan hangisinin daha güçlü olduğunu göstermez.</string>
+    <string name="rankings_info_context_body">Farklı bölge ve liglerdeki takımlar daha az karşılaşır, bu yüzden puanları daha az maçla bağlanır. Küçük farkları yakın kabul edin; G–M kaydı puana bağlam katar.</string>
     <string name="rankings_info_close">Tamam</string>
 </resources>

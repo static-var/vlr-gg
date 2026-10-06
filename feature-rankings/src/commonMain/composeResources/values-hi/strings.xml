@@ -1,15 +1,22 @@
 <resources>
     <string name="rankings_title">रैंकिंग</string>
-    <string name="rankings_subtitle">हर क्षेत्र की शीर्ष टीमें</string>
+    <string name="rankings_subtitle">Elo के अनुसार दुनिया की शीर्ष टीमें</string>
+    <string name="rankings_beta">बीटा</string>
     <string name="loading_rankings">रैंकिंग लोड हो रही है</string>
     <string name="no_rankings_yet">अभी कोई रैंकिंग नहीं है</string>
-    <string name="regional_rankings_unpublished">क्षेत्रीय टीम रैंकिंग अभी प्रकाशित नहीं हुई है।</string>
+    <string name="rankings_unpublished">अभी किसी टीम के पास रैंक होने के लिए पर्याप्त हाल के मैच नहीं हैं।</string>
     <string name="favorite_team">पसंदीदा टीम</string>
-    <string name="region_rankings_unpublished">%1$s की टीम रैंकिंग अभी प्रकाशित नहीं हुई है।</string>
+    <string name="region_all">सभी</string>
+    <string name="region_americas">अमेरिका</string>
+    <string name="region_emea">EMEA</string>
+    <string name="region_pacific">प्रशांत</string>
+    <string name="region_china">चीन</string>
+    <string name="region_rankings_unpublished">अभी %1$s की किसी टीम के पास रैंक होने के लिए पर्याप्त हाल के मैच नहीं हैं।</string>
     <string name="top_teams_in_region">शीर्ष %1$d • %2$s</string>
-    <string name="ranking_points">%1$s अंक</string>
+    <string name="top_teams_all_circuits">शीर्ष %1$d • सभी सर्किट</string>
+    <string name="ranking_elo">%1$d Elo</string>
+    <string name="ranking_record">%1$d जीत–%2$d हार</string>
     <string name="ranking_team_label">#%1$d %2$s</string>
-    <string name="country_with_separator">%1$s •</string>
     <string name="search_teams">टीमें खोजें</string>
     <string name="close_team_search">खोज बंद करें</string>
     <string name="search_teams_hint">कम से कम 3 अक्षर दर्ज करें</string>
@@ -17,12 +24,12 @@
     <string name="no_teams_found">कोई टीम नहीं मिली</string>
     <string name="try_another_team_name">टीम का कोई दूसरा नाम या छोटा नाम आज़माएँ।</string>
     <string name="rankings_info_title">रैंकिंग कैसे काम करती है</string>
-    <string name="rankings_info_introduction">रैंकिंग बताती है कि हर क्षेत्र में टीमें एक-दूसरे के मुकाबले कहाँ खड़ी हैं। अंक मैच के नतीजों के आधार पर प्रदर्शन का सार बताते हैं।</string>
-    <string name="rankings_info_points_title">रैंक और अंक</string>
-    <string name="rankings_info_points_body">ज़्यादा अंक होने पर तालिका में स्थान ऊँचा होता है। अंक एक रेटिंग हैं, जीतों की गिनती या जीत का प्रतिशत नहीं। रैंक #1 उस क्षेत्र की सबसे ऊँची रैंक वाली टीम है।</string>
+    <string name="rankings_info_introduction">रैंकिंग सभी सर्किट के पूरे हुए मैचों से बनी Elo रेटिंग का उपयोग करती है, इसलिए सभी टीमें एक ही लीडरबोर्ड पर हैं। यह रैंकिंग बीटा में है और सुधार के साथ बदल सकती है।</string>
+    <string name="rankings_info_eligibility_title">कौन रैंक होता है</string>
+    <string name="rankings_info_eligibility_body">कोई टीम पिछले 180 दिनों में कम से कम 5 रेटेड सीरीज़ और पिछले 90 दिनों में एक मैच खेलने के बाद दिखती है। खेलना बंद करने वाली टीमें लौटने तक हट जाती हैं।</string>
     <string name="rankings_info_elo_title">Elo कैसे काम करता है</string>
     <string name="rankings_info_elo_body">Elo मैच के नतीजे की तुलना रेटिंग के आधार पर अपेक्षित नतीजे से करता है। मज़बूत टीम को हराने पर ज़्यादा अंक मिलते हैं और कमज़ोर टीम से हारने पर ज़्यादा अंक कटते हैं। अपेक्षित नतीजों से आम तौर पर रेटिंग में कम बदलाव होता है।</string>
-    <string name="rankings_info_context_title">अंकों को सही संदर्भ में समझें</string>
-    <string name="rankings_info_context_body">अंकों की तुलना एक ही क्षेत्र में करें। अलग-अलग क्षेत्रों की अलग रैंकिंग होती है, इसलिए सिर्फ़ ज़्यादा अंक होने से यह तय नहीं होता कि अलग-अलग क्षेत्रों की टीमों में कौन ज़्यादा मज़बूत है।</string>
+    <string name="rankings_info_context_title">रेटिंग को सही संदर्भ में समझें</string>
+    <string name="rankings_info_context_body">अलग-अलग क्षेत्रों और सर्किट की टीमें कम आमने-सामने होती हैं, इसलिए उनकी रेटिंग कम मैचों से जुड़ी होती है। छोटे अंतर को करीबी मानें; जीत–हार रिकॉर्ड रेटिंग को संदर्भ देता है।</string>
     <string name="rankings_info_close">हो गया</string>
 </resources>
