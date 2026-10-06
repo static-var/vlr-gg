@@ -11,10 +11,13 @@
 		AAB7CE37C59F15BDE0A95B04 /* ICloudIdentityDeviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40212BB7FC3087ABA0CD3582 /* ICloudIdentityDeviceTests.swift */; };
 		AD5F1EABAFC8460BA502C001 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
 		BD5F1EABAFC8460BA502C001 /* MatchActivityLogoTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */; };
+		CD5F1EABAFC8460BA502C001 /* MatchActivityTeamColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5F1EABAFC8460BA502C000 /* MatchActivityTeamColors.swift */; };
 		AD5F1EABAFC8460BA502C002 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
 		BD5F1EABAFC8460BA502C002 /* MatchActivityLogoTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */; };
+		CD5F1EABAFC8460BA502C002 /* MatchActivityTeamColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5F1EABAFC8460BA502C000 /* MatchActivityTeamColors.swift */; };
 		AD5F1EABAFC8460BA502C003 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */; };
 		BD5F1EABAFC8460BA502C003 /* MatchActivityLogoTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */; };
+		CD5F1EABAFC8460BA502C003 /* MatchActivityTeamColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5F1EABAFC8460BA502C000 /* MatchActivityTeamColors.swift */; };
 
 		7A40E5F690294147A5126801 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */; };
 		1E500497BDD6693B31A1A4B2 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */; };
@@ -107,6 +110,7 @@
 		40212BB7FC3087ABA0CD3582 /* ICloudIdentityDeviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudIdentityDeviceTests.swift; sourceTree = "<group>"; };
 		AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityLogoCache.swift; sourceTree = "<group>"; };
 		BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityLogoTreatment.swift; sourceTree = "<group>"; };
+		CD5F1EABAFC8460BA502C000 /* MatchActivityTeamColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityTeamColors.swift; sourceTree = "<group>"; };
 		05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchLiveActivity.swift; sourceTree = "<group>"; };
 		3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityAttributes.swift; sourceTree = "<group>"; };
 		D1F8D968CF01C749B570E7A9 /* ActivityPushTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityPushTokenProvider.swift; sourceTree = "<group>"; };
@@ -295,6 +299,7 @@
 			children = (
 				AD5F1EABAFC8460BA502C000 /* MatchActivityLogoCache.swift */,
 				BD5F1EABAFC8460BA502C000 /* MatchActivityLogoTreatment.swift */,
+				CD5F1EABAFC8460BA502C000 /* MatchActivityTeamColors.swift */,
 				3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */,
 				48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */,
 			);
@@ -559,6 +564,7 @@
 				8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */,
 				AD5F1EABAFC8460BA502C001 /* MatchActivityLogoCache.swift in Sources */,
 				BD5F1EABAFC8460BA502C001 /* MatchActivityLogoTreatment.swift in Sources */,
+				CD5F1EABAFC8460BA502C001 /* MatchActivityTeamColors.swift in Sources */,
 				DF927176F502A5D4C6FFC3A7 /* MatchActivityAttributes.swift in Sources */,
 				7D487293553B3F4031496A2A /* NativeLocalization.swift in Sources */,
 				B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */,
@@ -586,6 +592,7 @@
 			files = (
 				AD5F1EABAFC8460BA502C002 /* MatchActivityLogoCache.swift in Sources */,
 				BD5F1EABAFC8460BA502C002 /* MatchActivityLogoTreatment.swift in Sources */,
+				CD5F1EABAFC8460BA502C002 /* MatchActivityTeamColors.swift in Sources */,
 				C4F26D6615E5B84E8ABD7919 /* MatchActivityAttributes.swift in Sources */,
 				7A40E5F690294147A5126801 /* MatchLiveActivity.swift in Sources */,
 				D3FAD1589057032649BD28A1 /* MatchActivityAttributesTests.swift in Sources */,
@@ -607,6 +614,7 @@
 				A549AA5B4708B66DBB9797F1 /* GeneratedBuildConfig.swift in Sources */,
 				AD5F1EABAFC8460BA502C003 /* MatchActivityLogoCache.swift in Sources */,
 				BD5F1EABAFC8460BA502C003 /* MatchActivityLogoTreatment.swift in Sources */,
+				CD5F1EABAFC8460BA502C003 /* MatchActivityTeamColors.swift in Sources */,
 				41ED708CD7A4065E2C2DDCB6 /* MatchActivityAttributes.swift in Sources */,
 				1E500497BDD6693B31A1A4B2 /* MatchLiveActivity.swift in Sources */,
 				9DD4C32FDB291AC803C0907D /* UpcomingMatchesWidget.swift in Sources */,

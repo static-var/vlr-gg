@@ -63,6 +63,35 @@ enum MatchActivityLogoCache {
         return cache
     }()
 
+    private final class CachedColor {
+        let value: MatchActivityLogoColor
+        init(_ value: MatchActivityLogoColor) { self.value = value }
+    }
+
+    private static let colors: NSCache<NSString, CachedColor> = {
+        let cache = NSCache<NSString, CachedColor>()
+        cache.countLimit = 64
+        return cache
+    }()
+
+    static func teamColors(for sources: [String?], appearance: Appearance) -> MatchActivityTeamColors {
+        let first = sources.first.flatMap { $0 }.flatMap { fileURL(for: $0) }.flatMap { logoColor(original: $0) }
+        let second = sources.dropFirst().first.flatMap { $0 }.flatMap { fileURL(for: $0) }.flatMap { logoColor(original: $0) }
+        return MatchActivityTeamColors.resolve(first: first, second: second, appearance: appearance)
+    }
+
+    static func logoColor(original: URL) -> MatchActivityLogoColor? {
+        let file = colorURL(original: original)
+        let key = file.path as NSString
+        if let cached = colors.object(forKey: key) { return cached.value }
+        guard let data = try? Data(contentsOf: file),
+              let color = try? PropertyListDecoder().decode(MatchActivityLogoColor.self, from: data) else { return nil }
+        if case .vivid(let rgb) = color,
+           ![rgb.red, rgb.green, rgb.blue].allSatisfy({ (0...255).contains($0) }) { return nil }
+        colors.setObject(CachedColor(color), forKey: key)
+        return color
+    }
+
     /// Reads prepared pixels only; downloading and contrast analysis happen in app-side prefetch.
     static func image(for source: String?, appearance: Appearance, size: LogoSize) -> UIImage? {
         guard let source, let original = fileURL(for: source) else { return nil }
@@ -97,7 +126,8 @@ enum MatchActivityLogoCache {
             guard !Task.isCancelled,
                   let remote = allowedRemoteURL(for: source),
                   let file = fileURL(for: source) else { continue }
-            if Appearance.allCases.allSatisfy({ appearance in
+            if FileManager.default.fileExists(atPath: colorURL(original: file).path),
+               Appearance.allCases.allSatisfy({ appearance in
                 LogoSize.allCases.allSatisfy { size in
                     FileManager.default.fileExists(atPath: variantURL(original: file, appearance: appearance, size: size).path)
                 }
@@ -136,11 +166,18 @@ enum MatchActivityLogoCache {
         }.filter { appearance, size in
             !FileManager.default.fileExists(atPath: variantURL(original: original, appearance: appearance, size: size).path)
         }
-        guard !missing.isEmpty else { return false }
-        let analysis = MatchActivityLogoTreatment.analyze(image)
         let encoder = PropertyListEncoder()
         encoder.outputFormat = .binary
         var changed = false
+        let colorFile = colorURL(original: original)
+        if !FileManager.default.fileExists(atPath: colorFile.path) {
+            let color = MatchActivityTeamColors.extract(from: image)
+            try encoder.encode(color).write(to: colorFile, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+            colors.setObject(CachedColor(color), forKey: colorFile.path as NSString)
+            changed = true
+        }
+        guard !missing.isEmpty else { return changed }
+        let analysis = MatchActivityLogoTreatment.analyze(image)
         for (appearance, size) in missing {
             guard !Task.isCancelled,
                   let prepared = MatchActivityLogoTreatment.prepare(
@@ -155,6 +192,10 @@ enum MatchActivityLogoCache {
 
     private static func variantURL(original: URL, appearance: Appearance, size: LogoSize) -> URL {
         original.appendingPathExtension("outline-v1-\(appearance.rawValue)-\(size.rawValue).pixels")
+    }
+
+    private static func colorURL(original: URL) -> URL {
+        original.appendingPathExtension("team-color-v1.plist")
     }
 
     /// Stores bounded premultiplied RGBA pixels without adding a raster image encoder dependency.
