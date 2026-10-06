@@ -218,32 +218,30 @@ class AndroidLiveMatchNotificationsTest {
         match.teams[1].copy(imageUrl = "second"),
       ))
       val renderer = LiveMatchNotificationRenderer(themed, cache)
-      for ((firstLogo, secondLogo) in listOf(
-        Color.RED to teal,
-        Color.RED to Color.rgb(255, 8, 5),
-        teal to teal,
-        Color.WHITE to Color.BLACK,
-        Color.YELLOW to Color.rgb(0, 0, 64),
-      )) {
+      // Each case pairs the two logo colours with checks on the resulting first, second and neutral colours.
+      val cases: List<Triple<Int, Int, (List<Int>) -> Unit>> = listOf(
+        Triple(Color.RED, teal) { assertEquals(listOf(Color.RED, teal), it.take(2)) },
+        // Nearly identical logos: the second team falls back to a default.
+        Triple(Color.RED, Color.rgb(255, 8, 5)) {
+          assertEquals(Color.RED, it[0])
+          assertTrue(it[1] in defaults.take(2))
+        },
+        // A logo matching the second default pushes the second team to the first default.
+        Triple(teal, teal) { assertEquals(listOf(teal, defaults[0]), it.take(2)) },
+        // Monochrome logos keep the defaults.
+        Triple(Color.WHITE, Color.BLACK) { assertEquals(defaults, it) },
+        // Only the general checks apply: both colours are adjusted for contrast.
+        Triple(Color.YELLOW, Color.rgb(0, 0, 64)) {},
+      )
+      for ((firstLogo, secondLogo, check) in cases) {
         cache.putLogo("first", Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888).apply { eraseColor(firstLogo) })
         cache.putLogo("second", Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888).apply { eraseColor(secondLogo) })
         val style = progress(renderer, withLogos)
         val colors = style.progressSegments.map { it.color }
-        assertNotEquals(colors[0], colors[1])
-        assertNotEquals(colors[0], colors[2])
-        assertNotEquals(colors[1], colors[2])
-        assertEquals(listOf(colors[0], colors[1], colors[2]), style.progressPoints.map { it.color })
-        when (firstLogo) {
-          Color.RED -> {
-            assertEquals(Color.RED, colors[0])
-            if (secondLogo == teal) assertEquals(teal, colors[1]) else assertTrue(colors[1] in defaults.take(2))
-          }
-          teal -> {
-            assertEquals(teal, colors[0])
-            assertEquals(defaults[0], colors[1])
-          }
-          Color.WHITE -> assertEquals(defaults, colors)
-        }
+        // Segments: first winner, second winner, then two unplayed maps; points follow the map before them.
+        assertEquals(3, colors.distinct().size)
+        assertEquals(colors.take(3), style.progressPoints.map { it.color })
+        check(colors)
         for (color in colors.take(2)) {
           val background = if (night) 0.02 else 0.80
           val luminance = ColorUtils.calculateLuminance(color)
