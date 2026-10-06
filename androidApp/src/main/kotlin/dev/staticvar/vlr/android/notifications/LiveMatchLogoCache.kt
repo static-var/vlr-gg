@@ -30,9 +30,11 @@ import kotlin.math.roundToInt
  * - A composite two-logo large icon (16:9, 48dp tall) built from those icons.
  * - A status-bar chip icon: SystemUI draws the small icon as a one-colour silhouette of its alpha,
  *   so only the logo's coloured or bright pixels are kept, letting inner detail survive instead of
- *   a filled outline. An opaque white plate behind the artwork measures as a near-solid mask, so the
- *   silhouette is rebuilt from the coloured pixels alone; logos that still come out as a solid block
- *   have no chip icon.
+ *   a filled outline. An opaque plate, whether white or saturated, behind contrasting artwork
+ *   measures as a near-solid mask, so the silhouette is rebuilt from the artwork it carries: the
+ *   coloured pixels alone for a white plate (e.g. Global Esports), or the dark artwork on a
+ *   saturated plate (e.g. Sentinels' red square); logos that still come out as a solid block have
+ *   no chip icon.
  */
 internal class LiveMatchLogoCache(context: Context) {
   private val appContext = context.applicationContext
@@ -42,6 +44,7 @@ internal class LiveMatchLogoCache(context: Context) {
   private val sources = bitmapCache(4 * 1024 * 1024)
   private val derived = bitmapCache(8 * 1024 * 1024)
   private val lowContrast = LruCache<String, Boolean>(64)
+  private val teamColors = LruCache<String, Int>(64)
   private val blockChipIcons = mutableSetOf<String>()
 
   fun hasLogo(url: String?): Boolean = !url.isNullOrBlank() && sources.get(url) != null
@@ -56,7 +59,16 @@ internal class LiveMatchLogoCache(context: Context) {
     sources.put(url, bounded)
     derived.evictAll()
     lowContrast.evictAll()
+    teamColors.evictAll()
     blockChipIcons.clear()
+  }
+
+  /** Returns the dominant colour of the logo for [url], or null when it is unknown or has no clear colour. */
+  @Synchronized
+  fun getTeamColor(url: String?): Int? {
+    val source = url?.let { sources.get(it) } ?: return null
+    val color = teamColors.get(url) ?: (source.dominantColor() ?: NoTeamColor).also { teamColors.put(url, it) }
+    return color.takeUnless { it == NoTeamColor }
   }
 
   /** Returns the 20dp team icon for [url], badged when it lacks contrast on the current theme. */
@@ -121,7 +133,7 @@ internal class LiveMatchLogoCache(context: Context) {
 
   private fun lacksContrast(url: String, source: Bitmap, night: Boolean): Boolean =
     lowContrast.get("$night|$url") ?: (
-      lowContrastShare(source, if (night) DarkBackgroundLuminance else LightBackgroundLuminance) > LowContrastLimit
+      lowContrastShare(source, notificationCardLuminance(night)) > LowContrastLimit
       ).also { lowContrast.put("$night|$url", it) }
 
   private inline fun LruCache<String, Bitmap>.getOrPut(key: String, create: () -> Bitmap): Bitmap =
@@ -133,14 +145,15 @@ internal class LiveMatchLogoCache(context: Context) {
         override fun sizeOf(key: String, value: Bitmap): Int = value.allocationByteCount
       }
 
-    // Approximate relative luminance of the promoted notification card in light and dark themes.
-    private const val LightBackgroundLuminance = 0.80
-    private const val DarkBackgroundLuminance = 0.02
     // A logo gets a badge when over half of its visible pixels are under 2:1 contrast with the card.
     private const val LowContrastLimit = 0.5
     private const val MinimumContrast = 2.0
     // A chip mask filling this much of its own bounds is a plate or block, not a recognisable mark.
     private const val BlockSolidity = 0.85f
+    // HSV thresholds for the chip masks. Coloured pixels exceed both, dark artwork stays at or under the value
+    // limit, so the two masks never share a pixel.
+    private const val ColouredSaturation = 0.35f
+    private const val DarkValueLimit = 0.35f
     // Above this, a mask is likely a white plate behind coloured artwork (e.g. Global Esports) that hides it.
     private const val NearBlockSolidity = 0.7f
     // Rejects tiny coloured fragments; the retry must keep this share of the combined mask to replace it.
@@ -148,6 +161,15 @@ internal class LiveMatchLogoCache(context: Context) {
     private const val PlateKeptShare = 0.1f
     private val LightBadge = Color.rgb(236, 236, 242)
     private val DarkBadge = Color.rgb(30, 30, 40)
+
+    // A team colour comes from the most common colour bin among vivid pixels in a small sample of the logo.
+    private const val ColorSampleSize = 32
+    private const val TeamColorSaturation = 0.25f
+    private const val TeamColorValue = 0.15f
+    // A bin needs this share of the visible pixels, so a tiny accent cannot dictate a team's colour.
+    private const val TeamColorShare = 0.05f
+    // Caches "no clear colour"; dominant colours are always opaque.
+    private const val NoTeamColor = Color.TRANSPARENT
 
     fun isAllowedLogoUrl(url: String): Boolean {
       val uri = runCatching { Uri.parse(url) }.getOrNull() ?: return false
@@ -195,6 +217,28 @@ internal class LiveMatchLogoCache(context: Context) {
     private fun Bitmap.toSoftwareBitmap(): Bitmap =
       if (config == Bitmap.Config.ARGB_8888) this else copy(Bitmap.Config.ARGB_8888, false)
 
+    /** Averages the largest bin of vivid pixels, skipping monochrome plates; null when no bin is large enough. */
+    private fun Bitmap.dominantColor(): Int? {
+      val sample = toSquareSoftwareBitmap(ColorSampleSize)
+      val pixels = IntArray(ColorSampleSize * ColorSampleSize)
+      sample.getPixels(pixels, 0, ColorSampleSize, 0, 0, ColorSampleSize, ColorSampleSize)
+      sample.recycle()
+      val visible = pixels.filter { Color.alpha(it) >= 128 }
+      val hsv = FloatArray(3)
+      val vivid = visible.filter {
+        Color.colorToHSV(it, hsv)
+        hsv[1] >= TeamColorSaturation && hsv[2] >= TeamColorValue
+      }
+      val bin = vivid.groupBy(::colorBin).toSortedMap().values.maxByOrNull { it.size } ?: return null
+      if (bin.size < visible.size * TeamColorShare) return null
+      fun average(channel: (Int) -> Int): Int = bin.sumOf(channel) / bin.size
+      return Color.rgb(average(Color::red), average(Color::green), average(Color::blue))
+    }
+
+    /** Groups colours into 16 levels per channel. */
+    private fun colorBin(color: Int): Int =
+      ((Color.red(color) shr 4) shl 8) or ((Color.green(color) shr 4) shl 4) or (Color.blue(color) shr 4)
+
     /** Draws the logo centred on a rounded badge that contrasts with the current theme. */
     private fun Bitmap.onBadge(size: Int, night: Boolean): Bitmap {
       val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
@@ -225,8 +269,7 @@ internal class LiveMatchLogoCache(context: Context) {
           val color = sample.getPixel(x, y)
           if (Color.alpha(color) < 128) continue
           visible++
-          val l = luminance(color)
-          if ((maxOf(l, background) + 0.05) / (minOf(l, background) + 0.05) < MinimumContrast) low++
+          if (contrastRatio(luminance(color), background) < MinimumContrast) low++
         }
       }
       return if (visible == 0) 0.0 else low.toDouble() / visible
@@ -235,17 +278,18 @@ internal class LiveMatchLogoCache(context: Context) {
     /**
      * Keeps saturated or bright pixels as an opaque silhouette; null when that is empty or a solid block.
      *
-     * A mask at or above [NearBlockSolidity] is usually a white plate behind coloured artwork whose silhouette
-     * would be a white blob; when the saturated pixels alone stay recognisable, they replace the combined mask.
+     * An opaque plate behind contrasting artwork reads as a near-solid mask whose silhouette would be a blob,
+     * so the artwork alone replaces the combined mask when it stays recognisable: the coloured pixels on a
+     * white plate, or the dark pixels on a saturated plate.
      */
     private fun Bitmap.chipMask(): Bitmap? {
-      val combined = maskOf { hsv -> isSaturated(hsv) || hsv[2] > 0.75f } ?: return null
+      val combined = maskOf { hsv -> isColoured(hsv) || hsv[2] > 0.75f } ?: return null
       if (combined.solidity < NearBlockSolidity) return combined.bitmap
-      val coloured = maskOf(::isSaturated)
-      if (coloured != null && coloured.solidity < BlockSolidity && coloured.kept >= combined.kept * PlateKeptShare) {
-        return coloured.bitmap
-      }
-      return combined.bitmap.takeIf { combined.solidity < BlockSolidity }
+      // Coloured artwork on a white plate, e.g. Global Esports.
+      maskOf(::isColoured)?.takeIf { it.isArtworkOf(combined) }?.let { return it.bitmap }
+      if (combined.solidity < BlockSolidity) return combined.bitmap
+      // Dark artwork on a saturated plate, e.g. the Sentinels emblem inside its red square.
+      return maskOf(::isDark)?.takeIf { it.isArtworkOf(combined) }?.bitmap
     }
 
     /** Keeps pixels matching [keep] as an opaque silhouette over transparent, with their bounds. */
@@ -275,10 +319,22 @@ internal class LiveMatchLogoCache(context: Context) {
       return Mask(output, kept, (maxX - minX + 1) * (maxY - minY + 1))
     }
 
-    private fun isSaturated(hsv: FloatArray): Boolean = hsv[1] > 0.35f && hsv[2] > 0.35f
+    private fun isColoured(hsv: FloatArray): Boolean = hsv[1] > ColouredSaturation && hsv[2] > DarkValueLimit
+
+    private fun isDark(hsv: FloatArray): Boolean = hsv[2] <= DarkValueLimit
 
     private class Mask(val bitmap: Bitmap, val kept: Int, val boundsArea: Int) {
       val solidity = kept.toFloat() / boundsArea
+
+      /** Whether this mask is recognisable artwork from inside the near-solid [plate] mask. */
+      fun isArtworkOf(plate: Mask): Boolean = solidity < BlockSolidity && kept >= plate.kept * PlateKeptShare
     }
   }
 }
+
+/** Approximate relative luminance of the promoted notification card in the light or dark theme. */
+internal fun notificationCardLuminance(night: Boolean): Double = if (night) 0.02 else 0.80
+
+/** WCAG contrast ratio between two relative luminances. */
+internal fun contrastRatio(first: Double, second: Double): Double =
+  (maxOf(first, second) + 0.05) / (minOf(first, second) + 0.05)

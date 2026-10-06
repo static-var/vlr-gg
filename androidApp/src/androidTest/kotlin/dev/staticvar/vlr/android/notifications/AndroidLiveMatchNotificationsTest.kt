@@ -7,6 +7,7 @@ package dev.staticvar.vlr.android.notifications
 import android.Manifest
 import android.app.Notification
 import android.app.NotificationManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -16,6 +17,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.text.Spanned
 import android.text.style.StyleSpan
+import androidx.core.graphics.ColorUtils
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import com.russhwolf.settings.MapSettings
@@ -194,46 +196,66 @@ class AndroidLiveMatchNotificationsTest {
 
   @Test
   @SdkSuppress(minSdkVersion = 36)
-  fun progressWinnerColorsMatchTeamTextAndHideWithSpoilers() {
+  fun progressColorsFollowMapWinnersAndLogoPalette() {
     val match = update("991000001", 60).copy(
-      totalMaps = 3,
-      mapWinners = listOf("474", "624", null),
+      totalMaps = 4,
+      mapWinners = listOf("474", "624", null, null),
       currentMap = LiveMatchMap("Ascent", listOf(8, 6), number = 3),
     )
-    val renderer = LiveMatchNotificationRenderer(context)
-    val notification = renderer.build(match, false, 36)
-    val style = Notification.Builder.recoverBuilder(context, notification).style as Notification.ProgressStyle
-
-    val firstColor = style.progressSegments[0].color
-    val secondColor = style.progressSegments[1].color
-    val neutralColor = style.progressSegments[2].color
-    assertTrue(firstColor != secondColor)
-    assertTrue(neutralColor != firstColor && neutralColor != secondColor)
-    assertEquals(listOf(neutralColor, neutralColor), style.progressPoints.map { it.color })
-    assertFalse(style.isStyledByProgress)
-
-    val logoCache = LiveMatchLogoCache(context)
-    val testBmp1 = Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888)
-    val testBmp2 = Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888)
-    logoCache.putLogo("https://example.test/t1.png", testBmp1)
-    logoCache.putLogo("https://example.test/t2.png", testBmp2)
-    val matchWithLogos = match.copy(
-      teams = listOf(
-        match.teams[0].copy(imageUrl = "https://example.test/t1.png"),
-        match.teams[1].copy(imageUrl = "https://example.test/t2.png"),
-      ),
-    )
-    val withLogosRenderer = LiveMatchNotificationRenderer(context, logoCache)
-    val notifWithLogos = withLogosRenderer.build(matchWithLogos, false, 36)
-    val recoveredStyle = Notification.Builder.recoverBuilder(context, notifWithLogos).style as Notification.ProgressStyle
-    assertNull(recoveredStyle.progressStartIcon)
-    assertNull(recoveredStyle.progressEndIcon)
-    assertNotNull(recoveredStyle.progressTrackerIcon)
-    assertNotNull(notifWithLogos.getLargeIcon())
-
-    val final = renderer.build(match.copy(terminal = true, currentMap = null), false, 36)
-    val finalStyle = Notification.Builder.recoverBuilder(context, final).style as Notification.ProgressStyle
-    assertEquals(listOf(firstColor, secondColor), finalStyle.progressSegments.take(2).map { it.color })
+    val teal = Color.rgb(0, 136, 102)
+    for (night in listOf(false, true)) {
+      val themed = context.createConfigurationContext(Configuration(context.resources.configuration).apply {
+        uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
+          if (night) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
+      })
+      fun progress(renderer: LiveMatchNotificationRenderer, update: LiveMatchUpdate): Notification.ProgressStyle =
+        Notification.Builder.recoverBuilder(themed, renderer.build(update, false, 36)).style as Notification.ProgressStyle
+      val defaults = progress(LiveMatchNotificationRenderer(themed), match).progressSegments.map { it.color }
+      assertNotEquals(defaults[0], defaults[1])
+      val cache = LiveMatchLogoCache(themed)
+      val withLogos = match.copy(teams = listOf(
+        match.teams[0].copy(imageUrl = "first"),
+        match.teams[1].copy(imageUrl = "second"),
+      ))
+      val renderer = LiveMatchNotificationRenderer(themed, cache)
+      // Each case pairs the two logo colours with checks on the resulting first, second and neutral colours.
+      val cases: List<Triple<Int, Int, (List<Int>) -> Unit>> = listOf(
+        Triple(Color.RED, teal) { assertEquals(listOf(Color.RED, teal), it.take(2)) },
+        // Nearly identical logos: the second team falls back to a default.
+        Triple(Color.RED, Color.rgb(255, 8, 5)) {
+          assertEquals(Color.RED, it[0])
+          assertTrue(it[1] in defaults.take(2))
+        },
+        // A logo matching the second default pushes the second team to the first default.
+        Triple(teal, teal) { assertEquals(listOf(teal, defaults[0]), it.take(2)) },
+        // Monochrome logos keep the defaults.
+        Triple(Color.WHITE, Color.BLACK) { assertEquals(defaults, it) },
+        // Only the general checks apply: both colours are adjusted for contrast.
+        Triple(Color.YELLOW, Color.rgb(0, 0, 64)) {},
+      )
+      for ((firstLogo, secondLogo, check) in cases) {
+        cache.putLogo("first", Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888).apply { eraseColor(firstLogo) })
+        cache.putLogo("second", Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888).apply { eraseColor(secondLogo) })
+        val style = progress(renderer, withLogos)
+        val colors = style.progressSegments.map { it.color }
+        // Segments: first winner, second winner, then two unplayed maps; points follow the map before them.
+        assertEquals(3, colors.distinct().size)
+        assertEquals(colors.take(3), style.progressPoints.map { it.color })
+        check(colors)
+        for (color in colors.take(2)) {
+          val background = if (night) 0.02 else 0.80
+          val luminance = ColorUtils.calculateLuminance(color)
+          assertTrue((maxOf(luminance, background) + 0.05) / (minOf(luminance, background) + 0.05) >= 3)
+        }
+        assertFalse(style.isStyledByProgress)
+        assertNull(style.progressStartIcon)
+        assertNull(style.progressEndIcon)
+        assertNotNull(style.progressTrackerIcon)
+        assertEquals(colors, progress(renderer, withLogos.copy(terminal = true, currentMap = null)).progressSegments.map { it.color })
+        val swapped = progress(renderer, withLogos.copy(mapWinners = listOf("624", "474", null, null)))
+        assertEquals(listOf(colors[1], colors[0], colors[2]), swapped.progressPoints.map { it.color })
+      }
+    }
   }
 
   @Test
@@ -292,9 +314,10 @@ class AndroidLiveMatchNotificationsTest {
     assertEquals("TL 8–6" to Icon.TYPE_RESOURCE, chip(trailing.copy(currentMap = live.currentMap)))
     assertEquals("8–8" to Icon.TYPE_RESOURCE, chip(trailing.copy(currentMap = live.currentMap?.copy(scores = listOf(8, 8)))))
     val longTag = trailing.copy(teams = listOf(trailing.teams[0].copy(tag = "TEAMLIQ", imageUrl = null), trailing.teams[1]))
-    assertEquals("12–10" to Icon.TYPE_RESOURCE, chip(longTag.copy(currentMap = live.currentMap?.copy(scores = listOf(12, 10)))))
+    val longScore = longTag.copy(currentMap = live.currentMap?.copy(scores = listOf(12, 10)))
+    assertEquals("12–10" to Icon.TYPE_RESOURCE, chip(longScore))
 
-    // A pause joins the map name in the content text; the status-bar chip stays score-only.
+    // A pause joins the map name in the content text and marks the status-bar chip with the pause glyph.
     val paused = live.copy(pause = LiveMatchPause(LiveMatchPauseKind.TechPause))
     val pausedNotification = renderer.build(paused, scoresHidden = false, sdkInt = 36)
     assertEquals("Team Liquid\u20038 : 6\u2003Paper Rex", pausedNotification.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
@@ -302,8 +325,20 @@ class AndroidLiveMatchNotificationsTest {
       "Ascent · ${context.getString(R.string.live_match_notification_pause_tech)}",
       pausedNotification.extras.getCharSequence(Notification.EXTRA_TEXT).toString(),
     )
-    assertEquals(chip(live), chip(paused))
-    assertEquals(chip(trailing), chip(trailing.copy(pause = LiveMatchPause(LiveMatchPauseKind.Halftime))))
+    assertEquals("8–6 ||" to Icon.TYPE_RESOURCE, chip(paused))
+    assertEquals("8–6 ||" to Icon.TYPE_BITMAP, chip(trailing.copy(pause = LiveMatchPause(LiveMatchPauseKind.Halftime))))
+    // The glyph survives the tag fallback: a tag that fits keeps the suffix, an overlong one drops only the tag.
+    assertEquals(
+      "TL 8–6 ||" to Icon.TYPE_RESOURCE,
+      chip(trailing.copy(currentMap = live.currentMap, pause = paused.pause)),
+    )
+    assertEquals("12–10 ||" to Icon.TYPE_RESOURCE, chip(longScore.copy(pause = paused.pause)))
+    // Hidden scores leave the chip no score, so the generic text carries the pause instead.
+    val hiddenPaused = LiveMatchNotificationRenderer(context, logos).build(paused, scoresHidden = true, sdkInt = 36)
+    assertEquals(
+      "${context.getString(R.string.widget_live)} ||",
+      hiddenPaused.extras.getCharSequence("android.shortCriticalText")?.toString(),
+    )
     val reasoned = renderer.build(paused.copy(pause = LiveMatchPause(LiveMatchPauseKind.TechPause, "GEAR")), false, 36)
     assertTrue(reasoned.extras.getCharSequence(Notification.EXTRA_TEXT).toString().endsWith(" · GEAR"))
     val terminalPaused = renderer.build(paused.copy(terminal = true), false, 36)
@@ -605,7 +640,7 @@ class AndroidLiveMatchNotificationsTest {
     val matchId = "991000002"
     val tag = "live-match-$matchId"
     fun state(observedAt: Long) = validState(matchId, observedAt)
-      .replace("\"future_field\":true", "\"total_maps\":3")
+      .replace("\"future_field\":true", "\"total_maps\":3,\"pause\":{\"kind\":\"timeout\"}")
       .replace("\"name\":\"Ascent\"", "\"name\":\"Ascent\",\"number\":2")
     fun awaitMode(showChip: Boolean): Notification {
       val deadline = SystemClock.elapsedRealtime() + 3_000
@@ -620,6 +655,7 @@ class AndroidLiveMatchNotificationsTest {
     try {
       notifications.handle(payload(state = state(70)))
       val initial = awaitMode(true)
+      assertEquals("8–6 ||", initial.extras.getCharSequence("android.shortCriticalText").toString())
       preferences.setShowScoreInStatusBar(false)
       notifications.refreshPresentation()
       val ordinary = awaitMode(false)
@@ -656,6 +692,7 @@ class AndroidLiveMatchNotificationsTest {
       preferences.setShowScoreInStatusBar(true)
       recovered.refreshPresentation()
       val recoveredChip = awaitMode(true)
+      assertEquals("9–6 ||", recoveredChip.extras.getCharSequence("android.shortCriticalText").toString())
       assertEquals(restored.extras.getCharSequence("android.shortCriticalText").toString(), recoveredChip.extras.getCharSequence("android.shortCriticalText").toString())
       assertEquals(restored.smallIcon.type, recoveredChip.smallIcon.type)
 

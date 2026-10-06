@@ -21,6 +21,7 @@ import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import dev.staticvar.vlr.android.BuildConfig
 import dev.staticvar.vlr.android.MainActivity
 import dev.staticvar.vlr.android.R
@@ -470,12 +471,11 @@ internal class LiveMatchNotificationRenderer(
   private val night: Boolean
     get() = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
-  private val colors: LiveMatchTeamColors
-    get() = if (night) {
-      LiveMatchTeamColors(Color.rgb(207, 178, 255), Color.rgb(100, 218, 199), Color.rgb(158, 158, 166))
-    } else {
-      LiveMatchTeamColors(Color.rgb(103, 58, 183), Color.rgb(0, 105, 92), Color.rgb(117, 117, 125))
-    }
+  private fun colors(update: LiveMatchUpdate): LiveMatchTeamColors = LiveMatchTeamColors.fromLogos(
+    logoCache.getTeamColor(update.teams[0].imageUrl),
+    logoCache.getTeamColor(update.teams[1].imageUrl),
+    night,
+  )
 
   /**
    * Builds a live or final notification with match actions and optional hidden scores.
@@ -609,7 +609,7 @@ internal class LiveMatchNotificationRenderer(
       Api36Notification.applyProgressStyle(
         builder = builder,
         progress = progress,
-        colors = colors,
+        colors = colors(update),
         currentMapScores = map?.scores.orEmpty(),
         context = context,
       )
@@ -681,7 +681,7 @@ internal class LiveMatchNotificationRenderer(
       Api36Notification.applyProgressStyle(
         builder = builder,
         progress = progress,
-        colors = colors,
+        colors = colors(update),
         currentMapScores = emptyList(),
         context = context,
         terminal = true,
@@ -696,7 +696,8 @@ internal class LiveMatchNotificationRenderer(
    *
    * With a leader, the chip shows the leader's logo silhouette and the score leader-first (`[NRG] 10–5`). Without a
    * usable logo it names the leader instead (`NRG 10–5`), dropping the name when the text would be too long for the
-   * chip, which hides overlong text entirely. Ties, hidden scores and the pre-round state keep the app icon.
+   * chip, which hides overlong text entirely. Trailing pause bars (`10–5 ||`) mark a broadcast pause, including on
+   * the score fallback and the generic text. Ties, hidden scores and the pre-round state keep the app icon.
    */
   private fun applyChip(
     builder: Notification.Builder,
@@ -718,25 +719,16 @@ internal class LiveMatchNotificationRenderer(
   }
 
   private fun chipPresentation(update: LiveMatchUpdate, scoresHidden: Boolean): ChipPresentation {
-    val scores = chipScores(update, scoresHidden)
-    if (scores == null) {
-      return ChipPresentation(context.getString(R.string.widget_live))
-    }
-    val (s1, s2) = scores
-    if (s1 == null || s2 == null) {
-      return ChipPresentation("${score(s1)}–${score(s2)}")
-    }
-    if (s1 == s2) {
-      return ChipPresentation("$s1–$s2")
+    val pause = if (update.pause != null) PauseChipSuffix else ""
+    val (s1, s2) = chipScores(update, scoresHidden)
+      ?: return ChipPresentation(context.getString(R.string.widget_live) + pause)
+    if (s1 == null || s2 == null || s1 == s2) {
+      return ChipPresentation("${score(s1)}–${score(s2)}$pause")
     }
     val leader = update.teams[if (s1 > s2) 0 else 1]
-    val score = "${maxOf(s1, s2)}–${minOf(s1, s2)}"
-    val icon = logoCache.getChipIcon(leader.imageUrl)
-    return if (icon != null) {
-      ChipPresentation(score, Icon.createWithBitmap(icon))
-    } else {
-      ChipPresentation("${leader.displayName} $score".takeIf { it.length <= ChipTextLimit } ?: score)
-    }
+    val score = "${maxOf(s1, s2)}–${minOf(s1, s2)}$pause"
+    logoCache.getChipIcon(leader.imageUrl)?.let { return ChipPresentation(score, Icon.createWithBitmap(it)) }
+    return ChipPresentation("${leader.displayName} $score".takeIf { it.length <= ChipTextLimit } ?: score)
   }
 
   private data class ChipPresentation(val text: String, val icon: Icon? = null)
@@ -788,10 +780,13 @@ internal class LiveMatchNotificationRenderer(
   }
 }
 
-/** Removes a live notification that stops receiving updates, such as during a server outage. */
 // Longest chip text seen fully on API 36 ("NRG 12–10"); longer text is not shortened but hidden.
 private const val ChipTextLimit = 9
 
+// ASCII pause bars stay monochrome without depending on emoji fonts.
+private const val PauseChipSuffix = " ||"
+
+/** Removes a live notification that stops receiving updates, such as during a server outage. */
 internal const val LiveNotificationTimeoutMillis = 5 * 60 * 1_000L
 
 /** Describes the active map position within a match series. */
@@ -853,7 +848,7 @@ private object Api36Notification {
       })
       .setProgressPoints((1 until total).take(4).map { index ->
         Notification.ProgressStyle.Point(index * MapSegmentLength)
-          .setColor(colors.neutral)
+          .setColor(colors.winner(progress.winnerTeamIndices[index - 1]))
       })
       .setProgress(progressValue)
       .setProgressTrackerIcon(Icon.createWithResource(context, R.drawable.ic_live_tracker))
@@ -870,8 +865,53 @@ private object Api37Notification {
   }
 }
 
-/** Keeps each team's text and map wins recognizable in either system theme. */
+/** Keeps map winners distinct from one another and from maps without a winner. */
 private data class LiveMatchTeamColors(val first: Int, val second: Int, val neutral: Int) {
   fun team(index: Int): Int = if (index == 0) first else second
   fun winner(index: Int?): Int = index?.let(::team) ?: neutral
+
+  companion object {
+    private val Light = LiveMatchTeamColors(Color.rgb(103, 58, 183), Color.rgb(0, 105, 92), Color.rgb(117, 117, 125))
+    private val Dark = LiveMatchTeamColors(Color.rgb(207, 178, 255), Color.rgb(100, 218, 199), Color.rgb(158, 158, 166))
+    // CIELAB distance below which two colours read as the same on the progress bar.
+    private const val MinimumDistance = 30.0
+    // WCAG minimum for graphical objects against the notification card.
+    private const val MinimumContrast = 3.0
+    private const val LightnessStep = 0.025f
+
+    /**
+     * Uses each team's logo colour, adjusted to read on the card. A missing, monochrome or neutral-looking logo
+     * colour falls back to the theme default; a second colour too close to the first takes the default that
+     * differs most from it.
+     */
+    fun fromLogos(firstLogo: Int?, secondLogo: Int?, night: Boolean): LiveMatchTeamColors {
+      val defaults = if (night) Dark else Light
+      fun logoColor(logo: Int?): Int? = logo?.readableOnCard(night)?.takeIf { it.isDistinctFrom(defaults.neutral) }
+      val first = logoColor(firstLogo) ?: defaults.first
+      val second = (logoColor(secondLogo) ?: defaults.second).takeIf { it.isDistinctFrom(first) }
+        ?: listOf(defaults.first, defaults.second).maxBy { distance(first, it) }
+      return defaults.copy(first = first, second = second)
+    }
+
+    /** Lightens on dark cards, or darkens on light ones, until the colour reaches [MinimumContrast]. */
+    private fun Int.readableOnCard(night: Boolean): Int {
+      val card = notificationCardLuminance(night)
+      val hsl = FloatArray(3).also { ColorUtils.colorToHSL(this, it) }
+      var color = this
+      // Terminates: white on the dark card and black on the light card both clear the minimum.
+      while (contrastRatio(ColorUtils.calculateLuminance(color), card) < MinimumContrast) {
+        hsl[2] = (hsl[2] + if (night) LightnessStep else -LightnessStep).coerceIn(0f, 1f)
+        color = ColorUtils.HSLToColor(hsl)
+      }
+      return color
+    }
+
+    private fun Int.isDistinctFrom(other: Int): Boolean = distance(this, other) >= MinimumDistance
+
+    private fun distance(first: Int, second: Int): Double {
+      val firstLab = DoubleArray(3).also { ColorUtils.colorToLAB(first, it) }
+      val secondLab = DoubleArray(3).also { ColorUtils.colorToLAB(second, it) }
+      return ColorUtils.distanceEuclidean(firstLab, secondLab)
+    }
+  }
 }
