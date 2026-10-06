@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import dev.staticvar.designsystem.component.tag.PrismTag
+import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
@@ -51,6 +53,12 @@ internal fun PrismScreenTitleBarPreview(@PreviewParameter(PrismPreviewProvider::
             color = Prism.color.accent,
           )
         },
+        modifier = Modifier.fillMaxWidth(),
+      )
+      PrismScreenTitleBar(
+        title = "Ranking",
+        subtitle = "Top teams worldwide by Elo",
+        titleAccessory = { PrismTag(text = "Beta", style = PrismTagStyle.Accent) },
         modifier = Modifier.fillMaxWidth(),
       )
     }

@@ -33,7 +33,8 @@ import vlr.designsystem.generated.resources.prism_back
  *
  * [style] controls the token-backed height, spacing, and title treatment while this composable
  * owns inset handling and slot placement. [onBackPress] renders the standard app-bar back
- * affordance; [actions] supports call sites that provide trailing controls.
+ * affordance; [actions] supports call sites that provide trailing controls. [titleAccessory]
+ * sits right after the title, for a short status such as a tag.
  */
 @Composable
 public fun PrismScreenTitleBar(
@@ -43,6 +44,7 @@ public fun PrismScreenTitleBar(
   onBackPress: (() -> Unit)? = null,
   actions: (@Composable RowScope.() -> Unit)? = null,
   style: PrismScreenTitleBarStyle = PrismScreenTitleBarStyle.Default,
+  titleAccessory: (@Composable () -> Unit)? = null,
 ) {
   val hasNavigation = onBackPress != null
 
@@ -59,15 +61,22 @@ public fun PrismScreenTitleBar(
           ),
         )
       }
-      Text(
-        text = title,
+      Row(
         modifier = Modifier.padding(
           horizontal = style.titleHorizontalPadding(hasNavigation = hasNavigation),
         ),
-        style = style.titleTextStyle,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          text = title,
+          modifier = Modifier.weight(1f, fill = false),
+          style = style.titleTextStyle,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+        )
+        titleAccessory?.invoke()
+      }
     }
     if (actions != null) {
       PrismScreenTitleActions(content = actions)
