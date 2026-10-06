@@ -290,6 +290,37 @@ final class MatchActivityAttributesTests: XCTestCase {
     }
 
     @available(iOS 16.1, *)
+    func testDecodesStageAndRoundWinnersInPayloadTeamOrder() throws {
+        let json = #"{"match_id":"734308","observed_at":1788789340,"terminal":false,"stage":"Playoffs: Grand Final","teams":[{"id":"474","name":"TL","score":1},{"id":"624","name":"PRX","score":1}],"current_map":{"name":"Lotus","number":3,"scores":[5,0]},"total_maps":3,"map_winners":["624","474",null],"map_round_winners":[{"map_number":1,"winners":[1,0,1]},{"map_number":2,"winners":[0,null,1]},{"map_number":3,"winners":[]}]}"#
+        let state = try JSONDecoder().decode(
+            MatchActivityAttributes.ContentState.self,
+            from: Data(json.utf8)
+        )
+
+        XCTAssertEqual(state.stage, "Playoffs: Grand Final")
+        XCTAssertEqual(state.map_round_winners.map(\.map_number), [1, 2, 3])
+        XCTAssertEqual(state.map_round_winners.map(\.winners), [[1, 0, 1], [0, nil, 1], []])
+        XCTAssertEqual(state.teams[try XCTUnwrap(state.map_round_winners[0].winners[0])].id, "624")
+        XCTAssertEqual(state.map_winners, ["624", "474", nil])
+        XCTAssertEqual(
+            try JSONDecoder().decode(MatchActivityAttributes.ContentState.self, from: JSONEncoder().encode(state)),
+            state
+        )
+    }
+
+    @available(iOS 16.1, *)
+    func testDecodesNullStageAndEmptyRoundHistory() throws {
+        let json = #"{"match_id":"734308","observed_at":1788789340,"terminal":false,"stage":null,"teams":[{"name":"TL"},{"name":"PRX"}],"map_round_winners":[]}"#
+        let state = try JSONDecoder().decode(
+            MatchActivityAttributes.ContentState.self,
+            from: Data(json.utf8)
+        )
+
+        XCTAssertNil(state.stage)
+        XCTAssertTrue(state.map_round_winners.isEmpty)
+    }
+
+    @available(iOS 16.1, *)
     func testDecodesCompactBackendPayload() throws {
         let attributesJSON = #"{"match_id":"734308"}"#
         let contentStateJSON = #"{"match_id":"734308","observed_at":1788789340,"terminal":false,"teams":[{"name":"FNATIC","img":null,"score":1},{"name":"NRG","img":"https://example.com/nrg.png","score":null}],"current_map":{"name":"Ascent","scores":[12,null]}}"#
@@ -315,6 +346,8 @@ final class MatchActivityAttributesTests: XCTestCase {
         XCTAssertNil(state.current_map?.number)
         XCTAssertEqual(state.current_map?.scores, [12, nil])
         XCTAssertNil(state.total_maps)
+        XCTAssertNil(state.stage)
+        XCTAssertTrue(state.map_round_winners.isEmpty)
 
         let stateWithoutMap = try JSONDecoder().decode(
             MatchActivityAttributes.ContentState.self,
