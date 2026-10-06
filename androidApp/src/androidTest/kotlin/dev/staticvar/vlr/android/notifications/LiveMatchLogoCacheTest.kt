@@ -45,6 +45,13 @@ class LiveMatchLogoCacheTest {
     assertFalse(updated.containsColor(Color.RED))
     assertTrue(updated.containsColor(Color.GREEN))
     assertEquals(Color.GREEN, cache.getTeamColor("first"))
+
+    val tiedColors = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888).apply {
+      eraseColor(Color.BLUE)
+      Canvas(this).drawRect(0f, 0f, 16f, 32f, Paint().apply { color = Color.RED })
+    }
+    cache.putLogo("first", tiedColors)
+    assertEquals(Color.BLUE, cache.getTeamColor("first"))
   }
 
   @Test
@@ -53,8 +60,7 @@ class LiveMatchLogoCacheTest {
     val cache = LiveMatchLogoCache(context)
     cache.putLogo("plate", plateLogo())
     val plate = requireNotNull(cache.getChipIcon("plate"))
-    val plateColor = requireNotNull(cache.getTeamColor("plate"))
-    assertTrue(Color.red(plateColor) > 220 && Color.green(plateColor) < 40 && Color.blue(plateColor) < 65)
+    assertIsPlateRed(cache.getTeamColor("plate"))
     assertTrue(plate.hasOpaquePixelAt(32, 29))
     assertFalse(plate.hasOpaquePixelAt(32, 14))
 
@@ -62,8 +68,7 @@ class LiveMatchLogoCacheTest {
     // The dark emblem inside that plate must become the silhouette instead.
     cache.putLogo("dark-plate", darkPlateLogo())
     val darkPlate = requireNotNull(cache.getChipIcon("dark-plate"))
-    val darkPlateColor = requireNotNull(cache.getTeamColor("dark-plate"))
-    assertTrue(Color.red(darkPlateColor) > 220 && Color.green(darkPlateColor) < 40 && Color.blue(darkPlateColor) < 65)
+    assertIsPlateRed(cache.getTeamColor("dark-plate"))
     assertFalse(darkPlate.hasOpaquePixelAt(6, 6))
     assertFalse(darkPlate.hasOpaquePixelAt(58, 58))
     assertTrue(darkPlate.hasOpaquePixelAt(32, 42))
@@ -98,6 +103,12 @@ class LiveMatchLogoCacheTest {
       strokeWidth = 6f
     })
     canvas.drawRect(18f, 27f, 46f, 32f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.rgb(15, 76, 201) })
+  }
+
+  /** The team colour is the logo's red, not its white plate or dark emblem. */
+  private fun assertIsPlateRed(color: Int?) {
+    requireNotNull(color)
+    assertTrue(Color.red(color) > 220 && Color.green(color) < 40 && Color.blue(color) < 65)
   }
 
   /** A saturated red plate filling most of the bitmap with a dark emblem on it, like the Sentinels logo. */
