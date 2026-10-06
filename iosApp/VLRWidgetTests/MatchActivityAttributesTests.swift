@@ -183,8 +183,8 @@ final class MatchActivityAttributesTests: XCTestCase {
         XCTAssertNil(resumed.pause)
         XCTAssertEqual(MatchLiveActivityScores(state: paused, hidden: false).primaryLeft,
                        MatchLiveActivityScores(state: resumed, hidden: false).primaryLeft)
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: paused, hidden: false)?.segments,
-                       MatchLiveActivityMapProgress(state: resumed, hidden: false)?.segments)
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: paused, hidden: false)?.maps.map(\.segment),
+                       MatchLiveActivityMapProgress(state: resumed, hidden: false)?.maps.map(\.segment))
     }
 
     @available(iOS 16.1, *)
@@ -254,9 +254,9 @@ final class MatchActivityAttributesTests: XCTestCase {
         )
         XCTAssertEqual(state.teams.map(\.id), ["474", "624"])
         XCTAssertEqual(state.map_winners, ["474", "624", nil])
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: state, hidden: false)?.segments,
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state, hidden: false)?.maps.map(\.segment),
                        [.wonBy(0), .wonBy(1), .active])
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: state, hidden: true)?.segments,
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state, hidden: true)?.maps.map(\.segment),
                        [.pending, .pending, .pending])
     }
 
@@ -269,11 +269,11 @@ final class MatchActivityAttributesTests: XCTestCase {
                   current_map: .init(name: "Lotus", scores: [5, 0], number: 3),
                   total_maps: 3, map_winners: winners)
         }
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: false, winners: ["474"]), hidden: false)?.segments,
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: false, winners: ["474"]), hidden: false)?.maps.map(\.segment),
                        [.wonBy(0), .pending, .active])
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: true, winners: []), hidden: false)?.segments,
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: true, winners: []), hidden: false)?.maps.map(\.segment),
                        [.pending, .pending, .pending])
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: true, winners: ["474", "624"]), hidden: false)?.segments,
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: true, winners: ["474", "624"]), hidden: false)?.maps.map(\.segment),
                        [.wonBy(0), .wonBy(1), .pending])
     }
 

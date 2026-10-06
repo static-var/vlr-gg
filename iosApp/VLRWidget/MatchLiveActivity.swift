@@ -18,6 +18,7 @@ struct MatchLiveActivity: Widget {
         } dynamicIsland: { context in
             let hidden = MatchLiveActivitySpoilerPreference.isHidden
             let scores = MatchLiveActivityScores(state: context.state, hidden: hidden)
+            let teamColors = MatchActivityLogoCache.teamColors(for: context.state.teams.map(\.img), appearance: .dark)
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     MatchLiveActivityStatus(state: context.state)
@@ -41,7 +42,7 @@ struct MatchLiveActivity: Widget {
                     MatchLiveActivityRollingScore(value: scores.primaryLeft, height: 20)
                 }
                 .font(PrismWidgetFont.regular(13, relativeTo: .caption))
-                .foregroundStyle(PrismWidgetPalette.dark.accent)
+                .foregroundStyle(Color(uiColor: teamColors.color(for: 0)))
                 .monospacedDigit()
                 .accessibilityElement(children: .combine)
                 .environment(\.colorScheme, .dark)
@@ -51,7 +52,7 @@ struct MatchLiveActivity: Widget {
                     MatchLiveActivityLogo(team: context.state.teams.dropFirst().first, size: 20)
                 }
                 .font(PrismWidgetFont.regular(13, relativeTo: .caption))
-                .foregroundStyle(PrismWidgetPalette.dark.accent)
+                .foregroundStyle(Color(uiColor: teamColors.color(for: 1)))
                 .monospacedDigit()
                 .accessibilityElement(children: .combine)
                 .environment(\.colorScheme, .dark)
@@ -81,7 +82,7 @@ struct MatchLiveActivityLockScreen: View {
     }
 
     var body: some View {
-        VStack(spacing: mapProgress == nil ? 10 : 7) {
+        VStack(spacing: mapProgress == nil ? 10 : 6) {
             HStack(spacing: 6) {
                 MatchLiveActivityStatus(state: state)
                 Spacer()
@@ -93,7 +94,7 @@ struct MatchLiveActivityLockScreen: View {
             MatchLiveActivityScoreContent(state: state, spoilersHidden: spoilersHidden, isExpanded: false)
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, mapProgress == nil ? 14 : 11)
+        .padding(.vertical, mapProgress == nil ? 14 : 10)
         .foregroundStyle(palette.ink)
         .accessibilityElement(children: .contain)
         .accessibilityHint(String(localized: "Opens match details"))
@@ -137,18 +138,52 @@ private struct MatchLiveActivityStatus: View {
 }
 
 @available(iOS 16.1, *)
+struct MatchLiveActivityDetailContent: Equatable {
+    enum Value: Equatable {
+        case branding
+        case stage(String)
+        case pauseReason(String)
+    }
+
+    let value: Value
+
+    init(state: MatchActivityAttributes.ContentState) {
+        if !state.terminal, let pause = state.pause {
+            if let reason = pause.reason, !reason.contains(where: \.isNewline) {
+                value = .pauseReason(reason)
+            } else {
+                value = .branding
+            }
+        } else if let stage = state.stage?.trimmingCharacters(in: .whitespacesAndNewlines), !stage.isEmpty {
+            value = .stage(stage)
+        } else {
+            value = .branding
+        }
+    }
+}
+
+@available(iOS 16.1, *)
 private struct MatchLiveActivityDetail: View {
     let state: MatchActivityAttributes.ContentState
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        ViewThatFits(in: .horizontal) {
-            if !state.terminal, let reason = state.pause?.reason, !reason.contains(where: \.isNewline) {
-                Text(verbatim: reason)
+        Group {
+            switch MatchLiveActivityDetailContent(state: state).value {
+            case .pauseReason(let reason):
+                ViewThatFits(in: .horizontal) {
+                    Text(verbatim: reason)
+                        .fixedSize(horizontal: true, vertical: false)
+                    Text(verbatim: "VAL ESPORTS")
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+            case .stage(let stage):
+                Text(verbatim: stage)
+                    .truncationMode(.tail)
+            case .branding:
+                Text(verbatim: "VAL ESPORTS")
                     .fixedSize(horizontal: true, vertical: false)
             }
-            Text(verbatim: "VAL ESPORTS")
-                .fixedSize(horizontal: true, vertical: false)
         }
         .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
         .foregroundStyle(colorScheme == .dark ? PrismWidgetPalette.dark.secondary : PrismWidgetPalette.light.secondary)
@@ -170,15 +205,18 @@ private struct MatchLiveActivityScoreContent: View {
     private var mapProgress: MatchLiveActivityMapProgress? {
         MatchLiveActivityMapProgress(state: state, hidden: spoilersHidden)
     }
+    private var teamColors: MatchActivityTeamColors {
+        MatchActivityLogoCache.teamColors(for: state.teams.map(\.img), appearance: colorScheme == .dark ? .dark : .light)
+    }
 
     var body: some View {
-        VStack(spacing: mapProgress == nil ? 10 : 7) {
+        VStack(spacing: mapProgress == nil ? 10 : 6) {
             HStack(alignment: state.terminal ? .top : .center, spacing: 8) {
                 team(at: 0)
-                VStack(spacing: 3) {
+                VStack(spacing: mapProgress == nil ? 3 : 1) {
                     if !state.terminal, let map = state.current_map {
                         Text(map.name)
-                            .font(PrismWidgetFont.regular(12, relativeTo: .caption))
+                            .font(PrismWidgetFont.regular(mapProgress == nil ? 12 : 11, relativeTo: .caption))
                             .foregroundStyle(palette.secondary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)
@@ -186,13 +224,13 @@ private struct MatchLiveActivityScoreContent: View {
                     MatchLiveActivityScorePair(
                         left: scores.primaryLeft,
                         right: scores.primaryRight,
-                        size: state.terminal ? (isExpanded ? 48 : 58) : (isExpanded ? 36 : 43),
+                        size: mapProgress != nil ? 36 : state.terminal ? (isExpanded ? 48 : 58) : (isExpanded ? 36 : 43),
                         color: palette.ink
                     )
-                    .frame(height: state.terminal ? (isExpanded ? 52 : 58) : (isExpanded ? 41 : 48))
+                    .frame(height: mapProgress != nil ? 41 : state.terminal ? (isExpanded ? 52 : 58) : (isExpanded ? 41 : 48))
                     if !state.terminal, state.current_map != nil {
                         Text(scores.series)
-                            .font(PrismWidgetFont.regular(isExpanded ? 12 : 14, relativeTo: .caption))
+                            .font(PrismWidgetFont.regular(mapProgress != nil ? 11 : isExpanded ? 12 : 14, relativeTo: .caption))
                             .foregroundStyle(palette.secondary)
                             .monospacedDigit()
                     }
@@ -201,9 +239,9 @@ private struct MatchLiveActivityScoreContent: View {
                 .accessibilityElement(children: .combine)
                 team(at: 1)
             }
-            .frame(height: isExpanded ? (mapProgress == nil ? 88 : 72) : (mapProgress == nil ? 100 : 88))
+            .frame(height: isExpanded ? (mapProgress == nil ? 88 : 72) : (mapProgress == nil ? 100 : 72))
             if let mapProgress {
-                MatchLiveActivityMapProgressView(progress: mapProgress, state: state, palette: palette)
+                MatchLiveActivityMapProgressView(progress: mapProgress, state: state, palette: palette, teamColors: teamColors)
             }
         }
         .foregroundStyle(palette.ink)
@@ -213,7 +251,7 @@ private struct MatchLiveActivityScoreContent: View {
 
     private func team(at index: Int) -> some View {
         let value = state.teams.indices.contains(index) ? state.teams[index] : nil
-        return VStack(spacing: 7) {
+        return VStack(spacing: mapProgress == nil ? 7 : 4) {
             if let image = MatchActivityLogoCache.image(
                 for: value?.img,
                 appearance: colorScheme == .dark ? .dark : .light,
@@ -222,14 +260,14 @@ private struct MatchLiveActivityScoreContent: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: isExpanded ? 40 : 58, height: isExpanded ? 40 : 58)
+                    .frame(width: mapProgress != nil ? 38 : isExpanded ? 40 : 58, height: mapProgress != nil ? 38 : isExpanded ? 40 : 58)
                     .accessibilityHidden(true)
             }
             Text(value?.visibleName ?? "—")
                 .accessibilityLabel(value?.name ?? "—")
-                .font(PrismWidgetFont.regular(13, relativeTo: .caption))
-                .foregroundStyle(MatchLiveActivityTeamColors.color(for: index, scheme: colorScheme))
-                .lineLimit(2)
+                .font(PrismWidgetFont.regular(mapProgress == nil ? 13 : 12, relativeTo: .caption))
+                .foregroundStyle(Color(uiColor: teamColors.color(for: index)))
+                .lineLimit(mapProgress == nil ? 2 : 1)
                 .minimumScaleFactor(0.75)
                 .multilineTextAlignment(.center)
         }
@@ -245,21 +283,74 @@ struct MatchLiveActivityMapProgress {
         case pending
     }
 
-    let segments: [Segment]
+    enum Round: Equatable {
+        case wonBy(Int)
+        case unknown
+        case pending
+    }
+
+    struct Map: Identifiable, Equatable {
+        let number: Int
+        let segment: Segment
+        let rounds: [Round]
+        let scores: [Int?]
+
+        var id: Int { number }
+        var scoreText: String {
+            if scores.allSatisfy({ $0 == nil }) { return "—" }
+            return scores.map { $0.map(String.init) ?? "—" }.joined(separator: " : ")
+        }
+    }
+
+    let maps: [Map]
+    let firstVisibleIndex: Int
     let hidden: Bool
 
+    var visibleMaps: ArraySlice<Map> { maps.dropFirst(firstVisibleIndex).prefix(3) }
+
     init?(state: MatchActivityAttributes.ContentState, hidden: Bool) {
-        guard let total = state.total_maps, (1...9).contains(total) else { return nil }
+        let total = max(state.total_maps ?? 0, state.map_winners.count,
+                        state.map_round_winners.map(\.map_number).max() ?? 0,
+                        state.current_map?.number ?? 0)
+        guard (1...9).contains(total) else { return nil }
         self.hidden = hidden
-        segments = (0..<total).map { index in
-            if hidden { return .pending }
+        maps = (0..<total).map { index in
+            let number = index + 1
+            let active = !state.terminal && state.current_map?.number == number
+            let history = state.map_round_winners.first { $0.map_number == number }?.winners ?? []
+            var segment = Segment.pending
             if state.map_winners.indices.contains(index), let winner = state.map_winners[index] {
-                let matchingTeams = state.teams.indices.filter { state.teams[$0].id == winner }
-                if matchingTeams.count == 1 { return .wonBy(matchingTeams[0]) }
+                let matchingTeams = state.teams.indices.prefix(2).filter { state.teams[$0].id == winner }
+                if matchingTeams.count == 1 { segment = .wonBy(matchingTeams[0]) }
             }
-            if !state.terminal, state.current_map?.number == index + 1 { return .active }
-            return .pending
+            if segment == .pending && active { segment = .active }
+            if hidden {
+                return Map(number: number, segment: .pending,
+                           rounds: Array(repeating: .pending, count: 12), scores: [nil, nil])
+            }
+            let knownHistory = !history.isEmpty && history.allSatisfy { $0 == 0 || $0 == 1 }
+            let historyScores: [Int?] = knownHistory
+                ? [history.filter { $0 == 0 }.count, history.filter { $0 == 1 }.count] : [nil, nil]
+            let scores = active ? (0..<2).map { team in
+                let values = state.current_map?.scores ?? []
+                return values.indices.contains(team) ? values[team] : nil
+            } : historyScores
+            let currentRoundCount = active && scores.allSatisfy({ $0 != nil && $0! >= 0 })
+                ? scores.compactMap { $0 }.reduce(0, +) : 0
+            let played = max(history.count, currentRoundCount)
+            let rounds: [Round] = (0..<max(12, played)).map { round in
+                if round < history.count, let winner = history[round], (0...1).contains(winner) {
+                    return .wonBy(winner)
+                }
+                return round < played ? .unknown : .pending
+            }
+            return Map(number: number, segment: segment, rounds: rounds, scores: scores)
         }
+        let lastPlayed = maps.last { map in
+            map.segment != .pending || map.rounds.contains { $0 != .pending }
+        }?.number ?? 1
+        let focus = state.terminal ? lastPlayed : state.current_map?.number ?? lastPlayed
+        firstVisibleIndex = min(max(0, focus - 3), max(0, total - 3))
     }
 }
 
@@ -268,56 +359,79 @@ private struct MatchLiveActivityMapProgressView: View {
     let progress: MatchLiveActivityMapProgress
     let state: MatchActivityAttributes.ContentState
     let palette: PrismWidgetPalette
-    @Environment(\.colorScheme) private var colorScheme
+    let teamColors: MatchActivityTeamColors
 
     var body: some View {
-        HStack(spacing: 5) {
-            ForEach(progress.segments.indices, id: \.self) { index in
-                let segment = progress.segments[index]
-                Capsule()
-                    .fill(fill(for: segment))
-                    .overlay {
-                        if segment == .active {
-                            Capsule().strokeBorder(palette.accent, lineWidth: 1.2)
-                            Circle().fill(palette.accent).frame(width: 4, height: 4)
+        HStack(spacing: 7) {
+            ForEach(progress.visibleMaps) { map in
+                VStack(spacing: 3) {
+                    Text(verbatim: map.scoreText)
+                        .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
+                        .foregroundStyle(palette.secondary)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                    GeometryReader { geometry in
+                        HStack(spacing: min(3, geometry.size.width / CGFloat(map.rounds.count * 3))) {
+                            ForEach(map.rounds.indices, id: \.self) { round in
+                                RoundedRectangle(cornerRadius: 1.5)
+                                    .fill(fill(for: map.rounds[round]))
+                                    .frame(maxWidth: 6)
+                                    .frame(maxWidth: .infinity)
+                            }
                         }
                     }
-                    .frame(height: 7)
-                    .accessibilityLabel(label(for: segment, map: index + 1))
+                    .frame(height: 12)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 4)
+                    .background {
+                        RoundedRectangle(cornerRadius: 6)
+                            .strokeBorder(outline(for: map.segment), lineWidth: 1.4)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(label(for: map))
+                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
             }
         }
+        .clipped()
+        .animation(.easeInOut(duration: 0.3), value: progress.firstVisibleIndex)
         .accessibilityElement(children: .contain)
     }
 
-    private func fill(for segment: MatchLiveActivityMapProgress.Segment) -> Color {
-        if case .wonBy(let index) = segment {
-            return MatchLiveActivityTeamColors.color(for: index, scheme: colorScheme)
+    private func fill(for round: MatchLiveActivityMapProgress.Round) -> Color {
+        switch round {
+        case .wonBy(let index): return Color(uiColor: teamColors.color(for: index))
+        case .unknown: return palette.secondary.opacity(0.6)
+        case .pending: return palette.border.opacity(0.55)
         }
-        return palette.border.opacity(0.55)
     }
 
-    private func label(for segment: MatchLiveActivityMapProgress.Segment, map: Int) -> String {
-        switch segment {
+    private func outline(for segment: MatchLiveActivityMapProgress.Segment) -> Color {
+        if case .wonBy(let index) = segment { return Color(uiColor: teamColors.color(for: index)) }
+        return palette.border.opacity(0.7)
+    }
+
+    private func label(for map: MatchLiveActivityMapProgress.Map) -> String {
+        if progress.hidden { return "Map \(map.number), result hidden" }
+        let status: String
+        switch map.segment {
         case .wonBy(let index):
-            return "Map \(map), \(state.teams[index].name) won"
+            status = "\(state.teams[index].name) won"
         case .active:
-            return "Map \(map) in progress"
+            status = "in progress"
         case .pending:
-            return progress.hidden ? "Map \(map), result hidden" : "Map \(map), result unavailable"
+            status = "result unavailable"
         }
-    }
-}
-
-private enum MatchLiveActivityTeamColors {
-    static func color(for index: Int, scheme: ColorScheme) -> Color {
-        if scheme == .dark {
-            return index == 0
-                ? Color(red: 207.0 / 255.0, green: 178.0 / 255.0, blue: 1)
-                : Color(red: 100.0 / 255.0, green: 218.0 / 255.0, blue: 199.0 / 255.0)
-        }
-        return index == 0
-            ? Color(red: 103.0 / 255.0, green: 58.0 / 255.0, blue: 183.0 / 255.0)
-            : Color(red: 0, green: 105.0 / 255.0, blue: 92.0 / 255.0)
+        let rounds = map.rounds.enumerated().compactMap { index, round -> String? in
+            switch round {
+            case .wonBy(let team):
+                return "Round \(index + 1), \(state.teams.indices.contains(team) ? state.teams[team].name : "unknown team")"
+            case .unknown: return "Round \(index + 1), winner unavailable"
+            case .pending: return nil
+            }
+        }.joined(separator: ". ")
+        return "Map \(map.number), \(status), \(map.scoreText). \(rounds)"
     }
 }
 
