@@ -4,7 +4,7 @@
  */
 package dev.staticvar.vlr.domain.repository
 
-import dev.staticvar.vlr.domain.model.RegionalRanking
+import dev.staticvar.vlr.domain.model.TeamRanking
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -13,14 +13,9 @@ import kotlinx.coroutines.flow.Flow
  */
 interface RankingsRepository {
   /**
-   * Get all regional rankings.
+   * Get the global Elo ranking, best team first.
    */
-  fun getAllRankings(): Flow<List<RegionalRanking>>
-
-  /**
-   * Get rankings for a specific region.
-   */
-  fun getRankingsByRegion(region: String): Flow<RegionalRanking?>
+  fun getRankings(): Flow<List<TeamRanking>>
 
   /**
    * Refresh rankings from remote source.

@@ -141,7 +141,7 @@ FROM (
 
     UNION ALL
 
-    SELECT 'RANKING', team_id || ':' || region
+    SELECT 'RANKING', team_id
     FROM rankings
     WHERE last_updated > 0
       AND last_updated < :cutoffEpochMillis

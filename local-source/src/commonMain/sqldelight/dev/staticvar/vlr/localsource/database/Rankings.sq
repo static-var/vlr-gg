@@ -1,19 +1,21 @@
 -- Rankings and seasonal standings tables
 
+-- Global Elo ranking, in the order the API ranks it.
 CREATE TABLE rankings (
-    team_id TEXT NOT NULL,
-    region TEXT NOT NULL,
+    team_id TEXT NOT NULL PRIMARY KEY,
     team_name TEXT NOT NULL DEFAULT '',
     team_logo TEXT NOT NULL DEFAULT '',
     country TEXT NOT NULL DEFAULT '',
     rank INTEGER NOT NULL,
-    points TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    elo REAL NOT NULL,
+    match_wins INTEGER NOT NULL DEFAULT 0,
+    match_losses INTEGER NOT NULL DEFAULT 0,
     last_updated INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (team_id, region)
+    region TEXT
 );
 
-CREATE INDEX idx_rankings_region ON rankings(region);
-CREATE INDEX idx_rankings_rank ON rankings(region, rank);
+CREATE INDEX idx_rankings_position ON rankings(position);
 
 CREATE TABLE standings (
     team_id TEXT NOT NULL,
@@ -37,28 +39,17 @@ CREATE INDEX idx_standings_circuit ON standings(circuit);
 -- ============================================================================
 
 insertRanking:
-INSERT OR REPLACE INTO rankings(team_id, region, rank, points, last_updated)
-VALUES (?, ?, ?, ?, ?);
-
-insertRankingDetails:
-INSERT OR REPLACE INTO rankings(team_id, region, team_name, team_logo, country, rank, points, last_updated)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
-
-getRankingsByRegion:
-SELECT * FROM rankings WHERE region = :region ORDER BY rank ASC;
+INSERT OR REPLACE INTO rankings(team_id, team_name, team_logo, country, rank, position, elo, match_wins, match_losses, last_updated, region)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 getAllRankings:
-SELECT * FROM rankings ORDER BY region ASC, rank ASC;
+SELECT * FROM rankings ORDER BY position ASC;
 
 getRankingsWithFavoriteStatus:
 SELECT r.*, CAST((fav.team_id IS NOT NULL) AS INTEGER) AS is_favorite
 FROM rankings AS r
 LEFT JOIN favorite_teams AS fav ON r.team_id = fav.team_id AND fav.active = 1
-WHERE :region IS NULL OR r.region = :region
-ORDER BY r.region ASC, r.rank ASC;
-
-deleteRankingsByRegion:
-DELETE FROM rankings WHERE region = :region;
+ORDER BY r.position ASC;
 
 deleteAllRankings:
 DELETE FROM rankings;

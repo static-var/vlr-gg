@@ -1,0 +1,49 @@
+{
+  "as_of": "2026-10-06",
+  "algorithm": "k48-hnone-m0.3-r0",
+  "circuit": "all",
+  "region": "all",
+  "total": 3,
+  "limit": 200,
+  "offset": 0,
+  "teams": [
+    {
+      "rank": 1,
+      "overall_rank": 1,
+      "region": "americas",
+      "team": {"id": "1034", "name": "NRG", "tag": "NRG", "logo": "https://owcdn.net/img/6610f026c1a9e.png", "country": "United States", "region": "na"},
+      "elo": 1834.62,
+      "map_elo": 1791.08,
+      "matches": {"played": 41, "wins": 31, "losses": 10, "win_rate": 0.7561},
+      "maps": {"played": 97, "wins": 68, "losses": 29, "win_rate": 0.701},
+      "last_played_on": "2026-10-04",
+      "primary_circuit": "vct",
+      "circuits": ["vct", "offseason"]
+    },
+    {
+      "rank": 2,
+      "overall_rank": 2,
+      "region": null,
+      "team": {"id": "11058", "name": "G2 Esports", "tag": "G2", "logo": null, "country": null, "region": null},
+      "elo": 1802.4,
+      "map_elo": 1770.0,
+      "matches": {"played": 38, "wins": 27, "losses": 11, "win_rate": 0.7105},
+      "maps": {"played": 90, "wins": 61, "losses": 29, "win_rate": 0.6778},
+      "last_played_on": "2026-10-01",
+      "primary_circuit": "vct",
+      "circuits": ["vct"]
+    },
+    {
+      "rank": 2,
+      "overall_rank": 2,
+      "team": {"id": "2", "name": "Sentinels", "logo": "https://owcdn.net/img/62875027c8e06.png", "country": "United States"},
+      "elo": 1802.4,
+      "map_elo": 1755.3,
+      "matches": {"played": 35, "wins": 22, "losses": 13, "win_rate": 0.6286},
+      "maps": {"played": 84, "wins": 51, "losses": 33, "win_rate": 0.6071},
+      "last_played_on": "2026-09-28",
+      "primary_circuit": null,
+      "circuits": []
+    }
+  ]
+}

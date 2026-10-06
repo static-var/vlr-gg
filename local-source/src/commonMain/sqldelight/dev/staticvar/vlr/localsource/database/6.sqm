@@ -1,0 +1,18 @@
+-- Rankings switch from VLR's regional points tables to the global Elo ranking.
+-- The table is a refreshable cache, so it is rebuilt rather than converted.
+DROP TABLE IF EXISTS rankings;
+
+CREATE TABLE rankings (
+    team_id TEXT NOT NULL PRIMARY KEY,
+    team_name TEXT NOT NULL DEFAULT '',
+    team_logo TEXT NOT NULL DEFAULT '',
+    country TEXT NOT NULL DEFAULT '',
+    rank INTEGER NOT NULL,
+    position INTEGER NOT NULL,
+    elo REAL NOT NULL,
+    match_wins INTEGER NOT NULL DEFAULT 0,
+    match_losses INTEGER NOT NULL DEFAULT 0,
+    last_updated INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX idx_rankings_position ON rankings(position);

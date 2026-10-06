@@ -42,7 +42,7 @@ import dev.staticvar.vlr.domain.model.PlayerInfo
 import dev.staticvar.vlr.domain.model.PlayerStats
 import dev.staticvar.vlr.domain.model.PlayerTeam
 import dev.staticvar.vlr.domain.model.PreviousEncounter
-import dev.staticvar.vlr.domain.model.RegionalRanking
+import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.domain.model.RoundInfo
 import dev.staticvar.vlr.domain.model.RoundSide
 import dev.staticvar.vlr.domain.model.RoundWinType
@@ -487,28 +487,17 @@ internal fun GetPlayersByTeam.toPlayerInfo(
 // RANKINGS MAPPERS
 // ============================================================================
 
-/**
- * Groups rankings by region to create domain RegionalRanking model.
- */
-internal fun List<GetRankingsWithFavoriteStatus>.toRegionalRankings(
-  regionLabel: (String) -> String = { "" },
-): List<RegionalRanking> = groupBy { it.region }
-  .map { (region, rankings) ->
-    RegionalRanking(
-      region = region,
-      teams = rankings.map { it.toTeamRanking() },
-      regionLabel = regionLabel(region),
-    )
-  }
-
-private fun GetRankingsWithFavoriteStatus.toTeamRanking(): TeamRanking = TeamRanking(
+internal fun GetRankingsWithFavoriteStatus.toTeamRanking(): TeamRanking = TeamRanking(
   teamId = team_id,
   teamName = team_name,
   teamLogo = team_logo,
   country = country,
   rank = rank.toInt(),
-  points = points,
+  elo = elo,
+  wins = match_wins.toInt(),
+  losses = match_losses.toInt(),
   isFavorite = is_favorite == 1L,
+  region = RankingRegion.entries.firstOrNull { it.apiValue == region },
 )
 
 // ============================================================================

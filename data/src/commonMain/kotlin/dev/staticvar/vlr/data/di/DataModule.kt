@@ -90,7 +90,6 @@ fun dataModule(): Module = module {
       rankingsDataSource = get(),
       database = get(),
       dispatchers = get(),
-      regionLabels = get(),
     )
   }
   single<PlayerRepository> {

@@ -8,9 +8,10 @@ import app.cash.sqldelight.driver.native.NativeSqliteDriver
 import app.cash.sqldelight.driver.native.inMemoryDriver
 import app.cash.turbine.test
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
+import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.localsource.database.VlrDatabase
-import dev.staticvar.vlr.remotesource.network.RemotePayload
-import dev.staticvar.vlr.remotesource.rankings.RankingDto
+import dev.staticvar.vlr.remotesource.rankings.RankingRecordDto
+import dev.staticvar.vlr.remotesource.rankings.RankingTeamDto
 import dev.staticvar.vlr.remotesource.rankings.RankingsDataSource
 import dev.staticvar.vlr.remotesource.rankings.TeamRankingDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,24 +54,30 @@ class RankingsRepositoryImplTest {
   }
 
   @Test
-  fun refreshRankings_replacesDataPerRegion() = runTest(dispatcher) {
-    database.rankingsQueries.insertRanking("old1", "NA", 5L, "25", 0L)
-    database.rankingsQueries.insertRanking("old2", "EU", 3L, "30", 0L)
+  fun refreshRankings_replacesRankingInApiOrder() = runTest(dispatcher) {
+    insertRanking("old", position = 0)
 
     dataSource.listResult = Result.success(
       listOf(
-        RankingDto(
-          region = "NA",
-          teams = listOf(
-            TeamRankingDto(id = 11, name = "Alpha", rank = 1, points = 120, country = "US"),
-            TeamRankingDto(id = 12, name = "Beta", rank = 2, points = 100, country = "CA"),
-          ),
+        TeamRankingDto(
+          rank = 1,
+          team = RankingTeamDto(id = "11", name = "Alpha", logo = "alpha.png", country = "United States"),
+          elo = 1850.4,
+          matches = RankingRecordDto(wins = 20, losses = 4),
+          region = "americas",
         ),
-        RankingDto(
-          region = "APAC",
-          teams = listOf(
-            TeamRankingDto(id = 21, name = "Gamma", rank = 1, points = 140, country = "KR"),
-          ),
+        TeamRankingDto(
+          rank = 2,
+          team = RankingTeamDto(id = "21", name = "Gamma"),
+          elo = 1800.0,
+          matches = RankingRecordDto(wins = 9, losses = 9),
+          region = "unclassified",
+        ),
+        TeamRankingDto(
+          rank = 2,
+          team = RankingTeamDto(id = "12", name = "Beta"),
+          elo = 1800.0,
+          matches = RankingRecordDto(wins = 8, losses = 8),
         ),
       ),
     )
@@ -78,77 +85,80 @@ class RankingsRepositoryImplTest {
     val result = repository.refreshRankings()
     assertTrue(result.isSuccess)
 
-    val na = database.rankingsQueries.getRankingsByRegion("NA").executeAsList()
-    assertEquals(listOf(1, 2), na.map { it.rank.toInt() })
-    assertEquals("Alpha", na.first().team_name)
-    assertEquals("US", na.first().country)
-    val apac = database.rankingsQueries.getRankingsByRegion("APAC").executeAsList()
-    assertEquals(1, apac.size)
-    assertTrue(database.rankingsQueries.getRankingsByRegion("EU").executeAsList().isEmpty())
+    val rows = database.rankingsQueries.getAllRankings().executeAsList()
+    assertEquals(listOf("11", "21", "12"), rows.map { it.team_id })
+    assertEquals(listOf(1L, 2L, 2L), rows.map { it.rank })
+    assertEquals(listOf("americas", null, null), rows.map { it.region })
+    val alpha = rows.first()
+    assertEquals("Alpha", alpha.team_name)
+    assertEquals("alpha.png", alpha.team_logo)
+    assertEquals("United States", alpha.country)
+    assertEquals(1850.4, alpha.elo)
+    assertEquals(20L, alpha.match_wins)
+    assertEquals(4L, alpha.match_losses)
+    assertEquals("", rows[1].team_logo)
+    assertEquals("", rows[1].country)
+
+    repository.getRankings().test {
+      assertEquals(listOf(RankingRegion.Americas, null, null), awaitItem().map { it.region })
+      cancelAndIgnoreRemainingEvents()
+    }
   }
 
   @Test
-  fun getAllRankings_groupsByRegion() = runTest(dispatcher) {
-    database.rankingsQueries.insertRankingDetails(
-      "team1",
-      "NA",
-      "Alpha",
-      "alpha.png",
-      "US",
-      1L,
-      "100",
-      0L,
-    )
-    database.rankingsQueries.insertRankingDetails(
-      "team2",
-      "NA",
-      "Beta",
-      "beta.png",
-      "CA",
-      2L,
-      "80",
-      0L,
-    )
-    database.rankingsQueries.insertRankingDetails(
-      "team3",
-      "EMEA",
-      "Gamma",
-      "gamma.png",
-      "DE",
-      1L,
-      "90",
-      0L,
-    )
+  fun refreshRankings_failureKeepsCachedRanking() = runTest(dispatcher) {
+    insertRanking("cached", position = 0)
+    dataSource.listResult = Result.failure(IllegalStateException("offline"))
 
-    repository.getAllRankings().test {
+    assertTrue(repository.refreshRankings().isFailure)
+
+    assertEquals(listOf("cached"), database.rankingsQueries.getAllRankings().executeAsList().map { it.team_id })
+  }
+
+  @Test
+  fun getRankings_emitsTeamsInPositionOrderWithFavorites() = runTest(dispatcher) {
+    insertRanking("team2", position = 1, rank = 2, elo = 1790.0, region = "emea")
+    insertRanking("team1", position = 0, rank = 1, elo = 1835.6, region = "pacific")
+    insertRanking("team3", position = 2, rank = 3, region = "china")
+    database.teamsQueries.addFavoriteTeam("team2")
+
+    repository.getRankings().test {
       val emission = awaitItem()
-      assertEquals(2, emission.size)
-      val na = emission.first { it.region == "NA" }
-      assertEquals(listOf(1, 2), na.teams.map { it.rank })
-      assertEquals(listOf("Alpha", "Beta"), na.teams.map { it.teamName })
-      assertEquals(listOf("alpha.png", "beta.png"), na.teams.map { it.teamLogo })
-      assertEquals(listOf("US", "CA"), na.teams.map { it.country })
-      val emea = emission.first { it.region == "EMEA" }
-      assertEquals(listOf("team3"), emea.teams.map { it.teamId })
+      assertEquals(listOf("team1", "team2", "team3"), emission.map { it.teamId })
+      assertEquals(listOf(1, 2, 3), emission.map { it.rank })
+      assertEquals(1835.6, emission.first().elo)
+      assertEquals(listOf(false, true, false), emission.map { it.isFavorite })
+      assertEquals(listOf(RankingRegion.Pacific, RankingRegion.Emea, RankingRegion.China), emission.map { it.region })
       cancelAndIgnoreRemainingEvents()
     }
   }
 
-  @Test
-  fun getRankingsByRegion_emitsNullWhenEmpty() = runTest(dispatcher) {
-    repository.getRankingsByRegion("LATAM").test {
-      assertTrue(awaitItem() == null)
-      cancelAndIgnoreRemainingEvents()
-    }
+  private fun insertRanking(
+    teamId: String,
+    position: Long,
+    rank: Long = position + 1,
+    elo: Double = 1500.0,
+    region: String? = null,
+  ) {
+    database.rankingsQueries.insertRanking(
+      team_id = teamId,
+      team_name = "Team $teamId",
+      team_logo = "",
+      country = "",
+      rank = rank,
+      position = position,
+      elo = elo,
+      match_wins = 0,
+      match_losses = 0,
+      last_updated = 0,
+      region = region,
+    )
   }
 
   private class FakeRankingsDataSource : RankingsDataSource {
-    var listResult: Result<List<RankingDto>> = Result.success(emptyList())
-    override suspend fun list(): Result<RemotePayload<List<RankingDto>>> = listResult.map {
-      RemotePayload(value = it, requestedLanguage = null, contentLanguage = null)
-    }
+    var listResult: Result<List<TeamRankingDto>> = Result.success(emptyList())
+    override suspend fun list(): Result<List<TeamRankingDto>> = listResult
   }
-
   private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {
     override val default = dispatcher
     override val io = dispatcher

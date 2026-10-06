@@ -4,17 +4,15 @@
  */
 package dev.staticvar.vlr.domain.model
 
-/**
- * Domain model for regional team rankings.
- */
-data class RegionalRanking(
-  val region: String,
-  val teams: List<TeamRanking>,
-  val regionLabel: String = "",
-)
+enum class RankingRegion(val apiValue: String) {
+  Americas("americas"),
+  Emea("emea"),
+  Pacific("pacific"),
+  China("china"),
+}
 
 /**
- * Individual team ranking entry.
+ * One team's line in the global Elo ranking.
  */
 data class TeamRanking(
   val teamId: String,
@@ -22,6 +20,9 @@ data class TeamRanking(
   val teamLogo: String,
   val country: String,
   val rank: Int,
-  val points: String,
+  val elo: Double,
+  val wins: Int,
+  val losses: Int,
   val isFavorite: Boolean = false,
+  val region: RankingRegion? = null,
 )

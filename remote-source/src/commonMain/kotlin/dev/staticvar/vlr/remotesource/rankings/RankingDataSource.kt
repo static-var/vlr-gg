@@ -4,8 +4,7 @@
  */
 package dev.staticvar.vlr.remotesource.rankings
 
-import dev.staticvar.vlr.remotesource.network.RemotePayload
-
 interface RankingsDataSource {
-  suspend fun list(): Result<RemotePayload<List<RankingDto>>>
+  /** Every team in the global Elo ranking, in ranked order. */
+  suspend fun list(): Result<List<TeamRankingDto>>
 }

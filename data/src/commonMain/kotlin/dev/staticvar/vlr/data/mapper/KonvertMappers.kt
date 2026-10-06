@@ -8,6 +8,7 @@ import dev.staticvar.vlr.data.PlayerAgentStats
 import dev.staticvar.vlr.data.PlayerTeamHistory
 import dev.staticvar.vlr.data.Rankings
 import dev.staticvar.vlr.data.Standings
+import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.remotesource.player.PlayerAgentStatsDto
 import dev.staticvar.vlr.remotesource.player.PlayerTeamRefDto
 import dev.staticvar.vlr.remotesource.rankings.TeamRankingDto
@@ -24,15 +25,18 @@ import kotlin.time.Clock
 
 // ----------------------------- Rankings -----------------------------
 
-internal fun TeamRankingDto.toEntity(region: String): Rankings = Rankings(
-  team_id = id.toString(),
-  region = region,
-  team_name = name,
-  team_logo = logo,
-  country = country,
+internal fun TeamRankingDto.toEntity(position: Int, lastUpdated: Long): Rankings = Rankings(
+  team_id = team.id,
+  team_name = team.name,
+  team_logo = team.logo.orEmpty(),
+  country = team.country.orEmpty(),
   rank = rank.toLong(),
-  points = points.toString(),
-  last_updated = Clock.System.now().toEpochMilliseconds(),
+  position = position.toLong(),
+  elo = elo,
+  match_wins = matches.wins.toLong(),
+  match_losses = matches.losses.toLong(),
+  last_updated = lastUpdated,
+  region = RankingRegion.entries.firstOrNull { it.apiValue == region }?.apiValue,
 )
 
 // ----------------------------- Standings -----------------------------

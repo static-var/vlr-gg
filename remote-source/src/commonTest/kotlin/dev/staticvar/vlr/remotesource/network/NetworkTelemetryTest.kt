@@ -141,6 +141,9 @@ class NetworkTelemetryTest {
     assertEquals("<other>", telemetryEndpoint("/private/email@example.com"))
     assertEquals("<other>", telemetryEndpoint("/api/v1/secret"))
     assertEquals("<other>", telemetryEndpoint("/api/v1/team/id/secret"))
+    assertEquals("/api/v2/rankings", telemetryEndpoint("/api/v2/rankings/"))
+    assertEquals("<other>", telemetryEndpoint("/api/v2/rankings/teams/12"))
+    assertEquals("<other>", telemetryEndpoint("/api/v1/rankings/"))
   }
 }
 

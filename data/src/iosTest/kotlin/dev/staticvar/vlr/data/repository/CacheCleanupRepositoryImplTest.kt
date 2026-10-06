@@ -338,15 +338,18 @@ class CacheCleanupRepositoryImplTest {
   }
 
   private fun insertRanking(teamId: String, lastUpdated: Long) {
-    database.rankingsQueries.insertRankingDetails(
+    database.rankingsQueries.insertRanking(
       team_id = teamId,
-      region = "NA",
       team_name = "Team $teamId",
       team_logo = "",
       country = "US",
       rank = 1,
-      points = "100",
+      position = 0,
+      elo = 1500.0,
+      match_wins = 0,
+      match_losses = 0,
       last_updated = lastUpdated,
+      region = null,
     )
   }
 
