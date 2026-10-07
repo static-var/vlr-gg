@@ -210,6 +210,27 @@ class MatchPredictionPersistenceTest {
     assertEquals(listOf("120" to "1034"), predictions.requests)
   }
 
+  @Test
+  fun partialListPreservesOverdueScheduleAndPregamePredictionWithoutAnotherRequest() = runTest(dispatcher) {
+    predictions.result = Result.success(prediction())
+    assertTrue(repository.refreshMatchPrediction("match").isSuccess)
+    val saved = requireNotNull(repository.getMatchDetails("match").first()?.prediction)
+    val overdueTime = "2000-01-01T12:00:00Z"
+    driver.execute(null, "UPDATE matches SET time = '$overdueTime' WHERE id = 'match'", 0)
+    listResult = Result.success(listOf(MatchPreviewDto(
+      id = "match", event = "Event", series = "Bo3", status = MatchStatus.UPCOMING,
+      team1 = TeamDto(id = "120", name = "Alpha"), team2 = TeamDto(id = "1034", name = "Beta"),
+      time = null,
+    )))
+
+    assertTrue(repository.refreshMatches().isSuccess)
+    assertTrue(repository.refreshMatchPrediction("match").isSuccess)
+
+    assertEquals(overdueTime, database.matchesQueries.getMatchWithFavoriteStatus("match").executeAsOne().time)
+    assertEquals(saved, repository.getMatchDetails("match").first()?.prediction)
+    assertEquals(listOf("120" to "1034"), predictions.requests)
+  }
+
   private fun newRepository() = MatchRepositoryImpl(matches, database, dispatchers, predictions, Json)
 
   private fun prediction(source: String = "model") = MatchPredictionDto(

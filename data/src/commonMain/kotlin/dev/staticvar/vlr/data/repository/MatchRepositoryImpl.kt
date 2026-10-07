@@ -267,9 +267,9 @@ internal class MatchRepositoryImpl(
             // Insert updated match
             val cachedMatch = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
             val remoteMatch = dto.toMatchEntity(cachedStatus = cachedMatch?.status).copy(id = matchId)
-          val matchEntity = remoteMatch.copy(
-            event_id = remoteMatch.event_id ?: cachedMatch?.event_id,
-            time = remoteMatch.time.ifBlank { cachedMatch?.time.orEmpty() },
+            val matchEntity = remoteMatch.copy(
+              event_id = remoteMatch.event_id ?: cachedMatch?.event_id,
+              time = remoteMatch.time.ifBlank { cachedMatch?.time.orEmpty() },
               team1_id = remoteMatch.team1_id.ifBlank { cachedMatch?.team1_id.orEmpty() },
               team2_id = remoteMatch.team2_id.ifBlank { cachedMatch?.team2_id.orEmpty() },
             )
@@ -468,6 +468,7 @@ internal class MatchRepositoryImpl(
       event_logo_url = entity.event_logo_url.ifBlank { current.event_logo_url },
       stage = entity.stage.ifBlank { current.stage },
       status = entity.status.ifBlank { current.status },
+      time = entity.time.ifBlank { current.time },
       eta = entity.eta ?: current.eta,
       note = entity.note.ifBlank { current.note },
       patch = entity.patch ?: current.patch,
