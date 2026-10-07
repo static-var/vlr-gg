@@ -495,7 +495,11 @@ internal class LiveMatchNotificationRenderer(
       Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://valorantesports.staticvar.dev/match/${update.matchId}"), context, MainActivity::class.java),
       PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
-    val builder = if (sdkInt >= 26) Notification.Builder(context, ChannelId) else Notification.Builder(context)
+    val builder = if (Build.VERSION.SDK_INT >= 26 && sdkInt >= 26) {
+      Notification.Builder(context, ChannelId)
+    } else {
+      Notification.Builder(context)
+    }
     builder
       .setSmallIcon(R.drawable.ic_notification)
       .setColor(context.getColor(R.color.widget_preview_accent))
@@ -528,7 +532,6 @@ internal class LiveMatchNotificationRenderer(
     builder
       .setOngoing(true)
       .setAutoCancel(false)
-      .setTimeoutAfter(timeoutMillis)
       .addAction(
         Notification.Action.Builder(
           null,
@@ -536,10 +539,11 @@ internal class LiveMatchNotificationRenderer(
           dismissIntent(update.matchId, LiveMatchNotificationReceiver.ActionUnpin),
         ).build(),
       )
-    if (sdkInt >= 36) {
+    if (Build.VERSION.SDK_INT >= 26 && sdkInt >= 26) builder.setTimeoutAfter(timeoutMillis)
+    if (Build.VERSION.SDK_INT >= 36 && sdkInt >= 36) {
       applyChip(builder, update, scoresHidden, showScoreInStatusBar)
       if (showScoreInStatusBar) {
-        if (sdkInt >= 37) {
+        if (Build.VERSION.SDK_INT >= 37 && sdkInt >= 37) {
           Api37Notification.applyPromotedOngoing(builder)
         } else {
           builder.addExtras(Bundle().apply { putBoolean(PromotedOngoingExtra, true) })
@@ -561,7 +565,7 @@ internal class LiveMatchNotificationRenderer(
     }
     val builder = Notification.Builder.recoverBuilder(context, source)
       .setDeleteIntent(dismissIntent(matchId, LiveMatchNotificationReceiver.ActionDismiss, generation))
-      .setTimeoutAfter(timeoutMillis)
+    if (Build.VERSION.SDK_INT >= 26) builder.setTimeoutAfter(timeoutMillis)
     builder.setSmallIcon(R.drawable.ic_notification)
     if (Build.VERSION.SDK_INT >= 36) {
       builder.setShortCriticalText(
@@ -605,7 +609,7 @@ internal class LiveMatchNotificationRenderer(
       .setSubText(subText)
 
     val progress = update.mapProgress()
-    if (sdkInt >= 36 && progress != null && !scoresHidden) {
+    if (Build.VERSION.SDK_INT >= 36 && sdkInt >= 36 && progress != null && !scoresHidden) {
       Api36Notification.applyProgressStyle(
         builder = builder,
         progress = progress,
@@ -677,7 +681,7 @@ internal class LiveMatchNotificationRenderer(
       .setContentText(matchup)
       .setSubText(null)
     val progress = update.mapProgress()
-    if (sdkInt >= 36 && progress != null && !scoresHidden) {
+    if (Build.VERSION.SDK_INT >= 36 && sdkInt >= 36 && progress != null && !scoresHidden) {
       Api36Notification.applyProgressStyle(
         builder = builder,
         progress = progress,
@@ -699,6 +703,7 @@ internal class LiveMatchNotificationRenderer(
    * chip, which hides overlong text entirely. Trailing pause bars (`10–5 ||`) mark a broadcast pause, including on
    * the score fallback and the generic text. Ties, hidden scores and the pre-round state keep the app icon.
    */
+  @RequiresApi(36)
   private fun applyChip(
     builder: Notification.Builder,
     update: LiveMatchUpdate,
