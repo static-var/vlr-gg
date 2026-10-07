@@ -459,7 +459,7 @@ private fun LazyListScope.matchDetailItems(
   onMatchSelected: (String) -> Unit,
   onVideoSelected: (String) -> Unit,
 ) {
-  if (preferences.showPrediction) {
+  if (preferences.showPrediction && (match.prediction != null || match.canRequestPrediction)) {
     item(key = "prediction") {
       MatchPredictionSection(
         match = match,

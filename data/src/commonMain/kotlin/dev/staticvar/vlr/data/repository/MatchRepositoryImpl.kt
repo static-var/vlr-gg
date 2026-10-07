@@ -27,10 +27,8 @@ import dev.staticvar.vlr.domain.model.CurrentMatchMap
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
-import dev.staticvar.vlr.domain.model.MatchPrediction
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchVeto
-import dev.staticvar.vlr.domain.model.PredictionSource
 import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.model.VetoAction
@@ -41,7 +39,7 @@ import dev.staticvar.vlr.localsource.database.GetMatchWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
 import dev.staticvar.vlr.remotesource.match.MatchPredictionDataSource
-import dev.staticvar.vlr.remotesource.match.PredictionWarningDto
+import dev.staticvar.vlr.remotesource.match.isPredictionTeamPair
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
@@ -161,17 +159,10 @@ internal class MatchRepositoryImpl(
             ?.takeIf { it.team_a_id == match.team1_id && it.team_b_id == match.team2_id }
             ?.let { prediction ->
               runCatching {
-                MatchPrediction(
-                  teamAId = prediction.team_a_id,
-                  teamBId = prediction.team_b_id,
-                  teamAProbability = prediction.team_a_probability,
-                  teamBProbability = prediction.team_b_probability,
-                  source = PredictionSource.valueOf(prediction.source),
-                  warnings = storageJson.decodeFromString<List<PredictionWarningDto>>(prediction.warnings_json)
-                    .map { it.toDomain() },
-                )
+                prediction.toDomain(storageJson)
               }.getOrNull()
             },
+          canRequestPrediction = match.canRequestPrediction(),
         )
       }
     }.distinctUntilChanged().flowOn(dispatchers.io)
@@ -392,7 +383,7 @@ internal class MatchRepositoryImpl(
               team_b_id = dto.teamB.id,
               team_a_probability = dto.match.teamA,
               team_b_probability = dto.match.teamB,
-              source = dto.toDomain().source.name,
+              source = dto.match.source.toDomain().name,
               warnings_json = storageJson.encodeToString(dto.match.warnings),
             )
           }
@@ -402,11 +393,7 @@ internal class MatchRepositoryImpl(
 
   private fun GetMatchWithFavoriteStatus.canRequestPrediction(): Boolean {
     if (status.uppercase() !in setOf("UPCOMING", "TBD")) return false
-    if (team1_id.toLongOrNull()?.let { it > 0 } != true ||
-      team2_id.toLongOrNull()?.let { it > 0 } != true || team1_id == team2_id
-    ) {
-      return false
-    }
+    if (!isPredictionTeamPair(team1_id, team2_id)) return false
     val scheduled = runCatching { Instant.parse(time) }.getOrNull()
     return scheduled == null || scheduled > Clock.System.now()
   }

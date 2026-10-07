@@ -24,6 +24,7 @@ data class MatchDetails(
   val veto: List<MatchVeto> = emptyList(),
   val currentMap: CurrentMatchMap? = null,
   val prediction: MatchPrediction? = null,
+  val canRequestPrediction: Boolean = false,
 )
 
 data class CurrentMatchMap(

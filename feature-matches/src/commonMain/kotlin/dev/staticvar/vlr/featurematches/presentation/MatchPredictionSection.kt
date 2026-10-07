@@ -107,8 +107,10 @@ internal fun MatchPredictionSection(match: MatchDetails, isLoading: Boolean, has
             style = Prism.typography.bodySmall,
             color = Prism.color.bodyColor,
           )
-          PrismButton(onClick = onRetry, style = PrismButtonStyle.Secondary, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(Res.string.prediction_retry))
+          if (hasError) {
+            PrismButton(onClick = onRetry, style = PrismButtonStyle.Secondary, modifier = Modifier.fillMaxWidth()) {
+              Text(stringResource(Res.string.prediction_retry))
+            }
           }
         }
       }

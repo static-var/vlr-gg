@@ -14,7 +14,7 @@ import kotlin.math.abs
 
 internal class MatchPredictionDataSourceImpl(private val client: HttpClient) : MatchPredictionDataSource {
   override suspend fun predict(teamAId: String, teamBId: String): Result<MatchPredictionDto> = try {
-    require(TeamId.matches(teamAId) && TeamId.matches(teamBId) && teamAId != teamBId) {
+    require(isPredictionTeamPair(teamAId, teamBId)) {
       "Prediction requires two distinct team IDs"
     }
     val response = client.get(ApiPaths.MATCH_PREDICTION) {
@@ -45,7 +45,4 @@ internal class MatchPredictionDataSourceImpl(private val client: HttpClient) : M
     Result.failure(error)
   }
 
-  private companion object {
-    val TeamId = Regex("^[1-9][0-9]{0,9}$")
-  }
 }

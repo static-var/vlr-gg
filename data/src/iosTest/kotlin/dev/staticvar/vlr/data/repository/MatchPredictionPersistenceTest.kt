@@ -28,6 +28,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CompletableDeferred
@@ -75,7 +76,9 @@ class MatchPredictionPersistenceTest {
   fun aggregateEmitsPredictionAndRestoresSourceAndAllWarningCodes() = runTest(dispatcher) {
     predictions.result = Result.success(prediction())
     repository.getMatchDetails("match").test {
-      assertNull(requireNotNull(awaitItem()).prediction)
+      val initial = requireNotNull(awaitItem())
+      assertNull(initial.prediction)
+      assertTrue(initial.canRequestPrediction)
 
       assertTrue(repository.refreshMatchPrediction("match").isSuccess)
 
@@ -93,6 +96,10 @@ class MatchPredictionPersistenceTest {
         saved.warnings,
       )
       assertEquals(saved, newRepository().getMatchDetails("match").first()?.prediction)
+      assertEquals(
+        """[{"code":"low_coverage"},{"code":"unknown","upstream_code":"roster_transition_detected"}]""",
+        database.matchPredictionsQueries.getMatchPrediction("match").executeAsOne().warnings_json,
+      )
       cancelAndIgnoreRemainingEvents()
     }
     assertEquals(listOf("120" to "1034"), predictions.requests)
@@ -132,6 +139,7 @@ class MatchPredictionPersistenceTest {
       val details = requireNotNull(repository.getMatchDetails("match").first())
       assertEquals("Updated event", details.event.name)
       assertEquals(saved, details.prediction)
+      assertFalse(details.canRequestPrediction)
       assertEquals(1, predictions.requests.size)
     }
   }
@@ -229,6 +237,16 @@ class MatchPredictionPersistenceTest {
     assertEquals(overdueTime, database.matchesQueries.getMatchWithFavoriteStatus("match").executeAsOne().time)
     assertEquals(saved, repository.getMatchDetails("match").first()?.prediction)
     assertEquals(listOf("120" to "1034"), predictions.requests)
+  }
+
+  @Test
+  fun invalidTeamsAreNotEligibleAndDoNotTriggerPredictionRequests() = runTest(dispatcher) {
+    for (teamId in listOf("", "0", "0120", "10000000000", "tbd", "1034")) {
+      database.matchesQueries.insertMatch(match().copy(team1_id = teamId))
+      assertFalse(requireNotNull(repository.getMatchDetails("match").first()).canRequestPrediction, teamId)
+      assertTrue(repository.refreshMatchPrediction("match").isSuccess)
+    }
+    assertTrue(predictions.requests.isEmpty())
   }
 
   private fun newRepository() = MatchRepositoryImpl(matches, database, dispatchers, predictions, Json)
