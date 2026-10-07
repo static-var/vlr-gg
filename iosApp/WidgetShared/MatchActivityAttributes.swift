@@ -141,8 +141,8 @@ struct MatchActivityAttributes: ActivityAttributes {
             map_winners = (try? container.decodeIfPresent([MatchActivityTeamID?].self, forKey: .map_winners))?
                 .map { $0?.value } ?? []
             pause = try? container.decodeIfPresent(Pause.self, forKey: .pause)
-            stage = try container.decodeIfPresent(String.self, forKey: .stage)
-            map_round_winners = try container.decodeIfPresent([MapRounds].self, forKey: .map_round_winners) ?? []
+            stage = try? container.decodeIfPresent(String.self, forKey: .stage)
+            map_round_winners = (try? container.decodeIfPresent([MapRounds].self, forKey: .map_round_winners)) ?? []
         }
     }
 

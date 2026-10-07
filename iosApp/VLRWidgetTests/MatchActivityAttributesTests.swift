@@ -321,6 +321,34 @@ final class MatchActivityAttributesTests: XCTestCase {
     }
 
     @available(iOS 16.1, *)
+    func testMalformedOptionalStageAndRoundHistoryPreserveMatchUpdate() throws {
+        let payloads = [
+            #"{"stage":42,"map_round_winners":[{"map_number":1,"winners":[0,null,1]}]}"#,
+            #"{"stage":"Playoffs: Grand Final","map_round_winners":"invalid"}"#,
+            #"{"stage":{},"map_round_winners":[{"map_number":1,"winners":[0,"invalid",1]}]}"#,
+        ]
+        for (index, fields) in payloads.enumerated() {
+            var payload = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(fields.utf8)) as? [String: Any])
+            payload.merge([
+                "match_id": "734308", "observed_at": 1788789340, "terminal": false,
+                "teams": [["id": "474", "name": "TL"], ["id": "624", "name": "PRX"]],
+                "current_map": ["name": "Lotus", "number": 1, "scores": [8, 6]],
+                "total_maps": 3, "map_winners": ["474"],
+            ]) { _, matchValue in matchValue }
+            let state = try JSONDecoder().decode(
+                MatchActivityAttributes.ContentState.self,
+                from: JSONSerialization.data(withJSONObject: payload)
+            )
+            XCTAssertEqual(state.match_id, "734308")
+            XCTAssertEqual(state.current_map?.scores, [8, 6])
+            XCTAssertEqual(state.map_winners, ["474"])
+            XCTAssertEqual(state.stage, index == 1 ? "Playoffs: Grand Final" : nil)
+            XCTAssertEqual(state.map_round_winners,
+                           index == 0 ? [.init(map_number: 1, winners: [0, nil, 1])] : [])
+        }
+    }
+
+    @available(iOS 16.1, *)
     func testDecodesCompactBackendPayload() throws {
         let attributesJSON = #"{"match_id":"734308"}"#
         let contentStateJSON = #"{"match_id":"734308","observed_at":1788789340,"terminal":false,"teams":[{"name":"FNATIC","img":null,"score":1},{"name":"NRG","img":"https://example.com/nrg.png","score":null}],"current_map":{"name":"Ascent","scores":[12,null]}}"#
