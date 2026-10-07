@@ -246,3 +246,6 @@ iosApp/VLRWidget/GeneratedBuildConfig.swift
 
 # Local benchmark archives and traces
 /benchmark-results/
+
+# Local design mocks
+/design-mocks/
