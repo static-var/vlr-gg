@@ -4,12 +4,12 @@
     <string name="loading_team">Chargement de l’équipe</string>
     <string name="no_team_details">Aucun détail sur l’équipe pour le moment</string>
     <string name="team_not_published">Le profil de cette équipe n’a pas encore été publié.</string>
-    <string name="team_subtitle">Effectif, résultats et forme récente</string>
+    <string name="team_subtitle">Équipe</string>
     <string name="updating_favorite">Mise à jour du favori</string>
     <string name="remove_team_favorite">Retirer l’équipe des favoris</string>
     <string name="add_team_favorite">Ajouter l’équipe aux favoris</string>
-    <string name="unranked">Non classée</string>
-    <string name="team_rank">N° %1$d</string>
+    <string name="team_website">Site web</string>
+    <string name="team_social">X</string>
     <string name="roster">Effectif</string>
     <string name="players">joueurs</string>
     <string name="favorite_player">Joueur favori</string>

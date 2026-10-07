@@ -11,13 +11,13 @@ import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.core.telemetry.traceRefresh
 import dev.staticvar.vlr.data.cache.EmptyRegionLabelStore
 import dev.staticvar.vlr.data.cache.RegionLabelStore
-import dev.staticvar.vlr.data.refresh.KeyedRefreshLock
 import dev.staticvar.vlr.data.mapper.aggregateTeamInfo
 import dev.staticvar.vlr.data.mapper.toCompletedMatchEntities
 import dev.staticvar.vlr.data.mapper.toRosterEntities
 import dev.staticvar.vlr.data.mapper.toTeamEntity
 import dev.staticvar.vlr.data.mapper.toTeamPreview
 import dev.staticvar.vlr.data.mapper.toUpcomingMatchEntities
+import dev.staticvar.vlr.data.refresh.KeyedRefreshLock
 import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.localsource.database.GetTeamRoster
@@ -26,17 +26,19 @@ import dev.staticvar.vlr.localsource.database.Team_completed_matches
 import dev.staticvar.vlr.localsource.database.Team_upcoming_matches
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.team.TeamDataSource
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 
 internal class TeamRepositoryImpl(
   private val teamDataSource: TeamDataSource,
   private val database: VlrDatabase,
   private val dispatchers: DispatcherProvider,
+  private val storageJson: Json,
   private val regionLabels: RegionLabelStore = EmptyRegionLabelStore,
 ) : TeamRepository {
 
@@ -53,6 +55,7 @@ internal class TeamRepositoryImpl(
           roster = teamsQueries.getTeamRoster(team.id).executeAsList(),
           upcomingMatches = teamsQueries.getUpcomingMatches(team.id).executeAsList(),
           completedMatches = teamsQueries.getCompletedMatches(team.id).executeAsList(),
+          storageJson = storageJson,
           regionLabel = regionLabels.label(team.region.orEmpty()),
         )
       }
@@ -90,6 +93,7 @@ internal class TeamRepositoryImpl(
             roster = slices.roster,
             upcomingMatches = slices.upcoming,
             completedMatches = slices.completed,
+            storageJson = storageJson,
             regionLabel = regionLabels.label(it.region.orEmpty()),
           )
         }
@@ -106,6 +110,7 @@ internal class TeamRepositoryImpl(
           roster = teamsQueries.getTeamRoster(team.id).executeAsList(),
           upcomingMatches = teamsQueries.getUpcomingMatches(team.id).executeAsList(),
           completedMatches = teamsQueries.getCompletedMatches(team.id).executeAsList(),
+          storageJson = storageJson,
           regionLabel = regionLabels.label(team.region.orEmpty()),
         )
       }
@@ -137,75 +142,90 @@ internal class TeamRepositoryImpl(
     }
   }
 
-  override suspend fun refreshTeamDetails(teamId: String): Result<Unit> = traceRefresh(dispatchers.io, "refreshTeamDetails") {
-    detailRefreshes.withLock(teamId) {
-      teamDataSource.details(teamId).mapCatching { payload ->
-        val dto = payload.value
-        currentCoroutineContext().ensureActive()
-        traceDatabase {
-          database.transaction {
-            val teamEntity = dto.toTeamEntity(id = teamId)
-            teamsQueries.insertTeam(teamEntity)
-
-            teamsQueries.deleteTeamRoster(teamId)
-            teamsQueries.deleteUpcomingMatches(teamId)
-            teamsQueries.deleteCompletedMatches(teamId)
-
-            dto.toRosterEntities(teamId).forEach { member ->
-              teamsQueries.insertTeamRosterMemberDetails(
-                team_id = member.team_id,
-                player_id = member.player_id,
-                player_name = member.player_name,
-                player_alias = member.player_alias,
-                player_image_url = member.player_image_url,
-                player_country = member.player_country,
-                is_stand_in = member.is_stand_in,
-                is_coach = member.is_coach,
-                is_current = member.is_current,
-                role = member.role,
+  override suspend fun refreshTeamDetails(teamId: String): Result<Unit> =
+    traceRefresh(dispatchers.io, "refreshTeamDetails") {
+      detailRefreshes.withLock(teamId) {
+        teamDataSource.details(teamId).mapCatching { payload ->
+          val dto = payload.value
+          currentCoroutineContext().ensureActive()
+          traceDatabase {
+            database.transaction {
+              val teamEntity = dto.toTeamEntity(id = teamId)
+              teamsQueries.insertTeam(teamEntity)
+              teamsQueries.updateTeamDetails(
+                id = teamEntity.id,
+                name = teamEntity.name,
+                tag = teamEntity.tag,
+                logo_url = teamEntity.logo_url,
+                region = teamEntity.region,
+                country = teamEntity.country,
+                roster_url = teamEntity.roster_url,
+                earnings = teamEntity.earnings,
+                rank = teamEntity.rank,
+                website = teamEntity.website,
+                twitter = teamEntity.twitter,
+                last_updated = teamEntity.last_updated,
               )
-            }
 
-            dto.toUpcomingMatchEntities(teamId).forEach { match ->
-              teamsQueries.insertUpcomingMatchDetails(
-                team_id = match.team_id,
-                match_id = match.match_id,
-                opponent_team_id = match.opponent_team_id,
-                opponent_team_name = match.opponent_team_name,
-                opponent_team_logo_url = match.opponent_team_logo_url,
-                date = match.date,
-                eta = match.eta,
-                event_name = match.event_name,
-                event_logo_url = match.event_logo_url,
-                event_id = match.event_id,
-                stage = match.stage,
-              )
-            }
+              teamsQueries.deleteTeamRoster(teamId)
+              teamsQueries.deleteUpcomingMatches(teamId)
+              teamsQueries.deleteCompletedMatches(teamId)
 
-            dto.toCompletedMatchEntities(teamId).forEach { match ->
-              teamsQueries.insertCompletedMatchDetails(
-                team_id = match.team_id,
-                match_id = match.match_id,
-                opponent_team_id = match.opponent_team_id,
-                opponent_team_name = match.opponent_team_name,
-                opponent_team_logo_url = match.opponent_team_logo_url,
-                date = match.date,
-                event_name = match.event_name,
-                event_logo_url = match.event_logo_url,
-                event_id = match.event_id,
-                stage = match.stage,
-                result = match.result,
-              )
+              dto.toRosterEntities(teamId).forEach { member ->
+                teamsQueries.insertTeamRosterMemberDetails(
+                  team_id = member.team_id,
+                  player_id = member.player_id,
+                  player_name = member.player_name,
+                  player_alias = member.player_alias,
+                  player_image_url = member.player_image_url,
+                  player_country = member.player_country,
+                  is_stand_in = member.is_stand_in,
+                  is_coach = member.is_coach,
+                  is_current = member.is_current,
+                  role = member.role,
+                )
+              }
+
+              dto.toUpcomingMatchEntities(teamId).forEach { match ->
+                teamsQueries.insertUpcomingMatchDetails(
+                  team_id = match.team_id,
+                  match_id = match.match_id,
+                  opponent_team_id = match.opponent_team_id,
+                  opponent_team_name = match.opponent_team_name,
+                  opponent_team_logo_url = match.opponent_team_logo_url,
+                  date = match.date,
+                  eta = match.eta,
+                  event_name = match.event_name,
+                  event_logo_url = match.event_logo_url,
+                  event_id = match.event_id,
+                  stage = match.stage,
+                )
+              }
+
+              dto.toCompletedMatchEntities(teamId).forEach { match ->
+                teamsQueries.insertCompletedMatchDetails(
+                  team_id = match.team_id,
+                  match_id = match.match_id,
+                  opponent_team_id = match.opponent_team_id,
+                  opponent_team_name = match.opponent_team_name,
+                  opponent_team_logo_url = match.opponent_team_logo_url,
+                  date = match.date,
+                  event_name = match.event_name,
+                  event_logo_url = match.event_logo_url,
+                  event_id = match.event_id,
+                  stage = match.stage,
+                  result = match.result,
+                )
+              }
             }
           }
+          regionLabels.put(
+            contentLanguage = payload.contentLanguage,
+            labels = mapOf(dto.region to dto.regionLabel.orEmpty()),
+          )
         }
-        regionLabels.put(
-          contentLanguage = payload.contentLanguage,
-          labels = mapOf(dto.region to dto.regionLabel.orEmpty()),
-        )
       }
     }
-  }
 
   private data class TeamDetailSlices(
     val team: GetTeamWithFavoriteStatus?,

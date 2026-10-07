@@ -81,11 +81,15 @@ class CacheCleanupRepositoryImplTest {
 
     assertEquals(
       setOf("old-row", "fresh-row"),
-      database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("fresh-query").executeAsList().map { it.team_id }.toSet(),
+      database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("fresh-query").executeAsList().map {
+        it.team_id
+      }.toSet(),
     )
     assertEquals(
       setOf("old-row", "unknown-row"),
-      database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("unknown-query").executeAsList().map { it.team_id }.toSet(),
+      database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("unknown-query").executeAsList().map {
+        it.team_id
+      }.toSet(),
     )
     assertTrue(database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("stale-query").executeAsList().isEmpty())
     assertEquals(1L, repository.observeStats().first().deletedRecords)
@@ -373,7 +377,7 @@ class CacheCleanupRepositoryImplTest {
 
   private fun insertTeam(id: String, lastUpdated: Long) {
     database.teamsQueries.insertTeam(
-      Teams(id, "Team $id", "", "", null, "US", null, null, 0, null, null, lastUpdated),
+      Teams(id, "Team $id", "", "", null, "US", null, null, 0, null, null, lastUpdated, null),
     )
   }
 

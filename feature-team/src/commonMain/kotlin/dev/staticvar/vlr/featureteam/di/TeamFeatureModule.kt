@@ -21,6 +21,7 @@ public fun teamFeatureModule(): Module = module {
       refreshTeamDetailsUseCase = get(),
       networkMonitor = get(),
       teamRepository = get(),
+      teamRankingProfileRepository = get(),
     )
   }
 }

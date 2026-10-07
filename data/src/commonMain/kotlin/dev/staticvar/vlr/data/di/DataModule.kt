@@ -18,6 +18,7 @@ import dev.staticvar.vlr.data.repository.FavoritesRepositoryImpl
 import dev.staticvar.vlr.data.repository.MatchRepositoryImpl
 import dev.staticvar.vlr.data.repository.PlayerRepositoryImpl
 import dev.staticvar.vlr.data.repository.RankingsRepositoryImpl
+import dev.staticvar.vlr.data.repository.TeamRankingProfileRepositoryImpl
 import dev.staticvar.vlr.data.repository.TeamRepositoryImpl
 import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.domain.repository.CircuitStandingsRepository
@@ -30,6 +31,7 @@ import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.domain.repository.PlayerRepository
 import dev.staticvar.vlr.domain.repository.RankingsRepository
+import dev.staticvar.vlr.domain.repository.TeamRankingProfileRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
 import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
@@ -48,12 +50,18 @@ fun dataModule(): Module = module {
   single(StorageJson) { Json { ignoreUnknownKeys = true } }
   single<RegionLabelStore> {
     val languageProvider = get<AcceptLanguageProvider>()
-    LocalizedRegionLabelStore(storage = get(), json = get(StorageJson), currentLanguageTag = languageProvider::currentLanguageTag)
+    LocalizedRegionLabelStore(
+      storage = get(),
+      json = get(StorageJson),
+      currentLanguageTag = languageProvider::currentLanguageTag,
+    )
   }
   single<CacheCleanupRepository> { CacheCleanupRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoriteScheduleRepository> { FavoriteScheduleRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoriteSyncStateRepository> { FavoriteSyncStateRepositoryImpl(database = get(), dispatchers = get()) }
-  single<FavoriteMatchesRepository> { FavoriteMatchesRepositoryImpl(source = get(), identity = get(), favorites = get()) }
+  single<FavoriteMatchesRepository> {
+    FavoriteMatchesRepositoryImpl(source = get(), identity = get(), favorites = get())
+  }
   single<FavoriteTopicRepository> { FavoriteTopicRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoritesRepository> { FavoritesRepositoryImpl(database = get(), dispatchers = get()) }
   single<MatchRepository> {
@@ -79,6 +87,7 @@ fun dataModule(): Module = module {
       teamDataSource = get(),
       database = get(),
       dispatchers = get(),
+      storageJson = get(StorageJson),
       regionLabels = get(),
     )
   }
@@ -87,6 +96,14 @@ fun dataModule(): Module = module {
       rankingsDataSource = get(),
       database = get(),
       dispatchers = get(),
+    )
+  }
+  single<TeamRankingProfileRepository> {
+    TeamRankingProfileRepositoryImpl(
+      source = get(),
+      database = get(),
+      dispatchers = get(),
+      storageJson = get(StorageJson),
     )
   }
   single<PlayerRepository> {

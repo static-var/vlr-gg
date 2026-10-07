@@ -34,9 +34,9 @@ import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.model.EventTeam
 import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.MatchDetails
-import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
+import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.PlayerAgentStat
 import dev.staticvar.vlr.domain.model.PlayerInfo
 import dev.staticvar.vlr.domain.model.PlayerStats
@@ -51,6 +51,7 @@ import dev.staticvar.vlr.domain.model.TeamDetails
 import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.domain.model.TeamPlayer
 import dev.staticvar.vlr.domain.model.TeamPreview
+import dev.staticvar.vlr.domain.model.TeamRankingProfile
 import dev.staticvar.vlr.domain.model.TeamUpcomingMatch
 import dev.staticvar.vlr.domain.model.VideoReference
 import dev.staticvar.vlr.localsource.database.Events
@@ -66,6 +67,9 @@ import dev.staticvar.vlr.localsource.database.GetTeamsByRegion
 import dev.staticvar.vlr.localsource.database.GetTeamsWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.Team_completed_matches
 import dev.staticvar.vlr.localsource.database.Team_upcoming_matches
+import dev.staticvar.vlr.remotesource.rankings.TeamRankingProfileDto
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 import dev.staticvar.vlr.domain.model.MatchVideos as DomainMatchVideos
 
 /**
@@ -288,6 +292,7 @@ internal fun aggregateTeamInfo(
   roster: List<GetTeamRoster>,
   upcomingMatches: List<Team_upcoming_matches>,
   completedMatches: List<Team_completed_matches>,
+  storageJson: Json,
   regionLabel: String = "",
 ): TeamInfo = TeamInfo(
   id = team.id,
@@ -304,12 +309,24 @@ internal fun aggregateTeamInfo(
   completedMatches = completedMatches.map { it.toDomain() },
   isFavorite = team.is_favorite == 1L,
   regionLabel = regionLabel,
+  rankingProfile = team.ranking_profile.toRankingProfile(team.id, storageJson),
 )
+
+private fun String?.toRankingProfile(teamId: String, json: Json): TeamRankingProfile? {
+  if (this == null) return null
+  return try {
+    val dto = json.decodeFromString<TeamRankingProfileDto>(this)
+    if (dto.team.id != teamId || dto.form.any { it != 'W' && it != 'L' }) null else dto.toDomain()
+  } catch (_: SerializationException) {
+    null
+  }
+}
 
 internal fun GetTeamsWithFavoriteStatus.toTeamPreview(
   roster: List<GetTeamRoster>,
   upcomingMatches: List<Team_upcoming_matches>,
   completedMatches: List<Team_completed_matches>,
+  storageJson: Json,
   regionLabel: String = "",
 ): TeamInfo = aggregateTeamInfo(
   team = GetTeamWithFavoriteStatus(
@@ -325,11 +342,13 @@ internal fun GetTeamsWithFavoriteStatus.toTeamPreview(
     website = website,
     twitter = twitter,
     last_updated = last_updated,
+    ranking_profile = ranking_profile,
     is_favorite = is_favorite,
   ),
   roster = roster,
   upcomingMatches = upcomingMatches,
   completedMatches = completedMatches,
+  storageJson = storageJson,
   regionLabel = regionLabel,
 )
 
@@ -337,6 +356,7 @@ internal fun GetTeamsByRegion.toTeamPreview(
   roster: List<GetTeamRoster>,
   upcomingMatches: List<Team_upcoming_matches>,
   completedMatches: List<Team_completed_matches>,
+  storageJson: Json,
   regionLabel: String = "",
 ): TeamInfo = aggregateTeamInfo(
   team = GetTeamWithFavoriteStatus(
@@ -352,11 +372,13 @@ internal fun GetTeamsByRegion.toTeamPreview(
     website = website,
     twitter = twitter,
     last_updated = last_updated,
+    ranking_profile = ranking_profile,
     is_favorite = is_favorite,
   ),
   roster = roster,
   upcomingMatches = upcomingMatches,
   completedMatches = completedMatches,
+  storageJson = storageJson,
   regionLabel = regionLabel,
 )
 

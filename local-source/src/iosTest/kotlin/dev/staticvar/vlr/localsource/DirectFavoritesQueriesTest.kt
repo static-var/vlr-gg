@@ -223,6 +223,7 @@ class DirectFavoritesQueriesTest {
         website = null,
         twitter = null,
         last_updated = 0,
+        ranking_profile = null,
       ),
     )
   }

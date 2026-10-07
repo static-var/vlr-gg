@@ -9,10 +9,14 @@ import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
+import dev.staticvar.vlr.domain.repository.TeamRankingProfileRefreshResult
+import dev.staticvar.vlr.domain.repository.TeamRankingProfileRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.featureteam.usecase.ObserveTeamDetailsUseCase
 import dev.staticvar.vlr.featureteam.usecase.RefreshTeamDetailsUseCase
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +34,7 @@ public class TeamDetailsViewModel(
   refreshTeamDetailsUseCase: RefreshTeamDetailsUseCase,
   networkMonitor: NetworkMonitor,
   private val teamRepository: TeamRepository,
+  private val teamRankingProfileRepository: TeamRankingProfileRepository,
 ) : ViewModel() {
   public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
@@ -38,9 +43,30 @@ public class TeamDetailsViewModel(
   }
 
   private val favoriteMutation = MutableStateFlow(FavoriteMutation())
+  private val ratingNotFound = MutableStateFlow(false)
+  private val ratingRefresher = RefreshController(viewModelScope, networkMonitor, operation = "refresh team rankings") {
+    ratingNotFound.value = false
+    teamRankingProfileRepository.refreshProfile(teamId).map { result ->
+      currentCoroutineContext().ensureActive()
+      ratingNotFound.value = result == TeamRankingProfileRefreshResult.NotFound
+      Unit
+    }
+  }
 
   public val uiState: StateFlow<TeamDetailsUiState> =
-    combine(observeTeamDetailsUseCase(teamId), refresher.state, favoriteMutation) { team, refresh, favorite ->
+    combine(
+      observeTeamDetailsUseCase(teamId),
+      refresher.state,
+      favoriteMutation,
+      ratingRefresher.state,
+      ratingNotFound,
+    ) {
+        team,
+        refresh,
+        favorite,
+        ratingRefresh,
+        ratingNotFound,
+      ->
       TeamDetailsUiState(
         team = team,
         isLoading = refresh.isLoading(hasContent = team != null),
@@ -49,6 +75,12 @@ public class TeamDetailsViewModel(
         errorDetails = refresh.errorDetails,
         isUpdatingFavorite = favorite.isPending,
         favoriteErrorMessage = favorite.errorMessage,
+        rating = team?.rankingProfile?.let(TeamRatingState::Available)
+          ?: when {
+            ratingRefresh.errorMessage != null -> TeamRatingState.Unavailable
+            ratingNotFound -> TeamRatingState.NotFound
+            else -> TeamRatingState.Loading
+          },
       )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, TeamDetailsUiState())
 
@@ -80,5 +112,6 @@ public class TeamDetailsViewModel(
 
   public fun refresh() {
     refresher.refresh()
+    ratingRefresher.refresh()
   }
 }

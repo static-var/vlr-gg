@@ -12,6 +12,7 @@ import dev.staticvar.vlr.localsource.database.DatabaseDriverFactory
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -63,22 +64,38 @@ class KmpDatabaseUpgradeTest {
       openTestDatabase().use { db ->
         assertEquals(revision, VlrDatabase.Schema.version.toInt(), db.version)
         assertEquals(revision, freshSchema, schemaDescription(db))
-        assertEquals(revision, listOf("player", "Cached player"),
-          rows(db, "SELECT player_id, player_name FROM team_roster").single())
-        assertEquals(revision, listOf("match", "Cached event"),
-          rows(db, "SELECT id, event_name FROM matches").single())
-        assertEquals(revision, listOf("42", "event", "match", "Grand final", "Playoffs"),
-          rows(db, "SELECT id, event_id, match_id, round, stage FROM event_matches").single())
+        assertEquals(
+          revision,
+          listOf("player", "Cached player"),
+          rows(db, "SELECT player_id, player_name FROM team_roster").single(),
+        )
+        assertEquals(
+          revision,
+          listOf("match", "Cached event"),
+          rows(db, "SELECT id, event_name FROM matches").single(),
+        )
+        assertEquals(
+          revision,
+          listOf("42", "event", "match", "Grand final", "Playoffs"),
+          rows(db, "SELECT id, event_id, match_id, round, stage FROM event_matches").single(),
+        )
         assertTrue(revision, rows(db, "PRAGMA foreign_key_check").isEmpty())
       }
       withDatabase { database ->
-        assertEquals(revision, listOf("match"),
-          database.favoriteScheduleQueries.getFavoriteSchedule().executeAsList().map { it.id })
+        assertEquals(
+          revision,
+          listOf("match"),
+          database.favoriteScheduleQueries.getFavoriteSchedule().executeAsList().map { it.id },
+        )
         database.matchesQueries.removeFavoriteMatch("uncached")
       }
       withDatabase { database ->
-        assertEquals(revision, listOf("match"), database.homeQueries.getDirectFavorites().executeAsList()
-          .filter { it.entity_type == "MATCH" }.map { it.id })
+        assertEquals(
+          revision,
+          listOf("match"),
+          database.homeQueries.getDirectFavorites().executeAsList()
+            .filter { it.entity_type == "MATCH" }.map { it.id },
+        )
         database.eventsQueries.insertEventMatch("event", "no-match-details", "Upper final", "Playoffs")
         val eventMatches = database.eventsQueries.getEventMatches("event").executeAsList()
         assertEquals(revision, setOf("match", "no-match-details"), eventMatches.map { it.match_id }.toSet())
@@ -149,36 +166,56 @@ class KmpDatabaseUpgradeTest {
           database.homeQueries.getDirectFavorites().executeAsList()
             .map { "${it.entity_type}:${it.id}" }.toSet(),
         )
-        assertEquals(variant, listOf("match"),
-          database.favoriteScheduleQueries.getFavoriteSchedule().executeAsList().map { it.id })
+        assertEquals(
+          variant,
+          listOf("match"),
+          database.favoriteScheduleQueries.getFavoriteSchedule().executeAsList().map { it.id },
+        )
       }
       openTestDatabase().use { db ->
         assertEquals(variant, VlrDatabase.Schema.version.toInt(), db.version)
         assertEquals(variant, freshSchema, schemaDescription(db))
         assertTrue(variant, rows(db, "PRAGMA foreign_key_check").isEmpty())
         if (variant == "release-3") {
-          assertEquals(variant, listOf("17", "1", "existing-client"),
-            rows(db, "SELECT revision, synced, client_id FROM favorite_sync_state").single())
+          assertEquals(
+            variant,
+            listOf("17", "1", "existing-client"),
+            rows(db, "SELECT revision, synced, client_id FROM favorite_sync_state").single(),
+          )
           assertTrue(variant, rows(db, "SELECT * FROM match_current_map").isEmpty())
           assertTrue(variant, rows(db, "SELECT * FROM match_veto").isEmpty())
         } else {
-          assertEquals(variant, listOf("Ascent", "2", null, "0", "1"),
-            rows(db, "SELECT name, number, team1_score, team2_score, is_live FROM match_current_map").single())
-          assertEquals(variant,
+          assertEquals(
+            variant,
+            listOf("Ascent", "2", null, "0", "1"),
+            rows(db, "SELECT name, number, team1_score, team2_score, is_live FROM match_current_map").single(),
+          )
+          assertEquals(
+            variant,
             listOf(listOf("Alpha", "BAN", "Bind"), listOf(null, "REMAINS", "Ascent")),
-            rows(db, "SELECT team, action, map FROM match_veto ORDER BY position"))
+            rows(db, "SELECT team, action, map FROM match_veto ORDER BY position"),
+          )
           assertTrue(variant, rows(db, "SELECT * FROM favorite_sync_state").isEmpty())
         }
         if (variant == "topics-4") {
-          assertEquals(variant, listOf("0", "live-match-removed", "1"),
-            rows(db, "SELECT active, notification_topic, topic_synced FROM favorite_matches WHERE match_id = 'removed'").single())
+          assertEquals(
+            variant,
+            listOf("0", "live-match-removed", "1"),
+            rows(
+              db,
+              "SELECT active, notification_topic, topic_synced FROM favorite_matches WHERE match_id = 'removed'",
+            ).single(),
+          )
         }
       }
       withDatabase { database ->
         database.favoriteSyncStateQueries.ensureFavoriteSyncState()
         database.favoriteSyncStateQueries.markFavoritesDirty()
-        assertEquals(variant, if (variant == "release-3") 18L else 1L,
-          database.favoriteSyncStateQueries.getFavoriteSyncState().executeAsOne().revision)
+        assertEquals(
+          variant,
+          if (variant == "release-3") 18L else 1L,
+          database.favoriteSyncStateQueries.getFavoriteSyncState().executeAsOne().revision,
+        )
         if (variant == "topics-4") {
           database.favoriteTopicsQueries.clearMatchTopic("live-match-removed")
           database.favoriteTopicsQueries.pruneInactiveMatchFavorites()
@@ -227,11 +264,118 @@ class KmpDatabaseUpgradeTest {
       assertEquals(VlrDatabase.Schema.version.toInt(), db.version)
       assertEquals(freshSchema, schemaDescription(db))
       assertTrue(rows(db, "SELECT name FROM sqlite_master WHERE name IN ('news', 'news_media')").isEmpty())
-      assertEquals(listOf("17", "1", "existing-client"),
-        rows(db, "SELECT revision, synced, client_id FROM favorite_sync_state").single())
-      assertEquals(listOf("42", "1234"),
-        rows(db, "SELECT deleted_records, last_run_epoch_millis FROM cache_cleanup_state").single())
+      assertEquals(
+        listOf("17", "1", "existing-client"),
+        rows(db, "SELECT revision, synced, client_id FROM favorite_sync_state").single(),
+      )
+      assertEquals(
+        listOf("42", "1234"),
+        rows(db, "SELECT deleted_records, last_run_epoch_millis FROM cache_cleanup_state").single(),
+      )
       assertTrue(rows(db, "PRAGMA foreign_key_check").isEmpty())
+    }
+  }
+
+  @Test
+  fun versionTenUpgradePreservesTeamDetailsAndRankingProfileSurvivesReopening() {
+    withDatabase { it.favoriteScheduleQueries.getFavoriteSchedule().executeAsList() }
+    val freshSchema = openTestDatabase().use(::schemaDescription)
+    removeTestDatabase()
+    val path = context.getDatabasePath("vlr")
+    instrumentation.context.assets.open("kmp-schemas/10.db").use { source ->
+      path.outputStream().use { destination -> source.copyTo(destination) }
+    }
+    openTestDatabase().use { db ->
+      assertEquals(10, db.version)
+      assertTrue(rows(db, "PRAGMA table_info(teams)").none { it[1] == "ranking_profile" })
+      db.execSQL(
+        """
+        INSERT INTO teams(id, name, tag, logo_url, region, country, rank, website, twitter, last_updated)
+        VALUES ('team', 'Cached team', 'FNC', 'team.webp', 'Europe', 'United Kingdom', 3,
+          'https://example.com', 'https://example.com/team', 1234)
+        """.trimIndent(),
+      )
+      db.execSQL(
+        "INSERT INTO team_roster(team_id, player_id, player_name, player_alias, role) " +
+          "VALUES ('team', 'player', 'Cached player', 'Player', 'Team Captain')",
+      )
+      db.execSQL(
+        """
+        INSERT INTO team_upcoming_matches(team_id, match_id, opponent_team_name, date, eta, event_name,
+          event_logo_url, stage)
+        VALUES ('team', 'upcoming', 'Next opponent', '2026-10-10', '3d', 'Cached event', '', 'Playoffs')
+        """.trimIndent(),
+      )
+      db.execSQL(
+        """
+        INSERT INTO team_completed_matches(team_id, match_id, opponent_team_name, date, event_name,
+          event_logo_url, stage, result)
+        VALUES ('team', 'completed', 'Previous opponent', '2026-10-04', 'Cached event', '', 'Group Stage', '2:0')
+        """.trimIndent(),
+      )
+      db.execSQL(
+        "INSERT INTO favorite_teams(team_id, active, notification_topic, topic_synced) " +
+          "VALUES ('team', 1, 'team-team', 1)",
+      )
+      db.execSQL("INSERT INTO favorite_players(player_id) VALUES ('player')")
+    }
+
+    withDatabase { database ->
+      val team = database.teamsQueries.getTeamWithFavoriteStatus("team").executeAsOne()
+      assertEquals("Cached team", team.name)
+      assertEquals("FNC", team.tag)
+      assertEquals("team.webp", team.logo_url)
+      assertEquals("Europe", team.region)
+      assertEquals("United Kingdom", team.country)
+      assertEquals(3L, team.rank)
+      assertEquals("https://example.com", team.website)
+      assertEquals("https://example.com/team", team.twitter)
+      assertEquals(1234L, team.last_updated)
+      assertEquals(1L, team.is_favorite)
+      assertNull(team.ranking_profile)
+      assertEquals(listOf("team"), database.teamsQueries.getFavoriteTeamIds().executeAsList())
+      assertEquals(listOf("player"), database.playersQueries.getFavoritePlayerIds().executeAsList())
+      val roster = database.teamsQueries.getTeamRoster("team").executeAsOne()
+      assertEquals("Cached player", roster.player_name)
+      assertEquals("Player", roster.player_alias)
+      assertEquals("Team Captain", roster.role)
+      assertEquals(1L, roster.is_favorite)
+      val upcoming = database.teamsQueries.getUpcomingMatches("team").executeAsOne()
+      assertEquals("upcoming", upcoming.match_id)
+      assertEquals("Next opponent", upcoming.opponent_team_name)
+      assertEquals("3d", upcoming.eta)
+      assertEquals("Playoffs", upcoming.stage)
+      val completed = database.teamsQueries.getCompletedMatches("team").executeAsOne()
+      assertEquals("completed", completed.match_id)
+      assertEquals("Previous opponent", completed.opponent_team_name)
+      assertEquals("Group Stage", completed.stage)
+      assertEquals("2:0", completed.result)
+    }
+    openTestDatabase().use { db ->
+      assertEquals(VlrDatabase.Schema.version.toInt(), db.version)
+      assertEquals(freshSchema, schemaDescription(db))
+      assertEquals(
+        listOf("1", "team-team", "1"),
+        rows(db, "SELECT active, notification_topic, topic_synced FROM favorite_teams WHERE team_id = 'team'").single(),
+      )
+      assertTrue(rows(db, "PRAGMA foreign_key_check").isEmpty())
+    }
+
+    val profile = """{"rank":8,"elo":1929.0}"""
+    withDatabase { database ->
+      database.teamsQueries.updateTeamRankingProfile(
+        ranking_profile = profile,
+        last_updated = 2222,
+        id = "team",
+      )
+    }
+    withDatabase { database ->
+      val team = database.teamsQueries.getTeamWithFavoriteStatus("team").executeAsOne()
+      assertEquals(profile, team.ranking_profile)
+      assertEquals(2222L, team.last_updated)
+      assertEquals("Cached team", team.name)
+      assertEquals(1L, team.is_favorite)
+      assertEquals("Cached player", database.teamsQueries.getTeamRoster("team").executeAsOne().player_name)
     }
   }
 
@@ -241,7 +385,9 @@ class KmpDatabaseUpgradeTest {
     openTestDatabase().use { db ->
       sql.split(';').map(String::trim).filter(String::isNotEmpty).forEach(db::execSQL)
       db.execSQL("INSERT INTO teams(id, name, logo_url, country) VALUES ('team', 'Cached team', '', '')")
-      db.execSQL("INSERT INTO players(id, name, country, current_team_id) VALUES ('player', 'Cached player', '', 'team')")
+      db.execSQL(
+        "INSERT INTO players(id, name, country, current_team_id) VALUES ('player', 'Cached player', '', 'team')",
+      )
       db.execSQL("INSERT INTO team_roster(team_id, player_id, player_name) VALUES ('team', 'player', 'Cached player')")
       db.execSQL("INSERT INTO events(id, name, prizes, dates, logo_url) VALUES ('event', 'Cached event', '', '', '')")
       db.execSQL(
@@ -273,7 +419,9 @@ class KmpDatabaseUpgradeTest {
             put("table:$name", rows(db, "PRAGMA table_info(\"$name\")").map { it.drop(1) }.sortedBy { it.first() })
             put("foreign-keys:$name", rows(db, "PRAGMA foreign_key_list(\"$name\")"))
           }
+
           "index" -> put("index:$name", rows(db, "PRAGMA index_info(\"$name\")").map { listOf(it[0], it[2]) })
+
           "view" -> put("view:$name", rows(db, "PRAGMA table_info(\"$name\")").map { it.drop(1) })
         }
       }

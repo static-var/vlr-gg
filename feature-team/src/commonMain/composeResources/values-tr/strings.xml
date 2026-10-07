@@ -4,12 +4,12 @@
     <string name="loading_team">Takım yükleniyor</string>
     <string name="no_team_details">Henüz takım ayrıntısı yok</string>
     <string name="team_not_published">Bu takımın profili henüz yayınlanmadı.</string>
-    <string name="team_subtitle">Kadro, sonuçlar ve son form durumu</string>
+    <string name="team_subtitle">Takım</string>
     <string name="updating_favorite">Favori güncelleniyor</string>
     <string name="remove_team_favorite">Takımı favorilerden kaldır</string>
     <string name="add_team_favorite">Takımı favorilere ekle</string>
-    <string name="unranked">Sıralamasız</string>
-    <string name="team_rank">#%1$d</string>
+    <string name="team_website">Web sitesi</string>
+    <string name="team_social">X</string>
     <string name="roster">Kadro</string>
     <string name="players">oyuncular</string>
     <string name="favorite_player">Favori oyuncu</string>

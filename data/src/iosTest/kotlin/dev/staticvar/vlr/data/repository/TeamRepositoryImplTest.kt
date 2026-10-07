@@ -18,11 +18,11 @@ import dev.staticvar.vlr.remotesource.team.TeamDetailsDto
 import dev.staticvar.vlr.remotesource.team.TeamPlayerDto
 import dev.staticvar.vlr.remotesource.team.UpcomingMatchDto
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -31,6 +31,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -58,6 +59,7 @@ class TeamRepositoryImplTest {
       teamDataSource = dataSource,
       database = database,
       dispatchers = dispatcherProvider,
+      storageJson = Json,
     )
   }
 
@@ -84,7 +86,7 @@ class TeamRepositoryImplTest {
         )
       }
     }
-    val repo = TeamRepositoryImpl(source, database, dispatcherProvider)
+    val repo = TeamRepositoryImpl(source, database, dispatcherProvider, Json)
     val older = async { repo.refreshTeamDetails("team1") }
     advanceUntilIdle()
     val newer = async { repo.refreshTeamDetails("team1") }
@@ -106,7 +108,7 @@ class TeamRepositoryImplTest {
         Result.success(RemotePayload(TeamDetailsDto(name = "Cancelled response"), null, null))
       }
     }
-    val repo = TeamRepositoryImpl(source, database, dispatcherProvider)
+    val repo = TeamRepositoryImpl(source, database, dispatcherProvider, Json)
     val refresh = async { repo.refreshTeamDetails("team1") }
     advanceUntilIdle()
     refresh.cancelAndJoin()
@@ -316,6 +318,7 @@ class TeamRepositoryImplTest {
         website = null,
         twitter = null,
         last_updated = 0,
+        ranking_profile = null,
       ),
     )
   }

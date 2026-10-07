@@ -15,7 +15,6 @@ import dev.staticvar.vlr.localsource.database.Matches
 import dev.staticvar.vlr.localsource.database.Players
 import dev.staticvar.vlr.localsource.database.Teams
 import dev.staticvar.vlr.localsource.database.VlrDatabase
-import dev.staticvar.vlr.remotesource.common.MatchStatus as RemoteMatchStatus
 import dev.staticvar.vlr.remotesource.match.EventDto
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
 import dev.staticvar.vlr.remotesource.match.MatchDetailsDto
@@ -31,6 +30,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import dev.staticvar.vlr.remotesource.common.MatchStatus as RemoteMatchStatus
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FavoriteScheduleRepositoryImplTest {
@@ -465,6 +465,7 @@ class FavoriteScheduleRepositoryImplTest {
         website = null,
         twitter = null,
         last_updated = 0,
+        ranking_profile = null,
       ),
     )
   }
