@@ -45,5 +45,4 @@ public sealed interface PrismSheetStyle {
       @ReadOnlyComposable
       get() = BorderStroke(Prism.dimens.strokeDefault, Prism.color.stroke)
   }
-
 }

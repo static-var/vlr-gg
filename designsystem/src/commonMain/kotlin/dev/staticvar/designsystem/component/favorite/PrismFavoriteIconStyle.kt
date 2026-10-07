@@ -63,5 +63,4 @@ public sealed interface PrismFavoriteIconStyle {
     @Composable
     override fun border(selected: Boolean): BorderStroke? = null
   }
-
 }

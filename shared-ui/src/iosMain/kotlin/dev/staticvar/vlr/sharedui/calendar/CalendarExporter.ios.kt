@@ -8,7 +8,6 @@ package dev.staticvar.vlr.sharedui.calendar
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import kotlin.coroutines.resume
 import kotlinx.cinterop.useContents
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -27,12 +26,16 @@ import platform.Foundation.NSProcessInfo
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDefaults
 import platform.Foundation.dateWithTimeIntervalSince1970
+import kotlin.coroutines.resume
 
 @Composable
 public actual fun rememberCalendarManager(): CalendarManager = remember { IosCalendarManager }
 
 @Composable
-public actual fun rememberCalendarExporter(): suspend (fileName: String, entries: List<CalendarEntry>) -> CalendarExportResult {
+public actual fun rememberCalendarExporter(): suspend (
+  fileName: String,
+  entries: List<CalendarEntry>,
+) -> CalendarExportResult {
   val manager = rememberCalendarManager()
   return remember(manager) { { fileName, entries -> manager.add(fileName, entries) } }
 }
@@ -42,6 +45,7 @@ private object IosCalendarManager : CalendarManager {
     calendarExportMutex.withLock {
       when (EKEventStore.authorizationStatusForEntityType(EKEntityType.EKEntityTypeEvent)) {
         EKAuthorizationStatusNotDetermined -> CalendarEntryStatus.NotAdded
+
         EKAuthorizationStatusAuthorized -> {
           val store = EKEventStore()
           val saved = readSavedEvents()
@@ -51,14 +55,16 @@ private object IosCalendarManager : CalendarManager {
             CalendarEntryStatus.NotAdded
           }
         }
+
         else -> CalendarEntryStatus.Denied
       }
     }
   }
 
-  override suspend fun add(fileName: String, entries: List<CalendarEntry>): CalendarExportResult = mutateCalendar { store ->
-    store.addToCalendar(entries)
-  }
+  override suspend fun add(fileName: String, entries: List<CalendarEntry>): CalendarExportResult =
+    mutateCalendar { store ->
+      store.addToCalendar(entries)
+    }
 
   override suspend fun remove(uids: Set<String>): CalendarExportResult = mutateCalendar { store ->
     val saved = readSavedEvents()
@@ -94,7 +100,9 @@ private suspend fun mutateCalendar(action: (EKEventStore) -> CalendarExportResul
 }
 
 private suspend fun EKEventStore.requestCalendarAccess(): Boolean {
-  if (EKEventStore.authorizationStatusForEntityType(EKEntityType.EKEntityTypeEvent) == EKAuthorizationStatusAuthorized) {
+  if (EKEventStore.authorizationStatusForEntityType(EKEntityType.EKEntityTypeEvent) ==
+    EKAuthorizationStatusAuthorized
+  ) {
     return true
   }
   return suspendCancellableCoroutine { continuation ->

@@ -104,6 +104,7 @@ public enum class PrismIconTint {
 @Composable
 private fun PrismIconTint.containerColor(style: PrismIconStyle): Color = when (this) {
   PrismIconTint.Inverted -> style.contentColor
+
   PrismIconTint.None,
   PrismIconTint.Primary,
   PrismIconTint.Alt,

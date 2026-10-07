@@ -53,12 +53,19 @@ public fun rememberMatchDetailContentFade(ready: Boolean = true): TransitionCont
 }
 
 internal enum class MatchSharedContent {
-  Card, Event, TeamName, TeamScore,
+  Card,
+  Event,
+  TeamName,
+  TeamScore,
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun Modifier.matchSharedBounds(matchId: String, content: MatchSharedContent, teamId: String? = null): Modifier {
+internal fun Modifier.matchSharedBounds(
+  matchId: String,
+  content: MatchSharedContent,
+  teamId: String? = null,
+): Modifier {
   if ((content == MatchSharedContent.TeamName || content == MatchSharedContent.TeamScore) && teamId.isNullOrBlank()) {
     return this
   }

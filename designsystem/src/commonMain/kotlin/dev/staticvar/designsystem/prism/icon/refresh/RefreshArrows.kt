@@ -20,7 +20,12 @@ public val RefreshArrows: ImageVector by lazy {
     viewportWidth = 24f,
     viewportHeight = 24f,
   ).apply {
-    path(stroke = SolidColor(Color.Black), strokeLineWidth = 2f, strokeLineCap = StrokeCap.Square, strokeLineJoin = StrokeJoin.Miter) {
+    path(
+      stroke = SolidColor(Color.Black),
+      strokeLineWidth = 2f,
+      strokeLineCap = StrokeCap.Square,
+      strokeLineJoin = StrokeJoin.Miter,
+    ) {
       moveTo(4.5f, 9f)
       curveTo(5.7f, 5f, 9.7f, 2.8f, 13.7f, 3.7f)
       curveTo(16.3f, 4.2f, 18.4f, 5.7f, 20f, 8f)

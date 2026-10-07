@@ -22,8 +22,8 @@ import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismCatppuccinFlavour
-import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismTheme
+import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
 
 @PrismPreview
@@ -36,7 +36,8 @@ internal fun PrismIconsPreview(@PreviewParameter(IconThemePreviewProvider::class
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       Text(text = theme.label, color = Prism.color.contentPrimary)
-      val actions = listOf(icons.refresh, icons.share, icons.calendarAdd, icons.calendarRemove, icons.preview, icons.back)
+      val actions =
+        listOf(icons.refresh, icons.share, icons.calendarAdd, icons.calendarRemove, icons.preview, icons.back)
       IconPreviewRow("Actions", actions)
       Text(text = "Disabled actions", color = Prism.color.contentPrimary)
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -56,7 +57,9 @@ private fun IconPreviewRow(label: String, icons: List<ImageVector>) {
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     Text(text = label, color = Prism.color.contentPrimary)
     Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-      icons.forEach { icon -> PrismIcon(imageVector = icon, contentDescription = icon.name, style = PrismIconStyle.Plain) }
+      icons.forEach { icon ->
+        PrismIcon(imageVector = icon, contentDescription = icon.name, style = PrismIconStyle.Plain)
+      }
     }
   }
 }
@@ -67,7 +70,13 @@ internal data class IconThemePreviewCase(
   val flavour: PrismCatppuccinFlavour = PrismCatppuccinFlavour.Latte,
 ) {
   val label: String
-    get() = if (family == PrismThemeFamily.Catppuccin) "${family.name} ${flavour.name}" else "${family.name} ${variant.name}"
+    get() = if (family ==
+      PrismThemeFamily.Catppuccin
+    ) {
+      "${family.name} ${flavour.name}"
+    } else {
+      "${family.name} ${variant.name}"
+    }
 }
 
 internal class IconThemePreviewProvider : PreviewParameterProvider<IconThemePreviewCase> {

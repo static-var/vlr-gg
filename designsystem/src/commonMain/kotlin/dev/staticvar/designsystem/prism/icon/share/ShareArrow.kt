@@ -20,7 +20,12 @@ public val ShareArrow: ImageVector by lazy {
     viewportWidth = 24f,
     viewportHeight = 24f,
   ).apply {
-    path(stroke = SolidColor(Color.Black), strokeLineWidth = 2f, strokeLineCap = StrokeCap.Square, strokeLineJoin = StrokeJoin.Miter) {
+    path(
+      stroke = SolidColor(Color.Black),
+      strokeLineWidth = 2f,
+      strokeLineCap = StrokeCap.Square,
+      strokeLineJoin = StrokeJoin.Miter,
+    ) {
       moveTo(12f, 15f)
       verticalLineTo(3f)
       moveTo(8f, 7f)

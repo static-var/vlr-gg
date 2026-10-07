@@ -7,7 +7,6 @@ package dev.staticvar.vlr.sharedui.component.event.detail
 import androidx.compose.runtime.Composable
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventMatch
-import kotlin.math.round
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
@@ -26,6 +25,7 @@ import vlr.shared_ui.generated.resources.format_tbd
 import vlr.shared_ui.generated.resources.format_teams
 import vlr.shared_ui.generated.resources.format_unknown
 import vlr.shared_ui.generated.resources.format_versus
+import kotlin.math.round
 
 public enum class EventMatchGrouping {
   Status,
