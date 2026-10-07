@@ -38,8 +38,8 @@ class RankingFavoritesQueriesTest {
 
   @Test
   fun rankingsObserveExplicitTeamFavoritesWithoutRefreshing() = runTest {
-    database.rankingsQueries.insertRanking("other", "Other", "", "", 1, 0, 1600.0, 0, 0, 0, null)
-    database.rankingsQueries.insertRanking("120", "Team 120", "", "", 2, 1, 1550.0, 0, 0, 0, null)
+    database.rankingsQueries.insertRankingQueryTeam("global", "other", "Other", "", "", 1, 1, 0, 1600.0, 1500.0, 0, 0, 0, 0.0, null, 0)
+    database.rankingsQueries.insertRankingQueryTeam("global", "120", "Team 120", "", "", 2, 2, 1, 1550.0, 1500.0, 0, 0, 0, 0.0, null, 0)
     database.playersQueries.insertPlayer(
       Players(
         id = "601", name = "Asuna", alias = "Asuna", real_name = null, country = "US",
@@ -51,7 +51,7 @@ class RankingFavoritesQueriesTest {
     var favorites = emptyList<Long>()
     val dispatcher = StandardTestDispatcher(testScheduler)
     backgroundScope.launch(dispatcher) {
-      database.rankingsQueries.getRankingsWithFavoriteStatus().asFlow().mapToList(dispatcher).collect {
+      database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("global").asFlow().mapToList(dispatcher).collect {
         favorites = it.map { row -> row.is_favorite }
       }
     }

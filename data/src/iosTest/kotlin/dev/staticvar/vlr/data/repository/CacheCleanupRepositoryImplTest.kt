@@ -50,42 +50,45 @@ class CacheCleanupRepositoryImplTest {
   }
 
   @Test
-  fun cleanupRemovesStaleQueryRankingsAndRetainsFavoritesAndRecentSelections() = runTest(dispatcher) {
+  fun cleanupRemovesEntireStaleRankingSnapshotEvenWhenItContainsAFavorite() = runTest(dispatcher) {
     val now = 4_000_000_000L
     val stale = now - THIRTY_DAYS - 1
-    val fresh = now - THIRTY_DAYS
-    fun insertQueryRanking(queryKey: String, teamId: String, updated: Long) {
-      database.rankingsQueries.insertRankingQueryTeam(
-        query_key = queryKey,
-        team_id = teamId,
-        team_name = "Team $teamId",
-        team_logo = "",
-        country = "",
-        rank = 1,
-        overall_rank = 1,
-        position = 0,
-        elo = 1500.0,
-        map_elo = 1500.0,
-        matches_played = 0,
-        match_wins = 0,
-        match_losses = 0,
-        win_rate = 0.0,
-        region = null,
-        last_updated = updated,
-      )
-    }
-    insertQueryRanking("global", "stale", stale)
-    insertQueryRanking("regional", "stale", stale)
-    insertQueryRanking("global", "favorite", stale)
-    insertQueryRanking("global", "fresh", fresh)
-    insertQueryRanking("global", "unknown", 0)
+    insertQueryRanking("other", stale, queryKey = "stale-query")
+    insertQueryRanking("favorite", stale, queryKey = "stale-query")
+    insertTeam("favorite", stale)
     database.teamsQueries.addFavoriteTeam("favorite")
 
     assertTrue(repository.cleanupIfDue(now).isSuccess)
 
-    assertEquals(listOf("favorite", "fresh", "unknown"), database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("global").executeAsList().map { it.team_id }.sorted())
-    assertTrue(database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("regional").executeAsList().isEmpty())
+    assertTrue(database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("stale-query").executeAsList().isEmpty())
+    assertEquals(1L, database.teamsQueries.isFavoriteTeam("favorite").executeAsOne())
+    assertNotNull(database.teamsQueries.getTeamWithFavoriteStatus("favorite").executeAsOneOrNull())
     assertEquals(2L, repository.observeStats().first().deletedRecords)
+  }
+
+  @Test
+  fun cleanupPreservesCompleteFreshAndUnknownAgeRankingSnapshots() = runTest(dispatcher) {
+    val now = 4_000_000_000L
+    val stale = now - THIRTY_DAYS - 1
+    val cutoff = now - THIRTY_DAYS
+    insertQueryRanking("old-row", stale, queryKey = "fresh-query")
+    insertQueryRanking("fresh-row", cutoff, queryKey = "fresh-query")
+    insertQueryRanking("old-row", stale, queryKey = "unknown-query")
+    insertQueryRanking("unknown-row", 0, queryKey = "unknown-query")
+    insertQueryRanking("stale-row", stale, queryKey = "stale-query")
+
+    assertTrue(repository.cleanupIfDue(now).isSuccess)
+
+    assertEquals(
+      setOf("old-row", "fresh-row"),
+      database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("fresh-query").executeAsList().map { it.team_id }.toSet(),
+    )
+    assertEquals(
+      setOf("old-row", "unknown-row"),
+      database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("unknown-query").executeAsList().map { it.team_id }.toSet(),
+    )
+    assertTrue(database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("stale-query").executeAsList().isEmpty())
+    assertEquals(1L, repository.observeStats().first().deletedRecords)
   }
 
   @Test
@@ -106,7 +109,7 @@ class CacheCleanupRepositoryImplTest {
     insertEvent("stale-event", stale)
     insertTeam("stale-team", stale)
     insertPlayer("stale-player", stale)
-    insertRanking("stale-team", stale)
+    insertQueryRanking("stale-team", stale)
     insertStanding("stale-team", stale)
     insertPlayer("fresh-player", fresh)
     insertPlayer("unknown-player", 0)
@@ -125,7 +128,7 @@ class CacheCleanupRepositoryImplTest {
     )
     assertNull(database.teamsQueries.getTeamWithFavoriteStatus("stale-team").executeAsOneOrNull())
     assertNull(database.playersQueries.getPlayerWithFavoriteStatus("stale-player").executeAsOneOrNull())
-    assertTrue(database.rankingsQueries.getAllRankings().executeAsList().isEmpty())
+    assertTrue(database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("global").executeAsList().isEmpty())
     assertTrue(database.rankingsQueries.getStandingsByYear(2026).executeAsList().isEmpty())
     assertNotNull(database.playersQueries.getPlayerWithFavoriteStatus("fresh-player").executeAsOneOrNull())
     assertNotNull(database.playersQueries.getPlayerWithFavoriteStatus("unknown-player").executeAsOneOrNull())
@@ -201,7 +204,7 @@ class CacheCleanupRepositoryImplTest {
 
     insertTeam("favorite-team", stale)
     insertMatch("team-match", stale, team1Id = "favorite-team")
-    insertRanking("favorite-team", stale)
+    insertQueryRanking("favorite-team", stale)
     insertStanding("favorite-team", stale)
     database.teamsQueries.addFavoriteTeam("favorite-team")
 
@@ -232,10 +235,10 @@ class CacheCleanupRepositoryImplTest {
     listOf("roster-player", "favorite-player").forEach { id ->
       assertNotNull(database.playersQueries.getPlayerWithFavoriteStatus(id).executeAsOneOrNull(), id)
     }
-    assertEquals(1, database.rankingsQueries.getAllRankings().executeAsList().size)
+    assertTrue(database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("global").executeAsList().isEmpty())
     assertEquals(1, database.rankingsQueries.getStandingsByYear(2026).executeAsList().size)
     assertNull(database.playersQueries.getPlayerWithFavoriteStatus("disposable").executeAsOneOrNull())
-    assertEquals(1L, repository.observeStats().first().deletedRecords)
+    assertEquals(2L, repository.observeStats().first().deletedRecords)
   }
 
   @Test
@@ -267,6 +270,8 @@ class CacheCleanupRepositoryImplTest {
     val stale = now - THIRTY_DAYS - 1
     insertMatch("stale-match", stale)
     insertPlayer("another-stale-player", stale)
+    insertQueryRanking("first-ranked-team", stale)
+    insertQueryRanking("second-ranked-team", stale)
     driver.execute(
       identifier = null,
       sql = """
@@ -282,6 +287,7 @@ class CacheCleanupRepositoryImplTest {
     assertTrue(repository.cleanupIfDue(now).isFailure)
     assertNotNull(database.matchesQueries.getMatchWithFavoriteStatus("stale-match").executeAsOneOrNull())
     assertNotNull(database.playersQueries.getPlayerWithFavoriteStatus("another-stale-player").executeAsOneOrNull())
+    assertEquals(2, database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("global").executeAsList().size)
     assertEquals(0L, repository.observeStats().first().deletedRecords)
     assertNull(repository.observeStats().first().lastRunEpochMillis)
 
@@ -289,7 +295,8 @@ class CacheCleanupRepositoryImplTest {
     assertTrue(repository.cleanupIfDue(now).isSuccess)
     assertNull(database.matchesQueries.getMatchWithFavoriteStatus("stale-match").executeAsOneOrNull())
     assertNull(database.playersQueries.getPlayerWithFavoriteStatus("another-stale-player").executeAsOneOrNull())
-    assertEquals(2L, repository.observeStats().first().deletedRecords)
+    assertTrue(database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("global").executeAsList().isEmpty())
+    assertEquals(4L, repository.observeStats().first().deletedRecords)
     assertEquals(now, repository.observeStats().first().lastRunEpochMillis)
   }
 
@@ -376,15 +383,20 @@ class CacheCleanupRepositoryImplTest {
     )
   }
 
-  private fun insertRanking(teamId: String, lastUpdated: Long) {
-    database.rankingsQueries.insertRanking(
+  private fun insertQueryRanking(teamId: String, lastUpdated: Long, queryKey: String = "global") {
+    database.rankingsQueries.insertRankingQueryTeam(
+      query_key = queryKey,
       team_id = teamId,
       team_name = "Team $teamId",
       team_logo = "",
       country = "US",
       rank = 1,
+      overall_rank = 1,
       position = 0,
       elo = 1500.0,
+      map_elo = 1500.0,
+      matches_played = 0,
+      win_rate = 0.0,
       match_wins = 0,
       match_losses = 0,
       last_updated = lastUpdated,

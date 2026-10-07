@@ -1,22 +1,5 @@
 -- Rankings and seasonal standings tables
 
--- Global Elo ranking, in the order the API ranks it.
-CREATE TABLE rankings (
-    team_id TEXT NOT NULL PRIMARY KEY,
-    team_name TEXT NOT NULL DEFAULT '',
-    team_logo TEXT NOT NULL DEFAULT '',
-    country TEXT NOT NULL DEFAULT '',
-    rank INTEGER NOT NULL,
-    position INTEGER NOT NULL,
-    elo REAL NOT NULL,
-    match_wins INTEGER NOT NULL DEFAULT 0,
-    match_losses INTEGER NOT NULL DEFAULT 0,
-    last_updated INTEGER NOT NULL DEFAULT 0,
-    region TEXT
-);
-
-CREATE INDEX idx_rankings_position ON rankings(position);
-
 CREATE TABLE ranking_query_teams (
     query_key TEXT NOT NULL,
     team_id TEXT NOT NULL,
@@ -74,22 +57,6 @@ ORDER BY r.position ASC;
 
 deleteRankingQueryTeams:
 DELETE FROM ranking_query_teams WHERE query_key = :query_key;
-
-insertRanking:
-INSERT OR REPLACE INTO rankings(team_id, team_name, team_logo, country, rank, position, elo, match_wins, match_losses, last_updated, region)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-
-getAllRankings:
-SELECT * FROM rankings ORDER BY position ASC;
-
-getRankingsWithFavoriteStatus:
-SELECT r.*, CAST((fav.team_id IS NOT NULL) AS INTEGER) AS is_favorite
-FROM rankings AS r
-LEFT JOIN favorite_teams AS fav ON r.team_id = fav.team_id AND fav.active = 1
-ORDER BY r.position ASC;
-
-deleteAllRankings:
-DELETE FROM rankings;
 
 insertStanding:
 INSERT OR REPLACE INTO standings(team_id, year, circuit, region, rank, points, last_updated)

@@ -42,7 +42,6 @@ import dev.staticvar.vlr.domain.model.PlayerInfo
 import dev.staticvar.vlr.domain.model.PlayerStats
 import dev.staticvar.vlr.domain.model.PlayerTeam
 import dev.staticvar.vlr.domain.model.PreviousEncounter
-import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.domain.model.RoundInfo
 import dev.staticvar.vlr.domain.model.RoundSide
 import dev.staticvar.vlr.domain.model.RoundWinType
@@ -52,7 +51,6 @@ import dev.staticvar.vlr.domain.model.TeamDetails
 import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.domain.model.TeamPlayer
 import dev.staticvar.vlr.domain.model.TeamPreview
-import dev.staticvar.vlr.domain.model.TeamRanking
 import dev.staticvar.vlr.domain.model.TeamUpcomingMatch
 import dev.staticvar.vlr.domain.model.VideoReference
 import dev.staticvar.vlr.localsource.database.Events
@@ -62,7 +60,6 @@ import dev.staticvar.vlr.localsource.database.GetMatchWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetMatchesWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetPlayerWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetPlayersByTeam
-import dev.staticvar.vlr.localsource.database.GetRankingsWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetTeamRoster
 import dev.staticvar.vlr.localsource.database.GetTeamWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.GetTeamsByRegion
@@ -481,23 +478,6 @@ internal fun GetPlayersByTeam.toPlayerInfo(
   ),
   agentStats = agentStats,
   teamHistory = teamHistory,
-)
-
-// ============================================================================
-// RANKINGS MAPPERS
-// ============================================================================
-
-internal fun GetRankingsWithFavoriteStatus.toTeamRanking(): TeamRanking = TeamRanking(
-  teamId = team_id,
-  teamName = team_name,
-  teamLogo = team_logo,
-  country = country,
-  rank = rank.toInt(),
-  elo = elo,
-  wins = match_wins.toInt(),
-  losses = match_losses.toInt(),
-  isFavorite = is_favorite == 1L,
-  region = RankingRegion.entries.firstOrNull { it.apiValue == region },
 )
 
 // ============================================================================

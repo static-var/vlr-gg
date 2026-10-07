@@ -8,7 +8,6 @@ package dev.staticvar.vlr.data
 // a single import surface for data layer mappers. Expand as new entities are mapped.
 
 // Simple tables
-typealias Rankings = dev.staticvar.vlr.localsource.database.Rankings
 typealias Standings = dev.staticvar.vlr.localsource.database.Standings
 typealias Events = dev.staticvar.vlr.localsource.database.Events
 typealias Players = dev.staticvar.vlr.localsource.database.Players

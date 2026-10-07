@@ -6,38 +6,11 @@ package dev.staticvar.vlr.data.mapper
 
 import dev.staticvar.vlr.data.PlayerAgentStats
 import dev.staticvar.vlr.data.PlayerTeamHistory
-import dev.staticvar.vlr.data.Rankings
 import dev.staticvar.vlr.data.Standings
-import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.remotesource.player.PlayerAgentStatsDto
 import dev.staticvar.vlr.remotesource.player.PlayerTeamRefDto
-import dev.staticvar.vlr.remotesource.rankings.TeamRankingDto
 import dev.staticvar.vlr.remotesource.standings.TeamStandingDto
 import kotlin.time.Clock
-
-/**
- * Simple manual mappers for Rankings and Standings.
- * These are 1:1 or near-1:1 mappings that don't require Konvert.
- *
- * Note: EventPrizeDto and EventTeamDto mappers are in EventTeamMappers.kt
- * Note: PlayerDetailsDto mapper is complex and should be manual
- */
-
-// ----------------------------- Rankings -----------------------------
-
-internal fun TeamRankingDto.toEntity(position: Int, lastUpdated: Long): Rankings = Rankings(
-  team_id = team.id,
-  team_name = team.name,
-  team_logo = team.logo.orEmpty(),
-  country = team.country.orEmpty(),
-  rank = rank.toLong(),
-  position = position.toLong(),
-  elo = elo,
-  match_wins = matches.wins.toLong(),
-  match_losses = matches.losses.toLong(),
-  last_updated = lastUpdated,
-  region = RankingRegion.entries.firstOrNull { it.apiValue == region }?.apiValue,
-)
 
 // ----------------------------- Standings -----------------------------
 
