@@ -2,6 +2,10 @@
  * Copyright (c) 2022-2026 Shreyansh Lodha
  * SPDX-License-Identifier: MIT
  */
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.konan.target.KonanTarget
+
 plugins {
   alias(libs.plugins.android.application) apply false
   alias(libs.plugins.android.test) apply false
@@ -17,6 +21,28 @@ plugins {
   alias(libs.plugins.spotless.plugin)
   id("vlr.detekt")
   id("vlr.ktlint")
+}
+
+if (System.getProperty("os.name") == "Mac OS X") {
+  val swiftLibraries = providers.exec {
+    commandLine("xcrun", "--find", "swift")
+  }.standardOutput.asText.map { file(it.trim()).parentFile.parentFile.resolve("lib/swift") }
+  subprojects {
+    pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+      extensions.configure<KotlinMultiplatformExtension> {
+        targets.withType<KotlinNativeTarget>().configureEach {
+          val platform = when (konanTarget) {
+            KonanTarget.IOS_ARM64 -> "iphoneos"
+            KonanTarget.IOS_SIMULATOR_ARM64 -> "iphonesimulator"
+            else -> null
+          }
+          if (platform != null) {
+            binaries.configureEach { linkerOpts("-L${swiftLibraries.get().resolve(platform)}") }
+          }
+        }
+      }
+    }
+  }
 }
 
 val composeMetricsEnabled =
