@@ -41,8 +41,6 @@ import vlr.feature_rankings.generated.resources.rankings_metric_elo_description
 import vlr.feature_rankings.generated.resources.rankings_metric_map_elo_description
 import vlr.feature_rankings.generated.resources.rankings_metric_matches_description
 import vlr.feature_rankings.generated.resources.rankings_metric_win_rate_description
-import vlr.feature_rankings.generated.resources.rankings_options
-import vlr.feature_rankings.generated.resources.rankings_options_context
 import vlr.feature_rankings.generated.resources.rankings_order_asc_description
 import vlr.feature_rankings.generated.resources.rankings_order_context
 import vlr.feature_rankings.generated.resources.rankings_order_desc_description
@@ -52,7 +50,6 @@ import vlr.feature_rankings.generated.resources.rankings_region_china_descriptio
 import vlr.feature_rankings.generated.resources.rankings_region_context
 import vlr.feature_rankings.generated.resources.rankings_region_emea_description
 import vlr.feature_rankings.generated.resources.rankings_region_pacific_description
-import vlr.feature_rankings.generated.resources.rankings_regional_rules
 import vlr.feature_rankings.generated.resources.rankings_select_circuit
 import vlr.feature_rankings.generated.resources.rankings_select_metric
 import vlr.feature_rankings.generated.resources.rankings_select_order
@@ -63,14 +60,8 @@ import vlr.feature_rankings.generated.resources.rankings_worldwide
 internal fun RankingsSelectionSheet(
   selection: RankingSheet?,
   query: RankingsQuery,
-  regional: Boolean,
   onDismiss: () -> Unit,
   onQueryChanged: (RankingsQuery) -> Unit,
-  onExplore: () -> Unit,
-  onInfo: () -> Unit,
-  onCollapsed: () -> Unit,
-  onRefresh: () -> Unit,
-  refreshing: Boolean,
 ) {
   val title = stringResource(
     when (selection) {
@@ -78,7 +69,7 @@ internal fun RankingsSelectionSheet(
       RankingSheet.Order -> Res.string.rankings_select_order
       RankingSheet.Circuit -> Res.string.rankings_select_circuit
       RankingSheet.Region -> Res.string.rankings_select_region
-      else -> Res.string.rankings_options
+      null -> Res.string.rankings_select_metric
     },
   )
   val description = stringResource(
@@ -87,7 +78,7 @@ internal fun RankingsSelectionSheet(
       RankingSheet.Order -> Res.string.rankings_order_context
       RankingSheet.Circuit -> Res.string.rankings_circuit_context
       RankingSheet.Region -> Res.string.rankings_region_context
-      else -> if (regional) Res.string.rankings_regional_rules else Res.string.rankings_options_context
+      null -> Res.string.rankings_metric_context
     },
   )
   fun select(updated: RankingsQuery) {
@@ -98,18 +89,15 @@ internal fun RankingsSelectionSheet(
     visible = selection != null,
     onDismissRequest = onDismiss,
     paneTitle = title,
-    onCollapsed = onCollapsed,
     header = {
       Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
         Text(title, Modifier.semantics { heading() }, style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
         Text(description, style = Prism.typography.bodySmall, color = Prism.color.labelColor)
       }
     },
-    footer = if (selection == RankingSheet.Options) null else {
-      {
-        PrismButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth(), style = PrismButtonStyle.Secondary) {
-          Text(stringResource(Res.string.rankings_info_close))
-        }
+    footer = {
+      PrismButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth(), style = PrismButtonStyle.Secondary) {
+        Text(stringResource(Res.string.rankings_info_close))
       }
     },
   ) {
@@ -138,15 +126,6 @@ internal fun RankingsSelectionSheet(
             RankingChoice(regionLabel(region), regionDescription(region), query.region == region) { select(query.copy(region = region)) }
           }
         }
-        RankingSheet.Options -> RankingsOptions(
-          query = query,
-          regional = regional,
-          onApply = ::select,
-          onExplore = { onExplore(); onDismiss() },
-          onInfo = { onDismiss(); onInfo() },
-          onRefresh = { onRefresh(); onDismiss() },
-          refreshing = refreshing,
-        )
         null -> Unit
       }
     }

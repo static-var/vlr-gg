@@ -44,7 +44,7 @@ import vlr.feature_rankings.generated.resources.region_china
 import vlr.feature_rankings.generated.resources.region_emea
 import vlr.feature_rankings.generated.resources.region_pacific
 
-internal enum class RankingSheet { Metric, Order, Circuit, Region, Options }
+internal enum class RankingSheet { Metric, Order, Circuit, Region }
 
 @Composable
 internal fun RankingsQuerySentence(query: RankingsQuery, onSelection: (RankingSheet) -> Unit) {

@@ -42,7 +42,7 @@ import dev.staticvar.designsystem.component.selection.PrismSwitch
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
-import dev.staticvar.designsystem.prism.icon.settings.StairStepSettings
+import dev.staticvar.designsystem.prism.icon.about.StairStepAbout
 import dev.staticvar.vlr.domain.model.RankingMetric
 import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.domain.model.RankingsQuery
@@ -65,8 +65,8 @@ import vlr.feature_rankings.generated.resources.ranking_series_count
 import vlr.feature_rankings.generated.resources.ranking_team_label
 import vlr.feature_rankings.generated.resources.ranking_win_rate
 import vlr.feature_rankings.generated.resources.rankings_beta
+import vlr.feature_rankings.generated.resources.rankings_info_title
 import vlr.feature_rankings.generated.resources.rankings_no_matching_teams
-import vlr.feature_rankings.generated.resources.rankings_options
 import vlr.feature_rankings.generated.resources.rankings_regional
 import vlr.feature_rankings.generated.resources.rankings_subtitle
 import vlr.feature_rankings.generated.resources.rankings_title
@@ -99,7 +99,6 @@ internal fun RankingsScreen(
 ) {
   var sheet by rememberSaveable { mutableStateOf<RankingSheet?>(null) }
   var showRankingInfo by rememberSaveable { mutableStateOf(false) }
-  var pendingRankingInfo by rememberSaveable { mutableStateOf(false) }
   val hasContent = uiState.teams.isNotEmpty()
 
   Column(
@@ -128,10 +127,10 @@ internal fun RankingsScreen(
               )
             }
             PrismIconButton(
-              icon = StairStepSettings,
-              contentDescription = stringResource(Res.string.rankings_options),
+              icon = StairStepAbout,
+              contentDescription = stringResource(Res.string.rankings_info_title),
               size = PrismIconButtonSize.Toolbar,
-              onClick = { sheet = RankingSheet.Options },
+              onClick = { showRankingInfo = true },
             )
           }
         },
@@ -180,19 +179,8 @@ internal fun RankingsScreen(
   RankingsSelectionSheet(
     selection = sheet,
     query = uiState.exploreQuery,
-    regional = uiState.view == RankingsView.Regional,
     onDismiss = { sheet = null },
     onQueryChanged = onExploreQueryChanged,
-    onExplore = { onViewSelected(RankingsView.Explore) },
-    onInfo = { pendingRankingInfo = true },
-    onCollapsed = {
-      if (pendingRankingInfo) {
-        pendingRankingInfo = false
-        showRankingInfo = true
-      }
-    },
-    onRefresh = onRefresh,
-    refreshing = uiState.isLoading || uiState.isRefreshing,
   )
   RankingsInfoSheet(visible = showRankingInfo, onDismiss = { showRankingInfo = false })
 }

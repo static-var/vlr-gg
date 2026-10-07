@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertIsSelected
@@ -22,7 +21,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
-import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.vlr.domain.model.RankingMetric
@@ -31,19 +29,14 @@ import dev.staticvar.vlr.domain.model.RankingsQuery
 import dev.staticvar.vlr.domain.model.TeamRanking
 import org.jetbrains.compose.resources.stringResource
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import vlr.feature_rankings.generated.resources.Res
 import vlr.feature_rankings.generated.resources.ranking_team_label
-import vlr.feature_rankings.generated.resources.rankings_apply
-import vlr.feature_rankings.generated.resources.rankings_include_inactive
 import vlr.feature_rankings.generated.resources.rankings_info_close
 import vlr.feature_rankings.generated.resources.rankings_info_elo_title
 import vlr.feature_rankings.generated.resources.rankings_info_title
-import vlr.feature_rankings.generated.resources.rankings_minimum_series
-import vlr.feature_rankings.generated.resources.rankings_options
 import vlr.feature_rankings.generated.resources.region_emea
 import vlr.feature_rankings.generated.resources.search_teams
 
@@ -52,10 +45,6 @@ class RankingsScreenTest {
   @get:Rule
   val compose = createAndroidComposeRule<RankingsScreenTestActivity>()
 
-  private lateinit var options: String
-  private lateinit var minimum: String
-  private lateinit var inactive: String
-  private lateinit var apply: String
   private lateinit var search: String
   private lateinit var emea: String
   private lateinit var info: String
@@ -100,33 +89,9 @@ class RankingsScreenTest {
   }
 
   @Test
-  fun optionsValidateMinimumAndApplyEligibilityTogether() {
-    var query by mutableStateOf(RankingsQuery())
-    compose.setContent {
-      Screen(
-        RankingsUiState(teams = teams(), isLoading = false, exploreQuery = query),
-        onQueryChanged = { query = it },
-      )
-    }
-
-    compose.onNodeWithContentDescription(options).performClick()
-    compose.onNodeWithContentDescription(minimum).performTextReplacement("1001")
-    compose.onNodeWithText(apply).assertIsNotEnabled()
-    compose.onNodeWithContentDescription(minimum).performTextReplacement("0")
-    compose.onNodeWithContentDescription(inactive).performClick()
-    compose.onNodeWithText(apply).performScrollTo().performClick()
-    compose.runOnIdle {
-      assertEquals(0, query.minMatches)
-      assertTrue(query.includeInactive)
-    }
-    compose.onNodeWithTag("rankings_query_sentence").assertIsDisplayed()
-  }
-
-  @Test
-  fun rankingExplanationOpensFromOptionsAndDismisses() {
+  fun rankingExplanationOpensFromToolbarAndDismisses() {
     compose.setContent { Screen(RankingsUiState(teams = teams(), isLoading = false)) }
-    compose.onNodeWithContentDescription(options).performClick()
-    compose.onNodeWithText(info).performScrollTo().performClick()
+    compose.onNodeWithContentDescription(info).performClick()
     compose.onNodeWithText(eloInfo).assertExists()
     compose.onNodeWithText(done).performClick()
     compose.onNodeWithTag("rankings_query_sentence").assertIsDisplayed()
@@ -141,10 +106,6 @@ class RankingsScreenTest {
     onTeamSelected: (String) -> Unit = {},
   ) {
     PrismTheme {
-      options = stringResource(Res.string.rankings_options)
-      minimum = stringResource(Res.string.rankings_minimum_series)
-      inactive = stringResource(Res.string.rankings_include_inactive)
-      apply = stringResource(Res.string.rankings_apply)
       search = stringResource(Res.string.search_teams)
       emea = stringResource(Res.string.region_emea)
       info = stringResource(Res.string.rankings_info_title)
