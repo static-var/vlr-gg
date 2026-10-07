@@ -310,7 +310,7 @@ struct MatchLiveActivityMapProgress {
 
     init?(state: MatchActivityAttributes.ContentState, hidden: Bool) {
         let total = max(state.total_maps ?? 0, state.map_winners.count,
-                        state.map_round_winners.map(\.map_number).max() ?? 0,
+                        state.map_round_winners.count,
                         state.current_map?.number ?? 0)
         guard (1...9).contains(total) else { return nil }
         self.hidden = hidden
@@ -318,7 +318,8 @@ struct MatchLiveActivityMapProgress {
             let number = index + 1
             let current = state.current_map?.number == number
             let active = !state.terminal && current
-            let history = state.map_round_winners.first { $0.map_number == number }?.winners ?? []
+            let history = state.map_round_winners.indices.contains(index)
+                ? state.map_round_winners[index].map { $0 == "0" ? 0 : 1 } : []
             var segment = Segment.pending
             if state.map_winners.indices.contains(index), let winner = state.map_winners[index] {
                 let matchingTeams = state.teams.indices.prefix(2).filter { state.teams[$0].id == winner }
@@ -329,8 +330,7 @@ struct MatchLiveActivityMapProgress {
                 return Map(number: number, segment: .pending,
                            rounds: Array(repeating: .pending, count: 12), scores: [nil, nil])
             }
-            let knownHistory = !history.isEmpty && history.allSatisfy { $0 == 0 || $0 == 1 }
-            let historyScores: [Int?] = knownHistory
+            let historyScores: [Int?] = !history.isEmpty
                 ? [history.filter { $0 == 0 }.count, history.filter { $0 == 1 }.count] : [nil, nil]
             let scores = current ? (0..<2).map { team in
                 let values = state.current_map?.scores ?? []
@@ -340,8 +340,8 @@ struct MatchLiveActivityMapProgress {
                 ? scores.compactMap { $0 }.reduce(0, +) : 0
             let played = max(history.count, currentRoundCount)
             let rounds: [Round] = (0..<max(12, played)).map { round in
-                if round < history.count, let winner = history[round], (0...1).contains(winner) {
-                    return .wonBy(winner)
+                if round < history.count {
+                    return .wonBy(history[round])
                 }
                 return round < played ? .unknown : .pending
             }
