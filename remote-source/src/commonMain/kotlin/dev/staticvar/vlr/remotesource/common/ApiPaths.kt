@@ -15,6 +15,7 @@ object ApiPaths {
   fun player(id: String) = "/api/v1/player/$id"
   fun team(id: String) = "/api/v1/team/$id"
   const val RANKINGS = "/api/v2/rankings/"
+  fun teamRankingProfile(id: String) = "/api/v2/rankings/teams/$id"
   fun standings(year: Int) = "/api/v1/standings/$year"
   const val VERSION = "/api/v1/version/"
 }

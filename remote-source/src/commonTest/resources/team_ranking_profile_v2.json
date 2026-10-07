@@ -1,0 +1,23 @@
+{
+  "team": {"id": "2593", "name": "FNATIC", "tag": "FNC", "logo": "https://example.com/fnatic.png", "country": "eu", "region": "Europe"},
+  "rank": 4,
+  "circuit_rank": 3,
+  "region": "emea",
+  "region_rank": 2,
+  "elo": 1842,
+  "map_elo": 1796,
+  "matches": {"played": 84, "wins": 58, "losses": 26, "win_rate": 0.6904761904761905},
+  "maps": {"played": 218, "wins": 142, "losses": 76, "win_rate": 0.6513761467889908},
+  "first_played_on": "2021-03-14",
+  "last_played_on": "2026-10-03",
+  "active": true,
+  "circuits": [
+    {"circuit": "vct", "matches": 80, "last_played_on": "2026-10-03"},
+    {"circuit": "offseason", "matches": 4, "last_played_on": "2026-09-29"}
+  ],
+  "form": "WL",
+  "recent": [
+    {"match_id": "542270", "played_on": "2026-10-03", "event": "Champions", "stage": "Playoffs", "opponent": {"id": "2", "name": "Sentinels", "logo": "https://example.com/sentinels.png"}, "team_score": 2, "opponent_score": 1, "won": true},
+    {"match_id": "542269", "played_on": "2026-10-01", "event": "Champions", "stage": null, "opponent": {"id": "2599", "name": "Team Heretics"}, "team_score": null, "opponent_score": null, "won": false}
+  ]
+}

@@ -13,10 +13,10 @@ import dev.staticvar.vlr.remotesource.liveupdates.LiveActivityStartDataSource
 import dev.staticvar.vlr.remotesource.liveupdates.LiveActivityStartDataSourceImpl
 import dev.staticvar.vlr.remotesource.liveupdates.PushTokenRegistrationDataSource
 import dev.staticvar.vlr.remotesource.liveupdates.PushTokenRegistrationDataSourceImpl
-import dev.staticvar.vlr.remotesource.match.MatchDataSource
-import dev.staticvar.vlr.remotesource.match.MatchDataSourceImpl
 import dev.staticvar.vlr.remotesource.match.FavoriteMatchesDataSource
 import dev.staticvar.vlr.remotesource.match.FavoriteMatchesDataSourceImpl
+import dev.staticvar.vlr.remotesource.match.MatchDataSource
+import dev.staticvar.vlr.remotesource.match.MatchDataSourceImpl
 import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
 import dev.staticvar.vlr.remotesource.network.HttpClientFactory
 import dev.staticvar.vlr.remotesource.network.NetworkConfiguration
@@ -25,6 +25,8 @@ import dev.staticvar.vlr.remotesource.player.PlayerDataSource
 import dev.staticvar.vlr.remotesource.player.PlayerDataSourceImpl
 import dev.staticvar.vlr.remotesource.rankings.RankingsDataSource
 import dev.staticvar.vlr.remotesource.rankings.RankingsDataSourceImpl
+import dev.staticvar.vlr.remotesource.rankings.TeamRankingProfileDataSource
+import dev.staticvar.vlr.remotesource.rankings.TeamRankingProfileDataSourceImpl
 import dev.staticvar.vlr.remotesource.standings.StandingsDataSource
 import dev.staticvar.vlr.remotesource.standings.StandingsDataSourceImpl
 import dev.staticvar.vlr.remotesource.team.TeamDataSource
@@ -76,6 +78,7 @@ fun remoteSourceModule(
   single<EventDataSource> { EventDataSourceImpl(get()) }
   single<PlayerDataSource> { PlayerDataSourceImpl(get()) }
   single<RankingsDataSource> { RankingsDataSourceImpl(get()) }
+  single<TeamRankingProfileDataSource> { TeamRankingProfileDataSourceImpl(get()) }
   single<StandingsDataSource> { StandingsDataSourceImpl(get()) }
   single<TeamDataSource> { TeamDataSourceImpl(get()) }
   single<VersionDataSource> { VersionDataSourceImpl(get()) }
