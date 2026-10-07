@@ -1,4 +1,8 @@
-valorantesports.staticvar.dev {
+valesports.app {
+  # CNAME _acme-challenge.valesports.app to the DNS challenge target below.
+  tls {
+    dns_challenge_override_domain _acme-challenge.valesports.staticvar.dev
+  }
   encode zstd gzip
   header {
     X-Content-Type-Options nosniff
@@ -15,5 +19,23 @@ valorantesports.staticvar.dev {
   }
   handle {
     reverse_proxy valorant-esports-web:8080
+  }
+}
+
+www.valesports.app {
+  # CNAME _acme-challenge.www.valesports.app to the DNS challenge target below.
+  tls {
+    dns_challenge_override_domain _acme-challenge.www.valesports.staticvar.dev
+  }
+  redir https://valesports.app{uri} 308
+}
+
+valorantesports.staticvar.dev {
+  @associations path /.well-known/apple-app-site-association /.well-known/assetlinks.json
+  handle @associations {
+    reverse_proxy valorant-esports-web:8080
+  }
+  handle {
+    redir https://valesports.app{uri} 308
   }
 }

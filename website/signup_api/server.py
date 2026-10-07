@@ -18,7 +18,7 @@ MAX_BODY_BYTES = 1024
 SUPPORT_MAX_BODY_BYTES = 32768
 MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024
 MAX_MULTIPART_BYTES = MAX_ATTACHMENT_BYTES + SUPPORT_MAX_BODY_BYTES
-PUBLIC_ORIGIN = "https://valorantesports.staticvar.dev"
+PUBLIC_ORIGIN = "https://valesports.app"
 ADMIN_ORIGIN = os.environ.get("ADMIN_ORIGIN", "http://127.0.0.1:8081")
 SUPPORT_FIELDS = {"email", "category", "platform", "subject", "message", "app_version", "device", "website"}
 CATEGORIES = ("bug", "feature", "question", "other")
@@ -187,7 +187,7 @@ class SignupHandler(BaseHTTPRequestHandler):
         if self.path != "/api/testflight-signups":
             self.send_error(404)
             return
-        if self.headers.get("Origin") not in (None, "https://valorantesports.staticvar.dev"):
+        if self.headers.get("Origin") not in (None, PUBLIC_ORIGIN):
             self.send_error(403)
             return
         if self.headers.get_content_type() != "application/x-www-form-urlencoded":

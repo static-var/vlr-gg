@@ -49,7 +49,8 @@ class SupportAndInboxTest(unittest.TestCase):
         fields = {"email": "Fan@Example.com", "category": "bug", "platform": "ios", "subject": "Scores stuck",
                   "message": "Scores do not update", "app_version": "1.0.5", "device": "iPhone", "website": ""}
         fields.update(changes)
-        return self.request(self.public, "POST", "/api/support-requests", fields)
+        return self.request(self.public, "POST", "/api/support-requests", fields,
+                            {"Origin": "https://valesports.app"})
 
     def rows(self):
         with closing(sqlite3.connect(self.database)) as connection, connection:
@@ -89,8 +90,9 @@ class SupportAndInboxTest(unittest.TestCase):
     def test_honeypot_cross_origin_large_body_and_duplicates_are_rejected(self):
         self.assertEqual(self.support(website="bot")[:2], (303, "/support/thanks/"))
         self.assertEqual(self.support(message="a" * server.SUPPORT_MAX_BODY_BYTES)[0], 413)
-        self.assertEqual(self.request(self.public, "POST", "/api/support-requests", {"email": "ok@example.com"},
-                                      {"Origin": "https://evil.example"})[0], 403)
+        for origin in ("https://evil.example", "https://valorantesports.staticvar.dev", "https://www.valesports.app"):
+            self.assertEqual(self.request(self.public, "POST", "/api/support-requests", {"email": "ok@example.com"},
+                                          {"Origin": origin})[0], 403)
         self.assertEqual(self.request(self.public, "POST", "/api/support-requests", [("email", "a@b.com"), ("email", "b@c.com")])[0], 400)
         self.assertEqual(self.rows(), [])
 
