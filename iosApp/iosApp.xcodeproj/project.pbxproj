@@ -727,13 +727,6 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-framework",
-					shared,
-					"-lsqlite3",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.staticvar.vlr.ios;
 				PRODUCT_NAME = VLR;
 				SDKROOT = iphoneos;
@@ -894,13 +887,6 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-framework",
-					shared,
-					"-lsqlite3",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.staticvar.vlr.ios;
 				PRODUCT_NAME = VLR;
 				SDKROOT = iphoneos;
@@ -956,6 +942,13 @@
 		9221A1FDC06803E8A2FC6E61 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-framework",
+					shared,
+					"-lsqlite3",
+				);
 				APS_ENVIRONMENT = development;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
 					AppIconAmethyst,
@@ -980,6 +973,13 @@
 		AF835BFF1220CA5AB5B867E4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-framework",
+					shared,
+					"-lsqlite3",
+				);
 				APS_ENVIRONMENT = production;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
 					AppIconAmethyst,

@@ -21,12 +21,6 @@ settings:
     FRAMEWORK_SEARCH_PATHS:
       - $(inherited)
       - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
-    OTHER_LDFLAGS:
-      - $(inherited)
-      - -ObjC
-      - -framework
-      - shared
-      - -lsqlite3
     LD_RUNPATH_SEARCH_PATHS:
       - $(inherited)
       - "@executable_path/Frameworks"
@@ -56,6 +50,12 @@ targets:
         embed: true
     settings:
       base:
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -ObjC
+          - -framework
+          - shared
+          - -lsqlite3
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES:
           - AppIconAmethyst
