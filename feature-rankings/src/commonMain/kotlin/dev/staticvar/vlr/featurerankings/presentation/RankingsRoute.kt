@@ -23,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismIconButton
@@ -36,6 +38,7 @@ import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.navigation.PrismTabs
+import dev.staticvar.designsystem.component.selection.PrismSwitch
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
@@ -64,6 +67,7 @@ import vlr.feature_rankings.generated.resources.ranking_win_rate
 import vlr.feature_rankings.generated.resources.rankings_beta
 import vlr.feature_rankings.generated.resources.rankings_info_title
 import vlr.feature_rankings.generated.resources.rankings_no_matching_teams
+import vlr.feature_rankings.generated.resources.rankings_regional
 import vlr.feature_rankings.generated.resources.rankings_subtitle
 import vlr.feature_rankings.generated.resources.rankings_title
 import vlr.feature_rankings.generated.resources.region_all
@@ -109,6 +113,23 @@ internal fun RankingsScreen(
         subtitle = stringResource(Res.string.rankings_subtitle),
         titleAccessory = { PrismTag(text = stringResource(Res.string.rankings_beta), style = PrismTagStyle.Accent) },
         actions = {
+          val regionalLabel = stringResource(Res.string.rankings_regional)
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+              text = regionalLabel,
+              modifier = Modifier.clearAndSetSemantics {},
+              style = Prism.typography.label,
+              color = Prism.color.labelColor,
+            )
+            PrismSwitch(
+              checked = uiState.view == RankingsView.Regional,
+              onCheckedChange = { regional ->
+                onViewSelected(if (regional) RankingsView.Regional else RankingsView.Explore)
+              },
+              modifier = Modifier.testTag("rankings_regional_switch")
+                .semantics { contentDescription = regionalLabel },
+            )
+          }
           PrismIconButton(
             icon = StairStepAbout,
             contentDescription = stringResource(Res.string.rankings_info_title),
