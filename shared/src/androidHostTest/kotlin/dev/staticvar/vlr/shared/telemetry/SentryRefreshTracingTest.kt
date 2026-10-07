@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022-2026 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.shared.telemetry
 
 import dev.staticvar.vlr.core.telemetry.DatabaseTrace
