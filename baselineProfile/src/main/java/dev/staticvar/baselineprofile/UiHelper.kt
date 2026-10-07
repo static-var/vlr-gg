@@ -96,7 +96,7 @@ internal fun UiDevice.browseEvents() {
 }
 
 internal fun UiDevice.browseTeamAndPlayer() {
-  navigateTo("Ranking", "The top teams in every region")
+  navigateTo("Ranking", "Team ratings and records")
   browseList()
   openFirstCard()
   requireSubtitle("Roster, results and recent form")
@@ -121,7 +121,7 @@ internal fun UiDevice.browseTeamAndPlayer() {
   scrollTo(By.text("Upcoming"))
   selectTab("Upcoming")
   pressBack()
-  requireSubtitle("The top teams in every region")
+  requireSubtitle("Team ratings and records")
   navigateTo("Home", "Your Favorites")
   scrollTo(By.text("Favorites"))
   scrollTo(By.text("Teams"))

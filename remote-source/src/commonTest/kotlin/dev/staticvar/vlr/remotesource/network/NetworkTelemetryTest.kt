@@ -68,14 +68,14 @@ class NetworkTelemetryTest {
   }
 
   @Test
-  fun requestPreservesAuthenticationButTelemetryOmitsItsCredentialsAndSearchText() = runTest {
+  fun requestPreservesAuthenticationButTelemetryOmitsCredentialsAndQueryParameters() = runTest {
     val recorder = RecordingTelemetry()
     val client = HttpClient(MockEngine) {
       install(NetworkTelemetry) { reporter = recorder }
       engine {
         addHandler { request ->
           assertEquals("Bearer private-token", request.headers[HttpHeaders.Authorization])
-          assertEquals("private search", request.url.parameters["q"])
+          assertEquals("private region", request.url.parameters["region"])
           assertNull(request.headers["sentry-trace"])
           assertNull(request.headers["baggage"])
           respond("[]")
@@ -83,11 +83,11 @@ class NetworkTelemetryTest {
       }
     }
     try {
-      client.get("https://api.example/api/v1/search/?q=private%20search") {
+      client.get("https://api.example/api/v2/rankings/?region=private%20region") {
         headers { append(HttpHeaders.Authorization, "Bearer private-token") }
       }
-      assertEquals(listOf("http.client GET /api/v1/search"), recorder.spans)
-      assertEquals(listOf("http GET /api/v1/search status=200"), recorder.breadcrumbs)
+      assertEquals(listOf("http.client GET /api/v2/rankings"), recorder.spans)
+      assertEquals(listOf("http GET /api/v2/rankings status=200"), recorder.breadcrumbs)
       assertEquals(listOf(TelemetrySpanStatus.Ok), recorder.finishes)
       assertFalse((recorder.spans + recorder.breadcrumbs).any { it.contains("private") })
     } finally {
@@ -141,6 +141,9 @@ class NetworkTelemetryTest {
     assertEquals("<other>", telemetryEndpoint("/private/email@example.com"))
     assertEquals("<other>", telemetryEndpoint("/api/v1/secret"))
     assertEquals("<other>", telemetryEndpoint("/api/v1/team/id/secret"))
+    assertEquals("/api/v2/rankings", telemetryEndpoint("/api/v2/rankings/"))
+    assertEquals("<other>", telemetryEndpoint("/api/v2/rankings/teams/12"))
+    assertEquals("<other>", telemetryEndpoint("/api/v1/rankings/"))
   }
 }
 

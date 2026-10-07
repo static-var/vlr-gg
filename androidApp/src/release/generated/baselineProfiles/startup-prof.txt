@@ -18072,7 +18072,6 @@ Ldev/staticvar/vlr/domain/repository/MatchRepository;
 Ldev/staticvar/vlr/domain/repository/PlayerRepository;
 Ldev/staticvar/vlr/domain/repository/RankingsRepository;
 Ldev/staticvar/vlr/domain/repository/TeamRepository;
-Ldev/staticvar/vlr/domain/repository/TeamSearchRepository;
 Ldev/staticvar/vlr/domain/usecase/RefreshFavoriteMatches;
 Ldev/staticvar/vlr/featureabout/presentation/BundledRelease;
 SPLdev/staticvar/vlr/featureabout/presentation/BundledRelease;-><clinit>()V
@@ -18990,7 +18989,6 @@ SPLdev/staticvar/vlr/remotesource/network/PlatformAcceptLanguageProvider;->appli
 SPLdev/staticvar/vlr/remotesource/network/PlatformAcceptLanguageProvider;->preferredLanguageTags()Ljava/util/List;
 Ldev/staticvar/vlr/remotesource/player/PlayerDataSource;
 Ldev/staticvar/vlr/remotesource/rankings/RankingsDataSource;
-Ldev/staticvar/vlr/remotesource/search/SearchDataSource;
 Ldev/staticvar/vlr/remotesource/standings/StandingsDataSource;
 Ldev/staticvar/vlr/remotesource/team/TeamDataSource;
 Ldev/staticvar/vlr/remotesource/version/VersionDataSource;

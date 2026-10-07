@@ -6,7 +6,7 @@ package dev.staticvar.vlr.remotesource.network
 
 import dev.staticvar.vlr.remotesource.jsonHeaders
 import dev.staticvar.vlr.remotesource.di.remoteSourceModule
-import dev.staticvar.vlr.remotesource.rankings.RankingsDataSourceImpl
+import dev.staticvar.vlr.remotesource.standings.StandingsDataSourceImpl
 import dev.staticvar.vlr.remotesource.testJson
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -77,18 +77,18 @@ class AcceptLanguageTransportTest {
     }
     val client = configuredClient(provider) {
       respond(
-        """[{"region":"Brazil","region_label":"Brasil","teams":[]}]""",
+        """{"year":2026,"circuits":[{"region":"Brazil","region_label":"Brasil","teams":[]}]}""",
         status = HttpStatusCode.OK,
         headers = responseHeaders,
       )
     }
 
-    val payload = RankingsDataSourceImpl(client).list().getOrThrow()
+    val payload = StandingsDataSourceImpl(client).byYear(2026).getOrThrow()
 
     assertEquals("pt-BR,en-US", payload.requestedLanguage)
     assertEquals("pt-BR", payload.contentLanguage)
-    assertEquals("Brazil", payload.value.single().region)
-    assertEquals("Brasil", payload.value.single().regionLabel)
+    assertEquals("Brazil", payload.value.circuits.single().region)
+    assertEquals("Brasil", payload.value.circuits.single().regionLabel)
   }
 
   @Test

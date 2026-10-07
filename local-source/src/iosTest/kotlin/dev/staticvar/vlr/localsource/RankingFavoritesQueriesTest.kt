@@ -38,8 +38,8 @@ class RankingFavoritesQueriesTest {
 
   @Test
   fun rankingsObserveExplicitTeamFavoritesWithoutRefreshing() = runTest {
-    database.rankingsQueries.insertRanking("120", "NA", 1, "100", 0)
-    database.rankingsQueries.insertRanking("other", "EU", 1, "90", 0)
+    database.rankingsQueries.insertRankingQueryTeam("global", "other", "Other", "", "", 1, 1, 0, 1600.0, 1500.0, 0, 0, 0, 0.0, null, 0)
+    database.rankingsQueries.insertRankingQueryTeam("global", "120", "Team 120", "", "", 2, 2, 1, 1550.0, 1500.0, 0, 0, 0, 0.0, null, 0)
     database.playersQueries.insertPlayer(
       Players(
         id = "601", name = "Asuna", alias = "Asuna", real_name = null, country = "US",
@@ -48,31 +48,22 @@ class RankingFavoritesQueriesTest {
       ),
     )
     database.playersQueries.addFavoritePlayer("601")
-    var allFavorites = emptyList<Long>()
-    var regionalFavorites = emptyList<Long>()
+    var favorites = emptyList<Long>()
     val dispatcher = StandardTestDispatcher(testScheduler)
     backgroundScope.launch(dispatcher) {
-      database.rankingsQueries.getRankingsWithFavoriteStatus(null).asFlow().mapToList(dispatcher).collect {
-        allFavorites = it.map { row -> row.is_favorite }
-      }
-    }
-    backgroundScope.launch(dispatcher) {
-      database.rankingsQueries.getRankingsWithFavoriteStatus("NA").asFlow().mapToList(dispatcher).collect {
-        regionalFavorites = it.map { row -> row.is_favorite }
+      database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("global").asFlow().mapToList(dispatcher).collect {
+        favorites = it.map { row -> row.is_favorite }
       }
     }
     runCurrent()
-    assertEquals(listOf(0L, 0L), allFavorites)
-    assertEquals(listOf(0L), regionalFavorites)
+    assertEquals(listOf(0L, 0L), favorites)
 
     database.teamsQueries.addFavoriteTeam("120")
     runCurrent()
-    assertEquals(listOf(0L, 1L), allFavorites)
-    assertEquals(listOf(1L), regionalFavorites)
+    assertEquals(listOf(0L, 1L), favorites)
 
     database.teamsQueries.removeFavoriteTeam("120")
     runCurrent()
-    assertEquals(listOf(0L, 0L), allFavorites)
-    assertEquals(listOf(0L), regionalFavorites)
+    assertEquals(listOf(0L, 0L), favorites)
   }
 }

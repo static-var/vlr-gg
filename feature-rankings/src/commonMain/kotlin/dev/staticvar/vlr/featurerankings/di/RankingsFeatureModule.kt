@@ -19,7 +19,7 @@ public fun rankingsFeatureModule(): Module = module {
       observeRankingsUseCase = get(),
       refreshRankingsUseCase = get(),
       networkMonitor = get(),
-      teamSearchRepository = get(),
+      preferencesRepository = get(),
     )
   }
 }

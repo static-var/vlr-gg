@@ -141,11 +141,13 @@ FROM (
 
     UNION ALL
 
-    SELECT 'RANKING', team_id || ':' || region
-    FROM rankings
-    WHERE last_updated > 0
-      AND last_updated < :cutoffEpochMillis
-      AND team_id NOT IN (SELECT team_id FROM cache_protected_teams)
+    SELECT 'RANKING_QUERY', query_key || ':' || team_id
+    FROM ranking_query_teams
+    WHERE query_key IN (
+        SELECT query_key FROM ranking_query_teams
+        GROUP BY query_key
+        HAVING MIN(last_updated) > 0 AND MAX(last_updated) < :cutoffEpochMillis
+    )
 
     UNION ALL
 
@@ -188,11 +190,13 @@ WHERE last_updated > 0
   AND last_updated < :cutoffEpochMillis
   AND id NOT IN (SELECT event_id FROM cache_protected_events);
 
-deleteStaleRankings:
-DELETE FROM rankings
-WHERE last_updated > 0
-  AND last_updated < :cutoffEpochMillis
-  AND team_id NOT IN (SELECT team_id FROM cache_protected_teams);
+deleteStaleRankingQueryTeams:
+DELETE FROM ranking_query_teams
+WHERE query_key IN (
+    SELECT query_key FROM ranking_query_teams
+    GROUP BY query_key
+    HAVING MIN(last_updated) > 0 AND MAX(last_updated) < :cutoffEpochMillis
+);
 
 deleteStaleStandings:
 DELETE FROM standings

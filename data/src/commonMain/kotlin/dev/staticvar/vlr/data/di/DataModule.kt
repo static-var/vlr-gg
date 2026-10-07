@@ -19,7 +19,6 @@ import dev.staticvar.vlr.data.repository.MatchRepositoryImpl
 import dev.staticvar.vlr.data.repository.PlayerRepositoryImpl
 import dev.staticvar.vlr.data.repository.RankingsRepositoryImpl
 import dev.staticvar.vlr.data.repository.TeamRepositoryImpl
-import dev.staticvar.vlr.data.repository.TeamSearchRepositoryImpl
 import dev.staticvar.vlr.domain.repository.CacheCleanupRepository
 import dev.staticvar.vlr.domain.repository.CircuitStandingsRepository
 import dev.staticvar.vlr.domain.repository.EventRepository
@@ -32,7 +31,6 @@ import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.domain.repository.PlayerRepository
 import dev.staticvar.vlr.domain.repository.RankingsRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
-import dev.staticvar.vlr.domain.repository.TeamSearchRepository
 import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
 import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
 import kotlinx.serialization.json.Json
@@ -76,7 +74,6 @@ fun dataModule(): Module = module {
       dispatchers = get(),
     )
   }
-  single<TeamSearchRepository> { TeamSearchRepositoryImpl(searchDataSource = get()) }
   single<TeamRepository> {
     TeamRepositoryImpl(
       teamDataSource = get(),
@@ -90,7 +87,6 @@ fun dataModule(): Module = module {
       rankingsDataSource = get(),
       database = get(),
       dispatchers = get(),
-      regionLabels = get(),
     )
   }
   single<PlayerRepository> {

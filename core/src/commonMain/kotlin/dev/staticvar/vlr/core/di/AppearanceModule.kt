@@ -9,6 +9,7 @@ import dev.staticvar.vlr.core.settings.AppearanceRepository
 import dev.staticvar.vlr.core.settings.CacheCleanupPreferencesRepository
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
 import dev.staticvar.vlr.core.settings.PushTokenRegistrationPreferencesRepository
+import dev.staticvar.vlr.core.settings.RankingsPreferencesRepository
 import dev.staticvar.vlr.core.settings.ReleaseNotesPreferencesRepository
 import dev.staticvar.vlr.core.settings.SpoilerPreferencesRepository
 import org.koin.core.module.Module
@@ -22,6 +23,7 @@ public fun appearanceModule(): Module = module {
   single { PushTokenRegistrationPreferencesRepository(get()) }
   single { ReleaseNotesPreferencesRepository(get()) }
   single { MatchDetailsPreferencesRepository(get()) }
+  single { RankingsPreferencesRepository(get()) }
   single { SpoilerPreferencesRepository(get()) }
   single { CacheCleanupPreferencesRepository(get()) }
 }

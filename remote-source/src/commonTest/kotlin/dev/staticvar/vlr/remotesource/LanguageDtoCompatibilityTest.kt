@@ -8,8 +8,6 @@ import dev.staticvar.vlr.remotesource.common.VetoAction
 import dev.staticvar.vlr.remotesource.events.EventDetailsDto
 import dev.staticvar.vlr.remotesource.match.MatchDetailsDto
 import dev.staticvar.vlr.remotesource.match.MatchPreviewDto
-import dev.staticvar.vlr.remotesource.rankings.RankingDto
-import dev.staticvar.vlr.remotesource.search.SearchResultDto
 import dev.staticvar.vlr.remotesource.standings.StandingsDto
 import dev.staticvar.vlr.remotesource.team.TeamDetailsDto
 import kotlinx.serialization.decodeFromString
@@ -63,12 +61,10 @@ class LanguageDtoCompatibilityTest {
   fun optional_labels_are_compatible_with_old_payloads() {
     assertNull(json.decodeFromString<MatchPreviewDto>("""{"status":"upcoming"}""").statusLabel)
     assertNull(json.decodeFromString<EventDetailsDto>("""{"status":"upcoming"}""").statusLabel)
-    assertNull(json.decodeFromString<RankingDto>("""{"region":"Europe"}""").regionLabel)
     assertNull(json.decodeFromString<TeamDetailsDto>("""{"region":"Europe"}""").regionLabel)
     assertNull(
       json.decodeFromString<StandingsDto>("""{"circuits":[{"region":"Europe"}]}""")
         .circuits.single().regionLabel,
     )
-    assertNull(json.decodeFromString<SearchResultDto>("""{"category":"teams"}""").categoryLabel)
   }
 }

@@ -4,8 +4,15 @@
  */
 package dev.staticvar.vlr.remotesource.rankings
 
-import dev.staticvar.vlr.remotesource.network.RemotePayload
-
 interface RankingsDataSource {
-  suspend fun list(): Result<RemotePayload<List<RankingDto>>>
+  suspend fun list(query: RankingsRequest = RankingsRequest()): Result<List<TeamRankingDto>>
 }
+
+data class RankingsRequest(
+  val circuit: String = "all",
+  val region: String = "all",
+  val minMatches: Int = 5,
+  val includeInactive: Boolean = false,
+  val sort: String = "elo",
+  val order: String = "desc",
+)

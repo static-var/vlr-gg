@@ -1,19 +1,26 @@
 -- Rankings and seasonal standings tables
 
-CREATE TABLE rankings (
+CREATE TABLE ranking_query_teams (
+    query_key TEXT NOT NULL,
     team_id TEXT NOT NULL,
-    region TEXT NOT NULL,
-    team_name TEXT NOT NULL DEFAULT '',
-    team_logo TEXT NOT NULL DEFAULT '',
-    country TEXT NOT NULL DEFAULT '',
+    team_name TEXT NOT NULL,
+    team_logo TEXT NOT NULL,
+    country TEXT NOT NULL,
     rank INTEGER NOT NULL,
-    points TEXT NOT NULL,
-    last_updated INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (team_id, region)
+    overall_rank INTEGER,
+    position INTEGER NOT NULL,
+    elo REAL NOT NULL,
+    map_elo REAL NOT NULL,
+    matches_played INTEGER NOT NULL,
+    match_wins INTEGER NOT NULL,
+    match_losses INTEGER NOT NULL,
+    win_rate REAL NOT NULL,
+    region TEXT,
+    last_updated INTEGER NOT NULL,
+    PRIMARY KEY (query_key, team_id)
 );
 
-CREATE INDEX idx_rankings_region ON rankings(region);
-CREATE INDEX idx_rankings_rank ON rankings(region, rank);
+CREATE INDEX idx_ranking_query_position ON ranking_query_teams(query_key, position);
 
 CREATE TABLE standings (
     team_id TEXT NOT NULL,
@@ -36,32 +43,20 @@ CREATE INDEX idx_standings_circuit ON standings(circuit);
 -- QUERIES
 -- ============================================================================
 
-insertRanking:
-INSERT OR REPLACE INTO rankings(team_id, region, rank, points, last_updated)
-VALUES (?, ?, ?, ?, ?);
+insertRankingQueryTeam:
+INSERT OR REPLACE INTO ranking_query_teams
+(query_key, team_id, team_name, team_logo, country, rank, overall_rank, position, elo, map_elo, matches_played, match_wins, match_losses, win_rate, region, last_updated)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
-insertRankingDetails:
-INSERT OR REPLACE INTO rankings(team_id, region, team_name, team_logo, country, rank, points, last_updated)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
-
-getRankingsByRegion:
-SELECT * FROM rankings WHERE region = :region ORDER BY rank ASC;
-
-getAllRankings:
-SELECT * FROM rankings ORDER BY region ASC, rank ASC;
-
-getRankingsWithFavoriteStatus:
+getRankingQueryTeamsWithFavoriteStatus:
 SELECT r.*, CAST((fav.team_id IS NOT NULL) AS INTEGER) AS is_favorite
-FROM rankings AS r
+FROM ranking_query_teams AS r
 LEFT JOIN favorite_teams AS fav ON r.team_id = fav.team_id AND fav.active = 1
-WHERE :region IS NULL OR r.region = :region
-ORDER BY r.region ASC, r.rank ASC;
+WHERE r.query_key = :query_key
+ORDER BY r.position ASC;
 
-deleteRankingsByRegion:
-DELETE FROM rankings WHERE region = :region;
-
-deleteAllRankings:
-DELETE FROM rankings;
+deleteRankingQueryTeams:
+DELETE FROM ranking_query_teams WHERE query_key = :query_key;
 
 insertStanding:
 INSERT OR REPLACE INTO standings(team_id, year, circuit, region, rank, points, last_updated)

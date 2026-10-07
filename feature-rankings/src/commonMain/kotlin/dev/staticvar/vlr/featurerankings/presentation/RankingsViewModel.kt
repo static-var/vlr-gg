@@ -9,100 +9,107 @@ import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
-import dev.staticvar.vlr.domain.repository.TeamSearchRepository
+import dev.staticvar.vlr.core.settings.RankingsPreferencesRepository
+import dev.staticvar.vlr.domain.model.RankingRegion
+import dev.staticvar.vlr.domain.model.RankingsQuery
 import dev.staticvar.vlr.featurerankings.usecase.ObserveRankingsUseCase
 import dev.staticvar.vlr.featurerankings.usecase.RefreshRankingsUseCase
-import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 public class RankingsViewModel(
-  observeRankingsUseCase: ObserveRankingsUseCase,
-  refreshRankingsUseCase: RefreshRankingsUseCase,
-  networkMonitor: NetworkMonitor,
-  private val teamSearchRepository: TeamSearchRepository,
+  private val observeRankingsUseCase: ObserveRankingsUseCase,
+  private val refreshRankingsUseCase: RefreshRankingsUseCase,
+  private val networkMonitor: NetworkMonitor,
+  private val preferencesRepository: RankingsPreferencesRepository,
 ) : ViewModel() {
   public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
-  private val selectedRegion: MutableStateFlow<String?> = MutableStateFlow(null)
-  private val refresher: RefreshController = RefreshController(viewModelScope, networkMonitor) {
-    refreshRankingsUseCase()
+  private val mutableUiState = MutableStateFlow(
+    RankingsUiState(
+      view = if (preferencesRepository.regionalEnabled.value) RankingsView.Regional else RankingsView.Explore,
+    ),
+  )
+  public val uiState: StateFlow<RankingsUiState> = mutableUiState.asStateFlow()
+
+  private var queryScope: CoroutineScope? = null
+  private var refresher: RefreshController? = null
+  private var queryGeneration = 0
+
+  init {
+    observeQuery(uiState.value.query, refresh = false)
   }
 
-  public val uiState: StateFlow<RankingsUiState> =
-    combine(observeRankingsUseCase(), selectedRegion, refresher.state) { rankings, region, refresh ->
-      RankingsUiState(
-        regions = rankings,
-        selectedRegion = region?.takeIf { selected -> rankings.any { it.region == selected } }
-          ?: rankings.firstOrNull()?.region,
-        isLoading = refresh.isLoading(hasContent = rankings.isNotEmpty()),
-        isRefreshing = refresh.isRefreshing,
-        errorMessage = refresh.errorMessage,
-        errorDetails = refresh.errorDetails,
-      )
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, RankingsUiState())
-
-  private val mutableSearchState: MutableStateFlow<TeamSearchUiState> = MutableStateFlow(TeamSearchUiState())
-  public val searchState: StateFlow<TeamSearchUiState> = mutableSearchState.asStateFlow()
-  private var searchJob: Job? = null
-
-  public fun openSearch() {
-    mutableSearchState.value = mutableSearchState.value.copy(isOpen = true)
+  public fun setView(view: RankingsView) {
+    preferencesRepository.setRegionalEnabled(view == RankingsView.Regional)
+    updateSelection { it.copy(view = view) }
   }
 
-  public fun closeSearch() {
-    searchJob?.cancel()
-    mutableSearchState.value = TeamSearchUiState()
+  public fun updateExploreQuery(query: RankingsQuery) {
+    updateSelection { it.copy(exploreQuery = query.copy(minMatches = 5, includeInactive = false)) }
   }
 
-  public fun updateSearchQuery(query: String) {
-    if (!mutableSearchState.value.isOpen || query == mutableSearchState.value.query) return
-    searchJob?.cancel()
-    mutableSearchState.value = mutableSearchState.value.copy(query = query, results = TeamSearchResults.Idle)
-    search(query.trim(), debounce = true)
-  }
-
-  public fun retrySearch() {
-    if (!mutableSearchState.value.isOpen || mutableSearchState.value.results !is TeamSearchResults.Error) return
-    search(mutableSearchState.value.query.trim(), debounce = false)
-  }
-
-  private fun search(query: String, debounce: Boolean) {
-    if (query.length < 3) return
-    searchJob?.cancel()
-    searchJob = viewModelScope.launch {
-      if (debounce) delay(300)
-      mutableSearchState.value = mutableSearchState.value.copy(results = TeamSearchResults.Loading)
-      val result = try {
-        teamSearchRepository.searchTeams(query)
-      } catch (cancelled: CancellationException) {
-        throw cancelled
-      } catch (error: Exception) {
-        Result.failure(error)
-      }
-      ensureActive()
-      mutableSearchState.value = mutableSearchState.value.copy(
-        results = result.fold(
-          onSuccess = { TeamSearchResults.Success(it) },
-          onFailure = { TeamSearchResults.Error(it.message.orEmpty()) },
-        ),
-      )
-    }
-  }
-
-  public fun selectRegion(region: String) {
-    selectedRegion.value = region
+  public fun selectRegion(region: RankingRegion?) {
+    updateSelection { it.copy(selectedRegion = region) }
   }
 
   public fun refresh() {
-    refresher.refresh()
+    refresher?.refresh()
+  }
+
+  private fun updateSelection(update: (RankingsUiState) -> RankingsUiState) {
+    val previousQuery = uiState.value.query
+    mutableUiState.update { current ->
+      val selected = update(current)
+      if (selected.query == current.query) {
+        selected
+      } else {
+        selected.copy(
+          teams = emptyList(),
+          isLoading = true,
+          isRefreshing = false,
+          errorMessage = null,
+          errorDetails = null,
+        )
+      }
+    }
+    val query = uiState.value.query
+    if (query != previousQuery) observeQuery(query, refresh = true)
+  }
+
+  private fun observeQuery(query: RankingsQuery, refresh: Boolean) {
+    queryScope?.cancel()
+    val generation = ++queryGeneration
+    val scope = CoroutineScope(viewModelScope.coroutineContext + SupervisorJob(viewModelScope.coroutineContext[Job]))
+    queryScope = scope
+    val controller = RefreshController(scope, networkMonitor, operation = "refresh rankings") {
+      refreshRankingsUseCase(query)
+    }
+    refresher = controller
+    scope.launch {
+      combine(observeRankingsUseCase(query), controller.state) { teams, refreshState -> teams to refreshState }
+        .collect { (teams, refreshState) ->
+          if (generation == queryGeneration) {
+            mutableUiState.update {
+              it.copy(
+                teams = teams,
+                isLoading = refreshState.isLoading(hasContent = teams.isNotEmpty()),
+                isRefreshing = refreshState.isRefreshing,
+                errorMessage = refreshState.errorMessage,
+                errorDetails = refreshState.errorDetails,
+              )
+            }
+          }
+        }
+    }
+    if (refresh) controller.refresh()
   }
 }
