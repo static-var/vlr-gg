@@ -23,6 +23,7 @@ settings:
       - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
     OTHER_LDFLAGS:
       - $(inherited)
+      - -ObjC
       - -framework
       - shared
       - -lsqlite3
@@ -34,7 +35,7 @@ settings:
 packages:
   Sentry:
     url: https://github.com/getsentry/sentry-cocoa.git
-    exactVersion: 8.58.4
+    exactVersion: 9.30.1
 
 targets:
   iosApp:
@@ -74,6 +75,7 @@ targets:
 
           export REPO_ROOT="$SRCROOT/.."
           export GENERATED_SWIFT_PATH="$SRCROOT/iosApp/GeneratedBuildConfig.swift"
+          export CI_DERIVED_DATA_PATH="${BUILD_DIR%/Build/Products}"
 
           if [ "${CI_XCODE_CLOUD:-}" = TRUE ]; then
             export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
