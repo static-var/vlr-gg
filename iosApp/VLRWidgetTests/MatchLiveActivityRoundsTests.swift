@@ -50,13 +50,27 @@ final class MatchLiveActivityRoundsTests: XCTestCase {
             XCTAssertEqual(progress.visibleMaps.map(\.number), expected)
         }
         let final = try XCTUnwrap(MatchLiveActivityMapProgress(
-            state: state(map: 5, total: 5, winners: ["1", "1", "1", nil, nil], terminal: true), hidden: false
+            state: state(map: 3, total: 5, winners: ["1", "1", "1", nil, nil], terminal: true), hidden: false
         ))
         XCTAssertEqual(final.visibleMaps.map(\.number), [1, 2, 3])
         let extraMap = try XCTUnwrap(MatchLiveActivityMapProgress(state: state(
             map: 4, total: 3, history: [.init(map_number: 4, winners: [0, 1])]
         ), hidden: false))
         XCTAssertEqual(extraMap.visibleMaps.map(\.number), [2, 3, 4])
+    }
+
+    func testTerminalMapKeepsBackendScoreWhenHistoryLags() throws {
+        let history: [Int?] = Array(repeating: 0, count: 12) + Array(repeating: 1, count: 9)
+        for terminal in [false, true] {
+            let progress = try XCTUnwrap(MatchLiveActivityMapProgress(state: state(
+                scores: [13, 9], history: [.init(map_number: 1, winners: history)],
+                winners: ["1", nil, nil], terminal: terminal
+            ), hidden: false))
+            XCTAssertEqual(progress.maps[0].scoreText, "13 : 9")
+            XCTAssertEqual(progress.maps[0].rounds.count, 22)
+            XCTAssertEqual(progress.maps[0].rounds.last, .unknown)
+            XCTAssertEqual(progress.maps[0].segment, .wonBy(0))
+        }
     }
 
     func testSpoilersHideTallyWinnersAndRoundCount() throws {

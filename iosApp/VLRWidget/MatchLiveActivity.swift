@@ -316,7 +316,8 @@ struct MatchLiveActivityMapProgress {
         self.hidden = hidden
         maps = (0..<total).map { index in
             let number = index + 1
-            let active = !state.terminal && state.current_map?.number == number
+            let current = state.current_map?.number == number
+            let active = !state.terminal && current
             let history = state.map_round_winners.first { $0.map_number == number }?.winners ?? []
             var segment = Segment.pending
             if state.map_winners.indices.contains(index), let winner = state.map_winners[index] {
@@ -331,11 +332,11 @@ struct MatchLiveActivityMapProgress {
             let knownHistory = !history.isEmpty && history.allSatisfy { $0 == 0 || $0 == 1 }
             let historyScores: [Int?] = knownHistory
                 ? [history.filter { $0 == 0 }.count, history.filter { $0 == 1 }.count] : [nil, nil]
-            let scores = active ? (0..<2).map { team in
+            let scores = current ? (0..<2).map { team in
                 let values = state.current_map?.scores ?? []
                 return values.indices.contains(team) ? values[team] : nil
             } : historyScores
-            let currentRoundCount = active && scores.allSatisfy({ $0 != nil && $0! >= 0 })
+            let currentRoundCount = current && scores.allSatisfy({ $0 != nil && $0! >= 0 })
                 ? scores.compactMap { $0 }.reduce(0, +) : 0
             let played = max(history.count, currentRoundCount)
             let rounds: [Round] = (0..<max(12, played)).map { round in
