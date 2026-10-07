@@ -22,9 +22,34 @@ actual class DatabaseDriverFactory(private val context: Context) {
         db.setForeignKeyConstraintsEnabled(true)
       }
 
+      override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        if (db.hasRoomSchema()) {
+          RoomToKmpMigration.migrate(AndroidSqliteDriver(db))
+        } else {
+          super.onUpgrade(db, oldVersion, newVersion)
+        }
+      }
+
+      override fun onOpen(db: SupportSQLiteDatabase) {
+        super.onOpen(db)
+        if (db.hasRoomSchema()) {
+          db.beginTransaction()
+          try {
+            RoomToKmpMigration.migrate(AndroidSqliteDriver(db))
+            db.setTransactionSuccessful()
+          } finally {
+            db.endTransaction()
+          }
+        }
+      }
+
       override fun onDowngrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {
         RoomToKmpMigration.migrate(AndroidSqliteDriver(db))
       }
     },
   ).let(::TracingSqlDriver)
 }
+
+private fun SupportSQLiteDatabase.hasRoomSchema(): Boolean = query(
+  "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'room_master_table'",
+).use { it.moveToFirst() }
