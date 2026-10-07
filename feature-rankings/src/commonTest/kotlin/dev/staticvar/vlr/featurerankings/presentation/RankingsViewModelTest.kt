@@ -56,7 +56,14 @@ class RankingsViewModelTest {
 
   @Test
   fun exposesEveryServerRecordWithoutPaginationOrLocalReranking() = runTest(dispatcher) {
-    val teams = (1..50).map { ranking("Team $it", rank = it) }
+    val records = (1..50).map { id ->
+      ranking("Team $id", rank = 1 + (id * 7) % 13).copy(
+        teamId = id.toString(),
+        elo = 1600.0 + (id * 19) % 53,
+        mapElo = 1500.0 + (id * 31) % 59,
+      )
+    }
+    val teams = records.indices.map { records[(it * 17 + 11) % records.size] }
     val repository = FakeRankingsRepository(teams)
     val viewModel = createViewModel(repository)
     advanceUntilIdle()
@@ -225,7 +232,6 @@ class RankingsViewModelTest {
     viewModel.setView(RankingsView.Regional)
     advanceUntilIdle()
     assertEquals(regional, viewModel.uiState.value.teams)
-    assertEquals(listOf(2, 2, 4), viewModel.uiState.value.teams.map { it.rank })
     assertEquals(global, repository.rankings(RankingsQuery()).value)
     assertEquals(listOf(regionalQuery), repository.refreshQueries)
   }

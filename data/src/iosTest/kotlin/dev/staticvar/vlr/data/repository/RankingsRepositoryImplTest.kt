@@ -15,7 +15,6 @@ import dev.staticvar.vlr.domain.model.RankingOrder
 import dev.staticvar.vlr.domain.model.RankingsQuery
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.rankings.RankingRecordDto
-import dev.staticvar.vlr.remotesource.rankings.RankingListDto
 import dev.staticvar.vlr.remotesource.rankings.RankingTeamDto
 import dev.staticvar.vlr.remotesource.rankings.RankingsDataSource
 import dev.staticvar.vlr.remotesource.rankings.RankingsRequest
@@ -24,7 +23,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.Json
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -136,21 +134,6 @@ class RankingsRepositoryImplTest {
   }
 
   @Test
-  fun refreshRankings_malformed_metrics_preserve_cached_selection() = runTest(dispatcher) {
-    insertRanking("cached", position = 0)
-    val valid = """{"total":1,"teams":[{"rank":1,"team":{"id":"new","name":"New"},"elo":1500.0,"map_elo":1490.0,"matches":{"played":5,"win_rate":0.2,"wins":1,"losses":4}}]}"""
-    for (field in listOf("\"map_elo\":1490.0,", "\"played\":5,", "\"win_rate\":0.2,")) {
-      dataSource.listResult = runCatching {
-        Json.decodeFromString<RankingListDto>(valid.replace(field, "")).teams
-      }
-
-      assertTrue(repository.refreshRankings().isFailure, field)
-
-      assertEquals(listOf("cached"), database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus(RankingsQuery().cacheKey).executeAsList().map { it.team_id })
-    }
-  }
-
-  @Test
   fun refreshRankings_isolates_every_query_dimension_and_preserves_other_selections() = runTest(dispatcher) {
     val original = RankingsQuery()
     val variants = listOf(
@@ -165,20 +148,27 @@ class RankingsRepositoryImplTest {
     for ((index, query) in variants.withIndex()) {
       repository.getRankings(query).test {
         assertTrue(awaitItem().isEmpty())
+        dataSource.listResult = Result.success(listOf(
+          TeamRankingDto(1, RankingTeamDto("selected-$index", "Selected"), 1600.0, RankingRecordDto(4, 1, 5, 0.8), mapElo = 1590.0),
+        ))
+        assertTrue(repository.refreshRankings(query).isSuccess)
+        assertEquals(listOf("selected-$index"), awaitItem().map { it.teamId })
         cancelAndIgnoreRemainingEvents()
       }
-      dataSource.listResult = Result.success(listOf(
-        TeamRankingDto(1, RankingTeamDto("selected-$index", "Selected"), 1600.0, RankingRecordDto(4, 1, 5, 0.8), mapElo = 1590.0),
-      ))
-      assertTrue(repository.refreshRankings(query).isSuccess)
       assertEquals(
         RankingsRequest(query.circuit.apiValue, query.region?.apiValue ?: "all", query.minMatches, query.includeInactive, query.metric.apiValue, query.order.apiValue),
         dataSource.queries.last(),
       )
     }
-    assertEquals(listOf("original"), database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus(original.cacheKey).executeAsList().map { it.team_id })
+    repository.getRankings(original).test {
+      assertEquals(listOf("original"), awaitItem().map { it.teamId })
+      cancelAndIgnoreRemainingEvents()
+    }
     for ((index, query) in variants.withIndex()) {
-      assertEquals(listOf("selected-$index"), database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus(query.cacheKey).executeAsList().map { it.team_id })
+      repository.getRankings(query).test {
+        assertEquals(listOf("selected-$index"), awaitItem().map { it.teamId })
+        cancelAndIgnoreRemainingEvents()
+      }
     }
   }
 

@@ -31,12 +31,12 @@ class RankingsQueriesTest {
 
   @Test
   fun rankings_are_read_in_position_order() {
-    insertQueryRanking("team2", position = 1, rank = 2, region = "emea")
-    insertQueryRanking("team1", position = 0, rank = 1, region = "americas")
-    insertQueryRanking("team3", position = 2, rank = 2)
+    insertQueryRanking("team-b", position = 1, rank = 1, region = "emea")
+    insertQueryRanking("team-z", position = 0, rank = 3, region = "americas")
+    insertQueryRanking("team-a", position = 2, rank = 1)
     val rows = database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("global").executeAsList()
-    assertEquals(listOf("team1", "team2", "team3"), rows.map { it.team_id })
-    assertEquals(listOf(1L, 2L, 2L), rows.map { it.rank })
+    assertEquals(listOf("team-z", "team-b", "team-a"), rows.map { it.team_id })
+    assertEquals(listOf(3L, 1L, 1L), rows.map { it.rank })
     assertEquals(listOf("americas", "emea", null), rows.map { it.region })
   }
 
