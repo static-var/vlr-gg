@@ -5,6 +5,8 @@
 package dev.staticvar.vlr.featurerankings.usecase
 
 import dev.staticvar.vlr.domain.model.TeamRanking
+import dev.staticvar.vlr.domain.model.RankingsQuery
+import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.domain.repository.RankingsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -34,9 +36,11 @@ class RankingsUseCasesTest {
         )
       val repository = FakeRankingsRepository(rankings = expected)
 
-      val actual = ObserveRankingsUseCase(repository)().first()
+      val query = RankingsQuery(region = RankingRegion.Emea)
+      val actual = ObserveRankingsUseCase(repository)(query).first()
 
       assertEquals(expected, actual)
+      assertEquals(query, repository.observedQuery)
     }
   }
 
@@ -45,10 +49,12 @@ class RankingsUseCasesTest {
     runTest {
       val repository = FakeRankingsRepository(rankings = emptyList())
 
-      val result = RefreshRankingsUseCase(repository)()
+      val query = RankingsQuery(region = RankingRegion.Pacific, includeInactive = true)
+      val result = RefreshRankingsUseCase(repository)(query)
 
       assertEquals(true, result.isSuccess)
       assertEquals(1, repository.refreshCalls)
+      assertEquals(query, repository.refreshedQuery)
     }
   }
 
@@ -56,11 +62,19 @@ class RankingsUseCasesTest {
     private val rankingsFlow: Flow<List<TeamRanking>> = flowOf(rankings)
     var refreshCalls: Int = 0
       private set
+    var observedQuery: RankingsQuery? = null
+      private set
+    var refreshedQuery: RankingsQuery? = null
+      private set
 
-    override fun getRankings(): Flow<List<TeamRanking>> = rankingsFlow
+    override fun getRankings(query: RankingsQuery): Flow<List<TeamRanking>> {
+      observedQuery = query
+      return rankingsFlow
+    }
 
-    override suspend fun refreshRankings(): Result<Unit> {
+    override suspend fun refreshRankings(query: RankingsQuery): Result<Unit> {
       refreshCalls += 1
+      refreshedQuery = query
       return Result.success(Unit)
     }
   }

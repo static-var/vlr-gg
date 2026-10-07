@@ -230,23 +230,13 @@ internal fun appNavigationModule(): Module = module {
   navigation<AppRoute.Rankings>(metadata = listPane(group = "rankings")) {
     val viewModel = vlrViewModel<RankingsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val searchState by viewModel.searchState.collectAsStateWithLifecycle()
-    val appState = LocalVlrAppState.current
-    NavigationBackHandler(
-      state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
-      isBackEnabled = searchState.isOpen && appState.backStack.lastOrNull() == AppRoute.Rankings,
-      onBackCompleted = viewModel::closeSearch,
-    )
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
     RankingsRoute(
       uiState = uiState,
+      onViewSelected = viewModel::setView,
+      onExploreQueryChanged = viewModel::updateExploreQuery,
       onRegionSelected = viewModel::selectRegion,
-      searchState = searchState,
-      onOpenSearch = viewModel::openSearch,
-      onCloseSearch = viewModel::closeSearch,
-      onSearchQueryChanged = viewModel::updateSearchQuery,
-      onRetrySearch = viewModel::retrySearch,
       onRefresh = viewModel::refresh,
       onTeamSelected = LocalVlrAppState.current::showRootTeamDetails,
       modifier = Modifier.fillMaxSize(),
