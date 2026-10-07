@@ -4,12 +4,10 @@
     <string name="loading_team">Carregando equipe</string>
     <string name="no_team_details">Ainda não há detalhes da equipe</string>
     <string name="team_not_published">O perfil desta equipe ainda não foi publicado.</string>
-    <string name="team_subtitle">Elenco, resultados e desempenho recente</string>
+    <string name="team_subtitle">Equipe</string>
     <string name="updating_favorite">Atualizando favorito</string>
     <string name="remove_team_favorite">Remover equipe dos favoritos</string>
     <string name="add_team_favorite">Adicionar equipe aos favoritos</string>
-    <string name="unranked">Sem classificação</string>
-    <string name="team_rank">#%1$d</string>
     <string name="roster">Elenco</string>
     <string name="players">jogadores</string>
     <string name="favorite_player">Jogador favorito</string>
@@ -22,4 +20,6 @@
     <string name="event_stage">%1$s • %2$s</string>
     <string name="middle_dot">•</string>
     <string name="favorite_update_failed">Não foi possível atualizar o favorito. Tente novamente.</string>
+    <string name="team_website">Site</string>
+    <string name="team_social">X</string>
 </resources>

@@ -4,12 +4,12 @@
     <string name="loading_team">टीम लोड हो रही है</string>
     <string name="no_team_details">टीम का विवरण अभी उपलब्ध नहीं है</string>
     <string name="team_not_published">इस टीम की प्रोफ़ाइल अभी प्रकाशित नहीं हुई है।</string>
-    <string name="team_subtitle">रोस्टर, नतीजे और हालिया फ़ॉर्म</string>
+    <string name="team_subtitle">टीम</string>
     <string name="updating_favorite">पसंदीदा अपडेट हो रहा है</string>
     <string name="remove_team_favorite">टीम को पसंदीदा सूची से हटाएँ</string>
     <string name="add_team_favorite">टीम को पसंदीदा सूची में जोड़ें</string>
-    <string name="unranked">बिना रैंक</string>
-    <string name="team_rank">#%1$d</string>
+    <string name="team_website">वेबसाइट</string>
+    <string name="team_social">X</string>
     <string name="roster">रोस्टर</string>
     <string name="players">खिलाड़ी</string>
     <string name="favorite_player">पसंदीदा खिलाड़ी</string>

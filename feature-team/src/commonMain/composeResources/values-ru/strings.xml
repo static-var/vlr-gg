@@ -4,12 +4,12 @@
     <string name="loading_team">Загрузка команды</string>
     <string name="no_team_details">Сведений о команде пока нет</string>
     <string name="team_not_published">Профиль этой команды ещё не опубликован.</string>
-    <string name="team_subtitle">Состав, результаты и последние выступления</string>
+    <string name="team_subtitle">Команда</string>
     <string name="updating_favorite">Обновление избранного</string>
     <string name="remove_team_favorite">Удалить команду из избранного</string>
     <string name="add_team_favorite">Добавить команду в избранное</string>
-    <string name="unranked">Без рейтинга</string>
-    <string name="team_rank">№ %1$d</string>
+    <string name="team_website">Сайт</string>
+    <string name="team_social">X</string>
     <string name="roster">Состав</string>
     <string name="players">игроки</string>
     <string name="favorite_player">Любимый игрок</string>
