@@ -4,12 +4,10 @@
     <string name="loading_team">Loading team</string>
     <string name="no_team_details">No team details yet</string>
     <string name="team_not_published">This team profile has not been published.</string>
-    <string name="team_subtitle">Roster, results and recent form</string>
+    <string name="team_subtitle">Team</string>
     <string name="updating_favorite">Updating favorite</string>
     <string name="remove_team_favorite">Remove team from favorites</string>
     <string name="add_team_favorite">Add team to favorites</string>
-    <string name="unranked">Unranked</string>
-    <string name="team_rank">#%1$d</string>
     <string name="roster">Roster</string>
     <string name="players">players</string>
     <string name="favorite_player">Favorite player</string>
@@ -22,4 +20,6 @@
     <string name="event_stage">%1$s • %2$s</string>
     <string name="middle_dot">•</string>
     <string name="favorite_update_failed">Couldn't update favorite. Try again.</string>
+    <string name="team_website">Website</string>
+    <string name="team_social">X</string>
 </resources>

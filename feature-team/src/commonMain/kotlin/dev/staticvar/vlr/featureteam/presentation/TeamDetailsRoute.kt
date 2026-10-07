@@ -22,7 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.PrismCard
@@ -37,11 +39,12 @@ import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.TeamCompletedMatch
+import dev.staticvar.vlr.domain.model.TeamInfo
 import dev.staticvar.vlr.domain.model.TeamPlayer
 import dev.staticvar.vlr.domain.model.TeamUpcomingMatch
-import dev.staticvar.vlr.sharedui.component.common.SharedNetworkLogo
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
+import dev.staticvar.vlr.sharedui.component.common.SharedNetworkLogo
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
@@ -66,9 +69,9 @@ import vlr.feature_team.generated.resources.remove_team_favorite
 import vlr.feature_team.generated.resources.roster
 import vlr.feature_team.generated.resources.team_details
 import vlr.feature_team.generated.resources.team_not_published
-import vlr.feature_team.generated.resources.team_rank
+import vlr.feature_team.generated.resources.team_social
 import vlr.feature_team.generated.resources.team_subtitle
-import vlr.feature_team.generated.resources.unranked
+import vlr.feature_team.generated.resources.team_website
 import vlr.feature_team.generated.resources.upcoming
 import vlr.feature_team.generated.resources.updating_favorite
 
@@ -114,28 +117,18 @@ internal fun TeamDetailsScreen(
 ) {
   val team = uiState.team
   val spoilersHidden = LocalSpoilerMode.current.enabled
-  val itemSeparator = " ${stringResource(Res.string.middle_dot)} "
 
   Column(
     modifier = modifier.fillMaxSize().padding(horizontal = Prism.dimens.spacingM),
-    verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+    verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     TeamDetailsChrome(
       title = team?.name ?: stringResource(Res.string.team_details),
       isFavorite = team?.isFavorite,
       isUpdatingFavorite = uiState.isUpdatingFavorite,
-      hasContent = team != null,
-      isRefreshing = team != null && (uiState.isRefreshing || uiState.isLoading),
-      errorMessage = uiState.errorMessage.takeIf { team != null },
-      errorDetails = uiState.errorDetails,
       onBack = onBack,
-      onRefresh = onRefresh,
       onToggleFavorite = onToggleFavorite,
     )
-
-    uiState.favoriteErrorMessage?.let { message ->
-      PrismStateMessage(text = stringResource(message))
-    }
 
     when {
       (uiState.isLoading || uiState.isRefreshing) && team == null ->
@@ -163,23 +156,13 @@ internal fun TeamDetailsScreen(
 
       else ->
         TeamDetailsLoadedContent(
-          name = team.name,
-          logoUrl = team.logoUrl,
-          metadata =
-            listOfNotNull(
-                team.tag.takeIf(String::isNotBlank),
-                team.regionLabel.ifBlank { team.region },
-                team.country,
-              )
-              .joinToString(itemSeparator),
-          rank = team.rank,
-          roster = team.roster,
-          upcomingMatches = team.upcomingMatches,
-          completedMatches = team.completedMatches,
+          team = team,
+          uiState = uiState,
+          onRefresh = onRefresh,
           section = section,
           spoilersHidden = spoilersHidden,
           canShowEmpty =
-            !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null,
+          !uiState.isRefreshing && !uiState.isLoading && uiState.errorMessage == null,
           onSectionSelected = onSectionSelected,
           onMatchSelected = onMatchSelected,
           onPlayerSelected = onPlayerSelected,
@@ -195,12 +178,7 @@ private fun TeamDetailsChrome(
   title: String,
   isFavorite: Boolean?,
   isUpdatingFavorite: Boolean,
-  hasContent: Boolean,
-  isRefreshing: Boolean,
-  errorMessage: String?,
-  errorDetails: String?,
   onBack: () -> Unit,
-  onRefresh: () -> Unit,
   onToggleFavorite: () -> Unit,
 ) {
   Column {
@@ -214,43 +192,31 @@ private fun TeamDetailsChrome(
             selected = isFavorite,
             size = PrismFavoriteIconSize.Large,
             contentDescription =
-              if (isUpdatingFavorite) {
-                stringResource(Res.string.updating_favorite)
-              } else if (isFavorite) {
-                stringResource(Res.string.remove_team_favorite)
-              } else {
-                stringResource(Res.string.add_team_favorite)
-              },
+            if (isUpdatingFavorite) {
+              stringResource(Res.string.updating_favorite)
+            } else if (isFavorite) {
+              stringResource(Res.string.remove_team_favorite)
+            } else {
+              stringResource(Res.string.add_team_favorite)
+            },
             modifier =
-              Modifier.clickable(
-                enabled = !isUpdatingFavorite,
-                role = Role.Button,
-                onClick = onToggleFavorite,
-              ),
+            Modifier.clickable(
+              enabled = !isUpdatingFavorite,
+              role = Role.Button,
+              onClick = onToggleFavorite,
+            ),
           )
         }
       },
-    )
-
-    SharedRefreshStatus(
-      hasContent = hasContent,
-      isRefreshing = isRefreshing,
-      errorMessage = errorMessage,
-      errorDetails = errorDetails,
-      onRefresh = onRefresh,
     )
   }
 }
 
 @Composable
 private fun TeamDetailsLoadedContent(
-  name: String,
-  logoUrl: String,
-  metadata: String,
-  rank: Int,
-  roster: List<TeamPlayer>,
-  upcomingMatches: List<TeamUpcomingMatch>,
-  completedMatches: List<TeamCompletedMatch>,
+  team: TeamInfo,
+  uiState: TeamDetailsUiState,
+  onRefresh: () -> Unit,
   section: TeamMatchesSection,
   spoilersHidden: Boolean,
   canShowEmpty: Boolean,
@@ -264,10 +230,34 @@ private fun TeamDetailsLoadedContent(
     modifier = modifier.cardMascotViewport(),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
-    item(key = "summary") {
-      TeamSummaryCard(name = name, logoUrl = logoUrl, metadata = metadata, rank = rank)
+    item(key = "refresh-status") {
+      SharedRefreshStatus(
+        hasContent = true,
+        isRefreshing = uiState.isRefreshing || uiState.isLoading,
+        errorMessage = uiState.errorMessage,
+        errorDetails = uiState.errorDetails,
+        onRefresh = onRefresh,
+      )
     }
-    teamRosterItems(roster = roster, onPlayerSelected = onPlayerSelected)
+    uiState.favoriteErrorMessage?.let { message ->
+      item(key = "favorite-error") {
+        PrismStateMessage(text = stringResource(message))
+      }
+    }
+    item(key = "summary") {
+      val separator = " ${stringResource(Res.string.middle_dot)} "
+      TeamSummaryCard(
+        name = team.name,
+        logoUrl = team.logoUrl,
+        metadata = listOf(team.tag, team.regionLabel.ifBlank { team.region }, team.country)
+          .filter(String::isNotBlank).distinct().joinToString(separator),
+        website = team.website,
+        twitter = team.twitter,
+      )
+    }
+    item(key = "rating") {
+      TeamRatingCard(state = uiState.rating, onMatchSelected = onMatchSelected)
+    }
     item(key = "match-tabs") {
       PrismTabs(
         modifier = Modifier.padding(bottom = Prism.dimens.spacingS),
@@ -289,7 +279,7 @@ private fun TeamDetailsLoadedContent(
     when (section) {
       TeamMatchesSection.Upcoming ->
         teamUpcomingMatchItems(
-          matches = upcomingMatches,
+          matches = team.upcomingMatches,
           canShowEmpty = canShowEmpty,
           onMatchSelected = onMatchSelected,
           onEventSelected = onEventSelected,
@@ -297,13 +287,14 @@ private fun TeamDetailsLoadedContent(
 
       TeamMatchesSection.Completed ->
         teamCompletedMatchItems(
-          matches = completedMatches,
+          matches = team.completedMatches,
           spoilersHidden = spoilersHidden,
           canShowEmpty = canShowEmpty,
           onMatchSelected = onMatchSelected,
           onEventSelected = onEventSelected,
         )
     }
+    teamRosterItems(roster = team.roster, onPlayerSelected = onPlayerSelected)
     item {
       Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
     }
@@ -311,14 +302,15 @@ private fun TeamDetailsLoadedContent(
 }
 
 @Composable
-private fun TeamSummaryCard(name: String, logoUrl: String, metadata: String, rank: Int) {
+private fun TeamSummaryCard(name: String, logoUrl: String, metadata: String, website: String?, twitter: String?) {
+  val uriHandler = LocalUriHandler.current
   PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
     val hasLogo = logoUrl.isNotBlank()
     Box(modifier = Modifier.fillMaxWidth()) {
       Column(
         modifier =
-          Modifier.fillMaxWidth(if (hasLogo) 0.65f else 1f)
-            .padding(end = if (hasLogo) Prism.dimens.spacingS else 0.dp),
+        Modifier.fillMaxWidth(if (hasLogo) 0.65f else 1f)
+          .padding(end = if (hasLogo) Prism.dimens.spacingS else 0.dp),
       ) {
         Text(text = name, style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
         Text(
@@ -327,12 +319,14 @@ private fun TeamSummaryCard(name: String, logoUrl: String, metadata: String, ran
           style = Prism.typography.bodySmall,
           color = Prism.color.labelColor,
         )
-        SpoilerScore(
-          text = if (rank > 0) stringResource(Res.string.team_rank, rank) else stringResource(Res.string.unranked),
-          modifier = Modifier.padding(top = Prism.dimens.spacingXs),
-          style = Prism.typography.label,
-          color = Prism.color.bodyColor,
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
+          website?.takeIf(String::isNotBlank)?.let { url ->
+            TeamExternalLink(label = stringResource(Res.string.team_website), onClick = { uriHandler.openUri(url) })
+          }
+          twitter?.takeIf(String::isNotBlank)?.let { url ->
+            TeamExternalLink(label = stringResource(Res.string.team_social), onClick = { uriHandler.openUri(url) })
+          }
+        }
       }
       if (hasLogo) {
         Box(modifier = Modifier.matchParentSize(), contentAlignment = Alignment.CenterEnd) {
@@ -349,10 +343,18 @@ private fun TeamSummaryCard(name: String, logoUrl: String, metadata: String, ran
   }
 }
 
-private fun LazyListScope.teamRosterItems(
-  roster: List<TeamPlayer>,
-  onPlayerSelected: (String) -> Unit,
-) {
+@Composable
+private fun TeamExternalLink(label: String, onClick: () -> Unit) {
+  Text(
+    text = label,
+    modifier = Modifier.clickable(role = Role.Button, onClick = onClick).padding(vertical = Prism.dimens.spacingS),
+    style = Prism.typography.label,
+    color = Prism.color.accent,
+    textDecoration = TextDecoration.Underline,
+  )
+}
+
+private fun LazyListScope.teamRosterItems(roster: List<TeamPlayer>, onPlayerSelected: (String) -> Unit) {
   if (roster.isEmpty()) return
 
   item(key = "roster-title") {
@@ -393,9 +395,9 @@ private fun TeamRosterItem(player: TeamPlayer, onPlayerSelected: (String) -> Uni
     }
     Text(
       text =
-        listOfNotNull(player.name, player.role, player.country)
-          .filter(String::isNotBlank)
-          .joinToString(itemSeparator),
+      listOfNotNull(player.name, player.role, player.country)
+        .filter(String::isNotBlank)
+        .joinToString(itemSeparator),
       modifier = Modifier.padding(top = Prism.dimens.spacingXs),
       style = Prism.typography.bodySmall,
       color = Prism.color.labelColor,
@@ -449,9 +451,9 @@ private fun TeamUpcomingMatchItem(
     Text(
       text = stringResource(Res.string.event_stage, match.eventName, match.stage),
       modifier =
-        Modifier.padding(top = Prism.dimens.spacingXs).let { base ->
-          if (eventId != null) base.clickable { onEventSelected(eventId) } else base
-        },
+      Modifier.padding(top = Prism.dimens.spacingXs).let { base ->
+        if (eventId != null) base.clickable { onEventSelected(eventId) } else base
+      },
       style = Prism.typography.bodySmall,
       color = if (eventId != null) Prism.color.accent else Prism.color.labelColor,
     )
@@ -517,9 +519,9 @@ private fun TeamCompletedMatchItem(
     Text(
       text = stringResource(Res.string.event_stage, match.eventName, match.stage),
       modifier =
-        Modifier.padding(top = Prism.dimens.spacingXs).let { base ->
-          if (eventId != null) base.clickable { onEventSelected(eventId) } else base
-        },
+      Modifier.padding(top = Prism.dimens.spacingXs).let { base ->
+        if (eventId != null) base.clickable { onEventSelected(eventId) } else base
+      },
       style = Prism.typography.bodySmall,
       color = if (eventId != null) Prism.color.accent else Prism.color.labelColor,
     )
@@ -537,7 +539,11 @@ private fun TeamCompletedMatchItem(
       }
       if (match.date.isNotBlank()) {
         if (spoilersHidden || match.result.isNotBlank()) {
-          Text(text = stringResource(Res.string.middle_dot), style = Prism.typography.label, color = Prism.color.bodyColor)
+          Text(
+            text = stringResource(Res.string.middle_dot),
+            style = Prism.typography.label,
+            color = Prism.color.bodyColor,
+          )
         }
         Text(text = match.date, style = Prism.typography.label, color = Prism.color.bodyColor)
       }
