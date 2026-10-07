@@ -21,7 +21,9 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.sharedui"
-    compileSdk = 37
+    compileSdk {
+      version = release(37) { minorApiLevel = 1 }
+    }
     minSdk = 24
     androidResources.enable = true
 
@@ -119,7 +121,9 @@ agentPreview {
     viewport("phone", 393, 852)
     viewport("tablet", 840, 1100)
     assetsDirs.from(
-      project(":designsystem").layout.buildDirectory.dir("generated/assets/copyAndroidMainComposeResourcesToAndroidAssets"),
+      project(
+        ":designsystem",
+      ).layout.buildDirectory.dir("generated/assets/copyAndroidMainComposeResourcesToAndroidAssets"),
     )
     screenshot {
       cropToContent.set(true)

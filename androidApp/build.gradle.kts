@@ -88,7 +88,9 @@ android {
   sourceSets.getByName("androidTest").assets.srcDir(rootProject.file("app/schemas"))
   sourceSets.getByName("androidTest").assets.srcDir(rootProject.file("local-source/src/commonMain/sqldelight/databases"))
   namespace = "dev.staticvar.vlr.android"
-  compileSdk = 37
+  compileSdk {
+    version = release(37) { minorApiLevel = 1 }
+  }
 
   defaultConfig {
     applicationId = "dev.staticvar.vlr"
