@@ -17,17 +17,16 @@ import dev.staticvar.vlr.domain.model.MapData
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
+import dev.staticvar.vlr.domain.model.MatchPrediction
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchVideos
+import dev.staticvar.vlr.domain.model.PredictionSource
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchDetailsUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchDetailsUseCase
+import dev.staticvar.vlr.featurematches.usecase.RefreshMatchPredictionUseCase
 import dev.staticvar.vlr.featurematches.usecase.SetMatchFavoriteUseCase
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +42,10 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import vlr.feature_matches.generated.resources.Res
 import vlr.feature_matches.generated.resources.favorite_update_failed
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MatchDetailsViewModelTest {
@@ -168,7 +171,6 @@ class MatchDetailsViewModelTest {
 
       assertEquals(first.uiState.value.preferences, second.uiState.value.preferences)
       assertEquals(emptyList(), repository.refreshDetailRequests)
-
     }
   }
 
@@ -348,6 +350,64 @@ class MatchDetailsViewModelTest {
     assertEquals(false, viewModel.uiState.value.isFavoritePending)
   }
 
+  @Test
+  fun predictionRefreshKeepsDatabaseContentAndDoesNotFailMatchDetails() = runTest(dispatcher) {
+    val prediction = MatchPrediction("team-a", "team-b", 0.6, 0.4, PredictionSource.MODEL)
+    val cached = matchDetails("match-1", status = "upcoming").copy(prediction = prediction)
+    val repository = FakeMatchRepository(cached)
+    repository.predictionResult = Result.failure(IllegalStateException("Prediction unavailable"))
+    repository.blockPredictionRefresh = true
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(prediction, viewModel.uiState.value.match?.prediction)
+    assertEquals(false, viewModel.uiState.value.isPredictionLoading)
+    assertEquals(false, viewModel.uiState.value.isRefreshing)
+    repository.allowPredictionRefresh.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(true, viewModel.uiState.value.predictionError)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+    assertEquals(prediction, viewModel.uiState.value.match?.prediction)
+
+    val fresh = prediction.copy(teamAProbability = 0.7, teamBProbability = 0.3, source = PredictionSource.ELO)
+    repository.publishDetails(cached.copy(prediction = fresh))
+    advanceUntilIdle()
+    assertEquals(fresh, viewModel.uiState.value.match?.prediction)
+  }
+
+  @Test
+  fun predictionStillRefreshesWhenDetailsFailWithCachedMatch() = runTest(dispatcher) {
+    val repository = FakeMatchRepository(matchDetails("match-1", status = "upcoming"))
+    repository.refreshResult = Result.failure(IllegalStateException("Details unavailable"))
+    val viewModel = createViewModel(repository)
+    advanceUntilIdle()
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(listOf("match-1"), repository.refreshPredictionRequests)
+    assertEquals("Details unavailable", viewModel.uiState.value.errorMessage)
+  }
+
+  @Test
+  fun disabledPredictionSkipsRefreshAndEnablingOnlyRefreshesPrediction() = runTest(dispatcher) {
+    val preferences = MatchDetailsPreferencesRepository(MapSettings())
+    preferences.setPreferences(MatchDetailsPreferences(showPrediction = false))
+    val repository = FakeMatchRepository(matchDetails("match-1", status = "upcoming"))
+    val viewModel = createViewModel(repository, preferences)
+    advanceUntilIdle()
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(emptyList(), repository.refreshPredictionRequests)
+    assertEquals(false, viewModel.uiState.value.isPredictionLoading)
+
+    viewModel.setPreferences(preferences.preferences.value.copy(showPrediction = true))
+    advanceUntilIdle()
+    assertEquals(listOf("match-1"), repository.refreshPredictionRequests)
+    assertEquals(listOf("match-1"), repository.refreshDetailRequests)
+    assertEquals(true, viewModel.uiState.value.preferences.showPrediction)
+  }
+
   private fun createViewModel(
     repository: FakeMatchRepository,
     preferencesRepository: MatchDetailsPreferencesRepository = MatchDetailsPreferencesRepository(MapSettings()),
@@ -356,6 +416,7 @@ class MatchDetailsViewModelTest {
     matchId = "match-1",
     observeMatchDetailsUseCase = ObserveMatchDetailsUseCase(repository),
     refreshMatchDetailsUseCase = RefreshMatchDetailsUseCase(repository),
+    refreshMatchPredictionUseCase = RefreshMatchPredictionUseCase(repository),
     setMatchFavoriteUseCase = SetMatchFavoriteUseCase(repository),
     networkMonitor = object : NetworkMonitor {
       override val status = MutableStateFlow(NetworkStatus.Online)
@@ -364,31 +425,28 @@ class MatchDetailsViewModelTest {
     favoritesRepository = favoritesRepository,
   ).also { viewModelStore.put("viewModel-${nextViewModelKey++}", it) }
 
-  private fun matchDetails(
-    matchId: String,
-    hasDetails: Boolean = false,
-    status: String = "LIVE",
-  ): MatchDetails = MatchDetails(
-    id = matchId,
-    event = EventInfo(
-      id = "event-1",
-      name = "Masters",
-      series = "Bo3",
-      stage = "Playoffs",
-      img = "",
-      date = "Today",
-      patch = null,
-      status = status,
-    ),
-    head2head = emptyList(),
-    note = "",
-    score = "0:0",
-    teams = emptyList(),
-    bans = emptyList(),
-    videos = MatchVideos(streams = emptyList(), vods = emptyList()),
-    matchData = if (hasDetails) listOf(mapData()) else emptyList(),
-    mapCount = if (hasDetails) 1 else 0,
-  )
+  private fun matchDetails(matchId: String, hasDetails: Boolean = false, status: String = "LIVE"): MatchDetails =
+    MatchDetails(
+      id = matchId,
+      event = EventInfo(
+        id = "event-1",
+        name = "Masters",
+        series = "Bo3",
+        stage = "Playoffs",
+        img = "",
+        date = "Today",
+        patch = null,
+        status = status,
+      ),
+      head2head = emptyList(),
+      note = "",
+      score = "0:0",
+      teams = emptyList(),
+      bans = emptyList(),
+      videos = MatchVideos(streams = emptyList(), vods = emptyList()),
+      matchData = if (hasDetails) listOf(mapData()) else emptyList(),
+      mapCount = if (hasDetails) 1 else 0,
+    )
 
   private fun mapData(): MapData = MapData(
     map = "Lotus",
@@ -401,7 +459,10 @@ class MatchDetailsViewModelTest {
     val teamIds = MutableStateFlow(emptySet<String>())
     val playerIds = MutableStateFlow(emptySet<String>())
 
-    override fun observeDirectFavorites(): Flow<DirectFavoriteSnapshot> = combine(teamIds, playerIds) { teams, players ->
+    override fun observeDirectFavorites(): Flow<DirectFavoriteSnapshot> = combine(teamIds, playerIds) {
+        teams,
+        players,
+      ->
       DirectFavoriteSnapshot(
         teams = teams.map { DirectFavorite.Team(id = it, title = it, imageUrl = "") },
         players = players.map { DirectFavorite.Player(id = it, title = it, imageUrl = "") },
@@ -421,6 +482,10 @@ class MatchDetailsViewModelTest {
     val allowFavorite = CompletableDeferred<Unit>()
     val observedMatchIds: MutableList<String> = mutableListOf()
     val refreshDetailRequests: MutableList<String> = mutableListOf()
+    val refreshPredictionRequests: MutableList<String> = mutableListOf()
+    var predictionResult: Result<Unit> = Result.success(Unit)
+    var blockPredictionRefresh = false
+    val allowPredictionRefresh = CompletableDeferred<Unit>()
     var refreshCancelled: Boolean = false
     var blockDetailRefresh: Boolean = false
     val allowRefresh: CompletableDeferred<Unit> = CompletableDeferred()
@@ -452,10 +517,19 @@ class MatchDetailsViewModelTest {
       if (favoriteResult.isSuccess && publishFavoriteImmediately) {
         val current = detailsByMatchId["match-1"]?.value
         val inherited = current?.favoriteReasons.orEmpty().filter { it.source != MatchFavoriteSource.MATCH }
-        val reasons = inherited + if (value) listOf(MatchFavoriteReason(MatchFavoriteSource.MATCH, "match-1", "")) else emptyList()
-        publishDetails(current?.copy(isDirectFavorite = value, isFavorite = reasons.isNotEmpty(), favoriteReasons = reasons))
+        val reasons =
+          inherited + if (value) listOf(MatchFavoriteReason(MatchFavoriteSource.MATCH, "match-1", "")) else emptyList()
+        publishDetails(
+          current?.copy(isDirectFavorite = value, isFavorite = reasons.isNotEmpty(), favoriteReasons = reasons),
+        )
       }
       return favoriteResult
+    }
+
+    override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> {
+      refreshPredictionRequests += matchId
+      if (blockPredictionRefresh) allowPredictionRefresh.await()
+      return predictionResult
     }
 
     override suspend fun refreshMatches(): Result<Unit> = Result.success(Unit)

@@ -15,6 +15,7 @@ public class MatchDetailsPreferencesRepository(private val storage: Settings) {
         showBreakdown = storage.getBoolean(BreakdownKey, true),
         showMedia = storage.getBoolean(MediaKey, true),
         showHeadToHead = storage.getBoolean(HeadToHeadKey, true),
+        showPrediction = storage.getBoolean(PredictionKey, true),
       ),
     )
 
@@ -22,12 +23,14 @@ public class MatchDetailsPreferencesRepository(private val storage: Settings) {
     storage.putBoolean(BreakdownKey, preferences.showBreakdown)
     storage.putBoolean(MediaKey, preferences.showMedia)
     storage.putBoolean(HeadToHeadKey, preferences.showHeadToHead)
+    storage.putBoolean(PredictionKey, preferences.showPrediction)
     this.preferences.value = preferences
   }
 
   private companion object {
     const val BreakdownKey: String = "match_details.show_breakdown"
     const val MediaKey: String = "match_details.show_media"
+    const val PredictionKey: String = "match_details.show_prediction"
     const val HeadToHeadKey: String = "match_details.show_head_to_head"
   }
 }

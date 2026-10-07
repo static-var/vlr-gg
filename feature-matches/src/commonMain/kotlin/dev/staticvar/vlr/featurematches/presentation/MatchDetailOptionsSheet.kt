@@ -37,6 +37,8 @@ import vlr.feature_matches.generated.resources.head_to_head
 import vlr.feature_matches.generated.resources.match_options
 import vlr.feature_matches.generated.resources.match_stats_and_player_table
 import vlr.feature_matches.generated.resources.media
+import vlr.feature_matches.generated.resources.prediction
+import vlr.feature_matches.generated.resources.prediction_option_description
 import vlr.feature_matches.generated.resources.previous_meetings
 import vlr.feature_matches.generated.resources.streams_and_vods
 
@@ -55,8 +57,16 @@ internal fun MatchDetailOptionsSheet(
     contentDescription = stringResource(Res.string.match_options),
     sheetTitle = stringResource(Res.string.match_options),
     header = {
-      Text(stringResource(Res.string.match_options), style = Prism.typography.sectionTitle, color = Prism.color.titleColor)
-      Text(stringResource(Res.string.choose_what_you_see_in_match_details), style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
+      Text(
+        stringResource(Res.string.match_options),
+        style = Prism.typography.sectionTitle,
+        color = Prism.color.titleColor,
+      )
+      Text(
+        stringResource(Res.string.choose_what_you_see_in_match_details),
+        style = Prism.typography.bodySmall,
+        color = Prism.color.bodyColor,
+      )
     },
     footer = {
       PrismButton(onClick = { onExpandedChange(false) }, style = PrismButtonStyle.Secondary) {
@@ -68,6 +78,12 @@ internal fun MatchDetailOptionsSheet(
       modifier = Modifier.fillMaxWidth(),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     ) {
+      MatchSectionOption(
+        title = stringResource(Res.string.prediction),
+        description = stringResource(Res.string.prediction_option_description),
+        checked = preferences.showPrediction,
+        onCheckedChange = { onPreferencesChange(preferences.copy(showPrediction = it)) },
+      )
       if (match.matchData.isNotEmpty()) {
         MatchSectionOption(
           title = stringResource(Res.string.breakdown),

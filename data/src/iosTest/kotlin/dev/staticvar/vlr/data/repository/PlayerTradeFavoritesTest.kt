@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -47,7 +48,7 @@ class PlayerTradeFavoritesTest {
     database = VlrDatabase(driver)
     playerDataSource = FakePlayerDataSource()
     players = PlayerRepositoryImpl(playerDataSource, database, dispatchers)
-    matches = MatchRepositoryImpl(FakeMatchDataSource(), database, dispatchers)
+    matches = MatchRepositoryImpl(FakeMatchDataSource(), database, dispatchers, TestMatchPredictionDataSource(), Json)
     favorites = FavoritesRepositoryImpl(database, dispatchers)
   }
 

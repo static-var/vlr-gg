@@ -35,14 +35,22 @@ import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.localsource.database.GetMatchFavoriteReasons
 import dev.staticvar.vlr.localsource.database.GetMatchesWithFavoriteStatus
+import dev.staticvar.vlr.localsource.database.GetMatchWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
+import dev.staticvar.vlr.remotesource.match.MatchPredictionDataSource
+import dev.staticvar.vlr.remotesource.match.isPredictionTeamPair
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 /**
  * Implementation of MatchRepository.
@@ -52,6 +60,8 @@ internal class MatchRepositoryImpl(
   private val matchDataSource: MatchDataSource,
   private val database: VlrDatabase,
   private val dispatchers: DispatcherProvider,
+  private val predictionDataSource: MatchPredictionDataSource,
+  private val storageJson: Json,
 ) : MatchRepository {
 
   private val matchesQueries = database.matchesQueries
@@ -89,6 +99,7 @@ internal class MatchRepositoryImpl(
       eventId = null,
       mapper = ::GetMatchFavoriteReasons,
     )
+    val predictionQuery = database.matchPredictionsQueries.getMatchPrediction(matchId)
     val changes = listOf(
       matchQuery,
       mapsQuery,
@@ -100,6 +111,7 @@ internal class MatchRepositoryImpl(
       currentMapQuery,
       vetoQuery,
       favoritesQuery,
+      predictionQuery,
     ).map { query -> query.asFlow().map { Unit } }
 
     return combine(changes) {
@@ -143,6 +155,14 @@ internal class MatchRepositoryImpl(
           isFavorite = reasons.isNotEmpty(),
           isDirectFavorite = reasons.any { it.source == MatchFavoriteSource.MATCH },
           favoriteReasons = reasons,
+          prediction = predictionQuery.executeAsOneOrNull()
+            ?.takeIf { it.team_a_id == match.team1_id && it.team_b_id == match.team2_id }
+            ?.let { prediction ->
+              runCatching {
+                prediction.toDomain(storageJson)
+              }.getOrNull()
+            },
+          canRequestPrediction = match.canRequestPrediction(),
         )
       }
     }.distinctUntilChanged().flowOn(dispatchers.io)
@@ -220,128 +240,162 @@ internal class MatchRepositoryImpl(
    * Refreshes detailed match data from remote and stores in database.
    * Called when user views match details.
    */
-  override suspend fun refreshMatchDetails(matchId: String): Result<Unit> = traceRefresh(dispatchers.io, "refreshMatchDetails") {
-    matchDataSource.details(matchId).mapCatching { dto ->
-      traceDatabase {
+  override suspend fun refreshMatchDetails(matchId: String): Result<Unit> =
+    traceRefresh(dispatchers.io, "refreshMatchDetails") {
+      matchDataSource.details(matchId).mapCatching { dto ->
+        traceDatabase {
+          database.transaction {
+            // Delete existing related data
+            matchesQueries.deleteMatchMaps(matchId)
+            matchesQueries.deleteMatchRounds(matchId)
+            matchesQueries.deleteMatchPlayerStats(matchId)
+            matchesQueries.deleteMatchBans(matchId)
+            matchesQueries.deleteMatchVideos(matchId)
+            matchesQueries.deletePreviousEncounters(matchId)
+            matchesQueries.deleteMatchCurrentMap(matchId)
+            matchesQueries.deleteMatchVeto(matchId)
+
+            // Insert updated match
+            val cachedMatch = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
+            val remoteMatch = dto.toMatchEntity(cachedStatus = cachedMatch?.status).copy(id = matchId)
+            val matchEntity = remoteMatch.copy(
+              event_id = remoteMatch.event_id ?: cachedMatch?.event_id,
+              time = remoteMatch.time.ifBlank { cachedMatch?.time.orEmpty() },
+              team1_id = remoteMatch.team1_id.ifBlank { cachedMatch?.team1_id.orEmpty() },
+              team2_id = remoteMatch.team2_id.ifBlank { cachedMatch?.team2_id.orEmpty() },
+            )
+            upsertMatch(matchEntity)
+
+            dto.toCurrentMapModel()?.let { map ->
+              matchesQueries.insertMatchCurrentMap(
+                match_id = matchId,
+                name = map.name,
+                number = map.number?.toLong(),
+                team1_score = map.team1Score?.toLong(),
+                team2_score = map.team2Score?.toLong(),
+                is_live = map.isLive,
+              )
+            }
+            dto.toVetoModels().forEachIndexed { index, step ->
+              matchesQueries.insertMatchVeto(
+                match_id = matchId,
+                position = index.toLong(),
+                team = step.team,
+                action = step.action.name,
+                map = step.map,
+              )
+            }
+
+            // Insert related data
+            dto.toMapEntities(matchId).forEach { map ->
+              matchesQueries.insertMatchMap(
+                match_id = map.match_id,
+                map_name = map.map_name,
+                team1_score = map.team1_score,
+                team2_score = map.team2_score,
+                duration = map.duration,
+                stats_url = map.stats_url,
+              )
+            }
+
+            dto.toRoundEntities(matchId).forEach { round ->
+              matchesQueries.insertMatchRound(
+                match_id = round.match_id,
+                map_name = round.map_name,
+                round_number = round.round_number,
+                round_score = round.round_score,
+                winner = round.winner,
+                side = round.side,
+                win_type = round.win_type,
+              )
+            }
+
+            dto.toPlayerStatEntities(matchId).forEach { stats ->
+              matchesQueries.insertPlayerStats(
+                match_id = stats.match_id,
+                map_name = stats.map_name,
+                player_id = stats.player_id,
+                player_name = stats.player_name,
+                team_id = stats.team_id,
+                agent_name = stats.agent_name,
+                agent_image_url = stats.agent_image_url,
+                rating = stats.rating,
+                acs = stats.acs,
+                kills = stats.kills,
+                deaths = stats.deaths,
+                assists = stats.assists,
+                kast_percent = stats.kast_percent,
+                adr = stats.adr,
+                hs_percent = stats.hs_percent,
+                first_kills = stats.first_kills,
+                first_deaths = stats.first_deaths,
+                first_kills_diff = stats.first_kills_diff,
+              )
+            }
+
+            dto.toBanEntities(matchId).forEach { ban ->
+              matchesQueries.insertMatchBan(
+                match_id = ban.match_id,
+                ban_type = ban.ban_type,
+                ban_value = ban.ban_value,
+              )
+            }
+
+            dto.toVideoEntities(matchId).forEach { video ->
+              matchesQueries.insertMatchVideo(
+                match_id = video.match_id,
+                video_type = video.video_type,
+                name = video.name,
+                url = video.url,
+              )
+            }
+
+            dto.toPreviousEncounterEntities(matchId).forEach { encounter ->
+              ensurePreviousEncounterMatchExists(matchEntity, encounter)
+              matchesQueries.insertPreviousEncounter(
+                match_id = encounter.match_id,
+                previous_match_id = encounter.previous_match_id,
+                team1_name = encounter.team1_name,
+                team1_score = encounter.team1_score,
+                team2_name = encounter.team2_name,
+                team2_score = encounter.team2_score,
+              )
+            }
+          }
+        }
+      }
+    }
+
+  override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> =
+    traceRefresh(dispatchers.io, "refreshMatchPrediction") {
+      val request = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
+        ?.takeIf { it.canRequestPrediction() } ?: return@traceRefresh Result.success(Unit)
+      predictionDataSource.predict(request.team1_id, request.team2_id).mapCatching { dto ->
+        currentCoroutineContext().ensureActive()
         database.transaction {
-          // Delete existing related data
-          matchesQueries.deleteMatchMaps(matchId)
-          matchesQueries.deleteMatchRounds(matchId)
-          matchesQueries.deleteMatchPlayerStats(matchId)
-          matchesQueries.deleteMatchBans(matchId)
-          matchesQueries.deleteMatchVideos(matchId)
-          matchesQueries.deletePreviousEncounters(matchId)
-          matchesQueries.deleteMatchCurrentMap(matchId)
-          matchesQueries.deleteMatchVeto(matchId)
-
-          // Insert updated match
-          val cachedMatch = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
-          val remoteMatch = dto.toMatchEntity(cachedStatus = cachedMatch?.status).copy(id = matchId)
-          val matchEntity = remoteMatch.copy(
-            event_id = remoteMatch.event_id ?: cachedMatch?.event_id,
-            team1_id = remoteMatch.team1_id.ifBlank { cachedMatch?.team1_id.orEmpty() },
-            team2_id = remoteMatch.team2_id.ifBlank { cachedMatch?.team2_id.orEmpty() },
-          )
-          upsertMatch(matchEntity)
-
-          dto.toCurrentMapModel()?.let { map ->
-            matchesQueries.insertMatchCurrentMap(
+          val current = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
+          if (current != null && current.canRequestPrediction() &&
+            current.team1_id == request.team1_id && current.team2_id == request.team2_id
+          ) {
+            database.matchPredictionsQueries.upsertMatchPrediction(
               match_id = matchId,
-              name = map.name,
-              number = map.number?.toLong(),
-              team1_score = map.team1Score?.toLong(),
-              team2_score = map.team2Score?.toLong(),
-              is_live = map.isLive,
-            )
-          }
-          dto.toVetoModels().forEachIndexed { index, step ->
-            matchesQueries.insertMatchVeto(
-              match_id = matchId,
-              position = index.toLong(),
-              team = step.team,
-              action = step.action.name,
-              map = step.map,
-            )
-          }
-
-          // Insert related data
-          dto.toMapEntities(matchId).forEach { map ->
-            matchesQueries.insertMatchMap(
-              match_id = map.match_id,
-              map_name = map.map_name,
-              team1_score = map.team1_score,
-              team2_score = map.team2_score,
-              duration = map.duration,
-              stats_url = map.stats_url,
-            )
-          }
-
-          dto.toRoundEntities(matchId).forEach { round ->
-            matchesQueries.insertMatchRound(
-              match_id = round.match_id,
-              map_name = round.map_name,
-              round_number = round.round_number,
-              round_score = round.round_score,
-              winner = round.winner,
-              side = round.side,
-              win_type = round.win_type,
-            )
-          }
-
-          dto.toPlayerStatEntities(matchId).forEach { stats ->
-            matchesQueries.insertPlayerStats(
-              match_id = stats.match_id,
-              map_name = stats.map_name,
-              player_id = stats.player_id,
-              player_name = stats.player_name,
-              team_id = stats.team_id,
-              agent_name = stats.agent_name,
-              agent_image_url = stats.agent_image_url,
-              rating = stats.rating,
-              acs = stats.acs,
-              kills = stats.kills,
-              deaths = stats.deaths,
-              assists = stats.assists,
-              kast_percent = stats.kast_percent,
-              adr = stats.adr,
-              hs_percent = stats.hs_percent,
-              first_kills = stats.first_kills,
-              first_deaths = stats.first_deaths,
-              first_kills_diff = stats.first_kills_diff,
-            )
-          }
-
-          dto.toBanEntities(matchId).forEach { ban ->
-            matchesQueries.insertMatchBan(
-              match_id = ban.match_id,
-              ban_type = ban.ban_type,
-              ban_value = ban.ban_value,
-            )
-          }
-
-          dto.toVideoEntities(matchId).forEach { video ->
-            matchesQueries.insertMatchVideo(
-              match_id = video.match_id,
-              video_type = video.video_type,
-              name = video.name,
-              url = video.url,
-            )
-          }
-
-          dto.toPreviousEncounterEntities(matchId).forEach { encounter ->
-            ensurePreviousEncounterMatchExists(matchEntity, encounter)
-            matchesQueries.insertPreviousEncounter(
-              match_id = encounter.match_id,
-              previous_match_id = encounter.previous_match_id,
-              team1_name = encounter.team1_name,
-              team1_score = encounter.team1_score,
-              team2_name = encounter.team2_name,
-              team2_score = encounter.team2_score,
+              team_a_id = dto.teamA.id,
+              team_b_id = dto.teamB.id,
+              team_a_probability = dto.match.teamA,
+              team_b_probability = dto.match.teamB,
+              source = dto.match.source.toDomain().name,
+              warnings_json = storageJson.encodeToString(dto.match.warnings),
             )
           }
         }
       }
     }
+
+  private fun GetMatchWithFavoriteStatus.canRequestPrediction(): Boolean {
+    if (status.uppercase() !in setOf("UPCOMING", "TBD")) return false
+    if (!isPredictionTeamPair(team1_id, team2_id)) return false
+    val scheduled = runCatching { Instant.parse(time) }.getOrNull()
+    return scheduled == null || scheduled > Clock.System.now()
   }
 
   private fun ensurePreviousEncounterMatchExists(parentMatch: Matches, encounter: MatchPreviousEncounters) {
@@ -401,6 +455,7 @@ internal class MatchRepositoryImpl(
       event_logo_url = entity.event_logo_url.ifBlank { current.event_logo_url },
       stage = entity.stage.ifBlank { current.stage },
       status = entity.status.ifBlank { current.status },
+      time = entity.time.ifBlank { current.time },
       eta = entity.eta ?: current.eta,
       note = entity.note.ifBlank { current.note },
       patch = entity.patch ?: current.patch,
@@ -418,6 +473,10 @@ internal class MatchRepositoryImpl(
   }
 
   private fun upsertMatch(entity: Matches) {
+    val prediction = database.matchPredictionsQueries.getMatchPrediction(entity.id).executeAsOneOrNull()
+    if (prediction != null && (prediction.team_a_id != entity.team1_id || prediction.team_b_id != entity.team2_id)) {
+      database.matchPredictionsQueries.deleteMatchPrediction(entity.id)
+    }
     matchesQueries.updateMatch(
       event_id = entity.event_id,
       event_name = entity.event_name,

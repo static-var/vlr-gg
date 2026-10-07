@@ -7,9 +7,9 @@ package dev.staticvar.vlr.featurematches.presentation
 import androidx.lifecycle.ViewModelStore
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
+import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
-import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
@@ -137,11 +137,17 @@ class MatchesViewModelTest {
 
       viewModel.selectFilter(MatchStatusFilter.Upcoming)
       advanceUntilIdle()
-      assertEquals(listOf("upcoming-earlier", "upcoming-later"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
+      assertEquals(
+        listOf("upcoming-earlier", "upcoming-later"),
+        viewModel.uiState.value.pageMatches.map(MatchPreview::id),
+      )
 
       viewModel.selectFilter(MatchStatusFilter.Completed)
       advanceUntilIdle()
-      assertEquals(listOf("completed-newer", "completed-older"), viewModel.uiState.value.pageMatches.map(MatchPreview::id))
+      assertEquals(
+        listOf("completed-newer", "completed-older"),
+        viewModel.uiState.value.pageMatches.map(MatchPreview::id),
+      )
     }
   }
 
@@ -204,20 +210,17 @@ class MatchesViewModelTest {
     },
   ).also { viewModelStore.put("viewModel-${nextViewModelKey++}", it) }
 
-  private fun matchPreview(
-    id: String,
-    status: MatchStatus,
-    time: String? = "2025-01-01T12:00:00Z",
-  ): MatchPreview = MatchPreview(
-    id = id,
-    event = "Masters",
-    series = "Bo3",
-    status = status,
-    team1 = teamPreview(name = "Alpha"),
-    team2 = teamPreview(name = "Bravo"),
-    time = time,
-    eventId = "event-1",
-  )
+  private fun matchPreview(id: String, status: MatchStatus, time: String? = "2025-01-01T12:00:00Z"): MatchPreview =
+    MatchPreview(
+      id = id,
+      event = "Masters",
+      series = "Bo3",
+      status = status,
+      team1 = teamPreview(name = "Alpha"),
+      team2 = teamPreview(name = "Bravo"),
+      time = time,
+      eventId = "event-1",
+    )
 
   private fun teamPreview(name: String): TeamPreview = TeamPreview(
     id = name.lowercase(),
@@ -249,6 +252,8 @@ class MatchesViewModelTest {
       matchesFlow.value = refreshedMatches
       return Result.success(Unit)
     }
+
+    override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun refreshMatchDetails(matchId: String): Result<Unit> = Result.success(Unit)
   }

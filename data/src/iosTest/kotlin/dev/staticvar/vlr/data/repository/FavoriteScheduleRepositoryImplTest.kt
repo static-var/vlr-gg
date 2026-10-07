@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -231,7 +232,7 @@ class FavoriteScheduleRepositoryImplTest {
         ),
       )
     }
-    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers)
+    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, TestMatchPredictionDataSource(), Json)
 
     assertTrue(matchRepository.refreshMatches().isSuccess)
     val match = repository.observeMatches().first().single()
@@ -264,7 +265,7 @@ class FavoriteScheduleRepositoryImplTest {
         ),
       )
     }
-    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers)
+    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, TestMatchPredictionDataSource(), Json)
 
     assertTrue(matchRepository.refreshMatches().isSuccess)
 
@@ -307,7 +308,7 @@ class FavoriteScheduleRepositoryImplTest {
         ),
       )
     }
-    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers)
+    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, TestMatchPredictionDataSource(), Json)
     assertTrue(matchRepository.refreshMatches().isSuccess)
     assertTrue(matchRepository.addToFavorites("live").isSuccess)
 
@@ -352,7 +353,7 @@ class FavoriteScheduleRepositoryImplTest {
         ),
       )
     }
-    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers)
+    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, TestMatchPredictionDataSource(), Json)
     assertTrue(matchRepository.refreshMatches().isSuccess)
     assertTrue(matchRepository.addToFavorites("finished").isSuccess)
 

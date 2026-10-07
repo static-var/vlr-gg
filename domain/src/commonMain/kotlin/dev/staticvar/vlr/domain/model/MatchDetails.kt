@@ -23,6 +23,8 @@ data class MatchDetails(
   val isDirectFavorite: Boolean = isFavorite,
   val veto: List<MatchVeto> = emptyList(),
   val currentMap: CurrentMatchMap? = null,
+  val prediction: MatchPrediction? = null,
+  val canRequestPrediction: Boolean = false,
 )
 
 data class CurrentMatchMap(
@@ -34,11 +36,7 @@ data class CurrentMatchMap(
 )
 
 /** One structured map-veto step. Unknown actions keep the original note in [map]. */
-data class MatchVeto(
-  val team: String?,
-  val action: VetoAction,
-  val map: String,
-)
+data class MatchVeto(val team: String?, val action: VetoAction, val map: String)
 
 enum class VetoAction {
   BAN,

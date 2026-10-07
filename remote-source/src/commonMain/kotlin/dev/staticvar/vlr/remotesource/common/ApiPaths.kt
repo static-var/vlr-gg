@@ -10,6 +10,7 @@ object ApiPaths {
   fun event(id: String) = "/api/v1/events/$id"
 
   const val MATCHES = "/api/v1/matches/"
+  const val MATCH_PREDICTION = "/api/v2/rankings/predict"
   fun match(id: String) = "/api/v1/matches/$id"
 
   fun player(id: String) = "/api/v1/player/$id"

@@ -17,10 +17,10 @@ import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.EventRepository
-import dev.staticvar.vlr.domain.repository.FavoritesRepository
-import dev.staticvar.vlr.domain.repository.FavoriteMatchesRepository
 import dev.staticvar.vlr.domain.repository.FavoriteMatchFeed
+import dev.staticvar.vlr.domain.repository.FavoriteMatchesRepository
 import dev.staticvar.vlr.domain.repository.FavoriteMatchesRetryLaterException
+import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.featurehome.presentation.initialHomeMatchPage
 import kotlinx.coroutines.CancellationException
@@ -29,10 +29,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.coroutines.CoroutineContext
@@ -81,7 +81,9 @@ class HomeUseCasesTest {
     )
 
     val feed = ObserveHomeFeedUseCase(
-      FakeFavoritesRepository(directFavorites), FakeMatchRepository(matches), FakeEventRepository(events),
+      FakeFavoritesRepository(directFavorites),
+      FakeMatchRepository(matches),
+      FakeEventRepository(events),
       favoriteMatchesRepository = FakeFavoriteMatchesRepository(),
       dispatchers = TestDispatcherProvider(StandardTestDispatcher(testScheduler)),
       clock = object : Clock {
@@ -390,16 +392,12 @@ private class FakeFavoriteMatchesRepository(
   override suspend fun fetch(includeResults: Boolean): Result<List<MatchPreview>> = result
 }
 
-private class TestDispatcherProvider(
-  override val default: CoroutineDispatcher,
-) : DispatcherProvider {
+private class TestDispatcherProvider(override val default: CoroutineDispatcher) : DispatcherProvider {
   override val io: CoroutineDispatcher = default
   override val main: CoroutineDispatcher = default
 }
 
-private class TrackingDispatcher(
-  private val delegate: CoroutineDispatcher,
-) : CoroutineDispatcher() {
+private class TrackingDispatcher(private val delegate: CoroutineDispatcher) : CoroutineDispatcher() {
   var isRunning: Boolean = false
     private set
 
@@ -415,9 +413,7 @@ private class TrackingDispatcher(
   }
 }
 
-private class FakeFavoritesRepository(
-  private val directFavorites: DirectFavoriteSnapshot,
-) : FavoritesRepository {
+private class FakeFavoritesRepository(private val directFavorites: DirectFavoriteSnapshot) : FavoritesRepository {
   override fun observeDirectFavorites(): Flow<DirectFavoriteSnapshot> = flowOf(directFavorites)
 
   override fun observeTeamIds(): Flow<Set<String>> = flowOf(directFavorites.teams.mapTo(mutableSetOf()) { it.id })
@@ -438,6 +434,8 @@ private class FakeMatchRepository(
   override suspend fun removeFromFavorites(matchId: String): Result<Unit> = Result.success(Unit)
 
   override suspend fun refreshMatches(): Result<Unit> = refresh()
+
+  override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> = Result.success(Unit)
 
   override suspend fun refreshMatchDetails(matchId: String): Result<Unit> = Result.success(Unit)
 }
