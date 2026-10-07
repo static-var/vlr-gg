@@ -33,6 +33,8 @@ import dev.staticvar.designsystem.prism.Prism
 
 /**
  * Flat brutalist switch with rectangular track and square thumb.
+ *
+ * [trackAlignment] positions the visible track within the minimum touch target.
  */
 @Composable
 public fun PrismSwitch(
@@ -41,6 +43,7 @@ public fun PrismSwitch(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  trackAlignment: Alignment = Alignment.Center,
 ) {
   val trackWidth = Prism.dimens.controlHeight
   val horizontalPadding = Prism.dimens.spacingXs
@@ -59,6 +62,7 @@ public fun PrismSwitch(
     modifier = modifier,
     enabled = enabled,
     interactionSource = interactionSource,
+    trackAlignment = trackAlignment,
   ) {
     PrismSwitchTrack(
       trackWidth = trackWidth,
@@ -142,6 +146,7 @@ private fun PrismSwitchTouchTarget(
   modifier: Modifier,
   enabled: Boolean,
   interactionSource: MutableInteractionSource,
+  trackAlignment: Alignment,
   content: @Composable () -> Unit,
 ) {
   Box(
@@ -159,7 +164,7 @@ private fun PrismSwitchTouchTarget(
         interactionSource = interactionSource,
         indication = ripple(),
       ),
-    contentAlignment = Alignment.Center,
+    contentAlignment = trackAlignment,
   ) {
     content()
   }
