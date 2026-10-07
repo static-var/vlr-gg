@@ -1,17 +1,13 @@
-New since 1.0.0
+New since 1.0.0:
 
-Follow favorite matches from your Lock Screen and Dynamic Island. See live map scores, team logos and map progress, and know when play pauses, a timeout starts or halftime begins.
-
-Search for teams from Rankings and open their profiles, including teams outside the current rankings.
-
-Choose your app icon, theme, and mascot in Appearance settings.
-
-Catch up on favorite matches from the past 24 hours on Home, with live matches brought into view. Redesigned widgets offer another way to follow your favorites.
-
-Open favorites from Spotlight and use Siri to check favorite matches or control spoiler protection.
-
-Use Val Esports in English, Hindi, Spanish, French, German, Brazilian Portuguese, Russian, Turkish, or Korean.
-
-See current map scores and round-by-round results in match details. Find settings more easily and enjoy smoother browsing, clearer logos and more reliable favorites.
-
-For this beta, try following a favorite live match, browsing match details, changing your appearance and opening favorites with Spotlight or Siri. We'd love to hear what you think through TestFlight feedback.
+• Explore rankings by region and competition, plus team ratings and recent form.
+• See estimated win chances before a match.
+• Follow favorite matches on your Lock Screen and Dynamic Island, with live scores, map progress, pauses and round history.
+• Add matches and event schedules to your calendar.
+• Catch up on favorite matches and recent results on Home.
+• Keep upcoming matches and live scores in refreshed widgets.
+• See current map scores and round-by-round match results.
+• Choose your app icon, theme and mascot.
+• Find favorites in Spotlight and check your next match with Siri.
+• Enjoy nine languages, clearer Settings and smoother browsing.
+• News is no longer in the app.
