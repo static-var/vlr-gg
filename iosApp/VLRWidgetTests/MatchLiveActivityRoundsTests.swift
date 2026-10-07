@@ -11,11 +11,12 @@ final class MatchLiveActivityRoundsTests: XCTestCase {
         map: Int = 1, scores: [Int?] = [2, 2], total: Int = 3,
         history: [State.MapRounds] = [], winners: [String?] = [],
         pause: State.Pause? = nil, terminal: Bool = false,
+        seriesScores: [Int] = [2, 1],
         stage: String? = "Playoffs: Grand Final"
     ) -> State {
         State(match_id: "123", observed_at: 0, terminal: terminal,
-              teams: [.init(name: "FNATIC", img: nil, score: 2, id: "1"),
-                      .init(name: "PRX", img: nil, score: 1, id: "2")],
+              teams: [.init(name: "FNATIC", img: nil, score: seriesScores[0], id: "1"),
+                      .init(name: "PRX", img: nil, score: seriesScores[1], id: "2")],
               current_map: .init(name: "Lotus", scores: scores, number: map),
               total_maps: total, map_winners: winners, pause: pause,
               stage: stage, map_round_winners: history)
@@ -73,6 +74,29 @@ final class MatchLiveActivityRoundsTests: XCTestCase {
         }
     }
 
+    func testTwoMapSweepOnlyHidesUnplayedMapAfterEndingWithSpoilersVisible() throws {
+        let history: [State.MapRounds] = [
+            .init(map_number: 1, winners: Array(repeating: 0, count: 13) + Array(repeating: 1, count: 9)),
+            .init(map_number: 2, winners: Array(repeating: 0, count: 13) + Array(repeating: 1, count: 6)),
+            .init(map_number: 3, winners: []),
+        ]
+        for (terminal, hidden, expected) in [
+            (true, false, [1, 2]),
+            (false, false, [1, 2, 3]),
+            (true, true, [1, 2, 3]),
+        ] {
+            let progress = try XCTUnwrap(MatchLiveActivityMapProgress(state: state(
+                map: 2, scores: [13, 6], history: history, winners: ["1", "1", nil],
+                terminal: terminal, seriesScores: [2, 0]
+            ), hidden: hidden))
+            XCTAssertEqual(progress.visibleMaps.map(\.number), expected, "terminal: \(terminal), hidden: \(hidden)")
+            if terminal && !hidden {
+                XCTAssertEqual(progress.visibleMaps.map(\.scoreText), ["13 : 9", "13 : 6"])
+                XCTAssertTrue(progress.visibleMaps.allSatisfy { $0.segment == .wonBy(0) })
+            }
+        }
+    }
+
     func testSpoilersHideTallyWinnersAndRoundCount() throws {
         let progress = try XCTUnwrap(MatchLiveActivityMapProgress(state: state(
             scores: [14, 12], history: [.init(map_number: 1, winners: Array(repeating: 1, count: 26))],
@@ -108,9 +132,19 @@ final class MatchLiveActivityRoundsTests: XCTestCase {
         }
         let fourth = Array(completed.prefix(3)) + [State.MapRounds(map_number: 4, winners: (0..<12).map { $0 % 2 })]
         let fifth = completed + [State.MapRounds(map_number: 5, winners: Array(repeating: 0, count: 14) + Array(repeating: 1, count: 12))]
+        let sweep: [State.MapRounds] = [
+            .init(map_number: 1, winners: Array(repeating: 0, count: 13) + Array(repeating: 1, count: 9)),
+            .init(map_number: 2, winners: Array(repeating: 0, count: 13) + Array(repeating: 1, count: 6)),
+            .init(map_number: 3, winners: []),
+        ]
         let scenarios: [(String, State, String)] = [
+            ("ended-sweep", state(map: 2, scores: [13, 6], history: sweep, winners: ["1", "1", nil], terminal: true, seriesScores: [2, 0]), "Playoffs: Grand Final"),
+            ("ongoing-sweep", state(map: 2, scores: [13, 6], history: sweep, winners: ["1", "1", nil], seriesScores: [2, 0]), "Playoffs: Grand Final"),
             ("fourth-map", state(map: 4, scores: [6, 6], total: 5, history: fourth, winners: ["1", "2", "1", nil, nil]), "Playoffs: Grand Final"),
             ("fifth-map", state(map: 5, scores: [14, 12], total: 5, history: fifth, winners: ["1", "2", "1", "2", nil]), "Playoffs: Grand Final"),
+            ("long-overtime", state(map: 3, scores: [30, 30], history: Array(completed.prefix(2)) + [
+                .init(map_number: 3, winners: (0..<60).map { $0 % 2 }),
+            ], winners: ["1", "2", nil], seriesScores: [1, 1]), "Playoffs: Grand Final"),
             ("pause", state(pause: .init(kind: .techPause, reason: "Player disconnected")), "Player disconnected"),
             ("long-stage", state(stage: "Playoffs: Grand Final International Championship Decider"), "Playoffs: Grand Final"),
         ]

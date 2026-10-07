@@ -316,7 +316,7 @@ struct MatchLiveActivityMapProgress {
                         state.current_map?.number ?? 0)
         guard (1...9).contains(total) else { return nil }
         self.hidden = hidden
-        maps = (0..<total).map { index in
+        let allMaps = (0..<total).map { index in
             let number = index + 1
             let current = state.current_map?.number == number
             let active = !state.terminal && current
@@ -349,11 +349,12 @@ struct MatchLiveActivityMapProgress {
             }
             return Map(number: number, segment: segment, rounds: rounds, scores: scores)
         }
-        let lastPlayed = maps.last { map in
+        let lastPlayed = allMaps.last { map in
             map.segment != .pending || map.rounds.contains { $0 != .pending }
         }?.number ?? 1
+        maps = state.terminal && !hidden ? Array(allMaps.prefix(lastPlayed)) : allMaps
         let focus = state.terminal ? lastPlayed : state.current_map?.number ?? lastPlayed
-        firstVisibleIndex = min(max(0, focus - 3), max(0, total - 3))
+        firstVisibleIndex = min(max(0, focus - 3), max(0, maps.count - 3))
     }
 }
 
@@ -373,14 +374,11 @@ private struct MatchLiveActivityMapProgressView: View {
                         .foregroundStyle(palette.secondary)
                         .monospacedDigit()
                         .lineLimit(1)
-                    GeometryReader { geometry in
-                        HStack(spacing: min(3, geometry.size.width / CGFloat(map.rounds.count * 3))) {
-                            ForEach(map.rounds.indices, id: \.self) { round in
-                                RoundedRectangle(cornerRadius: 1.5)
-                                    .fill(fill(for: map.rounds[round]))
-                                    .frame(maxWidth: 6)
-                                    .frame(maxWidth: .infinity)
-                            }
+                    HStack(spacing: min(1.5, 40 / CGFloat(map.rounds.count))) {
+                        ForEach(map.rounds.indices, id: \.self) { round in
+                            RoundedRectangle(cornerRadius: 1.5)
+                                .fill(fill(for: map.rounds[round]))
+                                .frame(maxWidth: .infinity)
                         }
                     }
                     .frame(height: 12)
