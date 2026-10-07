@@ -4,10 +4,12 @@
  */
 package dev.staticvar.vlr.android
 
+import android.Manifest
 import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.SystemClock
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
@@ -36,6 +38,9 @@ class LauncherIconTaskTest {
   fun disablingLauncherAliasPreservesRunningActivityAndTask() {
     val instrumentation = InstrumentationRegistry.getInstrumentation()
     val context = instrumentation.targetContext
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      instrumentation.uiAutomation.grantRuntimePermission(context.packageName, Manifest.permission.POST_NOTIFICATIONS)
+    }
     val packages = context.packageManager
     val launcher = packages.getLaunchIntentForPackage(context.packageName)!!
     val original = launcher.component!!
