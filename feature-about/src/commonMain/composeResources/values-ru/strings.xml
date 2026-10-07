@@ -161,7 +161,7 @@
     <string name="match_reminders_permission_description">Разрешите уведомления, чтобы получать напоминания об избранном.</string>
     <string name="live_updates_with_reminders_description">Следите за счётом в реальном времени в уведомлениях. Если Live Updates отключены, напоминания перед избранными матчами по-прежнему приходят.</string>
     <string name="release_1_1_0_calendar_title">Матчи в вашем календаре</string>
-    <string name="release_1_1_0_calendar_description">Добавьте предстоящий матч или расписание турнира в календарь. Удалять сохранённые расписания турниров так же просто.</string>
+    <string name="release_1_1_0_calendar_description">Добавьте предстоящий матч или расписание турнира в календарь.</string>
     <string name="release_1_1_0_rankings_title">Рейтинги и форма команд</string>
     <string name="release_1_1_0_rankings_description">Изучайте рейтинги по регионам и соревнованиям. Смотрите оценки команд, последние результаты и статистику побед и поражений.</string>
     <string name="release_1_1_0_predictions_title">Перед матчем</string>

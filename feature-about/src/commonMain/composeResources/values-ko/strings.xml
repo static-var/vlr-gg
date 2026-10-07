@@ -158,7 +158,7 @@
     <string name="match_reminders_permission_description">즐겨찾기 경기 시작 알림을 받으려면 알림을 허용하세요.</string>
     <string name="live_updates_with_reminders_description">알림에서 실시간 점수를 확인하세요. Live Updates를 꺼도 즐겨찾는 경기 시작 전 알림은 계속 받을 수 있습니다.</string>
     <string name="release_1_1_0_calendar_title">경기를 캘린더에</string>
-    <string name="release_1_1_0_calendar_description">예정된 경기나 이벤트 경기 일정을 캘린더에 추가하세요. 저장한 이벤트 일정도 간편하게 삭제할 수 있습니다.</string>
+    <string name="release_1_1_0_calendar_description">예정된 경기나 이벤트 경기 일정을 캘린더에 추가하세요.</string>
     <string name="release_1_1_0_rankings_title">랭킹과 팀의 최근 성적</string>
     <string name="release_1_1_0_rankings_description">지역과 대회별 랭킹을 살펴보세요. 팀 평점, 최근 결과와 승패 기록을 확인할 수 있습니다.</string>
     <string name="release_1_1_0_predictions_title">경기 시작 전</string>

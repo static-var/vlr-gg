@@ -159,7 +159,7 @@
     <string name="release_1_1_0_stability_title">Smoother navigation</string>
     <string name="release_1_1_0_stability_description">Move between matches and events more smoothly, find settings more easily, and keep your favorites reliably after app updates.</string>
     <string name="release_1_1_0_calendar_title">Matches in your calendar</string>
-    <string name="release_1_1_0_calendar_description">Add an upcoming match or an event's schedule to your calendar. Remove saved event schedules just as easily.</string>
+    <string name="release_1_1_0_calendar_description">Add an upcoming match or an event's schedule to your calendar.</string>
     <string name="release_1_1_0_rankings_title">Rankings and team form</string>
     <string name="release_1_1_0_rankings_description">Explore rankings by region and competition. See team ratings, recent results and win records.</string>
     <string name="release_1_1_0_predictions_title">Before the match</string>

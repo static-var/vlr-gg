@@ -159,7 +159,7 @@
     <string name="match_reminders_permission_description">अपने पसंदीदा के रिमाइंडर पाने के लिए सूचनाओं की अनुमति दें।</string>
     <string name="live_updates_with_reminders_description">सूचनाओं में लाइव स्कोर देखें। Live Updates बंद होने पर भी पसंदीदा मैचों के शुरू होने से पहले रिमाइंडर मिलते रहेंगे।</string>
     <string name="release_1_1_0_calendar_title">मैच अपने कैलेंडर में</string>
-    <string name="release_1_1_0_calendar_description">आने वाला मैच या किसी इवेंट का शेड्यूल अपने कैलेंडर में जोड़ें। सहेजे गए इवेंट शेड्यूल उतनी ही आसानी से हटाएँ।</string>
+    <string name="release_1_1_0_calendar_description">आने वाला मैच या किसी इवेंट का शेड्यूल अपने कैलेंडर में जोड़ें।</string>
     <string name="release_1_1_0_rankings_title">रैंकिंग और टीम का हालिया प्रदर्शन</string>
     <string name="release_1_1_0_rankings_description">क्षेत्र और प्रतियोगिता के अनुसार रैंकिंग देखें। टीम की रेटिंग, हालिया नतीजे और जीत-हार का रिकॉर्ड जानें।</string>
     <string name="release_1_1_0_predictions_title">मैच से पहले</string>

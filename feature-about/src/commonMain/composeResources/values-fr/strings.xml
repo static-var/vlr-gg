@@ -160,7 +160,7 @@
     <string name="match_reminders_permission_description">Autorisez les notifications pour recevoir des rappels pour vos favoris.</string>
     <string name="live_updates_with_reminders_description">Suivez les scores en direct dans les notifications. Lorsque Live Updates est désactivé, vous recevez toujours des rappels avant vos matchs favoris.</string>
     <string name="release_1_1_0_calendar_title">Vos matchs dans votre calendrier</string>
-    <string name="release_1_1_0_calendar_description">Ajoutez un prochain match ou le programme d’un événement à votre calendrier. Retirez les programmes d’événements enregistrés tout aussi facilement.</string>
+    <string name="release_1_1_0_calendar_description">Ajoutez un prochain match ou le programme d’un événement à votre calendrier.</string>
     <string name="release_1_1_0_rankings_title">Classements et forme des équipes</string>
     <string name="release_1_1_0_rankings_description">Explorez les classements par région et compétition. Consultez les notes des équipes, leurs résultats récents et leurs bilans de victoires et défaites.</string>
     <string name="release_1_1_0_predictions_title">Avant le match</string>

@@ -158,7 +158,7 @@
     <string name="match_reminders_permission_description">Favorileriniz için hatırlatıcı almak üzere bildirimlere izin verin.</string>
     <string name="live_updates_with_reminders_description">Canlı skorları bildirimlerde takip edin. Live Updates kapalıyken de favori maçlardan önce hatırlatıcı alırsınız.</string>
     <string name="release_1_1_0_calendar_title">Maçlar takviminde</string>
-    <string name="release_1_1_0_calendar_description">Yaklaşan bir maçı veya etkinlik programını takvimine ekle. Kaydettiğin etkinlik programlarını aynı kolaylıkla kaldır.</string>
+    <string name="release_1_1_0_calendar_description">Yaklaşan bir maçı veya etkinlik programını takvimine ekle.</string>
     <string name="release_1_1_0_rankings_title">Sıralamalar ve takımların formu</string>
     <string name="release_1_1_0_rankings_description">Bölge ve turnuvaya göre sıralamaları incele. Takım puanlarını, son sonuçları ve galibiyet-mağlubiyet kayıtlarını gör.</string>
     <string name="release_1_1_0_predictions_title">Maçtan önce</string>

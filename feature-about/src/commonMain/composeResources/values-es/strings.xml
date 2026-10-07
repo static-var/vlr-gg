@@ -160,7 +160,7 @@
     <string name="match_reminders_permission_description">Permite las notificaciones para recibir recordatorios de tus favoritos.</string>
     <string name="live_updates_with_reminders_description">Sigue los marcadores en directo en las notificaciones. Cuando Live Updates esté desactivado, seguirás recibiendo recordatorios antes de tus partidas favoritas.</string>
     <string name="release_1_1_0_calendar_title">Partidos en tu calendario</string>
-    <string name="release_1_1_0_calendar_description">Añade un próximo partido o el calendario de un evento a tu calendario. Elimina los calendarios de eventos guardados con la misma facilidad.</string>
+    <string name="release_1_1_0_calendar_description">Añade un próximo partido o el calendario de un evento a tu calendario.</string>
     <string name="release_1_1_0_rankings_title">Clasificaciones y forma de los equipos</string>
     <string name="release_1_1_0_rankings_description">Explora clasificaciones por región y competición. Consulta las valoraciones, los resultados recientes y los registros de victorias y derrotas de los equipos.</string>
     <string name="release_1_1_0_predictions_title">Antes del partido</string>
