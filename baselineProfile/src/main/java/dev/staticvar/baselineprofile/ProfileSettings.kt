@@ -4,6 +4,7 @@
  */
 package dev.staticvar.baselineprofile
 
+import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
@@ -16,6 +17,10 @@ import androidx.test.uiautomator.Until
 
 internal fun configureProfileSettings() {
   val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    val result = device.executeShellCommand("pm grant $TARGET_PACKAGE android.permission.POST_NOTIFICATIONS")
+    check(result.isBlank()) { "Could not grant profile notification permission: $result" }
+  }
   device.launchProfileApp()
   device.tapSettingsIfPresent(By.desc("Show results and stats throughout app"))
   device.settingsObject(By.desc("Hide results and stats throughout app"))

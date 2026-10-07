@@ -76,7 +76,7 @@ internal fun UiDevice.browseEvents() {
   browseList()
   openFirstCard(By.clickable(true).hasDescendant(By.text("COMPLETED")))
   requireSubtitle("Teams, matches and standings")
-  scrollTo(By.text(Pattern.compile("Favorite event|Remove from favorites")))
+  requireObject(By.text(Pattern.compile("Favorite event|Remove from favorites")))
   val addedFavorite = hasObject(By.text("Favorite event"))
   if (addedFavorite) {
     requireObject(By.clickable(true).enabled(true).hasDescendant(By.text("Favorite event"))).activate()
@@ -99,13 +99,16 @@ internal fun UiDevice.browseTeamAndPlayer() {
   navigateTo("Ranking", "Team ratings and records")
   browseList()
   openFirstCard()
-  requireSubtitle("Roster, results and recent form")
+  requireSubtitle("Team")
   val addedTeam = addFavorite("team")
-  val teamName = checkNotNull(verticalList().findObject(By.clazz("android.widget.TextView"))?.text) {
-    "Expected the team name in its summary card"
+  val teamName = awaitUiValue("the team name in its summary card") {
+    verticalListOrNull()?.findObject(By.clazz("android.widget.TextView"))?.text
   }
   scrollTo(By.text("Roster"))
-  openFirstCard()
+  openFirstCard(
+    By.clickable(true).hasDescendant(By.clazz("android.widget.TextView")),
+    sectionTitle = By.text("Roster"),
+  )
   requireSubtitle("Stats, agents and team history")
   val addedPlayer = addFavorite("player")
   browseList(allowSinglePage = true)
@@ -114,11 +117,11 @@ internal fun UiDevice.browseTeamAndPlayer() {
     requireObject(By.desc("Add player to favorites"))
   }
   pressBack()
-  requireSubtitle("Roster, results and recent form")
-  scrollTo(By.text("Completed"))
+  requireSubtitle("Team")
+  scrollTo(By.text("Completed"), Direction.UP)
   selectTab("Completed")
   browseList()
-  scrollTo(By.text("Upcoming"))
+  scrollTo(By.text("Upcoming"), Direction.UP)
   selectTab("Upcoming")
   pressBack()
   requireSubtitle("Team ratings and records")
@@ -126,7 +129,7 @@ internal fun UiDevice.browseTeamAndPlayer() {
   scrollTo(By.text("Favorites"))
   scrollTo(By.text("Teams"))
   scrollTo(By.clickable(true).hasDescendant(By.text(teamName)).hasDescendant(By.text("→"))).activate()
-  requireSubtitle("Roster, results and recent form")
+  requireSubtitle("Team")
   if (addedTeam) {
     requireObject(By.desc("Remove team from favorites")).click(100)
     requireObject(By.desc("Add team to favorites"))
@@ -199,15 +202,23 @@ private fun UiDevice.browseList(allowSinglePage: Boolean = false) {
   repeat(2) { swipeList(Direction.UP, allowSinglePage) }
 }
 
-private fun UiDevice.openFirstCard(selector: BySelector = By.clickable(true)) {
+private fun UiDevice.openFirstCard(
+  selector: BySelector = By.clickable(true),
+  sectionTitle: BySelector? = null,
+) {
   waitForIdle(2_000)
   awaitUiValue("a clickable card in the content list") {
     verticalListOrNull()?.let { list ->
       val viewport = list.visibleBounds
+      val sectionBottom = sectionTitle?.let { findVisibleObject(it)?.visibleBounds?.bottom } ?: viewport.top
       val card = list.findObjects(selector).firstOrNull { card ->
         val bounds = card.visibleBounds
-        bounds.height() > 80 && bounds.top >= viewport.top + 8 && bounds.bottom <= viewport.bottom - 8
-      } ?: return@awaitUiValue null
+        bounds.height() > 80 && bounds.top >= maxOf(viewport.top, sectionBottom) + 8 &&
+          bounds.bottom <= viewport.bottom - 8
+      } ?: run {
+        if (sectionTitle != null) swipeList(Direction.DOWN)
+        return@awaitUiValue null
+      }
       val bounds = card.visibleBounds
       SystemClock.sleep(200)
       if (card.visibleBounds == bounds) {
@@ -222,9 +233,6 @@ private fun UiDevice.verticalListOrNull(): UiObject2? =
   findObjects(By.scrollable(true))
     .filter { it.visibleBounds.height() > displayHeight / 3 }
     .lastOrNull()
-
-private fun UiDevice.verticalList(): UiObject2 =
-  checkNotNull(verticalListOrNull()) { "Expected a vertical content list" }
 
 private fun UiDevice.scrollTo(selector: BySelector, direction: Direction = Direction.DOWN): UiObject2 {
   awaitUi("scrollable content or $selector") { hasObject(selector) || verticalListOrNull() != null }
@@ -255,7 +263,10 @@ private fun <T> UiDevice.awaitUiValue(description: String, query: UiDevice.() ->
     } catch (_: StaleObjectException) {
       // Compose replaced the accessibility node; query the current tree again.
     }
-    check(SystemClock.uptimeMillis() < deadline) { "Expected $description; verify backend data and connectivity" }
+    check(SystemClock.uptimeMillis() < deadline) {
+      val visibleText = findObjects(By.clazz("android.widget.TextView")).map { it.text }.take(20)
+      "Expected $description; verify backend data and connectivity. Visible text: $visibleText"
+    }
     SystemClock.sleep(100)
   }
 }
