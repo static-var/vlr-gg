@@ -102,6 +102,8 @@ class MatchesUseCasesTest {
       return onRefreshMatches()
     }
 
+    override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> = Result.success(Unit)
+
     override suspend fun refreshMatchDetails(matchId: String): Result<Unit> {
       refreshedMatchId = matchId
       return Result.success(Unit)

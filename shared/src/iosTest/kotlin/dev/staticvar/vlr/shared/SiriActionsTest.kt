@@ -22,10 +22,10 @@ import dev.staticvar.vlr.domain.usecase.RefreshFavoriteMatches
 import dev.staticvar.vlr.shared.widget.UpcomingWidgetMatch
 import dev.staticvar.vlr.shared.widget.WidgetJson
 import dev.staticvar.vlr.shared.widget.widgetModule
-import kotlinx.serialization.json.Json
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
@@ -95,7 +95,9 @@ class SiriActionsTest {
     assertTrue(observed.value)
     assertTrue(SpoilerPreferencesRepository(fixture.storage).enabled.value)
 
-    val visible = fixture.widgetJson.decodeFromString<List<UpcomingWidgetMatch>>(fixture.actions.setSpoilersHidden(false))
+    val visible = fixture.widgetJson.decodeFromString<List<UpcomingWidgetMatch>>(
+      fixture.actions.setSpoilersHidden(false),
+    )
     assertEquals(2, visible.first().score1)
     assertEquals(1, visible.first().score2)
     assertEquals(0, fixture.remote.refreshes)
@@ -127,12 +129,15 @@ private class Fixture(hasFavorites: Boolean = true) {
 
   init {
     val app = startKoin {
-      modules(widgetModule(), module {
-        single<FavoritesRepository> { favorites }
-        single<FavoriteScheduleRepository> { schedule }
-        single { preferences }
-        single { RefreshFavoriteMatches(favorites, remote, UnusedEventRepository, schedule) }
-      })
+      modules(
+        widgetModule(),
+        module {
+          single<FavoritesRepository> { favorites }
+          single<FavoriteScheduleRepository> { schedule }
+          single { preferences }
+          single { RefreshFavoriteMatches(favorites, remote, UnusedEventRepository, schedule) }
+        },
+      )
     }
     widgetJson = app.koin.get(WidgetJson)
     actions = SiriActions(authToken = "")
@@ -150,6 +155,8 @@ private class SiriRemoteRepositories : MatchRepository {
 
   override fun getMatches() = flowOf(emptyList<MatchPreview>())
   override fun getMatchDetails(matchId: String) = flowOf<MatchDetails?>(null)
+  override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> = Result.success(Unit)
+
   override suspend fun refreshMatchDetails(matchId: String) = Result.success(Unit)
   override suspend fun addToFavorites(matchId: String): Result<Unit> = error("Unexpected favorite mutation")
   override suspend fun removeFromFavorites(matchId: String): Result<Unit> = error("Unexpected favorite mutation")

@@ -123,9 +123,7 @@ private class Fixture(
   )
 }
 
-private class FakeFavoritesRepository(
-  private val favorites: DirectFavoriteSnapshot,
-) : FavoritesRepository {
+private class FakeFavoritesRepository(private val favorites: DirectFavoriteSnapshot) : FavoritesRepository {
   override fun observeDirectFavorites(): Flow<DirectFavoriteSnapshot> = flowOf(favorites)
 
   override fun observeTeamIds(): Flow<Set<String>> = flowOf(favorites.teams.mapTo(mutableSetOf()) { it.id })
@@ -133,9 +131,8 @@ private class FakeFavoritesRepository(
   override fun observePlayerIds(): Flow<Set<String>> = flowOf(favorites.players.mapTo(mutableSetOf()) { it.id })
 }
 
-private class FakeFavoriteScheduleRepository(
-  private val matches: List<FavoriteScheduledMatch>,
-) : FavoriteScheduleRepository {
+private class FakeFavoriteScheduleRepository(private val matches: List<FavoriteScheduledMatch>) :
+  FavoriteScheduleRepository {
   override fun observeMatches(): Flow<List<FavoriteScheduledMatch>> = flowOf(matches)
 }
 
@@ -159,6 +156,8 @@ private class FakeMatchRepository(
     overviewRefreshes++
     return overviewResult
   }
+
+  override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> = Result.success(Unit)
 
   override suspend fun refreshMatchDetails(matchId: String): Result<Unit> {
     detailRefreshes += matchId

@@ -1,0 +1,22 @@
+CREATE TABLE match_predictions (
+    match_id TEXT NOT NULL PRIMARY KEY,
+    team_a_id TEXT NOT NULL,
+    team_b_id TEXT NOT NULL,
+    team_a_probability REAL NOT NULL CHECK (team_a_probability BETWEEN 0 AND 1),
+    team_b_probability REAL NOT NULL CHECK (team_b_probability BETWEEN 0 AND 1),
+    source TEXT NOT NULL CHECK (source IN ('MODEL', 'ELO')),
+    warnings_json TEXT NOT NULL DEFAULT '[]',
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+);
+
+getMatchPrediction:
+SELECT * FROM match_predictions WHERE match_id = :matchId;
+
+upsertMatchPrediction:
+INSERT OR REPLACE INTO match_predictions(
+    match_id, team_a_id, team_b_id, team_a_probability, team_b_probability, source, warnings_json
+)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteMatchPrediction:
+DELETE FROM match_predictions WHERE match_id = :matchId;

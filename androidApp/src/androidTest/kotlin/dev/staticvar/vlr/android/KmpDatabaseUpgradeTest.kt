@@ -379,6 +379,49 @@ class KmpDatabaseUpgradeTest {
     }
   }
 
+  @Test
+  fun versionElevenUpgradePreservesMatchAndPredictionSurvivesReopening() {
+    withDatabase { it.favoriteScheduleQueries.getFavoriteSchedule().executeAsList() }
+    val freshSchema = openTestDatabase().use(::schemaDescription)
+    openTestDatabase().use { db ->
+      db.execSQL("DROP TABLE match_predictions")
+      db.execSQL(
+        """
+        INSERT INTO matches(id, event_name, event_logo_url, status, time,
+          team1_id, team1_name, team1_logo_url, team2_id, team2_name, team2_logo_url, note)
+        VALUES ('match', 'Champions', '', 'UPCOMING', '2099-01-01T12:00:00Z',
+          '120', 'Alpha', '', '1034', 'Beta', '', 'Grand final')
+        """.trimIndent(),
+      )
+      db.execSQL("INSERT INTO favorite_matches(match_id) VALUES ('match')")
+      db.version = 11
+    }
+
+    val warnings = """[{"code":"elo_fallback","reason":"model_timeout"}]"""
+    withDatabase { database ->
+      val match = database.matchesQueries.getMatchWithFavoriteStatus("match").executeAsOne()
+      assertEquals("Champions", match.event_name)
+      assertEquals("Grand final", match.note)
+      assertEquals(1L, match.is_direct_favorite)
+      assertNull(database.matchPredictionsQueries.getMatchPrediction("match").executeAsOneOrNull())
+      database.matchPredictionsQueries.upsertMatchPrediction("match", "120", "1034", 0.6, 0.4, "ELO", warnings)
+    }
+    openTestDatabase().use { db ->
+      assertEquals(VlrDatabase.Schema.version.toInt(), db.version)
+      assertEquals(freshSchema, schemaDescription(db))
+      assertTrue(rows(db, "PRAGMA foreign_key_check").isEmpty())
+    }
+    withDatabase { database ->
+      val restored = database.matchPredictionsQueries.getMatchPrediction("match").executeAsOne()
+      assertEquals("120", restored.team_a_id)
+      assertEquals("1034", restored.team_b_id)
+      assertEquals(0.6, restored.team_a_probability, 0.0)
+      assertEquals(0.4, restored.team_b_probability, 0.0)
+      assertEquals("ELO", restored.source)
+      assertEquals(warnings, restored.warnings_json)
+    }
+  }
+
   private fun createHistoricalDatabase(revision: String) {
     val sql = instrumentation.context.assets.open("kmp-schemas/$revision.sql")
       .bufferedReader().use { it.readText() }

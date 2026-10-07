@@ -31,11 +31,6 @@ import dev.staticvar.vlr.remotesource.match.RoundInfoDto
 import dev.staticvar.vlr.remotesource.match.TeamDto
 import dev.staticvar.vlr.remotesource.match.VetoDto
 import dev.staticvar.vlr.remotesource.match.VideoReferenceDto
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -44,6 +39,12 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import dev.staticvar.vlr.remotesource.common.VetoAction as RemoteVetoAction
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -67,6 +68,8 @@ class MatchRepositoryImplTest {
       matchDataSource = dataSource,
       database = database,
       dispatchers = dispatcherProvider,
+      predictionDataSource = TestMatchPredictionDataSource(),
+      storageJson = Json,
     )
   }
 
@@ -89,6 +92,8 @@ class MatchRepositoryImplTest {
       matchDataSource = dataSource,
       database = database,
       dispatchers = dispatcherProvider,
+      predictionDataSource = TestMatchPredictionDataSource(),
+      storageJson = Json,
     )
     assertEquals(expected, requireNotNull(restored.getMatchDetails("match1").first()).currentMap)
 
@@ -97,7 +102,8 @@ class MatchRepositoryImplTest {
     assertEquals(null, requireNotNull(restored.getMatchDetails("match1").first()).currentMap)
     assertEquals(null, database.matchesQueries.getMatchCurrentMap("match1").executeAsOneOrNull())
 
-    dataSource.detailResults["match1"] = Result.success(live.copy(event = live.event.copy(status = MatchStatus.COMPLETED)))
+    dataSource.detailResults["match1"] =
+      Result.success(live.copy(event = live.event.copy(status = MatchStatus.COMPLETED)))
     assertTrue(restored.refreshMatchDetails("match1").isSuccess)
     assertEquals(null, requireNotNull(restored.getMatchDetails("match1").first()).currentMap)
   }
@@ -506,6 +512,8 @@ class MatchRepositoryImplTest {
       matchDataSource = dataSource,
       database = database,
       dispatchers = dispatcherProvider,
+      predictionDataSource = TestMatchPredictionDataSource(),
+      storageJson = Json,
     )
     val restored = requireNotNull(restoredRepository.getMatchDetails("match1").first())
     assertEquals(rawBans, restored.bans)
@@ -534,11 +542,13 @@ class MatchRepositoryImplTest {
       requireNotNull(details).let { Triple(it.currentMap, it.bans, it.veto) }
     }.distinctUntilChanged().test {
       assertEquals(CurrentMatchMap("Ascent", 2, 0, 3, true), awaitItem().first)
-      dataSource.detailResults["match1"] = Result.success(initial.copy(
-        currentMap = CurrentMapDto(name = "Ascent", number = 2, scores = listOf(1, 3)),
-        bans = listOf("Beta pick Haven"),
-        veto = listOf(VetoDto(team = "Beta", action = RemoteVetoAction.PICK, map = "Haven")),
-      ))
+      dataSource.detailResults["match1"] = Result.success(
+        initial.copy(
+          currentMap = CurrentMapDto(name = "Ascent", number = 2, scores = listOf(1, 3)),
+          bans = listOf("Beta pick Haven"),
+          veto = listOf(VetoDto(team = "Beta", action = RemoteVetoAction.PICK, map = "Haven")),
+        ),
+      )
 
       assertTrue(repository.refreshMatchDetails("match1").isSuccess)
 
@@ -558,7 +568,8 @@ class MatchRepositoryImplTest {
 
   @Test
   fun matchDetailsObservesMetadataTableChanges() = runTest(dispatcher) {
-    dataSource.detailResults["match1"] = Result.success(MatchDetailsDto(event = EventDto(id = "event", status = MatchStatus.LIVE)))
+    dataSource.detailResults["match1"] =
+      Result.success(MatchDetailsDto(event = EventDto(id = "event", status = MatchStatus.LIVE)))
     assertTrue(repository.refreshMatchDetails("match1").isSuccess)
 
     repository.getMatchDetails("match1").map { requireNotNull(it).let { it.currentMap to it.veto } }
@@ -589,16 +600,22 @@ class MatchRepositoryImplTest {
     dataSource.detailResults["match1"] = Result.success(initial)
     assertTrue(repository.refreshMatchDetails("match1").isSuccess)
     val before = requireNotNull(repository.getMatchDetails("match1").first())
-    driver.execute(null, """
+    driver.execute(
+      null,
+      """
       CREATE TRIGGER reject_veto BEFORE INSERT ON match_veto
       BEGIN SELECT RAISE(ABORT, 'metadata write failed'); END
-    """.trimIndent(), 0)
-    dataSource.detailResults["match1"] = Result.success(initial.copy(
-      teams = listOf(TeamDto(name = "Alpha", score = 1), TeamDto(name = "Beta", score = 1)),
-      currentMap = CurrentMapDto(name = "Ascent", number = 2, scores = listOf(1, 3)),
-      bans = listOf("Beta pick Haven"),
-      veto = listOf(VetoDto(team = "Beta", action = RemoteVetoAction.PICK, map = "Haven")),
-    ))
+      """.trimIndent(),
+      0,
+    )
+    dataSource.detailResults["match1"] = Result.success(
+      initial.copy(
+        teams = listOf(TeamDto(name = "Alpha", score = 1), TeamDto(name = "Beta", score = 1)),
+        currentMap = CurrentMapDto(name = "Ascent", number = 2, scores = listOf(1, 3)),
+        bans = listOf("Beta pick Haven"),
+        veto = listOf(VetoDto(team = "Beta", action = RemoteVetoAction.PICK, map = "Haven")),
+      ),
+    )
 
     assertTrue(repository.refreshMatchDetails("match1").isFailure)
 
@@ -614,10 +631,14 @@ class MatchRepositoryImplTest {
     dataSource.listResult = Result.success(
       listOf(
         MatchPreviewDto(
-          id = "match1", event = "Champions", series = "Stage 1", status = MatchStatus.UPCOMING,
+          id = "match1",
+          event = "Champions",
+          series = "Stage 1",
+          status = MatchStatus.UPCOMING,
           team1 = TeamDto(id = "t1", name = "Alpha", img = "alpha.png"),
           team2 = TeamDto(id = "t2", name = "Beta", img = "beta.png"),
-          time = "2025-01-01", eventId = "event1",
+          time = "2025-01-01",
+          eventId = "event1",
         ),
       ),
     )
