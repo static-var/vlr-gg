@@ -7,15 +7,15 @@ package dev.staticvar.vlr.featureteam.presentation
 import androidx.lifecycle.ViewModelStore
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
+import dev.staticvar.vlr.domain.model.RankingCircuit
+import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.domain.model.TeamInfo
+import dev.staticvar.vlr.domain.model.TeamRankingProfile
+import dev.staticvar.vlr.domain.model.TeamRankingRecord
+import dev.staticvar.vlr.domain.repository.TeamRankingProfileRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.featureteam.usecase.ObserveTeamDetailsUseCase
 import dev.staticvar.vlr.featureteam.usecase.RefreshTeamDetailsUseCase
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +30,11 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import vlr.feature_team.generated.resources.Res
 import vlr.feature_team.generated.resources.favorite_update_failed
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TeamDetailsViewModelTest {
@@ -154,6 +159,116 @@ class TeamDetailsViewModelTest {
   }
 
   @Test
+  fun ratingFailureDoesNotCancelTeamRefreshOrReplaceItsErrorState() = runTest(dispatcher) {
+    val repository = FakeTeamRepository()
+    repository.refreshedTeam = teamInfo("team-1")
+    repository.refreshGate = CompletableDeferred()
+    val ratings = FakeTeamRankingProfileRepository(Result.failure(IllegalStateException("rating unavailable")))
+    val viewModel = createViewModel(repository, ratings)
+
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(TeamRatingState.Unavailable, viewModel.uiState.value.rating)
+    assertEquals(true, viewModel.uiState.value.isLoading)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+    assertEquals(false, repository.refreshCancelled)
+
+    repository.refreshGate?.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(teamInfo("team-1"), viewModel.uiState.value.team)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+  }
+
+  @Test
+  fun slowRatingDoesNotKeepTeamContentLoadingOrRefreshing() = runTest(dispatcher) {
+    val repository = FakeTeamRepository()
+    repository.refreshedTeam = teamInfo("team-1")
+    val ratings = FakeTeamRankingProfileRepository(Result.success(rankingProfile()))
+    ratings.gate = CompletableDeferred()
+    val viewModel = createViewModel(repository, ratings)
+
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(teamInfo("team-1"), viewModel.uiState.value.team)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(false, viewModel.uiState.value.isRefreshing)
+    assertEquals(TeamRatingState.Loading, viewModel.uiState.value.rating)
+
+    ratings.gate?.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(TeamRatingState.Available(rankingProfile()), viewModel.uiState.value.rating)
+  }
+
+  @Test
+  fun ratingRetryCoalescesInFlightRequestsAndRecoversFromFailure() = runTest(dispatcher) {
+    val ratings = FakeTeamRankingProfileRepository(Result.failure(IllegalStateException("offline")))
+    val viewModel = createViewModel(FakeTeamRepository(teamInfo("team-1")), ratings)
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(TeamRatingState.Unavailable, viewModel.uiState.value.rating)
+
+    ratings.result = Result.success(rankingProfile())
+    ratings.gate = CompletableDeferred()
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(TeamRatingState.Loading, viewModel.uiState.value.rating)
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(listOf("team-1", "team-1"), ratings.requests)
+
+    ratings.gate?.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(TeamRatingState.Available(rankingProfile()), viewModel.uiState.value.rating)
+    assertEquals(listOf("team-1", "team-1"), ratings.requests)
+  }
+
+  @Test
+  fun ratingRefreshKeepsLastSuccessfulProfileOnFailure() = runTest(dispatcher) {
+    val profile = rankingProfile()
+    val ratings = FakeTeamRankingProfileRepository(Result.success(profile))
+    val viewModel = createViewModel(FakeTeamRepository(teamInfo("team-1")), ratings)
+    viewModel.refresh()
+    advanceUntilIdle()
+
+    ratings.result = Result.failure(IllegalStateException("temporarily unavailable"))
+    ratings.gate = CompletableDeferred()
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(TeamRatingState.Available(profile), viewModel.uiState.value.rating)
+    ratings.gate?.complete(Unit)
+    advanceUntilIdle()
+    assertEquals(TeamRatingState.Available(profile), viewModel.uiState.value.rating)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+  }
+
+  @Test
+  fun clearingViewModelStoreCancelsRatingRequest() = runTest(dispatcher) {
+    val ratings = FakeTeamRankingProfileRepository(Result.success(rankingProfile()))
+    ratings.gate = CompletableDeferred()
+    val viewModel = createViewModel(FakeTeamRepository(teamInfo("team-1")), ratings)
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(listOf("team-1"), ratings.requests)
+
+    viewModelStore.clear()
+    advanceUntilIdle()
+    assertEquals(true, ratings.cancelled)
+    assertEquals(TeamRatingState.Loading, viewModel.uiState.value.rating)
+  }
+
+  @Test
+  fun cancelledRatingResultIsNotShownAsServiceFailure() = runTest(dispatcher) {
+    val ratings = FakeTeamRankingProfileRepository(Result.failure(CancellationException("cancelled")))
+    val viewModel = createViewModel(FakeTeamRepository(teamInfo("team-1")), ratings)
+    viewModel.refresh()
+    advanceUntilIdle()
+    assertEquals(TeamRatingState.Loading, viewModel.uiState.value.rating)
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(null, viewModel.uiState.value.errorMessage)
+  }
+
+  @Test
   fun favoriteStaysPendingUntilObservedStateAcknowledgesWrite() = runTest(dispatcher) {
     val repository = FakeTeamRepository(teamInfo("team-1"))
     repository.publishFavoriteImmediately = false
@@ -234,15 +349,34 @@ class TeamDetailsViewModelTest {
     assertEquals(Res.string.favorite_update_failed, viewModel.uiState.value.favoriteErrorMessage)
   }
 
-  private fun createViewModel(repository: FakeTeamRepository): TeamDetailsViewModel = TeamDetailsViewModel(
+  private fun createViewModel(
+    repository: FakeTeamRepository,
+    ratings: FakeTeamRankingProfileRepository = FakeTeamRankingProfileRepository(Result.success(rankingProfile())),
+  ): TeamDetailsViewModel = TeamDetailsViewModel(
     teamId = "team-1",
     teamRepository = repository,
+    teamRankingProfileRepository = ratings,
     observeTeamDetailsUseCase = ObserveTeamDetailsUseCase(repository),
     refreshTeamDetailsUseCase = RefreshTeamDetailsUseCase(repository),
     networkMonitor = object : NetworkMonitor {
       override val status = MutableStateFlow(NetworkStatus.Online)
     },
   ).also { viewModelStore.put("viewModel", it) }
+
+  private fun rankingProfile(): TeamRankingProfile = TeamRankingProfile(
+    rank = 4,
+    regionRank = 2,
+    circuitRank = 3,
+    region = RankingRegion.Emea,
+    elo = 1842.0,
+    mapElo = 1796.0,
+    matches = TeamRankingRecord(84, 58, 26, 58.0 / 84),
+    maps = TeamRankingRecord(218, 142, 76, 142.0 / 218),
+    active = true,
+    primaryCircuit = RankingCircuit.Vct,
+    form = listOf(true, false),
+    recent = emptyList(),
+  )
 
   private fun teamInfo(teamId: String): TeamInfo = TeamInfo(
     id = teamId,
@@ -260,6 +394,7 @@ class TeamDetailsViewModelTest {
   )
 
   private class FakeTeamRepository(team: TeamInfo? = null) : TeamRepository {
+    var refreshedTeam: TeamInfo? = null
     var publishFavoriteImmediately = true
     var favoriteGate: CompletableDeferred<Unit>? = null
     var favoriteResult: Result<Unit> = Result.success(Unit)
@@ -304,10 +439,29 @@ class TeamDetailsViewModelTest {
       refreshDetailRequests += teamId
       try {
         refreshGate?.await()
+        if (refreshResult.isSuccess) refreshedTeam?.let { detailsByTeamId.getValue(teamId).value = it }
         return refreshResult
       } catch (cancelled: CancellationException) {
         refreshCancelled = true
         throw cancelled
+      }
+    }
+  }
+
+  private class FakeTeamRankingProfileRepository(var result: Result<TeamRankingProfile>) :
+    TeamRankingProfileRepository {
+    var gate: CompletableDeferred<Unit>? = null
+    var cancelled: Boolean = false
+    val requests = mutableListOf<String>()
+
+    override suspend fun getProfile(teamId: String): Result<TeamRankingProfile> {
+      requests += teamId
+      try {
+        gate?.await()
+        return result
+      } catch (cancellation: CancellationException) {
+        cancelled = true
+        throw cancellation
       }
     }
   }
