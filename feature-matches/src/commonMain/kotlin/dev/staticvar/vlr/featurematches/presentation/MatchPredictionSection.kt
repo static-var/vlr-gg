@@ -82,7 +82,14 @@ import vlr.feature_matches.generated.resources.win_probability
 internal fun MatchPredictionSection(match: MatchDetails, isLoading: Boolean, hasError: Boolean, onRetry: () -> Unit) {
   var aboutExpanded by remember(match.id) { mutableStateOf(false) }
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-    PrismSectionTitle(title = stringResource(Res.string.win_probability), preLabel = stringResource(Res.string.before_the_match))
+    PrismSectionTitle(
+      title = stringResource(Res.string.win_probability),
+      preLabel = if (match.event.status?.uppercase() in setOf("UPCOMING", "TBD")) {
+        stringResource(Res.string.before_the_match)
+      } else {
+        null
+      },
+    )
     PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
       val prediction = match.prediction
       when {
