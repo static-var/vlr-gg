@@ -5,5 +5,10 @@
 package dev.staticvar.vlr.domain.repository
 
 interface TeamRankingProfileRepository {
-  suspend fun refreshProfile(teamId: String): Result<Unit>
+  suspend fun refreshProfile(teamId: String): Result<TeamRankingProfileRefreshResult>
+}
+
+enum class TeamRankingProfileRefreshResult {
+  Updated,
+  NotFound,
 }

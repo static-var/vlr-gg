@@ -6,6 +6,8 @@
   <string name="team_rating_loading">Loading rankings…</string>
   <string name="team_rating_unavailable_title">Rating not available right now</string>
   <string name="team_rating_unavailable_body">Rankings could not load. You can still view the roster and matches below.</string>
+  <string name="team_rating_not_found_title">No rankings yet</string>
+  <string name="team_rating_not_found_body">We do not have ranking data for this team yet.</string>
   <string name="team_rating_unranked_title">Not ranked yet</string>
   <string name="team_rating_unranked_body">No match results in the rankings yet. A team gets a rank after 5 included matches in 180 days and a match in the past 90 days.</string>
   <string name="team_rating_worldwide">Worldwide</string>
@@ -27,12 +29,15 @@
   <string name="team_rating_series_elo">series Elo</string>
   <string name="team_rating_map_elo">map Elo</string>
   <string name="team_rating_inactive">Inactive: no match in the last 90 days, so no rank is shown.</string>
+  <string name="team_rating_not_enough_matches">Not enough recent matches to rank</string>
   <string name="team_rating_form">Recent form, newest first</string>
   <string name="team_rating_form_record">%1$d–%2$d in the last %3$d</string>
   <string name="team_rating_form_description">Last %1$d matches in the rankings, %2$d wins and %3$d losses</string>
   <string name="team_rating_form_hidden">Last %1$d matches in the rankings, results hidden</string>
   <string name="team_rating_show_matches">Show the matches</string>
   <string name="team_rating_hide_matches">Hide the matches</string>
+  <string name="team_rating_form_expanded">Expanded</string>
+  <string name="team_rating_form_collapsed">Collapsed</string>
   <string name="team_rating_win">W</string>
   <string name="team_rating_loss">L</string>
   <string name="team_rating_win_description">Win</string>
@@ -57,4 +62,5 @@
   <string name="team_rating_info_context_title">Read gaps with care</string>
   <string name="team_rating_info_context_body">Teams from different regions meet less often, so cross-region ratings link through fewer matches. Treat small Elo gaps as close.</string>
   <string name="team_rating_info_done">Done</string>
+  <string name="team_rating_retry">Retry</string>
 </resources>

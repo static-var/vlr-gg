@@ -5,5 +5,5 @@
 package dev.staticvar.vlr.remotesource.rankings
 
 interface TeamRankingProfileDataSource {
-  suspend fun getProfile(teamId: String): Result<TeamRankingProfileDto>
+  suspend fun getProfile(teamId: String): Result<TeamRankingProfileDto?>
 }

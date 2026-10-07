@@ -19,6 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -33,7 +34,7 @@ class TeamRankingProfileDataSourceTest {
       },
     )
 
-    val profile = source.getProfile("2593").getOrThrow()
+    val profile = assertNotNull(source.getProfile("2593").getOrThrow())
 
     assertEquals("/api/v2/rankings/teams/2593", requests.single().encodedPath)
     assertTrue(requests.single().parameters.isEmpty())
@@ -54,7 +55,8 @@ class TeamRankingProfileDataSourceTest {
 
   @Test
   fun getProfile_preserves_known_team_without_match_history_as_unranked() = runTest {
-    val profile = TeamRankingProfileDataSourceImpl(singleResponseClient(noHistory)).getProfile("2593").getOrThrow()
+    val profile =
+      assertNotNull(TeamRankingProfileDataSourceImpl(singleResponseClient(noHistory)).getProfile("2593").getOrThrow())
 
     assertNull(profile.rank)
     assertNull(profile.regionRank)
@@ -79,7 +81,7 @@ class TeamRankingProfileDataSourceTest {
   }
 
   @Test
-  fun getProfile_preserves_not_found_failure_without_retrying() = runTest {
+  fun getProfile_returns_missing_profile_for_not_found_without_retrying() = runTest {
     var requests = 0
     val client = mockClient {
       requests++
@@ -88,8 +90,21 @@ class TeamRankingProfileDataSourceTest {
 
     val result = TeamRankingProfileDataSourceImpl(client).getProfile("2593")
 
-    assertEquals(HttpStatusCode.NotFound, assertIs<ClientRequestException>(result.exceptionOrNull()).response.status)
+    assertNull(result.getOrThrow())
     assertEquals(1, requests)
+  }
+
+  @Test
+  fun getProfile_preserves_other_http_failures() = runTest {
+    val client = singleResponseClient("""{"detail":"Unauthorized"}""", HttpStatusCode.Unauthorized)
+      .config { expectSuccess = true }
+
+    val result = TeamRankingProfileDataSourceImpl(client).getProfile("2593")
+
+    assertEquals(
+      HttpStatusCode.Unauthorized,
+      assertIs<ClientRequestException>(result.exceptionOrNull()).response.status,
+    )
   }
 
   @Test

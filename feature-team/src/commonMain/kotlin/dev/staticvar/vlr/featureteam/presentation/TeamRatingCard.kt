@@ -42,6 +42,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import dev.staticvar.designsystem.component.button.PrismButton
+import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
@@ -68,7 +70,9 @@ import vlr.feature_team.generated.resources.team_rating_circuit_tier3
 import vlr.feature_team.generated.resources.team_rating_circuit_vcl
 import vlr.feature_team.generated.resources.team_rating_circuit_vct
 import vlr.feature_team.generated.resources.team_rating_form
+import vlr.feature_team.generated.resources.team_rating_form_collapsed
 import vlr.feature_team.generated.resources.team_rating_form_description
+import vlr.feature_team.generated.resources.team_rating_form_expanded
 import vlr.feature_team.generated.resources.team_rating_form_hidden
 import vlr.feature_team.generated.resources.team_rating_form_record
 import vlr.feature_team.generated.resources.team_rating_hide_matches
@@ -81,6 +85,9 @@ import vlr.feature_team.generated.resources.team_rating_map_elo
 import vlr.feature_team.generated.resources.team_rating_maps
 import vlr.feature_team.generated.resources.team_rating_matches
 import vlr.feature_team.generated.resources.team_rating_no_rank
+import vlr.feature_team.generated.resources.team_rating_not_enough_matches
+import vlr.feature_team.generated.resources.team_rating_not_found_body
+import vlr.feature_team.generated.resources.team_rating_not_found_title
 import vlr.feature_team.generated.resources.team_rating_rank
 import vlr.feature_team.generated.resources.team_rating_record
 import vlr.feature_team.generated.resources.team_rating_record_note
@@ -89,6 +96,7 @@ import vlr.feature_team.generated.resources.team_rating_region_americas
 import vlr.feature_team.generated.resources.team_rating_region_china
 import vlr.feature_team.generated.resources.team_rating_region_emea
 import vlr.feature_team.generated.resources.team_rating_region_pacific
+import vlr.feature_team.generated.resources.team_rating_retry
 import vlr.feature_team.generated.resources.team_rating_score
 import vlr.feature_team.generated.resources.team_rating_series_elo
 import vlr.feature_team.generated.resources.team_rating_show_matches
@@ -105,7 +113,12 @@ import kotlin.math.roundToInt
 
 /** Team rankings and result history that expand within the surrounding screen's scroll content. */
 @Composable
-internal fun TeamRatingCard(state: TeamRatingState, onMatchSelected: (String) -> Unit, modifier: Modifier = Modifier) {
+internal fun TeamRatingCard(
+  state: TeamRatingState,
+  onMatchSelected: (String) -> Unit,
+  onRetry: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   var infoVisible by rememberSaveable { mutableStateOf(false) }
   PrismCard(modifier = modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
     Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
@@ -118,10 +131,20 @@ internal fun TeamRatingCard(state: TeamRatingState, onMatchSelected: (String) ->
             color = Prism.color.labelColor,
           )
 
-        TeamRatingState.Unavailable ->
+        TeamRatingState.Unavailable -> {
           TeamRatingMessage(
             title = stringResource(Res.string.team_rating_unavailable_title),
             body = stringResource(Res.string.team_rating_unavailable_body),
+          )
+          PrismButton(onClick = onRetry, style = PrismButtonStyle.Tertiary) {
+            Text(stringResource(Res.string.team_rating_retry))
+          }
+        }
+
+        TeamRatingState.NotFound ->
+          TeamRatingMessage(
+            title = stringResource(Res.string.team_rating_not_found_title),
+            body = stringResource(Res.string.team_rating_not_found_body),
           )
 
         is TeamRatingState.Available ->
@@ -209,6 +232,12 @@ private fun TeamRatingContent(profile: TeamRankingProfile, onMatchSelected: (Str
       style = Prism.typography.caption,
       color = Prism.color.labelColor,
     )
+  } else if (profile.rank == null && !LocalSpoilerMode.current.enabled) {
+    Text(
+      text = stringResource(Res.string.team_rating_not_enough_matches),
+      style = Prism.typography.caption,
+      color = Prism.color.labelColor,
+    )
   }
   Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
     TeamEloValue(
@@ -292,6 +321,8 @@ private fun TeamRecentForm(profile: TeamRankingProfile, onMatchSelected: (String
     }
   val action =
     stringResource(if (expanded) Res.string.team_rating_hide_matches else Res.string.team_rating_show_matches)
+  val expansionState =
+    stringResource(if (expanded) Res.string.team_rating_form_expanded else Res.string.team_rating_form_collapsed)
   Column(
     modifier = Modifier.padding(top = Prism.dimens.spacingS),
     verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
@@ -323,7 +354,7 @@ private fun TeamRecentForm(profile: TeamRankingProfile, onMatchSelected: (String
         }
         .semantics(mergeDescendants = true) {
           contentDescription = description
-          stateDescription = action
+          stateDescription = expansionState
         },
       horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
       verticalAlignment = Alignment.CenterVertically,

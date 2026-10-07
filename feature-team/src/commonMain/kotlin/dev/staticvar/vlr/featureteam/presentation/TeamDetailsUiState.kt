@@ -25,6 +25,8 @@ public sealed interface TeamRatingState {
   public data class Available(val profile: TeamRankingProfile) : TeamRatingState
 
   public data object Unavailable : TeamRatingState
+
+  public data object NotFound : TeamRatingState
 }
 
 public enum class TeamMatchesSection {

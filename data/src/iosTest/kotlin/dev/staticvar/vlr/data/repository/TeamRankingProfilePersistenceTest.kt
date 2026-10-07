@@ -9,6 +9,7 @@ import app.cash.sqldelight.driver.native.inMemoryDriver
 import app.cash.turbine.test
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.domain.model.TeamInfo
+import dev.staticvar.vlr.domain.repository.TeamRankingProfileRefreshResult
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.network.RemotePayload
 import dev.staticvar.vlr.remotesource.rankings.RankingRecordDto
@@ -157,6 +158,23 @@ class TeamRankingProfilePersistenceTest {
   }
 
   @Test
+  fun not_found_does_not_create_a_placeholder_or_replace_a_cached_profile() = runTest(dispatcher) {
+    source.result = Result.success(null)
+    assertEquals(TeamRankingProfileRefreshResult.NotFound, profiles.refreshProfile("2593").getOrThrow())
+    assertNull(teams.getTeamDetails("2593").first())
+
+    source.result = Result.success(profile)
+    assertEquals(TeamRankingProfileRefreshResult.Updated, profiles.refreshProfile("2593").getOrThrow())
+    val savedRow = database.teamsQueries.getTeamWithFavoriteStatus("2593").executeAsOne()
+    val savedProfile = assertNotNull(teams.getTeamDetails("2593").first()?.rankingProfile)
+    source.result = Result.success(null)
+
+    assertEquals(TeamRankingProfileRefreshResult.NotFound, profiles.refreshProfile("2593").getOrThrow())
+    assertEquals(savedRow, database.teamsQueries.getTeamWithFavoriteStatus("2593").executeAsOne())
+    assertEquals(savedProfile, teams.getTeamDetails("2593").first()?.rankingProfile)
+  }
+
+  @Test
   fun invalid_stored_profile_keeps_normal_team_details_available() = runTest(dispatcher) {
     assertTrue(teams.refreshTeamDetails("2593").isSuccess)
     for (snapshot in listOf("not-json", "{}")) {
@@ -170,7 +188,7 @@ class TeamRankingProfilePersistenceTest {
   @Test
   fun cancelled_refresh_cannot_persist_a_late_successful_response() = runTest(dispatcher) {
     val cancelledSource = object : TeamRankingProfileDataSource {
-      override suspend fun getProfile(teamId: String): Result<TeamRankingProfileDto> = try {
+      override suspend fun getProfile(teamId: String): Result<TeamRankingProfileDto?> = try {
         awaitCancellation()
       } catch (_: CancellationException) {
         Result.success(profile)
@@ -208,10 +226,10 @@ class TeamRankingProfilePersistenceTest {
   }
 
   private inner class FakeProfileSource : TeamRankingProfileDataSource {
-    var result = Result.success(profile)
+    var result: Result<TeamRankingProfileDto?> = Result.success(profile)
     var requests = 0
 
-    override suspend fun getProfile(teamId: String): Result<TeamRankingProfileDto> {
+    override suspend fun getProfile(teamId: String): Result<TeamRankingProfileDto?> {
       requests++
       return result
     }

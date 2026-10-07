@@ -256,7 +256,7 @@ private fun TeamDetailsLoadedContent(
       )
     }
     item(key = "rating") {
-      TeamRatingCard(state = uiState.rating, onMatchSelected = onMatchSelected)
+      TeamRatingCard(state = uiState.rating, onMatchSelected = onMatchSelected, onRetry = onRefresh)
     }
     item(key = "match-tabs") {
       PrismTabs(
@@ -321,7 +321,15 @@ private fun TeamSummaryCard(name: String, logoUrl: String, metadata: String, web
         )
         Row(horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
           website?.takeIf(String::isNotBlank)?.let { url ->
-            TeamExternalLink(label = stringResource(Res.string.team_website), onClick = { uriHandler.openUri(url) })
+            val host = url.substringAfter("://").substringBefore('/').lowercase().removePrefix("www.")
+            val label = if (host == "x.com" ||
+              host == "twitter.com"
+            ) {
+              Res.string.team_social
+            } else {
+              Res.string.team_website
+            }
+            TeamExternalLink(label = stringResource(label), onClick = { uriHandler.openUri(url) })
           }
           twitter?.takeIf(String::isNotBlank)?.let { url ->
             TeamExternalLink(label = stringResource(Res.string.team_social), onClick = { uriHandler.openUri(url) })

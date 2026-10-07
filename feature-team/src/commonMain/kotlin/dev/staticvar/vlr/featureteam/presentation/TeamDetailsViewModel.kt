@@ -9,13 +9,12 @@ import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
+import dev.staticvar.vlr.domain.repository.TeamRankingProfileRefreshResult
 import dev.staticvar.vlr.domain.repository.TeamRankingProfileRepository
 import dev.staticvar.vlr.domain.repository.TeamRepository
 import dev.staticvar.vlr.featureteam.usecase.ObserveTeamDetailsUseCase
 import dev.staticvar.vlr.featureteam.usecase.RefreshTeamDetailsUseCase
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,15 +43,29 @@ public class TeamDetailsViewModel(
   }
 
   private val favoriteMutation = MutableStateFlow(FavoriteMutation())
-  private val ratingRefreshFailed = MutableStateFlow(false)
-  private var ratingRefreshJob: Job? = null
+  private val ratingNotFound = MutableStateFlow(false)
+  private val ratingRefresher = RefreshController(viewModelScope, networkMonitor, operation = "refresh team rankings") {
+    ratingNotFound.value = false
+    teamRankingProfileRepository.refreshProfile(teamId).map { result ->
+      currentCoroutineContext().ensureActive()
+      ratingNotFound.value = result == TeamRankingProfileRefreshResult.NotFound
+      Unit
+    }
+  }
 
   public val uiState: StateFlow<TeamDetailsUiState> =
-    combine(observeTeamDetailsUseCase(teamId), refresher.state, favoriteMutation, ratingRefreshFailed) {
+    combine(
+      observeTeamDetailsUseCase(teamId),
+      refresher.state,
+      favoriteMutation,
+      ratingRefresher.state,
+      ratingNotFound,
+    ) {
         team,
         refresh,
         favorite,
-        ratingRefreshFailed,
+        ratingRefresh,
+        ratingNotFound,
       ->
       TeamDetailsUiState(
         team = team,
@@ -63,7 +76,11 @@ public class TeamDetailsViewModel(
         isUpdatingFavorite = favorite.isPending,
         favoriteErrorMessage = favorite.errorMessage,
         rating = team?.rankingProfile?.let(TeamRatingState::Available)
-          ?: if (ratingRefreshFailed) TeamRatingState.Unavailable else TeamRatingState.Loading,
+          ?: when {
+            ratingRefresh.errorMessage != null -> TeamRatingState.Unavailable
+            ratingNotFound -> TeamRatingState.NotFound
+            else -> TeamRatingState.Loading
+          },
       )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, TeamDetailsUiState())
 
@@ -95,23 +112,6 @@ public class TeamDetailsViewModel(
 
   public fun refresh() {
     refresher.refresh()
-    refreshRating()
-  }
-
-  private fun refreshRating() {
-    if (ratingRefreshJob?.isActive == true) return
-    ratingRefreshFailed.value = false
-
-    ratingRefreshJob = viewModelScope.launch(start = CoroutineStart.LAZY) {
-      try {
-        teamRankingProfileRepository.refreshProfile(teamId).getOrThrow()
-        currentCoroutineContext().ensureActive()
-      } catch (cancelled: CancellationException) {
-        throw cancelled
-      } catch (_: Exception) {
-        currentCoroutineContext().ensureActive()
-        ratingRefreshFailed.value = true
-      }
-    }.also { it.start() }
+    ratingRefresher.refresh()
   }
 }
