@@ -5,8 +5,10 @@
 package dev.staticvar.vlr.featurerankings.presentation
 
 import androidx.lifecycle.ViewModelStore
+import com.russhwolf.settings.MapSettings
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
+import dev.staticvar.vlr.core.settings.RankingsPreferencesRepository
 import dev.staticvar.vlr.domain.model.RankingCircuit
 import dev.staticvar.vlr.domain.model.RankingMetric
 import dev.staticvar.vlr.domain.model.RankingOrder
@@ -111,8 +113,6 @@ class RankingsViewModelTest {
     val explore = RankingsQuery(
       circuit = RankingCircuit.GameChangers,
       region = RankingRegion.Emea,
-      minMatches = 12,
-      includeInactive = true,
       metric = RankingMetric.MapElo,
       order = RankingOrder.Asc,
     )
@@ -143,6 +143,68 @@ class RankingsViewModelTest {
     assertEquals(exploreTeams, viewModel.uiState.value.visibleTeams)
     assertEquals(RankingRegion.China, viewModel.uiState.value.selectedRegion)
     assertEquals(listOf(explore, regional, explore), repository.refreshQueries)
+  }
+
+  @Test
+  fun recreationRestoresOnlyRegionalPreferenceInBothDirections() = runTest(dispatcher) {
+    for (view in listOf(RankingsView.Regional, RankingsView.Explore)) {
+      val storage = MapSettings()
+      val original = createViewModel(
+        FakeRankingsRepository(),
+        preferencesRepository = RankingsPreferencesRepository(storage),
+      )
+      original.updateExploreQuery(
+        RankingsQuery(
+          circuit = RankingCircuit.GameChangers,
+          region = RankingRegion.Emea,
+          metric = RankingMetric.MapElo,
+          order = RankingOrder.Asc,
+        ),
+      )
+      original.selectRegion(RankingRegion.China)
+      original.setView(RankingsView.Regional)
+      original.setView(view)
+      advanceUntilIdle()
+
+      val repository = FakeRankingsRepository()
+      val recreated = createViewModel(
+        repository,
+        preferencesRepository = RankingsPreferencesRepository(storage),
+      )
+      assertEquals(view, recreated.uiState.value.view)
+      assertEquals(null, recreated.uiState.value.selectedRegion)
+      assertEquals(RankingsQuery(), recreated.uiState.value.exploreQuery)
+      assertEquals(RankingsQuery(), recreated.uiState.value.query)
+      advanceUntilIdle()
+      assertEquals(listOf(RankingsQuery()), repository.observedQueries)
+      assertEquals(emptyList(), repository.refreshQueries)
+    }
+  }
+
+  @Test
+  fun exploreAlwaysUsesStandardEligibilityWhileKeepingSelectedRankingOptions() = runTest(dispatcher) {
+    val repository = FakeRankingsRepository()
+    val viewModel = createViewModel(repository)
+    val requested = RankingsQuery(
+      circuit = RankingCircuit.GameChangers,
+      region = RankingRegion.Emea,
+      minMatches = 12,
+      includeInactive = true,
+      metric = RankingMetric.MapElo,
+      order = RankingOrder.Asc,
+    )
+
+    viewModel.updateExploreQuery(requested)
+    advanceUntilIdle()
+
+    val expected = RankingsQuery(
+      circuit = RankingCircuit.GameChangers,
+      region = RankingRegion.Emea,
+      metric = RankingMetric.MapElo,
+      order = RankingOrder.Asc,
+    )
+    assertEquals(expected, viewModel.uiState.value.query)
+    assertEquals(listOf(expected), repository.refreshQueries)
   }
 
   @Test
@@ -252,12 +314,14 @@ class RankingsViewModelTest {
   private fun createViewModel(
     repository: FakeRankingsRepository,
     networkStatus: NetworkStatus = NetworkStatus.Online,
+    preferencesRepository: RankingsPreferencesRepository = RankingsPreferencesRepository(MapSettings()),
   ): RankingsViewModel = RankingsViewModel(
     observeRankingsUseCase = ObserveRankingsUseCase(repository),
     refreshRankingsUseCase = RefreshRankingsUseCase(repository),
     networkMonitor = object : NetworkMonitor {
       override val status = MutableStateFlow(networkStatus)
     },
+    preferencesRepository = preferencesRepository,
   ).also { viewModelStore.put("viewModel", it) }
 
   private fun ranking(teamName: String, rank: Int): TeamRanking = TeamRanking(
@@ -274,12 +338,16 @@ class RankingsViewModelTest {
   private class FakeRankingsRepository(initialRankings: List<TeamRanking> = emptyList()) : RankingsRepository {
     private val cache = mutableMapOf(RankingsQuery() to MutableStateFlow(initialRankings))
     val refreshQueries = mutableListOf<RankingsQuery>()
+    val observedQueries = mutableListOf<RankingsQuery>()
     var refreshAction: suspend (RankingsQuery) -> Result<Unit> = { Result.success(Unit) }
 
     fun rankings(query: RankingsQuery): MutableStateFlow<List<TeamRanking>> =
       cache.getOrPut(query) { MutableStateFlow(emptyList()) }
 
-    override fun getRankings(query: RankingsQuery): Flow<List<TeamRanking>> = rankings(query)
+    override fun getRankings(query: RankingsQuery): Flow<List<TeamRanking>> {
+      observedQueries += query
+      return rankings(query)
+    }
 
     override suspend fun refreshRankings(query: RankingsQuery): Result<Unit> {
       refreshQueries += query

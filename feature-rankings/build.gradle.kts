@@ -64,6 +64,8 @@ kotlin {
       dependencies {
         implementation(kotlin("test"))
         implementation(libs.coroutine.test)
+        implementation(libs.multiplatform.settings)
+        implementation(libs.multiplatform.settings.test)
       }
     }
 

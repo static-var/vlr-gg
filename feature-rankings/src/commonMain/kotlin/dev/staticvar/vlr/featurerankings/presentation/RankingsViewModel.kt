@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
+import dev.staticvar.vlr.core.settings.RankingsPreferencesRepository
 import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.domain.model.RankingsQuery
 import dev.staticvar.vlr.featurerankings.usecase.ObserveRankingsUseCase
@@ -28,10 +29,15 @@ public class RankingsViewModel(
   private val observeRankingsUseCase: ObserveRankingsUseCase,
   private val refreshRankingsUseCase: RefreshRankingsUseCase,
   private val networkMonitor: NetworkMonitor,
+  private val preferencesRepository: RankingsPreferencesRepository,
 ) : ViewModel() {
   public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
-  private val mutableUiState = MutableStateFlow(RankingsUiState())
+  private val mutableUiState = MutableStateFlow(
+    RankingsUiState(
+      view = if (preferencesRepository.regionalEnabled.value) RankingsView.Regional else RankingsView.Explore,
+    ),
+  )
   public val uiState: StateFlow<RankingsUiState> = mutableUiState.asStateFlow()
 
   private var queryScope: CoroutineScope? = null
@@ -43,11 +49,12 @@ public class RankingsViewModel(
   }
 
   public fun setView(view: RankingsView) {
+    preferencesRepository.setRegionalEnabled(view == RankingsView.Regional)
     updateSelection { it.copy(view = view) }
   }
 
   public fun updateExploreQuery(query: RankingsQuery) {
-    updateSelection { it.copy(exploreQuery = query) }
+    updateSelection { it.copy(exploreQuery = query.copy(minMatches = 5, includeInactive = false)) }
   }
 
   public fun selectRegion(region: RankingRegion?) {
