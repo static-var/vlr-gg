@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -114,7 +115,10 @@ internal fun RankingsScreen(
         titleAccessory = { PrismTag(text = stringResource(Res.string.rankings_beta), style = PrismTagStyle.Accent) },
         actions = {
           val regionalLabel = stringResource(Res.string.rankings_regional)
-          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          Column(
+            modifier = Modifier.height(Prism.dimens.controlHeight),
+            horizontalAlignment = Alignment.CenterHorizontally,
+          ) {
             Text(
               text = regionalLabel,
               modifier = Modifier.clearAndSetSemantics {},
@@ -126,7 +130,7 @@ internal fun RankingsScreen(
               onCheckedChange = { regional ->
                 onViewSelected(if (regional) RankingsView.Regional else RankingsView.Explore)
               },
-              modifier = Modifier.testTag("rankings_regional_switch")
+              modifier = Modifier.weight(1f).testTag("rankings_regional_switch")
                 .semantics { contentDescription = regionalLabel },
             )
           }
