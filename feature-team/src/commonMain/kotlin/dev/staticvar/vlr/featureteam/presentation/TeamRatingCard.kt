@@ -360,7 +360,13 @@ private fun TeamRecentForm(profile: TeamRankingProfile, onMatchSelected: (String
       modifier =
       Modifier.fillMaxWidth()
         .heightIn(min = Prism.dimens.controlHeight)
-        .clickable(enabled = profile.recent.isNotEmpty(), role = Role.Button, onClickLabel = action) {
+        .clickable(
+          interactionSource = null,
+          indication = null,
+          enabled = profile.recent.isNotEmpty(),
+          role = Role.Button,
+          onClickLabel = action,
+        ) {
           expanded =
             !expanded
         }
