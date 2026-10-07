@@ -40,3 +40,6 @@
 @media(max-width:950px) and (min-width:701px){.hero{grid-template-columns:1fr 1fr;gap:28px}.hero h1{font-size:48px;letter-spacing:-2px}.product-preview{gap:14px}.screen-preview figcaption{font-size:12px}}
 @media(max-width:700px){.product-preview{max-width:440px;gap:18px}.screen-preview:nth-child(2){margin-top:32px}.screen-preview a{box-shadow:5px 5px #19181b}.app-visual{padding:24px 20px 20px}}
 @media(prefers-reduced-motion:reduce){.screen-preview a:hover{transform:none}}
+
+@media(max-width:700px){.navlinks a.nav-about{display:block}.navlinks{gap:14px}}
+@media(max-width:380px){.navlinks{gap:10px}}
