@@ -153,7 +153,7 @@
     <string name="release_1_1_0_ios_shortcuts_title">Spotlight와 Siri에서 즐겨찾기</string>
     <string name="release_1_1_0_ios_shortcuts_description">Spotlight에서 즐겨찾는 팀과 이벤트를 찾으세요. Siri에게 다음 즐겨찾는 경기를 물어보거나 스포일러 보호를 설정하세요.</string>
     <string name="release_1_1_0_stability_title">더 부드러운 화면 이동</string>
-    <string name="release_1_1_0_stability_description">경기와 이벤트 사이를 더 부드럽게 이동하고 설정을 더 쉽게 찾으세요. 앱을 업데이트한 뒤에도 즐겨찾기가 안전하게 유지됩니다.</string>
+    <string name="release_1_1_0_stability_description">경기와 이벤트 사이를 더 부드럽게 이동하고 설정을 더 쉽게 찾으세요. 앱을 업데이트한 뒤에도 즐겨찾기가 안전하게 유지됩니다. 앱에서 뉴스가 삭제되었습니다.</string>
     <string name="match_reminders_description">즐겨찾는 경기가 시작되기 전에 알림을 받으세요. 경기 시작 알림을 받으려면 알림을 허용하세요.</string>
     <string name="match_reminders_permission_description">즐겨찾기 경기 시작 알림을 받으려면 알림을 허용하세요.</string>
     <string name="live_updates_with_reminders_description">알림에서 실시간 점수를 확인하세요. Live Updates를 꺼도 즐겨찾는 경기 시작 전 알림은 계속 받을 수 있습니다.</string>

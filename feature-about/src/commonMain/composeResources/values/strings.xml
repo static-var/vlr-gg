@@ -157,7 +157,7 @@
     <string name="release_1_1_0_ios_shortcuts_title">Favorites in Spotlight and Siri</string>
     <string name="release_1_1_0_ios_shortcuts_description">Find favorite teams and events in Spotlight. Ask Siri about your next favorite match or manage spoiler protection.</string>
     <string name="release_1_1_0_stability_title">Smoother navigation</string>
-    <string name="release_1_1_0_stability_description">Move between matches and events more smoothly, find settings more easily, and keep your favorites reliably after app updates.</string>
+    <string name="release_1_1_0_stability_description">Move between matches and events more smoothly, find settings more easily, and keep your favorites reliably after app updates. News is no longer in the app.</string>
     <string name="release_1_1_0_calendar_title">Matches in your calendar</string>
     <string name="release_1_1_0_calendar_description">Add an upcoming match or an event's schedule to your calendar.</string>
     <string name="release_1_1_0_rankings_title">Rankings and team form</string>

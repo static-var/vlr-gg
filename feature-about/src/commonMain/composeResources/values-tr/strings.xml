@@ -153,7 +153,7 @@
     <string name="release_1_1_0_ios_shortcuts_title">Spotlight ve Siri’de favoriler</string>
     <string name="release_1_1_0_ios_shortcuts_description">Spotlight’ta favori takımlarını ve etkinliklerini bul. Siri’ye bir sonraki favori maçını sor veya spoiler korumasını yönet.</string>
     <string name="release_1_1_0_stability_title">Daha akıcı gezinme</string>
-    <string name="release_1_1_0_stability_description">Maçlar ve etkinlikler arasında daha akıcı geçiş yapın, ayarları daha kolay bulun. Uygulama güncellemelerinden sonra da favorileriniz korunur.</string>
+    <string name="release_1_1_0_stability_description">Maçlar ve etkinlikler arasında daha akıcı geçiş yapın, ayarları daha kolay bulun. Uygulama güncellemelerinden sonra da favorileriniz korunur. Haberler artık uygulamada yer almıyor.</string>
     <string name="match_reminders_description">Favori bir maç başlamadan önce hatırlatıcı alın. Hatırlatıcı almak için bildirimlere izin verin.</string>
     <string name="match_reminders_permission_description">Favorileriniz için hatırlatıcı almak üzere bildirimlere izin verin.</string>
     <string name="live_updates_with_reminders_description">Canlı skorları bildirimlerde takip edin. Live Updates kapalıyken de favori maçlardan önce hatırlatıcı alırsınız.</string>

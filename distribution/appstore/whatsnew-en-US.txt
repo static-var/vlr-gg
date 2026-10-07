@@ -10,3 +10,4 @@ New since 1.0.0:
 • Choose your app icon, theme and mascot.
 • Find favorites in Spotlight and check your next match with Siri.
 • Enjoy nine languages, clearer Settings and smoother browsing.
+• News is no longer in the app.

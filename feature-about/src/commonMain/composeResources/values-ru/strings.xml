@@ -156,7 +156,7 @@
     <string name="release_1_1_0_ios_shortcuts_title">Избранное в Spotlight и Siri</string>
     <string name="release_1_1_0_ios_shortcuts_description">Находите избранные команды и турниры в Spotlight. Спрашивайте Siri о следующем избранном матче или управляйте защитой от спойлеров.</string>
     <string name="release_1_1_0_stability_title">Более плавная навигация</string>
-    <string name="release_1_1_0_stability_description">Переходите между матчами и событиями плавнее и находите настройки быстрее. Избранное сохраняется после обновления приложения.</string>
+    <string name="release_1_1_0_stability_description">Переходите между матчами и событиями плавнее и находите настройки быстрее. Избранное сохраняется после обновления приложения. В приложении больше нет новостей.</string>
     <string name="match_reminders_description">Получайте напоминания перед началом избранных матчей. Разрешите уведомления, чтобы получать напоминания.</string>
     <string name="match_reminders_permission_description">Разрешите уведомления, чтобы получать напоминания об избранном.</string>
     <string name="live_updates_with_reminders_description">Следите за счётом в реальном времени в уведомлениях. Если Live Updates отключены, напоминания перед избранными матчами по-прежнему приходят.</string>

@@ -154,7 +154,7 @@
     <string name="release_1_1_0_ios_shortcuts_title">Spotlight और Siri में पसंदीदा</string>
     <string name="release_1_1_0_ios_shortcuts_description">Spotlight में पसंदीदा टीम और इवेंट खोजें। Siri से अगले पसंदीदा मैच के बारे में पूछें या स्पॉइलर सुरक्षा बदलें।</string>
     <string name="release_1_1_0_stability_title">आसान नेविगेशन</string>
-    <string name="release_1_1_0_stability_description">मैच और इवेंट के बीच अब आसानी से जाएँ और सेटिंग्स जल्दी खोजें। ऐप अपडेट होने के बाद भी आपके पसंदीदा सुरक्षित रहते हैं।</string>
+    <string name="release_1_1_0_stability_description">मैच और इवेंट के बीच अब आसानी से जाएँ और सेटिंग्स जल्दी खोजें। ऐप अपडेट होने के बाद भी आपके पसंदीदा सुरक्षित रहते हैं। ऐप में अब समाचार नहीं हैं।</string>
     <string name="match_reminders_description">पसंदीदा मैच शुरू होने से पहले रिमाइंडर पाएँ। रिमाइंडर पाने के लिए सूचनाओं की अनुमति दें।</string>
     <string name="match_reminders_permission_description">अपने पसंदीदा के रिमाइंडर पाने के लिए सूचनाओं की अनुमति दें।</string>
     <string name="live_updates_with_reminders_description">सूचनाओं में लाइव स्कोर देखें। Live Updates बंद होने पर भी पसंदीदा मैचों के शुरू होने से पहले रिमाइंडर मिलते रहेंगे।</string>

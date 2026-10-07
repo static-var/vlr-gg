@@ -155,7 +155,7 @@
     <string name="release_1_1_0_ios_shortcuts_title">Vos favoris dans Spotlight et Siri</string>
     <string name="release_1_1_0_ios_shortcuts_description">Retrouvez vos équipes et événements favoris dans Spotlight. Demandez à Siri votre prochain match favori ou gérez la protection contre les spoilers.</string>
     <string name="release_1_1_0_stability_title">Une navigation plus fluide</string>
-    <string name="release_1_1_0_stability_description">Passez plus facilement d’un match à un événement, trouvez les réglages plus vite et conservez vos favoris après les mises à jour de l’app.</string>
+    <string name="release_1_1_0_stability_description">Passez plus facilement d’un match à un événement, trouvez les réglages plus vite et conservez vos favoris après les mises à jour de l’app. Les actualités ne sont plus dans l’app.</string>
     <string name="match_reminders_description">Recevez un rappel avant le début d’un match favori. Autorisez les notifications pour recevoir des rappels.</string>
     <string name="match_reminders_permission_description">Autorisez les notifications pour recevoir des rappels pour vos favoris.</string>
     <string name="live_updates_with_reminders_description">Suivez les scores en direct dans les notifications. Lorsque Live Updates est désactivé, vous recevez toujours des rappels avant vos matchs favoris.</string>
