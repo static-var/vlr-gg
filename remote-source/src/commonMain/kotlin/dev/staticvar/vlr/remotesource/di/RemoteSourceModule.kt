@@ -17,6 +17,8 @@ import dev.staticvar.vlr.remotesource.match.FavoriteMatchesDataSource
 import dev.staticvar.vlr.remotesource.match.FavoriteMatchesDataSourceImpl
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
 import dev.staticvar.vlr.remotesource.match.MatchDataSourceImpl
+import dev.staticvar.vlr.remotesource.match.MatchPredictionDataSource
+import dev.staticvar.vlr.remotesource.match.MatchPredictionDataSourceImpl
 import dev.staticvar.vlr.remotesource.network.AcceptLanguageProvider
 import dev.staticvar.vlr.remotesource.network.HttpClientFactory
 import dev.staticvar.vlr.remotesource.network.NetworkConfiguration
@@ -74,6 +76,7 @@ fun remoteSourceModule(
   single<LiveActivityStartDataSource> { LiveActivityStartDataSourceImpl(get()) }
   single<MatchDataSource> { MatchDataSourceImpl(get()) }
   single<FavoriteMatchesDataSource> { FavoriteMatchesDataSourceImpl(get()) }
+  single<MatchPredictionDataSource> { MatchPredictionDataSourceImpl(get()) }
   single<PushTokenRegistrationDataSource> { PushTokenRegistrationDataSourceImpl(get()) }
   single<EventDataSource> { EventDataSourceImpl(get()) }
   single<PlayerDataSource> { PlayerDataSourceImpl(get()) }
