@@ -5,6 +5,14 @@
 package dev.staticvar.vlr.remotesource.rankings
 
 interface RankingsDataSource {
-  /** Every team in the global Elo ranking, in ranked order. */
-  suspend fun list(): Result<List<TeamRankingDto>>
+  suspend fun list(query: RankingsRequest = RankingsRequest()): Result<List<TeamRankingDto>>
 }
+
+data class RankingsRequest(
+  val circuit: String = "all",
+  val region: String = "all",
+  val minMatches: Int = 5,
+  val includeInactive: Boolean = false,
+  val sort: String = "elo",
+  val order: String = "desc",
+)

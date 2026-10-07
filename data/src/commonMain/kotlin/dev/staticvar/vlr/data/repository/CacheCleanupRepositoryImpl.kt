@@ -48,6 +48,7 @@ internal class CacheCleanupRepositoryImpl(
           queries.deleteStaleEventOverviews(cutoff)
           queries.deleteStaleEvents(cutoff)
           queries.deleteStaleRankings(cutoff)
+          queries.deleteStaleRankingQueryTeams(cutoff)
           queries.deleteStaleStandings(cutoff)
           queries.deleteStaleTeams(cutoff)
           queries.deleteStalePlayers(cutoff)

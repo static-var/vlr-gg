@@ -17,6 +17,28 @@ CREATE TABLE rankings (
 
 CREATE INDEX idx_rankings_position ON rankings(position);
 
+CREATE TABLE ranking_query_teams (
+    query_key TEXT NOT NULL,
+    team_id TEXT NOT NULL,
+    team_name TEXT NOT NULL,
+    team_logo TEXT NOT NULL,
+    country TEXT NOT NULL,
+    rank INTEGER NOT NULL,
+    overall_rank INTEGER,
+    position INTEGER NOT NULL,
+    elo REAL NOT NULL,
+    map_elo REAL NOT NULL,
+    matches_played INTEGER NOT NULL,
+    match_wins INTEGER NOT NULL,
+    match_losses INTEGER NOT NULL,
+    win_rate REAL NOT NULL,
+    region TEXT,
+    last_updated INTEGER NOT NULL,
+    PRIMARY KEY (query_key, team_id)
+);
+
+CREATE INDEX idx_ranking_query_position ON ranking_query_teams(query_key, position);
+
 CREATE TABLE standings (
     team_id TEXT NOT NULL,
     year INTEGER NOT NULL,
@@ -37,6 +59,21 @@ CREATE INDEX idx_standings_circuit ON standings(circuit);
 -- ============================================================================
 -- QUERIES
 -- ============================================================================
+
+insertRankingQueryTeam:
+INSERT OR REPLACE INTO ranking_query_teams
+(query_key, team_id, team_name, team_logo, country, rank, overall_rank, position, elo, map_elo, matches_played, match_wins, match_losses, win_rate, region, last_updated)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+getRankingQueryTeamsWithFavoriteStatus:
+SELECT r.*, CAST((fav.team_id IS NOT NULL) AS INTEGER) AS is_favorite
+FROM ranking_query_teams AS r
+LEFT JOIN favorite_teams AS fav ON r.team_id = fav.team_id AND fav.active = 1
+WHERE r.query_key = :query_key
+ORDER BY r.position ASC;
+
+deleteRankingQueryTeams:
+DELETE FROM ranking_query_teams WHERE query_key = :query_key;
 
 insertRanking:
 INSERT OR REPLACE INTO rankings(team_id, team_name, team_logo, country, rank, position, elo, match_wins, match_losses, last_updated, region)

@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.domain.repository
 
 import dev.staticvar.vlr.domain.model.TeamRanking
+import dev.staticvar.vlr.domain.model.RankingsQuery
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -13,12 +14,12 @@ import kotlinx.coroutines.flow.Flow
  */
 interface RankingsRepository {
   /**
-   * Get the global Elo ranking, best team first.
+   * Observe the first 50 teams for this selection, in server order.
    */
-  fun getRankings(): Flow<List<TeamRanking>>
+  fun getRankings(query: RankingsQuery = RankingsQuery()): Flow<List<TeamRanking>>
 
   /**
    * Refresh rankings from remote source.
    */
-  suspend fun refreshRankings(): Result<Unit>
+  suspend fun refreshRankings(query: RankingsQuery = RankingsQuery()): Result<Unit>
 }

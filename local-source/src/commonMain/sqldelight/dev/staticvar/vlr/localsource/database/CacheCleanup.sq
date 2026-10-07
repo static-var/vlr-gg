@@ -149,6 +149,14 @@ FROM (
 
     UNION ALL
 
+    SELECT 'RANKING_QUERY', query_key || ':' || team_id
+    FROM ranking_query_teams
+    WHERE last_updated > 0
+      AND last_updated < :cutoffEpochMillis
+      AND team_id NOT IN (SELECT team_id FROM cache_protected_teams)
+
+    UNION ALL
+
     SELECT 'STANDING', team_id || ':' || year || ':' || circuit
     FROM standings
     WHERE last_updated > 0
@@ -187,6 +195,12 @@ DELETE FROM events
 WHERE last_updated > 0
   AND last_updated < :cutoffEpochMillis
   AND id NOT IN (SELECT event_id FROM cache_protected_events);
+
+deleteStaleRankingQueryTeams:
+DELETE FROM ranking_query_teams
+WHERE last_updated > 0
+  AND last_updated < :cutoffEpochMillis
+  AND team_id NOT IN (SELECT team_id FROM cache_protected_teams);
 
 deleteStaleRankings:
 DELETE FROM rankings

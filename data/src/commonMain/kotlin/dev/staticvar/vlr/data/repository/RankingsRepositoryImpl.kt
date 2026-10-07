@@ -8,14 +8,18 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.core.telemetry.traceRefresh
-import dev.staticvar.vlr.data.mapper.toEntity
+import dev.staticvar.vlr.data.mapper.toRequest
 import dev.staticvar.vlr.data.mapper.toTeamRanking
 import dev.staticvar.vlr.domain.model.TeamRanking
+import dev.staticvar.vlr.domain.model.RankingRegion
+import dev.staticvar.vlr.domain.model.RankingsQuery
 import dev.staticvar.vlr.domain.repository.RankingsRepository
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.rankings.RankingsDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlin.time.Clock
 
 internal class RankingsRepositoryImpl(
@@ -26,32 +30,37 @@ internal class RankingsRepositoryImpl(
 
   private val rankingsQueries = database.rankingsQueries
 
-  override fun getRankings(): Flow<List<TeamRanking>> = rankingsQueries
-    .getRankingsWithFavoriteStatus()
+  override fun getRankings(query: RankingsQuery): Flow<List<TeamRanking>> = rankingsQueries
+    .getRankingQueryTeamsWithFavoriteStatus(query.cacheKey)
     .asFlow()
     .mapToList(dispatchers.io)
     .map { rankings -> rankings.map { it.toTeamRanking() } }
 
-  override suspend fun refreshRankings(): Result<Unit> = traceRefresh(dispatchers.io, "refreshRankings") {
-    rankingsDataSource.list().mapCatching { teams ->
+  override suspend fun refreshRankings(query: RankingsQuery): Result<Unit> = traceRefresh(dispatchers.io, "refreshRankings") {
+    rankingsDataSource.list(query.toRequest()).mapCatching { teams ->
+      currentCoroutineContext().ensureActive()
       val lastUpdated = Clock.System.now().toEpochMilliseconds()
       traceDatabase {
         database.transaction {
-          rankingsQueries.deleteAllRankings()
+          rankingsQueries.deleteRankingQueryTeams(query.cacheKey)
           teams.forEachIndexed { position, team ->
-            val entity = team.toEntity(position, lastUpdated)
-            rankingsQueries.insertRanking(
-              team_id = entity.team_id,
-              team_name = entity.team_name,
-              team_logo = entity.team_logo,
-              country = entity.country,
-              rank = entity.rank,
-              position = entity.position,
-              elo = entity.elo,
-              match_wins = entity.match_wins,
-              match_losses = entity.match_losses,
-              last_updated = entity.last_updated,
-              region = entity.region,
+            rankingsQueries.insertRankingQueryTeam(
+              query_key = query.cacheKey,
+              team_id = team.team.id,
+              team_name = team.team.name,
+              team_logo = team.team.logo.orEmpty(),
+              country = team.team.country.orEmpty(),
+              rank = team.rank.toLong(),
+              overall_rank = team.overallRank?.toLong(),
+              position = position.toLong(),
+              elo = team.elo,
+              map_elo = team.mapElo,
+              matches_played = team.matches.played.toLong(),
+              match_wins = team.matches.wins.toLong(),
+              match_losses = team.matches.losses.toLong(),
+              win_rate = team.matches.winRate,
+              region = RankingRegion.entries.firstOrNull { it.apiValue == team.region }?.apiValue,
+              last_updated = lastUpdated,
             )
           }
         }

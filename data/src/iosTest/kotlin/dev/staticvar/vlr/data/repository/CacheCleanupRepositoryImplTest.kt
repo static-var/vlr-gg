@@ -50,6 +50,45 @@ class CacheCleanupRepositoryImplTest {
   }
 
   @Test
+  fun cleanupRemovesStaleQueryRankingsAndRetainsFavoritesAndRecentSelections() = runTest(dispatcher) {
+    val now = 4_000_000_000L
+    val stale = now - THIRTY_DAYS - 1
+    val fresh = now - THIRTY_DAYS
+    fun insertQueryRanking(queryKey: String, teamId: String, updated: Long) {
+      database.rankingsQueries.insertRankingQueryTeam(
+        query_key = queryKey,
+        team_id = teamId,
+        team_name = "Team $teamId",
+        team_logo = "",
+        country = "",
+        rank = 1,
+        overall_rank = 1,
+        position = 0,
+        elo = 1500.0,
+        map_elo = 1500.0,
+        matches_played = 0,
+        match_wins = 0,
+        match_losses = 0,
+        win_rate = 0.0,
+        region = null,
+        last_updated = updated,
+      )
+    }
+    insertQueryRanking("global", "stale", stale)
+    insertQueryRanking("regional", "stale", stale)
+    insertQueryRanking("global", "favorite", stale)
+    insertQueryRanking("global", "fresh", fresh)
+    insertQueryRanking("global", "unknown", 0)
+    database.teamsQueries.addFavoriteTeam("favorite")
+
+    assertTrue(repository.cleanupIfDue(now).isSuccess)
+
+    assertEquals(listOf("favorite", "fresh", "unknown"), database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("global").executeAsList().map { it.team_id }.sorted())
+    assertTrue(database.rankingsQueries.getRankingQueryTeamsWithFavoriteStatus("regional").executeAsList().isEmpty())
+    assertEquals(2L, repository.observeStats().first().deletedRecords)
+  }
+
+  @Test
   fun cleanupRemovesStaleLogicalRecordsAndRetainsFreshAndUnknownAges() = runTest(dispatcher) {
     val now = 4_000_000_000L
     val stale = now - THIRTY_DAYS - 1

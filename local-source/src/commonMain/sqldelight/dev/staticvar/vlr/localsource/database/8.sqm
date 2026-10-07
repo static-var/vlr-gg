@@ -1,0 +1,21 @@
+CREATE TABLE ranking_query_teams (
+    query_key TEXT NOT NULL,
+    team_id TEXT NOT NULL,
+    team_name TEXT NOT NULL,
+    team_logo TEXT NOT NULL,
+    country TEXT NOT NULL,
+    rank INTEGER NOT NULL,
+    overall_rank INTEGER,
+    position INTEGER NOT NULL,
+    elo REAL NOT NULL,
+    map_elo REAL NOT NULL,
+    matches_played INTEGER NOT NULL,
+    match_wins INTEGER NOT NULL,
+    match_losses INTEGER NOT NULL,
+    win_rate REAL NOT NULL,
+    region TEXT,
+    last_updated INTEGER NOT NULL,
+    PRIMARY KEY (query_key, team_id)
+);
+
+CREATE INDEX idx_ranking_query_position ON ranking_query_teams(query_key, position);
