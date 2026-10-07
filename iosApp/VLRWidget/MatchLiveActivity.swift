@@ -179,7 +179,7 @@ private struct MatchLiveActivityDetail: View {
                         .fixedSize(horizontal: true, vertical: false)
                 }
             case .stage(let stage):
-                Text(verbatim: stage.count > 32 ? String(stage.prefix(31)) + "…" : stage)
+                Text(verbatim: stage.count > 48 ? String(stage.prefix(47)) + "…" : stage)
                     .truncationMode(.tail)
                     .accessibilityLabel(Text(verbatim: stage))
             case .branding:

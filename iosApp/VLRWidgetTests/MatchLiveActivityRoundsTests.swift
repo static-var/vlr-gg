@@ -112,7 +112,7 @@ final class MatchLiveActivityRoundsTests: XCTestCase {
             ("fourth-map", state(map: 4, scores: [6, 6], total: 5, history: fourth, winners: ["1", "2", "1", nil, nil]), "Playoffs: Grand Final"),
             ("fifth-map", state(map: 5, scores: [14, 12], total: 5, history: fifth, winners: ["1", "2", "1", "2", nil]), "Playoffs: Grand Final"),
             ("pause", state(pause: .init(kind: .techPause, reason: "Player disconnected")), "Player disconnected"),
-            ("long-stage", state(stage: "Playoffs: Grand Final Championship Decider"), "Playoffs: Grand Final"),
+            ("long-stage", state(stage: "Playoffs: Grand Final International Championship Decider"), "Playoffs: Grand Final"),
         ]
         for (name, value, detail) in scenarios {
             for width in [320.0, 370.0] {
