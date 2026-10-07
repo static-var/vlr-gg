@@ -1,6 +1,6 @@
 <resources>
     <string name="rankings_title">Sıralama</string>
-    <string name="rankings_subtitle">Elo'ya göre dünyanın en iyi takımları</string>
+    <string name="rankings_subtitle">Takım puanları ve sonuçları</string>
     <string name="rankings_beta">Beta</string>
     <string name="loading_rankings">Sıralamalar yükleniyor</string>
     <string name="no_rankings_yet">Henüz sıralama yok</string>
@@ -69,4 +69,27 @@
     <string name="ranking_map_elo">%1$d harita Elo</string>
     <string name="ranking_series_count">%1$d seri</string>
     <string name="ranking_win_rate">%1$s% galibiyet</string>
+    <string name="rankings_metric_context">Karşılaştırılacak sonucu seçin. Puanlar ve sonuçlar tüm devreleri kapsar.</string>
+    <string name="rankings_order_context">Takımları seçilen sıralama ölçütüne göre sıralayın.</string>
+    <string name="rankings_region_context">Takımların nerede yarıştığını seçin. Dünya geneli tüm bölgeleri kapsar.</string>
+    <string name="rankings_options_context">Bu kurallar hangi takımların gösterileceğini belirler. Koşullara uyan tüm takımlar, en fazla 50 takım olacak şekilde gösterilir.</string>
+    <string name="rankings_metric_elo_description">Seri sonuçlarına göre puan</string>
+    <string name="rankings_metric_map_elo_description">Tek tek harita sonuçlarına göre puan</string>
+    <string name="rankings_metric_matches_description">Oynanan tüm puanlı seriler</string>
+    <string name="rankings_metric_win_rate_description">Tüm puanlı serilerdeki galibiyet oranı</string>
+    <string name="rankings_order_desc_description">En yüksek değerden başla</string>
+    <string name="rankings_order_asc_description">En düşük değerden başla</string>
+    <string name="rankings_circuit_all_description">Tüm devrelerden takımlar</string>
+    <string name="rankings_circuit_vct_description">VCT etkinliklerinde oynayan takımlar</string>
+    <string name="rankings_circuit_vcl_description">Challengers etkinliklerinde oynayan takımlar</string>
+    <string name="rankings_circuit_tier3_description">3. seviye etkinliklerde oynayan takımlar</string>
+    <string name="rankings_circuit_gc_description">Game Changers etkinliklerinde oynayan takımlar</string>
+    <string name="rankings_circuit_collegiate_description">Üniversite etkinliklerinde oynayan takımlar</string>
+    <string name="rankings_circuit_offseason_description">Sezon dışı etkinliklerde oynayan takımlar</string>
+    <string name="rankings_circuit_other_description">Diğer puanlı etkinliklerde oynayan takımlar</string>
+    <string name="rankings_region_all_description">Tüm bölgelerden takımlar</string>
+    <string name="rankings_region_americas_description">Kuzey ve Güney Amerika</string>
+    <string name="rankings_region_emea_description">Avrupa, Orta Doğu ve Afrika</string>
+    <string name="rankings_region_pacific_description">Çin hariç Asya-Pasifik</string>
+    <string name="rankings_region_china_description">Çin'de yarışan takımlar</string>
 </resources>

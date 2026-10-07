@@ -1,6 +1,6 @@
 <resources>
     <string name="rankings_title">रैंकिंग</string>
-    <string name="rankings_subtitle">Elo के अनुसार दुनिया की शीर्ष टीमें</string>
+    <string name="rankings_subtitle">टीमों की रेटिंग और रिकॉर्ड</string>
     <string name="rankings_beta">बीटा</string>
     <string name="loading_rankings">रैंकिंग लोड हो रही है</string>
     <string name="no_rankings_yet">अभी कोई रैंकिंग नहीं है</string>
@@ -69,4 +69,27 @@
     <string name="ranking_map_elo">%1$d मैप Elo</string>
     <string name="ranking_series_count">%1$d सीरीज़</string>
     <string name="ranking_win_rate">%1$s% जीत दर</string>
+    <string name="rankings_metric_context">तुलना के लिए परिणाम चुनें। रेटिंग और रिकॉर्ड में सभी सर्किट शामिल हैं।</string>
+    <string name="rankings_order_context">चुने गए रैंकिंग माप के अनुसार टीमें क्रम में लगाएँ।</string>
+    <string name="rankings_region_context">चुनें कि टीमें कहाँ प्रतिस्पर्धा करती हैं। दुनिया भर में सभी क्षेत्र शामिल हैं।</string>
+    <string name="rankings_options_context">ये नियम तय करते हैं कि कौन-सी टीमें दिखेंगी। सभी मेल खाने वाली टीमें दिखाई जाती हैं, अधिकतम 50।</string>
+    <string name="rankings_metric_elo_description">सीरीज़ के परिणामों से मिलने वाली रेटिंग</string>
+    <string name="rankings_metric_map_elo_description">हर मैप के परिणामों से मिलने वाली रेटिंग</string>
+    <string name="rankings_metric_matches_description">खेली गई सभी रेटेड सीरीज़</string>
+    <string name="rankings_metric_win_rate_description">सभी रेटेड सीरीज़ में जीत का अनुपात</string>
+    <string name="rankings_order_desc_description">सबसे ज़्यादा मान से शुरू करें</string>
+    <string name="rankings_order_asc_description">सबसे कम मान से शुरू करें</string>
+    <string name="rankings_circuit_all_description">सभी सर्किट की टीमें</string>
+    <string name="rankings_circuit_vct_description">VCT इवेंट में खेलने वाली टीमें</string>
+    <string name="rankings_circuit_vcl_description">Challengers इवेंट में खेलने वाली टीमें</string>
+    <string name="rankings_circuit_tier3_description">टियर 3 इवेंट में खेलने वाली टीमें</string>
+    <string name="rankings_circuit_gc_description">Game Changers इवेंट में खेलने वाली टीमें</string>
+    <string name="rankings_circuit_collegiate_description">कॉलेज के इवेंट में खेलने वाली टीमें</string>
+    <string name="rankings_circuit_offseason_description">ऑफसीज़न इवेंट में खेलने वाली टीमें</string>
+    <string name="rankings_circuit_other_description">अन्य रेटेड इवेंट में खेलने वाली टीमें</string>
+    <string name="rankings_region_all_description">सभी क्षेत्रों की टीमें</string>
+    <string name="rankings_region_americas_description">उत्तरी और दक्षिणी अमेरिका</string>
+    <string name="rankings_region_emea_description">यूरोप, मध्य पूर्व और अफ़्रीका</string>
+    <string name="rankings_region_pacific_description">चीन को छोड़कर एशिया-प्रशांत</string>
+    <string name="rankings_region_china_description">चीन में प्रतिस्पर्धा करने वाली टीमें</string>
 </resources>

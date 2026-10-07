@@ -1,6 +1,6 @@
 <resources>
     <string name="rankings_title">Рейтинг</string>
-    <string name="rankings_subtitle">Лучшие команды мира по Elo</string>
+    <string name="rankings_subtitle">Рейтинги и результаты команд</string>
     <string name="rankings_beta">Бета</string>
     <string name="loading_rankings">Загрузка рейтинга</string>
     <string name="no_rankings_yet">Рейтинга пока нет</string>
@@ -69,4 +69,27 @@
     <string name="ranking_map_elo">%1$d Elo карт</string>
     <string name="ranking_series_count">%1$d серий</string>
     <string name="ranking_win_rate">%1$s% побед</string>
+    <string name="rankings_metric_context">Выберите результат для сравнения. Рейтинги и результаты включают все турниры.</string>
+    <string name="rankings_order_context">Сортируйте команды по выбранному показателю рейтинга.</string>
+    <string name="rankings_region_context">Выберите, где играют команды. Весь мир включает все регионы.</string>
+    <string name="rankings_options_context">Эти правила определяют, какие команды появятся. Показаны все подходящие команды, но не более 50.</string>
+    <string name="rankings_metric_elo_description">Рейтинг по результатам серий</string>
+    <string name="rankings_metric_map_elo_description">Рейтинг по результатам отдельных карт</string>
+    <string name="rankings_metric_matches_description">Все сыгранные рейтинговые серии</string>
+    <string name="rankings_metric_win_rate_description">Доля побед во всех рейтинговых сериях</string>
+    <string name="rankings_order_desc_description">Начать с самого высокого значения</string>
+    <string name="rankings_order_asc_description">Начать с самого низкого значения</string>
+    <string name="rankings_circuit_all_description">Команды из всех турниров</string>
+    <string name="rankings_circuit_vct_description">Команды, игравшие в турнирах VCT</string>
+    <string name="rankings_circuit_vcl_description">Команды, игравшие в турнирах Challengers</string>
+    <string name="rankings_circuit_tier3_description">Команды, игравшие в турнирах третьего уровня</string>
+    <string name="rankings_circuit_gc_description">Команды, игравшие в турнирах Game Changers</string>
+    <string name="rankings_circuit_collegiate_description">Команды, игравшие в студенческих турнирах</string>
+    <string name="rankings_circuit_offseason_description">Команды, игравшие в межсезонных турнирах</string>
+    <string name="rankings_circuit_other_description">Команды, игравшие в других рейтинговых турнирах</string>
+    <string name="rankings_region_all_description">Команды из всех регионов</string>
+    <string name="rankings_region_americas_description">Северная и Южная Америка</string>
+    <string name="rankings_region_emea_description">Европа, Ближний Восток и Африка</string>
+    <string name="rankings_region_pacific_description">Азиатско-Тихоокеанский регион, кроме Китая</string>
+    <string name="rankings_region_china_description">Команды, играющие в Китае</string>
 </resources>

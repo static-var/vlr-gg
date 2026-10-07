@@ -1,6 +1,6 @@
 <resources>
     <string name="rankings_title">Classement</string>
-    <string name="rankings_subtitle">Les meilleures équipes mondiales selon l’Elo</string>
+    <string name="rankings_subtitle">Notes et bilans des équipes</string>
     <string name="rankings_beta">Bêta</string>
     <string name="loading_rankings">Chargement du classement</string>
     <string name="no_rankings_yet">Aucun classement pour le moment</string>
@@ -69,4 +69,27 @@
     <string name="ranking_map_elo">%1$d Elo de cartes</string>
     <string name="ranking_series_count">%1$d séries</string>
     <string name="ranking_win_rate">%1$s% de victoires</string>
+    <string name="rankings_metric_context">Choisissez le résultat à comparer. Les notes et les bilans incluent tous les circuits.</string>
+    <string name="rankings_order_context">Triez les équipes selon la mesure de classement choisie.</string>
+    <string name="rankings_region_context">Choisissez où les équipes jouent. Le monde entier inclut toutes les régions.</string>
+    <string name="rankings_options_context">Ces règles déterminent les équipes affichées. Toutes les équipes correspondantes sont affichées, dans la limite de 50.</string>
+    <string name="rankings_metric_elo_description">Note basée sur les résultats des séries</string>
+    <string name="rankings_metric_map_elo_description">Note basée sur les résultats de chaque carte</string>
+    <string name="rankings_metric_matches_description">Toutes les séries notées jouées</string>
+    <string name="rankings_metric_win_rate_description">Proportion de séries notées remportées</string>
+    <string name="rankings_order_desc_description">Commencer par la valeur la plus élevée</string>
+    <string name="rankings_order_asc_description">Commencer par la valeur la plus basse</string>
+    <string name="rankings_circuit_all_description">Équipes de tous les circuits</string>
+    <string name="rankings_circuit_vct_description">Équipes ayant joué des événements VCT</string>
+    <string name="rankings_circuit_vcl_description">Équipes ayant joué des événements Challengers</string>
+    <string name="rankings_circuit_tier3_description">Équipes ayant joué des événements de niveau 3</string>
+    <string name="rankings_circuit_gc_description">Équipes ayant joué des événements Game Changers</string>
+    <string name="rankings_circuit_collegiate_description">Équipes ayant joué des événements universitaires</string>
+    <string name="rankings_circuit_offseason_description">Équipes ayant joué des événements hors saison</string>
+    <string name="rankings_circuit_other_description">Équipes ayant joué d’autres événements notés</string>
+    <string name="rankings_region_all_description">Équipes de toutes les régions</string>
+    <string name="rankings_region_americas_description">Amérique du Nord et Amérique du Sud</string>
+    <string name="rankings_region_emea_description">Europe, Moyen-Orient et Afrique</string>
+    <string name="rankings_region_pacific_description">Asie-Pacifique, hors Chine</string>
+    <string name="rankings_region_china_description">Équipes jouant en Chine</string>
 </resources>

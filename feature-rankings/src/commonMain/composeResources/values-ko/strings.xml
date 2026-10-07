@@ -1,6 +1,6 @@
 <resources>
     <string name="rankings_title">랭킹</string>
-    <string name="rankings_subtitle">Elo 기준 세계 최상위 팀</string>
+    <string name="rankings_subtitle">팀 레이팅과 전적</string>
     <string name="rankings_beta">베타</string>
     <string name="loading_rankings">랭킹 불러오는 중</string>
     <string name="no_rankings_yet">아직 랭킹이 없습니다</string>
@@ -69,4 +69,27 @@
     <string name="ranking_map_elo">맵 Elo %1$d</string>
     <string name="ranking_series_count">시리즈 %1$d개</string>
     <string name="ranking_win_rate">승률 %1$s%</string>
+    <string name="rankings_metric_context">비교할 결과를 선택하세요. 레이팅과 전적에는 모든 서킷이 포함됩니다.</string>
+    <string name="rankings_order_context">선택한 순위 지표로 팀을 정렬합니다.</string>
+    <string name="rankings_region_context">팀이 경쟁하는 지역을 선택하세요. 전 세계에는 모든 지역이 포함됩니다.</string>
+    <string name="rankings_options_context">이 규칙에 따라 표시할 팀이 결정됩니다. 조건에 맞는 모든 팀을 최대 50개까지 표시합니다.</string>
+    <string name="rankings_metric_elo_description">시리즈 결과를 바탕으로 한 레이팅</string>
+    <string name="rankings_metric_map_elo_description">개별 맵 결과를 바탕으로 한 레이팅</string>
+    <string name="rankings_metric_matches_description">레이팅에 반영된 전체 시리즈 수</string>
+    <string name="rankings_metric_win_rate_description">레이팅에 반영된 전체 시리즈 중 승리 비율</string>
+    <string name="rankings_order_desc_description">가장 높은 값부터 표시</string>
+    <string name="rankings_order_asc_description">가장 낮은 값부터 표시</string>
+    <string name="rankings_circuit_all_description">모든 서킷의 팀</string>
+    <string name="rankings_circuit_vct_description">VCT 대회에 참가한 팀</string>
+    <string name="rankings_circuit_vcl_description">Challengers 대회에 참가한 팀</string>
+    <string name="rankings_circuit_tier3_description">티어 3 대회에 참가한 팀</string>
+    <string name="rankings_circuit_gc_description">Game Changers 대회에 참가한 팀</string>
+    <string name="rankings_circuit_collegiate_description">대학 대회에 참가한 팀</string>
+    <string name="rankings_circuit_offseason_description">오프시즌 대회에 참가한 팀</string>
+    <string name="rankings_circuit_other_description">레이팅에 반영된 기타 대회에 참가한 팀</string>
+    <string name="rankings_region_all_description">모든 지역의 팀</string>
+    <string name="rankings_region_americas_description">북미 및 남미</string>
+    <string name="rankings_region_emea_description">유럽, 중동 및 아프리카</string>
+    <string name="rankings_region_pacific_description">중국을 제외한 아시아 태평양</string>
+    <string name="rankings_region_china_description">중국에서 경쟁하는 팀</string>
 </resources>

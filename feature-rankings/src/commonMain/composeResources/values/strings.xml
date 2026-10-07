@@ -1,6 +1,6 @@
 <resources>
     <string name="rankings_title">Ranking</string>
-    <string name="rankings_subtitle">Top teams worldwide by Elo</string>
+    <string name="rankings_subtitle">Team ratings and records</string>
     <string name="rankings_beta">Beta</string>
     <string name="loading_rankings">Loading rankings</string>
     <string name="no_rankings_yet">No rankings yet</string>
@@ -69,4 +69,27 @@
     <string name="ranking_map_elo">%1$d map Elo</string>
     <string name="ranking_series_count">%1$d series</string>
     <string name="ranking_win_rate">%1$s% win rate</string>
+    <string name="rankings_metric_context">Choose which result to compare. Ratings and records include every circuit.</string>
+    <string name="rankings_order_context">Sort teams using the selected ranking measure.</string>
+    <string name="rankings_region_context">Choose where teams compete. Worldwide includes every region.</string>
+    <string name="rankings_options_context">These rules decide which teams appear. All matching teams are shown, up to 50.</string>
+    <string name="rankings_metric_elo_description">Rating from series results</string>
+    <string name="rankings_metric_map_elo_description">Rating from individual map results</string>
+    <string name="rankings_metric_matches_description">All rated series played</string>
+    <string name="rankings_metric_win_rate_description">Share of all rated series won</string>
+    <string name="rankings_order_desc_description">Start with the highest value</string>
+    <string name="rankings_order_asc_description">Start with the lowest value</string>
+    <string name="rankings_circuit_all_description">Teams across every circuit</string>
+    <string name="rankings_circuit_vct_description">Teams that played VCT events</string>
+    <string name="rankings_circuit_vcl_description">Teams that played Challengers events</string>
+    <string name="rankings_circuit_tier3_description">Teams that played tier 3 events</string>
+    <string name="rankings_circuit_gc_description">Teams that played Game Changers events</string>
+    <string name="rankings_circuit_collegiate_description">Teams that played collegiate events</string>
+    <string name="rankings_circuit_offseason_description">Teams that played offseason events</string>
+    <string name="rankings_circuit_other_description">Teams that played other rated events</string>
+    <string name="rankings_region_all_description">Teams from every region</string>
+    <string name="rankings_region_americas_description">North and South America</string>
+    <string name="rankings_region_emea_description">Europe, the Middle East and Africa</string>
+    <string name="rankings_region_pacific_description">Asia-Pacific, excluding China</string>
+    <string name="rankings_region_china_description">Teams competing in China</string>
 </resources>

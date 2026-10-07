@@ -41,7 +41,6 @@ import vlr.feature_rankings.generated.resources.rankings_minimum_error
 import vlr.feature_rankings.generated.resources.rankings_minimum_series
 import vlr.feature_rankings.generated.resources.rankings_open_explore
 import vlr.feature_rankings.generated.resources.rankings_refresh
-import vlr.feature_rankings.generated.resources.rankings_regional_rules
 import vlr.feature_rankings.generated.resources.rankings_reset
 
 @Composable
@@ -59,48 +58,47 @@ internal fun RankingsOptions(
   val minimumValue = minimum.toIntOrNull()?.takeIf { it in 0..1000 }
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
     if (regional) {
-      Text(
-        stringResource(Res.string.rankings_regional_rules),
-        style = Prism.typography.bodyLarge,
-        color = Prism.color.bodyColor,
-      )
       PrismButton(onClick = onExplore, modifier = Modifier.fillMaxWidth()) {
         Text(stringResource(Res.string.rankings_open_explore))
       }
     } else {
       val minimumLabel = stringResource(Res.string.rankings_minimum_series)
-      Text(minimumLabel, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
-      Text(
-        stringResource(Res.string.rankings_minimum_context),
-        style = Prism.typography.bodySmall,
-        color = Prism.color.labelColor,
-      )
-      PrismSurface(
-        color = Prism.color.surface,
-        border = BorderStroke(Prism.dimens.strokeDefault, Prism.color.stroke),
-        shape = Prism.shapes.small,
-      ) {
-        BasicTextField(
-          value = minimum,
-          onValueChange = { value -> if (value.length <= 4 && value.all(Char::isDigit)) minimum = value },
-          modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM)
-            .semantics { contentDescription = minimumLabel },
-          textStyle = Prism.typography.bodyLarge.copy(color = Prism.color.titleColor),
-          cursorBrush = SolidColor(Prism.color.accent),
-          singleLine = true,
-          keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        )
-      }
-      if (minimumValue == null) {
-        Text(
-          stringResource(Res.string.rankings_minimum_error),
-          style = Prism.typography.bodySmall,
-          color = Prism.color.labelColor,
-        )
+      Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+          Text(minimumLabel, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
+          Text(
+            stringResource(Res.string.rankings_minimum_context),
+            style = Prism.typography.bodySmall,
+            color = Prism.color.labelColor,
+          )
+        }
+        PrismSurface(
+          color = Prism.color.surface,
+          border = BorderStroke(Prism.dimens.strokeDefault, Prism.color.stroke),
+          shape = Prism.shapes.small,
+        ) {
+          BasicTextField(
+            value = minimum,
+            onValueChange = { value -> if (value.length <= 4 && value.all(Char::isDigit)) minimum = value },
+            modifier = Modifier.fillMaxWidth().padding(Prism.dimens.spacingM)
+              .semantics { contentDescription = minimumLabel },
+            textStyle = Prism.typography.bodyLarge.copy(color = Prism.color.titleColor),
+            cursorBrush = SolidColor(Prism.color.accent),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+          )
+        }
+        if (minimumValue == null) {
+          Text(
+            stringResource(Res.string.rankings_minimum_error),
+            style = Prism.typography.bodySmall,
+            color = Prism.color.labelColor,
+          )
+        }
       }
       val inactiveLabel = stringResource(Res.string.rankings_include_inactive)
       Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-        Column(Modifier.weight(1f)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
           Text(inactiveLabel, style = Prism.typography.cardTitle, color = Prism.color.titleColor)
           Text(
             stringResource(Res.string.rankings_active_context),
