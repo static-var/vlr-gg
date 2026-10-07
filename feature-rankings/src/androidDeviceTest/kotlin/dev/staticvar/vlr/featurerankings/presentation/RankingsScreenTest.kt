@@ -6,11 +6,14 @@ package dev.staticvar.vlr.featurerankings.presentation
 
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertIsSelected
@@ -32,6 +35,7 @@ import dev.staticvar.vlr.domain.model.RankingMetric
 import dev.staticvar.vlr.domain.model.RankingRegion
 import dev.staticvar.vlr.domain.model.RankingsQuery
 import dev.staticvar.vlr.domain.model.TeamRanking
+import dev.staticvar.vlr.sharedui.component.common.LocalIsOnline
 import org.jetbrains.compose.resources.stringResource
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -114,6 +118,46 @@ class RankingsScreenTest {
   }
 
   @Test
+  fun manualRefreshWorksForPopulatedAndEmptyViewsAndPreventsDuplicateRequests() {
+    var state by mutableStateOf(RankingsUiState())
+    var online by mutableStateOf(true)
+    var refreshCount = 0
+    var expectedRefreshCount = 0
+    compose.setContent {
+      CompositionLocalProvider(LocalIsOnline provides online) {
+        Screen(
+          state,
+          onRefresh = {
+            refreshCount++
+            state = state.copy(isRefreshing = true)
+          },
+        )
+      }
+    }
+
+    val refresh = compose.onNodeWithTag("rankings_refresh")
+    for (view in RankingsView.entries) {
+      compose.runOnIdle { state = RankingsUiState(view = view) }
+      refresh.assertIsDisplayed().assertIsNotEnabled().performClick()
+      compose.runOnIdle { assertEquals(expectedRefreshCount, refreshCount) }
+
+      for (results in listOf(teams(), emptyList())) {
+        for (isOnline in listOf(true, false)) {
+          compose.runOnIdle {
+            online = isOnline
+            state = RankingsUiState(view = view, teams = results, isLoading = false)
+          }
+          refresh.assertIsDisplayed().assertIsEnabled().performClick()
+          expectedRefreshCount++
+          compose.runOnIdle { assertEquals(expectedRefreshCount, refreshCount) }
+          refresh.assertIsNotEnabled().performClick()
+          compose.runOnIdle { assertEquals(expectedRefreshCount, refreshCount) }
+        }
+      }
+    }
+  }
+
+  @Test
   fun selectingRegionKeepsItsHeaderAndOptionsUntilSheetExitCompletes() {
     var query by mutableStateOf(RankingsQuery())
     var selectedQuery: RankingsQuery? = null
@@ -157,6 +201,7 @@ class RankingsScreenTest {
     onRegionSelected: (RankingRegion?) -> Unit = {},
     onQueryChanged: (RankingsQuery) -> Unit = {},
     onTeamSelected: (String) -> Unit = {},
+    onRefresh: () -> Unit = {},
   ) {
     PrismTheme {
       regionTitle = stringResource(Res.string.rankings_select_region)
@@ -175,6 +220,7 @@ class RankingsScreenTest {
         onRegionSelected = onRegionSelected,
         onViewSelected = onViewSelected,
         onExploreQueryChanged = onQueryChanged,
+        onRefresh = onRefresh,
       )
     }
   }

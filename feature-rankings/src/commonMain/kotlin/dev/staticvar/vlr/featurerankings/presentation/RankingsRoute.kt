@@ -51,6 +51,7 @@ import dev.staticvar.vlr.domain.model.TeamRanking
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
+import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenLoading
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
@@ -140,6 +141,13 @@ internal fun RankingsScreen(
             contentDescription = stringResource(Res.string.rankings_info_title),
             size = PrismIconButtonSize.Toolbar,
             onClick = { showRankingInfo = true },
+          )
+          SharedRefreshButton(
+            isLoading = uiState.isLoading,
+            isRefreshing = uiState.isRefreshing,
+            hasContent = hasContent,
+            onRefresh = onRefresh,
+            modifier = Modifier.testTag("rankings_refresh"),
           )
         },
       )
