@@ -12,7 +12,8 @@ CREATE TABLE teams (
     rank INTEGER NOT NULL DEFAULT 0,
     website TEXT,
     twitter TEXT,
-    last_updated INTEGER NOT NULL DEFAULT 0
+    last_updated INTEGER NOT NULL DEFAULT 0,
+    ranking_profile TEXT
 );
 
 CREATE INDEX idx_team_region ON teams(region);
@@ -100,7 +101,29 @@ END;
 -- ============================================================================
 
 insertTeam:
-INSERT OR REPLACE INTO teams VALUES ?;
+INSERT OR IGNORE INTO teams VALUES ?;
+
+updateTeamDetails:
+UPDATE teams SET
+    name = :name,
+    tag = :tag,
+    logo_url = :logo_url,
+    region = :region,
+    country = :country,
+    roster_url = :roster_url,
+    earnings = :earnings,
+    rank = :rank,
+    website = :website,
+    twitter = :twitter,
+    last_updated = :last_updated
+WHERE id = :id;
+
+insertTeamRankingProfile:
+INSERT OR IGNORE INTO teams(id, name, tag, logo_url, region, country, last_updated, ranking_profile)
+VALUES (:id, :name, :tag, :logo_url, :region, :country, :last_updated, :ranking_profile);
+
+updateTeamRankingProfile:
+UPDATE teams SET ranking_profile = :ranking_profile, last_updated = :last_updated WHERE id = :id;
 
 getTeamsWithFavoriteStatus:
 SELECT

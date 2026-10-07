@@ -44,15 +44,15 @@ public class TeamDetailsViewModel(
   }
 
   private val favoriteMutation = MutableStateFlow(FavoriteMutation())
-  private val rating = MutableStateFlow<TeamRatingState>(TeamRatingState.Loading)
+  private val ratingRefreshFailed = MutableStateFlow(false)
   private var ratingRefreshJob: Job? = null
 
   public val uiState: StateFlow<TeamDetailsUiState> =
-    combine(observeTeamDetailsUseCase(teamId), refresher.state, favoriteMutation, rating) {
+    combine(observeTeamDetailsUseCase(teamId), refresher.state, favoriteMutation, ratingRefreshFailed) {
         team,
         refresh,
         favorite,
-        rating,
+        ratingRefreshFailed,
       ->
       TeamDetailsUiState(
         team = team,
@@ -62,7 +62,8 @@ public class TeamDetailsViewModel(
         errorDetails = refresh.errorDetails,
         isUpdatingFavorite = favorite.isPending,
         favoriteErrorMessage = favorite.errorMessage,
-        rating = rating,
+        rating = team?.rankingProfile?.let(TeamRatingState::Available)
+          ?: if (ratingRefreshFailed) TeamRatingState.Unavailable else TeamRatingState.Loading,
       )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, TeamDetailsUiState())
 
@@ -99,18 +100,17 @@ public class TeamDetailsViewModel(
 
   private fun refreshRating() {
     if (ratingRefreshJob?.isActive == true) return
-    if (rating.value !is TeamRatingState.Available) rating.value = TeamRatingState.Loading
+    ratingRefreshFailed.value = false
 
     ratingRefreshJob = viewModelScope.launch(start = CoroutineStart.LAZY) {
       try {
-        val profile = teamRankingProfileRepository.getProfile(teamId).getOrThrow()
+        teamRankingProfileRepository.refreshProfile(teamId).getOrThrow()
         currentCoroutineContext().ensureActive()
-        rating.value = TeamRatingState.Available(profile)
       } catch (cancelled: CancellationException) {
         throw cancelled
       } catch (_: Exception) {
         currentCoroutineContext().ensureActive()
-        if (rating.value !is TeamRatingState.Available) rating.value = TeamRatingState.Unavailable
+        ratingRefreshFailed.value = true
       }
     }.also { it.start() }
   }

@@ -87,6 +87,7 @@ fun dataModule(): Module = module {
       teamDataSource = get(),
       database = get(),
       dispatchers = get(),
+      storageJson = get(StorageJson),
       regionLabels = get(),
     )
   }
@@ -97,7 +98,14 @@ fun dataModule(): Module = module {
       dispatchers = get(),
     )
   }
-  single<TeamRankingProfileRepository> { TeamRankingProfileRepositoryImpl(source = get(), dispatchers = get()) }
+  single<TeamRankingProfileRepository> {
+    TeamRankingProfileRepositoryImpl(
+      source = get(),
+      database = get(),
+      dispatchers = get(),
+      storageJson = get(StorageJson),
+    )
+  }
   single<PlayerRepository> {
     PlayerRepositoryImpl(
       playerDataSource = get(),

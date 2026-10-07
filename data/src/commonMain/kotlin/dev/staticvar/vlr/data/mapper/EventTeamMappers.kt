@@ -144,6 +144,7 @@ internal fun TeamDetailsDto.toTeamEntity(id: String, now: Long = Clock.System.no
     website = website,
     twitter = twitter,
     last_updated = now,
+    ranking_profile = null,
   )
 
 internal fun TeamDetailsDto.toRosterEntities(teamId: String): List<Team_roster> = roster.map { it.toEntity(teamId) }

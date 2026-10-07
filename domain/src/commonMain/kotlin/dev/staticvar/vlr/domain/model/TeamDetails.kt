@@ -29,6 +29,7 @@ data class TeamInfo(
   val completedMatches: List<TeamCompletedMatch>,
   val isFavorite: Boolean = false,
   val regionLabel: String = "",
+  val rankingProfile: TeamRankingProfile? = null,
 ) {
   fun matchesInNext7Days(today: LocalDate = currentLocalDate()): List<TeamUpcomingMatch> =
     upcomingMatches.filter { match ->
@@ -96,7 +97,8 @@ private fun String.toUpcomingMatchDate(today: LocalDate): LocalDate? {
 
   val month = parts[0].toMonthOrNull() ?: return null
   val day = parts[1].trimEnd(',').toIntOrNull() ?: return null
-  val candidate = runCatching { LocalDate(year = today.year, month = month, dayOfMonth = day) }.getOrNull() ?: return null
+  val candidate =
+    runCatching { LocalDate(year = today.year, month = month, dayOfMonth = day) }.getOrNull() ?: return null
 
   return if (candidate < today) {
     runCatching { LocalDate(year = today.year + 1, month = month, dayOfMonth = day) }.getOrNull()

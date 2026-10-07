@@ -4,8 +4,6 @@
  */
 package dev.staticvar.vlr.domain.repository
 
-import dev.staticvar.vlr.domain.model.TeamRankingProfile
-
 interface TeamRankingProfileRepository {
-  suspend fun getProfile(teamId: String): Result<TeamRankingProfile>
+  suspend fun refreshProfile(teamId: String): Result<Unit>
 }
