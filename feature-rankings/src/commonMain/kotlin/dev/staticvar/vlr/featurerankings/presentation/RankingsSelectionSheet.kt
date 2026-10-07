@@ -58,9 +58,11 @@ import vlr.feature_rankings.generated.resources.rankings_worldwide
 
 @Composable
 internal fun RankingsSelectionSheet(
-  selection: RankingSheet?,
+  selection: RankingSheet,
+  visible: Boolean,
   query: RankingsQuery,
   onDismiss: () -> Unit,
+  onCollapsed: () -> Unit,
   onQueryChanged: (RankingsQuery) -> Unit,
 ) {
   val title = stringResource(
@@ -69,7 +71,6 @@ internal fun RankingsSelectionSheet(
       RankingSheet.Order -> Res.string.rankings_select_order
       RankingSheet.Circuit -> Res.string.rankings_select_circuit
       RankingSheet.Region -> Res.string.rankings_select_region
-      null -> Res.string.rankings_select_metric
     },
   )
   val description = stringResource(
@@ -78,7 +79,6 @@ internal fun RankingsSelectionSheet(
       RankingSheet.Order -> Res.string.rankings_order_context
       RankingSheet.Circuit -> Res.string.rankings_circuit_context
       RankingSheet.Region -> Res.string.rankings_region_context
-      null -> Res.string.rankings_metric_context
     },
   )
   fun select(updated: RankingsQuery) {
@@ -86,7 +86,8 @@ internal fun RankingsSelectionSheet(
     onDismiss()
   }
   PrismModalSheet(
-    visible = selection != null,
+    visible = visible,
+    onCollapsed = onCollapsed,
     onDismissRequest = onDismiss,
     paneTitle = title,
     header = {
@@ -126,7 +127,6 @@ internal fun RankingsSelectionSheet(
             RankingChoice(regionLabel(region), regionDescription(region), query.region == region) { select(query.copy(region = region)) }
           }
         }
-        null -> Unit
       }
     }
   }

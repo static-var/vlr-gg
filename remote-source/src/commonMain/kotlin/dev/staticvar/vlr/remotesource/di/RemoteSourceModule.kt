@@ -25,8 +25,6 @@ import dev.staticvar.vlr.remotesource.player.PlayerDataSource
 import dev.staticvar.vlr.remotesource.player.PlayerDataSourceImpl
 import dev.staticvar.vlr.remotesource.rankings.RankingsDataSource
 import dev.staticvar.vlr.remotesource.rankings.RankingsDataSourceImpl
-import dev.staticvar.vlr.remotesource.search.SearchDataSource
-import dev.staticvar.vlr.remotesource.search.SearchDataSourceImpl
 import dev.staticvar.vlr.remotesource.standings.StandingsDataSource
 import dev.staticvar.vlr.remotesource.standings.StandingsDataSourceImpl
 import dev.staticvar.vlr.remotesource.team.TeamDataSource
@@ -80,6 +78,5 @@ fun remoteSourceModule(
   single<RankingsDataSource> { RankingsDataSourceImpl(get()) }
   single<StandingsDataSource> { StandingsDataSourceImpl(get()) }
   single<TeamDataSource> { TeamDataSourceImpl(get()) }
-  single<SearchDataSource> { SearchDataSourceImpl(get()) }
   single<VersionDataSource> { VersionDataSourceImpl(get()) }
 }

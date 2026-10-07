@@ -64,30 +64,6 @@ object EventStatusNullableSerializer : KSerializer<EventStatus?> {
     EventStatus.fromWire(runCatching { decoder.decodeString() }.getOrNull())
 }
 
-@Serializable
-enum class SearchCategory(val wireName: String) {
-  ALL("all"),
-  TEAM("teams"),
-  PLAYER("players"),
-  EVENT("events"),
-  SERIES("series"),
-  ;
-
-  companion object {
-    private val byWire = entries.associateBy(SearchCategory::wireName)
-    fun fromWire(value: String?): SearchCategory? = value?.let { byWire[it] }
-  }
-}
-
-object SearchCategoryNullableSerializer : KSerializer<SearchCategory?> {
-  override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("SearchCategoryNullable", PrimitiveKind.STRING)
-  override fun serialize(encoder: Encoder, value: SearchCategory?) {
-    encoder.encodeString(value?.wireName ?: "unknown")
-  }
-  override fun deserialize(decoder: Decoder): SearchCategory? =
-    SearchCategory.fromWire(runCatching { decoder.decodeString() }.getOrNull())
-}
-
 @Serializable(with = VetoActionSerializer::class)
 enum class VetoAction(val wireName: String) {
   BAN("ban"),

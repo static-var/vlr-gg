@@ -59,10 +59,10 @@ data class TeamRanking(
   val elo: Double,
   val wins: Int,
   val losses: Int,
+  val mapElo: Double,
+  val matchesPlayed: Int,
+  val winRate: Double,
   val isFavorite: Boolean = false,
   val region: RankingRegion? = null,
-  val mapElo: Double = elo,
-  val matchesPlayed: Int = wins + losses,
-  val winRate: Double = if (matchesPlayed == 0) 0.0 else wins.toDouble() / matchesPlayed,
   val overallRank: Int? = null,
 )

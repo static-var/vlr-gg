@@ -25,6 +25,4 @@ public data class RankingsUiState(
       RankingsView.Explore -> exploreQuery
       RankingsView.Regional -> RankingsQuery(region = selectedRegion)
     }
-
-  public val visibleTeams: List<TeamRanking> get() = teams
 }

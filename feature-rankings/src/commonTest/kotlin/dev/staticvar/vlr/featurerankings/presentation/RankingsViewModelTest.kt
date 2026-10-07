@@ -61,7 +61,7 @@ class RankingsViewModelTest {
     val viewModel = createViewModel(repository)
     advanceUntilIdle()
 
-    assertEquals(teams, viewModel.uiState.value.visibleTeams)
+    assertEquals(teams, viewModel.uiState.value.teams)
     assertEquals(false, viewModel.uiState.value.isLoading)
     assertEquals(emptyList(), repository.refreshQueries)
   }
@@ -127,7 +127,7 @@ class RankingsViewModelTest {
     viewModel.updateExploreQuery(explore)
     advanceUntilIdle()
     assertEquals(explore, viewModel.uiState.value.query)
-    assertEquals(exploreTeams, viewModel.uiState.value.visibleTeams)
+    assertEquals(exploreTeams, viewModel.uiState.value.teams)
 
     viewModel.selectRegion(RankingRegion.China)
     advanceUntilIdle()
@@ -135,12 +135,12 @@ class RankingsViewModelTest {
     viewModel.setView(RankingsView.Regional)
     advanceUntilIdle()
     assertEquals(regional, viewModel.uiState.value.query)
-    assertEquals(regionalTeams, viewModel.uiState.value.visibleTeams)
+    assertEquals(regionalTeams, viewModel.uiState.value.teams)
 
     viewModel.setView(RankingsView.Explore)
     advanceUntilIdle()
     assertEquals(explore, viewModel.uiState.value.query)
-    assertEquals(exploreTeams, viewModel.uiState.value.visibleTeams)
+    assertEquals(exploreTeams, viewModel.uiState.value.teams)
     assertEquals(RankingRegion.China, viewModel.uiState.value.selectedRegion)
     assertEquals(listOf(explore, regional, explore), repository.refreshQueries)
   }
@@ -224,8 +224,8 @@ class RankingsViewModelTest {
     viewModel.selectRegion(RankingRegion.Americas)
     viewModel.setView(RankingsView.Regional)
     advanceUntilIdle()
-    assertEquals(regional, viewModel.uiState.value.visibleTeams)
-    assertEquals(listOf(2, 2, 4), viewModel.uiState.value.visibleTeams.map { it.rank })
+    assertEquals(regional, viewModel.uiState.value.teams)
+    assertEquals(listOf(2, 2, 4), viewModel.uiState.value.teams.map { it.rank })
     assertEquals(global, repository.rankings(RankingsQuery()).value)
     assertEquals(listOf(regionalQuery), repository.refreshQueries)
   }
@@ -260,13 +260,13 @@ class RankingsViewModelTest {
     viewModel.updateExploreQuery(nextQuery)
     assertEquals(emptyList(), viewModel.uiState.value.teams)
     advanceUntilIdle()
-    assertEquals(nextTeams, viewModel.uiState.value.visibleTeams)
+    assertEquals(nextTeams, viewModel.uiState.value.teams)
     assertEquals(false, viewModel.uiState.value.isRefreshing)
 
     oldResponse.complete(Unit)
     advanceUntilIdle()
     assertEquals(nextQuery, viewModel.uiState.value.query)
-    assertEquals(nextTeams, viewModel.uiState.value.visibleTeams)
+    assertEquals(nextTeams, viewModel.uiState.value.teams)
     assertEquals(null, viewModel.uiState.value.errorMessage)
     assertEquals(null, viewModel.uiState.value.errorDetails)
     assertEquals(false, viewModel.uiState.value.isLoading)
@@ -286,13 +286,13 @@ class RankingsViewModelTest {
 
     viewModel.updateExploreQuery(RankingsQuery(circuit = RankingCircuit.Collegiate))
     advanceUntilIdle()
-    assertEquals(emptyList(), viewModel.uiState.value.visibleTeams)
+    assertEquals(emptyList(), viewModel.uiState.value.teams)
     assertEquals(true, viewModel.uiState.value.isLoading)
     assertEquals(true, viewModel.uiState.value.isRefreshing)
 
     gate.complete(Unit)
     advanceUntilIdle()
-    assertEquals(emptyList(), viewModel.uiState.value.visibleTeams)
+    assertEquals(emptyList(), viewModel.uiState.value.teams)
     assertEquals(false, viewModel.uiState.value.isLoading)
     assertEquals(false, viewModel.uiState.value.isRefreshing)
   }
@@ -308,7 +308,7 @@ class RankingsViewModelTest {
     val replacement = listOf(fnatic.copy(rank = 1, isFavorite = true), nrg.copy(rank = 2))
     repository.rankings(RankingsQuery()).value = replacement
     advanceUntilIdle()
-    assertEquals(replacement, viewModel.uiState.value.visibleTeams)
+    assertEquals(replacement, viewModel.uiState.value.teams)
   }
 
   private fun createViewModel(
@@ -331,6 +331,9 @@ class RankingsViewModelTest {
     country = "",
     rank = rank,
     elo = 1800.0 - rank,
+    mapElo = 1750.0 - rank,
+    matchesPlayed = 10 + rank,
+    winRate = 10.0 / (10 + rank),
     wins = 10,
     losses = rank,
   )

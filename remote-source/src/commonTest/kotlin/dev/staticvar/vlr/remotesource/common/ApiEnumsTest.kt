@@ -35,19 +35,6 @@ class ApiEnumsTest {
   )
 
   @Test
-  fun searchCategory_unknown_decodes_to_null() = EnumFallbackAsserts.assertNullableMappings(
-    SearchCategoryNullableSerializer,
-    mapOf(
-      "teams" to SearchCategory.TEAM,
-      "players" to SearchCategory.PLAYER,
-      "events" to SearchCategory.EVENT,
-      "series" to SearchCategory.SERIES,
-      "all" to SearchCategory.ALL,
-      "esports_org" to null,
-    ),
-  )
-
-  @Test
   fun vetoAction_unknown_decodes_to_unknown() = EnumFallbackAsserts.assertMappings(
     VetoActionSerializer,
     mapOf(

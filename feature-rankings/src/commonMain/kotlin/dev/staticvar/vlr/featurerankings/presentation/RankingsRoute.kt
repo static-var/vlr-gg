@@ -99,6 +99,7 @@ internal fun RankingsScreen(
   onRefresh: () -> Unit = {},
 ) {
   var sheet by rememberSaveable { mutableStateOf<RankingSheet?>(null) }
+  var showSelectionSheet by rememberSaveable { mutableStateOf(false) }
   var showRankingInfo by rememberSaveable { mutableStateOf(false) }
   val hasContent = uiState.teams.isNotEmpty()
 
@@ -154,7 +155,13 @@ internal fun RankingsScreen(
     if (uiState.view == RankingsView.Regional) {
       RegionalTabs(uiState.selectedRegion, onRegionSelected)
     } else {
-      RankingsQuerySentence(query = uiState.exploreQuery, onSelection = { sheet = it })
+      RankingsQuerySentence(
+        query = uiState.exploreQuery,
+        onSelection = {
+          sheet = it
+          showSelectionSheet = true
+        },
+      )
     }
 
     when {
@@ -170,7 +177,7 @@ internal fun RankingsScreen(
           modifier = Modifier.fillMaxWidth().weight(1f),
         )
       }
-      uiState.visibleTeams.isEmpty() -> {
+      uiState.teams.isEmpty() -> {
         SharedEmptyState(
           artwork = EmptyStateArtwork.NoLiveMatches,
           title = stringResource(Res.string.no_rankings_yet),
@@ -183,12 +190,16 @@ internal fun RankingsScreen(
       }
     }
   }
-  RankingsSelectionSheet(
-    selection = sheet,
-    query = uiState.exploreQuery,
-    onDismiss = { sheet = null },
-    onQueryChanged = onExploreQueryChanged,
-  )
+  sheet?.let { selection ->
+    RankingsSelectionSheet(
+      selection = selection,
+      visible = showSelectionSheet,
+      query = uiState.exploreQuery,
+      onDismiss = { showSelectionSheet = false },
+      onCollapsed = { if (!showSelectionSheet) sheet = null },
+      onQueryChanged = onExploreQueryChanged,
+    )
+  }
   RankingsInfoSheet(visible = showRankingInfo, onDismiss = { showRankingInfo = false })
 }
 
@@ -213,14 +224,14 @@ private fun RankingsContent(uiState: RankingsUiState, onTeamSelected: (String) -
       item {
         Text(
           text = uiState.selectedRegion?.let {
-            stringResource(Res.string.top_teams_in_region, uiState.visibleTeams.size, regionLabel(it))
-          } ?: stringResource(Res.string.top_teams_all_circuits, uiState.visibleTeams.size),
+            stringResource(Res.string.top_teams_in_region, uiState.teams.size, regionLabel(it))
+          } ?: stringResource(Res.string.top_teams_all_circuits, uiState.teams.size),
           style = Prism.typography.label,
           color = Prism.color.labelColor,
         )
       }
     }
-    items(uiState.visibleTeams, key = { it.teamId }) { team ->
+    items(uiState.teams, key = { it.teamId }) { team ->
       RankingTeamItem(
         team = team,
         metric = uiState.query.metric,

@@ -8,7 +8,6 @@ import dev.staticvar.vlr.remotesource.common.VetoAction
 import dev.staticvar.vlr.remotesource.events.EventDetailsDto
 import dev.staticvar.vlr.remotesource.match.MatchDetailsDto
 import dev.staticvar.vlr.remotesource.match.MatchPreviewDto
-import dev.staticvar.vlr.remotesource.search.SearchResultDto
 import dev.staticvar.vlr.remotesource.standings.StandingsDto
 import dev.staticvar.vlr.remotesource.team.TeamDetailsDto
 import kotlinx.serialization.decodeFromString
@@ -67,6 +66,5 @@ class LanguageDtoCompatibilityTest {
       json.decodeFromString<StandingsDto>("""{"circuits":[{"region":"Europe"}]}""")
         .circuits.single().regionLabel,
     )
-    assertNull(json.decodeFromString<SearchResultDto>("""{"category":"teams"}""").categoryLabel)
   }
 }
