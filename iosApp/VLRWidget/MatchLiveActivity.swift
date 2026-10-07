@@ -85,6 +85,7 @@ struct MatchLiveActivityLockScreen: View {
         VStack(spacing: mapProgress == nil ? 10 : 6) {
             HStack(spacing: 6) {
                 MatchLiveActivityStatus(state: state)
+                    .layoutPriority(1)
                 Spacer()
                 MatchLiveActivityDetail(state: state)
             }
@@ -178,8 +179,9 @@ private struct MatchLiveActivityDetail: View {
                         .fixedSize(horizontal: true, vertical: false)
                 }
             case .stage(let stage):
-                Text(verbatim: stage)
+                Text(verbatim: stage.count > 32 ? String(stage.prefix(31)) + "…" : stage)
                     .truncationMode(.tail)
+                    .accessibilityLabel(Text(verbatim: stage))
             case .branding:
                 Text(verbatim: "VAL ESPORTS")
                     .fixedSize(horizontal: true, vertical: false)
