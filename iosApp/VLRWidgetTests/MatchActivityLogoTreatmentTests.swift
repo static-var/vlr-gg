@@ -65,7 +65,8 @@ final class MatchActivityLogoTreatmentTests: XCTestCase {
         let source = try image(width: 1024, height: 512, gray: 0, inset: 64)
         XCTAssertTrue(try MatchActivityLogoCache.prepareVariants(source, original: original))
         XCTAssertFalse(try MatchActivityLogoCache.prepareVariants(source, original: original))
-        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: directory.path).count, 4)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: directory.path).count, 5)
+        XCTAssertEqual(MatchActivityLogoCache.logoColor(original: original), .monochrome)
         for appearance in MatchActivityLogoCache.Appearance.allCases {
             for size in MatchActivityLogoCache.LogoSize.allCases {
                 let loaded = try XCTUnwrap(MatchActivityLogoCache.image(
@@ -108,6 +109,80 @@ final class MatchActivityLogoTreatmentTests: XCTestCase {
             XCTAssertLessThanOrEqual(bitmap.width, size == .compact ? 60 : 174)
             XCTAssertEqual(bitmap.width, bitmap.height * 2)
         }
+    }
+
+    func testLogoColorsIgnoreTransparentAndMonochromePixels() throws {
+        let context = try makeContext(width: 32, height: 32)
+        context.setFillColor(gray: 1, alpha: 1)
+        context.fill(CGRect(x: 0, y: 0, width: 32, height: 32))
+        context.setFillColor(red: 1, green: 0, blue: 0, alpha: 1)
+        context.fill(CGRect(x: 8, y: 8, width: 16, height: 16))
+        let logo = try XCTUnwrap(context.makeImage())
+        XCTAssertEqual(MatchActivityTeamColors.extract(from: logo), .vivid(.init(red: 255, green: 0, blue: 0)))
+        XCTAssertEqual(MatchActivityTeamColors.extract(from: try image(gray: 0)), .monochrome)
+        XCTAssertEqual(MatchActivityTeamColors.extract(from: try image(gray: 1)), .monochrome)
+        XCTAssertEqual(MatchActivityTeamColors.extract(from: try image(gray: 0, alpha: 0)), .unavailable)
+    }
+
+    func testSmallAccentDoesNotDictateTeamColor() throws {
+        let context = try makeContext(width: 32, height: 32)
+        context.setFillColor(gray: 1, alpha: 1)
+        context.fill(CGRect(x: 0, y: 0, width: 32, height: 32))
+        context.setFillColor(red: 1, green: 0, blue: 0, alpha: 1)
+        context.fill(CGRect(x: 0, y: 0, width: 2, height: 2))
+        XCTAssertEqual(MatchActivityTeamColors.extract(from: try XCTUnwrap(context.makeImage())), .unavailable)
+    }
+
+    func testTeamColorsPreserveVividLogoAndUseWhiteForDarkMonochrome() throws {
+        let red = MatchActivityTeamColors.RGB(red: 255, green: 0, blue: 0)
+        let dark = MatchActivityTeamColors.resolve(first: .vivid(red), second: .monochrome, appearance: .dark)
+        XCTAssertEqual(dark.first, red.color)
+        XCTAssertEqual(dark.second, MatchActivityTeamColors.RGB(red: 255, green: 255, blue: 255).color)
+        let light = MatchActivityTeamColors.resolve(first: .vivid(red), second: .monochrome, appearance: .light)
+        XCTAssertEqual(light.second, MatchActivityTeamColors.RGB(red: 0, green: 0, blue: 0).color)
+    }
+
+    func testSimilarTeamColorsChooseDistinctThemeFallback() throws {
+        let red = MatchActivityTeamColors.RGB(red: 255, green: 0, blue: 0)
+        let colors = MatchActivityTeamColors.resolve(first: .vivid(red), second: .vivid(red), appearance: .dark)
+        XCTAssertEqual(colors.first, red.color)
+        XCTAssertEqual(colors.second, MatchActivityTeamColors.RGB(red: 100, green: 218, blue: 199).color)
+        let monochrome = MatchActivityTeamColors.resolve(first: .monochrome, second: .monochrome, appearance: .dark)
+        let white = MatchActivityTeamColors.RGB(red: 255, green: 255, blue: 255).color
+        XCTAssertEqual(monochrome.first, white)
+        XCTAssertNotEqual(monochrome.second, white)
+        XCTAssertNotEqual(monochrome.second, monochrome.neutral)
+    }
+
+    func testExtractedColorsReachGraphicalContrastInBothAppearances() throws {
+        let difficult = [MatchActivityTeamColors.RGB(red: 15, green: 40, blue: 90),
+                         MatchActivityTeamColors.RGB(red: 250, green: 220, blue: 30)]
+        for appearance in MatchActivityLogoCache.Appearance.allCases {
+            let background = appearance == .dark ? 0.02 : 0.80
+            for color in difficult {
+                let readable = color.readable(on: appearance)
+                let ratio = (max(readable.luminance, background) + 0.05) / (min(readable.luminance, background) + 0.05)
+                XCTAssertGreaterThanOrEqual(ratio, 3)
+            }
+        }
+    }
+
+    func testAlreadyPreparedLogosAcquireColorWithoutRebuildingVariants() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let original = directory.appendingPathComponent("synthetic-logo")
+        let source = try image(gray: 0)
+        XCTAssertTrue(try MatchActivityLogoCache.prepareVariants(source, original: original))
+        let colorFile = original.appendingPathExtension("team-color-v1.plist")
+        try FileManager.default.removeItem(at: colorFile)
+        let variants = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+        let before = try variants.map { try Data(contentsOf: $0) }
+        XCTAssertTrue(try MatchActivityLogoCache.prepareVariants(source, original: original))
+        XCTAssertEqual(try variants.map { try Data(contentsOf: $0) }, before)
+        XCTAssertEqual(try PropertyListDecoder().decode(MatchActivityLogoColor.self, from: Data(contentsOf: colorFile)), .monochrome)
+        XCTAssertEqual(MatchActivityLogoCache.logoColor(original: original), .monochrome)
+        XCTAssertFalse(try MatchActivityLogoCache.prepareVariants(source, original: original))
     }
 
     private func image(

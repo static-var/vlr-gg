@@ -183,8 +183,8 @@ final class MatchActivityAttributesTests: XCTestCase {
         XCTAssertNil(resumed.pause)
         XCTAssertEqual(MatchLiveActivityScores(state: paused, hidden: false).primaryLeft,
                        MatchLiveActivityScores(state: resumed, hidden: false).primaryLeft)
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: paused, hidden: false)?.segments,
-                       MatchLiveActivityMapProgress(state: resumed, hidden: false)?.segments)
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: paused, hidden: false)?.maps.map(\.segment),
+                       MatchLiveActivityMapProgress(state: resumed, hidden: false)?.maps.map(\.segment))
     }
 
     @available(iOS 16.1, *)
@@ -254,9 +254,9 @@ final class MatchActivityAttributesTests: XCTestCase {
         )
         XCTAssertEqual(state.teams.map(\.id), ["474", "624"])
         XCTAssertEqual(state.map_winners, ["474", "624", nil])
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: state, hidden: false)?.segments,
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state, hidden: false)?.maps.map(\.segment),
                        [.wonBy(0), .wonBy(1), .active])
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: state, hidden: true)?.segments,
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state, hidden: true)?.maps.map(\.segment),
                        [.pending, .pending, .pending])
     }
 
@@ -269,11 +269,11 @@ final class MatchActivityAttributesTests: XCTestCase {
                   current_map: .init(name: "Lotus", scores: [5, 0], number: 3),
                   total_maps: 3, map_winners: winners)
         }
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: false, winners: ["474"]), hidden: false)?.segments,
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: false, winners: ["474"]), hidden: false)?.maps.map(\.segment),
                        [.wonBy(0), .pending, .active])
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: true, winners: []), hidden: false)?.segments,
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: true, winners: []), hidden: false)?.maps.map(\.segment),
                        [.pending, .pending, .pending])
-        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: true, winners: ["474", "624"]), hidden: false)?.segments,
+        XCTAssertEqual(MatchLiveActivityMapProgress(state: state(terminal: true, winners: ["474", "624"]), hidden: false)?.maps.map(\.segment),
                        [.wonBy(0), .wonBy(1), .pending])
     }
 
@@ -287,6 +287,65 @@ final class MatchActivityAttributesTests: XCTestCase {
 
         XCTAssertEqual(teams.map(\.visibleName), ["Alpha Wolves", "Beta Squad", "Gamma Group", "DF"])
         XCTAssertEqual(teams.map(\.logoInitials), ["AW", "BS", "GG", "DF"])
+    }
+
+    @available(iOS 16.1, *)
+    func testDecodesStageAndRoundWinnersInPayloadTeamOrder() throws {
+        let json = #"{"match_id":"734308","observed_at":1788789340,"terminal":false,"stage":"Playoffs: Grand Final","teams":[{"id":"474","name":"TL","score":1},{"id":"624","name":"PRX","score":1}],"current_map":{"name":"Lotus","number":3,"scores":[5,0]},"total_maps":3,"map_winners":["624","474",null],"map_round_winners":[{"map_number":1,"winners":[1,0,1]},{"map_number":2,"winners":[0,null,1]},{"map_number":3,"winners":[]}]}"#
+        let state = try JSONDecoder().decode(
+            MatchActivityAttributes.ContentState.self,
+            from: Data(json.utf8)
+        )
+
+        XCTAssertEqual(state.stage, "Playoffs: Grand Final")
+        XCTAssertEqual(state.map_round_winners.map(\.map_number), [1, 2, 3])
+        XCTAssertEqual(state.map_round_winners.map(\.winners), [[1, 0, 1], [0, nil, 1], []])
+        XCTAssertEqual(state.teams[try XCTUnwrap(state.map_round_winners[0].winners[0])].id, "624")
+        XCTAssertEqual(state.map_winners, ["624", "474", nil])
+        XCTAssertEqual(
+            try JSONDecoder().decode(MatchActivityAttributes.ContentState.self, from: JSONEncoder().encode(state)),
+            state
+        )
+    }
+
+    @available(iOS 16.1, *)
+    func testDecodesNullStageAndEmptyRoundHistory() throws {
+        let json = #"{"match_id":"734308","observed_at":1788789340,"terminal":false,"stage":null,"teams":[{"name":"TL"},{"name":"PRX"}],"map_round_winners":[]}"#
+        let state = try JSONDecoder().decode(
+            MatchActivityAttributes.ContentState.self,
+            from: Data(json.utf8)
+        )
+
+        XCTAssertNil(state.stage)
+        XCTAssertTrue(state.map_round_winners.isEmpty)
+    }
+
+    @available(iOS 16.1, *)
+    func testMalformedOptionalStageAndRoundHistoryPreserveMatchUpdate() throws {
+        let payloads = [
+            #"{"stage":42,"map_round_winners":[{"map_number":1,"winners":[0,null,1]}]}"#,
+            #"{"stage":"Playoffs: Grand Final","map_round_winners":"invalid"}"#,
+            #"{"stage":{},"map_round_winners":[{"map_number":1,"winners":[0,"invalid",1]}]}"#,
+        ]
+        for (index, fields) in payloads.enumerated() {
+            var payload = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(fields.utf8)) as? [String: Any])
+            payload.merge([
+                "match_id": "734308", "observed_at": 1788789340, "terminal": false,
+                "teams": [["id": "474", "name": "TL"], ["id": "624", "name": "PRX"]],
+                "current_map": ["name": "Lotus", "number": 1, "scores": [8, 6]],
+                "total_maps": 3, "map_winners": ["474"],
+            ]) { _, matchValue in matchValue }
+            let state = try JSONDecoder().decode(
+                MatchActivityAttributes.ContentState.self,
+                from: JSONSerialization.data(withJSONObject: payload)
+            )
+            XCTAssertEqual(state.match_id, "734308")
+            XCTAssertEqual(state.current_map?.scores, [8, 6])
+            XCTAssertEqual(state.map_winners, ["474"])
+            XCTAssertEqual(state.stage, index == 1 ? "Playoffs: Grand Final" : nil)
+            XCTAssertEqual(state.map_round_winners,
+                           index == 0 ? [.init(map_number: 1, winners: [0, nil, 1])] : [])
+        }
     }
 
     @available(iOS 16.1, *)
@@ -315,6 +374,8 @@ final class MatchActivityAttributesTests: XCTestCase {
         XCTAssertNil(state.current_map?.number)
         XCTAssertEqual(state.current_map?.scores, [12, nil])
         XCTAssertNil(state.total_maps)
+        XCTAssertNil(state.stage)
+        XCTAssertTrue(state.map_round_winners.isEmpty)
 
         let stateWithoutMap = try JSONDecoder().decode(
             MatchActivityAttributes.ContentState.self,

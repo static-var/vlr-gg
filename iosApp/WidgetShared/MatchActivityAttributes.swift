@@ -60,6 +60,16 @@ struct MatchActivityAttributes: ActivityAttributes {
             }
         }
 
+        struct MapRounds: Codable, Hashable {
+            let map_number: Int
+            let winners: [Int?]
+
+            init(map_number: Int, winners: [Int?] = []) {
+                self.map_number = map_number
+                self.winners = winners
+            }
+        }
+
         struct Pause: Codable, Hashable {
             enum Kind: String, Codable {
                 case techPause = "tech_pause"
@@ -100,8 +110,10 @@ struct MatchActivityAttributes: ActivityAttributes {
         let total_maps: Int?
         let map_winners: [String?]
         let pause: Pause?
+        let stage: String?
+        let map_round_winners: [MapRounds]
 
-        init(match_id: String, observed_at: Int, terminal: Bool, teams: [Team], current_map: CurrentMap?, total_maps: Int? = nil, map_winners: [String?] = [], pause: Pause? = nil) {
+        init(match_id: String, observed_at: Int, terminal: Bool, teams: [Team], current_map: CurrentMap?, total_maps: Int? = nil, map_winners: [String?] = [], pause: Pause? = nil, stage: String? = nil, map_round_winners: [MapRounds] = []) {
             self.match_id = match_id
             self.observed_at = observed_at
             self.terminal = terminal
@@ -110,10 +122,12 @@ struct MatchActivityAttributes: ActivityAttributes {
             self.total_maps = total_maps
             self.map_winners = map_winners
             self.pause = pause
+            self.stage = stage
+            self.map_round_winners = map_round_winners
         }
 
         private enum CodingKeys: String, CodingKey {
-            case match_id, observed_at, terminal, teams, current_map, total_maps, map_winners, pause
+            case match_id, observed_at, terminal, teams, current_map, total_maps, map_winners, pause, stage, map_round_winners
         }
 
         init(from decoder: Decoder) throws {
@@ -127,6 +141,8 @@ struct MatchActivityAttributes: ActivityAttributes {
             map_winners = (try? container.decodeIfPresent([MatchActivityTeamID?].self, forKey: .map_winners))?
                 .map { $0?.value } ?? []
             pause = try? container.decodeIfPresent(Pause.self, forKey: .pause)
+            stage = try? container.decodeIfPresent(String.self, forKey: .stage)
+            map_round_winners = (try? container.decodeIfPresent([MapRounds].self, forKey: .map_round_winners)) ?? []
         }
     }
 
