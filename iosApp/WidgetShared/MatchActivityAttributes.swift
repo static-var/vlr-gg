@@ -60,9 +60,14 @@ struct MatchActivityAttributes: ActivityAttributes {
             }
         }
 
-        private struct LegacyMapRounds: Decodable {
+        struct MapRounds: Codable, Hashable {
             let map_number: Int
             let winners: [Int?]
+
+            init(map_number: Int, winners: [Int?] = []) {
+                self.map_number = map_number
+                self.winners = winners
+            }
         }
 
         struct Pause: Codable, Hashable {
@@ -101,22 +106,18 @@ struct MatchActivityAttributes: ActivityAttributes {
         let observed_at: Int
         let terminal: Bool
         let teams: [Team]
-        let team_0: String?
-        let team_1: String?
         let current_map: CurrentMap?
         let total_maps: Int?
         let map_winners: [String?]
         let pause: Pause?
         let stage: String?
-        let map_round_winners: [String]
+        let map_round_winners: [MapRounds]
 
-        init(match_id: String, observed_at: Int, terminal: Bool, teams: [Team], current_map: CurrentMap?, total_maps: Int? = nil, map_winners: [String?] = [], pause: Pause? = nil, stage: String? = nil, map_round_winners: [String] = [], team_0: String? = nil, team_1: String? = nil) {
+        init(match_id: String, observed_at: Int, terminal: Bool, teams: [Team], current_map: CurrentMap?, total_maps: Int? = nil, map_winners: [String?] = [], pause: Pause? = nil, stage: String? = nil, map_round_winners: [MapRounds] = []) {
             self.match_id = match_id
             self.observed_at = observed_at
             self.terminal = terminal
             self.teams = teams
-            self.team_0 = team_0
-            self.team_1 = team_1
             self.current_map = current_map
             self.total_maps = total_maps
             self.map_winners = map_winners
@@ -126,12 +127,7 @@ struct MatchActivityAttributes: ActivityAttributes {
         }
 
         private enum CodingKeys: String, CodingKey {
-            case match_id, observed_at, terminal, teams, team_0, team_1, current_map, total_maps, map_winners, pause, stage
-            case map_round_winners = "map_rounds"
-        }
-
-        private enum LegacyCodingKeys: String, CodingKey {
-            case map_round_winners
+            case match_id, observed_at, terminal, teams, current_map, total_maps, map_winners, pause, stage, map_round_winners
         }
 
         init(from decoder: Decoder) throws {
@@ -140,30 +136,13 @@ struct MatchActivityAttributes: ActivityAttributes {
             observed_at = try container.decode(Int.self, forKey: .observed_at)
             terminal = try container.decode(Bool.self, forKey: .terminal)
             teams = try container.decode([Team].self, forKey: .teams)
-            team_0 = try container.decodeIfPresent(MatchActivityTeamID.self, forKey: .team_0)?.value ?? teams.first?.id
-            team_1 = try container.decodeIfPresent(MatchActivityTeamID.self, forKey: .team_1)?.value ?? teams.dropFirst().first?.id
             current_map = try container.decodeIfPresent(CurrentMap.self, forKey: .current_map)
             total_maps = try container.decodeIfPresent(Int.self, forKey: .total_maps)
-            let legacy = try decoder.container(keyedBy: LegacyCodingKeys.self)
             map_winners = (try? container.decodeIfPresent([MatchActivityTeamID?].self, forKey: .map_winners))?
                 .map { $0?.value } ?? []
             pause = try? container.decodeIfPresent(Pause.self, forKey: .pause)
             stage = try container.decodeIfPresent(String.self, forKey: .stage)
-            if let rounds = try container.decodeIfPresent([String].self, forKey: .map_round_winners) {
-                map_round_winners = rounds
-            } else {
-                let rounds = try legacy.decodeIfPresent([LegacyMapRounds].self, forKey: .map_round_winners) ?? []
-                let slots = rounds.filter { (1...9).contains($0.map_number) }
-                map_round_winners = (0..<(slots.map(\.map_number).max() ?? 0)).map { index in
-                    let winners = slots.first { $0.map_number == index + 1 }?.winners ?? []
-                    guard winners.allSatisfy({ $0 == 0 || $0 == 1 }) else { return "" }
-                    return winners.map { $0 == 0 ? "0" : "1" }.joined()
-                }
-            }
-            guard map_round_winners.allSatisfy({ $0.allSatisfy { $0 == "0" || $0 == "1" } }) else {
-                throw DecodingError.dataCorruptedError(forKey: .map_round_winners, in: container,
-                                                      debugDescription: "Round histories must contain only team indexes 0 and 1")
-            }
+            map_round_winners = try container.decodeIfPresent([MapRounds].self, forKey: .map_round_winners) ?? []
         }
     }
 
