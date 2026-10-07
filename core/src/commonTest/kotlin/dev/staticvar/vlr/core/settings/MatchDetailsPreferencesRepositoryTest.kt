@@ -25,11 +25,13 @@ class MatchDetailsPreferencesRepositoryTest {
     for (showBreakdown in listOf(true, false)) {
       for (showMedia in listOf(true, false)) {
         for (showHeadToHead in listOf(true, false)) {
-          val preferences = MatchDetailsPreferences(showBreakdown, showMedia, showHeadToHead)
-          repository.setPreferences(preferences)
-          assertEquals(preferences, repository.preferences.value)
-          assertEquals(preferences, MatchDetailsPreferencesRepository(storage).preferences.value)
-          assertEquals(appearance.settings.value, AppearanceRepository(storage).settings.value)
+          for (showPrediction in listOf(true, false)) {
+            val preferences = MatchDetailsPreferences(showBreakdown, showMedia, showHeadToHead, showPrediction)
+            repository.setPreferences(preferences)
+            assertEquals(preferences, repository.preferences.value)
+            assertEquals(preferences, MatchDetailsPreferencesRepository(storage).preferences.value)
+            assertEquals(appearance.settings.value, AppearanceRepository(storage).settings.value)
+          }
         }
       }
     }

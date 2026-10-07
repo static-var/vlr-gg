@@ -8,4 +8,5 @@ public data class MatchDetailsPreferences(
   val showBreakdown: Boolean = true,
   val showMedia: Boolean = true,
   val showHeadToHead: Boolean = true,
+  val showPrediction: Boolean = true,
 )
