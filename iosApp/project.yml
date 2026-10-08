@@ -75,7 +75,7 @@ targets:
 
           export REPO_ROOT="$SRCROOT/.."
           export GENERATED_SWIFT_PATH="$SRCROOT/iosApp/GeneratedBuildConfig.swift"
-          export CI_DERIVED_DATA_PATH="${BUILD_DIR%/Build/Products}"
+          export CI_DERIVED_DATA_PATH="${CI_DERIVED_DATA_PATH:-${BUILD_DIR%%/Build/*}}"
 
           if [ "${CI_XCODE_CLOUD:-}" = TRUE ]; then
             export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
