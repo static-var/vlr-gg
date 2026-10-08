@@ -181,96 +181,6 @@
       "bounds_checked": true
     },
     {
-      "locale": "pt-BR",
-      "file": "output/pt-BR/feature-graphic-pt-BR-1024x500.png",
-      "dimensions": [
-        1024,
-        500
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": null,
-      "source_capture": null,
-      "source_capture_sha256": null,
-      "sha256": "8b28087e0d186cb8ebe4867040da1d32105ba732723fca2a75798173326fb0c0",
-      "bounds_checked": true
-    },
-    {
-      "locale": "pt-BR",
-      "file": "output/pt-BR/screenshot-pt-BR-01.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": "English",
-      "source_capture": "distribution/rebrand-2026/raw/android/03.png",
-      "source_capture_sha256": "ac5112be0628027064e50c8cae1848fd9d6f3de14dd26188e8d0d66bd2501139",
-      "sha256": "9063ff7a37dbb19ec428b5156b1120c7a4c02209ba8827823064697b4810e050",
-      "bounds_checked": true
-    },
-    {
-      "locale": "pt-BR",
-      "file": "output/pt-BR/screenshot-pt-BR-02.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": "English",
-      "source_capture": "distribution/rebrand-2026/raw/android/01.png",
-      "source_capture_sha256": "fc3c358649c13d5398b0173b9751e99cef7ba5a2f3229b5235441626d261924c",
-      "sha256": "7c35d7d3515fdaec7039efaaac62346123b88d43c93d9086fbb520397fab6a5b",
-      "bounds_checked": true
-    },
-    {
-      "locale": "pt-BR",
-      "file": "output/pt-BR/screenshot-pt-BR-03.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": "English",
-      "source_capture": "distribution/rebrand-2026/raw/android/04.png",
-      "source_capture_sha256": "34cafb1707028a2c345746dd64a69d0b273f2cf15d504ed0036e1e9eaf59ad6e",
-      "sha256": "6b1804a29ed6d675904ab3d8071bb6e088b77dc0ae9d2f324f1782d9b58960a2",
-      "bounds_checked": true
-    },
-    {
-      "locale": "pt-BR",
-      "file": "output/pt-BR/screenshot-pt-BR-04.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": "English",
-      "source_capture": "distribution/rebrand-2026/raw/android/02.png",
-      "source_capture_sha256": "e631346be4f348c714af575c85a518d1602c415d351470d83f9ed1e8d5267bcb",
-      "sha256": "a8996704cf1171b735fb8f416ad5f41bffc3b63768bfa2c33f33237ada75d1b0",
-      "bounds_checked": true
-    },
-    {
-      "locale": "pt-BR",
-      "file": "output/pt-BR/screenshot-pt-BR-05.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": "English",
-      "source_capture": "distribution/rebrand-2026/raw/android/05.png",
-      "source_capture_sha256": "a2662983fffbbddb3d3360cae48b61d67d248b514de9b55f07b88597928024a3",
-      "sha256": "9148055db7b077da27614b19f73a41615ec6aeeadd34b3d961065ee7e1524663",
-      "bounds_checked": true
-    },
-    {
       "locale": "hi-IN",
       "file": "output/hi-IN/feature-graphic-hi-IN-1024x500.png",
       "dimensions": [
@@ -359,6 +269,96 @@
       "source_capture_sha256": "a2662983fffbbddb3d3360cae48b61d67d248b514de9b55f07b88597928024a3",
       "sha256": "114d4a32e033341a68476af44ce57d30c7f41e58d2f3f9e76c9aa1bdf966946f",
       "bounds_checked": true
+    },
+    {
+      "locale": "pt-BR",
+      "file": "output/pt-BR/feature-graphic-pt-BR-1024x500.png",
+      "dimensions": [
+        1024,
+        500
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": null,
+      "source_capture": null,
+      "source_capture_sha256": null,
+      "sha256": "8b28087e0d186cb8ebe4867040da1d32105ba732723fca2a75798173326fb0c0",
+      "bounds_checked": true
+    },
+    {
+      "locale": "pt-BR",
+      "file": "output/pt-BR/screenshot-pt-BR-01.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": "Brazilian Portuguese",
+      "source_capture": "distribution/google-play/creative-2026-10/raw/pt-BR/03.png",
+      "source_capture_sha256": "5c1b1279b73e8674ee887264b7a92e0e2ab377fd5a2568470a8b1485da5558e0",
+      "sha256": "7fdd165917cf840aa0512226e1df21a2cab0d3118a4e5efd04f4539559968323",
+      "bounds_checked": true
+    },
+    {
+      "locale": "pt-BR",
+      "file": "output/pt-BR/screenshot-pt-BR-02.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": "Brazilian Portuguese",
+      "source_capture": "distribution/google-play/creative-2026-10/raw/pt-BR/01.png",
+      "source_capture_sha256": "ebc0d5145571e59d641af6526f3491ab4818f4aef573e44221fa3d07eb5da1bb",
+      "sha256": "5bb33013bc25e87b60e1e98bd715450e9337c12a932bc9af34de1125a360a761",
+      "bounds_checked": true
+    },
+    {
+      "locale": "pt-BR",
+      "file": "output/pt-BR/screenshot-pt-BR-03.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": "Brazilian Portuguese",
+      "source_capture": "distribution/google-play/creative-2026-10/raw/pt-BR/04.png",
+      "source_capture_sha256": "61dfc7646eaba9c18e189f131f5b6ec3dcec4bf459df596f76e0c56a43c73bd9",
+      "sha256": "e68bd7d6a0dcbfa031f5efd1b9ac89945a791bd7ae7c44fe6b8efc11e7f589c6",
+      "bounds_checked": true
+    },
+    {
+      "locale": "pt-BR",
+      "file": "output/pt-BR/screenshot-pt-BR-04.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": "Brazilian Portuguese",
+      "source_capture": "distribution/google-play/creative-2026-10/raw/pt-BR/02.png",
+      "source_capture_sha256": "0c2b68511dcd5434f88661353f0005020dc31d332808137dad65e9929b96d5c7",
+      "sha256": "766dd24c0725acb5a1f5868b7c5a29ef96c5633170a346bbc89b7192cf41bd50",
+      "bounds_checked": true
+    },
+    {
+      "locale": "pt-BR",
+      "file": "output/pt-BR/screenshot-pt-BR-05.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": "Brazilian Portuguese",
+      "source_capture": "distribution/google-play/creative-2026-10/raw/pt-BR/05.png",
+      "source_capture_sha256": "9acd4cd43e118e914f3e912167edbc49e9973a40395c000c35b65a815a190178",
+      "sha256": "0b9864faae2787a4db903edcc5ed75d6a171e56b82de5a2ff1b37edc8812ce61",
+      "bounds_checked": true
     }
   ],
   "fonts": {
@@ -369,7 +369,7 @@
   "source_ui_languages": {
     "en-US": "English",
     "en-IN": "English",
-    "pt-BR": "English",
+    "pt-BR": "Brazilian Portuguese",
     "hi-IN": "English"
   },
   "hindi_art_language": "English",

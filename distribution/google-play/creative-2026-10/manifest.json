@@ -134,9 +134,11 @@
             "Veja a posição",
             "dos times."
           ],
-          "support": "Rankings regionais de VALORANT"
+          "support": "Classificação de times de VALORANT"
         }
-      ]
+      ],
+      "source_directory": "distribution/google-play/creative-2026-10/raw/pt-BR",
+      "source_ui_language": "Brazilian Portuguese"
     },
     "hi-IN": {
       "art_language": "English",
