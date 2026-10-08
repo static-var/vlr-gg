@@ -60,7 +60,7 @@
 .feature-label{color:#5720bd;margin:0;font-size:15px}
 .predictions p:not(.feature-label){max-width:560px;color:#55515a}
 .predictions .button{margin-top:18px}
-.prediction-next{padding:28px 0 28px 36px;border-left:2px solid #7938ef}
+.prediction-next{margin-top:38px;padding-top:24px;border-top:2px solid #7938ef}
 .prediction-next h3{font-family:Chakra,Arial,sans-serif;font-weight:400;font-size:28px;line-height:1.2;margin:0 0 20px}
 .experience-home,.team-values{background:#7938ef;color:white;border-block:2px solid #19181b}
 .experience-home a:focus-visible,.team-values a:focus-visible,.about-experience a:focus-visible{outline-color:#f5f3ec}
@@ -110,7 +110,7 @@
  .traction-numbers dt{font-size:12px}
  .traction-source{font-size:12px;margin-top:22px}
  .predictions,.experience-home-inner,.team-values-inner{grid-template-columns:1fr;gap:28px}
- .prediction-next{padding:24px 0 0;border-left:0;border-top:2px solid #7938ef}
+ .prediction-next{margin-top:28px}
  .experience-home-inner,.team-values-inner{padding-top:44px;padding-bottom:44px}
  .page-intro{padding-top:44px;padding-bottom:44px}
  .page-intro h1{font-size:clamp(44px,10vw,62px);letter-spacing:-1.5px}
@@ -121,3 +121,9 @@
  .roadmap-item{grid-template-columns:1fr;gap:22px;padding:28px 0 32px}
 }
 @media(max-width:380px){.traction-numbers{gap:12px}.traction-numbers>div+div{padding-left:12px}.traction-numbers dd{font-size:29px}.traction-numbers dt{font-size:11px}}
+
+.prediction-preview{margin:0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:20px;padding:28px;background:#e8e1f6;border:2px solid #19181b;box-shadow:8px 8px #19181b}
+.prediction-preview>a{display:block;width:min(100%,300px);border:2px solid #19181b;background:#19181b}
+.prediction-preview img{display:block;width:100%;height:auto}
+.prediction-preview figcaption{font-size:13px;text-align:center;color:#55515a}
+@media(max-width:700px){.prediction-preview{padding:22px 20px;box-shadow:5px 5px #19181b}}
