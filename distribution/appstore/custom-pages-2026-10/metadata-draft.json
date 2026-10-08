@@ -1,0 +1,33 @@
+{
+  "status": "Draft copy; not proof of store publication",
+  "pages": {
+    "matches": {
+      "en-US": {
+        "promotionalText": "Follow VALORANT match schedules and scores. Explore maps, player stats and event results, then keep your favorite teams together in Val Esports."
+      }
+    },
+    "rankings": {
+      "en-US": {
+        "promotionalText": "Explore regional VALORANT team rankings and match stats. Check map results, player details and events, then follow your favorite teams."
+      }
+    },
+    "india": {
+      "en-US": {
+        "promotionalText": "Follow VALORANT match schedules, scores and your favorite teams. Explore event results and match stats with Val Esports."
+      },
+      "hi-IN": {
+        "promotionalText": "VALORANT मैच शेड्यूल, स्कोर और पसंदीदा टीमें एक जगह। इवेंट के नतीजे और मैच के आँकड़े देखें। Val Esports के साथ अपने पसंदीदा मैच फ़ॉलो करें।",
+        "artLocale": "en-US",
+        "note": "Hindi metadata draft; bundled headline fonts do not contain Devanagari glyphs. Confirm App Store localization availability before upload."
+      }
+    },
+    "brazil": {
+      "pt-BR": {
+        "promotionalText": "Acompanhe placares e horários de VALORANT. Veja resultados, mapas e estatísticas, e reúna seus times favoritos no Val Esports."
+      },
+      "en-US": {
+        "promotionalText": "Follow VALORANT scores and schedules. Explore event results, maps and player stats, then keep your favorite teams together in Val Esports."
+      }
+    }
+  }
+}
