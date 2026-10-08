@@ -16,7 +16,7 @@
         1154
       ],
       "essential_content_within_safe_area": true,
-      "sha256": "70e83b257161856d8891134c428a85872bb96afd0b9178307d8acf98f072f75a"
+      "sha256": "9ea191759c5442947dd178664164c99b90040a4319ca18ac9a9ebbc036ae8a4f"
     },
     {
       "placement": "search",
@@ -34,10 +34,14 @@
         1795
       ],
       "essential_content_within_safe_area": true,
-      "sha256": "e8e0172d64dd57c13e3b1d64c863aa1c29a02f494db391162463e945d59d2675"
+      "sha256": "1f94bd8de237e4b2a36160b7804c0a89eb7a663dc26d0b727cc18fa29e5c6e33"
     }
   ],
   "source_capture": "distribution/rebrand-2026/raw/ios/02.png",
+  "fonts": {
+    "headings": "designsystem/src/commonMain/composeResources/font/chakra_petch_regular.ttf",
+    "supporting_text": "designsystem/src/commonMain/composeResources/font/space_grotesk_regular.ttf"
+  },
   "capture_sha256": "bb5dd71ddda422fec832ab623cdaf603b76a41f3319c81423c6306bd1c723f3e",
   "specifications": "https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications",
   "template_safe_areas": {

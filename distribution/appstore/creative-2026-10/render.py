@@ -5,6 +5,7 @@ import hashlib
 import json
 import subprocess
 import xml.etree.ElementTree as ET
+import zipfile
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -17,7 +18,7 @@ from fontTools.ttLib import TTFont
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 INK, IVORY, VIOLET, LILAC = "#16131B", "#F5F1E8", "#956DFF", "#D9CCFF"
-HEADLINE = Path("/System/Library/Fonts/Supplemental/Arial Black.ttf")
+HEADLINE = ROOT / "designsystem/src/commonMain/composeResources/font/chakra_petch_regular.ttf"
 BODY = ROOT / "designsystem/src/commonMain/composeResources/font/space_grotesk_regular.ttf"
 CAPTURE = ROOT / "distribution/rebrand-2026/raw/ios/02.png"
 ICON = ROOT / "art/app-icon/match-point.svg"
@@ -33,6 +34,7 @@ def text_path(label, font_path, size, x, baseline, fill, boxes):
     glyphs = font.getGlyphSet()
     cmap = font.getBestCmap()
     scale = size / font["head"].unitsPerEm
+    stroke = size * 0.016 if font_path == HEADLINE else 0
     paths = []
     for character in label:
         glyph = glyphs[cmap[ord(character)]]
@@ -43,10 +45,11 @@ def text_path(label, font_path, size, x, baseline, fill, boxes):
         bounds = BoundsPen(glyphs)
         glyph.draw(TransformPen(bounds, transform))
         if bounds.bounds:
-            boxes.append((label, bounds.bounds))
+            left, top, right, bottom = bounds.bounds
+            boxes.append((label, (left-stroke/2, top-stroke/2, right+stroke/2, bottom+stroke/2)))
         x += glyph.width * scale
     font.close()
-    return f'<path fill="{fill}" d="{" ".join(paths)}"/>'
+    return f'<path fill="{fill}" stroke="{fill}" stroke-width="{stroke}" paint-order="stroke" d="{" ".join(paths)}"/>'
 
 
 def icon(x, y, size):
@@ -95,8 +98,8 @@ def compose(kind):
         boxes.append(("shipping icon", (1137, 623, 1577, 1063)))
         for label, font, size, x, baseline, fill in [
             ("VAL ESPORTS", BODY, 48, 1680, 624, LILAC),
-            ("Every match.", HEADLINE, 126, 1670, 805, IVORY),
-            ("Your way.", HEADLINE, 126, 1670, 954, IVORY),
+            ("Every match.", HEADLINE, 150, 1670, 805, IVORY),
+            ("Your way.", HEADLINE, 150, 1670, 954, IVORY),
             ("Scores. Schedules. Favorites.", BODY, 43, 1680, 1085, LILAC),
         ]:
             parts.append(text_path(label, font, size, x, baseline, fill, boxes))
@@ -109,8 +112,8 @@ def compose(kind):
         boxes.append(("shipping icon", (940, 836, 1052, 948)))
         for label, font, size, x, baseline, fill in [
             ("VAL ESPORTS", BODY, 50, 1090, 907, LILAC),
-            ("VALORANT", HEADLINE, 126, 940, 1155, IVORY),
-            ("scores & stats", HEADLINE, 104, 940, 1310, IVORY),
+            ("VALORANT", HEADLINE, 150, 940, 1155, IVORY),
+            ("scores & stats", HEADLINE, 130, 940, 1310, IVORY),
             ("Follow your favorites.", BODY, 48, 944, 1486, LILAC),
             ("Schedules. Results. Events.", BODY, 43, 944, 1564, LILAC),
         ]:
@@ -166,6 +169,10 @@ def main():
     report = {
         "assets": records,
         "source_capture": str(CAPTURE.relative_to(ROOT)),
+        "fonts": {
+            "headings": str(HEADLINE.relative_to(ROOT)),
+            "supporting_text": str(BODY.relative_to(ROOT)),
+        },
         "capture_sha256": hashlib.sha256(CAPTURE.read_bytes()).hexdigest(),
         "specifications": "https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications",
         "template_safe_areas": {
@@ -174,6 +181,9 @@ def main():
         },
     }
     (output / "validation.json").write_text(json.dumps(report, indent=2) + "\n")
+    with zipfile.ZipFile(HERE / "upload-assets.zip", "w", zipfile.ZIP_DEFLATED) as archive:
+        for record in records:
+            archive.write(output / record["filename"], record["filename"])
     print(f"Rendered and validated {len(records)} opaque PNG assets in {output}")
 
 
