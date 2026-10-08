@@ -1,0 +1,47 @@
+{
+  "assets": [
+    {
+      "placement": "header",
+      "filename": "val-esports-header-3840x1646.png",
+      "dimensions": [
+        3840,
+        1646
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "art_safe_area": [
+        1097,
+        493,
+        2743,
+        1154
+      ],
+      "essential_content_within_safe_area": true,
+      "sha256": "70e83b257161856d8891134c428a85872bb96afd0b9178307d8acf98f072f75a"
+    },
+    {
+      "placement": "search",
+      "filename": "val-esports-search-3840x2560.png",
+      "dimensions": [
+        3840,
+        2560
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "art_safe_area": [
+        836,
+        765,
+        3004,
+        1795
+      ],
+      "essential_content_within_safe_area": true,
+      "sha256": "e8e0172d64dd57c13e3b1d64c863aa1c29a02f494db391162463e945d59d2675"
+    }
+  ],
+  "source_capture": "distribution/rebrand-2026/raw/ios/02.png",
+  "capture_sha256": "bb5dd71ddda422fec832ab623cdaf603b76a41f3319c81423c6306bd1c723f3e",
+  "specifications": "https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications",
+  "template_safe_areas": {
+    "header": "https://devimages-cdn.apple.com/design/resources/download/app-store/creative_assets-product_page_header_template-static.psd",
+    "search": "https://devimages-cdn.apple.com/design/resources/download/app-store/creative_assets-search_results_template-static.psd"
+  }
+}
