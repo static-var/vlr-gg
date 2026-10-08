@@ -9,8 +9,10 @@ valesports.app {
     Referrer-Policy strict-origin-when-cross-origin
     X-Frame-Options DENY
     Permissions-Policy "camera=(), microphone=(), geolocation=()"
-    Content-Security-Policy "default-src 'none'; style-src 'self'; font-src 'self'; img-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+    Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
   }
+  @documents path_regexp documents (\.html|/)$
+  header @documents >Cache-Control "no-cache"
   @forms path /api/testflight-signups /api/support-requests
   handle @forms {
     reverse_proxy valorant-esports-signup:8080 {
