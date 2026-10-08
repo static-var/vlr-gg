@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="match-title match-desc">
-  <title id="match-title">VLR Match point</title>
+  <title id="match-title">Val Esports</title>
   <desc id="match-desc">A chunky arcade match display with a two-color pixel V, a live indicator, and score lights on a lavender background.</desc>
   <g id="background"><path fill="#CBA6F7" d="M0 0H64V64H0Z"/></g>
   <g id="foreground" shape-rendering="crispEdges">
