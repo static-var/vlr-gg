@@ -1,5 +1,5 @@
 {
-  "status": "Saved in App Store Connect; English pages awaiting creative replacement before review; added locales prepared locally",
+  "status": "Three English pages submitted and waiting for review; Brazil draft and added localizations prepared",
   "pages": {
     "matches": {
       "en-US": {
@@ -30,7 +30,8 @@
           ],
           "count": 5
         }
-      }
+      },
+      "review_status": "Waiting for Review"
     },
     "rankings": {
       "en-US": {
@@ -60,7 +61,8 @@
           ],
           "count": 5
         }
-      }
+      },
+      "review_status": "Waiting for Review"
     },
     "india": {
       "en-US": {
@@ -93,7 +95,8 @@
         "promotionalText": "VALORANT मैच शेड्यूल, स्कोर और पसंदीदा टीमें एक जगह। इवेंट के नतीजे और मैच के आँकड़े देखें। Val Esports के साथ अपने पसंदीदा मैच फ़ॉलो करें।",
         "artLocale": "en-US",
         "note": "Hindi metadata draft; bundled headline fonts do not contain Devanagari glyphs. Confirm App Store localization availability before upload."
-      }
+      },
+      "review_status": "Waiting for Review"
     },
     "brazil": {
       "pt-BR": {
@@ -125,8 +128,23 @@
           ],
           "count": 5
         }
-      }
+      },
+      "review_status": "Draft"
     }
   },
-  "localization_blocker": "App version 1.1.0 is waiting for review; Apple requires an editable app version to add new localizations. Existing binary review remains queued pending user preference."
+  "localization_blocker": "App version 1.1.0 is waiting for review; Apple requires an editable app version to add new localizations. Existing binary review remains queued pending user preference.",
+  "review_submission": {
+    "id": "8c0c9020-0011-4bd8-bc82-581918a740bf",
+    "submitted_at": "2026-10-08T11:15:00+05:30",
+    "status": "Waiting for Review",
+    "pages": [
+      "matches",
+      "rankings",
+      "india"
+    ],
+    "creative_assets": [
+      "val-esports-header-v2-3840x1646.png",
+      "val-esports-search-v2-3840x2560.png"
+    ]
+  }
 }
