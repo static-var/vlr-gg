@@ -1,5 +1,6 @@
 """Render Play graphics in the App Store lilac pixel design using genuine Android UI."""
 
+import argparse
 import base64
 import hashlib
 import importlib.util
@@ -90,11 +91,18 @@ def render_svg(parts, size, name, output):
 
 def main():
     config = json.loads((HERE / 'manifest.json').read_text())
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--locale', action='append', choices=list(config['locales']), help='Render only this locale. Repeat for several locales.')
+    selected = set(parser.parse_args().locale or config['locales'])
     output = HERE / 'output'
     output.mkdir(exist_ok=True)
     font_cmaps = {str(font): set(TTFont(font).getBestCmap()) for font in (brand.HEADLINE, brand.BODY)}
-    records = []
+    report_path = output / 'validation.json'
+    previous = json.loads(report_path.read_text()).get('assets', []) if report_path.exists() else []
+    records = [item for item in previous if item['locale'] not in selected]
     for locale, localized in config['locales'].items():
+        if locale not in selected:
+            continue
         folder = output / locale
         folder.mkdir(exist_ok=True)
         source_directory = ROOT / localized.get('source_directory', str(SOURCE.relative_to(ROOT)))
@@ -130,9 +138,10 @@ def main():
               'font_fallback_used': False,
               'source_ui_languages': {locale: item.get('source_ui_language', 'English') for locale, item in config['locales'].items()},
               'hindi_art_language': 'English', 'hindi_art_reason': 'Bundled brand fonts have no Devanagari glyph coverage.',
-              'feature_graphics': 4, 'phone_screenshots': 20}
-    (output / 'validation.json').write_text(json.dumps(report, indent=2) + '\n')
-    print(f'Rendered and validated {len(records)} opaque assets.')
+              'feature_graphics': sum(item['dimensions'] == (1024, 500) or item['dimensions'] == [1024, 500] for item in records),
+              'phone_screenshots': sum(item['dimensions'] == (1080, 1920) or item['dimensions'] == [1080, 1920] for item in records)}
+    report_path.write_text(json.dumps(report, indent=2) + '\n')
+    print(f'Rendered {len(selected) * 6} opaque assets; validation covers {len(records)} assets.')
 
 
 if __name__ == '__main__':
