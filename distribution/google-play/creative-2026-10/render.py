@@ -37,8 +37,8 @@ def text(label, font, size, x, baseline, bounds):
     return brand.text_path(label, font, size, x, baseline, brand.INK, bounds)
 
 
-def capture(number, x, y, width):
-    path = SOURCE / f'{number:02}.png'
+def capture(number, x, y, width, source_directory):
+    path = source_directory / f'{number:02}.png'
     with Image.open(path) as image:
         sw, sh = image.size
     height = width * sh / sw
@@ -58,7 +58,7 @@ def feature(locale, config):
     return parts, size, bounds, None
 
 
-def phone(locale, slide):
+def phone(locale, slide, source_directory):
     size, bounds = (1080, 1920), []
     parts = [background(*size), brand.icon(70, 66, 46)]
     parts.append(text('Val Esports', brand.BODY, 27, 132, 101, bounds))
@@ -66,7 +66,7 @@ def phone(locale, slide):
         parts.append(text(line, brand.HEADLINE, 76, 70, baseline, bounds))
     parts.append(text(slide['support'], brand.BODY, 32, 72, 344, bounds))
     parts += [panel(204, 392, 696, 1486, '#AD8BD8'), panel(188, 376, 696, 1486, brand.INK)]
-    ui, box, path = capture(slide['source'], 206, 394, 660)
+    ui, box, path = capture(slide['source'], 206, 394, 660, source_directory)
     parts.append(ui)
     bounds.append(('genuine Android screen', box))
     return parts, size, bounds, path
@@ -97,10 +97,11 @@ def main():
     for locale, localized in config['locales'].items():
         folder = output / locale
         folder.mkdir(exist_ok=True)
-        graphics = [('feature-graphic-1024x500', feature(locale, localized))]
+        source_directory = ROOT / localized.get('source_directory', str(SOURCE.relative_to(ROOT)))
+        graphics = [(f'feature-graphic-{locale}-1024x500', feature(locale, localized))]
         for index, slide in enumerate(localized['slides'], 1):
             assert 1 <= len(slide['headline']) <= 2
-            graphics.append((f'{index:02}', phone(locale, slide)))
+            graphics.append((f'screenshot-{locale}-{index:02}', phone(locale, slide, source_directory)))
         for name, (parts, size, boxes, source) in graphics:
             for label, (left, top, right, bottom) in boxes:
                 if not (40 <= left <= right <= size[0]-40 and 40 <= top <= bottom <= size[1]-40):
@@ -110,23 +111,24 @@ def main():
                     raise ValueError(f'Unsupported glyphs: {label}')
             file = render_svg(parts, size, name, folder)
             records.append({'locale': locale, 'file': str(file.relative_to(HERE)), 'dimensions': size,
-                            'mode': 'RGB', 'alpha': False, 'source_capture': str(source.relative_to(ROOT)) if source else None,
+                            'mode': 'RGB', 'alpha': False, 'source_ui_language': localized.get('source_ui_language', 'English') if source else None, 'source_capture': str(source.relative_to(ROOT)) if source else None,
                             'source_capture_sha256': hashlib.sha256(source.read_bytes()).hexdigest() if source else None,
                             'sha256': hashlib.sha256(file.read_bytes()).hexdigest(), 'bounds_checked': True})
         contact = Image.new('RGB', (1420, 950), brand.INK)
-        with Image.open(folder / 'feature-graphic-1024x500.png') as image:
+        with Image.open(folder / f'feature-graphic-{locale}-1024x500.png') as image:
             image.thumbnail((820, 400), Image.Resampling.LANCZOS)
             contact.paste(image, (30, 30))
         ImageDraw.Draw(contact).text((900, 85), locale, fill=brand.IVORY, font=ImageFont.truetype(str(brand.BODY), 40))
         ImageDraw.Draw(contact).text((900, 145), 'Android UI', fill=brand.IVORY, font=ImageFont.truetype(str(brand.BODY), 27))
         for index in range(1, 6):
-            with Image.open(folder / f'{index:02}.png') as image:
+            with Image.open(folder / f'screenshot-{locale}-{index:02}.png') as image:
                 image.thumbnail((260, 463), Image.Resampling.LANCZOS)
                 contact.paste(image, (30 + (index-1)*276, 460))
         contact.save(folder / 'contact-sheet.png')
     report = {'assets': records, 'fonts': {'headings': str(brand.HEADLINE.relative_to(ROOT)),
                                          'body': str(brand.BODY.relative_to(ROOT))},
-              'font_fallback_used': False, 'source_ui_language': 'English',
+              'font_fallback_used': False,
+              'source_ui_languages': {locale: item.get('source_ui_language', 'English') for locale, item in config['locales'].items()},
               'hindi_art_language': 'English', 'hindi_art_reason': 'Bundled brand fonts have no Devanagari glyph coverage.',
               'feature_graphics': 4, 'phone_screenshots': 20}
     (output / 'validation.json').write_text(json.dumps(report, indent=2) + '\n')
