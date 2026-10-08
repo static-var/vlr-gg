@@ -3,7 +3,7 @@
     "en-US": {
       "art_language": "English",
       "feature_support": "VALORANT scores, schedules & stats",
-      "feature_footer": "Free. Ad-free. No sign-in.",
+      "feature_footer": "Ad-free. No sign-in.",
       "slides": [
         {
           "source": 1,
@@ -49,7 +49,7 @@
     "en-IN": {
       "art_language": "English",
       "feature_support": "VALORANT match days, your way",
-      "feature_footer": "Free. Ad-free. No sign-in.",
+      "feature_footer": "Ad-free. No sign-in.",
       "slides": [
         {
           "source": 1,
@@ -95,7 +95,7 @@
     "pt-BR": {
       "art_language": "pt-BR",
       "feature_support": "Placares, partidas e estatísticas",
-      "feature_footer": "Grátis. Sem anúncios. Sem cadastro.",
+      "feature_footer": "Sem anúncios. Sem cadastro.",
       "slides": [
         {
           "source": 3,
@@ -141,7 +141,7 @@
     "hi-IN": {
       "art_language": "English",
       "feature_support": "VALORANT match days, your way",
-      "feature_footer": "Free. Ad-free. No sign-in.",
+      "feature_footer": "Ad-free. No sign-in.",
       "slides": [
         {
           "source": 1,
