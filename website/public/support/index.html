@@ -3,22 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>App support | Val Esports</title>
-  <meta name="description" content="Get help with Val Esports, report a problem or suggest an improvement. No account required.">
+  <title>App support | VAL ESPORTS</title>
+  <meta name="description" content="Get help with VAL ESPORTS, report a problem or suggest an improvement. No account required.">
   <link rel="canonical" href="https://valesports.app/support/">
-  <link rel="stylesheet" href="/style.css">
-  <link rel="stylesheet" href="/support/support.css">
+  <meta name="theme-color" content="#7938ef">
+  <link rel="stylesheet" href="/style.css?v=pages-20261008">
+  <link rel="stylesheet" href="/support/support.css?v=20261008">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <script src="/navigation.js?v=20261008" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
-  <header class="top"><nav class="wrap nav" aria-label="Main"><a class="brand" href="/">Val Esports</a><a href="/">App website</a></nav></header>
+  <header class="top"><nav class="wrap nav" aria-label="Main"><a class="brand" href="/"><img class="brand-icon" src="/assets/app-icon.webp" alt="" width="42" height="42"><span>VAL<br>ESPORTS</span></a><button class="nav-toggle" aria-controls="nav-menu" aria-expanded="false" hidden>Menu</button><div class="navlinks" id="nav-menu"><a href="/">Home</a><a href="/about/">About us</a><a href="/team/">Team</a><a href="/roadmap/">Roadmap</a><a href="/support/" aria-current="page">Support</a><a href="/source">Source ↗</a><a href="/#downloads">Get the app</a></div></nav></header>
   <main id="main" class="wrap support-page">
-    <header class="support-intro">
+    <div class="support-copy"><header class="support-intro">
+      <p class="page-label">Support</p>
       <h1>How can we help?</h1>
-      <p>Report a problem, ask a question or suggest an improvement for Val Esports. No account required.</p>
+      <p>Report a problem, ask a question or suggest an improvement for VAL ESPORTS. No account required.</p>
       <p>Looking for the iOS app? <a href="https://apps.apple.com/us/app/id6812190518">Download on the App Store</a>.</p>
     </header>
+    <p class="support-email">Prefer email? Write to <a href="mailto:shreyansh@valesports.app">shreyansh@valesports.app</a>.</p>
+    </div>
     <form class="support-form" action="/api/support-requests" method="post" enctype="multipart/form-data">
       <p class="form-note">Fields marked <span aria-hidden="true">*</span> are required. We'll use your email to reply about this request.</p>
       <div class="support-field">
@@ -61,11 +66,10 @@
         <p id="attachment-help" class="field-help">One file, up to 5 MB. PDF, JPG, PNG, WebP, GIF or HEIC.</p>
       </div>
       <div class="signup-trap" aria-hidden="true"><label for="support-website">Website</label><input id="support-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
-      <p id="private-data-note" class="form-note">Your request is sent privately to the developer; it is not a public post. <a href="/privacy/#website">How we handle your information</a>.</p>
+      <p id="private-data-note" class="form-note">Your request is sent privately to our team; it is not a public post. <a href="/privacy/#website">How we handle your information</a>.</p>
       <button class="button primary" type="submit">Send support request</button>
     </form>
-    <p class="support-email">Prefer email? Write to <a href="mailto:shreyansh@valesports.app">shreyansh@valesports.app</a>.</p>
   </main>
-  <footer class="wrap footer"><div class="footer-links"><a href="/">Home</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms of service</a><a href="/support/" aria-current="page">Support</a></div></footer>
+  <footer class="wrap footer"><div class="footer-top"><a class="brand" href="/">VAL ESPORTS</a><div class="footer-links"><a href="/about/">About us</a><a href="/team/">Team</a><a href="/roadmap/">Roadmap</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/support/" aria-current="page">Support</a></div></div><p class="fine">An independent app. Not affiliated with or endorsed by Riot Games. Valorant and related marks belong to their respective owners.</p></footer>
 </body>
 </html>

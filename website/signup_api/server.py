@@ -381,7 +381,7 @@ class SignupHandler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "same-origin")
-        self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'self' 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'")
+        self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'")
         self.end_headers()
         self.wfile.write(body)
 
@@ -397,7 +397,19 @@ class SignupHandler(BaseHTTPRequestHandler):
 
 
 def page(title, content, public=False):
-    style = '<link rel="stylesheet" href="/support/error.css">' if public else (
+    if public:
+        return ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+                '<meta name="viewport" content="width=device-width, initial-scale=1">'
+                '<meta name="robots" content="noindex"><meta name="theme-color" content="#7938ef">'
+                f'<title>{escape(title)} | VAL ESPORTS</title>'
+                '<link rel="stylesheet" href="/style.css?v=pages-20261008">'
+                '<link rel="stylesheet" href="/support/error.css?v=20261008">'
+                '<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">'
+                '</head><body><a class="skip" href="#main">Skip to content</a>'
+                '<header class="top"><nav class="wrap nav" aria-label="Main"><a class="brand" href="/"><img class="brand-icon" src="/assets/app-icon.webp" alt="" width="42" height="42"><span>VAL<br>ESPORTS</span></a><div class="navlinks" id="nav-menu"><a href="/">Home</a><a href="/about/">About us</a><a href="/team/">Team</a><a href="/roadmap/">Roadmap</a><a href="/support/" aria-current="page">Support</a><a href="/source">Source ↗</a><a href="/#downloads">Get the app</a></div></nav></header>'
+                f'<main id="main" class="wrap support-error"><h1>{escape(title)}</h1>{content}</main>'
+                '<footer class="wrap footer"><div class="footer-top"><a class="brand" href="/">VAL ESPORTS</a><div class="footer-links"><a href="/about/">About us</a><a href="/team/">Team</a><a href="/roadmap/">Roadmap</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/support/" aria-current="page">Support</a></div></div><p class="fine">An independent app. Not affiliated with or endorsed by Riot Games. Valorant and related marks belong to their respective owners.</p></footer>'+ '</body></html>')
+    style = (
         '<style>'
         'body{font:16px/1.5 system-ui,sans-serif;margin:40px auto;max-width:960px;padding:0 20px;color:#211b30;background:#faf8ff}'
         'h1,h2{line-height:1.2}a{color:#6538a3}label{display:block;margin:18px 0}'
@@ -410,7 +422,7 @@ def page(title, content, public=False):
     )
     return ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width, initial-scale=1">'
-            f'<title>{escape(title)} · Val Esports</title>{style}</head><body><header><p>Val Esports</p>'
+            f'<title>{escape(title)} · VAL ESPORTS</title>{style}</head><body><header><p>VAL ESPORTS</p>'
             f'<h1>{escape(title)}</h1></header><main>{content}</main></body></html>')
 
 
