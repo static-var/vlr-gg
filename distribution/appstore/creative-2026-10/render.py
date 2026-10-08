@@ -17,7 +17,8 @@ from fontTools.ttLib import TTFont
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
-INK, IVORY, VIOLET, LILAC = "#16131B", "#F5F1E8", "#956DFF", "#D9CCFF"
+INK, IVORY, VIOLET, LILAC = "#1E1E2E", "#F5F1E8", "#956DFF", "#CBA6F7"
+PINK, BLUE = "#F38BA8", "#B4BEFE"
 HEADLINE = ROOT / "designsystem/src/commonMain/composeResources/font/chakra_petch_regular.ttf"
 BODY = ROOT / "designsystem/src/commonMain/composeResources/font/space_grotesk_regular.ttf"
 CAPTURE = ROOT / "distribution/rebrand-2026/raw/ios/02.png"
@@ -63,6 +64,8 @@ def screenshot(x, y, width, crop=None):
         sw, sh = source.size
     payload = base64.b64encode(CAPTURE.read_bytes()).decode()
     left, top, right, bottom = crop or (0, 0, sw, sh)
+    if not (0 <= left < right <= sw and 0 <= top < bottom <= sh):
+        raise ValueError(f"screenshot crop outside capture: {(left, top, right, bottom)}")
     height = width * (bottom - top) / (right - left)
     return (
         f'<svg x="{x}" y="{y}" width="{width}" height="{height}" '
@@ -72,18 +75,23 @@ def screenshot(x, y, width, crop=None):
     )
 
 
-def background(width, height):
-    lines = "".join(
-        f'<path d="M{x} 0L{x-height} {height}"/>' for x in range(-height, width + height, 256)
+def pixel_panel(x, y, width, height, fill):
+    step = 48
+    return (
+        f'<path fill="{fill}" d="M{x+step} {y}H{x+width-step}V{y+step}'
+        f'H{x+width}V{y+height-step}H{x+width-step}V{y+height}'
+        f'H{x+step}V{y+height-step}H{x}V{y+step}H{x+step}Z"/>'
     )
-    return f'''<defs>
-      <radialGradient id="glow"><stop stop-color="#493660"/><stop offset="1" stop-color="{INK}"/></radialGradient>
-    </defs>
-    <rect width="{width}" height="{height}" fill="{INK}"/>
-    <ellipse cx="{width/2}" cy="{height/2}" rx="{width*.58}" ry="{height*.8}" fill="url(#glow)"/>
-    <g stroke="{VIOLET}" stroke-width="2" opacity=".09">{lines}</g>
-    <g stroke="{VIOLET}" stroke-width="6" fill="none" opacity=".32">
-      <path d="M230 340H680V540H950M230 740H680V540M230 {height-340}H680V{height-540}H950M230 {height-740}H680V{height-540}"/>
+
+
+def background(width, height, kind):
+    # The two pixel strokes echo the shipping icon's V without imitating gameplay.
+    return f'''<rect width="{width}" height="{height}" fill="{LILAC}"/>
+    <g fill="{PINK}">
+      <path d="M0 0H320V240H480V480H640V720H800V960H960V1200H800V1040H640V800H480V560H320V320H160V160H0Z"/>
+    </g>
+    <g fill="{BLUE}">
+      <path d="M{width} {height}H{width-320}V{height-240}H{width-480}V{height-480}H{width-640}V{height-720}H{width-800}V{height-960}H{width-960}V{height-1200}H{width-800}V{height-1040}H{width-640}V{height-800}H{width-480}V{height-560}H{width-320}V{height-320}H{width-160}V{height-160}H{width}Z"/>
     </g>'''
 
 
@@ -92,36 +100,34 @@ def compose(kind):
     width, height = spec["size"]
     boxes = []
     parts = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
-             background(width, height)]
+             background(width, height, kind)]
     if kind == "header":
-        parts.append(icon(1137, 623, 440))
-        boxes.append(("shipping icon", (1137, 623, 1577, 1063)))
+        parts += [pixel_panel(808, 368, 2280, 976, "#AD8BD8"),
+                  pixel_panel(760, 320, 2280, 976, IVORY)]
+        parts.append(icon(1170, 679, 280))
+        boxes.append(("shipping icon", (1170, 679, 1450, 959)))
         for label, font, size, x, baseline, fill in [
-            ("VAL ESPORTS", BODY, 48, 1680, 624, LILAC),
-            ("Every match.", HEADLINE, 150, 1670, 805, IVORY),
-            ("Your way.", HEADLINE, 150, 1670, 954, IVORY),
-            ("Scores. Schedules. Favorites.", BODY, 43, 1680, 1085, LILAC),
+            ("Val Esports", HEADLINE, 225, 1490, 839, INK),
+            ("VALORANT scores, schedules & stats", BODY, 56, 1493, 1000, INK),
         ]:
             parts.append(text_path(label, font, size, x, baseline, fill, boxes))
-        # Peripheral UI is decorative; the message remains inside Apple's art safe area.
-        ui, _ = screenshot(3050, 160, 610)
-        parts += ['<g transform="rotate(8 3355 823)">',
-                  '<rect x="3028" y="138" width="654" height="1370" rx="32" fill="#08070A"/>', ui, '</g>']
     else:
-        parts.append(icon(940, 836, 112))
-        boxes.append(("shipping icon", (940, 836, 1052, 948)))
+        parts += [pixel_panel(688, 608, 2560, 1440, "#AD8BD8"),
+                  pixel_panel(640, 560, 2560, 1440, IVORY)]
+        parts.append(icon(944, 1630, 88))
+        boxes.append(("shipping icon", (944, 1630, 1032, 1718)))
         for label, font, size, x, baseline, fill in [
-            ("VAL ESPORTS", BODY, 50, 1090, 907, LILAC),
-            ("VALORANT", HEADLINE, 150, 940, 1155, IVORY),
-            ("scores & stats", HEADLINE, 130, 940, 1310, IVORY),
-            ("Follow your favorites.", BODY, 48, 944, 1486, LILAC),
-            ("Schedules. Results. Events.", BODY, 43, 944, 1564, LILAC),
+            ("Val", HEADLINE, 250, 940, 1030, INK),
+            ("Esports", HEADLINE, 250, 930, 1270, INK),
+            ("VALORANT scores", BODY, 60, 944, 1450, INK),
+            ("Schedules & match stats", BODY, 54, 944, 1534, INK),
+            ("Free. Ad-free. No sign-in.", BODY, 45, 1060, 1690, INK),
         ]:
             parts.append(text_path(label, font, size, x, baseline, fill, boxes))
-        ui, bounds = screenshot(2140, 912, 790, (49, 474, 1157, 1408))
-        parts += [f'<rect x="2120" y="892" width="830" height="706" fill="{VIOLET}"/>', ui]
+        ui, bounds = screenshot(2120, 900, 820, (49, 474, 1157, 1408))
+        parts += [pixel_panel(2144, 924, 820, 692, LILAC),
+                  '<rect x="2116" y="896" width="828" height="700" fill="#1E1E2E"/>', ui]
         boxes.append(("actual match score UI", bounds))
-        parts.append(f'<path d="M940 1670H1150" stroke="{VIOLET}" stroke-width="12"/>')
     parts.append('</svg>')
     return "".join(parts), boxes
 
@@ -130,7 +136,7 @@ def main():
     output = HERE / "output"
     output.mkdir(exist_ok=True)
     records = []
-    preview = Image.new("RGB", (1200, 1600), INK)
+    preview = Image.new("RGB", (1200, 1430), INK)
     draw = ImageDraw.Draw(preview)
     label_font = ImageFont.truetype(str(BODY), 28)
     for kind in SPECS:
@@ -141,7 +147,7 @@ def main():
                 raise ValueError(f"{kind}: {label} outside art safe area: {(left, top, right, bottom)}")
         master = HERE / f"{kind}.svg"
         master.write_text(svg)
-        destination = output / f"val-esports-{kind}-{size[0]}x{size[1]}.png"
+        destination = output / f"val-esports-{kind}-v2-{size[0]}x{size[1]}.png"
         subprocess.run(["rsvg-convert", str(master), "-o", str(destination)], check=True)
         with Image.open(destination) as image:
             image.convert("RGB").save(destination, optimize=True)
@@ -150,11 +156,11 @@ def main():
                 raise ValueError(f"invalid {destination}")
             thumb = image.copy()
             thumb.thumbnail((1120, 750), Image.Resampling.LANCZOS)
-            y = 65 if kind == "header" else 790
+            y = 65 if kind == "header" else 635
             draw.text((40, y-40), f"{kind.capitalize()} / {size[0]} x {size[1]}", fill=IVORY, font=label_font)
             preview.paste(thumb, (40, y))
             safe_crop = image.crop(safe)
-            safe_crop.thumbnail((1120, 330), Image.Resampling.LANCZOS)
+            safe_crop.thumbnail((1120, 560), Image.Resampling.LANCZOS)
             review = Image.new("RGB", (1200, safe_crop.height+120), INK)
             ImageDraw.Draw(review).text((40, 25), "Apple art safe area / crop check", fill=IVORY, font=label_font)
             review.paste(safe_crop, (40, 80))
@@ -163,6 +169,12 @@ def main():
             "placement": kind, "filename": destination.name, "dimensions": size,
             "mode": "RGB", "alpha": False, "art_safe_area": safe,
             "essential_content_within_safe_area": True,
+            "content_bounds": {
+                label: [round(min(bounds[i] for name, bounds in boxes if name == label), 2)
+                        if i < 2 else round(max(bounds[i] for name, bounds in boxes if name == label), 2)
+                        for i in range(4)]
+                for label in dict.fromkeys(label for label, _ in boxes)
+            },
             "sha256": hashlib.sha256(destination.read_bytes()).hexdigest(),
         })
     preview.save(output / "preview.png")

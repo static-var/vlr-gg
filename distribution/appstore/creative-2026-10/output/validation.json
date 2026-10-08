@@ -2,7 +2,7 @@
   "assets": [
     {
       "placement": "header",
-      "filename": "val-esports-header-3840x1646.png",
+      "filename": "val-esports-header-v2-3840x1646.png",
       "dimensions": [
         3840,
         1646
@@ -16,11 +16,31 @@
         1154
       ],
       "essential_content_within_safe_area": true,
-      "sha256": "9ea191759c5442947dd178664164c99b90040a4319ca18ac9a9ebbc036ae8a4f"
+      "content_bounds": {
+        "shipping icon": [
+          1170,
+          679,
+          1450,
+          959
+        ],
+        "Val Esports": [
+          1493.83,
+          676.55,
+          2647.4,
+          888.5
+        ],
+        "VALORANT scores, schedules & stats": [
+          1494.4,
+          960.02,
+          2475.69,
+          1007.0
+        ]
+      },
+      "sha256": "0847e8c999553c00f9f1a430c6ca1ce5363c2d514f6c5c32363332a986606f26"
     },
     {
       "placement": "search",
-      "filename": "val-esports-search-3840x2560.png",
+      "filename": "val-esports-search-v2-3840x2560.png",
       "dimensions": [
         3840,
         2560
@@ -34,7 +54,51 @@
         1795
       ],
       "essential_content_within_safe_area": true,
-      "sha256": "1f94bd8de237e4b2a36160b7804c0a89eb7a663dc26d0b727cc18fa29e5c6e33"
+      "content_bounds": {
+        "shipping icon": [
+          944,
+          1630,
+          1032,
+          1718
+        ],
+        "Val": [
+          944.25,
+          849.5,
+          1274.75,
+          1032.0
+        ],
+        "Esports": [
+          948.0,
+          1093.0,
+          1802.25,
+          1325.0
+        ],
+        "VALORANT scores": [
+          945.5,
+          1407.16,
+          1449.38,
+          1450.84
+        ],
+        "Schedules & match stats": [
+          946.59,
+          1495.44,
+          1592.86,
+          1534.76
+        ],
+        "Free. Ad-free. No sign-in.": [
+          1063.6,
+          1658.5,
+          1596.67,
+          1699.0
+        ],
+        "actual match score UI": [
+          2120,
+          900,
+          2940,
+          1591.23
+        ]
+      },
+      "sha256": "8907a6a7662c018ca77ab44ce77fd1e4dcf8d60c9fc272868d76a5ffe4b4765d"
     }
   ],
   "source_capture": "distribution/rebrand-2026/raw/ios/02.png",
