@@ -492,7 +492,7 @@ internal class LiveMatchNotificationRenderer(
     val openMatch = PendingIntent.getActivity(
       context,
       update.matchId.hashCode(),
-      Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://valorantesports.staticvar.dev/match/${update.matchId}"), context, MainActivity::class.java),
+      Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://valesports.app/match/${update.matchId}"), context, MainActivity::class.java),
       PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
     val builder = if (Build.VERSION.SDK_INT >= 26 && sdkInt >= 26) {

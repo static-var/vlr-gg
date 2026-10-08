@@ -28,7 +28,7 @@ public fun matchCalendarEntry(matchId: String, title: String, description: Strin
     description = description,
     start = start,
     end = start + 1.hours,
-    url = "https://valorantesports.staticvar.dev/match/$matchId".takeIf { matchId.all(Char::isDigit) },
+    url = "https://valesports.app/match/$matchId".takeIf { matchId.all(Char::isDigit) },
   )
 
 public fun matchCalendarUid(matchId: String): String {

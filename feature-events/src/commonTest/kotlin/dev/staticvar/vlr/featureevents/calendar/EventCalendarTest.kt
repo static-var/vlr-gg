@@ -62,7 +62,7 @@ class EventCalendarTest {
 
     assertEquals(listOf("NRG vs LOUD", "Champions", "NRG vs TBD"), entries.map { it.title })
     assertEquals(listOf("Champions", "Champions", "Champions"), entries.map { it.description })
-    assertEquals("https://valorantesports.staticvar.dev/match/10", entries.first().url)
+    assertEquals("https://valesports.app/match/10", entries.first().url)
   }
 
   @Test

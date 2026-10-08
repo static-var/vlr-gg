@@ -16,7 +16,7 @@ class AppDeepLinkHandlerTest {
   fun numericMatchUrlCreatesMatchRequest() {
     val handler = AppDeepLinkHandler()
 
-    assertTrue(handler.openUrl("https://valorantesports.staticvar.dev/match/11757778"))
+    assertTrue(handler.openUrl("https://valesports.app/match/11757778"))
 
     assertEquals(
       AppDeepLinkRequest(
@@ -30,10 +30,10 @@ class AppDeepLinkHandlerTest {
   @Test
   fun favoriteDetailLinksNavigateFromColdAndWarmState() {
     val destinations = listOf(
-      "https://valorantesports.staticvar.dev/team/12" to AppRoute.TeamDetails("12"),
-      "https://valorantesports.staticvar.dev/event/34?source=spotlight" to AppRoute.EventDetails("34"),
-      "https://valorantesports.staticvar.dev/player/56#details" to AppRoute.PlayerDetails("56"),
-      "https://valorantesports.staticvar.dev/match/78" to AppRoute.MatchDetails("78"),
+      "https://valesports.app/team/12" to AppRoute.TeamDetails("12"),
+      "https://valesports.app/event/34?source=spotlight" to AppRoute.EventDetails("34"),
+      "https://valesports.app/player/56#details" to AppRoute.PlayerDetails("56"),
+      "https://valesports.app/match/78" to AppRoute.MatchDetails("78"),
     )
     for ((url, destination) in destinations) {
       val handler = AppDeepLinkHandler()
@@ -56,7 +56,7 @@ class AppDeepLinkHandlerTest {
   fun homeUrlCreatesHomeRequest() {
     val handler = AppDeepLinkHandler()
 
-    assertTrue(handler.openUrl("https://valorantesports.staticvar.dev/"))
+    assertTrue(handler.openUrl("https://valesports.app/"))
 
     assertEquals(
       AppDeepLinkRequest(id = 1L, destination = AppDeepLinkDestination.Home),
@@ -65,21 +65,33 @@ class AppDeepLinkHandlerTest {
   }
 
   @Test
+  fun existingSharedLinksStillOpen() {
+    val handler = AppDeepLinkHandler()
+
+    assertTrue(handler.openUrl("https://valorantesports.staticvar.dev/match/123"))
+    assertEquals(AppDeepLinkDestination.Match("123"), handler.state.value.pendingRequest?.destination)
+
+    assertTrue(handler.openUrl("https://valorantesports.staticvar.dev/"))
+    assertEquals(AppDeepLinkDestination.Home, handler.state.value.pendingRequest?.destination)
+  }
+
+  @Test
   fun unsupportedUrlsDoNotReplaceTheLatestRequest() {
     val handler = AppDeepLinkHandler()
-    handler.openUrl("https://valorantesports.staticvar.dev/match/11757778")
+    handler.openUrl("https://valesports.app/match/11757778")
     val acceptedRequest = handler.state.value.pendingRequest
 
     val unsupportedUrls = listOf(
-      "https://valorantesports.staticvar.dev/match/not-a-number",
-      "https://valorantesports.staticvar.dev/match/",
-      "https://valorantesports.staticvar.dev/match/11757778/more",
-      "https://valorantesports.staticvar.dev/news/11757778",
-      "https://valorantesports.staticvar.dev/team/not-a-number",
-      "https://valorantesports.staticvar.dev/event/",
-      "https://valorantesports.staticvar.dev/player/123/more",
+      "https://valesports.app/match/not-a-number",
+      "https://valesports.app/match/",
+      "https://valesports.app/match/11757778/more",
+      "https://valesports.app/news/11757778",
+      "https://valesports.app/team/not-a-number",
+      "https://valesports.app/event/",
+      "https://valesports.app/player/123/more",
+      "https://valesports.app.evil.example/match/123",
       "https://valorantesports.staticvar.dev.evil.example/match/123",
-      "http://valorantesports.staticvar.dev/match/123",
+      "http://valesports.app/match/123",
       "vlr://match/123",
       "https://vlr.gg/11757778",
     )
@@ -95,7 +107,7 @@ class AppDeepLinkHandlerTest {
     val handler = AppDeepLinkHandler()
     val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
 
-    handler.openUrl("https://valorantesports.staticvar.dev/match/11757778")
+    handler.openUrl("https://valesports.app/match/11757778")
     val firstRequest = handler.state.value.pendingRequest
     firstRequest?.navigate(appState)
     firstRequest?.let { handler.consume(it.id) }
@@ -105,7 +117,7 @@ class AppDeepLinkHandlerTest {
     assertEquals(AppRoute.Home, appState.backStack.last())
     assertNull(handler.state.value.pendingRequest)
 
-    handler.openUrl("https://valorantesports.staticvar.dev/match/11757778")
+    handler.openUrl("https://valesports.app/match/11757778")
     val repeatedRequest = handler.state.value.pendingRequest
     repeatedRequest?.navigate(appState)
 
@@ -118,7 +130,7 @@ class AppDeepLinkHandlerTest {
     val handler = AppDeepLinkHandler()
     val appState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home, AppRoute.Events))
 
-    handler.openUrl("https://valorantesports.staticvar.dev/match/11757778")
+    handler.openUrl("https://valesports.app/match/11757778")
     handler.state.value.pendingRequest?.navigate(appState)
 
     assertEquals(
@@ -130,7 +142,7 @@ class AppDeepLinkHandlerTest {
   @Test
   fun consumedRequestDoesNotReplayInARecreatedConsumer() {
     val handler = AppDeepLinkHandler()
-    handler.openUrl("https://valorantesports.staticvar.dev/match/11757778")
+    handler.openUrl("https://valesports.app/match/11757778")
     val request = handler.state.value.pendingRequest
     val firstAppState = VlrAppState(mutableListOf<NavKey>(AppRoute.Home))
     request?.navigate(firstAppState)

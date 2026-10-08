@@ -5,10 +5,10 @@
 package dev.staticvar.vlr.featureabout.presentation
 
 internal object AppWebsite {
-  const val Home = "https://valorantesports.staticvar.dev/"
+  const val Home = "https://valesports.app/"
   const val Privacy = "${Home}privacy/"
   const val Terms = "${Home}terms/"
-  const val Issues = "${Home}issues"
+  const val Issues = "${Home}support/"
   const val Source = "${Home}source"
   const val BackendSource = "${Home}backend-source"
 }
