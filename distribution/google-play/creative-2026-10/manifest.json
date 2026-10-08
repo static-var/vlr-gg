@@ -182,9 +182,11 @@
             "See where",
             "teams stand."
           ],
-          "support": "Regional VALORANT rankings"
+          "support": "VALORANT team rankings"
         }
-      ]
+      ],
+      "source_directory": "distribution/google-play/creative-2026-10/raw/hi-IN",
+      "source_ui_language": "Hindi"
     }
   },
   "source_ui_language": "English",

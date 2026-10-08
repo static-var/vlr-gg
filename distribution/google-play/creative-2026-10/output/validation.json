@@ -181,96 +181,6 @@
       "bounds_checked": true
     },
     {
-      "locale": "hi-IN",
-      "file": "output/hi-IN/feature-graphic-hi-IN-1024x500.png",
-      "dimensions": [
-        1024,
-        500
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": null,
-      "source_capture": null,
-      "source_capture_sha256": null,
-      "sha256": "7d5746f44b1579291f3058994b31cc682ddb8b68bd9e17ae8ac0c211cb6d52b8",
-      "bounds_checked": true
-    },
-    {
-      "locale": "hi-IN",
-      "file": "output/hi-IN/screenshot-hi-IN-01.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": "English",
-      "source_capture": "distribution/rebrand-2026/raw/android/01.png",
-      "source_capture_sha256": "fc3c358649c13d5398b0173b9751e99cef7ba5a2f3229b5235441626d261924c",
-      "sha256": "181156ed7d1036ec8fb9c4eb3ad016cfe90ab13df1e603c2b6e148d293b43825",
-      "bounds_checked": true
-    },
-    {
-      "locale": "hi-IN",
-      "file": "output/hi-IN/screenshot-hi-IN-02.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": "English",
-      "source_capture": "distribution/rebrand-2026/raw/android/03.png",
-      "source_capture_sha256": "ac5112be0628027064e50c8cae1848fd9d6f3de14dd26188e8d0d66bd2501139",
-      "sha256": "84c259d3293c9dca2a12e290eecbbdc222316806cf72139ef2b3044f380a47b2",
-      "bounds_checked": true
-    },
-    {
-      "locale": "hi-IN",
-      "file": "output/hi-IN/screenshot-hi-IN-03.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": "English",
-      "source_capture": "distribution/rebrand-2026/raw/android/04.png",
-      "source_capture_sha256": "34cafb1707028a2c345746dd64a69d0b273f2cf15d504ed0036e1e9eaf59ad6e",
-      "sha256": "445d9cef71aac98bd6af934f1c445759d9fecd6449273f41d090e9f620ae8862",
-      "bounds_checked": true
-    },
-    {
-      "locale": "hi-IN",
-      "file": "output/hi-IN/screenshot-hi-IN-04.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": "English",
-      "source_capture": "distribution/rebrand-2026/raw/android/02.png",
-      "source_capture_sha256": "e631346be4f348c714af575c85a518d1602c415d351470d83f9ed1e8d5267bcb",
-      "sha256": "ab2eafc09dcd60fd78fd4f8c9d094cdcdf33ce19e30f3baa7b5a9c47cf8beccb",
-      "bounds_checked": true
-    },
-    {
-      "locale": "hi-IN",
-      "file": "output/hi-IN/screenshot-hi-IN-05.png",
-      "dimensions": [
-        1080,
-        1920
-      ],
-      "mode": "RGB",
-      "alpha": false,
-      "source_ui_language": "English",
-      "source_capture": "distribution/rebrand-2026/raw/android/05.png",
-      "source_capture_sha256": "a2662983fffbbddb3d3360cae48b61d67d248b514de9b55f07b88597928024a3",
-      "sha256": "114d4a32e033341a68476af44ce57d30c7f41e58d2f3f9e76c9aa1bdf966946f",
-      "bounds_checked": true
-    },
-    {
       "locale": "pt-BR",
       "file": "output/pt-BR/feature-graphic-pt-BR-1024x500.png",
       "dimensions": [
@@ -359,6 +269,96 @@
       "source_capture_sha256": "9acd4cd43e118e914f3e912167edbc49e9973a40395c000c35b65a815a190178",
       "sha256": "0b9864faae2787a4db903edcc5ed75d6a171e56b82de5a2ff1b37edc8812ce61",
       "bounds_checked": true
+    },
+    {
+      "locale": "hi-IN",
+      "file": "output/hi-IN/feature-graphic-hi-IN-1024x500.png",
+      "dimensions": [
+        1024,
+        500
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": null,
+      "source_capture": null,
+      "source_capture_sha256": null,
+      "sha256": "7d5746f44b1579291f3058994b31cc682ddb8b68bd9e17ae8ac0c211cb6d52b8",
+      "bounds_checked": true
+    },
+    {
+      "locale": "hi-IN",
+      "file": "output/hi-IN/screenshot-hi-IN-01.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": "Hindi",
+      "source_capture": "distribution/google-play/creative-2026-10/raw/hi-IN/01.png",
+      "source_capture_sha256": "8adcca41102776b8c606bf73aae8b61696ce84e2b3a3bca4e0a56624ea8c8d5e",
+      "sha256": "19f3d53ef3e0692a8a0b79c9005627ca46cb7846427fff532399c6d33aeeba88",
+      "bounds_checked": true
+    },
+    {
+      "locale": "hi-IN",
+      "file": "output/hi-IN/screenshot-hi-IN-02.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": "Hindi",
+      "source_capture": "distribution/google-play/creative-2026-10/raw/hi-IN/03.png",
+      "source_capture_sha256": "e6d65883ea6658a0870c78b5e9e541f39454ac2d4fb48a9b31b6adcb15aedd72",
+      "sha256": "fd51a87008b6aeeaebbd128b9885642274ca351e6b78bde2058f02b98663cfe8",
+      "bounds_checked": true
+    },
+    {
+      "locale": "hi-IN",
+      "file": "output/hi-IN/screenshot-hi-IN-03.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": "Hindi",
+      "source_capture": "distribution/google-play/creative-2026-10/raw/hi-IN/04.png",
+      "source_capture_sha256": "e8d798c250813d95d714dd591618633b57b7a5e01a01abb3cfcbc0561c348e57",
+      "sha256": "49f41dbb395eaa30ecf399d2df61c1753718037a6bee668c7a40a731620ba92c",
+      "bounds_checked": true
+    },
+    {
+      "locale": "hi-IN",
+      "file": "output/hi-IN/screenshot-hi-IN-04.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": "Hindi",
+      "source_capture": "distribution/google-play/creative-2026-10/raw/hi-IN/02.png",
+      "source_capture_sha256": "7c0bfef603059071e9dbb274e5110e18407fc98e426527227bbd40e74287fde1",
+      "sha256": "7364407f1c8f3fe402aa93f8c7ff8d82874ea9da196718b08a460af43277f449",
+      "bounds_checked": true
+    },
+    {
+      "locale": "hi-IN",
+      "file": "output/hi-IN/screenshot-hi-IN-05.png",
+      "dimensions": [
+        1080,
+        1920
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "source_ui_language": "Hindi",
+      "source_capture": "distribution/google-play/creative-2026-10/raw/hi-IN/05.png",
+      "source_capture_sha256": "761f241fb067d1c490cc07eb9df24208c9eb3a757911a9db9ca8e8cf062426ae",
+      "sha256": "e2885396e0e308c07c2afb8c9b85f89aeb7d40c0fa4960cafe663e750a1bb7c0",
+      "bounds_checked": true
     }
   ],
   "fonts": {
@@ -370,7 +370,7 @@
     "en-US": "English",
     "en-IN": "English",
     "pt-BR": "Brazilian Portuguese",
-    "hi-IN": "English"
+    "hi-IN": "Hindi"
   },
   "hindi_art_language": "English",
   "hindi_art_reason": "Bundled brand fonts have no Devanagari glyph coverage.",
