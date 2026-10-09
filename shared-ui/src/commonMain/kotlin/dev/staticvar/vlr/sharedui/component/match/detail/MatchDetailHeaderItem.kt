@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,6 +42,7 @@ import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
 import dev.staticvar.vlr.sharedui.component.match.matchFavoriteReasonLabels
 import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
+import dev.staticvar.vlr.sharedui.component.match.rememberMatchSharedText
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
@@ -198,11 +200,18 @@ private fun MatchTicketEvent(
   } else {
     Modifier
   }
+  val transition = rememberMatchSharedText(
+    matchId,
+    MatchSharedContent.Event,
+    color = Prism.color.contentPrimary,
+    fontSize = Prism.typography.cardTitle.fontSize,
+  )
   Text(
     text = eventName.ifBlank { stringResource(Res.string.match_event_match) },
     modifier = Modifier.fillMaxWidth().padding(bottom = Prism.dimens.spacingM)
-      .then(eventModifier).matchSharedBounds(matchId, MatchSharedContent.Event),
+      .then(eventModifier).wrapContentSize(Alignment.Center).then(transition.modifier),
     style = Prism.typography.cardTitle,
+    color = transition.color,
     textAlign = TextAlign.Center,
     maxLines = 3,
     overflow = TextOverflow.Ellipsis,

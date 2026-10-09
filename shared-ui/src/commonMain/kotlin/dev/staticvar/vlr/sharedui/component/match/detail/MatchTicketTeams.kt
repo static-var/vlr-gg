@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,7 +34,7 @@ import dev.staticvar.vlr.sharedui.component.common.SharedNetworkIcon
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
 import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
-import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
+import dev.staticvar.vlr.sharedui.component.match.rememberMatchSharedText
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerContent
 import org.jetbrains.compose.resources.stringResource
@@ -104,11 +105,17 @@ internal fun MatchTicketTeams(
 @Composable
 private fun MatchTicketScore(matchId: String, team: TeamPreview?) {
   val winner = team?.isWinner == true && !LocalSpoilerMode.current.enabled
+  val transition = rememberMatchSharedText(
+    matchId,
+    MatchSharedContent.TeamScore,
+    team?.id,
+    if (winner) Prism.color.accent else Prism.color.contentPrimary,
+  )
   Text(
     text = team?.score?.toString() ?: "–",
-    modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.TeamScore, team?.id),
-    style = Prism.typography.display.copy(fontSize = 44.sp),
-    color = if (winner) Prism.color.accent else Prism.color.contentPrimary,
+    modifier = transition.modifier,
+    style = Prism.typography.headline.copy(fontSize = 44.sp),
+    color = transition.color,
     maxLines = 1,
   )
 }
@@ -141,19 +148,29 @@ private fun MatchTicketTeam(
       tint = PrismIconTint.None,
       modifier = Modifier.transitionContentFade(extraContentFade),
     )
-    Text(
-      text = team?.name?.takeIf(String::isNotBlank) ?: stringResource(Res.string.match_event_tbd),
-      modifier = Modifier.matchSharedBounds(matchId, MatchSharedContent.TeamName, team?.id),
-      style = Prism.typography.bodyLarge,
-      color = if (team?.isWinner == true &&
-        !LocalSpoilerMode.current.enabled
-      ) {
+    val nameTransition = rememberMatchSharedText(
+      matchId,
+      MatchSharedContent.TeamName,
+      team?.id,
+      if (team?.isWinner == true && !LocalSpoilerMode.current.enabled) {
         Prism.color.accent
       } else {
         Prism.color.contentPrimary
       },
+    )
+    Text(
+      text = team?.name?.takeIf(String::isNotBlank) ?: stringResource(Res.string.match_event_tbd),
+      modifier = nameTransition.modifier,
+      style = Prism.typography.headline.copy(fontSize = Prism.typography.bodyLarge.fontSize),
+      color = nameTransition.color,
+      autoSize = TextAutoSize.StepBased(
+        minFontSize = 8.sp,
+        maxFontSize = Prism.typography.bodyLarge.fontSize,
+        stepSize = 1.sp,
+      ),
       textAlign = TextAlign.Center,
-      maxLines = 2,
+      softWrap = false,
+      maxLines = 1,
       overflow = TextOverflow.Ellipsis,
     )
     team?.region?.takeIf(String::isNotBlank)?.let { region ->

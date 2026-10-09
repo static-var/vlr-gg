@@ -48,6 +48,7 @@ import dev.staticvar.designsystem.component.navigation.PrismBottomNavBar
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavBarLarge
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavItem
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.ProvideSharedTextTransitions
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -105,75 +106,77 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
         gestureTransition = navigationEventState.transitionState,
       )
 
-      SharedTransitionLayout(modifier = Modifier.fillMaxSize()) {
-        CompositionLocalProvider(
-          LocalAppEventSharedTransitionScope provides if (showSceneLayout) null else this,
-          LocalGroupedPaneTransition provides paneTransition,
-        ) {
-          Row(
-            modifier = if (showRail) {
-              Modifier.fillMaxSize()
-                .windowInsetsPadding(WindowInsets.safeDrawing)
-                .padding(Prism.dimens.spacingM)
-            } else {
-              Modifier.fillMaxSize()
-            },
-            horizontalArrangement = Arrangement.spacedBy(if (showRail) Prism.dimens.spacingM else 0.dp),
+      ProvideSharedTextTransitions {
+        SharedTransitionLayout(modifier = Modifier.fillMaxSize()) {
+          CompositionLocalProvider(
+            LocalAppEventSharedTransitionScope provides if (showSceneLayout) null else this,
+            LocalGroupedPaneTransition provides paneTransition,
           ) {
-            if (showRail) {
-              PrismBottomNavBarLarge(
-                items = navItems,
-                selectedItemId = appState.selectedNavigationItemId,
-                onItemSelected = { appState.selectRoot(it.id) },
-              )
-            }
-            Column(modifier = Modifier.weight(1f).fillMaxSize()) {
-              NavDisplay(
-                sceneState = sceneState,
-                navigationEventState = navigationEventState,
-                transitionSpec = {
-                  navigationForwardTransition(
-                    durationMillis = navigationDurationMillis(
-                      eventTransitionDurationMillis = eventTransitionDurationMillis,
-                      eventLogoTransitionEnabled = !showSceneLayout,
-                    ),
-                  )
-                },
-                popTransitionSpec = {
-                  navigationBackTransition(
-                    durationMillis = navigationDurationMillis(
-                      eventTransitionDurationMillis = eventTransitionDurationMillis,
-                      eventLogoTransitionEnabled = !showSceneLayout,
-                    ),
-                  )
-                },
-                predictivePopTransitionSpec = {
-                  navigationBackTransition(
-                    durationMillis = navigationDurationMillis(
-                      eventTransitionDurationMillis = eventTransitionDurationMillis,
-                      eventLogoTransitionEnabled = !showSceneLayout,
-                    ),
-                  )
-                },
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-              )
-              AnimatedVisibility(
-                visible = !showRail && (showSceneLayout || appState.shouldShowBottomNavigation),
-                enter = slideInVertically(
-                  animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
-                  initialOffsetY = { height -> height },
-                ) + fadeIn(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)),
-                exit = slideOutVertically(
-                  animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
-                  targetOffsetY = { height -> height },
-                ) + fadeOut(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)),
-              ) {
-                PrismBottomNavBar(
+            Row(
+              modifier = if (showRail) {
+                Modifier.fillMaxSize()
+                  .windowInsetsPadding(WindowInsets.safeDrawing)
+                  .padding(Prism.dimens.spacingM)
+              } else {
+                Modifier.fillMaxSize()
+              },
+              horizontalArrangement = Arrangement.spacedBy(if (showRail) Prism.dimens.spacingM else 0.dp),
+            ) {
+              if (showRail) {
+                PrismBottomNavBarLarge(
                   items = navItems,
                   selectedItemId = appState.selectedNavigationItemId,
                   onItemSelected = { appState.selectRoot(it.id) },
-                  modifier = Modifier.fillMaxWidth(),
                 )
+              }
+              Column(modifier = Modifier.weight(1f).fillMaxSize()) {
+                NavDisplay(
+                  sceneState = sceneState,
+                  navigationEventState = navigationEventState,
+                  transitionSpec = {
+                    navigationForwardTransition(
+                      durationMillis = navigationDurationMillis(
+                        eventTransitionDurationMillis = eventTransitionDurationMillis,
+                        eventLogoTransitionEnabled = !showSceneLayout,
+                      ),
+                    )
+                  },
+                  popTransitionSpec = {
+                    navigationBackTransition(
+                      durationMillis = navigationDurationMillis(
+                        eventTransitionDurationMillis = eventTransitionDurationMillis,
+                        eventLogoTransitionEnabled = !showSceneLayout,
+                      ),
+                    )
+                  },
+                  predictivePopTransitionSpec = {
+                    navigationBackTransition(
+                      durationMillis = navigationDurationMillis(
+                        eventTransitionDurationMillis = eventTransitionDurationMillis,
+                        eventLogoTransitionEnabled = !showSceneLayout,
+                      ),
+                    )
+                  },
+                  modifier = Modifier.weight(1f).fillMaxWidth(),
+                )
+                AnimatedVisibility(
+                  visible = !showRail && (showSceneLayout || appState.shouldShowBottomNavigation),
+                  enter = slideInVertically(
+                    animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
+                    initialOffsetY = { height -> height },
+                  ) + fadeIn(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)),
+                  exit = slideOutVertically(
+                    animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
+                    targetOffsetY = { height -> height },
+                  ) + fadeOut(animationSpec = tween(durationMillis = NavigationTransitionDurationMillis)),
+                ) {
+                  PrismBottomNavBar(
+                    items = navItems,
+                    selectedItemId = appState.selectedNavigationItemId,
+                    onItemSelected = { appState.selectRoot(it.id) },
+                    modifier = Modifier.fillMaxWidth(),
+                  )
+                }
               }
             }
           }
