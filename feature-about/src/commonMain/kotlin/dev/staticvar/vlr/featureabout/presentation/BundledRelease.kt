@@ -8,94 +8,44 @@ import androidx.compose.runtime.Immutable
 import org.jetbrains.compose.resources.StringResource
 import vlr.feature_about.generated.resources.Res
 import vlr.feature_about.generated.resources.new_in_val_esports
-import vlr.feature_about.generated.resources.release_1_1_0_android_live_description
-import vlr.feature_about.generated.resources.release_1_1_0_android_live_title
-import vlr.feature_about.generated.resources.release_1_1_0_appearance_description
-import vlr.feature_about.generated.resources.release_1_1_0_appearance_title
-import vlr.feature_about.generated.resources.release_1_1_0_calendar_description
-import vlr.feature_about.generated.resources.release_1_1_0_calendar_title
-import vlr.feature_about.generated.resources.release_1_1_0_favorites_description
-import vlr.feature_about.generated.resources.release_1_1_0_favorites_title
-import vlr.feature_about.generated.resources.release_1_1_0_introduction
-import vlr.feature_about.generated.resources.release_1_1_0_ios_live_description
-import vlr.feature_about.generated.resources.release_1_1_0_ios_live_title
-import vlr.feature_about.generated.resources.release_1_1_0_ios_shortcuts_description
-import vlr.feature_about.generated.resources.release_1_1_0_ios_shortcuts_title
-import vlr.feature_about.generated.resources.release_1_1_0_languages_description
-import vlr.feature_about.generated.resources.release_1_1_0_languages_title
-import vlr.feature_about.generated.resources.release_1_1_0_match_details_description
-import vlr.feature_about.generated.resources.release_1_1_0_match_details_title
-import vlr.feature_about.generated.resources.release_1_1_0_predictions_description
-import vlr.feature_about.generated.resources.release_1_1_0_predictions_title
-import vlr.feature_about.generated.resources.release_1_1_0_rankings_description
-import vlr.feature_about.generated.resources.release_1_1_0_rankings_title
-import vlr.feature_about.generated.resources.release_1_1_0_stability_description
-import vlr.feature_about.generated.resources.release_1_1_0_stability_title
-import vlr.feature_about.generated.resources.release_1_1_0_widgets_description
-import vlr.feature_about.generated.resources.release_1_1_0_widgets_title
+import vlr.feature_about.generated.resources.release_1_1_1_introduction
+import vlr.feature_about.generated.resources.release_1_1_1_ios_live_description
+import vlr.feature_about.generated.resources.release_1_1_1_ios_live_title
+import vlr.feature_about.generated.resources.release_1_1_1_predictions_description
+import vlr.feature_about.generated.resources.release_1_1_1_predictions_title
+import vlr.feature_about.generated.resources.release_1_1_1_stability_description
+import vlr.feature_about.generated.resources.release_1_1_1_stability_title
+import vlr.feature_about.generated.resources.release_1_1_1_team_form_description
+import vlr.feature_about.generated.resources.release_1_1_1_team_form_title
 import vlr.feature_about.generated.resources.see_what_s_new
 import vlr.feature_about.generated.resources.what_s_new
 
 /** Release notes shipped with the app, available without a network connection. */
 public object BundledRelease {
-  public const val id: String = "val-esports-1.1.0-beta"
+  public const val id: String = "val-esports-1.1.1"
   public val title: StringResource = Res.string.what_s_new
   public val introduction: StringResource =
-    Res.string.release_1_1_0_introduction
+    Res.string.release_1_1_1_introduction
   public val bannerTitle: StringResource = Res.string.new_in_val_esports
   public val bannerAction: StringResource = Res.string.see_what_s_new
 
   public val highlights: List<Highlight> = listOf(
     Highlight(
-      title = Res.string.release_1_1_0_rankings_title,
-      description = Res.string.release_1_1_0_rankings_description,
+      title = Res.string.release_1_1_1_predictions_title,
+      description = Res.string.release_1_1_1_predictions_description,
     ),
     Highlight(
-      title = Res.string.release_1_1_0_predictions_title,
-      description = Res.string.release_1_1_0_predictions_description,
+      title = Res.string.release_1_1_1_team_form_title,
+      description = Res.string.release_1_1_1_team_form_description,
     ),
     Highlight(
-      title = Res.string.release_1_1_0_favorites_title,
-      description = Res.string.release_1_1_0_favorites_description,
-    ),
-    Highlight(
-      title = Res.string.release_1_1_0_calendar_title,
-      description = Res.string.release_1_1_0_calendar_description,
-    ),
-    Highlight(
-      title = Res.string.release_1_1_0_ios_live_title,
-      description = Res.string.release_1_1_0_ios_live_description,
+      title = Res.string.release_1_1_1_ios_live_title,
+      description = Res.string.release_1_1_1_ios_live_description,
       platform = ReleasePlatform.Ios,
     ),
     Highlight(
-      title = Res.string.release_1_1_0_android_live_title,
-      description = Res.string.release_1_1_0_android_live_description,
-      platform = ReleasePlatform.Android,
-    ),
-    Highlight(
-      title = Res.string.release_1_1_0_match_details_title,
-      description = Res.string.release_1_1_0_match_details_description,
-    ),
-    Highlight(
-      title = Res.string.release_1_1_0_widgets_title,
-      description = Res.string.release_1_1_0_widgets_description,
-    ),
-    Highlight(
-      title = Res.string.release_1_1_0_appearance_title,
-      description = Res.string.release_1_1_0_appearance_description,
-    ),
-    Highlight(
-      title = Res.string.release_1_1_0_languages_title,
-      description = Res.string.release_1_1_0_languages_description,
-    ),
-    Highlight(
-      title = Res.string.release_1_1_0_ios_shortcuts_title,
-      description = Res.string.release_1_1_0_ios_shortcuts_description,
-      platform = ReleasePlatform.Ios,
-    ),
-    Highlight(
-      title = Res.string.release_1_1_0_stability_title,
-      description = Res.string.release_1_1_0_stability_description,
+      title = Res.string.release_1_1_1_stability_title,
+      description = Res.string.release_1_1_1_stability_description,
     ),
   ).filter { it.platform == null || it.platform == releasePlatform }
 
