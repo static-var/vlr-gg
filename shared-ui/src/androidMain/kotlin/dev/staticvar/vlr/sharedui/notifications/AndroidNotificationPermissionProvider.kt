@@ -163,8 +163,10 @@ private class AndroidNotificationPermissionProvider(
     }
     when {
       enabled -> NotificationAuthorization.Authorized
+
       Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
         preferences.getBoolean(HAS_PERMISSION_RESPONSE, false) -> NotificationAuthorization.Denied
+
       else -> NotificationAuthorization.NotDetermined
     }
   } catch (_: RuntimeException) {

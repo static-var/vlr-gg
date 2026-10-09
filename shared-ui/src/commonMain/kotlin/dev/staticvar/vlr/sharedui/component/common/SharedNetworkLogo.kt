@@ -77,7 +77,9 @@ internal fun rememberOutlinedLogoPainter(
   val request = remember(source, pixelSize, radiusPx, background, enabled) {
     if (enabled && source != null && pixelSize.width > 0 && pixelSize.height > 0) {
       LogoTreatmentRequest(source, pixelSize, radiusPx, background)
-    } else null
+    } else {
+      null
+    }
   }
   val treatment by rememberLogoTreatment(request, sharedLogoTreatments)
   return remember(treatment, painter, pixelSize) {

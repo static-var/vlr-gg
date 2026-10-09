@@ -5,7 +5,6 @@
 package dev.staticvar.vlr.sharedui.component.common
 
 import android.graphics.Bitmap
-import android.graphics.Color as AndroidColor
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -38,6 +37,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import android.graphics.Color as AndroidColor
 
 @RunWith(AndroidJUnit4::class)
 class SharedNetworkLogoTest {
@@ -82,14 +82,20 @@ class SharedNetworkLogoTest {
     val portrait = compose.awaitDarkPixelBounds(landscapeCanvas = false)
     assertAspectRatioPreserved(portrait)
     assertTrue("portrait logo should be end aligned: $portrait", portrait.left > portrait.canvasWidth / 4)
-    assertTrue("portrait logo should use most of the height: $portrait", portrait.height > portrait.canvasHeight * 4 / 5)
+    assertTrue(
+      "portrait logo should use most of the height: $portrait",
+      portrait.height > portrait.canvasHeight * 4 / 5,
+    )
 
     compose.runOnIdle { size = DpSize(160.dp, 80.dp) }
 
     val landscape = compose.awaitDarkPixelBounds(landscapeCanvas = true)
     assertAspectRatioPreserved(landscape)
     assertTrue("resized logo should remain end aligned: $landscape", landscape.left > landscape.canvasWidth * 7 / 10)
-    assertTrue("resized logo should use most of the height: $landscape", landscape.height > landscape.canvasHeight * 4 / 5)
+    assertTrue(
+      "resized logo should use most of the height: $landscape",
+      landscape.height > landscape.canvasHeight * 4 / 5,
+    )
     assertTrue("resizing should change the fitted width: $portrait -> $landscape", portrait.width > landscape.width)
     assertTrue("resizing should change the fitted height: $portrait -> $landscape", portrait.height > landscape.height)
   }
@@ -172,7 +178,9 @@ class SharedNetworkLogoTest {
     }
     return if (right >= left && bottom >= top) {
       PixelBounds(left, top, right, bottom, width, height)
-    } else null
+    } else {
+      null
+    }
   }
 
   private fun ImageBitmap.hasWhiteCorners(): Boolean {
@@ -185,13 +193,12 @@ class SharedNetworkLogoTest {
     ).all { color -> color.alpha > 0.95f && color.red > 0.95f && color.green > 0.95f && color.blue > 0.95f }
   }
 
-  private fun createLowContrastLogo(): Bitmap =
-    Bitmap.createBitmap(20, 40, Bitmap.Config.ARGB_8888).apply {
-      eraseColor(AndroidColor.TRANSPARENT)
-      for (y in 2 until height - 2) {
-        for (x in 2 until width - 2) setPixel(x, y, AndroidColor.WHITE)
-      }
+  private fun createLowContrastLogo(): Bitmap = Bitmap.createBitmap(20, 40, Bitmap.Config.ARGB_8888).apply {
+    eraseColor(AndroidColor.TRANSPARENT)
+    for (y in 2 until height - 2) {
+      for (x in 2 until width - 2) setPixel(x, y, AndroidColor.WHITE)
     }
+  }
 
   private data class PixelBounds(
     val left: Int,

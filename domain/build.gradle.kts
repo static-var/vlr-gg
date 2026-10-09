@@ -12,7 +12,9 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.domain"
-    compileSdk = 37
+    compileSdk {
+      version = release(37) { minorApiLevel = 1 }
+    }
     minSdk = 24
 
     withHostTestBuilder {}

@@ -47,7 +47,8 @@ private data class CardMascotVisibilityElement(val onVisibilityChanged: (Boolean
 }
 
 private class CardMascotVisibilityNode(var onVisibilityChanged: (Boolean) -> Unit) :
-  DelegatingNode(), ModifierLocalModifierNode {
+  DelegatingNode(),
+  ModifierLocalModifierNode {
   private var viewport: LayoutBoundsHolder? = null
   private var visibilityNode: DelegatableNode? = null
 

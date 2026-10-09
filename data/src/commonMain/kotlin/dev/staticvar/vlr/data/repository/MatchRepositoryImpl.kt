@@ -17,6 +17,7 @@ import dev.staticvar.vlr.data.mapper.toDomain
 import dev.staticvar.vlr.data.mapper.toEntity
 import dev.staticvar.vlr.data.mapper.toMapEntities
 import dev.staticvar.vlr.data.mapper.toMatchEntity
+import dev.staticvar.vlr.data.mapper.toMatchStatus
 import dev.staticvar.vlr.data.mapper.toOverviewEntity
 import dev.staticvar.vlr.data.mapper.toPlayerStatEntities
 import dev.staticvar.vlr.data.mapper.toPreviousEncounterEntities
@@ -28,6 +29,7 @@ import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchPreview
+import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamPreview
@@ -392,8 +394,10 @@ internal class MatchRepositoryImpl(
     }
 
   private fun GetMatchWithFavoriteStatus.canRequestPrediction(): Boolean {
-    if (status.uppercase() !in setOf("UPCOMING", "TBD")) return false
+    val matchStatus = status.toMatchStatus()
+    if (matchStatus !in setOf(MatchStatus.UPCOMING, MatchStatus.LIVE)) return false
     if (!isPredictionTeamPair(team1_id, team2_id)) return false
+    if (matchStatus == MatchStatus.LIVE) return true
     val scheduled = runCatching { Instant.parse(time) }.getOrNull()
     return scheduled == null || scheduled > Clock.System.now()
   }

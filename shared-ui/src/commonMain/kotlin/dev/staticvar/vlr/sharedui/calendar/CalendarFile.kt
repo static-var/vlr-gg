@@ -5,11 +5,11 @@
 package dev.staticvar.vlr.sharedui.calendar
 
 import androidx.compose.runtime.Composable
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 public data class CalendarEntry(
   val uid: String,
@@ -21,16 +21,15 @@ public data class CalendarEntry(
 )
 
 /** Calendar entry for a match. The UID depends only on the match ID, so a repeated import updates the entry. */
-public fun matchCalendarEntry(matchId: String, title: String, description: String, start: Instant): CalendarEntry {
-  return CalendarEntry(
+public fun matchCalendarEntry(matchId: String, title: String, description: String, start: Instant): CalendarEntry =
+  CalendarEntry(
     uid = matchCalendarUid(matchId),
     title = title,
     description = description,
     start = start,
     end = start + 1.hours,
-    url = "https://valorantesports.staticvar.dev/match/$matchId".takeIf { matchId.all(Char::isDigit) },
+    url = "https://valesports.app/match/$matchId".takeIf { matchId.all(Char::isDigit) },
   )
-}
 
 public fun matchCalendarUid(matchId: String): String {
   require(matchId.isNotBlank())
@@ -69,6 +68,7 @@ public enum class CalendarExportResult {
 
 public enum class CalendarEntryStatus {
   NotAdded,
+
   /** At least one requested match saved by this app is still in the calendar. */
   Added,
   Denied,
@@ -90,7 +90,10 @@ public expect fun rememberCalendarManager(): CalendarManager
  * fallback. iOS saves or reschedules entries with calendar access, checking saved events to avoid duplicates.
  */
 @Composable
-public expect fun rememberCalendarExporter(): suspend (fileName: String, entries: List<CalendarEntry>) -> CalendarExportResult
+public expect fun rememberCalendarExporter(): suspend (
+  fileName: String,
+  entries: List<CalendarEntry>,
+) -> CalendarExportResult
 
 public fun List<CalendarEntry>.toICalendar(generatedAt: Instant = Clock.System.now()): String = buildList {
   add("BEGIN:VCALENDAR")
@@ -129,7 +132,11 @@ private fun String.foldCalendarLine(): String = buildString {
   while (index < this@foldCalendarLine.length) {
     val length = if (this@foldCalendarLine[index].isHighSurrogate() &&
       index + 1 < this@foldCalendarLine.length && this@foldCalendarLine[index + 1].isLowSurrogate()
-    ) 2 else 1
+    ) {
+      2
+    } else {
+      1
+    }
     val character = this@foldCalendarLine.substring(index, index + length)
     val size = character.encodeToByteArray().size
     if (octets + size > 75) {

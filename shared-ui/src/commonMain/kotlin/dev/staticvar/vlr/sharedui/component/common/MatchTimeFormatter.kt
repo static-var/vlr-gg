@@ -5,7 +5,6 @@
 package dev.staticvar.vlr.sharedui.component.common
 
 import androidx.compose.runtime.Composable
-import kotlin.time.Instant
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -25,6 +24,7 @@ import vlr.shared_ui.generated.resources.format_month_may
 import vlr.shared_ui.generated.resources.format_month_nov
 import vlr.shared_ui.generated.resources.format_month_oct
 import vlr.shared_ui.generated.resources.format_month_sep
+import kotlin.time.Instant
 
 @Composable
 public fun formatMatchPreviewTime(isoUtcTime: String?, timeZone: TimeZone = TimeZone.currentSystemDefault()): String? {

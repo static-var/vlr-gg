@@ -53,7 +53,7 @@ final class SiriActionsTests: XCTestCase {
         let result = try await OpenNextFavoriteMatchIntent().perform()
         let url = try XCTUnwrap(result.value)
         XCTAssertEqual(url.scheme, "https")
-        XCTAssertEqual(url.host, "valorantesports.staticvar.dev")
+        XCTAssertEqual(url.host, "valesports.app")
         XCTAssertTrue(url.path == "/" || url.path.hasPrefix("/match/"))
     }
 

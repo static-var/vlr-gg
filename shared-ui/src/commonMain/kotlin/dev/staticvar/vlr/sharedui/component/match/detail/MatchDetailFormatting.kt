@@ -13,8 +13,6 @@ import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamDetails
 import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.model.VetoAction
-import kotlin.math.round
-import kotlin.math.roundToInt
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
@@ -34,6 +32,8 @@ import vlr.shared_ui.generated.resources.format_steps
 import vlr.shared_ui.generated.resources.format_teamOne
 import vlr.shared_ui.generated.resources.format_teamTwo
 import vlr.shared_ui.generated.resources.format_unknown
+import kotlin.math.round
+import kotlin.math.roundToInt
 
 internal const val AllMapsOptionId: String = "all"
 

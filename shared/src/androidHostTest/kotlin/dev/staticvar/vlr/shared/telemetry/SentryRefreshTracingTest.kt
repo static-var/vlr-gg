@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022-2026 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.shared.telemetry
 
 import dev.staticvar.vlr.core.telemetry.DatabaseTrace
@@ -5,6 +9,7 @@ import dev.staticvar.vlr.core.telemetry.TelemetrySpanStatus
 import io.sentry.Hint
 import io.sentry.Sentry
 import io.sentry.SentryEnvelope
+import io.sentry.SentryMetricsEvent
 import io.sentry.SentryOptions
 import io.sentry.SpanStatus
 import io.sentry.protocol.SentryTransaction
@@ -18,6 +23,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class SentryRefreshTracingTest {
   @Test
@@ -83,12 +89,48 @@ class SentryRefreshTracingTest {
     }
   }
 
-  private fun withCapturedTransactions(block: (List<SentryTransaction>) -> Unit) {
+  @Test
+  fun operationMetricsAreSanitizedAndFinishingTwiceDoesNotCountTwice() {
+    val metrics = CopyOnWriteArrayList<SentryMetricsEvent>()
+    withCapturedTransactions(metrics) {
+      val refresh = startPlatformSpan("https://example.com/refresh?token=secret", "matches.refresh")
+      refresh.finish(TelemetrySpanStatus.Ok)
+      refresh.finish(TelemetrySpanStatus.Error)
+
+      assertEquals(2, metrics.size)
+      val count = metrics.single { it.name == "vlr.operation.count" }
+      val duration = metrics.single { it.name == "vlr.operation.duration" }
+      assertEquals(1.0, count.value)
+      assertEquals("counter", count.type)
+      assertEquals("distribution", duration.type)
+      assertEquals("millisecond", duration.unit)
+      assertTrue(duration.value >= 0.0)
+      metrics.forEach { metric ->
+        assertEquals("https://example.com/refresh", metric.attributes?.get("operation")?.value)
+        assertEquals("ok", metric.attributes?.get("status")?.value)
+      }
+
+      Sentry.close()
+      startPlatformSpan("data.refresh", "matches.refresh").finish(TelemetrySpanStatus.Ok)
+      assertEquals(2, metrics.size)
+    }
+  }
+
+  private fun withCapturedTransactions(
+    metrics: MutableList<SentryMetricsEvent> = mutableListOf(),
+    block: (List<SentryTransaction>) -> Unit,
+  ) {
     val captured = CopyOnWriteArrayList<SentryTransaction>()
     val options = SentryOptions().apply {
       dsn = "https://public@example.invalid/1"
       tracesSampleRate = 1.0
       integrations.clear()
+      configureTelemetryPrivacy()
+      val sanitizeMetric = getMetrics().beforeSend!!
+      getMetrics().setBeforeSend { metric, hint ->
+        sanitizeMetric.execute(metric, hint)?.let(metrics::add)
+        null
+      }
       setEnableShutdownHook(false)
       setTransportFactory(io.sentry.ITransportFactory { configuration, _ ->
         object : ITransport {

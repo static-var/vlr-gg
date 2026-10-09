@@ -1,7 +1,7 @@
 /*
-* Copyright (c) 2022-2026 Shreyansh Lodha
-* SPDX-License-Identifier: MIT
-*/
+ * Copyright (c) 2022-2026 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
 package dev.staticvar.vlr.localsource
 
 import app.cash.sqldelight.db.QueryResult

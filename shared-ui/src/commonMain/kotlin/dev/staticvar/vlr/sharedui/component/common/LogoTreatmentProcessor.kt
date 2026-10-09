@@ -62,22 +62,30 @@ internal class LogoTreatmentProcessor(
   private val treatments = LogoCache<LogoTreatmentRequest, LogoTreatment>(cacheBytes) { key, value ->
     key.source.image.size + 128 + if (value is LogoTreatment.Outlined) {
       value.bitmap.width.toLong() * value.bitmap.height * 4
-    } else 0
+    } else {
+      0
+    }
   }
   private val inFlight = mutableMapOf<LogoTreatmentRequest, PendingTreatment>()
 
   override fun cached(request: LogoTreatmentRequest): LogoTreatment? {
     if (!mutex.tryLock()) return null
-    return try { treatments[request] } finally { mutex.unlock() }
+    return try {
+      treatments[request]
+    } finally {
+      mutex.unlock()
+    }
   }
 
   override suspend fun prepare(request: LogoTreatmentRequest): LogoTreatment {
     val pending = mutex.withLock {
       treatments[request]?.let { return it }
       inFlight.getOrPut(request) {
-        PendingTreatment(scope.async(start = CoroutineStart.LAZY) {
-          worker.withPermit { process(request) }
-        })
+        PendingTreatment(
+          scope.async(start = CoroutineStart.LAZY) {
+            worker.withPermit { process(request) }
+          },
+        )
       }.also { it.readers++ }
     }
     try {
@@ -108,7 +116,9 @@ internal class LogoTreatmentProcessor(
       render(source.image, request.pixelSize, request.radiusPx, color)?.let {
         LogoTreatment.Outlined(it, ceil(request.radiusPx).toInt())
       } ?: LogoTreatment.Original
-    } else LogoTreatment.Original
+    } else {
+      LogoTreatment.Original
+    }
     currentCoroutineContext().ensureActive()
     mutex.withLock { treatments.put(request, result) }
     return result
@@ -119,10 +129,7 @@ internal class LogoTreatmentProcessor(
   private class PendingTreatment(val result: Deferred<LogoTreatment>, var readers: Int = 0)
 }
 
-private class LogoCache<K, V>(
-  private val maxBytes: Long,
-  private val weight: (K, V) -> Long,
-) {
+private class LogoCache<K, V>(private val maxBytes: Long, private val weight: (K, V) -> Long) {
   private val values = LinkedHashMap<K, V>()
   private var bytes = 0L
 

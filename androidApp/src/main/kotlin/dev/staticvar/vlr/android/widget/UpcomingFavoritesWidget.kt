@@ -59,7 +59,7 @@ internal abstract class FavoriteMatchWidget(private val small: Boolean) : Glance
         Intent(context, MainActivity::class.java).apply {
           data = Uri.Builder()
             .scheme("https")
-            .authority("valorantesports.staticvar.dev")
+            .authority("valesports.app")
             .appendPath("match")
             .appendPath(match.id)
             .build()

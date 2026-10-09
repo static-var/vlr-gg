@@ -4,6 +4,13 @@
  */
 package dev.staticvar.vlr.featureteam.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,6 +48,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
@@ -309,6 +317,11 @@ private fun TeamEloValue(value: Double, label: String, modifier: Modifier = Modi
 @Composable
 private fun TeamRecentForm(profile: TeamRankingProfile, onMatchSelected: (String) -> Unit) {
   var expanded by rememberSaveable { mutableStateOf(false) }
+  val animation = Prism.anim.standard
+  val expansionSpec = tween<IntSize>(
+    durationMillis = animation.durationMillis,
+    easing = animation.easing,
+  )
   val form = profile.form.take(10)
   val wins = form.count { it }
   val losses = form.size - wins
@@ -325,10 +338,9 @@ private fun TeamRecentForm(profile: TeamRankingProfile, onMatchSelected: (String
     stringResource(if (expanded) Res.string.team_rating_form_expanded else Res.string.team_rating_form_collapsed)
   Column(
     modifier = Modifier.padding(top = Prism.dimens.spacingS),
-    verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
   ) {
     Row(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().padding(bottom = Prism.dimens.spacingS),
       horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -348,7 +360,13 @@ private fun TeamRecentForm(profile: TeamRankingProfile, onMatchSelected: (String
       modifier =
       Modifier.fillMaxWidth()
         .heightIn(min = Prism.dimens.controlHeight)
-        .clickable(enabled = profile.recent.isNotEmpty(), role = Role.Button, onClickLabel = action) {
+        .clickable(
+          interactionSource = null,
+          indication = null,
+          enabled = profile.recent.isNotEmpty(),
+          role = Role.Button,
+          onClickLabel = action,
+        ) {
           expanded =
             !expanded
         }
@@ -371,8 +389,17 @@ private fun TeamRecentForm(profile: TeamRankingProfile, onMatchSelected: (String
       }
       TeamFormChevron(expanded = expanded)
     }
-    if (expanded) {
-      Column(modifier = Modifier.fillMaxWidth().border(Prism.dimens.strokeDefault, Prism.color.stroke)) {
+    AnimatedVisibility(
+      visible = expanded,
+      enter = expandVertically(animationSpec = expansionSpec, expandFrom = Alignment.Top) +
+        fadeIn(animationSpec = animation.floatSpec()),
+      exit = shrinkVertically(animationSpec = expansionSpec, shrinkTowards = Alignment.Top) +
+        fadeOut(animationSpec = animation.floatSpec()),
+    ) {
+      Column(
+        modifier = Modifier.fillMaxWidth().padding(top = Prism.dimens.spacingS)
+          .border(Prism.dimens.strokeDefault, Prism.color.stroke),
+      ) {
         profile.recent.take(10).forEachIndexed { index, result ->
           if (index > 0) HorizontalDivider(thickness = Prism.dimens.strokeDefault, color = Prism.color.divider)
           TeamRecentResult(result = result, onMatchSelected = onMatchSelected)
@@ -416,8 +443,13 @@ private fun TeamFormTile(won: Boolean, modifier: Modifier = Modifier, newest: Bo
 @Composable
 private fun TeamFormChevron(expanded: Boolean) {
   val color = Prism.color.labelColor
+  val rotation by animateFloatAsState(
+    targetValue = if (expanded) 180f else 0f,
+    animationSpec = Prism.anim.standard.floatSpec(),
+    label = "team_form_chevron_rotation",
+  )
   Canvas(
-    modifier = Modifier.size(Prism.dimens.iconS).graphicsLayer { rotationZ = if (expanded) 180f else 0f },
+    modifier = Modifier.size(Prism.dimens.iconS).graphicsLayer { rotationZ = rotation },
   ) {
     val unit = size.width / 16f
     listOf(2 to 5, 4 to 7, 6 to 9, 8 to 9, 10 to 7, 12 to 5).forEach { (x, y) ->

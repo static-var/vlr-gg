@@ -13,8 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.TextUnit
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.SharedTextTransition
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.rememberSharedTextTransition
 import dev.staticvar.vlr.sharedui.component.common.rememberTransitionContentFade
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -72,6 +76,19 @@ internal enum class EventSharedContent { Card, Logo, Title }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
+internal fun rememberEventSharedText(eventId: String, color: Color, fontSize: TextUnit? = null): SharedTextTransition {
+  val scope = LocalEventTransitionScope.current
+  return rememberSharedTextTransition(
+    key = "event:$eventId:${EventSharedContent.Title}",
+    sharedScope = scope?.sharedTransitionScope,
+    visibilityScope = scope?.animatedVisibilityScope,
+    color = color,
+    fontSize = fontSize,
+  )
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
 internal fun Modifier.eventSharedBounds(eventId: String, content: EventSharedContent): Modifier {
   val transitionScope = LocalEventTransitionScope.current ?: return this
   val animation = Prism.anim.standard
@@ -82,12 +99,7 @@ internal fun Modifier.eventSharedBounds(eventId: String, content: EventSharedCon
       boundsTransform = BoundsTransform { _, _ ->
         tween(durationMillis = animation.durationMillis, easing = animation.easing)
       },
-      resizeMode = if (content == EventSharedContent.Card) {
-        SharedTransitionScope.ResizeMode.RemeasureToBounds
-      } else {
-        SharedTransitionScope.ResizeMode.scaleToBounds()
-      },
-      zIndexInOverlay = if (content == EventSharedContent.Card) 0f else 1f,
+      resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
     )
   }
 }

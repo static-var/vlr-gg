@@ -48,7 +48,8 @@ public fun PrismSegmentedButtons(
       null
     }
   CompositionLocalProvider(
-    LocalRippleConfiguration provides if (frame.shadowOffset == DpOffset.Zero) LocalRippleConfiguration.current else null,
+    LocalRippleConfiguration provides
+      if (frame.shadowOffset == DpOffset.Zero) LocalRippleConfiguration.current else null,
   ) {
     SingleChoiceSegmentedButtonRow(
       modifier = modifier.fillMaxWidth().prismFrame(frame, style.shape, pressProgress),

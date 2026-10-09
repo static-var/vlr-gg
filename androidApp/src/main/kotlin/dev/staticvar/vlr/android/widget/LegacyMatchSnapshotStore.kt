@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.IOException
-import java.time.Instant
+import kotlin.time.Instant
 
 internal object LegacyMatchSnapshotStore {
   private const val FILE_NAME = "all_matches_widget.json"
@@ -33,7 +33,7 @@ internal object LegacyMatchSnapshotStore {
           event = match.event,
           team1 = match.team1.name,
           team2 = match.team2.name,
-          startTimeEpochMillis = match.time?.let { runCatching { Instant.parse(it).toEpochMilli() }.getOrNull() },
+          startTimeEpochMillis = match.time?.let { runCatching { Instant.parse(it).toEpochMilliseconds() }.getOrNull() },
           status = match.status.name,
           score1 = match.team1.score.takeUnless { spoilersHidden },
           score2 = match.team2.score.takeUnless { spoilersHidden },

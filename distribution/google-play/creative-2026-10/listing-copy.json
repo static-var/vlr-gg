@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "prepared_date": "2026-10-08",
+  "status": "prepared-not-uploaded",
+  "platform": "Android",
+  "shared_urls": {
+    "website": "https://valesports.app/",
+    "support": "https://valesports.app/support/",
+    "privacy_policy": "https://valesports.app/privacy/"
+  },
+  "main_listing": {
+    "default_locale": "en-US",
+    "locales": {
+      "en-US": {
+        "title": "Val Esports",
+        "short_description": "VALORANT live scores, match schedules, favorites, rankings and widgets",
+        "full_description": "Follow competitive VALORANT in one place. Val Esports brings together match schedules, live scores, results, events and regional rankings.\n\nFollow your favorites\nSave teams, players, events and matches. Catch up on favorite matches and recent results in your Home feed. No account or sign-in is required.\n\nPlan your next match\nBrowse upcoming, live and completed matches. Set match reminders and add matches or event schedules to your calendar.\n\nSee what happened\nCheck series scores, map results, round history and player statistics. Open available streams and VODs from match details.\n\nKeep results a surprise\nUse spoiler controls to hide scores until you are ready to catch up.\n\nFollow teams and events\nExplore team rosters, player details, event schedules and regional rankings. Check team ratings and recent form.\n\nMatches on your home screen\nAdd Android widgets for favorite matches, upcoming fixtures and scores. Background refresh depends on your device's battery and background settings.\n\nMake it yours\nChoose your theme, app icon and mascot. Val Esports is open source and has no ads.\n\nPreviously available as VLR.gg (Unofficial). Val Esports is an independent fan app, not affiliated with or endorsed by Riot Games or VLR.gg. VALORANT is a trademark of Riot Games."
+      },
+      "en-IN": {
+        "title": "Val Esports",
+        "short_description": "VALORANT match schedules, live scores, favourites and home screen widgets",
+        "full_description": "Follow competitive VALORANT in one place. Val Esports brings together match schedules, live scores, results, events and regional rankings.\n\nFollow your favourites\nSave teams, players, events and matches. Catch up on favourite matches and recent results in your Home feed. No account or sign-in is required.\n\nPlan your next match\nBrowse upcoming, live and completed matches. Set match reminders and add matches or event schedules to your calendar.\n\nSee what happened\nCheck series scores, map results, round history and player statistics. Open available streams and VODs from match details.\n\nKeep results a surprise\nUse spoiler controls to hide scores until you are ready to catch up.\n\nFollow teams and events\nExplore team rosters, player details, event schedules and regional rankings. Check team ratings and recent form.\n\nMatches on your home screen\nAdd Android widgets for favourite matches, upcoming fixtures and scores. Background refresh depends on your device's battery and background settings.\n\nMake it yours\nChoose your theme, app icon and mascot. Val Esports is open source and has no ads.\n\nPreviously available as VLR.gg (Unofficial). Val Esports is an independent fan app, not affiliated with or endorsed by Riot Games or VLR.gg. VALORANT is a trademark of Riot Games."
+      },
+      "hi-IN": {
+        "title": "Val Esports",
+        "short_description": "VALORANT मैच शेड्यूल, लाइव स्कोर, पसंदीदा टीमें और होम स्क्रीन विजेट",
+        "full_description": "VALORANT की प्रतियोगिताओं को एक ही जगह फ़ॉलो करें। Val Esports में मैच शेड्यूल, लाइव स्कोर, नतीजे, इवेंट और क्षेत्रीय रैंकिंग देखें।\n\nअपनी पसंद की टीमों को फ़ॉलो करें\nटीमों, खिलाड़ियों, इवेंट और मैचों को पसंदीदा में सेव करें। होम फ़ीड में पसंदीदा मैच और हाल के नतीजे देखें। अकाउंट बनाने या साइन-इन करने की ज़रूरत नहीं है।\n\nअगले मैच की तैयारी करें\nआने वाले, लाइव और पूरे हो चुके मैच देखें। मैच के रिमाइंडर सेट करें और मैच या इवेंट शेड्यूल अपने कैलेंडर में जोड़ें।\n\nमैच की पूरी जानकारी देखें\nसीरीज़ स्कोर, मैप के नतीजे, राउंड का इतिहास और खिलाड़ियों के आँकड़े देखें। मैच की जानकारी से उपलब्ध स्ट्रीम और VOD खोलें।\n\nस्पॉइलर से बचें\nजब तक आप नतीजे देखने के लिए तैयार न हों, स्पॉइलर नियंत्रण से स्कोर छिपाएँ।\n\nटीमों और इवेंट पर नज़र रखें\nटीम के खिलाड़ी, खिलाड़ियों की जानकारी, इवेंट शेड्यूल और क्षेत्रीय रैंकिंग देखें। टीम रेटिंग और हालिया प्रदर्शन चेक करें।\n\nहोम स्क्रीन पर मैच देखें\nपसंदीदा मैच, आने वाले मुकाबले और स्कोर देखने के लिए Android विजेट जोड़ें। बैकग्राउंड में अपडेट होना आपके डिवाइस की बैटरी और बैकग्राउंड सेटिंग पर निर्भर करता है।\n\nऐप को अपने हिसाब से बदलें\nथीम, ऐप आइकन और शुभंकर चुनें। Val Esports ओपन सोर्स है और इसमें विज्ञापन नहीं हैं।\n\nपहले VLR.gg (Unofficial) नाम से उपलब्ध था। Val Esports प्रशंसकों के लिए बनाया गया एक स्वतंत्र ऐप है। यह Riot Games या VLR.gg से संबद्ध नहीं है और न ही उनके द्वारा समर्थित है। VALORANT, Riot Games का ट्रेडमार्क है।"
+      },
+      "pt-BR": {
+        "title": "Val Esports",
+        "short_description": "Placares de VALORANT, horários de partidas, favoritos e widgets",
+        "full_description": "Acompanhe o VALORANT competitivo em um só lugar. Val Esports reúne horários de partidas, placares ao vivo, resultados, eventos e rankings regionais.\n\nSiga seus favoritos\nSalve times, jogadores, eventos e partidas. Confira partidas favoritas e resultados recentes no feed da tela inicial. Não é necessário criar uma conta nem fazer login.\n\nPlaneje a próxima partida\nVeja partidas futuras, ao vivo e encerradas. Configure lembretes e adicione partidas ou a programação de eventos ao seu calendário.\n\nConfira o que aconteceu\nVeja placares das séries, resultados dos mapas, histórico de rounds e estatísticas dos jogadores. Abra as transmissões e os VODs disponíveis nos detalhes da partida.\n\nEvite spoilers dos resultados\nUse os controles de spoilers para ocultar os placares até querer conferir os resultados.\n\nAcompanhe times e eventos\nExplore elencos, perfis de jogadores, programação de eventos e rankings regionais. Confira as avaliações dos times e o desempenho recente.\n\nPartidas na sua tela inicial\nAdicione widgets do Android para ver partidas favoritas, próximos jogos e placares. A atualização em segundo plano depende das configurações de bateria e de segundo plano do seu dispositivo.\n\nDo seu jeito\nEscolha o tema, o ícone do app e o mascote. Val Esports é de código aberto e não tem anúncios.\n\nAntes disponível como VLR.gg (Unofficial). Val Esports é um app independente feito para fãs, sem afiliação ou endosso da Riot Games ou do VLR.gg. VALORANT é uma marca registrada da Riot Games."
+      }
+    }
+  },
+  "custom_listings": {
+    "matches": {
+      "locales": {
+        "en-US": {
+          "title": "Val Esports",
+          "short_description": "VALORANT live scores, match schedules, results and match reminders",
+          "full_description": "Follow VALORANT match days with live scores, upcoming fixtures and completed results. Set reminders, save matches and add fixtures to your calendar.\n\nFollow your favorites\nSave teams, players, events and matches. Catch up on favorite matches and recent results in your Home feed. No account or sign-in is required.\n\nPlan your next match\nBrowse upcoming, live and completed matches. Set match reminders and add matches or event schedules to your calendar.\n\nSee what happened\nCheck series scores, map results, round history and player statistics. Open available streams and VODs from match details.\n\nKeep results a surprise\nUse spoiler controls to hide scores until you are ready to catch up.\n\nFollow teams and events\nExplore team rosters, player details, event schedules and regional rankings. Check team ratings and recent form.\n\nMatches on your home screen\nAdd Android widgets for favorite matches, upcoming fixtures and scores. Background refresh depends on your device's battery and background settings.\n\nMake it yours\nChoose your theme, app icon and mascot. Val Esports is open source and has no ads.\n\nPreviously available as VLR.gg (Unofficial). Val Esports is an independent fan app, not affiliated with or endorsed by Riot Games or VLR.gg. VALORANT is a trademark of Riot Games."
+        },
+        "en-IN": {
+          "title": "Val Esports",
+          "short_description": "VALORANT live scores, match schedules, results and match reminders",
+          "full_description": "Follow VALORANT match days with live scores, upcoming fixtures and completed results. Set reminders, save matches and add fixtures to your calendar.\n\nFollow your favourites\nSave teams, players, events and matches. Catch up on favourite matches and recent results in your Home feed. No account or sign-in is required.\n\nPlan your next match\nBrowse upcoming, live and completed matches. Set match reminders and add matches or event schedules to your calendar.\n\nSee what happened\nCheck series scores, map results, round history and player statistics. Open available streams and VODs from match details.\n\nKeep results a surprise\nUse spoiler controls to hide scores until you are ready to catch up.\n\nFollow teams and events\nExplore team rosters, player details, event schedules and regional rankings. Check team ratings and recent form.\n\nMatches on your home screen\nAdd Android widgets for favourite matches, upcoming fixtures and scores. Background refresh depends on your device's battery and background settings.\n\nMake it yours\nChoose your theme, app icon and mascot. Val Esports is open source and has no ads.\n\nPreviously available as VLR.gg (Unofficial). Val Esports is an independent fan app, not affiliated with or endorsed by Riot Games or VLR.gg. VALORANT is a trademark of Riot Games."
+        },
+        "hi-IN": {
+          "title": "Val Esports",
+          "short_description": "VALORANT लाइव स्कोर, मैच शेड्यूल, नतीजे और मैच रिमाइंडर",
+          "full_description": "लाइव स्कोर, आने वाले मुकाबले और पूरे हो चुके मैचों के नतीजों के साथ VALORANT मैच फ़ॉलो करें। रिमाइंडर सेट करें, मैच सेव करें और उन्हें अपने कैलेंडर में जोड़ें।\n\nअपनी पसंद की टीमों को फ़ॉलो करें\nटीमों, खिलाड़ियों, इवेंट और मैचों को पसंदीदा में सेव करें। होम फ़ीड में पसंदीदा मैच और हाल के नतीजे देखें। अकाउंट बनाने या साइन-इन करने की ज़रूरत नहीं है।\n\nअगले मैच की तैयारी करें\nआने वाले, लाइव और पूरे हो चुके मैच देखें। मैच के रिमाइंडर सेट करें और मैच या इवेंट शेड्यूल अपने कैलेंडर में जोड़ें।\n\nमैच की पूरी जानकारी देखें\nसीरीज़ स्कोर, मैप के नतीजे, राउंड का इतिहास और खिलाड़ियों के आँकड़े देखें। मैच की जानकारी से उपलब्ध स्ट्रीम और VOD खोलें।\n\nस्पॉइलर से बचें\nजब तक आप नतीजे देखने के लिए तैयार न हों, स्पॉइलर नियंत्रण से स्कोर छिपाएँ।\n\nटीमों और इवेंट पर नज़र रखें\nटीम के खिलाड़ी, खिलाड़ियों की जानकारी, इवेंट शेड्यूल और क्षेत्रीय रैंकिंग देखें। टीम रेटिंग और हालिया प्रदर्शन चेक करें।\n\nहोम स्क्रीन पर मैच देखें\nपसंदीदा मैच, आने वाले मुकाबले और स्कोर देखने के लिए Android विजेट जोड़ें। बैकग्राउंड में अपडेट होना आपके डिवाइस की बैटरी और बैकग्राउंड सेटिंग पर निर्भर करता है।\n\nऐप को अपने हिसाब से बदलें\nथीम, ऐप आइकन और शुभंकर चुनें। Val Esports ओपन सोर्स है और इसमें विज्ञापन नहीं हैं।\n\nपहले VLR.gg (Unofficial) नाम से उपलब्ध था। Val Esports प्रशंसकों के लिए बनाया गया एक स्वतंत्र ऐप है। यह Riot Games या VLR.gg से संबद्ध नहीं है और न ही उनके द्वारा समर्थित है। VALORANT, Riot Games का ट्रेडमार्क है।"
+        },
+        "pt-BR": {
+          "title": "Val Esports",
+          "short_description": "Placares ao vivo, horários, resultados e lembretes de partidas de VALORANT",
+          "full_description": "Acompanhe as partidas de VALORANT com placares ao vivo, próximos jogos e resultados. Configure lembretes, salve partidas e adicione os jogos ao seu calendário.\n\nSiga seus favoritos\nSalve times, jogadores, eventos e partidas. Confira partidas favoritas e resultados recentes no feed da tela inicial. Não é necessário criar uma conta nem fazer login.\n\nPlaneje a próxima partida\nVeja partidas futuras, ao vivo e encerradas. Configure lembretes e adicione partidas ou a programação de eventos ao seu calendário.\n\nConfira o que aconteceu\nVeja placares das séries, resultados dos mapas, histórico de rounds e estatísticas dos jogadores. Abra as transmissões e os VODs disponíveis nos detalhes da partida.\n\nEvite spoilers dos resultados\nUse os controles de spoilers para ocultar os placares até querer conferir os resultados.\n\nAcompanhe times e eventos\nExplore elencos, perfis de jogadores, programação de eventos e rankings regionais. Confira as avaliações dos times e o desempenho recente.\n\nPartidas na sua tela inicial\nAdicione widgets do Android para ver partidas favoritas, próximos jogos e placares. A atualização em segundo plano depende das configurações de bateria e de segundo plano do seu dispositivo.\n\nDo seu jeito\nEscolha o tema, o ícone do app e o mascote. Val Esports é de código aberto e não tem anúncios.\n\nAntes disponível como VLR.gg (Unofficial). Val Esports é um app independente feito para fãs, sem afiliação ou endosso da Riot Games ou do VLR.gg. VALORANT é uma marca registrada da Riot Games."
+        }
+      },
+      "intent": "Live matches, schedules and results"
+    },
+    "rankings": {
+      "locales": {
+        "en-US": {
+          "title": "Val Esports",
+          "short_description": "VALORANT regional rankings, team ratings, recent form and match stats",
+          "full_description": "Follow VALORANT teams and players. Explore regional rankings, team ratings, recent form and match statistics, then save your favorites.\n\nFollow your favorites\nSave teams, players, events and matches. Catch up on favorite matches and recent results in your Home feed. No account or sign-in is required.\n\nPlan your next match\nBrowse upcoming, live and completed matches. Set match reminders and add matches or event schedules to your calendar.\n\nSee what happened\nCheck series scores, map results, round history and player statistics. Open available streams and VODs from match details.\n\nKeep results a surprise\nUse spoiler controls to hide scores until you are ready to catch up.\n\nFollow teams and events\nExplore team rosters, player details, event schedules and regional rankings. Check team ratings and recent form.\n\nMatches on your home screen\nAdd Android widgets for favorite matches, upcoming fixtures and scores. Background refresh depends on your device's battery and background settings.\n\nMake it yours\nChoose your theme, app icon and mascot. Val Esports is open source and has no ads.\n\nPreviously available as VLR.gg (Unofficial). Val Esports is an independent fan app, not affiliated with or endorsed by Riot Games or VLR.gg. VALORANT is a trademark of Riot Games."
+        },
+        "en-IN": {
+          "title": "Val Esports",
+          "short_description": "VALORANT regional rankings, team ratings, recent form and match stats",
+          "full_description": "Follow VALORANT teams and players. Explore regional rankings, team ratings, recent form and match statistics, then save your favourites.\n\nFollow your favourites\nSave teams, players, events and matches. Catch up on favourite matches and recent results in your Home feed. No account or sign-in is required.\n\nPlan your next match\nBrowse upcoming, live and completed matches. Set match reminders and add matches or event schedules to your calendar.\n\nSee what happened\nCheck series scores, map results, round history and player statistics. Open available streams and VODs from match details.\n\nKeep results a surprise\nUse spoiler controls to hide scores until you are ready to catch up.\n\nFollow teams and events\nExplore team rosters, player details, event schedules and regional rankings. Check team ratings and recent form.\n\nMatches on your home screen\nAdd Android widgets for favourite matches, upcoming fixtures and scores. Background refresh depends on your device's battery and background settings.\n\nMake it yours\nChoose your theme, app icon and mascot. Val Esports is open source and has no ads.\n\nPreviously available as VLR.gg (Unofficial). Val Esports is an independent fan app, not affiliated with or endorsed by Riot Games or VLR.gg. VALORANT is a trademark of Riot Games."
+        },
+        "hi-IN": {
+          "title": "Val Esports",
+          "short_description": "VALORANT क्षेत्रीय रैंकिंग, टीम रेटिंग, हालिया प्रदर्शन और मैच के आँकड़े",
+          "full_description": "VALORANT टीमों और खिलाड़ियों को फ़ॉलो करें। क्षेत्रीय रैंकिंग, टीम रेटिंग, हालिया प्रदर्शन और मैच के आँकड़े देखें, फिर अपनी पसंद के लोगों और टीमों को सेव करें।\n\nअपनी पसंद की टीमों को फ़ॉलो करें\nटीमों, खिलाड़ियों, इवेंट और मैचों को पसंदीदा में सेव करें। होम फ़ीड में पसंदीदा मैच और हाल के नतीजे देखें। अकाउंट बनाने या साइन-इन करने की ज़रूरत नहीं है।\n\nअगले मैच की तैयारी करें\nआने वाले, लाइव और पूरे हो चुके मैच देखें। मैच के रिमाइंडर सेट करें और मैच या इवेंट शेड्यूल अपने कैलेंडर में जोड़ें।\n\nमैच की पूरी जानकारी देखें\nसीरीज़ स्कोर, मैप के नतीजे, राउंड का इतिहास और खिलाड़ियों के आँकड़े देखें। मैच की जानकारी से उपलब्ध स्ट्रीम और VOD खोलें।\n\nस्पॉइलर से बचें\nजब तक आप नतीजे देखने के लिए तैयार न हों, स्पॉइलर नियंत्रण से स्कोर छिपाएँ।\n\nटीमों और इवेंट पर नज़र रखें\nटीम के खिलाड़ी, खिलाड़ियों की जानकारी, इवेंट शेड्यूल और क्षेत्रीय रैंकिंग देखें। टीम रेटिंग और हालिया प्रदर्शन चेक करें।\n\nहोम स्क्रीन पर मैच देखें\nपसंदीदा मैच, आने वाले मुकाबले और स्कोर देखने के लिए Android विजेट जोड़ें। बैकग्राउंड में अपडेट होना आपके डिवाइस की बैटरी और बैकग्राउंड सेटिंग पर निर्भर करता है।\n\nऐप को अपने हिसाब से बदलें\nथीम, ऐप आइकन और शुभंकर चुनें। Val Esports ओपन सोर्स है और इसमें विज्ञापन नहीं हैं।\n\nपहले VLR.gg (Unofficial) नाम से उपलब्ध था। Val Esports प्रशंसकों के लिए बनाया गया एक स्वतंत्र ऐप है। यह Riot Games या VLR.gg से संबद्ध नहीं है और न ही उनके द्वारा समर्थित है। VALORANT, Riot Games का ट्रेडमार्क है।"
+        },
+        "pt-BR": {
+          "title": "Val Esports",
+          "short_description": "Rankings de VALORANT, avaliações de times, desempenho e estatísticas",
+          "full_description": "Acompanhe times e jogadores de VALORANT. Veja rankings regionais, avaliações dos times, desempenho recente e estatísticas das partidas. Salve seus favoritos.\n\nSiga seus favoritos\nSalve times, jogadores, eventos e partidas. Confira partidas favoritas e resultados recentes no feed da tela inicial. Não é necessário criar uma conta nem fazer login.\n\nPlaneje a próxima partida\nVeja partidas futuras, ao vivo e encerradas. Configure lembretes e adicione partidas ou a programação de eventos ao seu calendário.\n\nConfira o que aconteceu\nVeja placares das séries, resultados dos mapas, histórico de rounds e estatísticas dos jogadores. Abra as transmissões e os VODs disponíveis nos detalhes da partida.\n\nEvite spoilers dos resultados\nUse os controles de spoilers para ocultar os placares até querer conferir os resultados.\n\nAcompanhe times e eventos\nExplore elencos, perfis de jogadores, programação de eventos e rankings regionais. Confira as avaliações dos times e o desempenho recente.\n\nPartidas na sua tela inicial\nAdicione widgets do Android para ver partidas favoritas, próximos jogos e placares. A atualização em segundo plano depende das configurações de bateria e de segundo plano do seu dispositivo.\n\nDo seu jeito\nEscolha o tema, o ícone do app e o mascote. Val Esports é de código aberto e não tem anúncios.\n\nAntes disponível como VLR.gg (Unofficial). Val Esports é um app independente feito para fãs, sem afiliação ou endosso da Riot Games ou do VLR.gg. VALORANT é uma marca registrada da Riot Games."
+        }
+      },
+      "intent": "Team rankings, team ratings and player statistics"
+    },
+    "india": {
+      "locales": {
+        "en-US": {
+          "title": "Val Esports",
+          "short_description": "VALORANT live scores, match schedules, favorites, rankings and widgets",
+          "full_description": "Plan your next VALORANT match day. Check schedules, follow your favorite teams, set reminders and add upcoming matches to your calendar.\n\nFollow your favorites\nSave teams, players, events and matches. Catch up on favorite matches and recent results in your Home feed. No account or sign-in is required.\n\nPlan your next match\nBrowse upcoming, live and completed matches. Set match reminders and add matches or event schedules to your calendar.\n\nSee what happened\nCheck series scores, map results, round history and player statistics. Open available streams and VODs from match details.\n\nKeep results a surprise\nUse spoiler controls to hide scores until you are ready to catch up.\n\nFollow teams and events\nExplore team rosters, player details, event schedules and regional rankings. Check team ratings and recent form.\n\nMatches on your home screen\nAdd Android widgets for favorite matches, upcoming fixtures and scores. Background refresh depends on your device's battery and background settings.\n\nMake it yours\nChoose your theme, app icon and mascot. Val Esports is open source and has no ads.\n\nPreviously available as VLR.gg (Unofficial). Val Esports is an independent fan app, not affiliated with or endorsed by Riot Games or VLR.gg. VALORANT is a trademark of Riot Games."
+        },
+        "en-IN": {
+          "title": "Val Esports",
+          "short_description": "VALORANT match schedules, live scores, favourites and home screen widgets",
+          "full_description": "Plan your next VALORANT match day. Check schedules, follow your favourite teams, set reminders and add upcoming matches to your calendar.\n\nFollow your favourites\nSave teams, players, events and matches. Catch up on favourite matches and recent results in your Home feed. No account or sign-in is required.\n\nPlan your next match\nBrowse upcoming, live and completed matches. Set match reminders and add matches or event schedules to your calendar.\n\nSee what happened\nCheck series scores, map results, round history and player statistics. Open available streams and VODs from match details.\n\nKeep results a surprise\nUse spoiler controls to hide scores until you are ready to catch up.\n\nFollow teams and events\nExplore team rosters, player details, event schedules and regional rankings. Check team ratings and recent form.\n\nMatches on your home screen\nAdd Android widgets for favourite matches, upcoming fixtures and scores. Background refresh depends on your device's battery and background settings.\n\nMake it yours\nChoose your theme, app icon and mascot. Val Esports is open source and has no ads.\n\nPreviously available as VLR.gg (Unofficial). Val Esports is an independent fan app, not affiliated with or endorsed by Riot Games or VLR.gg. VALORANT is a trademark of Riot Games."
+        },
+        "hi-IN": {
+          "title": "Val Esports",
+          "short_description": "VALORANT मैच शेड्यूल, लाइव स्कोर, पसंदीदा टीमें और होम स्क्रीन विजेट",
+          "full_description": "अगले VALORANT मैच की तैयारी करें। शेड्यूल देखें, पसंदीदा टीमों को फ़ॉलो करें, रिमाइंडर सेट करें और आने वाले मैच अपने कैलेंडर में जोड़ें।\n\nअपनी पसंद की टीमों को फ़ॉलो करें\nटीमों, खिलाड़ियों, इवेंट और मैचों को पसंदीदा में सेव करें। होम फ़ीड में पसंदीदा मैच और हाल के नतीजे देखें। अकाउंट बनाने या साइन-इन करने की ज़रूरत नहीं है।\n\nअगले मैच की तैयारी करें\nआने वाले, लाइव और पूरे हो चुके मैच देखें। मैच के रिमाइंडर सेट करें और मैच या इवेंट शेड्यूल अपने कैलेंडर में जोड़ें।\n\nमैच की पूरी जानकारी देखें\nसीरीज़ स्कोर, मैप के नतीजे, राउंड का इतिहास और खिलाड़ियों के आँकड़े देखें। मैच की जानकारी से उपलब्ध स्ट्रीम और VOD खोलें।\n\nस्पॉइलर से बचें\nजब तक आप नतीजे देखने के लिए तैयार न हों, स्पॉइलर नियंत्रण से स्कोर छिपाएँ।\n\nटीमों और इवेंट पर नज़र रखें\nटीम के खिलाड़ी, खिलाड़ियों की जानकारी, इवेंट शेड्यूल और क्षेत्रीय रैंकिंग देखें। टीम रेटिंग और हालिया प्रदर्शन चेक करें।\n\nहोम स्क्रीन पर मैच देखें\nपसंदीदा मैच, आने वाले मुकाबले और स्कोर देखने के लिए Android विजेट जोड़ें। बैकग्राउंड में अपडेट होना आपके डिवाइस की बैटरी और बैकग्राउंड सेटिंग पर निर्भर करता है।\n\nऐप को अपने हिसाब से बदलें\nथीम, ऐप आइकन और शुभंकर चुनें। Val Esports ओपन सोर्स है और इसमें विज्ञापन नहीं हैं।\n\nपहले VLR.gg (Unofficial) नाम से उपलब्ध था। Val Esports प्रशंसकों के लिए बनाया गया एक स्वतंत्र ऐप है। यह Riot Games या VLR.gg से संबद्ध नहीं है और न ही उनके द्वारा समर्थित है। VALORANT, Riot Games का ट्रेडमार्क है।"
+        },
+        "pt-BR": {
+          "title": "Val Esports",
+          "short_description": "Placares de VALORANT, horários de partidas, favoritos e widgets",
+          "full_description": "Planeje o próximo dia de partidas de VALORANT. Confira os horários, siga seus times favoritos, configure lembretes e adicione os próximos jogos ao calendário.\n\nSiga seus favoritos\nSalve times, jogadores, eventos e partidas. Confira partidas favoritas e resultados recentes no feed da tela inicial. Não é necessário criar uma conta nem fazer login.\n\nPlaneje a próxima partida\nVeja partidas futuras, ao vivo e encerradas. Configure lembretes e adicione partidas ou a programação de eventos ao seu calendário.\n\nConfira o que aconteceu\nVeja placares das séries, resultados dos mapas, histórico de rounds e estatísticas dos jogadores. Abra as transmissões e os VODs disponíveis nos detalhes da partida.\n\nEvite spoilers dos resultados\nUse os controles de spoilers para ocultar os placares até querer conferir os resultados.\n\nAcompanhe times e eventos\nExplore elencos, perfis de jogadores, programação de eventos e rankings regionais. Confira as avaliações dos times e o desempenho recente.\n\nPartidas na sua tela inicial\nAdicione widgets do Android para ver partidas favoritas, próximos jogos e placares. A atualização em segundo plano depende das configurações de bateria e de segundo plano do seu dispositivo.\n\nDo seu jeito\nEscolha o tema, o ícone do app e o mascote. Val Esports é de código aberto e não tem anúncios.\n\nAntes disponível como VLR.gg (Unofficial). Val Esports é um app independente feito para fãs, sem afiliação ou endosso da Riot Games ou do VLR.gg. VALORANT é uma marca registrada da Riot Games."
+        }
+      },
+      "intent": "India match days and calendar planning",
+      "existing_console_name": "india-organic-2026-10",
+      "default_locale_recommendation": "en-US",
+      "target_locale_recommendation": [
+        "en-US",
+        "en-IN",
+        "hi-IN"
+      ],
+      "existing_console_url": "https://play.google.com/console/u/0/developers/4856706088038269452/app/4973475782329564259/store-listings/4836443514277227018/edit",
+      "listing_parameter": "india-2026-10"
+    },
+    "brazil": {
+      "locales": {
+        "en-US": {
+          "title": "Val Esports",
+          "short_description": "VALORANT favorites, home screen widgets and controls to hide spoilers",
+          "full_description": "Follow your favorite VALORANT teams and events. Check matches in Android home screen widgets and hide scores until you are ready to catch up.\n\nFollow your favorites\nSave teams, players, events and matches. Catch up on favorite matches and recent results in your Home feed. No account or sign-in is required.\n\nPlan your next match\nBrowse upcoming, live and completed matches. Set match reminders and add matches or event schedules to your calendar.\n\nSee what happened\nCheck series scores, map results, round history and player statistics. Open available streams and VODs from match details.\n\nKeep results a surprise\nUse spoiler controls to hide scores until you are ready to catch up.\n\nFollow teams and events\nExplore team rosters, player details, event schedules and regional rankings. Check team ratings and recent form.\n\nMatches on your home screen\nAdd Android widgets for favorite matches, upcoming fixtures and scores. Background refresh depends on your device's battery and background settings.\n\nMake it yours\nChoose your theme, app icon and mascot. Val Esports is open source and has no ads.\n\nPreviously available as VLR.gg (Unofficial). Val Esports is an independent fan app, not affiliated with or endorsed by Riot Games or VLR.gg. VALORANT is a trademark of Riot Games."
+        },
+        "en-IN": {
+          "title": "Val Esports",
+          "short_description": "VALORANT favourites, home screen widgets and controls to hide spoilers",
+          "full_description": "Follow your favourite VALORANT teams and events. Check matches in Android home screen widgets and hide scores until you are ready to catch up.\n\nFollow your favourites\nSave teams, players, events and matches. Catch up on favourite matches and recent results in your Home feed. No account or sign-in is required.\n\nPlan your next match\nBrowse upcoming, live and completed matches. Set match reminders and add matches or event schedules to your calendar.\n\nSee what happened\nCheck series scores, map results, round history and player statistics. Open available streams and VODs from match details.\n\nKeep results a surprise\nUse spoiler controls to hide scores until you are ready to catch up.\n\nFollow teams and events\nExplore team rosters, player details, event schedules and regional rankings. Check team ratings and recent form.\n\nMatches on your home screen\nAdd Android widgets for favourite matches, upcoming fixtures and scores. Background refresh depends on your device's battery and background settings.\n\nMake it yours\nChoose your theme, app icon and mascot. Val Esports is open source and has no ads.\n\nPreviously available as VLR.gg (Unofficial). Val Esports is an independent fan app, not affiliated with or endorsed by Riot Games or VLR.gg. VALORANT is a trademark of Riot Games."
+        },
+        "hi-IN": {
+          "title": "Val Esports",
+          "short_description": "VALORANT पसंदीदा टीमें, होम स्क्रीन विजेट और स्कोर छिपाने के नियंत्रण",
+          "full_description": "अपनी पसंद की VALORANT टीमों और इवेंट को फ़ॉलो करें। Android होम स्क्रीन विजेट में मैच देखें और जब तक तैयार न हों, स्कोर छिपाकर रखें।\n\nअपनी पसंद की टीमों को फ़ॉलो करें\nटीमों, खिलाड़ियों, इवेंट और मैचों को पसंदीदा में सेव करें। होम फ़ीड में पसंदीदा मैच और हाल के नतीजे देखें। अकाउंट बनाने या साइन-इन करने की ज़रूरत नहीं है।\n\nअगले मैच की तैयारी करें\nआने वाले, लाइव और पूरे हो चुके मैच देखें। मैच के रिमाइंडर सेट करें और मैच या इवेंट शेड्यूल अपने कैलेंडर में जोड़ें।\n\nमैच की पूरी जानकारी देखें\nसीरीज़ स्कोर, मैप के नतीजे, राउंड का इतिहास और खिलाड़ियों के आँकड़े देखें। मैच की जानकारी से उपलब्ध स्ट्रीम और VOD खोलें।\n\nस्पॉइलर से बचें\nजब तक आप नतीजे देखने के लिए तैयार न हों, स्पॉइलर नियंत्रण से स्कोर छिपाएँ।\n\nटीमों और इवेंट पर नज़र रखें\nटीम के खिलाड़ी, खिलाड़ियों की जानकारी, इवेंट शेड्यूल और क्षेत्रीय रैंकिंग देखें। टीम रेटिंग और हालिया प्रदर्शन चेक करें।\n\nहोम स्क्रीन पर मैच देखें\nपसंदीदा मैच, आने वाले मुकाबले और स्कोर देखने के लिए Android विजेट जोड़ें। बैकग्राउंड में अपडेट होना आपके डिवाइस की बैटरी और बैकग्राउंड सेटिंग पर निर्भर करता है।\n\nऐप को अपने हिसाब से बदलें\nथीम, ऐप आइकन और शुभंकर चुनें। Val Esports ओपन सोर्स है और इसमें विज्ञापन नहीं हैं।\n\nपहले VLR.gg (Unofficial) नाम से उपलब्ध था। Val Esports प्रशंसकों के लिए बनाया गया एक स्वतंत्र ऐप है। यह Riot Games या VLR.gg से संबद्ध नहीं है और न ही उनके द्वारा समर्थित है। VALORANT, Riot Games का ट्रेडमार्क है।"
+        },
+        "pt-BR": {
+          "title": "Val Esports",
+          "short_description": "Seus favoritos de VALORANT, widgets e controles para ocultar spoilers",
+          "full_description": "Siga seus times e eventos favoritos de VALORANT. Veja as partidas nos widgets da tela inicial do Android e oculte os placares até querer conferir os resultados.\n\nSiga seus favoritos\nSalve times, jogadores, eventos e partidas. Confira partidas favoritas e resultados recentes no feed da tela inicial. Não é necessário criar uma conta nem fazer login.\n\nPlaneje a próxima partida\nVeja partidas futuras, ao vivo e encerradas. Configure lembretes e adicione partidas ou a programação de eventos ao seu calendário.\n\nConfira o que aconteceu\nVeja placares das séries, resultados dos mapas, histórico de rounds e estatísticas dos jogadores. Abra as transmissões e os VODs disponíveis nos detalhes da partida.\n\nEvite spoilers dos resultados\nUse os controles de spoilers para ocultar os placares até querer conferir os resultados.\n\nAcompanhe times e eventos\nExplore elencos, perfis de jogadores, programação de eventos e rankings regionais. Confira as avaliações dos times e o desempenho recente.\n\nPartidas na sua tela inicial\nAdicione widgets do Android para ver partidas favoritas, próximos jogos e placares. A atualização em segundo plano depende das configurações de bateria e de segundo plano do seu dispositivo.\n\nDo seu jeito\nEscolha o tema, o ícone do app e o mascote. Val Esports é de código aberto e não tem anúncios.\n\nAntes disponível como VLR.gg (Unofficial). Val Esports é um app independente feito para fãs, sem afiliação ou endosso da Riot Games ou do VLR.gg. VALORANT é uma marca registrada da Riot Games."
+        }
+      },
+      "intent": "Brazil favorites, widgets and spoiler controls",
+      "existing_console_name": "brazil-organic-2026-10",
+      "default_locale_recommendation": "pt-BR",
+      "target_locale_recommendation": [
+        "pt-BR",
+        "en-US"
+      ],
+      "existing_console_url": "https://play.google.com/console/u/0/developers/4856706088038269452/app/4973475782329564259/store-listings/4834958115975164980/edit",
+      "listing_parameter": "brazil-2026-10"
+    }
+  },
+  "asset_language_notes": {
+    "pt-BR": "Use Portuguese text overlays and Brazilian Portuguese app captures where available.",
+    "en-IN": "Use India match-day English copy with the bundled brand fonts.",
+    "hi-IN": "Hindi listing metadata is ready. Bundled Chakra Petch and Space Grotesk fonts lack Devanagari. Until a brand-approved Hindi font is available, use accurate Hindi app captures with English brand headings rather than introducing an unapproved font."
+  },
+  "publication_notes": [
+    "Existing India and Brazil custom listing identifiers and targeting should be preserved unless deliberately changed.",
+    "Country targeting and language targeting are separate. Adding en-IN does not by itself restrict the listing to India.",
+    "Custom listings do not automatically translate. Configure text and artwork in each chosen locale.",
+    "Search keyword groups must be verified in Play Console before assigning a search-targeted listing. Copy intent alone does not configure search targeting.",
+    "No changes to 1.1.0 release notes or the release binary are included."
+  ],
+  "official_sources": [
+    {
+      "url": "https://support.google.com/googleplay/android-developer/answer/9844778?hl=en",
+      "supports": "Available locales and manually supplied localized text and graphics"
+    },
+    {
+      "url": "https://support.google.com/googleplay/android-developer/answer/9867158?hl=en",
+      "supports": "Custom listing localization, URL targeting and keyword targeting"
+    },
+    {
+      "url": "https://support.google.com/googleplay/android-developer/answer/9866151?hl=en",
+      "supports": "Feature graphic and screenshot dimensions and localized overlay guidance"
+    }
+  ]
+}

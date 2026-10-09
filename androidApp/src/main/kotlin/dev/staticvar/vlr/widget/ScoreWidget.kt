@@ -57,7 +57,7 @@ class ScoreWidget : GlanceAppWidget() {
     val openApp = actionStartActivity(Intent(context, MainActivity::class.java))
     val actions = matches.associate { match ->
       match.id to actionStartActivity(Intent(context, MainActivity::class.java).apply {
-        data = Uri.Builder().scheme("https").authority("valorantesports.staticvar.dev")
+        data = Uri.Builder().scheme("https").authority("valesports.app")
           .appendPath("match").appendPath(match.id).build()
         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
       })

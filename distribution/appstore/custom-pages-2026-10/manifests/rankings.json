@@ -1,0 +1,112 @@
+{
+  "brand": {
+    "name": "Val Esports",
+    "descriptor": "UNOFFICIAL ESPORTS COMPANION",
+    "palette": {
+      "ivory": "#F5F1E8",
+      "violet": "#956DFF",
+      "violet_light": "#D9CCFF",
+      "ink": "#16131B",
+      "muted_ink": "#5F5866",
+      "white": "#FFFFFF"
+    },
+    "fonts": {
+      "headline": "designsystem/src/commonMain/composeResources/font/chakra_petch_regular.ttf",
+      "body": "designsystem/src/commonMain/composeResources/font/space_grotesk_regular.ttf",
+      "body_bold": "designsystem/src/commonMain/composeResources/font/space_grotesk_regular.ttf"
+    }
+  },
+  "outputs": {
+    "app_store": {
+      "platform": "ios",
+      "width": 1320,
+      "height": 2868,
+      "directory": "app-store-iphone-1320x2868",
+      "device_frame": {
+        "path": "distribution/app-store-941/frames/iphone18-pro-silver.png",
+        "screen": [
+          72,
+          69,
+          1206,
+          2622
+        ],
+        "screen_mask": "distribution/app-store-941/frames/iphone18-pro-silver-screen-mask.png"
+      }
+    },
+    "app_store_ipad": {
+      "platform": "ios_ipad",
+      "width": 2064,
+      "height": 2752,
+      "directory": "app-store-ipad-2064x2752",
+      "device_frame": {
+        "path": "distribution/app-store-941/frames/ipad-pro13-m5-silver.png",
+        "screen": [
+          118,
+          124,
+          2064,
+          2752
+        ],
+        "screen_mask": "distribution/app-store-941/frames/ipad-pro13-m5-silver-screen-mask.png"
+      }
+    }
+  },
+  "slides": [
+    {
+      "id": "01",
+      "headline": "Know the top teams",
+      "kicker": "REGIONAL RANKINGS",
+      "motif": "rank",
+      "theme": "ink",
+      "sources": {
+        "ios": "distribution/rebrand-2026/raw/ios/05.png",
+        "ios_ipad": "distribution/rebrand-2026/raw/ios-ipad/05.png"
+      }
+    },
+    {
+      "id": "02",
+      "headline": "Go beyond the score",
+      "kicker": "MAPS AND PLAYER STATS",
+      "motif": "target",
+      "theme": "ink",
+      "sources": {
+        "ios": "distribution/rebrand-2026/raw/ios/02.png",
+        "ios_ipad": "distribution/rebrand-2026/raw/ios-ipad/02.png"
+      }
+    },
+    {
+      "id": "03",
+      "headline": "Follow the whole event",
+      "kicker": "EVENTS AND RESULTS",
+      "motif": "bracket",
+      "theme": "ivory",
+      "sources": {
+        "ios": "distribution/rebrand-2026/raw/ios/04.png",
+        "ios_ipad": "distribution/rebrand-2026/raw/ios-ipad/04.png"
+      }
+    },
+    {
+      "id": "04",
+      "headline": "Follow every match",
+      "kicker": "SCORES AND SCHEDULES",
+      "motif": "court",
+      "theme": "ivory",
+      "sources": {
+        "ios": "distribution/rebrand-2026/raw/ios/01.png",
+        "ios_ipad": "distribution/rebrand-2026/raw/ios-ipad/01.png"
+      }
+    },
+    {
+      "id": "05",
+      "headline": "Your favorites. One home.",
+      "kicker": "YOUR HOME FEED",
+      "motif": "ticket",
+      "theme": "violet",
+      "sources": {
+        "ios": "distribution/rebrand-2026/raw/ios/03.png",
+        "ios_ipad": "distribution/rebrand-2026/raw/ios-ipad/03.png"
+      }
+    }
+  ],
+  "wide_assets": {},
+  "art_locale": "en-US"
+}

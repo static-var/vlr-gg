@@ -7,6 +7,8 @@ package dev.staticvar.vlr.shared.telemetry
 import dev.staticvar.vlr.core.telemetry.TelemetrySpan
 import dev.staticvar.vlr.core.telemetry.TelemetrySpanStatus
 import io.sentry.ISpan
+import io.sentry.KeyValueCollectionBehavior
+import io.sentry.SentryOptions
 import io.sentry.SpanStatus
 import io.sentry.SentryLogEventAttributeValue
 import io.sentry.android.replay.maskAllImages
@@ -26,7 +28,7 @@ internal actual fun initializePlatformSentry(configuration: SentryConfiguration)
     options.release = configuration.release
     options.dist = configuration.dist
     options.isDebug = false
-    options.isSendDefaultPii = false
+    options.configureTelemetryPrivacy()
     options.isEnableAutoSessionTracking = true
     options.isAnrEnabled = true
     options.isAttachScreenshot = false
@@ -35,18 +37,6 @@ internal actual fun initializePlatformSentry(configuration: SentryConfiguration)
     options.profilesSampleRate = 0.0
     options.profileSessionSampleRate = 0.0
     options.logs.isEnabled = true
-    options.logs.setBeforeSend { log ->
-      log.body = sanitizeTelemetryText(log.body)
-      log.attributes?.let { attributes ->
-        attributes.keys.toList().forEach { key ->
-          if (isSensitiveTelemetryKey(key)) attributes.remove(key)
-          else (attributes[key]?.value as? String)?.let { value ->
-            attributes[key] = SentryLogEventAttributeValue("string", sanitizeTelemetryText(value))
-          }
-        }
-      }
-      log
-    }
     options.sessionReplay.sessionSampleRate = 0.01
     options.sessionReplay.onErrorSampleRate = 0.1
     options.sessionReplay.maskAllText = true
@@ -76,6 +66,39 @@ internal actual fun initializePlatformSentry(configuration: SentryConfiguration)
     }
   }
   return Sentry.isEnabled()
+}
+
+internal fun SentryOptions.configureTelemetryPrivacy() {
+  dataCollection.apply {
+    userInfo = false
+    cookies = KeyValueCollectionBehavior.off()
+    urlQueryParams = KeyValueCollectionBehavior.off()
+    httpBodies = emptySet()
+    databaseQueryData = false
+    filePaths = false
+    httpHeaders.request = KeyValueCollectionBehavior.off()
+    httpHeaders.response = KeyValueCollectionBehavior.off()
+    graphql.document = false
+    graphql.variables = false
+  }
+  logs.setBeforeSend { log ->
+    log.body = sanitizeTelemetryText(log.body)
+    log.attributes?.sanitizeTelemetryAttributes()
+    log
+  }
+  metrics.setBeforeSend { metric, _ ->
+    metric.attributes?.sanitizeTelemetryAttributes()
+    metric
+  }
+}
+
+private fun MutableMap<String, SentryLogEventAttributeValue>.sanitizeTelemetryAttributes() {
+  keys.toList().forEach { key ->
+    if (isSensitiveTelemetryKey(key)) remove(key)
+    else (get(key)?.value as? String)?.let { value ->
+      this[key] = SentryLogEventAttributeValue("string", sanitizeTelemetryText(value))
+    }
+  }
 }
 
 internal actual fun startPlatformSpan(operation: String, description: String): TelemetrySpan {

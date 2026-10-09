@@ -54,7 +54,7 @@ class SignupHandlerTest(unittest.TestCase):
     def test_valid_signup_persists_once_and_redirects(self):
         for email in ["  Fan+Beta@Example.com  ", "fan+beta@example.com"]:
             self.assertEqual(
-                self.post({"email": email, "website": ""}),
+                self.post({"email": email, "website": ""}, {"Origin": "https://valesports.app"}),
                 (303, "/testflight/thanks/"),
             )
         self.assertEqual(self.emails(), [("fan+beta@example.com",)])
@@ -72,10 +72,11 @@ class SignupHandlerTest(unittest.TestCase):
         self.assertEqual(self.emails(), [])
 
     def test_cross_origin_submission_is_rejected(self):
-        self.assertEqual(
-            self.post({"email": "fan@example.com"}, {"Origin": "https://other.example"})[0],
-            403,
-        )
+        for origin in ("https://other.example", "https://valorantesports.staticvar.dev", "https://www.valesports.app"):
+            self.assertEqual(
+                self.post({"email": "fan@example.com"}, {"Origin": origin})[0],
+                403,
+            )
         self.assertEqual(self.emails(), [])
 
     def test_export_includes_only_uninvited_email_addresses(self):
