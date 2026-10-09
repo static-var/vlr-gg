@@ -395,22 +395,12 @@ private struct MatchLiveActivityMapProgressView: View {
         HStack(spacing: 7) {
             ForEach(progress.visibleMaps) { map in
                 VStack(spacing: 3) {
-                    HStack(spacing: 4) {
-                        Text(verbatim: map.scoreText)
-                            .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
-                            .foregroundStyle(scoreColor(for: map.segment))
-                            .monospacedDigit()
-                            .layoutPriority(1)
-                        if map.segment == .active {
-                            Text(String(localized: "LIVE"))
-                                .font(PrismWidgetFont.regular(9, relativeTo: .caption2))
-                                .foregroundStyle(palette.ink)
-                                .padding(.horizontal, 3)
-                                .background(palette.border.opacity(0.7), in: RoundedRectangle(cornerRadius: 3))
-                        }
-                    }
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                    Text(verbatim: map.scoreText)
+                        .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
+                        .foregroundStyle(scoreColor(for: map.segment))
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                     HStack(spacing: min(1.5, 40 / CGFloat(map.rounds.count))) {
                         ForEach(map.rounds.indices, id: \.self) { round in
                             RoundedRectangle(cornerRadius: 1.5)
