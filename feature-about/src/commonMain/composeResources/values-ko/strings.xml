@@ -140,6 +140,8 @@
     <string name="release_1_1_1_introduction">예측, 팀의 최근 성적, 경기 추적을 개선하고 호환성 문제를 수정했습니다.</string>
     <string name="release_1_1_1_predictions_title">진행 중인 경기에서도 예측 확인</string>
     <string name="release_1_1_1_predictions_description">진행 중인 경기에서도 예측을 열 수 있습니다. 경기 시작 전 표시는 예정된 경기에만 나타나며, 예측 옵션은 사용할 수 있을 때만 표시됩니다.</string>
+    <string name="release_1_1_1_navigation_title">더 부드러운 화면 이동</string>
+    <string name="release_1_1_1_navigation_description">홈이나 목록에서 경기 및 이벤트 상세 화면을 열거나 닫을 때 이름과 색상이 부드럽게 바뀝니다.</string>
     <string name="release_1_1_1_team_form_title">더 부드러운 최근 성적 표시</string>
     <string name="release_1_1_1_team_form_description">팀의 최근 결과가 더 부드러운 애니메이션으로 펼쳐지고 접힙니다.</string>
     <string name="release_1_1_1_ios_live_title">더 명확한 Live Activities</string>

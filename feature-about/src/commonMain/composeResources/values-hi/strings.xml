@@ -141,6 +141,8 @@
     <string name="release_1_1_1_introduction">पूर्वानुमान, टीम के हालिया प्रदर्शन और मैच ट्रैकिंग में सुधार, साथ ही संगतता संबंधी समस्याओं के समाधान।</string>
     <string name="release_1_1_1_predictions_title">लाइव मैचों के दौरान पूर्वानुमान</string>
     <string name="release_1_1_1_predictions_description">लाइव मैचों के दौरान पूर्वानुमान खोलें। मैच से पहले वाला लेबल केवल आगामी मैचों के लिए दिखता है और पूर्वानुमान के विकल्प केवल उपलब्ध होने पर दिखते हैं।</string>
+    <string name="release_1_1_1_navigation_title">अधिक सहज नेविगेशन</string>
+    <string name="release_1_1_1_navigation_description">होम या सूचियों से मैच और इवेंट की जानकारी खोलने या बंद करने पर नाम और रंग अब सहज रूप से बदलते हैं।</string>
     <string name="release_1_1_1_team_form_title">टीम का हालिया प्रदर्शन आसानी से देखें</string>
     <string name="release_1_1_1_team_form_description">टीम के हालिया परिणाम अब अधिक सहज एनिमेशन के साथ खुलते और बंद होते हैं।</string>
     <string name="release_1_1_1_ios_live_title">अधिक स्पष्ट Live Activities</string>

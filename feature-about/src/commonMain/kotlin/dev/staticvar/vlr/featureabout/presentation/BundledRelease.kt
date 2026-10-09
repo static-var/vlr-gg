@@ -11,6 +11,8 @@ import vlr.feature_about.generated.resources.new_in_val_esports
 import vlr.feature_about.generated.resources.release_1_1_1_introduction
 import vlr.feature_about.generated.resources.release_1_1_1_ios_live_description
 import vlr.feature_about.generated.resources.release_1_1_1_ios_live_title
+import vlr.feature_about.generated.resources.release_1_1_1_navigation_description
+import vlr.feature_about.generated.resources.release_1_1_1_navigation_title
 import vlr.feature_about.generated.resources.release_1_1_1_predictions_description
 import vlr.feature_about.generated.resources.release_1_1_1_predictions_title
 import vlr.feature_about.generated.resources.release_1_1_1_stability_description
@@ -33,6 +35,10 @@ public object BundledRelease {
     Highlight(
       title = Res.string.release_1_1_1_predictions_title,
       description = Res.string.release_1_1_1_predictions_description,
+    ),
+    Highlight(
+      title = Res.string.release_1_1_1_navigation_title,
+      description = Res.string.release_1_1_1_navigation_description,
     ),
     Highlight(
       title = Res.string.release_1_1_1_team_form_title,

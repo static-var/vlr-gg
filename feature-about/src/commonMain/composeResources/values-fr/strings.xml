@@ -142,6 +142,8 @@
     <string name="release_1_1_1_introduction">Des améliorations des pronostics, de la forme des équipes et du suivi des matchs, avec des corrections de compatibilité.</string>
     <string name="release_1_1_1_predictions_title">Pronostics pendant les matchs en direct</string>
     <string name="release_1_1_1_predictions_description">Ouvrez les pronostics pendant les matchs en direct. Le libellé d’avant-match apparaît uniquement pour les matchs à venir, et les options de pronostic uniquement lorsqu’elles sont disponibles.</string>
+    <string name="release_1_1_1_navigation_title">Navigation plus fluide</string>
+    <string name="release_1_1_1_navigation_description">Les noms et les couleurs changent progressivement lorsque vous ouvrez ou fermez les détails des matchs et événements depuis l’accueil ou les listes.</string>
     <string name="release_1_1_1_team_form_title">Forme des équipes plus fluide</string>
     <string name="release_1_1_1_team_form_description">Les résultats récents des équipes se déploient et se replient avec une animation plus fluide.</string>
     <string name="release_1_1_1_ios_live_title">Live Activities plus claires</string>

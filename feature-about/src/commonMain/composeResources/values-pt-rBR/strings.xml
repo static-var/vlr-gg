@@ -142,6 +142,8 @@
     <string name="release_1_1_1_introduction">Melhorias nas previsões, na forma das equipes e no acompanhamento das partidas, com correções de compatibilidade.</string>
     <string name="release_1_1_1_predictions_title">Previsões durante partidas ao vivo</string>
     <string name="release_1_1_1_predictions_description">Abra as previsões durante partidas ao vivo. O rótulo de pré-partida aparece apenas em partidas futuras, e as opções de previsão aparecem apenas quando disponíveis.</string>
+    <string name="release_1_1_1_navigation_title">Navegação mais fluida</string>
+    <string name="release_1_1_1_navigation_description">Nomes e cores agora mudam suavemente ao abrir ou fechar detalhes de partidas e eventos pela tela inicial ou pelas listas.</string>
     <string name="release_1_1_1_team_form_title">Forma das equipes mais fluida</string>
     <string name="release_1_1_1_team_form_description">Os resultados recentes das equipes expandem e recolhem com uma animação mais fluida.</string>
     <string name="release_1_1_1_ios_live_title">Live Activities mais claras</string>

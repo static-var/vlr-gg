@@ -140,6 +140,8 @@
     <string name="release_1_1_1_introduction">Tahminler, takım formu ve maç takibinde iyileştirmeler ile uyumluluk düzeltmeleri.</string>
     <string name="release_1_1_1_predictions_title">Canlı maçlar sırasında tahminler</string>
     <string name="release_1_1_1_predictions_description">Canlı maçlar sırasında tahminleri açın. Maç öncesi etiketi yalnızca yaklaşan maçlarda, tahmin seçenekleri ise yalnızca kullanılabilir olduğunda görünür.</string>
+    <string name="release_1_1_1_navigation_title">Daha akıcı gezinme</string>
+    <string name="release_1_1_1_navigation_description">Ana sayfadan veya listelerden maç ve etkinlik ayrıntılarını açıp kapatırken adlar ve renkler artık akıcı şekilde değişir.</string>
     <string name="release_1_1_1_team_form_title">Daha akıcı takım formu</string>
     <string name="release_1_1_1_team_form_description">Takımların son sonuçları daha akıcı bir animasyonla genişler ve daralır.</string>
     <string name="release_1_1_1_ios_live_title">Daha anlaşılır Live Activities</string>

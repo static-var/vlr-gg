@@ -141,6 +141,8 @@
     <string name="release_1_1_1_introduction">Verbesserungen bei Prognosen, Teamform und Matchverfolgung sowie Kompatibilitätskorrekturen.</string>
     <string name="release_1_1_1_predictions_title">Prognosen während laufender Matches</string>
     <string name="release_1_1_1_predictions_description">Öffne Prognosen während laufender Matches. Der Hinweis vor dem Match erscheint nur bei anstehenden Matches. Prognoseoptionen werden nur angezeigt, wenn sie verfügbar sind.</string>
+    <string name="release_1_1_1_navigation_title">Flüssigere Navigation</string>
+    <string name="release_1_1_1_navigation_description">Namen und Farben ändern sich jetzt fließend, wenn du Match- und Eventdetails von der Startseite oder aus Listen öffnest oder schließt.</string>
     <string name="release_1_1_1_team_form_title">Flüssigere Teamform</string>
     <string name="release_1_1_1_team_form_description">Aktuelle Teamergebnisse lassen sich mit einer flüssigeren Animation ein- und ausklappen.</string>
     <string name="release_1_1_1_ios_live_title">Übersichtlichere Live Activities</string>

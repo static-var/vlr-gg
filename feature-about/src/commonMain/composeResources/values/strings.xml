@@ -144,6 +144,8 @@
     <string name="release_1_1_1_introduction">Updates to predictions, team form and match tracking, with compatibility fixes.</string>
     <string name="release_1_1_1_predictions_title">Predictions during live matches</string>
     <string name="release_1_1_1_predictions_description">Open predictions during live matches. The pre-match label appears only for upcoming matches, and prediction options appear only when available.</string>
+    <string name="release_1_1_1_navigation_title">Smoother navigation</string>
+    <string name="release_1_1_1_navigation_description">Names and colors now change smoothly when you open or close match and event details from Home or lists.</string>
     <string name="release_1_1_1_team_form_title">Smoother team form</string>
     <string name="release_1_1_1_team_form_description">Recent team results expand and collapse with smoother animation.</string>
     <string name="release_1_1_1_ios_live_title">Clearer Live Activities</string>

@@ -143,6 +143,8 @@
     <string name="release_1_1_1_introduction">Улучшения прогнозов, формы команд и отслеживания матчей, а также исправления совместимости.</string>
     <string name="release_1_1_1_predictions_title">Прогнозы во время текущих матчей</string>
     <string name="release_1_1_1_predictions_description">Открывайте прогнозы во время текущих матчей. Метка «До матча» появляется только у предстоящих матчей, а параметры прогнозов показываются только при их доступности.</string>
+    <string name="release_1_1_1_navigation_title">Более плавная навигация</string>
+    <string name="release_1_1_1_navigation_description">Названия и цвета теперь меняются плавно при открытии или закрытии сведений о матчах и событиях с главного экрана или из списков.</string>
     <string name="release_1_1_1_team_form_title">Более плавный просмотр формы команды</string>
     <string name="release_1_1_1_team_form_description">Последние результаты команды раскрываются и сворачиваются с более плавной анимацией.</string>
     <string name="release_1_1_1_ios_live_title">Более понятные Live Activities</string>
