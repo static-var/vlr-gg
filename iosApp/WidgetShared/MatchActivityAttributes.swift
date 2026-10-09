@@ -63,10 +63,21 @@ struct MatchActivityAttributes: ActivityAttributes {
         struct MapRounds: Codable, Hashable {
             let map_number: Int
             let winners: [Int?]
+            let scores: [Int?]
 
-            init(map_number: Int, winners: [Int?] = []) {
+            init(map_number: Int, winners: [Int?] = [], scores: [Int?] = []) {
                 self.map_number = map_number
                 self.winners = winners
+                self.scores = scores
+            }
+
+            private enum CodingKeys: String, CodingKey { case map_number, winners, scores }
+
+            init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                map_number = try container.decode(Int.self, forKey: .map_number)
+                winners = try container.decode([Int?].self, forKey: .winners)
+                scores = (try? container.decodeIfPresent([Int?].self, forKey: .scores)) ?? []
             }
         }
 
