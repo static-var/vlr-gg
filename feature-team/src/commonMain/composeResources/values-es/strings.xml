@@ -9,7 +9,6 @@
     <string name="remove_team_favorite">Quitar equipo de favoritos</string>
     <string name="add_team_favorite">Añadir equipo a favoritos</string>
     <string name="roster">Plantilla</string>
-    <string name="players">jugadores</string>
     <string name="favorite_player">Jugador favorito</string>
     <string name="no_upcoming_matches">No hay próximos partidos</string>
     <string name="no_upcoming_team_fixtures">Aún no se han publicado próximos partidos para este equipo.</string>

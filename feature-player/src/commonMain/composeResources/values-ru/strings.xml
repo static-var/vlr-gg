@@ -9,9 +9,7 @@
     <string name="remove_player_favorite">Удалить игрока из избранного</string>
     <string name="add_player_favorite">Добавить игрока в избранное</string>
     <string name="agent_stats">Статистика агентов</string>
-    <string name="pool">пул</string>
     <string name="team_history">История команд</string>
-    <string name="history">история</string>
     <string name="current_team">Текущая команда</string>
     <string name="previous_team">Предыдущая команда</string>
     <string name="player_winnings">$%1$s</string>

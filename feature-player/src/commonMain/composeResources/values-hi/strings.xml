@@ -9,9 +9,7 @@
     <string name="remove_player_favorite">खिलाड़ी को पसंदीदा से हटाएँ</string>
     <string name="add_player_favorite">खिलाड़ी को पसंदीदा में जोड़ें</string>
     <string name="agent_stats">एजेंट के आँकड़े</string>
-    <string name="pool">पूल</string>
     <string name="team_history">टीम का इतिहास</string>
-    <string name="history">इतिहास</string>
     <string name="current_team">मौजूदा टीम</string>
     <string name="previous_team">पिछली टीम</string>
     <string name="player_winnings">$%1$s</string>

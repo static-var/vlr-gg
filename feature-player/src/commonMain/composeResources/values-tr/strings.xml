@@ -9,9 +9,7 @@
     <string name="remove_player_favorite">Oyuncuyu favorilerden kaldır</string>
     <string name="add_player_favorite">Oyuncuyu favorilere ekle</string>
     <string name="agent_stats">Ajan istatistikleri</string>
-    <string name="pool">havuz</string>
     <string name="team_history">Takım geçmişi</string>
-    <string name="history">geçmiş</string>
     <string name="current_team">Mevcut takım</string>
     <string name="previous_team">Önceki takım</string>
     <string name="player_winnings">$%1$s</string>

@@ -9,9 +9,7 @@
     <string name="remove_player_favorite">Eliminar jugador de favoritos</string>
     <string name="add_player_favorite">Añadir jugador a favoritos</string>
     <string name="agent_stats">Estadísticas por agente</string>
-    <string name="pool">selección</string>
     <string name="team_history">Historial de equipos</string>
-    <string name="history">historial</string>
     <string name="current_team">Equipo actual</string>
     <string name="previous_team">Equipo anterior</string>
     <string name="player_winnings">$%1$s</string>
