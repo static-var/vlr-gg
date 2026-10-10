@@ -7,6 +7,7 @@ package dev.staticvar.vlr.core.di
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationPreferencesRepository
 import dev.staticvar.vlr.core.settings.AppearanceRepository
 import dev.staticvar.vlr.core.settings.CacheCleanupPreferencesRepository
+import dev.staticvar.vlr.core.settings.EventDetailsPreferencesRepository
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
 import dev.staticvar.vlr.core.settings.PushTokenRegistrationPreferencesRepository
 import dev.staticvar.vlr.core.settings.RankingsPreferencesRepository
@@ -23,6 +24,7 @@ public fun appearanceModule(): Module = module {
   single { PushTokenRegistrationPreferencesRepository(get()) }
   single { ReleaseNotesPreferencesRepository(get()) }
   single { MatchDetailsPreferencesRepository(get()) }
+  single { EventDetailsPreferencesRepository(get()) }
   single { RankingsPreferencesRepository(get()) }
   single { SpoilerPreferencesRepository(get()) }
   single { CacheCleanupPreferencesRepository(get()) }
