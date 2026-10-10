@@ -37,6 +37,14 @@ public sealed interface PrismChipStyle {
   @ReadOnlyComposable
   public fun borderColor(selected: Boolean, enabled: Boolean): Color
 
+  /** Color for a chip's supporting text. Selected chips match the label; others recede. */
+  @Composable
+  @ReadOnlyComposable
+  public fun supportingContentColor(selected: Boolean, enabled: Boolean): Color = when {
+    !enabled || selected -> contentColor(selected = selected, enabled = enabled)
+    else -> Prism.color.labelColor
+  }
+
   public data object Default : PrismChipStyle {
     @Composable
     @ReadOnlyComposable

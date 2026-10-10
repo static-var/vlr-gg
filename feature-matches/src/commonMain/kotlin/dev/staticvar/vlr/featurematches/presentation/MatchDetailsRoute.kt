@@ -84,7 +84,6 @@ import vlr.feature_matches.generated.resources.loading_match_details
 import vlr.feature_matches.generated.resources.map_statistics_have_not_been_published_for_this_match
 import vlr.feature_matches.generated.resources.maps_scores_and_player_stats
 import vlr.feature_matches.generated.resources.match
-import vlr.feature_matches.generated.resources.media
 import vlr.feature_matches.generated.resources.no_match_breakdown_yet
 import vlr.feature_matches.generated.resources.no_match_details_yet
 import vlr.feature_matches.generated.resources.remove_match_from_favorites
@@ -163,7 +162,6 @@ internal fun MatchDetailsScreen(
   }
   val listState = rememberLazyListState()
   var optionsExpanded by remember(match?.id) { mutableStateOf(false) }
-  var mapMenuExpanded by remember(match?.id) { mutableStateOf(false) }
   var isLeaving by remember(match?.id) { mutableStateOf(false) }
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val mascotCharacter = LocalMascotCharacter.current
@@ -184,7 +182,7 @@ internal fun MatchDetailsScreen(
     isScreenActive = !spoilersHidden && mascotCharacter != null && lifecycleState == Lifecycle.State.RESUMED && !isLeaving,
     isContentReady = match != null && !uiState.isLoading && !uiState.isRefreshing &&
       !uiState.isDetailLoadPending && uiState.errorMessage == null,
-    isInteracting = listState.isScrollInProgress || optionsExpanded || mapMenuExpanded,
+    isInteracting = listState.isScrollInProgress || optionsExpanded,
   )
   fun leaveScreen(action: () -> Unit) {
     isLeaving = true
@@ -265,7 +263,6 @@ internal fun MatchDetailsScreen(
           onEventSelected = { id -> leaveScreen { onEventSelected(id) } },
           onTeamSelected = { id -> leaveScreen { onTeamSelected(id) } },
           onMapSelected = { selectedMapIndex = it },
-          onMapMenuExpandedChange = { mapMenuExpanded = it },
           onPlayerSelected = { id -> leaveScreen { onPlayerSelected(id) } },
           onMatchSelected = { id -> leaveScreen { onMatchSelected(id) } },
           onVideoSelected = { url -> uriHandler.openUri(url.asExternalUrl()) },
@@ -355,7 +352,6 @@ private fun MatchDetailsContent(
   onEventSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   onMapSelected: (Int?) -> Unit,
-  onMapMenuExpandedChange: (Boolean) -> Unit,
   onPlayerSelected: (String) -> Unit,
   onMatchSelected: (String) -> Unit,
   onVideoSelected: (String) -> Unit,
@@ -395,7 +391,6 @@ private fun MatchDetailsContent(
       showBreakdownEmpty = showBreakdownEmpty,
       selectedMapIndex = selectedMapIndex,
       onMapSelected = onMapSelected,
-      onMapMenuExpandedChange = onMapMenuExpandedChange,
       onPlayerSelected = onPlayerSelected,
       onMatchSelected = onMatchSelected,
       onVideoSelected = onVideoSelected,
@@ -455,7 +450,6 @@ private fun LazyListScope.matchDetailItems(
   showBreakdownEmpty: Boolean,
   selectedMapIndex: Int?,
   onMapSelected: (Int?) -> Unit,
-  onMapMenuExpandedChange: (Boolean) -> Unit,
   onPlayerSelected: (String) -> Unit,
   onMatchSelected: (String) -> Unit,
   onVideoSelected: (String) -> Unit,
@@ -482,7 +476,6 @@ private fun LazyListScope.matchDetailItems(
         selectedMapIndex = selectedMapIndex,
         onMapSelected = onMapSelected,
         onPlayerSelected = onPlayerSelected,
-        onMenuExpandedChange = onMapMenuExpandedChange,
       )
 
       MatchDetailsRow.HeadToHead -> MatchDetailHeadToHeadItem(
@@ -490,10 +483,7 @@ private fun LazyListScope.matchDetailItems(
         onEncounterSelected = onMatchSelected,
       )
 
-      MatchDetailsRow.MediaTitle -> PrismSectionTitle(
-        title = stringResource(Res.string.streams_vods),
-        preLabel = stringResource(Res.string.media),
-      )
+      MatchDetailsRow.MediaTitle -> PrismSectionTitle(title = stringResource(Res.string.streams_vods))
 
       MatchDetailsRow.Media -> MatchDetailMediaRow(videos = match.videos, onVideoSelected = onVideoSelected)
 

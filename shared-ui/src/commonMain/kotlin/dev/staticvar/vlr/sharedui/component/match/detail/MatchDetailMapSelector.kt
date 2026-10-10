@@ -7,19 +7,16 @@ package dev.staticvar.vlr.sharedui.component.match.detail
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import dev.staticvar.designsystem.component.dropdown.PrismDropdown
-import dev.staticvar.designsystem.component.dropdown.PrismDropdownOption
+import dev.staticvar.designsystem.component.chip.PrismChip
+import dev.staticvar.designsystem.component.chip.PrismChipGroup
 import dev.staticvar.vlr.domain.model.MapData
-import org.jetbrains.compose.resources.stringResource
-import vlr.shared_ui.generated.resources.Res
-import vlr.shared_ui.generated.resources.match_event_group
-import vlr.shared_ui.generated.resources.match_event_map_upper
 
 /**
- * Dropdown selector for match detail map breakdowns.
+ * Chip bar selector for match detail map breakdowns.
  *
- * Adds an `All maps` option when at least two maps are available. The caller owns the selected map
- * index; `null` represents the aggregate all-maps state.
+ * Shows an `All maps` chip followed by one chip per map with its score. Nothing is shown for a
+ * single map, because there is nothing to choose. The caller owns the selected map index; `null`
+ * represents the aggregate all-maps state.
  */
 @Composable
 public fun MatchDetailMapSelector(
@@ -28,30 +25,21 @@ public fun MatchDetailMapSelector(
   onMapSelected: (Int?) -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
-  onMenuExpandedChange: (Boolean) -> Unit = {},
 ) {
+  if (maps.size < 2) return
   val labels = matchFormattingLabels()
-  val mapOptions = remember(maps, labels) { maps.matchDetailMapOptions(labels) }
-  val dropdownOptions = remember(mapOptions) {
-    mapOptions.map { option -> PrismDropdownOption(id = option.id, label = option.label) }
-  }
-  val selectedOptionId = maps.resolveSelectedMapOptionId(selectedMapIndex)
-  val label = if (selectedOptionId ==
-    AllMapsOptionId
-  ) {
-    stringResource(Res.string.match_event_group)
-  } else {
-    stringResource(Res.string.match_event_map_upper)
+  val chips = remember(maps, labels) {
+    maps.matchDetailMapOptions(labels).map { option ->
+      PrismChip(id = option.id, label = option.label, supportingText = option.supportingText)
+    }
   }
 
-  PrismDropdown(
-    options = dropdownOptions,
-    selectedOptionId = selectedOptionId,
-    onOptionSelected = { option -> onMapSelected(option.id.toSelectedMapIndex()) },
+  PrismChipGroup(
+    chips = chips,
+    selectedChipId = maps.resolveSelectedMapOptionId(selectedMapIndex),
+    onChipSelected = { chip -> onMapSelected(chip.id.toSelectedMapIndex()) },
     modifier = modifier,
-    label = label,
-    enabled = enabled && dropdownOptions.isNotEmpty(),
-    onExpandedChange = onMenuExpandedChange,
+    enabled = enabled,
   )
 }
 
