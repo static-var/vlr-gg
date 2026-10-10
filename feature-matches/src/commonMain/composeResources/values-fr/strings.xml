@@ -57,6 +57,7 @@
     <string name="share_time_tba">Horaire à confirmer</string>
     <string name="share_match">%1$s contre %2$s | %3$s | %4$s</string>
     <string name="share_attribution">Partagé via Val Esports</string>
+    <string name="share_times_utc_offset">Heures en %1$s</string>
     <string name="mascot_player_cooked">%1$s a tout détruit !</string>
     <string name="mascot_player_cooking">%1$s est en feu !</string>
     <string name="mascot_team_won">%1$s a gagné !</string>

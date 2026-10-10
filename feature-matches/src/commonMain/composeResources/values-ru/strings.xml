@@ -57,6 +57,7 @@
     <string name="share_time_tba">Время уточняется</string>
     <string name="share_match">%1$s против %2$s | %3$s | %4$s</string>
     <string name="share_attribution">Отправлено через Val Esports</string>
+    <string name="share_times_utc_offset">Время указано в %1$s</string>
     <string name="mascot_player_cooked">%1$s разнёс всех!</string>
     <string name="mascot_player_cooking">%1$s разносит всех!</string>
     <string name="mascot_team_won">%1$s победили!</string>

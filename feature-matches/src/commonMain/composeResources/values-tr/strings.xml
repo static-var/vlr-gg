@@ -57,6 +57,7 @@
     <string name="share_time_tba">Saat henüz belli değil</string>
     <string name="share_match">%1$s - %2$s | %3$s | %4$s</string>
     <string name="share_attribution">Val Esports ile paylaşıldı</string>
+    <string name="share_times_utc_offset">Saatler %1$s</string>
     <string name="mascot_player_cooked">%1$s şov yaptı!</string>
     <string name="mascot_player_cooking">%1$s şov yapıyor!</string>
     <string name="mascot_team_won">%1$s kazandı!</string>

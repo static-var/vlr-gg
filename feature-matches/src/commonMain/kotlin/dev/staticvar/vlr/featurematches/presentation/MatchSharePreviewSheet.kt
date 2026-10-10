@@ -4,12 +4,14 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,7 +28,10 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
@@ -43,6 +48,7 @@ import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import vlr.feature_matches.generated.resources.Res
 import vlr.feature_matches.generated.resources.close
@@ -51,8 +57,11 @@ import vlr.feature_matches.generated.resources.could_not_open_the_share_menu_tap
 import vlr.feature_matches.generated.resources.match_share_preview
 import vlr.feature_matches.generated.resources.preview
 import vlr.feature_matches.generated.resources.share
+import vlr.feature_matches.generated.resources.share_attribution
 import vlr.feature_matches.generated.resources.share_live
+import vlr.feature_matches.generated.resources.share_logo
 import vlr.feature_matches.generated.resources.share_time_tba
+import vlr.feature_matches.generated.resources.share_times_utc_offset
 import vlr.feature_matches.generated.resources.sharing
 
 @Composable
@@ -63,6 +72,7 @@ internal fun MatchSharePreviewSheet(matches: List<MatchPreview>, imageSharer: Im
   var sharing by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf<String?>(null) }
   var visible by remember { mutableStateOf(true) }
+  val utcOffsets = remember(matches) { matches.mapNotNull { matchShareUtcOffset(it) }.distinct() }
 
   PrismModalSheet(
     visible = visible,
@@ -123,33 +133,86 @@ internal fun MatchSharePreviewSheet(matches: List<MatchPreview>, imageSharer: Im
         .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
-      matches.forEachIndexed { index, match ->
-        if (index > 0) PrismDivider(style = PrismDividerStyle.Hairline)
-        MatchSharePreviewItem(match = match)
+      matchesByEvent(matches).forEach { eventMatches ->
+        MatchShareEventGroup(matches = eventMatches, showUtcOffset = utcOffsets.size > 1)
       }
+      MatchShareFooter(utcOffset = utcOffsets.singleOrNull())
     }
   }
 }
 
 @Composable
-private fun MatchSharePreviewItem(match: MatchPreview) {
-  Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
+private fun MatchShareEventGroup(matches: List<MatchPreview>, showUtcOffset: Boolean) {
+  Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
     Text(
-      text = match.event,
-      style = Prism.typography.bodySmall,
+      text = matches.first().event.uppercase(),
+      style = Prism.typography.label,
       color = Prism.color.labelColor,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
     )
-    Text(
-      text = matchShareTime(match, stringResource(Res.string.share_live), stringResource(Res.string.share_time_tba), formatMatchPreviewTime(match.time)),
-      style = Prism.typography.label,
-      color = if (match.status == MatchStatus.LIVE) Prism.color.accent else Prism.color.labelColor,
-    )
+    PrismDivider()
+    matches.forEachIndexed { index, match ->
+      if (index > 0) PrismDivider(style = PrismDividerStyle.Hairline)
+      MatchSharePreviewItem(match = match, showUtcOffset = showUtcOffset)
+    }
+  }
+}
+
+@Composable
+private fun MatchSharePreviewItem(match: MatchPreview, showUtcOffset: Boolean) {
+  Column(verticalArrangement = Arrangement.spacedBy(MatchShareRowSpacing)) {
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        text = match.series,
+        modifier = Modifier.weight(1f),
+        style = Prism.typography.label,
+        color = Prism.color.bodyColor,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+      )
+      val time = matchShareImageTime(match, stringResource(Res.string.share_live), stringResource(Res.string.share_time_tba), formatMatchPreviewTime(match.time))
+      val utcOffset = if (showUtcOffset) matchShareUtcOffset(match) else null
+      Text(
+        text = if (utcOffset != null) "$time $utcOffset" else time,
+        style = Prism.typography.label,
+        color = if (match.status == MatchStatus.LIVE) Prism.color.accent else Prism.color.labelColor,
+        maxLines = 1,
+      )
+    }
     MatchShareTeamRow(team = match.team1)
     MatchShareTeamRow(team = match.team2)
-    if (match.series.isNotBlank()) {
-      Text(match.series, style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
+  }
+}
+
+@Composable
+private fun MatchShareFooter(utcOffset: String?) {
+  Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
+    PrismDivider(style = PrismDividerStyle.Hairline)
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        text = utcOffset?.let { stringResource(Res.string.share_times_utc_offset, it) }.orEmpty(),
+        modifier = Modifier.weight(1f),
+        style = Prism.typography.label,
+        color = Prism.color.labelColor,
+      )
+      Image(
+        painter = painterResource(Res.drawable.share_logo),
+        contentDescription = null,
+        modifier = Modifier.size(Prism.dimens.iconM),
+      )
+      Text(
+        text = stringResource(Res.string.share_attribution),
+        style = Prism.typography.label,
+        color = Prism.color.bodyColor,
+      )
     }
   }
 }
@@ -164,13 +227,20 @@ private fun MatchShareTeamRow(team: TeamPreview) {
     Text(
       text = team.name,
       modifier = Modifier.weight(1f),
-      style = Prism.typography.headline,
+      style = MatchShareTeamStyle,
       color = Prism.color.titleColor,
+      maxLines = 1,
+      overflow = TextOverflow.Ellipsis,
     )
     SpoilerScore(
       text = team.score?.toString() ?: "-",
-      style = Prism.typography.headline,
+      style = MatchShareTeamStyle,
       color = Prism.color.titleColor,
     )
   }
 }
+
+private val MatchShareRowSpacing = 2.dp
+
+private val MatchShareTeamStyle: TextStyle
+  @Composable get() = Prism.typography.headline.copy(fontSize = 20.sp)

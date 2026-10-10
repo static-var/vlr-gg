@@ -57,6 +57,7 @@
     <string name="share_time_tba">समय तय होना बाकी</string>
     <string name="share_match">%1$s बनाम %2$s | %3$s | %4$s</string>
     <string name="share_attribution">Val Esports से शेयर किया गया</string>
+    <string name="share_times_utc_offset">समय %1$s में</string>
     <string name="mascot_player_cooked">%1$s ने कमाल कर दिया!</string>
     <string name="mascot_player_cooking">%1$s का कमाल जारी है!</string>
     <string name="mascot_team_won">%1$s जीत गया!</string>

@@ -57,6 +57,7 @@
     <string name="share_time_tba">시간 미정</string>
     <string name="share_match">%1$s 대 %2$s | %3$s | %4$s</string>
     <string name="share_attribution">Val Esports에서 공유</string>
+    <string name="share_times_utc_offset">시간 기준: %1$s</string>
     <string name="mascot_player_cooked">%1$s 선수가 제대로 해냈어요!</string>
     <string name="mascot_player_cooking">%1$s 선수의 활약이 대단해요!</string>
     <string name="mascot_team_won">%1$s 승리!</string>
