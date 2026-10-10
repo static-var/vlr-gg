@@ -1,4 +1,5 @@
 <resources>
+  <string name="match_event_group_by">Group by</string>
   <string name="match_event_tbd">TBD</string>
   <string name="match_event_matches">Matches</string>
   <string name="match_event_schedule">schedule</string>

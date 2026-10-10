@@ -1,4 +1,5 @@
 <resources>
+  <string name="match_event_group_by">समूह का आधार</string>
   <string name="match_event_tbd">TBD</string>
   <string name="match_event_matches">मैच</string>
   <string name="match_event_schedule">शेड्यूल</string>

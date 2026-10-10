@@ -1,4 +1,5 @@
 <resources>
+  <string name="match_event_group_by">Agrupar por</string>
   <string name="match_event_tbd">TBD</string>
   <string name="match_event_matches">Partidas</string>
   <string name="match_event_schedule">programação</string>

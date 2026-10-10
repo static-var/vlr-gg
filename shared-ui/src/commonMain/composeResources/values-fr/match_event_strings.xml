@@ -1,4 +1,5 @@
 <resources>
+  <string name="match_event_group_by">Grouper par</string>
   <string name="match_event_tbd">TBD</string>
   <string name="match_event_matches">Matchs</string>
   <string name="match_event_schedule">calendrier</string>
