@@ -13,13 +13,8 @@
     <string name="no_standings_yet">Aún no hay clasificación</string>
     <string name="team_standings_have_not_been_published_for_this_event">La clasificación de los equipos todavía no se ha publicado para este evento.</string>
     <string name="standings">Clasificación</string>
-    <string name="table">tabla</string>
-    <string name="no_prize_breakdown_yet">Aún no hay reparto de premios</string>
-    <string name="prize_placements_have_not_been_published_for_this_event">Los puestos premiados de este evento todavía no se han publicado.</string>
     <string name="prizes">Premios</string>
-    <string name="placements">puestos</string>
     <string name="participants">Participantes</string>
-    <string name="teams">equipos</string>
     <string name="event_overview">Resumen del evento</string>
     <string name="events_around_the_world">Eventos de todo el mundo</string>
     <string name="loading_events">Cargando eventos</string>
@@ -43,7 +38,6 @@
     <string name="tab_unknown">Desconocidos</string>
     <string name="tab_matches">Partidos</string>
     <string name="tab_standings">Clasificación</string>
-    <string name="tab_prizes">Premios</string>
     <string name="mascot_event_won">¡%1$s ganó el evento!</string>
     <string name="add_upcoming_matches_to_calendar">Añadir próximos partidos al calendario</string>
     <string name="unable_to_save_matches_to_calendar">No se pudieron guardar los partidos en el calendario. Inténtalo de nuevo.</string>

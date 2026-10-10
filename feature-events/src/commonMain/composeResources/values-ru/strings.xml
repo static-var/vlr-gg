@@ -13,13 +13,8 @@
     <string name="no_standings_yet">Турнирной таблицы пока нет</string>
     <string name="team_standings_have_not_been_published_for_this_event">Турнирная таблица команд ещё не опубликована.</string>
     <string name="standings">Положение команд</string>
-    <string name="table">таблица</string>
-    <string name="no_prize_breakdown_yet">Распределение призовых пока недоступно</string>
-    <string name="prize_placements_have_not_been_published_for_this_event">Распределение призовых для этого турнира ещё не опубликовано.</string>
     <string name="prizes">Призы</string>
-    <string name="placements">места</string>
     <string name="participants">Участники</string>
-    <string name="teams">команды</string>
     <string name="event_overview">Обзор турнира</string>
     <string name="events_around_the_world">Турниры со всего мира</string>
     <string name="loading_events">Загрузка турниров</string>
@@ -43,7 +38,6 @@
     <string name="tab_unknown">Без статуса</string>
     <string name="tab_matches">Матчи</string>
     <string name="tab_standings">Таблица</string>
-    <string name="tab_prizes">Призы</string>
     <string name="mascot_event_won">Победитель турнира — %1$s!</string>
     <string name="add_upcoming_matches_to_calendar">Добавить предстоящие матчи в календарь</string>
     <string name="unable_to_save_matches_to_calendar">Не удалось сохранить матчи в календаре. Повторите попытку.</string>

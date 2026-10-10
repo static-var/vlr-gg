@@ -13,13 +13,8 @@
     <string name="no_standings_yet">No standings yet</string>
     <string name="team_standings_have_not_been_published_for_this_event">Team standings have not been published for this event.</string>
     <string name="standings">Standings</string>
-    <string name="table">table</string>
-    <string name="no_prize_breakdown_yet">No prize breakdown yet</string>
-    <string name="prize_placements_have_not_been_published_for_this_event">Prize placements have not been published for this event.</string>
     <string name="prizes">Prizes</string>
-    <string name="placements">placements</string>
     <string name="participants">Participants</string>
-    <string name="teams">teams</string>
     <string name="event_overview">Event overview</string>
     <string name="events_around_the_world">Events around the world</string>
     <string name="loading_events">Loading events</string>
@@ -43,7 +38,6 @@
     <string name="tab_unknown">Unknown</string>
     <string name="tab_matches">Matches</string>
     <string name="tab_standings">Standings</string>
-    <string name="tab_prizes">Prizes</string>
     <string name="mascot_event_won">%1$s won the event!</string>
     <string name="add_upcoming_matches_to_calendar">Add upcoming matches to calendar</string>
     <string name="unable_to_save_matches_to_calendar">Unable to save matches to the calendar. Please try again.</string>

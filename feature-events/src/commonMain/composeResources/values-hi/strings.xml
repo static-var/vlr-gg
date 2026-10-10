@@ -13,13 +13,8 @@
     <string name="no_standings_yet">अभी कोई स्टैंडिंग नहीं है</string>
     <string name="team_standings_have_not_been_published_for_this_event">इस इवेंट की टीम स्टैंडिंग अभी प्रकाशित नहीं हुई है।</string>
     <string name="standings">स्टैंडिंग</string>
-    <string name="table">तालिका</string>
-    <string name="no_prize_breakdown_yet">पुरस्कारों का विवरण अभी उपलब्ध नहीं है</string>
-    <string name="prize_placements_have_not_been_published_for_this_event">इस इवेंट के पुरस्कार और स्थान अभी प्रकाशित नहीं हुए हैं।</string>
     <string name="prizes">पुरस्कार</string>
-    <string name="placements">स्थान</string>
     <string name="participants">प्रतिभागी</string>
-    <string name="teams">टीमें</string>
     <string name="event_overview">इवेंट का अवलोकन</string>
     <string name="events_around_the_world">दुनिया भर के इवेंट</string>
     <string name="loading_events">इवेंट लोड हो रहे हैं</string>
@@ -43,7 +38,6 @@
     <string name="tab_unknown">अज्ञात</string>
     <string name="tab_matches">मैच</string>
     <string name="tab_standings">स्टैंडिंग</string>
-    <string name="tab_prizes">पुरस्कार</string>
     <string name="mascot_event_won">%1$s ने इवेंट जीत लिया!</string>
     <string name="add_upcoming_matches_to_calendar">आने वाले मैच कैलेंडर में जोड़ें</string>
     <string name="unable_to_save_matches_to_calendar">मैच कैलेंडर में सहेजे नहीं जा सके। फिर से कोशिश करें।</string>
