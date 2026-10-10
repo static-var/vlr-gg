@@ -66,28 +66,13 @@ class EventDetailsPreferencesRepositoryTest {
   }
 
   @Test
-  fun movingSkipsUnavailableSectionsAndKeepsTheirSlots() {
-    val preferences = EventDetailsPreferences()
-    val available = setOf(Participants, Standings, Matches)
+  fun movingASectionKeepsEverySectionAndItsVisibility() {
+    val preferences = EventDetailsPreferences(hiddenSections = setOf(Prizes))
 
-    assertEquals(
-      listOf(Standings, Prizes, Participants, Matches),
-      preferences.movedUp(Standings, available).sectionOrder,
-    )
-    assertEquals(
-      listOf(Standings, Prizes, Participants, Matches),
-      preferences.movedDown(Participants, available).sectionOrder,
-    )
-  }
-
-  @Test
-  fun movingPastTheEdgeOrAnUnavailableSectionChangesNothing() {
-    val preferences = EventDetailsPreferences(sectionOrder = listOf(Prizes, Participants, Standings, Matches))
-    val available = setOf(Participants, Standings, Matches)
-
-    assertEquals(preferences.sectionOrder, preferences.movedUp(Participants, available).sectionOrder)
-    assertEquals(preferences.sectionOrder, preferences.movedDown(Matches, available).sectionOrder)
-    assertEquals(preferences.sectionOrder, preferences.movedDown(Prizes, available).sectionOrder)
+    assertEquals(listOf(Participants, Standings, Prizes, Matches), preferences.moved(Prizes, 2).sectionOrder)
+    assertEquals(listOf(Prizes, Participants, Standings, Matches), preferences.moved(Prizes, 0).sectionOrder)
+    assertEquals(listOf(Participants, Standings, Matches, Prizes), preferences.moved(Prizes, 9).sectionOrder)
+    assertEquals(setOf(Prizes), preferences.moved(Prizes, 3).hiddenSections)
   }
 
   @Test

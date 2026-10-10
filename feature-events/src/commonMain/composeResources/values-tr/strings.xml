@@ -63,6 +63,8 @@
     <string name="matches_option_description">Tarihe göre tüm maçlar</string>
     <string name="move_section_up">%1$s yukarı taşı</string>
     <string name="move_section_down">%1$s aşağı taşı</string>
+    <string name="reorder_section">%1$s sırasını değiştir</string>
+    <string name="section_unavailable">Bu etkinlik için veri yok</string>
     <string name="today">Bugün</string>
     <string name="jump_to_todays_matches">Bugünkü maçlara git</string>
     <string name="no_matches_today">Bugün maç yok</string>

@@ -15,20 +15,18 @@ import kotlinx.datetime.LocalDate
 /** Participants show at most this many teams in their rail. */
 internal const val ParticipantRailLimit: Int = 8
 
-/** Sections this event has content for. Matches always shows, with an empty state before fixtures exist. */
-internal val EventDetails.availableSections: Set<EventDetailsSection>
+/** Sections this event has data for. The options sheet disables the rest. */
+internal val EventDetails.sectionsWithData: Set<EventDetailsSection>
   get() = buildSet {
     if (teams.isNotEmpty()) add(EventDetailsSection.Participants)
     if (prizes.isNotEmpty()) add(EventDetailsSection.Prizes)
     if (standings.isNotEmpty()) add(EventDetailsSection.Standings)
-    add(EventDetailsSection.Matches)
+    if (matches.isNotEmpty()) add(EventDetailsSection.Matches)
   }
 
-/** Available sections in the user's order, including hidden ones, for the options sheet. */
-internal fun EventDetailsPreferences.availableSectionsInOrder(event: EventDetails): List<EventDetailsSection> {
-  val available = event.availableSections
-  return orderedSections.filter { it in available }
-}
+/** Sections the event body can show. Matches always shows, with an empty state before fixtures exist. */
+internal val EventDetails.availableSections: Set<EventDetailsSection>
+  get() = sectionsWithData + EventDetailsSection.Matches
 
 /** A group of standings rows in VLR's ranked order. A null [name] means the server sent no group. */
 internal data class EventStandingsGroup(val name: String?, val standings: List<EventStanding>)

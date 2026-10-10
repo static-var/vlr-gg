@@ -63,6 +63,8 @@
     <string name="matches_option_description">Tous les matchs par date</string>
     <string name="move_section_up">Monter %1$s</string>
     <string name="move_section_down">Descendre %1$s</string>
+    <string name="reorder_section">Réorganiser %1$s</string>
+    <string name="section_unavailable">Aucune donnée pour cet événement</string>
     <string name="today">Aujourd'hui</string>
     <string name="jump_to_todays_matches">Aller aux matchs du jour</string>
     <string name="no_matches_today">Aucun match aujourd'hui</string>

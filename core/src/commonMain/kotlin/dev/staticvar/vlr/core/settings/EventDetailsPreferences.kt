@@ -31,28 +31,9 @@ public data class EventDetailsPreferences(
   public fun withVisibility(section: EventDetailsSection, visible: Boolean): EventDetailsPreferences =
     copy(hiddenSections = if (visible) hiddenSections - section else hiddenSections + section)
 
-  /** Swaps [section] with the nearest earlier section in [available]. Unavailable sections keep their slots. */
-  public fun movedUp(section: EventDetailsSection, available: Set<EventDetailsSection>): EventDetailsPreferences =
-    moved(section, step = -1, available = available)
-
-  /** Swaps [section] with the nearest later section in [available]. Unavailable sections keep their slots. */
-  public fun movedDown(section: EventDetailsSection, available: Set<EventDetailsSection>): EventDetailsPreferences =
-    moved(section, step = 1, available = available)
-
-  private fun moved(
-    section: EventDetailsSection,
-    step: Int,
-    available: Set<EventDetailsSection>,
-  ): EventDetailsPreferences {
-    val order = orderedSections.toMutableList()
-    val from = order.indexOf(section)
-    if (section !in available) return copy(sectionOrder = order)
-    var to = from + step
-    while (to in order.indices && order[to] !in available) to += step
-    if (to in order.indices) {
-      order[from] = order[to]
-      order[to] = section
-    }
-    return copy(sectionOrder = order)
+  /** Moves [section] to [index] of [orderedSections], clamped to the list bounds. */
+  public fun moved(section: EventDetailsSection, index: Int): EventDetailsPreferences {
+    val order = orderedSections - section
+    return copy(sectionOrder = order.toMutableList().apply { add(index.coerceIn(0, order.size), section) })
   }
 }

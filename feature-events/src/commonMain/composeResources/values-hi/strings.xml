@@ -63,6 +63,8 @@
     <string name="matches_option_description">तारीख के अनुसार सभी मैच</string>
     <string name="move_section_up">%1$s को ऊपर ले जाएं</string>
     <string name="move_section_down">%1$s को नीचे ले जाएं</string>
+    <string name="reorder_section">%1$s का क्रम बदलें</string>
+    <string name="section_unavailable">इस इवेंट के लिए कोई डेटा नहीं</string>
     <string name="today">आज</string>
     <string name="jump_to_todays_matches">आज के मैचों पर जाएं</string>
     <string name="no_matches_today">आज कोई मैच नहीं</string>

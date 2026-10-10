@@ -217,7 +217,7 @@ class EventDetailsLayoutTest {
   }
 
   @Test
-  fun optionsListOnlyAvailableSectionsInSavedOrder() {
+  fun sectionsWithoutDataStayHiddenInTheBodyButKeepTheirSavedChoice() {
     val preferences = EventDetailsPreferences(
       sectionOrder = listOf(
         EventDetailsSection.Standings,
@@ -225,14 +225,18 @@ class EventDetailsLayoutTest {
         EventDetailsSection.Prizes,
         EventDetailsSection.Participants,
       ),
-      hiddenSections = setOf(EventDetailsSection.Matches),
+      hiddenSections = setOf(EventDetailsSection.Prizes),
     )
     val event = event(standings = listOf(standing("FNATIC", null)))
 
+    assertEquals(setOf(EventDetailsSection.Standings), event.sectionsWithData)
     assertEquals(
-      listOf(EventDetailsSection.Standings, EventDetailsSection.Matches),
-      preferences.availableSectionsInOrder(event),
+      listOf("standings-title", "standings-0", "matches-title", "matches-empty", "bottom-spacer"),
+      buildEventDetailsRows(event, preferences, emptyList(), spoilersHidden = false).map(EventDetailsRow::key),
     )
+
+    val withMatches = event(matches = listOf(match("1", "2026-10-10", "10:00:00")))
+    assertEquals(setOf(EventDetailsSection.Matches), withMatches.sectionsWithData)
   }
 
   private fun List<EventMatchDay>.matchIds(): List<String> = flatMap { day -> day.matches.map { it.match.matchId } }
