@@ -22,20 +22,13 @@ import dev.staticvar.vlr.domain.model.EventPrizeTeam
 import dev.staticvar.vlr.domain.model.EventStanding
 import dev.staticvar.vlr.domain.model.EventStatus
 import dev.staticvar.vlr.domain.model.EventTeam
-import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 
 @PrismPreview
 @Composable
 internal fun EventDetailsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
     EventDetailsScreen(
-      uiState = EventDetailsUiState(event = sampleEventDetails(), isLoading = false),
-      section = EventDetailSection.Matches,
-      matchGrouping = EventMatchGrouping.Status,
-      selectedMatchGroupName = null,
-      onSectionSelected = {},
-      onMatchGroupingSelected = {},
-      onMatchGroupSelected = {},
+      uiState = EventDetailsUiState(event = sampleEventDetails(), isLoading = false, isDetailLoadPending = false),
       onBack = {},
       onMatchSelected = {},
       onTeamSelected = {},
@@ -68,34 +61,57 @@ private fun sampleEventDetails(): EventDetails = EventDetails(
   ),
   matches =
   listOf(
-    EventMatch(
-      matchId = "match-1",
-      time = "14:00 CET",
-      date = "Mar 8",
-      eta = "Live now",
-      status = "LIVE",
-      teams =
-      listOf(
-        EventMatchTeam(name = "FNATIC", region = "EMEA", score = 1),
-        EventMatchTeam(name = "Sentinels", region = "Americas", score = 0),
-      ),
-      round = "Upper Final",
-      stage = "Playoffs",
-    ),
+    previewMatch("match-1", date = "2026-03-08", time = "14:00:00", status = "completed", scores = 2 to 0),
+    previewMatch("match-2", date = "2026-03-09", time = "17:00:00", status = "live", scores = 1 to 0),
+    previewMatch("match-3", date = "2026-03-10", time = "TBD", status = "upcoming", scores = null),
   ),
+  // Preview-only rows shaped like VLR group tables. The app only renders standings the API sends.
   standings =
   listOf(
-    EventStanding(
-      teamName = "FNATIC",
-      teamLogoUrl = "",
-      teamCountry = "EU",
-      groupName = "Playoffs",
-      wins = 2,
-      losses = 0,
-      ties = 0,
-      mapDifference = 3,
-      roundDifference = 19,
-      roundDelta = 19,
-    ),
+    previewStanding("FNATIC", group = "Group Alpha", wins = 2, losses = 0, mapDifference = 4, roundDifference = 21),
+    previewStanding("Sentinels", group = "Group Alpha", wins = 1, losses = 1, mapDifference = 0, roundDifference = -3),
+    previewStanding("Gen.G", group = "Group Omega", wins = 2, losses = 0, mapDifference = 3, roundDifference = 15),
+    previewStanding("LOUD", group = "Group Omega", wins = 0, losses = 2, mapDifference = -3, roundDifference = -15),
   ),
+)
+
+private fun previewMatch(
+  id: String,
+  date: String,
+  time: String,
+  status: String,
+  scores: Pair<Int, Int>?,
+): EventMatch = EventMatch(
+  matchId = id,
+  time = time,
+  date = date,
+  eta = null,
+  status = status,
+  teams =
+  listOf(
+    EventMatchTeam(name = "FNATIC", region = "EMEA", score = scores?.first),
+    EventMatchTeam(name = "Sentinels", region = "Americas", score = scores?.second),
+  ),
+  round = "Upper Bracket",
+  stage = "Playoffs",
+)
+
+private fun previewStanding(
+  team: String,
+  group: String,
+  wins: Int,
+  losses: Int,
+  mapDifference: Int,
+  roundDifference: Int,
+): EventStanding = EventStanding(
+  teamName = team,
+  teamLogoUrl = "",
+  teamCountry = "",
+  groupName = group,
+  wins = wins,
+  losses = losses,
+  ties = 0,
+  mapDifference = mapDifference,
+  roundDifference = roundDifference,
+  roundDelta = roundDifference,
 )

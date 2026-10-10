@@ -34,6 +34,7 @@ public fun eventsFeatureModule(): Module = module {
       favoritesRepository = get(),
       eventRepository = get(),
       networkMonitor = get(),
+      preferencesRepository = get(),
     )
   }
 }

@@ -12,10 +12,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -27,12 +27,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -48,16 +53,14 @@ import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconSize
 import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.loader.PrismLoaderSize
-import dev.staticvar.designsystem.component.navigation.PrismTab
-import dev.staticvar.designsystem.component.navigation.PrismTabs
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.designsystem.component.section.PrismSectionTitleStyle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.core.settings.EventDetailsPreferences
 import dev.staticvar.vlr.domain.model.EventDetails
-import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.domain.model.EventPreview
 import dev.staticvar.vlr.domain.model.EventPrize
-import dev.staticvar.vlr.domain.model.EventStanding
 import dev.staticvar.vlr.domain.model.EventTeam
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
@@ -74,17 +77,14 @@ import dev.staticvar.vlr.sharedui.component.common.SharedRefreshStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedScreenTitleBar
 import dev.staticvar.vlr.sharedui.component.common.SharedScrollingDetails
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
+import dev.staticvar.vlr.sharedui.component.common.shortMonthName
 import dev.staticvar.vlr.sharedui.component.common.transitionContentFade
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailHeaderItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailMatchItem
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPreviewHeaderItem
-import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPrizeItem
-import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailStandingItem
+import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailPrizeTile
 import dev.staticvar.vlr.sharedui.component.event.detail.EventDetailTeamItem
-import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGroupSelector
-import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
-import dev.staticvar.vlr.sharedui.component.event.detail.eventFormattingLabels
-import dev.staticvar.vlr.sharedui.component.event.detail.groupEventMatches
 import dev.staticvar.vlr.sharedui.component.event.rememberEventDetailContentFade
 import dev.staticvar.vlr.sharedui.illustration.EmptyStateArtwork
 import dev.staticvar.vlr.sharedui.mascot.LocalMascotCharacter
@@ -94,69 +94,68 @@ import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
 import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 import dev.staticvar.vlr.sharedui.text.resolve
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import vlr.feature_events.generated.resources.Res
 import vlr.feature_events.generated.resources.add_upcoming_matches_to_calendar
 import vlr.feature_events.generated.resources.calendar_versus
+import vlr.feature_events.generated.resources.date_to_be_announced
 import vlr.feature_events.generated.resources.details_will_appear_when_this_event_is_published
 import vlr.feature_events.generated.resources.event
 import vlr.feature_events.generated.resources.favorite_event
+import vlr.feature_events.generated.resources.jump_to_todays_matches
 import vlr.feature_events.generated.resources.loading_event
 import vlr.feature_events.generated.resources.loading_event_details
+import vlr.feature_events.generated.resources.match_day_date
+import vlr.feature_events.generated.resources.match_day_date_with_year
 import vlr.feature_events.generated.resources.match_fixtures_have_not_been_published_for_this_event
+import vlr.feature_events.generated.resources.newest_first
 import vlr.feature_events.generated.resources.no_event_details_yet
+import vlr.feature_events.generated.resources.no_matches_today
 import vlr.feature_events.generated.resources.no_matches_yet
-import vlr.feature_events.generated.resources.no_prize_breakdown_yet
-import vlr.feature_events.generated.resources.no_standings_yet
+import vlr.feature_events.generated.resources.oldest_first
 import vlr.feature_events.generated.resources.participants
-import vlr.feature_events.generated.resources.placements
-import vlr.feature_events.generated.resources.prize_placements_have_not_been_published_for_this_event
 import vlr.feature_events.generated.resources.prizes
 import vlr.feature_events.generated.resources.remove_from_favorites
 import vlr.feature_events.generated.resources.remove_matches_from_calendar
+import vlr.feature_events.generated.resources.show_newest_first
+import vlr.feature_events.generated.resources.show_oldest_first
 import vlr.feature_events.generated.resources.standings
+import vlr.feature_events.generated.resources.standings_legend
 import vlr.feature_events.generated.resources.tab_matches
-import vlr.feature_events.generated.resources.tab_prizes
-import vlr.feature_events.generated.resources.tab_standings
-import vlr.feature_events.generated.resources.table
-import vlr.feature_events.generated.resources.team_standings_have_not_been_published_for_this_event
-import vlr.feature_events.generated.resources.teams
 import vlr.feature_events.generated.resources.teams_matches_and_standings
+import vlr.feature_events.generated.resources.today
 import vlr.feature_events.generated.resources.updating_favorite
+import kotlin.time.Clock
+
+// Keeps the last row and the mascot clear of the event options button.
+private val FabClearance = 88.dp
 
 @Composable
 public fun EventDetailsRoute(
   uiState: EventDetailsUiState,
   eventPreview: EventPreview? = null,
-  section: EventDetailSection,
-  matchGrouping: EventMatchGrouping,
-  selectedMatchGroupName: String?,
-  onSectionSelected: (EventDetailSection) -> Unit,
-  onMatchGroupingSelected: (EventMatchGrouping) -> Unit,
-  onMatchGroupSelected: (String) -> Unit,
   onBack: () -> Unit,
   onMatchSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
   onToggleFavorite: () -> Unit = {},
+  onPreferencesChange: (EventDetailsPreferences) -> Unit = {},
 ) {
   EventDetailsScreen(
     uiState = uiState,
     eventPreview = eventPreview,
-    section = section,
-    matchGrouping = matchGrouping,
-    selectedMatchGroupName = selectedMatchGroupName,
-    onSectionSelected = onSectionSelected,
-    onMatchGroupingSelected = onMatchGroupingSelected,
-    onMatchGroupSelected = onMatchGroupSelected,
     onBack = onBack,
     onMatchSelected = onMatchSelected,
     onTeamSelected = onTeamSelected,
     modifier = modifier,
     onRefresh = onRefresh,
     onToggleFavorite = onToggleFavorite,
+    onPreferencesChange = onPreferencesChange,
   )
 }
 
@@ -164,18 +163,13 @@ public fun EventDetailsRoute(
 internal fun EventDetailsScreen(
   uiState: EventDetailsUiState,
   eventPreview: EventPreview? = null,
-  section: EventDetailSection,
-  matchGrouping: EventMatchGrouping,
-  selectedMatchGroupName: String?,
-  onSectionSelected: (EventDetailSection) -> Unit,
-  onMatchGroupingSelected: (EventMatchGrouping) -> Unit,
-  onMatchGroupSelected: (String) -> Unit,
   onBack: () -> Unit,
   onMatchSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
   onRefresh: () -> Unit = {},
   onToggleFavorite: () -> Unit = {},
+  onPreferencesChange: (EventDetailsPreferences) -> Unit = {},
 ) {
   val event = uiState.event
   val spoilersHidden = LocalSpoilerMode.current.enabled
@@ -187,10 +181,12 @@ internal fun EventDetailsScreen(
       )
   val bodyFade = rememberEventDetailContentFade(bodyReady)
 
-  var isGroupingMenuExpanded by remember(event?.id) { mutableStateOf(false) }
+  var optionsExpanded by remember(event?.id) { mutableStateOf(false) }
+  var selectedMatchOrder by rememberSaveable(event?.id) { mutableStateOf(EventMatchOrder.OldestFirst) }
   var isNavigatingAway by remember(event?.id) { mutableStateOf(false) }
   val listState = rememberLazyListState()
   val participantsState = rememberLazyListState()
+  val prizesState = rememberLazyListState()
   val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
   val mascotCharacter = LocalMascotCharacter.current
   val candidates = remember(event, uiState.favoriteTeamIds, spoilersHidden, mascotCharacter) {
@@ -202,7 +198,8 @@ internal fun EventDetailsScreen(
     isScreenActive = mascotCharacter != null && lifecycleState == Lifecycle.State.RESUMED && !isNavigatingAway,
     isContentReady = event != null && !uiState.isLoading && !uiState.isRefreshing &&
       !uiState.isDetailLoadPending && uiState.errorMessage == null,
-    isInteracting = uiState.isSavingFavorite || listState.isScrollInProgress || participantsState.isScrollInProgress || isGroupingMenuExpanded,
+    isInteracting = uiState.isSavingFavorite || listState.isScrollInProgress || participantsState.isScrollInProgress ||
+      prizesState.isScrollInProgress || optionsExpanded,
   )
   fun leaveScreen(action: () -> Unit) {
     isNavigatingAway = true
@@ -265,25 +262,23 @@ internal fun EventDetailsScreen(
 
         else -> EventDetailsContent(
           event = event,
-          section = section,
-          matchGrouping = matchGrouping,
-          selectedMatchGroupName = selectedMatchGroupName,
+          preferences = uiState.preferences,
+          matchOrder = selectedMatchOrder,
+          isScreenResumed = lifecycleState == Lifecycle.State.RESUMED,
           isSavingFavorite = uiState.isSavingFavorite,
           canShowEmptySection = !uiState.isLoading && !uiState.isDetailLoadPending &&
             !uiState.isRefreshing && uiState.errorMessage == null,
           spoilersHidden = spoilersHidden,
           listState = listState,
           participantsState = participantsState,
+          prizesState = prizesState,
           contentAlpha = bodyFade.alpha,
           showContent = bodyReady,
           showLoading = !bodyReady,
           contentEnabled = bodyFade.acceptsInput,
           extraContentFade = transitionContentFade,
           onToggleFavorite = onToggleFavorite,
-          onSectionSelected = onSectionSelected,
-          onMatchGroupingSelected = onMatchGroupingSelected,
-          onMatchGroupSelected = onMatchGroupSelected,
-          onGroupingMenuExpandedChange = { isGroupingMenuExpanded = it },
+          onMatchOrderChange = { selectedMatchOrder = it },
           onMatchSelected = { matchId -> leaveScreen { onMatchSelected(matchId) } },
           onTeamSelected = { teamId -> leaveScreen { onTeamSelected(teamId) } },
           modifier = Modifier.fillMaxWidth().weight(1f),
@@ -298,9 +293,18 @@ internal fun EventDetailsScreen(
           character = mascotCharacter,
           message = cue.message.resolve(),
           onFinished = mascotState::onFinished,
-          modifier = Modifier.align(Alignment.BottomEnd).navigationBarsPadding(),
+          modifier = Modifier.align(Alignment.BottomEnd).navigationBarsPadding().padding(bottom = FabClearance),
         )
       }
+    }
+    if (event != null) {
+      EventDetailOptionsSheet(
+        event = event,
+        preferences = uiState.preferences,
+        expanded = optionsExpanded,
+        onExpandedChange = { optionsExpanded = it },
+        onPreferencesChange = onPreferencesChange,
+      )
     }
   }
 }
@@ -347,33 +351,44 @@ private fun EventDetailsChrome(
 @Composable
 private fun EventDetailsContent(
   event: EventDetails,
-  section: EventDetailSection,
-  matchGrouping: EventMatchGrouping,
-  selectedMatchGroupName: String?,
+  preferences: EventDetailsPreferences,
+  matchOrder: EventMatchOrder,
+  isScreenResumed: Boolean,
   isSavingFavorite: Boolean,
   canShowEmptySection: Boolean,
   spoilersHidden: Boolean,
   listState: LazyListState,
   participantsState: LazyListState,
+  prizesState: LazyListState,
   contentAlpha: State<Float>,
   showContent: Boolean,
   showLoading: Boolean,
   contentEnabled: Boolean,
   extraContentFade: TransitionContentFade,
   onToggleFavorite: () -> Unit,
-  onSectionSelected: (EventDetailSection) -> Unit,
-  onMatchGroupingSelected: (EventMatchGrouping) -> Unit,
-  onMatchGroupSelected: (String) -> Unit,
-  onGroupingMenuExpandedChange: (Boolean) -> Unit,
+  onMatchOrderChange: (EventMatchOrder) -> Unit,
   onMatchSelected: (String) -> Unit,
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val labels = eventFormattingLabels()
-  val groupedMatches = remember(event.matches, matchGrouping, labels) { event.matches.groupEventMatches(matchGrouping, labels) }
-  val groupNames = groupedMatches.keys.toList()
-  val resolvedMatchGroupName = selectedMatchGroupName.takeIf { it in groupedMatches } ?: groupNames.firstOrNull()
-  val visibleMatches = resolvedMatchGroupName?.let { groupName -> groupedMatches[groupName] }.orEmpty()
+  val matchesAction = event.status.matchesAction
+  val effectiveOrder = event.status.effectiveMatchOrder(matchOrder)
+  val timeZone = remember(isScreenResumed) { TimeZone.currentSystemDefault() }
+  val today by produceState(
+    initialValue = Clock.System.now().toLocalDateTime(timeZone).date,
+    key1 = isScreenResumed,
+    key2 = timeZone,
+  ) {
+    if (isScreenResumed) eventLocalDateFlow(timeZone).collect { value = it }
+  }
+  val matchDays = remember(event.matches, timeZone, effectiveOrder) {
+    event.matches.chronologicalMatchDays(timeZone, effectiveOrder)
+  }
+  val rows = remember(event, preferences, matchDays, spoilersHidden) {
+    buildEventDetailsRows(event, preferences, matchDays, spoilersHidden)
+  }
+  val todayIndex = rows.todayHeadingIndex(today)
+  val scope = rememberCoroutineScope()
   val favoriteReasons = if (event.isFavorite) {
     listOf(MatchFavoriteReason(MatchFavoriteSource.EVENT, event.id, event.title))
   } else {
@@ -402,48 +417,66 @@ private fun EventDetailsContent(
       )
     },
   ) {
-    if (event.teams.isNotEmpty()) {
-      item {
-        EventParticipantsRail(
-          teams = event.teams.take(8),
+    items(items = rows, key = EventDetailsRow::key, contentType = EventDetailsRow::contentType) { row ->
+      when (row) {
+        is EventDetailsRow.Participants -> EventParticipantsRail(
+          teams = row.teams,
           listState = participantsState,
           onTeamSelected = onTeamSelected,
         )
+
+        is EventDetailsRow.Prizes -> EventPrizesRail(
+          prizes = row.prizes,
+          spoilersHidden = spoilersHidden,
+          listState = prizesState,
+          onTeamSelected = onTeamSelected,
+        )
+
+        EventDetailsRow.StandingsTitle -> EventStandingsTitle(showLegend = !spoilersHidden)
+
+        EventDetailsRow.StandingsHidden -> SpoilerHiddenNotice(
+          modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
+        )
+
+        is EventDetailsRow.StandingsTable -> EventStandingsTable(
+          group = row.group,
+          modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)
+            .cardMascotEligible(topClearance = Prism.dimens.spacingM),
+        )
+
+        EventDetailsRow.MatchesTitle -> EventMatchesTitle(
+          action = if (event.matches.isEmpty()) EventMatchesAction.None else matchesAction,
+          order = effectiveOrder,
+          hasMatchesToday = todayIndex != null,
+          onTodayClick = {
+            // The hero is the first list item, so row indexes are offset by one.
+            todayIndex?.let { index -> scope.launch { listState.animateScrollToItem(index + 1) } }
+          },
+          onOrderChange = onMatchOrderChange,
+        )
+
+        EventDetailsRow.MatchesEmpty -> EventEmptySection(
+          visible = canShowEmptySection,
+          title = stringResource(Res.string.no_matches_yet),
+          message = stringResource(Res.string.match_fixtures_have_not_been_published_for_this_event),
+        )
+
+        is EventDetailsRow.MatchDay -> EventMatchDayHeading(date = row.date, today = today)
+
+        is EventDetailsRow.Match -> EventDetailMatchItem(
+          modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(
+            topClearance = Prism.dimens.spacingM + Prism.dimens.spacingS + Prism.dimens.spacingXs,
+          ),
+          match = row.match.match,
+          favoriteReasons = favoriteReasons,
+          schedule = row.match.localSchedule(),
+          onClick = { onMatchSelected(row.match.match.matchId) },
+        )
+
+        EventDetailsRow.BottomSpacer -> Spacer(
+          modifier = Modifier.navigationBarsPadding().fillMaxWidth().height(FabClearance),
+        )
       }
-    }
-    item {
-      EventDetailsTabs(section = section, onSectionSelected = onSectionSelected)
-    }
-    when (section) {
-      EventDetailSection.Matches -> eventMatchItems(
-        matches = event.matches,
-        visibleMatches = visibleMatches,
-        favoriteReasons = favoriteReasons,
-        grouping = matchGrouping,
-        groupNames = groupNames,
-        selectedGroupName = resolvedMatchGroupName,
-        canShowEmptySection = canShowEmptySection,
-        onGroupingSelected = onMatchGroupingSelected,
-        onGroupSelected = onMatchGroupSelected,
-        onMenuExpandedChange = onGroupingMenuExpandedChange,
-        onMatchSelected = onMatchSelected,
-      )
-
-      EventDetailSection.Standings -> eventStandingItems(
-        standings = event.standings,
-        spoilersHidden = spoilersHidden,
-        canShowEmptySection = canShowEmptySection,
-      )
-
-      EventDetailSection.Prizes -> eventPrizeItems(
-        prizes = event.prizes,
-        spoilersHidden = spoilersHidden,
-        canShowEmptySection = canShowEmptySection,
-        onTeamSelected = onTeamSelected,
-      )
-    }
-    item {
-      Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
     }
   }
 }
@@ -555,155 +588,135 @@ private fun EventDetailsHero(
 }
 
 @Composable
-private fun EventDetailsTabs(
-  section: EventDetailSection,
-  onSectionSelected: (EventDetailSection) -> Unit,
-) {
-  PrismTabs(
-    modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-    tabs = EventDetailSection.entries.map { section ->
-      PrismTab(
-        id = section.name,
-        label = stringResource(
-          when (section) {
-            EventDetailSection.Matches -> Res.string.tab_matches
-            EventDetailSection.Standings -> Res.string.tab_standings
-            EventDetailSection.Prizes -> Res.string.tab_prizes
-          },
-        ),
+private fun EventStandingsTitle(showLegend: Boolean) {
+  Column(
+    modifier = Modifier.fillMaxWidth().padding(horizontal = Prism.dimens.spacingM),
+    verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
+  ) {
+    PrismSectionTitle(title = stringResource(Res.string.standings))
+    if (showLegend) {
+      Text(
+        text = stringResource(Res.string.standings_legend),
+        style = Prism.typography.caption,
+        color = Prism.color.labelColor,
       )
+    }
+  }
+}
+
+@Composable
+private fun EventMatchesTitle(
+  action: EventMatchesAction,
+  order: EventMatchOrder,
+  hasMatchesToday: Boolean,
+  onTodayClick: () -> Unit,
+  onOrderChange: (EventMatchOrder) -> Unit,
+) {
+  PrismSectionTitle(
+    title = stringResource(Res.string.tab_matches),
+    modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
+    trailing = if (action == EventMatchesAction.None) {
+      null
+    } else {
+      {
+        when (action) {
+          EventMatchesAction.Today -> EventTodayButton(enabled = hasMatchesToday, onClick = onTodayClick)
+          EventMatchesAction.Order -> EventMatchOrderButton(order = order, onOrderChange = onOrderChange)
+          EventMatchesAction.None -> Unit
+        }
+      }
     },
-    selectedTabId = section.name,
-    onTabSelected = { onSectionSelected(EventDetailSection.valueOf(it.id)) },
   )
 }
 
-private fun LazyListScope.eventMatchItems(
-  matches: List<EventMatch>,
-  visibleMatches: List<EventMatch>,
-  favoriteReasons: List<MatchFavoriteReason>,
-  grouping: EventMatchGrouping,
-  groupNames: List<String>,
-  selectedGroupName: String?,
-  canShowEmptySection: Boolean,
-  onGroupingSelected: (EventMatchGrouping) -> Unit,
-  onGroupSelected: (String) -> Unit,
-  onMenuExpandedChange: (Boolean) -> Unit,
-  onMatchSelected: (String) -> Unit,
-) {
-  if (matches.isEmpty()) {
-    item {
-      EventEmptySection(
-        visible = canShowEmptySection,
-        title = stringResource(Res.string.no_matches_yet),
-        message = stringResource(Res.string.match_fixtures_have_not_been_published_for_this_event),
-      )
-    }
-  } else {
-    item {
-      EventMatchGroupSelector(
-        modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-        grouping = grouping,
-        groupNames = groupNames,
-        selectedGroupName = selectedGroupName,
-        onGroupingSelected = onGroupingSelected,
-        onGroupSelected = onGroupSelected,
-        onMenuExpandedChange = onMenuExpandedChange,
-      )
-    }
-    items(visibleMatches, key = EventMatch::matchId) { match ->
-      EventDetailMatchItem(
-        modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(
-          topClearance = Prism.dimens.spacingM + Prism.dimens.spacingS + Prism.dimens.spacingXs,
-        ),
-        match = match,
-        favoriteReasons = favoriteReasons,
-        onClick = { onMatchSelected(match.matchId) },
-      )
-    }
+/** Stays visible on days without matches, but disabled instead of jumping somewhere else. */
+@Composable
+private fun EventTodayButton(enabled: Boolean, onClick: () -> Unit) {
+  val jumpLabel = stringResource(Res.string.jump_to_todays_matches)
+  val noMatchesToday = stringResource(Res.string.no_matches_today)
+  PrismButton(
+    onClick = onClick,
+    enabled = enabled,
+    style = PrismButtonStyle.Tertiary,
+    modifier = Modifier.semantics {
+      if (enabled) {
+        onClick(label = jumpLabel, action = null)
+      } else {
+        stateDescription = noMatchesToday
+      }
+    },
+  ) {
+    Text(stringResource(Res.string.today))
   }
 }
 
-private fun LazyListScope.eventStandingItems(
-  standings: List<EventStanding>,
-  spoilersHidden: Boolean,
-  canShowEmptySection: Boolean,
-) {
-  if (standings.isEmpty()) {
-    item {
-      EventEmptySection(
-        visible = canShowEmptySection,
-        title = stringResource(Res.string.no_standings_yet),
-        message = stringResource(Res.string.team_standings_have_not_been_published_for_this_event),
-      )
-    }
-  } else if (spoilersHidden) {
-    item {
-      PrismSectionTitle(
-        title = stringResource(Res.string.standings),
-        preLabel = stringResource(Res.string.table),
-        modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-      )
-    }
-    item { SpoilerHiddenNotice(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
-  } else {
-    item {
-      PrismSectionTitle(
-        title = stringResource(Res.string.standings),
-        preLabel = stringResource(Res.string.table),
-        modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-      )
-    }
-    items(standings, key = EventStanding::teamName) { standing ->
-      EventDetailStandingItem(
-        standing = standing,
-        modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(topClearance = Prism.dimens.spacingM),
-      )
-    }
+@Composable
+private fun EventMatchOrderButton(order: EventMatchOrder, onOrderChange: (EventMatchOrder) -> Unit) {
+  val switchLabel = stringResource(
+    if (order == EventMatchOrder.OldestFirst) Res.string.show_newest_first else Res.string.show_oldest_first,
+  )
+  PrismButton(
+    onClick = { onOrderChange(order.toggled) },
+    style = PrismButtonStyle.Tertiary,
+    modifier = Modifier.semantics { onClick(label = switchLabel, action = null) },
+  ) {
+    Text(stringResource(if (order == EventMatchOrder.OldestFirst) Res.string.oldest_first else Res.string.newest_first))
   }
 }
 
-private fun LazyListScope.eventPrizeItems(
+@Composable
+private fun EventMatchDayHeading(date: LocalDate?, today: LocalDate) {
+  val label = when {
+    date == null -> stringResource(Res.string.date_to_be_announced)
+    date.year == today.year -> stringResource(Res.string.match_day_date, shortMonthName(date.month), date.day)
+    else -> stringResource(Res.string.match_day_date_with_year, shortMonthName(date.month), date.day, date.year)
+  }
+  PrismSectionTitle(
+    title = label,
+    prefix = if (date == today) stringResource(Res.string.today) else null,
+    style = PrismSectionTitleStyle.Subtle,
+    modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).padding(top = Prism.dimens.spacingXs),
+  )
+}
+
+/** Start time in the viewer's time zone, so cards agree with the local day headings. */
+@Composable
+private fun ScheduledEventMatch.localSchedule(): String? {
+  val localStart = start?.let { formatMatchPreviewTime(it.toString()) } ?: return null
+  return listOfNotNull(match.eta?.takeIf(String::isNotBlank), localStart).joinToString(separator = " • ")
+}
+
+@Composable
+private fun EventPrizesRail(
   prizes: List<EventPrize>,
   spoilersHidden: Boolean,
-  canShowEmptySection: Boolean,
+  listState: LazyListState,
   onTeamSelected: (String) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-  if (prizes.isEmpty()) {
-    item {
-      EventEmptySection(
-        visible = canShowEmptySection,
-        title = stringResource(Res.string.no_prize_breakdown_yet),
-        message = stringResource(Res.string.prize_placements_have_not_been_published_for_this_event),
-      )
-    }
-  } else if (spoilersHidden) {
-    item {
-      PrismSectionTitle(
-        title = stringResource(Res.string.prizes),
-        preLabel = stringResource(Res.string.placements),
-        modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-      )
-    }
-    item { SpoilerHiddenNotice(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM)) }
-  } else {
-    item {
-      PrismSectionTitle(
-        title = stringResource(Res.string.prizes),
-        preLabel = stringResource(Res.string.placements),
-        modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-      )
-    }
-    itemsIndexed(
-      items = prizes,
-      key = { index, prize -> "${prize.position}-${prize.prize}-${prize.team?.id}-$index" },
-    ) { _, prize ->
-      val prizeTeamId = prize.team?.id
-      EventDetailPrizeItem(
-        prize = prize,
-        modifier = Modifier.padding(horizontal = Prism.dimens.spacingM).cardMascotEligible(topClearance = Prism.dimens.spacingM),
-        onTeamClick = prizeTeamId?.let { teamId -> { onTeamSelected(teamId) } },
-      )
+  Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
+    PrismSectionTitle(title = stringResource(Res.string.prizes), modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
+    if (spoilersHidden) {
+      SpoilerHiddenNotice(modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
+    } else {
+      LazyRow(
+        state = listState,
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = Prism.dimens.spacingM),
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+      ) {
+        itemsIndexed(
+          items = prizes,
+          key = { index, prize -> "${prize.position}-${prize.prize}-${prize.team?.id}-$index" },
+        ) { _, prize ->
+          val prizeTeamId = prize.team?.id
+          EventDetailPrizeTile(
+            prize = prize,
+            modifier = Modifier.width(148.dp),
+            onTeamClick = prizeTeamId?.let { teamId -> { onTeamSelected(teamId) } },
+          )
+        }
+      }
     }
   }
 }
@@ -729,7 +742,7 @@ private fun EventParticipantsRail(
 ) {
   if (teams.isNotEmpty()) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-      PrismSectionTitle(title = stringResource(Res.string.participants), preLabel = stringResource(Res.string.teams), modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
+      PrismSectionTitle(title = stringResource(Res.string.participants), modifier = Modifier.padding(horizontal = Prism.dimens.spacingM))
       LazyRow(
         state = listState,
         modifier = Modifier.fillMaxWidth(),

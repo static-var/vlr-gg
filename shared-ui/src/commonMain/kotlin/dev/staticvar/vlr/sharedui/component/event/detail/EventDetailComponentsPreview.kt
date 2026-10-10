@@ -13,10 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -42,12 +38,7 @@ import dev.staticvar.vlr.sharedui.component.event.rememberEventDetailContentFade
 @Composable
 internal fun EventDetailComponentsPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {
-    var grouping by remember { mutableStateOf(EventMatchGrouping.Status) }
     val event = sampleEventDetails()
-    val labels = eventFormattingLabels()
-    val groupedMatches = remember(grouping, labels) { event.matches.groupEventMatches(grouping, labels) }
-    var selectedGroup by remember(grouping) { mutableStateOf(groupedMatches.keys.firstOrNull()) }
-    val visibleMatches = selectedGroup?.let { group -> groupedMatches[group] }.orEmpty()
 
     Column(
       modifier = Modifier
@@ -82,17 +73,7 @@ internal fun EventDetailComponentsPreview(@PreviewParameter(PrismPreviewProvider
           )
         }
       }
-      EventMatchGroupSelector(
-        grouping = grouping,
-        groupNames = groupedMatches.keys.toList(),
-        selectedGroupName = selectedGroup,
-        onGroupingSelected = {
-          grouping = it
-          selectedGroup = null
-        },
-        onGroupSelected = { selectedGroup = it },
-      )
-      visibleMatches.take(1).forEach { match -> EventDetailMatchItem(match = match, onClick = {}) }
+      event.matches.take(1).forEach { match -> EventDetailMatchItem(match = match, onClick = {}) }
     }
   }
 }
@@ -139,7 +120,7 @@ internal fun EventDetailResultRowsPreview(@PreviewParameter(PrismPreviewProvider
         onClick = {},
       )
       EventDetailStandingItem(standing = sampleStanding())
-      EventDetailPrizeItem(prize = samplePrize(), onTeamClick = {})
+      EventDetailPrizeTile(prize = samplePrize(), modifier = Modifier.width(148.dp), onTeamClick = {})
     }
   }
 }
