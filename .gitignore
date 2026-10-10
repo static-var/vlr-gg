@@ -249,3 +249,6 @@ iosApp/VLRWidget/GeneratedBuildConfig.swift
 
 # Local design mocks
 /design-mocks/
+
+# Local task artifacts
+/.humanlayer/
