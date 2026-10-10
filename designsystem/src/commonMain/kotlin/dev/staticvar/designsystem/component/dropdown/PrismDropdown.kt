@@ -35,6 +35,10 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.frame.prismFrame
@@ -122,7 +126,13 @@ private fun PrismDropdownTrigger(
     modifier = Modifier
       .fillMaxWidth()
       .heightIn(min = Prism.dimens.controlHeight)
-      .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
+      .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+      .semantics(mergeDescendants = true) {
+        if (!style.showsLabel && label != null) {
+          contentDescription = label
+          stateDescription = selectedLabel
+        }
+      },
     color = style.triggerContainerColor(enabled = enabled),
     border = style.triggerBorder(expanded = expanded, enabled = enabled),
     frame = style.triggerFrame,
@@ -136,7 +146,7 @@ private fun PrismDropdownTrigger(
           .weight(1f)
           .padding(horizontal = Prism.dimens.spacingS),
       ) {
-        if (label != null) {
+        if (style.showsLabel && label != null) {
           Text(
             text = label,
             style = Prism.typography.caption,
@@ -147,7 +157,7 @@ private fun PrismDropdownTrigger(
         }
         Text(
           text = selectedLabel,
-          modifier = Modifier.padding(top = if (label == null) 0.dp else Prism.dimens.spacingXs),
+          modifier = Modifier.padding(top = if (style.showsLabel && label != null) Prism.dimens.spacingXs else 0.dp),
           style = Prism.typography.button,
           color = style.triggerContentColor(enabled = enabled),
           maxLines = 1,
@@ -163,6 +173,7 @@ private fun PrismDropdownTrigger(
       ) {
         Text(
           text = if (expanded) "^" else "v",
+          modifier = Modifier.clearAndSetSemantics {},
           style = Prism.typography.button,
           color = if (enabled) Prism.color.accent else Prism.color.captionColor,
         )

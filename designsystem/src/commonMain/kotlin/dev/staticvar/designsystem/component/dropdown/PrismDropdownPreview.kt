@@ -49,6 +49,13 @@ internal fun PrismDropdownPreview(@PreviewParameter(PrismPreviewProvider::class)
         onOptionSelected = { selectedOptionId = it.id },
         label = "GROUP MATCHES BY",
       )
+      PrismDropdown(
+        options = options,
+        selectedOptionId = selectedOptionId,
+        onOptionSelected = { selectedOptionId = it.id },
+        label = "Group matches by",
+        style = PrismDropdownStyle.Compact,
+      )
     }
   }
 }
