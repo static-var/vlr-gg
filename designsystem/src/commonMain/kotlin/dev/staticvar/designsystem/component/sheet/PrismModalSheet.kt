@@ -15,6 +15,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -61,6 +62,8 @@ private object PrismModalSheetConstants {
  *
  * Back and scrim taps request dismissal. Content scrolls within the safe viewport. [onCollapsed]
  * runs after the exit finishes and the dialog leaves composition, including the initial hidden state.
+ * Pass [scrollState] when content needs to scroll the body itself, such as while dragging a row;
+ * otherwise each opening starts at the top.
  */
 @Composable
 public fun PrismModalSheet(
@@ -76,6 +79,7 @@ public fun PrismModalSheet(
   scrimColor: Color = Prism.color.scrim.copy(alpha = PrismModalSheetConstants.ScrimAlpha),
   paneTitle: String? = null,
   onCollapsed: () -> Unit = {},
+  scrollState: ScrollState? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val visibility = remember { MutableTransitionState(false) }
@@ -106,6 +110,7 @@ public fun PrismModalSheet(
           contentColor = contentColor,
           scrimColor = scrimColor,
           title = paneTitle,
+          scrollState = scrollState,
           content = content,
         )
       }
@@ -125,6 +130,7 @@ private fun AnimatedVisibilityScope.PrismModalSheetContent(
   contentColor: Color,
   scrimColor: Color,
   title: String?,
+  scrollState: ScrollState?,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val density = LocalDensity.current
@@ -164,7 +170,7 @@ private fun AnimatedVisibilityScope.PrismModalSheetContent(
         style = PrismSheetStyle.Modal,
         color = color,
         contentColor = contentColor,
-        scrollState = rememberScrollState(),
+        scrollState = scrollState ?: rememberScrollState(),
         contentPadding = PaddingValues(
           start = Prism.dimens.spacingM,
           top = Prism.dimens.spacingM,
