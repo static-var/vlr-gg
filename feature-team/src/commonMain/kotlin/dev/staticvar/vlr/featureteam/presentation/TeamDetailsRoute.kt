@@ -64,7 +64,6 @@ import vlr.feature_team.generated.resources.no_team_details
 import vlr.feature_team.generated.resources.no_team_results
 import vlr.feature_team.generated.resources.no_upcoming_matches
 import vlr.feature_team.generated.resources.no_upcoming_team_fixtures
-import vlr.feature_team.generated.resources.players
 import vlr.feature_team.generated.resources.remove_team_favorite
 import vlr.feature_team.generated.resources.roster
 import vlr.feature_team.generated.resources.team_details
@@ -366,7 +365,7 @@ private fun LazyListScope.teamRosterItems(roster: List<TeamPlayer>, onPlayerSele
   if (roster.isEmpty()) return
 
   item(key = "roster-title") {
-    PrismSectionTitle(title = stringResource(Res.string.roster), preLabel = stringResource(Res.string.players))
+    PrismSectionTitle(title = stringResource(Res.string.roster))
   }
   items(roster, key = { "player:${it.id}" }) { player ->
     TeamRosterItem(player = player, onPlayerSelected = onPlayerSelected)

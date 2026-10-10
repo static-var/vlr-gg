@@ -2,11 +2,9 @@
   <string name="match_event_group_by">Agrupar por</string>
   <string name="match_event_tbd">TBD</string>
   <string name="match_event_matches">Partidos</string>
-  <string name="match_event_schedule">calendario</string>
   <string name="match_event_group_matches_by">AGRUPAR PARTIDOS POR</string>
   <string name="match_event_open_bracket">Abrir cuadro</string>
   <string name="match_event_head_to_head">Cara a cara</string>
-  <string name="match_event_history">historial</string>
   <string name="match_event_scores_hidden">Marcadores ocultos</string>
   <string name="match_event_match">Partido</string>
   <string name="match_event_unknown">Desconocido</string>
@@ -23,14 +21,10 @@
   <string name="match_event_teams">EQUIPOS</string>
   <string name="match_event_map_breakdown_unavailable">Desglose de mapas no disponible.</string>
   <string name="match_event_combined_stats">Estadísticas combinadas</string>
-  <string name="match_event_all_maps">Todos los mapas</string>
-  <string name="match_event_group">GRUPO</string>
-  <string name="match_event_map_upper">MAPA</string>
   <string name="match_event_match_day">DÍA DEL PARTIDO</string>
   <string name="match_event_time_tba">Hora por anunciar</string>
   <string name="match_event_format">FORMATO</string>
   <string name="match_event_maps">Mapas</string>
-  <string name="match_event_breakdown">desglose</string>
   <string name="match_event_player">Jugador</string>
   <string name="match_event_agent">Agente</string>
   <string name="match_event_acs">ACS</string>

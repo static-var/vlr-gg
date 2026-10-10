@@ -2,11 +2,9 @@
   <string name="match_event_group_by">분류 기준</string>
   <string name="match_event_tbd">TBD</string>
   <string name="match_event_matches">경기</string>
-  <string name="match_event_schedule">일정</string>
   <string name="match_event_group_matches_by">그룹 경기 분류 기준</string>
   <string name="match_event_open_bracket">대진표 열기</string>
   <string name="match_event_head_to_head">상대 전적</string>
-  <string name="match_event_history">기록</string>
   <string name="match_event_scores_hidden">점수 숨김</string>
   <string name="match_event_match">경기</string>
   <string name="match_event_unknown">알 수 없음</string>
@@ -23,14 +21,10 @@
   <string name="match_event_teams">팀</string>
   <string name="match_event_map_breakdown_unavailable">맵별 세부 정보를 사용할 수 없습니다.</string>
   <string name="match_event_combined_stats">종합 통계</string>
-  <string name="match_event_all_maps">모든 맵</string>
-  <string name="match_event_group">그룹</string>
-  <string name="match_event_map_upper">맵</string>
   <string name="match_event_match_day">경기일</string>
   <string name="match_event_time_tba">시간 추후 발표</string>
   <string name="match_event_format">경기 방식</string>
   <string name="match_event_maps">맵</string>
-  <string name="match_event_breakdown">세부 정보</string>
   <string name="match_event_player">선수</string>
   <string name="match_event_agent">요원</string>
   <string name="match_event_acs">ACS</string>

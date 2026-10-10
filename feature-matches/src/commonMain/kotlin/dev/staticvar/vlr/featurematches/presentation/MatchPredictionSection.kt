@@ -84,8 +84,8 @@ internal fun MatchPredictionSection(match: MatchDetails, isLoading: Boolean, has
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
     PrismSectionTitle(
       title = stringResource(Res.string.win_probability),
-      preLabel = if (match.event.status?.uppercase() in setOf("UPCOMING", "TBD")) {
-        stringResource(Res.string.before_the_match)
+      trailing = if (match.event.status?.uppercase() in setOf("UPCOMING", "TBD")) {
+        { Text(stringResource(Res.string.before_the_match).uppercase()) }
       } else {
         null
       },

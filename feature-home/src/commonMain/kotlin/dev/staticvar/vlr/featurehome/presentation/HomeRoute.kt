@@ -34,6 +34,7 @@ import dev.staticvar.designsystem.component.icon.PrismIconSize
 import dev.staticvar.designsystem.component.icon.PrismIconStyle
 import dev.staticvar.designsystem.component.icon.PrismIconTint
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.designsystem.component.section.PrismSectionTitleStyle
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.EventPreview
@@ -349,7 +350,7 @@ private fun <T : DirectFavorite> androidx.compose.foundation.lazy.LazyListScope.
     PrismSectionTitle(
       title = stringResource(title),
       modifier = Modifier.padding(horizontal = Prism.dimens.spacingM),
-      showDivider = false,
+      style = PrismSectionTitleStyle.Subtle,
     )
   }
   items(

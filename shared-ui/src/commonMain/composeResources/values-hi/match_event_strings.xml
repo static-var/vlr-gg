@@ -2,11 +2,9 @@
   <string name="match_event_group_by">समूह का आधार</string>
   <string name="match_event_tbd">TBD</string>
   <string name="match_event_matches">मैच</string>
-  <string name="match_event_schedule">शेड्यूल</string>
   <string name="match_event_group_matches_by">मैचों को इनके अनुसार समूहित करें</string>
   <string name="match_event_open_bracket">ब्रैकेट खोलें</string>
   <string name="match_event_head_to_head">आमने-सामने</string>
-  <string name="match_event_history">इतिहास</string>
   <string name="match_event_scores_hidden">स्कोर छिपे हुए हैं</string>
   <string name="match_event_match">मैच</string>
   <string name="match_event_unknown">अज्ञात</string>
@@ -23,14 +21,10 @@
   <string name="match_event_teams">टीमें</string>
   <string name="match_event_map_breakdown_unavailable">मैप का विवरण उपलब्ध नहीं है।</string>
   <string name="match_event_combined_stats">संयुक्त आँकड़े</string>
-  <string name="match_event_all_maps">सभी मैप</string>
-  <string name="match_event_group">समूह</string>
-  <string name="match_event_map_upper">मैप</string>
   <string name="match_event_match_day">मैच का दिन</string>
   <string name="match_event_time_tba">समय की घोषणा बाद में की जाएगी</string>
   <string name="match_event_format">फ़ॉर्मेट</string>
   <string name="match_event_maps">मैप</string>
-  <string name="match_event_breakdown">विवरण</string>
   <string name="match_event_player">खिलाड़ी</string>
   <string name="match_event_agent">एजेंट</string>
   <string name="match_event_acs">ACS</string>

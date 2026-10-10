@@ -2,11 +2,9 @@
   <string name="match_event_group_by">Gruplama ölçütü</string>
   <string name="match_event_tbd">TBD</string>
   <string name="match_event_matches">Maçlar</string>
-  <string name="match_event_schedule">program</string>
   <string name="match_event_group_matches_by">MAÇLARI ŞUNA GÖRE GRUPLA</string>
   <string name="match_event_open_bracket">Braketi aç</string>
   <string name="match_event_head_to_head">Karşı karşıya</string>
-  <string name="match_event_history">geçmiş</string>
   <string name="match_event_scores_hidden">Skorlar gizli</string>
   <string name="match_event_match">Maç</string>
   <string name="match_event_unknown">Bilinmiyor</string>
@@ -23,14 +21,10 @@
   <string name="match_event_teams">TAKIMLAR</string>
   <string name="match_event_map_breakdown_unavailable">Harita dökümü kullanılamıyor.</string>
   <string name="match_event_combined_stats">Birleşik istatistikler</string>
-  <string name="match_event_all_maps">Tüm haritalar</string>
-  <string name="match_event_group">GRUP</string>
-  <string name="match_event_map_upper">HARİTA</string>
   <string name="match_event_match_day">MAÇ GÜNÜ</string>
   <string name="match_event_time_tba">Saat daha sonra duyurulacak</string>
   <string name="match_event_format">FORMAT</string>
   <string name="match_event_maps">Haritalar</string>
-  <string name="match_event_breakdown">döküm</string>
   <string name="match_event_player">Oyuncu</string>
   <string name="match_event_agent">Ajan</string>
   <string name="match_event_acs">ACS</string>
