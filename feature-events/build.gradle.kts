@@ -47,6 +47,7 @@ kotlin {
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.coroutines.core)
         implementation(libs.koin.core)
+        implementation(libs.kotlinx.datetime)
         implementation(libs.koin.core.viewmodel)
         api(libs.lifecycle.viewmodel.core)
         implementation(libs.lifecycle.runtime)
@@ -61,6 +62,8 @@ kotlin {
       dependencies {
         implementation(kotlin("test"))
         implementation(libs.coroutine.test)
+        implementation(libs.multiplatform.settings)
+        implementation(libs.multiplatform.settings.test)
       }
     }
 
