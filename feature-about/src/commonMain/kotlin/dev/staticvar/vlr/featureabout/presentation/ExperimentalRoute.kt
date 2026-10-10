@@ -24,7 +24,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.card.PrismCard
-import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.selection.PrismSegmentedButtonOption
 import dev.staticvar.designsystem.component.selection.PrismSegmentedButtons
@@ -103,14 +102,12 @@ private fun LiveUpdatesSettings(controller: LiveMatchNotificationSettingsControl
   val hasLiveActivities = !access.requiresNotificationPermission
   val remindersOnly = access.supportsMatchAlerts && !access.supportsLiveUpdates
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-    Text(
-      stringResource(when {
+    PrismSectionTitle(
+      title = stringResource(when {
         hasLiveActivities -> Res.string.live_activities
         access.supportsLiveUpdates -> Res.string.live_match_updates
         else -> Res.string.match_alerts
       }),
-      style = Prism.typography.sectionTitle,
-      color = Prism.color.contentPrimary,
     )
     Text(
       stringResource(when {
@@ -123,7 +120,7 @@ private fun LiveUpdatesSettings(controller: LiveMatchNotificationSettingsControl
       color = Prism.color.bodyColor,
     )
     if (!remindersOnly) {
-      NotificationPreferenceCard(
+      SettingsPreferenceCard(
         title = stringResource(Res.string.live_activity_favorites),
         description = stringResource(Res.string.live_activity_favorites_description),
         checked = preferences.enabled,
@@ -135,7 +132,7 @@ private fun LiveUpdatesSettings(controller: LiveMatchNotificationSettingsControl
       LiveActivityStyleCard(preferences.liveActivityStyle, controller::setLiveActivityStyle)
     }
     if (access.supportsLiveUpdates && access.requiresNotificationPermission) {
-      NotificationPreferenceCard(
+      SettingsPreferenceCard(
         title = stringResource(Res.string.show_score_in_status_bar),
         description = stringResource(Res.string.show_score_in_status_bar_description),
         checked = preferences.showScoreInStatusBar,
@@ -219,41 +216,18 @@ private fun CleanupSettingsCard(
   deletedCacheRecords: Long,
   onAutoCleanupChanged: (Boolean) -> Unit,
 ) {
-  val autoCleanupLabel = stringResource(Res.string.auto_cleanup)
-  PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
-    Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
-      ) {
-        Text(
-          text = stringResource(Res.string.auto_cleanup),
-          modifier = Modifier.weight(1f),
-          style = Prism.typography.bodyLarge,
-          color = Prism.color.contentPrimary,
-        )
-        PrismSwitch(
-          checked = autoCleanupEnabled,
-          onCheckedChange = onAutoCleanupChanged,
-          modifier = Modifier.semantics { contentDescription = autoCleanupLabel },
-        )
-      }
-      Text(
-        text = stringResource(Res.string.remove_cached_items_that_haven_t_been_refreshed_in_30_days),
-        style = Prism.typography.bodySmall,
-        color = Prism.color.bodyColor,
-      )
-      Text(
-        text = pluralStringResource(
-          Res.plurals.deleted_cached_items,
-          deletedCacheRecords.coerceIn(0L, Int.MAX_VALUE.toLong()).toInt(),
-          deletedCacheRecords.toString(),
-        ),
-        style = Prism.typography.caption,
-        color = Prism.color.captionColor,
-      )
-    }
-  }
+  SettingsPreferenceCard(
+    title = stringResource(Res.string.auto_cleanup),
+    description = stringResource(Res.string.remove_cached_items_that_haven_t_been_refreshed_in_30_days),
+    checked = autoCleanupEnabled,
+    enabled = true,
+    onChange = onAutoCleanupChanged,
+    supportingText = pluralStringResource(
+      Res.plurals.deleted_cached_items,
+      deletedCacheRecords.coerceIn(0L, Int.MAX_VALUE.toLong()).toInt(),
+      deletedCacheRecords.toString(),
+    ),
+  )
 }
 
 @Composable
@@ -262,18 +236,22 @@ private fun PermissionMessage(message: String) {
 }
 
 @Composable
-private fun NotificationPreferenceCard(
+private fun SettingsPreferenceCard(
   title: String,
   description: String,
   checked: Boolean,
   enabled: Boolean,
   onChange: (Boolean) -> Unit,
+  supportingText: String? = null,
 ) {
   PrismCard(modifier = Modifier.fillMaxWidth()) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
       Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
         Text(title, style = Prism.typography.bodyLarge, color = Prism.color.contentPrimary)
         Text(description, style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
+        if (supportingText != null) {
+          Text(supportingText, style = Prism.typography.caption, color = Prism.color.captionColor)
+        }
       }
       PrismSwitch(checked, onChange, modifier = Modifier.semantics { contentDescription = title }, enabled = enabled)
     }
