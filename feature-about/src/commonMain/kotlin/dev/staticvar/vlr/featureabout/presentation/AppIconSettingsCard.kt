@@ -68,7 +68,7 @@ import vlr.feature_about.generated.resources.app_icon_ticket
 import vlr.feature_about.generated.resources.app_icon_update_failed
 
 @Composable
-internal fun AppIconSettingsCard() {
+internal fun AppIconSettingsSection() {
   if (LocalInspectionMode.current) {
     AppIconSettingsCardContent(
       selectedIcon = AppIcon.Default,
@@ -131,46 +131,46 @@ private fun AppIconSettingsCardContent(
   selectionFailed: Boolean,
   onSelect: (AppIcon) -> Unit,
 ) {
-  PrismCard(
-    modifier = Modifier.fillMaxWidth(),
-    style = PrismCardStyle.Outlined,
-  ) {
-    Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-      Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs)) {
-        PrismSectionTitle(title = stringResource(Res.string.app_icon))
-        Text(
-          text = stringResource(Res.string.app_icon_choose_description),
-          style = Prism.typography.bodySmall,
-          color = Prism.color.bodyColor,
-        )
-      }
-      Column(
-        modifier = Modifier.fillMaxWidth().selectableGroup(),
-        verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-      ) {
-        AppIcon.entries.chunked(3).forEach { icons ->
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-          ) {
-            icons.forEach { icon ->
-              AppIconOption(
-                icon = icon,
-                selected = icon == selectedIcon,
-                enabled = pendingIcon == null,
-                onSelect = { onSelect(icon) },
-                modifier = Modifier.weight(1f),
-              )
+  Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
+    PrismSectionTitle(title = stringResource(Res.string.app_icon))
+    Text(
+      text = stringResource(Res.string.app_icon_choose_description),
+      style = Prism.typography.bodySmall,
+      color = Prism.color.bodyColor,
+    )
+    PrismCard(
+      modifier = Modifier.fillMaxWidth(),
+      style = PrismCardStyle.Outlined,
+    ) {
+      Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
+        Column(
+          modifier = Modifier.fillMaxWidth().selectableGroup(),
+          verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+        ) {
+          AppIcon.entries.chunked(3).forEach { icons ->
+            Row(
+              modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+            ) {
+              icons.forEach { icon ->
+                AppIconOption(
+                  icon = icon,
+                  selected = icon == selectedIcon,
+                  enabled = pendingIcon == null,
+                  onSelect = { onSelect(icon) },
+                  modifier = Modifier.weight(1f),
+                )
+              }
             }
           }
         }
-      }
-      if (selectionFailed) {
-        Text(
-          text = stringResource(Res.string.app_icon_update_failed),
-          style = Prism.typography.bodySmall,
-          color = Prism.color.danger,
-        )
+        if (selectionFailed) {
+          Text(
+            text = stringResource(Res.string.app_icon_update_failed),
+            style = Prism.typography.bodySmall,
+            color = Prism.color.danger,
+          )
+        }
       }
     }
   }

@@ -91,6 +91,7 @@ public fun AppearanceRoute(
         .padding(bottom = Prism.dimens.spacingL),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     ) {
+      PrismSectionTitle(title = stringResource(Res.string.appearance))
       AppearanceSettingsCard(
         isDark = isDark,
         family = family,
@@ -99,7 +100,13 @@ public fun AppearanceRoute(
         onFamilySelected = onFamilySelected,
         onFlavourSelected = onFlavourSelected,
       )
-      AppIconSettingsCard()
+      AppIconSettingsSection()
+      PrismSectionTitle(title = stringResource(Res.string.mascot))
+      Text(
+        stringResource(Res.string.mascot_description),
+        style = Prism.typography.bodySmall,
+        color = Prism.color.bodyColor,
+      )
       MascotSettingsCard(
         mascot = mascot,
         mascotVisitFrequency = mascotVisitFrequency,
@@ -121,7 +128,6 @@ private fun AppearanceSettingsCard(
 ) {
   PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
     Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-      PrismSectionTitle(title = stringResource(Res.string.appearance))
       PrismDropdown(
         label = stringResource(Res.string.theme),
         modifier = Modifier.fillMaxWidth(),
@@ -161,12 +167,6 @@ private fun MascotSettingsCard(
     style = PrismCardStyle.Outlined,
   ) {
     Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-      PrismSectionTitle(title = stringResource(Res.string.mascot))
-      Text(
-        stringResource(Res.string.mascot_description),
-        style = Prism.typography.bodySmall,
-        color = Prism.color.bodyColor,
-      )
       PrismDropdown(
         label = stringResource(Res.string.companion),
         modifier = Modifier.fillMaxWidth(),
