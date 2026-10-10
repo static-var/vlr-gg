@@ -199,11 +199,10 @@ INSERT INTO event_standings(
 )
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+-- Rows are replaced in VLR's ranked order on every refresh, so insertion order keeps
+-- VLR's tiebreakers (head-to-head, round differential) that wins alone cannot express.
 getEventStandings:
-SELECT * FROM event_standings WHERE event_id = :eventId ORDER BY group_name, wins DESC, map_difference DESC;
-
-getEventStandingsByGroup:
-SELECT * FROM event_standings WHERE event_id = :eventId AND group_name = :groupName ORDER BY wins DESC, map_difference DESC;
+SELECT * FROM event_standings WHERE event_id = :eventId ORDER BY id;
 
 deleteEventStandings:
 DELETE FROM event_standings WHERE event_id = :eventId;

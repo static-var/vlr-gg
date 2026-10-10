@@ -137,6 +137,27 @@ class EventQueriesTest {
   }
 
   @Test
+  fun `standings keep vlr ranking order`() {
+    database.eventsQueries.insertEvent(createTestEvent("event1"))
+    // VLR ranks NRG first on head-to-head despite equal wins, and lists stages in page order.
+    listOf(
+      Triple("Swiss Stage", "NRG", 8L),
+      Triple("Swiss Stage", "G2", 9L),
+      Triple("Group Alpha", "FNATIC", 10L),
+    ).forEach { (group, team, mapDifference) ->
+      database.eventsQueries.insertEventStanding(
+        event_id = "event1", team_name = team, team_logo_url = "", team_country = "",
+        group_name = group, wins = 3, losses = 1, ties = 0, map_difference = mapDifference,
+        round_difference = 0, round_delta = 0,
+      )
+    }
+
+    val teams = database.eventsQueries.getEventStandings("event1").executeAsList().map { it.team_name }
+
+    assertEquals(listOf("NRG", "G2", "FNATIC"), teams)
+  }
+
+  @Test
   fun `favorites add and remove`() {
     val event = createTestEvent("event1")
     database.eventsQueries.insertEvent(event)
