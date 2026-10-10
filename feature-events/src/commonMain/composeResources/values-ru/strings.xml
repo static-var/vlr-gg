@@ -61,9 +61,6 @@
     <string name="prizes_option_description">Призовые по местам</string>
     <string name="standings_option_description">Результаты групп и разницы</string>
     <string name="matches_option_description">Все матчи по датам</string>
-    <string name="move_section_up">Переместить «%1$s» выше</string>
-    <string name="move_section_down">Переместить «%1$s» ниже</string>
-    <string name="reorder_section">Изменить порядок «%1$s»</string>
     <string name="section_unavailable">Нет данных для этого турнира</string>
     <string name="today">Сегодня</string>
     <string name="jump_to_todays_matches">Перейти к сегодняшним матчам</string>

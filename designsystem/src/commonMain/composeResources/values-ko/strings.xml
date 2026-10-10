@@ -13,4 +13,7 @@
   <string name="prism_loader_merge">병합</string>
   <string name="prism_loader_render">표시</string>
   <string name="prism_loader_label_phase">%1$s · %2$s</string>
+  <string name="prism_reorder_item">%1$s 순서 변경</string>
+  <string name="prism_move_item_up">%1$s 위로 이동</string>
+  <string name="prism_move_item_down">%1$s 아래로 이동</string>
 </resources>

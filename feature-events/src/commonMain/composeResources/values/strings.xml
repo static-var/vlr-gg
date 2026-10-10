@@ -61,9 +61,6 @@
     <string name="prizes_option_description">Prize money by placement</string>
     <string name="standings_option_description">Group records and differences</string>
     <string name="matches_option_description">Every match by date</string>
-    <string name="move_section_up">Move %1$s up</string>
-    <string name="move_section_down">Move %1$s down</string>
-    <string name="reorder_section">Reorder %1$s</string>
     <string name="section_unavailable">No data for this event</string>
     <string name="today">Today</string>
     <string name="jump_to_todays_matches">Jump to today's matches</string>

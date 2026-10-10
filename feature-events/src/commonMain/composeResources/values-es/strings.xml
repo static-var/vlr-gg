@@ -61,9 +61,6 @@
     <string name="prizes_option_description">Premios por posición</string>
     <string name="standings_option_description">Récords de grupo y diferencias</string>
     <string name="matches_option_description">Todos los partidos por fecha</string>
-    <string name="move_section_up">Subir %1$s</string>
-    <string name="move_section_down">Bajar %1$s</string>
-    <string name="reorder_section">Reordenar %1$s</string>
     <string name="section_unavailable">Sin datos para este evento</string>
     <string name="today">Hoy</string>
     <string name="jump_to_todays_matches">Ir a los partidos de hoy</string>

@@ -61,9 +61,6 @@
     <string name="prizes_option_description">Premiação por colocação</string>
     <string name="standings_option_description">Campanhas de grupo e saldos</string>
     <string name="matches_option_description">Todas as partidas por data</string>
-    <string name="move_section_up">Mover %1$s para cima</string>
-    <string name="move_section_down">Mover %1$s para baixo</string>
-    <string name="reorder_section">Reordenar %1$s</string>
     <string name="section_unavailable">Sem dados para este evento</string>
     <string name="today">Hoje</string>
     <string name="jump_to_todays_matches">Ir para as partidas de hoje</string>

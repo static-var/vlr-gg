@@ -61,9 +61,6 @@
     <string name="prizes_option_description">Preisgeld nach Platzierung</string>
     <string name="standings_option_description">Gruppenbilanz und Differenzen</string>
     <string name="matches_option_description">Alle Matches nach Datum</string>
-    <string name="move_section_up">%1$s nach oben verschieben</string>
-    <string name="move_section_down">%1$s nach unten verschieben</string>
-    <string name="reorder_section">%1$s neu anordnen</string>
     <string name="section_unavailable">Keine Daten für dieses Event</string>
     <string name="today">Heute</string>
     <string name="jump_to_todays_matches">Zu den heutigen Matches springen</string>

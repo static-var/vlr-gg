@@ -13,4 +13,7 @@
   <string name="prism_loader_merge">ОБЪЕДИНЕНИЕ</string>
   <string name="prism_loader_render">ОТОБРАЖЕНИЕ</string>
   <string name="prism_loader_label_phase">%1$s · %2$s</string>
+  <string name="prism_reorder_item">Изменить порядок «%1$s»</string>
+  <string name="prism_move_item_up">Переместить «%1$s» выше</string>
+  <string name="prism_move_item_down">Переместить «%1$s» ниже</string>
 </resources>
