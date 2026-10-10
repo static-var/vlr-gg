@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -459,51 +460,45 @@ private fun LazyListScope.matchDetailItems(
   onMatchSelected: (String) -> Unit,
   onVideoSelected: (String) -> Unit,
 ) {
-  if (preferences.showPrediction && (match.prediction != null || match.canRequestPrediction)) {
-    item(key = "prediction") {
-      MatchPredictionSection(
+  val rows = buildMatchDetailsRows(match, preferences, showBreakdownEmpty)
+  items(items = rows, key = MatchDetailsRow::key, contentType = { it }) { row ->
+    when (row) {
+      MatchDetailsRow.Prediction -> MatchPredictionSection(
         match = match,
         isLoading = isPredictionLoading,
         hasError = predictionError,
         onRetry = onPredictionRetry,
       )
-    }
-  }
-  if (showBreakdownEmpty) {
-    item {
-      SharedEmptyState(
+
+      MatchDetailsRow.BreakdownEmpty -> SharedEmptyState(
         artwork = EmptyStateArtwork.NoLiveMatches,
         title = stringResource(Res.string.no_match_breakdown_yet),
         message = stringResource(Res.string.map_statistics_have_not_been_published_for_this_match),
         compact = true,
       )
-    }
-  }
-  if (preferences.showBreakdown && match.matchData.isNotEmpty()) {
-    item {
-      MatchDetailMapsItem(
+
+      MatchDetailsRow.Breakdown -> MatchDetailMapsItem(
         maps = match.matchData,
         selectedMapIndex = selectedMapIndex,
         onMapSelected = onMapSelected,
         onPlayerSelected = onPlayerSelected,
         onMenuExpandedChange = onMapMenuExpandedChange,
       )
-    }
-  }
-  if (preferences.showHeadToHead && match.head2head.isNotEmpty()) {
-    item {
-      MatchDetailHeadToHeadItem(
+
+      MatchDetailsRow.HeadToHead -> MatchDetailHeadToHeadItem(
         encounters = match.head2head,
         onEncounterSelected = onMatchSelected,
       )
+
+      MatchDetailsRow.MediaTitle -> PrismSectionTitle(
+        title = stringResource(Res.string.streams_vods),
+        preLabel = stringResource(Res.string.media),
+      )
+
+      MatchDetailsRow.Media -> MatchDetailMediaRow(videos = match.videos, onVideoSelected = onVideoSelected)
+
+      MatchDetailsRow.BottomSpacer -> Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth().height(88.dp))
     }
-  }
-  if (preferences.showMedia && (match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty())) {
-    item { PrismSectionTitle(title = stringResource(Res.string.streams_vods), preLabel = stringResource(Res.string.media)) }
-    item { MatchDetailMediaRow(videos = match.videos, onVideoSelected = onVideoSelected) }
-  }
-  item {
-    Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth().height(88.dp))
   }
 }
 

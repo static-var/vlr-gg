@@ -20,7 +20,8 @@
     <string name="view_upcoming">예정 경기 보기</string>
     <string name="refresh">새로고침</string>
     <string name="match_options">경기 옵션</string>
-    <string name="choose_what_you_see_in_match_details">경기 상세에서 표시할 내용을 선택하세요.</string>
+    <string name="choose_and_order_match_sections">경기 헤더 아래에 표시할 섹션과 순서를 선택하세요.</string>
+    <string name="section_unavailable">이 경기에 대한 데이터 없음</string>
     <string name="done">완료</string>
     <string name="breakdown">상세 분석</string>
     <string name="match_stats_and_player_table">경기 통계 및 선수 표</string>

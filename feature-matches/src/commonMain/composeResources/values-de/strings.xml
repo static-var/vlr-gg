@@ -20,7 +20,8 @@
     <string name="view_upcoming">Bevorstehende anzeigen</string>
     <string name="refresh">Aktualisieren</string>
     <string name="match_options">Matchoptionen</string>
-    <string name="choose_what_you_see_in_match_details">Wähle aus, was du in den Matchdetails sehen möchtest.</string>
+    <string name="choose_and_order_match_sections">Wähle aus, welche Bereiche unter dem Matchkopf erscheinen und in welcher Reihenfolge.</string>
+    <string name="section_unavailable">Keine Daten für dieses Match</string>
     <string name="done">Fertig</string>
     <string name="breakdown">Auswertung</string>
     <string name="match_stats_and_player_table">Matchstatistiken und Spielertabelle</string>

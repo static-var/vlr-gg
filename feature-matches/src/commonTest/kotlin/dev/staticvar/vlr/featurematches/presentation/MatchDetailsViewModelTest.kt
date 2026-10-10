@@ -10,6 +10,7 @@ import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
+import dev.staticvar.vlr.core.settings.MatchDetailsSection
 import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.model.EventInfo
@@ -406,6 +407,21 @@ class MatchDetailsViewModelTest {
     assertEquals(listOf("match-1"), repository.refreshPredictionRequests)
     assertEquals(listOf("match-1"), repository.refreshDetailRequests)
     assertEquals(true, viewModel.uiState.value.preferences.showPrediction)
+  }
+
+  @Test
+  fun reorderingSectionsDoesNotRequestAPrediction() = runTest(dispatcher) {
+    val preferences = MatchDetailsPreferencesRepository(MapSettings())
+    val repository = FakeMatchRepository(matchDetails("match-1", status = "upcoming"))
+    val viewModel = createViewModel(repository, preferences)
+    advanceUntilIdle()
+    val requests = repository.refreshPredictionRequests.toList()
+
+    viewModel.setPreferences(preferences.preferences.value.moved(MatchDetailsSection.Prediction, 3))
+    advanceUntilIdle()
+
+    assertEquals(requests, repository.refreshPredictionRequests)
+    assertEquals(MatchDetailsSection.Prediction, viewModel.uiState.value.preferences.sectionOrder.last())
   }
 
   private fun createViewModel(

@@ -20,7 +20,8 @@
     <string name="view_upcoming">Ver próximos partidos</string>
     <string name="refresh">Actualizar</string>
     <string name="match_options">Opciones del partido</string>
-    <string name="choose_what_you_see_in_match_details">Elige qué quieres ver en los detalles del partido.</string>
+    <string name="choose_and_order_match_sections">Elige qué secciones aparecen bajo la cabecera del partido y en qué orden.</string>
+    <string name="section_unavailable">Sin datos para este partido</string>
     <string name="done">Listo</string>
     <string name="breakdown">Desglose</string>
     <string name="match_stats_and_player_table">Estadísticas del partido y tabla de jugadores</string>

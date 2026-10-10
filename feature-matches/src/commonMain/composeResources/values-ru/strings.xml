@@ -20,7 +20,8 @@
     <string name="view_upcoming">Показать предстоящие</string>
     <string name="refresh">Обновить</string>
     <string name="match_options">Параметры матча</string>
-    <string name="choose_what_you_see_in_match_details">Выберите, что показывать в подробностях матча.</string>
+    <string name="choose_and_order_match_sections">Выберите, какие разделы показывать под шапкой матча и в каком порядке.</string>
+    <string name="section_unavailable">Нет данных для этого матча</string>
     <string name="done">Готово</string>
     <string name="breakdown">Разбор</string>
     <string name="match_stats_and_player_table">Статистика матча и таблица игроков</string>
