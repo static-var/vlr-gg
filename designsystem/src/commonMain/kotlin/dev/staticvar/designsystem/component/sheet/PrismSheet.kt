@@ -80,7 +80,7 @@ public fun PrismSheet(
         )
         Row(
           modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.End,
+          horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS, Alignment.End),
           verticalAlignment = Alignment.CenterVertically,
           content = footer,
         )
