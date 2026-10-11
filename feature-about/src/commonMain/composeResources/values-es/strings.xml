@@ -114,6 +114,14 @@
     <string name="live_activity_favorites_description">Sigue tus partidas favoritas, incluidas las partidas de tus eventos favoritos.</string>
     <string name="show_score_in_status_bar">Mostrar resultado en la barra de estado</string>
     <string name="show_score_in_status_bar_description">Muestra el resultado en directo en la barra de estado. Desactívalo para mantener los resultados en el panel de notificaciones.</string>
+    <string name="live_activity_style">Estilo de la actividad en directo</string>
+    <string name="live_activity_style_description">Los cambios se aplican a las actividades en directo que ya están en tu pantalla de bloqueo.</string>
+    <string name="live_activity_style_classic">Clásico</string>
+    <string name="live_activity_style_glance">Vistazo</string>
+    <string name="live_activity_style_scoreboard">Marcador</string>
+    <string name="live_activity_style_classic_description">Resultado grande del mapa actual con el progreso de rondas de cada mapa.</string>
+    <string name="live_activity_style_glance_description">Siglas de los equipos y resultados por mapa de un vistazo, con la imagen del mapa actual.</string>
+    <string name="live_activity_style_scoreboard_description">Siglas de los equipos y resultados por mapa en filas, con el progreso de rondas de cada mapa.</string>
     <string name="live_activities_disabled">Las actividades en directo están desactivadas en los ajustes del sistema.</string>
     <string name="notification_access_denied">Las notificaciones están desactivadas. Puedes permitirlas en los ajustes del sistema. Las actividades en directo tienen un ajuste independiente.</string>
     <string name="notification_access_error">No se pudo comprobar ni solicitar el permiso para enviar notificaciones. Vuelve a intentarlo.</string>

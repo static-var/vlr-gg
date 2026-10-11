@@ -34,6 +34,35 @@ class LiveMatchNotificationSettingsTest {
   }
 
   @Test
+  fun liveActivityStyleRestoresUnknownValuesAsClassicAndPersistsChoices() {
+    val storage = MapSettings()
+    assertEquals(LiveActivityStyle.Classic, LiveMatchNotificationPreferencesRepository(storage).preferences.value.liveActivityStyle)
+    storage.putString("notifications.liveActivityStyle", "retired-style")
+    assertEquals(LiveActivityStyle.Classic, LiveMatchNotificationPreferencesRepository(storage).preferences.value.liveActivityStyle)
+
+    LiveMatchNotificationPreferencesRepository(storage).setLiveActivityStyle(LiveActivityStyle.Glance)
+
+    assertEquals("glance", storage.getStringOrNull("notifications.liveActivityStyle"))
+    assertEquals(LiveActivityStyle.Glance, LiveMatchNotificationPreferencesRepository(storage).preferences.value.liveActivityStyle)
+  }
+
+  @Test
+  fun liveActivityStyleChangesOnlyWhenThePlatformSupportsStyles() {
+    val provider = FakeProvider()
+    val repository = LiveMatchNotificationPreferencesRepository(MapSettings())
+    LiveMatchNotificationSettingsController(repository, provider).setLiveActivityStyle(LiveActivityStyle.Scoreboard)
+    assertEquals(LiveActivityStyle.Classic, repository.preferences.value.liveActivityStyle)
+
+    provider.stylesSupported = true
+    val controller = LiveMatchNotificationSettingsController(repository, provider)
+    controller.setLiveActivityStyle(LiveActivityStyle.Scoreboard)
+
+    assertTrue(controller.access.value.supportsLiveActivityStyles)
+    assertEquals(LiveActivityStyle.Scoreboard, controller.preferences.value.liveActivityStyle)
+    assertEquals(0, provider.requests)
+  }
+
+  @Test
   fun statusBarScoreChoiceDoesNotRequestPermissionOrChangeFavorites() {
     val provider = FakeProvider()
     val repository = LiveMatchNotificationPreferencesRepository(MapSettings())
@@ -200,6 +229,7 @@ private class FakeProvider : NotificationPermissionProvider {
   var matchAlertsSupported = false
   var supported = true
   var requiresPermission = true
+  var stylesSupported = false
   var activitiesEnabled: Boolean? = true
   var reads = 0
   var requests = 0
@@ -212,6 +242,7 @@ private class FakeProvider : NotificationPermissionProvider {
   override fun supportsLiveUpdates(): Boolean = supported
   override fun supportsMatchAlerts(): Boolean = matchAlertsSupported
   override fun requiresNotificationPermission(): Boolean = requiresPermission
+  override fun supportsLiveActivityStyles(): Boolean = stylesSupported
   override fun areLiveActivitiesEnabled(): Boolean? = activitiesEnabled
   override fun readNotificationAuthorization(onResult: (NotificationAuthorization) -> Unit) {
     reads++

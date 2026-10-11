@@ -13,6 +13,10 @@ final class IosLiveActivityPermissionProvider: NSObject, NotificationPermissionP
         return false
     }
 
+    func supportsLiveActivityStyles() -> Bool {
+        supportsLiveUpdates()
+    }
+
     func requiresNotificationPermission() -> Bool {
         false
     }

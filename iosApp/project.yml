@@ -170,6 +170,7 @@ targets:
       - path: VLRWidget/VLRWidgetRefresh.swift
       - path: VLRWidget/UpcomingMatchesWidget.swift
       - path: VLRWidget/MatchLiveActivity.swift
+      - path: VLRWidget/MatchLiveActivityStyles.swift
       - path: VLRWidget/Localizable.xcstrings
         buildPhase: resources
       - path: WidgetShared

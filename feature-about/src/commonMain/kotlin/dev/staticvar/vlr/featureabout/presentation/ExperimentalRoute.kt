@@ -26,9 +26,12 @@ import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.designsystem.component.selection.PrismSegmentedButtonOption
+import dev.staticvar.designsystem.component.selection.PrismSegmentedButtons
 import dev.staticvar.designsystem.component.selection.PrismSwitch
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.core.notifications.NotificationAuthorization
+import dev.staticvar.vlr.core.settings.LiveActivityStyle
 import dev.staticvar.vlr.core.settings.LiveMatchNotificationSettingsController
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -43,6 +46,14 @@ import vlr.feature_about.generated.resources.live_activity_favorites
 import vlr.feature_about.generated.resources.live_activity_favorites_description
 import vlr.feature_about.generated.resources.live_activities_description
 import vlr.feature_about.generated.resources.live_activities_disabled
+import vlr.feature_about.generated.resources.live_activity_style
+import vlr.feature_about.generated.resources.live_activity_style_classic
+import vlr.feature_about.generated.resources.live_activity_style_classic_description
+import vlr.feature_about.generated.resources.live_activity_style_description
+import vlr.feature_about.generated.resources.live_activity_style_glance
+import vlr.feature_about.generated.resources.live_activity_style_glance_description
+import vlr.feature_about.generated.resources.live_activity_style_scoreboard
+import vlr.feature_about.generated.resources.live_activity_style_scoreboard_description
 import vlr.feature_about.generated.resources.live_match_updates
 import vlr.feature_about.generated.resources.match_alerts
 import vlr.feature_about.generated.resources.match_alerts_description
@@ -122,6 +133,9 @@ private fun LiveUpdatesSettings(controller: LiveMatchNotificationSettingsControl
         onChange = controller::setEnabled,
       )
     }
+    if (access.supportsLiveActivityStyles) {
+      LiveActivityStyleCard(preferences.liveActivityStyle, controller::setLiveActivityStyle)
+    }
     if (access.supportsLiveUpdates && access.requiresNotificationPermission) {
       NotificationPreferenceCard(
         title = stringResource(Res.string.show_score_in_status_bar),
@@ -165,6 +179,40 @@ private fun LiveUpdatesSettings(controller: LiveMatchNotificationSettingsControl
           Text(stringResource(Res.string.allow_notifications))
         }
       }
+    }
+  }
+}
+
+@Composable
+private fun LiveActivityStyleCard(selected: LiveActivityStyle, onSelected: (LiveActivityStyle) -> Unit) {
+  val options = LiveActivityStyle.entries.map { style ->
+    PrismSegmentedButtonOption(
+      id = style.storageValue,
+      label = stringResource(when (style) {
+        LiveActivityStyle.Classic -> Res.string.live_activity_style_classic
+        LiveActivityStyle.Glance -> Res.string.live_activity_style_glance
+        LiveActivityStyle.Scoreboard -> Res.string.live_activity_style_scoreboard
+      }),
+    )
+  }
+  PrismCard(modifier = Modifier.fillMaxWidth()) {
+    Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
+      Text(stringResource(Res.string.live_activity_style), style = Prism.typography.bodyLarge, color = Prism.color.contentPrimary)
+      Text(stringResource(Res.string.live_activity_style_description), style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
+      PrismSegmentedButtons(
+        options = options,
+        selectedOptionId = selected.storageValue,
+        onOptionSelected = { option -> onSelected(LiveActivityStyle.fromStorage(option.id)) },
+      )
+      Text(
+        stringResource(when (selected) {
+          LiveActivityStyle.Classic -> Res.string.live_activity_style_classic_description
+          LiveActivityStyle.Glance -> Res.string.live_activity_style_glance_description
+          LiveActivityStyle.Scoreboard -> Res.string.live_activity_style_scoreboard_description
+        }),
+        style = Prism.typography.caption,
+        color = Prism.color.captionColor,
+      )
     }
   }
 }

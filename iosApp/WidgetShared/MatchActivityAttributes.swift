@@ -123,8 +123,11 @@ struct MatchActivityAttributes: ActivityAttributes {
         let pause: Pause?
         let stage: String?
         let map_round_winners: [MapRounds]
+        /// Set only by local updates that need a redraw, such as a style change or newly downloaded artwork,
+        /// so ActivityKit sees new content. Server pushes omit it, and no view reads it.
+        let local_revision: Int?
 
-        init(match_id: String, observed_at: Int, terminal: Bool, teams: [Team], current_map: CurrentMap?, total_maps: Int? = nil, map_winners: [String?] = [], pause: Pause? = nil, stage: String? = nil, map_round_winners: [MapRounds] = []) {
+        init(match_id: String, observed_at: Int, terminal: Bool, teams: [Team], current_map: CurrentMap?, total_maps: Int? = nil, map_winners: [String?] = [], pause: Pause? = nil, stage: String? = nil, map_round_winners: [MapRounds] = [], local_revision: Int? = nil) {
             self.match_id = match_id
             self.observed_at = observed_at
             self.terminal = terminal
@@ -135,10 +138,11 @@ struct MatchActivityAttributes: ActivityAttributes {
             self.pause = pause
             self.stage = stage
             self.map_round_winners = map_round_winners
+            self.local_revision = local_revision
         }
 
         private enum CodingKeys: String, CodingKey {
-            case match_id, observed_at, terminal, teams, current_map, total_maps, map_winners, pause, stage, map_round_winners
+            case match_id, observed_at, terminal, teams, current_map, total_maps, map_winners, pause, stage, map_round_winners, local_revision
         }
 
         init(from decoder: Decoder) throws {
@@ -154,6 +158,13 @@ struct MatchActivityAttributes: ActivityAttributes {
             pause = try? container.decodeIfPresent(Pause.self, forKey: .pause)
             stage = try? container.decodeIfPresent(String.self, forKey: .stage)
             map_round_winners = (try? container.decodeIfPresent([MapRounds].self, forKey: .map_round_winners)) ?? []
+            local_revision = try? container.decodeIfPresent(Int.self, forKey: .local_revision)
+        }
+
+        func withLocalRevision(_ revision: Int) -> Self {
+            Self(match_id: match_id, observed_at: observed_at, terminal: terminal, teams: teams, current_map: current_map,
+                 total_maps: total_maps, map_winners: map_winners, pause: pause, stage: stage,
+                 map_round_winners: map_round_winners, local_revision: revision)
         }
     }
 

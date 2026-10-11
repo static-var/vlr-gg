@@ -60,6 +60,23 @@ final class MatchActivityLogoObserver {
 
     private func prefetch(_ state: MatchActivityAttributes.ContentState) async {
         await MatchActivityLogoCache.prefetch(state.teams.compactMap(\.img))
+        await MatchActivityStyleAssets.prefetch(for: [state])
+    }
+}
+
+/// Downloads what the selected stacked style needs, only for running activities; each source is throttled.
+@available(iOS 16.1, *)
+enum MatchActivityStyleAssets {
+    /// Returns true when new codes or artwork were stored.
+    @discardableResult
+    static func prefetch(for states: [MatchActivityAttributes.ContentState]) async -> Bool {
+        let style = MatchActivityStylePreference.current()
+        guard style != .classic, !states.isEmpty else { return false }
+        let codes = await MatchActivityTeamCodes.prefetch()
+        let art = style == .glance
+            ? await MatchActivityMapArt.prefetch(liveMaps: states.filter { !$0.terminal }.map { $0.current_map?.name })
+            : false
+        return codes || art
     }
 }
 
