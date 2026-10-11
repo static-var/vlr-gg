@@ -50,15 +50,15 @@ class LiveMatchNotificationSettingsTest {
   fun liveActivityStyleChangesOnlyWhenThePlatformSupportsStyles() {
     val provider = FakeProvider()
     val repository = LiveMatchNotificationPreferencesRepository(MapSettings())
-    LiveMatchNotificationSettingsController(repository, provider).setLiveActivityStyle(LiveActivityStyle.Scoreboard)
+    LiveMatchNotificationSettingsController(repository, provider).setLiveActivityStyle(LiveActivityStyle.Glance)
     assertEquals(LiveActivityStyle.Classic, repository.preferences.value.liveActivityStyle)
 
     provider.stylesSupported = true
     val controller = LiveMatchNotificationSettingsController(repository, provider)
-    controller.setLiveActivityStyle(LiveActivityStyle.Scoreboard)
+    controller.setLiveActivityStyle(LiveActivityStyle.Glance)
 
     assertTrue(controller.access.value.supportsLiveActivityStyles)
-    assertEquals(LiveActivityStyle.Scoreboard, controller.preferences.value.liveActivityStyle)
+    assertEquals(LiveActivityStyle.Glance, controller.preferences.value.liveActivityStyle)
     assertEquals(0, provider.requests)
   }
 

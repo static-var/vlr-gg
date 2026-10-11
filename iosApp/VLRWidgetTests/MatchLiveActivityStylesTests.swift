@@ -62,13 +62,12 @@ final class MatchLiveActivityStylesTests: XCTestCase {
                        [.series, .map(1), .map(2), .map(3), .map(4), .current(5)])
     }
 
-    func testMapFilterAndLimitKeepLatestMaps() {
+    func testLimitKeepsLatestMaps() {
         let history: [State.MapRounds] = (1...4).map { map in
             .init(map_number: map, winners: Array(repeating: map % 2 == 1 ? 0 : 1, count: 13))
         }
         let value = state(map: 5, scores: [2, 1], total: 5, history: history, winners: ["1", "2", "1", "2", nil], seriesScores: [2, 2])
         XCTAssertEqual(Columns(state: value, hidden: false, limit: 3).columns.map(\.kind), [.series, .map(3), .map(4), .current(5)])
-        XCTAssertEqual(Columns(state: value, hidden: false, maps: [4, 5]).columns.map(\.kind), [.series, .map(4), .current(5)])
     }
 
     func testShortNamePrefersTagThenCachedCodeThenName() {
@@ -154,34 +153,33 @@ final class MatchLiveActivityStylesTests: XCTestCase {
             ("pause", state(pause: .init(kind: .techPause, reason: "Player disconnected"))),
             ("untagged", state(tags: [nil, nil])),
         ]
+        let style = MatchActivityStyle.glance
         for (name, value) in scenarios {
-            for style in [MatchActivityStyle.glance, .scoreboard] {
-                for width in [320.0, 370.0] {
-                    let renderer = ImageRenderer(content: MatchLiveActivityStyledLockScreen(state: value, spoilersHidden: false, style: style)
-                        .frame(width: width).background(Color.black).environment(\.colorScheme, .dark)
-                        .environment(\.locale, Locale(identifier: "en_US")))
-                    renderer.scale = 3
-                    let image = try XCTUnwrap(renderer.uiImage)
-                    XCTAssertLessThanOrEqual(image.size.height, 160, "\(style) \(name), \(width)")
-                    let request = VNRecognizeTextRequest()
-                    request.recognitionLevel = .accurate
-                    request.usesLanguageCorrection = false
-                    try VNImageRequestHandler(cgImage: try XCTUnwrap(image.cgImage)).perform([request])
-                    let recognized = request.results?.compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ").uppercased() ?? ""
-                    let names = name.hasSuffix("untagged") ? ["FNATIC", "PAPER REX"] : ["FNC", "PRX"]
-                    for team in names {
-                        XCTAssertTrue(recognized.contains(team), "\(style) \(name), \(width): \(recognized)")
-                    }
-                    XCTAssertTrue(recognized.contains("GRAND FINAL"), "\(style) \(name), \(width): \(recognized)")
-                    if value.pause != nil {
-                        XCTAssertTrue(recognized.contains("TECHNICAL PAUSE"), "\(style) \(name), \(width): \(recognized)")
-                        XCTAssertFalse(recognized.contains("DISCONNECTED"), "\(style) \(name), \(width): \(recognized)")
-                    }
-                    let attachment = XCTAttachment(image: image)
-                    attachment.name = "\(style.rawValue)-\(name)-\(Int(width))"
-                    attachment.lifetime = .keepAlways
-                    add(attachment)
+            for width in [320.0, 370.0] {
+                let renderer = ImageRenderer(content: MatchLiveActivityStyledLockScreen(state: value, spoilersHidden: false, style: style)
+                    .frame(width: width).background(Color.black).environment(\.colorScheme, .dark)
+                    .environment(\.locale, Locale(identifier: "en_US")))
+                renderer.scale = 3
+                let image = try XCTUnwrap(renderer.uiImage)
+                XCTAssertLessThanOrEqual(image.size.height, 160, "\(style) \(name), \(width)")
+                let request = VNRecognizeTextRequest()
+                request.recognitionLevel = .accurate
+                request.usesLanguageCorrection = false
+                try VNImageRequestHandler(cgImage: try XCTUnwrap(image.cgImage)).perform([request])
+                let recognized = request.results?.compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ").uppercased() ?? ""
+                let names = name.hasSuffix("untagged") ? ["FNATIC", "PAPER REX"] : ["FNC", "PRX"]
+                for team in names {
+                    XCTAssertTrue(recognized.contains(team), "\(style) \(name), \(width): \(recognized)")
                 }
+                XCTAssertTrue(recognized.contains("GRAND FINAL"), "\(style) \(name), \(width): \(recognized)")
+                if value.pause != nil {
+                    XCTAssertTrue(recognized.contains("TECHNICAL PAUSE"), "\(style) \(name), \(width): \(recognized)")
+                    XCTAssertFalse(recognized.contains("DISCONNECTED"), "\(style) \(name), \(width): \(recognized)")
+                }
+                let attachment = XCTAttachment(image: image)
+                attachment.name = "\(style.rawValue)-\(name)-\(Int(width))"
+                attachment.lifetime = .keepAlways
+                add(attachment)
             }
         }
     }

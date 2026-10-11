@@ -118,10 +118,8 @@
     <string name="live_activity_style_description">Les modifications s’appliquent aussi aux activités en direct déjà affichées sur l’écran verrouillé.</string>
     <string name="live_activity_style_classic">Classique</string>
     <string name="live_activity_style_glance">Aperçu</string>
-    <string name="live_activity_style_scoreboard">Tableau</string>
     <string name="live_activity_style_classic_description">Grand score de la carte en cours avec la progression des manches pour chaque carte.</string>
     <string name="live_activity_style_glance_description">Sigles des équipes et scores des cartes en un coup d’œil, avec l’image de la carte en cours.</string>
-    <string name="live_activity_style_scoreboard_description">Sigles des équipes et scores des cartes en lignes, avec la progression des manches pour chaque carte.</string>
     <string name="live_activities_disabled">Les activités en direct sont désactivées dans les réglages du système.</string>
     <string name="notification_access_denied">Les notifications sont désactivées. Vous pouvez les autoriser dans les réglages du système. Les activités en direct ont un réglage distinct.</string>
     <string name="notification_access_error">Impossible de vérifier ou de demander l'autorisation d'envoyer des notifications. Réessayez.</string>

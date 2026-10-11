@@ -52,8 +52,6 @@ import vlr.feature_about.generated.resources.live_activity_style_classic_descrip
 import vlr.feature_about.generated.resources.live_activity_style_description
 import vlr.feature_about.generated.resources.live_activity_style_glance
 import vlr.feature_about.generated.resources.live_activity_style_glance_description
-import vlr.feature_about.generated.resources.live_activity_style_scoreboard
-import vlr.feature_about.generated.resources.live_activity_style_scoreboard_description
 import vlr.feature_about.generated.resources.live_match_updates
 import vlr.feature_about.generated.resources.match_alerts
 import vlr.feature_about.generated.resources.match_alerts_description
@@ -191,7 +189,6 @@ private fun LiveActivityStyleCard(selected: LiveActivityStyle, onSelected: (Live
       label = stringResource(when (style) {
         LiveActivityStyle.Classic -> Res.string.live_activity_style_classic
         LiveActivityStyle.Glance -> Res.string.live_activity_style_glance
-        LiveActivityStyle.Scoreboard -> Res.string.live_activity_style_scoreboard
       }),
     )
   }
@@ -208,7 +205,6 @@ private fun LiveActivityStyleCard(selected: LiveActivityStyle, onSelected: (Live
         stringResource(when (selected) {
           LiveActivityStyle.Classic -> Res.string.live_activity_style_classic_description
           LiveActivityStyle.Glance -> Res.string.live_activity_style_glance_description
-          LiveActivityStyle.Scoreboard -> Res.string.live_activity_style_scoreboard_description
         }),
         style = Prism.typography.caption,
         color = Prism.color.captionColor,

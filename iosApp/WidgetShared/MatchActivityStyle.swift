@@ -4,7 +4,6 @@ import Foundation
 enum MatchActivityStyle: String, CaseIterable, Codable {
     case classic
     case glance
-    case scoreboard
 
     init(storageValue: String?) {
         self = storageValue.flatMap(MatchActivityStyle.init(rawValue:)) ?? .classic

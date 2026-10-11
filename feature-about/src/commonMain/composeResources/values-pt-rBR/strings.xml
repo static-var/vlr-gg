@@ -118,10 +118,8 @@
     <string name="live_activity_style_description">As mudanças valem também para as Atividades ao Vivo que já estão na tela bloqueada.</string>
     <string name="live_activity_style_classic">Clássico</string>
     <string name="live_activity_style_glance">Resumo</string>
-    <string name="live_activity_style_scoreboard">Placar</string>
     <string name="live_activity_style_classic_description">Placar grande do mapa atual com o progresso de rodadas de cada mapa.</string>
     <string name="live_activity_style_glance_description">Siglas dos times e placares dos mapas em um relance, com a imagem do mapa atual.</string>
-    <string name="live_activity_style_scoreboard_description">Siglas dos times e placares dos mapas em linhas, com o progresso de rodadas de cada mapa.</string>
     <string name="live_activities_disabled">As Atividades ao Vivo estão desativadas nos ajustes do sistema.</string>
     <string name="notification_access_denied">As notificações estão desativadas. Você pode permiti-las nos ajustes do sistema. As Atividades ao Vivo têm um ajuste separado.</string>
     <string name="notification_access_error">Não foi possível verificar ou solicitar a permissão para enviar notificações. Tente novamente.</string>

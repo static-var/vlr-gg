@@ -116,10 +116,8 @@
     <string name="live_activity_style_description">Değişiklikler kilit ekranındaki mevcut Canlı Etkinliklere de uygulanır.</string>
     <string name="live_activity_style_classic">Klasik</string>
     <string name="live_activity_style_glance">Bakış</string>
-    <string name="live_activity_style_scoreboard">Skor tablosu</string>
     <string name="live_activity_style_classic_description">Mevcut haritanın skoru büyük gösterilir, her haritanın raund ilerlemesiyle birlikte.</string>
     <string name="live_activity_style_glance_description">Takım kısaltmaları ve harita skorları tek bakışta, mevcut haritanın görseliyle birlikte.</string>
-    <string name="live_activity_style_scoreboard_description">Takım kısaltmaları ve harita skorları satırlar hâlinde, her haritanın raund ilerlemesiyle birlikte.</string>
     <string name="live_activities_disabled">Canlı Etkinlikler sistem ayarlarında kapalı.</string>
     <string name="notification_access_denied">Bildirimler kapalı. Sistem ayarlarından izin verebilirsin. Canlı Etkinlikler ayrı bir ayara sahiptir.</string>
     <string name="notification_access_error">Bildirim izni kontrol edilemedi veya istenemedi. Lütfen tekrar dene.</string>

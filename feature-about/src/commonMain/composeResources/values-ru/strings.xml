@@ -119,10 +119,8 @@
     <string name="live_activity_style_description">Изменения применяются и к активностям, которые уже показаны на экране блокировки.</string>
     <string name="live_activity_style_classic">Классический</string>
     <string name="live_activity_style_glance">Кратко</string>
-    <string name="live_activity_style_scoreboard">Табло</string>
     <string name="live_activity_style_classic_description">Крупный счёт текущей карты и ход раундов на каждой карте.</string>
     <string name="live_activity_style_glance_description">Теги команд и счёт по картам с первого взгляда, с изображением текущей карты.</string>
-    <string name="live_activity_style_scoreboard_description">Теги команд и счёт по картам в строках, с ходом раундов на каждой карте.</string>
     <string name="live_activities_disabled">Эфир активности отключён в системных настройках.</string>
     <string name="notification_access_denied">Уведомления отключены. Вы можете разрешить их в системных настройках. У эфира активности есть отдельная настройка.</string>
     <string name="notification_access_error">Не удалось проверить или запросить разрешение на уведомления. Попробуйте ещё раз.</string>

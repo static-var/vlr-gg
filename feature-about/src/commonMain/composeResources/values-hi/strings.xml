@@ -117,10 +117,8 @@
     <string name="live_activity_style_description">बदलाव लॉक स्क्रीन पर पहले से मौजूद लाइव ऐक्टिविटी पर भी लागू होते हैं।</string>
     <string name="live_activity_style_classic">क्लासिक</string>
     <string name="live_activity_style_glance">झलक</string>
-    <string name="live_activity_style_scoreboard">स्कोरबोर्ड</string>
     <string name="live_activity_style_classic_description">मौजूदा मैप का बड़ा स्कोर, हर मैप की राउंड प्रगति के साथ।</string>
     <string name="live_activity_style_glance_description">टीम टैग और मैप स्कोर एक नज़र में, मौजूदा मैप की तस्वीर के साथ।</string>
-    <string name="live_activity_style_scoreboard_description">टीम टैग और मैप स्कोर पंक्तियों में, हर मैप की राउंड प्रगति के साथ।</string>
     <string name="live_activities_disabled">सिस्टम सेटिंग में लाइव ऐक्टिविटीज़ बंद हैं।</string>
     <string name="notification_access_denied">सूचनाएँ बंद हैं। आप सिस्टम सेटिंग में उन्हें अनुमति दे सकते हैं। लाइव ऐक्टिविटीज़ की सेटिंग अलग है।</string>
     <string name="notification_access_error">सूचनाओं की अनुमति की जाँच नहीं हो सकी या अनुमति नहीं माँगी जा सकी। फिर से कोशिश करें।</string>

@@ -117,10 +117,8 @@
     <string name="live_activity_style_description">Änderungen gelten auch für Live-Aktivitäten, die bereits auf deinem Sperrbildschirm angezeigt werden.</string>
     <string name="live_activity_style_classic">Klassisch</string>
     <string name="live_activity_style_glance">Kompakt</string>
-    <string name="live_activity_style_scoreboard">Anzeigetafel</string>
     <string name="live_activity_style_classic_description">Großer Spielstand der aktuellen Map mit Rundenverlauf für jede Map.</string>
     <string name="live_activity_style_glance_description">Teamkürzel und Map-Ergebnisse auf einen Blick, mit Bild der aktuellen Map.</string>
-    <string name="live_activity_style_scoreboard_description">Teamkürzel und Map-Ergebnisse in Zeilen, mit Rundenverlauf für jede Map.</string>
     <string name="live_activities_disabled">Live-Aktivitäten sind in den Systemeinstellungen deaktiviert.</string>
     <string name="notification_access_denied">Mitteilungen sind deaktiviert. Du kannst sie in den Systemeinstellungen erlauben. Live-Aktivitäten haben eine eigene Einstellung.</string>
     <string name="notification_access_error">Die Mitteilungsberechtigung konnte nicht geprüft oder angefordert werden. Versuche es erneut.</string>

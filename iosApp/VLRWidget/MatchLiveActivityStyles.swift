@@ -15,8 +15,6 @@ struct MatchLiveActivityStyledLockScreen: View {
             MatchLiveActivityLockScreen(state: state, spoilersHidden: spoilersHidden)
         case .glance:
             MatchLiveActivityGlance(state: state, spoilersHidden: spoilersHidden)
-        case .scoreboard:
-            MatchLiveActivityScoreboard(state: state, spoilersHidden: spoilersHidden)
         }
     }
 }
@@ -47,9 +45,8 @@ struct MatchLiveActivityScoreColumns: Equatable {
 
     let columns: [Column]
 
-    /// - Parameter maps: Only maps with these numbers get a column; nil keeps every played map.
     /// - Parameter limit: Keeps at most this many of the latest map columns.
-    init(state: MatchActivityAttributes.ContentState, hidden: Bool, maps: Set<Int>? = nil, limit: Int = 4) {
+    init(state: MatchActivityAttributes.ContentState, hidden: Bool, limit: Int = 4) {
         let progress = MatchLiveActivityMapProgress(state: state, hidden: hidden)
         let series = state.teams.prefix(2).map(\.score)
         var seriesWinner: Int?
@@ -60,7 +57,6 @@ struct MatchLiveActivityScoreColumns: Equatable {
 
         let currentNumber = state.terminal ? nil : state.current_map.map { $0.number ?? 0 }
         var mapColumns: [Column] = (progress?.maps ?? []).compactMap { map in
-            guard maps?.contains(map.number) ?? true else { return nil }
             if map.number == currentNumber || map.segment == .active {
                 return Column(kind: .current(map.number), values: Self.display(map.scores, hidden: hidden), winner: nil)
             }
@@ -93,7 +89,7 @@ struct MatchLiveActivityScoreColumns: Equatable {
 @available(iOS 16.1, *)
 struct MatchLiveActivityStackedScores: View {
     enum Layout {
-        case glance, scoreboard, dynamicIsland
+        case glance, dynamicIsland
 
         var logoSize: CGFloat { self == .glance ? 22 : 20 }
         var fontSize: CGFloat { self == .glance ? 18 : 16 }
@@ -105,7 +101,6 @@ struct MatchLiveActivityStackedScores: View {
     let state: MatchActivityAttributes.ContentState
     let spoilersHidden: Bool
     let layout: Layout
-    var maps: Set<Int>?
     @Environment(\.colorScheme) private var colorScheme
 
     private var palette: PrismWidgetPalette { colorScheme == .dark ? .dark : .light }
@@ -113,7 +108,7 @@ struct MatchLiveActivityStackedScores: View {
         MatchActivityLogoCache.teamColors(for: state.teams.map(\.img), appearance: colorScheme == .dark ? .dark : .light)
     }
     private var columns: [MatchLiveActivityScoreColumns.Column] {
-        MatchLiveActivityScoreColumns(state: state, hidden: spoilersHidden, maps: maps, limit: layout == .glance ? 5 : 3).columns
+        MatchLiveActivityScoreColumns(state: state, hidden: spoilersHidden, limit: layout == .glance ? 5 : 3).columns
     }
     /// Short tags share one narrow column; a full-name fallback gets more room unless a long series needs it.
     private func nameWidth(columns: Int) -> CGFloat {
@@ -150,28 +145,44 @@ struct MatchLiveActivityStackedScores: View {
         .accessibilityLabel(accessibilityLabel(team: team, index: index, columns: columns))
     }
 
+    /// Scores take the team's color at full strength; a bar under a score marks the team that won it.
     @ViewBuilder
     private func cell(_ column: MatchLiveActivityScoreColumns.Column, team index: Int) -> some View {
         let value = column.values[index]
+        let color = Color(uiColor: teamColors.color(for: index))
         switch column.kind {
         case .series:
             Text(verbatim: value)
-                .foregroundStyle(column.winner == nil || column.winner == index ? palette.ink : palette.secondary)
+                .foregroundStyle(color)
                 .modifier(CellFrame(layout: layout))
                 .background(RoundedRectangle(cornerRadius: 5).fill(palette.ink.opacity(0.14)))
+                .overlay(alignment: .bottom) { winnerMark(column, team: index, color: color) }
         case .map:
             Text(verbatim: value)
-                .foregroundStyle(column.winner == index ? palette.ink : palette.secondary.opacity(0.75))
+                .foregroundStyle(color)
                 .modifier(CellFrame(layout: layout))
+                .overlay(alignment: .bottom) { winnerMark(column, team: index, color: color) }
         case .current:
             MatchLiveActivityRollingScore(value: value, height: layout.cellHeight)
-                .foregroundStyle(palette.accent)
+                .foregroundStyle(color)
                 .modifier(CellFrame(layout: layout))
                 .background {
                     RoundedRectangle(cornerRadius: 5)
-                        .fill(palette.accent.opacity(0.16))
-                        .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(palette.accent.opacity(0.55), lineWidth: 1))
+                        .fill(palette.ink.opacity(0.16))
+                        .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(palette.ink.opacity(0.5), lineWidth: 1))
                 }
+        }
+    }
+
+    @ViewBuilder
+    private func winnerMark(_ column: MatchLiveActivityScoreColumns.Column, team index: Int, color: Color) -> some View {
+        if column.winner == index {
+            Capsule()
+                .fill(color)
+                .frame(width: layout.cellWidth * 0.5, height: 2)
+                // Sits in the row gap, clear of the digits.
+                .offset(y: 3)
+                .accessibilityHidden(true)
         }
     }
 
@@ -183,8 +194,8 @@ struct MatchLiveActivityStackedScores: View {
         let scores = columns.map { column -> String in
             let value = column.values[index]
             switch column.kind {
-            case .series: return "series \(value)"
-            case .map(let number): return "map \(number) \(value)"
+            case .series: return "series \(value)" + (column.winner == index ? " won" : "")
+            case .map(let number): return "map \(number) \(value)" + (column.winner == index ? " won" : "")
             case .current(let number): return "map \(number) live \(value)"
             }
         }
@@ -213,7 +224,7 @@ private struct MatchLiveActivityStatusLine: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            MatchLiveActivityStatus(state: state)
+            MatchLiveActivityStatus(state: state, usesAccent: false)
                 .layoutPriority(1)
             if !state.terminal, let map = state.current_map?.name.trimmingCharacters(in: .whitespacesAndNewlines), !map.isEmpty {
                 Text(verbatim: "·")
@@ -331,100 +342,5 @@ struct MatchLiveActivityGlance: View {
         .foregroundStyle(palette.ink)
         .accessibilityElement(children: .contain)
         .accessibilityHint(String(localized: "Opens match details"))
-    }
-}
-
-/// The classic layout's details in the stacked arrangement, with round progress per map on the right.
-@available(iOS 16.1, *)
-struct MatchLiveActivityScoreboard: View {
-    let state: MatchActivityAttributes.ContentState
-    let spoilersHidden: Bool
-    @Environment(\.colorScheme) private var colorScheme
-
-    private var palette: PrismWidgetPalette { colorScheme == .dark ? .dark : .light }
-    private var teamColors: MatchActivityTeamColors {
-        MatchActivityLogoCache.teamColors(for: state.teams.map(\.img), appearance: colorScheme == .dark ? .dark : .light)
-    }
-
-    var body: some View {
-        let progress = MatchLiveActivityMapProgress(state: state, hidden: spoilersHidden)
-        VStack(spacing: 9) {
-            HStack(spacing: 6) {
-                MatchLiveActivityStatusLine(state: state)
-                    .layoutPriority(1)
-                Spacer(minLength: 8)
-                MatchLiveActivityStageLabel(state: state, showsBranding: true)
-            }
-            .lineLimit(1)
-            HStack(alignment: .center, spacing: 12) {
-                MatchLiveActivityStackedScores(
-                    state: state,
-                    spoilersHidden: spoilersHidden,
-                    layout: .scoreboard,
-                    maps: progress.map { Set($0.visibleMaps.map(\.number)) }
-                )
-                .layoutPriority(1)
-                if let progress {
-                    VStack(alignment: .leading, spacing: 6) {
-                        ForEach(progress.visibleMaps) { map in
-                            strip(for: map)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .animation(.easeInOut(duration: 0.3), value: progress.firstVisibleIndex)
-                } else {
-                    Spacer(minLength: 0)
-                }
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .foregroundStyle(palette.ink)
-        .accessibilityElement(children: .contain)
-        .accessibilityHint(String(localized: "Opens match details"))
-    }
-
-    private func strip(for map: MatchLiveActivityMapProgress.Map) -> some View {
-        HStack(spacing: 6) {
-            Text(verbatim: String(map.number))
-                .font(PrismWidgetFont.regular(10, relativeTo: .caption2))
-                .foregroundStyle(badgeInk(for: map.segment))
-                .monospacedDigit()
-                .frame(width: 15, height: 15)
-                .background(RoundedRectangle(cornerRadius: 4).fill(badgeFill(for: map.segment)))
-            MatchLiveActivityRoundStrip(rounds: map.rounds, palette: palette, teamColors: teamColors)
-                .frame(height: 11)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(label(for: map))
-        .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .top)))
-    }
-
-    private func badgeFill(for segment: MatchLiveActivityMapProgress.Segment) -> Color {
-        switch segment {
-        case .wonBy(let index): return Color(uiColor: teamColors.color(for: index))
-        case .active: return palette.accent.opacity(0.25)
-        case .pending: return palette.border.opacity(0.45)
-        }
-    }
-
-    private func badgeInk(for segment: MatchLiveActivityMapProgress.Segment) -> Color {
-        switch segment {
-        case .wonBy: return .black
-        case .active: return palette.accent
-        case .pending: return palette.secondary
-        }
-    }
-
-    private func label(for map: MatchLiveActivityMapProgress.Map) -> String {
-        if spoilersHidden { return "Map \(map.number), result hidden" }
-        switch map.segment {
-        case .wonBy(let index) where state.teams.indices.contains(index):
-            return "Map \(map.number), \(state.teams[index].name) won, \(map.scoreText)"
-        case .active:
-            return "Map \(map.number), in progress, \(map.scoreText)"
-        default:
-            return "Map \(map.number), \(map.scoreText)"
-        }
     }
 }

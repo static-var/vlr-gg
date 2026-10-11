@@ -23,7 +23,7 @@ struct MatchLiveActivity: Widget {
             let teamColors = MatchActivityLogoCache.teamColors(for: context.state.teams.map(\.img), appearance: .dark)
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    MatchLiveActivityStatus(state: context.state)
+                    MatchLiveActivityStatus(state: context.state, usesAccent: style == .classic)
                         .padding(.leading, 8)
                         .environment(\.colorScheme, .dark)
                 }
@@ -119,7 +119,11 @@ struct MatchLiveActivityLockScreen: View {
 @available(iOS 16.1, *)
 struct MatchLiveActivityStatus: View {
     let state: MatchActivityAttributes.ContentState
+    /// Glance draws the status in white instead of the accent.
+    var usesAccent = true
     @Environment(\.colorScheme) private var colorScheme
+
+    private var palette: PrismWidgetPalette { colorScheme == .dark ? .dark : .light }
 
     private var statusLabel: String {
         if state.terminal { return String(localized: "FINAL") }
@@ -147,7 +151,7 @@ struct MatchLiveActivityStatus: View {
                 .minimumScaleFactor(0.7)
         }
         .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
-        .foregroundStyle(colorScheme == .dark ? PrismWidgetPalette.dark.accent : PrismWidgetPalette.light.accent)
+        .foregroundStyle(usesAccent ? palette.accent : palette.ink)
         .lineLimit(1)
     }
 }

@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 public enum class LiveActivityStyle(public val storageValue: String) {
   Classic("classic"),
   Glance("glance"),
-  Scoreboard("scoreboard"),
   ;
 
   public companion object {
