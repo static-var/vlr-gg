@@ -52,6 +52,3 @@ final class MatchActivityStyleSync {
         }
     }
 }
-
-
-
