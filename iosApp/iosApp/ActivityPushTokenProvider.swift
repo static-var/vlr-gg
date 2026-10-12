@@ -60,7 +60,11 @@ final class MatchActivityLogoObserver {
 
     private func prefetch(_ state: MatchActivityAttributes.ContentState) async {
         await MatchActivityLogoCache.prefetch(state.teams.compactMap(\.img))
-        await MatchActivityStyleAssets.prefetch(for: [state])
+        // The widget reads codes and art only while rendering, so newly stored ones need a redraw.
+        // The redraw's content update finds nothing new to store, so it does not loop.
+        if await MatchActivityStyleAssets.prefetch(for: [state]) {
+            MatchActivityStyleSync.shared.redraw()
+        }
     }
 }
 

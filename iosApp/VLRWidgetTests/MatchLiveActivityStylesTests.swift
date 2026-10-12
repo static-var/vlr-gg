@@ -33,6 +33,12 @@ final class MatchLiveActivityStylesTests: XCTestCase {
         XCTAssertEqual(columns.map(\.winner), [nil, 0, 1, nil])
     }
 
+    func testFinishedMapShowsItsWinnerBeforeTheNextMapStarts() {
+        let columns = Columns(state: state(map: 2, scores: [9, 13]), hidden: false).columns
+        XCTAssertEqual(columns.map(\.kind), [.series, .map(1), .map(2)])
+        XCTAssertEqual(columns.map(\.winner), [nil, 0, 1])
+    }
+
     func testFinishedMatchDropsLiveMapAndEmphasizesSeriesWinner() {
         let columns = Columns(
             state: state(map: 2, scores: [13, 9], total: 3, winners: ["1", "2", nil], terminal: true, seriesScores: [2, 0]),

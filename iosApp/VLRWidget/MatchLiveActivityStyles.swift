@@ -56,13 +56,15 @@ struct MatchLiveActivityScoreColumns: Equatable {
         var columns = [Column(kind: .series, values: Self.display(series, hidden: hidden), winner: seriesWinner)]
 
         let currentNumber = state.terminal ? nil : state.current_map.map { $0.number ?? 0 }
+        // A finished map keeps its winner even while it is still the current map, before the next one starts.
         var mapColumns: [Column] = (progress?.maps ?? []).compactMap { map in
+            if case .wonBy(let winner) = map.segment {
+                return Column(kind: .map(map.number), values: Self.display(map.scores, hidden: hidden), winner: winner)
+            }
             if map.number == currentNumber || map.segment == .active {
                 return Column(kind: .current(map.number), values: Self.display(map.scores, hidden: hidden), winner: nil)
             }
             switch map.segment {
-            case .wonBy(let winner):
-                return Column(kind: .map(map.number), values: Self.display(map.scores, hidden: hidden), winner: winner)
             case .pending where !hidden && map.scores.count == 2 && !map.scores.contains(nil):
                 return Column(kind: .map(map.number), values: Self.display(map.scores, hidden: hidden), winner: nil)
             default:
@@ -70,7 +72,7 @@ struct MatchLiveActivityScoreColumns: Equatable {
             }
         }
         if let current = state.current_map, let currentNumber,
-           !mapColumns.contains(where: { $0.kind == .current(currentNumber) }) {
+           !mapColumns.contains(where: { $0.kind == .current(currentNumber) || $0.kind == .map(currentNumber) }) {
             mapColumns.append(Column(kind: .current(currentNumber), values: Self.display(current.scores, hidden: hidden), winner: nil))
         }
         columns += mapColumns.suffix(max(0, limit))
