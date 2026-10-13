@@ -12,6 +12,8 @@ After app changes, if an iOS simulator is already running, build, install, and l
 
 Before preparing, uploading, submitting, or publishing a release, read and follow [docs/release-checklist.md](docs/release-checklist.md). It includes pending App Store language setup and recurring Android and iOS checks.
 
+Android and iOS ship the same version and build number from `version.xcconfig`. Xcode Cloud replaces the iOS build number with its own counter, so before an iOS release set `CURRENT_PROJECT_VERSION` to Xcode Cloud's next build number, or raise that number to match. `iosApp/ci_scripts/ci_post_clone.sh` stops the "iOS TestFlight Release" workflow when they differ. Build both platforms from the same commit.
+
 When preparing a release, update both sets of release notes:
 
 - In-app: edit `feature-about/src/commonMain/kotlin/dev/staticvar/vlr/featureabout/presentation/BundledRelease.kt`. Update the introduction and highlights, and assign a new unique `id` for the release. Keep that ID stable across builds and copy corrections for the same release; changing it makes the Home banner appear again. App version changes alone do not reset acknowledgement. Leave a highlight's `platform` unset for shared changes, or use `ReleasePlatform.Android` / `ReleasePlatform.Ios` for OS-specific changes.
