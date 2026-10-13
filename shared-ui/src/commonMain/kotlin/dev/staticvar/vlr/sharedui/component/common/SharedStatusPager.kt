@@ -43,7 +43,9 @@ public fun SharedStatusPager(
 
   LaunchedEffect(selectedTabId, tabIds) {
     val page = tabIds.indexOf(selectedTabId)
-    if (page >= 0 && (page != pagerState.currentPage || pagerState.currentPageOffsetFraction != 0f || pagerState.isScrollInProgress)) {
+    if (page >= 0 &&
+      (page != pagerState.currentPage || pagerState.currentPageOffsetFraction != 0f || pagerState.isScrollInProgress)
+    ) {
       syncingSelection = true
       try {
         pagerState.animateScrollToPage(page)

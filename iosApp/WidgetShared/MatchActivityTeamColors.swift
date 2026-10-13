@@ -3,9 +3,24 @@ import Foundation
 import UIKit
 
 enum MatchActivityLogoColor: Codable, Equatable {
-    case vivid(MatchActivityTeamColors.RGB)
-    case monochrome
+    case vivid(MatchActivityTeamColors.RGB, secondary: [MatchActivityTeamColors.RGB] = [])
+    case monochrome(secondary: [MatchActivityTeamColors.RGB] = [])
     case unavailable
+
+    var colors: [MatchActivityTeamColors.RGB] {
+        switch self {
+        case .vivid(let primary, let secondary): return [primary] + secondary
+        case .monochrome(let secondary): return secondary
+        case .unavailable: return []
+        }
+    }
+
+    var secondary: [MatchActivityTeamColors.RGB] {
+        switch self {
+        case .vivid(_, let secondary), .monochrome(let secondary): return secondary
+        case .unavailable: return []
+        }
+    }
 }
 
 struct MatchActivityTeamColors {
@@ -94,27 +109,41 @@ struct MatchActivityTeamColors {
         first: MatchActivityLogoColor?, second: MatchActivityLogoColor?,
         appearance: MatchActivityLogoCache.Appearance
     ) -> MatchActivityTeamColors {
-        let defaults: [RGB] = appearance == .dark
-            ? [RGB(red: 207, green: 178, blue: 255), RGB(red: 100, green: 218, blue: 199), RGB(red: 158, green: 158, blue: 166)]
-            : [RGB(red: 103, green: 58, blue: 183), RGB(red: 0, green: 105, blue: 92), RGB(red: 117, green: 117, blue: 125)]
-        func candidate(_ logo: MatchActivityLogoColor?) -> RGB? {
+        let component = appearance == .dark ? 255 : 0
+        let monochrome = RGB(red: component, green: component, blue: component)
+        let alternate = appearance == .dark
+            ? RGB(red: 136, green: 136, blue: 136)
+            : RGB(red: 110, green: 110, blue: 110)
+        let neutral = appearance == .dark
+            ? RGB(red: 158, green: 158, blue: 166)
+            : RGB(red: 117, green: 117, blue: 125)
+        func candidate(_ logo: MatchActivityLogoColor?) -> RGB {
             switch logo {
-            case .vivid(let color):
-                let readable = color.readable(on: appearance)
-                return readable.distance(from: defaults[2]) >= 30 ? readable : nil
-            case .monochrome:
-                let component = appearance == .dark ? 255 : 0
-                return RGB(red: component, green: component, blue: component)
-            case .unavailable, nil:
-                return nil
+            case .vivid(let color, _):
+                return color.readable(on: appearance)
+            case .monochrome, .unavailable, nil:
+                return monochrome
             }
         }
-        let first = candidate(first) ?? defaults[0]
-        var second = candidate(second) ?? defaults[1]
-        if first.distance(from: second) < 30 {
-            second = defaults[0].distance(from: first) >= defaults[1].distance(from: first) ? defaults[0] : defaults[1]
+        func secondary(_ logo: MatchActivityLogoColor?, distinctFrom other: RGB) -> RGB? {
+            logo?.secondary.lazy.map { $0.readable(on: appearance) }
+                .first { $0.distance(from: other) >= 30 }
         }
-        return MatchActivityTeamColors(first: first.color, second: second.color, neutral: defaults[2].color)
+        var firstColor = candidate(first)
+        var secondColor = candidate(second)
+        if firstColor.distance(from: secondColor) < 30 {
+            if firstColor.distance(from: monochrome) >= 30 {
+                secondColor = monochrome
+            } else if let color = secondary(second, distinctFrom: firstColor) {
+                secondColor = color
+            } else if let color = secondary(first, distinctFrom: secondColor) {
+                firstColor = color
+            } else {
+                firstColor = monochrome
+                secondColor = alternate
+            }
+        }
+        return MatchActivityTeamColors(first: firstColor.color, second: secondColor.color, neutral: neutral.color)
     }
 
     static func extract(from image: CGImage) -> MatchActivityLogoColor {
@@ -131,7 +160,7 @@ struct MatchActivityTeamColors {
         context.draw(image, in: CGRect(x: (size - width) / 2, y: (size - height) / 2, width: width, height: height))
         let pixels = data.assumingMemoryBound(to: UInt8.self)
         var visible = 0
-        var vivid = 0
+        var white = 0
         var bins: [Int: (count: Int, red: Int, green: Int, blue: Int)] = [:]
         for offset in stride(from: 0, to: size * size * 4, by: 4) {
             let alpha = Int(pixels[offset + 3])
@@ -139,21 +168,31 @@ struct MatchActivityTeamColors {
             visible += 1
             let rgb = (0..<3).map { min(255, Int(pixels[offset + $0]) * 255 / alpha) }
             let maximum = rgb.max()!, minimum = rgb.min()!
+            if minimum >= 192, maximum - minimum < 32 { white += 1 }
             guard Double(maximum) >= 0.15 * 255, Double(maximum - minimum) / Double(maximum) >= 0.25 else { continue }
-            vivid += 1
             let key = ((rgb[0] >> 4) << 8) | ((rgb[1] >> 4) << 4) | (rgb[2] >> 4)
             let previous = bins[key] ?? (0, 0, 0, 0)
             bins[key] = (previous.count + 1, previous.red + rgb[0], previous.green + rgb[1], previous.blue + rgb[2])
         }
         guard visible > 0 else { return .unavailable }
-        var largest: (count: Int, red: Int, green: Int, blue: Int)?
-        for key in bins.keys.sorted() {
+        let ranked = bins.keys.sorted {
+            let firstCount = bins[$0]!.count, secondCount = bins[$1]!.count
+            return firstCount == secondCount ? $0 < $1 : firstCount > secondCount
+        }
+        var candidates: [RGB] = []
+        for key in ranked {
             let bin = bins[key]!
-            if bin.count > (largest?.count ?? 0) { largest = bin }
+            guard Double(bin.count) >= Double(visible) * 0.05 else { continue }
+            let color = RGB(red: bin.red / bin.count, green: bin.green / bin.count, blue: bin.blue / bin.count)
+            if candidates.allSatisfy({ $0.distance(from: color) >= 30 }) {
+                candidates.append(color)
+            }
+            if candidates.count == 4 { break }
         }
-        guard let bin = largest, Double(bin.count) >= Double(visible) * 0.05 else {
-            return vivid == 0 ? .monochrome : .unavailable
+        if white > visible / 2 || bins.isEmpty {
+            return .monochrome(secondary: candidates)
         }
-        return .vivid(RGB(red: bin.red / bin.count, green: bin.green / bin.count, blue: bin.blue / bin.count))
+        guard let primary = candidates.first else { return .unavailable }
+        return .vivid(primary, secondary: Array(candidates.dropFirst()))
     }
 }

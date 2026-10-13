@@ -20,9 +20,9 @@ import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.designsystem.prism.animation.PrismAnimationPreset
 import dev.staticvar.designsystem.prism.animation.PrismAnimationTokens
 import dev.staticvar.designsystem.prism.color.PrismColorPalette
-import dev.staticvar.designsystem.prism.icon.ConsoleIcons
 import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 import dev.staticvar.designsystem.prism.frame.PrismFrames
+import dev.staticvar.designsystem.prism.icon.ConsoleIcons
 import dev.staticvar.designsystem.prism.theme.PrismThemeDefinition
 import dev.staticvar.designsystem.prism.typography.PrismFontFamilies
 import dev.staticvar.designsystem.prism.typography.PrismTypography

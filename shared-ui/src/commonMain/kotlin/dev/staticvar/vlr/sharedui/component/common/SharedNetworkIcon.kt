@@ -10,8 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
@@ -67,7 +67,8 @@ public fun SharedNetworkIcon(
     return
   }
 
-  val useConditionalOutline = conditionalOutline && size != PrismIconSize.Small && tint == PrismIconTint.None && contentScale == ContentScale.Fit
+  val useConditionalOutline =
+    conditionalOutline && size != PrismIconSize.Small && tint == PrismIconTint.None && contentScale == ContentScale.Fit
   val context = LocalPlatformContext.current
   // Share one decode size across list and hero icons, independent of animated bounds.
   val decodeSizePx = with(LocalDensity.current) { PrismIconSize.Hero.containerSizeDp.roundToPx() }
@@ -104,7 +105,9 @@ public fun SharedNetworkIcon(
     tint = tint,
     imageModifier = if (useConditionalOutline) {
       imageModifier.onSizeChanged { pixelSize = it }
-    } else imageModifier,
+    } else {
+      imageModifier
+    },
   )
 }
 
@@ -121,6 +124,7 @@ private fun SharedNetworkIconFallback(
     modifier = modifier.size(containerSize),
     color = when (tint) {
       PrismIconTint.Inverted -> style.contentColor
+
       PrismIconTint.None,
       PrismIconTint.Primary,
       PrismIconTint.Alt,

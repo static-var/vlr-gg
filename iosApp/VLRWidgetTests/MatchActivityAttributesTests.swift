@@ -321,6 +321,27 @@ final class MatchActivityAttributesTests: XCTestCase {
     }
 
     @available(iOS 16.1, *)
+    func testPerMapScoresDecodeWithoutDiscardingRoundHistory() throws {
+        for (field, expected) in [
+            (#", "scores": [13, 5]"#, [13, 5] as [Int?]),
+            (#", "scores": [13, null]"#, [13, nil]),
+            ("", []),
+            (#", "scores": null"#, []),
+            (#", "scores": "invalid""#, []),
+        ] {
+            let json = """
+            {"match_id":"754738","observed_at":0,"terminal":false,
+             "teams":[{"id":"120","name":"100T"},{"id":"11060","name":"NS"}],
+             "map_round_winners":[{"map_number":1,"winners":[0,null,1]\(field)}]}
+            """
+            let value = try JSONDecoder().decode(MatchActivityAttributes.ContentState.self, from: Data(json.utf8))
+            XCTAssertEqual(value.map_round_winners, [.init(map_number: 1, winners: [0, nil, 1], scores: expected)])
+            XCTAssertEqual(try JSONDecoder().decode(MatchActivityAttributes.ContentState.self,
+                                                    from: JSONEncoder().encode(value)), value)
+        }
+    }
+
+    @available(iOS 16.1, *)
     func testMalformedOptionalStageAndRoundHistoryPreserveMatchUpdate() throws {
         let payloads = [
             #"{"stage":42,"map_round_winners":[{"map_number":1,"winners":[0,null,1]}]}"#,

@@ -26,7 +26,8 @@ internal object DarkThemeDefinition : PrismThemeDefinition<DarkColorTokens> {
   override fun createTypographyTokens(palette: PrismColorPalette, fonts: PrismFontFamilies): PrismTypography =
     PrismTypographyTokens.createTokens(fonts)
 
-  override fun createMaterialTypography(tokens: PrismTypography): Typography = PrismTypographyTokens.createMaterial(tokens)
+  override fun createMaterialTypography(tokens: PrismTypography): Typography =
+    PrismTypographyTokens.createMaterial(tokens)
 
   override val shapes: Shapes
     get() = DarkShapes.shapes

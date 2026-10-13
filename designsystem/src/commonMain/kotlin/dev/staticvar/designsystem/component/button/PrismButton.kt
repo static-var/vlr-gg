@@ -74,7 +74,8 @@ public fun PrismButton(
       null
     }
   CompositionLocalProvider(
-    LocalRippleConfiguration provides if (frame.shadowOffset == DpOffset.Zero) LocalRippleConfiguration.current else null,
+    LocalRippleConfiguration provides
+      if (frame.shadowOffset == DpOffset.Zero) LocalRippleConfiguration.current else null,
   ) {
     Button(
       onClick = onClick,

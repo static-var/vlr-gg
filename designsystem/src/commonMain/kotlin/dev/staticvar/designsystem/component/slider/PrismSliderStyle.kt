@@ -58,13 +58,11 @@ public sealed interface PrismSliderStyle {
 
   @Composable
   @ReadOnlyComposable
-  public fun trackColor(enabled: Boolean): Color =
-    if (enabled) Prism.color.strokeVariant else Prism.color.surfaceDim
+  public fun trackColor(enabled: Boolean): Color = if (enabled) Prism.color.strokeVariant else Prism.color.surfaceDim
 
   @Composable
   @ReadOnlyComposable
-  public fun activeColor(enabled: Boolean): Color =
-    if (enabled) Prism.color.accent else Prism.color.labelColor
+  public fun activeColor(enabled: Boolean): Color = if (enabled) Prism.color.accent else Prism.color.labelColor
 
   @Composable
   @ReadOnlyComposable

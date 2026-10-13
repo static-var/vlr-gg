@@ -123,10 +123,13 @@ class MatchPredictionPersistenceTest {
   }
 
   @Test
-  fun detailsRefreshPreservesPregameSnapshotAndStopsRequestsWhenMatchStarts() = runTest(dispatcher) {
+  fun detailsRefreshUpdatesLivePredictionAndStopsRequestsWhenMatchCompletes() = runTest(dispatcher) {
     predictions.result = Result.success(prediction())
     assertTrue(repository.refreshMatchPrediction("match").isSuccess)
-    val saved = repository.getMatchDetails("match").first()?.prediction
+    val saved = requireNotNull(repository.getMatchDetails("match").first()?.prediction)
+    val livePrediction = prediction().let { it.copy(match = it.match.copy(teamA = 0.7, teamB = 0.3)) }
+    predictions.result = Result.success(livePrediction)
+    driver.execute(null, "UPDATE matches SET time = '2000-01-01T12:00:00Z' WHERE id = 'match'", 0)
     for (status in listOf(MatchStatus.LIVE, MatchStatus.COMPLETED)) {
       detailsResult = Result.success(MatchDetailsDto(
         event = EventDto(id = "event", name = "Updated event", status = status),
@@ -138,9 +141,9 @@ class MatchPredictionPersistenceTest {
 
       val details = requireNotNull(repository.getMatchDetails("match").first())
       assertEquals("Updated event", details.event.name)
-      assertEquals(saved, details.prediction)
-      assertFalse(details.canRequestPrediction)
-      assertEquals(1, predictions.requests.size)
+      assertEquals(saved.copy(teamAProbability = 0.7, teamBProbability = 0.3), details.prediction)
+      assertEquals(status == MatchStatus.LIVE, details.canRequestPrediction)
+      assertEquals(listOf("120" to "1034", "120" to "1034"), predictions.requests)
     }
   }
 
@@ -169,7 +172,7 @@ class MatchPredictionPersistenceTest {
   }
 
   @Test
-  fun matchStartingDuringRequestDoesNotSaveLateEstimate() = runTest(dispatcher) {
+  fun matchStartingDuringRequestSavesEstimate() = runTest(dispatcher) {
     val pending = CompletableDeferred<Result<MatchPredictionDto>>()
     predictions.pending = pending
     val refresh = async { repository.refreshMatchPrediction("match") }
@@ -177,6 +180,42 @@ class MatchPredictionPersistenceTest {
     assertEquals(1, predictions.requests.size)
     detailsResult = Result.success(MatchDetailsDto(
       event = EventDto(id = "event", status = MatchStatus.LIVE),
+      teams = listOf(TeamDto(id = "120", name = "Alpha"), TeamDto(id = "1034", name = "Beta")),
+    ))
+    assertTrue(repository.refreshMatchDetails("match").isSuccess)
+    pending.complete(Result.success(prediction()))
+
+    assertTrue(refresh.await().isSuccess)
+
+    assertEquals(0.6, requireNotNull(repository.getMatchDetails("match").first()?.prediction).teamAProbability)
+  }
+
+  @Test
+  fun liveMatchWithoutCachedPredictionRequestsEstimateAfterScheduledStart() = runTest(dispatcher) {
+    predictions.result = Result.success(prediction())
+    for (status in listOf("LIVE", "ONGOING")) {
+      database.matchPredictionsQueries.deleteMatchPrediction("match")
+      database.matchesQueries.insertMatch(match().copy(status = status, time = "2000-01-01T12:00:00Z"))
+      assertTrue(requireNotNull(repository.getMatchDetails("match").first()).canRequestPrediction)
+
+      assertTrue(repository.refreshMatchPrediction("match").isSuccess)
+
+      assertEquals(0.6, requireNotNull(repository.getMatchDetails("match").first()?.prediction).teamAProbability)
+    }
+    assertEquals(listOf("120" to "1034", "120" to "1034"), predictions.requests)
+  }
+
+  @Test
+  fun matchCompletingDuringRequestDoesNotSaveLateEstimate() = runTest(dispatcher) {
+    database.matchesQueries.insertMatch(match().copy(status = "LIVE", time = "2000-01-01T12:00:00Z"))
+    assertTrue(requireNotNull(repository.getMatchDetails("match").first()).canRequestPrediction)
+    val pending = CompletableDeferred<Result<MatchPredictionDto>>()
+    predictions.pending = pending
+    val refresh = async { repository.refreshMatchPrediction("match") }
+    runCurrent()
+    assertEquals(listOf("120" to "1034"), predictions.requests)
+    detailsResult = Result.success(MatchDetailsDto(
+      event = EventDto(id = "event", status = MatchStatus.COMPLETED),
       teams = listOf(TeamDto(id = "120", name = "Alpha"), TeamDto(id = "1034", name = "Beta")),
     ))
     assertTrue(repository.refreshMatchDetails("match").isSuccess)

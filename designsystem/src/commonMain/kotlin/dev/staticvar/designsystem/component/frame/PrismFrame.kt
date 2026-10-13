@@ -25,17 +25,10 @@ import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
 public fun Modifier.prismFrame(frame: PrismFrameTokens, shape: Shape, pressProgress: Float = 0f): Modifier =
   prismFrame(frame = frame, shape = shape, pressProgress = { pressProgress })
 
-internal fun Modifier.prismFrame(
-  frame: PrismFrameTokens,
-  shape: Shape,
-  pressProgress: State<Float>?,
-): Modifier = prismFrame(frame = frame, shape = shape, pressProgress = { pressProgress?.value ?: 0f })
+internal fun Modifier.prismFrame(frame: PrismFrameTokens, shape: Shape, pressProgress: State<Float>?): Modifier =
+  prismFrame(frame = frame, shape = shape, pressProgress = { pressProgress?.value ?: 0f })
 
-internal fun Modifier.prismFrame(
-  frame: PrismFrameTokens,
-  shape: Shape,
-  pressProgress: () -> Float,
-): Modifier =
+internal fun Modifier.prismFrame(frame: PrismFrameTokens, shape: Shape, pressProgress: () -> Float): Modifier =
   if (frame.shadowOffset == DpOffset.Zero) {
     this
   } else {

@@ -31,12 +31,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.prism.Prism
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.sin
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.shared_rosie_description
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.sin
 
 @Composable
 public fun RosieMascot(modifier: Modifier = Modifier, animated: Boolean = true) {

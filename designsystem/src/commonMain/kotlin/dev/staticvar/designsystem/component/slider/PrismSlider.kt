@@ -128,11 +128,7 @@ public fun PrismSlider(
 }
 
 @Composable
-private fun PrismSliderThumb(
-  interactionSource: MutableInteractionSource,
-  enabled: Boolean,
-  style: PrismSliderStyle,
-) {
+private fun PrismSliderThumb(interactionSource: MutableInteractionSource, enabled: Boolean, style: PrismSliderStyle) {
   val pressed by interactionSource.collectIsPressedAsState()
   val dragged by interactionSource.collectIsDraggedAsState()
   val focused by interactionSource.collectIsFocusedAsState()
@@ -181,7 +177,9 @@ private fun PrismSliderLayout(
     val labelWidth = width / labels.size
     val thumbWidthPx = thumbWidth.roundToPx().coerceAtMost(width)
     val sliderWidth = (width - labelWidth + thumbWidthPx).coerceAtMost(width)
-    val rail = measurables.first().measure(constraints.copy(minWidth = sliderWidth, maxWidth = sliderWidth, minHeight = 0))
+    val rail = measurables.first().measure(
+      constraints.copy(minWidth = sliderWidth, maxWidth = sliderWidth, minHeight = 0),
+    )
     val labelPlaceables = labelMeasurables.map {
       it.measure(constraints.copy(minWidth = labelWidth, maxWidth = labelWidth, minHeight = 0))
     }

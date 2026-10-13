@@ -58,7 +58,11 @@ private fun PrismSliderPreviewContent(variant: PrismVariant, family: PrismThemeF
         .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     ) {
-      Text("Four stops · ${steppedValue.toInt() + 1} of 4", style = Prism.typography.label, color = Prism.color.labelColor)
+      Text(
+        "Four stops · ${steppedValue.toInt() + 1} of 4",
+        style = Prism.typography.label,
+        color = Prism.color.labelColor,
+      )
       PrismSlider(
         value = steppedValue,
         onValueChange = { steppedValue = it },
@@ -68,7 +72,11 @@ private fun PrismSliderPreviewContent(variant: PrismVariant, family: PrismThemeF
         stopLabels = listOf("None", "Sometimes", "Frequently", "YES"),
       )
 
-      Text("Continuous · ${(continuousValue * 100).toInt()}%", style = Prism.typography.label, color = Prism.color.labelColor)
+      Text(
+        "Continuous · ${(continuousValue * 100).toInt()}%",
+        style = Prism.typography.label,
+        color = Prism.color.labelColor,
+      )
       PrismSlider(
         value = continuousValue,
         onValueChange = { continuousValue = it },

@@ -43,7 +43,15 @@ class SavedCalendarEventTest {
     assertNull(SavedCalendarEvent.fromRecord("event-1"))
     assertNull(SavedCalendarEvent.fromRecord(mapOf("id" to " ")))
     assertNull(SavedCalendarEvent.fromRecord(mapOf("externalId" to "server-event-1")))
-    val saved = assertNotNull(SavedCalendarEvent.fromRecord(mapOf("id" to "event-1", "externalId" to " ", "calendarId" to 5)))
+    val saved = assertNotNull(
+      SavedCalendarEvent.fromRecord(
+        mapOf(
+          "id" to "event-1",
+          "externalId" to " ",
+          "calendarId" to 5,
+        ),
+      ),
+    )
     assertFalse(saved.matchesFallback(" ", null))
   }
 }

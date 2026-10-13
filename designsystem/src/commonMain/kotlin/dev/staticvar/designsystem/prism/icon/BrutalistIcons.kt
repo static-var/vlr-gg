@@ -41,7 +41,9 @@ internal val BrutalistIcons: PrismIcons by lazy {
       name = "Matches",
       outline = "M6 5 H18 L21 9 V19 H16 L14 16 H10 L8 19 H3 V9 Z M6 11 H10 M8 9 V13 M15 10 H16 M18 13 H19",
       selectedOutline = "M6 5 H18 L21 9 V19 H16 L14 16 H10 L8 19 H3 V9 Z",
-      selectedFill = "M7 8 H9 V10 H11 V12 H9 V14 H7 V12 H5 V10 H7 Z M14 9 H17 V12 H14 Z M17 12 H20 V15 H17 Z M8 4 H16 V7 H8 Z",
+      selectedFill =
+      "M7 8 H9 V10 H11 V12 H9 V14 H7 V12 H5 V10 H7 Z M14 9 H17 V12 H14 Z M17 12 H20 V15 H17 Z M8 " +
+        "4 H16 V7 H8 Z",
     ),
     events = brutalistNavigation(
       name = "Events",
@@ -57,9 +59,15 @@ internal val BrutalistIcons: PrismIcons by lazy {
     ),
     settings = brutalistNavigation(
       name = "Settings",
-      outline = "M9 2 H15 L16 5 L19 4 L22 9 L19.5 11 V13 L22 15 L19 20 L16 19 L15 22 H9 L8 19 L5 20 L2 15 L4.5 13 V11 L2 9 L5 4 L8 5 Z M15 12 A3 3 0 1 0 9 12 A3 3 0 1 0 15 12 Z",
-      selectedOutline = "M9 2 H15 L16 5 L19 4 L22 9 L19.5 11 V13 L22 15 L19 20 L16 19 L15 22 H9 L8 19 L5 20 L2 15 L4.5 13 V11 L2 9 L5 4 L8 5 Z",
-      selectedFill = "M9 2 H15 L16 5 L19 4 L22 9 L19.5 11 V13 L22 15 L19 20 L16 19 L15 22 H9 L8 19 L5 20 L2 15 L4.5 13 V11 L2 9 L5 4 L8 5 Z M15 12 A3 3 0 1 0 9 12 A3 3 0 1 0 15 12 Z",
+      outline =
+      "M9 2 H15 L16 5 L19 4 L22 9 L19.5 11 V13 L22 15 L19 20 L16 19 L15 22 H9 L8 19 L5 20 L2 15 " +
+        "L4.5 13 V11 L2 9 L5 4 L8 5 Z M15 12 A3 3 0 1 0 9 12 A3 3 0 1 0 15 12 Z",
+      selectedOutline =
+      "M9 2 H15 L16 5 L19 4 L22 9 L19.5 11 V13 L22 15 L19 20 L16 19 L15 22 H9 L8 19 L5 20 L2 15 " +
+        "L4.5 13 V11 L2 9 L5 4 L8 5 Z",
+      selectedFill =
+      "M9 2 H15 L16 5 L19 4 L22 9 L19.5 11 V13 L22 15 L19 20 L16 19 L15 22 H9 L8 19 L5 20 L2 15 " +
+        "L4.5 13 V11 L2 9 L5 4 L8 5 Z M15 12 A3 3 0 1 0 9 12 A3 3 0 1 0 15 12 Z",
     ),
   )
 }
@@ -70,6 +78,6 @@ private fun brutalistNavigation(
   selectedOutline: String,
   selectedFill: String,
 ): PrismNavigationIcons = PrismNavigationIcons(
-  unselected = prismIconArtwork(name = "Brutalist${name}", outline = outline),
+  unselected = prismIconArtwork(name = "Brutalist$name", outline = outline),
   selected = prismIconArtwork(name = "Brutalist${name}Selected", outline = selectedOutline, fill = selectedFill),
 )

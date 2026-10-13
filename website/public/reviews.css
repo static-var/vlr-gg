@@ -1,0 +1,15 @@
+.reviews-section{border-bottom:2px solid #19181b;padding:64px 0;background:#e8e1f6}
+.reviews-heading{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:28px}
+.reviews-heading h2{font:400 clamp(32px,4vw,44px)/1.15 Chakra,Arial,sans-serif;letter-spacing:-1px;margin:0 0 12px}
+.reviews-heading p{margin:0;color:#615c65;max-width:600px}
+.reviews-controls{display:flex;flex-wrap:wrap;gap:10px}
+.reviews-controls[hidden],.reviews-controls button[hidden]{display:none}
+.reviews-controls button{font:inherit;font-size:14px;border:2px solid #19181b;background:#f5f3ec;color:#19181b;padding:10px 14px;cursor:pointer}
+.reviews-controls button:hover{background:white}
+.reviews-track{display:flex;gap:20px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;padding:4px 4px 16px;direction:ltr}
+.review-card{flex:0 0 min(370px,85vw);border:2px solid #19181b;background:#f5f3ec;padding:28px;display:flex;flex-direction:column;justify-content:space-between;min-height:205px}
+.review-card blockquote{font:400 26px/1.3 Chakra,Arial,sans-serif;margin:0 0 24px}
+.review-card p{margin:0;font-size:14px}
+.review-card time{display:block;color:#615c65;font-size:12px;margin-top:6px}
+.reviews-source{display:inline-block;margin-top:18px;font-size:14px}
+@media(max-width:700px){.reviews-section{padding:48px 0}.reviews-heading{display:block}.reviews-controls{margin-top:22px}.review-card{flex-basis:calc(100vw - 68px);padding:24px}.review-card blockquote{font-size:24px}}

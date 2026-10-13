@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <bool name="splash_light_system_bars">true</bool>
     <style name="Theme.VLR" parent="android:Theme.Material.Light.NoActionBar" />
-    <style name="Theme.VLR.Starting" parent="Theme.SplashScreen">
+    <style name="Base.Theme.VLR.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splash_background</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
         <item name="android:windowSplashScreenBrandingImage" tools:targetApi="31">@drawable/splash_branding</item>
@@ -10,6 +10,6 @@
         <item name="android:statusBarColor">@color/splash_background</item>
         <item name="android:navigationBarColor">@color/splash_background</item>
         <item name="android:windowLightStatusBar">@bool/splash_light_system_bars</item>
-        <item name="android:windowLightNavigationBar">@bool/splash_light_system_bars</item>
     </style>
+    <style name="Theme.VLR.Starting" parent="Base.Theme.VLR.Starting" />
 </resources>

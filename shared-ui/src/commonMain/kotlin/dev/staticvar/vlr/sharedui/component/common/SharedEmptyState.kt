@@ -53,13 +53,17 @@ internal fun SharedIllustratedState(
   actions: @Composable () -> Unit = {},
 ) {
   BoxWithConstraints(modifier = if (compact) modifier.fillMaxWidth() else modifier.fillMaxSize()) {
-    val artworkHeight = if (compact) 160.dp else if (constraints.hasBoundedHeight) {
+    val artworkHeight = if (compact) {
+      160.dp
+    } else if (constraints.hasBoundedHeight) {
       (maxHeight * 0.45f).coerceIn(120.dp, 300.dp)
     } else {
       300.dp
     }
     val artworkWidth = minOf(maxWidth, artworkHeight * (360f / 460f))
-    val contentModifier = if (compact) Modifier.fillMaxWidth() else {
+    val contentModifier = if (compact) {
+      Modifier.fillMaxWidth()
+    } else {
       Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
         .heightIn(min = if (constraints.hasBoundedHeight) maxHeight else 0.dp)
     }

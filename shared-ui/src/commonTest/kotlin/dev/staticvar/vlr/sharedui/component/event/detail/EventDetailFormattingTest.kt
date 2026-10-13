@@ -9,14 +9,14 @@ import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.domain.model.EventMatchTeam
 import dev.staticvar.vlr.domain.model.EventStatus
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.format_status_completed
 import vlr.shared_ui.generated.resources.format_status_ongoing
 import vlr.shared_ui.generated.resources.format_status_paused
 import vlr.shared_ui.generated.resources.format_status_unknown
 import vlr.shared_ui.generated.resources.format_status_upcoming
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class EventDetailFormattingTest {
   @Test

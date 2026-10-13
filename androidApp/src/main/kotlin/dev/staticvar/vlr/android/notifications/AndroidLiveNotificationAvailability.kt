@@ -8,6 +8,7 @@ import android.content.Context
 import android.app.NotificationManager
 import android.os.Build
 import android.util.Log
+import androidx.annotation.ChecksSdkIntAtLeast
 import dev.staticvar.vlr.android.BuildConfig
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailabilityLight
@@ -17,6 +18,7 @@ import com.google.firebase.FirebaseApp
 internal object AndroidLiveNotificationAvailability {
   private val lastStatuses = mutableMapOf<String, String>()
 
+  @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.BAKLAVA)
   fun isAvailable(context: Context): Boolean {
     val available = supportsMatchAlerts(context)
     val status = when {

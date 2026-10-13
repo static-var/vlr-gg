@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.surface.PrismSurface
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.color.contentColorFor
-import kotlin.math.absoluteValue
 import org.jetbrains.compose.resources.stringResource
 import vlr.designsystem.generated.resources.Res
 import vlr.designsystem.generated.resources.prism_loader_fetch
@@ -55,6 +54,7 @@ import vlr.designsystem.generated.resources.prism_loader_parse
 import vlr.designsystem.generated.resources.prism_loader_render
 import vlr.designsystem.generated.resources.prism_loader_sync
 import vlr.designsystem.generated.resources.prism_loading
+import kotlin.math.absoluteValue
 
 private object PrismLoaderConstants {
   val smallWidth: Dp = 96.dp

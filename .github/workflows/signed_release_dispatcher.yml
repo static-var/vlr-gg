@@ -33,7 +33,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install compile SDK
-        run: sdkmanager 'platforms;android-37.0'
+        run: sdkmanager 'platforms;android-37.1'
 
       - name: Decode keystore
         env:

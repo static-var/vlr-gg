@@ -192,7 +192,7 @@ final class FavoriteSearchTests: XCTestCase {
 
     func testDecodeRejectsMismatchedDuplicateAndUnsafeIdentifiers() throws {
         let valid = #"[{"id":"team:12","kind":"team","sourceId":"12","title":"Team Liquid"}]"#
-        XCTAssertEqual(try SearchFavorite.decode(Data(valid.utf8)).first?.url.absoluteString, "https://valorantesports.staticvar.dev/team/12")
+        XCTAssertEqual(try SearchFavorite.decode(Data(valid.utf8)).first?.url.absoluteString, "https://valesports.app/team/12")
         let withAlias = #"[{"id":"team:624","kind":"team","sourceId":"624","title":"Paper Rex","aliases":["PRX"]}]"#
         XCTAssertEqual(try SearchFavorite.decode(Data(withAlias.utf8)).first?.aliases, ["PRX"])
         for invalid in [
@@ -247,10 +247,10 @@ final class FavoriteSearchTests: XCTestCase {
         }
         XCTAssertEqual(Set(records.map(\.id)).count, 4)
         XCTAssertEqual(records.map { $0.url.absoluteString }, [
-            "https://valorantesports.staticvar.dev/team/12",
-            "https://valorantesports.staticvar.dev/event/12",
-            "https://valorantesports.staticvar.dev/match/12",
-            "https://valorantesports.staticvar.dev/player/12",
+            "https://valesports.app/team/12",
+            "https://valesports.app/event/12",
+            "https://valesports.app/match/12",
+            "https://valesports.app/player/12",
         ])
     }
 

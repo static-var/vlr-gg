@@ -15,7 +15,9 @@ kotlin {
 
   androidLibrary {
     namespace = "dev.staticvar.vlr.featureabout"
-    compileSdk = 37
+    compileSdk {
+      version = release(37) { minorApiLevel = 1 }
+    }
     minSdk = 24
     androidResources.enable = true
   }

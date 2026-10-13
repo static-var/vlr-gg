@@ -5,7 +5,7 @@ enum VLRWidgetContract {
     static let snapshotFilename = "upcoming-matches.json"
     static let refreshedSnapshotFilename = "upcoming-matches-refreshed.json"
     static let widgetKind = "dev.staticvar.vlr.upcoming-matches"
-    static let appURL = URL(string: "https://valorantesports.staticvar.dev/")!
+    static let appURL = URL(string: "https://valesports.app/")!
 
     static var snapshotURL: URL? {
         FileManager.default

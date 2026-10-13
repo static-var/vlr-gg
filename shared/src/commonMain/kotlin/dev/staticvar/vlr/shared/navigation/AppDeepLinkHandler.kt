@@ -71,8 +71,8 @@ internal sealed interface AppDeepLinkDestination {
   data class Player(val playerId: String) : AppDeepLinkDestination
 }
 
-private val detailsDeepLink = Regex("^https://valorantesports\\.staticvar\\.dev/(match|event|team|player)/([0-9]+)(?:[?#].*)?$")
-private val homeDeepLink = Regex("^https://valorantesports\\.staticvar\\.dev/(?:[?#].*)?$")
+private val detailsDeepLink = Regex("^https://(?:valesports\\.app|valorantesports\\.staticvar\\.dev)/(match|event|team|player)/([0-9]+)(?:[?#].*)?$")
+private val homeDeepLink = Regex("^https://(?:valesports\\.app|valorantesports\\.staticvar\\.dev)/(?:[?#].*)?$")
 
 internal fun parseAppDeepLink(url: String): AppDeepLinkDestination? {
   val normalizedUrl = url.trim()

@@ -1,0 +1,89 @@
+{
+  "status": "prepared-not-uploaded",
+  "app_version": "1.1.0",
+  "source": {
+    "description": "distribution/appstore/description-en-US.txt",
+    "whats_new": "distribution/whatsnew-ios/whatsnew-en-US"
+  },
+  "localizations": {
+    "en-GB": {
+      "name": "Val Esports",
+      "subtitle": "Live scores, matches & events",
+      "description": "Follow competitive Valorant in one place. Val Esports brings together match schedules, live scores, results, events, and regional rankings.\n\nYOUR FAVOURITES, TOGETHER\nSave teams, players, events, and matches to build a home feed around the competition you follow. No account or sign-in is required.\n\nFOLLOW EVERY MATCH\nCheck upcoming match times, live series scores, completed results, maps, and player statistics. Add upcoming matches to your calendar.\n\nKEEP RESULTS A SURPRISE\nTurn on spoiler protection to hide scores until you are ready to see them.\n\nFOLLOW THE WHOLE EVENT\nExplore event schedules, participating teams, standings, and prize information. Check regional rankings.\n\nAT A GLANCE ON iPHONE AND iPAD\nAdd favourite-match widgets to your Home Screen. Find saved favourites through Spotlight and use supported Shortcuts to check your next favourite match.\n\nMAKE IT YOURS\nChoose a theme and enjoy a clean layout on iPhone and iPad.\n\nVal Esports is an independent, open-source fan app. It is not affiliated with or endorsed by Riot Games. Valorant and related marks belong to Riot Games.\n",
+      "promotional_text": "Follow Valorant scores, schedules and results. Save your favourite teams and events, hide spoilers, and check favourite matches in widgets and Live Activities.",
+      "keywords": "valorant,vct,schedule,results,rankings,teams,players,spoilers,widgets,competitive",
+      "whats_new": "New since 1.0.0:\n\n• Explore rankings by region and competition, plus team ratings and recent form.\n• See estimated win chances before a match.\n• Follow favourite matches on your Lock Screen and Dynamic Island, with live scores, map progress, pauses and round history.\n• Add matches and event schedules to your calendar.\n• Catch up on favourite matches and recent results on Home.\n• Keep upcoming matches and live scores in refreshed widgets.\n• See current map scores and round-by-round match results.\n• Choose your app icon, theme and mascot.\n• Find favourites in Spotlight and check your next match with Siri.\n• Enjoy nine languages, clearer Settings and smoother browsing.\n• News is no longer in the app.\n",
+      "privacy_policy_url": "https://valesports.app/privacy/",
+      "support_url": "https://valesports.app/support/",
+      "marketing_url": "https://valesports.app/"
+    },
+    "hi": {
+      "name": "Val Esports",
+      "subtitle": "लाइव स्कोर, मैच और इवेंट",
+      "description": "प्रतिस्पर्धी Valorant की जानकारी एक जगह पाएँ। Val Esports में मैच शेड्यूल, लाइव स्कोर, नतीजे, इवेंट और क्षेत्रीय रैंकिंग देखें।\n\nआपकी पसंद, एक जगह\nटीमों, खिलाड़ियों, इवेंट और मैचों को पसंदीदा में जोड़कर अपना होम फ़ीड बनाएँ। किसी खाते या साइन-इन की ज़रूरत नहीं है।\n\nहर मैच को फ़ॉलो करें\nआने वाले मैचों का समय, लाइव सीरीज़ स्कोर, पूरे हो चुके मैचों के नतीजे, मैप और खिलाड़ियों के आँकड़े देखें। आने वाले मैच अपने कैलेंडर में जोड़ें।\n\nनतीजे जानने की जल्दी नहीं\nस्पॉइलर सुरक्षा चालू करके स्कोर तब तक छिपाएँ, जब तक आप उन्हें देखने के लिए तैयार न हों।\n\nपूरे इवेंट को फ़ॉलो करें\nइवेंट का शेड्यूल, भाग लेने वाली टीमें, अंक तालिका और पुरस्कार की जानकारी देखें। क्षेत्रीय रैंकिंग देखें।\n\niPHONE और iPAD पर एक नज़र में\nपसंदीदा मैचों के विजेट अपनी होम स्क्रीन पर जोड़ें। Spotlight में सहेजे हुए पसंदीदा खोजें और समर्थित Shortcuts से अपना अगला पसंदीदा मैच देखें।\n\nअपनी पसंद के अनुसार\nथीम चुनें और iPhone व iPad पर साफ़ लेआउट में जानकारी देखें।\n\nVal Esports प्रशंसकों के लिए एक स्वतंत्र, ओपन-सोर्स ऐप है। इसका Riot Games से कोई संबंध नहीं है और न ही Riot Games इसका समर्थन करता है। Valorant और उससे जुड़े ट्रेडमार्क Riot Games के हैं।\n",
+      "promotional_text": "Valorant के स्कोर, शेड्यूल और नतीजे देखें। पसंदीदा टीमें और इवेंट सहेजें, स्पॉइलर छिपाएँ और विजेट व Live Activities में पसंदीदा मैच देखें।",
+      "keywords": "valorant,vct,शेड्यूल,नतीजे,रैंकिंग,टीमें,खिलाड़ी,स्पॉइलर,विजेट",
+      "whats_new": "1.0.0 के बाद से नया:\n\n• क्षेत्र और प्रतियोगिता के अनुसार रैंकिंग, टीम रेटिंग और हालिया प्रदर्शन देखें।\n• मैच से पहले जीतने की अनुमानित संभावना देखें।\n• लॉक स्क्रीन और Dynamic Island पर पसंदीदा मैच फ़ॉलो करें, जिनमें लाइव स्कोर, मैप की प्रगति, विराम और राउंड का इतिहास शामिल हैं।\n• मैच और इवेंट शेड्यूल अपने कैलेंडर में जोड़ें।\n• होम पर पसंदीदा मैचों और हालिया नतीजों की जानकारी देखें।\n• नए विजेट में आने वाले मैच और लाइव स्कोर देखें।\n• मौजूदा मैप के स्कोर और हर राउंड के मैच नतीजे देखें।\n• अपने ऐप का आइकन, थीम और शुभंकर चुनें।\n• Spotlight में पसंदीदा खोजें और Siri से अपना अगला मैच देखें।\n• नौ भाषाओं, अधिक स्पष्ट सेटिंग्स और सहज ब्राउज़िंग का आनंद लें।\n• ऐप में अब समाचार नहीं हैं।\n",
+      "privacy_policy_url": "https://valesports.app/privacy/",
+      "support_url": "https://valesports.app/support/",
+      "marketing_url": "https://valesports.app/"
+    },
+    "pt-BR": {
+      "name": "Val Esports",
+      "subtitle": "Placares, partidas e eventos",
+      "description": "Acompanhe o Valorant competitivo em um só lugar. Val Esports reúne horários de partidas, placares ao vivo, resultados, eventos e rankings regionais.\n\nSEUS FAVORITOS, JUNTOS\nSalve times, jogadores, eventos e partidas para montar um feed na tela inicial com as competições que você acompanha. Não é necessário criar uma conta ou fazer login.\n\nACOMPANHE CADA PARTIDA\nConfira os horários das próximas partidas, placares das séries ao vivo, resultados das partidas encerradas, mapas e estatísticas dos jogadores. Adicione as próximas partidas ao seu calendário.\n\nEVITE SPOILERS DOS RESULTADOS\nAtive a proteção contra spoilers para ocultar os placares até estar pronto para vê-los.\n\nACOMPANHE O EVENTO INTEIRO\nExplore a programação dos eventos, os times participantes, as classificações e as informações sobre a premiação. Confira os rankings regionais.\n\nNUM RELANCE NO iPHONE E iPAD\nAdicione widgets de partidas favoritas à sua Tela de Início. Encontre os favoritos salvos no Spotlight e use os Atalhos compatíveis para conferir sua próxima partida favorita.\n\nDO SEU JEITO\nEscolha um tema e veja as informações em um layout organizado no iPhone e iPad.\n\nVal Esports é um app independente, de código aberto, feito para fãs. Não tem afiliação com a Riot Games nem é endossado por ela. Valorant e as marcas relacionadas pertencem à Riot Games.\n",
+      "promotional_text": "Siga placares, horários e resultados de Valorant. Salve times e eventos, oculte spoilers e acompanhe partidas em widgets e Atividades ao Vivo.",
+      "keywords": "valorant,vct,calendário,resultados,rankings,times,jogadores,spoilers,widgets,competitivo",
+      "whats_new": "Novidades desde a versão 1.0.0:\n\n• Explore rankings por região e competição, além de avaliações dos times e desempenho recente.\n• Veja as chances estimadas de vitória antes de uma partida.\n• Acompanhe partidas favoritas na Tela Bloqueada e na Dynamic Island, com placares ao vivo, progresso dos mapas, pausas e histórico de rounds.\n• Adicione partidas e a programação dos eventos ao seu calendário.\n• Confira partidas favoritas e resultados recentes na tela inicial.\n• Veja próximas partidas e placares ao vivo nos widgets atualizados.\n• Veja os placares do mapa atual e os resultados de cada round.\n• Escolha o ícone do app, o tema e o mascote.\n• Encontre favoritos no Spotlight e confira sua próxima partida com a Siri.\n• Aproveite nove idiomas, ajustes mais claros e uma navegação mais fluida.\n• Notícias não estão mais no app.\n",
+      "privacy_policy_url": "https://valesports.app/privacy/",
+      "support_url": "https://valesports.app/support/",
+      "marketing_url": "https://valesports.app/"
+    }
+  },
+  "custom_product_pages": {
+    "matches": {
+      "en-GB": {
+        "promotional_text": "Follow Valorant matches with live series scores, map results and round history. Save favourites, add upcoming matches to your calendar and hide spoilers."
+      },
+      "hi": {
+        "promotional_text": "Valorant मैचों के लाइव सीरीज़ स्कोर, मैप नतीजे और राउंड का इतिहास देखें। पसंदीदा सहेजें, आने वाले मैच कैलेंडर में जोड़ें और स्पॉइलर छिपाएँ।"
+      },
+      "pt-BR": {
+        "promotional_text": "Acompanhe partidas de Valorant com placares ao vivo, resultados dos mapas e histórico de rounds. Salve favoritos, use o calendário e oculte spoilers."
+      }
+    },
+    "india": {
+      "en-GB": {
+        "promotional_text": "Plan your next Valorant match day. Check upcoming schedules, save your favourite teams and matches, add fixtures to your calendar and follow live scores."
+      },
+      "hi": {
+        "promotional_text": "अगले Valorant मैच की तैयारी करें। आने वाले मैचों का शेड्यूल देखें, पसंदीदा टीमें और मैच सहेजें, मैच कैलेंडर में जोड़ें और लाइव स्कोर फ़ॉलो करें।"
+      },
+      "pt-BR": {
+        "promotional_text": "Prepare-se para a próxima partida de Valorant. Veja horários, salve seus times e partidas favoritos, adicione jogos ao calendário e siga os placares ao vivo."
+      }
+    },
+    "rankings": {
+      "en-GB": {
+        "promotional_text": "Explore Valorant rankings by region and competition, team ratings and recent form. Follow favourite teams and players, and check rosters and match stats."
+      },
+      "hi": {
+        "promotional_text": "क्षेत्र और प्रतियोगिता के अनुसार Valorant रैंकिंग, टीम रेटिंग और हालिया प्रदर्शन देखें। पसंदीदा टीमों व खिलाड़ियों को फ़ॉलो करें और मैच के आँकड़े देखें।"
+      },
+      "pt-BR": {
+        "promotional_text": "Explore rankings de Valorant por região e competição, avaliações dos times e desempenho recente. Siga times e jogadores e confira elencos e estatísticas."
+      }
+    },
+    "brazil": {
+      "en-GB": {
+        "promotional_text": "Keep favourite Valorant matches on your Home Screen with widgets. Hide scores with spoiler protection, then catch up on results when you are ready."
+      },
+      "hi": {
+        "promotional_text": "विजेट से पसंदीदा Valorant मैच अपनी होम स्क्रीन पर रखें। स्पॉइलर सुरक्षा से स्कोर छिपाएँ और तैयार होने पर मैच के नतीजे देखें।"
+      },
+      "pt-BR": {
+        "promotional_text": "Veja suas partidas favoritas de Valorant em widgets na Tela de Início. Oculte os placares com a proteção contra spoilers e confira os resultados quando quiser."
+      }
+    }
+  }
+}

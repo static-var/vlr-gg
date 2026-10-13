@@ -78,12 +78,14 @@ internal fun MatchDetailOptionsSheet(
       modifier = Modifier.fillMaxWidth(),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
     ) {
-      MatchSectionOption(
-        title = stringResource(Res.string.prediction),
-        description = stringResource(Res.string.prediction_option_description),
-        checked = preferences.showPrediction,
-        onCheckedChange = { onPreferencesChange(preferences.copy(showPrediction = it)) },
-      )
+      if (match.prediction != null || match.canRequestPrediction) {
+        MatchSectionOption(
+          title = stringResource(Res.string.prediction),
+          description = stringResource(Res.string.prediction_option_description),
+          checked = preferences.showPrediction,
+          onCheckedChange = { onPreferencesChange(preferences.copy(showPrediction = it)) },
+        )
+      }
       if (match.matchData.isNotEmpty()) {
         MatchSectionOption(
           title = stringResource(Res.string.breakdown),

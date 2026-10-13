@@ -1,0 +1,194 @@
+{
+  "locales": {
+    "en-US": {
+      "art_language": "English",
+      "feature_support": "VALORANT scores, schedules & stats",
+      "feature_footer": "Ad-free. No sign-in.",
+      "slides": [
+        {
+          "source": 1,
+          "headline": [
+            "Every match.",
+            "One place."
+          ],
+          "support": "VALORANT schedules and results"
+        },
+        {
+          "source": 2,
+          "headline": [
+            "Know the score."
+          ],
+          "support": "Map results and player stats"
+        },
+        {
+          "source": 3,
+          "headline": [
+            "Your teams.",
+            "Your match day."
+          ],
+          "support": "Favorites and spoiler controls"
+        },
+        {
+          "source": 4,
+          "headline": [
+            "Follow the",
+            "whole event."
+          ],
+          "support": "Teams, matches and standings"
+        },
+        {
+          "source": 5,
+          "headline": [
+            "See where",
+            "teams stand."
+          ],
+          "support": "Regional VALORANT rankings"
+        }
+      ]
+    },
+    "en-IN": {
+      "art_language": "English",
+      "feature_support": "VALORANT match days, your way",
+      "feature_footer": "Ad-free. No sign-in.",
+      "slides": [
+        {
+          "source": 1,
+          "headline": [
+            "Plan your",
+            "match day."
+          ],
+          "support": "VALORANT schedules and results"
+        },
+        {
+          "source": 3,
+          "headline": [
+            "Your teams.",
+            "Your match day."
+          ],
+          "support": "Favorites and spoiler controls"
+        },
+        {
+          "source": 4,
+          "headline": [
+            "Follow the",
+            "whole event."
+          ],
+          "support": "Teams, matches and standings"
+        },
+        {
+          "source": 2,
+          "headline": [
+            "Know the score."
+          ],
+          "support": "Map results and player stats"
+        },
+        {
+          "source": 5,
+          "headline": [
+            "See where",
+            "teams stand."
+          ],
+          "support": "Regional VALORANT rankings"
+        }
+      ]
+    },
+    "pt-BR": {
+      "art_language": "pt-BR",
+      "feature_support": "Placares, partidas e estatísticas",
+      "feature_footer": "Sem anúncios. Sem cadastro.",
+      "slides": [
+        {
+          "source": 3,
+          "headline": [
+            "Seus times.",
+            "Suas partidas."
+          ],
+          "support": "Favoritos e controle de spoilers"
+        },
+        {
+          "source": 1,
+          "headline": [
+            "Todos os jogos.",
+            "Em um só lugar."
+          ],
+          "support": "Partidas e resultados de VALORANT"
+        },
+        {
+          "source": 4,
+          "headline": [
+            "Acompanhe o",
+            "campeonato."
+          ],
+          "support": "Times, partidas e classificação"
+        },
+        {
+          "source": 2,
+          "headline": [
+            "Veja o placar."
+          ],
+          "support": "Resultados por mapa e estatísticas"
+        },
+        {
+          "source": 5,
+          "headline": [
+            "Veja a posição",
+            "dos times."
+          ],
+          "support": "Classificação de times de VALORANT"
+        }
+      ],
+      "source_directory": "distribution/google-play/creative-2026-10/raw/pt-BR",
+      "source_ui_language": "Brazilian Portuguese"
+    },
+    "hi-IN": {
+      "art_language": "English",
+      "feature_support": "VALORANT match days, your way",
+      "feature_footer": "Ad-free. No sign-in.",
+      "slides": [
+        {
+          "source": 1,
+          "headline": [
+            "Plan your",
+            "match day."
+          ],
+          "support": "VALORANT schedules and results"
+        },
+        {
+          "source": 3,
+          "headline": [
+            "Your teams.",
+            "Your match day."
+          ],
+          "support": "Favorites and spoiler controls"
+        },
+        {
+          "source": 4,
+          "headline": [
+            "Follow the",
+            "whole event."
+          ],
+          "support": "Teams, matches and standings"
+        },
+        {
+          "source": 2,
+          "headline": [
+            "Know the score."
+          ],
+          "support": "Map results and player stats"
+        },
+        {
+          "source": 5,
+          "headline": [
+            "See where",
+            "teams stand."
+          ],
+          "support": "VALORANT team rankings"
+        }
+      ],
+      "source_directory": "distribution/google-play/creative-2026-10/raw/hi-IN",
+      "source_ui_language": "Hindi"
+    }
+  },
+  "source_ui_language": "English",
+  "hindi_font_coverage": "Bundled brand fonts do not support Devanagari; use English artwork with Hindi store metadata."
+}

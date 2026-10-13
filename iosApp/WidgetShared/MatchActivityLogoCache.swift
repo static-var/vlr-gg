@@ -86,8 +86,9 @@ enum MatchActivityLogoCache {
         if let cached = colors.object(forKey: key) { return cached.value }
         guard let data = try? Data(contentsOf: file),
               let color = try? PropertyListDecoder().decode(MatchActivityLogoColor.self, from: data) else { return nil }
-        if case .vivid(let rgb) = color,
-           ![rgb.red, rgb.green, rgb.blue].allSatisfy({ (0...255).contains($0) }) { return nil }
+        guard color.colors.allSatisfy({ rgb in
+            [rgb.red, rgb.green, rgb.blue].allSatisfy { (0...255).contains($0) }
+        }) else { return nil }
         colors.setObject(CachedColor(color), forKey: key)
         return color
     }
@@ -195,7 +196,7 @@ enum MatchActivityLogoCache {
     }
 
     private static func colorURL(original: URL) -> URL {
-        original.appendingPathExtension("team-color-v1.plist")
+        original.appendingPathExtension("team-color-v2.plist")
     }
 
     /// Stores bounded premultiplied RGBA pixels without adding a raster image encoder dependency.

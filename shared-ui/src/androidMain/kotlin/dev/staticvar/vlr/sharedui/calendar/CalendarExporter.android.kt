@@ -10,9 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
-import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 
 @Composable
 public actual fun rememberCalendarManager(): CalendarManager {
@@ -21,7 +21,8 @@ public actual fun rememberCalendarManager(): CalendarManager {
     object : CalendarManager {
       override suspend fun status(uids: Set<String>): CalendarEntryStatus = CalendarEntryStatus.NotAdded
 
-      override suspend fun add(fileName: String, entries: List<CalendarEntry>): CalendarExportResult = export(fileName, entries)
+      override suspend fun add(fileName: String, entries: List<CalendarEntry>): CalendarExportResult =
+        export(fileName, entries)
 
       override suspend fun remove(uids: Set<String>): CalendarExportResult = CalendarExportResult.Failed
     }
@@ -29,7 +30,10 @@ public actual fun rememberCalendarManager(): CalendarManager {
 }
 
 @Composable
-public actual fun rememberCalendarExporter(): suspend (fileName: String, entries: List<CalendarEntry>) -> CalendarExportResult {
+public actual fun rememberCalendarExporter(): suspend (
+  fileName: String,
+  entries: List<CalendarEntry>,
+) -> CalendarExportResult {
   val context = LocalContext.current
   return remember(context) {
     { fileName, entries ->
@@ -45,7 +49,9 @@ public actual fun rememberCalendarExporter(): suspend (fileName: String, entries
         }
         // Calendar apps import every event in the file; the share targets cover devices without one.
         val open = Intent(Intent.ACTION_VIEW).setDataAndType(uri, CALENDAR_MIME_TYPE).grantingRead()
-        val share = Intent(Intent.ACTION_SEND).setType(CALENDAR_MIME_TYPE).putExtra(Intent.EXTRA_STREAM, uri).grantingRead()
+        val share = Intent(
+          Intent.ACTION_SEND,
+        ).setType(CALENDAR_MIME_TYPE).putExtra(Intent.EXTRA_STREAM, uri).grantingRead()
         val chooser = Intent.createChooser(open, null)
           .putExtra(Intent.EXTRA_ALTERNATE_INTENTS, arrayOf(share))
           .grantingRead()

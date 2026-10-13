@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -24,7 +25,6 @@ import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
 import dev.staticvar.designsystem.component.divider.PrismDividerStyle
-import dev.staticvar.designsystem.component.header.PrismHeader
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
@@ -36,8 +36,9 @@ import dev.staticvar.vlr.sharedui.component.common.formatMatchPreviewTime
 import dev.staticvar.vlr.sharedui.component.match.MatchFavoriteReasons
 import dev.staticvar.vlr.sharedui.component.match.MatchSharedContent
 import dev.staticvar.vlr.sharedui.component.match.matchSharedBounds
+import dev.staticvar.vlr.sharedui.component.match.rememberMatchSharedText
 import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
-import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerContent
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.match_event_live
@@ -68,10 +69,23 @@ public fun MatchPreviewItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
       ) {
-        PrismHeader(
-          text = matchPreview.event,
-          modifier = Modifier.weight(1f).matchSharedBounds(matchPreview.id, MatchSharedContent.Event),
-        )
+        Row(Modifier.weight(1f).padding(Prism.dimens.spacingXs)) {
+          Text("// ", style = Prism.typography.labelAlt, color = Prism.color.labelColor)
+          val eventTransition = rememberMatchSharedText(
+            matchId = matchPreview.id,
+            content = MatchSharedContent.Event,
+            color = Prism.color.labelColor,
+            fontSize = Prism.typography.labelAlt.fontSize,
+          )
+          Text(
+            text = matchPreview.event,
+            modifier = eventTransition.modifier,
+            style = Prism.typography.cardTitle.copy(fontSize = Prism.typography.labelAlt.fontSize),
+            color = eventTransition.color,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis,
+          )
+        }
         val time = formatMatchPreviewTime(isoUtcTime = matchPreview.time)
         when (matchPreview.status) {
           MatchStatus.LIVE -> PrismTag(
@@ -179,20 +193,25 @@ private fun TeamScoreRow(team: TeamPreview, matchId: String, useAltColor: Boolea
     modifier = modifier.fillMaxWidth().padding(vertical = Prism.dimens.spacingXs),
     verticalAlignment = Alignment.CenterVertically,
   ) {
+    val color = if (useAltColor) Prism.color.accent else Prism.color.labelColor
+    val nameTransition = rememberMatchSharedText(matchId, MatchSharedContent.TeamName, team.id, color)
     Text(
       text = team.name,
       style = Prism.typography.headline,
-      color = if (useAltColor) Prism.color.accent else Prism.color.labelColor,
+      color = nameTransition.color,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
-      modifier = Modifier.weight(1f).matchSharedBounds(matchId, MatchSharedContent.TeamName, team.id),
+      modifier = Modifier.weight(1f).wrapContentSize(Alignment.CenterStart).then(nameTransition.modifier),
     )
-    SpoilerScore(
-      text = team.score?.toString() ?: "-",
-      style = Prism.typography.headline,
-      color = if (useAltColor) Prism.color.accent else Prism.color.labelColor,
-      modifier = Modifier.padding(start = Prism.dimens.spacingXs)
-        .matchSharedBounds(matchId, MatchSharedContent.TeamScore, team.id),
-    )
+    SpoilerContent(modifier = Modifier.padding(start = Prism.dimens.spacingXs)) {
+      val scoreTransition = rememberMatchSharedText(matchId, MatchSharedContent.TeamScore, team.id, color)
+      Text(
+        text = team.score?.toString() ?: "–",
+        modifier = scoreTransition.modifier,
+        style = Prism.typography.headline,
+        color = scoreTransition.color,
+        maxLines = 1,
+      )
+    }
   }
 }

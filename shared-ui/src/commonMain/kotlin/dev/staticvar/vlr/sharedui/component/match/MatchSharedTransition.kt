@@ -13,8 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.TextUnit
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.SharedTextTransition
 import dev.staticvar.vlr.sharedui.component.common.TransitionContentFade
+import dev.staticvar.vlr.sharedui.component.common.rememberSharedTextTransition
 import dev.staticvar.vlr.sharedui.component.common.rememberTransitionContentFade
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -53,12 +57,39 @@ public fun rememberMatchDetailContentFade(ready: Boolean = true): TransitionCont
 }
 
 internal enum class MatchSharedContent {
-  Card, Event, TeamName, TeamScore,
+  Card,
+  Event,
+  TeamName,
+  TeamScore,
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun Modifier.matchSharedBounds(matchId: String, content: MatchSharedContent, teamId: String? = null): Modifier {
+internal fun rememberMatchSharedText(
+  matchId: String,
+  content: MatchSharedContent,
+  teamId: String? = null,
+  color: Color,
+  fontSize: TextUnit? = null,
+): SharedTextTransition {
+  val scope = LocalMatchTransitionScope.current
+  val hasIdentity = content == MatchSharedContent.Event || !teamId.isNullOrBlank()
+  return rememberSharedTextTransition(
+    key = "match:$matchId:$content:${teamId.orEmpty()}",
+    sharedScope = scope?.sharedTransitionScope.takeIf { hasIdentity },
+    visibilityScope = scope?.animatedVisibilityScope.takeIf { hasIdentity },
+    color = color,
+    fontSize = fontSize,
+  )
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+internal fun Modifier.matchSharedBounds(
+  matchId: String,
+  content: MatchSharedContent,
+  teamId: String? = null,
+): Modifier {
   if ((content == MatchSharedContent.TeamName || content == MatchSharedContent.TeamScore) && teamId.isNullOrBlank()) {
     return this
   }
@@ -71,12 +102,7 @@ internal fun Modifier.matchSharedBounds(matchId: String, content: MatchSharedCon
       boundsTransform = BoundsTransform { _, _ ->
         tween(durationMillis = animation.durationMillis, easing = animation.easing)
       },
-      resizeMode = if (content == MatchSharedContent.Card) {
-        SharedTransitionScope.ResizeMode.RemeasureToBounds
-      } else {
-        SharedTransitionScope.ResizeMode.scaleToBounds()
-      },
-      zIndexInOverlay = if (content == MatchSharedContent.Card) 0f else 1f,
+      resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
     )
   }
 }

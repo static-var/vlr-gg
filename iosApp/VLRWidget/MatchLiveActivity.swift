@@ -316,11 +316,12 @@ struct MatchLiveActivityMapProgress {
                         state.current_map?.number ?? 0)
         guard (1...9).contains(total) else { return nil }
         self.hidden = hidden
-        maps = (0..<total).map { index in
+        let allMaps = (0..<total).map { index in
             let number = index + 1
             let current = state.current_map?.number == number
             let active = !state.terminal && current
-            let history = state.map_round_winners.first { $0.map_number == number }?.winners ?? []
+            let mapHistory = state.map_round_winners.first { $0.map_number == number }
+            let history = mapHistory?.winners ?? []
             var segment = Segment.pending
             if state.map_winners.indices.contains(index), let winner = state.map_winners[index] {
                 let matchingTeams = state.teams.indices.prefix(2).filter { state.teams[$0].id == winner }
@@ -334,26 +335,52 @@ struct MatchLiveActivityMapProgress {
             let knownHistory = !history.isEmpty && history.allSatisfy { $0 == 0 || $0 == 1 }
             let historyScores: [Int?] = knownHistory
                 ? [history.filter { $0 == 0 }.count, history.filter { $0 == 1 }.count] : [nil, nil]
-            let scores = current ? (0..<2).map { team in
-                let values = state.current_map?.scores ?? []
-                return values.indices.contains(team) ? values[team] : nil
-            } : historyScores
-            let currentRoundCount = current && scores.allSatisfy({ $0 != nil && $0! >= 0 })
-                ? scores.compactMap { $0 }.reduce(0, +) : 0
-            let played = max(history.count, currentRoundCount)
+            let currentScores = current ? state.current_map?.scores ?? [] : []
+            let values = currentScores.isEmpty ? mapHistory?.scores ?? [] : currentScores
+            var scores = values.isEmpty ? historyScores : (0..<2).map { team -> Int? in
+                guard values.indices.contains(team), let value = values[team], value >= 0 else { return nil }
+                return value
+            }
+            if case .wonBy(let winner) = segment, knownHistory {
+                let won = historyScores[winner]!, lost = historyScores[1 - winner]!
+                let completedHistory = won == max(13, lost + 2)
+                if values.isEmpty && !completedHistory {
+                    scores = [nil, nil]
+                } else if completedHistory && scores.contains(nil)
+                            && scores.enumerated().allSatisfy({ $0.element == nil || $0.element == historyScores[$0.offset] }) {
+                    scores = historyScores
+                }
+            }
+            let scoredRounds = scores.allSatisfy({ $0 != nil }) ? scores.compactMap { $0 }.reduce(0, +) : 0
+            let winners = Self.resolvedRoundWinners(history, scores: scores)
+            let played = max(winners.count, scoredRounds)
             let rounds: [Round] = (0..<max(12, played)).map { round in
-                if round < history.count, let winner = history[round], (0...1).contains(winner) {
+                if round < winners.count, let winner = winners[round], (0...1).contains(winner) {
                     return .wonBy(winner)
                 }
                 return round < played ? .unknown : .pending
             }
             return Map(number: number, segment: segment, rounds: rounds, scores: scores)
         }
-        let lastPlayed = maps.last { map in
+        let lastPlayed = allMaps.last { map in
             map.segment != .pending || map.rounds.contains { $0 != .pending }
         }?.number ?? 1
+        maps = state.terminal && !hidden ? Array(allMaps.prefix(lastPlayed)) : allMaps
         let focus = state.terminal ? lastPlayed : state.current_map?.number ?? lastPlayed
-        firstVisibleIndex = min(max(0, focus - 3), max(0, total - 3))
+        firstVisibleIndex = min(max(0, focus - 3), max(0, maps.count - 3))
+    }
+
+    private static func resolvedRoundWinners(_ history: [Int?], scores: [Int?]) -> [Int?] {
+        guard scores.count == 2, let first = scores[0], let second = scores[1],
+              first >= 0, second >= 0, first + second == history.count,
+              history.allSatisfy({ $0 == nil || $0 == 0 || $0 == 1 }) else { return history }
+        let unknown = history.filter { $0 == nil }.count
+        guard unknown > 0 else { return history }
+        let missing = [first - history.filter { $0 == 0 }.count,
+                       second - history.filter { $0 == 1 }.count]
+        guard missing == [unknown, 0] || missing == [0, unknown] else { return history }
+        let winner = missing[0] == unknown ? 0 : 1
+        return history.map { $0 ?? winner }
     }
 }
 
@@ -370,17 +397,21 @@ private struct MatchLiveActivityMapProgressView: View {
                 VStack(spacing: 3) {
                     Text(verbatim: map.scoreText)
                         .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
-                        .foregroundStyle(palette.secondary)
+                        .foregroundStyle(scoreColor(for: map.segment))
                         .monospacedDigit()
                         .lineLimit(1)
-                    GeometryReader { geometry in
-                        HStack(spacing: min(3, geometry.size.width / CGFloat(map.rounds.count * 3))) {
-                            ForEach(map.rounds.indices, id: \.self) { round in
-                                RoundedRectangle(cornerRadius: 1.5)
-                                    .fill(fill(for: map.rounds[round]))
-                                    .frame(maxWidth: 6)
-                                    .frame(maxWidth: .infinity)
-                            }
+                        .minimumScaleFactor(0.7)
+                    HStack(spacing: min(1.5, 40 / CGFloat(map.rounds.count))) {
+                        ForEach(map.rounds.indices, id: \.self) { round in
+                            RoundedRectangle(cornerRadius: 1.5)
+                                .fill(fill(for: map.rounds[round]))
+                                .overlay {
+                                    if map.rounds[round] == .unknown {
+                                        RoundedRectangle(cornerRadius: 1.5)
+                                            .strokeBorder(palette.secondary, lineWidth: 1)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
                         }
                     }
                     .frame(height: 12)
@@ -388,7 +419,7 @@ private struct MatchLiveActivityMapProgressView: View {
                     .padding(.vertical, 4)
                     .background {
                         RoundedRectangle(cornerRadius: 6)
-                            .strokeBorder(outline(for: map.segment), lineWidth: 1.4)
+                            .strokeBorder(palette.border.opacity(0.7), lineWidth: 1.4)
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -405,14 +436,14 @@ private struct MatchLiveActivityMapProgressView: View {
     private func fill(for round: MatchLiveActivityMapProgress.Round) -> Color {
         switch round {
         case .wonBy(let index): return Color(uiColor: teamColors.color(for: index))
-        case .unknown: return palette.secondary.opacity(0.6)
+        case .unknown: return .clear
         case .pending: return palette.border.opacity(0.55)
         }
     }
 
-    private func outline(for segment: MatchLiveActivityMapProgress.Segment) -> Color {
+    private func scoreColor(for segment: MatchLiveActivityMapProgress.Segment) -> Color {
         if case .wonBy(let index) = segment { return Color(uiColor: teamColors.color(for: index)) }
-        return palette.border.opacity(0.7)
+        return palette.secondary
     }
 
     private func label(for map: MatchLiveActivityMapProgress.Map) -> String {

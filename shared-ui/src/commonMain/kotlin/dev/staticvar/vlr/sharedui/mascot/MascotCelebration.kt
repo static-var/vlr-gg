@@ -50,7 +50,7 @@ public fun MascotCelebration(
   modifier: Modifier = Modifier,
   animated: Boolean = true,
   secondaryMessage: String? = null,
-): Unit {
+) {
   PauseCardMascots(visible)
   val entrance = remember { Animatable(0f) }
   val banner = remember { Animatable(0f) }

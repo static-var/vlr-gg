@@ -52,12 +52,7 @@ internal fun analyzeLogoImage(image: Image): LogoEdgeAnalysis {
   return analyzeLogoEdges(sample)
 }
 
-internal fun renderOutlinedLogo(
-  image: Image,
-  pixelSize: IntSize,
-  radiusPx: Float,
-  outlineColor: Color,
-): ImageBitmap? {
+internal fun renderOutlinedLogo(image: Image, pixelSize: IntSize, radiusPx: Float, outlineColor: Color): ImageBitmap? {
   val source = image.logoImageBitmapOrNull() ?: return null
   require(pixelSize.width > 0 && pixelSize.height > 0) { "pixelSize must be positive: $pixelSize" }
   require(radiusPx.isFinite() && radiusPx >= 0f) { "radiusPx must be finite and non-negative: $radiusPx" }
@@ -131,11 +126,7 @@ private fun ImageBitmap.fitInside(pixelSize: IntSize): FittedImage {
   )
 }
 
-private data class FittedImage(
-  val scale: Float,
-  val left: Float,
-  val top: Float,
-)
+private data class FittedImage(val scale: Float, val left: Float, val top: Float)
 
 private fun Image.logoImageBitmapOrNull(): ImageBitmap? =
   if (this is BitmapImage && shareable && width > 0 && height > 0) bitmap.toLogoImageBitmap() else null

@@ -12,6 +12,8 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import cocoapods.Sentry.SentrySDK
 import cocoapods.Sentry.SentryFeedback
 import cocoapods.Sentry.SentryFeedbackSourceCustom
+import cocoapods.Sentry.captureFeedback
+import cocoapods.Sentry.startTransactionWithName
 import cocoapods.Sentry.SentrySpanStatus.kSentrySpanStatusCancelled
 import cocoapods.Sentry.SentrySpanStatus.kSentrySpanStatusInternalError
 import cocoapods.Sentry.SentrySpanStatus.kSentrySpanStatusOk

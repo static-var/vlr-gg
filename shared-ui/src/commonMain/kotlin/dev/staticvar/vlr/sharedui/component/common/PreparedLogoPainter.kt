@@ -11,10 +11,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import kotlin.math.roundToInt
 
-internal class PreparedLogoPainter(
-  private val treatment: LogoTreatment.Outlined,
-  private val pixelSize: IntSize,
-) : Painter() {
+internal class PreparedLogoPainter(private val treatment: LogoTreatment.Outlined, private val pixelSize: IntSize) :
+  Painter() {
   override val intrinsicSize = Size(pixelSize.width.toFloat(), pixelSize.height.toFloat())
 
   override fun DrawScope.onDraw() {

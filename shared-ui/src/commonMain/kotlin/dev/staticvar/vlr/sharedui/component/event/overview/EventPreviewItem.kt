@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.header.PrismHeader
@@ -31,6 +32,7 @@ import dev.staticvar.vlr.sharedui.component.event.EventFavoriteReasons
 import dev.staticvar.vlr.sharedui.component.event.EventSharedContent
 import dev.staticvar.vlr.sharedui.component.event.eventLogoSharedElement
 import dev.staticvar.vlr.sharedui.component.event.eventSharedBounds
+import dev.staticvar.vlr.sharedui.component.event.rememberEventSharedText
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.match_event_completed
@@ -78,11 +80,15 @@ public fun EventPreviewItem(modifier: Modifier = Modifier, eventPreview: EventPr
           tint = PrismIconTint.None,
         )
         Column(modifier = Modifier.padding(start = Prism.dimens.spacingS)) {
+          val titleTransition =
+            rememberEventSharedText(eventPreview.id, Prism.color.titleColor, Prism.typography.cardTitle.fontSize)
           Text(
             text = eventPreview.title,
-            modifier = Modifier.eventSharedBounds(eventPreview.id, EventSharedContent.Title),
+            modifier = titleTransition.modifier,
             style = Prism.typography.cardTitle,
-            color = Prism.color.titleColor,
+            color = titleTransition.color,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis,
           )
           Text(
             text = eventPreview.dates,

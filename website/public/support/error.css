@@ -1,6 +1,12 @@
-body{font:16px/1.5 system-ui,sans-serif;margin:40px auto;max-width:760px;padding:0 20px;color:#211b30;background:#faf8ff}
-h1{line-height:1.2}a{color:#6538a3}label{display:block;margin:18px 0}
-input,select,textarea,button{box-sizing:border-box;font:inherit;padding:12px;border:2px solid #211b30;border-radius:0}
-input,select,textarea{display:block;width:100%;max-width:640px}button{cursor:pointer;background:#60349d;color:white}
-:focus-visible{outline:3px solid #7938ef;outline-offset:3px}
-[role=alert]{padding:16px;border:2px solid #6538a3;background:#e8e1f6;overflow-wrap:anywhere}
+.support-error{padding-top:64px;padding-bottom:80px;max-width:1000px}
+.support-error h1{font:400 clamp(40px,5vw,62px)/1.1 Chakra,Arial,sans-serif;letter-spacing:-1px;margin:0 0 28px}
+.support-error>form{padding:28px;border:2px solid #19181b;background:#e8e1f6;box-shadow:6px 6px #19181b;margin:28px 0}
+.support-error label{display:block;font-size:15px;margin:0 0 22px}
+.support-error input,.support-error select,.support-error textarea{display:block;width:100%;margin-top:8px;border:2px solid #19181b;border-radius:0;background:white;color:#19181b;font:inherit;padding:12px;min-width:0}
+.support-error textarea{resize:vertical;min-height:160px}
+.support-error button{font:inherit;font-size:15px;padding:15px 21px;border:2px solid #19181b;border-radius:0;box-shadow:4px 4px #19181b;background:#7938ef;color:white;cursor:pointer}
+.support-error :is(input,select,textarea):focus-visible{outline:3px solid #7938ef;outline-offset:3px}
+.support-error [role=alert]{padding:18px;border-left:4px solid #5720bd;background:#e8e1f6;overflow-wrap:anywhere}
+.support-error a{color:#5720bd}
+.support-error input[hidden]{display:none}
+@media(max-width:600px){.support-error{padding-top:44px;padding-bottom:48px}.support-error>form{padding:20px}.support-error button{width:100%}}

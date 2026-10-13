@@ -1,0 +1,150 @@
+{
+  "status": "Three English pages submitted and waiting for review; Brazil draft and added localizations prepared",
+  "pages": {
+    "matches": {
+      "en-US": {
+        "promotionalText": "Follow VALORANT live scores, match schedules and results. Save matches, set reminders and add fixtures to your calendar. Free, ad-free and no sign-in."
+      },
+      "name": "Live scores and match schedules",
+      "version_id": "0d2c8d79-39f6-49b8-b718-500414e4113e",
+      "product_page_id": "aef48a50-ef77-4aba-9f58-bb333b34c92f",
+      "app_store_connect_url": "https://appstoreconnect.apple.com/apps/6812190518/distribution/productpages/0d2c8d79-39f6-49b8-b718-500414e4113e",
+      "keywords": [
+        "valorant",
+        "vct",
+        "results",
+        "competitive"
+      ],
+      "uploaded_screenshot_sets": {
+        "iphone": {
+          "dimensions": [
+            1320,
+            2868
+          ],
+          "count": 5
+        },
+        "ipad": {
+          "dimensions": [
+            2064,
+            2752
+          ],
+          "count": 5
+        }
+      },
+      "review_status": "Waiting for Review"
+    },
+    "rankings": {
+      "en-US": {
+        "promotionalText": "Follow VALORANT teams and players. Explore regional rankings, team ratings, recent form and match stats, then save your favorites. Free and ad-free."
+      },
+      "name": "Team rankings and match stats",
+      "version_id": "ec8d93da-4890-4683-9055-9d5b7b27f550",
+      "product_page_id": "4f550a3e-0a7c-41db-8e4e-3001b745c038",
+      "app_store_connect_url": "https://appstoreconnect.apple.com/apps/6812190518/distribution/productpages/ec8d93da-4890-4683-9055-9d5b7b27f550",
+      "keywords": [
+        "rankings",
+        "teams",
+        "players"
+      ],
+      "uploaded_screenshot_sets": {
+        "iphone": {
+          "dimensions": [
+            1320,
+            2868
+          ],
+          "count": 5
+        },
+        "ipad": {
+          "dimensions": [
+            2064,
+            2752
+          ],
+          "count": 5
+        }
+      },
+      "review_status": "Waiting for Review"
+    },
+    "india": {
+      "en-US": {
+        "promotionalText": "Keep up with VALORANT match days. Follow schedules and favorite teams, set match reminders and add fixtures to your calendar. Free, ad-free and no sign-in."
+      },
+      "name": "India match day",
+      "version_id": "fec4decb-da75-4e26-a651-1c4a604ffe3d",
+      "product_page_id": "0faed3bd-25c8-4d0b-b172-5f5befffd611",
+      "app_store_connect_url": "https://appstoreconnect.apple.com/apps/6812190518/distribution/productpages/fec4decb-da75-4e26-a651-1c4a604ffe3d",
+      "keywords": [
+        "schedule"
+      ],
+      "uploaded_screenshot_sets": {
+        "iphone": {
+          "dimensions": [
+            1320,
+            2868
+          ],
+          "count": 5
+        },
+        "ipad": {
+          "dimensions": [
+            2064,
+            2752
+          ],
+          "count": 5
+        }
+      },
+      "hi": {
+        "promotionalText": "VALORANT मैच शेड्यूल, स्कोर और पसंदीदा टीमें एक जगह। इवेंट के नतीजे और मैच के आँकड़े देखें। Val Esports के साथ अपने पसंदीदा मैच फ़ॉलो करें।",
+        "artLocale": "en-US",
+        "note": "Hindi metadata draft; bundled headline fonts do not contain Devanagari glyphs. Confirm App Store localization availability before upload."
+      },
+      "review_status": "Waiting for Review"
+    },
+    "brazil": {
+      "pt-BR": {
+        "promotionalText": "Acompanhe placares e horários de VALORANT. Veja resultados, mapas e estatísticas, e reúna seus times favoritos no Val Esports."
+      },
+      "en-US": {
+        "promotionalText": "Follow your favorite VALORANT teams and events, check home-screen widgets and hide scores until you catch up. Free, ad-free and no sign-in."
+      },
+      "name": "Brazil favorites and spoiler controls",
+      "version_id": "48920687-3fd3-4a87-bfbd-730729bc022d",
+      "product_page_id": "a66bb5f3-298a-4f22-9e4c-802299c51172",
+      "app_store_connect_url": "https://appstoreconnect.apple.com/apps/6812190518/distribution/productpages/48920687-3fd3-4a87-bfbd-730729bc022d",
+      "keywords": [
+        "spoilers",
+        "widgets"
+      ],
+      "uploaded_screenshot_sets": {
+        "iphone": {
+          "dimensions": [
+            1320,
+            2868
+          ],
+          "count": 5
+        },
+        "ipad": {
+          "dimensions": [
+            2064,
+            2752
+          ],
+          "count": 5
+        }
+      },
+      "review_status": "Draft"
+    }
+  },
+  "localization_blocker": "App version 1.1.0 is waiting for review; Apple requires an editable app version to add new localizations. Existing binary review remains queued pending user preference.",
+  "review_submission": {
+    "id": "8c0c9020-0011-4bd8-bc82-581918a740bf",
+    "submitted_at": "2026-10-08T11:15:00+05:30",
+    "status": "Waiting for Review",
+    "pages": [
+      "matches",
+      "rankings",
+      "india"
+    ],
+    "creative_assets": [
+      "val-esports-header-v2-3840x1646.png",
+      "val-esports-search-v2-3840x2560.png"
+    ]
+  }
+}

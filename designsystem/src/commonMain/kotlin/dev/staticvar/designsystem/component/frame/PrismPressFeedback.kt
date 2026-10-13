@@ -38,11 +38,13 @@ internal fun rememberPrismPressProgress(interactionSource: InteractionSource, en
       .collectLatest { interaction ->
         when (interaction) {
           is PressInteraction.Press -> progress.animateTo(1f, spec)
+
           is PressInteraction.Release -> {
             // Complete quick taps even when press and release arrive in the same frame.
             if (progress.value < 1f) progress.animateTo(1f, spec)
             progress.animateTo(0f, spec)
           }
+
           is PressInteraction.Cancel -> progress.animateTo(0f, spec)
         }
       }

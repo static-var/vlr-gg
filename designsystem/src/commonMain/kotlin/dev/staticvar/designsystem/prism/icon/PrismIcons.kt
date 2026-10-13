@@ -25,7 +25,4 @@ public data class PrismIcons(
 
 /** Matching silhouettes for the resting and selected state of a navigation destination. */
 @Immutable
-public data class PrismNavigationIcons(
-  val unselected: ImageVector,
-  val selected: ImageVector,
-)
+public data class PrismNavigationIcons(val unselected: ImageVector, val selected: ImageVector)

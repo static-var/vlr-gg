@@ -532,7 +532,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euo pipefail\nUSER_HOME=\"${HOME:-$(eval echo \"~${USER:-}\")}\"\n\nexport REPO_ROOT=\"$SRCROOT/..\"\nexport GENERATED_SWIFT_PATH=\"$SRCROOT/iosApp/GeneratedBuildConfig.swift\"\n\nif [ \"${CI_XCODE_CLOUD:-}\" = TRUE ]; then\n  export JAVA_HOME=\"$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home\"\n  export PATH=\"$JAVA_HOME/bin:$PATH\"\nfi\n\nif ! java -version >/dev/null 2>&1; then\n  if [ -n \"$USER_HOME\" ] && [ -x \"$USER_HOME/.sdkman/candidates/java/current/bin/java\" ]; then\n    export JAVA_HOME=\"$USER_HOME/.sdkman/candidates/java/current\"\n    export PATH=\"$JAVA_HOME/bin:$PATH\"\n  elif [ -x /usr/libexec/java_home ]; then\n    JAVA_HOME=\"$(/usr/libexec/java_home 2>/dev/null || true)\"\n    if [ -n \"$JAVA_HOME\" ] && [ -x \"$JAVA_HOME/bin/java\" ]; then\n      export JAVA_HOME\n      export PATH=\"$JAVA_HOME/bin:$PATH\"\n    fi\n  fi\nfi\n\nif ! java -version >/dev/null 2>&1; then\n  echo \"error: Java runtime not found. Install a JDK or set JAVA_HOME before building iOS.\" >&2\n  exit 1\nfi\n\npython3 \"$REPO_ROOT/scripts/generate-ios-build-config.py\"\n\ncd \"$SRCROOT/..\"\nif command -v build-brief >/dev/null 2>&1; then\n  build-brief ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nelse\n  ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nfi\n";
+			shellScript = "set -euo pipefail\nUSER_HOME=\"${HOME:-$(eval echo \"~${USER:-}\")}\"\n\nexport REPO_ROOT=\"$SRCROOT/..\"\nexport GENERATED_SWIFT_PATH=\"$SRCROOT/iosApp/GeneratedBuildConfig.swift\"\nexport CI_DERIVED_DATA_PATH=\"${CI_DERIVED_DATA_PATH:-${BUILD_DIR%%/Build/*}}\"\n\nif [ \"${CI_XCODE_CLOUD:-}\" = TRUE ]; then\n  export JAVA_HOME=\"$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home\"\n  export PATH=\"$JAVA_HOME/bin:$PATH\"\nfi\n\nif ! java -version >/dev/null 2>&1; then\n  if [ -n \"$USER_HOME\" ] && [ -x \"$USER_HOME/.sdkman/candidates/java/current/bin/java\" ]; then\n    export JAVA_HOME=\"$USER_HOME/.sdkman/candidates/java/current\"\n    export PATH=\"$JAVA_HOME/bin:$PATH\"\n  elif [ -x /usr/libexec/java_home ]; then\n    JAVA_HOME=\"$(/usr/libexec/java_home 2>/dev/null || true)\"\n    if [ -n \"$JAVA_HOME\" ] && [ -x \"$JAVA_HOME/bin/java\" ]; then\n      export JAVA_HOME\n      export PATH=\"$JAVA_HOME/bin:$PATH\"\n    fi\n  fi\nfi\n\nif ! java -version >/dev/null 2>&1; then\n  echo \"error: Java runtime not found. Install a JDK or set JAVA_HOME before building iOS.\" >&2\n  exit 1\nfi\n\npython3 \"$REPO_ROOT/scripts/generate-ios-build-config.py\"\n\ncd \"$SRCROOT/..\"\nif command -v build-brief >/dev/null 2>&1; then\n  build-brief ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nelse\n  ./gradlew :shared:embedAndSignAppleFrameworkForXcode\nfi\n";
 		};
 		D50BE0B098CD44B785DE478F /* Generate widget build config */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -727,12 +727,6 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					shared,
-					"-lsqlite3",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.staticvar.vlr.ios;
 				PRODUCT_NAME = VLR;
 				SDKROOT = iphoneos;
@@ -893,12 +887,6 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					shared,
-					"-lsqlite3",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.staticvar.vlr.ios;
 				PRODUCT_NAME = VLR;
 				SDKROOT = iphoneos;
@@ -954,6 +942,13 @@
 		9221A1FDC06803E8A2FC6E61 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-framework",
+					shared,
+					"-lsqlite3",
+				);
 				APS_ENVIRONMENT = development;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
 					AppIconAmethyst,
@@ -978,6 +973,13 @@
 		AF835BFF1220CA5AB5B867E4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-framework",
+					shared,
+					"-lsqlite3",
+				);
 				APS_ENVIRONMENT = production;
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
 					AppIconAmethyst,
@@ -1055,7 +1057,7 @@
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
 			requirement = {
 				kind = exactVersion;
-				version = 8.58.4;
+				version = 9.30.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

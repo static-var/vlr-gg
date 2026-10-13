@@ -32,6 +32,7 @@ import dev.staticvar.vlr.sharedui.component.event.EventFavoriteReasons
 import dev.staticvar.vlr.sharedui.component.event.EventSharedContent
 import dev.staticvar.vlr.sharedui.component.event.eventLogoSharedElement
 import dev.staticvar.vlr.sharedui.component.event.eventSharedBounds
+import dev.staticvar.vlr.sharedui.component.event.rememberEventSharedText
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.match_event_dates
@@ -185,11 +186,13 @@ private fun EventDetailHeaderContent(
           parentBackground = PrismTicketStyle.Standard.containerColor,
           tint = PrismIconTint.None,
         )
+        val titleTransition =
+          rememberEventSharedText(event.id, Prism.color.titleColor, Prism.typography.sectionTitle.fontSize)
         Text(
           text = event.title,
-          modifier = Modifier.eventSharedBounds(event.id, EventSharedContent.Title),
+          modifier = titleTransition.modifier,
           style = Prism.typography.sectionTitle,
-          color = Prism.color.titleColor,
+          color = titleTransition.color,
           textAlign = TextAlign.Center,
           maxLines = 3,
           overflow = TextOverflow.Ellipsis,

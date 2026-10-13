@@ -2,6 +2,8 @@
  * Copyright (c) 2022-2026 Shreyansh Lodha
  * SPDX-License-Identifier: MIT
  */
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
+
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.android.kotlin.multiplatform.library)
@@ -11,10 +13,38 @@ plugins {
   alias(libs.plugins.sentry.kmp)
 }
 
+val sentryCocoaVersion = "9.30.1"
+
 sentryKmp {
+  autoInstall.apple.provider.set(io.sentry.kotlin.multiplatform.gradle.AppleDependencyProvider.NONE)
+  autoInstall.apple.sentryCocoaVersion.set(sentryCocoaVersion)
   linker.xcodeprojPath.set(rootProject.file("iosApp/iosApp.xcodeproj").absolutePath)
   System.getenv("CI_DERIVED_DATA_PATH")?.let { derivedDataPath ->
     linker.frameworkPath.set("$derivedDataPath/SourcePackages/artifacts/sentry-cocoa/Sentry/Sentry.xcframework")
+  }
+}
+
+tasks.withType<KotlinNativeLink>().configureEach {
+  val pinnedVersion = sentryCocoaVersion
+  onlyIf("Sentry Cocoa framework matches the pinned version") { task ->
+    val frameworkPlists = (task as KotlinNativeLink).linkerOpts
+      .filter { it.startsWith("-F") }
+      .map { File(it.removePrefix("-F"), "Sentry.framework/Info.plist") }
+      .filter { it.isFile }
+      .distinct()
+    check(frameworkPlists.isNotEmpty()) {
+      "Sentry Cocoa $pinnedVersion framework is missing. Resolve the iOS package and set CI_DERIVED_DATA_PATH to its DerivedData directory."
+    }
+    frameworkPlists.forEach { plist ->
+      val process = ProcessBuilder("/usr/libexec/PlistBuddy", "-c", "Print :CFBundleShortVersionString", plist.path)
+        .redirectErrorStream(true)
+        .start()
+      val version = process.inputStream.bufferedReader().use { it.readText().trim() }
+      check(process.waitFor() == 0 && version == pinnedVersion) {
+        "Expected Sentry Cocoa $pinnedVersion, found $version at $plist. Resolve the iOS package and set CI_DERIVED_DATA_PATH to its DerivedData directory."
+      }
+    }
+    true
   }
 }
 
@@ -30,7 +60,9 @@ kotlin {
     namespace = "dev.staticvar.vlr.shared"
     androidResources.enable = true
     withHostTestBuilder {}
-    compileSdk = 37
+    compileSdk {
+      version = release(37) { minorApiLevel = 1 }
+    }
     minSdk = 24
   }
 

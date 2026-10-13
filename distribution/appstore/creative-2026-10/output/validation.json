@@ -1,0 +1,115 @@
+{
+  "assets": [
+    {
+      "placement": "header",
+      "filename": "val-esports-header-v2-3840x1646.png",
+      "dimensions": [
+        3840,
+        1646
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "art_safe_area": [
+        1097,
+        493,
+        2743,
+        1154
+      ],
+      "essential_content_within_safe_area": true,
+      "content_bounds": {
+        "shipping icon": [
+          1170,
+          679,
+          1450,
+          959
+        ],
+        "Val Esports": [
+          1493.83,
+          676.55,
+          2647.4,
+          888.5
+        ],
+        "VALORANT scores, schedules & stats": [
+          1494.4,
+          960.02,
+          2475.69,
+          1007.0
+        ]
+      },
+      "sha256": "0847e8c999553c00f9f1a430c6ca1ce5363c2d514f6c5c32363332a986606f26"
+    },
+    {
+      "placement": "search",
+      "filename": "val-esports-search-v2-3840x2560.png",
+      "dimensions": [
+        3840,
+        2560
+      ],
+      "mode": "RGB",
+      "alpha": false,
+      "art_safe_area": [
+        836,
+        765,
+        3004,
+        1795
+      ],
+      "essential_content_within_safe_area": true,
+      "content_bounds": {
+        "shipping icon": [
+          944,
+          1630,
+          1032,
+          1718
+        ],
+        "Val": [
+          944.25,
+          849.5,
+          1274.75,
+          1032.0
+        ],
+        "Esports": [
+          948.0,
+          1093.0,
+          1802.25,
+          1325.0
+        ],
+        "VALORANT scores": [
+          945.5,
+          1407.16,
+          1449.38,
+          1450.84
+        ],
+        "Schedules & match stats": [
+          946.59,
+          1495.44,
+          1592.86,
+          1534.76
+        ],
+        "Free. Ad-free. No sign-in.": [
+          1063.6,
+          1658.5,
+          1596.67,
+          1699.0
+        ],
+        "actual match score UI": [
+          2120,
+          900,
+          2940,
+          1591.23
+        ]
+      },
+      "sha256": "8907a6a7662c018ca77ab44ce77fd1e4dcf8d60c9fc272868d76a5ffe4b4765d"
+    }
+  ],
+  "source_capture": "distribution/rebrand-2026/raw/ios/02.png",
+  "fonts": {
+    "headings": "designsystem/src/commonMain/composeResources/font/chakra_petch_regular.ttf",
+    "supporting_text": "designsystem/src/commonMain/composeResources/font/space_grotesk_regular.ttf"
+  },
+  "capture_sha256": "bb5dd71ddda422fec832ab623cdaf603b76a41f3319c81423c6306bd1c723f3e",
+  "specifications": "https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications",
+  "template_safe_areas": {
+    "header": "https://devimages-cdn.apple.com/design/resources/download/app-store/creative_assets-product_page_header_template-static.psd",
+    "search": "https://devimages-cdn.apple.com/design/resources/download/app-store/creative_assets-search_results_template-static.psd"
+  }
+}

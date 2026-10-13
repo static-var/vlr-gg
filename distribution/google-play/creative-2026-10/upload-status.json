@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-08",
+  "package_name": "dev.staticvar.vlr",
+  "console_app_id": "4973475782329564259",
+  "status": "submitted-awaiting-automatic-quick-checks",
+  "pending_change_count": 30,
+  "managed_publishing": false,
+  "change_types": [
+    "feature_graphic",
+    "phone_screenshots"
+  ],
+  "listings": {
+    "default": {
+      "en-US": "output/en-US",
+      "pt-BR": "output/pt-BR",
+      "hi-IN": "output/hi-IN",
+      "other_translations": "Default-language graphics fallback"
+    },
+    "india-organic-2026-10": {
+      "console_id": "4836443514277227018",
+      "en-US": "output/en-IN",
+      "hi-IN": "output/hi-IN"
+    },
+    "brazil-organic-2026-10": {
+      "console_id": "4834958115975164980",
+      "pt-BR": "output/pt-BR",
+      "en-US": "output/en-US"
+    },
+    "vlr-gg-rename": {
+      "console_id": "4832743407394945003",
+      "en-US": "output/en-US"
+    },
+    "vlr-search": {
+      "console_id": "4836571113655382669",
+      "assets": "Inherits default group feature graphic and phone screenshots"
+    }
+  },
+  "fonts": {
+    "headings": "Chakra Petch",
+    "body": "Space Grotesk",
+    "hindi_overlay_language": "English",
+    "hindi_app_ui_language": "Hindi"
+  },
+  "deduplicated_library_files": {
+    "feature-graphic-en-IN-1024x500.png": "feature-graphic-hi-IN-1024x500.png",
+    "screenshot-en-IN-02.png": "screenshot-en-US-03.png",
+    "screenshot-en-IN-03.png": "screenshot-en-US-04.png",
+    "screenshot-en-IN-04.png": "screenshot-en-US-02.png",
+    "screenshot-en-IN-05.png": "screenshot-en-US-05.png"
+  }
+}
