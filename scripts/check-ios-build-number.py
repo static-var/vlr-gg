@@ -6,6 +6,8 @@ release workflow reads CURRENT_PROJECT_VERSION. Releasing only when the two matc
 both stores on the same build number.
 """
 
+from __future__ import annotations
+
 import importlib.util
 import os
 from pathlib import Path
