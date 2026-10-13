@@ -72,6 +72,7 @@ private fun PrismSectionTitlePreviewContent(
       PrismSectionTitle(title = "Win probability", trailing = { Text("PRE-MATCH") })
       PrismSectionTitle(title = "Head to head", trailing = { PrismTag(text = "PRX leads 3–2") })
       PrismSectionTitle(title = "Streams & VODs")
+      PrismSectionTitle(title = "Matches", trailing = { PrismSectionTitleAction(text = "Today", onClick = {}) })
       PrismSectionTitle(
         title = "A section title long enough to need truncation",
         prefix = "LR1",

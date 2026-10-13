@@ -23,6 +23,11 @@ private object PrismSectionTitleStyleConstants {
   const val TabTitleScale = 0.8f
   val TabLetterSpacing = 1.sp
   val TabPadding = PaddingValues(start = 12.dp, top = 6.dp, end = 12.dp, bottom = 5.dp)
+
+  // TabPadding minus the 4 dp gap between trailing content and the rule, so the action's top
+  // lines up with the tab's top.
+  val TabActionPadding = PaddingValues(start = 12.dp, top = 4.dp, end = 12.dp, bottom = 3.dp)
+  val SubtleActionPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
 }
 
 /**
@@ -72,6 +77,11 @@ public sealed interface PrismSectionTitleStyle {
   @get:Composable
   @get:ReadOnlyComposable
   public val tabPadding: PaddingValues
+
+  /** Padding inside a [PrismSectionTitleAction] placed in the trailing content. */
+  @get:Composable
+  @get:ReadOnlyComposable
+  public val actionPadding: PaddingValues
 
   /** Thickness of the rule under the header. Zero draws no rule. */
   @get:Composable
@@ -144,6 +154,11 @@ public sealed interface PrismSectionTitleStyle {
       @ReadOnlyComposable
       get() = PrismSectionTitleStyleConstants.TabPadding
 
+    override val actionPadding: PaddingValues
+      @Composable
+      @ReadOnlyComposable
+      get() = PrismSectionTitleStyleConstants.TabActionPadding
+
     override val ruleThickness: Dp
       @Composable
       @ReadOnlyComposable
@@ -203,6 +218,11 @@ public sealed interface PrismSectionTitleStyle {
       @Composable
       @ReadOnlyComposable
       get() = PaddingValues()
+
+    override val actionPadding: PaddingValues
+      @Composable
+      @ReadOnlyComposable
+      get() = PrismSectionTitleStyleConstants.SubtleActionPadding
 
     override val ruleThickness: Dp
       @Composable
