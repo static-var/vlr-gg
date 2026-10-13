@@ -257,9 +257,11 @@ private fun TeamDetailsLoadedContent(
     item(key = "rating") {
       TeamRatingCard(state = uiState.rating, onMatchSelected = onMatchSelected, onRetry = onRefresh)
     }
+    teamRosterItems(roster = team.roster, onPlayerSelected = onPlayerSelected)
     item(key = "match-tabs") {
       PrismTabs(
-        modifier = Modifier.padding(bottom = Prism.dimens.spacingS),
+        // Sets the matches apart from the roster cards above.
+        modifier = Modifier.padding(top = Prism.dimens.spacingM, bottom = Prism.dimens.spacingS),
         tabs = TeamMatchesSection.entries.map { tab ->
           PrismTab(
             id = tab.name,
@@ -293,7 +295,6 @@ private fun TeamDetailsLoadedContent(
           onEventSelected = onEventSelected,
         )
     }
-    teamRosterItems(roster = team.roster, onPlayerSelected = onPlayerSelected)
     item {
       Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
     }
