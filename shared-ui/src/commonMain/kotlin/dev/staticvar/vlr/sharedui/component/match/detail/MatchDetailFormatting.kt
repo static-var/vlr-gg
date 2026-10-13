@@ -37,7 +37,12 @@ import kotlin.math.roundToInt
 
 internal const val AllMapsOptionId: String = "all"
 
-internal data class MatchDetailMapOption(val id: String, val label: String, val mapIndex: Int?)
+internal data class MatchDetailMapOption(
+  val id: String,
+  val label: String,
+  val mapIndex: Int?,
+  val supportingText: String? = null,
+)
 
 internal data class MatchDetailHeadToHeadSummary(
   val firstTeamName: String,
@@ -113,8 +118,9 @@ internal fun List<MapData>.matchDetailMapOptions(labels: MatchFormattingLabels):
   val mapOptions = mapIndexed { index, map ->
     MatchDetailMapOption(
       id = index.toString(),
-      label = map.matchDetailMapOptionLabel(labels),
+      label = map.matchDetailMapName(labels),
       mapIndex = index,
+      supportingText = map.matchDetailMapScoreLabel(labels),
     )
   }
 
@@ -136,9 +142,6 @@ internal fun List<MapData>.resolveSelectedMap(selectedMapIndex: Int?): MapData? 
 
 internal fun List<MapData>.resolveSelectedMapOptionId(selectedMapIndex: Int?): String =
   resolveSelectedMapIndex(selectedMapIndex)?.toString() ?: if (size >= 2) AllMapsOptionId else ""
-
-internal fun MapData.matchDetailMapOptionLabel(labels: MatchFormattingLabels): String =
-  "${matchDetailMapName(labels)} - ${matchDetailMapScoreLabel(labels)}"
 
 internal fun MapData.matchDetailMapName(labels: MatchFormattingLabels): String = map.ifBlank { labels.map }
 

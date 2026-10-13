@@ -20,7 +20,8 @@
     <string name="view_upcoming">Показать предстоящие</string>
     <string name="refresh">Обновить</string>
     <string name="match_options">Параметры матча</string>
-    <string name="choose_what_you_see_in_match_details">Выберите, что показывать в подробностях матча.</string>
+    <string name="choose_and_order_match_sections">Выберите, какие разделы показывать под шапкой матча и в каком порядке.</string>
+    <string name="section_unavailable">Нет данных для этого матча</string>
     <string name="done">Готово</string>
     <string name="breakdown">Разбор</string>
     <string name="match_stats_and_player_table">Статистика матча и таблица игроков</string>
@@ -57,6 +58,7 @@
     <string name="share_time_tba">Время уточняется</string>
     <string name="share_match">%1$s против %2$s | %3$s | %4$s</string>
     <string name="share_attribution">Отправлено через Val Esports</string>
+    <string name="share_times_utc_offset">Время указано в %1$s</string>
     <string name="mascot_player_cooked">%1$s разнёс всех!</string>
     <string name="mascot_player_cooking">%1$s разносит всех!</string>
     <string name="mascot_team_won">%1$s победили!</string>

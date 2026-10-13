@@ -20,7 +20,8 @@
     <string name="view_upcoming">Bevorstehende anzeigen</string>
     <string name="refresh">Aktualisieren</string>
     <string name="match_options">Matchoptionen</string>
-    <string name="choose_what_you_see_in_match_details">Wähle aus, was du in den Matchdetails sehen möchtest.</string>
+    <string name="choose_and_order_match_sections">Wähle aus, welche Bereiche unter dem Matchkopf erscheinen und in welcher Reihenfolge.</string>
+    <string name="section_unavailable">Keine Daten für dieses Match</string>
     <string name="done">Fertig</string>
     <string name="breakdown">Auswertung</string>
     <string name="match_stats_and_player_table">Matchstatistiken und Spielertabelle</string>
@@ -57,6 +58,7 @@
     <string name="share_time_tba">Zeit noch offen</string>
     <string name="share_match">%1$s gegen %2$s | %3$s | %4$s</string>
     <string name="share_attribution">Geteilt über Val Esports</string>
+    <string name="share_times_utc_offset">Zeiten in %1$s</string>
     <string name="mascot_player_cooked">%1$s hat abgeliefert!</string>
     <string name="mascot_player_cooking">%1$s liefert ab!</string>
     <string name="mascot_team_won">%1$s hat gewonnen!</string>

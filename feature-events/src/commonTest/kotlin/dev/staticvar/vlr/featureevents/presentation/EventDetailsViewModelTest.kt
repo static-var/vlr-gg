@@ -5,8 +5,12 @@
 package dev.staticvar.vlr.featureevents.presentation
 
 import androidx.lifecycle.ViewModelStore
+import com.russhwolf.settings.MapSettings
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
+import dev.staticvar.vlr.core.settings.EventDetailsPreferences
+import dev.staticvar.vlr.core.settings.EventDetailsPreferencesRepository
+import dev.staticvar.vlr.core.settings.EventDetailsSection
 import dev.staticvar.vlr.domain.model.EventDetails
 import dev.staticvar.vlr.domain.model.EventMatch
 import dev.staticvar.vlr.domain.model.EventMatchTeam
@@ -209,9 +213,42 @@ class EventDetailsViewModelTest {
     assertEquals(false, viewModel.uiState.value.isSavingFavorite)
   }
 
+  @Test
+  fun sectionPreferencesAreSharedAcrossEventsAndRestored() = runTest(dispatcher) {
+    val storage = MapSettings()
+    val first = createViewModel(
+      FakeEventRepository(),
+      preferencesRepository = EventDetailsPreferencesRepository(storage),
+    )
+    advanceUntilIdle()
+    assertEquals(EventDetailsPreferences(), first.uiState.value.preferences)
+
+    val preferences = EventDetailsPreferences(
+      sectionOrder = listOf(
+        EventDetailsSection.Matches,
+        EventDetailsSection.Standings,
+        EventDetailsSection.Participants,
+        EventDetailsSection.Prizes,
+      ),
+      hiddenSections = setOf(EventDetailsSection.Prizes),
+    )
+    first.setPreferences(preferences)
+    advanceUntilIdle()
+    assertEquals(preferences, first.uiState.value.preferences)
+
+    val restored = createViewModel(
+      FakeEventRepository(),
+      preferencesRepository = EventDetailsPreferencesRepository(storage),
+    )
+    assertEquals(preferences, restored.uiState.value.preferences)
+    advanceUntilIdle()
+    assertEquals(preferences, restored.uiState.value.preferences)
+  }
+
   private fun createViewModel(
     repository: FakeEventRepository,
     favoritesRepository: FakeFavoritesRepository = FakeFavoritesRepository(),
+    preferencesRepository: EventDetailsPreferencesRepository = EventDetailsPreferencesRepository(MapSettings()),
   ): EventDetailsViewModel = EventDetailsViewModel(
     eventId = "event-1",
     observeEventDetailsUseCase = ObserveEventDetailsUseCase(repository),
@@ -221,6 +258,7 @@ class EventDetailsViewModelTest {
     networkMonitor = object : NetworkMonitor {
       override val status = MutableStateFlow(NetworkStatus.Online)
     },
+    preferencesRepository = preferencesRepository,
   ).also { viewModelStore.put("viewModel-${nextViewModelKey++}", it) }
 
   private class FakeFavoritesRepository : FavoritesRepository {

@@ -1,11 +1,10 @@
 <resources>
+  <string name="match_event_group_by">Группировать по</string>
   <string name="match_event_tbd">TBD</string>
   <string name="match_event_matches">Матчи</string>
-  <string name="match_event_schedule">расписание</string>
   <string name="match_event_group_matches_by">ГРУППИРОВАТЬ МАТЧИ ПО</string>
   <string name="match_event_open_bracket">Открыть сетку</string>
   <string name="match_event_head_to_head">Личные встречи</string>
-  <string name="match_event_history">история</string>
   <string name="match_event_scores_hidden">Счёт скрыт</string>
   <string name="match_event_match">Матч</string>
   <string name="match_event_unknown">Неизвестно</string>
@@ -22,14 +21,10 @@
   <string name="match_event_teams">КОМАНДЫ</string>
   <string name="match_event_map_breakdown_unavailable">Статистика по картам недоступна.</string>
   <string name="match_event_combined_stats">Общая статистика</string>
-  <string name="match_event_all_maps">Все карты</string>
-  <string name="match_event_group">ГРУППА</string>
-  <string name="match_event_map_upper">КАРТА</string>
   <string name="match_event_match_day">ДЕНЬ МАТЧА</string>
   <string name="match_event_time_tba">Время будет объявлено</string>
   <string name="match_event_format">ФОРМАТ</string>
   <string name="match_event_maps">Карты</string>
-  <string name="match_event_breakdown">подробности</string>
   <string name="match_event_player">Игрок</string>
   <string name="match_event_agent">Агент</string>
   <string name="match_event_acs">ACS</string>

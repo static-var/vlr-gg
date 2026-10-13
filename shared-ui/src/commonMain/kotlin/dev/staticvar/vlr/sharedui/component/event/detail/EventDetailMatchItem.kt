@@ -32,6 +32,9 @@ import vlr.shared_ui.generated.resources.match_event_tbd
 
 /**
  * Event match row with two score lines and schedule metadata.
+ *
+ * @param schedule Schedule line to show instead of the raw date and time the API sent, such as the
+ * start time in the viewer's time zone.
  */
 @Composable
 public fun EventDetailMatchItem(
@@ -39,6 +42,7 @@ public fun EventDetailMatchItem(
   modifier: Modifier = Modifier,
   onClick: (() -> Unit)? = null,
   favoriteReasons: List<MatchFavoriteReason> = emptyList(),
+  schedule: String? = null,
 ) {
   FavoriteTicketCardBox(selected = favoriteReasons.isNotEmpty(), modifier = modifier.fillMaxWidth()) {
     PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Filled, onClick = onClick) {
@@ -80,9 +84,9 @@ public fun EventDetailMatchItem(
 
       MatchFavoriteReasons(favoriteReasons, modifier = Modifier.padding(top = Prism.dimens.spacingXs))
 
-      match.eventMatchSchedule().takeIf(String::isNotBlank)?.let { schedule ->
+      (schedule ?: match.eventMatchSchedule()).takeIf(String::isNotBlank)?.let { scheduleText ->
         Text(
-          text = schedule,
+          text = scheduleText,
           modifier = Modifier.padding(top = Prism.dimens.spacingS),
           style = Prism.typography.caption,
           color = Prism.color.labelColor,

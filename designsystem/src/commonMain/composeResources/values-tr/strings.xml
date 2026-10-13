@@ -13,4 +13,7 @@
   <string name="prism_loader_merge">BİRLEŞTİR</string>
   <string name="prism_loader_render">GÖSTER</string>
   <string name="prism_loader_label_phase">%1$s · %2$s</string>
+  <string name="prism_reorder_item">%1$s sırasını değiştir</string>
+  <string name="prism_move_item_up">%1$s yukarı taşı</string>
+  <string name="prism_move_item_down">%1$s aşağı taşı</string>
 </resources>

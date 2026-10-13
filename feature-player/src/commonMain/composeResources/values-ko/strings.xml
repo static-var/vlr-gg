@@ -9,9 +9,7 @@
     <string name="remove_player_favorite">선수를 즐겨찾기에서 삭제</string>
     <string name="add_player_favorite">선수를 즐겨찾기에 추가</string>
     <string name="agent_stats">요원 통계</string>
-    <string name="pool">풀</string>
     <string name="team_history">팀 이력</string>
-    <string name="history">이력</string>
     <string name="current_team">현재 팀</string>
     <string name="previous_team">이전 팀</string>
     <string name="player_winnings">$%1$s</string>

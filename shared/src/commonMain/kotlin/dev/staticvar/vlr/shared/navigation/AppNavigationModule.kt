@@ -37,7 +37,6 @@ import dev.staticvar.vlr.featureabout.presentation.ExperimentalRoute
 import dev.staticvar.vlr.featureabout.presentation.SettingsRoute
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewBanner
 import dev.staticvar.vlr.featureabout.presentation.WhatsNewRoute
-import dev.staticvar.vlr.featureevents.presentation.EventDetailSection
 import dev.staticvar.vlr.featureevents.presentation.EventDetailsRoute
 import dev.staticvar.vlr.featureevents.presentation.EventDetailsViewModel
 import dev.staticvar.vlr.featureevents.presentation.EventsOverviewRoute
@@ -60,7 +59,6 @@ import dev.staticvar.vlr.shared.di.vlrViewModel
 import dev.staticvar.vlr.shared.notifications.LiveActivityStartCoordinator
 import dev.staticvar.vlr.shared.notifications.LocalLiveMatchNotificationSettingsController
 import dev.staticvar.vlr.sharedui.component.event.ProvideEventTransitionScope
-import dev.staticvar.vlr.sharedui.component.event.detail.EventMatchGrouping
 import dev.staticvar.vlr.sharedui.component.match.ProvideMatchTransitionScope
 import org.koin.compose.koinInject
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -198,9 +196,6 @@ internal fun appNavigationModule(): Module = module {
     val appState = LocalVlrAppState.current
     val viewModel = vlrViewModel<EventDetailsViewModel> { parametersOf(route.eventId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var section by rememberSaveable(route.eventId) { mutableStateOf(EventDetailSection.Matches) }
-    var matchGrouping by rememberSaveable(route.eventId) { mutableStateOf(EventMatchGrouping.Status) }
-    var selectedMatchGroupName: String? by rememberSaveable(route.eventId, matchGrouping) { mutableStateOf(null) }
 
     RefreshWhenResumed(networkStatus = viewModel.networkStatus, onRefresh = viewModel::refresh)
 
@@ -211,15 +206,7 @@ internal fun appNavigationModule(): Module = module {
         uiState = uiState,
         eventPreview = eventPreview,
         onRefresh = viewModel::refresh,
-        section = section,
-        matchGrouping = matchGrouping,
-        selectedMatchGroupName = selectedMatchGroupName,
-        onSectionSelected = { section = it },
-        onMatchGroupingSelected = { grouping ->
-          matchGrouping = grouping
-          selectedMatchGroupName = null
-        },
-        onMatchGroupSelected = { selectedMatchGroupName = it },
+        onPreferencesChange = viewModel::setPreferences,
         onBack = appState::navigateUp,
         onMatchSelected = appState::showMatchDetails,
         onTeamSelected = appState::showTeamDetails,

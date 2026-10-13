@@ -20,7 +20,8 @@
     <string name="view_upcoming">Ver próximas partidas</string>
     <string name="refresh">Atualizar</string>
     <string name="match_options">Opções da partida</string>
-    <string name="choose_what_you_see_in_match_details">Escolha o que você quer ver nos detalhes da partida.</string>
+    <string name="choose_and_order_match_sections">Escolha quais seções aparecem abaixo do cabeçalho da partida e em que ordem.</string>
+    <string name="section_unavailable">Sem dados para esta partida</string>
     <string name="done">Concluir</string>
     <string name="breakdown">Detalhamento</string>
     <string name="match_stats_and_player_table">Estatísticas da partida e tabela de jogadores</string>
@@ -57,6 +58,7 @@
     <string name="share_time_tba">Horário a definir</string>
     <string name="share_match">%1$s vs. %2$s | %3$s | %4$s</string>
     <string name="share_attribution">Compartilhado via Val Esports</string>
+    <string name="share_times_utc_offset">Horários em %1$s</string>
     <string name="mascot_player_cooked">%1$s amassou!</string>
     <string name="mascot_player_cooking">%1$s está amassando!</string>
     <string name="mascot_team_won">%1$s venceu!</string>

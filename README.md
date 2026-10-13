@@ -71,17 +71,15 @@ build-brief ./gradlew :androidApp:assembleDebug -Dorg.gradle.java.home="$JAVA_HO
 
 For iOS, open `iosApp/iosApp.xcodeproj`, select the `iosApp` scheme and an iPhone or iPad destination, and configure signing for physical devices. The Xcode build integrates the shared Kotlin framework.
 
-## Android releases and profiles
+## Releases and profiles
+
+Use the [release checklist](docs/release-checklist.md) before preparing, uploading, submitting, or publishing a release. It includes the pending App Store language setup and the checks needed for every Android and iOS release. Add languages once, then check their release notes, listing text, and assets on each release.
 
 Release builds enable R8 code shrinking, obfuscation and resource shrinking. Saved Baseline and Startup Profiles are consumed during the build; R8 rewrites profile rules to match the optimized release code.
 
 See [baselineProfile/README.md](baselineProfile/README.md) for generation commands, device requirements and covered journeys. Profile generation is separate from release builds.
 
-Edit [version.xcconfig](version.xcconfig) to set the shared version: `MARKETING_VERSION` is the version name and `CURRENT_PROJECT_VERSION` is the build number. Android, the iOS app, the iOS widget, and release workflows all read this file. Increase the build number before each new store upload. Debug and release builds use the same version values.
-
-The [beta workflow](.github/workflows/internal_play_store_release_dispatcher.yml) uses the checked-in shared version. It builds a signed AAB, uploads it to the open-testing track, creates a GitHub release and sends the configured Telegram announcement. Changes must then be submitted for review in Play Console; an upload does not mean the update is available to users.
-
-Play Store release notes live in [distribution/whatsnew/whatsnew-en-US](distribution/whatsnew/whatsnew-en-US) and must stay below 500 characters. In-app highlights live in [BundledRelease.kt](feature-about/src/commonMain/kotlin/dev/staticvar/vlr/featureabout/presentation/BundledRelease.kt). Keep both focused on changes users can understand. Change the bundled release identifier only when users should see a new announcement.
+The [beta workflow](.github/workflows/internal_play_store_release_dispatcher.yml) builds and uploads the Android release. Follow the checklist through store review and publication after the upload.
 
 ## Attribution and license
 

@@ -1,11 +1,10 @@
 <resources>
+  <string name="match_event_group_by">Grouper par</string>
   <string name="match_event_tbd">TBD</string>
   <string name="match_event_matches">Matchs</string>
-  <string name="match_event_schedule">calendrier</string>
   <string name="match_event_group_matches_by">GROUPER LES MATCHS PAR</string>
   <string name="match_event_open_bracket">Tableau ouvert</string>
   <string name="match_event_head_to_head">Face-à-face</string>
-  <string name="match_event_history">historique</string>
   <string name="match_event_scores_hidden">Scores masqués</string>
   <string name="match_event_match">Match</string>
   <string name="match_event_unknown">Inconnu</string>
@@ -22,14 +21,10 @@
   <string name="match_event_teams">ÉQUIPES</string>
   <string name="match_event_map_breakdown_unavailable">Détail des cartes indisponible.</string>
   <string name="match_event_combined_stats">Statistiques cumulées</string>
-  <string name="match_event_all_maps">Toutes les cartes</string>
-  <string name="match_event_group">GROUPE</string>
-  <string name="match_event_map_upper">CARTE</string>
   <string name="match_event_match_day">JOUR DU MATCH</string>
   <string name="match_event_time_tba">Heure à annoncer</string>
   <string name="match_event_format">FORMAT</string>
   <string name="match_event_maps">Cartes</string>
-  <string name="match_event_breakdown">détail</string>
   <string name="match_event_player">Joueur</string>
   <string name="match_event_agent">Agent</string>
   <string name="match_event_acs">ACS</string>

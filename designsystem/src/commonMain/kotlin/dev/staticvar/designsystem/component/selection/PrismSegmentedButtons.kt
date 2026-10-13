@@ -16,6 +16,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,25 +40,31 @@ public fun PrismSegmentedButtons(
   enabled: Boolean = true,
   style: PrismSegmentedButtonStyle = PrismSegmentedButtonStyle.Outlined,
 ) {
-  val interactions = remember { MutableInteractionSource() }
   val frame = style.frame
-  val pressProgress =
-    if (frame.shadowOffset != DpOffset.Zero) {
-      rememberPrismPressProgress(interactions, enabled = enabled)
-    } else {
-      null
+  val framed = frame.shadowOffset != DpOffset.Zero
+  // One source per segment, so a press only ripples the segment that was touched.
+  val interactions = options.map { option -> key(option.id) { remember { MutableInteractionSource() } } }
+  // The framed group still presses into its shadow when any segment is pressed.
+  val pressProgress = if (framed) {
+    options.mapIndexed { index, option ->
+      key(option.id) { rememberPrismPressProgress(interactions[index], enabled = enabled && option.enabled) }
     }
+  } else {
+    emptyList()
+  }
   CompositionLocalProvider(
     LocalRippleConfiguration provides
-      if (frame.shadowOffset == DpOffset.Zero) LocalRippleConfiguration.current else null,
+      if (framed) null else LocalRippleConfiguration.current,
   ) {
     SingleChoiceSegmentedButtonRow(
-      modifier = modifier.fillMaxWidth().prismFrame(frame, style.shape, pressProgress),
+      modifier = modifier.fillMaxWidth().prismFrame(frame, style.shape) {
+        pressProgress.maxOfOrNull { it.value } ?: 0f
+      },
       space = style.borderWidth,
     ) {
       options.forEachIndexed { index, option ->
         SegmentedButton(
-          interactionSource = interactions,
+          interactionSource = interactions[index],
           selected = option.id == selectedOptionId,
           onClick = { onOptionSelected(option) },
           shape = SegmentedButtonDefaults.itemShape(index, options.size, style.shape),

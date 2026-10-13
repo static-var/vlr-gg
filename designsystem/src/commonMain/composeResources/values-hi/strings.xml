@@ -13,4 +13,7 @@
   <string name="prism_loader_merge">मिलाएँ</string>
   <string name="prism_loader_render">दिखाएँ</string>
   <string name="prism_loader_label_phase">%1$s · %2$s</string>
+  <string name="prism_reorder_item">%1$s का क्रम बदलें</string>
+  <string name="prism_move_item_up">%1$s को ऊपर ले जाएं</string>
+  <string name="prism_move_item_down">%1$s को नीचे ले जाएं</string>
 </resources>

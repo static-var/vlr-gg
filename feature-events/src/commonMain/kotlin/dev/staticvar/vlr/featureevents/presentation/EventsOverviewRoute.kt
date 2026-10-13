@@ -151,9 +151,13 @@ private fun EventsOverviewContent(
   onRefresh: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  // Counts stay hidden until the first load lands, so tabs never claim zero while loading.
+  val countsKnown = events.isNotEmpty() || (!isLoading && !isRefreshing && errorMessage == null)
+  val counts = remember(events, statusFilters) { statusFilters.associateWith { events.filterByStatus(it).size } }
   SharedStatusPager(
     tabs = statusFilters.map { filter ->
       PrismTab(
+        count = counts[filter]?.takeIf { countsKnown },
         id = filter.name,
         label = stringResource(
           when (filter) {

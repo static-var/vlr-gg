@@ -20,7 +20,8 @@
     <string name="view_upcoming">Yaklaşanları görüntüle</string>
     <string name="refresh">Yenile</string>
     <string name="match_options">Maç seçenekleri</string>
-    <string name="choose_what_you_see_in_match_details">Maç ayrıntılarında neleri göreceğinizi seçin.</string>
+    <string name="choose_and_order_match_sections">Maç başlığının altında hangi bölümlerin hangi sırayla görüneceğini seçin.</string>
+    <string name="section_unavailable">Bu maç için veri yok</string>
     <string name="done">Tamam</string>
     <string name="breakdown">Analiz</string>
     <string name="match_stats_and_player_table">Maç istatistikleri ve oyuncu tablosu</string>
@@ -57,6 +58,7 @@
     <string name="share_time_tba">Saat henüz belli değil</string>
     <string name="share_match">%1$s - %2$s | %3$s | %4$s</string>
     <string name="share_attribution">Val Esports ile paylaşıldı</string>
+    <string name="share_times_utc_offset">Saatler %1$s</string>
     <string name="mascot_player_cooked">%1$s şov yaptı!</string>
     <string name="mascot_player_cooking">%1$s şov yapıyor!</string>
     <string name="mascot_team_won">%1$s kazandı!</string>

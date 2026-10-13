@@ -19,6 +19,9 @@ import dev.staticvar.designsystem.prism.frame.PrismFrameTokens
  */
 @Immutable
 public sealed interface PrismDropdownStyle {
+  public val showsLabel: Boolean
+    get() = true
+
   @get:Composable
   @get:ReadOnlyComposable
   public val triggerFrame: PrismFrameTokens
@@ -72,6 +75,20 @@ public sealed interface PrismDropdownStyle {
   @get:Composable
   @get:ReadOnlyComposable
   public val selectedRailColor: Color
+
+  public data object Compact : PrismDropdownStyle by Brutalist {
+    override val showsLabel: Boolean = false
+
+    override val triggerWidth: Dp
+      @Composable
+      @ReadOnlyComposable
+      get() = 132.dp
+
+    override val chevronWidth: Dp
+      @Composable
+      @ReadOnlyComposable
+      get() = 32.dp
+  }
 
   public data object Brutalist : PrismDropdownStyle {
     override val triggerWidth: Dp

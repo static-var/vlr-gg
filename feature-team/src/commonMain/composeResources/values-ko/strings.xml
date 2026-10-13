@@ -11,7 +11,6 @@
     <string name="team_website">웹사이트</string>
     <string name="team_social">X</string>
     <string name="roster">로스터</string>
-    <string name="players">선수</string>
     <string name="favorite_player">즐겨찾는 선수</string>
     <string name="no_upcoming_matches">예정된 경기 없음</string>
     <string name="no_upcoming_team_fixtures">이 팀의 예정된 경기가 아직 공개되지 않았습니다.</string>

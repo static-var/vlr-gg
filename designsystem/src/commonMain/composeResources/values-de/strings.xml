@@ -13,4 +13,7 @@
   <string name="prism_loader_merge">ZUSAMMENFÜHREN</string>
   <string name="prism_loader_render">ANZEIGEN</string>
   <string name="prism_loader_label_phase">%1$s · %2$s</string>
+  <string name="prism_reorder_item">%1$s neu anordnen</string>
+  <string name="prism_move_item_up">%1$s nach oben verschieben</string>
+  <string name="prism_move_item_down">%1$s nach unten verschieben</string>
 </resources>

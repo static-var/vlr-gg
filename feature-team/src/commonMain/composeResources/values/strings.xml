@@ -9,7 +9,6 @@
     <string name="remove_team_favorite">Remove team from favorites</string>
     <string name="add_team_favorite">Add team to favorites</string>
     <string name="roster">Roster</string>
-    <string name="players">players</string>
     <string name="favorite_player">Favorite player</string>
     <string name="no_upcoming_matches">No upcoming matches</string>
     <string name="no_upcoming_team_fixtures">No upcoming fixtures have been published for this team.</string>

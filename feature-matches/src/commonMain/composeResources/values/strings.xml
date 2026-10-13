@@ -20,7 +20,8 @@
     <string name="view_upcoming">View upcoming</string>
     <string name="refresh">Refresh</string>
     <string name="match_options">Match options</string>
-    <string name="choose_what_you_see_in_match_details">Choose what you see in match details.</string>
+    <string name="choose_and_order_match_sections">Choose which sections appear below the match header and their order.</string>
+    <string name="section_unavailable">No data for this match</string>
     <string name="done">Done</string>
     <string name="breakdown">Breakdown</string>
     <string name="match_stats_and_player_table">Match stats and player table</string>
@@ -57,6 +58,7 @@
     <string name="share_time_tba">Time TBA</string>
     <string name="share_match">%1$s vs %2$s | %3$s | %4$s</string>
     <string name="share_attribution">Shared via Val Esports</string>
+    <string name="share_times_utc_offset">Times in %1$s</string>
     <string name="mascot_player_cooked">%1$s cooked!</string>
     <string name="mascot_player_cooking">%1$s is cooking!</string>
     <string name="mascot_team_won">%1$s won!</string>

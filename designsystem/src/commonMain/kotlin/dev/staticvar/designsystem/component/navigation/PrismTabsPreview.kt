@@ -31,8 +31,8 @@ internal fun PrismTabsPreview(@PreviewParameter(PrismPreviewProvider::class) var
     val tabs =
       remember {
         listOf(
-          PrismTab(id = "overview", label = "Overview"),
-          PrismTab(id = "matches", label = "Matches"),
+          PrismTab(id = "overview", label = "Overview", count = 6),
+          PrismTab(id = "matches", label = "Matches", count = 128),
           PrismTab(id = "standings", label = "Standings"),
           PrismTab(id = "history", label = "History", enabled = false),
         )

@@ -12,20 +12,55 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import dev.staticvar.designsystem.component.dropdown.PrismDropdown
-import dev.staticvar.designsystem.component.dropdown.PrismDropdownOption
+import androidx.compose.ui.tooling.preview.Preview
 import dev.staticvar.designsystem.component.tag.PrismTag
-import dev.staticvar.designsystem.preview.PrismPreview
-import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
+import dev.staticvar.designsystem.prism.PrismThemeFamily
 import dev.staticvar.designsystem.prism.PrismVariant
 
-@PrismPreview
+@Preview(name = "Section titles - Light", group = "Prism/Section title", showBackground = true)
 @Composable
-internal fun PrismSectionTitlePreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
-  PrismTheme(variant = variant) {
+internal fun PrismSectionTitleLightPreview() {
+  PrismSectionTitlePreviewContent(variant = PrismVariant.Light)
+}
+
+@Preview(name = "Section titles - Dark", group = "Prism/Section title", showBackground = true)
+@Composable
+internal fun PrismSectionTitleDarkPreview() {
+  PrismSectionTitlePreviewContent(variant = PrismVariant.Dark)
+}
+
+@Preview(name = "Console section titles - Light", group = "Prism/Section title", showBackground = true)
+@Composable
+internal fun PrismSectionTitleConsoleLightPreview() {
+  PrismSectionTitlePreviewContent(PrismVariant.Light, PrismThemeFamily.Console)
+}
+
+@Preview(name = "Console section titles - Dark", group = "Prism/Section title", showBackground = true)
+@Composable
+internal fun PrismSectionTitleConsoleDarkPreview() {
+  PrismSectionTitlePreviewContent(PrismVariant.Dark, PrismThemeFamily.Console)
+}
+
+@Preview(name = "Catppuccin section titles - Latte", group = "Prism/Section title", showBackground = true)
+@Composable
+internal fun PrismSectionTitleCatppuccinLightPreview() {
+  PrismSectionTitlePreviewContent(PrismVariant.Light, PrismThemeFamily.Catppuccin)
+}
+
+@Preview(name = "Catppuccin section titles - Frappe", group = "Prism/Section title", showBackground = true)
+@Composable
+internal fun PrismSectionTitleCatppuccinDarkPreview() {
+  PrismSectionTitlePreviewContent(PrismVariant.Dark, PrismThemeFamily.Catppuccin)
+}
+
+@Composable
+private fun PrismSectionTitlePreviewContent(
+  variant: PrismVariant,
+  family: PrismThemeFamily = PrismThemeFamily.Brutalist,
+) {
+  PrismTheme(variant = variant, family = family) {
     Column(
       modifier =
       Modifier.fillMaxWidth()
@@ -33,60 +68,17 @@ internal fun PrismSectionTitlePreview(@PreviewParameter(PrismPreviewProvider::cl
         .padding(Prism.dimens.spacingM),
       verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingL),
     ) {
+      PrismSectionTitle(title = "Maps", prefix = "02", trailing = { Text("3 PLAYED") })
+      PrismSectionTitle(title = "Win probability", trailing = { Text("PRE-MATCH") })
+      PrismSectionTitle(title = "Head to head", trailing = { PrismTag(text = "PRX leads 3–2") })
+      PrismSectionTitle(title = "Streams & VODs")
+      PrismSectionTitle(title = "Matches", trailing = { PrismSectionTitleAction(text = "Today", onClick = {}) })
       PrismSectionTitle(
-        title = "Maps",
-        preLabel = "Breakdown",
-        trailing = {
-          PrismDropdown(
-            options = listOf(PrismDropdownOption(id = "all", label = "All maps")),
-            selectedOptionId = "all",
-            onOptionSelected = {},
-            label = "Group",
-          )
-        },
+        title = "A section title long enough to need truncation",
+        prefix = "LR1",
+        trailing = { Text("12") },
       )
-      PrismSectionTitle(
-        title = "Head to head",
-        preLabel = "History",
-        trailing = { PrismTag(text = "Team +5") },
-      )
-      PrismSectionTitle(
-        title = "Streams & VODs",
-        preLabel = "Media",
-      )
-
-      PrismSectionTitle(
-        title = "Upcoming Matches",
-        preLabel = "Today",
-      )
-
-      PrismSectionTitle(
-        title = "Featured Events",
-        preLabel = "Weekend",
-        trailing = {
-          Text(
-            text = "04",
-            style = Prism.typography.numericSecondary,
-            color = Prism.color.accent,
-          )
-        },
-      )
-
-      PrismSectionTitle(
-        title = "Events",
-        showDivider = false,
-      )
-
-      Text(
-        text = "Display sample · AGENT 1234",
-        style = Prism.typography.cardTitle,
-        color = Prism.color.titleColor,
-      )
-      Text(
-        text = "Body sample · The quick brown fox jumps over the lazy dog.",
-        style = Prism.typography.bodyLarge,
-        color = Prism.color.bodyColor,
-      )
+      PrismSectionTitle(title = "Teams", style = PrismSectionTitleStyle.Subtle, trailing = { Text("4") })
     }
   }
 }

@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.featureevents.presentation
 
+import dev.staticvar.vlr.core.settings.EventDetailsPreferences
 import dev.staticvar.vlr.domain.model.EventDetails
 import org.jetbrains.compose.resources.StringResource
 
@@ -17,10 +18,5 @@ public data class EventDetailsUiState(
   val isDetailLoadPending: Boolean = true,
   val errorMessage: String? = null,
   val errorDetails: String? = null,
+  val preferences: EventDetailsPreferences = EventDetailsPreferences(),
 )
-
-public enum class EventDetailSection {
-  Matches,
-  Standings,
-  Prizes,
-}

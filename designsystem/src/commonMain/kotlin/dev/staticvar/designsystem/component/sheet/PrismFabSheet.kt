@@ -6,6 +6,7 @@
 
 package dev.staticvar.designsystem.component.sheet
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -38,8 +39,8 @@ import dev.staticvar.designsystem.prism.Prism
  * Place this above screen content in a full-size Box. The host owns [expanded]; dismissal, including
  * the platform back action, requests false through [onExpandedChange]. [sheetTitle] identifies the
  * modal pane to accessibility services. [onCollapsed] runs after the modal has left composition and
- * a frame has passed, including the initial collapsed state. Motion follows the system animation
- * duration scale.
+ * a frame has passed, including the initial collapsed state. [scrollState] is forwarded to the modal
+ * body. Motion follows the system animation duration scale.
  */
 @Composable
 public fun PrismFabSheet(
@@ -53,6 +54,7 @@ public fun PrismFabSheet(
   onCollapsed: () -> Unit = {},
   header: (@Composable ColumnScope.() -> Unit)? = null,
   footer: (@Composable RowScope.() -> Unit)? = null,
+  scrollState: ScrollState? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   var collapsed by remember { mutableStateOf(true) }
@@ -78,6 +80,7 @@ public fun PrismFabSheet(
     },
     header = header,
     footer = footer,
+    scrollState = scrollState,
     content = content,
   )
 }

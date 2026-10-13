@@ -7,6 +7,7 @@ package dev.staticvar.designsystem.prism.theme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
+import dev.staticvar.designsystem.component.navigation.PrismTabTokens
 import dev.staticvar.designsystem.prism.animation.DefaultPrismAnimations
 import dev.staticvar.designsystem.prism.animation.PrismAnimationTokens
 import dev.staticvar.designsystem.prism.color.PrismColorPalette
@@ -34,6 +35,8 @@ internal interface PrismThemeDefinition<ColorTokens : Any> {
   val animations: PrismAnimationTokens get() = DefaultPrismAnimations
 
   fun createFrames(palette: PrismColorPalette): PrismFrames = PrismFrames()
+
+  val tabs: PrismTabTokens get() = PrismTabTokens()
 
   val shapes: Shapes
 }

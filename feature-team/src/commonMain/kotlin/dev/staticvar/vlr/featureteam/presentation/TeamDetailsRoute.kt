@@ -64,7 +64,6 @@ import vlr.feature_team.generated.resources.no_team_details
 import vlr.feature_team.generated.resources.no_team_results
 import vlr.feature_team.generated.resources.no_upcoming_matches
 import vlr.feature_team.generated.resources.no_upcoming_team_fixtures
-import vlr.feature_team.generated.resources.players
 import vlr.feature_team.generated.resources.remove_team_favorite
 import vlr.feature_team.generated.resources.roster
 import vlr.feature_team.generated.resources.team_details
@@ -258,9 +257,11 @@ private fun TeamDetailsLoadedContent(
     item(key = "rating") {
       TeamRatingCard(state = uiState.rating, onMatchSelected = onMatchSelected, onRetry = onRefresh)
     }
+    teamRosterItems(roster = team.roster, onPlayerSelected = onPlayerSelected)
     item(key = "match-tabs") {
       PrismTabs(
-        modifier = Modifier.padding(bottom = Prism.dimens.spacingS),
+        // Sets the matches apart from the roster cards above.
+        modifier = Modifier.padding(top = Prism.dimens.spacingM, bottom = Prism.dimens.spacingS),
         tabs = TeamMatchesSection.entries.map { tab ->
           PrismTab(
             id = tab.name,
@@ -294,7 +295,6 @@ private fun TeamDetailsLoadedContent(
           onEventSelected = onEventSelected,
         )
     }
-    teamRosterItems(roster = team.roster, onPlayerSelected = onPlayerSelected)
     item {
       Spacer(modifier = Modifier.navigationBarsPadding().fillMaxWidth())
     }
@@ -366,7 +366,7 @@ private fun LazyListScope.teamRosterItems(roster: List<TeamPlayer>, onPlayerSele
   if (roster.isEmpty()) return
 
   item(key = "roster-title") {
-    PrismSectionTitle(title = stringResource(Res.string.roster), preLabel = stringResource(Res.string.players))
+    PrismSectionTitle(title = stringResource(Res.string.roster))
   }
   items(roster, key = { "player:${it.id}" }) { player ->
     TeamRosterItem(player = player, onPlayerSelected = onPlayerSelected)

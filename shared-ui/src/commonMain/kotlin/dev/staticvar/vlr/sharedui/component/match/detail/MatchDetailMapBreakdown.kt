@@ -29,7 +29,6 @@ import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.format_mapNumber
-import vlr.shared_ui.generated.resources.match_event_all_maps
 import vlr.shared_ui.generated.resources.match_event_combined_stats
 import vlr.shared_ui.generated.resources.match_event_map_breakdown_unavailable
 import vlr.shared_ui.generated.resources.match_event_tbd
@@ -96,8 +95,7 @@ private fun AllMapsBreakdown(maps: List<MapData>, onPlayerSelected: ((String) ->
     subtitle = maps.matchDetailAllMapsMeta(
       matchFormattingLabels(playedMapCount = maps.count { map -> map.teams.any { it.score != null } }),
     ),
-    tag = stringResource(Res.string.match_event_all_maps),
-    tagStyle = PrismTagStyle.Neutral,
+    tag = null,
   )
   MatchDetailAllMapPlayerStatsTable(maps = maps, onPlayerSelected = onPlayerSelected)
 }
@@ -117,7 +115,12 @@ private fun SingleMapBreakdown(map: MapData, mapIndex: Int, onPlayerSelected: ((
 }
 
 @Composable
-private fun MatchDetailMapBreakdownHeader(title: String, subtitle: String?, tag: String, tagStyle: PrismTagStyle) {
+private fun MatchDetailMapBreakdownHeader(
+  title: String,
+  subtitle: String?,
+  tag: String?,
+  tagStyle: PrismTagStyle = PrismTagStyle.Neutral,
+) {
   Row(
     modifier = Modifier.fillMaxWidth(),
     verticalAlignment = Alignment.Top,
@@ -142,7 +145,9 @@ private fun MatchDetailMapBreakdownHeader(title: String, subtitle: String?, tag:
         )
       }
     }
-    PrismTag(text = tag, style = tagStyle)
+    if (tag != null) {
+      PrismTag(text = tag, style = tagStyle)
+    }
   }
 }
 

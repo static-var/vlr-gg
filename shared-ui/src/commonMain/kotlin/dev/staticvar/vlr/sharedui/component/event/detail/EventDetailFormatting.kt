@@ -10,9 +10,6 @@ import dev.staticvar.vlr.domain.model.EventMatch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
-import vlr.shared_ui.generated.resources.format_groupRound
-import vlr.shared_ui.generated.resources.format_groupStage
-import vlr.shared_ui.generated.resources.format_groupStatus
 import vlr.shared_ui.generated.resources.format_matchTbd
 import vlr.shared_ui.generated.resources.format_region
 import vlr.shared_ui.generated.resources.format_status_completed
@@ -26,21 +23,6 @@ import vlr.shared_ui.generated.resources.format_teams
 import vlr.shared_ui.generated.resources.format_unknown
 import vlr.shared_ui.generated.resources.format_versus
 import kotlin.math.round
-
-public enum class EventMatchGrouping {
-  Status,
-  Round,
-  Stage,
-  ;
-
-  public val label: String
-    @Composable
-    get() = when (this) {
-      Status -> stringResource(Res.string.format_groupStatus)
-      Round -> stringResource(Res.string.format_groupRound)
-      Stage -> stringResource(Res.string.format_groupStage)
-    }
-}
 
 internal fun EventDetails.eventDetailMeta(): String = listOf(region, dates, prize)
   .filter(String::isNotBlank)
@@ -56,17 +38,6 @@ internal fun EventMatch.eventMatchSchedule(): String = listOfNotNull(
   eta?.takeIf(String::isNotBlank),
   listOf(date, time).filter(String::isNotBlank).joinToString(separator = " ").ifBlank { null },
 ).joinToString(separator = " • ")
-
-public fun List<EventMatch>.groupEventMatches(
-  grouping: EventMatchGrouping,
-  labels: EventFormattingLabels,
-): Map<String, List<EventMatch>> = groupBy { match ->
-  when (grouping) {
-    EventMatchGrouping.Status -> match.status.eventMatchStatusLabel(labels)
-    EventMatchGrouping.Round -> match.round.eventGroupLabel(labels)
-    EventMatchGrouping.Stage -> match.stage.eventGroupLabel(labels)
-  }
-}
 
 internal fun String.eventHeroDateStat(): String = substringBefore(delimiter = "-")
   .trim()
@@ -98,19 +69,6 @@ private fun String.primaryCurrencyValue(): String = trim()
   .substringBefore("(")
   .substringBefore("•")
   .trim()
-
-private fun String.eventGroupLabel(labels: EventFormattingLabels): String = trim()
-  .ifBlank { labels.unknown }
-  .replaceFirstChar { char -> char.uppercase() }
-
-private fun String.eventMatchStatusLabel(labels: EventFormattingLabels): String = when (trim().lowercase()) {
-  "live" -> labels.live
-  "ongoing" -> labels.ongoing
-  "paused" -> labels.paused
-  "upcoming", "tbd" -> labels.upcoming
-  "completed", "final" -> labels.completed
-  else -> labels.unknown
-}
 
 private fun Double.toCompactDecimal(): String {
   val rounded = round(this * 100.0) / 100.0

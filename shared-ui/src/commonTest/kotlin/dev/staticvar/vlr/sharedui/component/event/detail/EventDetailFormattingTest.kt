@@ -32,36 +32,6 @@ class EventDetailFormattingTest {
   }
 
   @Test
-  fun statusAliasesJoinLocalizedGroupsWithoutMergingOngoingAndPaused() {
-    val labels = testFormattingLabels.copy(
-      completed = "Terminé",
-      upcoming = "À venir",
-      ongoing = "En cours",
-      paused = "En pause",
-    )
-    val matches = listOf(
-      eventMatch(id = "1", status = " FINAL "),
-      eventMatch(id = "2", status = "completed"),
-      eventMatch(id = "3", status = " TbD "),
-      eventMatch(id = "4", status = "upcoming"),
-      eventMatch(id = "5", status = "ongoing"),
-      eventMatch(id = "6", status = "paused"),
-    )
-
-    val grouped = matches.groupEventMatches(EventMatchGrouping.Status, labels)
-
-    assertEquals(
-      mapOf(
-        "Terminé" to listOf("1", "2"),
-        "À venir" to listOf("3", "4"),
-        "En cours" to listOf("5"),
-        "En pause" to listOf("6"),
-      ),
-      grouped.mapValues { (_, group) -> group.map(EventMatch::matchId) },
-    )
-  }
-
-  @Test
   fun pausedAndUnknownStatusesKeepTheirOwnLabels() {
     assertEquals(Res.string.format_status_paused, EventStatus.PAUSED.eventDetailLabelResource)
     assertEquals(Res.string.format_status_unknown, EventStatus.UNKNOWN.eventDetailLabelResource)
@@ -86,20 +56,6 @@ class EventDetailFormattingTest {
     val match = eventMatch(eta = null, date = "Jun 21", time = "18:00")
 
     assertEquals("Jun 21 18:00", match.eventMatchSchedule())
-  }
-
-  @Test
-  fun groupsMatchesBySelectedGroupingInFirstSeenOrder() {
-    val matches = listOf(
-      eventMatch(id = "1", status = "upcoming", round = "Upper Final", stage = "Playoffs"),
-      eventMatch(id = "2", status = "completed", round = "Opening", stage = "Group A"),
-      eventMatch(id = "3", status = "upcoming", round = "Opening", stage = "Group A"),
-    )
-
-    val grouped = matches.groupEventMatches(EventMatchGrouping.Status, testFormattingLabels)
-
-    assertEquals(listOf("Upcoming", "Completed"), grouped.keys.toList())
-    assertEquals(listOf("1", "3"), grouped.getValue("Upcoming").map(EventMatch::matchId))
   }
 
   @Test

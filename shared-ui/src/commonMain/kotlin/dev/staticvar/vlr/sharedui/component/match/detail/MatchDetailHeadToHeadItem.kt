@@ -41,7 +41,6 @@ import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.match_event_head_to_head
 import vlr.shared_ui.generated.resources.match_event_head_to_head_description
-import vlr.shared_ui.generated.resources.match_event_history
 import vlr.shared_ui.generated.resources.match_event_matches_count
 import vlr.shared_ui.generated.resources.match_event_played_count
 import vlr.shared_ui.generated.resources.match_event_scores_hidden
@@ -70,7 +69,6 @@ public fun MatchDetailHeadToHeadItem(
   ) {
     PrismSectionTitle(
       title = stringResource(Res.string.match_event_head_to_head),
-      preLabel = stringResource(Res.string.match_event_history),
       trailing = {
         PrismTag(
           text = if (spoilersHidden) {

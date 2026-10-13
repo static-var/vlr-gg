@@ -87,3 +87,33 @@ internal fun PrismChipGroupPreview(@PreviewParameter(PrismPreviewProvider::class
     }
   }
 }
+
+@PrismPreview
+@Composable
+internal fun PrismChipGroupSupportingTextPreview(
+  @PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant,
+) {
+  PrismTheme(variant = variant) {
+    var selectedChipId by remember { mutableStateOf("0") }
+    Column(
+      modifier =
+      Modifier
+        .fillMaxWidth()
+        .background(Prism.color.background)
+        .padding(Prism.dimens.spacingM),
+      verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+    ) {
+      Text("Supporting Text", style = Prism.typography.label, color = Prism.color.labelColor)
+      PrismChipGroup(
+        chips = listOf(
+          PrismChip(id = "all", label = "All maps"),
+          PrismChip(id = "0", label = "Lotus", supportingText = "13-7"),
+          PrismChip(id = "1", label = "Ascent", supportingText = "6-13"),
+          PrismChip(id = "2", label = "Summit", supportingText = "13-11"),
+        ),
+        selectedChipId = selectedChipId,
+        onChipSelected = { selectedChipId = it.id },
+      )
+    }
+  }
+}

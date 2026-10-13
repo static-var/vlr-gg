@@ -1,11 +1,10 @@
 <resources>
+  <string name="match_event_group_by">Group by</string>
   <string name="match_event_tbd">TBD</string>
   <string name="match_event_matches">Matches</string>
-  <string name="match_event_schedule">schedule</string>
   <string name="match_event_group_matches_by">GROUP MATCHES BY</string>
   <string name="match_event_open_bracket">Open bracket</string>
   <string name="match_event_head_to_head">Head to head</string>
-  <string name="match_event_history">history</string>
   <string name="match_event_scores_hidden">Scores hidden</string>
   <string name="match_event_match">Match</string>
   <string name="match_event_unknown">Unknown</string>
@@ -22,14 +21,10 @@
   <string name="match_event_teams">TEAMS</string>
   <string name="match_event_map_breakdown_unavailable">Map breakdown unavailable.</string>
   <string name="match_event_combined_stats">Combined stats</string>
-  <string name="match_event_all_maps">All maps</string>
-  <string name="match_event_group">GROUP</string>
-  <string name="match_event_map_upper">MAP</string>
   <string name="match_event_match_day">MATCH DAY</string>
   <string name="match_event_time_tba">Time to be announced</string>
   <string name="match_event_format">FORMAT</string>
   <string name="match_event_maps">Maps</string>
-  <string name="match_event_breakdown">breakdown</string>
   <string name="match_event_player">Player</string>
   <string name="match_event_agent">Agent</string>
   <string name="match_event_acs">ACS</string>

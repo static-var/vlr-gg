@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import dev.staticvar.designsystem.component.navigation.LocalPrismTabTokens
 import dev.staticvar.designsystem.prism.animation.LocalPrismAnimations
 import dev.staticvar.designsystem.prism.color.LocalPrismColors
 import dev.staticvar.designsystem.prism.dimens.LocalPrismDimens
@@ -43,6 +44,7 @@ internal fun <ColorTokens : Any> ProvidePrismTheme(
     LocalPrismColors provides palette,
     LocalPrismAnimations provides definition.animations,
     LocalPrismFrames provides frames,
+    LocalPrismTabTokens provides definition.tabs,
     LocalPrismTypography provides typographyTokens,
     LocalPrismDimens provides dimens,
     LocalContentColor provides palette.contentPrimary,

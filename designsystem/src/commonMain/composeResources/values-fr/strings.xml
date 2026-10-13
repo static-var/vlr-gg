@@ -13,4 +13,7 @@
   <string name="prism_loader_merge">FUSIONNER</string>
   <string name="prism_loader_render">AFFICHER</string>
   <string name="prism_loader_label_phase">%1$s · %2$s</string>
+  <string name="prism_reorder_item">Réorganiser %1$s</string>
+  <string name="prism_move_item_up">Monter %1$s</string>
+  <string name="prism_move_item_down">Descendre %1$s</string>
 </resources>

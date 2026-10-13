@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.core.refresh.RefreshController
+import dev.staticvar.vlr.core.settings.EventDetailsPreferences
+import dev.staticvar.vlr.core.settings.EventDetailsPreferencesRepository
 import dev.staticvar.vlr.domain.repository.EventRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.featureevents.usecase.ObserveEventDetailsUseCase
@@ -32,6 +34,7 @@ public class EventDetailsViewModel(
   networkMonitor: NetworkMonitor,
   favoritesRepository: FavoritesRepository,
   private val eventRepository: EventRepository,
+  private val preferencesRepository: EventDetailsPreferencesRepository,
 ) : ViewModel() {
   public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
@@ -58,10 +61,12 @@ public class EventDetailsViewModel(
       errorMessage = refresh.errorMessage,
       errorDetails = refresh.errorDetails,
     )
+  }.combine(preferencesRepository.preferences) { state, preferences ->
+    state.copy(preferences = preferences)
   }.stateIn(
     viewModelScope,
     SharingStarted.Eagerly,
-    EventDetailsUiState(),
+    EventDetailsUiState(preferences = preferencesRepository.preferences.value),
   )
 
   public fun toggleFavorite() {
@@ -86,4 +91,8 @@ public class EventDetailsViewModel(
   }
 
   public fun refresh(): Unit = refresher.refresh()
+
+  public fun setPreferences(preferences: EventDetailsPreferences) {
+    preferencesRepository.setPreferences(preferences)
+  }
 }

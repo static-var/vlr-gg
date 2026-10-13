@@ -49,6 +49,10 @@ private fun Int.twoDigits(): String = toString().padStart(length = 2, padChar = 
 @Composable
 internal fun previewMonthName(month: Month): String = stringResource(previewMonthResources[month.ordinal])
 
+/** Localized short month name, matching the month used in match times. */
+@Composable
+public fun shortMonthName(month: Month): String = previewMonthName(month)
+
 private val previewMonthResources = listOf(
   Res.string.format_month_jan,
   Res.string.format_month_feb,

@@ -54,7 +54,12 @@ kotlin {
       }
     }
 
-    val commonTest by getting { dependencies { implementation(kotlin("test")) } }
+    val commonTest by getting {
+      dependencies {
+        implementation(kotlin("test"))
+        implementation(libs.coroutine.test)
+      }
+    }
 
     val androidMain by getting {
       dependencies {

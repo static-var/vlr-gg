@@ -8,6 +8,9 @@ import androidx.compose.runtime.Immutable
 
 /**
  * Declarative model for a standard tab item.
+ *
+ * @param count Optional number of items behind the tab, shown beside the label. Leave it null while
+ * the number is unknown.
  */
 @Immutable
-public data class PrismTab(val id: String, val label: String, val enabled: Boolean = true)
+public data class PrismTab(val id: String, val label: String, val enabled: Boolean = true, val count: Int? = null)

@@ -105,37 +105,37 @@ internal fun noLiveMatchesVector(colors: IllustrationColors): ImageVector = illu
     width = 2.0f,
   )
   shape(
-    "M257 174 V139 C257 109 301 109 301 139 V174",
+    "M291 178 V143 C291 113 335 113 335 143 V178",
     fill = null,
     stroke = colors.ink,
     width = 9.0f,
   )
   shape(
-    "M260 139 C260 115 298 115 298 139",
+    "M294 143 C294 119 332 119 332 143",
     fill = null,
     stroke = colors.accent,
     width = 4.0f,
   )
   shape(
-    "M256 147 H257 Q263 147 263 153 V172 Q263 178 257 178 H256 Q250 178 250 172 V153 Q250 147 256 147 Z",
+    "M290 151 H291 Q297 151 297 157 V176 Q297 182 291 182 H290 Q284 182 284 176 V157 Q284 151 290 151 Z",
     fill = colors.accent,
     stroke = colors.ink,
     width = 2.0f,
   )
   shape(
-    "M301 147 H302 Q308 147 308 153 V172 Q308 178 302 178 H301 Q295 178 295 172 V153 Q295 147 301 147 Z",
+    "M335 151 H336 Q342 151 342 157 V176 Q342 182 336 182 H335 Q329 182 329 176 V157 Q329 151 335 151 Z",
     fill = colors.accent,
     stroke = colors.ink,
     width = 2.0f,
   )
   shape(
-    "M302 178 V186 Q302 196 288 196 H281",
+    "M336 182 V190 Q336 200 322 200 H315",
     fill = null,
     stroke = colors.ink,
     width = 3.0f,
   )
   shape(
-    "M276 192 H282 Q285 192 285 195 V196 Q285 199 282 199 H276 Q273 199 273 196 V195 Q273 192 276 192 Z",
+    "M310 196 H316 Q319 196 319 199 V200 Q319 203 316 203 H310 Q307 203 307 200 V199 Q307 196 310 196 Z",
     fill = colors.ink,
     stroke = null,
     width = 2.0f,

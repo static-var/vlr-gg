@@ -53,11 +53,14 @@ internal val CatppuccinIcons: PrismIcons by lazy {
       "M8 6 H16 Q19 6 20 10 L21 16 Q21.5 20 18 19 L14.5 16 H9.5 L6 19 Q2.5 20 3 16 L4 10 Q5 6 8 " +
         "6 Z M6.5 11 H10.5 M8.5 9 V13 M15.5 10 H15.6 M18 12.5 H18.1",
       selectedOutline =
-      "M8 6 H16 Q19 6 20 10 L21 16 Q21.5 20 18 19 L14.5 16 H9.5 L6 19 Q2.5 20 3 16 L4 10 Q5 6 8 " +
-        "6 Z M6.5 11 H10.5 M8.5 9 V13",
+      "M8 6 H16 Q19 6 20 10 L21 16 Q21.5 20 18 19 L14.5 16 H9.5 L6 19 Q2.5 20 3 16 L4 10 Q5 6 8 6 Z",
+      // Solid body like the other selected icons. The d-pad and buttons wind the other way, so
+      // they cut through the fill.
       selectedFill =
-      "M17 10 A1.5 1.5 0 1 1 14 10 A1.5 1.5 0 1 1 17 10 Z M19.5 12.5 A1.5 1.5 0 1 1 16.5 12.5 " +
-        "A1.5 1.5 0 1 1 19.5 12.5 Z M8 5 H16 Q18 5 19 8 H5 Q6 5 8 5 Z",
+      "M8 6 H16 Q19 6 20 10 L21 16 Q21.5 20 18 19 L14.5 16 H9.5 L6 19 Q2.5 20 3 16 L4 10 Q5 6 8 6 Z " +
+        "M7.5 8.8 V10 H6.3 V12 H7.5 V13.2 H9.5 V12 H10.7 V10 H9.5 V8.8 Z " +
+        "M16.8 10 A1.3 1.3 0 1 0 14.2 10 A1.3 1.3 0 1 0 16.8 10 Z " +
+        "M19.3 12.5 A1.3 1.3 0 1 0 16.7 12.5 A1.3 1.3 0 1 0 19.3 12.5 Z",
     ),
     events = catppuccinNavigation(
       name = "Events",

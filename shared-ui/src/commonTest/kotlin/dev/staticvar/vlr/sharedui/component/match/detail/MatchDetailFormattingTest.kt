@@ -79,12 +79,14 @@ class MatchDetailFormattingTest {
   }
 
   @Test
-  fun mapOptionLabelIncludesScoreOrPendingState() {
-    assertEquals("Lotus - 13-9", mapData(name = "Lotus").matchDetailMapOptionLabel(testFormattingLabels))
-    assertEquals(
-      "Haven - Pending",
-      mapData(name = "Haven", firstScore = null, secondScore = null).matchDetailMapOptionLabel(testFormattingLabels),
-    )
+  fun mapOptionsSeparateMapNameFromScoreOrPendingState() {
+    val options = listOf(
+      mapData(name = "Lotus"),
+      mapData(name = "Haven", firstScore = null, secondScore = null),
+    ).matchDetailMapOptions(testFormattingLabels)
+
+    assertEquals(listOf("All maps", "Lotus", "Haven"), options.map(MatchDetailMapOption::label))
+    assertEquals(listOf(null, "13-9", "Pending"), options.map(MatchDetailMapOption::supportingText))
   }
 
   @Test

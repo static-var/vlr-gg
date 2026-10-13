@@ -159,6 +159,15 @@ private fun PrismChipItem(
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
       )
+      if (chip.supportingText != null) {
+        Text(
+          text = chip.supportingText,
+          modifier = Modifier.padding(start = Prism.dimens.spacingXs),
+          style = Prism.typography.button,
+          color = visualState.supportingContentColor,
+          maxLines = 1,
+        )
+      }
     }
   }
 }
@@ -189,8 +198,19 @@ private fun rememberPrismChipVisualState(
       animationSpec = animation.colorSpec(),
       label = "chip_border_$chipId",
     )
+  val supportingContentColor by
+    animateColorAsState(
+      targetValue = style.supportingContentColor(selected = selected, enabled = enabled),
+      animationSpec = animation.colorSpec(),
+      label = "chip_supporting_$chipId",
+    )
 
-  return PrismChipVisualState(containerColor, contentColor, borderColor)
+  return PrismChipVisualState(containerColor, contentColor, borderColor, supportingContentColor)
 }
 
-private data class PrismChipVisualState(val containerColor: Color, val contentColor: Color, val borderColor: Color)
+private data class PrismChipVisualState(
+  val containerColor: Color,
+  val contentColor: Color,
+  val borderColor: Color,
+  val supportingContentColor: Color,
+)

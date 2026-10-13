@@ -9,6 +9,9 @@ import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import dev.staticvar.designsystem.component.navigation.PrismTabCount
+import dev.staticvar.designsystem.component.navigation.PrismTabFill
+import dev.staticvar.designsystem.component.navigation.PrismTabTokens
 import dev.staticvar.designsystem.prism.PrismCatppuccinFlavour
 import dev.staticvar.designsystem.prism.color.PrismColorPalette
 import dev.staticvar.designsystem.prism.icon.CatppuccinIcons
@@ -49,4 +52,11 @@ internal data class CatppuccinThemeDefinition(val flavour: PrismCatppuccinFlavou
     PrismTypographyTokens.createMaterial(tokens)
 
   override val shapes: Shapes get() = CatppuccinShapes.shapes
+
+  override val tabs: PrismTabTokens = PrismTabTokens(
+    pill = true,
+    displayLabel = false,
+    selectedFill = PrismTabFill.Accent,
+    count = PrismTabCount.Badge,
+  )
 }

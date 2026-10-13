@@ -190,19 +190,14 @@ private fun TeamRatingHeader(onInfoSelected: () -> Unit) {
       )
       PrismTag(text = stringResource(Res.string.team_rating_beta), style = PrismTagStyle.Accent)
     }
-    Box(
-      modifier = Modifier.heightIn(
-        min = Prism.dimens.controlHeight,
-      ).clickable(role = Role.Button, onClick = onInfoSelected),
-      contentAlignment = Alignment.Center,
-    ) {
-      Text(
-        text = stringResource(Res.string.team_rating_how),
-        style = Prism.typography.label,
-        color = Prism.color.accent,
-        textDecoration = TextDecoration.Underline,
-      )
-    }
+    // No reserved 48 dp row: Compose extends touches near the link to the minimum touch target.
+    Text(
+      text = stringResource(Res.string.team_rating_how),
+      modifier = Modifier.clickable(role = Role.Button, onClick = onInfoSelected),
+      style = Prism.typography.label,
+      color = Prism.color.accent,
+      textDecoration = TextDecoration.Underline,
+    )
   }
 }
 
@@ -378,10 +373,9 @@ private fun TeamRecentForm(profile: TeamRankingProfile, onMatchSelected: (String
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-        form.forEachIndexed { index, won ->
+        form.forEach { won ->
           TeamFormTile(
             won = won,
-            newest = index == 0,
             modifier = Modifier.weight(1f).aspectRatio(1f).clearAndSetSemantics {},
           )
         }
@@ -410,7 +404,7 @@ private fun TeamRecentForm(profile: TeamRankingProfile, onMatchSelected: (String
 }
 
 @Composable
-private fun TeamFormTile(won: Boolean, modifier: Modifier = Modifier, newest: Boolean = false) {
+private fun TeamFormTile(won: Boolean, modifier: Modifier = Modifier) {
   val hidden = LocalSpoilerMode.current.enabled
   val style = if (hidden) {
     PrismTagStyle.Neutral
@@ -421,10 +415,11 @@ private fun TeamFormTile(won: Boolean, modifier: Modifier = Modifier, newest: Bo
   }
   val outcome =
     stringResource(if (won) Res.string.team_rating_win_description else Res.string.team_rating_loss_description)
+  // Same corners as tags, so tiles follow the theme's shape.
+  val shape = Prism.shapes.small
   Box(
     modifier =
-    modifier.background(style.containerColor).border(style.border)
-      .then(if (newest) Modifier.border(Prism.dimens.strokeThick, Prism.color.accent) else Modifier),
+    modifier.background(style.containerColor, shape).border(style.border, shape),
     contentAlignment = Alignment.Center,
   ) {
     if (hidden) {

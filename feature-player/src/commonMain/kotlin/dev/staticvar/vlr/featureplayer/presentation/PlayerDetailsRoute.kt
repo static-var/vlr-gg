@@ -57,14 +57,12 @@ import vlr.feature_player.generated.resources.agent_rounds
 import vlr.feature_player.generated.resources.agent_stats
 import vlr.feature_player.generated.resources.agent_usage
 import vlr.feature_player.generated.resources.current_team
-import vlr.feature_player.generated.resources.history
 import vlr.feature_player.generated.resources.loading_player
 import vlr.feature_player.generated.resources.no_player_details
 import vlr.feature_player.generated.resources.player_details
 import vlr.feature_player.generated.resources.player_not_published
 import vlr.feature_player.generated.resources.player_subtitle
 import vlr.feature_player.generated.resources.player_winnings
-import vlr.feature_player.generated.resources.pool
 import vlr.feature_player.generated.resources.previous_team
 import vlr.feature_player.generated.resources.remove_player_favorite
 import vlr.feature_player.generated.resources.team_history
@@ -327,7 +325,7 @@ private fun LazyListScope.playerAgentStatItems(
   if (agentStats.isEmpty()) return
 
   item {
-    PrismSectionTitle(title = stringResource(Res.string.agent_stats), preLabel = stringResource(Res.string.pool))
+    PrismSectionTitle(title = stringResource(Res.string.agent_stats))
   }
   if (spoilersHidden) {
     item {
@@ -377,7 +375,7 @@ private fun LazyListScope.playerTeamHistoryItems(
   if (teams.isEmpty()) return
 
   item {
-    PrismSectionTitle(title = stringResource(Res.string.team_history), preLabel = stringResource(Res.string.history))
+    PrismSectionTitle(title = stringResource(Res.string.team_history))
   }
   items(teams) { team ->
     PlayerTeamHistoryItem(team = team, onTeamSelected = onTeamSelected)
