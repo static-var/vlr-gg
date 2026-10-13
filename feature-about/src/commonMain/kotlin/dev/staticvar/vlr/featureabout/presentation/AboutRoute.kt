@@ -38,7 +38,9 @@ import dev.staticvar.designsystem.component.appbar.PrismScreenTitleBar
 import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.divider.PrismDivider
 import dev.staticvar.designsystem.component.surface.PrismSurface
+import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.sharedui.component.common.SharedAppLogo
 import dev.staticvar.vlr.core.telemetry.AppTelemetry
 import dev.staticvar.vlr.sharedui.mascot.LynxMascot
 import dev.staticvar.vlr.sharedui.mascot.RosieMascot
@@ -132,11 +134,18 @@ private fun AboutIdentity() {
         verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
         itemVerticalAlignment = Alignment.CenterVertically,
       ) {
-        Text(
-          text = stringResource(Res.string.val_esports),
-          style = Prism.typography.display.copy(fontSize = 40.sp, lineHeight = 44.sp, letterSpacing = (-1).sp),
-          color = Prism.color.accent,
-        )
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          // The wordmark beside it names the app, so the logo stays silent.
+          SharedAppLogo(modifier = Modifier.size(56.dp))
+          Text(
+            text = stringResource(Res.string.val_esports),
+            style = Prism.typography.display.copy(fontSize = 40.sp, lineHeight = 44.sp, letterSpacing = (-1).sp),
+            color = Prism.color.accent,
+          )
+        }
         Row {
           LynxMascot(modifier = Modifier.size(88.dp), animated = true)
           RosieMascot(modifier = Modifier.size(88.dp), animated = true)
@@ -252,12 +261,7 @@ private fun AboutDonations() {
 
 @Composable
 private fun AboutSectionHeading(title: String) {
-  Text(
-    text = title,
-    modifier = Modifier.padding(bottom = Prism.dimens.spacingS).semantics { heading() },
-    style = Prism.typography.sectionTitle,
-    color = Prism.color.titleColor,
-  )
+  PrismSectionTitle(title = title, modifier = Modifier.padding(bottom = Prism.dimens.spacingS))
 }
 
 @Composable

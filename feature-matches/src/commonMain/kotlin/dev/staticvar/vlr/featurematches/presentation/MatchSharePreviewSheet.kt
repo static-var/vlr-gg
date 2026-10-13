@@ -4,7 +4,6 @@
  */
 package dev.staticvar.vlr.featurematches.presentation
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,8 +47,8 @@ import dev.staticvar.vlr.sharedui.spoilers.SpoilerScore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import dev.staticvar.vlr.sharedui.component.common.SharedAppLogo
 import vlr.feature_matches.generated.resources.Res
 import vlr.feature_matches.generated.resources.close
 import vlr.feature_matches.generated.resources.could_not_create_the_image_tap_share_to_try_again
@@ -59,7 +58,6 @@ import vlr.feature_matches.generated.resources.preview
 import vlr.feature_matches.generated.resources.share
 import vlr.feature_matches.generated.resources.share_attribution
 import vlr.feature_matches.generated.resources.share_live
-import vlr.feature_matches.generated.resources.share_logo
 import vlr.feature_matches.generated.resources.share_time_tba
 import vlr.feature_matches.generated.resources.share_times_utc_offset
 import vlr.feature_matches.generated.resources.sharing
@@ -203,11 +201,7 @@ private fun MatchShareFooter(utcOffset: String?) {
         style = Prism.typography.label,
         color = Prism.color.labelColor,
       )
-      Image(
-        painter = painterResource(Res.drawable.share_logo),
-        contentDescription = null,
-        modifier = Modifier.size(Prism.dimens.iconM),
-      )
+      SharedAppLogo(modifier = Modifier.size(Prism.dimens.iconM))
       Text(
         text = stringResource(Res.string.share_attribution),
         style = Prism.typography.label,
