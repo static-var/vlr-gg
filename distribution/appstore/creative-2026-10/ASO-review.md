@@ -21,6 +21,20 @@ Uploaded both PNGs through Helium on October 8, 2026 at 9:21 AM IST and submitte
 
 Sources: [Apple specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications), [asset workflow](https://developer.apple.com/help/app-store-connect/manage-app-information/manage-your-app-store-assets), [best practices and templates](https://developer.apple.com/app-store/asset-best-practices/).
 
+## Animated header
+
+`output/val-esports-header-motion-3840x1646.mp4` is an optional video alternative to the static header. Header video spec: 21:9 at 3840×1646, 30 or 60 fps, 5–30 s, `.mov`/`.m4v`/`.mp4`. It is muted by default and loops continuously.
+
+- **Scene:** An editorial colorblock look in four scenes: ink (scores), pink (schedules), ivory (rankings) and violet (stats). Each scene has a giant outlined backdrop word, two angled ticker tapes, halftone edges and twinkling sparkles. The icon and wordmark sit at the center, with "VALORANT" in a pill and the current word beside it. The wordmark is holographic on the ink scene. Foil-tinted match cards from the real iOS captures float on both sides. The crops are text-only, with no team or league logos.
+- **Rhythm:** Every 5 s a diagonal wipe, led by two accent bands and a white hairline, brings in the next scene. The wipe changes direction each time. Type re-colors exactly where the edge passes, and the hero gets a brief chromatic split. Then the icon does a coin flip, the new word's letters spring up, and the cards flip to new matches. There are no hard cuts, and nothing flashes faster than one transition per 5 s.
+- **Loop:** The 20 s loop is seamless. Every motion is periodic in the loop, and `capture.mjs` fails if the frames at 0 s and 20 s differ.
+- **Safe area:** Icon, wordmark, all four tagline variants, and the progress bar sit inside the header art safe area. The cards stay outside it across their whole float path and may crop. `capture.mjs` checks both.
+- **Poster frame:** Frame 0 is the settled ink "scores" scene, saved as `output/val-esports-header-motion-poster-3840x1646.png`. Select 0 s as the poster frame, because poster frames cannot be changed after approval.
+- **Encoding:** H.264 High 5.1, BT.709, yuv420p, with a silent stereo AAC track. The track avoids upload checks that require audio.
+- **Content:** No pricing, URLs, ©, other platforms, Apple award references, or gameplay.
+
+To regenerate, run `node distribution/appstore/creative-2026-10/header-motion/capture.mjs`. It requires Google Chrome, ffmpeg and ffprobe; no npm packages. Add `--stills 0,2.3,9` to write review PNGs instead. Uploaded through Helium on October 13, 2026 at 12:43 AM IST. Apple processed it as a 21:9 Product Page Header and it was submitted for standalone review; App Store Connect shows Waiting for Review. Asset ID: `87c00019-609c-8736-810c-620c355870ea`. Apple approved it on October 13, 2026. At 10:48–10:52 AM IST it was published as the header on the default product page (iOS App Version 1.1.0, English (U.S.)) and on all four custom product pages: Live scores and match schedules, India match day, Brazil favorites and spoiler controls, and Team rankings and match stats. The default page's static `val-esports-header-v2-3840x1646.png` header was removed to free the single header slot; it remains approved in Asset Library. Neither the picker nor the asset page offered a poster-frame control, so App Store Connect shows its own default thumbnail.
+
 ## What the current listing already does well
 
 Authenticated App Store Connect shows version 1.0.7/build 86, Ready for Distribution:
@@ -55,4 +69,4 @@ Save a repeatable India baseline for `val esports`, `valorant scores`, `vct scor
 
 ## Remaining scope
 
-Both creatives have been uploaded and submitted for review. Approval and placement publishing remain pending. The metadata draft has not been applied. App review-prompt implementation and paid campaigns were not performed.
+Both creatives have been uploaded and approved. The header video is published on the default and all custom product pages; check the search-results placement separately. The metadata draft has not been applied. App review-prompt implementation and paid campaigns were not performed.
