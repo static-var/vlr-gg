@@ -145,7 +145,7 @@
     <string name="notification_promotion_unavailable">Les scores en direct peuvent toujours apparaître dans les notifications ordinaires. Votre appareil ne permet pas les mises à jour en direct mises en avant pour cette application. Vérifiez les réglages de notification du système ; la disponibilité dépend aussi de votre appareil.</string>
     <string name="match_alerts">Alertes de matchs</string>
     <string name="match_alerts_description">Recevez une notification au début d’un match favori. Les mises à jour des scores en direct ne sont pas disponibles sur cet appareil.</string>
-    <string name="release_1_1_1_introduction">Des améliorations des pronostics, de la forme des équipes et du suivi des matchs, avec des corrections de compatibilité.</string>
+    <string name="release_1_1_1_introduction">Pronostics en direct, détails des matchs et des événements personnalisables, onglets plus clairs et navigation plus fluide, avec des corrections de compatibilité.</string>
     <string name="release_1_1_1_predictions_title">Pronostics pendant les matchs en direct</string>
     <string name="release_1_1_1_predictions_description">Ouvrez les pronostics pendant les matchs en direct. Le libellé d’avant-match apparaît uniquement pour les matchs à venir, et les options de pronostic uniquement lorsqu’elles sont disponibles.</string>
     <string name="release_1_1_1_navigation_title">Navigation plus fluide</string>
@@ -156,6 +156,14 @@
     <string name="release_1_1_1_ios_live_description">Les Live Activities affichent les bons scores des cartes, un historique des manches plus clair et des couleurs d’équipe lisibles. Les scores des cartes terminées prennent la couleur du vainqueur. Les bordures des cartes restent neutres.</string>
     <string name="release_1_1_1_stability_title">Compatibilité et stabilité</string>
     <string name="release_1_1_1_stability_description">Comprend des corrections de compatibilité et de stabilité.</string>
+    <string name="release_1_1_1_sections_title">Organisez les détails des matchs et des événements</string>
+    <string name="release_1_1_1_sections_description">Choisissez les sections affichées dans les détails des matchs et des événements, puis faites-les glisser dans l’ordre voulu depuis Options du match ou Options de l’événement.</string>
+    <string name="release_1_1_1_tabs_title">Onglets avec compteurs</string>
+    <string name="release_1_1_1_tabs_description">Les onglets des matchs et des événements indiquent combien d’éléments chacun contient. Dans les détails d’un événement, Aujourd’hui n’apparaît que s’il y a des matchs ce jour-là.</string>
+    <string name="release_1_1_1_glance_title">Style Aperçu pour les Live Activities</string>
+    <string name="release_1_1_1_glance_description">Essayez le style compact Aperçu dans Réglages &gt; Expérimental. Il affiche les sigles des équipes, les scores des cartes et l’illustration de la carte en cours. Le changement s’applique aussi aux Live Activities déjà sur votre écran verrouillé.</string>
+    <string name="release_1_1_1_refinements_title">Écrans peaufinés</string>
+    <string name="release_1_1_1_refinements_description">Les détails d’une équipe affichent d’abord l’effectif, l’image de partage des matchs est plus compacte et les thèmes sont plus cohérents dans les onglets, les boutons et les illustrations.</string>
     <string name="match_reminders_description">Recevez un rappel avant le début d’un match favori. Autorisez les notifications pour recevoir des rappels.</string>
     <string name="match_reminders_permission_description">Autorisez les notifications pour recevoir des rappels pour vos favoris.</string>
     <string name="live_updates_with_reminders_description">Suivez les scores en direct dans les notifications. Lorsque Live Updates est désactivé, vous recevez toujours des rappels avant vos matchs favoris.</string>

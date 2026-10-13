@@ -147,7 +147,7 @@
     <string name="match_reminders_description">Get a reminder before a favorite match starts. Allow notifications to receive reminders.</string>
     <string name="match_reminders_permission_description">Allow notifications to receive reminders for your favorites.</string>
     <string name="live_updates_with_reminders_description">Follow live scores in notifications. When Live Updates are off, favorites still receive pre-match reminders.</string>
-    <string name="release_1_1_1_introduction">Updates to predictions, team form and match tracking, with compatibility fixes.</string>
+    <string name="release_1_1_1_introduction">Live predictions, customizable match and event details, clearer tabs and smoother navigation, plus compatibility fixes.</string>
     <string name="release_1_1_1_predictions_title">Predictions during live matches</string>
     <string name="release_1_1_1_predictions_description">Open predictions during live matches. The pre-match label appears only for upcoming matches, and prediction options appear only when available.</string>
     <string name="release_1_1_1_navigation_title">Smoother navigation</string>
@@ -158,6 +158,14 @@
     <string name="release_1_1_1_ios_live_description">Live Activities show correct map scores, clearer round history and readable team colors. Completed map scores use the winner's color. Map borders stay neutral.</string>
     <string name="release_1_1_1_stability_title">Compatibility and stability</string>
     <string name="release_1_1_1_stability_description">Includes compatibility and stability fixes.</string>
+    <string name="release_1_1_1_sections_title">Arrange match and event details</string>
+    <string name="release_1_1_1_sections_description">Choose which sections appear on match and event details and drag them into your order. Open Match options or Event options to change them.</string>
+    <string name="release_1_1_1_tabs_title">Tabs with counts</string>
+    <string name="release_1_1_1_tabs_description">Match and event tabs show how many items each one holds. In event details, Today appears only when the event has matches that day.</string>
+    <string name="release_1_1_1_glance_title">Glance Live Activity style</string>
+    <string name="release_1_1_1_glance_description">Try the compact Glance style in Settings &gt; Experimental. It shows team tags, map scores and artwork from the current map. Switching also updates Live Activities already on your Lock Screen.</string>
+    <string name="release_1_1_1_refinements_title">Refined screens</string>
+    <string name="release_1_1_1_refinements_description">Team details show the roster first, the match share image is more compact, and themes look more consistent across tabs, buttons and illustrations.</string>
     <string name="note_title">A note from the developers</string>
     <string name="note_settings_description">A thank-you from Shreyansh and Akhil.</string>
     <string name="note_intro">It started with friends in different cities and a few games of VALORANT. More than five years later, the game is still a big part of our lives.</string>
