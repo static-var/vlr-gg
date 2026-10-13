@@ -101,9 +101,9 @@ targets:
 
           cd "$SRCROOT/.."
           if command -v build-brief >/dev/null 2>&1; then
-            build-brief ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+            build-brief ./gradlew :shared:embedAndSignAppleFrameworkForXcode -PenableAgentPreview=false
           else
-            ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+            ./gradlew :shared:embedAndSignAppleFrameworkForXcode -PenableAgentPreview=false
           fi
 
   VLRWidgetExtension:

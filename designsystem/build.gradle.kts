@@ -7,7 +7,6 @@ plugins {
   alias(libs.plugins.android.kotlin.multiplatform.library)
   alias(libs.plugins.compose.multiplatform)
   alias(libs.plugins.compose.compiler)
-  alias(libs.plugins.agentpreview)
   id("vlr.detekt")
   id("vlr.ktlint")
 }
@@ -76,16 +75,8 @@ kotlin {
   }
 }
 
-agentPreview {
-  maxPreviewParameterValues.set(8)
-  android {
-    viewport("phone", 393, 852)
-    viewport("tablet", 840, 1100)
-    screenshot {
-      cropToContent.set(true)
-      cropPaddingDp.set(20)
-    }
-  }
+if (providers.gradleProperty("enableAgentPreview").orNull != "false") {
+  apply(from = rootProject.file("gradle/agent-preview.gradle"))
 }
 
 dependencies {
