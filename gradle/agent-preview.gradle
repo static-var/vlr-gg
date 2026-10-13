@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) 2022-2026 Shreyansh Lodha
+ * SPDX-License-Identifier: MIT
+ */
+import org.gradle.api.attributes.Attribute
+import org.gradle.api.attributes.AttributeDisambiguationRule
+import org.gradle.api.attributes.MultipleCandidatesDetails
+
+// Keep the preview plugin and its Android test dependencies off the iOS classpath.
+buildscript {
+  repositories {
+    gradlePluginPortal()
+    google()
+    mavenCentral()
+  }
+  dependencies {
+    def preview = project.extensions.getByType(VersionCatalogsExtension).named('libs').findPlugin('agentpreview').get().get()
+    classpath("${preview.pluginId}:${preview.pluginId}.gradle.plugin:${preview.version}")
+  }
+}
+
+apply plugin: dev.staticvar.agentpreview.AgentPreviewPlugin
+
+agentPreview {
+  maxPreviewParameterValues.set(8)
+  android {
+    viewport('phone', 393, 852, 1.0f)
+    viewport('tablet', 840, 1100, 1.0f)
+    screenshot {
+      cropToContent.set(true)
+      cropPaddingDp.set(20)
+    }
+  }
+}
+
+abstract class AgentPreviewArtifactTypeRule implements AttributeDisambiguationRule<String> {
+  void execute(MultipleCandidatesDetails<String> details) {
+    if ('jar' in details.candidateValues) {
+      details.closestMatch('jar')
+    } else if ('android-classes-jar' in details.candidateValues) {
+      details.closestMatch('android-classes-jar')
+    }
+  }
+}
+
+if (project.path == ':shared-ui') {
+  dependencies.attributesSchema.attribute(Attribute.of('artifactType', String)) {
+    disambiguationRules.add(AgentPreviewArtifactTypeRule)
+  }
+  agentPreview {
+    accessibilityCheck.set(true)
+    android {
+      assetsDirs.from(project(':designsystem').layout.buildDirectory.dir('generated/assets/copyAndroidMainComposeResourcesToAndroidAssets'))
+    }
+  }
+  tasks.named('captureComposePreviews').configure {
+    dependsOn(':designsystem:copyAndroidMainComposeResourcesToAndroidAssets')
+  }
+}
