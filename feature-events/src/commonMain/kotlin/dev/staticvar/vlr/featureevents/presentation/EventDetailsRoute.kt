@@ -37,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -54,6 +53,7 @@ import dev.staticvar.designsystem.component.favorite.PrismFavoriteIconStyle
 import dev.staticvar.designsystem.component.loader.PrismFullscreenLoader
 import dev.staticvar.designsystem.component.loader.PrismLoaderSize
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
+import dev.staticvar.designsystem.component.section.PrismSectionTitleAction
 import dev.staticvar.designsystem.component.section.PrismSectionTitleStyle
 import dev.staticvar.designsystem.component.state.PrismStateMessage
 import dev.staticvar.designsystem.prism.Prism
@@ -114,7 +114,6 @@ import vlr.feature_events.generated.resources.match_day_date_with_year
 import vlr.feature_events.generated.resources.match_fixtures_have_not_been_published_for_this_event
 import vlr.feature_events.generated.resources.newest_first
 import vlr.feature_events.generated.resources.no_event_details_yet
-import vlr.feature_events.generated.resources.no_matches_today
 import vlr.feature_events.generated.resources.no_matches_yet
 import vlr.feature_events.generated.resources.oldest_first
 import vlr.feature_events.generated.resources.participants
@@ -371,7 +370,6 @@ private fun EventDetailsContent(
   onTeamSelected: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val matchesAction = event.status.matchesAction
   val effectiveOrder = event.status.effectiveMatchOrder(matchOrder)
   val timeZone = remember(isScreenResumed) { TimeZone.currentSystemDefault() }
   val today by produceState(
@@ -445,9 +443,11 @@ private fun EventDetailsContent(
         )
 
         EventDetailsRow.MatchesTitle -> EventMatchesTitle(
-          action = if (event.matches.isEmpty()) EventMatchesAction.None else matchesAction,
+          action = event.status.matchesHeaderAction(
+            hasMatches = event.matches.isNotEmpty(),
+            hasMatchesToday = todayIndex != null,
+          ),
           order = effectiveOrder,
-          hasMatchesToday = todayIndex != null,
           onTodayClick = {
             // The hero is the first list item, so row indexes are offset by one.
             todayIndex?.let { index -> scope.launch { listState.animateScrollToItem(index + 1) } }
@@ -608,7 +608,6 @@ private fun EventStandingsTitle(showLegend: Boolean) {
 private fun EventMatchesTitle(
   action: EventMatchesAction,
   order: EventMatchOrder,
-  hasMatchesToday: Boolean,
   onTodayClick: () -> Unit,
   onOrderChange: (EventMatchOrder) -> Unit,
 ) {
@@ -620,7 +619,7 @@ private fun EventMatchesTitle(
     } else {
       {
         when (action) {
-          EventMatchesAction.Today -> EventTodayButton(enabled = hasMatchesToday, onClick = onTodayClick)
+          EventMatchesAction.Today -> EventTodayButton(onClick = onTodayClick)
           EventMatchesAction.Order -> EventMatchOrderButton(order = order, onOrderChange = onOrderChange)
           EventMatchesAction.None -> Unit
         }
@@ -629,25 +628,15 @@ private fun EventMatchesTitle(
   )
 }
 
-/** Stays visible on days without matches, but disabled instead of jumping somewhere else. */
+/** Shown only when today has matches; see [matchesHeaderAction]. */
 @Composable
-private fun EventTodayButton(enabled: Boolean, onClick: () -> Unit) {
+private fun EventTodayButton(onClick: () -> Unit) {
   val jumpLabel = stringResource(Res.string.jump_to_todays_matches)
-  val noMatchesToday = stringResource(Res.string.no_matches_today)
-  PrismButton(
+  PrismSectionTitleAction(
+    text = stringResource(Res.string.today),
     onClick = onClick,
-    enabled = enabled,
-    style = PrismButtonStyle.Tertiary,
-    modifier = Modifier.semantics {
-      if (enabled) {
-        onClick(label = jumpLabel, action = null)
-      } else {
-        stateDescription = noMatchesToday
-      }
-    },
-  ) {
-    Text(stringResource(Res.string.today))
-  }
+    modifier = Modifier.semantics { onClick(label = jumpLabel, action = null) },
+  )
 }
 
 @Composable
@@ -655,13 +644,11 @@ private fun EventMatchOrderButton(order: EventMatchOrder, onOrderChange: (EventM
   val switchLabel = stringResource(
     if (order == EventMatchOrder.OldestFirst) Res.string.show_newest_first else Res.string.show_oldest_first,
   )
-  PrismButton(
+  PrismSectionTitleAction(
+    text = stringResource(if (order == EventMatchOrder.OldestFirst) Res.string.oldest_first else Res.string.newest_first),
     onClick = { onOrderChange(order.toggled) },
-    style = PrismButtonStyle.Tertiary,
     modifier = Modifier.semantics { onClick(label = switchLabel, action = null) },
-  ) {
-    Text(stringResource(if (order == EventMatchOrder.OldestFirst) Res.string.oldest_first else Res.string.newest_first))
-  }
+  )
 }
 
 @Composable

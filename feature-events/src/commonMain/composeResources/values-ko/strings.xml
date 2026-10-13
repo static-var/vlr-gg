@@ -58,7 +58,6 @@
     <string name="section_unavailable">이 이벤트에 대한 데이터 없음</string>
     <string name="today">오늘</string>
     <string name="jump_to_todays_matches">오늘 경기로 이동</string>
-    <string name="no_matches_today">오늘 경기 없음</string>
     <string name="oldest_first">오래된 순</string>
     <string name="newest_first">최신 순</string>
     <string name="show_newest_first">최신 순으로 보기</string>

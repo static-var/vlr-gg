@@ -129,6 +129,26 @@ class EventDetailsLayoutTest {
   }
 
   @Test
+  fun todayActionNeedsMatchesToday() {
+    assertEquals(
+      EventMatchesAction.Today,
+      EventStatus.ONGOING.matchesHeaderAction(hasMatches = true, hasMatchesToday = true),
+    )
+    assertEquals(
+      EventMatchesAction.None,
+      EventStatus.ONGOING.matchesHeaderAction(hasMatches = true, hasMatchesToday = false),
+    )
+    assertEquals(
+      EventMatchesAction.Order,
+      EventStatus.COMPLETED.matchesHeaderAction(hasMatches = true, hasMatchesToday = false),
+    )
+    assertEquals(
+      EventMatchesAction.None,
+      EventStatus.COMPLETED.matchesHeaderAction(hasMatches = false, hasMatchesToday = false),
+    )
+  }
+
+  @Test
   fun todayTargetsTodaysHeadingWhereverSectionsAreOrdered() {
     val event = event(
       teams = listOf(EventTeam(id = "fnc", name = "FNATIC", logoUrl = "", seed = null)),

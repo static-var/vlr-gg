@@ -58,7 +58,6 @@
     <string name="section_unavailable">इस इवेंट के लिए कोई डेटा नहीं</string>
     <string name="today">आज</string>
     <string name="jump_to_todays_matches">आज के मैचों पर जाएं</string>
-    <string name="no_matches_today">आज कोई मैच नहीं</string>
     <string name="oldest_first">पुराने पहले</string>
     <string name="newest_first">नए पहले</string>
     <string name="show_newest_first">नए पहले दिखाएं</string>

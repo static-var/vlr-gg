@@ -58,7 +58,6 @@
     <string name="section_unavailable">Keine Daten für dieses Event</string>
     <string name="today">Heute</string>
     <string name="jump_to_todays_matches">Zu den heutigen Matches springen</string>
-    <string name="no_matches_today">Heute keine Matches</string>
     <string name="oldest_first">Älteste zuerst</string>
     <string name="newest_first">Neueste zuerst</string>
     <string name="show_newest_first">Neueste zuerst anzeigen</string>

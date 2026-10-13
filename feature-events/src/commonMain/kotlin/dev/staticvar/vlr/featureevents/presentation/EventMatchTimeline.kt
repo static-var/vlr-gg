@@ -55,6 +55,14 @@ internal val EventStatus.matchesAction: EventMatchesAction
     else -> EventMatchesAction.None
   }
 
+/** Header control to show: Today appears only when today's local date has a match to jump to. */
+internal fun EventStatus.matchesHeaderAction(hasMatches: Boolean, hasMatchesToday: Boolean): EventMatchesAction =
+  when {
+    !hasMatches -> EventMatchesAction.None
+    matchesAction == EventMatchesAction.Today && !hasMatchesToday -> EventMatchesAction.None
+    else -> matchesAction
+  }
+
 /** Only completed events let users flip the order; everything else reads oldest first. */
 internal fun EventStatus.effectiveMatchOrder(selected: EventMatchOrder): EventMatchOrder =
   if (matchesAction == EventMatchesAction.Order) selected else EventMatchOrder.OldestFirst

@@ -58,7 +58,6 @@
     <string name="section_unavailable">Нет данных для этого турнира</string>
     <string name="today">Сегодня</string>
     <string name="jump_to_todays_matches">Перейти к сегодняшним матчам</string>
-    <string name="no_matches_today">Сегодня нет матчей</string>
     <string name="oldest_first">Сначала старые</string>
     <string name="newest_first">Сначала новые</string>
     <string name="show_newest_first">Показать сначала новые</string>

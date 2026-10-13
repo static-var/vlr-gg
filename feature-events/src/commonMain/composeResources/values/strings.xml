@@ -58,7 +58,6 @@
     <string name="section_unavailable">No data for this event</string>
     <string name="today">Today</string>
     <string name="jump_to_todays_matches">Jump to today's matches</string>
-    <string name="no_matches_today">No matches today</string>
     <string name="oldest_first">Oldest first</string>
     <string name="newest_first">Newest first</string>
     <string name="show_newest_first">Show newest first</string>

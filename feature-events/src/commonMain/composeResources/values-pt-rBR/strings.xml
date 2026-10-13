@@ -58,7 +58,6 @@
     <string name="section_unavailable">Sem dados para este evento</string>
     <string name="today">Hoje</string>
     <string name="jump_to_todays_matches">Ir para as partidas de hoje</string>
-    <string name="no_matches_today">Nenhuma partida hoje</string>
     <string name="oldest_first">Mais antigas primeiro</string>
     <string name="newest_first">Mais recentes primeiro</string>
     <string name="show_newest_first">Mostrar mais recentes primeiro</string>

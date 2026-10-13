@@ -58,7 +58,6 @@
     <string name="section_unavailable">Bu etkinlik için veri yok</string>
     <string name="today">Bugün</string>
     <string name="jump_to_todays_matches">Bugünkü maçlara git</string>
-    <string name="no_matches_today">Bugün maç yok</string>
     <string name="oldest_first">Önce en eski</string>
     <string name="newest_first">Önce en yeni</string>
     <string name="show_newest_first">Önce en yeniyi göster</string>
