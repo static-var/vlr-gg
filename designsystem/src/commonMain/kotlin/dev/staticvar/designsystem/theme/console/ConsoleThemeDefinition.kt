@@ -16,6 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.staticvar.designsystem.component.navigation.PrismTabCount
+import dev.staticvar.designsystem.component.navigation.PrismTabTokens
 import dev.staticvar.designsystem.prism.PrismVariant
 import dev.staticvar.designsystem.prism.animation.PrismAnimationPreset
 import dev.staticvar.designsystem.prism.animation.PrismAnimationTokens
@@ -75,6 +77,8 @@ internal data class ConsoleThemeDefinition(val variant: PrismVariant) : PrismThe
     scrimEnter = PrismAnimationPreset(120, LinearEasing),
     scrimExit = PrismAnimationPreset(120, LinearEasing),
   )
+
+  override val tabs: PrismTabTokens = PrismTabTokens(displayLabel = false, count = PrismTabCount.Block)
 
   override fun createFrames(palette: PrismColorPalette): PrismFrames {
     val shadow = if (variant == PrismVariant.Dark) Color(0xFF454545) else Color.Black
