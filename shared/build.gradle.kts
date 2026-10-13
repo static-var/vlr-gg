@@ -79,6 +79,8 @@ kotlin {
     target.binaries.framework {
       baseName = "shared"
       isStatic = true
+      // Optimizes the release binary for size; saves about 7 MB on device.
+      binaryOption("smallBinary", "true")
       export(projects.core)
       // Explicit bundle ID to silence Kotlin/Native warning and stabilize metadata
       freeCompilerArgs += listOf("-Xbinary=bundleId=dev.staticvar.vlr.shared")
