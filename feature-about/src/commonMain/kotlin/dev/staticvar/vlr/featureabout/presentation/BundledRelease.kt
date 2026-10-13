@@ -9,6 +9,14 @@ import org.jetbrains.compose.resources.StringResource
 import vlr.feature_about.generated.resources.Res
 import vlr.feature_about.generated.resources.new_in_val_esports
 import vlr.feature_about.generated.resources.release_1_1_1_introduction
+import vlr.feature_about.generated.resources.release_1_1_1_tabs_title
+import vlr.feature_about.generated.resources.release_1_1_1_tabs_description
+import vlr.feature_about.generated.resources.release_1_1_1_sections_title
+import vlr.feature_about.generated.resources.release_1_1_1_sections_description
+import vlr.feature_about.generated.resources.release_1_1_1_refinements_title
+import vlr.feature_about.generated.resources.release_1_1_1_refinements_description
+import vlr.feature_about.generated.resources.release_1_1_1_glance_title
+import vlr.feature_about.generated.resources.release_1_1_1_glance_description
 import vlr.feature_about.generated.resources.release_1_1_1_ios_live_description
 import vlr.feature_about.generated.resources.release_1_1_1_ios_live_title
 import vlr.feature_about.generated.resources.release_1_1_1_navigation_description
@@ -37,6 +45,14 @@ public object BundledRelease {
       description = Res.string.release_1_1_1_predictions_description,
     ),
     Highlight(
+      title = Res.string.release_1_1_1_sections_title,
+      description = Res.string.release_1_1_1_sections_description,
+    ),
+    Highlight(
+      title = Res.string.release_1_1_1_tabs_title,
+      description = Res.string.release_1_1_1_tabs_description,
+    ),
+    Highlight(
       title = Res.string.release_1_1_1_navigation_title,
       description = Res.string.release_1_1_1_navigation_description,
     ),
@@ -45,8 +61,17 @@ public object BundledRelease {
       description = Res.string.release_1_1_1_team_form_description,
     ),
     Highlight(
+      title = Res.string.release_1_1_1_refinements_title,
+      description = Res.string.release_1_1_1_refinements_description,
+    ),
+    Highlight(
       title = Res.string.release_1_1_1_ios_live_title,
       description = Res.string.release_1_1_1_ios_live_description,
+      platform = ReleasePlatform.Ios,
+    ),
+    Highlight(
+      title = Res.string.release_1_1_1_glance_title,
+      description = Res.string.release_1_1_1_glance_description,
       platform = ReleasePlatform.Ios,
     ),
     Highlight(

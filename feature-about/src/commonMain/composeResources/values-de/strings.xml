@@ -144,7 +144,7 @@
     <string name="notification_promotion_unavailable">Live-Spielstände können weiterhin als normale Benachrichtigungen erscheinen. Dein Gerät erlaubt für diese App keine hervorgehobenen Live-Updates. Prüfe die Benachrichtigungseinstellungen des Systems; die Verfügbarkeit hängt auch vom Gerät ab.</string>
     <string name="match_alerts">Spielbenachrichtigungen</string>
     <string name="match_alerts_description">Erhalte eine Benachrichtigung, wenn ein favorisiertes Spiel beginnt. Live-Spielstände sind auf diesem Gerät nicht verfügbar.</string>
-    <string name="release_1_1_1_introduction">Verbesserungen bei Prognosen, Teamform und Matchverfolgung sowie Kompatibilitätskorrekturen.</string>
+    <string name="release_1_1_1_introduction">Live-Prognosen, anpassbare Match- und Eventdetails, übersichtlichere Tabs und flüssigere Navigation sowie Kompatibilitätskorrekturen.</string>
     <string name="release_1_1_1_predictions_title">Prognosen während laufender Matches</string>
     <string name="release_1_1_1_predictions_description">Öffne Prognosen während laufender Matches. Der Hinweis vor dem Match erscheint nur bei anstehenden Matches. Prognoseoptionen werden nur angezeigt, wenn sie verfügbar sind.</string>
     <string name="release_1_1_1_navigation_title">Flüssigere Navigation</string>
@@ -155,6 +155,14 @@
     <string name="release_1_1_1_ios_live_description">Live Activities zeigen korrekte Map-Spielstände, einen übersichtlicheren Rundenverlauf und gut erkennbare Teamfarben. Spielstände abgeschlossener Maps nutzen die Farbe des Siegers. Map-Rahmen bleiben neutral.</string>
     <string name="release_1_1_1_stability_title">Kompatibilität und Stabilität</string>
     <string name="release_1_1_1_stability_description">Enthält Korrekturen für Kompatibilität und Stabilität.</string>
+    <string name="release_1_1_1_sections_title">Match- und Eventdetails anordnen</string>
+    <string name="release_1_1_1_sections_description">Wähle aus, welche Abschnitte in Match- und Eventdetails erscheinen, und ziehe sie in deine Reihenfolge. Du findest das unter Matchoptionen bzw. Event-Optionen.</string>
+    <string name="release_1_1_1_tabs_title">Tabs mit Anzahl</string>
+    <string name="release_1_1_1_tabs_description">Match- und Event-Tabs zeigen, wie viele Einträge sie enthalten. In den Eventdetails erscheint „Heute“ nur, wenn an diesem Tag Matches stattfinden.</string>
+    <string name="release_1_1_1_glance_title">Kompakter Stil für Live Activities</string>
+    <string name="release_1_1_1_glance_description">Probiere den Stil „Kompakt“ unter Einstellungen &gt; Experimentell aus. Er zeigt Teamkürzel, Map-Spielstände und Artwork der aktuellen Map. Der Wechsel aktualisiert auch Live Activities, die schon auf deinem Sperrbildschirm sind.</string>
+    <string name="release_1_1_1_refinements_title">Verfeinerte Ansichten</string>
+    <string name="release_1_1_1_refinements_description">Teamdetails zeigen zuerst den Kader, das Bild zum Teilen von Matches ist kompakter und Themes wirken bei Tabs, Buttons und Illustrationen einheitlicher.</string>
     <string name="match_reminders_description">Erhalte eine Erinnerung, bevor ein favorisiertes Match beginnt. Erlaube Mitteilungen, um Erinnerungen zu erhalten.</string>
     <string name="match_reminders_permission_description">Erlaube Mitteilungen, um Erinnerungen für deine Favoriten zu erhalten.</string>
     <string name="live_updates_with_reminders_description">Verfolge Live-Spielstände in Mitteilungen. Wenn Live Updates deaktiviert sind, erhältst du weiterhin Erinnerungen vor favorisierten Matches.</string>

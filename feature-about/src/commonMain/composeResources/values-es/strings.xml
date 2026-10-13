@@ -145,7 +145,7 @@
     <string name="notification_promotion_unavailable">Los resultados en directo pueden seguir apareciendo como notificaciones normales. Tu dispositivo no permite actualizaciones en directo destacadas para esta app. Revisa los ajustes de notificaciones del sistema; la disponibilidad también depende del dispositivo.</string>
     <string name="match_alerts">Alertas de partidos</string>
     <string name="match_alerts_description">Recibe una notificación cuando empiece un partido favorito. Las actualizaciones de resultados en directo no están disponibles en este dispositivo.</string>
-    <string name="release_1_1_1_introduction">Mejoras en las predicciones, la forma de los equipos y el seguimiento de partidas, con correcciones de compatibilidad.</string>
+    <string name="release_1_1_1_introduction">Predicciones en directo, detalles de partidos y eventos personalizables, pestañas más claras y navegación más fluida, con correcciones de compatibilidad.</string>
     <string name="release_1_1_1_predictions_title">Predicciones durante partidas en directo</string>
     <string name="release_1_1_1_predictions_description">Abre las predicciones durante las partidas en directo. La etiqueta previa al partido solo aparece en próximas partidas y las opciones de predicción solo se muestran cuando están disponibles.</string>
     <string name="release_1_1_1_navigation_title">Navegación más fluida</string>
@@ -156,6 +156,14 @@
     <string name="release_1_1_1_ios_live_description">Las Live Activities muestran marcadores de mapas correctos, un historial de rondas más claro y colores de equipo fáciles de distinguir. Los marcadores de los mapas completados usan el color del ganador. Los bordes de los mapas mantienen un color neutro.</string>
     <string name="release_1_1_1_stability_title">Compatibilidad y estabilidad</string>
     <string name="release_1_1_1_stability_description">Incluye correcciones de compatibilidad y estabilidad.</string>
+    <string name="release_1_1_1_sections_title">Organiza los detalles de partidos y eventos</string>
+    <string name="release_1_1_1_sections_description">Elige qué secciones aparecen en los detalles de partidos y eventos y arrástralas en el orden que prefieras desde Opciones del partido u Opciones del evento.</string>
+    <string name="release_1_1_1_tabs_title">Pestañas con recuento</string>
+    <string name="release_1_1_1_tabs_description">Las pestañas de partidos y eventos muestran cuántos elementos contiene cada una. En los detalles del evento, Hoy aparece solo cuando hay partidos ese día.</string>
+    <string name="release_1_1_1_glance_title">Estilo Vistazo para Live Activities</string>
+    <string name="release_1_1_1_glance_description">Prueba el estilo compacto Vistazo en Ajustes &gt; Experimental. Muestra las siglas de los equipos, los marcadores de los mapas y la imagen del mapa actual. Al cambiarlo también se actualizan las Live Activities que ya están en tu pantalla de bloqueo.</string>
+    <string name="release_1_1_1_refinements_title">Pantallas más pulidas</string>
+    <string name="release_1_1_1_refinements_description">Los detalles del equipo muestran primero la plantilla, la imagen para compartir partidos es más compacta y los temas se ven más coherentes en pestañas, botones e ilustraciones.</string>
     <string name="match_reminders_description">Recibe un recordatorio antes de que empiece una partida favorita. Permite las notificaciones para recibir recordatorios.</string>
     <string name="match_reminders_permission_description">Permite las notificaciones para recibir recordatorios de tus favoritos.</string>
     <string name="live_updates_with_reminders_description">Sigue los marcadores en directo en las notificaciones. Cuando Live Updates esté desactivado, seguirás recibiendo recordatorios antes de tus partidas favoritas.</string>

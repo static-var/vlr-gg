@@ -143,7 +143,7 @@
     <string name="notification_promotion_unavailable">Canlı skorlar normal bildirim olarak görünmeye devam edebilir. Cihazınız bu uygulama için öne çıkarılan canlı güncellemelere izin vermiyor. Sistem bildirim ayarlarını kontrol edin; kullanılabilirlik cihazınıza da bağlıdır.</string>
     <string name="match_alerts">Maç bildirimleri</string>
     <string name="match_alerts_description">Favori bir maç başladığında bildirim alın. Bu cihazda canlı skor güncellemeleri kullanılamıyor.</string>
-    <string name="release_1_1_1_introduction">Tahminler, takım formu ve maç takibinde iyileştirmeler ile uyumluluk düzeltmeleri.</string>
+    <string name="release_1_1_1_introduction">Canlı tahminler, özelleştirilebilir maç ve etkinlik ayrıntıları, daha anlaşılır sekmeler ve daha akıcı gezinme ile uyumluluk düzeltmeleri.</string>
     <string name="release_1_1_1_predictions_title">Canlı maçlar sırasında tahminler</string>
     <string name="release_1_1_1_predictions_description">Canlı maçlar sırasında tahminleri açın. Maç öncesi etiketi yalnızca yaklaşan maçlarda, tahmin seçenekleri ise yalnızca kullanılabilir olduğunda görünür.</string>
     <string name="release_1_1_1_navigation_title">Daha akıcı gezinme</string>
@@ -154,6 +154,14 @@
     <string name="release_1_1_1_ios_live_description">Live Activities doğru harita skorları, daha anlaşılır tur geçmişi ve kolay ayırt edilen takım renkleri gösterir. Tamamlanan haritaların skorları kazananın rengini kullanır. Harita kenarlıkları nötr kalır.</string>
     <string name="release_1_1_1_stability_title">Uyumluluk ve kararlılık</string>
     <string name="release_1_1_1_stability_description">Uyumluluk ve kararlılık düzeltmeleri içerir.</string>
+    <string name="release_1_1_1_sections_title">Maç ve etkinlik ayrıntılarını düzenleyin</string>
+    <string name="release_1_1_1_sections_description">Maç ve etkinlik ayrıntılarında hangi bölümlerin görüneceğini seçin ve sürükleyerek istediğiniz sıraya koyun. Bunun için Maç seçenekleri veya Etkinlik seçenekleri menüsünü açın.</string>
+    <string name="release_1_1_1_tabs_title">Sayı gösteren sekmeler</string>
+    <string name="release_1_1_1_tabs_description">Maç ve etkinlik sekmeleri her birinde kaç öğe olduğunu gösterir. Etkinlik ayrıntılarında Bugün düğmesi yalnızca o gün maç varsa görünür.</string>
+    <string name="release_1_1_1_glance_title">Live Activities için Bakış stili</string>
+    <string name="release_1_1_1_glance_description">Ayarlar &gt; Deneysel bölümünden kompakt Bakış stilini deneyin. Takım kısaltmalarını, harita skorlarını ve mevcut haritanın görselini gösterir. Stil değişikliği kilit ekranındaki mevcut Live Activities'i de günceller.</string>
+    <string name="release_1_1_1_refinements_title">İyileştirilmiş ekranlar</string>
+    <string name="release_1_1_1_refinements_description">Takım ayrıntıları önce kadroyu gösterir, maç paylaşım görseli daha kompakt hale geldi ve temalar sekmelerde, düğmelerde ve çizimlerde daha tutarlı görünür.</string>
     <string name="match_reminders_description">Favori bir maç başlamadan önce hatırlatıcı alın. Hatırlatıcı almak için bildirimlere izin verin.</string>
     <string name="match_reminders_permission_description">Favorileriniz için hatırlatıcı almak üzere bildirimlere izin verin.</string>
     <string name="live_updates_with_reminders_description">Canlı skorları bildirimlerde takip edin. Live Updates kapalıyken de favori maçlardan önce hatırlatıcı alırsınız.</string>

@@ -145,7 +145,7 @@
     <string name="notification_promotion_unavailable">Os placares ao vivo ainda podem aparecer como notificações comuns. Seu dispositivo não permite atualizações ao vivo em destaque para este app. Confira as configurações de notificação do sistema; a disponibilidade também depende do dispositivo.</string>
     <string name="match_alerts">Alertas de partidas</string>
     <string name="match_alerts_description">Receba uma notificação quando uma partida favorita começar. Atualizações de placar ao vivo não estão disponíveis neste dispositivo.</string>
-    <string name="release_1_1_1_introduction">Melhorias nas previsões, na forma das equipes e no acompanhamento das partidas, com correções de compatibilidade.</string>
+    <string name="release_1_1_1_introduction">Previsões ao vivo, detalhes de partidas e eventos personalizáveis, abas mais claras e navegação mais fluida, com correções de compatibilidade.</string>
     <string name="release_1_1_1_predictions_title">Previsões durante partidas ao vivo</string>
     <string name="release_1_1_1_predictions_description">Abra as previsões durante partidas ao vivo. O rótulo de pré-partida aparece apenas em partidas futuras, e as opções de previsão aparecem apenas quando disponíveis.</string>
     <string name="release_1_1_1_navigation_title">Navegação mais fluida</string>
@@ -156,6 +156,14 @@
     <string name="release_1_1_1_ios_live_description">As Live Activities mostram placares corretos dos mapas, um histórico de rodadas mais claro e cores de equipe fáceis de distinguir. Os placares dos mapas concluídos usam a cor do vencedor. As bordas dos mapas ficam neutras.</string>
     <string name="release_1_1_1_stability_title">Compatibilidade e estabilidade</string>
     <string name="release_1_1_1_stability_description">Inclui correções de compatibilidade e estabilidade.</string>
+    <string name="release_1_1_1_sections_title">Organize os detalhes de partidas e eventos</string>
+    <string name="release_1_1_1_sections_description">Escolha quais seções aparecem nos detalhes de partidas e eventos e arraste-as na ordem que preferir em Opções da partida ou Opções do evento.</string>
+    <string name="release_1_1_1_tabs_title">Abas com contagem</string>
+    <string name="release_1_1_1_tabs_description">As abas de partidas e eventos mostram quantos itens cada uma tem. Nos detalhes do evento, Hoje aparece apenas quando há partidas naquele dia.</string>
+    <string name="release_1_1_1_glance_title">Estilo Resumo para Live Activities</string>
+    <string name="release_1_1_1_glance_description">Experimente o estilo compacto Resumo em Configurações &gt; Experimental. Ele mostra as siglas das equipes, os placares dos mapas e a arte do mapa atual. A troca também atualiza as Live Activities que já estão na Tela Bloqueada.</string>
+    <string name="release_1_1_1_refinements_title">Telas refinadas</string>
+    <string name="release_1_1_1_refinements_description">Os detalhes da equipe mostram o elenco primeiro, a imagem de compartilhamento de partidas está mais compacta e os temas ficam mais consistentes em abas, botões e ilustrações.</string>
     <string name="match_reminders_description">Receba um lembrete antes do início de uma partida favorita. Permita as notificações para receber lembretes.</string>
     <string name="match_reminders_permission_description">Permita as notificações para receber lembretes dos seus favoritos.</string>
     <string name="live_updates_with_reminders_description">Acompanhe os placares ao vivo nas notificações. Quando Live Updates estiver desativado, você continuará recebendo lembretes antes das partidas favoritas.</string>

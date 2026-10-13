@@ -143,7 +143,7 @@
     <string name="notification_promotion_unavailable">실시간 점수는 일반 알림으로 계속 표시될 수 있습니다. 기기에서 이 앱의 강조된 실시간 업데이트를 허용하지 않습니다. 시스템 알림 설정을 확인하세요. 지원 여부는 기기에 따라 다릅니다.</string>
     <string name="match_alerts">경기 알림</string>
     <string name="match_alerts_description">즐겨찾는 경기가 시작되면 알림을 받습니다. 이 기기에서는 실시간 점수 업데이트를 사용할 수 없습니다.</string>
-    <string name="release_1_1_1_introduction">예측, 팀의 최근 성적, 경기 추적을 개선하고 호환성 문제를 수정했습니다.</string>
+    <string name="release_1_1_1_introduction">실시간 예측, 원하는 대로 구성하는 경기 및 이벤트 상세 정보, 더 명확한 탭과 부드러운 탐색을 추가하고 호환성 문제를 수정했습니다.</string>
     <string name="release_1_1_1_predictions_title">진행 중인 경기에서도 예측 확인</string>
     <string name="release_1_1_1_predictions_description">진행 중인 경기에서도 예측을 열 수 있습니다. 경기 시작 전 표시는 예정된 경기에만 나타나며, 예측 옵션은 사용할 수 있을 때만 표시됩니다.</string>
     <string name="release_1_1_1_navigation_title">더 부드러운 화면 이동</string>
@@ -154,6 +154,14 @@
     <string name="release_1_1_1_ios_live_description">Live Activities에 올바른 맵 점수, 더 명확한 라운드 기록, 쉽게 구분되는 팀 색상이 표시됩니다. 종료된 맵의 점수는 승리 팀의 색상으로 표시됩니다. 맵 테두리는 중립 색상을 유지합니다.</string>
     <string name="release_1_1_1_stability_title">호환성과 안정성</string>
     <string name="release_1_1_1_stability_description">호환성과 안정성 문제를 수정했습니다.</string>
+    <string name="release_1_1_1_sections_title">경기 및 이벤트 상세 정보 구성</string>
+    <string name="release_1_1_1_sections_description">경기 및 이벤트 상세 정보에 표시할 섹션을 고르고 드래그해 원하는 순서로 배치하세요. 경기 옵션 또는 이벤트 옵션에서 변경할 수 있습니다.</string>
+    <string name="release_1_1_1_tabs_title">개수가 표시되는 탭</string>
+    <string name="release_1_1_1_tabs_description">경기 및 이벤트 탭에 각 탭의 항목 수가 표시됩니다. 이벤트 상세 정보의 오늘 버튼은 그날 경기가 있을 때만 나타납니다.</string>
+    <string name="release_1_1_1_glance_title">Live Activities 간단히 스타일</string>
+    <string name="release_1_1_1_glance_description">설정 &gt; 실험적 기능에서 간결한 간단히 스타일을 사용해 보세요. 팀 태그, 맵 점수, 현재 맵 이미지를 보여 줍니다. 스타일을 바꾸면 잠금 화면에 이미 있는 Live Activities도 업데이트됩니다.</string>
+    <string name="release_1_1_1_refinements_title">다듬어진 화면</string>
+    <string name="release_1_1_1_refinements_description">팀 상세 정보에서 로스터가 먼저 표시되고, 경기 공유 이미지가 더 간결해졌으며, 탭, 버튼, 일러스트에서 테마가 더 일관되게 보입니다.</string>
     <string name="match_reminders_description">즐겨찾는 경기가 시작되기 전에 알림을 받으세요. 경기 시작 알림을 받으려면 알림을 허용하세요.</string>
     <string name="match_reminders_permission_description">즐겨찾기 경기 시작 알림을 받으려면 알림을 허용하세요.</string>
     <string name="live_updates_with_reminders_description">알림에서 실시간 점수를 확인하세요. Live Updates를 꺼도 즐겨찾는 경기 시작 전 알림은 계속 받을 수 있습니다.</string>

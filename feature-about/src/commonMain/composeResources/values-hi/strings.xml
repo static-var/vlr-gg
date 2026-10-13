@@ -144,7 +144,7 @@
     <string name="notification_promotion_unavailable">लाइव स्कोर सामान्य सूचनाओं में अब भी दिख सकते हैं। आपका डिवाइस इस ऐप के लिए प्रमुख लाइव अपडेट की अनुमति नहीं दे रहा है। सिस्टम की सूचना सेटिंग देखें; उपलब्धता आपके डिवाइस पर भी निर्भर करती है।</string>
     <string name="match_alerts">मैच अलर्ट</string>
     <string name="match_alerts_description">पसंदीदा मैच शुरू होने पर सूचना पाएँ। इस डिवाइस पर लाइव स्कोर अपडेट उपलब्ध नहीं हैं।</string>
-    <string name="release_1_1_1_introduction">पूर्वानुमान, टीम के हालिया प्रदर्शन और मैच ट्रैकिंग में सुधार, साथ ही संगतता संबंधी समस्याओं के समाधान।</string>
+    <string name="release_1_1_1_introduction">लाइव पूर्वानुमान, अपनी पसंद से सजाए जा सकने वाले मैच और इवेंट विवरण, अधिक स्पष्ट टैब और सहज नेविगेशन, साथ ही संगतता संबंधी समस्याओं के समाधान।</string>
     <string name="release_1_1_1_predictions_title">लाइव मैचों के दौरान पूर्वानुमान</string>
     <string name="release_1_1_1_predictions_description">लाइव मैचों के दौरान पूर्वानुमान खोलें। मैच से पहले वाला लेबल केवल आगामी मैचों के लिए दिखता है और पूर्वानुमान के विकल्प केवल उपलब्ध होने पर दिखते हैं।</string>
     <string name="release_1_1_1_navigation_title">अधिक सहज नेविगेशन</string>
@@ -155,6 +155,14 @@
     <string name="release_1_1_1_ios_live_description">Live Activities में सही मैप स्कोर, अधिक स्पष्ट राउंड इतिहास और आसानी से दिखने वाले टीम रंग हैं। पूरे हो चुके मैप के स्कोर विजेता के रंग में दिखते हैं। मैप के बॉर्डर तटस्थ रहते हैं।</string>
     <string name="release_1_1_1_stability_title">संगतता और स्थिरता</string>
     <string name="release_1_1_1_stability_description">संगतता और स्थिरता से जुड़ी समस्याओं के समाधान शामिल हैं।</string>
+    <string name="release_1_1_1_sections_title">मैच और इवेंट विवरण व्यवस्थित करें</string>
+    <string name="release_1_1_1_sections_description">चुनें कि मैच और इवेंट विवरण में कौन से सेक्शन दिखें, और उन्हें खींचकर अपने क्रम में लगाएं। इसके लिए मैच विकल्प या इवेंट विकल्प खोलें।</string>
+    <string name="release_1_1_1_tabs_title">गिनती वाले टैब</string>
+    <string name="release_1_1_1_tabs_description">मैच और इवेंट टैब दिखाते हैं कि हर टैब में कितने आइटम हैं। इवेंट विवरण में “आज” बटन तभी दिखता है जब उस दिन मैच हों।</string>
+    <string name="release_1_1_1_glance_title">Live Activities के लिए झलक स्टाइल</string>
+    <string name="release_1_1_1_glance_description">सेटिंग &gt; प्रयोगात्मक में कॉम्पैक्ट झलक स्टाइल आज़माएं। इसमें टीम टैग, मैप स्कोर और मौजूदा मैप की तस्वीर दिखती है। स्टाइल बदलने पर लॉक स्क्रीन पर पहले से मौजूद Live Activities भी अपडेट हो जाती हैं।</string>
+    <string name="release_1_1_1_refinements_title">बेहतर स्क्रीन</string>
+    <string name="release_1_1_1_refinements_description">टीम विवरण में पहले रोस्टर दिखता है, मैच शेयर करने की इमेज अधिक कॉम्पैक्ट है, और टैब, बटन और चित्रों में थीम अधिक एक जैसी दिखती है।</string>
     <string name="match_reminders_description">पसंदीदा मैच शुरू होने से पहले रिमाइंडर पाएँ। रिमाइंडर पाने के लिए सूचनाओं की अनुमति दें।</string>
     <string name="match_reminders_permission_description">अपने पसंदीदा के रिमाइंडर पाने के लिए सूचनाओं की अनुमति दें।</string>
     <string name="live_updates_with_reminders_description">सूचनाओं में लाइव स्कोर देखें। Live Updates बंद होने पर भी पसंदीदा मैचों के शुरू होने से पहले रिमाइंडर मिलते रहेंगे।</string>
