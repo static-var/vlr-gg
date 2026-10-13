@@ -1,6 +1,6 @@
 [versions]
 benchmark = "1.5.0"
-sentry-kmp = "0.28.0-beta.3"
+sentry-kmp = "0.28.0"
 sentry-android = "8.60.0"
 sentry-gradle = "6.23.0"
 kotlin = "2.4.20"
