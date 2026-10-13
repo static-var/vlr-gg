@@ -21,6 +21,9 @@ public interface NotificationPermissionProvider {
 
   public fun requiresNotificationPermission(): Boolean = true
 
+  /** Whether the platform offers alternative Live Activity layouts. */
+  public fun supportsLiveActivityStyles(): Boolean = false
+
   public fun areLiveActivitiesEnabled(): Boolean?
 
   /** Returns Android promotion access, or null when unavailable or not applicable. */

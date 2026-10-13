@@ -8,6 +8,7 @@ struct iOSApp: App {
         if #available(iOS 16.2, *) {
             IosMatchActivityOptOut.shared.start()
             MatchActivityLogoObserver.shared.start()
+            MatchActivityStyleSync.shared.start()
         }
 
         #if DEBUG

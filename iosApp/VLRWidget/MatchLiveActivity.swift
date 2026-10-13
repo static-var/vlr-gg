@@ -7,9 +7,10 @@ import WidgetKit
 struct MatchLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: MatchActivityAttributes.self) { context in
-            MatchLiveActivityLockScreen(
+            MatchLiveActivityStyledLockScreen(
                 state: context.state,
-                spoilersHidden: MatchLiveActivitySpoilerPreference.isHidden
+                spoilersHidden: MatchLiveActivitySpoilerPreference.isHidden,
+                style: MatchActivityStylePreference.current()
             )
             .environment(\.colorScheme, .dark)
             .activityBackgroundTint(.black)
@@ -17,24 +18,37 @@ struct MatchLiveActivity: Widget {
             .widgetURL(VLRWidgetContract.matchURL(id: context.attributes.match_id))
         } dynamicIsland: { context in
             let hidden = MatchLiveActivitySpoilerPreference.isHidden
+            let style = MatchActivityStylePreference.current()
             let scores = MatchLiveActivityScores(state: context.state, hidden: hidden)
             let teamColors = MatchActivityLogoCache.teamColors(for: context.state.teams.map(\.img), appearance: .dark)
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    MatchLiveActivityStatus(state: context.state)
+                    MatchLiveActivityStatus(state: context.state, usesAccent: style == .classic)
                         .padding(.leading, 8)
                         .environment(\.colorScheme, .dark)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    MatchLiveActivityDetail(state: context.state)
-                        .padding(.trailing, 8)
-                        .environment(\.colorScheme, .dark)
+                    Group {
+                        if style == .classic {
+                            MatchLiveActivityDetail(state: context.state)
+                        } else {
+                            MatchLiveActivityStageLabel(state: context.state, showsBranding: true)
+                        }
+                    }
+                    .padding(.trailing, 8)
+                    .environment(\.colorScheme, .dark)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    MatchLiveActivityScoreContent(state: context.state, spoilersHidden: hidden, isExpanded: true)
-                        .padding(.horizontal, 16)
-                        .padding(.top, 4)
-                        .environment(\.colorScheme, .dark)
+                    Group {
+                        if style == .classic {
+                            MatchLiveActivityScoreContent(state: context.state, spoilersHidden: hidden, isExpanded: true)
+                        } else {
+                            MatchLiveActivityStackedScores(state: context.state, spoilersHidden: hidden, layout: .dynamicIsland)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 4)
+                    .environment(\.colorScheme, .dark)
                 }
             } compactLeading: {
                 HStack(spacing: 4) {
@@ -103,9 +117,13 @@ struct MatchLiveActivityLockScreen: View {
 }
 
 @available(iOS 16.1, *)
-private struct MatchLiveActivityStatus: View {
+struct MatchLiveActivityStatus: View {
     let state: MatchActivityAttributes.ContentState
+    /// Glance draws the status in white instead of the accent.
+    var usesAccent = true
     @Environment(\.colorScheme) private var colorScheme
+
+    private var palette: PrismWidgetPalette { colorScheme == .dark ? .dark : .light }
 
     private var statusLabel: String {
         if state.terminal { return String(localized: "FINAL") }
@@ -133,7 +151,7 @@ private struct MatchLiveActivityStatus: View {
                 .minimumScaleFactor(0.7)
         }
         .font(PrismWidgetFont.regular(11, relativeTo: .caption2))
-        .foregroundStyle(colorScheme == .dark ? PrismWidgetPalette.dark.accent : PrismWidgetPalette.light.accent)
+        .foregroundStyle(usesAccent ? palette.accent : palette.ink)
         .lineLimit(1)
     }
 }
@@ -164,7 +182,7 @@ struct MatchLiveActivityDetailContent: Equatable {
 }
 
 @available(iOS 16.1, *)
-private struct MatchLiveActivityDetail: View {
+struct MatchLiveActivityDetail: View {
     let state: MatchActivityAttributes.ContentState
     @Environment(\.colorScheme) private var colorScheme
 
@@ -401,19 +419,7 @@ private struct MatchLiveActivityMapProgressView: View {
                         .monospacedDigit()
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
-                    HStack(spacing: min(1.5, 40 / CGFloat(map.rounds.count))) {
-                        ForEach(map.rounds.indices, id: \.self) { round in
-                            RoundedRectangle(cornerRadius: 1.5)
-                                .fill(fill(for: map.rounds[round]))
-                                .overlay {
-                                    if map.rounds[round] == .unknown {
-                                        RoundedRectangle(cornerRadius: 1.5)
-                                            .strokeBorder(palette.secondary, lineWidth: 1)
-                                    }
-                                }
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
+                    MatchLiveActivityRoundStrip(rounds: map.rounds, palette: palette, teamColors: teamColors)
                     .frame(height: 12)
                     .padding(.horizontal, 5)
                     .padding(.vertical, 4)
@@ -431,14 +437,6 @@ private struct MatchLiveActivityMapProgressView: View {
         .clipped()
         .animation(.easeInOut(duration: 0.3), value: progress.firstVisibleIndex)
         .accessibilityElement(children: .contain)
-    }
-
-    private func fill(for round: MatchLiveActivityMapProgress.Round) -> Color {
-        switch round {
-        case .wonBy(let index): return Color(uiColor: teamColors.color(for: index))
-        case .unknown: return .clear
-        case .pending: return palette.border.opacity(0.55)
-        }
     }
 
     private func scoreColor(for segment: MatchLiveActivityMapProgress.Segment) -> Color {
@@ -469,9 +467,41 @@ private struct MatchLiveActivityMapProgressView: View {
     }
 }
 
+/// Draws one bar per round, filled with the color of the team that won it.
+@available(iOS 16.1, *)
+struct MatchLiveActivityRoundStrip: View {
+    let rounds: [MatchLiveActivityMapProgress.Round]
+    let palette: PrismWidgetPalette
+    let teamColors: MatchActivityTeamColors
+
+    var body: some View {
+        HStack(spacing: min(1.5, 40 / CGFloat(max(1, rounds.count)))) {
+            ForEach(rounds.indices, id: \.self) { round in
+                RoundedRectangle(cornerRadius: 1.5)
+                    .fill(fill(for: rounds[round]))
+                    .overlay {
+                        if rounds[round] == .unknown {
+                            RoundedRectangle(cornerRadius: 1.5)
+                                .strokeBorder(palette.secondary, lineWidth: 1)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+            }
+        }
+    }
+
+    private func fill(for round: MatchLiveActivityMapProgress.Round) -> Color {
+        switch round {
+        case .wonBy(let index): return Color(uiColor: teamColors.color(for: index))
+        case .unknown: return .clear
+        case .pending: return palette.border.opacity(0.55)
+        }
+    }
+}
+
 /// Displays a cached team logo or falls back to team initials.
 @available(iOS 16.1, *)
-private struct MatchLiveActivityLogo: View {
+struct MatchLiveActivityLogo: View {
     let team: MatchActivityAttributes.ContentState.Team?
     let size: CGFloat
     @Environment(\.colorScheme) private var colorScheme
@@ -529,7 +559,7 @@ private struct MatchLiveActivityScorePair: View {
     }
 }
 
-private struct MatchLiveActivityRollingScore: View {
+struct MatchLiveActivityRollingScore: View {
     let value: String
     let height: CGFloat
 
@@ -569,7 +599,7 @@ struct MatchLiveActivityScores {
 }
 
 /// Reads the spoiler preference shared with the app.
-private enum MatchLiveActivitySpoilerPreference {
+enum MatchLiveActivitySpoilerPreference {
     static var isHidden: Bool {
         WidgetSnapshotRepository().loadSource()?.spoilersHidden ?? true
     }

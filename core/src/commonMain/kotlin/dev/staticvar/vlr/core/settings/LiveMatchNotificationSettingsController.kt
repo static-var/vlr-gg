@@ -18,6 +18,7 @@ public data class LiveMatchNotificationAccess(
   val supportsLiveUpdates: Boolean = true,
   val supportsMatchAlerts: Boolean = false,
   val requiresNotificationPermission: Boolean = true,
+  val supportsLiveActivityStyles: Boolean = false,
 ) {
   public val supportsNotifications: Boolean get() = supportsLiveUpdates || supportsMatchAlerts
 }
@@ -94,6 +95,10 @@ public class LiveMatchNotificationSettingsController(
     repository.setShowScoreInStatusBar(show)
   }
 
+  public fun setLiveActivityStyle(style: LiveActivityStyle) {
+    if (access.value.supportsLiveActivityStyles) repository.setLiveActivityStyle(style)
+  }
+
   public fun openPromotionSettings() {
     if (access.value.supportsLiveUpdates) provider.openPromotionSettings()
   }
@@ -106,5 +111,6 @@ public class LiveMatchNotificationSettingsController(
       supportsLiveUpdates = provider.supportsLiveUpdates(),
       supportsMatchAlerts = provider.supportsMatchAlerts(),
       requiresNotificationPermission = provider.requiresNotificationPermission(),
+      supportsLiveActivityStyles = provider.supportsLiveActivityStyles(),
     )
 }
