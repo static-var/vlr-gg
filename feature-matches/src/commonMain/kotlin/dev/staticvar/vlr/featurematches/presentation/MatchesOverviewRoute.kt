@@ -246,11 +246,23 @@ private fun MatchesOverviewContent(
   onRefresh: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  // Counts stay hidden until the first load lands, so tabs never claim zero while loading.
+  val countsKnown = matches.isNotEmpty() || (!isLoading && !isRefreshing && errorMessage == null)
+  val counts = remember(matches) { MatchStatusFilter.entries.associateWith { matches.filterByStatus(it).size } }
+  fun count(filter: MatchStatusFilter) = counts[filter]?.takeIf { countsKnown }
   SharedStatusPager(
     tabs = listOf(
-      PrismTab(id = MatchStatusFilter.Live.name, label = stringResource(Res.string.live)),
-      PrismTab(id = MatchStatusFilter.Upcoming.name, label = stringResource(Res.string.upcoming)),
-      PrismTab(id = MatchStatusFilter.Completed.name, label = stringResource(Res.string.completed)),
+      PrismTab(id = MatchStatusFilter.Live.name, label = stringResource(Res.string.live), count = count(MatchStatusFilter.Live)),
+      PrismTab(
+        id = MatchStatusFilter.Upcoming.name,
+        label = stringResource(Res.string.upcoming),
+        count = count(MatchStatusFilter.Upcoming),
+      ),
+      PrismTab(
+        id = MatchStatusFilter.Completed.name,
+        label = stringResource(Res.string.completed),
+        count = count(MatchStatusFilter.Completed),
+      ),
     ),
     selectedTabId = selectedStatus.name,
     onTabSelected = { onFilterSelected(MatchStatusFilter.valueOf(it)) },
