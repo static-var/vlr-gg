@@ -33,8 +33,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
@@ -43,6 +48,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.surface.PrismSurface
+import dev.staticvar.designsystem.component.surface.prismAnimatedSurface
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.color.contentColorFor
 import org.jetbrains.compose.resources.stringResource
@@ -97,7 +103,6 @@ public fun PrismLoader(
 ) {
   val metrics = loaderMetrics(size)
   val progress = rememberLoaderProgress()
-  val animatedLabelText = loaderLabelText(label = label, phaseProgress = progress.phase)
 
   PrismSurface(
     modifier =
@@ -117,7 +122,7 @@ public fun PrismLoader(
     ) {
       if (metrics.showLabel) {
         LabeledLoaderContent(
-          label = animatedLabelText,
+          label = label,
           metrics = metrics,
           colors = LoaderColors(color = color, trackColor = trackColor),
           progress = progress,
@@ -186,17 +191,15 @@ private fun rememberLoaderProgress(): LoaderProgress {
       label = "prism_loader_pulse",
     )
 
-  return LoaderProgress(phase = phaseProgress.value, pulse = pulseProgress.value)
+  return remember(phaseProgress, pulseProgress) { LoaderProgress(phase = phaseProgress, pulse = pulseProgress) }
 }
 
 @Composable
-private fun loaderLabelText(label: String, phaseProgress: Float): String {
-  val phaseLabel = stringResource(
-    PrismLoaderConstants.phaseLabels[
-      phaseProgress.toInt() %
-        PrismLoaderConstants.phaseLabels.size,
-    ],
-  )
+private fun loaderLabelText(label: String, phaseProgress: State<Float>): String {
+  val labelIndex by remember(phaseProgress) {
+    derivedStateOf { phaseProgress.value.toInt() % PrismLoaderConstants.phaseLabels.size }
+  }
+  val phaseLabel = stringResource(PrismLoaderConstants.phaseLabels[labelIndex])
   val resolvedLabel = label.trim()
   return if (resolvedLabel.isEmpty()) {
     phaseLabel
@@ -221,7 +224,7 @@ private fun LabeledLoaderContent(
     verticalArrangement = Arrangement.SpaceBetween,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    LoaderPhaseLabel(text = label)
+    LoaderPhaseLabel(label = label, phaseProgress = progress.phase)
     LoaderSegments(
       modifier = Modifier.fillMaxWidth(),
       metrics = metrics,
@@ -232,7 +235,8 @@ private fun LabeledLoaderContent(
 }
 
 @Composable
-private fun LoaderPhaseLabel(text: String) {
+private fun LoaderPhaseLabel(label: String, phaseProgress: State<Float>) {
+  val text = loaderLabelText(label, phaseProgress)
   val animations = Prism.anim
   AnimatedContent(
     targetState = text,
@@ -278,20 +282,24 @@ private fun RowScope.LoaderSegment(
   colors: LoaderColors,
   progress: LoaderProgress,
 ) {
-  val distance = (progress.phase - index.toFloat()).absoluteValue
-  val segmentStrength = if (distance >= 1f) 0f else 1f - distance
-  val pulseStrength = (segmentStrength + (progress.pulse * 0.4f)).coerceIn(0f, 1f)
-  val segmentColor = lerp(colors.trackColor, colors.color.copy(alpha = 0.20f), pulseStrength)
-  val segmentBorderColor = lerp(Prism.color.stroke, colors.color, pulseStrength)
-
-  PrismSurface(
-    modifier = Modifier.weight(1f).height(metrics.segmentHeight),
-    color = segmentColor,
-    shape = Prism.shapes.small,
-    border = BorderStroke(Prism.dimens.strokeDefault, segmentBorderColor),
-  ) {
-    Box(modifier = Modifier.fillMaxWidth())
+  val shape = Prism.shapes.small
+  val stroke = Prism.color.stroke
+  val strokeWidth = Prism.dimens.strokeDefault
+  val pulseStrength = {
+    val distance = (progress.phase.value - index.toFloat()).absoluteValue
+    val segmentStrength = if (distance >= 1f) 0f else 1f - distance
+    (segmentStrength + (progress.pulse.value * 0.4f)).coerceIn(0f, 1f)
   }
+  Box(
+    modifier = Modifier.weight(1f).height(metrics.segmentHeight)
+      .prismAnimatedSurface(
+        shape = shape,
+        containerColor = { lerp(colors.trackColor, colors.color.copy(alpha = 0.20f), pulseStrength()) },
+        borderColor = { lerp(stroke, colors.color, pulseStrength()) },
+        borderWidth = { strokeWidth },
+      )
+      .clip(shape),
+  )
 }
 
 /**
@@ -354,4 +362,4 @@ private data class LoaderMetrics(
 
 private data class LoaderColors(val color: Color, val trackColor: Color)
 
-private data class LoaderProgress(val phase: Float, val pulse: Float)
+private data class LoaderProgress(val phase: State<Float>, val pulse: State<Float>)

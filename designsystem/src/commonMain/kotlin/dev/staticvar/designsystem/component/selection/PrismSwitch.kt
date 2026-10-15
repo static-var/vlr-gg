@@ -6,8 +6,6 @@ package dev.staticvar.designsystem.component.selection
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,15 +18,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import dev.staticvar.designsystem.component.surface.PrismSurface
+import dev.staticvar.designsystem.component.surface.prismAnimatedBackground
+import dev.staticvar.designsystem.component.surface.prismAnimatedSurface
 import dev.staticvar.designsystem.prism.Prism
 
 /**
@@ -95,31 +96,31 @@ private fun rememberPrismSwitchVisualState(
     }
   val standardAnimation = Prism.anim.selection
   val slowAnimation = Prism.anim.slowFade
-  val animatedTrackColor by
+  val animatedTrackColor =
     animateColorAsState(
       targetValue = trackColor,
       animationSpec = standardAnimation.colorSpec(),
       label = "switch_track_color",
     )
-  val animatedBorderColor by
+  val animatedBorderColor =
     animateColorAsState(
       targetValue = borderColor,
       animationSpec = standardAnimation.colorSpec(),
       label = "switch_border_color",
     )
-  val animatedThumbColor by
+  val animatedThumbColor =
     animateColorAsState(
       targetValue = thumbColor,
       animationSpec = standardAnimation.colorSpec(),
       label = "switch_thumb_color",
     )
-  val animatedBorderWidth by
+  val animatedBorderWidth =
     animateDpAsState(
       targetValue = if (checked) Prism.dimens.strokeThick else Prism.dimens.strokeDefault,
       animationSpec = standardAnimation.dpSpec(),
       label = "switch_border_width",
     )
-  val animatedThumbOffset by
+  val animatedThumbOffset =
     animateDpAsState(
       targetValue = if (checked) thumbTravel else 0.dp,
       animationSpec = slowAnimation.dpSpec(),
@@ -172,11 +173,16 @@ private fun PrismSwitchTrack(
   thumbSize: Dp,
   visualState: PrismSwitchVisualState,
 ) {
-  PrismSurface(
-    modifier = Modifier.width(trackWidth).height(Prism.dimens.iconM),
-    color = visualState.trackColor,
-    shape = Prism.shapes.small,
-    border = BorderStroke(width = visualState.borderWidth, color = visualState.borderColor),
+  val shape = Prism.shapes.small
+  Box(
+    modifier = Modifier.width(trackWidth).height(Prism.dimens.iconM)
+      .prismAnimatedSurface(
+        shape = shape,
+        containerColor = { visualState.trackColor.value },
+        borderColor = { visualState.borderColor.value },
+        borderWidth = { visualState.borderWidth.value },
+      )
+      .clip(shape),
   ) {
     Box(
       modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
@@ -184,18 +190,18 @@ private fun PrismSwitchTrack(
     ) {
       Box(
         modifier =
-        Modifier.offset(x = visualState.thumbOffset)
+        Modifier.offset { IntOffset(visualState.thumbOffset.value.roundToPx(), 0) }
           .size(thumbSize)
-          .background(color = visualState.thumbColor, shape = Prism.shapes.small),
+          .prismAnimatedBackground(shape) { visualState.thumbColor.value },
       )
     }
   }
 }
 
 private data class PrismSwitchVisualState(
-  val trackColor: Color,
-  val borderColor: Color,
-  val borderWidth: Dp,
-  val thumbColor: Color,
-  val thumbOffset: Dp,
+  val trackColor: State<Color>,
+  val borderColor: State<Color>,
+  val borderWidth: State<Dp>,
+  val thumbColor: State<Color>,
+  val thumbOffset: State<Dp>,
 )

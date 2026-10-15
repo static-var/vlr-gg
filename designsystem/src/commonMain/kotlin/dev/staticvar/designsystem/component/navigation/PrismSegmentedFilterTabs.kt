@@ -6,7 +6,6 @@ package dev.staticvar.designsystem.component.navigation
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -19,14 +18,17 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import dev.staticvar.designsystem.component.surface.PrismSurface
+import dev.staticvar.designsystem.component.surface.prismAnimatedSurface
 import dev.staticvar.designsystem.prism.Prism
 
 /**
@@ -88,14 +90,18 @@ private fun RowScope.PrismSegmentedFilterTabItem(
       enabled = enabled,
       style = style,
     )
-  PrismSurface(
+  Box(
     modifier =
     Modifier.weight(1f)
       .heightIn(min = Prism.dimens.controlHeight)
-      .selectable(selected = selected, onClick = onClick, enabled = enabled, role = Role.Tab),
-    color = visualState.containerColor,
-    shape = shape,
-    border = visualState.border,
+      .selectable(selected = selected, onClick = onClick, enabled = enabled, role = Role.Tab)
+      .prismAnimatedSurface(
+        shape = shape,
+        containerColor = { visualState.containerColor.value },
+        borderColor = { visualState.borderColor.value },
+        borderWidth = { visualState.borderWidth.value },
+      )
+      .clip(shape),
   ) {
     Box(
       modifier =
@@ -104,15 +110,20 @@ private fun RowScope.PrismSegmentedFilterTabItem(
         .padding(horizontal = Prism.dimens.spacingM),
       contentAlignment = Alignment.Center,
     ) {
-      Text(
-        text = tab.label,
-        style = Prism.typography.button,
-        color = visualState.contentColor,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
+      PrismSegmentedFilterLabel(text = tab.label, color = visualState.contentColor)
     }
   }
+}
+
+@Composable
+private fun PrismSegmentedFilterLabel(text: String, color: State<Color>) {
+  Text(
+    text = text,
+    style = Prism.typography.button,
+    color = color.value,
+    maxLines = 1,
+    overflow = TextOverflow.Ellipsis,
+  )
 }
 
 @Composable
@@ -123,25 +134,25 @@ private fun rememberSegmentedFilterTabVisualState(
   style: PrismSegmentedFilterTabStyle,
 ): PrismSegmentedFilterTabVisualState {
   val animation = Prism.anim.selection
-  val containerColor by
+  val containerColor =
     animateColorAsState(
       targetValue = style.containerColor(selected = selected, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "segmented_container_$tabId",
     )
-  val contentColor by
+  val contentColor =
     animateColorAsState(
       targetValue = style.contentColor(selected = selected, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "segmented_content_$tabId",
     )
-  val borderColor by
+  val borderColor =
     animateColorAsState(
       targetValue = style.borderColor(selected = selected, enabled = enabled),
       animationSpec = animation.colorSpec(),
       label = "segmented_border_$tabId",
     )
-  val borderWidth by
+  val borderWidth =
     animateDpAsState(
       targetValue = style.borderWidth(selected = selected),
       animationSpec = animation.dpSpec(),
@@ -151,12 +162,14 @@ private fun rememberSegmentedFilterTabVisualState(
   return PrismSegmentedFilterTabVisualState(
     containerColor = containerColor,
     contentColor = contentColor,
-    border = BorderStroke(width = borderWidth, color = borderColor),
+    borderColor = borderColor,
+    borderWidth = borderWidth,
   )
 }
 
 private data class PrismSegmentedFilterTabVisualState(
-  val containerColor: Color,
-  val contentColor: Color,
-  val border: BorderStroke,
+  val containerColor: State<Color>,
+  val contentColor: State<Color>,
+  val borderColor: State<Color>,
+  val borderWidth: State<Dp>,
 )
