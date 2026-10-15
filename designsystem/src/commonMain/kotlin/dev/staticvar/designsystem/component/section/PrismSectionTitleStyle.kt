@@ -28,6 +28,8 @@ private object PrismSectionTitleStyleConstants {
   // lines up with the tab's top.
   val TabActionPadding = PaddingValues(start = 12.dp, top = 4.dp, end = 12.dp, bottom = 3.dp)
   val SubtleActionPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+  val EmptyFrame = PrismFrameTokens()
+  val EmptyPadding = PaddingValues()
 }
 
 /**
@@ -212,12 +214,12 @@ public sealed interface PrismSectionTitleStyle {
     override val tabFrame: PrismFrameTokens
       @Composable
       @ReadOnlyComposable
-      get() = PrismFrameTokens()
+      get() = PrismSectionTitleStyleConstants.EmptyFrame
 
     override val tabPadding: PaddingValues
       @Composable
       @ReadOnlyComposable
-      get() = PaddingValues()
+      get() = PrismSectionTitleStyleConstants.EmptyPadding
 
     override val actionPadding: PaddingValues
       @Composable

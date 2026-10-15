@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,7 +58,7 @@ public fun PrismFabSheet(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   var collapsed by remember { mutableStateOf(true) }
-  LaunchedEffect(expanded) { if (expanded) collapsed = false }
+  SideEffect(expanded) { if (expanded) collapsed = false }
   Box(modifier = modifier.fillMaxSize().safeDrawingPadding().padding(Prism.dimens.spacingM)) {
     if (!expanded && collapsed) {
       PrismFabSheetAction(

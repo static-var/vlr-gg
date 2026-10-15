@@ -4,14 +4,13 @@
  */
 package dev.staticvar.designsystem.component.favorite
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -64,29 +63,31 @@ public fun PrismFavoriteIcon(
     shape = Prism.shapes.small,
     border = style.border(selected = selected),
   ) {
-    Box(modifier = Modifier.size(size.containerSize), contentAlignment = Alignment.Center) {
-      Canvas(modifier = Modifier.size(size.containerSize)) {
+    Box(
+      modifier = Modifier.size(size.containerSize).drawWithCache {
         val strokePx = size.strokeWidth.toPx()
         val markStroke = Stroke(width = strokePx)
         val fillColor = if (selected) markColor else Color.Transparent
         val inset = size.containerSize.toPx() * 0.22f
         val markSize = this.size.width - (inset * 2f)
+        val path = bookmarkTagPath(size = Size(markSize, markSize))
 
-        translate(left = inset, top = inset) {
-          val path = bookmarkTagPath(size = Size(markSize, markSize))
-          drawPath(path = path, color = fillColor)
-          drawPath(path = path, color = markColor, style = markStroke)
-          if (selected) {
-            drawLine(
-              color = borderColor,
-              start = Offset(markSize * 0.28f, markSize * 0.2f),
-              end = Offset(markSize * 0.72f, markSize * 0.2f),
-              strokeWidth = strokePx,
-            )
+        onDrawBehind {
+          translate(left = inset, top = inset) {
+            drawPath(path = path, color = fillColor)
+            drawPath(path = path, color = markColor, style = markStroke)
+            if (selected) {
+              drawLine(
+                color = borderColor,
+                start = Offset(markSize * 0.28f, markSize * 0.2f),
+                end = Offset(markSize * 0.72f, markSize * 0.2f),
+                strokeWidth = strokePx,
+              )
+            }
           }
         }
-      }
-    }
+      },
+    )
   }
 }
 

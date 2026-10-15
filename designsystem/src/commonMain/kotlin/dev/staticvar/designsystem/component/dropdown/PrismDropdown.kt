@@ -32,14 +32,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.frame.prismFrame
 import dev.staticvar.designsystem.component.surface.PrismSurface
@@ -73,7 +74,7 @@ public fun PrismDropdown(
     }
   }
   var anchorWidth by remember { mutableIntStateOf(0) }
-  val menuWidth = with(LocalDensity.current) { anchorWidth.toDp() }.coerceAtLeast(style.menuWidth)
+  val minimumMenuWidth = style.menuWidth
   val selectedOption = options.firstOrNull { option -> option.id == selectedOptionId } ?: options.firstOrNull()
 
   Box(modifier = modifier.width(style.triggerWidth).onSizeChanged { anchorWidth = it.width }) {
@@ -88,7 +89,11 @@ public fun PrismDropdown(
     DropdownMenu(
       expanded = expanded,
       onDismissRequest = { updateExpanded(false) },
-      modifier = Modifier.width(menuWidth)
+      modifier = Modifier.layout { measurable, constraints ->
+        val width = constraints.constrainWidth(maxOf(anchorWidth, minimumMenuWidth.roundToPx()))
+        val placeable = measurable.measure(constraints.copy(minWidth = width, maxWidth = width))
+        layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
+      }
         .prismFrame(style.menuFrame, Prism.shapes.small)
         .background(Prism.color.surface, Prism.shapes.small)
         .border(style.menuFrame.border ?: style.menuBorder, Prism.shapes.small)

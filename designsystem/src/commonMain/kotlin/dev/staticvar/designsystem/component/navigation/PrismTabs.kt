@@ -33,7 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
@@ -178,29 +178,34 @@ private val ChipHeight = 40.dp
 
 /** Fades whichever edge still has chips scrolled out of view. */
 private fun Modifier.scrollEdgeFade(scrollState: ScrollState, width: Dp): Modifier =
-  graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen).drawWithContent {
-    drawContent()
+  graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen).drawWithCache {
     val fade = width.toPx().coerceAtMost(size.width / 2)
-    if (scrollState.canScrollBackward) {
-      drawRect(
-        brush = Brush.horizontalGradient(listOf(Color.Transparent, Color.Black), startX = 0f, endX = fade),
-        size = Size(fade, size.height),
-        blendMode = BlendMode.DstIn,
-      )
-    }
-    if (scrollState.canScrollForward) {
-      drawRect(
-        brush = Brush.horizontalGradient(
-          listOf(Color.Black, Color.Transparent),
-          startX = size.width - fade,
-          endX = size.width,
-        ),
-        topLeft = Offset(size.width - fade, 0f),
-        size = Size(fade, size.height),
-        blendMode = BlendMode.DstIn,
-      )
+    val startBrush = Brush.horizontalGradient(listOf(Color.Transparent, Color.Black), startX = 0f, endX = fade)
+    val endBrush = Brush.horizontalGradient(
+      listOf(Color.Black, Color.Transparent),
+      startX = size.width - fade,
+      endX = size.width,
+    )
+    onDrawWithContent {
+      drawContent()
+      if (scrollState.canScrollBackward) {
+        drawRect(
+          brush = startBrush,
+          size = Size(fade, size.height),
+          blendMode = BlendMode.DstIn,
+        )
+      }
+      if (scrollState.canScrollForward) {
+        drawRect(
+          brush = endBrush,
+          topLeft = Offset(size.width - fade, 0f),
+          size = Size(fade, size.height),
+          blendMode = BlendMode.DstIn,
+        )
+      }
     }
   }
+
 private const val MaxShownCount = 999
 
 @Composable

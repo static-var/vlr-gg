@@ -113,18 +113,20 @@ private fun Modifier.ticketSurface(style: PrismTicketStyle, seam: FloatState): M
       notched,
       tornEdge(size, tearWidth.toPx(), minOf(tearDepth.toPx(), size.height - seam.floatValue)),
     )
+    val borderStroke = Stroke(border.width.toPx() * 2f)
+    val dashEffect = PathEffect.dashPathEffect(floatArrayOf(dashLength.toPx(), dashLength.toPx()))
     onDrawWithContent {
       translate(frame.shadowOffset.x.toPx(), frame.shadowOffset.y.toPx()) { drawPath(ticket, frame.shadowColor) }
       clipPath(ticket) {
         drawPath(ticket, background)
         this@onDrawWithContent.drawContent()
-        drawPath(ticket, border.brush, style = Stroke(border.width.toPx() * 2f))
+        drawPath(ticket, border.brush, style = borderStroke)
         drawLine(
           color = perforationColor,
           start = Offset(radius, seam.floatValue),
           end = Offset(size.width - radius, seam.floatValue),
           strokeWidth = perforationWidth.toPx(),
-          pathEffect = PathEffect.dashPathEffect(floatArrayOf(dashLength.toPx(), dashLength.toPx())),
+          pathEffect = dashEffect,
         )
       }
     }
