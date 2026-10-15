@@ -4,7 +4,6 @@
  */
 package dev.staticvar.designsystem.component.tag
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,54 +43,40 @@ public fun PrismTag(
   enabled: Boolean = true,
   leadingContent: (@Composable () -> Unit)? = null,
 ) {
-  val visualState = rememberPrismTagVisualState(style = style, enabled = enabled)
-  val resolvedText = text.trim().uppercase()
+  val containerColor = if (enabled) style.containerColor else style.disabledContainerColor
+  val contentColor = if (enabled) style.contentColor else style.disabledContentColor
+  val borderColor = if (enabled) style.borderColor else style.disabledBorderColor
+  val baseFrame = style.frame
+  val borderWidth = style.border.width
+  val frame = remember(baseFrame, borderWidth, borderColor) {
+    baseFrame.copy(border = BorderStroke(width = borderWidth, color = borderColor))
+  }
+  val resolvedText = remember(text) { text.trim().uppercase() }
 
   PrismSurface(
     modifier = modifier,
-    color = visualState.containerColor,
+    color = containerColor,
     shape = Prism.shapes.small,
-    frame = style.frame.copy(border = visualState.border),
+    frame = frame,
   ) {
     PrismTagContent(
       text = resolvedText,
-      contentColor = visualState.contentColor,
+      contentColor = contentColor,
       leadingContent = leadingContent,
     )
   }
 }
 
 @Composable
-private fun rememberPrismTagVisualState(style: PrismTagStyle, enabled: Boolean): PrismTagVisualState {
-  val animation = Prism.anim.selection
-  val containerColor by
-    animateColorAsState(
-      targetValue = if (enabled) style.containerColor else style.disabledContainerColor,
-      animationSpec = animation.colorSpec(),
-      label = "tag_container",
-    )
-  val contentColor by
-    animateColorAsState(
-      targetValue = if (enabled) style.contentColor else style.disabledContentColor,
-      animationSpec = animation.colorSpec(),
-      label = "tag_content",
-    )
-  val borderColor by
-    animateColorAsState(
-      targetValue = if (enabled) style.borderColor else style.disabledBorderColor,
-      animationSpec = animation.colorSpec(),
-      label = "tag_border",
-    )
-
-  return PrismTagVisualState(
-    containerColor = containerColor,
-    contentColor = contentColor,
-    border = BorderStroke(width = style.border.width, color = borderColor),
-  )
-}
-
-@Composable
 private fun PrismTagContent(text: String, contentColor: Color, leadingContent: (@Composable () -> Unit)?) {
+  val caption = Prism.typography.caption
+  val textStyle = remember(caption) {
+    caption.copy(
+      fontSize = PrismTagConstants.LabelFontSize,
+      lineHeight = PrismTagConstants.LabelLineHeight,
+      letterSpacing = PrismTagConstants.LabelLetterSpacing,
+    )
+  }
   Row(
     modifier = Modifier.padding(horizontal = PrismTagConstants.ExtraHorizontalPadding),
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingXs),
@@ -109,17 +94,10 @@ private fun PrismTagContent(text: String, contentColor: Color, leadingContent: (
     Text(
       text = text,
       modifier = Modifier.align(Alignment.CenterVertically).padding(Prism.dimens.spacingXs),
-      style =
-      Prism.typography.caption.copy(
-        fontSize = PrismTagConstants.LabelFontSize,
-        lineHeight = PrismTagConstants.LabelLineHeight,
-        letterSpacing = PrismTagConstants.LabelLetterSpacing,
-      ),
+      style = textStyle,
       color = contentColor,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
     )
   }
 }
-
-private data class PrismTagVisualState(val containerColor: Color, val contentColor: Color, val border: BorderStroke)
