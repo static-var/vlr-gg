@@ -64,4 +64,5 @@
   <string name="match_event_win_type_time_out">TIME OUT</string>
   <string name="match_event_win_type_not_played">NOT PLAYED</string>
   <string name="match_event_match_score">Match score</string>
+  <string name="match_live_map_score_description">%1$s round score %2$s</string>
 </resources>

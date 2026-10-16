@@ -14,6 +14,7 @@ import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
+import dev.staticvar.vlr.domain.model.CurrentMatchMap
 import dev.staticvar.vlr.domain.model.DirectFavorite
 import dev.staticvar.vlr.domain.model.DirectFavoriteSnapshot
 import dev.staticvar.vlr.domain.model.EventPreview
@@ -65,6 +66,7 @@ private fun sampleHomeMatch(): MatchPreview = MatchPreview(
   eventId = "event-1",
   isFavorite = true,
   favoriteReasons = listOf(MatchFavoriteReason(MatchFavoriteSource.TEAM, "team-1", "Paper Rex")),
+  currentMap = CurrentMatchMap("Bind", 2, 7, 5),
 )
 
 private fun sampleHomeTeam(name: String, score: Int): TeamPreview = TeamPreview(

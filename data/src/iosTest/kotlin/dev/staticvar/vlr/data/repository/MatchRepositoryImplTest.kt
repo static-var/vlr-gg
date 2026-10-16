@@ -83,7 +83,7 @@ class MatchRepositoryImplTest {
     )
     dataSource.detailResults["match1"] = Result.success(live)
     assertTrue(repository.refreshMatchDetails("match1").isSuccess)
-    val expected = CurrentMatchMap("Ascent", 2, 0, 3, true)
+    val expected = CurrentMatchMap("Ascent", 2, 0, 3)
     val details = requireNotNull(repository.getMatchDetails("match1").first())
     assertEquals(expected, details.currentMap)
     assertEquals(listOf(1, 0), details.teams.map { it.score })
@@ -144,6 +144,43 @@ class MatchRepositoryImplTest {
       assertEquals("Beta", match.team2.name)
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun refreshMatchesClearsListMapWhenServerDropsItWithoutTouchingDetailMap() = runTest(dispatcher) {
+    val live = MatchPreviewDto(
+      id = "match1",
+      event = "Champions",
+      status = MatchStatus.LIVE,
+      team1 = TeamDto(id = "t1", name = "Alpha", score = 1),
+      team2 = TeamDto(id = "t2", name = "Beta", score = 0),
+      time = "2025-01-01T12:00:00Z",
+      eventId = "event1",
+      currentMap = CurrentMapDto(name = "Bind", number = 2, scores = listOf(7, 5)),
+    )
+    dataSource.listResult = Result.success(listOf(live))
+    assertTrue(repository.refreshMatches().isSuccess)
+    assertEquals(CurrentMatchMap("Bind", 2, 7, 5), repository.getMatches().first().single().currentMap)
+
+    dataSource.detailResults["match1"] = Result.success(
+      MatchDetailsDto(
+        event = EventDto(id = "event1", status = MatchStatus.LIVE),
+        teams = listOf(TeamDto(name = "Alpha", score = 1), TeamDto(name = "Beta", score = 0)),
+        currentMap = CurrentMapDto(name = "Bind", number = 2, scores = listOf(8, 5)),
+      ),
+    )
+    assertTrue(repository.refreshMatchDetails("match1").isSuccess)
+
+    dataSource.listResult = Result.success(listOf(live.copy(currentMap = null)))
+    assertTrue(repository.refreshMatches().isSuccess)
+    assertEquals(null, repository.getMatches().first().single().currentMap)
+    assertEquals(CurrentMatchMap("Bind", 2, 8, 5), requireNotNull(repository.getMatchDetails("match1").first()).currentMap)
+
+    dataSource.listResult = Result.success(listOf(live))
+    assertTrue(repository.refreshMatches().isSuccess)
+    dataSource.listResult = Result.success(listOf(live.copy(status = MatchStatus.COMPLETED)))
+    assertTrue(repository.refreshMatches().isSuccess)
+    assertEquals(null, repository.getMatches().first().single().currentMap)
   }
 
   @Test
@@ -541,7 +578,7 @@ class MatchRepositoryImplTest {
     repository.getMatchDetails("match1").map { details ->
       requireNotNull(details).let { Triple(it.currentMap, it.bans, it.veto) }
     }.distinctUntilChanged().test {
-      assertEquals(CurrentMatchMap("Ascent", 2, 0, 3, true), awaitItem().first)
+      assertEquals(CurrentMatchMap("Ascent", 2, 0, 3), awaitItem().first)
       dataSource.detailResults["match1"] = Result.success(
         initial.copy(
           currentMap = CurrentMapDto(name = "Ascent", number = 2, scores = listOf(1, 3)),
@@ -554,7 +591,7 @@ class MatchRepositoryImplTest {
 
       assertEquals(
         Triple(
-          CurrentMatchMap("Ascent", 2, 1, 3, true),
+          CurrentMatchMap("Ascent", 2, 1, 3),
           listOf("Beta pick Haven"),
           listOf(MatchVeto("Beta", VetoAction.PICK, "Haven")),
         ),
@@ -576,11 +613,11 @@ class MatchRepositoryImplTest {
       .distinctUntilChanged().test {
         assertEquals(null to emptyList<MatchVeto>(), awaitItem())
         database.transaction {
-          database.matchesQueries.insertMatchCurrentMap("match1", "Ascent", 2, null, 0, false)
+          database.matchesQueries.insertMatchCurrentMap("match1", "Ascent", 2, null, 0)
           database.matchesQueries.insertMatchVeto("match1", 0, "Alpha", "BAN", "Bind")
         }
         assertEquals(
-          CurrentMatchMap("Ascent", 2, null, 0, false) to listOf(MatchVeto("Alpha", VetoAction.BAN, "Bind")),
+          CurrentMatchMap("Ascent", 2, null, 0) to listOf(MatchVeto("Alpha", VetoAction.BAN, "Bind")),
           awaitItem(),
         )
         cancelAndIgnoreRemainingEvents()

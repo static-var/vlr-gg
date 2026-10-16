@@ -544,6 +544,10 @@ class FavoriteScheduleRepositoryImplTest {
     team2_name = team2,
     team2_logo_url = "",
     team2_score = score2,
+    current_map_name = null,
+    current_map_number = null,
+    current_map_team1_score = null,
+    current_map_team2_score = null,
   )
 
   private class TestDispatcherProvider(private val dispatcher: TestDispatcher) : DispatcherProvider {

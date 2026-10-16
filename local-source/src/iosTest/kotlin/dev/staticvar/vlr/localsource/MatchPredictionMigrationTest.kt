@@ -36,7 +36,7 @@ class MatchPredictionMigrationTest {
       """.trimIndent(), 0)
       driver.execute(null, "INSERT INTO favorite_matches(match_id) VALUES ('match')", 0)
 
-      VlrDatabase.Schema.migrate(driver, 11, VlrDatabase.Schema.version)
+      VlrDatabase.Schema.migrate(driver, 11, 12)
 
       val database = VlrDatabase(driver)
       val match = database.matchesQueries.getMatchWithFavoriteStatus("match").executeAsOne()

@@ -64,4 +64,5 @@
   <string name="match_event_win_type_time_out">TEMPO ESGOTADO</string>
   <string name="match_event_win_type_not_played">NÃO JOGADO</string>
   <string name="match_event_match_score">Placar da partida</string>
+  <string name="match_live_map_score_description">%1$s placar de rounds %2$s</string>
 </resources>

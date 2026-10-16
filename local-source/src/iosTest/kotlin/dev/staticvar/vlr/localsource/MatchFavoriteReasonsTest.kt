@@ -209,7 +209,8 @@ class MatchFavoriteReasonsTest {
     id = id, event_id = eventId, event_name = "Overview Event", series = "Bo3",
     status = "UPCOMING", time = "", team1_id = "100t", team1_name = "100 Thieves",
     team1_logo_url = "", team1_score = null, team2_id = "opponent", team2_name = "Opponent",
-    team2_logo_url = "", team2_score = null,
+    team2_logo_url = "", team2_score = null, current_map_name = null, current_map_number = null,
+    current_map_team1_score = null, current_map_team2_score = null,
   )
 
   private fun player(id: String, teamId: String) = Players(

@@ -7,7 +7,10 @@ package dev.staticvar.designsystem.component.divider
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +41,17 @@ internal fun PrismDividerPreview(@PreviewParameter(PrismPreviewProvider::class) 
 
       Text(text = "Strong", style = Prism.typography.label, color = Prism.color.labelColor)
       PrismDivider(style = PrismDividerStyle.Strong)
+
+      Text(text = "Vertical", style = Prism.typography.label, color = Prism.color.labelColor)
+      Row(
+        modifier = Modifier.height(IntrinsicSize.Min),
+        horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
+      ) {
+        listOf(PrismDividerStyle.Hairline, PrismDividerStyle.Default, PrismDividerStyle.Strong).forEach { style ->
+          Text(text = style.toString(), style = Prism.typography.label, color = Prism.color.labelColor)
+          PrismVerticalDivider(style = style)
+        }
+      }
     }
   }
 }

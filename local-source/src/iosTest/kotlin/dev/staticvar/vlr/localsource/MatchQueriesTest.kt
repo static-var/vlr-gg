@@ -53,13 +53,17 @@ class MatchQueriesTest {
 
     assertEquals("Team A", database.matchesQueries.getMatchWithFavoriteStatus("match1").executeAsOne().team1_name)
     assertEquals(1L, database.matchesQueries.isFavoriteMatch("match1").executeAsOne())
-    database.matchesQueries.insertMatchCurrentMap("match1", "Ascent", 2, null, 0, false)
+    driver.execute(
+      null,
+      "INSERT INTO match_current_map(match_id, name, number, team1_score, team2_score, is_live) " +
+        "VALUES ('match1', 'Ascent', 2, NULL, 0, 0)",
+      0,
+    )
     val currentMap = database.matchesQueries.getMatchCurrentMap("match1").executeAsOne()
     assertEquals("Ascent", currentMap.name)
     assertEquals(2L, currentMap.number)
     assertEquals(null, currentMap.team1_score)
     assertEquals(0L, currentMap.team2_score)
-    assertFalse(currentMap.is_live)
     database.matchesQueries.insertMatchVeto("match1", 1, null, "REMAINS", "Ascent")
     database.matchesQueries.insertMatchVeto("match1", 0, "Team A", "BAN", "Bind")
     val veto = database.matchesQueries.getMatchVeto("match1").executeAsList()
@@ -70,7 +74,7 @@ class MatchQueriesTest {
   @Test
   fun `version three upgrade preserves favorites and adds durable topic state`() {
     database.matchesQueries.insertMatch(createTestMatch(id = "match1"))
-    database.matchesQueries.insertMatchCurrentMap("match1", "Ascent", 2, null, 0, true)
+    database.matchesQueries.insertMatchCurrentMap("match1", "Ascent", 2, null, 0)
     val legacyFavorites = listOf(
       Triple("favorite_teams", "team_id", "team1"),
       Triple("favorite_events", "event_id", "event1"),
@@ -103,7 +107,7 @@ class MatchQueriesTest {
   @Test
   fun `deleting a match removes current map and veto`() {
     database.matchesQueries.insertMatch(createTestMatch(id = "match1"))
-    database.matchesQueries.insertMatchCurrentMap("match1", "Ascent", 2, 7, 5, true)
+    database.matchesQueries.insertMatchCurrentMap("match1", "Ascent", 2, 7, 5)
     database.matchesQueries.insertMatchVeto("match1", 0, "Team A", "PICK", "Ascent")
 
     database.matchesQueries.deleteMatchById("match1")

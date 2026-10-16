@@ -127,7 +127,6 @@ internal class MatchRepositoryImpl(
               number = map.number?.toInt(),
               team1Score = map.team1_score?.toInt(),
               team2Score = map.team2_score?.toInt(),
-              isLive = map.is_live,
             )
           }
         val reasons = favoritesQuery.executeAsList().map { reason ->
@@ -275,7 +274,6 @@ internal class MatchRepositoryImpl(
                 number = map.number?.toLong(),
                 team1_score = map.team1Score?.toLong(),
                 team2_score = map.team2Score?.toLong(),
-                is_live = map.isLive,
               )
             }
             dto.toVetoModels().forEachIndexed { index, step ->

@@ -364,6 +364,10 @@ class CacheCleanupRepositoryImplTest {
         team2_name = "Bravo",
         team2_logo_url = "",
         team2_score = 1,
+        current_map_name = null,
+        current_map_number = null,
+        current_map_team1_score = null,
+        current_map_team2_score = null,
       ),
     )
   }

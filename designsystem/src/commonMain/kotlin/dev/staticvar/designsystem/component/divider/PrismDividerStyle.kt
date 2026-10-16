@@ -15,25 +15,25 @@ import dev.staticvar.designsystem.prism.Prism
 /**
  * Visual treatment for [PrismDivider].
  *
- * Built-in styles map to the supported horizontal divider weights: hairline, default, and strong.
+ * Built-in styles map to the supported divider weights: hairline, default, and strong.
  * Each style owns the divider thickness, color, and end treatment.
  */
 @Immutable
 public sealed interface PrismDividerStyle {
-  /** Thickness of the horizontal divider. */
+  /** Thickness of the divider line. */
   public val thickness: Dp
 
-  /** Color used to draw the horizontal divider. */
+  /** Color used to draw the divider line. */
   @get:Composable
   @get:ReadOnlyComposable
   public val color: Color
 
-  /** Width reserved for each divider end cap. */
+  /** Length of each end cap along the divider. */
   @get:Composable
   @get:ReadOnlyComposable
   public val endCapWidth: Dp
 
-  /** Height of the square end cap marks. */
+  /** Thickness of the end cap marks across the divider. */
   @get:Composable
   @get:ReadOnlyComposable
   public val endCapHeight: Dp
