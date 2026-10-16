@@ -22,26 +22,24 @@ internal fun MatchInsightsDto.toDomain(team1Id: String, team2Id: String): MatchI
 )
 
 private fun MatchPredictionDto.toDomain(team1Id: String, team2Id: String): MatchPrediction? {
-  val aId = teamAId ?: return null
-  val bId = teamBId ?: return null
-  if (aId.isBlank() || bId.isBlank() || aId == bId ||
-    setOf(aId, bId) != setOf(team1Id, team2Id)
-  ) return null
-  val a = teamA ?: return null
-  val b = teamB ?: return null
-  if (!a.isFinite() || !b.isFinite() || a !in 0.0..1.0 || b !in 0.0..1.0 ||
-    abs(a + b - 1.0) > 1e-6
-  ) return null
+  val teamAId = teamAId?.takeIf { it.isNotBlank() } ?: return null
+  val teamBId = teamBId?.takeIf { it.isNotBlank() } ?: return null
+  if (teamAId == teamBId || setOf(teamAId, teamBId) != setOf(team1Id, team2Id)) return null
+
+  val teamAProbability = teamA?.takeIf { it in 0.0..1.0 } ?: return null
+  val teamBProbability = teamB?.takeIf { it in 0.0..1.0 } ?: return null
+  if (abs(teamAProbability + teamBProbability - 1.0) > 1e-6) return null
+
   val predictionSource = when (source?.kind) {
     "model" -> PredictionSource.MODEL
     "elo" -> PredictionSource.ELO
     else -> return null
   }
   return MatchPrediction(
-    teamAId = aId,
-    teamBId = bId,
-    teamAProbability = a,
-    teamBProbability = b,
+    teamAId = teamAId,
+    teamBId = teamBId,
+    teamAProbability = teamAProbability,
+    teamBProbability = teamBProbability,
     source = predictionSource,
     warnings = warnings.map { it.toDomain() },
     generatedAt = generatedAt,
