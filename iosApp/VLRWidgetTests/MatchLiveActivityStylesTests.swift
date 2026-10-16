@@ -13,17 +13,74 @@ final class MatchLiveActivityStylesTests: XCTestCase {
         history: [State.MapRounds]? = nil, winners: [String?] = ["1", "2", nil],
         terminal: Bool = false, seriesScores: [Int] = [1, 1],
         tags: [String?] = ["FNC", "PRX"], pause: State.Pause? = nil,
-        stage: String? = "Playoffs: Grand Final"
+        stage: String? = "Playoffs: Grand Final", mapName: String = "Lotus"
     ) -> State {
         State(match_id: "123", observed_at: 0, terminal: terminal,
               teams: [.init(name: "FNATIC", img: nil, score: seriesScores[0], tag: tags[0], id: "1"),
                       .init(name: "Paper Rex", img: nil, score: seriesScores[1], tag: tags[1], id: "2")],
-              current_map: .init(name: "Lotus", scores: scores, number: map),
+              current_map: .init(name: mapName, scores: scores, number: map),
               total_maps: total, map_winners: winners, pause: pause, stage: stage,
               map_round_winners: history ?? [
                 .init(map_number: 1, winners: Array(repeating: 0, count: 13) + Array(repeating: 1, count: 9)),
                 .init(map_number: 2, winners: Array(repeating: 1, count: 13) + Array(repeating: 0, count: 9)),
               ])
+    }
+
+    /// A match with no current map, like the push backend sends before VLR names one.
+    private func unstartedState(seriesScores: [Int] = [0, 0], winners: [String?] = [nil, nil, nil]) -> State {
+        State(match_id: "123", observed_at: 0, terminal: false,
+              teams: [.init(name: "FNATIC", img: nil, score: seriesScores[0], tag: "FNC", id: "1"),
+                      .init(name: "Paper Rex", img: nil, score: seriesScores[1], tag: "PRX", id: "2")],
+              current_map: nil, total_maps: 3, map_winners: winners, stage: "Playoffs: Grand Final")
+    }
+
+    func testPhaseIsUnstartedUntilAMapIsNamedAndFinalOnceTerminal() {
+        XCTAssertEqual(unstartedState().phase, .unstarted)
+        XCTAssertEqual(unstartedState(winners: ["1", nil, nil]).phase, .live)
+        XCTAssertEqual(unstartedState(seriesScores: [1, 0]).phase, .live)
+        XCTAssertEqual(state(map: 1, scores: [0, 0], history: [], winners: [nil, nil, nil], seriesScores: [0, 0]).phase, .live)
+        XCTAssertEqual(state().phase, .live)
+        XCTAssertEqual(state(terminal: true, seriesScores: [2, 1]).phase, .final)
+    }
+
+    /// Glance scores sit beside the names only while a map is live, where map artwork fills the trailing side.
+    /// The map has no artwork, so cached art cannot be mistaken for scores at the trailing edge.
+    @MainActor
+    func testGlanceScoresTrailBeforeTheFirstMapAndAfterTheMatch() throws {
+        let map = "Nowhere"
+        let scenarios: [(String, State, Bool)] = [
+            ("unstarted", unstartedState(), true),
+            ("map-one-zero", state(map: 1, scores: [0, 0], history: [], winners: [nil, nil, nil], seriesScores: [0, 0], mapName: map), false),
+            ("map-three", state(mapName: map), false),
+            ("final", state(map: 2, scores: [13, 9], winners: ["1", "1", nil], terminal: true, seriesScores: [2, 0], mapName: map), true),
+        ]
+        for (name, value, trails) in scenarios {
+            let width = 370.0
+            let renderer = ImageRenderer(content: MatchLiveActivityGlance(state: value, spoilersHidden: false)
+                .frame(width: width).background(Color.black).environment(\.colorScheme, .dark))
+            let image = try XCTUnwrap(renderer.cgImage)
+            let scoreEdge = try XCTUnwrap(Self.rightmostInk(in: image, belowFraction: 0.4), name)
+            if trails {
+                XCTAssertGreaterThan(scoreEdge, 0.9, name)
+            } else {
+                XCTAssertLessThan(scoreEdge, 0.7, name)
+            }
+        }
+    }
+
+    /// The rightmost lit column below the status line, as a fraction of the image width.
+    private static func rightmostInk(in image: CGImage, belowFraction top: Double) -> Double? {
+        let width = image.width, height = image.height
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        let context = CGContext(data: &pixels, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                                space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+        context?.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+        for x in stride(from: width - 1, through: 0, by: -1) {
+            for y in Int(Double(height) * top)..<height where pixels[(y * width + x) * 4 + 1] > 80 {
+                return Double(x) / Double(width)
+            }
+        }
+        return nil
     }
 
     func testColumnsListSeriesThenPlayedMapsThenLiveMap() {
@@ -148,6 +205,7 @@ final class MatchLiveActivityStylesTests: XCTestCase {
             .init(map_number: map, winners: Array(repeating: map % 2 == 1 ? 0 : 1, count: 13) + Array(repeating: map % 2, count: 11))
         } + [.init(map_number: 5, winners: (0..<26).map { $0 % 2 })]
         let scenarios: [(String, State)] = [
+            ("unstarted", unstartedState()),
             ("map-three", state()),
             ("map-one", state(map: 1, scores: [4, 2], history: [.init(map_number: 1, winners: [0, 0, 1, 0, 1, 0])], winners: [nil, nil, nil], seriesScores: [0, 0])),
             ("fifth-overtime", state(map: 5, scores: [13, 13], total: 5, history: fiveMaps, winners: ["1", "2", "1", "2", nil], seriesScores: [2, 2])),

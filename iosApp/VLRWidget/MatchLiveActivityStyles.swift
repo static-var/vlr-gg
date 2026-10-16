@@ -19,6 +19,21 @@ struct MatchLiveActivityStyledLockScreen: View {
     }
 }
 
+/// Where a match is in its lifetime. Matches the push backend, which treats a match with no current map, no map
+/// winner, and no series score as not started.
+enum MatchActivityPhase: Equatable {
+    case unstarted, live, final
+}
+
+@available(iOS 16.1, *)
+extension MatchActivityAttributes.ContentState {
+    var phase: MatchActivityPhase {
+        if terminal { return .final }
+        let started = current_map != nil || map_winners.contains { $0 != nil } || teams.contains { ($0.score ?? 0) > 0 }
+        return started ? .live : .unstarted
+    }
+}
+
 /// Lists the series score, then each played map, then the live map, like a badminton scoreboard.
 @available(iOS 16.1, *)
 struct MatchLiveActivityScoreColumns: Equatable {
@@ -103,6 +118,8 @@ struct MatchLiveActivityStackedScores: View {
     let state: MatchActivityAttributes.ContentState
     let spoilersHidden: Bool
     let layout: Layout
+    /// Glance only: pushes the scores to the trailing edge, away from the team names.
+    var scoresTrail = false
     @Environment(\.colorScheme) private var colorScheme
 
     private var palette: PrismWidgetPalette { colorScheme == .dark ? .dark : .light }
@@ -145,6 +162,7 @@ struct MatchLiveActivityStackedScores: View {
                     }
                 }
             }
+            .frame(maxWidth: layout == .glance ? .infinity : nil, alignment: scoresTrail ? .trailing : .leading)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel(team: team, index: index, columns: columns))
@@ -316,6 +334,7 @@ struct MatchLiveActivityGlance: View {
     let state: MatchActivityAttributes.ContentState
     let spoilersHidden: Bool
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var palette: PrismWidgetPalette { colorScheme == .dark ? .dark : .light }
     private var artwork: UIImage? {
@@ -331,7 +350,10 @@ struct MatchLiveActivityGlance: View {
                 // Sits over the artwork, so a dark pill keeps it readable on bright maps.
                 MatchLiveActivityStageLabel(state: state, isChip: true)
             }
-            MatchLiveActivityStackedScores(state: state, spoilersHidden: spoilersHidden, layout: .glance)
+            // Live map artwork fills the trailing side, so scores trail only before a map is named and after the match.
+            MatchLiveActivityStackedScores(state: state, spoilersHidden: spoilersHidden, layout: .glance,
+                                           scoresTrail: state.phase != .live)
+                .animation(reduceMotion ? nil : .easeInOut(duration: 0.6), value: state.phase)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
