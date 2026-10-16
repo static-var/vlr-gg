@@ -8,9 +8,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +18,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,7 +33,6 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
@@ -104,14 +101,6 @@ public fun MatchPreviewItem(
             overflow = TextOverflow.Ellipsis,
           )
         }
-        liveMap?.let { map ->
-          Text(
-            text = map.name,
-            style = Prism.typography.labelAlt,
-            color = Prism.color.contentSecondary,
-            maxLines = 1,
-          )
-        }
         val time = formatMatchPreviewTime(isoUtcTime = matchPreview.time)
         when (matchPreview.status) {
           MatchStatus.LIVE -> PrismTag(
@@ -128,6 +117,18 @@ public fun MatchPreviewItem(
           }
 
           MatchStatus.UNKNOWN -> Unit
+        }
+        liveMap?.let { map ->
+          Text(
+            text = map.name,
+            modifier = Modifier
+              .padding(start = Prism.dimens.spacingS + LiveMapRule.thickness)
+              .width(liveMapColumnWidth(map.name)),
+            style = Prism.typography.labelAlt,
+            color = Prism.color.contentSecondary,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+          )
         }
       }
       ScoreBox(
@@ -196,44 +197,46 @@ private fun ScoreBox(
       TeamScoreRow(actualTeam2, matchId = matchId, useAltColor = !spoilersHidden && state == MatchStatus.LIVE)
     }
     liveMap?.let { map ->
-      LiveMapScores(
-        mapName = map.name,
-        scores = mapScore(actualTeam1, map) to mapScore(actualTeam2, map),
-        modifier = Modifier.fillMaxHeight(),
+      Box(
+        modifier = Modifier
+          .fillMaxHeight()
+          .width(LiveMapRule.thickness)
+          .background(LiveMapRule.color),
       )
+      Column(modifier = Modifier.width(liveMapColumnWidth(map.name))) {
+        LiveMapScore(mapName = map.name, score = mapScore(actualTeam1, map))
+        PrismDivider(style = PrismDividerStyle.Hairline)
+        LiveMapScore(mapName = map.name, score = mapScore(actualTeam2, map))
+      }
     }
   }
 }
 
-/** The current map's round scores, boxed as one column so they don't read as another series score. */
+/** The rule that sets the live map column apart from the series score. */
+private val LiveMapRule = PrismDividerStyle.Default
+
+/** Fits the map name heading the column and a two-digit round score, so the column holds still mid-map. */
 @Composable
-private fun LiveMapScores(mapName: String, scores: Pair<Int?, Int?>, modifier: Modifier = Modifier) {
-  val scoreWidth = textWidth("00", Prism.typography.headline)
-  Column(
-    modifier = modifier
-      .background(Prism.color.accentSubtle, Prism.shapes.small)
-      .border(BorderStroke(1.dp, Prism.color.accent), Prism.shapes.small)
-      .padding(horizontal = Prism.dimens.spacingS),
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    listOf(scores.first, scores.second).forEach { score ->
-      val description = score?.let {
-        stringResource(Res.string.match_live_map_score_description, mapName, it.toString())
-      }
-      Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-        Text(
-          text = score?.toString() ?: "–",
-          modifier = Modifier
-            .widthIn(min = scoreWidth)
-            .then(description?.let { Modifier.semantics { contentDescription = it } } ?: Modifier),
-          style = Prism.typography.headline,
-          color = Prism.color.contentPrimary,
-          textAlign = TextAlign.Center,
-          maxLines = 1,
-        )
-      }
-    }
+private fun liveMapColumnWidth(mapName: String): Dp =
+  maxOf(textWidth(mapName, Prism.typography.labelAlt), textWidth("00", Prism.typography.headline))
+
+/** One team's round score on the current map, padded like [TeamScoreRow] so the two columns line up. */
+@Composable
+private fun LiveMapScore(mapName: String, score: Int?) {
+  val description = score?.let {
+    stringResource(Res.string.match_live_map_score_description, mapName, it.toString())
   }
+  Text(
+    text = score?.toString() ?: "–",
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(vertical = Prism.dimens.spacingXs)
+      .then(description?.let { Modifier.semantics { contentDescription = it } } ?: Modifier),
+    style = Prism.typography.headline,
+    color = Prism.color.contentPrimary,
+    textAlign = TextAlign.Center,
+    maxLines = 1,
+  )
 }
 
 @Composable
