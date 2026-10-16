@@ -20,7 +20,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
@@ -28,7 +27,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -38,6 +36,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.withFrameNanos
@@ -45,9 +45,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.color.contentColorFor
@@ -83,7 +85,7 @@ public fun PrismModalSheet(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val visibility = remember { MutableTransitionState(false) }
-  LaunchedEffect(visible) { visibility.targetState = visible }
+  SideEffect(visible) { visibility.targetState = visible }
   val collapsed = !visible && !visibility.currentState && visibility.isIdle
   val currentOnCollapsed = rememberUpdatedState(onCollapsed)
   LaunchedEffect(collapsed) {
@@ -134,6 +136,7 @@ private fun AnimatedVisibilityScope.PrismModalSheetContent(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val density = LocalDensity.current
+  val sheetMaxHeight = remember { mutableIntStateOf(Constraints.Infinity) }
   val bottomInset = with(density) { WindowInsets.safeDrawing.getBottom(this).toDp() }
   Box(Modifier.fillMaxSize()) {
     Box(
@@ -149,15 +152,28 @@ private fun AnimatedVisibilityScope.PrismModalSheetContent(
           onClick = onDismissRequest,
         ),
     )
-    BoxWithConstraints(
+    Box(
       Modifier.fillMaxSize()
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))
-        .imePadding(),
+        .imePadding()
+        .layout { measurable, constraints ->
+          sheetMaxHeight.intValue = if (constraints.hasBoundedHeight) {
+            (constraints.maxHeight.toDp() * PrismModalSheetConstants.MaxHeightFraction).roundToPx()
+          } else {
+            constraints.maxHeight
+          }
+          val placeable = measurable.measure(constraints)
+          layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
+        },
     ) {
       PrismSheet(
         modifier =
         modifier.align(Alignment.BottomCenter)
-          .heightIn(max = maxHeight * PrismModalSheetConstants.MaxHeightFraction)
+          .layout { measurable, constraints ->
+            val maxHeight = sheetMaxHeight.intValue.coerceIn(constraints.minHeight, constraints.maxHeight)
+            val placeable = measurable.measure(constraints.copy(maxHeight = maxHeight))
+            layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
+          }
           .animateEnterExit(
             enter = slideInVertically(Prism.anim.sheetEnter.intOffsetSpec()) { it },
             exit = slideOutVertically(Prism.anim.sheetExit.intOffsetSpec()) { it },

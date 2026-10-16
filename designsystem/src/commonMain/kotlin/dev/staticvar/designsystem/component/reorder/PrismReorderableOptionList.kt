@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
@@ -93,7 +94,7 @@ public fun <K : Any> PrismReorderableOptionList(
   val state = remember(scope, density) {
     PrismReorderState(savedOrder, scope, with(density) { spacing.toPx() }, settleSpec)
   }
-  LaunchedEffect(state, savedOrder) { state.sync(savedOrder) }
+  SideEffect(state, savedOrder) { state.sync(savedOrder) }
   // Drag gestures and accessibility actions can outlive a recomposition, so they read these.
   val currentSavedOrder by rememberUpdatedState(savedOrder)
   val currentOnMove by rememberUpdatedState(onMove)

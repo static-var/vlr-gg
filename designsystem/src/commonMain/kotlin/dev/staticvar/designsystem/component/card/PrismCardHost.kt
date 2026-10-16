@@ -36,10 +36,10 @@ public fun PrismCardHost(modifier: Modifier = Modifier, content: @Composable () 
   val topClearance = modifier.foldIn(0.dp) { value, element ->
     if (element is CardMascotEligibility) element.topClearance else value
   }
-  val mascot = LocalPrismCardMascot.current
+  val mascot = if (topClearance >= PrismCardMascotHeight) LocalPrismCardMascot.current else null
   Box(modifier = modifier, propagateMinConstraints = true) {
     content()
-    if (mascot != null && topClearance >= PrismCardMascotHeight) {
+    if (mascot != null) {
       Box(Modifier.matchParentSize()) {
         mascot(
           Modifier.align(Alignment.TopEnd)
