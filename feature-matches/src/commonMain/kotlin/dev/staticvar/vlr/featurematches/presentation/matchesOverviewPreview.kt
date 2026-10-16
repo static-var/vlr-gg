@@ -18,19 +18,21 @@ import dev.staticvar.vlr.domain.model.CurrentMatchMap
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
+import kotlin.time.Clock
 
 @PrismPreview
 @Composable
 internal fun MatchesOverviewPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+  val matches = listOf(
+    sampleMatchPreview(id = "match-1", status = MatchStatus.LIVE),
+    sampleMatchPreview(id = "match-2", status = MatchStatus.UPCOMING),
+  )
   PrismTheme(variant = variant) {
     MatchesOverviewScreen(
       uiState =
       MatchesUiState(
-        matches =
-        listOf(
-          sampleMatchPreview(id = "match-1", status = MatchStatus.LIVE),
-          sampleMatchPreview(id = "match-2", status = MatchStatus.UPCOMING),
-        ),
+        matches = matches,
+        statusLists = matches.groupByStatus(nowEpochMillis = Clock.System.now().toEpochMilliseconds()),
         selectedStatus = MatchStatusFilter.Live,
         isLoading = false,
       ),

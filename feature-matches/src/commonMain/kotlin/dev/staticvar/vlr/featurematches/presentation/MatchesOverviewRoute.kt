@@ -36,7 +36,6 @@ import dev.staticvar.designsystem.component.navigation.PrismTab
 import dev.staticvar.designsystem.component.selection.PrismCheckbox
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.domain.model.MatchPreview
-import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.sharedui.component.common.SharedEmptyState
 import dev.staticvar.vlr.sharedui.component.common.SharedLoadError
 import dev.staticvar.vlr.sharedui.component.common.SharedRefreshButton
@@ -125,7 +124,8 @@ internal fun MatchesOverviewScreen(
       onRefresh = onRefresh,
     )
     MatchesOverviewContent(
-      matches = uiState.matches,
+      statusLists = uiState.statusLists,
+      hasContent = uiState.matches.isNotEmpty(),
       selectedStatus = uiState.selectedStatus,
       isLoading = uiState.isLoading,
       isRefreshing = uiState.isRefreshing,
@@ -232,7 +232,8 @@ private fun MatchesOverviewChrome(
 
 @Composable
 private fun MatchesOverviewContent(
-  matches: List<MatchPreview>,
+  statusLists: MatchStatusLists,
+  hasContent: Boolean,
   selectedStatus: MatchStatusFilter,
   isLoading: Boolean,
   isRefreshing: Boolean,
@@ -247,9 +248,8 @@ private fun MatchesOverviewContent(
   modifier: Modifier = Modifier,
 ) {
   // Counts stay hidden until the first load lands, so tabs never claim zero while loading.
-  val countsKnown = matches.isNotEmpty() || (!isLoading && !isRefreshing && errorMessage == null)
-  val counts = remember(matches) { MatchStatusFilter.entries.associateWith { matches.filterByStatus(it).size } }
-  fun count(filter: MatchStatusFilter) = counts[filter]?.takeIf { countsKnown }
+  val countsKnown = hasContent || (!isLoading && !isRefreshing && errorMessage == null)
+  fun count(filter: MatchStatusFilter) = statusLists[filter].size.takeIf { countsKnown }
   SharedStatusPager(
     tabs = listOf(
       PrismTab(id = MatchStatusFilter.Live.name, label = stringResource(Res.string.live), count = count(MatchStatusFilter.Live)),
@@ -268,9 +268,12 @@ private fun MatchesOverviewContent(
     onTabSelected = { onFilterSelected(MatchStatusFilter.valueOf(it)) },
     modifier = modifier,
   ) { tabId, selectTab ->
+    val status = MatchStatusFilter.valueOf(tabId)
     MatchOverviewPage(
-      matches = matches,
-      status = MatchStatusFilter.valueOf(tabId),
+      pageMatches = statusLists[status],
+      hasContent = hasContent,
+      hasUpcomingMatches = statusLists.upcoming.isNotEmpty(),
+      status = status,
       isLoading = isLoading,
       isRefreshing = isRefreshing,
       errorMessage = errorMessage,
@@ -287,7 +290,9 @@ private fun MatchesOverviewContent(
 
 @Composable
 private fun MatchOverviewPage(
-  matches: List<MatchPreview>,
+  pageMatches: List<MatchPreview>,
+  hasContent: Boolean,
+  hasUpcomingMatches: Boolean,
   status: MatchStatusFilter,
   isLoading: Boolean,
   isRefreshing: Boolean,
@@ -300,14 +305,13 @@ private fun MatchOverviewPage(
   onSelectTab: (String) -> Unit,
   onRefresh: () -> Unit,
 ) {
-  val pageMatches = remember(matches, status) { matches.filterByStatus(status) }
   when {
-    (isLoading || isRefreshing) && matches.isEmpty() -> SharedScreenLoading(
+    (isLoading || isRefreshing) && !hasContent -> SharedScreenLoading(
       label = stringResource(Res.string.loading_matches),
       modifier = Modifier.fillMaxSize(),
     )
 
-    errorMessage != null && matches.isEmpty() -> SharedLoadError(
+    errorMessage != null && !hasContent -> SharedLoadError(
       errorMessage = errorMessage,
       errorDetails = errorDetails,
       onRefresh = onRefresh,
@@ -321,7 +325,7 @@ private fun MatchOverviewPage(
         MatchStatusFilter.Upcoming -> stringResource(Res.string.no_upcoming_matches) to stringResource(Res.string.the_next_fixtures_have_not_been_announced_yet_check_back_soon)
         MatchStatusFilter.Completed -> stringResource(Res.string.no_results_yet) to stringResource(Res.string.finished_matches_will_appear_here_once_scores_are_available)
       }
-      val hasUpcoming = status == MatchStatusFilter.Live && matches.any { it.status == MatchStatus.UPCOMING }
+      val hasUpcoming = status == MatchStatusFilter.Live && hasUpcomingMatches
       SharedEmptyState(
         artwork = EmptyStateArtwork.NoLiveMatches,
         title = title,

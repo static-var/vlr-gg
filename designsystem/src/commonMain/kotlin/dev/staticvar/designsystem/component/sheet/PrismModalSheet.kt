@@ -64,6 +64,8 @@ private object PrismModalSheetConstants {
  *
  * Back and scrim taps request dismissal. Content scrolls within the safe viewport. [onCollapsed]
  * runs after the exit finishes and the dialog leaves composition, including the initial hidden state.
+ * [onEnterFinished] runs when the Compose enter animation finishes while [visible] is true; it does
+ * not wait for the platform to present the frame.
  * Pass [scrollState] when content needs to scroll the body itself, such as while dragging a row;
  * otherwise each opening starts at the top.
  */
@@ -81,6 +83,7 @@ public fun PrismModalSheet(
   scrimColor: Color = Prism.color.scrim.copy(alpha = PrismModalSheetConstants.ScrimAlpha),
   paneTitle: String? = null,
   onCollapsed: () -> Unit = {},
+  onEnterFinished: () -> Unit = {},
   scrollState: ScrollState? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -93,6 +96,11 @@ public fun PrismModalSheet(
       withFrameNanos { }
       currentOnCollapsed.value()
     }
+  }
+  val entered = visible && visibility.currentState && visibility.isIdle
+  val currentOnEnterFinished = rememberUpdatedState(onEnterFinished)
+  LaunchedEffect(entered) {
+    if (entered) currentOnEnterFinished.value()
   }
   if (visible || visibility.currentState || !visibility.isIdle) {
     PrismModalSheetDialog(onDismissRequest = onDismissRequest) {

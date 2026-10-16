@@ -26,6 +26,7 @@ public fun matchesFeatureModule(): Module = module {
       observeMatchListUseCase = get(),
       refreshMatchesUseCase = get(),
       networkMonitor = get(),
+      dispatchers = get(),
     )
   }
   viewModel { parameters ->

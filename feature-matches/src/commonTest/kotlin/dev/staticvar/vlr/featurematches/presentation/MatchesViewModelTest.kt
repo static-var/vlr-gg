@@ -5,6 +5,7 @@
 package dev.staticvar.vlr.featurematches.presentation
 
 import androidx.lifecycle.ViewModelStore
+import dev.staticvar.vlr.core.coroutines.DispatcherProvider
 import dev.staticvar.vlr.core.network.NetworkMonitor
 import dev.staticvar.vlr.core.network.NetworkStatus
 import dev.staticvar.vlr.domain.model.MatchDetails
@@ -16,8 +17,10 @@ import dev.staticvar.vlr.domain.model.TeamPreview
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchListUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchesUseCase
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -26,10 +29,12 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlin.coroutines.CoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MatchesViewModelTest {
@@ -199,15 +204,81 @@ class MatchesViewModelTest {
     assertEquals(emptyList(), viewModel.uiState.value.pageMatches.single().favoriteReasons)
   }
 
-  private val MatchesUiState.pageMatches: List<MatchPreview>
-    get() = matches.filterByStatus(selectedStatus)
+  @Test
+  fun preservesTiesUnknownTimesAndUpcomingOverdueOrder() = runTest(dispatcher) {
+    val times = listOf(
+      "late" to "2025-01-01T14:00:00Z",
+      "null" to null,
+      "future" to "2099-01-01T10:00:00Z",
+      "tie-a" to "2025-01-01T12:00:00Z",
+      "invalid" to "invalid",
+      "early" to "2025-01-01T10:00:00Z",
+      "tie-b" to "2025-01-01T12:00:00Z",
+      "blank" to "",
+    )
+    val expected = mapOf(
+      MatchStatusFilter.Live to listOf("early", "tie-a", "tie-b", "late", "future", "null", "invalid", "blank"),
+      MatchStatusFilter.Upcoming to listOf("future", "null", "invalid", "blank", "early", "tie-a", "tie-b", "late"),
+      MatchStatusFilter.Completed to listOf("future", "late", "tie-a", "tie-b", "early", "null", "invalid", "blank"),
+    )
+    for ((filter, ids) in expected) {
+      val status = when (filter) {
+        MatchStatusFilter.Live -> MatchStatus.LIVE
+        MatchStatusFilter.Upcoming -> MatchStatus.UPCOMING
+        MatchStatusFilter.Completed -> MatchStatus.COMPLETED
+      }
+      val viewModel = createViewModel(FakeMatchRepository(times.map { (id, time) -> matchPreview(id, status, time) }))
+      viewModel.selectFilter(filter)
+      advanceUntilIdle()
+      assertEquals(ids, viewModel.uiState.value.pageMatches.map(MatchPreview::id), filter.name)
+    }
+  }
 
-  private fun createViewModel(repository: FakeMatchRepository): MatchesViewModel = MatchesViewModel(
+  @Test
+  fun unknownOnlyCacheIsContentWithoutStatusPages() = runTest(dispatcher) {
+    val unknown = matchPreview(id = "unknown", status = MatchStatus.UNKNOWN)
+    val viewModel = createViewModel(FakeMatchRepository(matches = listOf(unknown)))
+    advanceUntilIdle()
+
+    assertEquals(false, viewModel.uiState.value.isLoading)
+    assertEquals(listOf(unknown), viewModel.uiState.value.matches)
+    assertEquals(MatchStatusLists(), viewModel.uiState.value.statusLists)
+  }
+
+  @Test
+  fun preparesStatusListsOnDefaultDispatcherInsteadOfMain() = runTest(dispatcher) {
+    val default = TrackingDispatcher(StandardTestDispatcher(testScheduler))
+    val readsOnDefault = mutableListOf<Boolean>()
+    val source = listOf(
+      matchPreview(id = "live-1", status = MatchStatus.LIVE),
+      matchPreview(id = "upcoming-1", status = MatchStatus.UPCOMING),
+    )
+    val trackedMatches = object : AbstractList<MatchPreview>() {
+      override val size: Int get() = source.size
+      override fun get(index: Int): MatchPreview = source[index].also { readsOnDefault += default.isRunning }
+    }
+    val viewModel = createViewModel(FakeMatchRepository(trackedMatches), TestDispatcherProvider(default))
+    advanceUntilIdle()
+
+    assertEquals(listOf("live-1"), viewModel.uiState.value.statusLists.live.map(MatchPreview::id))
+    assertEquals(listOf("upcoming-1"), viewModel.uiState.value.statusLists.upcoming.map(MatchPreview::id))
+    assertTrue(readsOnDefault.isNotEmpty())
+    assertTrue(readsOnDefault.all { it }, "match list read on Main: $readsOnDefault")
+  }
+
+  private val MatchesUiState.pageMatches: List<MatchPreview>
+    get() = statusLists[selectedStatus]
+
+  private fun createViewModel(
+    repository: FakeMatchRepository,
+    dispatchers: DispatcherProvider = TestDispatcherProvider(dispatcher),
+  ): MatchesViewModel = MatchesViewModel(
     observeMatchListUseCase = ObserveMatchListUseCase(repository),
     refreshMatchesUseCase = RefreshMatchesUseCase(matchRepository = repository),
     networkMonitor = object : NetworkMonitor {
       override val status = MutableStateFlow(NetworkStatus.Online)
     },
+    dispatchers = dispatchers,
   ).also { viewModelStore.put("viewModel-${nextViewModelKey++}", it) }
 
   private fun matchPreview(id: String, status: MatchStatus, time: String? = "2025-01-01T12:00:00Z"): MatchPreview =
@@ -255,5 +326,26 @@ class MatchesViewModelTest {
 
 
     override suspend fun refreshMatchDetails(matchId: String): Result<Unit> = Result.success(Unit)
+  }
+
+  private class TestDispatcherProvider(override val default: CoroutineDispatcher) : DispatcherProvider {
+    override val io: CoroutineDispatcher = default
+    override val main: CoroutineDispatcher = default
+  }
+
+  private class TrackingDispatcher(private val delegate: CoroutineDispatcher) : CoroutineDispatcher() {
+    var isRunning: Boolean = false
+      private set
+
+    override fun dispatch(context: CoroutineContext, block: Runnable) {
+      delegate.dispatch(context) {
+        isRunning = true
+        try {
+          block.run()
+        } finally {
+          isRunning = false
+        }
+      }
+    }
   }
 }
