@@ -8,7 +8,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -49,7 +48,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.frame.prismFrame
 import dev.staticvar.designsystem.component.frame.rememberPrismPressProgress
-import dev.staticvar.designsystem.component.surface.PrismSurface
+import dev.staticvar.designsystem.component.surface.prismAnimatedBackground
+import dev.staticvar.designsystem.component.surface.prismAnimatedSurface
 import dev.staticvar.designsystem.prism.Prism
 
 /**
@@ -136,10 +136,13 @@ private fun PrismTabItem(
       )
       .alpha(if (enabled) 1f else 0.72f),
   ) {
-    PrismSurface(
-      color = visualState.containerColor,
-      shape = shape,
-      border = visualState.border,
+    Box(
+      modifier = Modifier.prismAnimatedSurface(
+        shape = shape,
+        containerColor = { visualState.containerColor.value },
+        borderColor = { visualState.borderColor.value },
+        borderWidth = { visualState.borderWidth },
+      ).clip(shape),
     ) {
       Row(
         modifier = Modifier.heightIn(min = ChipHeight).padding(
@@ -152,17 +155,17 @@ private fun PrismTabItem(
         Text(
           text = if (style.uppercase) tab.label.uppercase() else tab.label,
           style = style.labelStyle,
-          color = visualState.contentColor,
+          color = visualState.contentColor.value,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
         )
         tab.count?.let { count ->
           Text(
             text = if (count > MaxShownCount) "$MaxShownCount+" else count.toString(),
-            modifier = Modifier.background(visualState.countContainerColor, style.countShape)
+            modifier = Modifier.prismAnimatedBackground(style.countShape) { visualState.countContainerColor.value }
               .padding(style.countPadding),
             style = style.countStyle,
-            color = visualState.countContentColor,
+            color = visualState.countContentColor.value,
             maxLines = 1,
           )
         }
@@ -214,7 +217,7 @@ private fun rememberPrismTabVisualState(
     targetValue = target,
     animationSpec = animation.colorSpec(),
     label = "tabs_${name}_$tabId",
-  ).value
+  )
   val border = style.border(selected = selected, enabled = enabled)
   val selectedProgress =
     animateFloatAsState(
@@ -226,7 +229,8 @@ private fun rememberPrismTabVisualState(
   return PrismTabVisualState(
     containerColor = animated(style.containerColor(selected = selected, enabled = enabled), "container"),
     contentColor = animated(style.contentColor(selected = selected, enabled = enabled), "content"),
-    border = BorderStroke(width = border.width, color = animated(border.brushColor(), "border")),
+    borderWidth = border.width,
+    borderColor = animated(border.brushColor(), "border"),
     countContainerColor = animated(style.countContainerColor(selected = selected), "count_container"),
     countContentColor = animated(style.countContentColor(selected = selected, enabled = enabled), "count_content"),
     selectedProgress = selectedProgress,
@@ -239,11 +243,12 @@ private fun BorderStroke.brushColor(): Color = when (val brush = brush) {
 }
 
 private class PrismTabVisualState(
-  val containerColor: Color,
-  val contentColor: Color,
-  val border: BorderStroke,
-  val countContainerColor: Color,
-  val countContentColor: Color,
+  val containerColor: State<Color>,
+  val contentColor: State<Color>,
+  val borderWidth: Dp,
+  val borderColor: State<Color>,
+  val countContainerColor: State<Color>,
+  val countContentColor: State<Color>,
   selectedProgress: State<Float>,
 ) {
   val selectedProgress: Float by selectedProgress
