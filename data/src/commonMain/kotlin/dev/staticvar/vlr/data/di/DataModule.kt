@@ -73,7 +73,6 @@ fun dataModule(): Module = module {
       matchDataSource = get(),
       database = get(),
       dispatchers = get(),
-      predictionDataSource = get(),
       storageJson = get(StorageJson),
     )
   }

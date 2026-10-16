@@ -144,10 +144,7 @@ internal fun MatchDetailsScreen(
 ) {
   val isOnline = LocalIsOnline.current
   val match = uiState.match
-  val hasDetailedContent = match != null && (
-      match.matchData.isNotEmpty() || match.head2head.isNotEmpty() ||
-        match.videos.streams.isNotEmpty() || match.videos.vods.isNotEmpty() || match.prediction != null
-      )
+  val hasDetailedContent = match?.availableSections?.isNotEmpty() == true
   val bodyReady = match != null && (hasDetailedContent || (!uiState.isLoading && !uiState.isDetailLoadPending))
   val extraContentFade = rememberMatchDetailContentFade()
   val bodyFade = rememberMatchDetailContentFade(bodyReady)
@@ -245,9 +242,6 @@ internal fun MatchDetailsScreen(
         else -> MatchDetailsContent(
           match = match,
           preferences = uiState.preferences,
-          isPredictionLoading = uiState.isPredictionLoading,
-          predictionError = uiState.predictionError,
-          onPredictionRetry = onRefresh,
           showBreakdownEmpty = !hasDetailedContent && uiState.preferences.showBreakdown &&
             !uiState.isLoading && !uiState.isDetailLoadPending && !uiState.isRefreshing && uiState.errorMessage == null,
           selectedMapIndex = resolvedMapIndex,
@@ -335,9 +329,6 @@ private fun MatchDetailsChrome(
 private fun MatchDetailsContent(
   match: MatchDetails,
   preferences: MatchDetailsPreferences,
-  isPredictionLoading: Boolean,
-  predictionError: Boolean,
-  onPredictionRetry: () -> Unit,
   showBreakdownEmpty: Boolean,
   selectedMapIndex: Int?,
   isFavoritePending: Boolean,
@@ -385,9 +376,6 @@ private fun MatchDetailsContent(
     matchDetailItems(
       match = match,
       preferences = preferences,
-      isPredictionLoading = isPredictionLoading,
-      predictionError = predictionError,
-      onPredictionRetry = onPredictionRetry,
       showBreakdownEmpty = showBreakdownEmpty,
       selectedMapIndex = selectedMapIndex,
       onMapSelected = onMapSelected,
@@ -444,9 +432,6 @@ private fun MatchDetailsHero(
 private fun LazyListScope.matchDetailItems(
   match: MatchDetails,
   preferences: MatchDetailsPreferences,
-  isPredictionLoading: Boolean,
-  predictionError: Boolean,
-  onPredictionRetry: () -> Unit,
   showBreakdownEmpty: Boolean,
   selectedMapIndex: Int?,
   onMapSelected: (Int?) -> Unit,
@@ -457,12 +442,7 @@ private fun LazyListScope.matchDetailItems(
   val rows = buildMatchDetailsRows(match, preferences, showBreakdownEmpty)
   items(items = rows, key = MatchDetailsRow::key, contentType = { it }) { row ->
     when (row) {
-      MatchDetailsRow.Prediction -> MatchPredictionSection(
-        match = match,
-        isLoading = isPredictionLoading,
-        hasError = predictionError,
-        onRetry = onPredictionRetry,
-      )
+      MatchDetailsRow.Insights -> MatchInsightsSection(match)
 
       MatchDetailsRow.BreakdownEmpty -> SharedEmptyState(
         artwork = EmptyStateArtwork.NoLiveMatches,

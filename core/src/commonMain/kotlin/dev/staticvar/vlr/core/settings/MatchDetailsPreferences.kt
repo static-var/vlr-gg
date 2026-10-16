@@ -6,7 +6,7 @@ package dev.staticvar.vlr.core.settings
 
 /** Sections shown below the match hero, declared in their default order. */
 public enum class MatchDetailsSection {
-  Prediction,
+  Insights,
   Breakdown,
   HeadToHead,
   Media,
@@ -23,7 +23,7 @@ public data class MatchDetailsPreferences(
   val showBreakdown: Boolean = true,
   val showMedia: Boolean = true,
   val showHeadToHead: Boolean = true,
-  val showPrediction: Boolean = true,
+  val showInsights: Boolean = true,
   val sectionOrder: List<MatchDetailsSection> = MatchDetailsSection.entries,
 ) {
   /** Every section exactly once: saved positions first, then sections the saved order did not know. */
@@ -31,14 +31,14 @@ public data class MatchDetailsPreferences(
     get() = (sectionOrder + MatchDetailsSection.entries).distinct()
 
   public fun isVisible(section: MatchDetailsSection): Boolean = when (section) {
-    MatchDetailsSection.Prediction -> showPrediction
+    MatchDetailsSection.Insights -> showInsights
     MatchDetailsSection.Breakdown -> showBreakdown
     MatchDetailsSection.HeadToHead -> showHeadToHead
     MatchDetailsSection.Media -> showMedia
   }
 
   public fun withVisibility(section: MatchDetailsSection, visible: Boolean): MatchDetailsPreferences = when (section) {
-    MatchDetailsSection.Prediction -> copy(showPrediction = visible)
+    MatchDetailsSection.Insights -> copy(showInsights = visible)
     MatchDetailsSection.Breakdown -> copy(showBreakdown = visible)
     MatchDetailsSection.HeadToHead -> copy(showHeadToHead = visible)
     MatchDetailsSection.Media -> copy(showMedia = visible)

@@ -11,6 +11,7 @@ data class MatchPrediction(
   val teamBProbability: Double,
   val source: PredictionSource,
   val warnings: List<PredictionWarning> = emptyList(),
+  val generatedAt: String? = null,
 )
 
 enum class PredictionSource {

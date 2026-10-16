@@ -14,23 +14,17 @@ import dev.staticvar.vlr.core.settings.MatchDetailsPreferencesRepository
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.featurematches.usecase.ObserveMatchDetailsUseCase
 import dev.staticvar.vlr.featurematches.usecase.RefreshMatchDetailsUseCase
-import dev.staticvar.vlr.featurematches.usecase.RefreshMatchPredictionUseCase
 import dev.staticvar.vlr.featurematches.usecase.SetMatchFavoriteUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 public class MatchDetailsViewModel(
   private val matchId: String,
   observeMatchDetailsUseCase: ObserveMatchDetailsUseCase,
   refreshMatchDetailsUseCase: RefreshMatchDetailsUseCase,
-  refreshMatchPredictionUseCase: RefreshMatchPredictionUseCase,
   networkMonitor: NetworkMonitor,
   setMatchFavoriteUseCase: SetMatchFavoriteUseCase,
   favoritesRepository: FavoritesRepository,
@@ -38,22 +32,8 @@ public class MatchDetailsViewModel(
 ) : ViewModel() {
   public val networkStatus: StateFlow<NetworkStatus> = networkMonitor.status
 
-  private val predictionRefresher = RefreshController(viewModelScope, networkMonitor, operation = "match_prediction") {
-    if (preferencesRepository.preferences.value.showPrediction) {
-      refreshMatchPredictionUseCase(
-        matchId,
-      )
-    } else {
-      Result.success(Unit)
-    }
-  }
-
   private val refresher = RefreshController(viewModelScope, networkMonitor) {
-    try {
-      refreshMatchDetailsUseCase(matchId)
-    } finally {
-      if (preferencesRepository.preferences.value.showPrediction) predictionRefresher.refresh()
-    }
+    refreshMatchDetailsUseCase(matchId)
   }
 
   private val favorites = MatchFavoriteController(viewModelScope, setMatchFavoriteUseCase)
@@ -81,16 +61,8 @@ public class MatchDetailsViewModel(
   public val uiState: StateFlow<MatchDetailsUiState> = combine(
     contentState,
     favorites.state,
-    predictionRefresher.state,
-  ) {
-      content,
-      favorite,
-      predictionRefresh,
-    ->
+  ) { content, favorite ->
     content.copy(
-      isPredictionLoading = content.preferences.showPrediction && content.match?.prediction == null &&
-        (predictionRefresh.isRefreshing || (!predictionRefresh.hasCompleted && content.isDetailLoadPending)),
-      predictionError = predictionRefresh.errorMessage != null,
       isFavoritePending = matchId in favorite.pendingIds,
       favoriteErrorMessage = favorite.errorMessage,
     )
@@ -99,14 +71,6 @@ public class MatchDetailsViewModel(
     SharingStarted.Eagerly,
     MatchDetailsUiState(preferences = preferencesRepository.preferences.value),
   )
-
-  init {
-    viewModelScope.launch {
-      preferencesRepository.preferences.map { it.showPrediction }.distinctUntilChanged().drop(1).collect { enabled ->
-        if (enabled) predictionRefresher.refresh()
-      }
-    }
-  }
 
   public fun setPreferences(preferences: MatchDetailsPreferences) {
     preferencesRepository.setPreferences(preferences)

@@ -30,6 +30,7 @@ data class MatchDetailsDto(
   @SerialName("data") val matchData: List<MapDataDto> = emptyList(),
   @SerialName("current_map") val currentMap: CurrentMapDto? = null,
   @SerialName("map_count") val mapCount: Int = 0,
+  val insights: MatchInsightsDto? = null,
 )
 
 @Serializable

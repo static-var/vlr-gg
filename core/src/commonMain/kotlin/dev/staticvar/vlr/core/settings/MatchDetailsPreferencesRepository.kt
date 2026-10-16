@@ -15,7 +15,7 @@ public class MatchDetailsPreferencesRepository(private val storage: Settings) {
         showBreakdown = storage.getBoolean(BreakdownKey, true),
         showMedia = storage.getBoolean(MediaKey, true),
         showHeadToHead = storage.getBoolean(HeadToHeadKey, true),
-        showPrediction = storage.getBoolean(PredictionKey, true),
+        showInsights = storage.getBoolean(InsightsKey, true),
         sectionOrder = storage.getStringOrNull(SectionOrderKey)?.toSections() ?: MatchDetailsSection.entries,
       ).let { saved -> saved.copy(sectionOrder = saved.orderedSections) },
     )
@@ -25,7 +25,7 @@ public class MatchDetailsPreferencesRepository(private val storage: Settings) {
     storage.putBoolean(BreakdownKey, normalized.showBreakdown)
     storage.putBoolean(MediaKey, normalized.showMedia)
     storage.putBoolean(HeadToHeadKey, normalized.showHeadToHead)
-    storage.putBoolean(PredictionKey, normalized.showPrediction)
+    storage.putBoolean(InsightsKey, normalized.showInsights)
     storage.putString(SectionOrderKey, normalized.sectionOrder.joinToString(Separator) { it.name })
     this.preferences.value = normalized
   }
@@ -33,7 +33,7 @@ public class MatchDetailsPreferencesRepository(private val storage: Settings) {
   private companion object {
     const val BreakdownKey: String = "match_details.show_breakdown"
     const val MediaKey: String = "match_details.show_media"
-    const val PredictionKey: String = "match_details.show_prediction"
+    const val InsightsKey: String = "match_details.show_insights"
     const val HeadToHeadKey: String = "match_details.show_head_to_head"
     const val SectionOrderKey: String = "match_details.section_order"
     const val Separator: String = ","

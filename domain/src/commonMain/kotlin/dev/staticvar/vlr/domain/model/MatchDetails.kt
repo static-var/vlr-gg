@@ -23,8 +23,7 @@ data class MatchDetails(
   val isDirectFavorite: Boolean = isFavorite,
   val veto: List<MatchVeto> = emptyList(),
   val currentMap: CurrentMatchMap? = null,
-  val prediction: MatchPrediction? = null,
-  val canRequestPrediction: Boolean = false,
+  val insights: MatchInsights? = null,
 )
 
 data class CurrentMatchMap(

@@ -155,7 +155,6 @@ private class SiriRemoteRepositories : MatchRepository {
 
   override fun getMatches() = flowOf(emptyList<MatchPreview>())
   override fun getMatchDetails(matchId: String) = flowOf<MatchDetails?>(null)
-  override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> = Result.success(Unit)
 
   override suspend fun refreshMatchDetails(matchId: String) = Result.success(Unit)
   override suspend fun addToFavorites(matchId: String): Result<Unit> = error("Unexpected favorite mutation")

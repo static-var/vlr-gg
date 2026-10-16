@@ -17,8 +17,6 @@ public data class MatchDetailsUiState(
   val isLoading: Boolean = true,
   val isRefreshing: Boolean = false,
   val isDetailLoadPending: Boolean = true,
-  val isPredictionLoading: Boolean = false,
-  val predictionError: Boolean = false,
   val isFavoritePending: Boolean = false,
   val favoriteErrorMessage: StringResource? = null,
   val errorMessage: String? = null,

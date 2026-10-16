@@ -8,7 +8,7 @@ import com.russhwolf.settings.MapSettings
 import dev.staticvar.vlr.core.settings.MatchDetailsSection.Breakdown
 import dev.staticvar.vlr.core.settings.MatchDetailsSection.HeadToHead
 import dev.staticvar.vlr.core.settings.MatchDetailsSection.Media
-import dev.staticvar.vlr.core.settings.MatchDetailsSection.Prediction
+import dev.staticvar.vlr.core.settings.MatchDetailsSection.Insights
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -18,7 +18,7 @@ class MatchDetailsPreferencesRepositoryTest {
     val preferences = MatchDetailsPreferencesRepository(MapSettings()).preferences.value
 
     assertEquals(MatchDetailsPreferences(), preferences)
-    assertEquals(listOf(Prediction, Breakdown, HeadToHead, Media), preferences.sectionOrder)
+    assertEquals(listOf(Insights, Breakdown, HeadToHead, Media), preferences.sectionOrder)
   }
 
   @Test
@@ -32,8 +32,8 @@ class MatchDetailsPreferencesRepositoryTest {
     for (showBreakdown in listOf(true, false)) {
       for (showMedia in listOf(true, false)) {
         for (showHeadToHead in listOf(true, false)) {
-          for (showPrediction in listOf(true, false)) {
-            val preferences = MatchDetailsPreferences(showBreakdown, showMedia, showHeadToHead, showPrediction)
+          for (showInsights in listOf(true, false)) {
+            val preferences = MatchDetailsPreferences(showBreakdown, showMedia, showHeadToHead, showInsights)
             repository.setPreferences(preferences)
             assertEquals(preferences, repository.preferences.value)
             assertEquals(preferences, MatchDetailsPreferencesRepository(storage).preferences.value)
@@ -58,25 +58,25 @@ class MatchDetailsPreferencesRepositoryTest {
   fun visibilityChosenBeforeOrderingExistedKeepsTheDefaultOrder() {
     val storage = MapSettings()
     storage.putBoolean("match_details.show_breakdown", false)
-    storage.putBoolean("match_details.show_prediction", false)
+    storage.putBoolean("match_details.show_insights", false)
 
     val preferences = MatchDetailsPreferencesRepository(storage).preferences.value
 
-    assertEquals(listOf(Prediction, Breakdown, HeadToHead, Media), preferences.sectionOrder)
+    assertEquals(listOf(Insights, Breakdown, HeadToHead, Media), preferences.sectionOrder)
     assertEquals(listOf(false, false, true, true), preferences.orderedSections.map(preferences::isVisible))
   }
 
   @Test
   fun orderAndVisibilitySurviveRestartInTheExistingKeys() {
     val storage = MapSettings()
-    val preferences = MatchDetailsPreferences(sectionOrder = listOf(Media, HeadToHead, Prediction, Breakdown))
+    val preferences = MatchDetailsPreferences(sectionOrder = listOf(Media, HeadToHead, Insights, Breakdown))
       .withVisibility(HeadToHead, visible = false)
 
     MatchDetailsPreferencesRepository(storage).setPreferences(preferences)
 
     assertEquals(preferences, MatchDetailsPreferencesRepository(storage).preferences.value)
     assertEquals(false, storage.getBoolean("match_details.show_head_to_head", true))
-    assertEquals("Media,HeadToHead,Prediction,Breakdown", storage.getStringOrNull("match_details.section_order"))
+    assertEquals("Media,HeadToHead,Insights,Breakdown", storage.getStringOrNull("match_details.section_order"))
   }
 
   @Test
@@ -86,7 +86,7 @@ class MatchDetailsPreferencesRepositoryTest {
 
     val preferences = MatchDetailsPreferencesRepository(storage).preferences.value
 
-    assertEquals(listOf(Media, HeadToHead, Prediction, Breakdown), preferences.sectionOrder)
+    assertEquals(listOf(Media, HeadToHead, Insights, Breakdown), preferences.sectionOrder)
   }
 
   @Test
@@ -96,22 +96,22 @@ class MatchDetailsPreferencesRepositoryTest {
 
     repository.setPreferences(MatchDetailsPreferences(sectionOrder = listOf(Media)))
 
-    assertEquals(listOf(Media, Prediction, Breakdown, HeadToHead), repository.preferences.value.sectionOrder)
-    assertEquals("Media,Prediction,Breakdown,HeadToHead", storage.getStringOrNull("match_details.section_order"))
+    assertEquals(listOf(Media, Insights, Breakdown, HeadToHead), repository.preferences.value.sectionOrder)
+    assertEquals("Media,Insights,Breakdown,HeadToHead", storage.getStringOrNull("match_details.section_order"))
   }
 
   @Test
   fun movingASectionKeepsEverySectionAndEveryVisibilityFlag() {
-    val preferences = MatchDetailsPreferences(showBreakdown = false, showPrediction = false)
+    val preferences = MatchDetailsPreferences(showBreakdown = false, showInsights = false)
 
-    assertEquals(listOf(Prediction, HeadToHead, Breakdown, Media), preferences.moved(Breakdown, 2).sectionOrder)
-    assertEquals(listOf(Media, Prediction, Breakdown, HeadToHead), preferences.moved(Media, 0).sectionOrder)
-    assertEquals(listOf(Breakdown, HeadToHead, Media, Prediction), preferences.moved(Prediction, 9).sectionOrder)
-    assertEquals(listOf(Breakdown, Prediction, HeadToHead, Media), preferences.moved(Breakdown, -3).sectionOrder)
+    assertEquals(listOf(Insights, HeadToHead, Breakdown, Media), preferences.moved(Breakdown, 2).sectionOrder)
+    assertEquals(listOf(Media, Insights, Breakdown, HeadToHead), preferences.moved(Media, 0).sectionOrder)
+    assertEquals(listOf(Breakdown, HeadToHead, Media, Insights), preferences.moved(Insights, 9).sectionOrder)
+    assertEquals(listOf(Breakdown, Insights, HeadToHead, Media), preferences.moved(Breakdown, -3).sectionOrder)
     val moved = preferences.moved(Breakdown, 3)
     assertEquals(
       listOf(false, false, true, true),
-      listOf(moved.showPrediction, moved.showBreakdown, moved.showHeadToHead, moved.showMedia),
+      listOf(moved.showInsights, moved.showBreakdown, moved.showHeadToHead, moved.showMedia),
     )
   }
 

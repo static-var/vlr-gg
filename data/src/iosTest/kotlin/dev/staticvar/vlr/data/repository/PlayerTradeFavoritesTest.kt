@@ -48,7 +48,7 @@ class PlayerTradeFavoritesTest {
     database = VlrDatabase(driver)
     playerDataSource = FakePlayerDataSource()
     players = PlayerRepositoryImpl(playerDataSource, database, dispatchers)
-    matches = MatchRepositoryImpl(FakeMatchDataSource(), database, dispatchers, TestMatchPredictionDataSource(), Json)
+    matches = MatchRepositoryImpl(FakeMatchDataSource(), database, dispatchers, Json)
     favorites = FavoritesRepositoryImpl(database, dispatchers)
   }
 

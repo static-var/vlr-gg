@@ -38,8 +38,6 @@ import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
-import dev.staticvar.designsystem.component.loader.PrismLoaderSize
-import dev.staticvar.designsystem.component.loader.PrismLoader
 import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.sheet.PrismModalSheet
 import dev.staticvar.designsystem.component.tag.PrismTag
@@ -49,12 +47,13 @@ import dev.staticvar.vlr.domain.model.MatchPrediction
 import dev.staticvar.vlr.domain.model.PredictionSource
 import dev.staticvar.vlr.domain.model.PredictionWarning
 import dev.staticvar.vlr.domain.model.PredictionWarningCode
+import dev.staticvar.vlr.sharedui.spoilers.LocalSpoilerMode
+import dev.staticvar.vlr.sharedui.spoilers.SpoilerHiddenNotice
 import kotlin.math.roundToInt
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import vlr.feature_matches.generated.resources.Res
 import vlr.feature_matches.generated.resources.about_win_probability
-import vlr.feature_matches.generated.resources.before_the_match
 import vlr.feature_matches.generated.resources.done
 import vlr.feature_matches.generated.resources.elo_system
 import vlr.feature_matches.generated.resources.prediction_about
@@ -66,60 +65,62 @@ import vlr.feature_matches.generated.resources.prediction_gambling_notice
 import vlr.feature_matches.generated.resources.prediction_limited_map_data
 import vlr.feature_matches.generated.resources.prediction_limited_map_history
 import vlr.feature_matches.generated.resources.prediction_limited_team_history
-import vlr.feature_matches.generated.resources.prediction_load_failed
-import vlr.feature_matches.generated.resources.prediction_loading
 import vlr.feature_matches.generated.resources.prediction_model
 import vlr.feature_matches.generated.resources.prediction_no_map_history
 import vlr.feature_matches.generated.resources.prediction_no_match_history
-import vlr.feature_matches.generated.resources.prediction_not_available
 import vlr.feature_matches.generated.resources.prediction_patch_not_specified
-import vlr.feature_matches.generated.resources.prediction_retry
-import vlr.feature_matches.generated.resources.prediction_unavailable
 import vlr.feature_matches.generated.resources.prediction_unknown_warning
 import vlr.feature_matches.generated.resources.win_probability
+import vlr.feature_matches.generated.resources.insights
+import vlr.feature_matches.generated.resources.pre_game_summary
+import vlr.feature_matches.generated.resources.post_game_summary
 
 @Composable
-internal fun MatchPredictionSection(match: MatchDetails, isLoading: Boolean, hasError: Boolean, onRetry: () -> Unit) {
+internal fun MatchInsightsSection(match: MatchDetails) {
+  val summary = match.selectedInsightSummary()
+  val prediction = match.insights?.prediction
+  if (summary == null && prediction == null) return
+
   var aboutExpanded by remember(match.id) { mutableStateOf(false) }
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
-    PrismSectionTitle(
-      title = stringResource(Res.string.win_probability),
-      trailing = if (match.event.status?.uppercase() in setOf("UPCOMING", "TBD")) {
-        { Text(stringResource(Res.string.before_the_match).uppercase()) }
-      } else {
-        null
-      },
-    )
-    PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
-      val prediction = match.prediction
-      when {
-        prediction != null -> {
-          PredictionProbabilities(match, prediction)
-          PrismDivider(modifier = Modifier.padding(top = Prism.dimens.spacingM))
-          PredictionFooter(prediction, onAbout = { aboutExpanded = true })
-          PrismDivider()
-          GamblingNotice(modifier = Modifier.padding(top = Prism.dimens.spacingS))
-        }
-        isLoading -> Row(
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
-        ) {
-          PrismLoader(size = PrismLoaderSize.Small)
-          Text(stringResource(Res.string.prediction_loading), style = Prism.typography.bodySmall, color = Prism.color.bodyColor)
-        }
-        else -> Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
-          Text(stringResource(Res.string.prediction_unavailable), style = Prism.typography.cardTitle, color = Prism.color.titleColor)
+    PrismSectionTitle(title = stringResource(Res.string.insights))
+    if (summary != null) {
+      PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
+        Text(
+          text = stringResource(
+            when (summary.phase) {
+              MatchSummaryPhase.PreGame -> Res.string.pre_game_summary
+              MatchSummaryPhase.PostGame -> Res.string.post_game_summary
+            },
+          ),
+          style = Prism.typography.cardTitle,
+          color = Prism.color.titleColor,
+        )
+        if (summary.phase == MatchSummaryPhase.PostGame && LocalSpoilerMode.current.enabled) {
+          SpoilerHiddenNotice(modifier = Modifier.padding(top = Prism.dimens.spacingS))
+        } else {
           Text(
-            stringResource(if (hasError) Res.string.prediction_load_failed else Res.string.prediction_not_available),
-            style = Prism.typography.bodySmall,
+            text = summary.summary.text,
+            modifier = Modifier.padding(top = Prism.dimens.spacingS),
+            style = Prism.typography.bodyLarge,
             color = Prism.color.bodyColor,
           )
-          if (hasError) {
-            PrismButton(onClick = onRetry, style = PrismButtonStyle.Secondary, modifier = Modifier.fillMaxWidth()) {
-              Text(stringResource(Res.string.prediction_retry))
-            }
-          }
         }
+      }
+    }
+    if (prediction != null) {
+      PrismCard(modifier = Modifier.fillMaxWidth(), style = PrismCardStyle.Outlined) {
+        Text(
+          text = stringResource(Res.string.win_probability),
+          modifier = Modifier.padding(bottom = Prism.dimens.spacingM),
+          style = Prism.typography.cardTitle,
+          color = Prism.color.titleColor,
+        )
+        PredictionProbabilities(match, prediction)
+        PrismDivider(modifier = Modifier.padding(top = Prism.dimens.spacingM))
+        PredictionFooter(prediction, onAbout = { aboutExpanded = true })
+        PrismDivider()
+        GamblingNotice(modifier = Modifier.padding(top = Prism.dimens.spacingS))
       }
     }
   }

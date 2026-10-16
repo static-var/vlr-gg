@@ -102,7 +102,7 @@ class CacheCleanupRepositoryImplTest {
     val fresh = now - THIRTY_DAYS
 
     insertMatch("stale-match", stale)
-    database.matchPredictionsQueries.upsertMatchPrediction("stale-match", "team-a", "team-b", 0.6, 0.4, "MODEL", "[]")
+    database.matchInsightsQueries.upsertMatchInsights("stale-match", "team-a", "team-b", "{}")
     database.matchesQueries.insertMatchMap(
       match_id = "stale-match",
       map_name = "Ascent",
@@ -124,7 +124,7 @@ class CacheCleanupRepositoryImplTest {
     assertTrue(repository.cleanupIfDue(now).isSuccess)
 
     assertNull(database.matchesQueries.getMatchWithFavoriteStatus("stale-match").executeAsOneOrNull())
-    assertNull(database.matchPredictionsQueries.getMatchPrediction("stale-match").executeAsOneOrNull())
+    assertNull(database.matchInsightsQueries.getMatchInsights("stale-match").executeAsOneOrNull())
     assertTrue(database.matchOverviewQueries.getMatchOverview().executeAsList().none { it.id == "stale-match" })
     assertTrue(database.matchesQueries.getMatchMaps("stale-match").executeAsList().isEmpty())
     assertNull(database.eventsQueries.getEventWithFavoriteStatus("stale-event").executeAsOneOrNull())
@@ -189,14 +189,11 @@ class CacheCleanupRepositoryImplTest {
       team2_score = 1,
     )
     database.matchesQueries.addFavoriteMatch("direct-match")
-    database.matchPredictionsQueries.upsertMatchPrediction(
+    database.matchInsightsQueries.upsertMatchInsights(
       "direct-match",
       "direct-team-a",
       "direct-team-b",
-      0.6,
-      0.4,
-      "MODEL",
-      "[]",
+      "{}",
     )
 
     insertEvent("favorite-event", stale)
@@ -235,7 +232,7 @@ class CacheCleanupRepositoryImplTest {
       assertNotNull(database.matchesQueries.getMatchWithFavoriteStatus(id).executeAsOneOrNull(), id)
     }
     assertEquals(1, database.matchesQueries.getPreviousEncounters("direct-match").executeAsList().size)
-    assertNotNull(database.matchPredictionsQueries.getMatchPrediction("direct-match").executeAsOneOrNull())
+    assertNotNull(database.matchInsightsQueries.getMatchInsights("direct-match").executeAsOneOrNull())
     listOf("direct-event", "favorite-event").forEach { id ->
       assertNotNull(database.eventsQueries.getEventWithFavoriteStatus(id).executeAsOneOrNull(), id)
     }

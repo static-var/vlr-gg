@@ -1,0 +1,225 @@
+{
+  "teams": [
+    {
+      "name": "Team Vitality",
+      "score": null,
+      "img": "https://owcdn.net/img/6466d79e1ed40.png",
+      "id": "2059",
+      "tag": "VIT"
+    },
+    {
+      "name": "100 Thieves",
+      "score": null,
+      "img": "https://owcdn.net/img/603c00d5c5a08.png",
+      "id": "120",
+      "tag": "100T"
+    }
+  ],
+  "bans": [],
+  "veto": [],
+  "event": {
+    "id": "2766",
+    "img": "https://owcdn.net/img/692fc60a022bb.png",
+    "series": "Valorant Champions 2026",
+    "stage": "Playoffs: Lower Final",
+    "date": "2026-10-17T07:00:00Z",
+    "patch": null,
+    "status": "upcoming",
+    "status_label": "Upcoming"
+  },
+  "videos": {
+    "streams": [
+      {
+        "name": "Valorant",
+        "url": "https://www.twitch.tv/valorant"
+      },
+      {
+        "name": "VAL BR",
+        "url": "https://www.twitch.tv/valorant_br"
+      },
+      {
+        "name": "VAL LATAM",
+        "url": "https://www.twitch.tv/valorant_la"
+      },
+      {
+        "name": "VAL FR",
+        "url": "https://www.twitch.tv/valorant_fr"
+      },
+      {
+        "name": "VAL ES",
+        "url": "https://www.twitch.tv/valorant_es"
+      },
+      {
+        "name": "VAL TR",
+        "url": "https://www.twitch.tv/valorant_tur"
+      },
+      {
+        "name": "VCT CN",
+        "url": "https://www.twitch.tv/valorantesports_cn"
+      },
+      {
+        "name": "VAL ID",
+        "url": "https://www.twitch.tv/valorant_id"
+      },
+      {
+        "name": "VAL JP",
+        "url": "https://www.twitch.tv/valorant_jpn"
+      },
+      {
+        "name": "VAL TH",
+        "url": "https://www.twitch.tv/valorant_th"
+      },
+      {
+        "name": "VCT",
+        "url": "https://www.youtube.com/@ValorantEsports/live"
+      },
+      {
+        "name": "VCT BR",
+        "url": "https://www.youtube.com/@valesportsbr/live"
+      },
+      {
+        "name": "VCT LATAM",
+        "url": "https://www.youtube.com/@VALORANTEsportsLA/live"
+      },
+      {
+        "name": "VCL FR",
+        "url": "https://www.youtube.com/@valorantchallengersfr/live"
+      },
+      {
+        "name": "VCL TR",
+        "url": "https://www.youtube.com/@VALORANTChallengersTR/live"
+      },
+      {
+        "name": "VCT ID",
+        "url": "https://www.youtube.com/@VALORANTEsportsIndonesia/live"
+      },
+      {
+        "name": "VCT KR",
+        "url": "https://www.youtube.com/@ValorantEsportsKR/live"
+      },
+      {
+        "name": "VAL JP",
+        "url": "https://www.youtube.com/@VALORANTjp/live"
+      },
+      {
+        "name": "VCT TH",
+        "url": "https://www.youtube.com/@VALORANTEsportsTH/live"
+      },
+      {
+        "name": "VAL INSA",
+        "url": "https://www.youtube.com/@VALORANTinsa/live"
+      },
+      {
+        "name": "VCT VN",
+        "url": "https://www.youtube.com/@VALORANTChampionsTourVietnam/live"
+      },
+      {
+        "name": "Valorant",
+        "url": "https://play.sooplive.co.kr/valoranten"
+      },
+      {
+        "name": "VAL ID",
+        "url": "https://play.sooplive.co.kr/valorantid"
+      },
+      {
+        "name": "VAL TH",
+        "url": "https://play.sooplive.co.kr/valorantth"
+      },
+      {
+        "name": "VAL KR",
+        "url": "https://play.sooplive.co.kr/valorant"
+      },
+      {
+        "name": "VAL VN",
+        "url": "https://play.onlive.vn/valorant"
+      },
+      {
+        "name": "VCT CN",
+        "url": "https://live.bilibili.com/22908869"
+      },
+      {
+        "name": "VCT CN",
+        "url": "https://www.douyu.com/602"
+      },
+      {
+        "name": "VCT CN",
+        "url": "https://www.huya.com/660679"
+      },
+      {
+        "name": "Valorant",
+        "url": "https://kick.com/valorant"
+      }
+    ],
+    "vods": []
+  },
+  "map_count": 5,
+  "total_maps": 5,
+  "data": [],
+  "previous_encounters": [
+    {
+      "teams": [
+        {
+          "name": "Team Vitality",
+          "score": 0
+        },
+        {
+          "name": "100 Thieves",
+          "score": 2
+        }
+      ],
+      "match_id": "161215"
+    }
+  ],
+  "insights": {
+    "prediction": {
+      "team_a": 0.40659746739936276,
+      "team_b": 0.5934025326006372,
+      "source": {
+        "kind": "model",
+        "model_version": "vlr-prediction-v1-20261004T102610Z-bc1418c1",
+        "history": {
+          "max_date": "2026-09-30",
+          "freshness_days": 17
+        },
+        "coverage": {
+          "history_matches": 32870,
+          "history_max_played_on": "2026-09-30",
+          "team_a": {
+            "match_results": 204,
+            "effective_match_results": 27.21967299484968,
+            "map_results": 484,
+            "effective_map_results": 67.31072883271405,
+            "map_name_results": 0,
+            "effective_map_name_results": 0.0,
+            "patch_map_results": 0,
+            "effective_patch_map_results": 0.0,
+            "last_seen": "2026-09-30"
+          },
+          "team_b": {
+            "match_results": 246,
+            "effective_match_results": 27.53362905848153,
+            "map_results": 592,
+            "effective_map_results": 68.96337716216858,
+            "map_name_results": 0,
+            "effective_map_name_results": 0.0,
+            "patch_map_results": 0,
+            "effective_patch_map_results": 0.0,
+            "last_seen": "2026-09-30"
+          },
+          "head_to_head_results": 1,
+          "patch_scope": "known"
+        }
+      },
+      "warnings": [],
+      "team_a_id": "2059",
+      "team_b_id": "120",
+      "generated_at": "2026-10-16T14:24:25.145187Z"
+    },
+    "pre_match_summary": {
+      "text": "Team Vitality and 100 Thieves meet in the best-of-five lower final at Valorant Champions 2026. No head-to-head series history is listed, while the model estimates a 41% chance of a Team Vitality series win and 59% for 100 Thieves.",
+      "generated_at": "2026-10-16T14:46:47.499294Z"
+    },
+    "post_match_summary": null
+  },
+  "current_map": null
+}

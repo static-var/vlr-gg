@@ -17,7 +17,6 @@ import dev.staticvar.vlr.data.mapper.toDomain
 import dev.staticvar.vlr.data.mapper.toEntity
 import dev.staticvar.vlr.data.mapper.toMapEntities
 import dev.staticvar.vlr.data.mapper.toMatchEntity
-import dev.staticvar.vlr.data.mapper.toMatchStatus
 import dev.staticvar.vlr.data.mapper.toOverviewEntity
 import dev.staticvar.vlr.data.mapper.toPlayerStatEntities
 import dev.staticvar.vlr.data.mapper.toPreviousEncounterEntities
@@ -29,7 +28,6 @@ import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchFavoriteReason
 import dev.staticvar.vlr.domain.model.MatchFavoriteSource
 import dev.staticvar.vlr.domain.model.MatchPreview
-import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.MatchVeto
 import dev.staticvar.vlr.domain.model.PreviousEncounter
 import dev.staticvar.vlr.domain.model.TeamPreview
@@ -37,13 +35,9 @@ import dev.staticvar.vlr.domain.model.VetoAction
 import dev.staticvar.vlr.domain.repository.MatchRepository
 import dev.staticvar.vlr.localsource.database.GetMatchFavoriteReasons
 import dev.staticvar.vlr.localsource.database.GetMatchesWithFavoriteStatus
-import dev.staticvar.vlr.localsource.database.GetMatchWithFavoriteStatus
 import dev.staticvar.vlr.localsource.database.VlrDatabase
 import dev.staticvar.vlr.remotesource.match.MatchDataSource
-import dev.staticvar.vlr.remotesource.match.MatchPredictionDataSource
-import dev.staticvar.vlr.remotesource.match.isPredictionTeamPair
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
+import dev.staticvar.vlr.remotesource.match.MatchInsightsDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -51,8 +45,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlin.time.Clock
-import kotlin.time.Instant
 
 /**
  * Implementation of MatchRepository.
@@ -62,7 +54,6 @@ internal class MatchRepositoryImpl(
   private val matchDataSource: MatchDataSource,
   private val database: VlrDatabase,
   private val dispatchers: DispatcherProvider,
-  private val predictionDataSource: MatchPredictionDataSource,
   private val storageJson: Json,
 ) : MatchRepository {
 
@@ -101,7 +92,7 @@ internal class MatchRepositoryImpl(
       eventId = null,
       mapper = ::GetMatchFavoriteReasons,
     )
-    val predictionQuery = database.matchPredictionsQueries.getMatchPrediction(matchId)
+    val insightsQuery = database.matchInsightsQueries.getMatchInsights(matchId)
     val changes = listOf(
       matchQuery,
       mapsQuery,
@@ -113,7 +104,7 @@ internal class MatchRepositoryImpl(
       currentMapQuery,
       vetoQuery,
       favoritesQuery,
-      predictionQuery,
+      insightsQuery,
     ).map { query -> query.asFlow().map { Unit } }
 
     return combine(changes) {
@@ -156,14 +147,14 @@ internal class MatchRepositoryImpl(
           isFavorite = reasons.isNotEmpty(),
           isDirectFavorite = reasons.any { it.source == MatchFavoriteSource.MATCH },
           favoriteReasons = reasons,
-          prediction = predictionQuery.executeAsOneOrNull()
-            ?.takeIf { it.team_a_id == match.team1_id && it.team_b_id == match.team2_id }
-            ?.let { prediction ->
+          insights = insightsQuery.executeAsOneOrNull()
+            ?.takeIf { setOf(it.team1_id, it.team2_id) == setOf(match.team1_id, match.team2_id) }
+            ?.let { snapshot ->
               runCatching {
-                prediction.toDomain(storageJson)
+                storageJson.decodeFromString<MatchInsightsDto>(snapshot.insights_json)
+                  .toDomain(match.team1_id, match.team2_id)
               }.getOrNull()
             },
-          canRequestPrediction = match.canRequestPrediction(),
         )
       }
     }.distinctUntilChanged().flowOn(dispatchers.io)
@@ -266,6 +257,15 @@ internal class MatchRepositoryImpl(
               team2_id = remoteMatch.team2_id.ifBlank { cachedMatch?.team2_id.orEmpty() },
             )
             upsertMatch(matchEntity)
+            database.matchInsightsQueries.deleteMatchInsights(matchId)
+            dto.insights?.let { insights ->
+              database.matchInsightsQueries.upsertMatchInsights(
+                match_id = matchId,
+                team1_id = matchEntity.team1_id,
+                team2_id = matchEntity.team2_id,
+                insights_json = storageJson.encodeToString(insights),
+              )
+            }
 
             dto.toCurrentMapModel()?.let { map ->
               matchesQueries.insertMatchCurrentMap(
@@ -366,40 +366,6 @@ internal class MatchRepositoryImpl(
       }
     }
 
-  override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> =
-    traceRefresh(dispatchers.io, "refreshMatchPrediction") {
-      val request = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
-        ?.takeIf { it.canRequestPrediction() } ?: return@traceRefresh Result.success(Unit)
-      predictionDataSource.predict(request.team1_id, request.team2_id).mapCatching { dto ->
-        currentCoroutineContext().ensureActive()
-        database.transaction {
-          val current = matchesQueries.getMatchWithFavoriteStatus(matchId).executeAsOneOrNull()
-          if (current != null && current.canRequestPrediction() &&
-            current.team1_id == request.team1_id && current.team2_id == request.team2_id
-          ) {
-            database.matchPredictionsQueries.upsertMatchPrediction(
-              match_id = matchId,
-              team_a_id = dto.teamA.id,
-              team_b_id = dto.teamB.id,
-              team_a_probability = dto.match.teamA,
-              team_b_probability = dto.match.teamB,
-              source = dto.match.source.toDomain().name,
-              warnings_json = storageJson.encodeToString(dto.match.warnings),
-            )
-          }
-        }
-      }
-    }
-
-  private fun GetMatchWithFavoriteStatus.canRequestPrediction(): Boolean {
-    val matchStatus = status.toMatchStatus()
-    if (matchStatus !in setOf(MatchStatus.UPCOMING, MatchStatus.LIVE)) return false
-    if (!isPredictionTeamPair(team1_id, team2_id)) return false
-    if (matchStatus == MatchStatus.LIVE) return true
-    val scheduled = runCatching { Instant.parse(time) }.getOrNull()
-    return scheduled == null || scheduled > Clock.System.now()
-  }
-
   private fun ensurePreviousEncounterMatchExists(parentMatch: Matches, encounter: MatchPreviousEncounters) {
     matchesQueries.insertMatchIfMissing(
       id = encounter.previous_match_id,
@@ -475,9 +441,9 @@ internal class MatchRepositoryImpl(
   }
 
   private fun upsertMatch(entity: Matches) {
-    val prediction = database.matchPredictionsQueries.getMatchPrediction(entity.id).executeAsOneOrNull()
-    if (prediction != null && (prediction.team_a_id != entity.team1_id || prediction.team_b_id != entity.team2_id)) {
-      database.matchPredictionsQueries.deleteMatchPrediction(entity.id)
+    val insights = database.matchInsightsQueries.getMatchInsights(entity.id).executeAsOneOrNull()
+    if (insights != null && setOf(insights.team1_id, insights.team2_id) != setOf(entity.team1_id, entity.team2_id)) {
+      database.matchInsightsQueries.deleteMatchInsights(entity.id)
     }
     matchesQueries.updateMatch(
       event_id = entity.event_id,

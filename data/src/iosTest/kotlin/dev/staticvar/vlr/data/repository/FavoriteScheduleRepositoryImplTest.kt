@@ -232,7 +232,7 @@ class FavoriteScheduleRepositoryImplTest {
         ),
       )
     }
-    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, TestMatchPredictionDataSource(), Json)
+    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, Json)
 
     assertTrue(matchRepository.refreshMatches().isSuccess)
     val match = repository.observeMatches().first().single()
@@ -265,7 +265,7 @@ class FavoriteScheduleRepositoryImplTest {
         ),
       )
     }
-    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, TestMatchPredictionDataSource(), Json)
+    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, Json)
 
     assertTrue(matchRepository.refreshMatches().isSuccess)
 
@@ -308,7 +308,7 @@ class FavoriteScheduleRepositoryImplTest {
         ),
       )
     }
-    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, TestMatchPredictionDataSource(), Json)
+    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, Json)
     assertTrue(matchRepository.refreshMatches().isSuccess)
     assertTrue(matchRepository.addToFavorites("live").isSuccess)
 
@@ -353,7 +353,7 @@ class FavoriteScheduleRepositoryImplTest {
         ),
       )
     }
-    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, TestMatchPredictionDataSource(), Json)
+    val matchRepository = MatchRepositoryImpl(dataSource, database, dispatchers, Json)
     assertTrue(matchRepository.refreshMatches().isSuccess)
     assertTrue(matchRepository.addToFavorites("finished").isSuccess)
 
