@@ -315,7 +315,7 @@ private fun MatchOverviewPage(
       modifier = Modifier.fillMaxSize(),
     )
 
-    pageMatches.isEmpty() && !isRefreshing && !isLoading && errorMessage == null -> {
+    pageMatches.isEmpty() -> {
       val (title, message) = when (status) {
         MatchStatusFilter.Live -> stringResource(Res.string.no_live_matches) to stringResource(Res.string.the_next_round_is_still_ahead_check_the_schedule_for_upcoming_matches)
         MatchStatusFilter.Upcoming -> stringResource(Res.string.no_upcoming_matches) to stringResource(Res.string.the_next_fixtures_have_not_been_announced_yet_check_back_soon)

@@ -215,7 +215,7 @@ private fun EventOverviewPage(
       modifier = Modifier.fillMaxSize(),
     )
 
-    events.isEmpty() && !isRefreshing && !isLoading && errorMessage == null -> {
+    events.isEmpty() -> {
       val (title, message) = when (status) {
         EventStatusFilter.Ongoing -> stringResource(Res.string.no_live_events) to stringResource(Res.string.no_events_are_in_progress_right_now_check_upcoming_events_for_what_s_next)
         EventStatusFilter.Upcoming -> stringResource(Res.string.no_upcoming_events) to stringResource(Res.string.new_events_will_appear_here_when_their_schedules_are_announced)
