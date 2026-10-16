@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS match_current_map;
+CREATE TABLE match_current_map (
+    match_id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    number INTEGER,
+    team1_score INTEGER,
+    team2_score INTEGER,
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+);

@@ -32,7 +32,6 @@ data class CurrentMatchMap(
   val number: Int?,
   val team1Score: Int?,
   val team2Score: Int?,
-  val isLive: Boolean,
 )
 
 /** One structured map-veto step. Unknown actions keep the original note in [map]. */

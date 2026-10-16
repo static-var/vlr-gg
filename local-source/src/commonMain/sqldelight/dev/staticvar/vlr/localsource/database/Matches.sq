@@ -1,5 +1,3 @@
-import kotlin.Boolean;
-
 -- Core matches table
 CREATE TABLE matches (
     id TEXT NOT NULL PRIMARY KEY,
@@ -36,7 +34,6 @@ CREATE TABLE match_current_map (
     number INTEGER,
     team1_score INTEGER,
     team2_score INTEGER,
-    is_live INTEGER AS Boolean NOT NULL,
     FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
 );
 
@@ -411,8 +408,8 @@ getMatchCurrentMap:
 SELECT * FROM match_current_map WHERE match_id = :match_id;
 
 insertMatchCurrentMap:
-INSERT OR REPLACE INTO match_current_map(match_id, name, number, team1_score, team2_score, is_live)
-VALUES (?, ?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO match_current_map(match_id, name, number, team1_score, team2_score)
+VALUES (?, ?, ?, ?, ?);
 
 deleteMatchCurrentMap:
 DELETE FROM match_current_map WHERE match_id = :match_id;

@@ -83,7 +83,7 @@ class MatchRepositoryImplTest {
     )
     dataSource.detailResults["match1"] = Result.success(live)
     assertTrue(repository.refreshMatchDetails("match1").isSuccess)
-    val expected = CurrentMatchMap("Ascent", 2, 0, 3, true)
+    val expected = CurrentMatchMap("Ascent", 2, 0, 3)
     val details = requireNotNull(repository.getMatchDetails("match1").first())
     assertEquals(expected, details.currentMap)
     assertEquals(listOf(1, 0), details.teams.map { it.score })
@@ -541,7 +541,7 @@ class MatchRepositoryImplTest {
     repository.getMatchDetails("match1").map { details ->
       requireNotNull(details).let { Triple(it.currentMap, it.bans, it.veto) }
     }.distinctUntilChanged().test {
-      assertEquals(CurrentMatchMap("Ascent", 2, 0, 3, true), awaitItem().first)
+      assertEquals(CurrentMatchMap("Ascent", 2, 0, 3), awaitItem().first)
       dataSource.detailResults["match1"] = Result.success(
         initial.copy(
           currentMap = CurrentMapDto(name = "Ascent", number = 2, scores = listOf(1, 3)),
@@ -554,7 +554,7 @@ class MatchRepositoryImplTest {
 
       assertEquals(
         Triple(
-          CurrentMatchMap("Ascent", 2, 1, 3, true),
+          CurrentMatchMap("Ascent", 2, 1, 3),
           listOf("Beta pick Haven"),
           listOf(MatchVeto("Beta", VetoAction.PICK, "Haven")),
         ),
@@ -576,11 +576,11 @@ class MatchRepositoryImplTest {
       .distinctUntilChanged().test {
         assertEquals(null to emptyList<MatchVeto>(), awaitItem())
         database.transaction {
-          database.matchesQueries.insertMatchCurrentMap("match1", "Ascent", 2, null, 0, false)
+          database.matchesQueries.insertMatchCurrentMap("match1", "Ascent", 2, null, 0)
           database.matchesQueries.insertMatchVeto("match1", 0, "Alpha", "BAN", "Bind")
         }
         assertEquals(
-          CurrentMatchMap("Ascent", 2, null, 0, false) to listOf(MatchVeto("Alpha", VetoAction.BAN, "Bind")),
+          CurrentMatchMap("Ascent", 2, null, 0) to listOf(MatchVeto("Alpha", VetoAction.BAN, "Bind")),
           awaitItem(),
         )
         cancelAndIgnoreRemainingEvents()

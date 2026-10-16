@@ -11,6 +11,7 @@ import dev.staticvar.vlr.data.MatchMaps
 import dev.staticvar.vlr.data.MatchPreviousEncounters
 import dev.staticvar.vlr.data.MatchVideos
 import dev.staticvar.vlr.data.Matches
+import dev.staticvar.vlr.domain.model.CurrentMatchMap
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.RoundWinType
 import dev.staticvar.vlr.domain.model.VetoAction
@@ -37,17 +38,19 @@ import dev.staticvar.vlr.remotesource.match.TeamDto as DetailTeamDto
 class MatchMappersTest {
 
   @Test
-  fun `current map retains nullable scores and resolves live flag by identity`() {
+  fun `current map retains nullable scores and drops a missing map`() {
     val details = MatchDetailsDto(
       currentMap = CurrentMapDto(name = "Ascent", number = 2, scores = listOf(null, 0)),
-      matchData = listOf(MapDataDto(map = "Ascent", live = true), MapDataDto(map = "Bind")),
     )
-    val current = requireNotNull(details.toCurrentMapModel())
-    assertEquals(true, current.isLive)
-    assertEquals(null, current.team1Score)
-    assertEquals(0, current.team2Score)
-    assertEquals(false, details.copy(matchData = listOf(MapDataDto(map = "Ascent"))).toCurrentMapModel()?.isLive)
+    assertEquals(CurrentMatchMap("Ascent", 2, null, 0), details.toCurrentMapModel())
     assertEquals(null, details.copy(currentMap = null).toCurrentMapModel())
+  }
+
+  @Test
+  fun `current map parser rejects a blank name and an unknown number`() {
+    assertEquals(null, CurrentMapDto(name = " ", number = 2, scores = listOf(7, 5)).toDomain())
+    assertEquals(CurrentMatchMap("Bind", null, 7, 5), CurrentMapDto(name = "Bind", number = 0, scores = listOf(7, 5)).toDomain())
+    assertEquals(CurrentMatchMap("Bind", 2, 7, null), CurrentMapDto(name = "Bind", number = 2, scores = listOf(7)).toDomain())
   }
 
   @Test

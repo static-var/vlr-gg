@@ -46,7 +46,7 @@ class TeamRankingProfileMigrationTest {
         0,
       )
 
-      VlrDatabase.Schema.migrate(driver, 10, VlrDatabase.Schema.version)
+      VlrDatabase.Schema.migrate(driver, 10, 11)
 
       val query = "SELECT name, website, last_updated, ranking_profile FROM teams WHERE id = '2593'"
       val team = driver.executeQuery(null, query, { cursor ->

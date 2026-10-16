@@ -176,20 +176,15 @@ class KmpDatabaseUpgradeTest {
         assertEquals(variant, VlrDatabase.Schema.version.toInt(), db.version)
         assertEquals(variant, freshSchema, schemaDescription(db))
         assertTrue(variant, rows(db, "PRAGMA foreign_key_check").isEmpty())
+        assertTrue(variant, rows(db, "SELECT * FROM match_current_map").isEmpty())
         if (variant == "release-3") {
           assertEquals(
             variant,
             listOf("17", "1", "existing-client"),
             rows(db, "SELECT revision, synced, client_id FROM favorite_sync_state").single(),
           )
-          assertTrue(variant, rows(db, "SELECT * FROM match_current_map").isEmpty())
           assertTrue(variant, rows(db, "SELECT * FROM match_veto").isEmpty())
         } else {
-          assertEquals(
-            variant,
-            listOf("Ascent", "2", null, "0", "1"),
-            rows(db, "SELECT name, number, team1_score, team2_score, is_live FROM match_current_map").single(),
-          )
           assertEquals(
             variant,
             listOf(listOf("Alpha", "BAN", "Bind"), listOf(null, "REMAINS", "Ascent")),
@@ -385,6 +380,20 @@ class KmpDatabaseUpgradeTest {
     val freshSchema = openTestDatabase().use(::schemaDescription)
     openTestDatabase().use { db ->
       db.execSQL("DROP TABLE match_predictions")
+      db.execSQL("DROP TABLE match_current_map")
+      db.execSQL(
+        """
+        CREATE TABLE match_current_map (
+            match_id TEXT NOT NULL PRIMARY KEY,
+            name TEXT NOT NULL,
+            number INTEGER,
+            team1_score INTEGER,
+            team2_score INTEGER,
+            is_live INTEGER NOT NULL,
+            FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+        )
+        """.trimIndent(),
+      )
       db.execSQL(
         """
         INSERT INTO matches(id, event_name, event_logo_url, status, time,
