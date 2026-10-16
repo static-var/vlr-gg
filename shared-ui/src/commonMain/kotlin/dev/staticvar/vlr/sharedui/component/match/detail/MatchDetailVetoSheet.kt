@@ -10,10 +10,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
@@ -65,16 +72,19 @@ public fun MatchDetailVetoSheet(
       }
     },
   ) {
+    val numberStyle = Prism.typography.bodyLarge.copy(fontFeatureSettings = "tnum")
+    val stepCount = if (entries.isNotEmpty()) entries.size else fallbackEntries.size
+    val numberWidth = stepNumberWidth(count = stepCount, style = numberStyle)
     Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS)) {
       if (entries.isNotEmpty()) {
         entries.forEachIndexed { index, entry ->
-          VetoStep(index = index, showDivider = index > 0) {
+          VetoStep(index = index, showDivider = index > 0, numberStyle = numberStyle, numberWidth = numberWidth) {
             MatchVetoContent(entry)
           }
         }
       } else {
         fallbackEntries.forEachIndexed { index, entry ->
-          VetoStep(index = index, showDivider = index > 0) {
+          VetoStep(index = index, showDivider = index > 0, numberStyle = numberStyle, numberWidth = numberWidth) {
             Text(
               text = entry,
               modifier = Modifier.weight(1f),
@@ -88,17 +98,38 @@ public fun MatchDetailVetoSheet(
   }
 }
 
+/** Measures the last step's label, which is the widest because tabular figures give every digit one width. */
 @Composable
-private fun VetoStep(index: Int, showDivider: Boolean, content: @Composable RowScope.() -> Unit) {
+private fun stepNumberWidth(count: Int, style: TextStyle): Dp {
+  val measurer = rememberTextMeasurer()
+  val density = LocalDensity.current
+  return remember(count, style, measurer) {
+    with(density) { measurer.measure(stepNumber(count.coerceAtLeast(1) - 1), style).size.width.toDp() }
+  }
+}
+
+private fun stepNumber(index: Int): String = "${index + 1}."
+
+@Composable
+private fun VetoStep(
+  index: Int,
+  showDivider: Boolean,
+  numberStyle: TextStyle,
+  numberWidth: Dp,
+  content: @Composable RowScope.() -> Unit,
+) {
   if (showDivider) PrismDivider(style = PrismDividerStyle.Hairline)
   Row(
     modifier = Modifier.fillMaxWidth().padding(vertical = Prism.dimens.spacingXs),
     horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM),
     verticalAlignment = Alignment.CenterVertically,
   ) {
+    // One column width for every number, right-aligned, so "1." and "10." rows start their content at the same x.
     Text(
-      text = "${index + 1}.",
-      style = Prism.typography.bodyLarge,
+      text = stepNumber(index),
+      modifier = Modifier.widthIn(min = numberWidth),
+      style = numberStyle,
+      textAlign = TextAlign.End,
       color = Prism.color.labelColor,
     )
     content()
