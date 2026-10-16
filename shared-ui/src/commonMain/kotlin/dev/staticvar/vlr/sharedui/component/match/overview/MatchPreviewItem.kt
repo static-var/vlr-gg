@@ -121,11 +121,12 @@ public fun MatchPreviewItem(
             text = map.name,
             modifier = Modifier
               .padding(start = Prism.dimens.spacingS + LiveMapRule.endCapHeight)
-              .width(liveMapColumnWidth(map.name)),
+              .width(liveMapColumnWidth()),
             style = Prism.typography.labelAlt,
             color = Prism.color.contentSecondary,
             textAlign = TextAlign.Center,
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
           )
         }
       }
@@ -196,7 +197,7 @@ private fun ScoreBox(
     }
     liveMap?.let { map ->
       PrismVerticalDivider(style = LiveMapRule)
-      Column(modifier = Modifier.width(liveMapColumnWidth(map.name))) {
+      Column(modifier = Modifier.width(liveMapColumnWidth())) {
         LiveMapScore(mapName = map.name, score = mapScore(actualTeam1, map))
         PrismDivider(style = PrismDividerStyle.Hairline)
         LiveMapScore(mapName = map.name, score = mapScore(actualTeam2, map))
@@ -208,10 +209,13 @@ private fun ScoreBox(
 /** The rule that sets the live map column apart from the series score. */
 private val LiveMapRule = PrismDividerStyle.Hairline
 
-/** Fits the map name heading the column and a two-digit round score, so the column holds still mid-map. */
+/**
+ * One width for every live map column, so cards line up and nothing shifts as the map or score changes. It
+ * fits the longest current map name and a two-digit round score. A longer map name is ellipsized.
+ */
 @Composable
-private fun liveMapColumnWidth(mapName: String): Dp =
-  maxOf(textWidth(mapName, Prism.typography.labelAlt), textWidth("00", Prism.typography.headline))
+private fun liveMapColumnWidth(): Dp =
+  maxOf(textWidth("Fracture", Prism.typography.labelAlt), textWidth("00", Prism.typography.headline))
 
 /** One team's round score on the current map, padded like [TeamScoreRow] so the two columns line up. */
 @Composable
