@@ -140,6 +140,9 @@ struct MatchLiveActivityStackedScores: View {
             HStack(spacing: 3) {
                 ForEach(columns) { column in
                     cell(column, team: index)
+                    if column.kind == .series, columns.count > 1 {
+                        seriesDivider(row: index)
+                    }
                 }
             }
         }
@@ -147,7 +150,22 @@ struct MatchLiveActivityStackedScores: View {
         .accessibilityLabel(accessibilityLabel(team: team, index: index, columns: columns))
     }
 
-    /// Scores take the team's color at full strength; a bar under a score marks the team that won it.
+    /// Separates the series score from the map scores. Each row's half reaches into the row gap so the two halves meet
+    /// as one rule. The lock screen crushes dark tones, so the rule needs this much contrast to stay visible.
+    private func seriesDivider(row index: Int) -> some View {
+        Color.clear
+            .frame(width: 1, height: layout.cellHeight)
+            .overlay(alignment: index == 0 ? .top : .bottom) {
+                Rectangle()
+                    .fill(palette.ink.opacity(0.5))
+                    .frame(width: 1, height: layout.cellHeight + layout.rowSpacing / 2)
+            }
+            .padding(.horizontal, 3)
+            .accessibilityHidden(true)
+    }
+
+    /// The series score takes the team's color at full strength and finished maps a dimmed one, so the series reads
+    /// first; a bar under a score marks the team that won it.
     @ViewBuilder
     private func cell(_ column: MatchLiveActivityScoreColumns.Column, team index: Int) -> some View {
         let value = column.values[index]
@@ -157,11 +175,10 @@ struct MatchLiveActivityStackedScores: View {
             Text(verbatim: value)
                 .foregroundStyle(color)
                 .modifier(CellFrame(layout: layout))
-                .background(RoundedRectangle(cornerRadius: 5).fill(palette.ink.opacity(0.14)))
                 .overlay(alignment: .bottom) { winnerMark(column, team: index, color: color) }
         case .map:
             Text(verbatim: value)
-                .foregroundStyle(color)
+                .foregroundStyle(color.opacity(0.6))
                 .modifier(CellFrame(layout: layout))
                 .overlay(alignment: .bottom) { winnerMark(column, team: index, color: color) }
         case .current:
