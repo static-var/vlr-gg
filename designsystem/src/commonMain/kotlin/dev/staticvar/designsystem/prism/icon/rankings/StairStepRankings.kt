@@ -10,8 +10,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
-public val StairStepRankings: ImageVector
-  get() = ImageVector.Builder(
+public val StairStepRankings: ImageVector by lazy {
+  ImageVector.Builder(
     name = "PrismStairStepRankings",
     defaultWidth = 24.dp,
     defaultHeight = 24.dp,
@@ -108,3 +108,4 @@ public val StairStepRankings: ImageVector
       close()
     }
   }.build()
+}

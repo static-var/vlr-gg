@@ -10,8 +10,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
-public val StairStepBackFilled: ImageVector
-  get() = ImageVector.Builder(
+public val StairStepBackFilled: ImageVector by lazy {
+  ImageVector.Builder(
     name = "PrismStairStepBackFilled",
     defaultWidth = 24.dp,
     defaultHeight = 24.dp,
@@ -43,3 +43,4 @@ public val StairStepBackFilled: ImageVector
       close()
     }
   }.build()
+}
