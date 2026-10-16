@@ -13,7 +13,7 @@
   <string name="match_event_map_veto_description">Gebannte, gewählte und verbleibende Karte in dieser Reihenfolge.</string>
   <string name="match_event_veto_ban">GESPERRT</string>
   <string name="match_event_veto_pick">GEWÄHLT</string>
-  <string name="match_event_veto_remains">ÜBRIG</string>
+  <string name="match_event_veto_remains">ENTSCHEIDUNG</string>
   <string name="match_event_close">Schließen</string>
   <string name="match_event_event">Event</string>
   <string name="match_event_dates">DATEN</string>

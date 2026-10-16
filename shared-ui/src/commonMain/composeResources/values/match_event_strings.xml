@@ -13,7 +13,7 @@
   <string name="match_event_map_veto_description">Bans, picks, and remaining map in order.</string>
   <string name="match_event_veto_ban">BAN</string>
   <string name="match_event_veto_pick">PICK</string>
-  <string name="match_event_veto_remains">REMAINS</string>
+  <string name="match_event_veto_remains">DECIDER</string>
   <string name="match_event_close">Close</string>
   <string name="match_event_event">Event</string>
   <string name="match_event_dates">DATES</string>

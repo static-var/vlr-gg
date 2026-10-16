@@ -13,7 +13,7 @@
   <string name="match_event_map_veto_description">Запреты, выборы и оставшаяся карта по порядку.</string>
   <string name="match_event_veto_ban">ЗАПРЕТ</string>
   <string name="match_event_veto_pick">ВЫБОР</string>
-  <string name="match_event_veto_remains">ОСТАЛАСЬ</string>
+  <string name="match_event_veto_remains">РЕШАЮЩАЯ</string>
   <string name="match_event_close">Закрыть</string>
   <string name="match_event_event">Турнир</string>
   <string name="match_event_dates">ДАТЫ</string>

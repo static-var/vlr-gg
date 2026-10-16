@@ -13,7 +13,7 @@
   <string name="match_event_map_veto_description">बैन, पिक और शेष मैप, क्रम में।</string>
   <string name="match_event_veto_ban">बैन</string>
   <string name="match_event_veto_pick">चयन</string>
-  <string name="match_event_veto_remains">शेष</string>
+  <string name="match_event_veto_remains">निर्णायक</string>
   <string name="match_event_close">बंद करें</string>
   <string name="match_event_event">इवेंट</string>
   <string name="match_event_dates">तारीखें</string>

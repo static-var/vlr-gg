@@ -13,7 +13,7 @@
   <string name="match_event_map_veto_description">Vetos, selecciones y mapa restante, en orden.</string>
   <string name="match_event_veto_ban">VETO</string>
   <string name="match_event_veto_pick">ELECCIÓN</string>
-  <string name="match_event_veto_remains">RESTANTE</string>
+  <string name="match_event_veto_remains">DECISIVO</string>
   <string name="match_event_close">Cerrar</string>
   <string name="match_event_event">Evento</string>
   <string name="match_event_dates">FECHAS</string>

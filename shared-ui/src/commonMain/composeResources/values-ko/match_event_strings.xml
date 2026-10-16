@@ -13,7 +13,7 @@
   <string name="match_event_map_veto_description">밴, 픽 및 남은 맵을 순서대로 표시합니다.</string>
   <string name="match_event_veto_ban">밴</string>
   <string name="match_event_veto_pick">픽</string>
-  <string name="match_event_veto_remains">남음</string>
+  <string name="match_event_veto_remains">결정전</string>
   <string name="match_event_close">닫기</string>
   <string name="match_event_event">이벤트</string>
   <string name="match_event_dates">날짜</string>

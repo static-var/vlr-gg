@@ -13,7 +13,7 @@
   <string name="match_event_map_veto_description">Yasaklamalar, seçimler ve kalan harita sırasıyla gösterilir.</string>
   <string name="match_event_veto_ban">YASAKLAMA</string>
   <string name="match_event_veto_pick">SEÇİM</string>
-  <string name="match_event_veto_remains">KALAN</string>
+  <string name="match_event_veto_remains">KARAR HARİTASI</string>
   <string name="match_event_close">Kapat</string>
   <string name="match_event_event">Etkinlik</string>
   <string name="match_event_dates">TARİHLER</string>

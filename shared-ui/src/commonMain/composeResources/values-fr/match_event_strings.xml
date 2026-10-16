@@ -13,7 +13,7 @@
   <string name="match_event_map_veto_description">Cartes bannies, sélectionnées et restante, dans cet ordre.</string>
   <string name="match_event_veto_ban">BANNISSEMENT</string>
   <string name="match_event_veto_pick">SÉLECTION</string>
-  <string name="match_event_veto_remains">RESTANTE</string>
+  <string name="match_event_veto_remains">DÉCISIVE</string>
   <string name="match_event_close">Fermer</string>
   <string name="match_event_event">Événement</string>
   <string name="match_event_dates">DATES</string>
