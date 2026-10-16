@@ -14,6 +14,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
@@ -700,7 +701,7 @@ internal class LiveMatchNotificationRenderer(
    *
    * With a leader, the chip shows the leader's logo silhouette and the score leader-first (`[NRG] 10–5`). Without a
    * usable logo it names the leader instead (`NRG 10–5`), dropping the name when the text would be too long for the
-   * chip, which hides overlong text entirely. Trailing pause bars (`10–5 ||`) mark a broadcast pause, including on
+   * chip, which hides overlong text entirely. A trailing pause glyph (`10–5 ❙❙`) marks a broadcast pause, including on
    * the score fallback and the generic text. Ties, hidden scores and the pre-round state keep the app icon.
    */
   @RequiresApi(36)
@@ -788,8 +789,9 @@ internal class LiveMatchNotificationRenderer(
 // Longest chip text seen fully on API 36 ("NRG 12–10"); longer text is not shortened but hidden.
 private const val ChipTextLimit = 9
 
-// ASCII pause bars stay monochrome without depending on emoji fonts.
-private const val PauseChipSuffix = " ||"
+// Two medium vertical bars (U+2759) form a monochrome pause glyph; U+23F8 exists only in the color emoji font.
+// SystemUI shares the app's font fallback chain, so ASCII bars stand in on a build whose fonts lack U+2759.
+private val PauseChipSuffix by lazy { if (Paint().hasGlyph("\u2759")) " \u2759\u2759" else " ||" }
 
 /** Removes a live notification that stops receiving updates, such as during a server outage. */
 internal const val LiveNotificationTimeoutMillis = 5 * 60 * 1_000L
