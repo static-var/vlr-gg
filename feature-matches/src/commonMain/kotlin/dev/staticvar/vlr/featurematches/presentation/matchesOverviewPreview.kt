@@ -14,6 +14,7 @@ import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
+import dev.staticvar.vlr.domain.model.CurrentMatchMap
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
@@ -49,6 +50,7 @@ private fun sampleMatchPreview(id: String, status: MatchStatus): MatchPreview = 
   team2 = sampleTeamPreview(name = "Sentinels", score = 0),
   time = "14:00 CET",
   eventId = "event-1",
+  currentMap = if (status == MatchStatus.LIVE) CurrentMatchMap("Bind", 2, 7, 5) else null,
 )
 
 private fun sampleTeamPreview(name: String, score: Int): TeamPreview = TeamPreview(

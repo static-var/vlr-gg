@@ -64,4 +64,5 @@
   <string name="match_event_win_type_time_out">SÜRE DOLDU</string>
   <string name="match_event_win_type_not_played">OYNANMADI</string>
   <string name="match_event_match_score">Maç skoru</string>
+  <string name="match_live_map_score_description">%1$s raunt skoru %2$s</string>
 </resources>

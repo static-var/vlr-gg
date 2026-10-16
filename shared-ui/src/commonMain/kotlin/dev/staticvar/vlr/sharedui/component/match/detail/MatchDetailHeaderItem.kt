@@ -124,6 +124,7 @@ public fun MatchDetailPreviewHeaderItem(
     teams = listOf(match.team1, match.team2),
     isFavorite = match.isFavorite,
     favoriteLabels = matchFavoriteReasonLabels(match.favoriteReasons),
+    currentMap = match.currentMap.takeUnless { LocalSpoilerMode.current.enabled },
     modifier = modifier,
   )
 }

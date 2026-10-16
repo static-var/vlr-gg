@@ -18,6 +18,7 @@ import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
 import dev.staticvar.designsystem.prism.PrismVariant
+import dev.staticvar.vlr.domain.model.CurrentMatchMap
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
@@ -61,6 +62,7 @@ private fun sampleMatchPreview(status: MatchStatus, isFavorite: Boolean = false)
   time = "2025-10-03T11:00:00Z",
   eventId = "2283",
   isFavorite = isFavorite,
+  currentMap = if (status == MatchStatus.LIVE) CurrentMatchMap("Bind", 2, 7, 5) else null,
 )
 
 private fun sampleTeamPreview(id: String, name: String, score: Int?, isWinner: Boolean?): TeamPreview = TeamPreview(

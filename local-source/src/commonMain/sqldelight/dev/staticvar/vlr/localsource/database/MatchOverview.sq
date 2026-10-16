@@ -12,7 +12,11 @@ CREATE TABLE match_overview (
     team2_id TEXT NOT NULL,
     team2_name TEXT NOT NULL,
     team2_logo_url TEXT NOT NULL,
-    team2_score INTEGER
+    team2_score INTEGER,
+    current_map_name TEXT,
+    current_map_number INTEGER,
+    current_map_team1_score INTEGER,
+    current_map_team2_score INTEGER
 );
 
 CREATE INDEX idx_match_overview_status_time ON match_overview(status, time);

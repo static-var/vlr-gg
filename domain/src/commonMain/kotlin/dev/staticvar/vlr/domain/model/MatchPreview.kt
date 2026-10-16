@@ -20,6 +20,8 @@ data class MatchPreview(
   val isFavorite: Boolean = false,
   val favoriteReasons: List<MatchFavoriteReason> = emptyList(),
   val isDirectFavorite: Boolean = isFavorite,
+  /** The map the server is tracking for a live match, kept through pauses until the match leaves live. */
+  val currentMap: CurrentMatchMap? = null,
 )
 
 data class TeamPreview(

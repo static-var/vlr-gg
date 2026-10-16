@@ -147,6 +147,43 @@ class MatchRepositoryImplTest {
   }
 
   @Test
+  fun refreshMatchesClearsListMapWhenServerDropsItWithoutTouchingDetailMap() = runTest(dispatcher) {
+    val live = MatchPreviewDto(
+      id = "match1",
+      event = "Champions",
+      status = MatchStatus.LIVE,
+      team1 = TeamDto(id = "t1", name = "Alpha", score = 1),
+      team2 = TeamDto(id = "t2", name = "Beta", score = 0),
+      time = "2025-01-01T12:00:00Z",
+      eventId = "event1",
+      currentMap = CurrentMapDto(name = "Bind", number = 2, scores = listOf(7, 5)),
+    )
+    dataSource.listResult = Result.success(listOf(live))
+    assertTrue(repository.refreshMatches().isSuccess)
+    assertEquals(CurrentMatchMap("Bind", 2, 7, 5), repository.getMatches().first().single().currentMap)
+
+    dataSource.detailResults["match1"] = Result.success(
+      MatchDetailsDto(
+        event = EventDto(id = "event1", status = MatchStatus.LIVE),
+        teams = listOf(TeamDto(name = "Alpha", score = 1), TeamDto(name = "Beta", score = 0)),
+        currentMap = CurrentMapDto(name = "Bind", number = 2, scores = listOf(8, 5)),
+      ),
+    )
+    assertTrue(repository.refreshMatchDetails("match1").isSuccess)
+
+    dataSource.listResult = Result.success(listOf(live.copy(currentMap = null)))
+    assertTrue(repository.refreshMatches().isSuccess)
+    assertEquals(null, repository.getMatches().first().single().currentMap)
+    assertEquals(CurrentMatchMap("Bind", 2, 8, 5), requireNotNull(repository.getMatchDetails("match1").first()).currentMap)
+
+    dataSource.listResult = Result.success(listOf(live))
+    assertTrue(repository.refreshMatches().isSuccess)
+    dataSource.listResult = Result.success(listOf(live.copy(status = MatchStatus.COMPLETED)))
+    assertTrue(repository.refreshMatches().isSuccess)
+    assertEquals(null, repository.getMatches().first().single().currentMap)
+  }
+
+  @Test
   fun matchDetails_flow_emitsUpdatesAfterRefresh() = runTest(dispatcher) {
     dataSource.listResult = Result.success(
       listOf(

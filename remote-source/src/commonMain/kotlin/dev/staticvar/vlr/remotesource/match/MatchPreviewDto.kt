@@ -21,6 +21,7 @@ data class MatchPreviewDto(
   @SerialName("team2") val team2: TeamDto = TeamDto(name = ""),
   @SerialName("time") val time: String? = null,
   @SerialName("event_id") val eventId: String = "",
+  @SerialName("current_map") val currentMap: CurrentMapDto? = null,
 )
 
 @Serializable

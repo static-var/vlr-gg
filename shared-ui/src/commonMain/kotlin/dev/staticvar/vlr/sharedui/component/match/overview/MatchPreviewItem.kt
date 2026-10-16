@@ -8,19 +8,34 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
@@ -28,6 +43,7 @@ import dev.staticvar.designsystem.component.divider.PrismDividerStyle
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.domain.model.CurrentMatchMap
 import dev.staticvar.vlr.domain.model.MatchPreview
 import dev.staticvar.vlr.domain.model.MatchStatus
 import dev.staticvar.vlr.domain.model.TeamPreview
@@ -42,6 +58,7 @@ import dev.staticvar.vlr.sharedui.spoilers.SpoilerContent
 import org.jetbrains.compose.resources.stringResource
 import vlr.shared_ui.generated.resources.Res
 import vlr.shared_ui.generated.resources.match_event_live
+import vlr.shared_ui.generated.resources.match_live_map_score_description
 
 @Composable
 public fun MatchPreviewItem(
@@ -53,6 +70,7 @@ public fun MatchPreviewItem(
   onClick: (() -> Unit)? = null,
 ) {
   val selectionAnimation = Prism.anim.selection
+  val liveMap = matchPreview.currentMap.takeUnless { LocalSpoilerMode.current.enabled }
   FavoriteTicketCardBox(
     selected = matchPreview.isFavorite,
     modifier = modifier,
@@ -86,6 +104,14 @@ public fun MatchPreviewItem(
             overflow = TextOverflow.Ellipsis,
           )
         }
+        liveMap?.let { map ->
+          Text(
+            text = map.name,
+            style = Prism.typography.labelAlt,
+            color = Prism.color.contentSecondary,
+            maxLines = 1,
+          )
+        }
         val time = formatMatchPreviewTime(isoUtcTime = matchPreview.time)
         when (matchPreview.status) {
           MatchStatus.LIVE -> PrismTag(
@@ -109,6 +135,7 @@ public fun MatchPreviewItem(
         team1 = matchPreview.team1,
         team2 = matchPreview.team2,
         state = matchPreview.status,
+        liveMap = liveMap,
       )
       Row(
         modifier = Modifier
@@ -152,15 +179,69 @@ private fun ScoreBox(
   team1: TeamPreview,
   team2: TeamPreview,
   state: MatchStatus,
+  liveMap: CurrentMatchMap?,
 ) {
   val spoilersHidden = LocalSpoilerMode.current.enabled
   val (actualTeam1, actualTeam2) = rememberTeamPreview(team1, team2, state, spoilersHidden)
-  Column(modifier = modifier.fillMaxWidth()) {
-    TeamScoreRow(actualTeam1, matchId = matchId, useAltColor = !spoilersHidden && state != MatchStatus.UPCOMING)
-    PrismDivider(
-      style = PrismDividerStyle.Hairline,
-    )
-    TeamScoreRow(actualTeam2, matchId = matchId, useAltColor = !spoilersHidden && state == MatchStatus.LIVE)
+  fun mapScore(team: TeamPreview, map: CurrentMatchMap) = if (team == team1) map.team1Score else map.team2Score
+  Row(
+    modifier = modifier.fillMaxWidth().height(IntrinsicSize.Min),
+    horizontalArrangement = Arrangement.spacedBy(Prism.dimens.spacingS),
+  ) {
+    Column(modifier = Modifier.weight(1f)) {
+      TeamScoreRow(actualTeam1, matchId = matchId, useAltColor = !spoilersHidden && state != MatchStatus.UPCOMING)
+      PrismDivider(
+        style = PrismDividerStyle.Hairline,
+      )
+      TeamScoreRow(actualTeam2, matchId = matchId, useAltColor = !spoilersHidden && state == MatchStatus.LIVE)
+    }
+    liveMap?.let { map ->
+      LiveMapScores(
+        mapName = map.name,
+        scores = mapScore(actualTeam1, map) to mapScore(actualTeam2, map),
+        modifier = Modifier.fillMaxHeight(),
+      )
+    }
+  }
+}
+
+/** The current map's round scores, boxed as one column so they don't read as another series score. */
+@Composable
+private fun LiveMapScores(mapName: String, scores: Pair<Int?, Int?>, modifier: Modifier = Modifier) {
+  val scoreWidth = textWidth("00", Prism.typography.headline)
+  Column(
+    modifier = modifier
+      .background(Prism.color.accentSubtle, Prism.shapes.small)
+      .border(BorderStroke(1.dp, Prism.color.accent), Prism.shapes.small)
+      .padding(horizontal = Prism.dimens.spacingS),
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    listOf(scores.first, scores.second).forEach { score ->
+      val description = score?.let {
+        stringResource(Res.string.match_live_map_score_description, mapName, it.toString())
+      }
+      Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+        Text(
+          text = score?.toString() ?: "–",
+          modifier = Modifier
+            .widthIn(min = scoreWidth)
+            .then(description?.let { Modifier.semantics { contentDescription = it } } ?: Modifier),
+          style = Prism.typography.headline,
+          color = Prism.color.contentPrimary,
+          textAlign = TextAlign.Center,
+          maxLines = 1,
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun textWidth(sample: String, style: TextStyle): Dp {
+  val measurer = rememberTextMeasurer()
+  val density = LocalDensity.current
+  return remember(sample, style, measurer, density) {
+    with(density) { measurer.measure(sample, style).size.width.toDp() }
   }
 }
 

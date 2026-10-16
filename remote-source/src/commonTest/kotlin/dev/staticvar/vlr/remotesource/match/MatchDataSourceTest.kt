@@ -39,6 +39,18 @@ class MatchDataSourceTest {
   }
 
   @Test
+  fun list_decodes_current_map_object_null_and_absent() = runWithBody(
+    body = """[
+      {"id":"1","status":"live","team1":{"name":"A"},"team2":{"name":"B"},"current_map":{"name":"Bind","number":2,"scores":[7,5]}},
+      {"id":"2","status":"live","team1":{"name":"A"},"team2":{"name":"B"},"current_map":null},
+      {"id":"3","status":"upcoming","team1":{"name":"A"},"team2":{"name":"B"}}
+    ]"""
+  ) { ds ->
+    val matches = ds.list().getOrThrow()
+    assertEquals(listOf(CurrentMapDto("Bind", 2, listOf(7, 5)), null, null), matches.map { it.currentMap })
+  }
+
+  @Test
   fun details_parses_minimal_payload() = runWithBody(
     body = """{ "id":"m1", "event": { "id":"e1", "name":"Evt" }, "previous_encounters":[], "note":"", "score":"", "teams":[], "bans":[], "videos": {"streams":[],"vods":[]}, "data":[], "map_count":0 }"""
   ) { ds ->

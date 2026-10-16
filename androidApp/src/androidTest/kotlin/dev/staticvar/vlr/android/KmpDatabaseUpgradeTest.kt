@@ -394,6 +394,28 @@ class KmpDatabaseUpgradeTest {
         )
         """.trimIndent(),
       )
+      db.execSQL("DROP TABLE match_overview")
+      db.execSQL(
+        """
+        CREATE TABLE match_overview (
+            id TEXT NOT NULL PRIMARY KEY,
+            event_id TEXT,
+            event_name TEXT NOT NULL,
+            series TEXT NOT NULL,
+            status TEXT NOT NULL,
+            time TEXT NOT NULL,
+            team1_id TEXT NOT NULL,
+            team1_name TEXT NOT NULL,
+            team1_logo_url TEXT NOT NULL,
+            team1_score INTEGER,
+            team2_id TEXT NOT NULL,
+            team2_name TEXT NOT NULL,
+            team2_logo_url TEXT NOT NULL,
+            team2_score INTEGER
+        )
+        """.trimIndent(),
+      )
+      db.execSQL("CREATE INDEX idx_match_overview_status_time ON match_overview(status, time)")
       db.execSQL(
         """
         INSERT INTO matches(id, event_name, event_logo_url, status, time,

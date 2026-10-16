@@ -64,4 +64,5 @@
   <string name="match_event_win_type_time_out">समय समाप्त</string>
   <string name="match_event_win_type_not_played">नहीं खेला गया</string>
   <string name="match_event_match_score">मैच स्कोर</string>
+  <string name="match_live_map_score_description">%1$s राउंड स्कोर %2$s</string>
 </resources>
