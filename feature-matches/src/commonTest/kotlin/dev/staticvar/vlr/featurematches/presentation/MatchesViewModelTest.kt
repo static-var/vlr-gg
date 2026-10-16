@@ -253,7 +253,6 @@ class MatchesViewModelTest {
       return Result.success(Unit)
     }
 
-    override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> = Result.success(Unit)
 
     override suspend fun refreshMatchDetails(matchId: String): Result<Unit> = Result.success(Unit)
   }

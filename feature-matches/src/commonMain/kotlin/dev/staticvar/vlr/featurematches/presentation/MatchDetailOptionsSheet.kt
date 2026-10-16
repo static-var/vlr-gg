@@ -33,8 +33,8 @@ import vlr.feature_matches.generated.resources.head_to_head
 import vlr.feature_matches.generated.resources.match_options
 import vlr.feature_matches.generated.resources.match_stats_and_player_table
 import vlr.feature_matches.generated.resources.media
-import vlr.feature_matches.generated.resources.prediction
-import vlr.feature_matches.generated.resources.prediction_option_description
+import vlr.feature_matches.generated.resources.insights
+import vlr.feature_matches.generated.resources.insights_option_description
 import vlr.feature_matches.generated.resources.previous_meetings
 import vlr.feature_matches.generated.resources.section_unavailable
 import vlr.feature_matches.generated.resources.streams_and_vods
@@ -95,7 +95,7 @@ internal fun MatchDetailOptionsSheet(
 
 private val MatchDetailsSection.title: StringResource
   get() = when (this) {
-    MatchDetailsSection.Prediction -> Res.string.prediction
+    MatchDetailsSection.Insights -> Res.string.insights
     MatchDetailsSection.Breakdown -> Res.string.breakdown
     MatchDetailsSection.HeadToHead -> Res.string.head_to_head
     MatchDetailsSection.Media -> Res.string.media
@@ -103,7 +103,7 @@ private val MatchDetailsSection.title: StringResource
 
 private val MatchDetailsSection.description: StringResource
   get() = when (this) {
-    MatchDetailsSection.Prediction -> Res.string.prediction_option_description
+    MatchDetailsSection.Insights -> Res.string.insights_option_description
     MatchDetailsSection.Breakdown -> Res.string.match_stats_and_player_table
     MatchDetailsSection.HeadToHead -> Res.string.previous_meetings
     MatchDetailsSection.Media -> Res.string.streams_and_vods

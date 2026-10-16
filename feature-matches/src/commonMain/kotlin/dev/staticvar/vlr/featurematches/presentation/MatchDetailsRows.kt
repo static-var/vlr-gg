@@ -8,13 +8,9 @@ import dev.staticvar.vlr.core.settings.MatchDetailsPreferences
 import dev.staticvar.vlr.core.settings.MatchDetailsSection
 import dev.staticvar.vlr.domain.model.MatchDetails
 
-/**
- * Sections this match can show. The options sheet disables the rest. A prediction that can still be
- * requested counts, so its loading and retry states keep their place.
- */
 internal val MatchDetails.availableSections: Set<MatchDetailsSection>
   get() = buildSet {
-    if (prediction != null || canRequestPrediction) add(MatchDetailsSection.Prediction)
+    if (insights?.prediction != null || selectedInsightSummary() != null) add(MatchDetailsSection.Insights)
     if (matchData.isNotEmpty()) add(MatchDetailsSection.Breakdown)
     if (head2head.isNotEmpty()) add(MatchDetailsSection.HeadToHead)
     if (videos.streams.isNotEmpty() || videos.vods.isNotEmpty()) add(MatchDetailsSection.Media)
@@ -22,7 +18,7 @@ internal val MatchDetails.availableSections: Set<MatchDetailsSection>
 
 /** One item in the match details list below the hero. Keys stay stable across reorders and refreshes. */
 internal enum class MatchDetailsRow(val key: String) {
-  Prediction("prediction"),
+  Insights("insights"),
   Breakdown("breakdown"),
   BreakdownEmpty("breakdown-empty"),
   HeadToHead("head-to-head"),
@@ -45,7 +41,7 @@ internal fun buildMatchDetailsRows(
     .filter(preferences::isVisible)
     .forEach { section ->
       when (section) {
-        MatchDetailsSection.Prediction -> if (section in available) add(MatchDetailsRow.Prediction)
+        MatchDetailsSection.Insights -> if (section in available) add(MatchDetailsRow.Insights)
         MatchDetailsSection.Breakdown -> when {
           section in available -> add(MatchDetailsRow.Breakdown)
           showBreakdownEmpty -> add(MatchDetailsRow.BreakdownEmpty)
