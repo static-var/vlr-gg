@@ -8,13 +8,10 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,6 +34,7 @@ import dev.staticvar.designsystem.component.card.PrismCard
 import dev.staticvar.designsystem.component.card.PrismCardStyle
 import dev.staticvar.designsystem.component.divider.PrismDivider
 import dev.staticvar.designsystem.component.divider.PrismDividerStyle
+import dev.staticvar.designsystem.component.divider.PrismVerticalDivider
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.component.tag.PrismTagStyle
 import dev.staticvar.designsystem.prism.Prism
@@ -122,7 +120,7 @@ public fun MatchPreviewItem(
           Text(
             text = map.name,
             modifier = Modifier
-              .padding(start = Prism.dimens.spacingS + LiveMapRule.thickness)
+              .padding(start = Prism.dimens.spacingS + LiveMapRule.endCapHeight)
               .width(liveMapColumnWidth(map.name)),
             style = Prism.typography.labelAlt,
             color = Prism.color.contentSecondary,
@@ -197,12 +195,7 @@ private fun ScoreBox(
       TeamScoreRow(actualTeam2, matchId = matchId, useAltColor = !spoilersHidden && state == MatchStatus.LIVE)
     }
     liveMap?.let { map ->
-      Box(
-        modifier = Modifier
-          .fillMaxHeight()
-          .width(LiveMapRule.thickness)
-          .background(LiveMapRule.color),
-      )
+      PrismVerticalDivider(style = LiveMapRule)
       Column(modifier = Modifier.width(liveMapColumnWidth(map.name))) {
         LiveMapScore(mapName = map.name, score = mapScore(actualTeam1, map))
         PrismDivider(style = PrismDividerStyle.Hairline)
@@ -213,7 +206,7 @@ private fun ScoreBox(
 }
 
 /** The rule that sets the live map column apart from the series score. */
-private val LiveMapRule = PrismDividerStyle.Default
+private val LiveMapRule = PrismDividerStyle.Hairline
 
 /** Fits the map name heading the column and a two-digit round score, so the column holds still mid-map. */
 @Composable
