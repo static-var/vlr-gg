@@ -19,10 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +30,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import dev.staticvar.designsystem.component.button.PrismButton
 import dev.staticvar.designsystem.component.button.PrismButtonStyle
 import dev.staticvar.designsystem.component.card.PrismCard
@@ -42,6 +41,7 @@ import dev.staticvar.designsystem.component.section.PrismSectionTitle
 import dev.staticvar.designsystem.component.sheet.PrismModalSheet
 import dev.staticvar.designsystem.component.tag.PrismTag
 import dev.staticvar.designsystem.prism.Prism
+import dev.staticvar.vlr.core.telemetry.AppTelemetry
 import dev.staticvar.vlr.domain.model.MatchDetails
 import dev.staticvar.vlr.domain.model.MatchPrediction
 import dev.staticvar.vlr.domain.model.PredictionSource
@@ -81,7 +81,8 @@ internal fun MatchInsightsSection(match: MatchDetails) {
   val prediction = match.insights?.prediction
   if (summary == null && prediction == null) return
 
-  var aboutExpanded by remember(match.id) { mutableStateOf(false) }
+  val aboutSheet = remember(match.id) { PredictionAboutSheetState(AppTelemetry) }
+  LifecycleEventEffect(Lifecycle.Event.ON_STOP, onEvent = aboutSheet::cancelOpening)
   Column(verticalArrangement = Arrangement.spacedBy(Prism.dimens.spacingM)) {
     PrismSectionTitle(title = stringResource(Res.string.insights))
     if (summary != null) {
@@ -118,13 +119,17 @@ internal fun MatchInsightsSection(match: MatchDetails) {
         )
         PredictionProbabilities(match, prediction)
         PrismDivider(modifier = Modifier.padding(top = Prism.dimens.spacingM))
-        PredictionFooter(prediction, onAbout = { aboutExpanded = true })
+        PredictionFooter(prediction, onAbout = aboutSheet::open)
         PrismDivider()
         GamblingNotice(modifier = Modifier.padding(top = Prism.dimens.spacingS))
       }
     }
   }
-  PredictionAboutSheet(visible = aboutExpanded, onDismiss = { aboutExpanded = false })
+  PredictionAboutSheet(
+    visible = aboutSheet.visible,
+    onDismiss = aboutSheet::dismiss,
+    onEnterFinished = aboutSheet::onEnterFinished,
+  )
 }
 
 @Composable
@@ -214,12 +219,13 @@ private fun GamblingNotice(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun PredictionAboutSheet(visible: Boolean, onDismiss: () -> Unit) {
+private fun PredictionAboutSheet(visible: Boolean, onDismiss: () -> Unit, onEnterFinished: () -> Unit) {
   val title = stringResource(Res.string.about_win_probability)
   PrismModalSheet(
     visible = visible,
     onDismissRequest = onDismiss,
     paneTitle = title,
+    onEnterFinished = onEnterFinished,
     header = { Text(title, style = Prism.typography.sectionTitle, color = Prism.color.titleColor) },
     footer = { PrismButton(onClick = onDismiss, style = PrismButtonStyle.Secondary) { Text(stringResource(Res.string.done)) } },
   ) {
