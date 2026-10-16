@@ -375,11 +375,11 @@ class KmpDatabaseUpgradeTest {
   }
 
   @Test
-  fun versionElevenUpgradePreservesMatchAndPredictionSurvivesReopening() {
+  fun versionElevenUpgradePreservesMatchAndInsightsSurviveReopening() {
     withDatabase { it.favoriteScheduleQueries.getFavoriteSchedule().executeAsList() }
     val freshSchema = openTestDatabase().use(::schemaDescription)
     openTestDatabase().use { db ->
-      db.execSQL("DROP TABLE match_predictions")
+      db.execSQL("DROP TABLE match_insights")
       db.execSQL("DROP TABLE match_current_map")
       db.execSQL(
         """
@@ -428,14 +428,14 @@ class KmpDatabaseUpgradeTest {
       db.version = 11
     }
 
-    val warnings = """[{"code":"elo_fallback","reason":"model_timeout"}]"""
+    val insights = """{"pre_match_summary":{"text":"Preview","generated_at":"2026-10-16T12:00:00Z"}}"""
     withDatabase { database ->
       val match = database.matchesQueries.getMatchWithFavoriteStatus("match").executeAsOne()
       assertEquals("Champions", match.event_name)
       assertEquals("Grand final", match.note)
       assertEquals(1L, match.is_direct_favorite)
-      assertNull(database.matchPredictionsQueries.getMatchPrediction("match").executeAsOneOrNull())
-      database.matchPredictionsQueries.upsertMatchPrediction("match", "120", "1034", 0.6, 0.4, "ELO", warnings)
+      assertNull(database.matchInsightsQueries.getMatchInsights("match").executeAsOneOrNull())
+      database.matchInsightsQueries.upsertMatchInsights("match", "120", "1034", insights)
     }
     openTestDatabase().use { db ->
       assertEquals(VlrDatabase.Schema.version.toInt(), db.version)
@@ -443,13 +443,10 @@ class KmpDatabaseUpgradeTest {
       assertTrue(rows(db, "PRAGMA foreign_key_check").isEmpty())
     }
     withDatabase { database ->
-      val restored = database.matchPredictionsQueries.getMatchPrediction("match").executeAsOne()
-      assertEquals("120", restored.team_a_id)
-      assertEquals("1034", restored.team_b_id)
-      assertEquals(0.6, restored.team_a_probability, 0.0)
-      assertEquals(0.4, restored.team_b_probability, 0.0)
-      assertEquals("ELO", restored.source)
-      assertEquals(warnings, restored.warnings_json)
+      val restored = database.matchInsightsQueries.getMatchInsights("match").executeAsOne()
+      assertEquals("120", restored.team1_id)
+      assertEquals("1034", restored.team2_id)
+      assertEquals(insights, restored.insights_json)
     }
   }
 

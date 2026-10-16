@@ -1,0 +1,1538 @@
+{
+  "teams": [
+    {
+      "name": "Team Vitality",
+      "score": 1,
+      "img": "https://owcdn.net/img/6466d79e1ed40.png",
+      "id": "2059",
+      "tag": "VIT"
+    },
+    {
+      "name": "LOUD",
+      "score": 2,
+      "img": "https://owcdn.net/img/62bbec8dc1b9f.png",
+      "id": "6961",
+      "tag": "LOUD"
+    }
+  ],
+  "bans": [
+    "VIT ban Sunset",
+    "LOUD ban Ascent",
+    "VIT pick Lotus",
+    "LOUD pick Summit",
+    "VIT ban Abyss",
+    "LOUD ban Split",
+    "Haven remains"
+  ],
+  "veto": [
+    {
+      "team": "VIT",
+      "action": "ban",
+      "map": "Sunset",
+      "action_label": "Ban"
+    },
+    {
+      "team": "LOUD",
+      "action": "ban",
+      "map": "Ascent",
+      "action_label": "Ban"
+    },
+    {
+      "team": "VIT",
+      "action": "pick",
+      "map": "Lotus",
+      "action_label": "Pick"
+    },
+    {
+      "team": "LOUD",
+      "action": "pick",
+      "map": "Summit",
+      "action_label": "Pick"
+    },
+    {
+      "team": "VIT",
+      "action": "ban",
+      "map": "Abyss",
+      "action_label": "Ban"
+    },
+    {
+      "team": "LOUD",
+      "action": "ban",
+      "map": "Split",
+      "action_label": "Ban"
+    },
+    {
+      "team": null,
+      "action": "remains",
+      "map": "Haven",
+      "action_label": "Remains"
+    }
+  ],
+  "event": {
+    "id": "2766",
+    "img": "https://owcdn.net/img/692fc60a022bb.png",
+    "series": "Valorant Champions 2026",
+    "stage": "Playoffs: Upper Final",
+    "date": "2026-10-16T06:00:00Z",
+    "patch": "13.05",
+    "status": "final",
+    "status_label": "Completed"
+  },
+  "videos": {
+    "streams": [
+      {
+        "name": "Valorant",
+        "url": "https://www.twitch.tv/valorant"
+      },
+      {
+        "name": "VAL BR",
+        "url": "https://www.twitch.tv/valorant_br"
+      },
+      {
+        "name": "VAL LATAM",
+        "url": "https://www.twitch.tv/valorant_la"
+      },
+      {
+        "name": "VAL FR",
+        "url": "https://www.twitch.tv/valorant_fr"
+      },
+      {
+        "name": "VAL ES",
+        "url": "https://www.twitch.tv/valorant_es"
+      },
+      {
+        "name": "VAL TR",
+        "url": "https://www.twitch.tv/valorant_tur"
+      },
+      {
+        "name": "VCT CN",
+        "url": "https://www.twitch.tv/valorantesports_cn"
+      },
+      {
+        "name": "VAL ID",
+        "url": "https://www.twitch.tv/valorant_id"
+      },
+      {
+        "name": "VAL JP",
+        "url": "https://www.twitch.tv/valorant_jpn"
+      },
+      {
+        "name": "VAL TH",
+        "url": "https://www.twitch.tv/valorant_th"
+      },
+      {
+        "name": "VCT",
+        "url": "https://www.youtube.com/@ValorantEsports/live"
+      },
+      {
+        "name": "VCT BR",
+        "url": "https://www.youtube.com/@valesportsbr/live"
+      },
+      {
+        "name": "VCT LATAM",
+        "url": "https://www.youtube.com/@VALORANTEsportsLA/live"
+      },
+      {
+        "name": "VCL FR",
+        "url": "https://www.youtube.com/@valorantchallengersfr/live"
+      },
+      {
+        "name": "VCL TR",
+        "url": "https://www.youtube.com/@VALORANTChallengersTR/live"
+      },
+      {
+        "name": "VCT ID",
+        "url": "https://www.youtube.com/@VALORANTEsportsIndonesia/live"
+      },
+      {
+        "name": "VCT KR",
+        "url": "https://www.youtube.com/@ValorantEsportsKR/live"
+      },
+      {
+        "name": "VAL JP",
+        "url": "https://www.youtube.com/@VALORANTjp/live"
+      },
+      {
+        "name": "VCT TH",
+        "url": "https://www.youtube.com/@VALORANTEsportsTH/live"
+      },
+      {
+        "name": "VAL INSA",
+        "url": "https://www.youtube.com/@VALORANTinsa/live"
+      },
+      {
+        "name": "VCT VN",
+        "url": "https://www.youtube.com/@VALORANTChampionsTourVietnam/live"
+      },
+      {
+        "name": "Valorant",
+        "url": "https://play.sooplive.co.kr/valoranten"
+      },
+      {
+        "name": "VAL ID",
+        "url": "https://play.sooplive.co.kr/valorantid"
+      },
+      {
+        "name": "VAL TH",
+        "url": "https://play.sooplive.co.kr/valorantth"
+      },
+      {
+        "name": "VAL KR",
+        "url": "https://play.sooplive.co.kr/valorant"
+      },
+      {
+        "name": "VAL VN",
+        "url": "https://play.onlive.vn/valorant"
+      },
+      {
+        "name": "VCT CN",
+        "url": "https://live.bilibili.com/22908869"
+      },
+      {
+        "name": "VCT CN",
+        "url": "https://www.douyu.com/602"
+      },
+      {
+        "name": "VCT CN",
+        "url": "https://www.huya.com/660679"
+      },
+      {
+        "name": "Valorant",
+        "url": "https://kick.com/valorant"
+      }
+    ],
+    "vods": [
+      {
+        "name": "Full match",
+        "url": "https://www.twitch.tv/videos/2902056335?t=0h46m59s"
+      },
+      {
+        "name": "Map 1",
+        "url": "https://youtu.be/lXdvR5iMU3Y?t=90"
+      },
+      {
+        "name": "Map 2",
+        "url": "https://youtu.be/lXdvR5iMU3Y?t=2945"
+      },
+      {
+        "name": "Map 3",
+        "url": "https://youtu.be/lXdvR5iMU3Y?t=5565"
+      }
+    ]
+  },
+  "map_count": 3,
+  "total_maps": 3,
+  "data": [
+    {
+      "number": 1,
+      "map": "Lotus",
+      "teams": [
+        {
+          "name": "Team Vitality",
+          "score": 13
+        },
+        {
+          "name": "LOUD",
+          "score": 8
+        }
+      ],
+      "members": [
+        {
+          "id": "9780",
+          "name": "Jamppi",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Fade",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/fade.png"
+            }
+          ],
+          "rating": 1.41,
+          "acs": 215,
+          "kills": 19,
+          "deaths": 12,
+          "assists": 9,
+          "kast": 76,
+          "adr": 128,
+          "headshot_percent": 30,
+          "first_kills": 2,
+          "first_deaths": 1,
+          "first_kills_diff": 1
+        },
+        {
+          "id": "458",
+          "name": "Chronicle",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Viper",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/viper.png"
+            }
+          ],
+          "rating": 1.12,
+          "acs": 243,
+          "kills": 17,
+          "deaths": 17,
+          "assists": 13,
+          "kast": 90,
+          "adr": 157,
+          "headshot_percent": 19,
+          "first_kills": 2,
+          "first_deaths": 0,
+          "first_kills_diff": 2
+        },
+        {
+          "id": "5554",
+          "name": "PROFEK",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Omen",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/omen.png"
+            }
+          ],
+          "rating": 0.99,
+          "acs": 184,
+          "kills": 14,
+          "deaths": 15,
+          "assists": 10,
+          "kast": 90,
+          "adr": 114,
+          "headshot_percent": 32,
+          "first_kills": 1,
+          "first_deaths": 0,
+          "first_kills_diff": 1
+        },
+        {
+          "id": "5022",
+          "name": "Derke",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Raze",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/raze.png"
+            }
+          ],
+          "rating": 0.93,
+          "acs": 200,
+          "kills": 15,
+          "deaths": 16,
+          "assists": 5,
+          "kast": 67,
+          "adr": 141,
+          "headshot_percent": 22,
+          "first_kills": 3,
+          "first_deaths": 2,
+          "first_kills_diff": 1
+        },
+        {
+          "id": "33902",
+          "name": "Sayonara",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Chamber",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+            }
+          ],
+          "rating": 0.9,
+          "acs": 217,
+          "kills": 16,
+          "deaths": 16,
+          "assists": 5,
+          "kast": 71,
+          "adr": 140,
+          "headshot_percent": 21,
+          "first_kills": 5,
+          "first_deaths": 5,
+          "first_kills_diff": 0
+        },
+        {
+          "id": "29242",
+          "name": "erde",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Omen",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/omen.png"
+            }
+          ],
+          "rating": 1.2,
+          "acs": 243,
+          "kills": 17,
+          "deaths": 17,
+          "assists": 9,
+          "kast": 86,
+          "adr": 160,
+          "headshot_percent": 24,
+          "first_kills": 0,
+          "first_deaths": 1,
+          "first_kills_diff": -1
+        },
+        {
+          "id": "10557",
+          "name": "Darker",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Viper",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/viper.png"
+            }
+          ],
+          "rating": 1.16,
+          "acs": 239,
+          "kills": 20,
+          "deaths": 14,
+          "assists": 1,
+          "kast": 81,
+          "adr": 158,
+          "headshot_percent": 27,
+          "first_kills": 1,
+          "first_deaths": 1,
+          "first_kills_diff": 0
+        },
+        {
+          "id": "28716",
+          "name": "lukxo",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Chamber",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+            }
+          ],
+          "rating": 0.9,
+          "acs": 207,
+          "kills": 15,
+          "deaths": 16,
+          "assists": 1,
+          "kast": 57,
+          "adr": 127,
+          "headshot_percent": 18,
+          "first_kills": 4,
+          "first_deaths": 7,
+          "first_kills_diff": -3
+        },
+        {
+          "id": "41224",
+          "name": "tkzin",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Neon",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/neon.png"
+            }
+          ],
+          "rating": 0.75,
+          "acs": 172,
+          "kills": 12,
+          "deaths": 17,
+          "assists": 4,
+          "kast": 76,
+          "adr": 119,
+          "headshot_percent": 38,
+          "first_kills": 2,
+          "first_deaths": 2,
+          "first_kills_diff": 0
+        },
+        {
+          "id": "10885",
+          "name": "DaviH",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Fade",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/fade.png"
+            }
+          ],
+          "rating": 0.69,
+          "acs": 161,
+          "kills": 12,
+          "deaths": 17,
+          "assists": 8,
+          "kast": 67,
+          "adr": 106,
+          "headshot_percent": 34,
+          "first_kills": 1,
+          "first_deaths": 2,
+          "first_kills_diff": -1
+        }
+      ],
+      "rounds": [
+        {
+          "round_number": 1,
+          "round_score": "1-0",
+          "winner": "team1",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 2,
+          "round_score": "2-0",
+          "winner": "team1",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 3,
+          "round_score": "3-0",
+          "winner": "team1",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 4,
+          "round_score": "4-0",
+          "winner": "team1",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 5,
+          "round_score": "4-1",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 6,
+          "round_score": "4-2",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 7,
+          "round_score": "5-2",
+          "winner": "team1",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 8,
+          "round_score": "5-3",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 9,
+          "round_score": "5-4",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 10,
+          "round_score": "5-5",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 11,
+          "round_score": "5-6",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 12,
+          "round_score": "6-6",
+          "winner": "team1",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 13,
+          "round_score": "7-6",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 14,
+          "round_score": "8-6",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 15,
+          "round_score": "9-6",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 16,
+          "round_score": "9-7",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 17,
+          "round_score": "10-7",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 18,
+          "round_score": "10-8",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Spike exploded",
+          "side_label": "Attack",
+          "win_type_label": "Spike exploded"
+        },
+        {
+          "round_number": 19,
+          "round_score": "11-8",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 20,
+          "round_score": "12-8",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 21,
+          "round_score": "13-8",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        }
+      ],
+      "live": false,
+      "winner": "Team Vitality"
+    },
+    {
+      "number": 2,
+      "map": "Summit",
+      "teams": [
+        {
+          "name": "Team Vitality",
+          "score": 5
+        },
+        {
+          "name": "LOUD",
+          "score": 13
+        }
+      ],
+      "members": [
+        {
+          "id": "5022",
+          "name": "Derke",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Chamber",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+            }
+          ],
+          "rating": 1.13,
+          "acs": 229,
+          "kills": 14,
+          "deaths": 12,
+          "assists": 1,
+          "kast": 61,
+          "adr": 144,
+          "headshot_percent": 42,
+          "first_kills": 4,
+          "first_deaths": 2,
+          "first_kills_diff": 2
+        },
+        {
+          "id": "5554",
+          "name": "PROFEK",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Harbor",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/harbor.png"
+            }
+          ],
+          "rating": 0.98,
+          "acs": 222,
+          "kills": 13,
+          "deaths": 15,
+          "assists": 6,
+          "kast": 78,
+          "adr": 149,
+          "headshot_percent": 42,
+          "first_kills": 2,
+          "first_deaths": 2,
+          "first_kills_diff": 0
+        },
+        {
+          "id": "33902",
+          "name": "Sayonara",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Fade",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/fade.png"
+            }
+          ],
+          "rating": 0.8,
+          "acs": 172,
+          "kills": 10,
+          "deaths": 14,
+          "assists": 7,
+          "kast": 67,
+          "adr": 105,
+          "headshot_percent": 45,
+          "first_kills": 2,
+          "first_deaths": 0,
+          "first_kills_diff": 2
+        },
+        {
+          "id": "458",
+          "name": "Chronicle",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Neon",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/neon.png"
+            }
+          ],
+          "rating": 0.76,
+          "acs": 197,
+          "kills": 12,
+          "deaths": 15,
+          "assists": 4,
+          "kast": 72,
+          "adr": 124,
+          "headshot_percent": 26,
+          "first_kills": 1,
+          "first_deaths": 0,
+          "first_kills_diff": 1
+        },
+        {
+          "id": "9780",
+          "name": "Jamppi",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Phoenix",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/phoenix.png"
+            }
+          ],
+          "rating": 0.69,
+          "acs": 154,
+          "kills": 9,
+          "deaths": 14,
+          "assists": 6,
+          "kast": 72,
+          "adr": 99,
+          "headshot_percent": 38,
+          "first_kills": 0,
+          "first_deaths": 5,
+          "first_kills_diff": -5
+        },
+        {
+          "id": "28716",
+          "name": "lukxo",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Chamber",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+            }
+          ],
+          "rating": 1.89,
+          "acs": 386,
+          "kills": 26,
+          "deaths": 12,
+          "assists": 4,
+          "kast": 83,
+          "adr": 248,
+          "headshot_percent": 30,
+          "first_kills": 5,
+          "first_deaths": 2,
+          "first_kills_diff": 3
+        },
+        {
+          "id": "10557",
+          "name": "Darker",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Omen",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/omen.png"
+            }
+          ],
+          "rating": 1.44,
+          "acs": 250,
+          "kills": 17,
+          "deaths": 11,
+          "assists": 7,
+          "kast": 78,
+          "adr": 177,
+          "headshot_percent": 36,
+          "first_kills": 1,
+          "first_deaths": 1,
+          "first_kills_diff": 0
+        },
+        {
+          "id": "29242",
+          "name": "erde",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Sage",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/sage.png"
+            }
+          ],
+          "rating": 1.15,
+          "acs": 226,
+          "kills": 13,
+          "deaths": 13,
+          "assists": 13,
+          "kast": 78,
+          "adr": 171,
+          "headshot_percent": 39,
+          "first_kills": 1,
+          "first_deaths": 0,
+          "first_kills_diff": 1
+        },
+        {
+          "id": "41224",
+          "name": "tkzin",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Neon",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/neon.png"
+            }
+          ],
+          "rating": 0.77,
+          "acs": 149,
+          "kills": 10,
+          "deaths": 12,
+          "assists": 2,
+          "kast": 56,
+          "adr": 115,
+          "headshot_percent": 57,
+          "first_kills": 1,
+          "first_deaths": 4,
+          "first_kills_diff": -3
+        },
+        {
+          "id": "10885",
+          "name": "DaviH",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Fade",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/fade.png"
+            }
+          ],
+          "rating": 0.68,
+          "acs": 75,
+          "kills": 4,
+          "deaths": 10,
+          "assists": 7,
+          "kast": 72,
+          "adr": 63,
+          "headshot_percent": 18,
+          "first_kills": 1,
+          "first_deaths": 2,
+          "first_kills_diff": -1
+        }
+      ],
+      "rounds": [
+        {
+          "round_number": 1,
+          "round_score": "1-0",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 2,
+          "round_score": "2-0",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 3,
+          "round_score": "2-1",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 4,
+          "round_score": "2-2",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Spike exploded",
+          "side_label": "Attack",
+          "win_type_label": "Spike exploded"
+        },
+        {
+          "round_number": 5,
+          "round_score": "2-3",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 6,
+          "round_score": "3-3",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Time out",
+          "side_label": "Defense",
+          "win_type_label": "Time out"
+        },
+        {
+          "round_number": 7,
+          "round_score": "3-4",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 8,
+          "round_score": "4-4",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 9,
+          "round_score": "4-5",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 10,
+          "round_score": "4-6",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 11,
+          "round_score": "4-7",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 12,
+          "round_score": "5-7",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 13,
+          "round_score": "5-8",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 14,
+          "round_score": "5-9",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 15,
+          "round_score": "5-10",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 16,
+          "round_score": "5-11",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 17,
+          "round_score": "5-12",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 18,
+          "round_score": "5-13",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        }
+      ],
+      "live": false,
+      "winner": "LOUD"
+    },
+    {
+      "number": 3,
+      "map": "Haven",
+      "teams": [
+        {
+          "name": "Team Vitality",
+          "score": 11
+        },
+        {
+          "name": "LOUD",
+          "score": 13
+        }
+      ],
+      "members": [
+        {
+          "id": "33902",
+          "name": "Sayonara",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Sova",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/sova.png"
+            }
+          ],
+          "rating": 1.24,
+          "acs": 244,
+          "kills": 22,
+          "deaths": 18,
+          "assists": 4,
+          "kast": 75,
+          "adr": 147,
+          "headshot_percent": 30,
+          "first_kills": 2,
+          "first_deaths": 2,
+          "first_kills_diff": 0
+        },
+        {
+          "id": "9780",
+          "name": "Jamppi",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Yoru",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/yoru.png"
+            }
+          ],
+          "rating": 0.9,
+          "acs": 182,
+          "kills": 19,
+          "deaths": 18,
+          "assists": 2,
+          "kast": 50,
+          "adr": 111,
+          "headshot_percent": 33,
+          "first_kills": 1,
+          "first_deaths": 4,
+          "first_kills_diff": -3
+        },
+        {
+          "id": "5554",
+          "name": "PROFEK",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Astra",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/astra.png"
+            }
+          ],
+          "rating": 0.88,
+          "acs": 146,
+          "kills": 11,
+          "deaths": 17,
+          "assists": 8,
+          "kast": 63,
+          "adr": 94,
+          "headshot_percent": 31,
+          "first_kills": 3,
+          "first_deaths": 1,
+          "first_kills_diff": 2
+        },
+        {
+          "id": "5022",
+          "name": "Derke",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Chamber",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+            }
+          ],
+          "rating": 0.74,
+          "acs": 162,
+          "kills": 12,
+          "deaths": 18,
+          "assists": 5,
+          "kast": 58,
+          "adr": 120,
+          "headshot_percent": 13,
+          "first_kills": 2,
+          "first_deaths": 4,
+          "first_kills_diff": -2
+        },
+        {
+          "id": "458",
+          "name": "Chronicle",
+          "team": "Team Vitality",
+          "agents": [
+            {
+              "title": "Neon",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/neon.png"
+            }
+          ],
+          "rating": 0.48,
+          "acs": 124,
+          "kills": 7,
+          "deaths": 21,
+          "assists": 9,
+          "kast": 71,
+          "adr": 91,
+          "headshot_percent": 11,
+          "first_kills": 1,
+          "first_deaths": 4,
+          "first_kills_diff": -3
+        },
+        {
+          "id": "29242",
+          "name": "erde",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Omen",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/omen.png"
+            }
+          ],
+          "rating": 1.47,
+          "acs": 288,
+          "kills": 24,
+          "deaths": 13,
+          "assists": 10,
+          "kast": 79,
+          "adr": 183,
+          "headshot_percent": 44,
+          "first_kills": 3,
+          "first_deaths": 2,
+          "first_kills_diff": 1
+        },
+        {
+          "id": "28716",
+          "name": "lukxo",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Chamber",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/chamber.png"
+            }
+          ],
+          "rating": 1.26,
+          "acs": 279,
+          "kills": 23,
+          "deaths": 14,
+          "assists": 3,
+          "kast": 75,
+          "adr": 176,
+          "headshot_percent": 16,
+          "first_kills": 7,
+          "first_deaths": 3,
+          "first_kills_diff": 4
+        },
+        {
+          "id": "41224",
+          "name": "tkzin",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Neon",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/neon.png"
+            }
+          ],
+          "rating": 1.18,
+          "acs": 257,
+          "kills": 21,
+          "deaths": 16,
+          "assists": 6,
+          "kast": 83,
+          "adr": 173,
+          "headshot_percent": 34,
+          "first_kills": 5,
+          "first_deaths": 2,
+          "first_kills_diff": 3
+        },
+        {
+          "id": "10885",
+          "name": "DaviH",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Sova",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/sova.png"
+            }
+          ],
+          "rating": 0.93,
+          "acs": 137,
+          "kills": 13,
+          "deaths": 12,
+          "assists": 5,
+          "kast": 75,
+          "adr": 80,
+          "headshot_percent": 21,
+          "first_kills": 0,
+          "first_deaths": 1,
+          "first_kills_diff": -1
+        },
+        {
+          "id": "10557",
+          "name": "Darker",
+          "team": "LOUD",
+          "agents": [
+            {
+              "title": "Viper",
+              "img": "https://www.vlr.gg/img/vlr/game/agents/viper.png"
+            }
+          ],
+          "rating": 0.71,
+          "acs": 127,
+          "kills": 11,
+          "deaths": 16,
+          "assists": 8,
+          "kast": 71,
+          "adr": 76,
+          "headshot_percent": 17,
+          "first_kills": 0,
+          "first_deaths": 1,
+          "first_kills_diff": -1
+        }
+      ],
+      "rounds": [
+        {
+          "round_number": 1,
+          "round_score": "1-0",
+          "winner": "team1",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 2,
+          "round_score": "2-0",
+          "winner": "team1",
+          "side": "attack",
+          "win_type": "Spike exploded",
+          "side_label": "Attack",
+          "win_type_label": "Spike exploded"
+        },
+        {
+          "round_number": 3,
+          "round_score": "3-0",
+          "winner": "team1",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 4,
+          "round_score": "4-0",
+          "winner": "team1",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 5,
+          "round_score": "4-1",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 6,
+          "round_score": "4-2",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 7,
+          "round_score": "4-3",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 8,
+          "round_score": "4-4",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 9,
+          "round_score": "5-4",
+          "winner": "team1",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 10,
+          "round_score": "5-5",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 11,
+          "round_score": "5-6",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 12,
+          "round_score": "5-7",
+          "winner": "team2",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 13,
+          "round_score": "6-7",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 14,
+          "round_score": "7-7",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 15,
+          "round_score": "7-8",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Spike exploded",
+          "side_label": "Attack",
+          "win_type_label": "Spike exploded"
+        },
+        {
+          "round_number": 16,
+          "round_score": "8-8",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 17,
+          "round_score": "9-8",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 18,
+          "round_score": "10-8",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Elimination",
+          "side_label": "Defense",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 19,
+          "round_score": "10-9",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 20,
+          "round_score": "10-10",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Spike exploded",
+          "side_label": "Attack",
+          "win_type_label": "Spike exploded"
+        },
+        {
+          "round_number": 21,
+          "round_score": "10-11",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 22,
+          "round_score": "10-12",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        },
+        {
+          "round_number": 23,
+          "round_score": "11-12",
+          "winner": "team1",
+          "side": "defense",
+          "win_type": "Defused",
+          "side_label": "Defense",
+          "win_type_label": "Defused"
+        },
+        {
+          "round_number": 24,
+          "round_score": "11-13",
+          "winner": "team2",
+          "side": "attack",
+          "win_type": "Elimination",
+          "side_label": "Attack",
+          "win_type_label": "Elimination"
+        }
+      ],
+      "live": false,
+      "winner": "LOUD"
+    }
+  ],
+  "previous_encounters": [
+    {
+      "teams": [
+        {
+          "name": "Team Vitality",
+          "score": 2
+        },
+        {
+          "name": "LOUD",
+          "score": 0
+        }
+      ],
+      "match_id": "753451"
+    }
+  ],
+  "insights": {
+    "prediction": null,
+    "pre_match_summary": null,
+    "post_match_summary": {
+      "text": "LOUD won the Valorant Champions 2026 Playoffs: Upper Final 2-1 over Team Vitality, dropping Lotus 8-13 before taking Summit 13-5 and Haven 13-11. On Lotus, Team Vitality surged ahead with the first four rounds, weathered a four-round LOUD streak in rounds 8-11, then seized control with a four-round run in rounds 12-15 and closed it out by winning four of the last five rounds. LOUD answered emphatically on Summit after an early 2-0 deficit, stringing together three-round bursts twice and then ending the map on a crushing six-round streak from round 13 through round 18. Haven decided the series with sharp momentum swings: Team Vitality opened 4-0, LOUD replied with four straight and later built an 8-4 edge, Team Vitality fought back with a 3-0 stretch to make it close, but LOUD finished stronger with four wins in the final six rounds to seal the 13-11 map and the match. The standout performers were lukxo for LOUD with 64 kills, 16 first_kills, a 1.32 rating, 286 acs, and 180 adr, alongside erde for LOUD with 54 kills, 32 assists, a 1.29 rating, 255 acs, and 172 adr, while Team Vitality’s best fragging came from Sayonara with 48 kills, 9 first_kills, 214 acs, and 133 adr.",
+      "generated_at": "2026-10-16T12:27:29.012560Z"
+    }
+  },
+  "current_map": null
+}

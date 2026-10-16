@@ -157,8 +157,6 @@ private class FakeMatchRepository(
     return overviewResult
   }
 
-  override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> = Result.success(Unit)
-
   override suspend fun refreshMatchDetails(matchId: String): Result<Unit> {
     detailRefreshes += matchId
     return Result.success(Unit)

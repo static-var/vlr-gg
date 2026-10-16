@@ -1,0 +1,9 @@
+DROP TABLE match_predictions;
+
+CREATE TABLE match_insights (
+    match_id TEXT NOT NULL PRIMARY KEY,
+    team1_id TEXT NOT NULL,
+    team2_id TEXT NOT NULL,
+    insights_json TEXT NOT NULL,
+    FOREIGN KEY(match_id) REFERENCES matches(id) ON DELETE CASCADE
+);

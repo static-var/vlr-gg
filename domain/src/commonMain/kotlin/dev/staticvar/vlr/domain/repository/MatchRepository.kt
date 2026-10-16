@@ -43,6 +43,4 @@ interface MatchRepository {
    * Refresh match detail from remote source.
    */
   suspend fun refreshMatchDetails(matchId: String): Result<Unit>
-
-  suspend fun refreshMatchPrediction(matchId: String): Result<Unit>
 }

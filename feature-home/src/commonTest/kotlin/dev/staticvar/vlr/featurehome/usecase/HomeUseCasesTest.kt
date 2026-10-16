@@ -435,7 +435,6 @@ private class FakeMatchRepository(
 
   override suspend fun refreshMatches(): Result<Unit> = refresh()
 
-  override suspend fun refreshMatchPrediction(matchId: String): Result<Unit> = Result.success(Unit)
 
   override suspend fun refreshMatchDetails(matchId: String): Result<Unit> = Result.success(Unit)
 }

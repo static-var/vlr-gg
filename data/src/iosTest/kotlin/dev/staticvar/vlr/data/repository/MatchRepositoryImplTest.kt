@@ -68,7 +68,6 @@ class MatchRepositoryImplTest {
       matchDataSource = dataSource,
       database = database,
       dispatchers = dispatcherProvider,
-      predictionDataSource = TestMatchPredictionDataSource(),
       storageJson = Json,
     )
   }
@@ -92,7 +91,6 @@ class MatchRepositoryImplTest {
       matchDataSource = dataSource,
       database = database,
       dispatchers = dispatcherProvider,
-      predictionDataSource = TestMatchPredictionDataSource(),
       storageJson = Json,
     )
     assertEquals(expected, requireNotNull(restored.getMatchDetails("match1").first()).currentMap)
@@ -549,7 +547,6 @@ class MatchRepositoryImplTest {
       matchDataSource = dataSource,
       database = database,
       dispatchers = dispatcherProvider,
-      predictionDataSource = TestMatchPredictionDataSource(),
       storageJson = Json,
     )
     val restored = requireNotNull(restoredRepository.getMatchDetails("match1").first())
