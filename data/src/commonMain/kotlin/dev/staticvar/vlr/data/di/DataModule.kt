@@ -60,7 +60,7 @@ fun dataModule(): Module = module {
   single<FavoriteScheduleRepository> { FavoriteScheduleRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoriteSyncStateRepository> { FavoriteSyncStateRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoriteMatchesRepository> {
-    FavoriteMatchesRepositoryImpl(source = get(), identity = get(), favorites = get())
+    FavoriteMatchesRepositoryImpl(source = get(), identity = get(), favorites = get(), dispatchers = get())
   }
   single<FavoriteTopicRepository> { FavoriteTopicRepositoryImpl(database = get(), dispatchers = get()) }
   single<FavoritesRepository> { FavoritesRepositoryImpl(database = get(), dispatchers = get()) }
