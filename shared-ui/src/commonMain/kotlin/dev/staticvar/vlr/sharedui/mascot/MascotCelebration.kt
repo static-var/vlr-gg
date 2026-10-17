@@ -68,21 +68,22 @@ public fun MascotCelebration(
       message = message,
       secondaryMessage = secondaryMessage,
       animated = animated,
-      entrance = entrance.value,
-      bannerProgress = banner.value,
+      entrance = { entrance.value },
+      bannerProgress = { banner.value },
       modifier = modifier,
     )
   }
 }
 
+/** [entrance] and [bannerProgress] are read in layer blocks only, so animation frames never recompose the scene. */
 @Composable
 internal fun CelebrationScene(
   character: MascotCharacter,
   message: String,
   secondaryMessage: String?,
   animated: Boolean,
-  entrance: Float,
-  bannerProgress: Float,
+  entrance: () -> Float,
+  bannerProgress: () -> Float,
   modifier: Modifier = Modifier,
 ) {
   val colors = Prism.color
@@ -91,7 +92,7 @@ internal fun CelebrationScene(
       Modifier.align(Alignment.CenterEnd).offset(x = 50.dp, y = (-20).dp).size(160.dp)
         .graphicsLayer {
           rotationZ = -45f
-          translationX = (1f - entrance) * 160.dp.toPx()
+          translationX = (1f - entrance()) * 160.dp.toPx()
         },
       animated = animated,
       character = character,
@@ -100,14 +101,15 @@ internal fun CelebrationScene(
       Modifier.align(Alignment.BottomEnd).padding(start = 16.dp, end = 30.dp, bottom = 8.dp),
       horizontalAlignment = Alignment.End,
     ) {
-      BannerPaws(character, Modifier.zIndex(1f).graphicsLayer { alpha = bannerProgress })
+      BannerPaws(character, Modifier.zIndex(1f).graphicsLayer { alpha = bannerProgress() })
       Box(
         Modifier
           .graphicsLayer {
+            val progress = bannerProgress()
             transformOrigin = TransformOrigin(1f, 0f)
-            scaleX = bannerProgress
-            alpha = bannerProgress
-            rotationZ = -3f * (1f - bannerProgress)
+            scaleX = progress
+            alpha = progress
+            rotationZ = -3f * (1f - progress)
           }
           .background(colors.accentSubtle, Prism.shapes.small)
           .border(2.dp, colors.accent, Prism.shapes.small),

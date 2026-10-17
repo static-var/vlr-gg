@@ -36,8 +36,8 @@ internal fun MascotCelebrationPreview(@PreviewParameter(PrismPreviewProvider::cl
           message = message,
           secondaryMessage = secondaryMessage,
           animated = false,
-          entrance = 1f,
-          bannerProgress = 1f,
+          entrance = { 1f },
+          bannerProgress = { 1f },
         )
       }
     }
