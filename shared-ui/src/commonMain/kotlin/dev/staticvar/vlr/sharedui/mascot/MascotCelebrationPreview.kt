@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.preview.PrismPreview
@@ -40,6 +41,32 @@ internal fun MascotCelebrationPreview(@PreviewParameter(PrismPreviewProvider::cl
           bannerProgress = { 1f },
         )
       }
+    }
+  }
+}
+
+/** The narrowest supported width at the largest font scale: every message must fit the banner unclipped. */
+@Preview(name = "Narrow, large type", widthDp = 320, heightDp = 1400, fontScale = 2f, showBackground = true)
+@Composable
+internal fun MascotCelebrationNarrowPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
+  PrismTheme(variant = variant) {
+    Column(Modifier.width(320.dp).background(Prism.color.background)) {
+      CelebrationScene(
+        character = MascotCharacter.Lynx,
+        message = "Natus Vincere hat das Event gewonnen!",
+        secondaryMessage = null,
+        animated = false,
+        entrance = { 1f },
+        bannerProgress = { 1f },
+      )
+      CelebrationScene(
+        character = MascotCharacter.Rosie,
+        message = "Paper Rex hat gewonnen und",
+        secondaryMessage = "Something hat abgeliefert!!!",
+        animated = false,
+        entrance = { 1f },
+        bannerProgress = { 1f },
+      )
     }
   }
 }
