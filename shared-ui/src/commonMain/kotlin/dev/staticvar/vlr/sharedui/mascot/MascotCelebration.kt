@@ -7,7 +7,6 @@ package dev.staticvar.vlr.sharedui.mascot
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -26,12 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -146,26 +141,8 @@ internal fun CelebrationScene(
 
 @Composable
 private fun BannerPaws(character: MascotCharacter, modifier: Modifier) {
-  if (character == MascotCharacter.Rosie) {
-    RosiePaws(modifier.offset(y = 13.dp).size(52.dp, 27.dp))
-  } else {
-    val colors = Prism.color
-    val fur = lerp(colors.accent, colors.surface, 0.28f)
-    val outline = lerp(colors.accent, colors.contentPrimary, 0.55f)
-    Canvas(modifier.offset(x = (-2).dp, y = 9.dp).size(48.dp, 18.dp)) {
-      val pawWidth = size.width * 0.38f
-      for (x in listOf(0f, size.width - pawWidth)) {
-        drawOval(fur, Offset(x, 0f), Size(pawWidth, size.height))
-        drawOval(outline, Offset(x, 0f), Size(pawWidth, size.height), style = Stroke(1.5.dp.toPx()))
-        drawLine(
-          outline,
-          Offset(x + pawWidth * 0.4f, size.height * 0.55f),
-          Offset(x + pawWidth * 0.4f, size.height * 0.85f),
-          1.dp.toPx(),
-        )
-      }
-    }
-  }
+  val art = character.art
+  MascotPaws(art, modifier.offset(y = (art.pawsBounds.height / 2f).dp))
 }
 
 public enum class MascotCharacter {
