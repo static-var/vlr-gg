@@ -60,7 +60,7 @@ internal fun UiDevice.browseMatches() {
   check(wait(Until.gone(By.textStartsWith("Loading match details")), TIMEOUT)) {
     "Match breakdown did not finish loading"
   }
-  scrollTo(By.text(Pattern.compile("Maps|No match breakdown yet")))
+  scrollTo(By.text(Pattern.compile("Maps|No match breakdown yet", Pattern.CASE_INSENSITIVE)))
   browseList()
   pressBack()
   requireSubtitle("Results, schedules and live scores")
@@ -82,14 +82,11 @@ internal fun UiDevice.browseEvents() {
     requireObject(By.clickable(true).enabled(true).hasDescendant(By.text("Favorite event"))).activate()
     requireObject(By.text("Remove from favorites"))
   }
-  for (section in listOf("Standings", "Prizes", "Matches")) {
-    scrollTo(By.text(section))
-    selectTab(section)
-    browseList(allowSinglePage = true)
-  }
+  scrollTo(textIgnoringCase("Matches"))
+  browseList(allowSinglePage = true)
   if (addedFavorite) {
     scrollTo(By.clickable(true).enabled(true).hasDescendant(By.text("Remove from favorites")), Direction.UP).activate()
-    requireObject(By.text("Favorite event"))
+    scrollTo(By.text("Favorite event"), Direction.UP)
   }
   pressBack()
   requireSubtitle("Events around the world")
@@ -104,10 +101,10 @@ internal fun UiDevice.browseTeamAndPlayer() {
   val teamName = awaitUiValue("the team name in its summary card") {
     verticalListOrNull()?.findObject(By.clazz("android.widget.TextView"))?.text
   }
-  scrollTo(By.text("Roster"))
+  scrollTo(textIgnoringCase("Roster"))
   openFirstCard(
     By.clickable(true).hasDescendant(By.clazz("android.widget.TextView")),
-    sectionTitle = By.text("Roster"),
+    sectionTitle = textIgnoringCase("Roster"),
   )
   requireSubtitle("Stats, agents and team history")
   val addedPlayer = addFavorite("player")
@@ -118,16 +115,16 @@ internal fun UiDevice.browseTeamAndPlayer() {
   }
   pressBack()
   requireSubtitle("Team")
-  scrollTo(By.text("Completed"), Direction.UP)
+  scrollTo(textIgnoringCase("Completed"))
   selectTab("Completed")
   browseList()
-  scrollTo(By.text("Upcoming"), Direction.UP)
+  scrollTo(textIgnoringCase("Upcoming"), Direction.UP)
   selectTab("Upcoming")
   pressBack()
   requireSubtitle("Team ratings and records")
   navigateTo("Home", "Your Favorites")
-  scrollTo(By.text("Favorites"))
-  scrollTo(By.text("Teams"))
+  scrollTo(textIgnoringCase("Favorites"))
+  scrollTo(textIgnoringCase("Teams"))
   scrollTo(By.clickable(true).hasDescendant(By.text(teamName)).hasDescendant(By.text("→"))).activate()
   requireSubtitle("Team")
   if (addedTeam) {
@@ -176,12 +173,14 @@ private fun UiDevice.requireSubtitle(subtitle: String) {
   requireObject(By.text("// ${subtitle.uppercase()}"))
 }
 
+private fun textIgnoringCase(label: String): BySelector =
+  By.text(Pattern.compile(Pattern.quote(label), Pattern.CASE_INSENSITIVE))
+
 private fun UiDevice.selectTab(label: String) {
-  val tabLabel = Pattern.compile(Pattern.quote(label), Pattern.CASE_INSENSITIVE)
-  val selectedTab = By.selected(true).hasDescendant(By.text(tabLabel))
+  val selectedTab = By.selected(true).hasDescendant(textIgnoringCase(label))
   repeat(3) {
     if (hasObject(selectedTab)) return
-    requireObject(By.clickable(true).hasDescendant(By.text(tabLabel))).activate()
+    requireObject(By.clickable(true).hasDescendant(textIgnoringCase(label))).activate()
     if (wait(Until.hasObject(selectedTab), 1_500L)) {
       waitForIdle(2_000)
       return
