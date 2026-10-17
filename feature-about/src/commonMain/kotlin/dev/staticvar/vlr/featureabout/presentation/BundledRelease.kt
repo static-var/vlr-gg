@@ -8,75 +8,63 @@ import androidx.compose.runtime.Immutable
 import org.jetbrains.compose.resources.StringResource
 import vlr.feature_about.generated.resources.Res
 import vlr.feature_about.generated.resources.new_in_val_esports
-import vlr.feature_about.generated.resources.release_1_1_1_introduction
-import vlr.feature_about.generated.resources.release_1_1_1_tabs_title
-import vlr.feature_about.generated.resources.release_1_1_1_tabs_description
-import vlr.feature_about.generated.resources.release_1_1_1_sections_title
-import vlr.feature_about.generated.resources.release_1_1_1_sections_description
-import vlr.feature_about.generated.resources.release_1_1_1_refinements_title
-import vlr.feature_about.generated.resources.release_1_1_1_refinements_description
-import vlr.feature_about.generated.resources.release_1_1_1_glance_title
-import vlr.feature_about.generated.resources.release_1_1_1_glance_description
-import vlr.feature_about.generated.resources.release_1_1_1_ios_live_description
-import vlr.feature_about.generated.resources.release_1_1_1_ios_live_title
-import vlr.feature_about.generated.resources.release_1_1_1_navigation_description
-import vlr.feature_about.generated.resources.release_1_1_1_navigation_title
-import vlr.feature_about.generated.resources.release_1_1_1_predictions_description
-import vlr.feature_about.generated.resources.release_1_1_1_predictions_title
-import vlr.feature_about.generated.resources.release_1_1_1_stability_description
-import vlr.feature_about.generated.resources.release_1_1_1_stability_title
-import vlr.feature_about.generated.resources.release_1_1_1_team_form_description
-import vlr.feature_about.generated.resources.release_1_1_1_team_form_title
+import vlr.feature_about.generated.resources.release_1_1_2_android_pause_description
+import vlr.feature_about.generated.resources.release_1_1_2_android_pause_title
+import vlr.feature_about.generated.resources.release_1_1_2_introduction
+import vlr.feature_about.generated.resources.release_1_1_2_ios_live_description
+import vlr.feature_about.generated.resources.release_1_1_2_ios_live_title
+import vlr.feature_about.generated.resources.release_1_1_2_live_map_description
+import vlr.feature_about.generated.resources.release_1_1_2_live_map_title
+import vlr.feature_about.generated.resources.release_1_1_2_mascots_description
+import vlr.feature_about.generated.resources.release_1_1_2_mascots_title
+import vlr.feature_about.generated.resources.release_1_1_2_smoother_description
+import vlr.feature_about.generated.resources.release_1_1_2_smoother_title
+import vlr.feature_about.generated.resources.release_1_1_2_summaries_description
+import vlr.feature_about.generated.resources.release_1_1_2_summaries_title
+import vlr.feature_about.generated.resources.release_1_1_2_veto_description
+import vlr.feature_about.generated.resources.release_1_1_2_veto_title
 import vlr.feature_about.generated.resources.see_what_s_new
 import vlr.feature_about.generated.resources.what_s_new
 
 /** Release notes shipped with the app, available without a network connection. */
 public object BundledRelease {
-  public const val id: String = "val-esports-1.1.1"
+  public const val id: String = "val-esports-1.1.2"
   public val title: StringResource = Res.string.what_s_new
   public val introduction: StringResource =
-    Res.string.release_1_1_1_introduction
+    Res.string.release_1_1_2_introduction
   public val bannerTitle: StringResource = Res.string.new_in_val_esports
   public val bannerAction: StringResource = Res.string.see_what_s_new
 
   public val highlights: List<Highlight> = listOf(
     Highlight(
-      title = Res.string.release_1_1_1_predictions_title,
-      description = Res.string.release_1_1_1_predictions_description,
+      title = Res.string.release_1_1_2_summaries_title,
+      description = Res.string.release_1_1_2_summaries_description,
     ),
     Highlight(
-      title = Res.string.release_1_1_1_sections_title,
-      description = Res.string.release_1_1_1_sections_description,
+      title = Res.string.release_1_1_2_live_map_title,
+      description = Res.string.release_1_1_2_live_map_description,
     ),
     Highlight(
-      title = Res.string.release_1_1_1_tabs_title,
-      description = Res.string.release_1_1_1_tabs_description,
+      title = Res.string.release_1_1_2_mascots_title,
+      description = Res.string.release_1_1_2_mascots_description,
     ),
     Highlight(
-      title = Res.string.release_1_1_1_navigation_title,
-      description = Res.string.release_1_1_1_navigation_description,
+      title = Res.string.release_1_1_2_veto_title,
+      description = Res.string.release_1_1_2_veto_description,
     ),
     Highlight(
-      title = Res.string.release_1_1_1_team_form_title,
-      description = Res.string.release_1_1_1_team_form_description,
-    ),
-    Highlight(
-      title = Res.string.release_1_1_1_refinements_title,
-      description = Res.string.release_1_1_1_refinements_description,
-    ),
-    Highlight(
-      title = Res.string.release_1_1_1_ios_live_title,
-      description = Res.string.release_1_1_1_ios_live_description,
+      title = Res.string.release_1_1_2_ios_live_title,
+      description = Res.string.release_1_1_2_ios_live_description,
       platform = ReleasePlatform.Ios,
     ),
     Highlight(
-      title = Res.string.release_1_1_1_glance_title,
-      description = Res.string.release_1_1_1_glance_description,
-      platform = ReleasePlatform.Ios,
+      title = Res.string.release_1_1_2_android_pause_title,
+      description = Res.string.release_1_1_2_android_pause_description,
+      platform = ReleasePlatform.Android,
     ),
     Highlight(
-      title = Res.string.release_1_1_1_stability_title,
-      description = Res.string.release_1_1_1_stability_description,
+      title = Res.string.release_1_1_2_smoother_title,
+      description = Res.string.release_1_1_2_smoother_description,
     ),
   ).filter { it.platform == null || it.platform == releasePlatform }
 
