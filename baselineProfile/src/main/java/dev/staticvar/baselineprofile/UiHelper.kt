@@ -177,10 +177,11 @@ private fun UiDevice.requireSubtitle(subtitle: String) {
 }
 
 private fun UiDevice.selectTab(label: String) {
-  val selectedTab = By.selected(true).hasDescendant(By.text(label))
+  val tabLabel = Pattern.compile(Pattern.quote(label), Pattern.CASE_INSENSITIVE)
+  val selectedTab = By.selected(true).hasDescendant(By.text(tabLabel))
   repeat(3) {
     if (hasObject(selectedTab)) return
-    requireObject(By.clickable(true).hasDescendant(By.text(label))).activate()
+    requireObject(By.clickable(true).hasDescendant(By.text(tabLabel))).activate()
     if (wait(Until.hasObject(selectedTab), 1_500L)) {
       waitForIdle(2_000)
       return
