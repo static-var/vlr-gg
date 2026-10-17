@@ -3,8 +3,9 @@
 Kotlin file holding the mascot's Paths and one draw function per layer.
 
 usage: svg2compose.py <mascot.svg> <ClassName> <out.kt>
-Emits `internal object <ClassName>Art : MascotArt` with one `Path` val per shape, `tailPivot`/`eyesPivot`/`pawsBounds`,
-and `DrawScope.drawShadow/drawTail/drawBody/drawPaws/drawHead/drawEyes/drawFace(palette)` functions.
+Emits `internal object <ClassName>Art : MascotArt` with one `Path` val per shape, one `Stroke` val per distinct
+stroke width, `tailPivot`/`eyesPivot`/`pawsBounds`, and
+`DrawScope.drawShadow/drawTail/drawBody/drawPaws/drawHead/drawEyes/drawFace(palette)` functions.
 Shapes: path (M L H V C S Q T Z, abs/rel), circle, ellipse, rect(rx), line, polyline, polygon."""
 import re, sys
 import xml.etree.ElementTree as ET
@@ -165,7 +166,7 @@ def main():
         base = re.sub(r'[^A-Za-z0-9]', '', base); base = base[0].lower() + base[1:]
         n = used.get(base, 0); used[base] = n + 1
         return base if n == 0 else f'{base}{n + 1}'
-    path_decls, draw_fns = [], []
+    path_decls, draw_fns, strokes = [], [], {}
     for layer in ('shadow', 'tail', 'body', 'paws', 'head', 'eyes', 'face'):
         calls = []
         if layer == 'body' and paw_items:
@@ -186,12 +187,15 @@ def main():
             if stroke:
                 w = float(el.get('stroke-width', 1))
                 stroke_color = color_expr(stroke, op * float(el.get("stroke-opacity", 1)))
-                calls.append(draw_call(n, stroke_color, f'style = Stroke({fmt(w)}, cap = StrokeCap.Round, join = StrokeJoin.Round)'))
+                style = strokes.setdefault(w, 'stroke' + fmt(w).rstrip('f').replace('.', '_'))
+                calls.append(draw_call(n, stroke_color, f'style = {style}'))
         fn = 'draw' + layer[0].upper() + layer[1:]
         draw_fns.append(f'  override fun DrawScope.{fn}(palette: MascotPalette) {{\n' + '\n'.join(calls) + '\n  }')
     tp = [fmt(v) for v in groups['tail'].get('data-pivot').split(',')]
     ep = [fmt(v) for v in groups['eyes'].get('data-pivot').split(',')]
-    body_text = '\n'.join(path_decls) + '\n'.join(draw_fns)
+    stroke_decls = [f'  private val {name} = Stroke({fmt(w)}, cap = StrokeCap.Round, join = StrokeJoin.Round)'
+                    for w, name in strokes.items()]
+    body_text = '\n'.join(path_decls + stroke_decls + draw_fns)
     candidates = ['androidx.compose.ui.geometry.CornerRadius', 'androidx.compose.ui.geometry.Offset',
                   'androidx.compose.ui.geometry.Rect', 'androidx.compose.ui.geometry.RoundRect',
                   'androidx.compose.ui.graphics.Path', 'androidx.compose.ui.graphics.StrokeCap',
@@ -212,7 +216,7 @@ internal object {cls}Art : MascotArt {{
   override val eyesPivot = Offset({ep[0]}, {ep[1]})
   override val pawsBounds = {paws_bounds(paw_items)}
 '''
-    text = header + '\n'.join(path_decls) + '\n\n' + '\n\n'.join(draw_fns) + '\n}\n'
+    text = header + '\n'.join(path_decls + stroke_decls) + '\n\n' + '\n\n'.join(draw_fns) + '\n}\n'
     open(out, 'w').write(text)
     print(out, sum(len(v) for v in layers.values()), 'shapes')
 main()

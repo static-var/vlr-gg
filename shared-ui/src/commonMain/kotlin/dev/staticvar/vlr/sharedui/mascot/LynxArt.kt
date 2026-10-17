@@ -215,6 +215,9 @@ internal object LynxArt : MascotArt {
     moveTo(80f, 84f)
     cubicTo(82f, 91f, 90f, 89f, 91f, 84f)
   }
+  private val stroke3_5 = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round)
+  private val stroke2_2 = Stroke(2.2f, cap = StrokeCap.Round, join = StrokeJoin.Round)
+  private val stroke2_8 = Stroke(2.8f, cap = StrokeCap.Round, join = StrokeJoin.Round)
 
   override fun DrawScope.drawShadow(palette: MascotPalette) {
     drawPath(shadow0, palette.shadow)
@@ -223,37 +226,33 @@ internal object LynxArt : MascotArt {
   override fun DrawScope.drawTail(palette: MascotPalette) {
     drawPath(tail0, palette.fur)
     drawPath(tail1, palette.furDark)
-    drawPath(tail2, palette.outline, style = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    drawPath(tail2, palette.outline, style = stroke3_5)
   }
 
   override fun DrawScope.drawBody(palette: MascotPalette) {
     drawPath(body0, palette.fur)
-    drawPath(body0, palette.outline, style = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    drawPath(body0, palette.outline, style = stroke3_5)
     drawPath(body1, palette.furLight)
     drawPaws(palette)
   }
 
   override fun DrawScope.drawPaws(palette: MascotPalette) {
     drawPath(paws0, palette.furLight)
-    drawPath(paws0, palette.outline, style = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
-    drawPath(
-      paws1,
-      palette.outline.copy(alpha = palette.outline.alpha * 0.5f),
-      style = Stroke(2.2f, cap = StrokeCap.Round, join = StrokeJoin.Round),
-    )
+    drawPath(paws0, palette.outline, style = stroke3_5)
+    drawPath(paws1, palette.outline.copy(alpha = palette.outline.alpha * 0.5f), style = stroke2_2)
   }
 
   override fun DrawScope.drawHead(palette: MascotPalette) {
     drawPath(head0, palette.fur)
     drawPath(head1, palette.furDark)
     drawPath(head2, palette.pink)
-    drawPath(head3, palette.outline, style = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    drawPath(head3, palette.outline, style = stroke3_5)
     drawPath(head4, palette.fur)
     drawPath(head5, palette.furDark)
     drawPath(head6, palette.furLight)
     drawPath(head7, palette.pink)
     drawPath(head8, palette.pink)
-    drawPath(head9, palette.outline, style = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    drawPath(head9, palette.outline, style = stroke3_5)
   }
 
   override fun DrawScope.drawEyes(palette: MascotPalette) {
@@ -265,6 +264,6 @@ internal object LynxArt : MascotArt {
 
   override fun DrawScope.drawFace(palette: MascotPalette) {
     drawPath(face0, palette.ink)
-    drawPath(face1, palette.ink, style = Stroke(2.8f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    drawPath(face1, palette.ink, style = stroke2_8)
   }
 }

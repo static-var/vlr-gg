@@ -149,6 +149,8 @@ internal object RosieArt : MascotArt {
     cubicTo(75f, 82f, 66f, 76f, 70f, 70f)
     close()
   }
+  private val stroke3_5 = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round)
+  private val stroke2_2 = Stroke(2.2f, cap = StrokeCap.Round, join = StrokeJoin.Round)
 
   override fun DrawScope.drawShadow(palette: MascotPalette) {
     drawPath(shadow0, palette.shadow)
@@ -156,34 +158,30 @@ internal object RosieArt : MascotArt {
 
   override fun DrawScope.drawTail(palette: MascotPalette) {
     drawPath(tail0, palette.fur)
-    drawPath(tail0, palette.outline, style = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    drawPath(tail0, palette.outline, style = stroke3_5)
     drawPath(tail1, palette.furLight)
   }
 
   override fun DrawScope.drawBody(palette: MascotPalette) {
     drawPath(body0, palette.fur)
-    drawPath(body0, palette.outline, style = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    drawPath(body0, palette.outline, style = stroke3_5)
     drawPath(body1, palette.furLight)
     drawPaws(palette)
   }
 
   override fun DrawScope.drawPaws(palette: MascotPalette) {
     drawPath(paws0, palette.fur)
-    drawPath(paws0, palette.outline, style = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    drawPath(paws0, palette.outline, style = stroke3_5)
     drawPath(paws1, palette.fur)
-    drawPath(paws1, palette.outline, style = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
-    drawPath(
-      paws2,
-      palette.outline.copy(alpha = palette.outline.alpha * 0.5f),
-      style = Stroke(2.2f, cap = StrokeCap.Round, join = StrokeJoin.Round),
-    )
+    drawPath(paws1, palette.outline, style = stroke3_5)
+    drawPath(paws2, palette.outline.copy(alpha = palette.outline.alpha * 0.5f), style = stroke2_2)
   }
 
   override fun DrawScope.drawHead(palette: MascotPalette) {
     drawPath(head0, palette.furDark)
-    drawPath(head0, palette.outline, style = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    drawPath(head0, palette.outline, style = stroke3_5)
     drawPath(head1, palette.fur)
-    drawPath(head1, palette.outline, style = Stroke(3.5f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    drawPath(head1, palette.outline, style = stroke3_5)
     drawPath(head2, palette.furLight)
     drawPath(head3, palette.furLight)
     drawPath(head4, palette.pink.copy(alpha = palette.pink.alpha * 0.75f))

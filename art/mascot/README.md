@@ -9,6 +9,8 @@ SVG subset so a script can turn them into Compose `Path` code:
 - Layer groups, which `MascotFigure` animates: `tail` (swings around `data-pivot`), `body` (breathes), `paws` inside body
   (reused on the celebration banner), `head` (bobs), `eyes` inside head (blinks around `data-pivot`).
 - The head fills the card peek window x 28..132, y 12..95; `MascotPeekWindow` crops the small card mascot to it.
+- `svg2compose.py` caches every shape as a `Path` val and every distinct `stroke-width` as a `Stroke` val, so a draw
+  allocates nothing while the idle animation redraws each frame.
 
 Workflow:
 
