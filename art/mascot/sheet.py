@@ -3,7 +3,8 @@
 Per candidate: light and dark rows, each with the 160 figure, the 88 About size, the card peek crop at 3x
 device density (60x48 px) and at 1.5x (30x24), and the celebration pose (rotated -45 deg at the right edge).
 usage: sheet.py out.png label1=cand1.svg [label2=cand2.svg ...]"""
-import os, re, subprocess, sys, tempfile
+import re, shutil, subprocess, sys, tempfile
+from pathlib import Path
 
 PALETTES = {
   'light': dict(bg='#FFFFFF', surface='#F5F5F5', fur='#9E6EEF', furLight='#DAC8F9', furDark='#6E4CAF',
@@ -54,7 +55,7 @@ def main():
     tiles = []
     for c in cands:
         label, path = c.split('=', 1)
-        body = inner(open(path).read())
+        body = inner(Path(path).read_text())
         for theme in ('light', 'dark'):
             tiles.append((body, label, theme))
     n = len(tiles)
@@ -67,9 +68,10 @@ def main():
         parts.append(f'<g transform="translate({x},0)">{row(body, label, theme, y)}</g>')
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{side}" height="{side}" viewBox="0 0 {side} {side}">'
            f'<style>{css} svg{{overflow:hidden}} path,line,polyline,polygon,circle,ellipse,rect{{stroke-linecap:round;stroke-linejoin:round}}</style><rect width="{side}" height="{side}" fill="#808080"/>{"".join(parts)}</svg>')
-    tmp = tempfile.mkdtemp()
-    src = os.path.join(tmp, 'sheet.svg'); open(src, 'w').write(svg)
-    subprocess.run(['qlmanage', '-t', '-s', str(min(side * 2, 4000)), '-o', tmp, src], check=True, capture_output=True)
-    os.replace(os.path.join(tmp, 'sheet.svg.png'), out_png)
+    with tempfile.TemporaryDirectory() as tmp:
+        src = Path(tmp, 'sheet.svg')
+        src.write_text(svg)
+        subprocess.run(['qlmanage', '-t', '-s', str(min(side * 2, 4000)), '-o', tmp, str(src)], check=True, capture_output=True)
+        shutil.move(Path(tmp, 'sheet.svg.png'), out_png)
     print(out_png, f'{cols}x{rows} tiles')
 main()
