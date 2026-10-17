@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import dev.staticvar.designsystem.preview.PrismPreview
 import dev.staticvar.designsystem.preview.PrismPreviewProvider
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.designsystem.prism.PrismTheme
@@ -26,7 +25,7 @@ private val previewMessages = listOf(
   "Paper Rex hat gewonnen und" to "Something hat abgeliefert!!!",
 )
 
-@PrismPreview
+@Preview(name = "Celebration banners", widthDp = 393, heightDp = 1100, showBackground = true)
 @Composable
 internal fun MascotCelebrationPreview(@PreviewParameter(PrismPreviewProvider::class) variant: PrismVariant) {
   PrismTheme(variant = variant) {

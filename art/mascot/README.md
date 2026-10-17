@@ -29,4 +29,6 @@ characters at every size through the agent preview task:
 ./gradlew :shared-ui:captureComposePreviews -PagentPreview.previewNameFilter=Mascot -PagentPreview.viewportFilter=android-phone
 ```
 
-The PNGs land under `shared-ui/build/agentPreviewSnapshots/`.
+The PNGs land under `shared-ui/build/agentPreviewSnapshots/`. `MascotCelebrationPreview` and
+`MascotCelebrationNarrowPreview` show the speech banner at each message length, the narrow one at 320 dp with a 2x font
+scale; they carry explicit sizes, so render them with `-PagentPreview.viewportFilter=preview`.
