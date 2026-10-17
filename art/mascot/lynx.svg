@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+<ellipse cx="81" cy="144" rx="38" ry="4" fill="var(--shadow)"/>
+<g id="tail" data-pivot="108,125">
+  <path d="M 105 119 C 112 120 114 111 124 109 C 136 106 140 121 131 128 C 123 135 113 133 106 130 Z" fill="var(--fur)"/>
+  <path d="M 126 109 C 136 109 139 121 131 128 L 123 131 Q 129 121 122 111 Z" fill="var(--furDark)"/>
+  <path d="M 105 119 C 112 120 114 111 124 109 C 136 106 140 121 131 128 C 123 135 113 133 106 130 Z" fill="none" stroke="var(--outline)" stroke-width="3.5"/>
+</g>
+<g id="body">
+  <path d="M 58 91 C 50 103 46 118 48 131 C 50 145 109 146 113 132 C 116 118 110 102 102 91 Z" fill="var(--fur)" stroke="var(--outline)" stroke-width="3.5"/>
+  <ellipse cx="80" cy="117" rx="19" ry="21" fill="var(--furLight)"/>
+  <g id="paws">
+    <path d="M 52 133 C 52 121 78 121 78 133 L 78 137 Q 78 143 65 143 Q 52 143 52 137 Z M 84 133 C 84 121 110 121 110 133 L 110 137 Q 110 143 97 143 Q 84 143 84 137 Z" fill="var(--furLight)" stroke="var(--outline)" stroke-width="3.5"/>
+    <path d="M 61 135 V 139 M 69 135 V 139 M 93 135 V 139 M 101 135 V 139" fill="none" stroke="var(--outline)" stroke-width="2.2" stroke-opacity="0.5"/>
+  </g>
+  <g id="head">
+    <path d="M 39 56 L 36 32 L 33 13 Q 35 12 37 15 L 43 26 L 48 30 L 67 42 Z M 93 42 L 112 30 L 117 26 L 123 15 Q 125 12 127 13 L 124 32 L 121 56 Z" fill="var(--fur)"/>
+    <path d="M 33 13 Q 35 12 37 15 L 43 26 L 48 30 L 43 31 L 40 35 L 36 32 Z M 127 13 Q 125 12 123 15 L 117 26 L 112 30 L 117 31 L 120 35 L 124 32 Z" fill="var(--furDark)"/>
+    <path d="M 43 34 L 57 44 L 44 50 Z M 103 44 L 117 34 L 116 50 Z" fill="var(--pink)"/>
+    <path d="M 39 56 L 36 32 L 33 13 Q 35 12 37 15 L 43 26 L 48 30 L 67 42 Z M 93 42 L 112 30 L 117 26 L 123 15 Q 125 12 127 13 L 124 32 L 121 56 Z" fill="none" stroke="var(--outline)" stroke-width="3.5"/>
+    <path d="M 80 35 C 103 35 122 47 124 67 Q 125 76 130 82 Q 126 86 119 86 C 111 100 95 105 80 105 C 65 105 49 100 41 86 Q 34 86 30 82 Q 35 76 36 67 C 38 47 57 35 80 35 Z" fill="var(--fur)"/>
+    <path d="M 66 38 Q 70 36 74 36 L 73 47 Q 70 51 67 47 Z M 86 36 Q 90 36 94 38 L 93 47 Q 90 51 87 47 Z" fill="var(--furDark)"/>
+    <path d="M 80 75 C 67 68 56 77 60 87 C 63 97 75 97 80 94 C 85 97 97 97 100 87 C 104 77 93 68 80 75 Z" fill="var(--furLight)"/>
+    <ellipse cx="47" cy="78" rx="6" ry="3" fill="var(--pink)"/>
+    <ellipse cx="113" cy="78" rx="6" ry="3" fill="var(--pink)"/>
+    <path d="M 80 35 C 103 35 122 47 124 67 Q 125 76 130 82 Q 126 86 119 86 C 111 100 95 105 80 105 C 65 105 49 100 41 86 Q 34 86 30 82 Q 35 76 36 67 C 38 47 57 35 80 35 Z" fill="none" stroke="var(--outline)" stroke-width="3.5"/>
+    <g id="eyes" data-pivot="80,65">
+      <ellipse cx="59" cy="65" rx="8" ry="9.5" fill="var(--ink)"/>
+      <ellipse cx="101" cy="65" rx="8" ry="9.5" fill="var(--ink)"/>
+      <circle cx="56.5" cy="62" r="2.8" fill="var(--white)"/>
+      <circle cx="98.5" cy="62" r="2.8" fill="var(--white)"/>
+    </g>
+    <path d="M 75 76 Q 80 73 85 76 Q 84 80 80 82 Q 76 80 75 76 Z" fill="var(--ink)"/>
+    <path d="M 80 81 V 84 C 78 91 70 89 69 84 M 80 84 C 82 91 90 89 91 84" fill="none" stroke="var(--ink)" stroke-width="2.8"/>
+  </g>
+</g>
+</svg>

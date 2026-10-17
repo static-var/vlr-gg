@@ -5,9 +5,6 @@
 package dev.staticvar.vlr.sharedui.mascot
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -15,11 +12,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
@@ -55,9 +50,7 @@ internal fun CardMascot(
     }.clipToBounds().clearAndSetSemantics {},
   ) {
     if (active && inViewport && state.ownerId === id) {
-      // Crop the artwork's transparent margin so its paws meet the host's bottom edge.
-      val artwork = Modifier.offset(y = (-2).dp)
-        .wrapContentSize(Alignment.TopStart, unbounded = true).requiredSize(PrismCardMascotWidth)
+      val artwork = Modifier.mascotPeekArtwork(PrismCardMascotWidth)
       when (character) {
         MascotCharacter.Lynx -> LynxMascot(artwork)
         MascotCharacter.Rosie -> RosieMascot(artwork)

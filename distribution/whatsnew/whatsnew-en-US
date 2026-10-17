@@ -1,9 +1,8 @@
-New in 1.1.1:
-• Open predictions during live matches.
-• Choose and reorder the sections on match and event details.
-• See how many matches and events each tab holds.
-• Move between Home, lists and details with smoother transitions.
-• See prediction options only when available, with clearer labels.
-• Expand recent team results with smoother animation.
-• Refined team pages, share images and themes.
-• Compatibility and stability fixes.
+New in 1.1.2:
+• See pre-game and post-game summaries in match details.
+• Follow the live map score on Home and Matches cards.
+• Lynx and Rosie have a fresh look, and their banner fits the whole message.
+• Map veto steps line up, and the last map is labeled Decider.
+• The live match chip shows a clearer pause symbol.
+• Empty tabs no longer blink while lists refresh.
+• Smoother match lists and animations.

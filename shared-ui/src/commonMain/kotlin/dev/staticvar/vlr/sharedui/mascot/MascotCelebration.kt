@@ -7,18 +7,14 @@ package dev.staticvar.vlr.sharedui.mascot
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,14 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import dev.staticvar.designsystem.prism.Prism
@@ -68,83 +63,126 @@ public fun MascotCelebration(
     entrance.animateTo(0f, tween(550, easing = FastOutSlowInEasing))
     currentOnFinished()
   }
-  val colors = Prism.color
-  val fur = lerp(colors.accent, colors.surface, 0.28f)
-  val outline = lerp(colors.accent, colors.contentPrimary, 0.55f)
-  val bannerHeight = if (secondaryMessage != null) 80.dp else 54.dp
-  val bannerWidth = if (secondaryMessage != null) 260.dp else 190.dp
-  Box(modifier.fillMaxWidth().height(160.dp).zIndex(1f)) {
-    if (visible) {
+  if (visible) {
+    CelebrationScene(
+      character = character,
+      message = message,
+      secondaryMessage = secondaryMessage,
+      animated = animated,
+      entrance = { entrance.value },
+      bannerProgress = { banner.value },
+      modifier = modifier,
+    )
+  }
+}
+
+/** [entrance] and [bannerProgress] are read in layer blocks only, so animation frames never recompose the scene. */
+@Composable
+internal fun CelebrationScene(
+  character: MascotCharacter,
+  message: String,
+  secondaryMessage: String?,
+  animated: Boolean,
+  entrance: () -> Float,
+  bannerProgress: () -> Float,
+  modifier: Modifier = Modifier,
+) {
+  Layout(
+    content = {
       CharacterMascot(
-        Modifier.align(Alignment.CenterEnd).offset(x = 50.dp, y = (-20).dp).size(160.dp)
-          .graphicsLayer {
-            rotationZ = -45f
-            translationX = (1f - entrance.value) * 160.dp.toPx()
-          },
+        Modifier.size(CharacterSize).graphicsLayer {
+          rotationZ = -45f
+          translationX = (1f - entrance()) * CharacterSize.toPx()
+        },
         animated = animated,
         character = character,
       )
-      Box(
-        Modifier.align(Alignment.BottomEnd).offset(x = (-30).dp, y = (-8).dp)
-          .width(bannerWidth).height(bannerHeight)
-          .graphicsLayer {
-            transformOrigin = TransformOrigin(1f, 0f)
-            scaleX = banner.value
-            alpha = banner.value
-            rotationZ = -3f * (1f - banner.value)
-          }
-          .background(colors.accentSubtle, Prism.shapes.small)
-          .border(2.dp, colors.accent, Prism.shapes.small),
-        contentAlignment = Alignment.Center,
-      ) {
-        Column(
-          modifier = Modifier.padding(horizontal = 12.dp).semantics(mergeDescendants = true) {},
-          horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-          Text(
-            message,
-            style = Prism.typography.sectionTitle,
-            color = colors.contentPrimary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-          )
-          if (secondaryMessage != null) {
-            Text(
-              secondaryMessage,
-              style = Prism.typography.sectionTitle,
-              color = colors.contentPrimary,
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis,
-            )
-          }
-        }
-      }
-      if (character == MascotCharacter.Rosie) {
-        RosiePaws(
-          Modifier.align(Alignment.BottomEnd).offset(x = (-30).dp, y = 5.dp - bannerHeight).size(52.dp, 27.dp)
-            .graphicsLayer { alpha = banner.value },
-        )
+      Banner(message, secondaryMessage, bannerProgress)
+      BannerPaws(character, Modifier.graphicsLayer { alpha = bannerProgress() })
+    },
+    modifier = modifier.fillMaxWidth().zIndex(1f),
+  ) { (characterMeasurable, bannerMeasurable, pawsMeasurable), constraints ->
+    val width = constraints.maxWidth
+    val bannerEnd = BannerEndPadding.roundToPx()
+    val bannerBottom = BannerBottomPadding.roundToPx()
+    val bannerMaxHeight =
+      if (constraints.hasBoundedHeight) {
+        (constraints.maxHeight - bannerBottom).coerceAtLeast(0)
       } else {
-        Canvas(
-          Modifier.align(Alignment.BottomEnd).offset(x = (-32).dp, y = 1.dp - bannerHeight).size(48.dp, 18.dp)
-            .graphicsLayer { alpha = banner.value },
-        ) {
-          val pawWidth = size.width * 0.38f
-          for (x in listOf(0f, size.width - pawWidth)) {
-            drawOval(fur, Offset(x, 0f), Size(pawWidth, size.height))
-            drawOval(outline, Offset(x, 0f), Size(pawWidth, size.height), style = Stroke(1.5.dp.toPx()))
-            drawLine(
-              outline,
-              Offset(x + pawWidth * 0.4f, size.height * 0.55f),
-              Offset(x + pawWidth * 0.4f, size.height * 0.85f),
-              1.dp.toPx(),
-            )
-          }
-        }
+        Constraints.Infinity
       }
+    val banner = bannerMeasurable.measure(
+      Constraints(
+        maxWidth = (width - BannerStartPadding.roundToPx() - bannerEnd).coerceAtLeast(0),
+        maxHeight = bannerMaxHeight,
+      ),
+    )
+    val paws = pawsMeasurable.measure(Constraints())
+    val figure = characterMeasurable.measure(Constraints())
+    val height = constraints.constrainHeight(CharacterRise.roundToPx() + banner.height + bannerBottom)
+    val bannerTop = height - bannerBottom - banner.height
+    layout(width, height) {
+      figure.place(width - figure.width + CharacterOverhang.roundToPx(), bannerTop - CharacterRise.roundToPx())
+      banner.place(width - bannerEnd - banner.width, bannerTop)
+      paws.place(width - bannerEnd - paws.width, bannerTop - paws.height)
     }
   }
+}
+
+@Composable
+private fun Banner(message: String, secondaryMessage: String?, bannerProgress: () -> Float) {
+  val colors = Prism.color
+  Column(
+    modifier = Modifier
+      .graphicsLayer {
+        val progress = bannerProgress()
+        transformOrigin = TransformOrigin(1f, 0f)
+        scaleX = progress
+        alpha = progress
+        rotationZ = -3f * (1f - progress)
+      }
+      .background(colors.accentSubtle, Prism.shapes.small)
+      .border(2.dp, colors.accent, Prism.shapes.small)
+      .padding(horizontal = 12.dp, vertical = 10.dp)
+      .semantics(mergeDescendants = true) {},
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
+    Text(
+      message,
+      style = Prism.typography.sectionTitle,
+      color = colors.contentPrimary,
+      textAlign = TextAlign.Center,
+      softWrap = true,
+    )
+    if (secondaryMessage != null) {
+      Text(
+        secondaryMessage,
+        style = Prism.typography.sectionTitle,
+        color = colors.contentPrimary,
+        textAlign = TextAlign.Center,
+        softWrap = true,
+      )
+    }
+  }
+}
+
+private val CharacterSize = 160.dp
+
+/** How far the character's frame hangs past the scene's end edge. */
+private val CharacterOverhang = 50.dp
+
+/** The character's frame starts this far above the banner's top edge, so its paws land on the banner. */
+private val CharacterRise = 125.dp
+private val BannerStartPadding = 16.dp
+private val BannerEndPadding = 30.dp
+private val BannerBottomPadding = 8.dp
+
+/** Placed with their bottom on the banner's top edge; the offset sinks half of the paw art into the banner. */
+@Composable
+private fun BannerPaws(character: MascotCharacter, modifier: Modifier) {
+  val art = character.art
+  MascotPaws(art, modifier.offset(y = (art.pawsBounds.height / 2f).dp))
 }
 
 public enum class MascotCharacter {
