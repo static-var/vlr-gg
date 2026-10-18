@@ -47,6 +47,7 @@ class IosSymbolUploadHookTest(unittest.TestCase):
         self.env = {
             "PATH": f"{self.bin}:/usr/bin:/bin",
             "HOME": str(self.root),
+            "CI_WORKFLOW": "iOS TestFlight Release",
             "CI_XCODEBUILD_ACTION": "archive",
             "CI_XCODEBUILD_EXIT_CODE": "0",
             "CI_ARCHIVE_PATH": str(self.archive),
@@ -101,6 +102,15 @@ class IosSymbolUploadHookTest(unittest.TestCase):
         self.env.pop("SENTRY_AUTH_TOKEN")
         self.assertEqual(self.run_hook().returncode, 0)
         self.assert_no_external_commands()
+
+    def test_other_archive_workflows_skip_without_credentials(self):
+        for key in ("SENTRY_AUTH_TOKEN", "SENTRY_ORG", "SENTRY_PROJECT"):
+            self.env.pop(key)
+        for workflow in ("iOS CI Validation", ""):
+            with self.subTest(workflow=workflow):
+                self.env["CI_WORKFLOW"] = workflow
+                self.assertEqual(self.run_hook().returncode, 0)
+                self.assert_no_external_commands()
 
     def test_required_ci_configuration_fails_before_install_or_upload(self):
         for key in ("CI_XCODEBUILD_EXIT_CODE", "CI_ARCHIVE_PATH", "SENTRY_AUTH_TOKEN", "SENTRY_ORG", "SENTRY_PROJECT"):

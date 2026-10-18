@@ -2,7 +2,7 @@
 set +x
 set -eu
 
-if [ "${CI_XCODEBUILD_ACTION:-}" != archive ]; then
+if [ "${CI_WORKFLOW:-}" != 'iOS TestFlight Release' ] || [ "${CI_XCODEBUILD_ACTION:-}" != archive ]; then
   exit 0
 fi
 
