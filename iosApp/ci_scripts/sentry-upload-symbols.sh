@@ -1,0 +1,1 @@
+../../scripts/sentry-upload-symbols.sh
