@@ -70,7 +70,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
           chmod +x ./gradlew
-          ./gradlew :androidApp:bundleRelease \
+          ./gradlew :androidApp:bundleRelease :androidApp:writeReleaseNativeSymbolInputs \
             -Dorg.gradle.java.home="$JAVA_HOME" \
             -PsentryUpload=true \
             --stacktrace
@@ -84,11 +84,24 @@ jobs:
       - name: Verify packaged Compose resources
         run: python3 scripts/check-compose-resources.py "$APK"
 
+      - name: Prepare native debug symbols
+        run: |
+          symbols="androidApp/build/outputs/native-debug-symbols/release/native-debug-symbols.zip"
+          python3 scripts/prepare-android-symbols.py \
+            --bundle "$APK" \
+            --aar-list androidApp/build/intermediates/native-symbol-inputs/release/aars.txt \
+            --output "$symbols" \
+            --allow-missing libandroidx.graphics.path.so \
+            --allow-missing libdatastore_shared_counter.so
+          echo "NATIVE_SYMBOLS=$symbols" >> "$GITHUB_ENV"
+
       - name: Preserve signed bundle
         uses: actions/upload-artifact@v7
         with:
           name: beta-${{ env.VERSION_CODE }}
-          path: ${{ env.APK }}
+          path: |
+            ${{ env.APK }}
+            ${{ env.NATIVE_SYMBOLS }}
           if-no-files-found: error
 
       - name: Publish to Play Store
@@ -98,6 +111,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: dev.staticvar.vlr
           releaseFiles: ${{ env.APK }}
+          debugSymbols: ${{ env.NATIVE_SYMBOLS }}
           tracks: beta
           inAppUpdatePriority: 5
           whatsNewDirectory: distribution/whatsnew
@@ -111,7 +125,7 @@ jobs:
           name: Release ${{ env.VERSION_NAME }} (build ${{ env.VERSION_CODE }})
           prerelease: true
           bodyFile: distribution/whatsnew/whatsnew-en-US
-          artifacts: ${{ env.APK }}
+          artifacts: ${{ env.APK }},${{ env.NATIVE_SYMBOLS }}
 
       - name: Send Telegram release
         if: inputs.publish && inputs.notify_telegram

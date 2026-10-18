@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 import io.sentry.android.gradle.extensions.InstrumentationFeature
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
@@ -83,6 +84,31 @@ require(!providers.gradleProperty("releaseVersionName").isPresent && !providers.
   "Update version.xcconfig instead of overriding the Android version"
 }
 val releaseSigningStore = providers.environmentVariable("VLR_SIGNING_STORE_FILE").orNull
+
+abstract class WriteNativeSymbolInputs : DefaultTask() {
+  @get:InputFiles
+  abstract val artifacts: ConfigurableFileCollection
+
+  @get:OutputFile
+  abstract val manifest: RegularFileProperty
+
+  @TaskAction
+  fun writeManifest() {
+    manifest.get().asFile.apply {
+      parentFile.mkdirs()
+      writeText(artifacts.files.sortedBy { it.path }.joinToString("\n") { it.absolutePath } + "\n")
+    }
+  }
+}
+
+tasks.register<WriteNativeSymbolInputs>("writeReleaseNativeSymbolInputs") {
+  artifacts.from(configurations.named("releaseRuntimeClasspath").map { configuration ->
+    configuration.incoming.artifactView {
+      componentFilter { it is ModuleComponentIdentifier }
+    }.files.filter { it.extension == "aar" }
+  })
+  manifest.set(layout.buildDirectory.file("intermediates/native-symbol-inputs/release/aars.txt"))
+}
 
 android {
   sourceSets.getByName("androidTest").assets.srcDir(rootProject.file("app/schemas"))
