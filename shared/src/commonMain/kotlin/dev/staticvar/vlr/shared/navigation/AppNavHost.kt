@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -146,13 +147,16 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
             LocalAppEventSharedTransitionScope provides if (showSceneLayout) null else this,
             LocalGroupedPaneTransition provides paneTransition,
           ) {
+            val showBottomBar = barSide == null && !showRail && (showSceneLayout || appState.shouldShowBottomNavigation)
             Row(
-              modifier = if (showRail) {
-                Modifier.fillMaxSize()
+              modifier = when {
+                !showRail -> Modifier.fillMaxSize()
+                barSide == null -> Modifier.fillMaxSize()
                   .windowInsetsPadding(WindowInsets.safeDrawing)
                   .padding(Prism.dimens.spacingM)
-              } else {
-                Modifier.fillMaxSize()
+                else -> Modifier.fillMaxSize()
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
+                  .padding(start = Prism.dimens.spacingM, top = Prism.dimens.spacingM, end = Prism.dimens.spacingM)
               },
               horizontalArrangement = Arrangement.spacedBy(if (showRail) Prism.dimens.spacingM else 0.dp),
             ) {
@@ -164,8 +168,8 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
                 )
               }
               val contentModifier = if (barSide != null) {
-                val insets = WindowInsets.safeDrawing.only(barSide + WindowInsetsSides.Bottom)
-                (if (showRail) Modifier else Modifier.windowInsetsPadding(insets).consumeWindowInsets(insets))
+                val stripInsets = WindowInsets.safeDrawing.only(barSide)
+                (if (showRail) Modifier else Modifier.windowInsetsPadding(stripInsets).consumeWindowInsets(stripInsets))
                   .cardMascotViewport()
               } else {
                 Modifier
@@ -198,10 +202,16 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
                       ),
                     )
                   },
-                  modifier = Modifier.weight(1f).fillMaxWidth(),
+                  modifier = Modifier.weight(1f).fillMaxWidth().then(
+                    if (showBottomBar) {
+                      Modifier.consumeWindowInsets(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom))
+                    } else {
+                      Modifier
+                    },
+                  ),
                 )
                 AnimatedVisibility(
-                  visible = barSide == null && !showRail && (showSceneLayout || appState.shouldShowBottomNavigation),
+                  visible = showBottomBar,
                   enter = slideInVertically(
                     animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
                     initialOffsetY = { height -> height },
