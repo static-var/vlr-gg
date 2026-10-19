@@ -83,6 +83,6 @@ internal fun rememberOutlinedLogoPainter(
   }
   val treatment by rememberLogoTreatment(request, sharedLogoTreatments)
   return remember(treatment, painter, pixelSize) {
-    (treatment as? LogoTreatment.Outlined)?.let { PreparedLogoPainter(it, pixelSize) } ?: painter
+    (treatment as? LogoTreatment.Outlined)?.let { PreparedLogoPainter(it.bitmap) } ?: painter
   }
 }

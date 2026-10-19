@@ -23,7 +23,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
-import kotlin.math.ceil
 
 internal class LogoSource(val image: Image) {
   override fun equals(other: Any?): Boolean = other is LogoSource && image === other.image
@@ -39,7 +38,7 @@ internal data class LogoTreatmentRequest(
 
 internal sealed interface LogoTreatment {
   data object Original : LogoTreatment
-  data class Outlined(val bitmap: ImageBitmap, val padding: Int) : LogoTreatment
+  data class Outlined(val bitmap: ImageBitmap) : LogoTreatment
 }
 
 internal interface LogoTreatmentProvider {
@@ -113,9 +112,8 @@ internal class LogoTreatmentProcessor(
     }
     val result = if (analysis.needsOutline(request.background)) {
       val color = if (request.background.luminance() > 0.179f) Color.Black else Color.White
-      render(source.image, request.pixelSize, request.radiusPx, color)?.let {
-        LogoTreatment.Outlined(it, ceil(request.radiusPx).toInt())
-      } ?: LogoTreatment.Original
+      render(source.image, request.pixelSize, request.radiusPx, color)?.let(LogoTreatment::Outlined)
+        ?: LogoTreatment.Original
     } else {
       LogoTreatment.Original
     }

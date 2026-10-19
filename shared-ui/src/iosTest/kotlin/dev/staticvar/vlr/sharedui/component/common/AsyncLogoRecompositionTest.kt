@@ -205,7 +205,7 @@ class AsyncLogoRecompositionTest {
     background = Color.White,
   )
 
-  private fun outlined(): LogoTreatment.Outlined = LogoTreatment.Outlined(ImageBitmap(102, 102), padding = 3)
+  private fun outlined(): LogoTreatment.Outlined = LogoTreatment.Outlined(ImageBitmap(96, 96))
 }
 
 private sealed interface TreatmentMode
