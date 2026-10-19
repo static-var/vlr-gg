@@ -20,8 +20,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
@@ -54,6 +57,7 @@ private fun <T : Any> GroupedListDetailContent(listEntry: NavEntry<T>, detailEnt
     label = "detail pane width",
   ) { if (it == null) 0f else 1f }
   val paneSpacing = Prism.dimens.spacingS
+  val hinge = LocalHostChrome.current?.hinge
 
   Layout(
     modifier = Modifier.fillMaxSize().clipToBounds(),
@@ -64,7 +68,11 @@ private fun <T : Any> GroupedListDetailContent(listEntry: NavEntry<T>, detailEnt
         contentAlignment = Alignment.TopStart,
         contentKey = { it?.contentKey },
         transitionSpec = {
-          (fadeIn(tween(PaneTransitionDurationMillis)) togetherWith fadeOut(tween(PaneTransitionDurationMillis))).using(null)
+          (
+            fadeIn(
+              tween(PaneTransitionDurationMillis),
+            ) togetherWith fadeOut(tween(PaneTransitionDurationMillis))
+            ).using(null)
         },
       ) { entry ->
         Box(Modifier.fillMaxSize()) { entry?.Content() }
@@ -73,18 +81,33 @@ private fun <T : Any> GroupedListDetailContent(listEntry: NavEntry<T>, detailEnt
   ) { measurables, constraints ->
     val width = constraints.maxWidth
     val height = constraints.maxHeight
-    val spacing = paneSpacing.roundToPx().coerceAtMost(width)
-    val detailWidth = ((width - spacing) * 0.6f).roundToInt()
-    val progress = detailVisibility.value
-    val visibleDetailWidth = (detailWidth * progress).roundToInt()
-    val visibleSpacing = (spacing * progress).roundToInt()
-    val listWidth = width - visibleDetailWidth - visibleSpacing
-    val list = measurables[0].measure(Constraints.fixed(listWidth, height))
-    val detail = measurables[1].measure(Constraints.fixed(detailWidth, height))
     layout(width, height) {
-      list.placeRelative(0, 0)
-      detail.placeRelative(listWidth + visibleSpacing, 0)
+      val localHinge = coordinates?.verticalHinge(hinge, width, height, minPaneWidth = 240.dp.roundToPx())
+      val spacing = localHinge?.width?.roundToInt() ?: paneSpacing.roundToPx().coerceAtMost(width)
+      val detailWidth = localHinge?.let { width - it.right.roundToInt() } ?: ((width - spacing) * 0.6f).roundToInt()
+      val progress = detailVisibility.value
+      val visibleDetailWidth = (detailWidth * progress).roundToInt()
+      val visibleSpacing = (spacing * progress).roundToInt()
+      val listWidth = width - visibleDetailWidth - visibleSpacing
+      val list = measurables[0].measure(Constraints.fixed(listWidth, height))
+      val detail = measurables[1].measure(Constraints.fixed(detailWidth, height))
+      if (localHinge == null) {
+        list.placeRelative(0, 0)
+        detail.placeRelative(listWidth + visibleSpacing, 0)
+      } else {
+        list.place(0, 0)
+        detail.place(listWidth + visibleSpacing, 0)
+      }
     }
+  }
+}
+
+private fun LayoutCoordinates.verticalHinge(hinge: Rect?, width: Int, height: Int, minPaneWidth: Int): Rect? {
+  if (hinge == null || hinge.height <= hinge.width) return null
+  val localHinge = Rect(windowToLocal(hinge.topLeft), windowToLocal(hinge.bottomRight))
+  return localHinge.takeIf { region ->
+    region.top <= 1 && region.bottom >= height - 1 &&
+      region.left >= minPaneWidth && width - region.right >= minPaneWidth
   }
 }
 
