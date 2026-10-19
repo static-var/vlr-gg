@@ -5,11 +5,12 @@
 package dev.staticvar.designsystem.component.navigation
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
@@ -32,20 +33,21 @@ public fun PrismVerticalBarNav(
   style: PrismNavigationRailStyle = PrismNavigationRailStyle.Default,
 ) {
   PrismSurface(
-    modifier = modifier.width(48.dp),
+    modifier = modifier,
     color = Prism.color.background,
     shape = CircleShape,
     border = BorderStroke(Prism.dimens.strokeDefault, Prism.color.stroke),
   ) {
     Column(
-      modifier = Modifier.padding(vertical = Prism.dimens.spacingXs).selectableGroup(),
+      modifier = Modifier.padding(VerticalBarNavInset).selectableGroup(),
+      verticalArrangement = Arrangement.spacedBy(VerticalBarNavInset),
     ) {
       items.forEach { item ->
         val selected = item.id == selectedItemId
 
         PrismSurface(
           modifier = Modifier
-            .size(48.dp)
+            .size(VerticalBarNavItemSize)
             .selectable(
               selected = selected,
               onClick = { onItemSelected(item) },
@@ -53,9 +55,9 @@ public fun PrismVerticalBarNav(
             ),
           color = style.containerColor(selected),
           shape = CircleShape,
-          frame = style.frame.copy(border = style.border(selected)),
+          frame = style.frame.copy(border = if (selected) style.border(selected = true) else null),
         ) {
-          Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Icon(
               imageVector = if (selected) item.selectedIcon else item.icon,
               contentDescription = item.label,
@@ -67,3 +69,7 @@ public fun PrismVerticalBarNav(
     }
   }
 }
+
+// The inset is equal on every side so the capsule ends stay concentric with the first and last item.
+private val VerticalBarNavInset = 4.dp
+private val VerticalBarNavItemSize = 44.dp
