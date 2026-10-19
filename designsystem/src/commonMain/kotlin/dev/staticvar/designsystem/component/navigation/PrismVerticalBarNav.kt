@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import dev.staticvar.designsystem.component.surface.PrismSurface
@@ -48,6 +49,7 @@ public fun PrismVerticalBarNav(
         PrismSurface(
           modifier = Modifier
             .size(VerticalBarNavItemSize)
+            .clip(CircleShape)
             .selectable(
               selected = selected,
               onClick = { onItemSelected(item) },
