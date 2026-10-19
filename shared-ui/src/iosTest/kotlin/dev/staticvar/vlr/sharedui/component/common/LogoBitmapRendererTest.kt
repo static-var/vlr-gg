@@ -110,7 +110,7 @@ class LogoBitmapRendererTest {
     assertTrue(analysis.needsOutline(Color(0xFF202020)))
   }
 
-  @Test fun rendersAspectFitArtworkInsideTheFullyPaddedBitmap() {
+  @Test fun rendersTheOutlineInsideTheRequestedBounds() {
     val source = bitmapImage(40, 20) { drawRect(Color.Black) }
 
     val fitted = checkNotNull(
@@ -133,11 +133,19 @@ class LogoBitmapRendererTest {
       ),
     )
     val pixels = outlined.toPixelMap()
-    assertEquals(24, outlined.width)
-    assertEquals(24, outlined.height)
-    assertEquals(Color.Black, pixels[12, 12])
-    assertEquals(Color.White, pixels[12, 5])
-    assertEquals(0f, pixels[12, 4].alpha)
+    assertEquals(20, outlined.width)
+    assertEquals(20, outlined.height)
+    assertEquals(Color.Black, pixels[10, 10])
+    assertEquals(Color.White, pixels[10, 4])
+    assertEquals(0f, pixels[10, 3].alpha)
+    assertEquals(Color.White, pixels[0, 10])
+    assertEquals(Color.White, pixels[19, 10])
+  }
+
+  @Test fun skipsBoundsTooSmallForTheOutline() {
+    val source = bitmapImage(16, 16) { drawRect(Color.Black) }
+
+    assertNull(renderOutlinedLogo(source, IntSize(4, 4), 2f, Color.White))
   }
 
   @Test fun skipsImagesThatCannotBeReadConcurrently() {

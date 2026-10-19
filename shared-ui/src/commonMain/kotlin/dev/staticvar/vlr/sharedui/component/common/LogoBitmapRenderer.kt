@@ -57,15 +57,13 @@ internal fun renderOutlinedLogo(image: Image, pixelSize: IntSize, radiusPx: Floa
   require(pixelSize.width > 0 && pixelSize.height > 0) { "pixelSize must be positive: $pixelSize" }
   require(radiusPx.isFinite() && radiusPx >= 0f) { "radiusPx must be finite and non-negative: $radiusPx" }
 
+  // The outline must fit inside pixelSize, because the image clips anything drawn outside its bounds.
   val padding = ceil(radiusPx).toInt()
-  val outputWidth = pixelSize.width.toLong() + padding.toLong() * 2
-  val outputHeight = pixelSize.height.toLong() + padding.toLong() * 2
-  require(outputWidth <= Int.MAX_VALUE && outputHeight <= Int.MAX_VALUE) {
-    "Outlined logo dimensions are too large: ${outputWidth}x$outputHeight"
-  }
+  val artworkSize = IntSize(pixelSize.width - padding * 2, pixelSize.height - padding * 2)
+  if (artworkSize.width <= 0 || artworkSize.height <= 0) return null
 
-  val output = ImageBitmap(outputWidth.toInt(), outputHeight.toInt())
-  val fitted = source.fitInside(pixelSize)
+  val output = ImageBitmap(pixelSize.width, pixelSize.height)
+  val fitted = source.fitInside(artworkSize)
   val outlineFilter = ColorFilter.tint(outlineColor)
   CanvasDrawScope().draw(
     density = Density(1f),

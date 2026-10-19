@@ -68,7 +68,7 @@ public fun SharedNetworkIcon(
   }
 
   val useConditionalOutline =
-    conditionalOutline && size != PrismIconSize.Small && tint == PrismIconTint.None && contentScale == ContentScale.Fit
+    conditionalOutline && tint == PrismIconTint.None && contentScale == ContentScale.Fit
   val context = LocalPlatformContext.current
   // Share one decode size across list and hero icons, independent of animated bounds.
   val decodeSizePx = with(LocalDensity.current) { PrismIconSize.Hero.containerSizeDp.roundToPx() }
