@@ -59,6 +59,7 @@
 		4C32F668A1F6E32D83DC9E3F /* FavoriteSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973F66BBC21F094338D4832F /* FavoriteSearchTests.swift */; };
 		561A93F4EB86F4A8116CB8DA /* SiriActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */; };
 		56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */; };
+		D3B02B8817A54E429BA3AA01 /* HostChromeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B02B8817A54E429BA3AA02 /* HostChromeBridge.swift */; };
 		7D487293553B3F4031496A2A /* NativeLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB7CFA376CE1D06FD224461 /* NativeLocalization.swift */; };
 		7E353AB5AAE161E37B859B61 /* NativeLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 512CE686A685EA1302CD1FB1 /* NativeLocalizationTests.swift */; };
 		81F0194729993D1D335F3D75 /* chakra_petch_OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 26CF5DFE79A8999E46F8AD25 /* chakra_petch_OFL.txt */; };
@@ -171,6 +172,7 @@
 		C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
 		CE31C8AA15CA1F48E0DD9971 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
 		CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D3B02B8817A54E429BA3AA02 /* HostChromeBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostChromeBridge.swift; sourceTree = "<group>"; };
 		DE7A165F07B1521494741109 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
 		E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriActionsTests.swift; sourceTree = "<group>"; };
 		EEC913577C9501B660DECCCD /* chakra_petch_regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = chakra_petch_regular.ttf; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 				D1F8D968CF01C749B570E7A9 /* ActivityPushTokenProvider.swift */,
 				F543015C899423D4B01CEB2E /* Assets.xcassets */,
 				CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
+				D3B02B8817A54E429BA3AA02 /* HostChromeBridge.swift */,
 				5C7B64D40E8F44E29B9D622C /* LiveActivityPermissionProvider.swift */,
 				5FFB84F263D52FFC7C65EE64 /* FavoriteSearch.swift */,
 				86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */,
@@ -571,6 +574,7 @@
 				172919BAE82CA2AD8BB77844 /* MatchActivityStyle.swift in Sources */,
 				98EBCF0009BC343633523083 /* ActivityPushTokenProvider.swift in Sources */,
 				56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
+				D3B02B8817A54E429BA3AA01 /* HostChromeBridge.swift in Sources */,
 				CD369A06E85A4B3F85B9452D /* LiveActivityPermissionProvider.swift in Sources */,
 				B5774EBA09C9BF2544502554 /* FavoriteSearch.swift in Sources */,
 				8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */,

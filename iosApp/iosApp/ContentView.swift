@@ -38,7 +38,7 @@ private struct ComposeView: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> UIViewController {
         context.coordinator.open(pendingDeepLink)
-        return MainViewControllerKt.MainViewController(
+        let controller = MainViewControllerKt.MainViewController(
             authToken: GeneratedBuildConfig.authToken,
             deepLinkHandler: context.coordinator.deepLinkHandler,
             onWidgetSnapshotChanged: { snapshotJSON in
@@ -56,8 +56,13 @@ private struct ComposeView: UIViewControllerRepresentable {
                         IosMatchActivityOptOut.shared.preferenceChanged(enabled.boolValue)
                     }
                 }
-            }
+            },
+            hostChromeStore: context.coordinator.hostChromeStore
         )
+        let hostChromeBridge = HostChromeBridge(store: context.coordinator.hostChromeStore)
+        hostChromeBridge.frame = controller.view.bounds
+        controller.view.addSubview(hostChromeBridge)
+        return controller
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
@@ -66,6 +71,7 @@ private struct ComposeView: UIViewControllerRepresentable {
 
     final class Coordinator {
         let deepLinkHandler = AppDeepLinkHandler()
+        let hostChromeStore = IosHostChromeStore()
         let notificationPermissionProvider = IosLiveActivityPermissionProvider()
         let pushTokenProvider = IosActivityPushTokenProvider()
         let liveUpdateStateProvider = IosLiveUpdateStateProvider()

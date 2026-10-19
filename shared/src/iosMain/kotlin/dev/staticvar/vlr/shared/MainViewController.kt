@@ -8,15 +8,18 @@ package dev.staticvar.vlr.shared
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.window.ComposeUIViewController
+import dev.staticvar.vlr.core.notifications.LiveUpdateStateProvider
 import dev.staticvar.vlr.core.notifications.NotificationPermissionProvider
 import dev.staticvar.vlr.core.notifications.PushTokenProvider
-import dev.staticvar.vlr.core.notifications.LiveUpdateStateProvider
 import dev.staticvar.vlr.shared.di.initializeAppKoin
-import dev.staticvar.vlr.shared.network.iosNetworkModule
+import dev.staticvar.vlr.shared.host.IosHostChromeStore
 import dev.staticvar.vlr.shared.navigation.AppDeepLinkHandler
-import dev.staticvar.vlr.sharedui.share.LocalImageSharer
+import dev.staticvar.vlr.shared.navigation.LocalHostChrome
+import dev.staticvar.vlr.shared.network.iosNetworkModule
 import dev.staticvar.vlr.sharedui.notifications.LocalNotificationPermissionProvider
+import dev.staticvar.vlr.sharedui.share.LocalImageSharer
 import dev.staticvar.vlr.sharedui.share.rememberIosImageSharer
+import io.sentry.kotlin.multiplatform.Sentry
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSBundle
 import platform.Foundation.NSProcessInfo
@@ -27,7 +30,6 @@ import platform.posix.stderr
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.processUnhandledException
 import kotlin.native.setUnhandledExceptionHook
-import io.sentry.kotlin.multiplatform.Sentry
 
 private const val GeneratedPlaceholderToken: String = "replace-with-your-token"
 private const val UnknownThrowableDescription: String = "<unable to render throwable>"
@@ -46,6 +48,7 @@ fun MainViewController(
   pushTokenProvider: PushTokenProvider? = null,
   liveUpdateStateProvider: LiveUpdateStateProvider? = null,
   onLiveUpdatesChanged: (Boolean) -> Unit = {},
+  hostChromeStore: IosHostChromeStore = IosHostChromeStore(),
 ): UIViewController {
   ensureUnhandledExceptionLoggingInstalled()
 
@@ -58,6 +61,7 @@ fun MainViewController(
       CompositionLocalProvider(
         LocalImageSharer provides rememberIosImageSharer(),
         LocalNotificationPermissionProvider provides notificationPermissionProvider,
+        LocalHostChrome provides hostChromeStore.chrome,
       ) {
         App(
           deepLinkHandler = deepLinkHandler,
