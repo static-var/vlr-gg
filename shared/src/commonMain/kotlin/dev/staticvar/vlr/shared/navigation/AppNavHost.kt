@@ -18,20 +18,31 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -47,6 +58,7 @@ import dev.staticvar.designsystem.component.card.cardMascotViewport
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavBar
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavBarLarge
 import dev.staticvar.designsystem.component.navigation.PrismBottomNavItem
+import dev.staticvar.designsystem.component.navigation.PrismVerticalBarNav
 import dev.staticvar.designsystem.prism.Prism
 import dev.staticvar.vlr.sharedui.component.common.ProvideSharedTextTransitions
 import org.jetbrains.compose.resources.stringResource
@@ -61,15 +73,37 @@ import vlr.shared.generated.resources.navigation_ranking
 @OptIn(KoinExperimentalAPI::class, ExperimentalSharedTransitionApi::class)
 @Composable
 public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
+  val hostChrome = LocalHostChrome.current
+  val barSide = hostChrome?.barSide
   val navigationTelemetry = remember(appState) { NavigationTelemetry() }
   val activeRoute = appState.backStack.lastOrNull() as? AppRoute
   SideEffect { navigationTelemetry.show(activeRoute) }
   val icons = Prism.icons
   val navItems = listOf(
-    PrismBottomNavItem(id = HOME_ID, label = stringResource(Res.string.navigation_home), icon = icons.home.unselected, selectedIcon = icons.home.selected),
-    PrismBottomNavItem(id = MATCHES_ID, label = stringResource(Res.string.navigation_matches), icon = icons.matches.unselected, selectedIcon = icons.matches.selected),
-    PrismBottomNavItem(id = EVENTS_ID, label = stringResource(Res.string.navigation_events), icon = icons.events.unselected, selectedIcon = icons.events.selected),
-    PrismBottomNavItem(id = RANKINGS_ID, label = stringResource(Res.string.navigation_ranking), icon = icons.rankings.unselected, selectedIcon = icons.rankings.selected),
+    PrismBottomNavItem(
+      id = HOME_ID,
+      label = stringResource(Res.string.navigation_home),
+      icon = icons.home.unselected,
+      selectedIcon = icons.home.selected,
+    ),
+    PrismBottomNavItem(
+      id = MATCHES_ID,
+      label = stringResource(Res.string.navigation_matches),
+      icon = icons.matches.unselected,
+      selectedIcon = icons.matches.selected,
+    ),
+    PrismBottomNavItem(
+      id = EVENTS_ID,
+      label = stringResource(Res.string.navigation_events),
+      icon = icons.events.unselected,
+      selectedIcon = icons.events.selected,
+    ),
+    PrismBottomNavItem(
+      id = RANKINGS_ID,
+      label = stringResource(Res.string.navigation_ranking),
+      icon = icons.rankings.unselected,
+      selectedIcon = icons.rankings.selected,
+    ),
   )
   val entryProvider = koinEntryProvider<NavKey>()
   val entryDecorators = listOf(
@@ -79,7 +113,7 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
 
   ProvideVlrAppState(appState = appState) {
     Box(
-      modifier = modifier.fillMaxSize().cardMascotViewport(),
+      modifier = modifier.fillMaxSize().then(if (barSide == null) Modifier.cardMascotViewport() else Modifier),
     ) {
       val adaptiveLayout = appAdaptiveLayout(currentWindowAdaptiveInfoV2())
       val showSceneLayout = adaptiveLayout.showTwoPanes
@@ -122,14 +156,21 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
               },
               horizontalArrangement = Arrangement.spacedBy(if (showRail) Prism.dimens.spacingM else 0.dp),
             ) {
-              if (showRail) {
+              if (showRail && barSide == null) {
                 PrismBottomNavBarLarge(
                   items = navItems,
                   selectedItemId = appState.selectedNavigationItemId,
                   onItemSelected = { appState.selectRoot(it.id) },
                 )
               }
-              Column(modifier = Modifier.weight(1f).fillMaxSize()) {
+              val contentModifier = if (barSide != null) {
+                val insets = WindowInsets.safeDrawing.only(barSide + WindowInsetsSides.Bottom)
+                (if (showRail) Modifier else Modifier.windowInsetsPadding(insets).consumeWindowInsets(insets))
+                  .cardMascotViewport()
+              } else {
+                Modifier
+              }
+              Column(modifier = Modifier.weight(1f).fillMaxSize().then(contentModifier)) {
                 NavDisplay(
                   sceneState = sceneState,
                   navigationEventState = navigationEventState,
@@ -160,7 +201,7 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
                   modifier = Modifier.weight(1f).fillMaxWidth(),
                 )
                 AnimatedVisibility(
-                  visible = !showRail && (showSceneLayout || appState.shouldShowBottomNavigation),
+                  visible = barSide == null && !showRail && (showSceneLayout || appState.shouldShowBottomNavigation),
                   enter = slideInVertically(
                     animationSpec = tween(durationMillis = NavigationTransitionDurationMillis),
                     initialOffsetY = { height -> height },
@@ -182,7 +223,39 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
           }
         }
       }
+      if (barSide != null) {
+        HostVerticalNavigation(hostChrome = hostChrome, items = navItems, appState = appState)
+      }
     }
+  }
+}
+
+@Composable
+private fun BoxScope.HostVerticalNavigation(
+  hostChrome: HostChrome,
+  items: List<PrismBottomNavItem>,
+  appState: VlrAppState,
+) {
+  val layoutDirection = LocalLayoutDirection.current
+  val safePadding = WindowInsets.safeDrawing.asPaddingValues()
+  val isEnd = hostChrome.barSide == WindowInsetsSides.End
+  val stripWidth = if (isEnd) {
+    safePadding.calculateEndPadding(layoutDirection)
+  } else {
+    safePadding.calculateStartPadding(layoutDirection)
+  }
+  Box(
+    modifier = Modifier.align(if (isEnd) Alignment.BottomEnd else Alignment.BottomStart)
+      .fillMaxHeight()
+      .width(stripWidth)
+      .padding(top = hostChrome.barTopReserved, bottom = VerticalBarNavBottomOffset),
+    contentAlignment = Alignment.BottomCenter,
+  ) {
+    PrismVerticalBarNav(
+      items = items,
+      selectedItemId = appState.selectedNavigationItemId,
+      onItemSelected = { appState.selectRoot(it.id) },
+    )
   }
 }
 
@@ -241,3 +314,6 @@ internal const val MatchTransitionRoleKey: String = "VlrMatchTransitionRole"
 
 private const val NavigationTransitionDurationMillis: Int = 180
 private const val NavigationSlideOffsetDivisor: Int = 8
+
+// Matches where UIKit places a tab bar inside the iPhone Duo vertical bar.
+private val VerticalBarNavBottomOffset = 26.dp
