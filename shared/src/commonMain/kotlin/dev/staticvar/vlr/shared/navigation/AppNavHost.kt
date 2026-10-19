@@ -149,14 +149,12 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
           ) {
             val showBottomBar = barSide == null && !showRail && (showSceneLayout || appState.shouldShowBottomNavigation)
             Row(
-              modifier = when {
-                !showRail -> Modifier.fillMaxSize()
-                barSide == null -> Modifier.fillMaxSize()
-                  .windowInsetsPadding(WindowInsets.safeDrawing)
-                  .padding(Prism.dimens.spacingM)
-                else -> Modifier.fillMaxSize()
+              modifier = if (showRail) {
+                Modifier.fillMaxSize()
                   .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
                   .padding(start = Prism.dimens.spacingM, top = Prism.dimens.spacingM, end = Prism.dimens.spacingM)
+              } else {
+                Modifier.fillMaxSize()
               },
               horizontalArrangement = Arrangement.spacedBy(if (showRail) Prism.dimens.spacingM else 0.dp),
             ) {
@@ -165,6 +163,8 @@ public fun AppNavHost(appState: VlrAppState, modifier: Modifier = Modifier) {
                   items = navItems,
                   selectedItemId = appState.selectedNavigationItemId,
                   onItemSelected = { appState.selectRoot(it.id) },
+                  modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+                    .padding(bottom = Prism.dimens.spacingM),
                 )
               }
               val contentModifier = if (barSide != null) {
