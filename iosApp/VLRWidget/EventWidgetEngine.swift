@@ -104,13 +104,13 @@ enum EventWidgetEngine {
         let horizon = date.addingTimeInterval(86_400)
         var dates = Set<Date>()
         var pending = Set<Date>()
-        func schedule(_ boundary: Date) {
-            if boundary >= date, boundary <= horizon, dates.insert(boundary).inserted { pending.insert(boundary) }
+        func schedule(_ boundary: Date, from entryDate: Date) {
+            if boundary >= date, entryDate == date || boundary <= horizon, dates.insert(boundary).inserted { pending.insert(boundary) }
         }
-        schedule(date)
-        if let start = record.value.event.dates.start?.start(in: timeZone) { schedule(start) }
+        schedule(date, from: date)
+        if let start = record.value.event.dates.start?.start(in: timeZone) { schedule(start, from: date) }
         let safety = record.fetchedAt.addingTimeInterval(10_801)
-        if record.value.matches.contains(where: { if case .live = $0.phase { return true }; return false }) { schedule(safety) }
+        if record.value.matches.contains(where: { if case .live = $0.phase { return true }; return false }) { schedule(safety, from: date) }
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = timeZone
         var entries: [EventWidgetEntry] = []
@@ -119,15 +119,17 @@ enum EventWidgetEngine {
             let displayed = entryDate == date ? content : self.content(record.value, fetchedAt: record.fetchedAt,
                 source: source, at: entryDate, timeZone: timeZone)
             entries.append(.init(date: entryDate, content: .content(displayed)))
-            if let midnight = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: entryDate)) { schedule(midnight) }
+            if let midnight = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: entryDate)) { schedule(midnight, from: entryDate) }
             for fixture in displayed.fixtures(large: true) {
-                for boundary in WidgetKickoff.timelineDates(start: fixture.start, now: entryDate, timeZone: timeZone) { schedule(boundary) }
+                for boundary in WidgetKickoff.timelineDates(start: fixture.start, now: entryDate, timeZone: timeZone) {
+                    schedule(boundary, from: entryDate)
+                }
                 if record.value.matches.contains(where: { $0.fixture.id == fixture.id && $0.phase == .upcoming }), let start = fixture.start {
-                    schedule(start.addingTimeInterval(21_601))
+                    schedule(start.addingTimeInterval(21_601), from: entryDate)
                 }
             }
             if case .visible(.between(let hero, _)) = displayed.body, let start = hero.last.scheduledStart {
-                schedule(start.addingTimeInterval(43_200))
+                schedule(start.addingTimeInterval(43_200), from: entryDate)
             }
         }
         entries.sort { $0.date < $1.date }
@@ -226,7 +228,7 @@ enum EventWidgetEngine {
             fixture("sample-2", "Echo", "Foxtrot", offset: 21_600, round: "Upper Round 1"),
             fixture("sample-3", "Golf", "Hotel", offset: 28_800, round: "Lower Round 1"),
         ].map { EventWidgetMatch(fixture: $0, phase: .upcoming) }
-        return .init(header: .init(eventID: "", title: "Val Esports", logo: nil, subtitle: .starts(nil, location: ""),
+        return .init(header: .init(eventID: "", title: "Val Esports", logo: nil, subtitle: .stage("Playoffs", location: ""),
                                   progress: .empty, hasLiveMatch: false),
                      body: .visible(.scheduled(.first(hero), .matches(.init(heading: .upNext, rows: rows)))))
     }

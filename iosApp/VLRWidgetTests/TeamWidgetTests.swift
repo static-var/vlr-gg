@@ -320,7 +320,7 @@ final class TeamWidgetTests: XCTestCase {
         upcoming.form = [.win]
         XCTAssertEqual(upcoming.expired(fetchedAt: fetchedAt, now: fetchedAt.addingTimeInterval(21_600)), upcoming)
         XCTAssertEqual(upcoming.expired(fetchedAt: fetchedAt, now: fetchedAt.addingTimeInterval(21_601)), idle)
-        let fresh = FavoriteWidgetRecord(key: .init(entityID: "2", clientID: "client"), fetchedAt: fetchedAt, value: upcoming)
+        let fresh = FavoriteWidgetRecord(key: .init(entityID: "2", clientID: "client"), fetchedAt: fetchedAt, value: upcoming, origin: .fresh)
         guard case .upcoming(let overdue) = fresh.teamContent(at: fetchedAt.addingTimeInterval(21_601)).state else {
             return XCTFail("Fresh upcoming match must remain upcoming")
         }

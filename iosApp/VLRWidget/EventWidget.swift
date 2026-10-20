@@ -142,9 +142,11 @@ struct EventWidgetView: View {
                         Text(verbatim: " · " + day).fixedSize(horizontal: true, vertical: false).layoutPriority(1)
                     }
                     if text.liveBadge {
-                        Text(verbatim: " · " + widgetString("Live", locale: locale))
-                            .foregroundStyle(palette.accent).widgetAccentable()
-                            .fixedSize(horizontal: true, vertical: false).layoutPriority(1)
+                        HStack(spacing: 0) {
+                            Text(verbatim: " · ").foregroundStyle(palette.secondary)
+                            Text(verbatim: widgetString("Live", locale: locale))
+                                .foregroundStyle(palette.accent).widgetAccentable()
+                        }.fixedSize(horizontal: true, vertical: false).layoutPriority(1)
                     }
                     if text.otherLiveCount > 0 {
                         Text(verbatim: " · " + widgetString("+%lld", locale: locale, Int64(text.otherLiveCount)))

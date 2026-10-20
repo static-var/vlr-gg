@@ -13,7 +13,7 @@ struct FavoriteWidgetRecord<Value: Sendable>: Sendable {
     let value: Value
     let origin: FavoriteWidgetOrigin
 
-    init(key: FavoriteWidgetKey, fetchedAt: Date, value: Value, origin: FavoriteWidgetOrigin = .fresh) {
+    init(key: FavoriteWidgetKey, fetchedAt: Date, value: Value, origin: FavoriteWidgetOrigin) {
         self.key = key
         self.fetchedAt = fetchedAt
         self.value = value

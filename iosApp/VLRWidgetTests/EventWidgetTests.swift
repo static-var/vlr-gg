@@ -28,7 +28,8 @@ final class EventWidgetTests: XCTestCase {
 
     func plan(_ data: EventWidgetData, at date: Date? = nil, hidden: Bool = false, teams: [String] = [], fetchedAt: Date? = nil) -> EventWidgetPlan {
         let date = date ?? now
-        return EventWidgetEngine.plan(.init(key: .init(entityID: data.event.id, clientID: "client"), fetchedAt: fetchedAt ?? date, value: data),
+        return EventWidgetEngine.plan(.init(key: .init(entityID: data.event.id, clientID: "client"),
+            fetchedAt: fetchedAt ?? date, value: data, origin: .fresh),
             selectedEventID: data.event.id, source: source(data.event.id, hidden: hidden, teams: teams), at: date, timeZone: zone)
     }
 
@@ -153,7 +154,7 @@ final class EventWidgetTests: XCTestCase {
         XCTAssertTrue(list.rows.isEmpty)
         XCTAssertEqual(plan(event).refreshAfter, now.addingTimeInterval(21_600))
         let eventStart = widgetInstant("2027-02-20T00:00:00Z")!
-        let startEntry = try XCTUnwrap(plan(event, at: eventStart.addingTimeInterval(-300)).entries.first { $0.date == eventStart })
+        let startEntry = try XCTUnwrap(plan(event).entries.first { $0.date == eventStart })
         guard case .content(let started) = startEntry.content, case .visible(.gap(.nextUnlisted, _)) = started.body else {
             return XCTFail()
         }
@@ -259,7 +260,7 @@ final class EventWidgetTests: XCTestCase {
 
         let mediumLogos = hidden.logoSources(large: false)
         XCTAssertEqual(mediumLogos, [event.event.logo!])
-        let record = FavoriteWidgetRecord(key: .init(entityID: "2766", clientID: "old"), fetchedAt: now, value: event)
+        let record = FavoriteWidgetRecord(key: .init(entityID: "2766", clientID: "old"), fetchedAt: now, value: event, origin: .fresh)
         let wrongClient = EventWidgetEngine.plan(record, selectedEventID: "2766", source: source("2766"), at: now, timeZone: zone)
         XCTAssertEqual(wrongClient.entries[0].content, .placeholder(eventID: "2766"))
         let removed = EventWidgetEngine.plan(record, selectedEventID: "2766", source: source("3122"), at: now, timeZone: zone)
@@ -289,6 +290,10 @@ final class EventWidgetTests: XCTestCase {
         XCTAssertEqual(plan(scheduled, at: start).refreshAfter, start.addingTimeInterval(900))
         XCTAssertEqual(plan(scheduled, at: start.addingTimeInterval(-86_400)).refreshAfter, start.addingTimeInterval(-84_600))
         XCTAssertEqual(plan(scheduled, at: start.addingTimeInterval(-86_401)).refreshAfter, start.addingTimeInterval(-79_201))
+        let early = plan(scheduled, at: start.addingTimeInterval(-172_800))
+        for boundary in ["2026-10-20T00:00:00Z", "2026-10-21T00:00:00Z", "2026-10-21T12:00:00Z"] {
+            XCTAssertTrue(early.entries.contains { $0.date == widgetInstant(boundary) }, boundary)
+        }
         let overdue = widgetInstant("2026-10-21T16:01:00Z")!
         XCTAssertEqual(plan(event, at: overdue, teams: ["4915"]).refreshAfter, widgetInstant("2026-10-21T16:16:00Z"))
         let staleDate = widgetInstant("2026-10-21T22:00:01Z")!
@@ -513,6 +518,7 @@ extension EventWidgetTests {
             }
             if scenario.name == "gallery-sample" {
                 guard case .visible(.scheduled(_, .matches(let list))) = content.body else { return XCTFail() }
+                XCTAssertEqual(content.header.subtitle, .stage("Playoffs", location: ""))
                 XCTAssertEqual(list.heading, .upNext)
                 XCTAssertEqual(list.rows.map(\.fixture.id), ["sample-1", "sample-2", "sample-3"])
                 XCTAssertEqual(content.logoSources(large: true), [])
