@@ -205,7 +205,7 @@ final class TeamWidgetTests: XCTestCase {
         }
     }
 
-    func testCacheDoesNotReuseScoresAfterConfigurationChanges() throws {
+    func testCacheSurvivesPublishAndUsesCurrentSpoilerSetting() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -219,7 +219,11 @@ final class TeamWidgetTests: XCTestCase {
         let hidden = UpcomingMatchesSnapshot(savedAtEpochMillis: 0, clientId: "client", hasFavorites: true,
             favorites: .empty, spoilersHidden: true, matches: [], theme: .preview,
             favoriteTeams: source.favoriteTeams)
-        XCTAssertNil(cache.load(teamID: "2", source: hidden))
+        XCTAssertEqual(TeamWidgetEntryContent.make(cache.load(teamID: "2", source: hidden), teamID: "2", clientID: "client", source: hidden), .content(content.redacted()))
+        let published = UpcomingMatchesSnapshot(savedAtEpochMillis: 123, clientId: "client", hasFavorites: true,
+            favorites: .empty, spoilersHidden: false, matches: [], theme: .preview, favoriteTeams: source.favoriteTeams)
+        XCTAssertEqual(cache.load(teamID: "2", source: published), content)
+        XCTAssertEqual(TeamWidgetEntryContent.make(content, teamID: "removed", clientID: "client", source: published), .needsTeam)
     }
 
     @MainActor

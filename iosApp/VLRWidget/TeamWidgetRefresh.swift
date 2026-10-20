@@ -22,7 +22,7 @@ struct TeamWidgetRefreshService {
         if let match, let id = match.id.addingPercentEncoding(withAllowedCharacters: pathCharacters) {
             details = try? await api.get("/api/v1/matches/\(id)")
         } else { details = nil }
-        return TeamWidgetMapper.content(profile: ranking, match: match, details: details, spoilersHidden: source.spoilersHidden)
+        return TeamWidgetMapper.content(profile: ranking, match: match, details: details, spoilersHidden: false)
     }
 }
 
@@ -33,27 +33,32 @@ struct TeamWidgetCache {
         self.directory = directory
     }
 
-    private struct Saved: Codable {
+    struct Saved: Codable {
         let teamID: String
-        let signature: String
+        let clientID: String
+        let fetchedAt: Date
         let content: TeamWidgetContent
     }
 
     func load(teamID: String, source: UpcomingMatchesSnapshot) -> TeamWidgetContent? {
-        guard let url = url(teamID: teamID), let data = try? Data(contentsOf: url),
-              let saved = try? JSONDecoder().decode(Saved.self, from: data),
-              saved.teamID == teamID, saved.signature == source.sourceSignature else { return nil }
-        return saved.content
+        loadSaved(teamID: teamID, clientID: source.clientId)?.content
     }
 
-    func store(_ content: TeamWidgetContent, teamID: String, source: UpcomingMatchesSnapshot) {
-        guard let url = url(teamID: teamID),
-              let data = try? JSONEncoder().encode(Saved(teamID: teamID, signature: source.sourceSignature, content: content)) else { return }
+    func loadSaved(teamID: String, clientID: String) -> Saved? {
+        guard let url = url(teamID: teamID, clientID: clientID), let data = try? Data(contentsOf: url),
+              let saved = try? JSONDecoder().decode(Saved.self, from: data),
+              saved.teamID == teamID, saved.clientID == clientID else { return nil }
+        return saved
+    }
+
+    func store(_ content: TeamWidgetContent, teamID: String, source: UpcomingMatchesSnapshot, fetchedAt: Date = .now) {
+        guard let url = url(teamID: teamID, clientID: source.clientId),
+              let data = try? JSONEncoder().encode(Saved(teamID: teamID, clientID: source.clientId, fetchedAt: fetchedAt, content: content)) else { return }
         try? data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
     }
 
-    private func url(teamID: String) -> URL? {
-        let name = Data(teamID.utf8).base64EncodedString().replacingOccurrences(of: "/", with: "_")
+    private func url(teamID: String, clientID: String) -> URL? {
+        let name = Data("\(teamID):\(clientID)".utf8).base64EncodedString().replacingOccurrences(of: "/", with: "_")
         return directory?.appendingPathComponent("team-widget-\(name).json")
     }
 }

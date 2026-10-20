@@ -141,6 +141,13 @@ enum TeamWidgetEntryContent: Equatable {
     case needsTeam
     case content(TeamWidgetContent)
     case placeholder
+
+    static func make(_ content: TeamWidgetContent?, teamID: String, clientID: String, source: UpcomingMatchesSnapshot?) -> Self {
+        guard let source, source.clientId == clientID,
+              source.favoriteTeams.contains(where: { $0.id == teamID }) else { return .needsTeam }
+        guard let content else { return .placeholder }
+        return .content(source.spoilersHidden ? content.redacted() : content)
+    }
 }
 
 enum TeamWidgetCountdown: Equatable {
