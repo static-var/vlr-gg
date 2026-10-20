@@ -432,6 +432,7 @@ extension EventWidgetTests {
         var cases: [RenderCase] = [
             visible("01-first-match", .scheduled(.first(fixture("first", 172_800, round: "Upper Round 1")), .matches(upcoming)), "12:00\u{202F}PM",
                 subtitle: .starts(WidgetDay("2026-10-22"), location: "São Paulo"), progress: .empty),
+            visible("01-first-unknown-time", .scheduled(.first(fixture("first-unknown", nil, round: "Upper Round 1")), .matches(upcoming)), "TBD"),
             visible("02-up-next", .scheduled(.next(next), .matches(upcoming)), "6:00\u{202F}PM"),
             visible("03-undecided", .scheduled(.next(fixture("tbd", 21_600, pair: .init(left: pair.left, right: .undecided))), .matches(upcoming)), "6:00\u{202F}PM"),
             visible("04-live-today", .live(live, today), "2–1", live: true),
@@ -496,6 +497,11 @@ extension EventWidgetTests {
                 XCTAssertNil(row.loser)
             }
         }
+        XCTAssertEqual(EventWidgetText.integer(-3, locale: locale, signed: true), "−3")
+        let unknown = try XCTUnwrap(cases.first { $0.name == "01-first-unknown-time" })
+        guard case .content(let unknownContent) = unknown.content, case .visible(let unknownState) = unknownContent.body else { return XCTFail() }
+        XCTAssertEqual(EventWidgetHeroText.make(unknownState, now: now, locale: locale, timeZone: zone).context,
+                       "LOUD vs Team Vitality · Upper Round 1")
         XCTAssertEqual(EventWidgetEntryContent.placeholder(eventID: "2766").widgetURL, VLRWidgetContract.detailsURL(kind: "event", id: "2766"))
         XCTAssertEqual(EventWidgetEntryContent.setup(.chooseEvent).widgetURL, VLRWidgetContract.appURL)
         XCTAssertEqual(EventWidgetEntryContent.placeholder(eventID: nil).widgetURL, VLRWidgetContract.appURL)

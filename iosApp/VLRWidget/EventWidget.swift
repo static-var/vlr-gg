@@ -137,10 +137,13 @@ struct EventWidgetView: View {
         HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: 0) {
-                    Text(verbatim: text.lead)
+                    Text(verbatim: text.lead).truncationMode(.tail)
+                    if let day = text.day {
+                        Text(verbatim: " · " + day).fixedSize(horizontal: true, vertical: false).layoutPriority(1)
+                    }
                     if text.liveBadge {
                         Text(verbatim: " · ")
-                        Text("Live").foregroundStyle(palette.accent).widgetAccentable()
+                        Text("Live").foregroundStyle(palette.accent).widgetAccentable().layoutPriority(1)
                     }
                     if text.otherLiveCount > 0 {
                         Text(verbatim: " · " + widgetString("+%lld", locale: locale, Int64(text.otherLiveCount)))
@@ -160,7 +163,7 @@ struct EventWidgetView: View {
                 } else {
                     HStack(spacing: 0) {
                         if text.contextLive {
-                            Text("Live").foregroundStyle(palette.accent).widgetAccentable()
+                            Text("Live").foregroundStyle(palette.accent).widgetAccentable().layoutPriority(1)
                             Text(verbatim: " · ")
                         }
                         Text(verbatim: text.context)

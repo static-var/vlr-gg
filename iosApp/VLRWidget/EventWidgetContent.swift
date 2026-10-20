@@ -628,6 +628,7 @@ struct EventWidgetHeroText: Equatable {
     let lead: String
     let value: String
     var context = ""
+    var day: String? = nil
     var liveBadge = false
     var contextLive = false
     var otherLiveCount = 0
@@ -682,26 +683,33 @@ struct EventWidgetHeroText: Equatable {
         let matchup = EventWidgetText.matchup(fixture.participants, locale: locale)
         let lead: String
         let context: String
+        var leadDay: String?
         switch kickoff {
         case .delayed(let time):
             lead = matchup
             context = EventWidgetText.join([widgetString("Was due %@", locale: locale, time), fixture.round])
         case .scheduled(let day, _):
+            leadDay = day
             if case .first = hero {
-                lead = widgetString("First match · %@", locale: locale, day)
+                lead = widgetString("First match", locale: locale)
                 context = EventWidgetText.join([matchup, fixture.round])
             } else if fixture.participants.teams.count < 2 {
-                lead = EventWidgetText.join([fixture.round, day])
+                lead = fixture.round
                 context = EventWidgetText.join([matchup, fixture.format?.label])
             } else {
-                lead = EventWidgetText.join([matchup, day])
+                lead = matchup
                 context = EventWidgetText.join([fixture.round, fixture.format?.label])
             }
         case .unknown:
-            lead = { if case .first = hero { return widgetString("First match", locale: locale) }; return matchup }()
-            context = EventWidgetText.join([fixture.round, fixture.format?.label])
+            if case .first = hero {
+                lead = widgetString("First match", locale: locale)
+                context = EventWidgetText.join([matchup, fixture.round])
+            } else {
+                lead = matchup
+                context = EventWidgetText.join([fixture.round, fixture.format?.label])
+            }
         }
-        return .init(lead: lead, value: kickoff.hero(locale: locale), context: context, art: .pair(fixture.participants))
+        return .init(lead: lead, value: kickoff.hero(locale: locale), context: context, day: leadDay, art: .pair(fixture.participants))
     }
 
     private static func gapText(_ gap: EventScheduleGap, locale: Locale, timeZone: TimeZone) -> Self {
@@ -801,7 +809,10 @@ enum EventWidgetText {
         formatter.locale = locale
         formatter.numberStyle = .decimal
         formatter.usesGroupingSeparator = false
-        if signed { formatter.positivePrefix = value > 0 ? "+" : "" }
+        if signed {
+            formatter.positivePrefix = value > 0 ? "+" : ""
+            formatter.negativePrefix = "−"
+        }
         return formatter.string(from: NSNumber(value: value)) ?? String(value)
     }
 
