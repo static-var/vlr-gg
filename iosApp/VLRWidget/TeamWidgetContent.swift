@@ -92,6 +92,24 @@ struct TeamWidgetContent: Codable, Equatable {
     var history: [TeamWidgetRecentResult]
     var state: TeamWidgetState
 
+    static let sampleProfile = TeamWidgetRankingResponse(
+        team: .init(id: "2", name: "Sentinels", tag: "SEN"),
+        rank: 4, region: "Americas", region_rank: 1,
+        recent: [
+            .init(match_id: "1", played_on: "2026-10-15", opponent: .init(id: "624", name: "Paper Rex", tag: "PRX"), team_score: 2, opponent_score: 1, won: true),
+            .init(match_id: "2", played_on: "2026-10-12", opponent: .init(id: "2", name: "DRX", tag: "DRX"), team_score: 2, opponent_score: 0, won: true),
+            .init(match_id: "3", played_on: "2026-10-09", opponent: .init(id: "3", name: "G2 Esports", tag: "G2"), team_score: 1, opponent_score: 2, won: false),
+            .init(match_id: "4", played_on: "2026-10-05", opponent: .init(id: "1", name: "FNATIC", tag: "FNC"), team_score: 2, opponent_score: 1, won: true),
+            .init(match_id: "5", played_on: "2026-09-28", opponent: .init(id: "4", name: "LOUD", tag: "LOUD"), team_score: 2, opponent_score: 0, won: true),
+        ])
+
+    static func sample(at date: Date) -> Self {
+        var content = TeamWidgetMapper.content(profile: sampleProfile, match: nil, details: nil, spoilersHidden: false)
+        content.state = .upcoming(.init(id: "100", opponent: .init(id: "1", name: "FNATIC", tag: "FNC"),
+            start: date.addingTimeInterval(8_040), event: "Masters London", stage: "Upper final", format: "Bo3"))
+        return content
+    }
+
     func redacted() -> Self {
         var content = self
         content.form = form.map { _ in .neutral }

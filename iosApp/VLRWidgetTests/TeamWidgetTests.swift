@@ -104,6 +104,42 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(TeamWidgetHero.make(value, now: now, locale: locale, timeZone: zone).value, "No matches")
     }
 
+    func testGallerySampleMatchesTheUpcomingDesign() {
+        let sample = TeamWidgetContent.sample(at: now)
+        let hero = TeamWidgetHero.make(sample, now: now, locale: locale, timeZone: zone)
+        XCTAssertEqual(sample.header, TeamWidgetHeader(team: .init(id: "2", name: "Sentinels", tag: "SEN"),
+            rank: 4, region: "Americas", regionRank: 1))
+        XCTAssertEqual(sample.form, [.win, .win, .loss, .win, .win])
+        XCTAssertEqual(hero.lead, "Plays FNATIC in")
+        XCTAssertEqual(hero.value, "2h 14m")
+        XCTAssertEqual(hero.context, "Masters London · Upper final · Bo3")
+        XCTAssertEqual(sample.history.map(\.opponent.name), ["Paper Rex", "DRX", "G2 Esports", "FNATIC", "LOUD"])
+        XCTAssertEqual(sample.history.map(\.result.score), ["2–1", "2–0", "1–2", "2–1", "2–0"])
+    }
+
+    @MainActor
+    func testPlaceholderRendersRedactedSampleInBothFamilies() throws {
+        let directory = URL(fileURLWithPath: "/tmp/vlr-team-widget-renders")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        for (name, family, height) in [("medium", WidgetFamily.systemMedium, CGFloat(158)), ("large", .systemLarge, 354)] {
+            let view = TeamWidgetView(entry: .init(date: now, content: .placeholder), familyOverride: family)
+                .frame(width: 338, height: height)
+                .background(PrismWidgetPalette.background(for: .light))
+                .environment(\.colorScheme, .light).environment(\.locale, locale).environment(\.timeZone, zone)
+            let renderer = ImageRenderer(content: view)
+            renderer.scale = 3
+            let image = try XCTUnwrap(renderer.uiImage)
+            try XCTUnwrap(image.pngData()).write(to: directory.appendingPathComponent("\(name)-placeholder-light.png"))
+            let request = VNRecognizeTextRequest()
+            request.recognitionLevel = .accurate
+            try VNImageRequestHandler(cgImage: try XCTUnwrap(image.cgImage)).perform([request])
+            let text = request.results?.compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ") ?? ""
+            XCTAssertFalse(text.contains("Loading"), text)
+            XCTAssertFalse(text.contains("Sentinels"), text)
+            XCTAssertFalse(text.contains("FNATIC"), text)
+        }
+    }
+
     func testMatchSelectionPrefersLiveThenNextAndIgnoresUnrelatedOrCompleted() throws {
         let decoder = JSONDecoder()
         let matches = try decoder.decode([TeamWidgetMatchResponse].self, from: Data("""
@@ -190,8 +226,7 @@ final class TeamWidgetTests: XCTestCase {
     func testTeamWidgetRendersRequiredLayoutsInLightDarkAndTint() throws {
         let directory = URL(fileURLWithPath: "/tmp/vlr-team-widget-renders")
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        var upcoming = try content()
-        upcoming.state = .upcoming(TeamWidgetFixture(id: "100", opponent: .init(id: "1", name: "FNATIC", tag: "FNC"), start: now.addingTimeInterval(8_040), event: "Masters London", stage: "Upper final", format: "Bo3"))
+        let upcoming = TeamWidgetContent.sample(at: now)
         var live = try content(live: true)
         if case .live(let series) = live.state {
             live.state = .live(.init(fixture: series.fixture, score: series.score, maps: Array(series.maps.prefix(3))))
@@ -206,6 +241,7 @@ final class TeamWidgetTests: XCTestCase {
         }
         let scenarios: [(String, TeamWidgetEntryContent, WidgetFamily, CGFloat, String)] = [
             ("medium-upcoming", .content(upcoming), .systemMedium, 158, "2h 14m"),
+            ("large-upcoming", .content(upcoming), .systemLarge, 354, "Recent"),
             ("medium-upcoming-monogram", .content(upcoming), .systemMedium, 158, "FNC"),
             ("medium-live", .content(live), .systemMedium, 158, "Ascent"),
             ("medium-live-bo3-after-map1", .content(betweenMaps), .systemMedium, 158, "Haven next"),
@@ -248,15 +284,7 @@ final class TeamWidgetTests: XCTestCase {
     }
 
     private func content(live: Bool = false, ownSecond: Bool = false, detailsOppositeOrder: Bool = false) throws -> TeamWidgetContent {
-        let profile = try JSONDecoder().decode(TeamWidgetRankingResponse.self, from: Data("""
-        {"team":{"id":"2","name":"Sentinels","tag":"SEN"},"rank":4,"region":"Americas","region_rank":1,"recent":[
-          {"match_id":"1","played_on":"2026-10-15","opponent":{"id":"624","name":"Paper Rex"},"team_score":2,"opponent_score":1,"won":true},
-          {"match_id":"2","played_on":"2026-10-12","opponent":{"id":"2","name":"DRX"},"team_score":2,"opponent_score":0,"won":true},
-          {"match_id":"3","played_on":"2026-10-09","opponent":{"id":"3","name":"G2 Esports"},"team_score":1,"opponent_score":2,"won":false},
-          {"match_id":"4","played_on":"2026-10-05","opponent":{"id":"1","name":"FNATIC"},"team_score":2,"opponent_score":1,"won":true},
-          {"match_id":"5","played_on":"2026-09-28","opponent":{"id":"4","name":"LOUD"},"team_score":2,"opponent_score":0,"won":true}
-        ]}
-        """.utf8))
+        let profile = TeamWidgetContent.sampleProfile
         guard live else { return TeamWidgetMapper.content(profile: profile, match: nil, details: nil, spoilersHidden: false) }
         let own = TeamWidgetMatchResponse.Team(id: "2", name: "Sentinels", img: nil, score: 1, tag: "SEN")
         let opponent = TeamWidgetMatchResponse.Team(id: "1", name: "FNATIC", img: nil, score: 1, tag: "FNC")

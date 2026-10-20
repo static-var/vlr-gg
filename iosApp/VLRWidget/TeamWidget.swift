@@ -13,6 +13,10 @@ struct TeamWidgetProvider: AppIntentTimelineProvider {
     }
 
     func snapshot(for configuration: TeamWidgetIntent, in context: Context) async -> TeamWidgetEntry {
+        if context.isPreview {
+            let now = Date.now
+            return TeamWidgetEntry(date: now, content: .content(.sample(at: now)))
+        }
         let source = WidgetSnapshotRepository().loadSource()
         guard let id = configuration.team?.id, source?.favoriteTeams.contains(where: { $0.id == id }) == true,
               let source else { return TeamWidgetEntry(date: .now, content: .needsTeam) }
@@ -95,11 +99,7 @@ struct TeamWidgetView: View {
             case .needsTeam: needsTeam
             case .content(let content): body(content)
             case .placeholder:
-                VStack(alignment: .leading) {
-                    Text("Team").font(.system(size: 15, weight: .semibold))
-                    Spacer()
-                    Text("Loading team…").font(.system(size: 24))
-                }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                body(.sample(at: entry.date)).redacted(reason: .placeholder)
             }
         }
         .foregroundStyle(palette.ink)
