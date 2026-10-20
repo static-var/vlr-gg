@@ -142,13 +142,14 @@ struct EventWidgetView: View {
                         Text(verbatim: " · " + day).fixedSize(horizontal: true, vertical: false).layoutPriority(1)
                     }
                     if text.liveBadge {
-                        Text(verbatim: " · ")
-                        Text("Live").foregroundStyle(palette.accent).widgetAccentable().layoutPriority(1)
+                        Text(verbatim: " · " + widgetString("Live", locale: locale))
+                            .foregroundStyle(palette.accent).widgetAccentable()
+                            .fixedSize(horizontal: true, vertical: false).layoutPriority(1)
                     }
                     if text.otherLiveCount > 0 {
                         Text(verbatim: " · " + widgetString("+%lld", locale: locale, Int64(text.otherLiveCount)))
                     }
-                }.font(.system(size: 13)).lineLimit(1).minimumScaleFactor(0.7)
+                }.font(.system(size: 13)).lineLimit(1)
                 HStack(alignment: .firstTextBaseline, spacing: 7) {
                     Text(verbatim: text.value).font(.system(size: 40)).tracking(-0.8).monospacedDigit()
                         .lineLimit(1).minimumScaleFactor(0.65).layoutPriority(1)
@@ -242,9 +243,9 @@ struct EventWidgetView: View {
             VStack(alignment: .leading, spacing: 3) {
                 participantRow(fixture.participants.left, name: text.left, score: text.leftScore, dimmed: text.loser == .left)
                 participantRow(fixture.participants.right, name: text.right, score: text.rightScore, dimmed: text.loser == .right)
-            }.frame(maxWidth: .infinity, alignment: .leading).layoutPriority(1)
+            }.frame(maxWidth: .infinity, alignment: .leading)
             Text(verbatim: text.round).font(.system(size: 11)).foregroundStyle(palette.secondary)
-                .lineLimit(1).minimumScaleFactor(0.8).truncationMode(.tail).frame(width: 70, alignment: .trailing)
+                .lineLimit(1).truncationMode(.tail).frame(width: 76, alignment: .trailing)
         }.frame(height: 49)
     }
 
