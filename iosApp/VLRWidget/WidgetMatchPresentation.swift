@@ -116,13 +116,13 @@ enum WidgetSeriesMapper {
 
     static func make(details: WidgetMatchDetailsResponse?, participants: WidgetMatchPair,
                      perspective: WidgetSide, previewCurrent: RemoteMatchPreview.CurrentMap? = nil,
-                     previewFormat: String? = nil) -> WidgetSeriesEnrichment {
+                     previewFormat: String? = nil, ownAliases: [String] = []) -> WidgetSeriesEnrichment {
         .init(format: format(details: details, preview: previewFormat),
-              maps: maps(details: details, participants: participants, perspective: perspective, previewCurrent: previewCurrent))
+              maps: maps(details: details, participants: participants, perspective: perspective, previewCurrent: previewCurrent, ownAliases: ownAliases))
     }
 
     private static func maps(details: WidgetMatchDetailsResponse?, participants: WidgetMatchPair,
-                             perspective: WidgetSide, previewCurrent: RemoteMatchPreview.CurrentMap?) -> [WidgetMap] {
+                             perspective: WidgetSide, previewCurrent: RemoteMatchPreview.CurrentMap?, ownAliases: [String]) -> [WidgetMap] {
         let ownFirst = perspective == .left
         let team = (ownFirst ? participants.left : participants.right).team ?? WidgetTeam(id: nil, name: "TBD")
         let opponent = (ownFirst ? participants.right : participants.left).team
@@ -150,7 +150,7 @@ enum WidgetSeriesMapper {
             let pick = veto.first { key($0.map) == key(name) }
             let choice: WidgetMapPick
             if let pick, pick.action.lowercased() == "pick", let picker = pick.team {
-                let ownNames = [team.id, team.name, team.tag].compactMap { $0 }
+                let ownNames = [team.id, team.name, team.tag].compactMap { $0 } + ownAliases
                 let isOwn = ownNames.contains { !$0.isEmpty && $0.caseInsensitiveCompare(picker) == .orderedSame }
                 choice = isOwn ? .team(team.tag ?? team.name) : .opponent(opponent?.tag ?? picker)
             } else { choice = .decider }

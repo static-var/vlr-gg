@@ -57,12 +57,13 @@ enum TeamWidgetMapper {
             if match.remoteStatus == .live {
                 form.append(.live)
                 let score = own.score.flatMap { first in opponent.score.map { WidgetScore(team: first, opponent: $0) } }
+                let seriesOpponent = WidgetTeam(id: opponent.id, name: opponent.name, tag: opponent.tag)
                 state = .live(TeamWidgetLiveSeries(fixture: fixture, score: score,
                     maps: WidgetSeriesMapper.make(details: details,
-                        participants: .init(left: .team(.init(id: match.team1.id, name: match.team1.name, tag: match.team1.tag)),
-                                            right: .team(.init(id: match.team2.id, name: match.team2.name, tag: match.team2.tag))),
+                        participants: .init(left: .team(ownFirst ? profile.team : seriesOpponent),
+                                            right: .team(ownFirst ? seriesOpponent : profile.team)),
                         perspective: ownFirst ? .left : .right, previewCurrent: match.current_map,
-                        previewFormat: match.series).maps))
+                        previewFormat: match.series, ownAliases: [own.id, own.name, own.tag].compactMap { $0 }).maps))
             } else { state = .upcoming(fixture) }
         } else { state = .idle(history.first) }
         return TeamWidgetContent(header: .init(team: profile.team, rank: profile.rank, region: profile.region, regionRank: profile.region_rank),

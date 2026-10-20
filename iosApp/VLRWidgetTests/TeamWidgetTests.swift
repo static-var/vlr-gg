@@ -114,6 +114,9 @@ final class TeamWidgetTests: XCTestCase {
         let reversedDetails = try self.content(live: true, detailsOppositeOrder: true)
         guard case .live(let reversed) = reversedDetails.state else { return XCTFail("Expected live series") }
         XCTAssertEqual(reversed.maps.map(\.score?.text), ["13–8", "9–13", "7–5", nil])
+        let missingPreviewTag = try self.content(live: true, ownTag: nil)
+        guard case .live(let withoutTag) = missingPreviewTag.state else { return XCTFail("Expected live series") }
+        XCTAssertEqual(withoutTag.maps.first?.pick, .team("SEN"))
     }
 
     func testRedactionRemovesResultsSeriesScoresAndAllMapProgress() throws {
@@ -381,10 +384,10 @@ final class TeamWidgetTests: XCTestCase {
         return directory
     }
 
-    private func content(live: Bool = false, ownSecond: Bool = false, detailsOppositeOrder: Bool = false) throws -> TeamWidgetContent {
+    private func content(live: Bool = false, ownSecond: Bool = false, detailsOppositeOrder: Bool = false, ownTag: String? = "SEN") throws -> TeamWidgetContent {
         let profile = TeamWidgetContent.sampleProfile
         guard live else { return TeamWidgetMapper.content(profile: profile, match: nil, details: nil) }
-        let own = RemoteMatchPreview.Team(id: "2", name: "Sentinels", img: nil, score: 1, tag: "SEN")
+        let own = RemoteMatchPreview.Team(id: "2", name: "Sentinels", img: nil, score: 1, tag: ownTag)
         let opponent = RemoteMatchPreview.Team(id: "1", name: "FNATIC", img: nil, score: 1, tag: "FNC")
         let match = RemoteMatchPreview(id: "100", event: "Masters London", series: "Bo3", status: "live", time: nil,
             team1: ownSecond ? opponent : own, team2: ownSecond ? own : opponent,
