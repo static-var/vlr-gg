@@ -197,7 +197,7 @@ final class EventWidgetTests: XCTestCase {
         let upcoming = EventWidgetData(event: event.event, matches: [.init(fixture: fixture, phase: .upcoming)], groups: [], prizes: [], detail: nil)
         guard case .visible(.scheduled) = try content(plan(upcoming, at: start.addingTimeInterval(21_600))).body else { return XCTFail() }
         guard case .visible(.gap) = try content(plan(upcoming, at: start.addingTimeInterval(21_601))).body else { return XCTFail() }
-        XCTAssertEqual(plan(upcoming, at: start.addingTimeInterval(21_601)).refreshAfter, start.addingTimeInterval(22_501))
+        XCTAssertEqual(plan(upcoming, at: start.addingTimeInterval(21_601)).refreshAfter, start.addingTimeInterval(28_801))
         let live = EventWidgetData(event: event.event, matches: [.init(fixture: fixture, phase: .live(nil))], groups: [], prizes: [], detail: nil)
         let livePlan = plan(live, at: now, fetchedAt: now)
         XCTAssertTrue(livePlan.entries.contains { $0.date == now.addingTimeInterval(10_801) })
@@ -250,9 +250,16 @@ final class EventWidgetTests: XCTestCase {
         guard case .content(let due) = regular.entries.first(where: { $0.date == start })?.content,
               case .visible(.scheduled(let next, _)) = due.body else { return XCTFail() }
         XCTAssertEqual(WidgetKickoff.make(start: next.fixture.start, now: start, locale: locale, timeZone: zone), .delayed("12:00\u{202F}PM"))
-        XCTAssertEqual(plan(scheduled, at: start).refreshAfter, start.addingTimeInterval(300))
+        XCTAssertEqual(plan(scheduled, at: start).refreshAfter, start.addingTimeInterval(900))
         XCTAssertEqual(plan(scheduled, at: start.addingTimeInterval(-86_400)).refreshAfter, start.addingTimeInterval(-84_600))
         XCTAssertEqual(plan(scheduled, at: start.addingTimeInterval(-86_401)).refreshAfter, start.addingTimeInterval(-79_201))
+        let overdue = widgetInstant("2026-10-21T16:01:00Z")!
+        XCTAssertEqual(plan(event, at: overdue, teams: ["4915"]).refreshAfter, widgetInstant("2026-10-21T16:16:00Z"))
+        let staleDate = widgetInstant("2026-10-21T22:00:01Z")!
+        let stale = EventWidgetData(event: event.event, matches: event.matches.filter {
+            $0.phase != .upcoming || $0.fixture.id == "777919" || ($0.fixture.start ?? .distantFuture) > staleDate
+        }, groups: event.groups, prizes: [], detail: nil)
+        XCTAssertEqual(plan(stale, at: staleDate).refreshAfter, widgetInstant("2026-10-21T22:30:01Z"))
         let hidden = try content(plan(scheduled, at: before, hidden: true, teams: ["b"]))
         guard case .hidden(.scheduled(_, let rows)) = hidden.body else { return XCTFail() }
         XCTAssertEqual(rows.rows, [])

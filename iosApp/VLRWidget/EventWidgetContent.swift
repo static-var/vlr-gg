@@ -582,7 +582,7 @@ extension EventWidgetContent {
 }
 
 enum EventWidgetRefreshPolicy {
-    static func date(for content: EventWidgetEntryContent, data: EventWidgetData?, fetchedAt: Date?, now: Date) -> Date? {
+    static func date(for content: EventWidgetEntryContent, data: EventWidgetData, fetchedAt: Date, now: Date) -> Date? {
         guard case .content(let content) = content else {
             if case .setup = content { return nil }
             return now.addingTimeInterval(900)
@@ -594,24 +594,16 @@ enum EventWidgetRefreshPolicy {
         case .visible(.live), .hidden(.live): base = now.addingTimeInterval(900)
         case .visible(.finished), .hidden(.finished): return now.addingTimeInterval(43_200)
         case .visible(.scheduled), .hidden(.scheduled), .visible(.between):
-            base = FavoriteWidgetRefreshPolicy.scheduled(start: scheduled?.start, now: now)
+            base = FavoriteWidgetRefreshPolicy.scheduled(start: scheduled?.start.flatMap { $0 > now ? $0 : nil }, now: now)
         case .visible(.gap(let gap, _)), .hidden(.gap(let gap, _)):
             if case .notListed = gap { base = now.addingTimeInterval(21_600) }
             else { base = now.addingTimeInterval(7_200) }
         }
         var result = base
-        if let data, let fetchedAt {
-            let expiredOpen = data.matches.contains { match in
-                switch match.phase {
-                case .upcoming, .live: !EventWidgetEngine.eligible(match, fetchedAt: fetchedAt, at: now)
-                default: false
-                }
-            }
-            if expiredOpen { result = min(result, now.addingTimeInterval(900)) }
-            let next = data.matches.filter { $0.phase == .upcoming && EventWidgetEngine.eligible($0, fetchedAt: fetchedAt, at: now) }
-                .compactMap(\.fixture.start).filter { $0 > now }.min()
-            if let next { result = min(result, next) }
-        }
+        let upcoming = data.matches.filter { $0.phase == .upcoming && EventWidgetEngine.eligible($0, fetchedAt: fetchedAt, at: now) }
+        let starts = upcoming.compactMap(\.fixture.start)
+        if starts.contains(where: { $0 <= now }) { result = min(result, now.addingTimeInterval(900)) }
+        if let next = starts.filter({ $0 > now }).min() { result = min(result, next) }
         if case .visible(.between(let hero, _)) = content.body, let start = hero.last.scheduledStart {
             let cutoff = start.addingTimeInterval(43_200)
             if cutoff > now { result = min(result, cutoff) }
