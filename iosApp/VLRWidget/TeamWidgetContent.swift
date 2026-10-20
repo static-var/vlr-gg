@@ -225,51 +225,50 @@ enum TeamWidgetRefreshPolicy {
     }
 }
 
-enum TeamWidgetCountdown: Equatable {
-    case scheduled(String)
-    case countdown(String)
+enum TeamWidgetKickoff: Equatable {
+    case scheduled(day: String, time: String)
     case delayed(String)
     case unknown
 
     static func make(start: Date?, now: Date, locale: Locale = .current, timeZone: TimeZone = .current) -> Self {
         guard let start else { return .unknown }
-        let seconds = start.timeIntervalSince(now)
-        if seconds <= 0 {
-            return .delayed(format(start, template: "jm", locale: locale, timeZone: timeZone))
-        }
-        if seconds > 86_400 {
-            return .scheduled(format(start, template: "EEEj", locale: locale, timeZone: timeZone))
-        }
-        let minutes = Int(ceil(seconds / 60))
-        if minutes < 60 {
-            return .countdown(teamWidgetString("%lld min", locale: locale, Int64(minutes)))
-        }
-        return .countdown(teamWidgetString("%lldh %02lldm", locale: locale, Int64(minutes / 60), Int64(minutes % 60)))
+        let time = format(start, template: "jm", locale: locale, timeZone: timeZone)
+        guard start > now else { return .delayed(time) }
+        return .scheduled(day: day(start, now: now, locale: locale, timeZone: timeZone), time: time)
     }
 
     func hero(locale: Locale = .current) -> String {
         switch self {
-        case .scheduled(let text), .countdown(let text): text
+        case .scheduled(_, let time): time
         case .delayed: teamWidgetString("Any minute", locale: locale)
         case .unknown: teamWidgetString("TBD", locale: locale)
         }
     }
 
-    static func timelineDates(start: Date?, now: Date) -> [Date] {
+    static func timelineDates(start: Date?, now: Date, timeZone: TimeZone = .current) -> [Date] {
         guard let start, start > now else { return [now] }
-        let end = min(start, now.addingTimeInterval(6 * 60 * 60))
-        var dates = [now]
-        let nextMinute = Date(timeIntervalSince1970: (floor(now.timeIntervalSince1970 / 60) + 1) * 60)
-        var date = max(nextMinute, start.addingTimeInterval(-86_400))
-        while date <= end && dates.count < 360 {
-            dates.append(date)
-            date = date.addingTimeInterval(60)
+        let startDay = calendar(timeZone).startOfDay(for: start)
+        let changes = [calendar(timeZone).date(byAdding: .day, value: -1, to: startDay), startDay, start]
+        return [now] + Set(changes.compactMap { $0 }.filter { $0 > now }).sorted()
+    }
+
+    private static func day(_ start: Date, now: Date, locale: Locale, timeZone: TimeZone) -> String {
+        let calendar = calendar(timeZone)
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: start)).day ?? 0
+        guard days > 1 else {
+            let formatter = RelativeDateTimeFormatter()
+            formatter.locale = locale
+            formatter.dateTimeStyle = .named
+            let word = formatter.localizedString(from: DateComponents(day: days))
+            return word.prefix(1).uppercased(with: locale) + word.dropFirst()
         }
-        if start <= end, dates.last != start {
-            if dates.count == 360 { dates.removeLast() }
-            dates.append(start)
-        }
-        return dates
+        return format(start, template: "EEEMMMd", locale: locale, timeZone: timeZone)
+    }
+
+    private static func calendar(_ timeZone: TimeZone) -> Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        return calendar
     }
 
     private static func format(_ date: Date, template: String, locale: Locale, timeZone: TimeZone) -> String {
@@ -277,14 +276,6 @@ enum TeamWidgetCountdown: Equatable {
         formatter.locale = locale
         formatter.timeZone = timeZone
         formatter.setLocalizedDateFormatFromTemplate(template)
-        if template == "EEEj", locale.language.languageCode?.identifier == "en" {
-            let weekday = DateFormatter()
-            weekday.locale = locale
-            weekday.timeZone = timeZone
-            weekday.setLocalizedDateFormatFromTemplate("EEE")
-            formatter.setLocalizedDateFormatFromTemplate("j")
-            return weekday.string(from: date) + ", " + formatter.string(from: date)
-        }
         return formatter.string(from: date)
     }
 }
@@ -331,18 +322,17 @@ struct TeamWidgetHero: Equatable {
         switch content.state {
         case .upcoming(let fixture):
             let opponent = fixture.opponent?.name ?? teamWidgetString("TBD", locale: locale)
-            let countdown = TeamWidgetCountdown.make(start: fixture.start, now: now, locale: locale, timeZone: timeZone)
+            let kickoff = TeamWidgetKickoff.make(start: fixture.start, now: now, locale: locale, timeZone: timeZone)
             let lead: String
             let context: String
-            switch countdown {
-            case .scheduled: lead = localized("Plays %@ on", opponent); context = fixture.context
-            case .countdown: lead = localized("Plays %@ in", opponent); context = fixture.context
+            switch kickoff {
+            case .scheduled(let day, _): lead = localized("Plays %@", opponent) + " · " + day; context = fixture.context
             case .delayed(let time):
                 lead = localized("Plays %@", opponent)
                 context = [localized("Was due %@", time), fixture.event].filter { !$0.isEmpty }.joined(separator: " · ")
             case .unknown: lead = localized("Plays %@", opponent); context = fixture.context
             }
-            return Self(lead: lead, value: countdown.hero(locale: locale), context: context, opponent: fixture.opponent)
+            return Self(lead: lead, value: kickoff.hero(locale: locale), context: context, opponent: fixture.opponent)
         case .live(let series):
             return Self(lead: localized("Playing %@", series.fixture.opponent?.name ?? teamWidgetString("TBD", locale: locale)),
                 value: series.score?.text ?? "–", context: series.fixture.context, opponent: series.fixture.opponent,
