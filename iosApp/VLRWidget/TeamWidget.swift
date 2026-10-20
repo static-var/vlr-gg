@@ -199,7 +199,7 @@ struct TeamWidgetView: View {
         return HStack(spacing: 5) {
             ForEach(Array(maps.enumerated()), id: \.offset) { _, map in
                 let live = map.status == .live
-                Text(verbatim: pillText(map, compact: maps.count >= 4))
+                Text(verbatim: Self.pillText(map, compact: maps.count >= 4, locale: locale))
                     .font(.system(size: 11)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.6)
                     .padding(.horizontal, 6).frame(height: 18)
                     .foregroundStyle(live ? palette.accent : map.status == .won ? palette.ink : palette.secondary)
@@ -215,7 +215,7 @@ struct TeamWidgetView: View {
         return maps.enumerated().filter { $0.element.status != .next || $0.offset == firstNext }.map(\.element)
     }
 
-    private func pillText(_ map: TeamWidgetMap, compact: Bool) -> String {
+    static func pillText(_ map: TeamWidgetMap, compact: Bool, locale: Locale = .current) -> String {
         if map.status == .next { return teamWidgetString("%@ next", locale: locale, map.name) }
         if compact && map.status != .live { return map.score?.text ?? "–" }
         return map.name + " " + (map.score?.text ?? "–")

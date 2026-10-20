@@ -150,6 +150,8 @@ final class TeamWidgetTests: XCTestCase {
             .init(name: "Lotus", pick: .decider, status: .next, score: nil),
         ]
         XCTAssertEqual(TeamWidgetView.mediumMaps(maps).map(\.name), ["Ascent", "Haven"])
+        XCTAssertEqual(TeamWidgetView.pillText(maps[1], compact: false, locale: locale), "Haven next")
+        XCTAssertEqual(TeamWidgetView.pillText(maps[0], compact: true, locale: locale), "13–10")
         let bo5 = [
             maps[0],
             TeamWidgetMap(name: "Icebox", pick: .opponent("FNC"), status: .lost, score: .init(team: 8, opponent: 13)),
