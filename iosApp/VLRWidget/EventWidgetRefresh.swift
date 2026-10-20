@@ -206,10 +206,8 @@ enum EventWidgetMapper {
         guard let match = data.matches.first(where: { $0.fixture.id == matchID }) else { return data }
         func enrich(_ slot: WidgetParticipant) -> WidgetParticipant {
             guard case .team(var team) = slot else { return slot }
-            let detail = details.teams.first { remote in
-                if let id = team.id, !id.isEmpty, remote.id == id { return true }
-                return nameKey(remote.name) == nameKey(team.name)
-            }
+            let identity = team.id.flatMap { id in id.isEmpty ? nil : details.teams.first { $0.id == id } }
+            let detail = identity ?? details.teams.first { nameKey($0.name) == nameKey(team.name) }
             team.logo = team.logo ?? clean(detail?.img)
             team.tag = team.tag ?? clean(detail?.tag)
             return .team(team)
@@ -232,7 +230,7 @@ struct EventWidgetRefreshService {
 
     func refresh(eventID: String, source: UpcomingMatchesSnapshot, at date: Date, timeZone: TimeZone) async -> FavoriteWidgetRecord<EventWidgetData>? {
         let pathCharacters = CharacterSet.urlPathAllowed.subtracting(CharacterSet(charactersIn: "/?#%"))
-        guard source.favoriteEvents.contains(where: { $0.id == eventID }), !source.clientId.isEmpty,
+        guard source.favoriteEvents.contains(where: { $0.id == eventID }), !source.clientId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               let encoded = eventID.addingPercentEncoding(withAllowedCharacters: pathCharacters) else { return nil }
         let key = FavoriteWidgetKey(entityID: eventID, clientID: source.clientId)
         let favorites = Set(source.favorites.teamIds)

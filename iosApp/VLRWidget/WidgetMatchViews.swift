@@ -54,20 +54,33 @@ struct WidgetMapPills: View {
     let maps: [WidgetMap]
     let palette: PrismWidgetPalette
     let locale: Locale
+    var compactSpacing = false
     var body: some View {
         let maps = Self.visible(maps)
-        return HStack(spacing: 5) {
+        return HStack(spacing: compactSpacing && maps.count >= 4 ? 3 : 5) {
             ForEach(Array(maps.enumerated()), id: \.offset) { _, map in
                 let live = map.status == .live
-                Text(verbatim: Self.text(map, compact: maps.count >= 4, locale: locale))
+                label(map, compact: maps.count >= 4)
                     .font(.system(size: 11)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.6)
-                    .padding(.horizontal, 6).frame(height: 18)
+                    .padding(.horizontal, compactSpacing && maps.count >= 4 ? 3 : 6).frame(height: 18)
                     .foregroundStyle(live ? palette.accent : map.status == .won ? palette.ink : palette.secondary)
                     .background(RoundedRectangle(cornerRadius: 5).fill(map.status == .won || map.status == .lost ? palette.ink.opacity(0.1) : .clear))
                     .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(live ? palette.accent : map.status == .next ? palette.border : .clear, lineWidth: live ? 1.5 : 1))
                     .widgetAccentable(live)
             }
         }.padding(.top, 5)
+    }
+
+    @ViewBuilder
+    private func label(_ map: WidgetMap, compact: Bool) -> some View {
+        if compactSpacing && map.status == .live {
+            HStack(spacing: 3) {
+                Text(verbatim: map.name).lineLimit(1).minimumScaleFactor(0.6)
+                Text(verbatim: map.score?.text ?? "–").fixedSize()
+            }
+        } else {
+            Text(verbatim: Self.text(map, compact: compact, locale: locale))
+        }
     }
 
     static func visible(_ maps: [WidgetMap]) -> [WidgetMap] {

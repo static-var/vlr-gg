@@ -7,6 +7,7 @@ struct VLRWidgetBundle: WidgetBundle {
         UpcomingMatchesWidget()
         if #available(iOS 17.0, *) {
             TeamWidget()
+            EventWidget()
         }
         if #available(iOS 16.1, *) {
             MatchLiveActivity()

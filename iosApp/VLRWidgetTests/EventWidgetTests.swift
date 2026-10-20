@@ -277,6 +277,17 @@ final class EventWidgetTests: XCTestCase {
         XCTAssertEqual(EventWidgetMapper.enrich(event, matchID: "754737", details: reversed).detail, enriched.detail)
     }
 
+    func testSharedMapNamesAreUniqueAndIDsWinOverConflictingNames() throws {
+        let json = #"{"total_maps":5,"teams":[{"id":"wrong","name":"Alpha"},{"id":"a","name":"Alpha"}],"data":[{"map":" Split ","teams":[{"id":"wrong","name":"Alpha","score":5},{"id":"a","name":"Alpha","score":13}]}],"veto":[{"action":"remains","map":"split"}],"current_map":{"name":"SPLIT","scores":[5,7]}}"#
+        let details = try JSONDecoder().decode(WidgetMatchDetailsResponse.self, from: Data(json.utf8))
+        let pair = WidgetMatchPair(left: .team(.init(id: "a", name: "Alpha")), right: .team(.init(id: "b", name: "Beta")))
+        let series = WidgetSeriesMapper.make(details: details, participants: pair, perspective: .left)
+        XCTAssertEqual(series.maps.count, 1)
+        XCTAssertEqual(series.maps[0].name, "Split")
+        XCTAssertEqual(series.maps[0].score?.text, "7–5")
+        XCTAssertEqual(series.maps[0].status, .live)
+    }
+
     func testRefreshUsesOneOptionalDetailRequestAndBaseFallback() async throws {
         let bytes = try fixtureBytes("event-3122")
         let recorder = EventRequestRecorder(bytes: bytes)
@@ -307,5 +318,195 @@ private actor EventRequestRecorder {
         paths.append(url.path)
         headers.append((request.value(forHTTPHeaderField: "Authorization") ?? "") + "|" + (request.value(forHTTPHeaderField: "app-name") ?? "") + "|" + String(request.value(forHTTPHeaderField: "Accept-Language") != nil))
         return (bytes, HTTPURLResponse(url: url, statusCode: url.path.contains("/matches/") ? 503 : 200, httpVersion: nil, headerFields: nil)!)
+    }
+}
+
+@available(iOS 17.0, *)
+extension EventWidgetTests {
+    struct RenderCase {
+        let name: String
+        let content: EventWidgetEntryContent
+        let value: String?
+    }
+
+    func renderCases() throws -> [RenderCase] {
+        let champions = try data("2766")
+        let final = try XCTUnwrap(champions.matches.last)
+        let pair = final.fixture.participants
+        func fixture(_ id: String, _ offset: TimeInterval?, round: String = "Grand Final", pair: WidgetMatchPair? = nil, format: WidgetSeriesFormat? = .bo5) -> EventWidgetFixture {
+            .init(id: id, participants: pair ?? final.fixture.participants, start: offset.map { now.addingTimeInterval($0) },
+                  day: WidgetDay("2026-10-20"), round: round, stage: "Playoffs", format: format)
+        }
+        let next = fixture("next", 21_600, round: "Lower Final")
+        let later = [fixture("row-1", 32_400, round: "Lower Round 3"), fixture("row-2", 86_400, round: "Lower Final", pair: .init(left: .undecided, right: pair.right)),
+                     fixture("row-3", 172_800, pair: .init(left: .undecided, right: .undecided))]
+        let upcoming = EventMatchList(heading: .upNext, rows: later.map { .init(fixture: $0, phase: .upcoming) })
+        let today = EventMatchList(heading: .today, rows: [
+            .init(fixture: fixture("earlier-1", -14_400, round: "Lower Round 2"), phase: .completed(.init(team: 2, opponent: 1))),
+            .init(fixture: fixture("earlier-2", -3_600, round: "Lower Round 2"), phase: .completed(.init(team: 1, opponent: 2))),
+            .init(fixture: later[0], phase: .upcoming),
+        ])
+        let earlier = EventMatchList(heading: .earlier, rows: Array(champions.matches.dropLast().suffix(3).reversed()))
+        let neutralToday = EventNeutralList(heading: .today, rows: today.rows.enumerated().map { .init(fixture: $0.element.fixture, phase: $0.offset < 2 ? .ended : .upcoming) })
+        let neutralEarlier = EventNeutralList(heading: .earlier, rows: earlier.rows.map { .init(fixture: $0.fixture, phase: .ended) })
+        let header = EventWidgetHeader(eventID: "2766", title: "Champions 2026", logo: champions.event.logo,
+            subtitle: .stage("Playoffs", location: "Shanghai"), progress: .fraction(0.82), hasLiveMatch: false)
+        func visible(_ name: String, _ state: EventVisibleState, _ value: String?, live: Bool = false, subtitle: EventWidgetSubtitle? = nil, progress: EventWidgetProgress? = nil) -> RenderCase {
+            let header = EventWidgetHeader(eventID: header.eventID, title: header.title, logo: header.logo, subtitle: subtitle ?? header.subtitle,
+                                           progress: progress ?? header.progress, hasLiveMatch: live)
+            return .init(name: name, content: .content(.init(header: header, body: .visible(state))), value: value)
+        }
+        func hidden(_ name: String, _ state: EventHiddenState, _ value: String, live: Bool = false) -> RenderCase {
+            let header = EventWidgetHeader(eventID: header.eventID, title: header.title, logo: header.logo,
+                subtitle: live ? header.subtitle : .ended(champions.event.dates.endInclusive, location: "Shanghai"), progress: live ? header.progress : .complete, hasLiveMatch: live)
+            return .init(name: name, content: .content(.init(header: header, body: .hidden(state))), value: value)
+        }
+        func maps(_ index: Int?, between: Bool = false, long: Bool = false) -> [WidgetMap] {
+            let names = ["Ascent", "Sunset", "Haven", "Lotus", long ? "Extraordinarily Long Map Name" : "Split"]
+            return names.enumerated().map { offset, name in
+                let live = !between && offset == index
+                let completed = offset < (index ?? 0)
+                let won = offset % 2 == 0
+                return .init(name: name, pick: .decider, status: live ? .live : completed ? (won ? .won : .lost) : .next,
+                    score: live ? .init(team: 6, opponent: 4) : completed ? .init(team: won ? 13 : 9, opponent: won ? 9 : 13) : nil)
+            }
+        }
+        let grand = fixture("live", -3_600)
+        let live = EventLiveHero(fixture: grand, score: .init(team: 2, opponent: 1), maps: Array(maps(2).prefix(3)), otherLiveCount: 0)
+        let lastFixture = fixture("last", -3_600, round: "Lower Round 3")
+        let victory = try XCTUnwrap(EventWidgetVictory(match: .init(fixture: lastFixture, phase: .completed(.init(team: 1, opponent: 2)))))
+        let between = EventBetweenHero(last: victory, next: fixture("tomorrow", 86_400))
+        let finished = try content(plan(champions))
+        let unconfirmed = EventFinishedHero.unconfirmed(.init(end: champions.event.dates.endInclusive, prizePool: champions.event.prizePool))
+        let empty = EventMatchList(heading: .upNext, rows: [])
+        var cases: [RenderCase] = [
+            visible("01-first-match", .scheduled(.first(fixture("first", 172_800, round: "Upper Round 1")), .matches(upcoming)), "12:00\u{202F}PM",
+                subtitle: .starts(WidgetDay("2026-10-22"), location: "São Paulo"), progress: .empty),
+            visible("02-up-next", .scheduled(.next(next), .matches(upcoming)), "6:00\u{202F}PM"),
+            visible("03-undecided", .scheduled(.next(fixture("tbd", 21_600, pair: .init(left: pair.left, right: .undecided))), .matches(upcoming)), "6:00\u{202F}PM"),
+            visible("04-live-today", .live(live, today), "2–1", live: true),
+            visible("05-two-live", .live(.init(fixture: grand, score: .init(team: 1, opponent: 0), maps: Array(maps(1).prefix(3)), otherLiveCount: 1), today), "1–0", live: true),
+            visible("06-result-right-winner", .between(between, upcoming), "2–1"),
+            RenderCase(name: "07-final-standings", content: .content(finished), value: "LOUD"),
+            visible("07-winner-fallback", .finished(.champion(victory.winner, final: victory), .matches(earlier)), victory.winner.name),
+            visible("07-winner-unavailable", .finished(unconfirmed, .matches(earlier)), "Oct 18"),
+            visible("08-not-listed", .gap(.notListed(start: WidgetDay("2027-02-20")), empty), "Feb 20", subtitle: .dates(.init(start: WidgetDay("2027-02-20"), endInclusive: WidgetDay("2027-03-03")), location: "Seoul"), progress: .empty),
+            visible("08-active-gap", .gap(.nextUnlisted, earlier), "TBD"),
+            visible("09-delayed", .scheduled(.next(fixture("late", -1, round: "Lower Final")), .matches(upcoming)), "Any minute"),
+            hidden("10-live-hidden-today", .live(.init(fixture: grand), neutralToday), "Live now", live: true),
+            hidden("11-finished-hidden-earlier", .finished(.init(end: champions.event.dates.endInclusive, prizePool: champions.event.prizePool), neutralEarlier), "Oct 18"),
+            RenderCase(name: "12-choose-event", content: .setup(.chooseEvent), value: nil),
+            RenderCase(name: "12-no-favorites", content: .setup(.noFavorites), value: nil),
+            RenderCase(name: "12-placeholder", content: .placeholder(eventID: "2766"), value: nil),
+            visible("bo5-map2", .live(.init(fixture: grand, score: .init(team: 1, opponent: 0), maps: maps(1), otherLiveCount: 0), earlier), "1–0", live: true),
+            visible("bo5-map4", .live(.init(fixture: grand, score: .init(team: 2, opponent: 1), maps: maps(3), otherLiveCount: 0), earlier), "2–1", live: true),
+            visible("bo5-map5-decider", .live(.init(fixture: grand, score: .init(team: 2, opponent: 2), maps: maps(4), otherLiveCount: 0), earlier), "2–2", live: true),
+            visible("bo5-between-maps", .live(.init(fixture: grand, score: .init(team: 2, opponent: 1), maps: maps(3, between: true), otherLiveCount: 0), earlier), "2–1", live: true),
+            visible("live-missing-score-details", .live(.init(fixture: grand, score: nil, maps: [], otherLiveCount: 0), today), "–", live: true),
+            visible("tbd-pair", .scheduled(.next(fixture("unknown", nil, pair: .init(left: .undecided, right: .undecided))), .matches(upcoming)), "TBD"),
+            visible("long-map-name", .live(.init(fixture: grand, score: .init(team: 2, opponent: 2), maps: maps(4, long: true), otherLiveCount: 0), earlier), "2–2", live: true),
+            hidden("hidden-up-next", .scheduled(.next(next), .init(heading: .upNext, rows: later.map { .init(fixture: $0, phase: .upcoming) })), "6:00\u{202F}PM"),
+            hidden("hidden-active-gap", .gap(.nextUnlisted, neutralEarlier), "TBD"),
+        ]
+        let grouped = try content(plan(data("3122"), teams: ["4915"]))
+        cases.append(.init(name: "group-table", content: .content(grouped), value: "6:30\u{202F}PM"))
+        let activeEvent = EventWidgetMetadata(id: champions.event.id, title: champions.event.title, logo: champions.event.logo,
+            location: champions.event.location, prizePool: champions.event.prizePool, dates: champions.event.dates, reportedStatus: .ongoing)
+        let stale = EventWidgetData(event: activeEvent, matches: [.init(fixture: grand, phase: .live(nil))], groups: [], prizes: [], detail: nil)
+        cases.append(.init(name: "expired-hero", content: .content(try content(plan(stale, fetchedAt: now.addingTimeInterval(-10_801)))), value: "TBD"))
+        let longPair = WidgetMatchPair(left: .team(.init(id: nil, name: "Extraordinarily Long Championship Team Name")), right: .team(.init(id: nil, name: "Another Very Long Esports Team Name")))
+        cases.append(visible("long-names", .scheduled(.next(fixture("long", 3_600, round: "Extraordinarily Long Lower Bracket Final Round", pair: longPair)), .matches(upcoming)), "1:00\u{202F}PM"))
+        return cases
+    }
+
+    func testHeroTextAndNeutralRowsHaveLiteralExpectedValues() throws {
+        let cases = try renderCases()
+        for scenario in cases {
+            guard case .content(let content) = scenario.content else { continue }
+            let text: EventWidgetHeroText
+            switch content.body {
+            case .visible(let state): text = .make(state, now: now, large: false, locale: locale, timeZone: zone)
+            case .hidden(let state): text = .make(state, now: now, large: false, locale: locale, timeZone: zone)
+            }
+            XCTAssertEqual(text.value, scenario.value, scenario.name)
+            XCTAssertEqual(scenario.content.widgetURL, VLRWidgetContract.detailsURL(kind: "event", id: content.header.eventID))
+            if scenario.name == "06-result-right-winner" { XCTAssertEqual(text.lead, "Team Vitality beat LOUD") }
+            if scenario.name == "bo5-map5-decider" {
+                XCTAssertEqual(WidgetMapPills.visible(text.maps).count, 5)
+                XCTAssertEqual(WidgetMapPills.visible(text.maps).map { WidgetMapPills.text($0, compact: true, locale: locale) }, ["13–9", "9–13", "13–9", "9–13", "Split 6–4"])
+            }
+            if case .hidden(.live(_, let list)) = content.body {
+                XCTAssertEqual(text.lead, "LOUD vs Team Vitality")
+                XCTAssertEqual(text.context, "Scores hidden · Grand Final")
+                XCTAssertEqual(text.maps, [])
+                let row = EventWidgetText.row(list.rows[0], heading: list.heading, now: now, locale: locale, timeZone: zone)
+                XCTAssertEqual(row.day, "Ended")
+                XCTAssertNil(row.leftScore)
+                XCTAssertNil(row.rightScore)
+                XCTAssertNil(row.loser)
+            }
+        }
+        XCTAssertEqual(EventWidgetEntryContent.placeholder(eventID: "2766").widgetURL, VLRWidgetContract.detailsURL(kind: "event", id: "2766"))
+        XCTAssertEqual(EventWidgetEntryContent.setup(.chooseEvent).widgetURL, VLRWidgetContract.appURL)
+        XCTAssertEqual(EventWidgetEntryContent.placeholder(eventID: nil).widgetURL, VLRWidgetContract.appURL)
+    }
+
+    @MainActor
+    func testEventWidgetRendersEveryStateInLightDarkAndTint() throws {
+        let directory = ProcessInfo.processInfo.environment["VLR_RENDER_DIR"].map { URL(fileURLWithPath: $0).appendingPathComponent("event") }
+        if let directory { try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true) }
+        for scenario in try renderCases() {
+            for (familyName, family, height) in [("medium", WidgetFamily.systemMedium, CGFloat(158)), ("large", .systemLarge, 354)] {
+                for mode in ["light", "dark", "tint"] {
+                    let view = EventWidgetView(entry: .init(date: now, content: scenario.content), familyOverride: family, tintedOverride: mode == "tint")
+                        .frame(width: 338, height: height)
+                        .background(mode == "tint" ? Color(red: 0.20, green: 0.30, blue: 0.50) : PrismWidgetPalette.background(for: mode == "dark" ? .dark : .light))
+                        .environment(\.colorScheme, mode == "dark" ? .dark : .light).environment(\.locale, locale).environment(\.timeZone, zone)
+                    let renderer = ImageRenderer(content: view)
+                    renderer.scale = 3
+                    let image = try XCTUnwrap(renderer.uiImage)
+                    XCTAssertEqual(image.size, CGSize(width: 338, height: height))
+                    let filename = "\(familyName)-\(scenario.name)-\(mode).png"
+                    if let directory { try XCTUnwrap(image.pngData()).write(to: directory.appendingPathComponent(filename)) }
+                    let attachment = XCTAttachment(image: image)
+                    attachment.name = filename
+                    attachment.lifetime = .keepAlways
+                    add(attachment)
+                }
+            }
+        }
+    }
+
+    @MainActor
+    func testEventWidgetRendersEveryLocaleWithLongNames() throws {
+        let scenario = try XCTUnwrap(renderCases().first { $0.name == "long-names" })
+        let directory = ProcessInfo.processInfo.environment["VLR_RENDER_DIR"].map { URL(fileURLWithPath: $0).appendingPathComponent("event") }
+        if let directory { try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true) }
+        for identifier in ["en_US", "de_DE", "es_ES", "fr_FR", "hi_IN", "ko_KR", "pt_BR", "ru_RU", "tr_TR"] {
+            for (familyName, family, height) in [("medium", WidgetFamily.systemMedium, CGFloat(158)), ("large", .systemLarge, 354)] {
+                let view = EventWidgetView(entry: .init(date: now, content: scenario.content), familyOverride: family)
+                    .frame(width: 338, height: height).background(Color.white)
+                    .environment(\.colorScheme, .light).environment(\.locale, Locale(identifier: identifier)).environment(\.timeZone, TimeZone(identifier: "Asia/Kolkata")!)
+                let renderer = ImageRenderer(content: view)
+                renderer.scale = 3
+                let image = try XCTUnwrap(renderer.uiImage)
+                let filename = "\(familyName)-locale-\(identifier).png"
+                if let directory { try XCTUnwrap(image.pngData()).write(to: directory.appendingPathComponent(filename)) }
+            }
+        }
+    }
+}
+
+@available(iOS 17.0, *)
+final class EventWidgetIntentTests: XCTestCase {
+    func testPickerResolvesCurrentDirectFavoritesOnly() async throws {
+        let query = FavoriteEventQuery(loadEvents: { [.init(id: "2", name: "Masters"), .init(id: "1", name: "Champions")] })
+        let suggested = try await query.suggestedEntities()
+        XCTAssertEqual(suggested.map(\.name), ["Champions", "Masters"])
+        let resolved = try await query.entities(for: ["gone", "2"])
+        XCTAssertEqual(resolved.map(\.id), ["2"])
+        let removed = FavoriteEventQuery(loadEvents: { [] })
+        let none = try await removed.entities(for: ["2"])
+        XCTAssertEqual(none.map(\.id), [])
     }
 }

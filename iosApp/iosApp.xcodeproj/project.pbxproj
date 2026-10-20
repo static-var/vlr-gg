@@ -10,9 +10,9 @@
 		009B3B6E559C6466AF5E01A4 /* MatchActivityTeamColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B4ABC0C8DE37D3C7452ADB /* MatchActivityTeamColors.swift */; };
 		099124514C9782698F2C797B /* VLRWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */; };
 		09A438B88839E831E9EFA9A2 /* MatchActivityStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6EDA015402D627B79F54E9 /* MatchActivityStyle.swift */; };
-		09FA528847860E68238E4D07 /* FavoriteWidgetStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F4BE5E860BFDA0C23B19E0 /* FavoriteWidgetStoreTests.swift */; };
 		0B92FCB7DE8E2959B960EA79 /* TeamWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C573F07CB732ADD30EB527 /* TeamWidget.swift */; };
 		0D63805B732B1B227E85F095 /* MatchActivityTeamCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A6C698CF113B0B0F3BC001 /* MatchActivityTeamCodes.swift */; };
+		0DFE37A8592469CD024D3BC5 /* EventWidgetIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2A86457236C3004C8579C7 /* EventWidgetIntent.swift */; };
 		0E398FEF71532358A4173AC9 /* TeamWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C573F07CB732ADD30EB527 /* TeamWidget.swift */; };
 		10E77CBD224C1205727E6DC2 /* TeamWidgetContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FA9B96A16113362D0323F2 /* TeamWidgetContent.swift */; };
 		15D0070A8332C69488B9E71D /* VLRWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4389493D9A9B41262A3B1F7B /* VLRWidgetRefresh.swift */; };
@@ -22,6 +22,7 @@
 		1C88E0A4A666DE8A82972345 /* TeamWidgetContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FA9B96A16113362D0323F2 /* TeamWidgetContent.swift */; };
 		1E500497BDD6693B31A1A4B2 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */; };
 		22EA1CB33A17DCC6FC82406D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F543015C899423D4B01CEB2E /* Assets.xcassets */; };
+		25CDA81289B2AF97CAFE447B /* EventWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7437C0B71E8588E1C9DC8F /* EventWidget.swift */; };
 		2A7718436560474BA648F2A9 /* MatchActivityTeamColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B4ABC0C8DE37D3C7452ADB /* MatchActivityTeamColors.swift */; };
 		2C8712CDBFCF1CC46C17EE6B /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D530281DDD45BB536CC313C6 /* InfoPlist.xcstrings */; };
 		3052266E5DA47F67960F30D7 /* WidgetFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE75D462EC8F50E6DBF425EA /* WidgetFormatting.swift */; };
@@ -48,6 +49,7 @@
 		561A93F4EB86F4A8116CB8DA /* SiriActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */; };
 		56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */; };
 		58D38D290BEA140639D0E536 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA76E3399E29872389A8AA /* MatchActivityLogoCache.swift */; };
+		5A958E51AE07E07F1AC24AEF /* EventWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7437C0B71E8588E1C9DC8F /* EventWidget.swift */; };
 		6049011682B750E67726BE29 /* LiveActivityPermissionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7642941D9449CAF80ED2EA05 /* LiveActivityPermissionProvider.swift */; };
 		6621D37A1B6E6DC30B5FAD33 /* MatchLiveActivityStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6288F5BBCB1207067C25AAFC /* MatchLiveActivityStyles.swift */; };
 		748A263005DBA8C434DC98A7 /* MatchActivityLogoTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AFEB53B3F777914C5F1FF7 /* MatchActivityLogoTreatment.swift */; };
@@ -74,6 +76,7 @@
 		B31C480DFB8D81AA0EB42F35 /* VLRWidgetModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3B99E7E7B0D24494A7C6B3 /* VLRWidgetModels.swift */; };
 		B4584E8391589889D796A814 /* VLRWidgetContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CAB889C0F6CC16A3A9F64D /* VLRWidgetContract.swift */; };
 		B5774EBA09C9BF2544502554 /* FavoriteSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFB84F263D52FFC7C65EE64 /* FavoriteSearch.swift */; };
+		B890709B2DDD9E6BFA4FF4DD /* EventWidgetIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2A86457236C3004C8579C7 /* EventWidgetIntent.swift */; };
 		B8E50991B70EEE733C63AF32 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 6A8D1EB5C724332B1C0F728D /* Localizable.xcstrings */; };
 		B9A419A55750D206768D49B6 /* EventWidgetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E12DAA62B7B8B98F1CC221 /* EventWidgetTests.swift */; };
 		BC1B377DD56AF31948E3B31E /* chakra_petch_regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EEC913577C9501B660DECCCD /* chakra_petch_regular.ttf */; };
@@ -200,12 +203,13 @@
 		BEB309EDF07929C6826356A2 /* TeamWidgetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamWidgetTests.swift; sourceTree = "<group>"; };
 		C117AD187833E2513BD2F553 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
-		C4F4BE5E860BFDA0C23B19E0 /* FavoriteWidgetStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteWidgetStoreTests.swift; sourceTree = "<group>"; };
 		C737F63F604F3C29E306493A /* MatchActivityLogoTreatmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityLogoTreatmentTests.swift; sourceTree = "<group>"; };
 		C9D1826F65E59805A547049E /* TeamWidgetRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamWidgetRefresh.swift; sourceTree = "<group>"; };
 		CE31C8AA15CA1F48E0DD9971 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
 		CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		CF2A86457236C3004C8579C7 /* EventWidgetIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventWidgetIntent.swift; sourceTree = "<group>"; };
 		CF54AB173A88123836D78D36 /* WidgetMatchViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetMatchViews.swift; sourceTree = "<group>"; };
+		CF7437C0B71E8588E1C9DC8F /* EventWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventWidget.swift; sourceTree = "<group>"; };
 		CFDA1E4DB6B0EAEAACEBF729 /* version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = version.xcconfig; sourceTree = "<group>"; };
 		D1F8D968CF01C749B570E7A9 /* ActivityPushTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityPushTokenProvider.swift; sourceTree = "<group>"; };
 		D4FA9B96A16113362D0323F2 /* TeamWidgetContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamWidgetContent.swift; sourceTree = "<group>"; };
@@ -317,7 +321,6 @@
 			isa = PBXGroup;
 			children = (
 				03E12DAA62B7B8B98F1CC221 /* EventWidgetTests.swift */,
-				C4F4BE5E860BFDA0C23B19E0 /* FavoriteWidgetStoreTests.swift */,
 				593AC05C89885B2102D4BE59 /* MatchActivityAttributesTests.swift */,
 				C737F63F604F3C29E306493A /* MatchActivityLogoTreatmentTests.swift */,
 				B9EA4590539C7AEECB5795B4 /* MatchLiveActivityRoundsTests.swift */,
@@ -345,7 +348,9 @@
 			isa = PBXGroup;
 			children = (
 				96D81F174E01C0AD0DB90B86 /* Assets.xcassets */,
+				CF7437C0B71E8588E1C9DC8F /* EventWidget.swift */,
 				2633FCCEDEE4AF6DA20ECCDD /* EventWidgetContent.swift */,
+				CF2A86457236C3004C8579C7 /* EventWidgetIntent.swift */,
 				181E76B315448652EDF12F5D /* EventWidgetRefresh.swift */,
 				B4CDEC3E59D371D5381F98E0 /* FavoriteWidgetStore.swift */,
 				F95B8B8B53351C500C2EACA2 /* GeneratedBuildConfig.swift */,
@@ -657,11 +662,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A958E51AE07E07F1AC24AEF /* EventWidget.swift in Sources */,
 				4C8A32E76EDD24AB455170B0 /* EventWidgetContent.swift in Sources */,
+				0DFE37A8592469CD024D3BC5 /* EventWidgetIntent.swift in Sources */,
 				7C6CD77A4BE4E5A53869E819 /* EventWidgetRefresh.swift in Sources */,
 				B9A419A55750D206768D49B6 /* EventWidgetTests.swift in Sources */,
 				F1CDEC095103418B972D5F76 /* FavoriteWidgetStore.swift in Sources */,
-				09FA528847860E68238E4D07 /* FavoriteWidgetStoreTests.swift in Sources */,
 				C4F26D6615E5B84E8ABD7919 /* MatchActivityAttributes.swift in Sources */,
 				D3FAD1589057032649BD28A1 /* MatchActivityAttributesTests.swift in Sources */,
 				379F2E73E56E97FFF7205AF8 /* MatchActivityLogoCache.swift in Sources */,
@@ -698,7 +704,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25CDA81289B2AF97CAFE447B /* EventWidget.swift in Sources */,
 				E74ACF601B5A2DCC4FE53779 /* EventWidgetContent.swift in Sources */,
+				B890709B2DDD9E6BFA4FF4DD /* EventWidgetIntent.swift in Sources */,
 				FE636281D3A0778529F7C323 /* EventWidgetRefresh.swift in Sources */,
 				F2CC3165403448901112685C /* FavoriteWidgetStore.swift in Sources */,
 				A549AA5B4708B66DBB9797F1 /* GeneratedBuildConfig.swift in Sources */,

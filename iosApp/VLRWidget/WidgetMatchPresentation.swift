@@ -129,17 +129,25 @@ enum WidgetSeriesMapper {
 
         guard let details else { return [] }
         let veto = details.veto.filter { ["pick", "remains"].contains($0.action.lowercased()) }
-        var names = details.data.filter { $0.map.lowercased() != "all" }.map(\.map)
-        for pick in veto where !names.contains(where: { $0.caseInsensitiveCompare(pick.map) == .orderedSame }) { names.append(pick.map) }
+        func key(_ value: String) -> String { value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
+        func index(in values: [RemoteMatchPreview.Team], fallback: Int) -> Int {
+            if let id = team.id, !id.isEmpty, let index = values.firstIndex(where: { $0.id == id }) { return index }
+            return values.firstIndex { key($0.name) == key(team.name) } ?? fallback
+        }
+        var names: [String] = []
+        for name in details.data.map(\.map) + veto.map(\.map) {
+            guard !key(name).isEmpty, key(name) != "all", !names.contains(where: { key($0) == key(name) }) else { continue }
+            names.append(name.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
         let current = details.current_map ?? previewCurrent
         let previewIndex = ownFirst ? 0 : 1
-        let currentTeamIndex = details.current_map == nil ? previewIndex : details.teams.firstIndex {
-            (team.id != nil && $0.id == team.id) || $0.name.caseInsensitiveCompare(team.name) == .orderedSame
-        } ?? previewIndex
-        if let current, !current.name.isEmpty, !names.contains(current.name) { names.append(current.name) }
+        let currentTeamIndex = details.current_map == nil ? previewIndex : index(in: details.teams, fallback: previewIndex)
+        if let current, !key(current.name).isEmpty, !names.contains(where: { key($0) == key(current.name) }) {
+            names.append(current.name.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
         return names.map { name in
-            let map = details.data.first { $0.map.caseInsensitiveCompare(name) == .orderedSame }
-            let pick = veto.first { $0.map.caseInsensitiveCompare(name) == .orderedSame }
+            let map = details.data.first { key($0.map) == key(name) }
+            let pick = veto.first { key($0.map) == key(name) }
             let choice: WidgetMapPick
             if let pick, pick.action.lowercased() == "pick", let picker = pick.team {
                 let ownNames = [team.id, team.name, team.tag].compactMap { $0 }
@@ -147,14 +155,14 @@ enum WidgetSeriesMapper {
                 choice = isOwn ? .team(team.tag ?? team.name) : .opponent(opponent?.tag ?? picker)
             } else { choice = .decider }
             let orderedTeams = map?.teams ?? []
-            let ownIndex = orderedTeams.firstIndex { (team.id != nil && $0.id == team.id) || $0.name.caseInsensitiveCompare(team.name) == .orderedSame } ?? (ownFirst ? 0 : 1)
+            let ownIndex = index(in: orderedTeams, fallback: previewIndex)
             let otherIndex = ownIndex == 0 ? 1 : 0
             var scores: WidgetScore?
             if orderedTeams.indices.contains(ownIndex), orderedTeams.indices.contains(otherIndex),
                let first = orderedTeams[ownIndex].score, let second = orderedTeams[otherIndex].score {
                 scores = WidgetScore(team: first, opponent: second)
             }
-            let isCurrent = current?.name.caseInsensitiveCompare(name) == .orderedSame
+            let isCurrent = current.map { key($0.name) == key(name) } ?? false
             let live = map?.live == true || (isCurrent && map?.live != false)
             if live, let raw = current?.scores, raw.count == 2, (0...1).contains(currentTeamIndex),
                let first = raw[currentTeamIndex], let second = raw[1 - currentTeamIndex] {
