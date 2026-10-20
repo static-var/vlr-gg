@@ -38,7 +38,7 @@ final class TeamWidgetTests: XCTestCase {
             return .content(value)
         }
         let cases: [(TeamWidgetEntryContent, TimeInterval?)] = [
-            (.needsTeam, nil), (.placeholder, 900), (.content(live), 900), (.content(live.redacted()), 900),
+            (.needsTeam(.chooseTeam), nil), (.needsTeam(.noFavorites), nil), (.placeholder, 900), (.content(live), 900), (.content(live.redacted()), 900),
             (upcoming(-1), 300), (upcoming(0), 300), (upcoming(60), 60), (upcoming(86_400), 1_800),
             (upcoming(86_401), 7_200), (upcoming(nil), 7_200), (.content(idle), 7_200), (.content(idle.redacted()), 7_200),
         ]
@@ -307,7 +307,25 @@ final class TeamWidgetTests: XCTestCase {
         let published = UpcomingMatchesSnapshot(savedAtEpochMillis: 123, clientId: "client", hasFavorites: true,
             favorites: .empty, spoilersHidden: false, matches: [], theme: .preview, favoriteTeams: source.favoriteTeams)
         XCTAssertEqual(cache.load(teamID: "2", source: published), content)
-        XCTAssertEqual(TeamWidgetEntryContent.make(content, teamID: "removed", clientID: "client", source: published), .needsTeam)
+        XCTAssertEqual(TeamWidgetEntryContent.make(content, teamID: "removed", clientID: "client", source: published), .needsTeam(.chooseTeam))
+    }
+
+    func testEntrySetupUsesCurrentFavoriteTeamsAndClient() {
+        let empty = UpcomingMatchesSnapshot(savedAtEpochMillis: 0, clientId: "client", hasFavorites: false,
+            favorites: .empty, spoilersHidden: false, matches: [], theme: .preview, favoriteTeams: [])
+        let favorites = UpcomingMatchesSnapshot(savedAtEpochMillis: 0, clientId: "client", hasFavorites: true,
+            favorites: .empty, spoilersHidden: false, matches: [], theme: .preview,
+            favoriteTeams: [.init(id: "2", name: "Sentinels")])
+        let cases: [(UpcomingMatchesSnapshot?, String?, String, TeamWidgetSetup)] = [
+            (nil, "2", "client", .noFavorites),
+            (empty, "2", "client", .noFavorites),
+            (favorites, nil, "client", .chooseTeam),
+            (favorites, "1", "client", .chooseTeam),
+            (favorites, "2", "other-client", .chooseTeam),
+        ]
+        for (source, teamID, clientID, expected) in cases {
+            XCTAssertEqual(TeamWidgetEntryContent.make(nil, teamID: teamID, clientID: clientID, source: source), .needsTeam(expected))
+        }
     }
 
     func testCachedContentExpiresLiveAndOverdueUpcomingMatches() {
@@ -379,7 +397,7 @@ final class TeamWidgetTests: XCTestCase {
             ("medium-upcoming-monogram", .content(upcoming), .systemMedium, 158, "2h 14m"),
             ("medium-live", .content(live), .systemMedium, 158, "1–1"),
             ("medium-live-bo3-after-map1", .content(betweenMaps), .systemMedium, 158, "1–0"),
-            ("medium-needs-team", .needsTeam, .systemMedium, 158, nil),
+            ("medium-needs-team", .needsTeam(.chooseTeam), .systemMedium, 158, nil),
             ("large-live", .content(live), .systemLarge, 354, "1–1"),
             ("large-live-hidden", .content(live.redacted()), .systemLarge, 354, "Live now"),
             ("large-idle", .content(try content()), .systemLarge, 354, "2–1"),

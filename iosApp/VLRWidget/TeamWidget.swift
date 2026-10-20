@@ -18,17 +18,21 @@ struct TeamWidgetProvider: AppIntentTimelineProvider {
             return TeamWidgetEntry(date: now, content: .content(.sample(at: now)))
         }
         let source = WidgetSnapshotRepository().loadSource()
-        guard let id = configuration.team?.id, source?.favoriteTeams.contains(where: { $0.id == id }) == true,
-              let source else { return TeamWidgetEntry(date: .now, content: .needsTeam) }
-        return TeamWidgetEntry(date: .now, content: .make(TeamWidgetCache().load(teamID: id, source: source), teamID: id, clientID: source.clientId, source: source))
+        let id = configuration.team?.id
+        let cached: TeamWidgetContent?
+        if let source, let id { cached = TeamWidgetCache().load(teamID: id, source: source) }
+        else { cached = nil }
+        return TeamWidgetEntry(date: .now, content: .make(cached, teamID: id, clientID: source?.clientId ?? "", source: source))
     }
 
     func timeline(for configuration: TeamWidgetIntent, in context: Context) async -> Timeline<TeamWidgetEntry> {
         let now = Date.now
         let repository = WidgetSnapshotRepository()
-        guard let source = repository.loadSource(), let id = configuration.team?.id,
-              source.favoriteTeams.contains(where: { $0.id == id }) else {
-            return Timeline(entries: [TeamWidgetEntry(date: now, content: .needsTeam)], policy: .never)
+        let source = repository.loadSource()
+        let id = configuration.team?.id
+        let initialContent = TeamWidgetEntryContent.make(nil, teamID: id, clientID: source?.clientId ?? "", source: source)
+        guard case .placeholder = initialContent, let source, let id else {
+            return Timeline(entries: [TeamWidgetEntry(date: now, content: initialContent)], policy: .never)
         }
         let cache = TeamWidgetCache()
         let content = await TeamWidgetRefreshCoordinator.shared.refresh(teamID: id, source: source, cache: cache)
