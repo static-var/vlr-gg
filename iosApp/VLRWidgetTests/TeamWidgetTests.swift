@@ -103,7 +103,7 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(TeamWidgetMapper.match(for: "2", in: Array(matches.dropLast()))?.id, "next")
     }
 
-    func testRefreshUsesAuthenticatedFavoritePreviewAndLoadsDetailsOnlyForLiveTeam() async throws {
+    func testRefreshUsesAuthenticatedFavoritePreviewAndLoadsDetailsForUpcomingAndLiveTeam() async throws {
         let recorder = TeamWidgetRequestRecorder()
         let client = WidgetAPIClient(baseURL: URL(string: "https://example.test")!, authorization: "test-token") { request in
             await recorder.load(request)
@@ -114,10 +114,11 @@ final class TeamWidgetTests: XCTestCase {
         let service = TeamWidgetRefreshService(api: client)
         let upcoming = try await service.refresh(teamID: "2", source: source)
         guard case .upcoming(let fixture) = upcoming.state else { return XCTFail("Expected upcoming fixture") }
-        XCTAssertEqual(fixture.stage, "Week 1–Quarterfinals")
-        XCTAssertEqual(fixture.format, "")
+        XCTAssertEqual(fixture, TeamWidgetFixture(id: "100",
+            opponent: .init(id: "1", name: "FNATIC", tag: "FNC", logo: "https://example.test/fnatic.png"),
+            start: nil, event: "Masters", stage: "Upper final", format: "Bo3"))
         let initialPaths = await recorder.paths
-        XCTAssertEqual(Set(initialPaths), ["/api/v2/rankings/teams/2", "/api/v1/favorites/saved-client/matches?include_results=false"])
+        XCTAssertEqual(Set(initialPaths), ["/api/v2/rankings/teams/2", "/api/v1/favorites/saved-client/matches?include_results=false", "/api/v1/matches/100"])
         await recorder.setLive()
         let live = try await service.refresh(teamID: "2", source: source)
         guard case .live(let series) = live.state else { return XCTFail("Expected live series") }
@@ -128,6 +129,28 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(paths.last, "/api/v1/matches/100")
         let headers = await recorder.headers
         XCTAssertEqual(Set(headers), ["test-token|dev.staticvar.vlr"])
+        await recorder.failDetails()
+        let fallback = try await service.refresh(teamID: "2", source: source)
+        guard case .upcoming(let preview) = fallback.state else { return XCTFail("Expected preview fallback") }
+        XCTAssertEqual(preview, TeamWidgetFixture(id: "100", opponent: .init(id: "1", name: "FNATIC"),
+            start: nil, event: "Masters", stage: "Week 1–Quarterfinals", format: ""))
+    }
+
+    func testUpcomingDetailsMapCountFallbackAndPreviewFormat() throws {
+        let profile = try JSONDecoder().decode(TeamWidgetRankingResponse.self, from: Data("""
+        {"team":{"id":"2","name":"Sentinels"},"recent":[]}
+        """.utf8))
+        let match = try JSONDecoder().decode(TeamWidgetMatchResponse.self, from: Data("""
+        {"id":"100","event":"Masters","series":"Bo5","status":"upcoming","team1":{"id":"2","name":"Sentinels"},"team2":{"id":"1","name":"FNATIC","img":"https://example.test/preview.png","tag":"FNC"}}
+        """.utf8))
+        for (counts, expected) in [("\"total_maps\":3,\"map_count\":5", "Bo3"), ("\"map_count\":1", "Bo1"), ("\"total_maps\":2", "Bo5")] {
+            let details = try JSONDecoder().decode(TeamWidgetDetailsResponse.self,
+                from: Data("{\"veto\":[],\"data\":[],\"teams\":[],\(counts)}".utf8))
+            let result = TeamWidgetMapper.content(profile: profile, match: match, details: details, spoilersHidden: false)
+            XCTAssertEqual(result.fixture, TeamWidgetFixture(id: "100",
+                opponent: .init(id: "1", name: "FNATIC", tag: "FNC", logo: "https://example.test/preview.png"),
+                start: nil, event: "Masters", stage: "", format: expected))
+        }
     }
 
     func testCacheDoesNotReuseScoresAfterConfigurationChanges() throws {
@@ -224,8 +247,10 @@ private actor TeamWidgetRequestRecorder {
     var paths: [String] = []
     var headers: [String] = []
     private var live = false
+    private var detailsFail = false
 
     func setLive() { live = true }
+    func failDetails() { live = false; detailsFail = true }
 
     func load(_ request: URLRequest) -> (Data, HTTPURLResponse) {
         let url = request.url!
@@ -242,10 +267,10 @@ private actor TeamWidgetRequestRecorder {
             """
         } else {
             json = """
-            {"teams":[{"id":"2","name":"Sentinels"},{"id":"1","name":"FNATIC"}],"veto":[{"team":"SEN","action":"pick","map":"Ascent"}],"data":[{"map":"Ascent","live":true,"teams":[{"name":"Sentinels","score":7},{"name":"FNATIC","score":5}]}],"current_map":{"name":"Ascent","number":1,"scores":[7,5]},"event":{"stage":"Upper final"}}
+            {"total_maps":3,"map_count":5,"teams":[{"id":"1","name":"FNATIC","tag":"FNC","img":"https://example.test/fnatic.png"},{"id":"2","name":"Sentinels"}],"veto":[{"team":"SEN","action":"pick","map":"Ascent"}],"data":[{"map":"Ascent","live":true,"teams":[{"name":"Sentinels","score":7},{"name":"FNATIC","score":5}]}],"current_map":{"name":"Ascent","number":1,"scores":[5,7]},"event":{"stage":"Upper final"}}
             """
         }
-        return (Data(json.utf8), HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!)
+        return (Data(json.utf8), HTTPURLResponse(url: url, statusCode: detailsFail && url.path == "/api/v1/matches/100" ? 503 : 200, httpVersion: nil, headerFields: nil)!)
     }
 }
 

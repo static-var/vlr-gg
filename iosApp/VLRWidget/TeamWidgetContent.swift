@@ -303,6 +303,8 @@ struct TeamWidgetDetailsResponse: Codable {
     let teams: [TeamWidgetMatchResponse.Team]
     let event: Event?
     let current_map: TeamWidgetMatchResponse.CurrentMap?
+    var total_maps: Int? = nil
+    var map_count: Int? = nil
 
     struct Event: Codable { let stage: String? }
     struct Veto: Codable { let team: String?; let action: String; let map: String }
@@ -338,12 +340,16 @@ enum TeamWidgetMapper {
             let ownFirst = match.team1.id == profile.team.id
             let opponent = ownFirst ? match.team2 : match.team1
             let own = ownFirst ? match.team1 : match.team2
+            let opponentDetails = details?.teams.first { $0.id == opponent.id }
             let format = match.series.replacingOccurrences(of: " ", with: "").lowercased()
             let isFormat = ["bo1", "bo3", "bo5"].contains(format)
+            let mapCount = details?.total_maps ?? details?.map_count
+            let seriesFormat = mapCount.flatMap { [1, 3, 5].contains($0) ? "Bo\($0)" : nil }
+                ?? (isFormat ? "Bo" + format.dropFirst(2) : "")
             let stage = details?.event?.stage.flatMap { $0.isEmpty ? nil : $0 } ?? (isFormat ? "" : match.series)
             let fixture = TeamWidgetFixture(id: match.id,
-                opponent: opponent.id?.isEmpty != false || opponent.name.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == "TBD" ? nil : TeamWidgetTeam(id: opponent.id!, name: opponent.name, tag: opponent.tag, logo: opponent.img),
-                start: date(match.time), event: match.event, stage: stage, format: isFormat ? "Bo" + format.dropFirst(2) : "")
+                opponent: opponent.id?.isEmpty != false || opponent.name.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == "TBD" ? nil : TeamWidgetTeam(id: opponent.id!, name: opponent.name, tag: opponentDetails?.tag ?? opponent.tag, logo: opponentDetails?.img ?? opponent.img),
+                start: date(match.time), event: match.event, stage: stage, format: seriesFormat)
             if ["live", "ongoing"].contains(match.status?.lowercased() ?? "") {
                 form.append(.live)
                 let score = own.score.flatMap { first in opponent.score.map { TeamWidgetScore(team: first, opponent: $0) } }

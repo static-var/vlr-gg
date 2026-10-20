@@ -19,8 +19,7 @@ struct TeamWidgetRefreshService {
         let (ranking, previews) = try await (profile, matches)
         let match = TeamWidgetMapper.match(for: teamID, in: previews)
         let details: TeamWidgetDetailsResponse?
-        if let match, ["live", "ongoing"].contains(match.status?.lowercased() ?? ""),
-           let id = match.id.addingPercentEncoding(withAllowedCharacters: pathCharacters) {
+        if let match, let id = match.id.addingPercentEncoding(withAllowedCharacters: pathCharacters) {
             details = try? await api.get("/api/v1/matches/\(id)")
         } else { details = nil }
         return TeamWidgetMapper.content(profile: ranking, match: match, details: details, spoilersHidden: source.spoilersHidden)
