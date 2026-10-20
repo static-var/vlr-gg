@@ -165,6 +165,11 @@ targets:
         buildPhase: resources
       - path: VLRWidget/VLRWidgetModels.swift
       - path: VLRWidget/VLRWidgetRefresh.swift
+      - path: VLRWidget/TeamWidgetContent.swift
+      - path: VLRWidget/TeamWidgetMapper.swift
+      - path: VLRWidget/TeamWidgetRefresh.swift
+      - path: VLRWidget/TeamWidgetIntent.swift
+      - path: VLRWidget/TeamWidget.swift
       - path: VLRWidget/UpcomingMatchesWidget.swift
       - path: VLRWidget/MatchLiveActivity.swift
       - path: VLRWidget/MatchLiveActivityStyles.swift

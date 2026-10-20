@@ -33,6 +33,7 @@ enum MatchActivityLogoCache {
 
     private static let session: URLSession = {
         let configuration = URLSessionConfiguration.ephemeral
+        configuration.timeoutIntervalForResource = 8
         configuration.httpShouldSetCookies = false
         configuration.httpCookieStorage = nil
         configuration.urlCredentialStorage = nil
@@ -106,6 +107,19 @@ enum MatchActivityLogoCache {
 
     static func preparedImage(original: URL, appearance: Appearance, size: LogoSize) -> UIImage? {
         let file = variantURL(original: original, appearance: appearance, size: size)
+        return readBitmap(file, size: size)
+    }
+
+    static func tintedImage(for source: String?, size: LogoSize) -> UIImage? {
+        guard let source, let original = fileURL(for: source) else { return nil }
+        return tintedImage(original: original, size: size)
+    }
+
+    static func tintedImage(original: URL, size: LogoSize) -> UIImage? {
+        readBitmap(tintedURL(original: original, size: size), size: size)
+    }
+
+    private static func readBitmap(_ file: URL, size: LogoSize) -> UIImage? {
         let key = file.path as NSString
         if let cached = images.object(forKey: key) { return cached }
         guard let data = try? Data(contentsOf: file),
@@ -131,6 +145,7 @@ enum MatchActivityLogoCache {
                Appearance.allCases.allSatisfy({ appearance in
                 LogoSize.allCases.allSatisfy { size in
                     FileManager.default.fileExists(atPath: variantURL(original: file, appearance: appearance, size: size).path)
+                        && FileManager.default.fileExists(atPath: tintedURL(original: file, size: size).path)
                 }
             }) { continue }
             do {
@@ -177,6 +192,14 @@ enum MatchActivityLogoCache {
             colors.setObject(CachedColor(color), forKey: colorFile.path as NSString)
             changed = true
         }
+        for size in LogoSize.allCases {
+            let file = tintedURL(original: original, size: size)
+            guard !FileManager.default.fileExists(atPath: file.path), !Task.isCancelled,
+                  let prepared = MatchActivityLogoTreatment.prepareTinted(image, maxPixelSize: size.rawValue),
+                  let bitmap = LogoBitmap(prepared) else { continue }
+            try encoder.encode(bitmap).write(to: file, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+            changed = true
+        }
         guard !missing.isEmpty else { return changed }
         let analysis = MatchActivityLogoTreatment.analyze(image)
         for (appearance, size) in missing {
@@ -193,6 +216,10 @@ enum MatchActivityLogoCache {
 
     private static func variantURL(original: URL, appearance: Appearance, size: LogoSize) -> URL {
         original.appendingPathExtension("outline-v1-\(appearance.rawValue)-\(size.rawValue).pixels")
+    }
+
+    private static func tintedURL(original: URL, size: LogoSize) -> URL {
+        original.appendingPathExtension("tint-v1-\(size.rawValue).pixels")
     }
 
     private static func colorURL(original: URL) -> URL {

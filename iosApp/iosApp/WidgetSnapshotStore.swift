@@ -17,15 +17,18 @@ enum WidgetSnapshotStore {
                         let snapshot = try JSONDecoder().decode(UpcomingMatchesSnapshot.self, from: data)
                         let updated = UpcomingMatchesSnapshot(
                             savedAtEpochMillis: snapshot.savedAtEpochMillis,
+                            clientId: snapshot.clientId,
                             hasFavorites: snapshot.hasFavorites,
                             favorites: snapshot.favorites,
                             spoilersHidden: enabled,
                             matches: enabled ? matches.map { $0.withoutScores() } : matches,
-                            theme: snapshot.theme
+                            theme: snapshot.theme,
+                            favoriteTeams: snapshot.favoriteTeams
                         )
                         try JSONEncoder().encode(updated).write(to: url, options: .atomic)
                     }
                     WidgetCenter.shared.reloadTimelines(ofKind: VLRWidgetContract.widgetKind)
+                    WidgetCenter.shared.reloadTimelines(ofKind: VLRWidgetContract.teamWidgetKind)
                     continuation.resume()
                 } catch {
                     continuation.resume(throwing: error)
@@ -47,6 +50,7 @@ enum WidgetSnapshotStore {
             do {
                 try data.write(to: snapshotURL, options: .atomic)
                 WidgetCenter.shared.reloadTimelines(ofKind: VLRWidgetContract.widgetKind)
+                WidgetCenter.shared.reloadTimelines(ofKind: VLRWidgetContract.teamWidgetKind)
             } catch {
                 logger.error("Unable to publish widget snapshot: \(error.localizedDescription, privacy: .public)")
             }

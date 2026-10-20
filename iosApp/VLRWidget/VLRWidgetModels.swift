@@ -1,5 +1,10 @@
 import Foundation
 
+struct WidgetFavoriteTeam: Codable, Equatable, Identifiable {
+    let id: String
+    let name: String
+}
+
 struct WidgetFavoriteIDs: Codable, Equatable {
     let matchIds: [String]
     let teamIds: [String]
@@ -44,6 +49,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
     let spoilersHidden: Bool
     let matches: [UpcomingMatch]
     let theme: WidgetTheme
+    let favoriteTeams: [WidgetFavoriteTeam]
 
     var savedAt: Date {
         Date(timeIntervalSince1970: TimeInterval(savedAtEpochMillis) / 1_000)
@@ -64,7 +70,8 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         favorites: WidgetFavoriteIDs,
         spoilersHidden: Bool,
         matches: [UpcomingMatch],
-        theme: WidgetTheme
+        theme: WidgetTheme,
+        favoriteTeams: [WidgetFavoriteTeam] = []
     ) {
         self.savedAtEpochMillis = savedAtEpochMillis
         self.clientId = clientId
@@ -73,6 +80,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         self.spoilersHidden = spoilersHidden
         self.matches = matches
         self.theme = theme
+        self.favoriteTeams = favoriteTeams
     }
 
     init(from decoder: Decoder) throws {
@@ -84,6 +92,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         spoilersHidden = try container.decodeIfPresent(Bool.self, forKey: .spoilersHidden) ?? false
         matches = try container.decode([UpcomingMatch].self, forKey: .matches)
         theme = try container.decode(WidgetTheme.self, forKey: .theme)
+        favoriteTeams = try container.decodeIfPresent([WidgetFavoriteTeam].self, forKey: .favoriteTeams) ?? []
     }
 
     func withRefreshedMatches(_ matches: [UpcomingMatch], at date: Date) -> UpcomingMatchesSnapshot {
@@ -97,7 +106,8 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
                 guard spoilersHidden else { return match }
                 return match.withoutScores()
             },
-            theme: theme
+            theme: theme,
+            favoriteTeams: favoriteTeams
         )
     }
 
@@ -109,11 +119,14 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
             favorites: source.favorites,
             spoilersHidden: source.spoilersHidden,
             matches: source.spoilersHidden ? matches.map { $0.withoutScores() } : matches,
-            theme: source.theme
+            theme: source.theme,
+            favoriteTeams: source.favoriteTeams
         )
     }
 
     var sourceSignature: String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
         let fields = [
             String(savedAtEpochMillis),
             clientId,
@@ -123,6 +136,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
             favorites.teamIds.sorted().joined(separator: ","),
             favorites.eventIds.sorted().joined(separator: ","),
             favorites.playerIds.sorted().joined(separator: ","),
+            String(data: (try? encoder.encode(favoriteTeams.sorted { $0.id < $1.id })) ?? Data(), encoding: .utf8) ?? "",
             String(theme.background),
             String(theme.surface),
             String(theme.accent),

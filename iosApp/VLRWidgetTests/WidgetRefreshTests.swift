@@ -4,6 +4,21 @@ import WidgetKit
 import CoreText
 
 final class WidgetRefreshTests: XCTestCase {
+    func testFavoriteTeamsSurviveRefreshAndConfigurationAndAffectCacheSignature() throws {
+        let favorite = WidgetFavoriteTeam(id: "2", name: "Sentinels")
+        let source = UpcomingMatchesSnapshot(savedAtEpochMillis: 0, clientId: "client", hasFavorites: true,
+            favorites: .empty, spoilersHidden: false, matches: [], theme: .preview, favoriteTeams: [favorite])
+        let refreshed = source.withRefreshedMatches([], at: Date(timeIntervalSince1970: 1_792_152_000))
+        XCTAssertEqual(refreshed.favoriteTeams, [favorite])
+        XCTAssertEqual(refreshed.usingConfiguration(from: source).favoriteTeams, [favorite])
+        let data = try JSONEncoder().encode(source)
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        json.removeValue(forKey: "favoriteTeams")
+        let legacy = try JSONDecoder().decode(UpcomingMatchesSnapshot.self, from: JSONSerialization.data(withJSONObject: json))
+        XCTAssertEqual(legacy.favoriteTeams, [])
+        XCTAssertNotEqual(legacy.sourceSignature, source.sourceSignature)
+    }
+
     @MainActor
     func testWidgetLayoutsAttachSmallMediumAndLargeRenders() throws {
         let fontURL = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "chakra_petch_regular", withExtension: "ttf"))

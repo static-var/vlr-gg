@@ -227,7 +227,7 @@ struct WidgetRefreshService {
     }
 }
 
-private enum RemoteMatchStatus {
+enum RemoteMatchStatus {
     case upcoming
     case live
     case completed
@@ -251,25 +251,28 @@ private enum RemoteMatchStatus {
     }
 }
 
-private struct RemoteTeam: Decodable {
-    let id: String?
-    let name: String
-    let score: Int?
-}
-
-private struct RemoteMatchPreview: Decodable {
+struct RemoteMatchPreview: Codable {
     let id: String
     let event: String
     let series: String
     let status: String?
-    let team1: RemoteTeam
-    let team2: RemoteTeam
     let time: String?
-    let eventId: String
+    let team1: Team
+    let team2: Team
+    var current_map: CurrentMap? = nil
 
-    enum CodingKeys: String, CodingKey {
-        case id, event, series, status, team1, team2, time
-        case eventId = "event_id"
+    struct Team: Codable {
+        let id: String?
+        let name: String
+        let img: String?
+        let score: Int?
+        let tag: String?
+    }
+
+    struct CurrentMap: Codable {
+        let name: String
+        let number: Int?
+        let scores: [Int?]?
     }
 
     var teamIDs: [String] { [team1.id, team2.id].compactMap { $0 } }
@@ -293,11 +296,14 @@ private struct RemoteMatchPreview: Decodable {
 }
 
 private func epochMillis(_ value: String?) -> Int64? {
+    widgetInstant(value).map { Int64($0.timeIntervalSince1970 * 1_000) }
+}
+
+func widgetInstant(_ value: String?) -> Date? {
     guard let value, !value.isEmpty else { return nil }
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    let date = formatter.date(from: value) ?? ISO8601DateFormatter().date(from: value)
-    return date.map { Int64($0.timeIntervalSince1970 * 1_000) }
+    return formatter.date(from: value) ?? ISO8601DateFormatter().date(from: value)
 }
 
 private func normalizedMatchFormat(_ value: String) -> String {
