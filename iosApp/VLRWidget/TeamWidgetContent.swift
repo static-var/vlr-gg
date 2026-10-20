@@ -379,6 +379,37 @@ struct TeamWidgetDetailsResponse: Codable {
     }
 }
 
+extension TeamWidgetDetailsResponse {
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        veto = try values.decodeIfPresent([Veto].self, forKey: .veto) ?? []
+        data = try values.decodeIfPresent([Map].self, forKey: .data) ?? []
+        teams = try values.decodeIfPresent([TeamWidgetMatchResponse.Team].self, forKey: .teams) ?? []
+        event = try values.decodeIfPresent(Event.self, forKey: .event)
+        current_map = try values.decodeIfPresent(TeamWidgetMatchResponse.CurrentMap.self, forKey: .current_map)
+        total_maps = try values.decodeIfPresent(Int.self, forKey: .total_maps)
+        map_count = try values.decodeIfPresent(Int.self, forKey: .map_count)
+    }
+}
+
+extension TeamWidgetDetailsResponse.Veto {
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        team = try values.decodeIfPresent(String.self, forKey: .team)
+        action = try values.decodeIfPresent(String.self, forKey: .action) ?? "unknown"
+        map = try values.decodeIfPresent(String.self, forKey: .map) ?? ""
+    }
+}
+
+extension TeamWidgetDetailsResponse.Map {
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        map = try values.decodeIfPresent(String.self, forKey: .map) ?? ""
+        live = try values.decodeIfPresent(Bool.self, forKey: .live)
+        teams = try values.decodeIfPresent([TeamWidgetMatchResponse.Team].self, forKey: .teams) ?? []
+    }
+}
+
 enum TeamWidgetMapper {
     static func match(for teamID: String, in matches: [TeamWidgetMatchResponse]) -> TeamWidgetMatchResponse? {
         matches.filter { ($0.team1.id == teamID || $0.team2.id == teamID)

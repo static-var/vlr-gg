@@ -215,6 +215,21 @@ final class TeamWidgetTests: XCTestCase {
             start: nil, event: "Masters", stage: "Week 1–Quarterfinals", format: ""))
     }
 
+    func testDetailsDecodeMissingListsAndNestedDefaults() throws {
+        let decoder = JSONDecoder()
+        let minimal = try decoder.decode(TeamWidgetDetailsResponse.self, from: Data("{\"event\":{\"stage\":\"Final\"},\"total_maps\":3}".utf8))
+        XCTAssertTrue(minimal.veto.isEmpty)
+        XCTAssertTrue(minimal.data.isEmpty)
+        XCTAssertTrue(minimal.teams.isEmpty)
+        XCTAssertEqual(minimal.event?.stage, "Final")
+        XCTAssertEqual(minimal.total_maps, 3)
+        let nested = try decoder.decode(TeamWidgetDetailsResponse.self, from: Data("{\"veto\":[{}],\"data\":[{}]}".utf8))
+        XCTAssertEqual(nested.veto.first?.action, "unknown")
+        XCTAssertEqual(nested.veto.first?.map, "")
+        XCTAssertEqual(nested.data.first?.map, "")
+        XCTAssertEqual(nested.data.first?.teams.count, 0)
+    }
+
     func testUpcomingDetailsMapCountFallbackAndPreviewFormat() throws {
         let profile = try JSONDecoder().decode(TeamWidgetRankingResponse.self, from: Data("""
         {"team":{"id":"2","name":"Sentinels"},"recent":[]}
