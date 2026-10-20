@@ -38,7 +38,7 @@ struct TeamWidgetProvider: AppIntentTimelineProvider {
         let record = await FavoriteWidgetStores.teams.refresh(for: .init(entityID: id, clientID: source.clientId)) {
             try await TeamWidgetRefreshService().refresh(teamID: id, source: source)
         }
-        let content = record.map { $0.value.expired(fetchedAt: $0.fetchedAt, now: now) }
+        let content = record.map { $0.teamContent(at: now) }
         let entryContent = TeamWidgetEntryContent.make(content, teamID: id, clientID: source.clientId, source: repository.loadSource())
         let start: Date?
         if case .content(let visibleContent) = entryContent {

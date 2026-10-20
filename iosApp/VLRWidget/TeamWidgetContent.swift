@@ -1,5 +1,14 @@
 import Foundation
 
+extension FavoriteWidgetRecord where Value == TeamWidgetContent {
+    func teamContent(at date: Date) -> TeamWidgetContent {
+        switch origin {
+        case .fresh: value
+        case .cachedFallback: value.expired(fetchedAt: fetchedAt, now: date)
+        }
+    }
+}
+
 struct TeamWidgetHeader: Codable, Equatable, Sendable {
     let team: WidgetTeam
     let rank: Int?

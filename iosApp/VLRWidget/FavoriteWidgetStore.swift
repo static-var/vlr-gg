@@ -5,10 +5,13 @@ struct FavoriteWidgetKey: Codable, Hashable, Sendable {
     let clientID: String
 }
 
+enum FavoriteWidgetOrigin: String, Codable, Sendable { case fresh, cachedFallback }
+
 struct FavoriteWidgetRecord<Value: Codable & Sendable>: Codable, Sendable {
     let key: FavoriteWidgetKey
     let fetchedAt: Date
     let value: Value
+    var origin: FavoriteWidgetOrigin = .fresh
 }
 extension FavoriteWidgetRecord: Equatable where Value: Equatable {}
 
@@ -30,7 +33,9 @@ actor FavoriteWidgetStore<Value: Codable & Sendable> {
         guard let url = fileURL(for: key), let bytes = try? Data(contentsOf: url),
               let saved = try? JSONDecoder().decode(Saved.self, from: bytes),
               saved.version == 1, saved.record.key == key else { return nil }
-        return saved.record
+        var record = saved.record
+        record.origin = .cachedFallback
+        return record
     }
 
     func refresh(for key: FavoriteWidgetKey,

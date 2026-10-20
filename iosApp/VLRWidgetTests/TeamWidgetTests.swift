@@ -319,6 +319,11 @@ final class TeamWidgetTests: XCTestCase {
         upcoming.form = [.win]
         XCTAssertEqual(upcoming.expired(fetchedAt: fetchedAt, now: fetchedAt.addingTimeInterval(21_600)), upcoming)
         XCTAssertEqual(upcoming.expired(fetchedAt: fetchedAt, now: fetchedAt.addingTimeInterval(21_601)), idle)
+        let fresh = FavoriteWidgetRecord(key: .init(entityID: "2", clientID: "client"), fetchedAt: fetchedAt, value: upcoming)
+        guard case .upcoming(let overdue) = fresh.teamContent(at: fetchedAt.addingTimeInterval(21_601)).state else {
+            return XCTFail("Fresh upcoming match must remain upcoming")
+        }
+        XCTAssertEqual(overdue.id, "100")
     }
 
     @MainActor
@@ -469,6 +474,7 @@ final class FavoriteWidgetStoreTests: XCTestCase {
         async let second = store.refresh(for: key, fetch: fetch)
         let values = await (first, second)
         XCTAssertEqual(values.0, values.1)
+        XCTAssertEqual(values.0?.origin, .fresh)
         let count = await counter.count
         XCTAssertEqual(count, 1)
         let loaded = await store.load(for: key)
@@ -480,6 +486,7 @@ final class FavoriteWidgetStoreTests: XCTestCase {
         _ = await store.refresh(for: key) { latest }
         let fallback = await store.refresh(for: key) { throw WidgetRefreshError.httpStatus(503) }
         XCTAssertEqual(fallback?.value, latest)
+        XCTAssertEqual(fallback?.origin, .cachedFallback)
         let reopened = FavoriteWidgetStore<TeamWidgetContent>(namespace: .team, directory: directory)
         let disk = await reopened.load(for: key)
         XCTAssertEqual(disk?.value, latest)
