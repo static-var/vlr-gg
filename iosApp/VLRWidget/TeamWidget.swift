@@ -80,7 +80,7 @@ struct TeamWidgetView: View {
     var body: some View {
         Group {
             switch entry.content {
-            case .needsTeam: needsTeam
+            case .needsTeam(let setup): needsTeam(setup)
             case .content(let content): body(content)
             case .placeholder:
                 body(.sample(at: entry.date)).redacted(reason: .placeholder)
@@ -99,21 +99,52 @@ struct TeamWidgetView: View {
         return VLRWidgetContract.appURL
     }
 
-    private var needsTeam: some View {
+    private func needsTeam(_ setup: TeamWidgetSetup) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 8) {
+            HStack(alignment: .top, spacing: 8) {
                 RoundedRectangle(cornerRadius: 7).strokeBorder(palette.border, style: StrokeStyle(lineWidth: 1.5, dash: [3, 3]))
                     .frame(width: large ? 40 : 28, height: large ? 40 : 28)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Choose a team").font(.system(size: 15, weight: .semibold))
+                    Text(verbatim: teamWidgetString(setup == .chooseTeam ? "Choose a team" : "No favorite teams", locale: locale))
+                        .font(.system(size: 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                     Text(verbatim: "Val Esports").font(.system(size: 12)).foregroundStyle(palette.secondary)
-                }
+                }.frame(maxWidth: .infinity, alignment: .leading)
+                HStack(spacing: 6) {
+                    ForEach(0..<5) { _ in Circle().fill(palette.border).frame(width: 10, height: 10) }
+                }.padding(.top, 2)
             }
-            Spacer(minLength: 18)
-            Text("Touch and hold, then").font(.system(size: 13))
-            Text("Edit Widget").font(.system(size: 34)).minimumScaleFactor(0.7).lineLimit(1)
-            Text("Pick a team from your favorites").font(.system(size: 12)).foregroundStyle(palette.secondary)
-        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            if large { Spacer().frame(height: 18) } else { Spacer(minLength: 18) }
+            VStack(alignment: .leading, spacing: 0) {
+                Text(verbatim: teamWidgetString(setup == .chooseTeam ? "Touch and hold, then" : "To use this widget,", locale: locale))
+                    .font(.system(size: 13))
+                Text(verbatim: teamWidgetString(setup == .chooseTeam ? "Edit Widget" : "Open Val Esports", locale: locale))
+                    .font(.system(size: 34)).minimumScaleFactor(0.7).lineLimit(1)
+                Text(verbatim: teamWidgetString(setup == .chooseTeam ? "Pick a team from your favorites" : "Favorite a team, then pick it here", locale: locale))
+                    .font(.system(size: 12)).foregroundStyle(palette.secondary)
+            }
+            if large {
+                Spacer(minLength: 8)
+                ghostHistory
+            }
+        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private var ghostHistory: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Recent results show here").font(.system(size: 12)).foregroundStyle(palette.secondary).padding(.bottom, 2)
+            ForEach(Array([CGFloat(118), 84, 140, 96].enumerated()), id: \.offset) { index, width in
+                HStack(spacing: 10) {
+                    Text(verbatim: "–").font(.system(size: 12, weight: .semibold)).frame(width: 18)
+                    RoundedRectangle(cornerRadius: 6).fill(palette.border).frame(width: 22, height: 22)
+                    Capsule().fill(palette.border).frame(width: width, height: 10)
+                    Spacer(minLength: 0)
+                    Text(verbatim: "–").font(.system(size: 17)).monospacedDigit()
+                }.foregroundStyle(palette.secondary).frame(height: 38)
+                    .overlay(alignment: .top) {
+                        if index > 0 { Rectangle().fill(palette.border.opacity(0.35)).frame(height: 0.5) }
+                    }
+            }
+        }
     }
 
     private func body(_ content: TeamWidgetContent) -> some View {
