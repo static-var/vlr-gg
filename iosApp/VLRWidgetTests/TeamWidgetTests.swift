@@ -8,25 +8,22 @@ final class TeamWidgetTests: XCTestCase {
     private let locale = Locale(identifier: "en_US")
     private let zone = TimeZone(secondsFromGMT: 0)!
 
-    func testCountdownUsesLocalDatesHoursMinutesAndDelayedTextAtBoundaries() {
-        let cases: [(TimeInterval?, TeamWidgetCountdown)] = [
-            (8_040, .countdown("2h 14m")),
-            (3_600, .countdown("1h 00m")),
-            (3_599.5, .countdown("1h 00m")),
-            (3_540.5, .countdown("1h 00m")),
-            (3_540, .countdown("59 min")),
-            (2_700, .countdown("45 min")),
-            (1, .countdown("1 min")),
-            (86_400, .countdown("24h 00m")),
+    func testKickoffShowsStartTimeWithRelativeDay() {
+        let cases: [(TimeInterval?, TeamWidgetKickoff)] = [
+            (8_040, .scheduled(day: "Today", time: "2:14\u{202F}PM")),
+            (1, .scheduled(day: "Today", time: "12:00\u{202F}PM")),
+            (86_400, .scheduled(day: "Tomorrow", time: "12:00\u{202F}PM")),
             (0, .delayed("12:00\u{202F}PM")),
             (nil, .unknown),
         ]
         for (offset, expected) in cases {
-            XCTAssertEqual(TeamWidgetCountdown.make(start: offset.map { now.addingTimeInterval($0) }, now: now, locale: locale, timeZone: zone), expected)
+            XCTAssertEqual(TeamWidgetKickoff.make(start: offset.map { now.addingTimeInterval($0) }, now: now, locale: locale, timeZone: zone), expected)
         }
         let start = TeamWidgetMapper.date("2026-10-22T20:00:00Z")!
-        XCTAssertEqual(TeamWidgetCountdown.make(start: start, now: now, locale: locale, timeZone: zone), .scheduled("Thu, 8\u{202F}PM"))
-        XCTAssertEqual(TeamWidgetCountdown.make(start: start, now: now, locale: Locale(identifier: "de_DE"), timeZone: zone), .scheduled("Do, 20 Uhr"))
+        XCTAssertEqual(TeamWidgetKickoff.make(start: start, now: now, locale: locale, timeZone: zone), .scheduled(day: "Thu, Oct 22", time: "8:00\u{202F}PM"))
+        XCTAssertEqual(TeamWidgetKickoff.make(start: start, now: now, locale: Locale(identifier: "de_DE"), timeZone: zone), .scheduled(day: "Do. 22. Okt.", time: "20:00"))
+        XCTAssertEqual(TeamWidgetKickoff.make(start: now.addingTimeInterval(86_400), now: now, locale: Locale(identifier: "de_DE"), timeZone: zone),
+            .scheduled(day: "Morgen", time: "12:00"))
     }
 
     func testRefreshPolicyForEveryWidgetState() throws {
@@ -53,27 +50,22 @@ final class TeamWidgetTests: XCTestCase {
             "pt_PT": "A qualquer momento", "ru_RU": "С минуты на минуту", "tr_TR": "Her an"]
         for (identifier, expected) in translations {
             let locale = Locale(identifier: identifier)
-            XCTAssertEqual(TeamWidgetCountdown.delayed("").hero(locale: locale), expected, identifier)
+            XCTAssertEqual(TeamWidgetKickoff.delayed("").hero(locale: locale), expected, identifier)
         }
     }
 
-    func testTimelineContinuesThroughStartBeyondRefreshAndCapsAtSixHours() {
-        let dates = TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(3_600), now: now)
-        XCTAssertEqual(dates.count, 61)
-        XCTAssertEqual(dates.last, now.addingTimeInterval(3_600))
-        XCTAssertTrue(dates.contains(now.addingTimeInterval(1_860)))
-        let fractionalNow = now.addingTimeInterval(0.5)
-        let boundary = TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(180.5), now: fractionalNow)
-        XCTAssertEqual(boundary, [fractionalNow, now.addingTimeInterval(60), now.addingTimeInterval(120), now.addingTimeInterval(180), now.addingTimeInterval(180.5)])
-        let far = TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(3 * 86_400), now: now)
-        XCTAssertEqual(far, [now])
-        let crossingStart = now.addingTimeInterval(86_520.5)
-        let crossing = TeamWidgetCountdown.timelineDates(start: crossingStart, now: now)
-        XCTAssertEqual(crossing.first, now)
-        XCTAssertEqual(crossing[1], crossingStart.addingTimeInterval(-86_400))
-        XCTAssertLessThanOrEqual(crossing.last!, now.addingTimeInterval(21_600))
-        XCTAssertEqual(TeamWidgetCountdown.timelineDates(start: nil, now: now), [now])
-        XCTAssertEqual(TeamWidgetCountdown.timelineDates(start: now, now: now), [now])
+    func testTimelineAddsEntriesOnlyWhenTheDayLabelOrStateChanges() {
+        func dates(_ start: Date?) -> [Date] { TeamWidgetKickoff.timelineDates(start: start, now: now, timeZone: zone) }
+        let midnight = Date(timeIntervalSince1970: 1_792_195_200)
+        let today = now.addingTimeInterval(3_600)
+        XCTAssertEqual(dates(today), [now, today])
+        let tomorrow = now.addingTimeInterval(86_400)
+        XCTAssertEqual(dates(tomorrow), [now, midnight, tomorrow])
+        let later = now.addingTimeInterval(3 * 86_400)
+        XCTAssertEqual(dates(later), [now, midnight.addingTimeInterval(86_400), midnight.addingTimeInterval(2 * 86_400), later])
+        XCTAssertEqual(dates(midnight), [now, midnight])
+        XCTAssertEqual(dates(nil), [now])
+        XCTAssertEqual(dates(now), [now])
     }
 
     func testMatchTimesParseInstantsWithAndWithoutFractionalSeconds() throws {
@@ -167,8 +159,8 @@ final class TeamWidgetTests: XCTestCase {
         var value = base
         value.state = .upcoming(fixture)
         let hero = TeamWidgetHero.make(value, now: now, locale: locale, timeZone: zone)
-        XCTAssertEqual(hero.lead, "Plays TBD in")
-        XCTAssertEqual(hero.value, "5h 30m")
+        XCTAssertEqual(hero.lead, "Plays TBD · Today")
+        XCTAssertEqual(hero.value, "5:30\u{202F}PM")
         XCTAssertEqual(hero.context, "Masters London · Upper final · Bo3")
         let delayed = TeamWidgetHero.make(value, now: now.addingTimeInterval(20_000), locale: locale, timeZone: zone)
         XCTAssertEqual(delayed.lead, "Plays TBD")
@@ -184,8 +176,8 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(sample.header, TeamWidgetHeader(team: .init(id: "2", name: "Sentinels", tag: "SEN"),
             rank: 4, region: "Americas", regionRank: 1))
         XCTAssertEqual(sample.form, [.win, .win, .loss, .win, .win])
-        XCTAssertEqual(hero.lead, "Plays FNATIC in")
-        XCTAssertEqual(hero.value, "2h 14m")
+        XCTAssertEqual(hero.lead, "Plays FNATIC · Today")
+        XCTAssertEqual(hero.value, "2:14\u{202F}PM")
         XCTAssertEqual(hero.context, "Masters London · Upper final · Bo3")
         XCTAssertEqual(sample.history.map(\.opponent.name), ["Paper Rex", "DRX", "G2 Esports", "FNATIC", "LOUD"])
         XCTAssertEqual(sample.history.map(\.result.score), ["2–1", "2–0", "1–2", "2–1", "2–0"])
@@ -392,9 +384,9 @@ final class TeamWidgetTests: XCTestCase {
             ]))
         }
         let scenarios: [(String, TeamWidgetEntryContent, WidgetFamily, CGFloat, String?)] = [
-            ("medium-upcoming", .content(upcoming), .systemMedium, 158, "2h 14m"),
-            ("large-upcoming", .content(upcoming), .systemLarge, 354, "2h 14m"),
-            ("medium-upcoming-monogram", .content(upcoming), .systemMedium, 158, "2h 14m"),
+            ("medium-upcoming", .content(upcoming), .systemMedium, 158, "2:14\u{202F}PM"),
+            ("large-upcoming", .content(upcoming), .systemLarge, 354, "2:14\u{202F}PM"),
+            ("medium-upcoming-monogram", .content(upcoming), .systemMedium, 158, "2:14\u{202F}PM"),
             ("medium-live", .content(live), .systemMedium, 158, "1–1"),
             ("medium-live-bo3-after-map1", .content(betweenMaps), .systemMedium, 158, "1–0"),
             ("medium-needs-team", .needsTeam(.chooseTeam), .systemMedium, 158, nil),
