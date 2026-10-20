@@ -223,7 +223,7 @@ struct TeamWidgetView: View {
 
     @ViewBuilder
     private func history(_ content: TeamWidgetContent, hero: TeamWidgetHero) -> some View {
-        if content.historyRows.isEmpty {
+        if !hero.maps.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Maps").font(.system(size: 12)).foregroundStyle(palette.secondary).padding(.bottom, 2)
                 ForEach(Array(hero.maps.prefix(5).enumerated()), id: \.offset) { index, map in
@@ -232,7 +232,7 @@ struct TeamWidgetView: View {
                     }
                 }
             }
-        } else {
+        } else if !content.historyRows.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
                 Text(verbatim: historyLabel(content)).font(.system(size: 12)).foregroundStyle(palette.secondary).padding(.bottom, 2)
                 ForEach(Array(content.historyRows.enumerated()), id: \.offset) { index, result in
