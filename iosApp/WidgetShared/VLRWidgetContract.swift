@@ -6,6 +6,8 @@ enum VLRWidgetContract {
     static let refreshedSnapshotFilename = "upcoming-matches-refreshed.json"
     static let widgetKind = "dev.staticvar.vlr.upcoming-matches"
     static let teamWidgetKind = "dev.staticvar.vlr.team"
+    static let eventWidgetKind = "dev.staticvar.vlr.event"
+    static let homeWidgetKinds = [widgetKind, teamWidgetKind, eventWidgetKind]
     static let appURL = URL(string: "https://valesports.app/")!
 
     static var snapshotURL: URL? {

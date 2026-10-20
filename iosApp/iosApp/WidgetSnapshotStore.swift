@@ -15,25 +15,23 @@ enum WidgetSnapshotStore {
                        FileManager.default.fileExists(atPath: url.path) {
                         let data = try Data(contentsOf: url)
                         let snapshot = try JSONDecoder().decode(UpcomingMatchesSnapshot.self, from: data)
-                        let updated = UpcomingMatchesSnapshot(
-                            savedAtEpochMillis: snapshot.savedAtEpochMillis,
-                            clientId: snapshot.clientId,
-                            hasFavorites: snapshot.hasFavorites,
-                            favorites: snapshot.favorites,
-                            spoilersHidden: enabled,
-                            matches: enabled ? matches.map { $0.withoutScores() } : matches,
-                            theme: snapshot.theme,
-                            favoriteTeams: snapshot.favoriteTeams
-                        )
+                        var updated = snapshot
+                        updated.spoilersHidden = enabled
+                        updated.matches = enabled ? matches.map { $0.withoutScores() } : matches
                         try JSONEncoder().encode(updated).write(to: url, options: .atomic)
                     }
-                    WidgetCenter.shared.reloadTimelines(ofKind: VLRWidgetContract.widgetKind)
-                    WidgetCenter.shared.reloadTimelines(ofKind: VLRWidgetContract.teamWidgetKind)
+                    reloadHomeWidgets()
                     continuation.resume()
                 } catch {
                     continuation.resume(throwing: error)
                 }
             }
+        }
+    }
+
+    private static func reloadHomeWidgets() {
+        for kind in VLRWidgetContract.homeWidgetKinds {
+            WidgetCenter.shared.reloadTimelines(ofKind: kind)
         }
     }
 
@@ -49,8 +47,7 @@ enum WidgetSnapshotStore {
 
             do {
                 try data.write(to: snapshotURL, options: .atomic)
-                WidgetCenter.shared.reloadTimelines(ofKind: VLRWidgetContract.widgetKind)
-                WidgetCenter.shared.reloadTimelines(ofKind: VLRWidgetContract.teamWidgetKind)
+                reloadHomeWidgets()
             } catch {
                 logger.error("Unable to publish widget snapshot: \(error.localizedDescription, privacy: .public)")
             }
