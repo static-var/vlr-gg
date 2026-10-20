@@ -21,7 +21,22 @@ public data class UpcomingMatchesSnapshot(
   val theme: WidgetTheme,
   val favorites: WidgetFavorites = WidgetFavorites(),
   val spoilersHidden: Boolean = false,
+  val favoriteTeams: List<WidgetFavoriteTeam> = emptyList(),
 )
+
+@Serializable
+public data class WidgetFavoriteTeam(
+  val id: String,
+  val name: String,
+  val shortName: String? = null,
+  val logoUrl: String? = null,
+)
+
+internal fun DirectFavoriteSnapshot.widgetFavoriteTeams(): List<WidgetFavoriteTeam> = teams
+  .filter { it.id.isNotBlank() }
+  .distinctBy { it.id }
+  .map { WidgetFavoriteTeam(it.id, it.title, it.shortName, it.imageUrl.takeIf(String::isNotBlank)) }
+  .sortedBy { it.id }
 
 @Serializable
 public data class UpcomingWidgetMatch(

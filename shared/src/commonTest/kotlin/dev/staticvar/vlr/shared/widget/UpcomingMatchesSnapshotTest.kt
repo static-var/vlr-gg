@@ -22,6 +22,15 @@ class UpcomingMatchesSnapshotTest {
   private val now = Instant.parse("2026-09-12T12:00:00Z").toEpochMilliseconds()
 
   @Test
+  fun `team picker exports only direct favorite teams and their display data`() {
+    val snapshot = DirectFavoriteSnapshot(
+      teams = listOf(DirectFavorite.Team("2", "Sentinels", "https://owcdn.net/sen.png", "SEN")),
+      players = listOf(DirectFavorite.Player("1", "Player", "", currentTeamId = "624")),
+    )
+    assertEquals(listOf(WidgetFavoriteTeam("2", "Sentinels", "SEN", "https://owcdn.net/sen.png")), snapshot.widgetFavoriteTeams())
+  }
+
+  @Test
   fun `widget team IDs include cached player teams without duplicates or missing links`() {
     val favorites = DirectFavoriteSnapshot(
       teams = listOf(DirectFavorite.Team("direct", "Team", "")),
