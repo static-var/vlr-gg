@@ -144,6 +144,25 @@ struct TeamWidgetContent: Codable, Equatable {
         return content
     }
 
+    var historyRows: [TeamWidgetRecentResult] {
+        switch state {
+        case .live(let series) where !series.maps.isEmpty: []
+        case .liveHidden: []
+        case .idle, .idleHidden: Array(history.dropFirst().prefix(4))
+        default: Array(history.prefix(4))
+        }
+    }
+
+    func logoSources(large: Bool) -> [String] {
+        let opponent: TeamWidgetTeam?
+        switch state {
+        case .idle(let last): opponent = last?.opponent
+        case .idleHidden(let last): opponent = last.opponent
+        default: opponent = fixture?.opponent
+        }
+        return ([header.team.logo, opponent?.logo] + (large ? historyRows.map { $0.opponent.logo } : [])).compactMap { $0 }
+    }
+
     var fixture: TeamWidgetFixture? {
         switch state {
         case .upcoming(let fixture), .liveHidden(let fixture): fixture

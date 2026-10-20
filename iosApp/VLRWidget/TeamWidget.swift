@@ -38,13 +38,8 @@ struct TeamWidgetProvider: AppIntentTimelineProvider {
             content = refreshed
         } catch { content = cache.load(teamID: id, source: source) }
         if let content {
-            let sources = [content.header.team.logo, content.fixture?.opponent?.logo]
-                + content.history.map { $0.opponent.logo }
-            await withTaskGroup(of: Void.self) { group in
-                for source in Set(sources.compactMap { $0 }) {
-                    group.addTask { await MatchActivityLogoCache.prefetch([source]) }
-                }
-            }
+            let visibleContent = repository.loadSource()?.spoilersHidden == true ? content.redacted() : content
+            await TeamWidgetLogoPrefetch.run(visibleContent.logoSources(large: context.family == .systemLarge))
             let entryContent = TeamWidgetEntryContent.make(content, teamID: id, clientID: source.clientId, source: repository.loadSource())
             let interval: TimeInterval
             switch content.state {
@@ -251,7 +246,7 @@ struct TeamWidgetView: View {
                 }
             }
         } else {
-            let rows = historyRows(content)
+            let rows = content.historyRows
             if !rows.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(verbatim: historyLabel(content)).font(.system(size: 12)).foregroundStyle(palette.secondary).padding(.bottom, 2)
@@ -262,14 +257,6 @@ struct TeamWidgetView: View {
                     }
                 }
             }
-        }
-    }
-
-    private func historyRows(_ content: TeamWidgetContent) -> [TeamWidgetRecentResult] {
-        switch content.state {
-        case .liveHidden: []
-        case .idle, .idleHidden: Array(content.history.dropFirst().prefix(4))
-        default: Array(content.history.prefix(4))
         }
     }
 

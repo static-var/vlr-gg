@@ -45,6 +45,24 @@ final class TeamWidgetTests: XCTestCase {
         }
     }
 
+    func testLogoPrefetchUsesOnlyVisibleTeamsAndCancelsAtDeadline() async throws {
+        var value = TeamWidgetContent.sample(at: now)
+        let own = TeamWidgetTeam(id: "2", name: "Sentinels", logo: "own")
+        value = TeamWidgetContent(header: .init(team: own, rank: nil, region: nil, regionRank: nil), form: [],
+            history: value.history.enumerated().map { index, row in
+                .init(id: row.id, date: row.date, opponent: .init(id: row.opponent.id, name: row.opponent.name, logo: "history-\(index)"), result: row.result)
+            }, state: .upcoming(.init(id: "100", opponent: .init(id: "1", name: "FNATIC", logo: "opponent"), start: nil, event: "", stage: "", format: "")))
+        XCTAssertEqual(value.logoSources(large: false), ["own", "opponent"])
+        XCTAssertEqual(value.logoSources(large: true), ["own", "opponent", "history-0", "history-1", "history-2", "history-3"])
+        await TeamWidgetLogoPrefetch.run(["own"], timeout: .milliseconds(10)) { sources in
+            XCTAssertEqual(sources, ["own"])
+            do {
+                try await Task.sleep(for: .seconds(10))
+                XCTFail("Prefetch must be cancelled")
+            } catch { XCTAssertTrue(Task.isCancelled) }
+        }
+    }
+
     func testMappingKeepsTeamPerspectiveMapPicksAndOldestToNewestForm() throws {
         let content = try content(live: true, ownSecond: true)
         XCTAssertEqual(content.form, [.win, .win, .loss, .win, .win, .live])

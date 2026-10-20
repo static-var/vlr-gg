@@ -62,3 +62,15 @@ struct TeamWidgetCache {
         return directory?.appendingPathComponent("team-widget-\(name).json")
     }
 }
+
+enum TeamWidgetLogoPrefetch {
+    static func run(_ sources: [String], timeout: Duration = .seconds(4),
+                    prefetch: @escaping ([String]) async -> Void = MatchActivityLogoCache.prefetch) async {
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask { await prefetch(sources) }
+            group.addTask { try? await Task.sleep(for: timeout) }
+            await group.next()
+            group.cancelAll()
+        }
+    }
+}

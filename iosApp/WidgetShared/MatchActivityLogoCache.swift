@@ -33,6 +33,7 @@ enum MatchActivityLogoCache {
 
     private static let session: URLSession = {
         let configuration = URLSessionConfiguration.ephemeral
+        configuration.timeoutIntervalForResource = 8
         configuration.httpShouldSetCookies = false
         configuration.httpCookieStorage = nil
         configuration.urlCredentialStorage = nil
