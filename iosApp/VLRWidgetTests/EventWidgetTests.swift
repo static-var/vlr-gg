@@ -94,7 +94,7 @@ final class EventWidgetTests: XCTestCase {
         }
         let before = widgetInstant("2026-10-01T12:00:00Z")!
         let clean = EventWidgetData(event: event.event, matches: event.matches.map { .init(fixture: $0.fixture, phase: .upcoming) }, groups: event.groups, prizes: [], detail: nil)
-        guard case .scheduled(.next(let selected)) = EventWidgetEngine.selection(in: clean, fetchedAt: before, favoriteTeamIDs: ["4915"], at: before, timeZone: zone) else { return XCTFail() }
+        guard case .scheduled(.next(let selected)) = EventWidgetEngine.selection(in: clean, fetchedAt: before, favoriteTeamIDs: ["4915"], phase: .inProgress, at: before, timeZone: zone) else { return XCTFail() }
         XCTAssertEqual(selected.id, "777925")
     }
 
@@ -319,9 +319,9 @@ final class EventWidgetTests: XCTestCase {
         let event = try data("2766")
         let details = try JSONDecoder().decode(WidgetMatchDetailsResponse.self, from: fixtureBytes("match-754737"))
         let enriched = EventWidgetMapper.enrich(event, matchID: "754737", details: details)
-        XCTAssertEqual(enriched.detail?.series.format, .bo5)
-        XCTAssertEqual(enriched.detail?.series.maps.prefix(4).map(\.score?.text), ["13–11", "8–13", "13–5", "13–10"])
-        XCTAssertEqual(enriched.detail?.series.maps.prefix(4).map(\.status), [.won, .lost, .won, .won])
+        XCTAssertEqual(enriched.matches.first { $0.fixture.id == "754737" }?.fixture.format, .bo5)
+        XCTAssertEqual(enriched.detail?.maps.prefix(4).map(\.score?.text), ["13–11", "8–13", "13–5", "13–10"])
+        XCTAssertEqual(enriched.detail?.maps.prefix(4).map(\.status), [.won, .lost, .won, .won])
         let reversed = WidgetMatchDetailsResponse(veto: details.veto, data: details.data, teams: details.teams.reversed(), event: details.event,
             current_map: details.current_map, total_maps: details.total_maps, map_count: details.map_count)
         XCTAssertEqual(EventWidgetMapper.enrich(event, matchID: "754737", details: reversed).detail, enriched.detail)
@@ -475,8 +475,8 @@ extension EventWidgetTests {
             guard case .content(let content) = scenario.content else { continue }
             let text: EventWidgetHeroText
             switch content.body {
-            case .visible(let state): text = .make(state, now: now, large: false, locale: locale, timeZone: zone)
-            case .hidden(let state): text = .make(state, now: now, large: false, locale: locale, timeZone: zone)
+            case .visible(let state): text = .make(state, now: now, locale: locale, timeZone: zone)
+            case .hidden(let state): text = .make(state, now: now, locale: locale, timeZone: zone)
             }
             XCTAssertEqual(text.value, scenario.value, scenario.name)
             XCTAssertEqual(scenario.content.widgetURL, VLRWidgetContract.detailsURL(kind: "event", id: content.header.eventID))

@@ -214,7 +214,7 @@ enum EventWidgetMapper {
         }
         let pair = WidgetMatchPair(left: enrich(match.fixture.participants.left), right: enrich(match.fixture.participants.right))
         let series = WidgetSeriesMapper.make(details: details, participants: pair, perspective: .left)
-        return data.adding(.init(matchID: matchID, series: series), participants: pair)
+        return data.adding(.init(matchID: matchID, maps: series.maps), participants: pair, format: series.format)
     }
 }
 
@@ -238,8 +238,9 @@ struct EventWidgetRefreshService {
         return await store.refresh(for: key) {
             let response: EventResponse = try await api.get("/api/v1/events/\(encoded)")
             var data = try EventWidgetMapper.normalize(response, expectedEventID: eventID, at: date)
+            let phase = EventWidgetEngine.phase(in: data, fetchedAt: date, at: date, timeZone: timeZone)
             let selected = EventWidgetEngine.selection(in: data, fetchedAt: date, favoriteTeamIDs: favorites,
-                at: date, timeZone: timeZone)
+                phase: phase, at: date, timeZone: timeZone)
             if let id = selected.detailMatchID?.addingPercentEncoding(withAllowedCharacters: pathCharacters),
                let details: WidgetMatchDetailsResponse = try? await api.get("/api/v1/matches/\(id)"), let matchID = selected.detailMatchID {
                 data = EventWidgetMapper.enrich(data, matchID: matchID, details: details)

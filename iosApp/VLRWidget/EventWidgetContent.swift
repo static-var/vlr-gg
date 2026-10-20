@@ -57,7 +57,7 @@ struct EventWidgetPrize: Codable, Equatable, Sendable {
 }
 struct EventWidgetMatchDetail: Codable, Equatable, Sendable {
     let matchID: String
-    let series: WidgetSeriesEnrichment
+    let maps: [WidgetMap]
 }
 
 struct EventWidgetData: Codable, Equatable, Sendable {
@@ -66,12 +66,12 @@ struct EventWidgetData: Codable, Equatable, Sendable {
     let groups: [EventWidgetGroup]
     let prizes: [EventWidgetPrize]
     let detail: EventWidgetMatchDetail?
-    func adding(_ detail: EventWidgetMatchDetail, participants: WidgetMatchPair) -> Self {
+    func adding(_ detail: EventWidgetMatchDetail, participants: WidgetMatchPair, format: WidgetSeriesFormat?) -> Self {
         let updated = matches.map { match in
             guard match.fixture.id == detail.matchID else { return match }
             let old = match.fixture
             let fixture = EventWidgetFixture(id: old.id, participants: participants, start: old.start, day: old.day,
-                round: old.round, stage: old.stage, format: detail.series.format)
+                round: old.round, stage: old.stage, format: format)
             return EventWidgetMatch(fixture: fixture, phase: match.phase)
         }
         return Self(event: event, matches: updated, groups: groups, prizes: prizes, detail: detail)
@@ -388,7 +388,7 @@ enum EventWidgetEngine {
 
     /// The API has no completion time. The 12-hour result window uses the scheduled start and can therefore end early.
     static func selection(in data: EventWidgetData, fetchedAt: Date, favoriteTeamIDs: Set<String>,
-                          at date: Date, timeZone: TimeZone) -> EventWidgetSelection {
+                          phase: EventPhase, at date: Date, timeZone: TimeZone) -> EventWidgetSelection {
         let available = data.matches.filter { eligible($0, fetchedAt: fetchedAt, at: date) }
         func priority(_ left: EventWidgetMatch, _ right: EventWidgetMatch) -> Bool {
             let leftFavorite = left.fixture.participants.teams.contains { $0.id.map(favoriteTeamIDs.contains) ?? false }
@@ -396,19 +396,13 @@ enum EventWidgetEngine {
             if leftFavorite != rightFavorite { return leftFavorite }
             return chronological(left, right)
         }
-        func enriched(_ fixture: EventWidgetFixture) -> EventWidgetFixture {
-            guard let detail = data.detail, detail.matchID == fixture.id else { return fixture }
-            return .init(id: fixture.id, participants: fixture.participants, start: fixture.start, day: fixture.day,
-                         round: fixture.round, stage: fixture.stage, format: detail.series.format)
-        }
         let live = available.filter { if case .live = $0.phase { return true }; return false }.sorted(by: priority)
         if let first = live.first, case .live(let score) = first.phase {
-            return .live(.init(fixture: enriched(first.fixture), score: score,
-                maps: data.detail?.matchID == first.fixture.id ? data.detail!.series.maps : [], otherLiveCount: live.count - 1))
+            return .live(.init(fixture: first.fixture, score: score,
+                maps: data.detail?.matchID == first.fixture.id ? data.detail!.maps : [], otherLiveCount: live.count - 1))
         }
         let completed = data.matches.filter { if case .completed = $0.phase { return true }; return false }.sorted(by: chronological)
         let last = completed.last.flatMap(EventWidgetVictory.init)
-        let phase = phase(in: data, fetchedAt: fetchedAt, at: date, timeZone: timeZone)
         if phase == .finished {
             let champion = data.prizes.first { $0.position.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "1st" }?.team ?? last?.winner
             if let champion {
@@ -421,7 +415,7 @@ enum EventWidgetEngine {
         guard let nextMatch = upcoming.first else {
             return .gap(phase == .notStarted ? .notListed(start: data.event.dates.start) : .nextUnlisted)
         }
-        let next = enriched(nextMatch.fixture)
+        let next = nextMatch.fixture
         if let last, let start = last.scheduledStart, let nextStart = next.start {
             var calendar = Calendar(identifier: .gregorian)
             calendar.timeZone = timeZone
@@ -449,8 +443,8 @@ enum EventWidgetEngine {
     private static func content(_ data: EventWidgetData, fetchedAt: Date, source: UpcomingMatchesSnapshot,
                                 at date: Date, timeZone: TimeZone) -> EventWidgetContent {
         let favorites = Set(source.favorites.teamIds)
-        let selection = selection(in: data, fetchedAt: fetchedAt, favoriteTeamIDs: favorites, at: date, timeZone: timeZone)
         let phase = phase(in: data, fetchedAt: fetchedAt, at: date, timeZone: timeZone)
+        let selection = selection(in: data, fetchedAt: fetchedAt, favoriteTeamIDs: favorites, phase: phase, at: date, timeZone: timeZone)
         let subtitle: EventWidgetSubtitle
         let selectedFixture: EventWidgetFixture?
         switch selection {
@@ -543,11 +537,8 @@ enum EventWidgetEngine {
         return .init(heading: .earlier, rows: Array(recent.prefix(3)))
     }
 
-    private static func neutral(_ list: EventMatchList, after fixture: EventWidgetFixture? = nil) -> EventNeutralList {
-        .init(heading: list.heading, rows: list.rows.filter { row in
-            guard let fixture, list.heading == .upNext else { return true }
-            return chronological(.init(fixture: fixture, phase: .upcoming), row)
-        }.map { row in
+    private static func neutral(_ list: EventMatchList) -> EventNeutralList {
+        .init(heading: list.heading, rows: list.rows.map { row in
             let phase: EventNeutralMatch.Phase
             switch row.phase { case .upcoming: phase = .upcoming; case .live: phase = .live; case .completed, .unknown: phase = .ended }
             return .init(fixture: row.fixture, phase: phase)
@@ -649,7 +640,7 @@ struct EventWidgetHeroText: Equatable {
         let format: String?
     }
 
-    static func make(_ state: EventVisibleState, now: Date, large: Bool, locale: Locale, timeZone: TimeZone) -> Self {
+    static func make(_ state: EventVisibleState, now: Date, locale: Locale, timeZone: TimeZone) -> Self {
         func text(_ key: String) -> String { widgetString(key, locale: locale) }
         switch state {
         case .scheduled(let hero, _): return scheduled(hero, now: now, locale: locale, timeZone: timeZone)
@@ -674,7 +665,7 @@ struct EventWidgetHeroText: Equatable {
         }
     }
 
-    static func make(_ state: EventHiddenState, now: Date, large: Bool, locale: Locale, timeZone: TimeZone) -> Self {
+    static func make(_ state: EventHiddenState, now: Date, locale: Locale, timeZone: TimeZone) -> Self {
         switch state {
         case .scheduled(let hero, _): return scheduled(hero, now: now, locale: locale, timeZone: timeZone)
         case .live(let hero, _):

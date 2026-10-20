@@ -92,8 +92,8 @@ struct EventWidgetView: View {
     private func content(_ content: EventWidgetContent) -> some View {
         let text: EventWidgetHeroText
         switch content.body {
-        case .visible(let state): text = .make(state, now: entry.date, large: large, locale: locale, timeZone: timeZone)
-        case .hidden(let state): text = .make(state, now: entry.date, large: large, locale: locale, timeZone: timeZone)
+        case .visible(let state): text = .make(state, now: entry.date, locale: locale, timeZone: timeZone)
+        case .hidden(let state): text = .make(state, now: entry.date, locale: locale, timeZone: timeZone)
         }
         return VStack(alignment: .leading, spacing: 0) {
             header(content.header)
