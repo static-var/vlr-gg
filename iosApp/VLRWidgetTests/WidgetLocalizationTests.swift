@@ -12,7 +12,6 @@ final class WidgetLocalizationTests: XCTestCase {
             "Pick an event from your favorites",
             "Favorite an event, then pick it here",
             "First match",
-            "First match · %@",
             "%1$@ vs %2$@",
             "Starts %@",
             "Ended %@",
