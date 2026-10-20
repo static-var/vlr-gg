@@ -168,7 +168,7 @@ struct PrismWidgetPalette {
     )
 
     static let dark = PrismWidgetPalette(
-        background: Color(hex: 0x292136),
+        background: .black,
         ink: Color(hex: 0xF0E7FF),
         secondary: Color(hex: 0xC3B2D5),
         accent: Color(hex: 0xC49AFD),
