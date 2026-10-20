@@ -245,7 +245,7 @@ struct EventWidgetView: View {
                 participantRow(fixture.participants.right, name: text.right, score: text.rightScore, dimmed: text.loser == .right)
             }.frame(maxWidth: .infinity, alignment: .leading)
             Text(verbatim: text.round).font(.system(size: 11)).foregroundStyle(palette.secondary)
-                .lineLimit(1).truncationMode(.tail).frame(width: 76, alignment: .trailing)
+                .lineLimit(1).truncationMode(.tail).frame(maxWidth: 120, alignment: .trailing).layoutPriority(1)
         }.frame(height: 49)
     }
 
