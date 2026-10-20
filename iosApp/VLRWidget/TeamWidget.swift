@@ -32,19 +32,15 @@ struct TeamWidgetProvider: AppIntentTimelineProvider {
         }
         let cache = TeamWidgetCache()
         let content = await TeamWidgetRefreshCoordinator.shared.refresh(teamID: id, source: source, cache: cache)
-        if let content {
-            let visibleContent = repository.loadSource()?.spoilersHidden == true ? content.redacted() : content
+        let entryContent = TeamWidgetEntryContent.make(content, teamID: id, clientID: source.clientId, source: repository.loadSource())
+        let start: Date?
+        if case .content(let visibleContent) = entryContent {
             await TeamWidgetLogoPrefetch.run(visibleContent.logoSources(large: context.family == .systemLarge))
-            let entryContent = TeamWidgetEntryContent.make(content, teamID: id, clientID: source.clientId, source: repository.loadSource())
-            let refresh = TeamWidgetRefreshPolicy.date(for: entryContent, now: now)
-            let start: Date?
-            if case .upcoming(let fixture) = content.state { start = fixture.start } else { start = nil }
-            let dates = TeamWidgetCountdown.timelineDates(start: start, now: now)
-            return Timeline(entries: dates.map { TeamWidgetEntry(date: $0, content: entryContent) }, policy: refresh.map { .after($0) } ?? .never)
-        }
-        let entryContent = TeamWidgetEntryContent.make(nil, teamID: id, clientID: source.clientId, source: repository.loadSource())
+            if case .upcoming(let fixture) = visibleContent.state { start = fixture.start } else { start = nil }
+        } else { start = nil }
         let refresh = TeamWidgetRefreshPolicy.date(for: entryContent, now: now)
-        return Timeline(entries: [TeamWidgetEntry(date: now, content: entryContent)], policy: refresh.map { .after($0) } ?? .never)
+        let dates = TeamWidgetCountdown.timelineDates(start: start, now: now)
+        return Timeline(entries: dates.map { TeamWidgetEntry(date: $0, content: entryContent) }, policy: refresh.map { .after($0) } ?? .never)
     }
 }
 
@@ -227,7 +223,7 @@ struct TeamWidgetView: View {
 
     @ViewBuilder
     private func history(_ content: TeamWidgetContent, hero: TeamWidgetHero) -> some View {
-        if !hero.maps.isEmpty {
+        if content.historyRows.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Maps").font(.system(size: 12)).foregroundStyle(palette.secondary).padding(.bottom, 2)
                 ForEach(Array(hero.maps.prefix(5).enumerated()), id: \.offset) { index, map in
@@ -237,14 +233,11 @@ struct TeamWidgetView: View {
                 }
             }
         } else {
-            let rows = content.historyRows
-            if !rows.isEmpty {
-                VStack(alignment: .leading, spacing: 0) {
-                    Text(verbatim: historyLabel(content)).font(.system(size: 12)).foregroundStyle(palette.secondary).padding(.bottom, 2)
-                    ForEach(Array(rows.enumerated()), id: \.offset) { index, result in
-                        historyRow(result).overlay(alignment: .top) {
-                            if index > 0 { Rectangle().fill(palette.border.opacity(0.35)).frame(height: 0.5) }
-                        }
+            VStack(alignment: .leading, spacing: 0) {
+                Text(verbatim: historyLabel(content)).font(.system(size: 12)).foregroundStyle(palette.secondary).padding(.bottom, 2)
+                ForEach(Array(content.historyRows.enumerated()), id: \.offset) { index, result in
+                    historyRow(result).overlay(alignment: .top) {
+                        if index > 0 { Rectangle().fill(palette.border.opacity(0.35)).frame(height: 0.5) }
                     }
                 }
             }
