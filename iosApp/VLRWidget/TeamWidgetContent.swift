@@ -37,9 +37,25 @@ enum TeamWidgetResult: Codable, Equatable {
     }
 }
 
+struct TeamWidgetDay: Codable, Equatable {
+    let year: Int
+    let month: Int
+    let day: Int
+
+    init?(_ value: String) {
+        let parts = value.split(separator: "-").compactMap { Int($0) }
+        guard parts.count == 3 else { return nil }
+        let components = DateComponents(year: parts[0], month: parts[1], day: parts[2])
+        guard components.isValidDate(in: Calendar(identifier: .gregorian)) else { return nil }
+        year = parts[0]
+        month = parts[1]
+        day = parts[2]
+    }
+}
+
 struct TeamWidgetRecentResult: Codable, Equatable, Identifiable {
     let id: String
-    let date: Date?
+    let date: TeamWidgetDay?
     let opponent: TeamWidgetTeam
     var result: TeamWidgetResult
 }
@@ -221,8 +237,13 @@ func teamWidgetString(_ key: String, locale: Locale = .current, _ arguments: CVa
     return String(format: format, locale: locale, arguments: arguments)
 }
 
-func teamWidgetDate(_ date: Date?, locale: Locale = .current, timeZone: TimeZone = .current) -> String {
-    guard let date else { return teamWidgetString("TBD", locale: locale) }
+func teamWidgetDate(_ day: TeamWidgetDay?, locale: Locale = .current, timeZone: TimeZone = .current) -> String {
+    guard let day else { return teamWidgetString("TBD", locale: locale) }
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = timeZone
+    guard let date = calendar.date(from: DateComponents(year: day.year, month: day.month, day: day.day, hour: 12)) else {
+        return teamWidgetString("TBD", locale: locale)
+    }
     let formatter = DateFormatter()
     formatter.locale = locale
     formatter.timeZone = timeZone
@@ -355,7 +376,7 @@ enum TeamWidgetMapper {
     static func content(profile: TeamWidgetRankingResponse, match: TeamWidgetMatchResponse?, details: TeamWidgetDetailsResponse?, spoilersHidden: Bool) -> TeamWidgetContent {
         let history = profile.recent.map { row in
             let score = row.team_score.flatMap { first in row.opponent_score.map { TeamWidgetScore(team: first, opponent: $0) } }
-            return TeamWidgetRecentResult(id: row.match_id, date: date(row.played_on), opponent: row.opponent,
+            return TeamWidgetRecentResult(id: row.match_id, date: TeamWidgetDay(row.played_on), opponent: row.opponent,
                 result: row.won ? .win(score) : .loss(score))
         }
         let results = Array(profile.recent.prefix(5).reversed()).map { $0.won ? TeamWidgetFormSlot.win : .loss }
@@ -392,11 +413,7 @@ enum TeamWidgetMapper {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         if let date = formatter.date(from: value) ?? ISO8601DateFormatter().date(from: value) { return date }
-        let day = DateFormatter()
-        day.locale = Locale(identifier: "en_US_POSIX")
-        day.timeZone = TimeZone(secondsFromGMT: 0)
-        day.dateFormat = "yyyy-MM-dd"
-        return day.date(from: value)
+        return nil
     }
 
     private static func maps(details: TeamWidgetDetailsResponse?, match: TeamWidgetMatchResponse, team: TeamWidgetTeam, ownFirst: Bool) -> [TeamWidgetMap] {

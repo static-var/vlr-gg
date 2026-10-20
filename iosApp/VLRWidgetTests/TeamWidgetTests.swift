@@ -38,6 +38,13 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(86_520), now: now, refresh: now.addingTimeInterval(120)), [now])
     }
 
+    func testResultDayKeepsItsCalendarDateInEveryTimeZone() throws {
+        let day = try XCTUnwrap(TeamWidgetDay("2026-10-15"))
+        for identifier in ["America/Los_Angeles", "Asia/Tokyo"] {
+            XCTAssertEqual(teamWidgetDate(day, locale: locale, timeZone: try XCTUnwrap(TimeZone(identifier: identifier))), "Oct 15")
+        }
+    }
+
     func testMappingKeepsTeamPerspectiveMapPicksAndOldestToNewestForm() throws {
         let content = try content(live: true, ownSecond: true)
         XCTAssertEqual(content.form, [.win, .win, .loss, .win, .win, .live])
