@@ -48,8 +48,7 @@ enum EventWidgetDates {
             guard WidgetDay(String(time.prefix(10))) != nil else { return nil }
             return widgetInstant(time)
         }
-        guard date.range(of: #"^\d{4}-\d{2}-\d{2}$"#, options: .regularExpression) != nil,
-              WidgetDay(date) != nil else { return nil }
+        guard WidgetDay(date) != nil else { return nil }
         let parts = time.split(separator: ":", omittingEmptySubsequences: false)
         guard (2...3).contains(parts.count), parts.allSatisfy({ $0.count == 2 && Int($0) != nil }),
               let hour = Int(parts[0]), hour < 24, let minute = Int(parts[1]), minute < 60,
@@ -145,11 +144,16 @@ enum EventWidgetEngine {
     }
 
     static func phase(in data: EventWidgetData, fetchedAt: Date, at date: Date, timeZone: TimeZone) -> EventPhase {
-        if data.matches.contains(where: { if case .live = $0.phase { return eligible($0, fetchedAt: fetchedAt,
-            at: date) }; return false }) { return .inProgress }
+        let isLive = data.matches.contains { match in
+            guard case .live = match.phase else { return false }
+            return eligible(match, fetchedAt: fetchedAt, at: date)
+        }
+        if isLive { return .inProgress }
         if data.event.reportedStatus == .completed { return .finished }
-        if data.matches
-            .contains(where: { if case .completed = $0.phase { return true }; if case .live = $0.phase { return true }; return false }) { return .inProgress }
+        let isStarted = data.matches.contains { match in
+            switch match.phase { case .completed, .live: true; default: false }
+        }
+        if isStarted { return .inProgress }
         if data.event.reportedStatus == .ongoing || data.event.reportedStatus == .paused { return .inProgress }
         if let start = data.event.dates.start, date >= start.start(in: timeZone) { return .inProgress }
         return .notStarted
