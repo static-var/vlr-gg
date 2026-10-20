@@ -71,6 +71,22 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(TeamWidgetHero.make(idle, now: now, locale: locale, timeZone: zone).value, "Oct 15")
     }
 
+    func testMediumMapsKeepFinishedAndLiveMapsWithOnlyFirstNext() {
+        let maps: [TeamWidgetMap] = [
+            .init(name: "Ascent", pick: .team("SEN"), status: .won, score: .init(team: 13, opponent: 10)),
+            .init(name: "Haven", pick: .opponent("FNC"), status: .next, score: nil),
+            .init(name: "Lotus", pick: .decider, status: .next, score: nil),
+        ]
+        XCTAssertEqual(TeamWidgetView.mediumMaps(maps).map(\.name), ["Ascent", "Haven"])
+        let bo5 = [
+            maps[0],
+            TeamWidgetMap(name: "Icebox", pick: .opponent("FNC"), status: .lost, score: .init(team: 8, opponent: 13)),
+            TeamWidgetMap(name: "Split", pick: .team("SEN"), status: .live, score: .init(team: 7, opponent: 5)),
+            maps[1], maps[2],
+        ]
+        XCTAssertEqual(TeamWidgetView.mediumMaps(bo5).map(\.name), ["Ascent", "Icebox", "Split", "Haven"])
+    }
+
     func testUpcomingDelayedTBDAndEmptySeasonHeroCopy() throws {
         let base = try content()
         let fixture = TeamWidgetFixture(id: "100", opponent: nil, start: now.addingTimeInterval(19_800), event: "Masters London", stage: "Upper final", format: "Bo3")
@@ -180,10 +196,19 @@ final class TeamWidgetTests: XCTestCase {
         if case .live(let series) = live.state {
             live.state = .live(.init(fixture: series.fixture, score: series.score, maps: Array(series.maps.prefix(3))))
         }
+        var betweenMaps = live
+        if case .live(let series) = live.state {
+            betweenMaps.state = .live(.init(fixture: series.fixture, score: .init(team: 1, opponent: 0), maps: [
+                .init(name: "Ascent", pick: .team("SEN"), status: .won, score: .init(team: 13, opponent: 10)),
+                .init(name: "Haven", pick: .opponent("FNC"), status: .next, score: nil),
+                .init(name: "Lotus", pick: .decider, status: .next, score: nil),
+            ]))
+        }
         let scenarios: [(String, TeamWidgetEntryContent, WidgetFamily, CGFloat, String)] = [
             ("medium-upcoming", .content(upcoming), .systemMedium, 158, "2h 14m"),
             ("medium-upcoming-monogram", .content(upcoming), .systemMedium, 158, "FNC"),
             ("medium-live", .content(live), .systemMedium, 158, "Ascent"),
+            ("medium-live-bo3-after-map1", .content(betweenMaps), .systemMedium, 158, "Haven next"),
             ("medium-needs-team", .needsTeam, .systemMedium, 158, "Edit Widget"),
             ("large-live", .content(live), .systemLarge, 354, "Playing now"),
             ("large-idle", .content(try content()), .systemLarge, 354, "Before that"),
@@ -213,6 +238,10 @@ final class TeamWidgetTests: XCTestCase {
                 XCTAssertTrue(text.localizedCaseInsensitiveContains(expected), "\(name) \(mode): \(text)")
                 if name == "medium-upcoming-monogram" {
                     XCTAssertTrue(text.contains("SEN"), text)
+                }
+                if name == "medium-live-bo3-after-map1" {
+                    XCTAssertFalse(text.contains("Lotus"), text)
+                    XCTAssertTrue(text.replacingOccurrences(of: "–", with: "-").contains("13-10"), text)
                 }
             }
         }

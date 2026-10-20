@@ -215,7 +215,8 @@ struct TeamWidgetView: View {
     }
 
     private func mapPills(_ maps: [TeamWidgetMap]) -> some View {
-        HStack(spacing: 5) {
+        let maps = Self.mediumMaps(maps)
+        return HStack(spacing: 5) {
             ForEach(Array(maps.enumerated()), id: \.offset) { _, map in
                 let live = map.status == .live
                 Text(verbatim: pillText(map, compact: maps.count >= 4))
@@ -227,6 +228,11 @@ struct TeamWidgetView: View {
                     .widgetAccentable(live)
             }
         }.padding(.top, 5)
+    }
+
+    static func mediumMaps(_ maps: [TeamWidgetMap]) -> [TeamWidgetMap] {
+        let firstNext = maps.firstIndex { $0.status == .next }
+        return maps.enumerated().filter { $0.element.status != .next || $0.offset == firstNext }.map(\.element)
     }
 
     private func pillText(_ map: TeamWidgetMap, compact: Bool) -> String {
