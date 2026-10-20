@@ -26,6 +26,35 @@ struct TeamWidgetRefreshService {
     }
 }
 
+actor TeamWidgetRefreshCoordinator {
+    static let shared = TeamWidgetRefreshCoordinator()
+
+    private struct Key: Hashable {
+        let teamID: String
+        let clientID: String
+    }
+
+    private var pending: [Key: Task<TeamWidgetContent?, Never>] = [:]
+
+    func refresh(teamID: String, source: UpcomingMatchesSnapshot, cache: TeamWidgetCache,
+                 service: TeamWidgetRefreshService = .init()) async -> TeamWidgetContent? {
+        let key = Key(teamID: teamID, clientID: source.clientId)
+        if let task = pending[key] { return await task.value }
+        let fetchedAt = Date.now
+        let task = Task<TeamWidgetContent?, Never> {
+            if let content = try? await service.refresh(teamID: teamID, source: source) {
+                cache.store(content, teamID: teamID, source: source, fetchedAt: fetchedAt)
+                return cache.load(teamID: teamID, source: source) ?? content
+            }
+            return cache.load(teamID: teamID, source: source)
+        }
+        pending[key] = task
+        let content = await task.value
+        pending[key] = nil
+        return content
+    }
+}
+
 struct TeamWidgetCache {
     let directory: URL?
 
@@ -52,6 +81,7 @@ struct TeamWidgetCache {
     }
 
     func store(_ content: TeamWidgetContent, teamID: String, source: UpcomingMatchesSnapshot, fetchedAt: Date = .now) {
+        if let saved = loadSaved(teamID: teamID, clientID: source.clientId), saved.fetchedAt >= fetchedAt { return }
         guard let url = url(teamID: teamID, clientID: source.clientId),
               let data = try? JSONEncoder().encode(Saved(teamID: teamID, clientID: source.clientId, fetchedAt: fetchedAt, content: content)) else { return }
         try? data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])

@@ -31,12 +31,7 @@ struct TeamWidgetProvider: AppIntentTimelineProvider {
             return Timeline(entries: [TeamWidgetEntry(date: now, content: .needsTeam)], policy: .after(now.addingTimeInterval(900)))
         }
         let cache = TeamWidgetCache()
-        let content: TeamWidgetContent?
-        do {
-            let refreshed = try await TeamWidgetRefreshService().refresh(teamID: id, source: source)
-            cache.store(refreshed, teamID: id, source: source)
-            content = refreshed
-        } catch { content = cache.load(teamID: id, source: source) }
+        let content = await TeamWidgetRefreshCoordinator.shared.refresh(teamID: id, source: source, cache: cache)
         if let content {
             let visibleContent = repository.loadSource()?.spoilersHidden == true ? content.redacted() : content
             await TeamWidgetLogoPrefetch.run(visibleContent.logoSources(large: context.family == .systemLarge))

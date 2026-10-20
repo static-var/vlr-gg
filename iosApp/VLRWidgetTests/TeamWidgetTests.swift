@@ -251,6 +251,35 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(TeamWidgetEntryContent.make(content, teamID: "removed", clientID: "client", source: published), .needsTeam)
     }
 
+    func testConcurrentRefreshesShareRequestsAndOlderContentCannotReplaceNewer() async throws {
+        let recorder = TeamWidgetRequestRecorder()
+        let client = WidgetAPIClient(baseURL: URL(string: "https://example.test")!, authorization: nil) { request in
+            try await Task.sleep(for: .milliseconds(20))
+            return await recorder.load(request)
+        }
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let cache = TeamWidgetCache(directory: directory)
+        let source = UpcomingMatchesSnapshot(savedAtEpochMillis: 0, clientId: "client", hasFavorites: true,
+            favorites: .empty, spoilersHidden: false, matches: [], theme: .preview, favoriteTeams: [.init(id: "2", name: "Sentinels")])
+        let coordinator = TeamWidgetRefreshCoordinator()
+        let service = TeamWidgetRefreshService(api: client)
+        async let medium = coordinator.refresh(teamID: "2", source: source, cache: cache, service: service)
+        async let large = coordinator.refresh(teamID: "2", source: source, cache: cache, service: service)
+        let results = await (medium, large)
+        XCTAssertNotNil(results.0)
+        XCTAssertEqual(results.0, results.1)
+        let paths = await recorder.paths
+        XCTAssertEqual(paths.count, 3)
+        let newer = try content(live: true)
+        let timestamp = Date.now.addingTimeInterval(10)
+        cache.store(newer, teamID: "2", source: source, fetchedAt: timestamp)
+        cache.store(try content(), teamID: "2", source: source, fetchedAt: timestamp.addingTimeInterval(-1))
+        XCTAssertEqual(cache.load(teamID: "2", source: source), newer)
+        XCTAssertEqual(cache.loadSaved(teamID: "2", clientID: "client")?.fetchedAt, timestamp)
+    }
+
     @MainActor
     func testTeamWidgetRendersRequiredLayoutsInLightDarkAndTint() throws {
         let directory = URL(fileURLWithPath: "/tmp/vlr-team-widget-renders")
