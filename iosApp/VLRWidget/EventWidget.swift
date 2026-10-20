@@ -242,9 +242,9 @@ struct EventWidgetView: View {
             VStack(alignment: .leading, spacing: 3) {
                 participantRow(fixture.participants.left, name: text.left, score: text.leftScore, dimmed: text.loser == .left)
                 participantRow(fixture.participants.right, name: text.right, score: text.rightScore, dimmed: text.loser == .right)
-            }.frame(maxWidth: .infinity, alignment: .leading)
+            }.frame(maxWidth: .infinity, alignment: .leading).layoutPriority(1)
             Text(verbatim: text.round).font(.system(size: 11)).foregroundStyle(palette.secondary)
-                .multilineTextAlignment(.trailing).lineLimit(2).minimumScaleFactor(0.7).frame(width: 70, alignment: .trailing)
+                .lineLimit(1).minimumScaleFactor(0.8).truncationMode(.tail).frame(width: 70, alignment: .trailing)
         }.frame(height: 49)
     }
 
@@ -276,7 +276,8 @@ struct EventWidgetView: View {
         section(widgetString("Final standings", locale: locale), count: values.count) { index in
             let row = values[index]
             HStack(spacing: 8) {
-                Text(verbatim: row.position).font(.system(size: 12)).foregroundStyle(palette.secondary).frame(width: 42, alignment: .leading)
+                Text(verbatim: row.position).font(.system(size: 12)).foregroundStyle(palette.secondary)
+                    .lineLimit(1).minimumScaleFactor(0.8).frame(width: 50, alignment: .leading)
                 logo(.team(row.team), size: 20)
                 Text(verbatim: row.team.name).font(.system(size: 13)).lineLimit(1).minimumScaleFactor(0.7)
                 Spacer(minLength: 0)
