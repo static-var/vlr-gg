@@ -20,8 +20,9 @@ struct TeamWidgetProvider: AppIntentTimelineProvider {
         let source = WidgetSnapshotRepository().loadSource()
         let id = configuration.team?.id
         let cached: TeamWidgetContent?
-        if let source, let id { cached = TeamWidgetCache().load(teamID: id, source: source) }
-        else { cached = nil }
+        if let source, let id, let record = await FavoriteWidgetStores.teams.load(for: .init(entityID: id, clientID: source.clientId)) {
+            cached = record.value.expired(fetchedAt: record.fetchedAt, now: .now)
+        } else { cached = nil }
         return TeamWidgetEntry(date: .now, content: .make(cached, teamID: id, clientID: source?.clientId ?? "", source: source))
     }
 
@@ -34,16 +35,18 @@ struct TeamWidgetProvider: AppIntentTimelineProvider {
         guard case .placeholder = initialContent, let source, let id else {
             return Timeline(entries: [TeamWidgetEntry(date: now, content: initialContent)], policy: .never)
         }
-        let cache = TeamWidgetCache()
-        let content = await TeamWidgetRefreshCoordinator.shared.refresh(teamID: id, source: source, cache: cache)
+        let record = await FavoriteWidgetStores.teams.refresh(for: .init(entityID: id, clientID: source.clientId)) {
+            try await TeamWidgetRefreshService().refresh(teamID: id, source: source)
+        }
+        let content = record.map { $0.teamContent(at: now) }
         let entryContent = TeamWidgetEntryContent.make(content, teamID: id, clientID: source.clientId, source: repository.loadSource())
         let start: Date?
         if case .content(let visibleContent) = entryContent {
-            await TeamWidgetLogoPrefetch.run(visibleContent.logoSources(large: context.family == .systemLarge))
+            await WidgetLogoPrefetch.run(visibleContent.logoSources(large: context.family == .systemLarge))
             if case .upcoming(let fixture) = visibleContent.state { start = fixture.start } else { start = nil }
         } else { start = nil }
         let refresh = TeamWidgetRefreshPolicy.date(for: entryContent, now: now)
-        let dates = TeamWidgetKickoff.timelineDates(start: start, now: now)
+        let dates = WidgetKickoff.timelineDates(start: start, now: now)
         return Timeline(entries: dates.map { TeamWidgetEntry(date: $0, content: entryContent) }, policy: refresh.map { .after($0) } ?? .never)
     }
 }
@@ -105,7 +108,7 @@ struct TeamWidgetView: View {
                 RoundedRectangle(cornerRadius: 7).strokeBorder(palette.border, style: StrokeStyle(lineWidth: 1.5, dash: [3, 3]))
                     .frame(width: large ? 40 : 28, height: large ? 40 : 28)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(verbatim: teamWidgetString(setup == .chooseTeam ? "Choose a team" : "No favorite teams", locale: locale))
+                    Text(verbatim: widgetString(setup == .chooseTeam ? "Choose a team" : "No favorite teams", locale: locale))
                         .font(.system(size: 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                     Text(verbatim: "Val Esports").font(.system(size: 12)).foregroundStyle(palette.secondary)
                 }.frame(maxWidth: .infinity, alignment: .leading)
@@ -115,11 +118,11 @@ struct TeamWidgetView: View {
             }
             if large { Spacer().frame(height: 18) } else { Spacer(minLength: 18) }
             VStack(alignment: .leading, spacing: 0) {
-                Text(verbatim: teamWidgetString(setup == .chooseTeam ? "Touch and hold, then" : "To use this widget,", locale: locale))
+                Text(verbatim: widgetString(setup == .chooseTeam ? "Touch and hold, then" : "To use this widget,", locale: locale))
                     .font(.system(size: 13))
-                Text(verbatim: teamWidgetString(setup == .chooseTeam ? "Edit Widget" : "Open Val Esports", locale: locale))
+                Text(verbatim: widgetString(setup == .chooseTeam ? "Edit Widget" : "Open Val Esports", locale: locale))
                     .font(.system(size: 34)).minimumScaleFactor(0.7).lineLimit(1)
-                Text(verbatim: teamWidgetString(setup == .chooseTeam ? "Pick a team from your favorites" : "Favorite a team, then pick it here", locale: locale))
+                Text(verbatim: widgetString(setup == .chooseTeam ? "Pick a team from your favorites" : "Favorite a team, then pick it here", locale: locale))
                     .font(.system(size: 12)).foregroundStyle(palette.secondary)
             }
             if large {
@@ -162,7 +165,7 @@ struct TeamWidgetView: View {
 
     private func header(_ content: TeamWidgetContent) -> some View {
         HStack(alignment: .top, spacing: 8) {
-            logo(content.header.team, size: large ? 40 : 28)
+            WidgetLogo(mark: .team(content.header.team), size: large ? 40 : 28, palette: palette, colorScheme: colorScheme, tinted: tinted)
             VStack(alignment: .leading, spacing: 1) {
                 Text(verbatim: content.header.team.name).font(.system(size: 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                 Text(verbatim: ranking(content.header)).font(.system(size: 12)).foregroundStyle(palette.secondary).lineLimit(1).minimumScaleFactor(0.6)
@@ -175,9 +178,9 @@ struct TeamWidgetView: View {
 
     private func ranking(_ header: TeamWidgetHeader) -> String {
         var parts: [String] = []
-        if let rank = header.rank { parts.append(teamWidgetString("#%lld worldwide", locale: locale, Int64(rank))) }
+        if let rank = header.rank { parts.append(widgetString("#%lld worldwide", locale: locale, Int64(rank))) }
         if large, let rank = header.regionRank, let region = header.region {
-            parts.append(teamWidgetString("#%lld %@", locale: locale, Int64(rank), region))
+            parts.append(widgetString("#%lld %@", locale: locale, Int64(rank), region))
         }
         return parts.joined(separator: " · ")
     }
@@ -208,7 +211,7 @@ struct TeamWidgetView: View {
                 }.font(.system(size: 13)).lineLimit(1).minimumScaleFactor(0.7)
                 Text(verbatim: hero.value).font(.system(size: 40, weight: .regular)).tracking(-0.8).monospacedDigit()
                     .lineLimit(1).minimumScaleFactor(0.65)
-                if !large, !hero.maps.isEmpty { mapPills(hero.maps) }
+                if !large, !hero.maps.isEmpty { WidgetMapPills(maps: hero.maps, palette: palette, locale: locale) }
                 else {
                     HStack(spacing: 0) {
                         if hero.liveContext {
@@ -219,7 +222,7 @@ struct TeamWidgetView: View {
                     }.font(.system(size: 12)).foregroundStyle(palette.secondary).lineLimit(1).padding(.top, 3)
                 }
             }.frame(maxWidth: .infinity, alignment: .leading)
-            if let opponent = hero.opponent { logo(opponent, size: 44) }
+            if let opponent = hero.opponent { WidgetLogo(mark: .team(opponent), size: 44, palette: palette, colorScheme: colorScheme, tinted: tinted) }
             else if case .content(let content) = entry.content, case .upcoming = content.state {
                 ZStack {
                     Circle().strokeBorder(palette.border, style: StrokeStyle(lineWidth: 1.5, dash: [3, 3]))
@@ -227,33 +230,6 @@ struct TeamWidgetView: View {
                 }.frame(width: 44, height: 44)
             }
         }
-    }
-
-    private func mapPills(_ maps: [TeamWidgetMap]) -> some View {
-        let maps = Self.mediumMaps(maps)
-        return HStack(spacing: 5) {
-            ForEach(Array(maps.enumerated()), id: \.offset) { _, map in
-                let live = map.status == .live
-                Text(verbatim: Self.pillText(map, compact: maps.count >= 4, locale: locale))
-                    .font(.system(size: 11)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.6)
-                    .padding(.horizontal, 6).frame(height: 18)
-                    .foregroundStyle(live ? palette.accent : map.status == .won ? palette.ink : palette.secondary)
-                    .background(RoundedRectangle(cornerRadius: 5).fill(map.status == .won || map.status == .lost ? palette.ink.opacity(0.1) : .clear))
-                    .overlay(RoundedRectangle(cornerRadius: 5).strokeBorder(live ? palette.accent : map.status == .next ? palette.border : .clear, lineWidth: live ? 1.5 : 1))
-                    .widgetAccentable(live)
-            }
-        }.padding(.top, 5)
-    }
-
-    static func mediumMaps(_ maps: [TeamWidgetMap]) -> [TeamWidgetMap] {
-        let firstNext = maps.firstIndex { $0.status == .next }
-        return maps.enumerated().filter { $0.element.status != .next || $0.offset == firstNext }.map(\.element)
-    }
-
-    static func pillText(_ map: TeamWidgetMap, compact: Bool, locale: Locale = .current) -> String {
-        if map.status == .next { return teamWidgetString("%@ next", locale: locale, map.name) }
-        if compact && map.status != .live { return map.score?.text ?? "–" }
-        return map.name + " " + (map.score?.text ?? "–")
     }
 
     @ViewBuilder
@@ -281,77 +257,57 @@ struct TeamWidgetView: View {
 
     private func historyLabel(_ content: TeamWidgetContent) -> String {
         switch content.state {
-        case .idle, .idleHidden: teamWidgetString("Before that", locale: locale)
-        default: teamWidgetString("Recent", locale: locale)
+        case .idle, .idleHidden: widgetString("Before that", locale: locale)
+        default: widgetString("Recent", locale: locale)
         }
     }
 
     private func historyRow(_ row: TeamWidgetRecentResult) -> some View {
         HStack(spacing: 10) {
             Text(verbatim: resultLetter(row.result)).font(.system(size: 12, weight: .semibold)).frame(width: 18)
-            logo(row.opponent, size: 22)
+            WidgetLogo(mark: .team(row.opponent), size: 22, palette: palette, colorScheme: colorScheme, tinted: tinted)
             Text(verbatim: row.opponent.name).foregroundStyle(palette.ink).font(.system(size: 15)).lineLimit(1).minimumScaleFactor(0.65)
-            Text(verbatim: teamWidgetDate(row.date, locale: locale, timeZone: timeZone)).font(.system(size: 12)).foregroundStyle(palette.secondary).lineLimit(1)
+            Text(verbatim: widgetDate(row.date, locale: locale, timeZone: timeZone)).font(.system(size: 12)).foregroundStyle(palette.secondary).lineLimit(1)
             Spacer(minLength: 0)
             Text(verbatim: row.result.score).font(.system(size: 17)).monospacedDigit()
         }.foregroundStyle(resultColor(row.result)).frame(height: 38)
     }
 
     private func resultLetter(_ result: TeamWidgetResult) -> String {
-        switch result { case .win: teamWidgetString("W", locale: locale); case .loss: teamWidgetString("L", locale: locale); case .hidden: "" }
+        switch result { case .win: widgetString("W", locale: locale); case .loss: widgetString("L", locale: locale); case .hidden: "" }
     }
 
     private func resultColor(_ result: TeamWidgetResult) -> Color {
         switch result { case .win: palette.ink; case .loss, .hidden: palette.secondary }
     }
 
-    private func mapRow(_ map: TeamWidgetMap, compact: Bool) -> some View {
+    private func mapRow(_ map: WidgetMap, compact: Bool) -> some View {
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 1) {
                 Text(verbatim: map.name).font(.system(size: 15))
                 if !compact { Text(verbatim: mapSubtitle(map)).font(.system(size: 12)).foregroundStyle(palette.secondary).lineLimit(1) }
             }
             Spacer(minLength: 0)
-            Text(verbatim: map.score?.text ?? teamWidgetString("Next", locale: locale)).font(.system(size: 17)).monospacedDigit()
+            Text(verbatim: map.score?.text ?? widgetString("Next", locale: locale)).font(.system(size: 17)).monospacedDigit()
                 .foregroundStyle(map.status == .live ? palette.accent : map.status == .won ? palette.ink : palette.secondary)
                 .widgetAccentable(map.status == .live)
         }.frame(height: compact ? 30 : 52)
     }
 
-    private func mapSubtitle(_ map: TeamWidgetMap) -> String {
+    private func mapSubtitle(_ map: WidgetMap) -> String {
         let pick: String
         switch map.pick {
-        case .team(let name), .opponent(let name): pick = teamWidgetString("%@ pick", locale: locale, name)
-        case .decider: pick = teamWidgetString("Decider", locale: locale)
+        case .team(let name), .opponent(let name): pick = widgetString("%@ pick", locale: locale, name)
+        case .decider: pick = widgetString("Decider", locale: locale)
         }
         let status: String
         switch map.status {
-        case .won: status = teamWidgetString("Won", locale: locale)
-        case .lost: status = teamWidgetString("Lost", locale: locale)
-        case .live: status = teamWidgetString("Playing now", locale: locale)
-        case .next: status = teamWidgetString("Next", locale: locale)
+        case .won: status = widgetString("Won", locale: locale)
+        case .lost: status = widgetString("Lost", locale: locale)
+        case .live: status = widgetString("Playing now", locale: locale)
+        case .next: status = widgetString("Next", locale: locale)
         }
         return pick + " · " + status
     }
 
-    @ViewBuilder
-    private func logo(_ team: TeamWidgetTeam, size: CGFloat) -> some View {
-        let image = tinted ? MatchActivityLogoCache.tintedImage(for: team.logo, size: .expanded)
-            : MatchActivityLogoCache.image(for: team.logo, appearance: colorScheme == .dark ? .dark : .light, size: .expanded)
-        if let image {
-            if #available(iOS 18.0, *), tinted {
-                Image(uiImage: image).resizable().widgetAccentedRenderingMode(.fullColor).scaledToFit().frame(width: size, height: size)
-            } else {
-                Image(uiImage: image).resizable().scaledToFit().frame(width: size, height: size)
-            }
-        } else {
-            RoundedRectangle(cornerRadius: size / 4).fill(palette.ink.opacity(0.08))
-                .overlay {
-                    Text(verbatim: (team.tag ?? String(team.name.prefix(3))).uppercased())
-                        .font(.system(size: size * 0.32, weight: .semibold))
-                        .foregroundStyle(palette.secondary).lineLimit(1).minimumScaleFactor(0.5)
-                }
-                .frame(width: size, height: size)
-        }
-    }
 }

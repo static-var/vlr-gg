@@ -9,7 +9,7 @@ final class TeamWidgetTests: XCTestCase {
     private let zone = TimeZone(secondsFromGMT: 0)!
 
     func testKickoffShowsStartTimeWithRelativeDay() {
-        let cases: [(TimeInterval?, TeamWidgetKickoff)] = [
+        let cases: [(TimeInterval?, WidgetKickoff)] = [
             (8_040, .scheduled(day: "Today", time: "2:14\u{202F}PM")),
             (1, .scheduled(day: "Today", time: "12:00\u{202F}PM")),
             (86_400, .scheduled(day: "Tomorrow", time: "12:00\u{202F}PM")),
@@ -17,12 +17,12 @@ final class TeamWidgetTests: XCTestCase {
             (nil, .unknown),
         ]
         for (offset, expected) in cases {
-            XCTAssertEqual(TeamWidgetKickoff.make(start: offset.map { now.addingTimeInterval($0) }, now: now, locale: locale, timeZone: zone), expected)
+            XCTAssertEqual(WidgetKickoff.make(start: offset.map { now.addingTimeInterval($0) }, now: now, locale: locale, timeZone: zone), expected)
         }
         let start = TeamWidgetMapper.date("2026-10-22T20:00:00Z")!
-        XCTAssertEqual(TeamWidgetKickoff.make(start: start, now: now, locale: locale, timeZone: zone), .scheduled(day: "Thu, Oct 22", time: "8:00\u{202F}PM"))
-        XCTAssertEqual(TeamWidgetKickoff.make(start: start, now: now, locale: Locale(identifier: "de_DE"), timeZone: zone), .scheduled(day: "Do. 22. Okt.", time: "20:00"))
-        XCTAssertEqual(TeamWidgetKickoff.make(start: now.addingTimeInterval(86_400), now: now, locale: Locale(identifier: "de_DE"), timeZone: zone),
+        XCTAssertEqual(WidgetKickoff.make(start: start, now: now, locale: locale, timeZone: zone), .scheduled(day: "Thu, Oct 22", time: "8:00\u{202F}PM"))
+        XCTAssertEqual(WidgetKickoff.make(start: start, now: now, locale: Locale(identifier: "de_DE"), timeZone: zone), .scheduled(day: "Do. 22. Okt.", time: "20:00"))
+        XCTAssertEqual(WidgetKickoff.make(start: now.addingTimeInterval(86_400), now: now, locale: Locale(identifier: "de_DE"), timeZone: zone),
             .scheduled(day: "Morgen", time: "12:00"))
     }
 
@@ -50,12 +50,12 @@ final class TeamWidgetTests: XCTestCase {
             "pt_PT": "A qualquer momento", "ru_RU": "С минуты на минуту", "tr_TR": "Her an"]
         for (identifier, expected) in translations {
             let locale = Locale(identifier: identifier)
-            XCTAssertEqual(TeamWidgetKickoff.delayed("").hero(locale: locale), expected, identifier)
+            XCTAssertEqual(WidgetKickoff.delayed("").hero(locale: locale), expected, identifier)
         }
     }
 
     func testTimelineAddsEntriesOnlyWhenTheDayLabelOrStateChanges() {
-        func dates(_ start: Date?) -> [Date] { TeamWidgetKickoff.timelineDates(start: start, now: now, timeZone: zone) }
+        func dates(_ start: Date?) -> [Date] { WidgetKickoff.timelineDates(start: start, now: now, timeZone: zone) }
         let midnight = Date(timeIntervalSince1970: 1_792_195_200)
         let today = now.addingTimeInterval(3_600)
         XCTAssertEqual(dates(today), [now, today])
@@ -76,22 +76,23 @@ final class TeamWidgetTests: XCTestCase {
     }
 
     func testResultDayKeepsItsCalendarDateInEveryTimeZone() throws {
-        let day = try XCTUnwrap(TeamWidgetDay("2026-10-15"))
+        XCTAssertEqual(WidgetDay("2026-1-5"), WidgetDay("2026-01-05"))
+        let day = try XCTUnwrap(WidgetDay("2026-10-15"))
         for identifier in ["America/Los_Angeles", "Asia/Tokyo"] {
-            XCTAssertEqual(teamWidgetDate(day, locale: locale, timeZone: try XCTUnwrap(TimeZone(identifier: identifier))), "Oct 15")
+            XCTAssertEqual(widgetDate(day, locale: locale, timeZone: try XCTUnwrap(TimeZone(identifier: identifier))), "Oct 15")
         }
     }
 
     func testLogoPrefetchUsesOnlyVisibleTeamsAndCancelsAtDeadline() async throws {
         var value = TeamWidgetContent.sample(at: now)
-        let own = TeamWidgetTeam(id: "2", name: "Sentinels", logo: "own")
+        let own = WidgetTeam(id: "2", name: "Sentinels", logo: "own")
         value = TeamWidgetContent(header: .init(team: own, rank: nil, region: nil, regionRank: nil), form: [],
             history: value.history.enumerated().map { index, row in
                 .init(id: row.id, date: row.date, opponent: .init(id: row.opponent.id, name: row.opponent.name, logo: "history-\(index)"), result: row.result)
             }, state: .upcoming(.init(id: "100", opponent: .init(id: "1", name: "FNATIC", logo: "opponent"), start: nil, event: "", stage: "", format: "")))
         XCTAssertEqual(value.logoSources(large: false), ["own", "opponent"])
         XCTAssertEqual(value.logoSources(large: true), ["own", "opponent", "history-0", "history-1", "history-2", "history-3"])
-        await TeamWidgetLogoPrefetch.run(["own"], timeout: .milliseconds(10)) { sources in
+        await WidgetLogoPrefetch.run(["own"], timeout: .milliseconds(10)) { sources in
             XCTAssertEqual(sources, ["own"])
             do {
                 try await Task.sleep(for: .seconds(10))
@@ -114,6 +115,9 @@ final class TeamWidgetTests: XCTestCase {
         let reversedDetails = try self.content(live: true, detailsOppositeOrder: true)
         guard case .live(let reversed) = reversedDetails.state else { return XCTFail("Expected live series") }
         XCTAssertEqual(reversed.maps.map(\.score?.text), ["13–8", "9–13", "7–5", nil])
+        let missingPreviewTag = try self.content(live: true, ownTag: nil)
+        guard case .live(let withoutTag) = missingPreviewTag.state else { return XCTFail("Expected live series") }
+        XCTAssertEqual(withoutTag.maps.first?.pick, .team("SEN"))
     }
 
     func testRedactionRemovesResultsSeriesScoresAndAllMapProgress() throws {
@@ -136,21 +140,21 @@ final class TeamWidgetTests: XCTestCase {
     }
 
     func testMediumMapsKeepFinishedAndLiveMapsWithOnlyFirstNext() {
-        let maps: [TeamWidgetMap] = [
+        let maps: [WidgetMap] = [
             .init(name: "Ascent", pick: .team("SEN"), status: .won, score: .init(team: 13, opponent: 10)),
             .init(name: "Haven", pick: .opponent("FNC"), status: .next, score: nil),
             .init(name: "Lotus", pick: .decider, status: .next, score: nil),
         ]
-        XCTAssertEqual(TeamWidgetView.mediumMaps(maps).map(\.name), ["Ascent", "Haven"])
-        XCTAssertEqual(TeamWidgetView.pillText(maps[1], compact: false, locale: locale), "Haven next")
-        XCTAssertEqual(TeamWidgetView.pillText(maps[0], compact: true, locale: locale), "13–10")
+        XCTAssertEqual(WidgetMapPills.visible(maps).map(\.name), ["Ascent", "Haven"])
+        XCTAssertEqual(WidgetMapPills.text(maps[1], compact: false, locale: locale), "Haven next")
+        XCTAssertEqual(WidgetMapPills.text(maps[0], compact: true, locale: locale), "13–10")
         let bo5 = [
             maps[0],
-            TeamWidgetMap(name: "Icebox", pick: .opponent("FNC"), status: .lost, score: .init(team: 8, opponent: 13)),
-            TeamWidgetMap(name: "Split", pick: .team("SEN"), status: .live, score: .init(team: 7, opponent: 5)),
+            WidgetMap(name: "Icebox", pick: .opponent("FNC"), status: .lost, score: .init(team: 8, opponent: 13)),
+            WidgetMap(name: "Split", pick: .team("SEN"), status: .live, score: .init(team: 7, opponent: 5)),
             maps[1], maps[2],
         ]
-        XCTAssertEqual(TeamWidgetView.mediumMaps(bo5).map(\.name), ["Ascent", "Icebox", "Split", "Haven"])
+        XCTAssertEqual(WidgetMapPills.visible(bo5).map(\.name), ["Ascent", "Icebox", "Split", "Haven"])
     }
 
     func testUpcomingDelayedTBDAndEmptySeasonHeroCopy() throws {
@@ -251,13 +255,13 @@ final class TeamWidgetTests: XCTestCase {
 
     func testDetailsDecodeMissingListsAndNestedDefaults() throws {
         let decoder = JSONDecoder()
-        let minimal = try decoder.decode(TeamWidgetDetailsResponse.self, from: Data("{\"event\":{\"stage\":\"Final\"},\"total_maps\":3}".utf8))
+        let minimal = try decoder.decode(WidgetMatchDetailsResponse.self, from: Data("{\"event\":{\"stage\":\"Final\"},\"total_maps\":3}".utf8))
         XCTAssertTrue(minimal.veto.isEmpty)
         XCTAssertTrue(minimal.data.isEmpty)
         XCTAssertTrue(minimal.teams.isEmpty)
         XCTAssertEqual(minimal.event?.stage, "Final")
         XCTAssertEqual(minimal.total_maps, 3)
-        let nested = try decoder.decode(TeamWidgetDetailsResponse.self, from: Data("{\"veto\":[{}],\"data\":[{}]}".utf8))
+        let nested = try decoder.decode(WidgetMatchDetailsResponse.self, from: Data("{\"veto\":[{}],\"data\":[{}]}".utf8))
         XCTAssertEqual(nested.veto.first?.action, "unknown")
         XCTAssertEqual(nested.veto.first?.map, "")
         XCTAssertEqual(nested.data.first?.map, "")
@@ -271,35 +275,14 @@ final class TeamWidgetTests: XCTestCase {
         let match = try JSONDecoder().decode(RemoteMatchPreview.self, from: Data("""
         {"id":"100","event":"Masters","series":"Bo5","status":"upcoming","team1":{"id":"2","name":"Sentinels"},"team2":{"id":"1","name":"FNATIC","img":"https://example.test/preview.png","tag":"FNC"}}
         """.utf8))
-        for (counts, expected) in [("\"total_maps\":3,\"map_count\":5", "Bo3"), ("\"map_count\":1", "Bo1"), ("\"total_maps\":2", "Bo5")] {
-            let details = try JSONDecoder().decode(TeamWidgetDetailsResponse.self,
+        for (counts, expected) in [("\"total_maps\":3,\"map_count\":5", "Bo3"), ("\"map_count\":1", "Bo1"), ("\"total_maps\":2", "Bo5"), ("\"total_maps\":2,\"map_count\":3", "Bo5")] {
+            let details = try JSONDecoder().decode(WidgetMatchDetailsResponse.self,
                 from: Data("{\"veto\":[],\"data\":[],\"teams\":[],\(counts)}".utf8))
             let result = TeamWidgetMapper.content(profile: profile, match: match, details: details)
             XCTAssertEqual(result.fixture, TeamWidgetFixture(id: "100",
                 opponent: .init(id: "1", name: "FNATIC", tag: "FNC", logo: "https://example.test/preview.png"),
                 start: nil, event: "Masters", stage: "", format: expected))
         }
-    }
-
-    func testCacheSurvivesPublishAndUsesCurrentSpoilerSetting() throws {
-        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: directory) }
-        let cache = TeamWidgetCache(directory: directory)
-        let source = UpcomingMatchesSnapshot(savedAtEpochMillis: 0, clientId: "client", hasFavorites: true,
-            favorites: .empty, spoilersHidden: false, matches: [], theme: .preview,
-            favoriteTeams: [.init(id: "2", name: "Sentinels")])
-        let content = try content(live: true)
-        cache.store(content, teamID: "2", source: source)
-        XCTAssertEqual(cache.load(teamID: "2", source: source)?.form, [.win, .win, .loss, .win, .win, .live])
-        let hidden = UpcomingMatchesSnapshot(savedAtEpochMillis: 0, clientId: "client", hasFavorites: true,
-            favorites: .empty, spoilersHidden: true, matches: [], theme: .preview,
-            favoriteTeams: source.favoriteTeams)
-        XCTAssertEqual(TeamWidgetEntryContent.make(cache.load(teamID: "2", source: hidden), teamID: "2", clientID: "client", source: hidden), .content(content.redacted()))
-        let published = UpcomingMatchesSnapshot(savedAtEpochMillis: 123, clientId: "client", hasFavorites: true,
-            favorites: .empty, spoilersHidden: false, matches: [], theme: .preview, favoriteTeams: source.favoriteTeams)
-        XCTAssertEqual(cache.load(teamID: "2", source: published), content)
-        XCTAssertEqual(TeamWidgetEntryContent.make(content, teamID: "removed", clientID: "client", source: published), .needsTeam(.chooseTeam))
     }
 
     func testEntrySetupUsesCurrentFavoriteTeamsAndClient() {
@@ -323,7 +306,7 @@ final class TeamWidgetTests: XCTestCase {
     func testCachedContentExpiresLiveAndOverdueUpcomingMatches() {
         let fetchedAt = Date(timeIntervalSince1970: 1_792_152_000)
         let fixture = TeamWidgetFixture(id: "100", opponent: nil, start: fetchedAt, event: "Masters", stage: "Final", format: "Bo3")
-        let last = TeamWidgetRecentResult(id: "99", date: TeamWidgetDay("2026-10-15"),
+        let last = TeamWidgetRecentResult(id: "99", date: WidgetDay("2026-10-15"),
             opponent: .init(id: "1", name: "FNATIC"), result: .win(.init(team: 2, opponent: 1)))
         let live = TeamWidgetContent(header: .init(team: .init(id: "2", name: "Sentinels"), rank: nil, region: nil, regionRank: nil),
             form: [.win, .live], history: [last], state: .live(.init(fixture: fixture, score: .init(team: 1, opponent: 0), maps: [])))
@@ -337,34 +320,11 @@ final class TeamWidgetTests: XCTestCase {
         upcoming.form = [.win]
         XCTAssertEqual(upcoming.expired(fetchedAt: fetchedAt, now: fetchedAt.addingTimeInterval(21_600)), upcoming)
         XCTAssertEqual(upcoming.expired(fetchedAt: fetchedAt, now: fetchedAt.addingTimeInterval(21_601)), idle)
-    }
-
-    func testConcurrentRefreshesShareRequestsAndCacheStoresLastWrite() async throws {
-        let recorder = TeamWidgetRequestRecorder()
-        let client = WidgetAPIClient(baseURL: URL(string: "https://example.test")!, authorization: nil) { request in
-            try await Task.sleep(for: .milliseconds(20))
-            return await recorder.load(request)
+        let fresh = FavoriteWidgetRecord(key: .init(entityID: "2", clientID: "client"), fetchedAt: fetchedAt, value: upcoming, origin: .fresh)
+        guard case .upcoming(let overdue) = fresh.teamContent(at: fetchedAt.addingTimeInterval(21_601)).state else {
+            return XCTFail("Fresh upcoming match must remain upcoming")
         }
-        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: directory) }
-        let cache = TeamWidgetCache(directory: directory)
-        let source = UpcomingMatchesSnapshot(savedAtEpochMillis: 0, clientId: "client", hasFavorites: true,
-            favorites: .empty, spoilersHidden: false, matches: [], theme: .preview, favoriteTeams: [.init(id: "2", name: "Sentinels")])
-        let coordinator = TeamWidgetRefreshCoordinator()
-        let service = TeamWidgetRefreshService(api: client)
-        async let medium = coordinator.refresh(teamID: "2", source: source, cache: cache, service: service)
-        async let large = coordinator.refresh(teamID: "2", source: source, cache: cache, service: service)
-        let results = await (medium, large)
-        XCTAssertNotNil(results.0)
-        XCTAssertEqual(results.0, results.1)
-        let paths = await recorder.paths
-        XCTAssertEqual(paths.count, 3)
-        let timestamp = Date.now.addingTimeInterval(10)
-        cache.store(try content(live: true), teamID: "2", source: source, fetchedAt: timestamp)
-        let last = try content()
-        cache.store(last, teamID: "2", source: source, fetchedAt: timestamp.addingTimeInterval(-1))
-        XCTAssertEqual(cache.load(teamID: "2", source: source), last)
+        XCTAssertEqual(overdue.id, "100")
     }
 
     @MainActor
@@ -430,20 +390,20 @@ final class TeamWidgetTests: XCTestCase {
         return directory
     }
 
-    private func content(live: Bool = false, ownSecond: Bool = false, detailsOppositeOrder: Bool = false) throws -> TeamWidgetContent {
+    private func content(live: Bool = false, ownSecond: Bool = false, detailsOppositeOrder: Bool = false, ownTag: String? = "SEN") throws -> TeamWidgetContent {
         let profile = TeamWidgetContent.sampleProfile
         guard live else { return TeamWidgetMapper.content(profile: profile, match: nil, details: nil) }
-        let own = RemoteMatchPreview.Team(id: "2", name: "Sentinels", img: nil, score: 1, tag: "SEN")
+        let own = RemoteMatchPreview.Team(id: "2", name: "Sentinels", img: nil, score: 1, tag: ownTag)
         let opponent = RemoteMatchPreview.Team(id: "1", name: "FNATIC", img: nil, score: 1, tag: "FNC")
         let match = RemoteMatchPreview(id: "100", event: "Masters London", series: "Bo3", status: "live", time: nil,
             team1: ownSecond ? opponent : own, team2: ownSecond ? own : opponent,
             current_map: .init(name: "Ascent", number: 3, scores: ownSecond ? [5, 7] : [7, 5]))
-        func map(_ name: String, _ scores: [Int], live: Bool = false) -> TeamWidgetDetailsResponse.Map {
+        func map(_ name: String, _ scores: [Int], live: Bool = false) -> WidgetMatchDetailsResponse.Map {
             let teams = [RemoteMatchPreview.Team(id: nil, name: "Sentinels", img: nil, score: scores[0], tag: nil),
                 RemoteMatchPreview.Team(id: nil, name: "FNATIC", img: nil, score: scores[1], tag: nil)]
             return .init(map: name, live: live, teams: ownSecond ? teams.reversed() : teams)
         }
-        let details = TeamWidgetDetailsResponse(veto: [.init(team: "SEN", action: "pick", map: "Haven"), .init(team: "FNC", action: "pick", map: "Lotus"), .init(team: nil, action: "remains", map: "Ascent"), .init(team: nil, action: "remains", map: "Split")],
+        let details = WidgetMatchDetailsResponse(veto: [.init(team: "SEN", action: "pick", map: "Haven"), .init(team: "FNC", action: "pick", map: "Lotus"), .init(team: nil, action: "remains", map: "Ascent"), .init(team: nil, action: "remains", map: "Split")],
             data: [map("Haven", [13, 8]), map("Lotus", [9, 13]), map("Ascent", [7, 5], live: true)],
             teams: ownSecond != detailsOppositeOrder ? [opponent, own] : [own, opponent], event: .init(stage: "Upper final"),
             current_map: .init(name: "Ascent", number: 3, scores: ownSecond != detailsOppositeOrder ? [5, 7] : [7, 5]))
@@ -494,4 +454,84 @@ final class TeamWidgetIntentTests: XCTestCase {
         let unresolved = try await removed.entities(for: ["2"])
         XCTAssertEqual(unresolved.map(\.id), [])
     }
+}
+
+final class FavoriteWidgetStoreTests: XCTestCase {
+    func testSharedRefreshRoundTripFallbackAndLatestValue() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let now = Date(timeIntervalSince1970: 1_792_152_000)
+        let store = FavoriteWidgetStore<TeamWidgetContent>(namespace: .team, directory: directory, now: { now })
+        let key = FavoriteWidgetKey(entityID: "2", clientID: "client")
+        let counter = FetchCounter()
+        let initial = TeamWidgetContent.sample(at: now)
+        let fetch: @Sendable () async throws -> TeamWidgetContent = {
+            await counter.increment()
+            try await Task.sleep(for: .milliseconds(20))
+            return initial
+        }
+        async let first = store.refresh(for: key, fetch: fetch)
+        async let second = store.refresh(for: key, fetch: fetch)
+        let values = await (first, second)
+        XCTAssertEqual(values.0, values.1)
+        XCTAssertEqual(values.0?.origin, .fresh)
+        let count = await counter.count
+        XCTAssertEqual(count, 1)
+        let loaded = await store.load(for: key)
+        XCTAssertEqual(loaded?.value, initial)
+        XCTAssertEqual(loaded?.fetchedAt, now)
+        XCTAssertEqual(loaded?.origin, .cachedFallback)
+        var next = initial
+        next.state = .idle(nil)
+        let latest = next
+        _ = await store.refresh(for: key) { latest }
+        let fallback = await store.refresh(for: key) { throw WidgetRefreshError.httpStatus(503) }
+        XCTAssertEqual(fallback?.value, latest)
+        XCTAssertEqual(fallback?.origin, .cachedFallback)
+        let reopened = FavoriteWidgetStore<TeamWidgetContent>(namespace: .team, directory: directory)
+        let disk = await reopened.load(for: key)
+        XCTAssertEqual(disk?.value, latest)
+        let otherClient = await store.load(for: .init(entityID: "2", clientID: "other"))
+        XCTAssertNil(otherClient)
+    }
+
+    func testNamespacesStructuredKeysAndBadRecordsStaySeparate() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let team = FavoriteWidgetStore<String>(namespace: .team, directory: directory)
+        let event = FavoriteWidgetStore<String>(namespace: .event, directory: directory)
+        let keys = [FavoriteWidgetKey(entityID: "a:b/c", clientID: "d"), .init(entityID: "a/b:c", clientID: "d")]
+        _ = await team.refresh(for: keys[0]) { "team" }
+        _ = await event.refresh(for: keys[0]) { "event" }
+        _ = await event.refresh(for: keys[1]) { "other" }
+        let teamValue = await team.load(for: keys[0])
+        let eventValue = await event.load(for: keys[0])
+        let otherValue = await event.load(for: keys[1])
+        XCTAssertEqual(teamValue?.value, "team")
+        XCTAssertEqual(eventValue?.value, "event")
+        XCTAssertEqual(otherValue?.value, "other")
+        let files = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+        XCTAssertEqual(files.count, 3)
+        for file in files {
+            var json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: file)) as? [String: Any])
+            XCTAssertEqual(Set(json.keys), ["version", "key", "fetchedAt", "value"])
+            json["version"] = 99
+            try JSONSerialization.data(withJSONObject: json).write(to: file)
+        }
+        let invalid = await team.load(for: keys[0])
+        XCTAssertNil(invalid)
+        for file in files { try Data("bad".utf8).write(to: file) }
+        let corrupt = await event.load(for: keys[1])
+        XCTAssertNil(corrupt)
+        let unavailable = FavoriteWidgetStore<String>(namespace: .event, directory: directory.appendingPathComponent("absent"))
+        let fresh = await unavailable.refresh(for: keys[0]) { "fresh" }
+        XCTAssertEqual(fresh?.value, "fresh")
+    }
+}
+
+private actor FetchCounter {
+    var count = 0
+    func increment() { count += 1 }
 }

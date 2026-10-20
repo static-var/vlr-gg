@@ -22,6 +22,24 @@ class UpcomingMatchesSnapshotTest {
   private val now = Instant.parse("2026-09-12T12:00:00Z").toEpochMilliseconds()
 
   @Test
+  fun `event picker exports stable direct favorite rows and preserves them in JSON`() {
+    val rows = DirectFavoriteSnapshot(events = listOf(
+      DirectFavorite.Event("2", "Champions renamed", ""),
+      DirectFavorite.Event("1", "Masters", ""),
+      DirectFavorite.Event("2", "Duplicate", ""),
+      DirectFavorite.Event(" ", "Blank", ""),
+    )).widgetFavoriteEvents()
+    assertEquals(listOf(WidgetFavoriteEvent("1", "Masters"), WidgetFavoriteEvent("2", "Champions renamed")), rows)
+    assertEquals(emptyList(), DirectFavoriteSnapshot().widgetFavoriteEvents())
+    val json = Json { encodeDefaults = true; ignoreUnknownKeys = true }
+    val snapshot = UpcomingMatchesSnapshot(now, hasFavorites = true, matches = emptyList(),
+      theme = WidgetTheme(0, 0, 0, 0, 0, 0, false), favoriteEvents = rows)
+    val encoded = json.encodeToString(snapshot)
+    assertEquals(rows, json.decodeFromString<UpcomingMatchesSnapshot>(encoded).copy(savedAtEpochMillis = 1).favoriteEvents)
+    assertEquals(emptyList(), json.decodeFromString<UpcomingMatchesSnapshot>(json.encodeToString(snapshot.copy(favoriteEvents = emptyList())).replace(",\"favoriteEvents\":[]", "")).favoriteEvents)
+  }
+
+  @Test
   fun `team picker exports only direct favorite teams and their display data`() {
     val snapshot = DirectFavoriteSnapshot(
       teams = listOf(DirectFavorite.Team("2", "Sentinels", "https://owcdn.net/sen.png", "SEN")),

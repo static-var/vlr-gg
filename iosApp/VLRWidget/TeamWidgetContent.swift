@@ -1,32 +1,28 @@
 import Foundation
 
-struct TeamWidgetTeam: Codable, Equatable {
-    let id: String
-    let name: String
-    var tag: String? = nil
-    var logo: String? = nil
+extension FavoriteWidgetRecord where Value == TeamWidgetContent {
+    func teamContent(at date: Date) -> TeamWidgetContent {
+        switch origin {
+        case .fresh: value
+        case .cachedFallback: value.expired(fetchedAt: fetchedAt, now: date)
+        }
+    }
 }
 
-struct TeamWidgetHeader: Codable, Equatable {
-    let team: TeamWidgetTeam
+struct TeamWidgetHeader: Codable, Equatable, Sendable {
+    let team: WidgetTeam
     let rank: Int?
     let region: String?
     let regionRank: Int?
 }
 
-enum TeamWidgetFormSlot: String, Codable {
+enum TeamWidgetFormSlot: String, Codable, Sendable {
     case win, loss, empty, neutral, live
 }
 
-struct TeamWidgetScore: Codable, Equatable {
-    let team: Int
-    let opponent: Int
-    var text: String { "\(team)–\(opponent)" }
-}
-
-enum TeamWidgetResult: Codable, Equatable {
-    case win(TeamWidgetScore?)
-    case loss(TeamWidgetScore?)
+enum TeamWidgetResult: Codable, Equatable, Sendable {
+    case win(WidgetScore?)
+    case loss(WidgetScore?)
     case hidden
 
     var score: String {
@@ -37,32 +33,16 @@ enum TeamWidgetResult: Codable, Equatable {
     }
 }
 
-struct TeamWidgetDay: Codable, Equatable {
-    let year: Int
-    let month: Int
-    let day: Int
-
-    init?(_ value: String) {
-        let parts = value.split(separator: "-").compactMap { Int($0) }
-        guard parts.count == 3 else { return nil }
-        let components = DateComponents(year: parts[0], month: parts[1], day: parts[2])
-        guard components.isValidDate(in: Calendar(identifier: .gregorian)) else { return nil }
-        year = parts[0]
-        month = parts[1]
-        day = parts[2]
-    }
-}
-
-struct TeamWidgetRecentResult: Codable, Equatable, Identifiable {
+struct TeamWidgetRecentResult: Codable, Equatable, Sendable, Identifiable {
     let id: String
-    let date: TeamWidgetDay?
-    let opponent: TeamWidgetTeam
+    let date: WidgetDay?
+    let opponent: WidgetTeam
     var result: TeamWidgetResult
 }
 
-struct TeamWidgetFixture: Codable, Equatable {
+struct TeamWidgetFixture: Codable, Equatable, Sendable {
     let id: String
-    let opponent: TeamWidgetTeam?
+    let opponent: WidgetTeam?
     let start: Date?
     let event: String
     let stage: String
@@ -71,30 +51,13 @@ struct TeamWidgetFixture: Codable, Equatable {
     var context: String { [event, stage, format].filter { !$0.isEmpty }.joined(separator: " · ") }
 }
 
-enum TeamWidgetMapStatus: String, Codable {
-    case won, lost, live, next
-}
-
-enum TeamWidgetMapPick: Codable, Equatable {
-    case team(String)
-    case opponent(String)
-    case decider
-}
-
-struct TeamWidgetMap: Codable, Equatable {
-    let name: String
-    let pick: TeamWidgetMapPick
-    let status: TeamWidgetMapStatus
-    let score: TeamWidgetScore?
-}
-
-struct TeamWidgetLiveSeries: Codable, Equatable {
+struct TeamWidgetLiveSeries: Codable, Equatable, Sendable {
     let fixture: TeamWidgetFixture
-    let score: TeamWidgetScore?
-    let maps: [TeamWidgetMap]
+    let score: WidgetScore?
+    let maps: [WidgetMap]
 }
 
-enum TeamWidgetState: Codable, Equatable {
+enum TeamWidgetState: Codable, Equatable, Sendable {
     case upcoming(TeamWidgetFixture)
     case live(TeamWidgetLiveSeries)
     case liveHidden(TeamWidgetFixture)
@@ -102,7 +65,7 @@ enum TeamWidgetState: Codable, Equatable {
     case idleHidden(TeamWidgetRecentResult)
 }
 
-struct TeamWidgetContent: Codable, Equatable {
+struct TeamWidgetContent: Codable, Equatable, Sendable {
     let header: TeamWidgetHeader
     var form: [TeamWidgetFormSlot]
     var history: [TeamWidgetRecentResult]
@@ -167,7 +130,7 @@ struct TeamWidgetContent: Codable, Equatable {
     }
 
     func logoSources(large: Bool) -> [String] {
-        let opponent: TeamWidgetTeam?
+        let opponent: WidgetTeam?
         switch state {
         case .idle(let last): opponent = last?.opponent
         case .idleHidden(let last): opponent = last.opponent
@@ -213,11 +176,7 @@ enum TeamWidgetRefreshPolicy {
             switch content.state {
             case .live, .liveHidden: interval = 15 * 60
             case .upcoming(let fixture):
-                if let start = fixture.start {
-                    let remaining = start.timeIntervalSince(now)
-                    interval = remaining <= 0 ? 5 * 60 : remaining <= 86_400 ? 30 * 60 : 2 * 60 * 60
-                    if start > now { return min(now.addingTimeInterval(interval), start) }
-                } else { interval = 2 * 60 * 60 }
+                return FavoriteWidgetRefreshPolicy.scheduled(start: fixture.start, now: now, overdueInterval: 300)
             case .idle, .idleHidden: interval = 2 * 60 * 60
             }
         }
@@ -225,104 +184,21 @@ enum TeamWidgetRefreshPolicy {
     }
 }
 
-enum TeamWidgetKickoff: Equatable {
-    case scheduled(day: String, time: String)
-    case delayed(String)
-    case unknown
-
-    static func make(start: Date?, now: Date, locale: Locale = .current, timeZone: TimeZone = .current) -> Self {
-        guard let start else { return .unknown }
-        let time = format(start, template: "jm", locale: locale, timeZone: timeZone)
-        guard start > now else { return .delayed(time) }
-        return .scheduled(day: day(start, now: now, locale: locale, timeZone: timeZone), time: time)
-    }
-
-    func hero(locale: Locale = .current) -> String {
-        switch self {
-        case .scheduled(_, let time): time
-        case .delayed: teamWidgetString("Any minute", locale: locale)
-        case .unknown: teamWidgetString("TBD", locale: locale)
-        }
-    }
-
-    static func timelineDates(start: Date?, now: Date, timeZone: TimeZone = .current) -> [Date] {
-        guard let start, start > now else { return [now] }
-        let startDay = calendar(timeZone).startOfDay(for: start)
-        let changes = [calendar(timeZone).date(byAdding: .day, value: -1, to: startDay), startDay, start]
-        return [now] + Set(changes.compactMap { $0 }.filter { $0 > now }).sorted()
-    }
-
-    private static func day(_ start: Date, now: Date, locale: Locale, timeZone: TimeZone) -> String {
-        let calendar = calendar(timeZone)
-        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: start)).day ?? 0
-        guard days > 1 else {
-            let formatter = RelativeDateTimeFormatter()
-            formatter.locale = locale
-            formatter.dateTimeStyle = .named
-            let word = formatter.localizedString(from: DateComponents(day: days))
-            return word.prefix(1).uppercased(with: locale) + word.dropFirst()
-        }
-        return format(start, template: "EEEMMMd", locale: locale, timeZone: timeZone)
-    }
-
-    private static func calendar(_ timeZone: TimeZone) -> Calendar {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = timeZone
-        return calendar
-    }
-
-    private static func format(_ date: Date, template: String, locale: Locale, timeZone: TimeZone) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = locale
-        formatter.timeZone = timeZone
-        formatter.setLocalizedDateFormatFromTemplate(template)
-        return formatter.string(from: date)
-    }
-}
-
-private final class TeamWidgetResources {}
-
-func teamWidgetString(_ key: String, locale: Locale = .current, _ arguments: CVarArg...) -> String {
-    let resources = Bundle(for: TeamWidgetResources.self)
-    let identifier = locale.identifier
-    let language = locale.language.languageCode?.identifier ?? identifier
-    let candidates = [identifier, identifier.replacingOccurrences(of: "_", with: "-"), language]
-        + Bundle.preferredLocalizations(from: resources.localizations, forPreferences: [identifier])
-    let path = candidates.lazy.compactMap { resources.path(forResource: $0, ofType: "lproj") }.first
-    let bundle = path.flatMap(Bundle.init(path:)) ?? resources
-    let format = bundle.localizedString(forKey: key, value: key, table: "Localizable")
-    return String(format: format, locale: locale, arguments: arguments)
-}
-
-func teamWidgetDate(_ day: TeamWidgetDay?, locale: Locale = .current, timeZone: TimeZone = .current) -> String {
-    guard let day else { return teamWidgetString("TBD", locale: locale) }
-    var calendar = Calendar(identifier: .gregorian)
-    calendar.timeZone = timeZone
-    guard let date = calendar.date(from: DateComponents(year: day.year, month: day.month, day: day.day, hour: 12)) else {
-        return teamWidgetString("TBD", locale: locale)
-    }
-    let formatter = DateFormatter()
-    formatter.locale = locale
-    formatter.timeZone = timeZone
-    formatter.setLocalizedDateFormatFromTemplate("MMMd")
-    return formatter.string(from: date)
-}
-
 struct TeamWidgetHero: Equatable {
     let lead: String
     let value: String
     let context: String
-    let opponent: TeamWidgetTeam?
+    let opponent: WidgetTeam?
     var liveLabel = false
     var liveContext = false
-    var maps: [TeamWidgetMap] = []
+    var maps: [WidgetMap] = []
 
     static func make(_ content: TeamWidgetContent, now: Date, locale: Locale = .current, timeZone: TimeZone = .current) -> Self {
-        func localized(_ key: String, _ argument: String) -> String { teamWidgetString(key, locale: locale, argument) }
+        func localized(_ key: String, _ argument: String) -> String { widgetString(key, locale: locale, argument) }
         switch content.state {
         case .upcoming(let fixture):
-            let opponent = fixture.opponent?.name ?? teamWidgetString("TBD", locale: locale)
-            let kickoff = TeamWidgetKickoff.make(start: fixture.start, now: now, locale: locale, timeZone: timeZone)
+            let opponent = fixture.opponent?.name ?? widgetString("TBD", locale: locale)
+            let kickoff = WidgetKickoff.make(start: fixture.start, now: now, locale: locale, timeZone: timeZone)
             let lead: String
             let context: String
             switch kickoff {
@@ -334,25 +210,25 @@ struct TeamWidgetHero: Equatable {
             }
             return Self(lead: lead, value: kickoff.hero(locale: locale), context: context, opponent: fixture.opponent)
         case .live(let series):
-            return Self(lead: localized("Playing %@", series.fixture.opponent?.name ?? teamWidgetString("TBD", locale: locale)),
+            return Self(lead: localized("Playing %@", series.fixture.opponent?.name ?? widgetString("TBD", locale: locale)),
                 value: series.score?.text ?? "–", context: series.fixture.context, opponent: series.fixture.opponent,
                 liveLabel: true, maps: series.maps)
         case .liveHidden(let fixture):
-            return Self(lead: localized("Playing %@", fixture.opponent?.name ?? teamWidgetString("TBD", locale: locale)),
-                value: teamWidgetString("Live now", locale: locale),
-                context: [teamWidgetString("Scores hidden", locale: locale), fixture.format].filter { !$0.isEmpty }.joined(separator: " · "),
+            return Self(lead: localized("Playing %@", fixture.opponent?.name ?? widgetString("TBD", locale: locale)),
+                value: widgetString("Live now", locale: locale),
+                context: [widgetString("Scores hidden", locale: locale), fixture.format].filter { !$0.isEmpty }.joined(separator: " · "),
                 opponent: fixture.opponent, liveContext: true)
         case .idleHidden(let last):
-            return Self(lead: localized("Last played %@", last.opponent.name), value: teamWidgetDate(last.date, locale: locale, timeZone: timeZone),
-                context: teamWidgetString("Scores hidden · No match scheduled", locale: locale), opponent: last.opponent)
+            return Self(lead: localized("Last played %@", last.opponent.name), value: widgetDate(last.date, locale: locale, timeZone: timeZone),
+                context: widgetString("Scores hidden · No match scheduled", locale: locale), opponent: last.opponent)
         case .idle(.some(let last)):
             let key: String
             switch last.result { case .win: key = "Beat %@"; case .loss: key = "Lost to %@"; case .hidden: key = "Last played %@" }
             return Self(lead: localized(key, last.opponent.name), value: last.result.score,
-                context: teamWidgetDate(last.date, locale: locale, timeZone: timeZone) + " · " + teamWidgetString("No match scheduled", locale: locale), opponent: last.opponent)
+                context: widgetDate(last.date, locale: locale, timeZone: timeZone) + " · " + widgetString("No match scheduled", locale: locale), opponent: last.opponent)
         case .idle(nil):
-            return Self(lead: teamWidgetString("Season starts soon", locale: locale), value: teamWidgetString("No matches", locale: locale),
-                context: teamWidgetString("VLR has not listed a match yet", locale: locale), opponent: nil)
+            return Self(lead: widgetString("Season starts soon", locale: locale), value: widgetString("No matches", locale: locale),
+                context: widgetString("VLR has not listed a match yet", locale: locale), opponent: nil)
         }
     }
 }

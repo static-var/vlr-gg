@@ -161,10 +161,26 @@ targets:
     platform: iOS
     sources:
       - path: VLRWidgetTests
+        excludes:
+          - Fixtures
+      - path: VLRWidgetTests/Fixtures/EventWidget
+        type: folder
+        buildPhase: resources
       - path: ../designsystem/src/commonMain/composeResources/font/chakra_petch_regular.ttf
         buildPhase: resources
       - path: VLRWidget/VLRWidgetModels.swift
       - path: VLRWidget/VLRWidgetRefresh.swift
+      - path: VLRWidget/WidgetFormatting.swift
+      - path: VLRWidget/WidgetMatchPresentation.swift
+      - path: VLRWidget/WidgetMatchViews.swift
+      - path: VLRWidget/FavoriteWidgetStore.swift
+      - path: VLRWidget/WidgetRefreshSupport.swift
+      - path: VLRWidget/EventWidget.swift
+      - path: VLRWidget/EventWidgetIntent.swift
+      - path: VLRWidget/EventWidgetModels.swift
+      - path: VLRWidget/EventWidgetEngine.swift
+      - path: VLRWidget/EventWidgetText.swift
+      - path: VLRWidget/EventWidgetRefresh.swift
       - path: VLRWidget/TeamWidgetContent.swift
       - path: VLRWidget/TeamWidgetMapper.swift
       - path: VLRWidget/TeamWidgetRefresh.swift

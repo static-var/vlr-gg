@@ -19,6 +19,23 @@ final class WidgetRefreshTests: XCTestCase {
         XCTAssertNotEqual(legacy.sourceSignature, source.sourceSignature)
     }
 
+    func testFavoriteEventsSurviveCopiesAndInvalidateSignature() throws {
+        var source = UpcomingMatchesSnapshot(savedAtEpochMillis: 0, clientId: "client", hasFavorites: true,
+            favorites: .empty, spoilersHidden: false, matches: [], theme: .preview,
+            favoriteEvents: [.init(id: "2766", name: "Champions")])
+        let refreshed = source.withRefreshedMatches([], at: Date(timeIntervalSince1970: 100))
+        XCTAssertEqual(refreshed.favoriteEvents, [.init(id: "2766", name: "Champions")])
+        XCTAssertEqual(refreshed.usingConfiguration(from: source).favoriteEvents, source.favoriteEvents)
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(source)) as? [String: Any])
+        json.removeValue(forKey: "favoriteEvents")
+        let decoded = try JSONDecoder().decode(UpcomingMatchesSnapshot.self, from: JSONSerialization.data(withJSONObject: json))
+        XCTAssertEqual(decoded.favoriteEvents, [])
+        XCTAssertNotEqual(decoded.sourceSignature, source.sourceSignature)
+        source.favoriteEvents[0] = .init(id: "2766", name: "New title")
+        XCTAssertNotEqual(refreshed.sourceSignature, source.sourceSignature)
+        XCTAssertEqual(VLRWidgetContract.homeWidgetKinds, ["dev.staticvar.vlr.upcoming-matches", "dev.staticvar.vlr.team", "dev.staticvar.vlr.event"])
+    }
+
     @MainActor
     func testWidgetLayoutsAttachSmallMediumAndLargeRenders() throws {
         let fontURL = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "chakra_petch_regular", withExtension: "ttf"))

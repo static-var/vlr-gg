@@ -6,8 +6,8 @@ enum WidgetRefreshError: Error, Equatable {
     case httpStatus(Int)
 }
 
-struct WidgetAPIClient {
-    typealias Loader = (URLRequest) async throws -> (Data, HTTPURLResponse)
+struct WidgetAPIClient: Sendable {
+    typealias Loader = @Sendable (URLRequest) async throws -> (Data, HTTPURLResponse)
 
     private let baseURL: URL
     private let loader: Loader

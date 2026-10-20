@@ -22,6 +22,7 @@ public data class UpcomingMatchesSnapshot(
   val favorites: WidgetFavorites = WidgetFavorites(),
   val spoilersHidden: Boolean = false,
   val favoriteTeams: List<WidgetFavoriteTeam> = emptyList(),
+  val favoriteEvents: List<WidgetFavoriteEvent> = emptyList(),
 )
 
 @Serializable
@@ -34,6 +35,18 @@ internal fun DirectFavoriteSnapshot.widgetFavoriteTeams(): List<WidgetFavoriteTe
   .filter { it.id.isNotBlank() }
   .distinctBy { it.id }
   .map { WidgetFavoriteTeam(it.id, it.title) }
+  .sortedBy { it.id }
+
+@Serializable
+public data class WidgetFavoriteEvent(
+  val id: String,
+  val name: String,
+)
+
+internal fun DirectFavoriteSnapshot.widgetFavoriteEvents(): List<WidgetFavoriteEvent> = events
+  .filter { it.id.isNotBlank() }
+  .distinctBy { it.id }
+  .map { WidgetFavoriteEvent(it.id, it.title) }
   .sortedBy { it.id }
 
 @Serializable

@@ -5,6 +5,11 @@ struct WidgetFavoriteTeam: Codable, Equatable, Identifiable {
     let name: String
 }
 
+struct WidgetFavoriteEvent: Codable, Equatable, Identifiable, Sendable {
+    let id: String
+    let name: String
+}
+
 struct WidgetFavoriteIDs: Codable, Equatable {
     let matchIds: [String]
     let teamIds: [String]
@@ -42,14 +47,15 @@ enum WidgetMatchStatus: String, Codable {
 }
 
 struct UpcomingMatchesSnapshot: Codable, Equatable {
-    let savedAtEpochMillis: Int64
-    let clientId: String
-    let hasFavorites: Bool
-    let favorites: WidgetFavoriteIDs
-    let spoilersHidden: Bool
-    let matches: [UpcomingMatch]
-    let theme: WidgetTheme
-    let favoriteTeams: [WidgetFavoriteTeam]
+    var savedAtEpochMillis: Int64
+    var clientId: String
+    var hasFavorites: Bool
+    var favorites: WidgetFavoriteIDs
+    var spoilersHidden: Bool
+    var matches: [UpcomingMatch]
+    var theme: WidgetTheme
+    var favoriteTeams: [WidgetFavoriteTeam]
+    var favoriteEvents: [WidgetFavoriteEvent]
 
     var savedAt: Date {
         Date(timeIntervalSince1970: TimeInterval(savedAtEpochMillis) / 1_000)
@@ -71,7 +77,8 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         spoilersHidden: Bool,
         matches: [UpcomingMatch],
         theme: WidgetTheme,
-        favoriteTeams: [WidgetFavoriteTeam] = []
+        favoriteTeams: [WidgetFavoriteTeam] = [],
+        favoriteEvents: [WidgetFavoriteEvent] = []
     ) {
         self.savedAtEpochMillis = savedAtEpochMillis
         self.clientId = clientId
@@ -81,6 +88,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         self.matches = matches
         self.theme = theme
         self.favoriteTeams = favoriteTeams
+        self.favoriteEvents = favoriteEvents
     }
 
     init(from decoder: Decoder) throws {
@@ -93,35 +101,21 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
         matches = try container.decode([UpcomingMatch].self, forKey: .matches)
         theme = try container.decode(WidgetTheme.self, forKey: .theme)
         favoriteTeams = try container.decodeIfPresent([WidgetFavoriteTeam].self, forKey: .favoriteTeams) ?? []
+        favoriteEvents = try container.decodeIfPresent([WidgetFavoriteEvent].self, forKey: .favoriteEvents) ?? []
     }
 
     func withRefreshedMatches(_ matches: [UpcomingMatch], at date: Date) -> UpcomingMatchesSnapshot {
-        UpcomingMatchesSnapshot(
-            savedAtEpochMillis: Int64(date.timeIntervalSince1970 * 1_000),
-            clientId: clientId,
-            hasFavorites: hasFavorites,
-            favorites: favorites,
-            spoilersHidden: spoilersHidden,
-            matches: matches.map { match in
-                guard spoilersHidden else { return match }
-                return match.withoutScores()
-            },
-            theme: theme,
-            favoriteTeams: favoriteTeams
-        )
+        var copy = self
+        copy.savedAtEpochMillis = Int64(date.timeIntervalSince1970 * 1_000)
+        copy.matches = spoilersHidden ? matches.map { $0.withoutScores() } : matches
+        return copy
     }
 
     func usingConfiguration(from source: UpcomingMatchesSnapshot) -> UpcomingMatchesSnapshot {
-        UpcomingMatchesSnapshot(
-            savedAtEpochMillis: savedAtEpochMillis,
-            clientId: source.clientId,
-            hasFavorites: source.hasFavorites,
-            favorites: source.favorites,
-            spoilersHidden: source.spoilersHidden,
-            matches: source.spoilersHidden ? matches.map { $0.withoutScores() } : matches,
-            theme: source.theme,
-            favoriteTeams: source.favoriteTeams
-        )
+        var copy = source
+        copy.savedAtEpochMillis = savedAtEpochMillis
+        copy.matches = source.spoilersHidden ? matches.map { $0.withoutScores() } : matches
+        return copy
     }
 
     var sourceSignature: String {
@@ -137,6 +131,7 @@ struct UpcomingMatchesSnapshot: Codable, Equatable {
             favorites.eventIds.sorted().joined(separator: ","),
             favorites.playerIds.sorted().joined(separator: ","),
             String(data: (try? encoder.encode(favoriteTeams.sorted { $0.id < $1.id })) ?? Data(), encoding: .utf8) ?? "",
+            String(data: (try? encoder.encode(favoriteEvents.sorted { $0.id < $1.id })) ?? Data(), encoding: .utf8) ?? "",
             String(theme.background),
             String(theme.surface),
             String(theme.accent),

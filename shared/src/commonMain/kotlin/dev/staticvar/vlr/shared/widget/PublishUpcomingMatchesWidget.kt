@@ -51,6 +51,7 @@ internal fun PublishUpcomingMatchesWidget(monospace: Boolean, onSnapshotChanged:
         favorites = directFavorites.widgetFavorites(),
         spoilersHidden = hidden,
         favoriteTeams = directFavorites.widgetFavoriteTeams(),
+        favoriteEvents = directFavorites.widgetFavoriteEvents(),
       )
     }.distinctUntilChanged().collect { snapshot ->
       publish(widgetJson.encodeToString(snapshot.copy(savedAtEpochMillis = Clock.System.now().toEpochMilliseconds())))
