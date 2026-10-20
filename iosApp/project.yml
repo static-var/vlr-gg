@@ -165,6 +165,10 @@ targets:
         buildPhase: resources
       - path: VLRWidget/VLRWidgetModels.swift
       - path: VLRWidget/VLRWidgetRefresh.swift
+      - path: VLRWidget/WidgetFormatting.swift
+      - path: VLRWidget/WidgetMatchPresentation.swift
+      - path: VLRWidget/WidgetMatchViews.swift
+      - path: VLRWidget/FavoriteWidgetStore.swift
       - path: VLRWidget/TeamWidgetContent.swift
       - path: VLRWidget/TeamWidgetMapper.swift
       - path: VLRWidget/TeamWidgetRefresh.swift
