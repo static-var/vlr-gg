@@ -174,9 +174,12 @@ targets:
       - path: VLRWidget/WidgetMatchPresentation.swift
       - path: VLRWidget/WidgetMatchViews.swift
       - path: VLRWidget/FavoriteWidgetStore.swift
+      - path: VLRWidget/WidgetRefreshSupport.swift
       - path: VLRWidget/EventWidget.swift
       - path: VLRWidget/EventWidgetIntent.swift
-      - path: VLRWidget/EventWidgetContent.swift
+      - path: VLRWidget/EventWidgetModels.swift
+      - path: VLRWidget/EventWidgetEngine.swift
+      - path: VLRWidget/EventWidgetText.swift
       - path: VLRWidget/EventWidgetRefresh.swift
       - path: VLRWidget/TeamWidgetContent.swift
       - path: VLRWidget/TeamWidgetMapper.swift
