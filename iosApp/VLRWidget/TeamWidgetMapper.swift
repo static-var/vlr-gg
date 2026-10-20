@@ -79,7 +79,7 @@ enum TeamWidgetMapper {
     }
 
     static func content(profile: TeamWidgetRankingResponse, match: RemoteMatchPreview?, details: TeamWidgetDetailsResponse?) -> TeamWidgetContent {
-        let history = profile.recent.map { row in
+        let history = profile.recent.prefix(5).map { row in
             let score = row.team_score.flatMap { first in row.opponent_score.map { TeamWidgetScore(team: first, opponent: $0) } }
             return TeamWidgetRecentResult(id: row.match_id, date: TeamWidgetDay(row.played_on), opponent: row.opponent,
                 result: row.won ? .win(score) : .loss(score))
