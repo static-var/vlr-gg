@@ -26,6 +26,24 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(TeamWidgetCountdown.make(start: start, now: now, locale: Locale(identifier: "de_DE"), timeZone: zone), .scheduled("Do, 20 Uhr"))
     }
 
+    func testRefreshPolicyForEveryWidgetState() throws {
+        let live = try content(live: true)
+        let idle = try content()
+        func upcoming(_ offset: TimeInterval?) -> TeamWidgetEntryContent {
+            var value = idle
+            value.state = .upcoming(.init(id: "100", opponent: nil, start: offset.map { now.addingTimeInterval($0) }, event: "", stage: "", format: ""))
+            return .content(value)
+        }
+        let cases: [(TeamWidgetEntryContent, TimeInterval?)] = [
+            (.needsTeam, nil), (.placeholder, 900), (.content(live), 900), (.content(live.redacted()), 900),
+            (upcoming(-1), 300), (upcoming(0), 300), (upcoming(60), 1_800), (upcoming(86_400), 1_800),
+            (upcoming(86_401), 7_200), (upcoming(nil), 7_200), (.content(idle), 7_200), (.content(idle.redacted()), 7_200),
+        ]
+        for (entry, interval) in cases {
+            XCTAssertEqual(TeamWidgetRefreshPolicy.date(for: entry, now: now), interval.map { now.addingTimeInterval($0) })
+        }
+    }
+
     func testTimelineHasOneEntryPerMinuteThroughStartUntilRefresh() {
         let dates = TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(180), now: now, refresh: now.addingTimeInterval(300))
         XCTAssertEqual(dates.map { Int($0.timeIntervalSince(now)) }, [0, 60, 120, 180])

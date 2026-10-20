@@ -28,7 +28,7 @@ struct TeamWidgetProvider: AppIntentTimelineProvider {
         let repository = WidgetSnapshotRepository()
         guard let source = repository.loadSource(), let id = configuration.team?.id,
               source.favoriteTeams.contains(where: { $0.id == id }) else {
-            return Timeline(entries: [TeamWidgetEntry(date: now, content: .needsTeam)], policy: .after(now.addingTimeInterval(900)))
+            return Timeline(entries: [TeamWidgetEntry(date: now, content: .needsTeam)], policy: .never)
         }
         let cache = TeamWidgetCache()
         let content = await TeamWidgetRefreshCoordinator.shared.refresh(teamID: id, source: source, cache: cache)
@@ -36,20 +36,15 @@ struct TeamWidgetProvider: AppIntentTimelineProvider {
             let visibleContent = repository.loadSource()?.spoilersHidden == true ? content.redacted() : content
             await TeamWidgetLogoPrefetch.run(visibleContent.logoSources(large: context.family == .systemLarge))
             let entryContent = TeamWidgetEntryContent.make(content, teamID: id, clientID: source.clientId, source: repository.loadSource())
-            let interval: TimeInterval
-            switch content.state {
-            case .live, .liveHidden: interval = 900
-            case .upcoming(let fixture) where fixture.start.map({ $0 <= now }) == true: interval = 300
-            default: interval = 1800
-            }
+            let refresh = TeamWidgetRefreshPolicy.date(for: entryContent, now: now)
             let start: Date?
             if case .upcoming(let fixture) = content.state { start = fixture.start } else { start = nil }
-            let nextStart = start.flatMap { $0 > now ? $0 : nil } ?? .distantFuture
-            let refresh = min(now.addingTimeInterval(interval), nextStart)
-            let dates = TeamWidgetCountdown.timelineDates(start: start, now: now, refresh: refresh)
-            return Timeline(entries: dates.map { TeamWidgetEntry(date: $0, content: entryContent) }, policy: .after(refresh))
+            let dates = TeamWidgetCountdown.timelineDates(start: start, now: now, refresh: refresh ?? now)
+            return Timeline(entries: dates.map { TeamWidgetEntry(date: $0, content: entryContent) }, policy: refresh.map { .after($0) } ?? .never)
         }
-        return Timeline(entries: [TeamWidgetEntry(date: now, content: .make(nil, teamID: id, clientID: source.clientId, source: repository.loadSource()))], policy: .after(now.addingTimeInterval(300)))
+        let entryContent = TeamWidgetEntryContent.make(nil, teamID: id, clientID: source.clientId, source: repository.loadSource())
+        let refresh = TeamWidgetRefreshPolicy.date(for: entryContent, now: now)
+        return Timeline(entries: [TeamWidgetEntry(date: now, content: entryContent)], policy: refresh.map { .after($0) } ?? .never)
     }
 }
 

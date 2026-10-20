@@ -184,6 +184,27 @@ enum TeamWidgetEntryContent: Equatable {
     }
 }
 
+enum TeamWidgetRefreshPolicy {
+    static func date(for entry: TeamWidgetEntryContent, now: Date) -> Date? {
+        let interval: TimeInterval
+        switch entry {
+        case .needsTeam: return nil
+        case .placeholder: interval = 15 * 60
+        case .content(let content):
+            switch content.state {
+            case .live, .liveHidden: interval = 15 * 60
+            case .upcoming(let fixture):
+                if let start = fixture.start {
+                    let remaining = start.timeIntervalSince(now)
+                    interval = remaining <= 0 ? 5 * 60 : remaining <= 86_400 ? 30 * 60 : 2 * 60 * 60
+                } else { interval = 2 * 60 * 60 }
+            case .idle, .idleHidden: interval = 2 * 60 * 60
+            }
+        }
+        return now.addingTimeInterval(interval)
+    }
+}
+
 enum TeamWidgetCountdown: Equatable {
     case scheduled(String)
     case countdown(String)
