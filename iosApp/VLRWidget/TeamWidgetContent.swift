@@ -197,6 +197,7 @@ enum TeamWidgetRefreshPolicy {
                 if let start = fixture.start {
                     let remaining = start.timeIntervalSince(now)
                     interval = remaining <= 0 ? 5 * 60 : remaining <= 86_400 ? 30 * 60 : 2 * 60 * 60
+                    if start > now { return min(now.addingTimeInterval(interval), start) }
                 } else { interval = 2 * 60 * 60 }
             case .idle, .idleHidden: interval = 2 * 60 * 60
             }

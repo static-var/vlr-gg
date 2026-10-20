@@ -39,7 +39,7 @@ final class TeamWidgetTests: XCTestCase {
         }
         let cases: [(TeamWidgetEntryContent, TimeInterval?)] = [
             (.needsTeam, nil), (.placeholder, 900), (.content(live), 900), (.content(live.redacted()), 900),
-            (upcoming(-1), 300), (upcoming(0), 300), (upcoming(60), 1_800), (upcoming(86_400), 1_800),
+            (upcoming(-1), 300), (upcoming(0), 300), (upcoming(60), 60), (upcoming(86_400), 1_800),
             (upcoming(86_401), 7_200), (upcoming(nil), 7_200), (.content(idle), 7_200), (.content(idle.redacted()), 7_200),
         ]
         for (entry, interval) in cases {
