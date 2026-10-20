@@ -143,6 +143,12 @@ final class EventWidgetTests: XCTestCase {
         XCTAssertEqual(initial.header.progress, .empty)
         XCTAssertTrue(list.rows.isEmpty)
         XCTAssertEqual(plan(event).refreshAfter, now.addingTimeInterval(21_600))
+        let eventStart = widgetInstant("2027-02-20T00:00:00Z")!
+        let startEntry = try XCTUnwrap(plan(event).entries.first { $0.date == eventStart })
+        guard case .content(let started) = startEntry.content, case .visible(.gap(.nextUnlisted, _)) = started.body else {
+            return XCTFail()
+        }
+
         let during = widgetInstant("2027-02-21T12:00:00Z")!
         guard case .visible(.gap(.nextUnlisted, _)) = try content(plan(event, at: during)).body else { return XCTFail() }
         XCTAssertEqual(plan(event, at: during).refreshAfter, during.addingTimeInterval(7_200))
@@ -198,6 +204,12 @@ final class EventWidgetTests: XCTestCase {
         guard case .visible(.scheduled) = try content(plan(upcoming, at: start.addingTimeInterval(21_600))).body else { return XCTFail() }
         guard case .visible(.gap) = try content(plan(upcoming, at: start.addingTimeInterval(21_601))).body else { return XCTFail() }
         XCTAssertEqual(plan(upcoming, at: start.addingTimeInterval(21_601)).refreshAfter, start.addingTimeInterval(28_801))
+        let scheduledPlan = plan(event, at: widgetInstant("2026-10-21T15:55:00Z")!)
+        let expired = try XCTUnwrap(scheduledPlan.entries.first { $0.date == widgetInstant("2026-10-21T22:00:01Z") })
+        guard case .content(let expiredContent) = expired.content, case .visible(.scheduled(let afterExpiry, _)) = expiredContent.body else {
+            return XCTFail()
+        }
+        XCTAssertEqual(afterExpiry.fixture.id, "777925")
         let live = EventWidgetData(event: event.event, matches: [.init(fixture: fixture, phase: .live(nil))], groups: [], prizes: [], detail: nil)
         let livePlan = plan(live, at: now, fetchedAt: now)
         XCTAssertTrue(livePlan.entries.contains { $0.date == now.addingTimeInterval(10_801) })
@@ -221,6 +233,15 @@ final class EventWidgetTests: XCTestCase {
         XCTAssertEqual(ended.prizePool, "$2,250,000")
         XCTAssertEqual(list.rows.count, 3)
         XCTAssertTrue(list.rows.allSatisfy { $0.phase == .ended })
+        let midnight = widgetInstant("2026-10-19T00:00:00Z")!
+        let overnight = plan(event, at: widgetInstant("2026-10-18T23:55:00Z")!, hidden: true)
+        let boundary = try XCTUnwrap(overnight.entries.first { $0.date == midnight })
+        guard case .content(let boundaryContent) = boundary.content,
+              case .hidden(.finished(_, let midnightList)) = boundaryContent.body else { return XCTFail() }
+        let row = EventWidgetText.row(try XCTUnwrap(midnightList.rows.first), heading: midnightList.heading,
+                                     now: midnight, locale: locale, timeZone: zone)
+        XCTAssertEqual(row.day, "Yesterday")
+
         let mediumLogos = hidden.logoSources(large: false)
         XCTAssertEqual(mediumLogos, [event.event.logo!])
         let record = FavoriteWidgetRecord(key: .init(entityID: "2766", clientID: "old"), fetchedAt: now, value: event)
