@@ -92,7 +92,7 @@ internal data class EventData(
   val groups: List<EventGroup>,
   val prizes: List<EventPrize>,
   val detail: EventDetail?,
-)
+) : FavoriteWidgetContent
 
 internal enum class ScheduledRole { First, Next }
 internal enum class ListHeading { Today, UpNext, Earlier }

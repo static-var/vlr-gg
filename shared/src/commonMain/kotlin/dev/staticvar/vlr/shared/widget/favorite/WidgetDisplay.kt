@@ -22,6 +22,7 @@ sealed interface LogoMark {
   }
 }
 
+data class StageText(val stage: String, val format: String?)
 data class PillText(val text: String, val tone: PillTone)
 data class FormText(val mark: FormMark, val label: String)
 data class NeutralFormText(val mark: NeutralFormMark, val label: String)
@@ -65,7 +66,13 @@ sealed interface FavoriteWidgetFrame {
     override val logoSources: List<String>,
   ) : FavoriteWidgetFrame
 
-
+  data class Event(
+    val key: WidgetKey,
+    val medium: EventPresentation,
+    val large: EventPresentation,
+    override val tap: WidgetTap,
+    override val logoSources: List<String>,
+  ) : FavoriteWidgetFrame
 }
 
 sealed interface TeamDisplayBody {
@@ -158,3 +165,110 @@ data class TeamRowText(
 
 data class NeutralTeamRowText(val opponent: LogoMark.Named, val name: String, val date: String)
 data class NeutralTeamHistoryText(val heading: String, val rows: List<NeutralTeamRowText>)
+
+data class LogoPair(val left: LogoMark, val right: LogoMark)
+data class EventHeaderText(
+  val event: LogoMark.Named,
+  val title: String,
+  val subtitle: String,
+  val progress: Float?,
+  val live: Boolean,
+)
+data class EventPresentation(val header: EventHeaderText, val body: EventDisplayBody)
+
+sealed interface EventDisplayBody {
+  data class Visible(val state: VisibleEventText) : EventDisplayBody
+  data class Hidden(val state: HiddenEventText) : EventDisplayBody
+}
+
+data class ScheduledEventText(
+  val lead: String,
+  val day: String?,
+  val time: String,
+  val context: String,
+  val pair: LogoPair,
+)
+data class GapText(val lead: String, val value: String, val context: String)
+data class EndedText(val lead: String, val date: String, val context: String)
+data class NeutralLiveText(
+  val lead: String,
+  val label: String,
+  val context: String,
+  val liveLabel: String,
+  val pair: LogoPair,
+)
+data class LiveEventText(
+  val lead: String,
+  val score: String,
+  val liveLabel: String,
+  val otherLive: String?,
+  val beside: StageText,
+  val pills: List<PillText>,
+  val pair: LogoPair,
+)
+data class VictoryText(val lead: String, val score: String, val context: String, val pair: LogoPair)
+
+sealed interface FinishedEventText {
+  data class Champion(val label: String, val name: String, val context: String, val logo: LogoMark.Named) :
+    FinishedEventText
+  data class Unconfirmed(val ended: EndedText) : FinishedEventText
+}
+
+sealed interface VisibleEventText {
+  data class Scheduled(val hero: ScheduledEventText, val list: UpcomingListText?) : VisibleEventText
+  data class Live(val hero: LiveEventText, val list: MatchListText?) : VisibleEventText
+  data class Between(val hero: VictoryText, val list: MatchListText?) : VisibleEventText
+  data class Gap(val hero: GapText, val list: MatchListText?) : VisibleEventText
+  data class Finished(val hero: FinishedEventText, val list: FinishedListText?) : VisibleEventText
+}
+
+sealed interface HiddenEventText {
+  data class Scheduled(val hero: ScheduledEventText, val list: NeutralListText?) : HiddenEventText
+  data class Live(val hero: NeutralLiveText, val list: NeutralListText?) : HiddenEventText
+  data class Gap(val hero: GapText, val list: NeutralListText?) : HiddenEventText
+  data class Finished(val hero: EndedText, val list: NeutralListText?) : HiddenEventText
+}
+
+enum class LoserSide { Left, Right }
+data class MatchRowText(
+  val day: String,
+  val time: String,
+  val left: LogoMark,
+  val right: LogoMark,
+  val leftName: String,
+  val rightName: String,
+  val round: String,
+  val leftScore: String?,
+  val rightScore: String?,
+  val loser: LoserSide?,
+  val live: Boolean,
+)
+data class NeutralRowText(
+  val day: String,
+  val time: String,
+  val left: LogoMark,
+  val right: LogoMark,
+  val leftName: String,
+  val rightName: String,
+  val round: String,
+  val live: Boolean,
+)
+data class MatchListText(val heading: String, val rows: List<MatchRowText>)
+data class NeutralListText(val heading: String, val rows: List<NeutralRowText>)
+data class GroupRowText(
+  val rank: String,
+  val team: LogoMark.Named,
+  val record: String,
+  val maps: String,
+  val favorite: Boolean,
+)
+data class PrizeRowText(val position: String, val team: LogoMark.Named, val amount: String)
+
+sealed interface UpcomingListText {
+  data class Matches(val value: MatchListText) : UpcomingListText
+  data class Group(val heading: String, val rows: List<GroupRowText>) : UpcomingListText
+}
+sealed interface FinishedListText {
+  data class Matches(val value: MatchListText) : FinishedListText
+  data class Prizes(val heading: String, val rows: List<PrizeRowText>) : FinishedListText
+}

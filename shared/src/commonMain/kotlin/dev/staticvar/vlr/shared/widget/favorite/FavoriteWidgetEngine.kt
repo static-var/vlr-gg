@@ -30,6 +30,7 @@ class FavoriteWidgetEngine internal constructor(
       is WidgetGate.Setup -> WidgetProjection(
         when (gate.kind) {
           WidgetKind.Team -> TeamWidgetText.setup(gate.reason, locale)
+          WidgetKind.Event -> EventWidgetText.setup(gate.reason, locale)
         },
         null,
         0,
@@ -39,6 +40,7 @@ class FavoriteWidgetEngine internal constructor(
       is WidgetGate.MissingClient -> WidgetProjection(
         when (gate.kind) {
           WidgetKind.Team -> TeamWidgetText.placeholder(null, locale)
+          WidgetKind.Event -> EventWidgetText.placeholder(null, locale, gate.entityId)
         },
         null,
         0,
@@ -51,6 +53,7 @@ class FavoriteWidgetEngine internal constructor(
           WidgetProjection(
             when (gate.key.kind) {
               WidgetKind.Team -> TeamWidgetText.placeholder(gate.key, locale)
+              WidgetKind.Event -> EventWidgetText.placeholder(gate.key, locale, gate.key.entityId)
             },
             gate.key,
             0,
@@ -67,6 +70,14 @@ class FavoriteWidgetEngine internal constructor(
               locale,
             )
 
+            WidgetKind.Event -> EventWidgetProgram.project(
+              gate.key,
+              gate.source,
+              record,
+              request.now,
+              request.timeZone,
+              locale,
+            )
           }
           WidgetProjection(projected.frame, gate.key, record.revision, projected.schedule)
         }
@@ -84,6 +95,7 @@ class FavoriteWidgetEngine internal constructor(
     val fetched: FavoriteWidgetContent? = try {
       when (key.kind) {
         WidgetKind.Team -> remote.team(key)
+        WidgetKind.Event -> remote.event(key, gate.source.favorites.teamIds.toSet(), request.now, request.timeZone)
       }
     } catch (cancelled: CancellationException) {
       throw cancelled
@@ -94,6 +106,7 @@ class FavoriteWidgetEngine internal constructor(
     val attemptedAt = clock.now()
     val value = when (fetched) {
       is TeamContent -> CachedValue.Team(fetched, attemptedAt)
+      is EventData -> CachedValue.Event(fetched, attemptedAt)
       null -> previous?.value ?: CachedValue.NoData
     }
     val origin = if (fetched == null) RecordOrigin.CachedFallback else RecordOrigin.Fresh
@@ -104,6 +117,7 @@ class FavoriteWidgetEngine internal constructor(
       attemptedAt = attemptedAt,
       fetchAfter = when (key.kind) {
         WidgetKind.Team -> TeamWidgetProgram.fetchAfter(value, origin, attemptedAt)
+        WidgetKind.Event -> EventWidgetProgram.fetchAfter(value, gate.source, attemptedAt, request.timeZone)
       },
       origin = origin,
       value = value,
@@ -127,6 +141,7 @@ private fun WidgetRequest.gate(): WidgetGate {
   val current = source ?: return WidgetGate.Setup(kind, SetupReason.NoFavorites)
   val favorites = when (kind) {
     WidgetKind.Team -> current.favoriteTeams.map { it.id }.toSet()
+    WidgetKind.Event -> current.favoriteEvents.map { it.id }.toSet()
   }
   if (favorites.isEmpty()) return WidgetGate.Setup(kind, SetupReason.NoFavorites)
   return when (val selected = selection) {

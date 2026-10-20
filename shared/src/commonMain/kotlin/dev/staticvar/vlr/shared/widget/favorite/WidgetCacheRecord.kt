@@ -25,6 +25,10 @@ internal sealed interface CachedValue {
   data class Team(val value: TeamContent, val fetchedAt: Instant) : CachedValue
 
   @Serializable
+  @SerialName("event")
+  data class Event(val value: EventData, val fetchedAt: Instant) : CachedValue
+
+  @Serializable
   @SerialName("no-data")
   data object NoData : CachedValue
 }
@@ -62,6 +66,12 @@ internal object WidgetCacheCodec {
     when (val value = record.value) {
       is CachedValue.Team -> if (expected.kind != WidgetKind.Team ||
         value.value.header.team.id != expected.entityId
+      ) {
+        return null
+      }
+
+      is CachedValue.Event -> if (expected.kind != WidgetKind.Event ||
+        value.value.event.id != expected.entityId
       ) {
         return null
       }

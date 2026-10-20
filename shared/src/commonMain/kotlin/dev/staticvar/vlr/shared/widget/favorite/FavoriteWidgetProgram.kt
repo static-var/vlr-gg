@@ -6,6 +6,7 @@ package dev.staticvar.vlr.shared.widget.favorite
 
 import dev.staticvar.vlr.shared.widget.UpcomingMatchesSnapshot
 import kotlinx.datetime.TimeZone
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 internal data class ProgramProjection(val frame: FavoriteWidgetFrame, val schedule: WidgetSchedule)
@@ -44,4 +45,46 @@ internal object TeamWidgetProgram {
     }
     return TeamWidgetRules.refreshAt(content, now)
   }
+}
+
+internal object EventWidgetProgram {
+  fun project(
+    key: WidgetKey,
+    source: UpcomingMatchesSnapshot,
+    record: WidgetCacheRecord,
+    now: Instant,
+    zone: TimeZone,
+    locale: WidgetLocale,
+  ): ProgramProjection {
+    val cached = record.value as? CachedValue.Event ?: return ProgramProjection(
+      EventWidgetText.placeholder(key, locale, key.entityId),
+      WidgetSchedule(null, record.fetchAfter),
+    )
+    val data = cached.value
+    val fetchedAt = cached.fetchedAt
+    val content = project(data, fetchedAt, source, now, zone)
+    return ProgramProjection(
+      EventWidgetText.frame(key, content, now, zone, locale),
+      WidgetSchedule(
+        EventWidgetRules.renderAt(data, content, fetchedAt, now, zone),
+        record.fetchAfter,
+      ),
+    )
+  }
+
+  fun fetchAfter(value: CachedValue, source: UpcomingMatchesSnapshot, now: Instant, zone: TimeZone): Instant {
+    val cached = value as? CachedValue.Event ?: return now + 900.seconds
+    val data = cached.value
+    val fetched = cached.fetchedAt
+    return EventWidgetRules.refreshAt(data, project(data, fetched, source, now, zone), fetched, now)
+  }
+
+  private fun project(
+    data: EventData,
+    fetchedAt: Instant,
+    source: UpcomingMatchesSnapshot,
+    now: Instant,
+    zone: TimeZone,
+  ): EventContent =
+    EventWidgetRules.project(data, fetchedAt, source.favorites.teamIds.toSet(), source.spoilersHidden, now, zone)
 }
