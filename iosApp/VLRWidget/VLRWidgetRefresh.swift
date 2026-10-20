@@ -296,11 +296,14 @@ struct RemoteMatchPreview: Codable {
 }
 
 private func epochMillis(_ value: String?) -> Int64? {
+    widgetInstant(value).map { Int64($0.timeIntervalSince1970 * 1_000) }
+}
+
+func widgetInstant(_ value: String?) -> Date? {
     guard let value, !value.isEmpty else { return nil }
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    let date = formatter.date(from: value) ?? ISO8601DateFormatter().date(from: value)
-    return date.map { Int64($0.timeIntervalSince1970 * 1_000) }
+    return formatter.date(from: value) ?? ISO8601DateFormatter().date(from: value)
 }
 
 private func normalizedMatchFormat(_ value: String) -> String {

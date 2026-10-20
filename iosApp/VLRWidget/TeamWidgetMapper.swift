@@ -117,11 +117,8 @@ enum TeamWidgetMapper {
         return spoilersHidden ? content.redacted() : content
     }
 
-    private static let instantFormat = Date.ISO8601FormatStyle()
-
     static func date(_ value: String?) -> Date? {
-        guard let value else { return nil }
-        return try? instantFormat.parse(value)
+        widgetInstant(value)
     }
 
     private static func maps(details: TeamWidgetDetailsResponse?, match: RemoteMatchPreview, team: TeamWidgetTeam, ownFirst: Bool) -> [TeamWidgetMap] {
