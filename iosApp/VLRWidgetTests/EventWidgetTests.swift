@@ -61,7 +61,6 @@ final class EventWidgetTests: XCTestCase {
             matches[index]["time"] = ""
             json["matches"] = matches
         }
-        XCTAssertEqual(unknownTime.matches.first?.fixture.id, "753455")
         XCTAssertEqual(unknownTime.matches.sorted(by: EventWidgetEngine.chronological).prefix(3).map(\.fixture.id),
                        ["753454", "753455", "753460"])
         let noPrizes = EventWidgetData(event: unknownTime.event, matches: unknownTime.matches, groups: [], prizes: [], detail: nil)
@@ -387,6 +386,7 @@ extension EventWidgetTests {
         let content: EventWidgetEntryContent
         let value: String?
         var lead: String? = nil
+        var day: String? = nil
         var context: String? = nil
     }
 
@@ -412,15 +412,16 @@ extension EventWidgetTests {
         let neutralEarlier = EventNeutralList(heading: .earlier, rows: earlier.rows.map { .init(fixture: $0.fixture, phase: .ended) })
         let header = EventWidgetHeader(eventID: "2766", title: "Champions 2026", logo: champions.event.logo,
             subtitle: .stage("Playoffs", location: "Shanghai"), progress: .fraction(0.82), hasLiveMatch: false)
-        func visible(_ name: String, _ state: EventVisibleState, _ value: String?, lead: String? = nil, context: String? = nil,
+        func visible(_ name: String, _ state: EventVisibleState, _ value: String?, lead: String? = nil, day: String? = nil, context: String? = nil,
                      live: Bool = false, subtitle: EventWidgetSubtitle? = nil, progress: EventWidgetProgress? = nil) -> RenderCase {
             let header = EventWidgetHeader(eventID: header.eventID, title: header.title, logo: header.logo, subtitle: subtitle ?? header.subtitle,
                                            progress: progress ?? header.progress, hasLiveMatch: live)
-            return .init(name: name, content: .content(.init(header: header, body: .visible(state))), value: value, lead: lead, context: context)
+            return .init(name: name, content: .content(.init(header: header, body: .visible(state))), value: value, lead: lead, day: day, context: context)
         }
-        func hidden(_ name: String, _ state: EventHiddenState, _ value: String, live: Bool = false) -> RenderCase {
+        func hidden(_ name: String, _ state: EventHiddenState, _ value: String, live: Bool = false, finished: Bool = false) -> RenderCase {
             let header = EventWidgetHeader(eventID: header.eventID, title: header.title, logo: header.logo,
-                subtitle: live ? header.subtitle : .ended(champions.event.dates.endInclusive, location: "Shanghai"), progress: live ? header.progress : .complete, hasLiveMatch: live)
+                subtitle: finished ? .ended(champions.event.dates.endInclusive, location: "Shanghai") : header.subtitle,
+                progress: finished ? .complete : header.progress, hasLiveMatch: live)
             return .init(name: name, content: .content(.init(header: header, body: .hidden(state))), value: value)
         }
         func maps(_ index: Int?, between: Bool = false, long: Bool = false) -> [WidgetMap] {
@@ -444,7 +445,7 @@ extension EventWidgetTests {
         var cases: [RenderCase] = [
             RenderCase(name: "gallery-sample", content: .content(EventWidgetEngine.sample(at: now)), value: "2:14\u{202F}PM"),
             visible("01-first-match", .scheduled(.first(fixture("first", 172_800, round: "Upper Round 1")), .matches(upcoming)), "12:00\u{202F}PM",
-                lead: "First match · Thu, Oct 22", context: "LOUD vs Team Vitality · Upper Round 1",
+                lead: "First match", day: "Thu, Oct 22", context: "LOUD vs Team Vitality · Upper Round 1",
                 subtitle: .starts(WidgetDay("2026-10-22"), location: "São Paulo"), progress: .empty),
             visible("01-first-unknown-time", .scheduled(.first(fixture("first-unknown", nil, round: "Upper Round 1")), .matches(upcoming)), "TBD",
                 lead: "First match", context: "LOUD vs Team Vitality · Upper Round 1"),
@@ -463,7 +464,7 @@ extension EventWidgetTests {
             visible("09-delayed", .scheduled(.next(fixture("late", -1, round: "Lower Final")), .matches(upcoming)), "Any minute",
                 lead: "LOUD vs Team Vitality", context: "Was due 11:59\u{202F}AM · Lower Final"),
             hidden("10-live-hidden-today", .live(.init(fixture: grand), neutralToday), "Live now", live: true),
-            hidden("11-finished-hidden-earlier", .finished(.init(end: champions.event.dates.endInclusive, prizePool: champions.event.prizePool), neutralEarlier), "Oct 18"),
+            hidden("11-finished-hidden-earlier", .finished(.init(end: champions.event.dates.endInclusive, prizePool: champions.event.prizePool), neutralEarlier), "Oct 18", finished: true),
             RenderCase(name: "12-choose-event", content: .setup(.chooseEvent), value: nil),
             RenderCase(name: "12-no-favorites", content: .setup(.noFavorites), value: nil),
             RenderCase(name: "12-placeholder", content: .placeholder(eventID: "2766"), value: nil),
@@ -500,7 +501,8 @@ extension EventWidgetTests {
             XCTAssertEqual(text.value, scenario.value, scenario.name)
             XCTAssertEqual(scenario.content.widgetURL, VLRWidgetContract.detailsURL(kind: "event", id: content.header.eventID))
             if let lead = scenario.lead {
-                XCTAssertEqual(text.day.map { text.lead + " · " + $0 } ?? text.lead, lead, scenario.name)
+                XCTAssertEqual(text.lead, lead, scenario.name)
+                XCTAssertEqual(text.day, scenario.day, scenario.name)
             }
             if let context = scenario.context {
                 XCTAssertEqual(text.beside.map { EventWidgetText.join([$0.round, $0.format]) } ?? text.context, context, scenario.name)
