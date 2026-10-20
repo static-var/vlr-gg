@@ -49,6 +49,7 @@
 		748A263005DBA8C434DC98A7 /* MatchActivityLogoTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AFEB53B3F777914C5F1FF7 /* MatchActivityLogoTreatment.swift */; };
 		74BBB1946BBE434E28EEAD52 /* MatchActivityLogoTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AFEB53B3F777914C5F1FF7 /* MatchActivityLogoTreatment.swift */; };
 		7D487293553B3F4031496A2A /* NativeLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB7CFA376CE1D06FD224461 /* NativeLocalization.swift */; };
+		7DDE7B6D6FD58A44E7E04C20 /* HostChromeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B34D963D5774907710062A /* HostChromeBridge.swift */; };
 		7E353AB5AAE161E37B859B61 /* NativeLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 512CE686A685EA1302CD1FB1 /* NativeLocalizationTests.swift */; };
 		81F0194729993D1D335F3D75 /* chakra_petch_OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 26CF5DFE79A8999E46F8AD25 /* chakra_petch_OFL.txt */; };
 		88FAF2F8FE95B1B3827271DA /* VLRWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6062090215F075FB02BCE24E /* VLRWidgetBundle.swift */; };
@@ -126,6 +127,7 @@
 
 /* Begin PBXFileReference section */
 		00C573F07CB732ADD30EB527 /* TeamWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamWidget.swift; sourceTree = "<group>"; };
+		04B34D963D5774907710062A /* HostChromeBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostChromeBridge.swift; sourceTree = "<group>"; };
 		05249B7F85782139B1E0BAB6 /* MatchLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchLiveActivity.swift; sourceTree = "<group>"; };
 		059539F3D20DAB9551E1E933 /* MatchActivityStyleSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityStyleSync.swift; sourceTree = "<group>"; };
 		07ED39F464598B211EB46A3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 				CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
 				5FFB84F263D52FFC7C65EE64 /* FavoriteSearch.swift */,
 				86FF1066841DA3A5A2E7AB29 /* GeneratedBuildConfig.swift */,
+				04B34D963D5774907710062A /* HostChromeBridge.swift */,
 				C117AD187833E2513BD2F553 /* Info.plist */,
 				D530281DDD45BB536CC313C6 /* InfoPlist.xcstrings */,
 				C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */,
@@ -586,6 +589,7 @@
 				56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
 				B5774EBA09C9BF2544502554 /* FavoriteSearch.swift in Sources */,
 				8C06D2F60C2805BDF56BC049 /* GeneratedBuildConfig.swift in Sources */,
+				7DDE7B6D6FD58A44E7E04C20 /* HostChromeBridge.swift in Sources */,
 				6049011682B750E67726BE29 /* LiveActivityPermissionProvider.swift in Sources */,
 				DF927176F502A5D4C6FFC3A7 /* MatchActivityAttributes.swift in Sources */,
 				58D38D290BEA140639D0E536 /* MatchActivityLogoCache.swift in Sources */,
