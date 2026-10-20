@@ -443,13 +443,15 @@ extension EventWidgetTests {
         let unconfirmed = EventFinishedHero.unconfirmed(.init(end: champions.event.dates.endInclusive, prizePool: champions.event.prizePool))
         let empty = EventMatchList(heading: .upNext, rows: [])
         var cases: [RenderCase] = [
-            RenderCase(name: "gallery-sample", content: .content(EventWidgetEngine.sample(at: now)), value: "2:14\u{202F}PM"),
+            RenderCase(name: "gallery-sample", content: .content(EventWidgetEngine.sample(at: now)), value: "2:14\u{202F}PM",
+                lead: "First match", day: "Today"),
             visible("01-first-match", .scheduled(.first(fixture("first", 172_800, round: "Upper Round 1")), .matches(upcoming)), "12:00\u{202F}PM",
                 lead: "First match", day: "Thu, Oct 22", context: "LOUD vs Team Vitality · Upper Round 1",
                 subtitle: .starts(WidgetDay("2026-10-22"), location: "São Paulo"), progress: .empty),
             visible("01-first-unknown-time", .scheduled(.first(fixture("first-unknown", nil, round: "Upper Round 1")), .matches(upcoming)), "TBD",
                 lead: "First match", context: "LOUD vs Team Vitality · Upper Round 1"),
-            visible("02-up-next", .scheduled(.next(next), .matches(upcoming)), "6:00\u{202F}PM"),
+            visible("02-up-next", .scheduled(.next(next), .matches(upcoming)), "6:00\u{202F}PM",
+                lead: "LOUD vs Team Vitality", day: "Today"),
             visible("03-undecided", .scheduled(.next(fixture("tbd", 21_600, pair: .init(left: pair.left, right: .undecided))), .matches(upcoming)), "6:00\u{202F}PM"),
             visible("04-live-today", .live(live, today), "2–1", lead: "LOUD vs Team Vitality", context: "Grand Final · Bo5", live: true),
             visible("05-two-live", .live(.init(fixture: grand, score: .init(team: 1, opponent: 0), maps: Array(maps(1).prefix(3)), otherLiveCount: 1), today), "1–0", live: true),
@@ -499,7 +501,9 @@ extension EventWidgetTests {
             case .hidden(let state): text = .make(state, now: now, locale: locale, timeZone: zone)
             }
             XCTAssertEqual(text.value, scenario.value, scenario.name)
-            XCTAssertEqual(scenario.content.widgetURL, VLRWidgetContract.detailsURL(kind: "event", id: content.header.eventID))
+            let expectedURL = scenario.name == "gallery-sample" ? VLRWidgetContract.appURL
+                : VLRWidgetContract.detailsURL(kind: "event", id: content.header.eventID)
+            XCTAssertEqual(scenario.content.widgetURL, expectedURL, scenario.name)
             if let lead = scenario.lead {
                 XCTAssertEqual(text.lead, lead, scenario.name)
                 XCTAssertEqual(text.day, scenario.day, scenario.name)
