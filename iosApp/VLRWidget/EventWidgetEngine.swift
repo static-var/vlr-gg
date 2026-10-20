@@ -102,30 +102,36 @@ enum EventWidgetEngine {
         let content = content(record.value, fetchedAt: record.fetchedAt, source: source, at: date, timeZone: timeZone)
         let entry = EventWidgetEntryContent.content(content)
         let refresh = EventWidgetRefreshPolicy.date(for: entry, data: record.value, fetchedAt: record.fetchedAt, now: date)
-        var dates = Set([date])
+        let horizon = date.addingTimeInterval(86_400)
+        var dates = Set<Date>()
+        var pending = Set<Date>()
+        func schedule(_ boundary: Date) {
+            if boundary >= date, boundary <= horizon, dates.insert(boundary).inserted { pending.insert(boundary) }
+        }
+        schedule(date)
+        if let start = record.value.event.dates.start?.start(in: timeZone) { schedule(start) }
+        let safety = record.fetchedAt.addingTimeInterval(10_801)
+        if record.value.matches.contains(where: { if case .live = $0.phase { return true }; return false }) { schedule(safety) }
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = timeZone
-        if let midnight = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: date)) {
-            dates.insert(midnight)
-        }
-        if let start = record.value.event.dates.start?.start(in: timeZone), start > date { dates.insert(start) }
-        for fixture in content.fixtures(large: true) {
-            dates.formUnion(WidgetKickoff.timelineDates(start: fixture.start, now: date, timeZone: timeZone))
-            if record.value.matches.contains(where: { $0.fixture.id == fixture.id && $0.phase == .upcoming }), let start = fixture.start {
-                let expiry = start.addingTimeInterval(21_601)
-                if expiry > date { dates.insert(expiry) }
+        var entries: [EventWidgetEntry] = []
+        while let entryDate = pending.min() {
+            pending.remove(entryDate)
+            let displayed = entryDate == date ? content : self.content(record.value, fetchedAt: record.fetchedAt,
+                source: source, at: entryDate, timeZone: timeZone)
+            entries.append(.init(date: entryDate, content: .content(displayed)))
+            if let midnight = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: entryDate)) { schedule(midnight) }
+            for fixture in displayed.fixtures(large: true) {
+                for boundary in WidgetKickoff.timelineDates(start: fixture.start, now: entryDate, timeZone: timeZone) { schedule(boundary) }
+                if record.value.matches.contains(where: { $0.fixture.id == fixture.id && $0.phase == .upcoming }), let start = fixture.start {
+                    schedule(start.addingTimeInterval(21_601))
+                }
+            }
+            if case .visible(.between(let hero, _)) = displayed.body, let start = hero.last.scheduledStart {
+                schedule(start.addingTimeInterval(43_200))
             }
         }
-        if case .visible(.between(let hero, _)) = content.body, let start = hero.last.scheduledStart {
-            dates.insert(start.addingTimeInterval(43_200))
-        }
-        let safety = record.fetchedAt.addingTimeInterval(10_801)
-        if record.value.matches.contains(where: { if case .live = $0.phase { return true }; return false }), safety > date {
-            dates.insert(safety)
-        }
-        let entries = dates.filter { $0 >= date }.sorted().map {
-            EventWidgetEntry(date: $0, content: .content(self.content(record.value, fetchedAt: record.fetchedAt, source: source, at: $0, timeZone: timeZone)))
-        }
+        entries.sort { $0.date < $1.date }
         return .init(entries: entries, refreshAfter: refresh)
     }
 
