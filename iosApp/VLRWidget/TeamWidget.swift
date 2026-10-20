@@ -39,7 +39,7 @@ struct TeamWidgetProvider: AppIntentTimelineProvider {
             let refresh = TeamWidgetRefreshPolicy.date(for: entryContent, now: now)
             let start: Date?
             if case .upcoming(let fixture) = content.state { start = fixture.start } else { start = nil }
-            let dates = TeamWidgetCountdown.timelineDates(start: start, now: now, refresh: refresh ?? now)
+            let dates = TeamWidgetCountdown.timelineDates(start: start, now: now)
             return Timeline(entries: dates.map { TeamWidgetEntry(date: $0, content: entryContent) }, policy: refresh.map { .after($0) } ?? .never)
         }
         let entryContent = TeamWidgetEntryContent.make(nil, teamID: id, clientID: source.clientId, source: repository.loadSource())

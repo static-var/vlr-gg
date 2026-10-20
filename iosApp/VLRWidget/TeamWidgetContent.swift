@@ -221,7 +221,7 @@ enum TeamWidgetCountdown: Equatable {
             return .scheduled(format(start, template: "EEEj", locale: locale, timeZone: timeZone))
         }
         let minutes = Int(ceil(seconds / 60))
-        if seconds < 3_600 {
+        if minutes < 60 {
             return .countdown(teamWidgetString("%lld min", locale: locale, Int64(minutes)))
         }
         return .countdown(teamWidgetString("%lldh %02lldm", locale: locale, Int64(minutes / 60), Int64(minutes % 60)))
@@ -235,19 +235,20 @@ enum TeamWidgetCountdown: Equatable {
         }
     }
 
-    static func timelineDates(start: Date?, now: Date, refresh: Date) -> [Date] {
-        guard let start, start > now, refresh > now else { return [now] }
+    static func timelineDates(start: Date?, now: Date) -> [Date] {
+        guard let start, start > now else { return [now] }
+        let end = min(start, now.addingTimeInterval(6 * 60 * 60))
         var dates = [now]
-        let window = start.addingTimeInterval(-86_400)
-        let remainingMinutes = ceil(start.timeIntervalSince(now) / 60)
-        let nextCountdownChange = start.addingTimeInterval(-(remainingMinutes - 1) * 60)
-        var date = max(nextCountdownChange, window)
-        while date < refresh && date <= start {
+        var date = Date(timeIntervalSince1970: (floor(now.timeIntervalSince1970 / 60) + 1) * 60)
+        while date <= end && dates.count < 360 {
             dates.append(date)
             date = date.addingTimeInterval(60)
         }
-        if start > now, start <= refresh, dates.last != start { dates.append(start) }
-        return dates.sorted()
+        if start <= end, dates.last != start {
+            if dates.count == 360 { dates.removeLast() }
+            dates.append(start)
+        }
+        return dates
     }
 
     private static func format(_ date: Date, template: String, locale: Locale, timeZone: TimeZone) -> String {

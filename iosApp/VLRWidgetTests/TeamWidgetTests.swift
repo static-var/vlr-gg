@@ -12,6 +12,9 @@ final class TeamWidgetTests: XCTestCase {
         let cases: [(TimeInterval?, TeamWidgetCountdown)] = [
             (8_040, .countdown("2h 14m")),
             (3_600, .countdown("1h 00m")),
+            (3_599.5, .countdown("1h 00m")),
+            (3_540.5, .countdown("1h 00m")),
+            (3_540, .countdown("59 min")),
             (2_700, .countdown("45 min")),
             (1, .countdown("1 min")),
             (86_400, .countdown("24h 00m")),
@@ -44,16 +47,19 @@ final class TeamWidgetTests: XCTestCase {
         }
     }
 
-    func testTimelineHasOneEntryPerMinuteThroughStartUntilRefresh() {
-        let dates = TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(180), now: now, refresh: now.addingTimeInterval(300))
-        XCTAssertEqual(dates.map { Int($0.timeIntervalSince(now)) }, [0, 60, 120, 180])
-        let starting = TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(180), now: now, refresh: now.addingTimeInterval(180))
-        XCTAssertEqual(starting.map { Int($0.timeIntervalSince(now)) }, [0, 60, 120, 180])
-        let crossing = TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(86_520), now: now, refresh: now.addingTimeInterval(301))
-        XCTAssertEqual(crossing.map { Int($0.timeIntervalSince(now)) }, [0, 120, 180, 240, 300])
-        let boundary = TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(86_430), now: now, refresh: now.addingTimeInterval(181))
-        XCTAssertEqual(boundary.map { Int($0.timeIntervalSince(now)) }, [0, 30, 90, 150])
-        XCTAssertEqual(TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(86_520), now: now, refresh: now.addingTimeInterval(120)), [now])
+    func testTimelineContinuesThroughStartBeyondRefreshAndCapsAtSixHours() {
+        let dates = TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(3_600), now: now)
+        XCTAssertEqual(dates.count, 61)
+        XCTAssertEqual(dates.last, now.addingTimeInterval(3_600))
+        XCTAssertTrue(dates.contains(now.addingTimeInterval(1_860)))
+        let fractionalNow = now.addingTimeInterval(0.5)
+        let boundary = TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(180.5), now: fractionalNow)
+        XCTAssertEqual(boundary, [fractionalNow, now.addingTimeInterval(60), now.addingTimeInterval(120), now.addingTimeInterval(180), now.addingTimeInterval(180.5)])
+        let far = TeamWidgetCountdown.timelineDates(start: now.addingTimeInterval(86_520), now: now)
+        XCTAssertEqual(far.count, 360)
+        XCTAssertLessThanOrEqual(far.last!, now.addingTimeInterval(21_600))
+        XCTAssertEqual(TeamWidgetCountdown.timelineDates(start: nil, now: now), [now])
+        XCTAssertEqual(TeamWidgetCountdown.timelineDates(start: now, now: now), [now])
     }
 
     func testResultDayKeepsItsCalendarDateInEveryTimeZone() throws {
