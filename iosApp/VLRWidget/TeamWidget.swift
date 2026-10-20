@@ -61,6 +61,7 @@ struct TeamWidget: Widget {
     }
 }
 
+@available(iOS 17.0, *)
 struct TeamWidgetView: View {
     @Environment(\.widgetFamily) private var environmentFamily
     @Environment(\.colorScheme) private var colorScheme
@@ -88,7 +89,7 @@ struct TeamWidgetView: View {
         .foregroundStyle(palette.ink)
         .padding(16)
         .widgetURL(widgetURL)
-        .teamWidgetBackground(PrismWidgetPalette.background(for: colorScheme))
+        .containerBackground(PrismWidgetPalette.background(for: colorScheme), for: .widget)
     }
 
     private var widgetURL: URL {
@@ -324,13 +325,5 @@ struct TeamWidgetView: View {
                 }
                 .frame(width: size, height: size)
         }
-    }
-}
-
-private extension View {
-    @ViewBuilder
-    func teamWidgetBackground(_ color: Color) -> some View {
-        if #available(iOS 17.0, *) { containerBackground(color, for: .widget) }
-        else { background(color) }
     }
 }

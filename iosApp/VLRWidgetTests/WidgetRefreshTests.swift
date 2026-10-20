@@ -5,7 +5,7 @@ import CoreText
 
 final class WidgetRefreshTests: XCTestCase {
     func testFavoriteTeamsSurviveRefreshAndConfigurationAndAffectCacheSignature() throws {
-        let favorite = WidgetFavoriteTeam(id: "2", name: "Sentinels", shortName: "SEN", logoUrl: "https://owcdn.net/sen.png")
+        let favorite = WidgetFavoriteTeam(id: "2", name: "Sentinels")
         let source = UpcomingMatchesSnapshot(savedAtEpochMillis: 0, clientId: "client", hasFavorites: true,
             favorites: .empty, spoilersHidden: false, matches: [], theme: .preview, favoriteTeams: [favorite])
         let refreshed = source.withRefreshedMatches([], at: Date(timeIntervalSince1970: 1_792_152_000))

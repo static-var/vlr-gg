@@ -227,7 +227,7 @@ struct WidgetRefreshService {
     }
 }
 
-private enum RemoteMatchStatus {
+enum RemoteMatchStatus {
     case upcoming
     case live
     case completed
@@ -251,25 +251,28 @@ private enum RemoteMatchStatus {
     }
 }
 
-private struct RemoteTeam: Decodable {
-    let id: String?
-    let name: String
-    let score: Int?
-}
-
-private struct RemoteMatchPreview: Decodable {
+struct RemoteMatchPreview: Codable {
     let id: String
     let event: String
     let series: String
     let status: String?
-    let team1: RemoteTeam
-    let team2: RemoteTeam
     let time: String?
-    let eventId: String
+    let team1: Team
+    let team2: Team
+    var current_map: CurrentMap? = nil
 
-    enum CodingKeys: String, CodingKey {
-        case id, event, series, status, team1, team2, time
-        case eventId = "event_id"
+    struct Team: Codable {
+        let id: String?
+        let name: String
+        let img: String?
+        let score: Int?
+        let tag: String?
+    }
+
+    struct CurrentMap: Codable {
+        let name: String
+        let number: Int?
+        let scores: [Int?]?
     }
 
     var teamIDs: [String] { [team1.id, team2.id].compactMap { $0 } }

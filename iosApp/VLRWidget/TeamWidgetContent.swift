@@ -113,7 +113,7 @@ struct TeamWidgetContent: Codable, Equatable {
         rank: 4, region: "Americas", region_rank: 1,
         recent: [
             .init(match_id: "1", played_on: "2026-10-15", opponent: .init(id: "624", name: "Paper Rex", tag: "PRX"), team_score: 2, opponent_score: 1, won: true),
-            .init(match_id: "2", played_on: "2026-10-12", opponent: .init(id: "2", name: "DRX", tag: "DRX"), team_score: 2, opponent_score: 0, won: true),
+            .init(match_id: "2", played_on: "2026-10-12", opponent: .init(id: "8185", name: "DRX", tag: "DRX"), team_score: 2, opponent_score: 0, won: true),
             .init(match_id: "3", played_on: "2026-10-09", opponent: .init(id: "3", name: "G2 Esports", tag: "G2"), team_score: 1, opponent_score: 2, won: false),
             .init(match_id: "4", played_on: "2026-10-05", opponent: .init(id: "1", name: "FNATIC", tag: "FNC"), team_score: 2, opponent_score: 1, won: true),
             .init(match_id: "5", played_on: "2026-09-28", opponent: .init(id: "4", name: "LOUD", tag: "LOUD"), team_score: 2, opponent_score: 0, won: true),
@@ -227,11 +227,11 @@ enum TeamWidgetCountdown: Equatable {
         return .countdown(teamWidgetString("%lldh %02lldm", locale: locale, Int64(minutes / 60), Int64(minutes % 60)))
     }
 
-    var hero: String {
+    func hero(locale: Locale = .current) -> String {
         switch self {
         case .scheduled(let text), .countdown(let text): text
-        case .delayed: teamWidgetString("Any minute")
-        case .unknown: teamWidgetString("TBD")
+        case .delayed: teamWidgetString("Any minute", locale: locale)
+        case .unknown: teamWidgetString("TBD", locale: locale)
         }
     }
 
@@ -256,7 +256,7 @@ enum TeamWidgetCountdown: Equatable {
         formatter.locale = locale
         formatter.timeZone = timeZone
         formatter.setLocalizedDateFormatFromTemplate(template)
-        if template == "EEEj", locale.languageCode == "en" {
+        if template == "EEEj", locale.language.languageCode?.identifier == "en" {
             let weekday = DateFormatter()
             weekday.locale = locale
             weekday.timeZone = timeZone
@@ -268,11 +268,16 @@ enum TeamWidgetCountdown: Equatable {
     }
 }
 
+private final class TeamWidgetResources {}
+
 func teamWidgetString(_ key: String, locale: Locale = .current, _ arguments: CVarArg...) -> String {
-    let language = locale.identifier.replacingOccurrences(of: "_", with: "-")
-    let path = Bundle.main.path(forResource: language, ofType: "lproj")
-        ?? Bundle.main.path(forResource: String(language.prefix(2)), ofType: "lproj")
-    let bundle = path.flatMap(Bundle.init(path:)) ?? .main
+    let resources = Bundle(for: TeamWidgetResources.self)
+    let identifier = locale.identifier
+    let language = locale.language.languageCode?.identifier ?? identifier
+    let candidates = [identifier, identifier.replacingOccurrences(of: "_", with: "-"), language]
+        + Bundle.preferredLocalizations(from: resources.localizations, forPreferences: [identifier])
+    let path = candidates.lazy.compactMap { resources.path(forResource: $0, ofType: "lproj") }.first
+    let bundle = path.flatMap(Bundle.init(path:)) ?? resources
     let format = bundle.localizedString(forKey: key, value: key, table: "Localizable")
     return String(format: format, locale: locale, arguments: arguments)
 }
@@ -316,7 +321,7 @@ struct TeamWidgetHero: Equatable {
                 context = [localized("Was due %@", time), fixture.event].filter { !$0.isEmpty }.joined(separator: " · ")
             case .unknown: lead = localized("Plays %@", opponent); context = fixture.context
             }
-            return Self(lead: lead, value: countdown.hero, context: context, opponent: fixture.opponent)
+            return Self(lead: lead, value: countdown.hero(locale: locale), context: context, opponent: fixture.opponent)
         case .live(let series):
             return Self(lead: localized("Playing %@", series.fixture.opponent?.name ?? teamWidgetString("TBD", locale: locale)),
                 value: series.score?.text ?? "–", context: series.fixture.context, opponent: series.fixture.opponent,
@@ -337,196 +342,6 @@ struct TeamWidgetHero: Equatable {
         case .idle(nil):
             return Self(lead: teamWidgetString("Season starts soon", locale: locale), value: teamWidgetString("No matches", locale: locale),
                 context: teamWidgetString("VLR has not listed a match yet", locale: locale), opponent: nil)
-        }
-    }
-}
-
-struct TeamWidgetRankingResponse: Codable {
-    let team: TeamWidgetTeam
-    let rank: Int?
-    let region: String?
-    let region_rank: Int?
-    let recent: [Result]
-
-    struct Result: Codable {
-        let match_id: String
-        let played_on: String
-        let opponent: TeamWidgetTeam
-        let team_score: Int?
-        let opponent_score: Int?
-        let won: Bool
-    }
-}
-
-struct TeamWidgetMatchResponse: Codable {
-    let id: String
-    let event: String
-    let series: String
-    let status: String?
-    let time: String?
-    let team1: Team
-    let team2: Team
-    let current_map: CurrentMap?
-
-    struct Team: Codable {
-        let id: String?
-        let name: String
-        let img: String?
-        let score: Int?
-        let tag: String?
-    }
-
-    struct CurrentMap: Codable {
-        let name: String
-        let number: Int?
-        let scores: [Int?]?
-    }
-}
-
-struct TeamWidgetDetailsResponse: Codable {
-    let veto: [Veto]
-    let data: [Map]
-    let teams: [TeamWidgetMatchResponse.Team]
-    let event: Event?
-    let current_map: TeamWidgetMatchResponse.CurrentMap?
-    var total_maps: Int? = nil
-    var map_count: Int? = nil
-
-    struct Event: Codable { let stage: String? }
-    struct Veto: Codable { let team: String?; let action: String; let map: String }
-    struct Map: Codable {
-        let map: String
-        let live: Bool?
-        let teams: [TeamWidgetMatchResponse.Team]
-    }
-}
-
-extension TeamWidgetDetailsResponse {
-    init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        veto = try values.decodeIfPresent([Veto].self, forKey: .veto) ?? []
-        data = try values.decodeIfPresent([Map].self, forKey: .data) ?? []
-        teams = try values.decodeIfPresent([TeamWidgetMatchResponse.Team].self, forKey: .teams) ?? []
-        event = try values.decodeIfPresent(Event.self, forKey: .event)
-        current_map = try values.decodeIfPresent(TeamWidgetMatchResponse.CurrentMap.self, forKey: .current_map)
-        total_maps = try values.decodeIfPresent(Int.self, forKey: .total_maps)
-        map_count = try values.decodeIfPresent(Int.self, forKey: .map_count)
-    }
-}
-
-extension TeamWidgetDetailsResponse.Veto {
-    init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        team = try values.decodeIfPresent(String.self, forKey: .team)
-        action = try values.decodeIfPresent(String.self, forKey: .action) ?? "unknown"
-        map = try values.decodeIfPresent(String.self, forKey: .map) ?? ""
-    }
-}
-
-extension TeamWidgetDetailsResponse.Map {
-    init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        map = try values.decodeIfPresent(String.self, forKey: .map) ?? ""
-        live = try values.decodeIfPresent(Bool.self, forKey: .live)
-        teams = try values.decodeIfPresent([TeamWidgetMatchResponse.Team].self, forKey: .teams) ?? []
-    }
-}
-
-enum TeamWidgetMapper {
-    static func match(for teamID: String, in matches: [TeamWidgetMatchResponse]) -> TeamWidgetMatchResponse? {
-        matches.filter { ($0.team1.id == teamID || $0.team2.id == teamID)
-            && ["live", "ongoing", "upcoming"].contains($0.status?.lowercased() ?? "") }
-            .sorted { left, right in
-                let leftLive = left.status?.lowercased() != "upcoming"
-                let rightLive = right.status?.lowercased() != "upcoming"
-                if leftLive != rightLive { return leftLive }
-                return (date(left.time) ?? .distantFuture) < (date(right.time) ?? .distantFuture)
-            }.first
-    }
-
-    static func content(profile: TeamWidgetRankingResponse, match: TeamWidgetMatchResponse?, details: TeamWidgetDetailsResponse?, spoilersHidden: Bool) -> TeamWidgetContent {
-        let history = profile.recent.map { row in
-            let score = row.team_score.flatMap { first in row.opponent_score.map { TeamWidgetScore(team: first, opponent: $0) } }
-            return TeamWidgetRecentResult(id: row.match_id, date: TeamWidgetDay(row.played_on), opponent: row.opponent,
-                result: row.won ? .win(score) : .loss(score))
-        }
-        let results = Array(profile.recent.prefix(5).reversed()).map { $0.won ? TeamWidgetFormSlot.win : .loss }
-        var form = Array(repeating: TeamWidgetFormSlot.empty, count: max(0, 5 - results.count)) + results
-        let state: TeamWidgetState
-        if let match {
-            let ownFirst = match.team1.id == profile.team.id
-            let opponent = ownFirst ? match.team2 : match.team1
-            let own = ownFirst ? match.team1 : match.team2
-            let opponentDetails = details?.teams.first { $0.id == opponent.id }
-            let format = match.series.replacingOccurrences(of: " ", with: "").lowercased()
-            let isFormat = ["bo1", "bo3", "bo5"].contains(format)
-            let mapCount = details?.total_maps ?? details?.map_count
-            let seriesFormat = mapCount.flatMap { [1, 3, 5].contains($0) ? "Bo\($0)" : nil }
-                ?? (isFormat ? "Bo" + format.dropFirst(2) : "")
-            let stage = details?.event?.stage.flatMap { $0.isEmpty ? nil : $0 } ?? (isFormat ? "" : match.series)
-            let fixture = TeamWidgetFixture(id: match.id,
-                opponent: opponent.id?.isEmpty != false || opponent.name.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == "TBD" ? nil : TeamWidgetTeam(id: opponent.id!, name: opponent.name, tag: opponentDetails?.tag ?? opponent.tag, logo: opponentDetails?.img ?? opponent.img),
-                start: date(match.time), event: match.event, stage: stage, format: seriesFormat)
-            if ["live", "ongoing"].contains(match.status?.lowercased() ?? "") {
-                form.append(.live)
-                let score = own.score.flatMap { first in opponent.score.map { TeamWidgetScore(team: first, opponent: $0) } }
-                state = .live(TeamWidgetLiveSeries(fixture: fixture, score: score,
-                    maps: maps(details: details, match: match, team: profile.team, ownFirst: ownFirst)))
-            } else { state = .upcoming(fixture) }
-        } else { state = .idle(history.first) }
-        let content = TeamWidgetContent(header: .init(team: profile.team, rank: profile.rank, region: profile.region, regionRank: profile.region_rank),
-            form: form, history: history, state: state)
-        return spoilersHidden ? content.redacted() : content
-    }
-
-    static func date(_ value: String?) -> Date? {
-        guard let value else { return nil }
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = formatter.date(from: value) ?? ISO8601DateFormatter().date(from: value) { return date }
-        return nil
-    }
-
-    private static func maps(details: TeamWidgetDetailsResponse?, match: TeamWidgetMatchResponse, team: TeamWidgetTeam, ownFirst: Bool) -> [TeamWidgetMap] {
-        guard let details else { return [] }
-        let veto = details.veto.filter { ["pick", "remains"].contains($0.action.lowercased()) }
-        var names = details.data.filter { $0.map.lowercased() != "all" }.map(\.map)
-        for pick in veto where !names.contains(where: { $0.caseInsensitiveCompare(pick.map) == .orderedSame }) { names.append(pick.map) }
-        let current = details.current_map ?? match.current_map
-        let previewIndex = ownFirst ? 0 : 1
-        let currentTeamIndex = details.current_map == nil ? previewIndex : details.teams.firstIndex {
-            $0.id == team.id || $0.name.caseInsensitiveCompare(team.name) == .orderedSame
-        } ?? previewIndex
-        if let current, !current.name.isEmpty, !names.contains(current.name) { names.append(current.name) }
-        return names.map { name in
-            let map = details.data.first { $0.map.caseInsensitiveCompare(name) == .orderedSame }
-            let pick = veto.first { $0.map.caseInsensitiveCompare(name) == .orderedSame }
-            let choice: TeamWidgetMapPick
-            if let pick, pick.action.lowercased() == "pick", let picker = pick.team {
-                let ownNames = [team.id, team.name, team.tag ?? "", match.team1.id == team.id ? match.team1.tag ?? "" : match.team2.tag ?? ""]
-                let isOwn = ownNames.contains { !$0.isEmpty && $0.caseInsensitiveCompare(picker) == .orderedSame }
-                choice = isOwn ? .team(team.tag ?? team.name) : .opponent((ownFirst ? match.team2.tag : match.team1.tag) ?? picker)
-            } else { choice = .decider }
-            let orderedTeams = map?.teams ?? []
-            let ownIndex = orderedTeams.firstIndex { $0.id == team.id || $0.name.caseInsensitiveCompare(team.name) == .orderedSame } ?? (ownFirst ? 0 : 1)
-            let otherIndex = ownIndex == 0 ? 1 : 0
-            var scores: TeamWidgetScore?
-            if orderedTeams.indices.contains(ownIndex), orderedTeams.indices.contains(otherIndex),
-               let first = orderedTeams[ownIndex].score, let second = orderedTeams[otherIndex].score {
-                scores = TeamWidgetScore(team: first, opponent: second)
-            }
-            let isCurrent = current?.name.caseInsensitiveCompare(name) == .orderedSame
-            let live = map?.live == true || (isCurrent && map?.live != false)
-            if live, let raw = current?.scores, raw.count == 2, (0...1).contains(currentTeamIndex),
-               let first = raw[currentTeamIndex], let second = raw[1 - currentTeamIndex] {
-                scores = TeamWidgetScore(team: first, opponent: second)
-            }
-            let status: TeamWidgetMapStatus
-            if live { status = .live }
-            else if let scores, scores.team != scores.opponent, max(scores.team, scores.opponent) >= 13 {
-                status = scores.team > scores.opponent ? .won : .lost
-            } else { status = .next }
-            return TeamWidgetMap(name: name, pick: choice, status: status, score: status == .next ? nil : scores)
         }
     }
 }

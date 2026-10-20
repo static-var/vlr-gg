@@ -27,6 +27,7 @@
 		34EA8327ED1BF8E48E8A3DB5 /* MatchActivityLogoTreatmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C737F63F604F3C29E306493A /* MatchActivityLogoTreatmentTests.swift */; };
 		36317EF4FEADC72B01C12E91 /* WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6EDCAF155347F5E7F4CE33 /* WidgetSnapshotStore.swift */; };
 		379F2E73E56E97FFF7205AF8 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA76E3399E29872389A8AA /* MatchActivityLogoCache.swift */; };
+		397E3D58BC63FA16E0837B86 /* TeamWidgetMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1D65C0A4B23F3AE008278E /* TeamWidgetMapper.swift */; };
 		3CE4C08EAB71CB913E84D89E /* TeamWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D1826F65E59805A547049E /* TeamWidgetRefresh.swift */; };
 		402263E0298C019302158B42 /* MatchActivityStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6EDA015402D627B79F54E9 /* MatchActivityStyle.swift */; };
 		41ED708CD7A4065E2C2DDCB6 /* MatchActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBC19A62339D3E070DCD026 /* MatchActivityAttributes.swift */; };
@@ -39,6 +40,7 @@
 		4AB1820EB09A19FA3724693A /* TeamWidgetIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E58CC6A08466946EE72C9D0 /* TeamWidgetIntent.swift */; };
 		4B834EF517F22C474F2BB36A /* MatchActivityLogoTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AFEB53B3F777914C5F1FF7 /* MatchActivityLogoTreatment.swift */; };
 		4C32F668A1F6E32D83DC9E3F /* FavoriteSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 973F66BBC21F094338D4832F /* FavoriteSearchTests.swift */; };
+		4CF08FF33DF4EC2E8DB0E743 /* TeamWidgetMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1D65C0A4B23F3AE008278E /* TeamWidgetMapper.swift */; };
 		561A93F4EB86F4A8116CB8DA /* SiriActionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96F580A95337BC2C129B8D0 /* SiriActionsTests.swift */; };
 		56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */; };
 		58D38D290BEA140639D0E536 /* MatchActivityLogoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EA76E3399E29872389A8AA /* MatchActivityLogoCache.swift */; };
@@ -166,6 +168,7 @@
 		94A6C698CF113B0B0F3BC001 /* MatchActivityTeamCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityTeamCodes.swift; sourceTree = "<group>"; };
 		96D81F174E01C0AD0DB90B86 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		973F66BBC21F094338D4832F /* FavoriteSearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteSearchTests.swift; sourceTree = "<group>"; };
+		9A1D65C0A4B23F3AE008278E /* TeamWidgetMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamWidgetMapper.swift; sourceTree = "<group>"; };
 		A9F7405903B24AF121E4A00B /* WidgetLocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetLocalizationTests.swift; sourceTree = "<group>"; };
 		B2B0BFF6AFB5460B79FE8042 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AppShortcuts.strings; sourceTree = "<group>"; };
 		B9EA4590539C7AEECB5795B4 /* MatchLiveActivityRoundsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchLiveActivityRoundsTests.swift; sourceTree = "<group>"; };
@@ -321,6 +324,7 @@
 				00C573F07CB732ADD30EB527 /* TeamWidget.swift */,
 				D4FA9B96A16113362D0323F2 /* TeamWidgetContent.swift */,
 				7E58CC6A08466946EE72C9D0 /* TeamWidgetIntent.swift */,
+				9A1D65C0A4B23F3AE008278E /* TeamWidgetMapper.swift */,
 				C9D1826F65E59805A547049E /* TeamWidgetRefresh.swift */,
 				09B33067BEDD8FEE7927EB79 /* UpcomingMatchesWidget.swift */,
 				4C823E9D6BCD587C88AD7701 /* VLRWidget.entitlements */,
@@ -631,6 +635,7 @@
 				0B92FCB7DE8E2959B960EA79 /* TeamWidget.swift in Sources */,
 				10E77CBD224C1205727E6DC2 /* TeamWidgetContent.swift in Sources */,
 				CECE10B0B898EEA2014B6A6F /* TeamWidgetIntent.swift in Sources */,
+				4CF08FF33DF4EC2E8DB0E743 /* TeamWidgetMapper.swift in Sources */,
 				3CE4C08EAB71CB913E84D89E /* TeamWidgetRefresh.swift in Sources */,
 				95E262E48E0A3364448F059A /* TeamWidgetTests.swift in Sources */,
 				44E37D45D9CD7737C66D6C33 /* TestGeneratedBuildConfig.swift in Sources */,
@@ -660,6 +665,7 @@
 				0E398FEF71532358A4173AC9 /* TeamWidget.swift in Sources */,
 				1C88E0A4A666DE8A82972345 /* TeamWidgetContent.swift in Sources */,
 				4AB1820EB09A19FA3724693A /* TeamWidgetIntent.swift in Sources */,
+				397E3D58BC63FA16E0837B86 /* TeamWidgetMapper.swift in Sources */,
 				DC8F0EA3188F118A1969FD64 /* TeamWidgetRefresh.swift in Sources */,
 				9DD4C32FDB291AC803C0907D /* UpcomingMatchesWidget.swift in Sources */,
 				88FAF2F8FE95B1B3827271DA /* VLRWidgetBundle.swift in Sources */,

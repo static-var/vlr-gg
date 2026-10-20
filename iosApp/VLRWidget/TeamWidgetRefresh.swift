@@ -15,7 +15,7 @@ struct TeamWidgetRefreshService {
             throw WidgetRefreshError.invalidResponse
         }
         async let profile: TeamWidgetRankingResponse = api.get("/api/v2/rankings/teams/\(team)")
-        async let matches: [TeamWidgetMatchResponse] = api.get("/api/v1/favorites/\(client)/matches?include_results=false")
+        async let matches: [RemoteMatchPreview] = api.get("/api/v1/favorites/\(client)/matches?include_results=false")
         let (ranking, previews) = try await (profile, matches)
         let match = TeamWidgetMapper.match(for: teamID, in: previews)
         let details: TeamWidgetDetailsResponse?

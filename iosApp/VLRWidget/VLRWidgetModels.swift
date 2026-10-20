@@ -3,8 +3,6 @@ import Foundation
 struct WidgetFavoriteTeam: Codable, Equatable, Identifiable {
     let id: String
     let name: String
-    var shortName: String? = nil
-    var logoUrl: String? = nil
 }
 
 struct WidgetFavoriteIDs: Codable, Equatable {

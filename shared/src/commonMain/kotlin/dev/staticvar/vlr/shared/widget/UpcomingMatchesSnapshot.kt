@@ -28,14 +28,12 @@ public data class UpcomingMatchesSnapshot(
 public data class WidgetFavoriteTeam(
   val id: String,
   val name: String,
-  val shortName: String? = null,
-  val logoUrl: String? = null,
 )
 
 internal fun DirectFavoriteSnapshot.widgetFavoriteTeams(): List<WidgetFavoriteTeam> = teams
   .filter { it.id.isNotBlank() }
   .distinctBy { it.id }
-  .map { WidgetFavoriteTeam(it.id, it.title, it.shortName, it.imageUrl.takeIf(String::isNotBlank)) }
+  .map { WidgetFavoriteTeam(it.id, it.title) }
   .sortedBy { it.id }
 
 @Serializable
