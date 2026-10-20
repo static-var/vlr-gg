@@ -5,19 +5,26 @@
 package dev.staticvar.vlr.shared.widget.favorite
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 internal data class WidgetTeam(val id: String?, val name: String, val tag: String? = null, val logo: String? = null)
 
+@Serializable
 internal sealed interface WidgetParticipant {
-
+  @Serializable
+  @SerialName("team")
   data class Team(val value: WidgetTeam) : WidgetParticipant
 
+  @Serializable
+  @SerialName("undecided")
   data object Undecided : WidgetParticipant
 
   val team: WidgetTeam?
     get() = (this as? Team)?.value
 }
 
+@Serializable
 internal data class WidgetMatchPair(val left: WidgetParticipant, val right: WidgetParticipant) {
   val teams: List<WidgetTeam>
     get() = listOfNotNull(left.team, right.team)
@@ -25,31 +32,43 @@ internal data class WidgetMatchPair(val left: WidgetParticipant, val right: Widg
 
 internal enum class WidgetSide { Left, Right }
 
+@Serializable
 internal data class WidgetScore(val team: Int, val opponent: Int) {
   val text: String
     get() = "$team–$opponent"
 }
 
+@Serializable
 internal enum class WidgetMapStatus {
   @SerialName("Won")
   Won,
+
   @SerialName("Lost")
   Lost,
+
   @SerialName("Live")
   Live,
+
   @SerialName("Next")
   Next,
 }
 
+@Serializable
 internal sealed interface WidgetMapPick {
-
+  @Serializable
+  @SerialName("team")
   data class Team(val tag: String) : WidgetMapPick
 
+  @Serializable
+  @SerialName("opponent")
   data class Opponent(val tag: String) : WidgetMapPick
 
+  @Serializable
+  @SerialName("decider")
   data object Decider : WidgetMapPick
 }
 
+@Serializable
 internal data class WidgetMap(
   val name: String,
   val pick: WidgetMapPick,
@@ -57,11 +76,14 @@ internal data class WidgetMap(
   val score: WidgetScore?,
 )
 
+@Serializable
 internal enum class WidgetSeriesFormat(val mapCount: Int) {
   @SerialName("Bo1")
   Bo1(1),
+
   @SerialName("Bo3")
   Bo3(3),
+
   @SerialName("Bo5")
   Bo5(5),
   ;
