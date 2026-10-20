@@ -216,11 +216,19 @@ enum EventWidgetEngine {
     }
 
     static func sample(at date: Date) -> EventWidgetContent {
-        let fixture = EventWidgetFixture(id: "sample", participants: .init(left: .team(.init(id: nil, name: "Alpha")),
-            right: .team(.init(id: nil, name: "Bravo"))),
-            start: date.addingTimeInterval(8_040), day: nil, round: "", stage: "", format: nil)
-        return .init(header: .init(eventID: "", title: "Val Esports", logo: nil, subtitle: .starts(nil, location: ""), progress: .empty, hasLiveMatch: false),
-                     body: .visible(.scheduled(.first(fixture), .matches(.init(heading: .upNext, rows: [])))))
+        func fixture(_ id: String, _ left: String, _ right: String, offset: TimeInterval, round: String) -> EventWidgetFixture {
+            .init(id: id, participants: .init(left: .team(.init(id: nil, name: left)), right: .team(.init(id: nil, name: right))),
+                  start: date.addingTimeInterval(offset), day: nil, round: round, stage: "Playoffs", format: .bo3)
+        }
+        let hero = fixture("sample", "Alpha", "Bravo", offset: 8_040, round: "Upper Round 1")
+        let rows = [
+            fixture("sample-1", "Charlie", "Delta", offset: 14_400, round: "Upper Round 1"),
+            fixture("sample-2", "Echo", "Foxtrot", offset: 21_600, round: "Upper Round 1"),
+            fixture("sample-3", "Golf", "Hotel", offset: 28_800, round: "Lower Round 1"),
+        ].map { EventWidgetMatch(fixture: $0, phase: .upcoming) }
+        return .init(header: .init(eventID: "", title: "Val Esports", logo: nil, subtitle: .starts(nil, location: ""),
+                                  progress: .empty, hasLiveMatch: false),
+                     body: .visible(.scheduled(.first(hero), .matches(.init(heading: .upNext, rows: rows)))))
     }
 
     private static func content(_ data: EventWidgetData, fetchedAt: Date, source: UpcomingMatchesSnapshot,

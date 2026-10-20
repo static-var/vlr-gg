@@ -442,6 +442,7 @@ extension EventWidgetTests {
         let unconfirmed = EventFinishedHero.unconfirmed(.init(end: champions.event.dates.endInclusive, prizePool: champions.event.prizePool))
         let empty = EventMatchList(heading: .upNext, rows: [])
         var cases: [RenderCase] = [
+            RenderCase(name: "gallery-sample", content: .content(EventWidgetEngine.sample(at: now)), value: "2:14\u{202F}PM"),
             visible("01-first-match", .scheduled(.first(fixture("first", 172_800, round: "Upper Round 1")), .matches(upcoming)), "12:00\u{202F}PM",
                 lead: "First match · Thu, Oct 22", context: "LOUD vs Team Vitality · Upper Round 1",
                 subtitle: .starts(WidgetDay("2026-10-22"), location: "São Paulo"), progress: .empty),
@@ -503,6 +504,12 @@ extension EventWidgetTests {
             }
             if let context = scenario.context {
                 XCTAssertEqual(text.beside.map { EventWidgetText.join([$0.round, $0.format]) } ?? text.context, context, scenario.name)
+            }
+            if scenario.name == "gallery-sample" {
+                guard case .visible(.scheduled(_, .matches(let list))) = content.body else { return XCTFail() }
+                XCTAssertEqual(list.heading, .upNext)
+                XCTAssertEqual(list.rows.map(\.fixture.id), ["sample-1", "sample-2", "sample-3"])
+                XCTAssertEqual(content.logoSources(large: true), [])
             }
             if scenario.name == "bo5-map5-decider" {
                 XCTAssertEqual(WidgetMapPills.visible(text.maps).count, 5)
