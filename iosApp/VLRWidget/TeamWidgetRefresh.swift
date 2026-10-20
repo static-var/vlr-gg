@@ -44,7 +44,7 @@ actor TeamWidgetRefreshCoordinator {
         let task = Task<TeamWidgetContent?, Never> {
             if let content = try? await service.refresh(teamID: teamID, source: source) {
                 cache.store(content, teamID: teamID, source: source, fetchedAt: fetchedAt)
-                return cache.load(teamID: teamID, source: source) ?? content
+                return content
             }
             return cache.load(teamID: teamID, source: source)
         }
@@ -69,19 +69,14 @@ struct TeamWidgetCache {
         let content: TeamWidgetContent
     }
 
-    func load(teamID: String, source: UpcomingMatchesSnapshot) -> TeamWidgetContent? {
-        loadSaved(teamID: teamID, clientID: source.clientId)?.content
-    }
-
-    func loadSaved(teamID: String, clientID: String) -> Saved? {
-        guard let url = url(teamID: teamID, clientID: clientID), let data = try? Data(contentsOf: url),
+    func load(teamID: String, source: UpcomingMatchesSnapshot, now: Date = .now) -> TeamWidgetContent? {
+        guard let url = url(teamID: teamID, clientID: source.clientId), let data = try? Data(contentsOf: url),
               let saved = try? JSONDecoder().decode(Saved.self, from: data),
-              saved.teamID == teamID, saved.clientID == clientID else { return nil }
-        return saved
+              saved.teamID == teamID, saved.clientID == source.clientId else { return nil }
+        return saved.content.expired(fetchedAt: saved.fetchedAt, now: now)
     }
 
     func store(_ content: TeamWidgetContent, teamID: String, source: UpcomingMatchesSnapshot, fetchedAt: Date = .now) {
-        if let saved = loadSaved(teamID: teamID, clientID: source.clientId), saved.fetchedAt >= fetchedAt { return }
         guard let url = url(teamID: teamID, clientID: source.clientId),
               let data = try? JSONEncoder().encode(Saved(teamID: teamID, clientID: source.clientId, fetchedAt: fetchedAt, content: content)) else { return }
         try? data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])

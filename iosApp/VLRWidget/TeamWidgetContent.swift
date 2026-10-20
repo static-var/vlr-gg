@@ -144,6 +144,20 @@ struct TeamWidgetContent: Codable, Equatable {
         return content
     }
 
+    func expired(fetchedAt: Date, now: Date) -> Self {
+        let expired: Bool
+        switch state {
+        case .live: expired = now.timeIntervalSince(fetchedAt) > 3 * 60 * 60
+        case .upcoming(let fixture): expired = fixture.start.map { now.timeIntervalSince($0) > 6 * 60 * 60 } ?? false
+        default: expired = false
+        }
+        guard expired else { return self }
+        var content = self
+        content.state = .idle(history.first)
+        if content.form.last == .live { content.form.removeLast() }
+        return content
+    }
+
     var historyRows: [TeamWidgetRecentResult] {
         switch state {
         case .live(let series) where !series.maps.isEmpty: []

@@ -308,7 +308,26 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(TeamWidgetEntryContent.make(content, teamID: "removed", clientID: "client", source: published), .needsTeam)
     }
 
-    func testConcurrentRefreshesShareRequestsAndOlderContentCannotReplaceNewer() async throws {
+    func testCachedContentExpiresLiveAndOverdueUpcomingMatches() {
+        let fetchedAt = Date(timeIntervalSince1970: 1_792_152_000)
+        let fixture = TeamWidgetFixture(id: "100", opponent: nil, start: fetchedAt, event: "Masters", stage: "Final", format: "Bo3")
+        let last = TeamWidgetRecentResult(id: "99", date: TeamWidgetDay("2026-10-15"),
+            opponent: .init(id: "1", name: "FNATIC"), result: .win(.init(team: 2, opponent: 1)))
+        let live = TeamWidgetContent(header: .init(team: .init(id: "2", name: "Sentinels"), rank: nil, region: nil, regionRank: nil),
+            form: [.win, .live], history: [last], state: .live(.init(fixture: fixture, score: .init(team: 1, opponent: 0), maps: [])))
+        var idle = live
+        idle.state = .idle(last)
+        idle.form = [.win]
+        XCTAssertEqual(live.expired(fetchedAt: fetchedAt, now: fetchedAt.addingTimeInterval(10_800)), live)
+        XCTAssertEqual(live.expired(fetchedAt: fetchedAt, now: fetchedAt.addingTimeInterval(10_801)), idle)
+        var upcoming = live
+        upcoming.state = .upcoming(fixture)
+        upcoming.form = [.win]
+        XCTAssertEqual(upcoming.expired(fetchedAt: fetchedAt, now: fetchedAt.addingTimeInterval(21_600)), upcoming)
+        XCTAssertEqual(upcoming.expired(fetchedAt: fetchedAt, now: fetchedAt.addingTimeInterval(21_601)), idle)
+    }
+
+    func testConcurrentRefreshesShareRequestsAndCacheStoresLastWrite() async throws {
         let recorder = TeamWidgetRequestRecorder()
         let client = WidgetAPIClient(baseURL: URL(string: "https://example.test")!, authorization: nil) { request in
             try await Task.sleep(for: .milliseconds(20))
@@ -329,12 +348,11 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(results.0, results.1)
         let paths = await recorder.paths
         XCTAssertEqual(paths.count, 3)
-        let newer = try content(live: true)
         let timestamp = Date.now.addingTimeInterval(10)
-        cache.store(newer, teamID: "2", source: source, fetchedAt: timestamp)
-        cache.store(try content(), teamID: "2", source: source, fetchedAt: timestamp.addingTimeInterval(-1))
-        XCTAssertEqual(cache.load(teamID: "2", source: source), newer)
-        XCTAssertEqual(cache.loadSaved(teamID: "2", clientID: "client")?.fetchedAt, timestamp)
+        cache.store(try content(live: true), teamID: "2", source: source, fetchedAt: timestamp)
+        let last = try content()
+        cache.store(last, teamID: "2", source: source, fetchedAt: timestamp.addingTimeInterval(-1))
+        XCTAssertEqual(cache.load(teamID: "2", source: source), last)
     }
 
     @MainActor
