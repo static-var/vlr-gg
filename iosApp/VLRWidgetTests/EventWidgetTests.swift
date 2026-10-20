@@ -55,6 +55,21 @@ final class EventWidgetTests: XCTestCase {
             prizes: [.init(position: "1st", amount: "", team: .init(id: "other", name: "Other"))], detail: nil)
         guard case .visible(.finished(.champion(_, let result), _)) = try content(plan(mismatched)).body else { return XCTFail() }
         XCTAssertNil(result)
+        let unknownTime = try data("2766") { json in
+            var matches = json["matches"] as! [[String: Any]]
+            let index = matches.firstIndex { $0["id"] as? String == "753455" }!
+            matches[index]["time"] = ""
+            json["matches"] = matches
+        }
+        XCTAssertEqual(unknownTime.matches.first?.fixture.id, "753455")
+        XCTAssertEqual(unknownTime.matches.sorted(by: EventWidgetEngine.chronological).prefix(3).map(\.fixture.id),
+                       ["753454", "753455", "753460"])
+        let noPrizes = EventWidgetData(event: unknownTime.event, matches: unknownTime.matches, groups: [], prizes: [], detail: nil)
+        guard case .visible(.finished(.champion(let latestWinner, let latestFinal), _)) = try content(plan(noPrizes)).body else {
+            return XCTFail()
+        }
+        XCTAssertEqual(latestWinner.name, "LOUD")
+        XCTAssertEqual(latestFinal?.matchID, "754737")
         let americas = try data("2977")
         XCTAssertEqual(americas.groups.map(\.standings.count), [6, 6])
         guard case .visible(.finished(_, .prizes)) = try content(plan(americas)).body else { return XCTFail() }

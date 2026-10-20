@@ -368,9 +368,11 @@ enum EventWidgetEngine {
         return .notStarted
     }
 
+    private static let unknownDay = WidgetDay(year: 9999, month: 12, day: 31)!
+
     static func chronological(_ left: EventWidgetMatch, _ right: EventWidgetMatch) -> Bool {
+        if left.fixture.day != right.fixture.day { return (left.fixture.day ?? unknownDay) < (right.fixture.day ?? unknownDay) }
         if left.fixture.start != right.fixture.start { return (left.fixture.start ?? .distantFuture) < (right.fixture.start ?? .distantFuture) }
-        if left.fixture.day != right.fixture.day { return (left.fixture.day ?? WidgetDay("9999-12-31")!) < (right.fixture.day ?? WidgetDay("9999-12-31")!) }
         return left.fixture.id < right.fixture.id
     }
 
