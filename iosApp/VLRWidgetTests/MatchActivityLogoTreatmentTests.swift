@@ -5,6 +5,30 @@ import XCTest
 
 /// Checks silhouette contrast decisions, rendered pixels, and persistent logo variants.
 final class MatchActivityLogoTreatmentTests: XCTestCase {
+    func testTintedLuminanceUsesBrightnessAsAlphaAndNormalizesDimMarks() throws {
+        let cases: [(String, [UInt8], [UInt8])] = [
+            ("white", [255, 255, 255, 255, 0, 0, 0, 0], [255, 0]),
+            ("black", [0, 0, 0, 255, 0, 0, 0, 0], [255, 0]),
+            ("two-tone", [255, 255, 255, 255, 64, 64, 64, 255], [255, 64]),
+            ("gray", [128, 128, 128, 255, 64, 64, 64, 128], [255, 128]),
+        ]
+        let directory = URL(fileURLWithPath: "/tmp/vlr-team-widget-renders")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        for (name, rgba, expected) in cases {
+            let provider = try XCTUnwrap(CGDataProvider(data: Data(rgba) as CFData))
+            let source = try XCTUnwrap(CGImage(width: 2, height: 1, bitsPerComponent: 8, bitsPerPixel: 32,
+                bytesPerRow: 8, space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue),
+                provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent))
+            let tinted = try XCTUnwrap(MatchActivityLogoTreatment.prepareTinted(source, maxPixelSize: 2))
+            let bytes = try pixels(tinted)
+            XCTAssertEqual([bytes[3], bytes[7]], expected, name)
+            XCTAssertEqual(bytes[0], bytes[3], name)
+            XCTAssertEqual(bytes[4], bytes[7], name)
+            try XCTUnwrap(UIImage(cgImage: tinted).pngData()).write(to: directory.appendingPathComponent("tint-\(name).png"))
+        }
+    }
+
     func testTransparentLogosReceiveOutlineOnlyOnLowContrastBackground() throws {
         let dark = try image(gray: 0)
         let light = try image(gray: 1)
@@ -65,7 +89,7 @@ final class MatchActivityLogoTreatmentTests: XCTestCase {
         let source = try image(width: 1024, height: 512, gray: 0, inset: 64)
         XCTAssertTrue(try MatchActivityLogoCache.prepareVariants(source, original: original))
         XCTAssertFalse(try MatchActivityLogoCache.prepareVariants(source, original: original))
-        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: directory.path).count, 5)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: directory.path).count, 7)
         XCTAssertEqual(MatchActivityLogoCache.logoColor(original: original), .monochrome())
         for appearance in MatchActivityLogoCache.Appearance.allCases {
             for size in MatchActivityLogoCache.LogoSize.allCases {
@@ -225,7 +249,7 @@ final class MatchActivityLogoTreatmentTests: XCTestCase {
         try FileManager.default.moveItem(at: colorFile, to: oldColorFile)
         let variants = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
             .filter { $0.pathExtension == "pixels" }
-        XCTAssertEqual(variants.count, 4)
+        XCTAssertEqual(variants.count, 6)
         let before = try variants.map { try Data(contentsOf: $0) }
         XCTAssertTrue(try MatchActivityLogoCache.prepareVariants(source, original: original))
         XCTAssertEqual(try variants.map { try Data(contentsOf: $0) }, before)

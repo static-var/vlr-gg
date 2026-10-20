@@ -104,6 +104,44 @@ enum MatchActivityLogoTreatment {
         return output.makeImage()
     }
 
+    static func prepareTinted(_ image: CGImage, maxPixelSize: Int) -> CGImage? {
+        guard maxPixelSize > 0 else { return nil }
+        let size = fittedSize(image, maximum: maxPixelSize)
+        guard let output = context(width: size.width, height: size.height),
+              let data = output.data else { return nil }
+        output.draw(image, in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        let pixels = data.assumingMemoryBound(to: UInt8.self)
+        var luminances = [Double](repeating: 0, count: size.width * size.height)
+        var visible: [Double] = []
+        for y in 0..<size.height {
+            for x in 0..<size.width {
+                let offset = y * output.bytesPerRow + x * 4
+                let alpha = Double(pixels[offset + 3]) / 255
+                let luminance = alpha > 0 ? (0.2126 * Double(pixels[offset])
+                    + 0.7152 * Double(pixels[offset + 1]) + 0.0722 * Double(pixels[offset + 2])) / (255 * alpha) : 0
+                luminances[y * size.width + x] = luminance
+                if alpha > 0.1 { visible.append(luminance) }
+            }
+        }
+        func percentile(_ values: [Double]) -> Double {
+            let sorted = values.sorted()
+            return sorted.isEmpty ? 0 : sorted[min(sorted.count - 1, Int(ceil(Double(sorted.count) * 0.95)) - 1)]
+        }
+        let invert = percentile(visible) < 0.35
+        let peak = percentile(visible.map { invert ? 1 - $0 : $0 })
+        let gain = 1 / max(peak, 0.05)
+        for y in 0..<size.height {
+            for x in 0..<size.width {
+                let offset = y * output.bytesPerRow + x * 4
+                let luminance = luminances[y * size.width + x]
+                let alpha = UInt8((min(1, max(0, (invert ? 1 - luminance : luminance) * gain))
+                    * Double(pixels[offset + 3])).rounded())
+                for component in 0..<4 { pixels[offset + component] = alpha }
+            }
+        }
+        return output.makeImage()
+    }
+
     private static func fittedSize(_ image: CGImage, maximum: Int) -> (width: Int, height: Int) {
         let scale = CGFloat(maximum) / CGFloat(max(image.width, image.height))
         return (max(1, Int((CGFloat(image.width) * scale).rounded())),
