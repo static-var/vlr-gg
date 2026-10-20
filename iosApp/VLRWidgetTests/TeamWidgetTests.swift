@@ -182,6 +182,7 @@ final class TeamWidgetTests: XCTestCase {
         }
         let scenarios: [(String, TeamWidgetEntryContent, WidgetFamily, CGFloat, String)] = [
             ("medium-upcoming", .content(upcoming), .systemMedium, 158, "2h 14m"),
+            ("medium-upcoming-monogram", .content(upcoming), .systemMedium, 158, "FNC"),
             ("medium-live", .content(live), .systemMedium, 158, "Ascent"),
             ("medium-needs-team", .needsTeam, .systemMedium, 158, "Edit Widget"),
             ("large-live", .content(live), .systemLarge, 354, "Playing now"),
@@ -210,6 +211,9 @@ final class TeamWidgetTests: XCTestCase {
                 try VNImageRequestHandler(cgImage: try XCTUnwrap(image.cgImage)).perform([request])
                 let text = request.results?.compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ") ?? ""
                 XCTAssertTrue(text.localizedCaseInsensitiveContains(expected), "\(name) \(mode): \(text)")
+                if name == "medium-upcoming-monogram" {
+                    XCTAssertTrue(text.contains("SEN"), text)
+                }
             }
         }
     }

@@ -147,7 +147,7 @@ struct TeamWidgetView: View {
 
     private func header(_ content: TeamWidgetContent) -> some View {
         HStack(alignment: .top, spacing: 8) {
-            logo(content.header.team.logo, size: large ? 40 : 28)
+            logo(content.header.team, size: large ? 40 : 28)
             VStack(alignment: .leading, spacing: 1) {
                 Text(verbatim: content.header.team.name).font(.system(size: 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.7)
                 Text(verbatim: ranking(content.header)).font(.system(size: 12)).foregroundStyle(palette.secondary).lineLimit(1).minimumScaleFactor(0.6)
@@ -204,7 +204,7 @@ struct TeamWidgetView: View {
                     }.font(.system(size: 12)).foregroundStyle(palette.secondary).lineLimit(1).padding(.top, 3)
                 }
             }.frame(maxWidth: .infinity, alignment: .leading)
-            if let opponent = hero.opponent { logo(opponent.logo, size: 44) }
+            if let opponent = hero.opponent { logo(opponent, size: 44) }
             else if case .content(let content) = entry.content, case .upcoming = content.state {
                 ZStack {
                     Circle().strokeBorder(palette.border, style: StrokeStyle(lineWidth: 1.5, dash: [3, 3]))
@@ -279,7 +279,7 @@ struct TeamWidgetView: View {
     private func historyRow(_ row: TeamWidgetRecentResult) -> some View {
         HStack(spacing: 10) {
             Text(verbatim: resultLetter(row.result)).font(.system(size: 12, weight: .semibold)).frame(width: 18)
-            logo(row.opponent.logo, size: 22)
+            logo(row.opponent, size: 22)
             Text(verbatim: row.opponent.name).foregroundStyle(palette.ink).font(.system(size: 15)).lineLimit(1).minimumScaleFactor(0.65)
             Text(verbatim: teamWidgetDate(row.date, locale: locale, timeZone: timeZone)).font(.system(size: 12)).foregroundStyle(palette.secondary).lineLimit(1)
             Spacer(minLength: 0)
@@ -325,9 +325,9 @@ struct TeamWidgetView: View {
     }
 
     @ViewBuilder
-    private func logo(_ source: String?, size: CGFloat) -> some View {
-        let image = tinted ? MatchActivityLogoCache.tintedImage(for: source, size: .expanded)
-            : MatchActivityLogoCache.image(for: source, appearance: colorScheme == .dark ? .dark : .light, size: .expanded)
+    private func logo(_ team: TeamWidgetTeam, size: CGFloat) -> some View {
+        let image = tinted ? MatchActivityLogoCache.tintedImage(for: team.logo, size: .expanded)
+            : MatchActivityLogoCache.image(for: team.logo, appearance: colorScheme == .dark ? .dark : .light, size: .expanded)
         if let image {
             if #available(iOS 18.0, *), tinted {
                 Image(uiImage: image).resizable().widgetAccentedRenderingMode(.fullColor).scaledToFit().frame(width: size, height: size)
@@ -335,7 +335,12 @@ struct TeamWidgetView: View {
                 Image(uiImage: image).resizable().scaledToFit().frame(width: size, height: size)
             }
         } else {
-            RoundedRectangle(cornerRadius: size / 4).strokeBorder(palette.border, style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+            RoundedRectangle(cornerRadius: size / 4).fill(palette.ink.opacity(0.08))
+                .overlay {
+                    Text(verbatim: (team.tag ?? String(team.name.prefix(3))).uppercased())
+                        .font(.system(size: size * 0.32, weight: .semibold))
+                        .foregroundStyle(palette.secondary).lineLimit(1).minimumScaleFactor(0.5)
+                }
                 .frame(width: size, height: size)
         }
     }
