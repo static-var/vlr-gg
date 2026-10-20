@@ -120,7 +120,7 @@ struct TeamWidgetContent: Codable, Equatable {
         ])
 
     static func sample(at date: Date) -> Self {
-        var content = TeamWidgetMapper.content(profile: sampleProfile, match: nil, details: nil, spoilersHidden: false)
+        var content = TeamWidgetMapper.content(profile: sampleProfile, match: nil, details: nil)
         content.state = .upcoming(.init(id: "100", opponent: .init(id: "1", name: "FNATIC", tag: "FNC"),
             start: date.addingTimeInterval(8_040), event: "Masters London", stage: "Upper final", format: "Bo3"))
         return content

@@ -22,7 +22,7 @@ struct TeamWidgetRefreshService {
         if let match, let id = match.id.addingPercentEncoding(withAllowedCharacters: pathCharacters) {
             details = try? await api.get("/api/v1/matches/\(id)")
         } else { details = nil }
-        return TeamWidgetMapper.content(profile: ranking, match: match, details: details, spoilersHidden: false)
+        return TeamWidgetMapper.content(profile: ranking, match: match, details: details)
     }
 }
 

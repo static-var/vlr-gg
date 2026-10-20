@@ -78,7 +78,7 @@ enum TeamWidgetMapper {
             }.first
     }
 
-    static func content(profile: TeamWidgetRankingResponse, match: RemoteMatchPreview?, details: TeamWidgetDetailsResponse?, spoilersHidden: Bool) -> TeamWidgetContent {
+    static func content(profile: TeamWidgetRankingResponse, match: RemoteMatchPreview?, details: TeamWidgetDetailsResponse?) -> TeamWidgetContent {
         let history = profile.recent.map { row in
             let score = row.team_score.flatMap { first in row.opponent_score.map { TeamWidgetScore(team: first, opponent: $0) } }
             return TeamWidgetRecentResult(id: row.match_id, date: TeamWidgetDay(row.played_on), opponent: row.opponent,
@@ -112,9 +112,8 @@ enum TeamWidgetMapper {
                     maps: maps(details: details, match: match, team: profile.team, ownFirst: ownFirst)))
             } else { state = .upcoming(fixture) }
         } else { state = .idle(history.first) }
-        let content = TeamWidgetContent(header: .init(team: profile.team, rank: profile.rank, region: profile.region, regionRank: profile.region_rank),
+        return TeamWidgetContent(header: .init(team: profile.team, rank: profile.rank, region: profile.region, regionRank: profile.region_rank),
             form: form, history: history, state: state)
-        return spoilersHidden ? content.redacted() : content
     }
 
     static func date(_ value: String?) -> Date? {

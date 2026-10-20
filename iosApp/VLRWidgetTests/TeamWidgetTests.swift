@@ -280,7 +280,7 @@ final class TeamWidgetTests: XCTestCase {
         for (counts, expected) in [("\"total_maps\":3,\"map_count\":5", "Bo3"), ("\"map_count\":1", "Bo1"), ("\"total_maps\":2", "Bo5")] {
             let details = try JSONDecoder().decode(TeamWidgetDetailsResponse.self,
                 from: Data("{\"veto\":[],\"data\":[],\"teams\":[],\(counts)}".utf8))
-            let result = TeamWidgetMapper.content(profile: profile, match: match, details: details, spoilersHidden: false)
+            let result = TeamWidgetMapper.content(profile: profile, match: match, details: details)
             XCTAssertEqual(result.fixture, TeamWidgetFixture(id: "100",
                 opponent: .init(id: "1", name: "FNATIC", tag: "FNC", logo: "https://example.test/preview.png"),
                 start: nil, event: "Masters", stage: "", format: expected))
@@ -417,7 +417,7 @@ final class TeamWidgetTests: XCTestCase {
 
     private func content(live: Bool = false, ownSecond: Bool = false, detailsOppositeOrder: Bool = false) throws -> TeamWidgetContent {
         let profile = TeamWidgetContent.sampleProfile
-        guard live else { return TeamWidgetMapper.content(profile: profile, match: nil, details: nil, spoilersHidden: false) }
+        guard live else { return TeamWidgetMapper.content(profile: profile, match: nil, details: nil) }
         let own = RemoteMatchPreview.Team(id: "2", name: "Sentinels", img: nil, score: 1, tag: "SEN")
         let opponent = RemoteMatchPreview.Team(id: "1", name: "FNATIC", img: nil, score: 1, tag: "FNC")
         let match = RemoteMatchPreview(id: "100", event: "Masters London", series: "Bo3", status: "live", time: nil,
@@ -432,7 +432,7 @@ final class TeamWidgetTests: XCTestCase {
             data: [map("Haven", [13, 8]), map("Lotus", [9, 13]), map("Ascent", [7, 5], live: true)],
             teams: ownSecond != detailsOppositeOrder ? [opponent, own] : [own, opponent], event: .init(stage: "Upper final"),
             current_map: .init(name: "Ascent", number: 3, scores: ownSecond != detailsOppositeOrder ? [5, 7] : [7, 5]))
-        return TeamWidgetMapper.content(profile: profile, match: match, details: details, spoilersHidden: false)
+        return TeamWidgetMapper.content(profile: profile, match: match, details: details)
     }
 }
 
