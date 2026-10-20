@@ -388,7 +388,7 @@ enum EventWidgetEngine {
 
     /// The API has no completion time. The 12-hour result window uses the scheduled start and can therefore end early.
     static func selection(in data: EventWidgetData, fetchedAt: Date, favoriteTeamIDs: Set<String>,
-                          spoilersHidden: Bool, at date: Date, timeZone: TimeZone) -> EventWidgetSelection {
+                          at date: Date, timeZone: TimeZone) -> EventWidgetSelection {
         let available = data.matches.filter { eligible($0, fetchedAt: fetchedAt, at: date) }
         func priority(_ left: EventWidgetMatch, _ right: EventWidgetMatch) -> Bool {
             let leftFavorite = left.fixture.participants.teams.contains { $0.id.map(favoriteTeamIDs.contains) ?? false }
@@ -422,7 +422,7 @@ enum EventWidgetEngine {
             return .gap(phase == .notStarted ? .notListed(start: data.event.dates.start) : .nextUnlisted)
         }
         let next = enriched(nextMatch.fixture)
-        if !spoilersHidden, let last, let start = last.scheduledStart, let nextStart = next.start {
+        if let last, let start = last.scheduledStart, let nextStart = next.start {
             var calendar = Calendar(identifier: .gregorian)
             calendar.timeZone = timeZone
             let age = date.timeIntervalSince(start)
@@ -449,7 +449,7 @@ enum EventWidgetEngine {
     private static func content(_ data: EventWidgetData, fetchedAt: Date, source: UpcomingMatchesSnapshot,
                                 at date: Date, timeZone: TimeZone) -> EventWidgetContent {
         let favorites = Set(source.favorites.teamIds)
-        let selection = selection(in: data, fetchedAt: fetchedAt, favoriteTeamIDs: favorites, spoilersHidden: source.spoilersHidden, at: date, timeZone: timeZone)
+        let selection = selection(in: data, fetchedAt: fetchedAt, favoriteTeamIDs: favorites, at: date, timeZone: timeZone)
         let phase = phase(in: data, fetchedAt: fetchedAt, at: date, timeZone: timeZone)
         let subtitle: EventWidgetSubtitle
         let selectedFixture: EventWidgetFixture?
@@ -471,32 +471,32 @@ enum EventWidgetEngine {
         func list(_ heroID: String?, _ preferred: EventMatchListHeading) -> EventMatchList {
             matchList(in: data, heroID: heroID, preferred: preferred, fetchedAt: fetchedAt, at: date, timeZone: timeZone)
         }
-        let body: EventWidgetBody
-        if source.spoilersHidden {
-            switch selection {
-            case .scheduled(let hero):
-                let later = data.matches.filter { $0.phase == .upcoming && eligible($0, fetchedAt: fetchedAt, at: date)
-                    && chronological(.init(fixture: hero.fixture, phase: .upcoming), $0) }.sorted(by: chronological)
-                let rows = later.isEmpty ? list(hero.fixture.id, .earlier) : EventMatchList(heading: .upNext, rows: Array(later.prefix(3)))
-                body = .hidden(.scheduled(hero, neutral(rows)))
-            case .live(let hero): body = .hidden(.live(.init(fixture: hero.fixture), neutral(list(hero.fixture.id, .today))))
-            case .gap(let gap): body = .hidden(.gap(gap, neutral(list(nil, .earlier))))
-            case .finished: body = .hidden(.finished(.init(end: data.event.dates.endInclusive, prizePool: data.event.prizePool), neutral(list(nil, .earlier))))
-            case .between: preconditionFailure("Hidden selection cannot contain a result")
+        let visible: EventVisibleState
+        switch selection {
+        case .scheduled(let hero):
+            visible = .scheduled(hero, upcomingList(in: data, hero: hero.fixture, favorites: favorites,
+                fetchedAt: fetchedAt, at: date, timeZone: timeZone))
+        case .live(let hero): visible = .live(hero, list(hero.fixture.id, .today))
+        case .between(let hero): visible = .between(hero, list(hero.last.matchID, .upNext))
+        case .gap(let gap): visible = .gap(gap, list(nil, .earlier))
+        case .finished(let hero):
+            let prizes = Array(data.prizes.filter { $0.position.lowercased() != "1st" }.prefix(4))
+            visible = .finished(hero, prizes.isEmpty ? .matches(list(nil, .earlier)) : .prizes(prizes))
+        }
+        func redact(_ visible: EventVisibleState) -> EventHiddenState {
+            func following(_ hero: EventWidgetFixture) -> EventNeutralList {
+                neutral(upcomingMatches(in: data, after: hero, fetchedAt: fetchedAt, at: date, timeZone: timeZone))
             }
-        } else {
-            switch selection {
-            case .scheduled(let hero):
-                body = .visible(.scheduled(hero, upcomingList(in: data, hero: hero.fixture, favorites: favorites, fetchedAt: fetchedAt, at: date, timeZone: timeZone)))
-            case .live(let hero): body = .visible(.live(hero, list(hero.fixture.id, .today)))
-            case .between(let hero): body = .visible(.between(hero, list(hero.last.matchID, .upNext)))
-            case .gap(let gap): body = .visible(.gap(gap, list(nil, .earlier)))
-            case .finished(let hero):
-                let prizes = Array(data.prizes.filter { $0.position.lowercased() != "1st" }.prefix(4))
-                body = .visible(.finished(hero, prizes.isEmpty ? .matches(list(nil, .earlier)) : .prizes(prizes)))
+            switch visible {
+            case .scheduled(let hero, _): return .scheduled(hero, following(hero.fixture))
+            case .live(let hero, let rows): return .live(.init(fixture: hero.fixture), neutral(rows))
+            case .between(let hero, _): return .scheduled(.next(hero.next), following(hero.next))
+            case .gap(let gap, let rows): return .gap(gap, neutral(rows))
+            case .finished:
+                return .finished(.init(end: data.event.dates.endInclusive, prizePool: data.event.prizePool), neutral(list(nil, .earlier)))
             }
         }
-        return .init(header: header, body: body)
+        return .init(header: header, body: source.spoilersHidden ? .hidden(redact(visible)) : .visible(visible))
     }
 
     private static func upcomingList(in data: EventWidgetData, hero: EventWidgetFixture, favorites: Set<String>,
@@ -515,10 +515,15 @@ enum EventWidgetEngine {
             }
             return .group(.init(name: group.name, rows: rows))
         }
-        let later = data.matches.filter { $0.fixture.id != hero.id && $0.phase == .upcoming && eligible($0, fetchedAt: fetchedAt, at: date)
+        return .matches(upcomingMatches(in: data, after: hero, fetchedAt: fetchedAt, at: date, timeZone: timeZone))
+    }
+
+    private static func upcomingMatches(in data: EventWidgetData, after hero: EventWidgetFixture,
+                                        fetchedAt: Date, at date: Date, timeZone: TimeZone) -> EventMatchList {
+        let later = data.matches.filter { $0.phase == .upcoming && eligible($0, fetchedAt: fetchedAt, at: date)
             && chronological(.init(fixture: hero, phase: .upcoming), $0) }.sorted(by: chronological)
-        if !later.isEmpty { return .matches(.init(heading: .upNext, rows: Array(later.prefix(3)))) }
-        return .matches(matchList(in: data, heroID: hero.id, preferred: .earlier, fetchedAt: fetchedAt, at: date, timeZone: timeZone))
+        if !later.isEmpty { return .init(heading: .upNext, rows: Array(later.prefix(3))) }
+        return matchList(in: data, heroID: hero.id, preferred: .earlier, fetchedAt: fetchedAt, at: date, timeZone: timeZone)
     }
 
     private static func matchList(in data: EventWidgetData, heroID: String?, preferred: EventMatchListHeading,

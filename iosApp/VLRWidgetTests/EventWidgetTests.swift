@@ -84,10 +84,17 @@ final class EventWidgetTests: XCTestCase {
             guard case .visible(.scheduled(.next(let fixture), .group(let group))) = try content(plan(event, teams: favorites)).body else { return XCTFail() }
             XCTAssertEqual(fixture.id, expectedID)
             XCTAssertEqual(group.name, groupName)
+            let hidden = try content(plan(event, hidden: true, teams: favorites))
+            guard case .hidden(.scheduled(let hiddenHero, let neutral)) = hidden.body else { return XCTFail() }
+            XCTAssertEqual(hiddenHero.fixture.id, expectedID)
+            XCTAssertEqual(neutral.heading, .upNext)
+            XCTAssertEqual(neutral.rows.count, 3)
+            XCTAssertTrue(neutral.rows.allSatisfy { $0.phase == .upcoming && $0.fixture.id != expectedID })
+
         }
         let before = widgetInstant("2026-10-01T12:00:00Z")!
         let clean = EventWidgetData(event: event.event, matches: event.matches.map { .init(fixture: $0.fixture, phase: .upcoming) }, groups: event.groups, prizes: [], detail: nil)
-        guard case .scheduled(.next(let selected)) = EventWidgetEngine.selection(in: clean, fetchedAt: before, favoriteTeamIDs: ["4915"], spoilersHidden: false, at: before, timeZone: zone) else { return XCTFail() }
+        guard case .scheduled(.next(let selected)) = EventWidgetEngine.selection(in: clean, fetchedAt: before, favoriteTeamIDs: ["4915"], at: before, timeZone: zone) else { return XCTFail() }
         XCTAssertEqual(selected.id, "777925")
     }
 

@@ -234,13 +234,12 @@ struct EventWidgetRefreshService {
               let encoded = eventID.addingPercentEncoding(withAllowedCharacters: pathCharacters) else { return nil }
         let key = FavoriteWidgetKey(entityID: eventID, clientID: source.clientId)
         let favorites = Set(source.favorites.teamIds)
-        let hidden = source.spoilersHidden
         let api = api
         return await store.refresh(for: key) {
             let response: EventResponse = try await api.get("/api/v1/events/\(encoded)")
             var data = try EventWidgetMapper.normalize(response, expectedEventID: eventID, at: date)
             let selected = EventWidgetEngine.selection(in: data, fetchedAt: date, favoriteTeamIDs: favorites,
-                spoilersHidden: hidden, at: date, timeZone: timeZone)
+                at: date, timeZone: timeZone)
             if let id = selected.detailMatchID?.addingPercentEncoding(withAllowedCharacters: pathCharacters),
                let details: WidgetMatchDetailsResponse = try? await api.get("/api/v1/matches/\(id)"), let matchID = selected.detailMatchID {
                 data = EventWidgetMapper.enrich(data, matchID: matchID, details: details)
