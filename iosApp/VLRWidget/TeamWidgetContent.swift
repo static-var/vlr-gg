@@ -128,7 +128,7 @@ struct TeamWidgetContent: Codable, Equatable {
 
     func redacted() -> Self {
         var content = self
-        content.form = form.map { _ in .neutral }
+        content.form = form.map { $0 == .live ? .live : .neutral }
         content.history = history.map { row in
             var row = row
             row.result = .hidden
@@ -147,7 +147,6 @@ struct TeamWidgetContent: Codable, Equatable {
     var historyRows: [TeamWidgetRecentResult] {
         switch state {
         case .live(let series) where !series.maps.isEmpty: []
-        case .liveHidden: []
         case .idle, .idleHidden: Array(history.dropFirst().prefix(4))
         default: Array(history.prefix(4))
         }

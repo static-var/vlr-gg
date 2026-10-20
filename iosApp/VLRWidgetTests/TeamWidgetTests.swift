@@ -81,7 +81,9 @@ final class TeamWidgetTests: XCTestCase {
 
     func testRedactionRemovesResultsSeriesScoresAndAllMapProgress() throws {
         let hidden = try content(live: true).redacted()
-        XCTAssertEqual(hidden.form, Array(repeating: .neutral, count: 6))
+        XCTAssertEqual(hidden.form, Array(repeating: .neutral, count: 5) + [.live])
+        XCTAssertEqual(hidden.historyRows.map(\.id), ["1", "2", "3", "4"])
+        XCTAssertEqual(hidden.historyRows.map(\.result), Array(repeating: .hidden, count: 4))
         XCTAssertEqual(hidden.history.map(\.result), Array(repeating: .hidden, count: 5))
         guard case .liveHidden(let fixture) = hidden.state else { return XCTFail("Expected hidden live fixture") }
         XCTAssertEqual(fixture.opponent?.name, "FNATIC")
