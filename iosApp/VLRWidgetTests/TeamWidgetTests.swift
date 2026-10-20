@@ -481,6 +481,7 @@ final class FavoriteWidgetStoreTests: XCTestCase {
         let loaded = await store.load(for: key)
         XCTAssertEqual(loaded?.value, initial)
         XCTAssertEqual(loaded?.fetchedAt, now)
+        XCTAssertEqual(loaded?.origin, .cachedFallback)
         var next = initial
         next.state = .idle(nil)
         let latest = next
@@ -515,6 +516,7 @@ final class FavoriteWidgetStoreTests: XCTestCase {
         XCTAssertEqual(files.count, 3)
         for file in files {
             var json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: file)) as? [String: Any])
+            XCTAssertEqual(Set(json.keys), ["version", "key", "fetchedAt", "value"])
             json["version"] = 99
             try JSONSerialization.data(withJSONObject: json).write(to: file)
         }

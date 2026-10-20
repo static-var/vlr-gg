@@ -5,13 +5,20 @@ struct FavoriteWidgetKey: Codable, Hashable, Sendable {
     let clientID: String
 }
 
-enum FavoriteWidgetOrigin: String, Codable, Sendable { case fresh, cachedFallback }
+enum FavoriteWidgetOrigin: Sendable { case fresh, cachedFallback }
 
-struct FavoriteWidgetRecord<Value: Codable & Sendable>: Codable, Sendable {
+struct FavoriteWidgetRecord<Value: Sendable>: Sendable {
     let key: FavoriteWidgetKey
     let fetchedAt: Date
     let value: Value
-    var origin: FavoriteWidgetOrigin = .fresh
+    let origin: FavoriteWidgetOrigin
+
+    init(key: FavoriteWidgetKey, fetchedAt: Date, value: Value, origin: FavoriteWidgetOrigin = .fresh) {
+        self.key = key
+        self.fetchedAt = fetchedAt
+        self.value = value
+        self.origin = origin
+    }
 }
 extension FavoriteWidgetRecord: Equatable where Value: Equatable {}
 
@@ -32,10 +39,8 @@ actor FavoriteWidgetStore<Value: Codable & Sendable> {
     func load(for key: FavoriteWidgetKey) -> FavoriteWidgetRecord<Value>? {
         guard let url = fileURL(for: key), let bytes = try? Data(contentsOf: url),
               let saved = try? JSONDecoder().decode(Saved.self, from: bytes),
-              saved.version == 1, saved.record.key == key else { return nil }
-        var record = saved.record
-        record.origin = .cachedFallback
-        return record
+              saved.version == 1, saved.key == key else { return nil }
+        return FavoriteWidgetRecord(key: saved.key, fetchedAt: saved.fetchedAt, value: saved.value, origin: .cachedFallback)
     }
 
     func refresh(for key: FavoriteWidgetKey,
@@ -44,7 +49,7 @@ actor FavoriteWidgetStore<Value: Codable & Sendable> {
         let task = Task<FavoriteWidgetRecord<Value>?, Never> {
             do {
                 let value = try await fetch()
-                let record = FavoriteWidgetRecord(key: key, fetchedAt: now(), value: value)
+                let record = FavoriteWidgetRecord(key: key, fetchedAt: now(), value: value, origin: .fresh)
                 store(record)
                 return record
             } catch { return load(for: key) }
@@ -56,7 +61,9 @@ actor FavoriteWidgetStore<Value: Codable & Sendable> {
 
     private struct Saved: Codable {
         let version: Int
-        let record: FavoriteWidgetRecord<Value>
+        let key: FavoriteWidgetKey
+        let fetchedAt: Date
+        let value: Value
     }
 
     private func fileURL(for key: FavoriteWidgetKey) -> URL? {
@@ -67,7 +74,8 @@ actor FavoriteWidgetStore<Value: Codable & Sendable> {
     }
 
     private func store(_ record: FavoriteWidgetRecord<Value>) {
-        guard let url = fileURL(for: record.key), let bytes = try? JSONEncoder().encode(Saved(version: 1, record: record)) else { return }
+        let saved = Saved(version: 1, key: record.key, fetchedAt: record.fetchedAt, value: record.value)
+        guard let url = fileURL(for: record.key), let bytes = try? JSONEncoder().encode(saved) else { return }
         try? bytes.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
     }
 }
