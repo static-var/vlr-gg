@@ -218,24 +218,6 @@ enum EventWidgetEngine {
         let favorites = Set(source.favorites.teamIds)
         let phase = phase(in: data, fetchedAt: fetchedAt, at: date, timeZone: timeZone)
         let selection = selection(in: data, fetchedAt: fetchedAt, favoriteTeamIDs: favorites, phase: phase, at: date, timeZone: timeZone)
-        let subtitle: EventWidgetSubtitle
-        let selectedFixture: EventWidgetFixture?
-        switch selection {
-        case .scheduled(let hero): selectedFixture = hero.fixture
-        case .live(let hero): selectedFixture = hero.fixture
-        case .between(let hero): selectedFixture = data.matches.first { $0.fixture.id == hero.last.matchID }?.fixture
-        default: selectedFixture = data.matches.sorted(by: chronological).last?.fixture
-        }
-        switch phase {
-        case .finished: subtitle = .ended(data.event.dates.endInclusive, location: data.event.location)
-        case .notStarted:
-            subtitle = data.matches.isEmpty ? .dates(data.event.dates, location: data.event.location) : .starts(data.event.dates.start,
-                location: data.event.location)
-        case .inProgress: subtitle = .stage(selectedFixture?.stage ?? "", location: data.event.location)
-        }
-        let header = EventWidgetHeader(eventID: data.event.id, title: data.event.title, logo: data.event.logo, subtitle: subtitle,
-            progress: EventWidgetDates.progress(data.event.dates, phase: phase, at: date, timeZone: timeZone),
-            hasLiveMatch: data.matches.contains { if case .live = $0.phase { return eligible($0, fetchedAt: fetchedAt, at: date) }; return false })
         func list(_ heroID: String?, _ preferred: EventMatchListHeading) -> EventMatchList {
             matchList(in: data, heroID: heroID, preferred: preferred, fetchedAt: fetchedAt, at: date, timeZone: timeZone)
         }
@@ -264,7 +246,27 @@ enum EventWidgetEngine {
                 return .finished(.init(end: data.event.dates.endInclusive, prizePool: data.event.prizePool), neutral(list(nil, .earlier)))
             }
         }
-        return .init(header: header, body: source.spoilersHidden ? .hidden(redact(visible)) : .visible(visible))
+        let body: EventWidgetBody = source.spoilersHidden ? .hidden(redact(visible)) : .visible(visible)
+        let subtitle: EventWidgetSubtitle
+        let selectedFixture: EventWidgetFixture?
+        switch body {
+        case .visible(.scheduled(let hero, _)), .hidden(.scheduled(let hero, _)): selectedFixture = hero.fixture
+        case .visible(.live(let hero, _)): selectedFixture = hero.fixture
+        case .hidden(.live(let hero, _)): selectedFixture = hero.fixture
+        case .visible(.between(let hero, _)): selectedFixture = data.matches.first { $0.fixture.id == hero.last.matchID }?.fixture
+        default: selectedFixture = data.matches.sorted(by: chronological).last?.fixture
+        }
+        switch phase {
+        case .finished: subtitle = .ended(data.event.dates.endInclusive, location: data.event.location)
+        case .notStarted:
+            subtitle = data.matches.isEmpty ? .dates(data.event.dates, location: data.event.location) : .starts(data.event.dates.start,
+                location: data.event.location)
+        case .inProgress: subtitle = .stage(selectedFixture?.stage ?? "", location: data.event.location)
+        }
+        let header = EventWidgetHeader(eventID: data.event.id, title: data.event.title, logo: data.event.logo, subtitle: subtitle,
+            progress: EventWidgetDates.progress(data.event.dates, phase: phase, at: date, timeZone: timeZone),
+            hasLiveMatch: data.matches.contains { if case .live = $0.phase { return eligible($0, fetchedAt: fetchedAt, at: date) }; return false })
+        return .init(header: header, body: body)
     }
 
     private static func upcomingList(in data: EventWidgetData, hero: EventWidgetFixture, favorites: Set<String>,

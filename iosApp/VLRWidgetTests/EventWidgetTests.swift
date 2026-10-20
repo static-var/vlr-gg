@@ -92,6 +92,9 @@ final class EventWidgetTests: XCTestCase {
             XCTAssertTrue(neutral.rows.allSatisfy { $0.phase == .upcoming && $0.fixture.id != expectedID })
 
         }
+        let betweenHidden = try content(plan(event, at: widgetInstant("2026-10-04T15:00:00Z")!, hidden: true))
+        guard case .stage(let stage, _) = betweenHidden.header.subtitle else { return XCTFail() }
+        XCTAssertEqual(stage, "Phase 2")
         let before = widgetInstant("2026-10-01T12:00:00Z")!
         let clean = EventWidgetData(event: event.event, matches: event.matches.map { .init(fixture: $0.fixture, phase: .upcoming) }, groups: event.groups, prizes: [], detail: nil)
         guard case .scheduled(.next(let selected)) = EventWidgetEngine.selection(in: clean, fetchedAt: before, favoriteTeamIDs: ["4915"], phase: .inProgress, at: before, timeZone: zone) else { return XCTFail() }
