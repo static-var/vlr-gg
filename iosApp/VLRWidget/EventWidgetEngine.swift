@@ -382,7 +382,7 @@ enum EventWidgetRefreshPolicy {
         case .visible(.live), .hidden(.live): base = now.addingTimeInterval(900)
         case .visible(.finished), .hidden(.finished): return now.addingTimeInterval(43_200)
         case .visible(.scheduled), .hidden(.scheduled), .visible(.between):
-            base = FavoriteWidgetRefreshPolicy.scheduled(start: scheduled?.start.flatMap { $0 > now ? $0 : nil }, now: now)
+            base = FavoriteWidgetRefreshPolicy.scheduled(start: scheduled?.start, now: now, overdueInterval: 900)
         case .visible(.gap(let gap, _)), .hidden(.gap(let gap, _)):
             if case .notListed = gap { base = now.addingTimeInterval(21_600) }
             else { base = now.addingTimeInterval(7_200) }

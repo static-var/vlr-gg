@@ -14,10 +14,10 @@ enum WidgetLogoPrefetch {
 }
 
 enum FavoriteWidgetRefreshPolicy {
-    static func scheduled(start: Date?, now: Date) -> Date {
+    static func scheduled(start: Date?, now: Date, overdueInterval: TimeInterval) -> Date {
         guard let start else { return now.addingTimeInterval(7_200) }
         let remaining = start.timeIntervalSince(now)
-        let interval: TimeInterval = remaining <= 0 ? 300 : remaining <= 86_400 ? 1_800 : 7_200
+        let interval: TimeInterval = remaining <= 0 ? overdueInterval : remaining <= 86_400 ? 1_800 : 7_200
         return min(now.addingTimeInterval(interval), start > now ? start : .distantFuture)
     }
 }

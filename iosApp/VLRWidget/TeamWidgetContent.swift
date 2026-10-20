@@ -176,7 +176,7 @@ enum TeamWidgetRefreshPolicy {
             switch content.state {
             case .live, .liveHidden: interval = 15 * 60
             case .upcoming(let fixture):
-                return FavoriteWidgetRefreshPolicy.scheduled(start: fixture.start, now: now)
+                return FavoriteWidgetRefreshPolicy.scheduled(start: fixture.start, now: now, overdueInterval: 300)
             case .idle, .idleHidden: interval = 2 * 60 * 60
             }
         }
