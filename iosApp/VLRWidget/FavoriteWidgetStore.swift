@@ -68,6 +68,7 @@ actor FavoriteWidgetStore<Value: Codable & Sendable> {
 }
 
 enum FavoriteWidgetStores {
+    static let events = FavoriteWidgetStore<EventWidgetData>(namespace: .event, directory: directory)
     static let teams = FavoriteWidgetStore<TeamWidgetContent>(namespace: .team, directory: directory)
     static let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: VLRWidgetContract.appGroupIdentifier)
 }

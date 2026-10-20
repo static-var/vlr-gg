@@ -6,13 +6,10 @@ struct WidgetDay: Codable, Equatable, Sendable {
     let day: Int
 
     init?(_ value: String) {
+        guard value.range(of: #"^\d{4}-\d{2}-\d{2}$"#, options: .regularExpression) != nil else { return nil }
         let parts = value.split(separator: "-").compactMap { Int($0) }
         guard parts.count == 3 else { return nil }
-        let components = DateComponents(year: parts[0], month: parts[1], day: parts[2])
-        guard components.isValidDate(in: Calendar(identifier: .gregorian)) else { return nil }
-        year = parts[0]
-        month = parts[1]
-        day = parts[2]
+        self.init(year: parts[0], month: parts[1], day: parts[2])
     }
 }
 
@@ -99,3 +96,43 @@ func widgetDate(_ day: WidgetDay?, locale: Locale = .current, timeZone: TimeZone
     return formatter.string(from: date)
 }
 
+
+extension WidgetDay: Comparable {
+    init?(year: Int, month: Int, day: Int) {
+        guard (1...9999).contains(year) else { return nil }
+        let parts = DateComponents(year: year, month: month, day: day)
+        guard parts.isValidDate(in: Calendar(identifier: .gregorian)) else { return nil }
+        self.year = year
+        self.month = month
+        self.day = day
+    }
+
+    func start(in timeZone: TimeZone) -> Date {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        return calendar.date(from: DateComponents(year: year, month: month, day: day))!
+    }
+
+    static func < (lhs: Self, rhs: Self) -> Bool {
+        (lhs.year, lhs.month, lhs.day) < (rhs.year, rhs.month, rhs.day)
+    }
+}
+
+extension WidgetKickoff {
+    static func row(start: Date, now: Date, locale: Locale, timeZone: TimeZone) -> (day: String, time: String) {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: calendar.startOfDay(for: start)).day ?? 0
+        let day: String
+        if abs(days) <= 1 {
+            let formatter = RelativeDateTimeFormatter()
+            formatter.locale = locale
+            formatter.dateTimeStyle = .named
+            let word = formatter.localizedString(from: DateComponents(day: days))
+            day = word.prefix(1).uppercased(with: locale) + word.dropFirst()
+        } else {
+            day = format(start, template: abs(days) <= 6 ? "EEE" : "MMMd", locale: locale, timeZone: timeZone)
+        }
+        return (day, format(start, template: calendar.component(.minute, from: start) == 0 ? "j" : "jm", locale: locale, timeZone: timeZone))
+    }
+}
