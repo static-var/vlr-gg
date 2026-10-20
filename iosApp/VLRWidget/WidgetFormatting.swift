@@ -6,7 +6,7 @@ struct WidgetDay: Codable, Equatable, Sendable {
     let day: Int
 
     init?(_ value: String) {
-        guard value.range(of: #"^\d{4}-\d{2}-\d{2}$"#, options: .regularExpression) != nil else { return nil }
+        guard value.range(of: #"^\d{4}-\d{1,2}-\d{1,2}$"#, options: .regularExpression) != nil else { return nil }
         let parts = value.split(separator: "-").compactMap { Int($0) }
         guard parts.count == 3 else { return nil }
         self.init(year: parts[0], month: parts[1], day: parts[2])

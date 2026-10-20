@@ -76,6 +76,7 @@ final class TeamWidgetTests: XCTestCase {
     }
 
     func testResultDayKeepsItsCalendarDateInEveryTimeZone() throws {
+        XCTAssertEqual(WidgetDay("2026-1-5"), WidgetDay("2026-01-05"))
         let day = try XCTUnwrap(WidgetDay("2026-10-15"))
         for identifier in ["America/Los_Angeles", "Asia/Tokyo"] {
             XCTAssertEqual(widgetDate(day, locale: locale, timeZone: try XCTUnwrap(TimeZone(identifier: identifier))), "Oct 15")
@@ -274,7 +275,7 @@ final class TeamWidgetTests: XCTestCase {
         let match = try JSONDecoder().decode(RemoteMatchPreview.self, from: Data("""
         {"id":"100","event":"Masters","series":"Bo5","status":"upcoming","team1":{"id":"2","name":"Sentinels"},"team2":{"id":"1","name":"FNATIC","img":"https://example.test/preview.png","tag":"FNC"}}
         """.utf8))
-        for (counts, expected) in [("\"total_maps\":3,\"map_count\":5", "Bo3"), ("\"map_count\":1", "Bo1"), ("\"total_maps\":2", "Bo5")] {
+        for (counts, expected) in [("\"total_maps\":3,\"map_count\":5", "Bo3"), ("\"map_count\":1", "Bo1"), ("\"total_maps\":2", "Bo5"), ("\"total_maps\":2,\"map_count\":3", "Bo5")] {
             let details = try JSONDecoder().decode(WidgetMatchDetailsResponse.self,
                 from: Data("{\"veto\":[],\"data\":[],\"teams\":[],\(counts)}".utf8))
             let result = TeamWidgetMapper.content(profile: profile, match: match, details: details)

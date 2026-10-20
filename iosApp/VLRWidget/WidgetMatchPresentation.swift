@@ -106,8 +106,8 @@ struct WidgetSeriesEnrichment: Codable, Equatable, Sendable {
 
 enum WidgetSeriesMapper {
     static func format(details: WidgetMatchDetailsResponse?, preview: String?) -> WidgetSeriesFormat? {
-        for count in [details?.total_maps, details?.map_count] {
-            if let count, let format = WidgetSeriesFormat(rawValue: count) { return format }
+        if let count = details?.total_maps ?? details?.map_count, let format = WidgetSeriesFormat(rawValue: count) {
+            return format
         }
         let text = preview?.replacingOccurrences(of: " ", with: "").lowercased() ?? ""
         guard text.hasPrefix("bo"), let count = Int(text.dropFirst(2)) else { return nil }

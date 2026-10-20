@@ -17,9 +17,6 @@ struct TeamWidgetRefreshService {
         async let profile: TeamWidgetRankingResponse = api.get("/api/v2/rankings/teams/\(team)")
         async let matches: [RemoteMatchPreview] = api.get("/api/v1/favorites/\(client)/matches?include_results=false")
         let (ranking, previews) = try await (profile, matches)
-        guard let rankingID = ranking.team.id, !rankingID.isEmpty, rankingID == teamID else {
-            throw WidgetRefreshError.invalidResponse
-        }
         let match = TeamWidgetMapper.match(for: teamID, in: previews)
         let details: WidgetMatchDetailsResponse?
         if let match, let id = match.id.addingPercentEncoding(withAllowedCharacters: pathCharacters) {
