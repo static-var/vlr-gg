@@ -240,7 +240,8 @@ enum TeamWidgetCountdown: Equatable {
         guard let start, start > now else { return [now] }
         let end = min(start, now.addingTimeInterval(6 * 60 * 60))
         var dates = [now]
-        var date = Date(timeIntervalSince1970: (floor(now.timeIntervalSince1970 / 60) + 1) * 60)
+        let nextMinute = Date(timeIntervalSince1970: (floor(now.timeIntervalSince1970 / 60) + 1) * 60)
+        var date = max(nextMinute, start.addingTimeInterval(-86_400))
         while date <= end && dates.count < 360 {
             dates.append(date)
             date = date.addingTimeInterval(60)
