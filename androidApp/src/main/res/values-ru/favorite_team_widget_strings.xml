@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_team_widget_name">Команда</string>
+    <string name="favorite_team_widget_description">Следующий матч, счёт в прямом эфире и последние результаты любимой команды.</string>
+</resources>

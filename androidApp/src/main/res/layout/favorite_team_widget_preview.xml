@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="PrivateResource,Overdraw"
+    android:layout_width="280dp"
+    android:layout_height="158dp"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp"
+    android:background="@color/glance_colorWidgetBackground">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed"
+        android:maxLines="1"
+        android:text="@string/widget_team_choose_team"
+        android:textColor="@color/glance_colorOnSurface"
+        android:textSize="15sp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="sans-serif-condensed"
+        android:maxLines="1"
+        android:text="@string/widget_favorite_tap_to_choose"
+        android:textColor="@color/glance_colorPrimary"
+        android:textSize="30sp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed"
+        android:maxLines="2"
+        android:text="@string/widget_team_pick"
+        android:textColor="@color/glance_colorOnSurfaceVariant"
+        android:textSize="12sp" />
+</LinearLayout>

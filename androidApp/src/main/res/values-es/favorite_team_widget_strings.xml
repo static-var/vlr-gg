@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favorite_team_widget_name">Equipo</string>
+    <string name="favorite_team_widget_description">El próximo partido, marcador en vivo y forma reciente de tu equipo favorito.</string>
+</resources>

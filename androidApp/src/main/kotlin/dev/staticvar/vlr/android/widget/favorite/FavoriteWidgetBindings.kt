@@ -33,7 +33,9 @@ internal data class FavoriteWidgetProvider(
 )
 
 internal object FavoriteEntityWidgets {
-  val providers: List<FavoriteWidgetProvider> = emptyList()
+  val providers: List<FavoriteWidgetProvider> = listOf(
+    FavoriteWidgetProvider(FavoriteTeamWidgetReceiver::class.java, FavoriteTeamWidget()),
+  )
 }
 
 internal data class FavoriteWidgetInstance(
