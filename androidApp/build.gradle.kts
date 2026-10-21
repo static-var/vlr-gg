@@ -223,6 +223,7 @@ dependencies {
   implementation(libs.firebase.messaging)
   implementation(libs.coroutines.core)
   implementation(libs.kotlinx.serialization)
+  implementation(libs.kotlinx.datetime)
 
   // Project modules
   implementation(projects.shared)
