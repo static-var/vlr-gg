@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <receiver
+            android:name="android.appwidget.AppWidgetProvider"
+            android:enabled="false"
+            android:exported="false"
+            android:label="Favorite widget runtime test">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/favorite_widget_runtime_test_info" />
+        </receiver>
+    </application>
+</manifest>
