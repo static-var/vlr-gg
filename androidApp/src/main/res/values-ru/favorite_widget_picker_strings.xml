@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_favorite_picker_empty_teams">Добавьте команду в избранное в Val Esports, чтобы использовать этот виджет.</string>
+    <string name="widget_favorite_picker_empty_events">Добавьте турнир в избранное в Val Esports, чтобы использовать этот виджет.</string>
+</resources>

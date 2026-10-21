@@ -4,6 +4,7 @@
  */
 package dev.staticvar.vlr.android.widget.favorite
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -82,7 +83,10 @@ internal abstract class FavoriteEntityWidget(val kind: WidgetKind) : GlanceAppWi
 }
 
 internal fun WidgetTap.intent(context: Context, appWidgetId: Int): Intent = when (this) {
-  WidgetTap.Chooser, WidgetTap.App -> Intent(context, MainActivity::class.java)
+  WidgetTap.Chooser -> Intent(context, FavoriteWidgetConfigurationActivity::class.java)
+    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+
+  WidgetTap.App -> Intent(context, MainActivity::class.java)
 
   is WidgetTap.Match -> entityIntent(context, "match", id)
 
