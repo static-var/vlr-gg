@@ -1,0 +1,1615 @@
+{
+  "upcoming": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:30:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Win",
+          "Win",
+          "Loss",
+          "Win",
+          "Win"
+        ],
+        "history": [
+          {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "2",
+            "day": "2026-10-12",
+            "opponent": {
+              "id": "8",
+              "name": "DRX",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          },
+          {
+            "id": "3",
+            "day": "2026-10-09",
+            "opponent": {
+              "id": "9",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 1,
+              "opponent": 2
+            }
+          },
+          {
+            "id": "4",
+            "day": "2026-10-05",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "5",
+            "day": "2026-09-28",
+            "opponent": {
+              "id": "10",
+              "name": "LOUD",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          }
+        ],
+        "state": {
+          "type": "upcoming",
+          "fixture": {
+            "id": "100",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": "https://example.test/fnatic.png"
+            },
+            "start": "2026-10-16T14:14:00Z",
+            "event": "Masters London",
+            "stage": "Upper final",
+            "format": "Bo3"
+          }
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "upcoming-tbd": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T14:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Win",
+          "Win",
+          "Loss",
+          "Win",
+          "Win"
+        ],
+        "history": [
+          {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "2",
+            "day": "2026-10-12",
+            "opponent": {
+              "id": "8",
+              "name": "DRX",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          },
+          {
+            "id": "3",
+            "day": "2026-10-09",
+            "opponent": {
+              "id": "9",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 1,
+              "opponent": 2
+            }
+          },
+          {
+            "id": "4",
+            "day": "2026-10-05",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "5",
+            "day": "2026-09-28",
+            "opponent": {
+              "id": "10",
+              "name": "LOUD",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          }
+        ],
+        "state": {
+          "type": "upcoming",
+          "fixture": {
+            "id": "100",
+            "opponent": null,
+            "start": null,
+            "event": "Masters London",
+            "stage": "Upper final",
+            "format": "Bo3"
+          }
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "upcoming-tomorrow": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T14:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Win",
+          "Win",
+          "Loss",
+          "Win",
+          "Win"
+        ],
+        "history": [
+          {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "2",
+            "day": "2026-10-12",
+            "opponent": {
+              "id": "8",
+              "name": "DRX",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          },
+          {
+            "id": "3",
+            "day": "2026-10-09",
+            "opponent": {
+              "id": "9",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 1,
+              "opponent": 2
+            }
+          },
+          {
+            "id": "4",
+            "day": "2026-10-05",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "5",
+            "day": "2026-09-28",
+            "opponent": {
+              "id": "10",
+              "name": "LOUD",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          }
+        ],
+        "state": {
+          "type": "upcoming",
+          "fixture": {
+            "id": "100",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": "https://example.test/fnatic.png"
+            },
+            "start": "2026-10-17T14:14:00Z",
+            "event": "Masters London",
+            "stage": "Upper final",
+            "format": "Bo3"
+          }
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "upcoming-delayed": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:05:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Win",
+          "Win",
+          "Loss",
+          "Win",
+          "Win"
+        ],
+        "history": [
+          {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "2",
+            "day": "2026-10-12",
+            "opponent": {
+              "id": "8",
+              "name": "DRX",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          },
+          {
+            "id": "3",
+            "day": "2026-10-09",
+            "opponent": {
+              "id": "9",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 1,
+              "opponent": 2
+            }
+          },
+          {
+            "id": "4",
+            "day": "2026-10-05",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "5",
+            "day": "2026-09-28",
+            "opponent": {
+              "id": "10",
+              "name": "LOUD",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          }
+        ],
+        "state": {
+          "type": "upcoming",
+          "fixture": {
+            "id": "100",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": "https://example.test/fnatic.png"
+            },
+            "start": "2026-10-16T11:59:00Z",
+            "event": "Masters London",
+            "stage": "Upper final",
+            "format": "Bo3"
+          }
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "live-context": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:15:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Win",
+          "Win",
+          "Loss",
+          "Win",
+          "Win",
+          "Live"
+        ],
+        "history": [
+          {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "2",
+            "day": "2026-10-12",
+            "opponent": {
+              "id": "8",
+              "name": "DRX",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          },
+          {
+            "id": "3",
+            "day": "2026-10-09",
+            "opponent": {
+              "id": "9",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 1,
+              "opponent": 2
+            }
+          },
+          {
+            "id": "4",
+            "day": "2026-10-05",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "5",
+            "day": "2026-09-28",
+            "opponent": {
+              "id": "10",
+              "name": "LOUD",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          }
+        ],
+        "state": {
+          "type": "live",
+          "fixture": {
+            "id": "100",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": "https://example.test/fnatic.png"
+            },
+            "start": "2026-10-16T14:14:00Z",
+            "event": "Masters London",
+            "stage": "Upper final",
+            "format": "Bo3"
+          },
+          "score": {
+            "team": 1,
+            "opponent": 1
+          },
+          "maps": []
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "live-bo3": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:15:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Win",
+          "Win",
+          "Loss",
+          "Win",
+          "Win",
+          "Live"
+        ],
+        "history": [
+          {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "2",
+            "day": "2026-10-12",
+            "opponent": {
+              "id": "8",
+              "name": "DRX",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          },
+          {
+            "id": "3",
+            "day": "2026-10-09",
+            "opponent": {
+              "id": "9",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 1,
+              "opponent": 2
+            }
+          },
+          {
+            "id": "4",
+            "day": "2026-10-05",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "5",
+            "day": "2026-09-28",
+            "opponent": {
+              "id": "10",
+              "name": "LOUD",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          }
+        ],
+        "state": {
+          "type": "live",
+          "fixture": {
+            "id": "100",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": "https://example.test/fnatic.png"
+            },
+            "start": "2026-10-16T14:14:00Z",
+            "event": "Masters London",
+            "stage": "Upper final",
+            "format": "Bo3"
+          },
+          "score": {
+            "team": 1,
+            "opponent": 1
+          },
+          "maps": [
+            {
+              "name": "Haven",
+              "pick": {
+                "type": "team",
+                "tag": "SEN"
+              },
+              "status": "Won",
+              "score": {
+                "team": 13,
+                "opponent": 9
+              }
+            },
+            {
+              "name": "Lotus",
+              "pick": {
+                "type": "opponent",
+                "tag": "FNC"
+              },
+              "status": "Lost",
+              "score": {
+                "team": 9,
+                "opponent": 13
+              }
+            },
+            {
+              "name": "Ascent",
+              "pick": {
+                "type": "decider"
+              },
+              "status": "Live",
+              "score": {
+                "team": 6,
+                "opponent": 4
+              }
+            }
+          ]
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "live-bo5": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:15:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Win",
+          "Win",
+          "Loss",
+          "Win",
+          "Win",
+          "Live"
+        ],
+        "history": [
+          {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "2",
+            "day": "2026-10-12",
+            "opponent": {
+              "id": "8",
+              "name": "DRX",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          },
+          {
+            "id": "3",
+            "day": "2026-10-09",
+            "opponent": {
+              "id": "9",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 1,
+              "opponent": 2
+            }
+          },
+          {
+            "id": "4",
+            "day": "2026-10-05",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "5",
+            "day": "2026-09-28",
+            "opponent": {
+              "id": "10",
+              "name": "LOUD",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          }
+        ],
+        "state": {
+          "type": "live",
+          "fixture": {
+            "id": "100",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": "https://example.test/fnatic.png"
+            },
+            "start": "2026-10-16T14:14:00Z",
+            "event": "Masters London",
+            "stage": "Upper final",
+            "format": "Bo5"
+          },
+          "score": {
+            "team": 2,
+            "opponent": 2
+          },
+          "maps": [
+            {
+              "name": "Haven",
+              "pick": {
+                "type": "team",
+                "tag": "SEN"
+              },
+              "status": "Won",
+              "score": {
+                "team": 13,
+                "opponent": 9
+              }
+            },
+            {
+              "name": "Lotus",
+              "pick": {
+                "type": "opponent",
+                "tag": "FNC"
+              },
+              "status": "Lost",
+              "score": {
+                "team": 9,
+                "opponent": 13
+              }
+            },
+            {
+              "name": "Ascent",
+              "pick": {
+                "type": "decider"
+              },
+              "status": "Won",
+              "score": {
+                "team": 13,
+                "opponent": 9
+              }
+            },
+            {
+              "name": "Icebox",
+              "pick": {
+                "type": "decider"
+              },
+              "status": "Lost",
+              "score": {
+                "team": 9,
+                "opponent": 13
+              }
+            },
+            {
+              "name": "Split",
+              "pick": {
+                "type": "decider"
+              },
+              "status": "Live",
+              "score": {
+                "team": 6,
+                "opponent": 4
+              }
+            }
+          ]
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "live-next": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:15:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Win",
+          "Win",
+          "Loss",
+          "Win",
+          "Win",
+          "Live"
+        ],
+        "history": [
+          {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "2",
+            "day": "2026-10-12",
+            "opponent": {
+              "id": "8",
+              "name": "DRX",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          },
+          {
+            "id": "3",
+            "day": "2026-10-09",
+            "opponent": {
+              "id": "9",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 1,
+              "opponent": 2
+            }
+          },
+          {
+            "id": "4",
+            "day": "2026-10-05",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "5",
+            "day": "2026-09-28",
+            "opponent": {
+              "id": "10",
+              "name": "LOUD",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          }
+        ],
+        "state": {
+          "type": "live",
+          "fixture": {
+            "id": "100",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": "https://example.test/fnatic.png"
+            },
+            "start": "2026-10-16T14:14:00Z",
+            "event": "Masters London",
+            "stage": "Upper final",
+            "format": "Bo3"
+          },
+          "score": {
+            "team": 1,
+            "opponent": 1
+          },
+          "maps": [
+            {
+              "name": "Haven",
+              "pick": {
+                "type": "team",
+                "tag": "SEN"
+              },
+              "status": "Won",
+              "score": {
+                "team": 13,
+                "opponent": 9
+              }
+            },
+            {
+              "name": "Lotus",
+              "pick": {
+                "type": "opponent",
+                "tag": "FNC"
+              },
+              "status": "Lost",
+              "score": {
+                "team": 9,
+                "opponent": 13
+              }
+            },
+            {
+              "name": "Ascent",
+              "pick": {
+                "type": "decider"
+              },
+              "status": "Next",
+              "score": null
+            }
+          ]
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "live-no-score": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T12:15:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Win",
+          "Win",
+          "Loss",
+          "Win",
+          "Win",
+          "Live"
+        ],
+        "history": [
+          {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "2",
+            "day": "2026-10-12",
+            "opponent": {
+              "id": "8",
+              "name": "DRX",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          },
+          {
+            "id": "3",
+            "day": "2026-10-09",
+            "opponent": {
+              "id": "9",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 1,
+              "opponent": 2
+            }
+          },
+          {
+            "id": "4",
+            "day": "2026-10-05",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "5",
+            "day": "2026-09-28",
+            "opponent": {
+              "id": "10",
+              "name": "LOUD",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          }
+        ],
+        "state": {
+          "type": "live",
+          "fixture": {
+            "id": "100",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": "https://example.test/fnatic.png"
+            },
+            "start": "2026-10-16T14:14:00Z",
+            "event": "Masters London",
+            "stage": "Upper final",
+            "format": "Bo3"
+          },
+          "score": null,
+          "maps": []
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "idle-win": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T14:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Win",
+          "Win",
+          "Loss",
+          "Win",
+          "Win"
+        ],
+        "history": [
+          {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "2",
+            "day": "2026-10-12",
+            "opponent": {
+              "id": "8",
+              "name": "DRX",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          },
+          {
+            "id": "3",
+            "day": "2026-10-09",
+            "opponent": {
+              "id": "9",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 1,
+              "opponent": 2
+            }
+          },
+          {
+            "id": "4",
+            "day": "2026-10-05",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "5",
+            "day": "2026-09-28",
+            "opponent": {
+              "id": "10",
+              "name": "LOUD",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          }
+        ],
+        "state": {
+          "type": "idle",
+          "latest": {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          }
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "idle-loss": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T14:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Win",
+          "Win",
+          "Loss",
+          "Win",
+          "Loss"
+        ],
+        "history": [
+          {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "2",
+            "day": "2026-10-12",
+            "opponent": {
+              "id": "8",
+              "name": "DRX",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          },
+          {
+            "id": "3",
+            "day": "2026-10-09",
+            "opponent": {
+              "id": "9",
+              "name": "G2 Esports",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 1,
+              "opponent": 2
+            }
+          },
+          {
+            "id": "4",
+            "day": "2026-10-05",
+            "opponent": {
+              "id": "1",
+              "name": "FNATIC",
+              "tag": "FNC",
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          },
+          {
+            "id": "5",
+            "day": "2026-09-28",
+            "opponent": {
+              "id": "10",
+              "name": "LOUD",
+              "tag": null,
+              "logo": null
+            },
+            "result": "Win",
+            "score": {
+              "team": 2,
+              "opponent": 0
+            }
+          }
+        ],
+        "state": {
+          "type": "idle",
+          "latest": {
+            "id": "1",
+            "day": "2026-10-15",
+            "opponent": {
+              "id": "7",
+              "name": "Paper Rex",
+              "tag": "PRX",
+              "logo": null
+            },
+            "result": "Loss",
+            "score": {
+              "team": 2,
+              "opponent": 1
+            }
+          }
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  },
+  "idle-empty": {
+    "version": 1,
+    "key": {
+      "kind": "Team",
+      "entityId": "2",
+      "clientId": "render-client"
+    },
+    "revision": 1,
+    "attemptedAt": "2026-10-16T12:00:00Z",
+    "fetchAfter": "2026-10-16T14:00:00Z",
+    "origin": "Fresh",
+    "value": {
+      "type": "team",
+      "value": {
+        "header": {
+          "team": {
+            "id": "2",
+            "name": "Sentinels",
+            "tag": "SEN",
+            "logo": "https://example.test/sentinels.png"
+          },
+          "rank": 4,
+          "region": "Americas",
+          "regionRank": 1
+        },
+        "form": [
+          "Empty",
+          "Empty",
+          "Empty",
+          "Empty",
+          "Empty"
+        ],
+        "history": [],
+        "state": {
+          "type": "idle",
+          "latest": null
+        }
+      },
+      "fetchedAt": "2026-10-16T12:00:00Z"
+    }
+  }
+}
