@@ -19,6 +19,7 @@ import dev.staticvar.vlr.android.notifications.AndroidLiveNotificationAvailabili
 import dev.staticvar.vlr.android.widget.FavoriteMatchWidgets
 import dev.staticvar.vlr.android.widget.LegacyWidgetRefreshScheduler
 import dev.staticvar.vlr.android.widget.WidgetSnapshotStore
+import dev.staticvar.vlr.android.widget.favorite.requestFavoriteWidgetUpdate
 import dev.staticvar.vlr.core.notifications.NotificationAuthorization
 import dev.staticvar.vlr.domain.repository.FavoritesRepository
 import dev.staticvar.vlr.shared.App
@@ -87,6 +88,7 @@ class MainActivity : ComponentActivity() {
           onWidgetSnapshotChanged = { snapshotJson ->
             try {
               if (WidgetSnapshotStore.writeIfChanged(applicationContext, snapshotJson)) {
+                requestFavoriteWidgetUpdate(applicationContext)
                 FavoriteMatchWidgets.updateAll(applicationContext)
                 ScoreWidget().updateAll(applicationContext)
               }

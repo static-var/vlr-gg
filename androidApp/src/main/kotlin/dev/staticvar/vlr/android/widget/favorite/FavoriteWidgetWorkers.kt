@@ -34,6 +34,16 @@ internal class FavoriteEntityReconcileWorker(context: Context, params: WorkerPar
   override suspend fun doWork(): Result = widgetWork { FavoriteWidgetRuntime.get().changed() }
 }
 
+internal class FavoriteEntityRestoreWorker(context: Context, params: WorkerParameters) :
+  CoroutineWorker(context, params) {
+  override suspend fun doWork(): Result = widgetWork {
+    val oldIds = inputData.getIntArray("old") ?: return@widgetWork
+    val newIds = inputData.getIntArray("new") ?: return@widgetWork
+    FavoriteWidgetRestore.apply(applicationContext, oldIds, newIds)
+    requestFavoriteWidgetUpdate(applicationContext)
+  }
+}
+
 private suspend fun widgetWork(block: suspend () -> Unit): Result = try {
   block()
   Result.success()
