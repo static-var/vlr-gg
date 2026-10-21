@@ -216,6 +216,7 @@ dependencies {
   implementation(libs.activity.compose)
   implementation(libs.coil.compose)
   implementation(libs.glance.appwidget)
+  implementation(libs.datastore.preferences.core)
   implementation(libs.work.runtime)
   implementation(libs.splashscreen)
   implementation(libs.koin.android)

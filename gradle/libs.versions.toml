@@ -22,6 +22,7 @@ sqldelight = "2.4.1"
 multiplatform-nav3-ui = "1.2.0-rc01"
 agentPreview = "0.3.1"
 glance = "1.2.0"
+datastore = "1.1.7"
 work = "2.12.0"
 leakcanary = "2.14"
 firebase = "34.19.0"
@@ -65,6 +66,7 @@ core = { module = "androidx.core:core-ktx", version = "1.19.1" }
 app-compat = { module = "androidx.appcompat:appcompat", version = "1.8.0" }
 activity-compose = { module = "androidx.activity:activity-compose", version = "1.13.0" }
 glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
+datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 core-viewtree = { module = "androidx.core:core-viewtree", version = "1.0.0" }
 emoji2 = { module = "androidx.emoji2:emoji2", version = "1.7.0" }
