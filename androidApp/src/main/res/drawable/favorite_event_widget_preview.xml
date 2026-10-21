@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="PrivateResource"
+    android:width="196dp" android:height="111dp" android:viewportWidth="280" android:viewportHeight="158">
+    <path android:fillColor="@color/glance_colorWidgetBackground"
+        android:pathData="M20,0H260Q280,0 280,20V138Q280,158 260,158H20Q0,158 0,138V20Q0,0 20,0" />
+    <path android:fillColor="@color/glance_colorSecondaryContainer"
+        android:pathData="M24,16H40Q48,16 48,24V40Q48,48 40,48H24Q16,48 16,40V24Q16,16 24,16" />
+    <path android:fillColor="@color/glance_colorOnSurface"
+        android:pathData="M60,20H160V29H60ZM16,96H170V124H16" />
+    <path android:fillColor="@color/glance_colorOnSurfaceVariant"
+        android:pathData="M60,36H124V42H60ZM16,132H224V138H16" />
+    <path android:fillColor="@color/glance_colorSurfaceVariant"
+        android:pathData="M211,29H261Q264,29 264,32Q264,35 261,35H211Q208,35 208,32Q208,29 211,29" />
+    <path android:fillColor="@color/glance_colorPrimary"
+        android:pathData="M211,29H230V35H211Q208,35 208,32Q208,29 211,29" />
+</vector>
