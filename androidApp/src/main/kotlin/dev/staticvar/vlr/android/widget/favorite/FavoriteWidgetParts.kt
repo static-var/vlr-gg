@@ -54,7 +54,7 @@ import dev.staticvar.vlr.shared.widget.favorite.PillTone
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
-internal enum class FavoriteWidgetPart { Form, Context, Pills, RegionalRank }
+internal enum class FavoriteWidgetPart { Form, Context, Pills, RegionalRank, Progress, Subtitle, Beside, OtherLive }
 
 internal data class FavoriteWidgetPresentation(
   val large: Boolean,
@@ -134,8 +134,12 @@ internal fun presentationFor(
 
 private val FavoriteWidgetPartDropOrder = listOf(
   FavoriteWidgetPart.RegionalRank,
+  FavoriteWidgetPart.OtherLive,
+  FavoriteWidgetPart.Progress,
   FavoriteWidgetPart.Pills,
+  FavoriteWidgetPart.Beside,
   FavoriteWidgetPart.Context,
+  FavoriteWidgetPart.Subtitle,
   FavoriteWidgetPart.Form,
 )
 
