@@ -211,6 +211,7 @@ class FavoriteTeamWidgetRenderTest(
             listOf("Haven", "Lotus", "Ascent")
           }
           val count = expectedRows
+          assertTrue("${render.name}: large layout shows no map scores", count > 0)
           assertEquals("${render.name}: map prefix", allMaps.take(count), strings.filter { it in allMaps })
           assertEquals("${render.name}: map heading", count > 0, "Maps" in strings)
           if (baseName != "live-bo5" && count > 0) {
