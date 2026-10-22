@@ -2,4 +2,6 @@
 <resources>
     <string name="widget_favorite_picker_empty_teams">Bu widget\'ı kullanmak için Val Esports\'ta bir takımı favorilerinize ekleyin.</string>
     <string name="widget_favorite_picker_empty_events">Bu widget\'ı kullanmak için Val Esports\'ta bir etkinliği favorilerinize ekleyin.</string>
+    <string name="widget_team_picker_explanation">Widget bu takımın sonraki maçını, canlı skorunu ve son sonuçlarını gösterir. Favorilerinden bir takıma dokun.</string>
+    <string name="widget_event_picker_explanation">Widget bu etkinliğin sonraki maçını, canlı skorunu ve puan durumunu gösterir. Favorilerinden bir etkinliğe dokun.</string>
 </resources>

@@ -2,4 +2,6 @@
 <resources>
     <string name="widget_favorite_picker_empty_teams">Adicione um time aos favoritos no Val Esports para usar este widget.</string>
     <string name="widget_favorite_picker_empty_events">Adicione um evento aos favoritos no Val Esports para usar este widget.</string>
+    <string name="widget_team_picker_explanation">O widget mostra a próxima partida, o placar ao vivo e os resultados recentes deste time. Toque em um time dos seus favoritos.</string>
+    <string name="widget_event_picker_explanation">O widget mostra a próxima partida, o placar ao vivo e a classificação deste evento. Toque em um evento dos seus favoritos.</string>
 </resources>
