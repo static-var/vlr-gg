@@ -622,6 +622,19 @@ extension EventWidgetTests {
 
 @available(iOS 17.0, *)
 final class EventWidgetIntentTests: XCTestCase {
+    func testPickerDecodesOptionalLogosAndKeepsRowsWithoutImages() async throws {
+        let values = try JSONDecoder().decode([WidgetFavoriteEvent].self, from: Data("""
+        [{"id":"2","name":"Masters","logo":"https://invalid.test/logo"},
+         {"id":"1","name":"Champions","logo":null}, {"id":"3","name":"Legacy"}]
+        """.utf8))
+        XCTAssertEqual(values[0].logo, "https://invalid.test/logo")
+        XCTAssertNil(values[1].logo)
+        XCTAssertNil(values[2].logo)
+        let entities = try await FavoriteEventQuery(loadEvents: { values }).suggestedEntities()
+        XCTAssertEqual(entities.map(\.name), ["Champions", "Legacy", "Masters"])
+        XCTAssertTrue(entities.allSatisfy { $0.displayRepresentation.image == nil })
+    }
+
     func testPickerResolvesCurrentDirectFavoritesOnly() async throws {
         let query = FavoriteEventQuery(loadEvents: { [.init(id: "2", name: "Masters"), .init(id: "1", name: "Champions")] })
         let suggested = try await query.suggestedEntities()

@@ -8,7 +8,10 @@ struct FavoriteEventEntity: AppEntity {
 
     let id: String
     let name: String
-    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(name)") }
+    var imageData: Data? = nil
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: "\(name)", image: imageData.map { .init(data: $0, isTemplate: false) })
+    }
 }
 
 @available(iOS 17.0, *)
@@ -19,15 +22,16 @@ struct FavoriteEventQuery: EntityQuery {
 
     func entities(for identifiers: [String]) async throws -> [FavoriteEventEntity] {
         let events = loadEvents()
-        return identifiers.compactMap { id in
-            events.first { $0.id == id }.map { FavoriteEventEntity(id: $0.id, name: $0.name) }
-        }
+        return await entities(identifiers.compactMap { id in events.first { $0.id == id } })
     }
 
     func suggestedEntities() async throws -> [FavoriteEventEntity] {
-        loadEvents()
-            .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
-            .map { FavoriteEventEntity(id: $0.id, name: $0.name) }
+        await entities(loadEvents().sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending })
+    }
+
+    private func entities(_ values: [WidgetFavoriteEvent]) async -> [FavoriteEventEntity] {
+        await WidgetLogoPrefetch.run(values.compactMap(\.logo), timeout: .seconds(1))
+        return values.map { FavoriteEventEntity(id: $0.id, name: $0.name, imageData: MatchActivityLogoCache.cachedImageData(for: $0.logo)) }
     }
 }
 

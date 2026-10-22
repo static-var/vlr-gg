@@ -8,7 +8,14 @@ struct FavoriteTeamEntity: AppEntity {
 
     let id: String
     let name: String
-    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(name)") }
+    var tag: String? = nil
+    var imageData: Data? = nil
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: "\(name)", subtitle: tag.flatMap { value in
+            let value = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            return value.isEmpty || value.caseInsensitiveCompare(name) == .orderedSame ? nil : "\(value)"
+        }, image: imageData.map { .init(data: $0, isTemplate: false) })
+    }
 }
 
 @available(iOS 17.0, *)
@@ -19,15 +26,16 @@ struct FavoriteTeamQuery: EntityQuery {
 
     func entities(for identifiers: [String]) async throws -> [FavoriteTeamEntity] {
         let teams = loadTeams()
-        return identifiers.compactMap { id in
-            teams.first { $0.id == id }.map { FavoriteTeamEntity(id: $0.id, name: $0.name) }
-        }
+        return await entities(identifiers.compactMap { id in teams.first { $0.id == id } })
     }
 
     func suggestedEntities() async throws -> [FavoriteTeamEntity] {
-        loadTeams()
-            .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
-            .map { FavoriteTeamEntity(id: $0.id, name: $0.name) }
+        await entities(loadTeams().sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending })
+    }
+
+    private func entities(_ values: [WidgetFavoriteTeam]) async -> [FavoriteTeamEntity] {
+        await WidgetLogoPrefetch.run(values.compactMap(\.logo), timeout: .seconds(1))
+        return values.map { FavoriteTeamEntity(id: $0.id, name: $0.name, tag: $0.tag, imageData: MatchActivityLogoCache.cachedImageData(for: $0.logo)) }
     }
 }
 

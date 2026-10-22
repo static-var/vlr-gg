@@ -460,6 +460,25 @@ private actor TeamWidgetRequestRecorder {
 
 @available(iOS 17.0, *)
 final class TeamWidgetIntentTests: XCTestCase {
+    func testPickerDecodesOptionalLogoAndTagAndOmitsDuplicateSubtitles() async throws {
+        let decoder = JSONDecoder()
+        let values = try decoder.decode([WidgetFavoriteTeam].self, from: Data("""
+        [{"id":"2","name":"Sentinels","tag":"SEN","logo":"https://invalid.test/logo"},
+         {"id":"1","name":"FNATIC","tag":"FNATIC","logo":null},
+         {"id":"3","name":"Legacy"}]
+        """.utf8))
+        XCTAssertEqual(values[0].logo, "https://invalid.test/logo")
+        XCTAssertNil(values[2].tag)
+        XCTAssertNil(values[2].logo)
+        let query = FavoriteTeamQuery(loadTeams: { values })
+        let entities = try await query.entities(for: ["2", "1", "3"])
+        XCTAssertNotNil(entities[0].displayRepresentation.subtitle)
+        XCTAssertNil(entities[1].displayRepresentation.subtitle)
+        XCTAssertNil(entities[2].displayRepresentation.subtitle)
+        XCTAssertTrue(entities.allSatisfy { $0.displayRepresentation.image == nil })
+        XCTAssertNil(FavoriteTeamEntity(id: "4", name: "Team", tag: "  ").displayRepresentation.subtitle)
+    }
+
     func testPickerListsAndResolvesOnlyCurrentFavoriteTeams() async throws {
         let query = FavoriteTeamQuery(loadTeams: { [.init(id: "2", name: "Sentinels"), .init(id: "1", name: "FNATIC")] })
         let suggested = try await query.suggestedEntities()

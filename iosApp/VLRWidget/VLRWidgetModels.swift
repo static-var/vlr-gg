@@ -3,11 +3,27 @@ import Foundation
 struct WidgetFavoriteTeam: Codable, Equatable, Identifiable {
     let id: String
     let name: String
+    let tag: String?
+    let logo: String?
+
+    init(id: String, name: String, tag: String? = nil, logo: String? = nil) {
+        self.id = id
+        self.name = name
+        self.tag = tag
+        self.logo = logo
+    }
 }
 
 struct WidgetFavoriteEvent: Codable, Equatable, Identifiable, Sendable {
     let id: String
     let name: String
+    let logo: String?
+
+    init(id: String, name: String, logo: String? = nil) {
+        self.id = id
+        self.name = name
+        self.logo = logo
+    }
 }
 
 struct WidgetFavoriteIDs: Codable, Equatable {
