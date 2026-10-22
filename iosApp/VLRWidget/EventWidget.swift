@@ -51,7 +51,7 @@ struct EventWidget: Widget {
 extension EventWidgetEntryContent {
     var widgetURL: URL {
         switch self {
-        case .content(let content): content.header.eventID.isEmpty ? VLRWidgetContract.appURL : VLRWidgetContract.detailsURL(kind: "event", id: content.header.eventID)
+        case .content(let content): content.widgetURL
         case .placeholder(let id): id.map { VLRWidgetContract.detailsURL(kind: "event", id: $0) } ?? VLRWidgetContract.appURL
         case .setup: VLRWidgetContract.appURL
         }
@@ -89,6 +89,10 @@ struct EventWidgetView: View {
         .containerBackground(PrismWidgetPalette.background(for: colorScheme), for: .widget)
     }
 
+    private func teamURL(_ team: WidgetTeam) -> URL {
+        team.id.map { VLRWidgetContract.detailsURL(kind: "team", id: $0) } ?? entry.content.widgetURL
+    }
+
     private func content(_ content: EventWidgetContent) -> some View {
         let text: EventWidgetHeroText
         switch content.body {
@@ -96,9 +100,9 @@ struct EventWidgetView: View {
         case .hidden(let state): text = .make(state, now: entry.date, locale: locale, timeZone: timeZone)
         }
         return VStack(alignment: .leading, spacing: 0) {
-            header(content.header)
+            header(content.header).widgetLink(to: content.widgetURL)
             if large { Spacer().frame(height: 18) } else { Spacer(minLength: 6) }
-            hero(text)
+            hero(text).widgetLink(to: content.heroURL)
             if large {
                 Spacer(minLength: 12)
                 list(content.body)
@@ -248,7 +252,7 @@ struct EventWidgetView: View {
             }.frame(maxWidth: .infinity, alignment: .leading)
             Text(verbatim: text.round).font(.system(size: 11)).foregroundStyle(palette.secondary)
                 .lineLimit(1).truncationMode(.tail).frame(maxWidth: 120, alignment: .trailing).layoutPriority(1)
-        }.frame(height: 49)
+        }.frame(height: 49).widgetLink(to: VLRWidgetContract.matchURL(id: fixture.id))
     }
 
     private func participantRow(_ participant: WidgetParticipant, name: String, score: String?, dimmed: Bool) -> some View {
@@ -272,6 +276,7 @@ struct EventWidgetView: View {
                 Text(verbatim: EventWidgetText.integer(row.standing.mapDifference, locale: locale, signed: true))
                     .foregroundStyle(palette.secondary).frame(width: 30, alignment: .trailing).monospacedDigit()
             }.font(.system(size: 13, weight: row.isFavorite ? .semibold : .regular)).frame(height: 30)
+                .widgetLink(to: teamURL(row.standing.team))
         }
     }
 
@@ -285,7 +290,7 @@ struct EventWidgetView: View {
                 Text(verbatim: row.team.name).font(.system(size: 13)).lineLimit(1).minimumScaleFactor(0.7)
                 Spacer(minLength: 0)
                 Text(verbatim: row.amount).font(.system(size: 13)).lineLimit(1).minimumScaleFactor(0.7)
-            }.frame(height: 38)
+            }.frame(height: 38).widgetLink(to: teamURL(row.team))
         }
     }
 

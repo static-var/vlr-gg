@@ -96,9 +96,7 @@ struct TeamWidgetView: View {
     }
 
     private var widgetURL: URL {
-        if case .content(let content) = entry.content, let fixture = content.fixture {
-            return VLRWidgetContract.matchURL(id: fixture.id)
-        }
+        if case .content(let content) = entry.content { return content.widgetURL }
         return VLRWidgetContract.appURL
     }
 
@@ -153,9 +151,9 @@ struct TeamWidgetView: View {
     private func body(_ content: TeamWidgetContent) -> some View {
         let hero = TeamWidgetHero.make(content, now: entry.date, locale: locale, timeZone: timeZone)
         return VStack(alignment: .leading, spacing: 0) {
-            header(content)
+            header(content).widgetLink(to: content.widgetURL)
             if large { Spacer().frame(height: 18) } else { Spacer(minLength: 6) }
-            heroBlock(hero)
+            heroBlock(hero).widgetLink(to: content.heroURL)
             if large {
                 Spacer(minLength: 8)
                 history(content, hero: hero)
@@ -238,7 +236,8 @@ struct TeamWidgetView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Maps").font(.system(size: 12)).foregroundStyle(palette.secondary).padding(.bottom, 2)
                 ForEach(Array(hero.maps.prefix(5).enumerated()), id: \.offset) { index, map in
-                    mapRow(map, compact: hero.maps.count > 3).overlay(alignment: .top) {
+                    mapRow(map, compact: hero.maps.count > 3)
+                        .widgetLink(to: content.heroURL).overlay(alignment: .top) {
                         if index > 0 { Rectangle().fill(palette.border.opacity(0.35)).frame(height: 0.5) }
                     }
                 }
@@ -247,7 +246,7 @@ struct TeamWidgetView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(verbatim: historyLabel(content)).font(.system(size: 12)).foregroundStyle(palette.secondary).padding(.bottom, 2)
                 ForEach(Array(content.historyRows.enumerated()), id: \.offset) { index, result in
-                    historyRow(result).overlay(alignment: .top) {
+                    historyRow(result).widgetLink(to: VLRWidgetContract.matchURL(id: result.id)).overlay(alignment: .top) {
                         if index > 0 { Rectangle().fill(palette.border.opacity(0.35)).frame(height: 0.5) }
                     }
                 }

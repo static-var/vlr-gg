@@ -95,3 +95,9 @@ struct WidgetMapPills: View {
     }
 
 }
+
+extension View {
+    func widgetLink(to destination: URL) -> some View {
+        Link(destination: destination) { contentShape(Rectangle()) }.buttonStyle(.plain)
+    }
+}

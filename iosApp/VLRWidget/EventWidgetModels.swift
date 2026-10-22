@@ -107,6 +107,30 @@ struct EventWidgetHeader: Equatable {
 struct EventWidgetContent: Equatable {
     let header: EventWidgetHeader
     let body: EventWidgetBody
+
+    var widgetURL: URL {
+        header.eventID.isEmpty ? VLRWidgetContract.appURL : VLRWidgetContract.detailsURL(kind: "event", id: header.eventID)
+    }
+
+    var heroURL: URL {
+        switch body {
+        case .visible(let state):
+            switch state {
+            case .scheduled(let hero, _): return VLRWidgetContract.matchURL(id: hero.fixture.id)
+            case .live(let hero, _): return VLRWidgetContract.matchURL(id: hero.fixture.id)
+            case .between(let hero, _): return VLRWidgetContract.matchURL(id: hero.last.matchID)
+            case .finished(.champion(let team, _), _):
+                return team.id.map { VLRWidgetContract.detailsURL(kind: "team", id: $0) } ?? widgetURL
+            case .gap, .finished(.unconfirmed, _): return widgetURL
+            }
+        case .hidden(let state):
+            switch state {
+            case .scheduled(let hero, _): return VLRWidgetContract.matchURL(id: hero.fixture.id)
+            case .live(let hero, _): return VLRWidgetContract.matchURL(id: hero.fixture.id)
+            case .gap, .finished: return widgetURL
+            }
+        }
+    }
 }
 enum EventWidgetBody: Equatable {
     case visible(EventVisibleState)

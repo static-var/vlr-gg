@@ -187,6 +187,22 @@ final class TeamWidgetTests: XCTestCase {
         XCTAssertEqual(sample.history.map(\.result.score), ["2–1", "2–0", "1–2", "2–1", "2–0"])
     }
 
+    func testTapTargetsStayOnTeamOrMatchWhenScoresAreHidden() throws {
+        var upcoming = TeamWidgetContent.sample(at: now)
+        let teamURL = VLRWidgetContract.detailsURL(kind: "team", id: "2")
+        XCTAssertEqual(upcoming.widgetURL, teamURL)
+        XCTAssertEqual(upcoming.heroURL, VLRWidgetContract.matchURL(id: "100"))
+        let live = try content(live: true)
+        XCTAssertEqual(live.heroURL, VLRWidgetContract.matchURL(id: "100"))
+        XCTAssertEqual(live.redacted().heroURL, live.heroURL)
+        let idle = try content()
+        XCTAssertEqual(idle.widgetURL, teamURL)
+        XCTAssertEqual(idle.heroURL, VLRWidgetContract.matchURL(id: "1"))
+        XCTAssertEqual(idle.redacted().heroURL, idle.heroURL)
+        upcoming.state = .idle(nil)
+        XCTAssertEqual(upcoming.heroURL, teamURL)
+    }
+
     @MainActor
     func testPlaceholderRendersRedactedSampleInBothFamilies() throws {
         let directory = try renderDirectory()

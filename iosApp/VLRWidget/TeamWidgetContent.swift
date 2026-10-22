@@ -139,6 +139,21 @@ struct TeamWidgetContent: Codable, Equatable, Sendable {
         return ([header.team.logo, opponent?.logo] + (large ? historyRows.map { $0.opponent.logo } : [])).compactMap { $0 }
     }
 
+    var widgetURL: URL {
+        header.team.id.map { VLRWidgetContract.detailsURL(kind: "team", id: $0) } ?? VLRWidgetContract.appURL
+    }
+
+    var heroURL: URL {
+        let matchID: String?
+        switch state {
+        case .upcoming(let fixture), .liveHidden(let fixture): matchID = fixture.id
+        case .live(let series): matchID = series.fixture.id
+        case .idle(let last): matchID = last?.id
+        case .idleHidden(let last): matchID = last.id
+        }
+        return matchID.map { VLRWidgetContract.matchURL(id: $0) } ?? widgetURL
+    }
+
     var fixture: TeamWidgetFixture? {
         switch state {
         case .upcoming(let fixture), .liveHidden(let fixture): fixture
