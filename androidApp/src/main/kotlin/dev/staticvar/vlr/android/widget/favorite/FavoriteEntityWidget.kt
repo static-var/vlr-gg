@@ -65,7 +65,7 @@ internal abstract class FavoriteEntityWidget(val kind: WidgetKind) : GlanceAppWi
         context.createConfigurationContext(Configuration(context.applicationContext.resources.configuration))
       }
       CompositionLocalProvider(LocalContext provides renderContext) {
-        Surface(GlanceModifier.clickable(actionStartActivity(widget.frame.tap.intent(context, appWidgetId)))) {
+        WidgetFrame(GlanceModifier.clickable(actionStartActivity(widget.frame.tap.intent(context, appWidgetId)))) {
           Content(widget.frame, widget.logos)
         }
       }
@@ -75,12 +75,12 @@ internal abstract class FavoriteEntityWidget(val kind: WidgetKind) : GlanceAppWi
   final override suspend fun providePreview(context: Context, widgetCategory: Int) {
     val frame = FavoriteWidgetRuntime.get().preview(kind)
     provideContent {
-      Surface(GlanceModifier) { Content(frame, WidgetBitmaps(emptyMap())) }
+      WidgetFrame(GlanceModifier) { Content(frame, WidgetBitmaps(emptyMap())) }
     }
   }
 
   @Composable
-  private fun Surface(modifier: GlanceModifier, content: @Composable () -> Unit) {
+  private fun WidgetFrame(modifier: GlanceModifier, content: @Composable () -> Unit) {
     GlanceTheme {
       val background = GlanceModifier.fillMaxSize().appWidgetBackground()
         .background(GlanceTheme.colors.widgetBackground)
